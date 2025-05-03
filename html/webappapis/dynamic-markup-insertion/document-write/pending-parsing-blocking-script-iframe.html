@@ -1,0 +1,12 @@
+<!doctype html>
+<script>
+window.log = [];
+window.parent.t1.step_timeout(() => {
+  // document.open() occurs while a parsing-blocking script is still loading.
+  document.open();
+  document.write("document.write body contents\n")
+  document.close();
+}, 500);
+</script>
+<script src="pending-script.js?parsing-blocking&pipe=trickle(d1)"></script>
+Initial body contents

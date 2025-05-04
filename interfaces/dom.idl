@@ -366,7 +366,8 @@ interface Element : Node {
   readonly attribute DOMString tagName;
 
   [CEReactions] attribute DOMString id;
-  [CEReactions] attribute DOMString className;
+  [CEReactions] attribute DOMString class;
+  [CEReactions] attribute DOMString className; // legacy alias of .class
   [SameObject, PutForwards=value] readonly attribute DOMTokenList classList;
   [CEReactions, Unscopable] attribute DOMString slot;
 

@@ -60,7 +60,7 @@ async def test_watch_position(
         function_declaration="""(channel) =>
             window.navigator.geolocation.watchPosition(
                 (result) => channel("unexpected result"),
-                (error) => channel({code: error.code})                
+                (error) => channel({code: error.code})
             )
         """,
         target=ContextTarget(new_tab["context"]),

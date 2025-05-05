@@ -331,6 +331,8 @@ def test_verify_payload():
       'wpt-firefox_android-nightly-testharness-28',
       'wpt-firefox_android-nightly-testharness-29',
       'wpt-firefox_android-nightly-testharness-30',
+      'wpt-firefox_android-nightly-testharness-31',
+      'wpt-firefox_android-nightly-testharness-32',
       'wpt-firefox-stable-reftest-1',
       'wpt-firefox-stable-reftest-2',
       'wpt-firefox-stable-reftest-3',

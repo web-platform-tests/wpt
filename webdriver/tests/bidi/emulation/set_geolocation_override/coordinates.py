@@ -193,3 +193,23 @@ async def test_persists_on_navigation(
     )
 
     assert await get_current_geolocation(bidi_session, new_tab) == test_coordinates
+
+
+async def test_reset_without_override(
+    bidi_session, new_tab, url, set_geolocation_permission
+):
+    test_url = url("/common/blank.html")
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"],
+        url=test_url,
+        wait="complete",
+    )
+    await set_geolocation_permission(new_tab)
+
+    default_coordinates = await get_current_geolocation(bidi_session, new_tab)
+
+    await bidi_session.emulation.set_geolocation_override(
+        contexts=[new_tab["context"]], coordinates=None
+    )
+
+    assert await get_current_geolocation(bidi_session, new_tab) == default_coordinates

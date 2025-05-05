@@ -12,13 +12,14 @@
             descriptor: {name: "geolocation"},
             state: "granted",
         });
-
-        // Ensure any previously set geolocation emulations are cleared.
-        await test_driver.bidi.emulation.set_geolocation_override(
-            {coordinates: null});
     });
 
-    promise_test(async () => {
+    promise_test(async (t) => {
+        t.add_cleanup(async () => {
+            await test_driver.bidi.emulation.set_geolocation_override(
+                {coordinates: null});
+        });
+
         const latitude = 51.478;
         const longitude = -0.166;
         const accuracy = 100;
@@ -27,14 +28,13 @@
             coordinates: {latitude, longitude, accuracy}
         });
 
-        const positionPromise = new Promise(
+        const position = await new Promise(
             (resolve, reject) =>
                 window.navigator.geolocation.getCurrentPosition(
                     position => resolve(position.coords.toJSON()),
                     error => reject(error),
                     {timeout: 200}
-                ))
-        const position = await positionPromise;
+                ));
 
         assert_equals(position.latitude, latitude);
         assert_equals(position.longitude, longitude);

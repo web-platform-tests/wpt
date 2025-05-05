@@ -478,6 +478,8 @@ def template(request, content, escape_type="html"):
             value = variables[field]
         elif hasattr(SubFunctions, field):
             value = getattr(SubFunctions, field)
+        elif field == "server_certificate_hash":
+            value = request.server.config["cert_hash_info"]["hash"]
         elif field == "headers":
             value = request.headers
         elif field == "GET":

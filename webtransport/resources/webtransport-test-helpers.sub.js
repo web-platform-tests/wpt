@@ -3,16 +3,23 @@
 
 const HOST = get_host_info().ORIGINAL_HOST;
 const PORT = '{{ports[webtransport-h3][0]}}';
+const PORT_CERT_HASH = '{{ports[webtransport-h3-cert-hash][0]}}';
 const BASE = `https://${HOST}:${PORT}`;
+const BASE_CERT_HASH = `https://${HOST}:${PORT_CERT_HASH}`;
 
 // Wait for the given number of milliseconds (ms).
 function wait(ms) { return new Promise(res => step_timeout(res, ms)); }
 
 // Create URL for WebTransport session.
-function webtransport_url(handler) {
+function webtransport_url(handler, options) {
+  if (options?.cert_hashes) {
+    return `${BASE_CERT_HASH}/webtransport/handlers/${handler}`;
+  }
   return `${BASE}/webtransport/handlers/${handler}`;
 }
 
+const cert_hash = new Uint8Array('{{server_certificate_hash}}'.split(':').map((el) => parseInt(el, 16)));
+const cert_hash_str = '{{server_certificate_hash}}'
 // Converts WebTransport stream error code to HTTP/3 error code.
 // https://ietf-wg-webtrans.github.io/draft-ietf-webtrans-http3/draft-ietf-webtrans-http3.html#section-4.3
 function webtransport_code_to_http_code(n) {

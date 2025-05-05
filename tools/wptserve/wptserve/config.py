@@ -128,6 +128,7 @@ class ConfigBuilder:
 
     _default = {
         "browser_host": "localhost",
+        "certificate_hash": {},
         "alternate_hosts": {},
         "doc_root": os.path.dirname("__file__"),
         "server_host": None,

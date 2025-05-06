@@ -284,9 +284,9 @@ const attributeSetterData = [
   {
     api:"Attr.value",
     acceptNS: true,
-      acceptTrustedTypeArgumentInIDL: false,
-      runSetter: function(element, attrNS, attrName, attrValue, type) {
-      element.setAttributeNS(attrNS, attrName, createTrustedOutput(type, ""));
+    acceptTrustedTypeArgumentInIDL: false,
+    runSetter: function(element, attrNS, attrName, attrValue, type, initialAttrValue = "") {
+      element.setAttributeNS(attrNS, attrName, createTrustedOutput(type, initialAttrValue));
       this.lastAttributeNode = findAttribute(element, attrNS, attrName);
       assert_true(!!this.lastAttributeNode);
       return (this.lastAttributeNode.value = attrValue);
@@ -296,8 +296,8 @@ const attributeSetterData = [
     api: "Node.nodeValue",
     acceptNS: true,
     acceptTrustedTypeArgumentInIDL: false,
-    runSetter: function(element, attrNS, attrName, attrValue, type) {
-      element.setAttributeNS(attrNS, attrName, createTrustedOutput(type, ""));
+    runSetter: function(element, attrNS, attrName, attrValue, type, initialAttrValue = "") {
+      element.setAttributeNS(attrNS, attrName, createTrustedOutput(type, initialAttrValue));
       this.lastAttributeNode = findAttribute(element, attrNS, attrName);
       assert_true(!!this.lastAttributeNode);
       return (this.lastAttributeNode.nodeValue = attrValue);
@@ -307,8 +307,8 @@ const attributeSetterData = [
     api: "Node.textContent",
     acceptNS: true,
     acceptTrustedTypeArgumentInIDL: false,
-    runSetter: function(element, attrNS, attrName, attrValue, type) {
-      element.setAttributeNS(attrNS, attrName, createTrustedOutput(type, ""));
+    runSetter: function(element, attrNS, attrName, attrValue, type, initialAttrValue = "") {
+      element.setAttributeNS(attrNS, attrName, createTrustedOutput(type, initialAttrValue));
       this.lastAttributeNode = findAttribute(element, attrNS, attrName);
       assert_true(!!this.lastAttributeNode);
       return (this.lastAttributeNode.textContent = attrValue);

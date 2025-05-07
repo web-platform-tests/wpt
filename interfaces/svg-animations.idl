@@ -55,6 +55,10 @@ SVGMPathElement includes SVGURIReference;
 interface SVGAnimateTransformElement : SVGAnimationElement {
 };
 
+[Exposed=Window]
+interface SVGDiscardElement : SVGAnimationElement {
+};
+
 partial interface SVGSVGElement {
   undefined pauseAnimations();
   undefined unpauseAnimations();

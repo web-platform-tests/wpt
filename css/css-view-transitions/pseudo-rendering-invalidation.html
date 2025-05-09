@@ -35,8 +35,30 @@ div {
   animation-play-state: paused;
 }
 
+::view-transition-image-pair(hidden) {
+  visibility: hidden;
+}
+
 ::view-transition {
   background-color: limegreen;
+}
+
+::view-transition-new(group) {
+  animation: none;
+  opacity: 1;
+}
+::view-transition-old(group) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(imagepair) {
+  animation: none;
+  opacity: 0;
+}
+::view-transition-old(imagepair) {
+  animation: none;
+  opacity: 1;
 }
 
 ::view-transition-new(new) {
@@ -86,6 +108,7 @@ div {
 <div style="left: 150px; top: 100px; view-transition-name:imagepair;">Image-Pair</div>
 <div style="left: 0px; top: 250px; view-transition-name:old;">Old</div>
 <div style="left: 150px; top: 250px; view-transition-name:new;">New</div>
+<div style="left: 0px; top: 0px; view-transition-name:hidden"></div>
 
 <script>
 failIfNot(document.startViewTransition, "Missing document.startViewTransition");

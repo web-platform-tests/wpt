@@ -135,7 +135,7 @@ class ChromeAndroidBrowserBase(WebDriverBrowser):
         self.device_serial = device_serial
         self.stackwalk_binary = stackwalk_binary
         self.symbols_path = symbols_path
-        self.logcat_runner = LogcatRunner(self.logger)
+        self.logcat_runner = LogcatRunner(self.logger, self)
 
     def setup(self):
         self.setup_adb_reverse()

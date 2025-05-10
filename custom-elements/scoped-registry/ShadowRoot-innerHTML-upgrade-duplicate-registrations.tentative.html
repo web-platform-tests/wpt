@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta name="author" title="Westbrook Johnson" href="mailto:westbrookjohnson@gmail.com">
+<meta name="assert" content="Custom Elements in scoped registries take precedence over global scope">
+<link rel="help" href="https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries">
+<link rel="help" href="https://github.com/WICG/webcomponents/issues/969">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="testdiv"></div>
+
+<script>
+class TestAutonomousGlobal extends HTMLElement {};
+customElements.define('test-element', TestAutonomousGlobal);
+
+class TestAutonomousScoped extends HTMLElement {};
+
+function attachShadowForTest(t, registry) {
+  const host = document.createElement('div');
+  const shadow = host.attachShadow({mode: 'open', registry});
+  document.body.appendChild(host);
+  t.add_cleanup(() => host.remove());
+  return shadow;
+}
+
+test(t => {
+  const registry = new CustomElementRegistry;
+  registry.define('test-element', TestAutonomousScoped);
+
+  const shadow = attachShadowForTest(t, registry);
+  shadow.innerHTML = '<test-element></test-element>';
+  assert_true(shadow.firstChild instanceof TestAutonomousScoped, 'should be TestAutonomousScoped');
+
+}, 'Update into autonomous custom element should not use the global registry when scoped element is defined');
+
+</script>

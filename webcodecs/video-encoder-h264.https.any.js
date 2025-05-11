@@ -77,8 +77,15 @@ promise_test(async t => {
   // Profile is a hex code at xx in a codec string of form "avc1.xxyyzz".
   let expectedProfileIndication = parseInt(codecString.substring(5, 7), 16);
 
+  // Level is a hex code at zz in the above avc1 string.
+  let maximumLevel = parseInt(codecString.substring(9, 11), 16);
+
   // See AVCDecoderConfigurationRecord in ISO/IEC 14496-15 for details.
   // https://www.w3.org/TR/webcodecs-avc-codec-registration/#dom-avcbitstreamformat-avc
   let profileIndication = new Uint8Array(description)[1];
   assert_equals(profileIndication, expectedProfileIndication);
+
+  // Level is treated as a maximum and is not precisely guaranteed.
+  let levelIndication = new Uint8Array(description)[3];
+  assert_less_than_equal(levelIndication, maximumLevel);
 }, 'Test that encoding with a specific H264 profile actually produces that profile.');

@@ -286,8 +286,16 @@ for(const group of
       shadowRoot .setHTMLUnsafe(testcase.data, config);
       assert_testcase(shadowRoot, testcase);
     }, `ShadowRoot.setHTMLUnsafe testcase ${group.id}/${index}, "${testcase.data}"`);
-    
-    test(_ => {
+
+   // parseHTML and parseHTMLUnsafe need to allow "html" and "body" for these
+   // tests to be useful. Update the config, if necessary.
+   if (config && config["sanitizer"] && config["sanitizer"]["elements"]) {
+     config["sanitizer"] = new Sanitizer(config["sanitizer"]);
+     config["sanitizer"].allowElement("body");
+     config["sanitizer"].allowElement("html");
+   }
+
+   test(_ => {
       assert_testcase(
         Document.parseHTML(testcase.data, config).body, testcase);
     }, `parseHTML testcase ${group.id}/${index}, "${testcase.data}"`);

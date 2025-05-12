@@ -372,7 +372,7 @@ promise_test(async testCase => {
   });
   await cookieStore.set('a b', 'x y');
   const cookie = await cookieStore.get('a b');
-  assert_equals(cookie, "x y");
+  assert_equals(cookie.value, "x y");
 
   await promise_rejects_js(testCase, TypeError, cookieStore.set(
       { name: 'a  ',

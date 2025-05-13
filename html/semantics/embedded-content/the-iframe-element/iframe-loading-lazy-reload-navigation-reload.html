@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Reloading iframe loading='lazy' before it is loaded: location.reload</title>
+<title>Reloading iframe loading='lazy' before it is loaded: navigation.reload</title>
 <iframe src="support/blank.htm?src" loading="lazy" hidden></iframe>
 <script>
 const iframe = document.querySelector('iframe');
@@ -7,7 +7,9 @@ const iframeLoaded = new Promise(resolve => {
   iframe.onload = resolve;
 });
 // Should have no effect on lazy-loading
-iframe.contentWindow.navigation.reload();
+if ("navigation" in iframe.contentWindow) {
+  iframe.contentWindow.navigation.reload();
+}
 iframe.hidden = false;
 </script>
 <!-- Loading testharness.js here is intentional to reproduce a bug in WebKit. -->

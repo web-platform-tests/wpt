@@ -1,8 +1,8 @@
 import asyncio
 import pytest
 import pytest_asyncio
-
 from webdriver.error import NoSuchAlertException
+
 from ..bidi import (
     any_string,
     recursive_compare,
@@ -67,7 +67,7 @@ async def check_beforeunload_implicitly_accepted(
             closed_event,
         )
 
-        # Assert the alert cannot be closed via classic.
+        # Assert via classic that the alert is not present.
         with pytest.raises(NoSuchAlertException):
             current_session.alert.text
 

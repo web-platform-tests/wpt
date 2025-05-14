@@ -9,11 +9,12 @@ import signal
 import socket
 import sys
 import time
-from typing import Optional
+from typing import Any, Callable, ContextManager, Mapping, Optional
 
 import mozprocess
 from mozlog import get_default_logger, handlers
 from mozlog.structuredlog import StructuredLogger
+from wptserve.config import Config
 
 from . import mpcontext
 from .wptlogging import LogLevelRewriter, QueueHandler, LogQueueThread
@@ -89,6 +90,10 @@ class ProxyLoggingContext:
         self.log_queue.put(None)
         # Wait for thread to shut down but not for too long since it's a daemon
         self.logging_thread.join(1)
+
+
+EnvironmentOptions = Mapping[str, Any]
+EnvironmentExtra = Callable[[EnvironmentOptions, Config], ContextManager[None]]
 
 
 class TestEnvironment:

@@ -10,19 +10,26 @@ import traceback
 import socket
 import sys
 from abc import ABCMeta, abstractmethod
-from typing import Any, Callable, ClassVar, Tuple, Type
+from typing import Any, Callable, ClassVar, Tuple, Type, TYPE_CHECKING
 from urllib.parse import urljoin, urlsplit, urlunsplit
 
 from . import pytestrunner
 from .actions import actions
 from .asyncactions import async_actions
 from .protocol import Protocol, WdspecProtocol
+if TYPE_CHECKING:
+    from ..browsers.base import ExecutorKwargs
+    from ..environment import TestEnvironment
+    from ..testloader import Subsuite
+    from ..wpttest import TestType, RunInfo
 
 
 here = os.path.dirname(__file__)
 
 
-def executor_kwargs(test_type, test_environment, run_info_data, subsuite, **kwargs):
+def executor_kwargs(test_type: "TestType", test_environment: "TestEnvironment",
+                    run_info_data: "RunInfo", subsuite: "Subsuite",
+                    **kwargs: Any) -> "ExecutorKwargs":
     timeout_multiplier = kwargs["timeout_multiplier"]
     if timeout_multiplier is None:
         timeout_multiplier = 1

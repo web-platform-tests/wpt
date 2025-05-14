@@ -30,16 +30,17 @@
 
   promise_test(async (t) => {
     const invalidData = [null, undefined, "", 123, true, false];
-    for (const d of invalidData) {
-       const options = {
-       digital: {
-         requests: [
-               {
-                    data: d,
-                   protocol: "openid4vp",
-              },
-          ]
-      }};
+    for (const data of invalidData) {
+      const options = {
+        digital: {
+          requests: [
+            {
+              data,
+              protocol: "openid4vp",
+            },
+          ],
+        },
+      };
       await promise_rejects_js(
         t,
         TypeError,

@@ -501,6 +501,7 @@ class Firefox(Browser):
             elif channel is None:
                 channel = channel_
         else:
+            rev = None
             version = None
 
         if dest is None:

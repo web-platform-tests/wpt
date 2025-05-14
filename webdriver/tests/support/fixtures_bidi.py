@@ -2,7 +2,7 @@ import asyncio
 import base64
 import copy
 import json
-from typing import Any, Coroutine, Mapping
+from typing import Any, Coroutine, Mapping, Optional
 from urllib.parse import urlunsplit
 
 import pytest
@@ -499,9 +499,11 @@ async def create_user_context(bidi_session):
 
     user_contexts = []
 
-    async def create_user_context():
+    async def create_user_context(
+            accept_insecure_certificate: Optional[bool] = None):
         nonlocal user_contexts
-        user_context = await bidi_session.browser.create_user_context()
+        user_context = await bidi_session.browser.create_user_context(
+            accept_insecure_certificate=accept_insecure_certificate)
         user_contexts.append(user_context)
 
         return user_context

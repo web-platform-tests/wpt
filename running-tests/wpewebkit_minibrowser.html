@@ -52,9 +52,8 @@ to run it manually you can find it on any of this paths:</p>
 </ul>
 </li>
 </ul>
-</section>
 <section id="nightly-universal-bundle">
-<h1>Nightly universal bundle<a class="headerlink" href="#nightly-universal-bundle" title="Link to this heading">¶</a></h1>
+<h2>Nightly universal bundle<a class="headerlink" href="#nightly-universal-bundle" title="Link to this heading">¶</a></h2>
 <p>Alternatively you can pass to <code class="docutils literal notranslate"><span class="pre">wpt</span></code> the flags <code class="docutils literal notranslate"><span class="pre">--install-browser</span> <span class="pre">--channel=nightly</span></code>
 and then <code class="docutils literal notranslate"><span class="pre">wpt</span></code> will automatically download the last bundle and unpack it on the
 default <code class="docutils literal notranslate"><span class="pre">wpt</span></code> working directory (usually subdir <code class="docutils literal notranslate"><span class="pre">_venv3/browsers</span></code> in your <code class="docutils literal notranslate"><span class="pre">wpt</span></code> checkout)
@@ -67,7 +66,7 @@ issues with this bundle then a possible workaround is to try to run the tests in
 headless mode, for that pass the flag <code class="docutils literal notranslate"><span class="pre">--headless</span></code> to <code class="docutils literal notranslate"><span class="pre">wpt</span></code></p>
 </section>
 <section id="headless-mode">
-<h1>Headless mode<a class="headerlink" href="#headless-mode" title="Link to this heading">¶</a></h1>
+<h2>Headless mode<a class="headerlink" href="#headless-mode" title="Link to this heading">¶</a></h2>
 <p>The WPE MiniBrowser needs a Wayland display to run, but if you don’t have one
 or you want to enable headless mode you can pass the flag <code class="docutils literal notranslate"><span class="pre">--headless</span></code> to <code class="docutils literal notranslate"><span class="pre">wpt</span></code>.</p>
 <p>Example:</p>
@@ -76,7 +75,7 @@ or you want to enable headless mode you can pass the flag <code class="docutils 
 </div>
 </section>
 <section id="using-a-custom-wpe-webkit-build">
-<h1>Using a custom WPE WebKit build<a class="headerlink" href="#using-a-custom-wpe-webkit-build" title="Link to this heading">¶</a></h1>
+<h2>Using a custom WPE WebKit build<a class="headerlink" href="#using-a-custom-wpe-webkit-build" title="Link to this heading">¶</a></h2>
 <p>If you want to test with a custom WPE WebKit build the easiest way is that you
 install this build in a temporary directory (<code class="docutils literal notranslate"><span class="pre">/tmp/wpetest</span></code> in this example),
 and then tell <code class="docutils literal notranslate"><span class="pre">wpt</span></code> to run it from there.</p>
@@ -102,9 +101,10 @@ Do not build WPE WebKit inside Flatpak or other container unless you run <code c
 from inside this container.</p>
 </section>
 <section id="running-tests-locally">
-<h1>Running tests locally<a class="headerlink" href="#running-tests-locally" title="Link to this heading">¶</a></h1>
+<h2>Running tests locally<a class="headerlink" href="#running-tests-locally" title="Link to this heading">¶</a></h2>
 <p>Is a good idea that you increase the verbosity of <code class="docutils literal notranslate"><span class="pre">wpt</span></code> by passing to it the flag <code class="docutils literal notranslate"><span class="pre">--log-mach=-</span></code>
 Also, please check the documentation about <a class="reference internal" href="from-local-system.html"><span class="doc">Running Tests from the Local System</span></a>.</p>
+</section>
 </section>
 
 

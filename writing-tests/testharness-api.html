@@ -1087,8 +1087,8 @@ This is implemented using <code class="docutils literal notranslate"><span class
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
-<li><p><strong>expected</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than.</p></li>
+<li><p><strong>actual</strong> (<em>number|bigint</em>) – Test value.</p></li>
+<li><p><strong>expected</strong> (<em>number|bigint</em>) – Value that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than.</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
@@ -1102,8 +1102,8 @@ This is implemented using <code class="docutils literal notranslate"><span class
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
-<li><p><strong>expected</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than.</p></li>
+<li><p><strong>actual</strong> (<em>number|bigint</em>) – Test value.</p></li>
+<li><p><strong>expected</strong> (<em>number|bigint</em>) – Value that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than.</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
@@ -1118,9 +1118,9 @@ than <code class="docutils literal notranslate"><span class="pre">upper</span></
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
-<li><p><strong>lower</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than.</p></li>
-<li><p><strong>upper</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than.</p></li>
+<li><p><strong>actual</strong> (<em>number|bigint</em>) – Test value.</p></li>
+<li><p><strong>lower</strong> (<em>number|bigint</em>) – Value that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than.</p></li>
+<li><p><strong>upper</strong> (<em>number|bigint</em>) – Value that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than.</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
@@ -1134,8 +1134,8 @@ than <code class="docutils literal notranslate"><span class="pre">upper</span></
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
-<li><p><strong>expected</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than or equal to.</p></li>
+<li><p><strong>actual</strong> (<em>number|bigint</em>) – Test value.</p></li>
+<li><p><strong>expected</strong> (<em>number|bigint</em>) – Value that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than or equal to.</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
@@ -1149,8 +1149,8 @@ than <code class="docutils literal notranslate"><span class="pre">upper</span></
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
-<li><p><strong>expected</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than or equal to.</p></li>
+<li><p><strong>actual</strong> (<em>number|bigint</em>) – Test value.</p></li>
+<li><p><strong>expected</strong> (<em>number|bigint</em>) – Value that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than or equal to.</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
@@ -1165,9 +1165,9 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
-<li><p><strong>lower</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than or equal to.</p></li>
-<li><p><strong>upper</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than or equal to.</p></li>
+<li><p><strong>actual</strong> (<em>number|bigint</em>) – Test value.</p></li>
+<li><p><strong>lower</strong> (<em>number|bigint</em>) – Value that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than or equal to.</p></li>
+<li><p><strong>upper</strong> (<em>number|bigint</em>) – Value that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than or equal to.</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
@@ -1811,6 +1811,12 @@ expected occur, in the correct order, and with the correct timing.</p>
 </dd>
 </dl>
 <dl class="js function">
+<dt class="sig sig-object js" id="EventWatcher.stop_watching">
+<span class="sig-prename descclassname"><span class="n"><span class="pre">EventWatcher</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">stop_watching</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#EventWatcher.stop_watching" title="Link to this definition">¶</a></dt>
+<dd><p>Stop listening for events</p>
+</dd></dl>
+
+<dl class="js function">
 <dt class="sig sig-object js" id="EventWatcher.wait_for">
 <span class="sig-prename descclassname"><span class="n"><span class="pre">EventWatcher</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">wait_for</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EventWatcher.wait_for" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a Promise that will resolve after the specified event or
@@ -1833,12 +1839,6 @@ series of events has occurred.</p>
 <span class="p">});</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="js function">
-<dt class="sig sig-object js" id="EventWatcher.stop_watching">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">EventWatcher</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">stop_watching</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#EventWatcher.stop_watching" title="Link to this definition">¶</a></dt>
-<dd><p>Stop listening for events</p>
 </dd></dl>
 
 </dd></dl>

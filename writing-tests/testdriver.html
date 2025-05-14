@@ -62,20 +62,22 @@
 <li><p><a class="reference internal" href="#device-posture" id="id22">Device Posture</a></p></li>
 <li><p><a class="reference internal" href="#bounce-tracking-mitigations" id="id23">Bounce Tracking Mitigations</a></p></li>
 <li><p><a class="reference internal" href="#compute-pressure" id="id24">Compute Pressure</a></p></li>
-<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id25">Using test_driver in other browsing contexts</a></p></li>
-<li><p><a class="reference internal" href="#actions" id="id26">Actions</a></p>
+<li><p><a class="reference internal" href="#viewport-segments" id="id25">Viewport Segments</a></p></li>
+<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id26">Using test_driver in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#actions" id="id27">Actions</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id2" id="id27">Markup</a></p></li>
-<li><p><a class="reference internal" href="#id3" id="id28">API</a></p></li>
-<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id29">Using in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id28">Markup</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id29">API</a></p></li>
+<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id30">Using in other browsing contexts</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#log" id="id30">Log</a></p>
+<li><p><a class="reference internal" href="#log" id="id31">Log</a></p>
 <ul>
-<li><p><a class="reference internal" href="#entry-added" id="id31">Entry added</a></p></li>
+<li><p><a class="reference internal" href="#entry-added" id="id32">Entry added</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#bluetooth" id="id32">Bluetooth</a></p></li>
+<li><p><a class="reference internal" href="#bluetooth" id="id33">Bluetooth</a></p></li>
+<li><p><a class="reference internal" href="#emulation" id="id34">Emulation</a></p></li>
 </ul>
 </li>
 </ul>
@@ -271,7 +273,7 @@ a provided function.</p>
 <dt class="sig sig-object js" id="test_driver.minimize_window">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">minimize_window</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.minimize_window" title="Link to this definition">¶</a></dt>
 <dd><p>Minimizes the browser window.</p>
-<p>Matches the the behaviour of the <a class="reference external" href="https://www.w3.org/TR/webdriver/#minimize-window">Minimize</a>
+<p>Matches the behaviour of the <a class="reference external" href="https://www.w3.org/TR/webdriver/#minimize-window">Minimize</a>
 WebDriver command</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -1077,7 +1079,7 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.update_virtual_pressure_source">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">update_virtual_pressure_source</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.update_virtual_pressure_source" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">update_virtual_pressure_source</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">own_contribution_estimate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.update_virtual_pressure_source" title="Link to this definition">¶</a></dt>
 <dd><p>Causes a virtual pressure source to report a new reading.</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/compute-pressure/?experimental=1#update-virtual-pressure-source">Update virtual pressure source</a>
 WebDriver command.</p>
@@ -1086,7 +1088,7 @@ WebDriver command.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>source_type</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/compute-pressure/#dom-pressuresource">virtual pressure source type</a> such as “cpu”.</p></li>
 <li><p><strong>sample</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/compute-pressure/#dom-pressurestate">virtual pressure state</a> such as “critical”.</p></li>
-<li><p><strong>estimate</strong> (<em>number</em>) – Optional, A <cite>virtual own contribution estimate</cite> &lt;<a class="reference external" href="https://w3c.github.io/compute-pressure/?experimental=1#the-owncontributionestimate-attribute">https://w3c.github.io/compute-pressure/?experimental=1#the-owncontributionestimate-attribute</a>&gt;`_</p></li>
+<li><p><strong>own_contribution_estimate</strong> (<em>number</em>) – Optional, A <cite>virtual own contribution estimate</cite> &lt;<a class="reference external" href="https://w3c.github.io/compute-pressure/?experimental=1#the-owncontributionestimate-attribute">https://w3c.github.io/compute-pressure/?experimental=1#the-owncontributionestimate-attribute</a>&gt;`_</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
@@ -1111,6 +1113,48 @@ WebDriver command.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the virtual pressure source has been removed or if a pressure source of the given type does not exist. Rejected in case the WebDriver command errors out.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="viewport-segments">
+<h3>Viewport Segments<a class="headerlink" href="#viewport-segments" title="Link to this heading">¶</a></h3>
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.set_display_features">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_display_features</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_display_features" title="Link to this definition">¶</a></dt>
+<dd><p>Overrides the display features provided by the hardware so the viewport segments
+can be emulated.</p>
+<p>Matches the <a class="reference external" href="https://drafts.csswg.org/css-viewport/#set-display-features">Set display features</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<em>Array</em>) – An array of <cite>DisplayFeatureOverride &lt;https://drafts.csswg.org/css-viewport/#display-feature-override&gt;</cite>.</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled when the display features are set. Rejected in case the WebDriver command errors out (including if the array is malformed).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.clear_display_features">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">clear_display_features</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.clear_display_features" title="Link to this definition">¶</a></dt>
+<dd><p>Removes display features override and returns the control
+back to hardware.</p>
+<p>Matches the <a class="reference external" href="https://drafts.csswg.org/css-viewport/#clear-display-features">Clear display features</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the display features override has been removed. Rejected in case the WebDriver command errors out.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1711,6 +1755,46 @@ WebDriver BiDi command.</p>
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">request_device_prompt_updated</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.request_device_prompt_updated" title="Link to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-requestdevicepromptupdated-event">bluetooth.RequestDevicePromptUpdatedParameters</a>
 event.</p>
+</dd></dl>
+
+</section>
+<section id="emulation">
+<h3>Emulation<a class="headerlink" href="#emulation" title="Link to this heading">¶</a></h3>
+<p>Emulation of browser APIs via <a class="reference external" href="https://www.w3.org/TR/webdriver-bidi/#module-emulation">WebDriver BiDi Emulation</a>.</p>
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.emulation.set_geolocation_override">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">emulation</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_geolocation_override</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.emulation.set_geolocation_override" title="Link to this definition">¶</a></dt>
+<dd><p>Overrides the geolocation coordinates for the specified
+browsing contexts.
+Matches the <a class="reference external" href="https://w3c.github.io/webdriver-bidi/#command-emulation-setGeolocationOverride">emulation.setGeolocationOverride</a>
+WebDriver BiDi command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>object</em>) – Parameters for the command.</p></li>
+<li><p><strong>params.coordinates</strong> (<em>null|object</em>) – The optional geolocation coordinates to set. Matches the <a class="reference external" href="https://w3c.github.io/webdriver-bidi/#commands-emulationsetgeolocationoverride">emulation.GeolocationCoordinates</a> value. If null or omitted and the <cite>params.error</cite> is set, the emulation will be removed. Mutually exclusive with <cite>params.error</cite>.</p></li>
+<li><p><strong>params.error</strong> (<em>object</em>) – The optional geolocation error to emulate. Matches the <a class="reference external" href="https://w3c.github.io/webdriver-bidi/#commands-emulationsetgeolocationoverride">emulation.GeolocationPositionError</a> value. Mutually exclusive with <cite>params.coordinates</cite>.</p></li>
+<li><p><strong>params.contexts</strong> (<em>null|Array.&lt;(Context)&gt;</em>) – The optional contexts parameter specifies which browsing contexts to set the geolocation override on. It should be either an array of Context objects (window or browsing context id), or null. If null or omitted, the override will be set on the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise.&lt;void&gt;</strong> – Resolves when the geolocation override is successfully set.</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">emulation</span><span class="p">.</span><span class="nx">set_geolocation_override</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">coordinates</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">latitude</span><span class="o">:</span><span class="w"> </span><span class="mf">52.51</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">longitude</span><span class="o">:</span><span class="w"> </span><span class="mf">13.39</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">accuracy</span><span class="o">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">altitude</span><span class="o">:</span><span class="w"> </span><span class="mf">34</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">altitudeAccuracy</span><span class="o">:</span><span class="w"> </span><span class="mf">0.75</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">heading</span><span class="o">:</span><span class="w"> </span><span class="mf">180</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">speed</span><span class="o">:</span><span class="w"> </span><span class="mf">2.77</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>

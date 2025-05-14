@@ -53,9 +53,8 @@ to run it manually you can find it on any of this paths:</p>
 </ul>
 </li>
 </ul>
-</section>
 <section id="nightly-universal-bundle">
-<h1>Nightly universal bundle<a class="headerlink" href="#nightly-universal-bundle" title="Link to this heading">¶</a></h1>
+<h2>Nightly universal bundle<a class="headerlink" href="#nightly-universal-bundle" title="Link to this heading">¶</a></h2>
 <p>Alternatively you can pass to <code class="docutils literal notranslate"><span class="pre">wpt</span></code> the flags <code class="docutils literal notranslate"><span class="pre">--install-browser</span> <span class="pre">--channel=nightly</span></code>
 and then <code class="docutils literal notranslate"><span class="pre">wpt</span></code> will automatically download the last bundle and unpack it on the
 default <code class="docutils literal notranslate"><span class="pre">wpt</span></code> working directory (usually subdir <code class="docutils literal notranslate"><span class="pre">_venv3/browsers</span></code> in your <code class="docutils literal notranslate"><span class="pre">wpt</span></code> checkout)
@@ -69,7 +68,7 @@ inside a virtualized display like <code class="docutils literal notranslate"><sp
 You can do this also from inside a virtual machine or Docker container.</p>
 </section>
 <section id="headless-mode">
-<h1>Headless mode<a class="headerlink" href="#headless-mode" title="Link to this heading">¶</a></h1>
+<h2>Headless mode<a class="headerlink" href="#headless-mode" title="Link to this heading">¶</a></h2>
 <p>WebKitGTK does not have a native headless mode, but you can workaround that
 by running the tests inside a virtualized display. For example you can use
 <code class="docutils literal notranslate"><span class="pre">weston</span></code> with the headless backend for a virtualized <code class="docutils literal notranslate"><span class="pre">Wayland</span></code> display,
@@ -80,7 +79,7 @@ or you can use <code class="docutils literal notranslate"><span class="pre">Xvfb
 </div>
 </section>
 <section id="using-a-custom-webkitgtk-build">
-<h1>Using a custom WebKitGTK build<a class="headerlink" href="#using-a-custom-webkitgtk-build" title="Link to this heading">¶</a></h1>
+<h2>Using a custom WebKitGTK build<a class="headerlink" href="#using-a-custom-webkitgtk-build" title="Link to this heading">¶</a></h2>
 <p>If you want to test with a custom WebKitGTK build the easiest way is that you
 install this build in a temporary directory (<code class="docutils literal notranslate"><span class="pre">/tmp/wkgtktest</span></code> in this example),
 and then tell <code class="docutils literal notranslate"><span class="pre">wpt</span></code> to run it from there.</p>
@@ -106,9 +105,10 @@ Do not build WebKitGTK inside Flatpak or other container unless you run <code cl
 from inside this container.</p>
 </section>
 <section id="running-tests-locally">
-<h1>Running tests locally<a class="headerlink" href="#running-tests-locally" title="Link to this heading">¶</a></h1>
+<h2>Running tests locally<a class="headerlink" href="#running-tests-locally" title="Link to this heading">¶</a></h2>
 <p>Is a good idea that you increase the verbosity of <code class="docutils literal notranslate"><span class="pre">wpt</span></code> by passing to it the flag <code class="docutils literal notranslate"><span class="pre">--log-mach=-</span></code>
 Also, please check the documentation about <a class="reference internal" href="from-local-system.html"><span class="doc">Running Tests from the Local System</span></a>.</p>
+</section>
 </section>
 
 

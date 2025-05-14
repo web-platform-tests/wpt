@@ -1,0 +1,4 @@
+features:
+- name: request-animation-frame-workers
+  files:
+  - WorkerGlobalScope_requestAnimationFrame.worker.js

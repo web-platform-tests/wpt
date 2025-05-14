@@ -14,7 +14,6 @@ USER_PROMPT_CLOSED_EVENT = "browsingContext.userPromptClosed"
 USER_PROMPT_OPENED_EVENT = "browsingContext.userPromptOpened"
 
 
-
 @pytest_asyncio.fixture
 async def check_beforeunload_implicitly_accepted(
     bidi_session,

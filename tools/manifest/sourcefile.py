@@ -5,7 +5,7 @@ from collections import deque
 from fnmatch import fnmatch
 from io import BytesIO
 from typing import (Any, BinaryIO, Callable, Deque, Dict, Iterable, List,
-                    Optional, Pattern, Set, Text, Tuple, TypedDict, Union, cast)
+                    Optional, Pattern, Set, Text, Tuple, TypedDict, Union)
 from urllib.parse import parse_qs, urlparse, urljoin
 
 try:

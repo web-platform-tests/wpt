@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Named items: fetch application/xml</title>
+<link rel="author" title="bzbarsky" href="mailto:bzbarsky@mit.edu">
+<link rel="author" title="ExE Boss" href="https://ExE-Boss.tech">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-htmldocument-nameditem">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+promise_test(function() {
+  return /** @type {Promise<Document>} */ (new Promise(function (resolve) {
+    var url = 'data:application/xml,<xml><form xmlns="http://www.w3.org/1999/xhtml" name="x"/></xml>';
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.responseType = "document";
+    xhr.onload = function() {
+      resolve(xhr.responseXML);
+    };
+    xhr.send();
+  })).then(function (doc) {
+    assert_equals(doc.x, undefined);
+    assert_equals(doc['x'], undefined);
+  });
+}, "Named getter is HTML-only");
+</script>

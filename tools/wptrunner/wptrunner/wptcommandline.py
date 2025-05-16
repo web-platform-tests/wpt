@@ -418,6 +418,10 @@ scheme host and port.""")
                                       "Cache API (default: %s)" % wptscreenshot.DEFAULT_API,
                                       {"wptscreenshot"}, "store")
 
+    # mozlog already supports these, so instead we just declare they also apply to wptreport
+    commandline.fmt_options["screenshot"][2].add("wptreport")
+    commandline.fmt_options["no-screenshot"][2].add("wptreport")
+
     commandline.log_formatters["wptreport"] = (wptreport.WptreportFormatter, "wptreport format")
     commandline.log_formatters["wptscreenshot"] = (wptscreenshot.WptscreenshotFormatter, "wpt.fyi screenshots")
 

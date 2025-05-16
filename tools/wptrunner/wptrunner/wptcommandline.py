@@ -69,6 +69,8 @@ scheme host and port.""")
                         help="Number of simultaneous processes to use")
     parser.add_argument("--max-restarts", type=int, default=5,
                         help="Maximum number of browser restart retries")
+    parser.add_argument("--max-restart-backoff", type=int, default=0,
+                        help="The maximum wait between retrying browser restarts; zero for no backoff")
 
     parser.add_argument("--no-capture-stdio", action="store_true",
                         help="Don't capture stdio and write to logging")

@@ -4,13 +4,14 @@ import subprocess
 import sys
 from abc import ABC
 from collections import defaultdict
-from typing import Any, ClassVar, Dict, Optional, Set, Type
+from typing import Any, ClassVar, Dict, Literal, Optional, Set, Type, get_args
 from urllib.parse import urljoin
 
 from .wptmanifest.parser import atoms
 
 atom_reset = atoms["Reset"]
-enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest"}
+TestType = Literal["testharness", "reftest", "wdspec", "crashtest", "print-reftest"]
+enabled_tests = frozenset(get_args(TestType))
 
 
 class Result(ABC):

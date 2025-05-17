@@ -6,7 +6,7 @@ import socket
 import time
 import traceback
 from abc import ABCMeta, abstractmethod
-from typing import cast, Any, List, Mapping, Optional, Tuple, Type
+from typing import cast, Any, List, Mapping, Optional, Sequence, Tuple, Type
 
 import mozprocess
 from mozdebug import DebuggerInfo
@@ -88,6 +88,12 @@ class BrowserError(Exception):
     pass
 
 
+# TODO: These types can probably be constrained more strictly per-vendor.
+BrowserKwargs = Mapping[str, Any]
+ExecutorKwargs = Mapping[str, Any]
+ExecutorBrowserKwargs = Mapping[str, Any]
+DependentProperties = Mapping[str, Sequence[str]]
+UpdateProperties = Tuple[Sequence[str], DependentProperties]
 BrowserSettings = Mapping[str, Any]
 
 
@@ -151,7 +157,7 @@ class Browser:
         """Browser-specific cleanup that is run after the testrun is finished"""
         pass
 
-    def executor_browser(self) -> Tuple[Type['ExecutorBrowser'], Mapping[str, Any]]:
+    def executor_browser(self) -> Tuple[Type['ExecutorBrowser'], ExecutorBrowserKwargs]:
         """Returns the ExecutorBrowser subclass for this Browser subclass and the keyword arguments
         with which it should be instantiated"""
         return ExecutorBrowser, {}

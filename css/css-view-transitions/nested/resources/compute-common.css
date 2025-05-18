@@ -57,6 +57,9 @@ html.no-match::view-transition {
 ::view-transition-group(green) {
     background: green;
 }
+::view-transition-nested-groups(*) {
+  background: inherit;
+}
 ::view-transition-group(test) {
     background: inherit;
 }

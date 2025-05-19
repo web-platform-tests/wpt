@@ -174,9 +174,6 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
         # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/gpu/swiftshader.md
         chrome_options["args"].extend(["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"])
 
-    if kwargs["enable_experimental"]:
-        chrome_options["args"].extend(["--enable-experimental-web-platform-features"])
-
     # Copy over any other flags that were passed in via `--binary-arg` or the
     # subsuite config.
     binary_args = kwargs.get("binary_args", []) + subsuite.config.get("binary_args", [])
@@ -184,6 +181,9 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
         if arg not in chrome_options["args"]:
             chrome_options["args"].append(arg)
 
+    # do not enable experimental features if running in stable release mode
+    if kwargs["enable_experimental"] and "--stable-release-mode" not in binary_args:
+        chrome_options["args"].extend(["--enable-experimental-web-platform-features"])
 
     # Pass the --headless=new flag to Chrome if WPT's own --headless flag was
     # set. '--headless' should always mean the new headless mode, as the old

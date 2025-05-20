@@ -184,9 +184,12 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
             chrome_options["args"].append(arg)
 
     # do not enable experimental features if running in stable release mode
-    if "--stable-release-mode" not in binary_args:
+    if kwargs["enable_experimental"] is None and "--stable-release-mode" not in binary_args:
         chrome_options["args"].extend(["--enable-experimental-web-platform-features",
                                        "--enable-blink-test-features"])
+
+    if kwargs["enable_experimental"]:
+        chrome_options["args"].extend(["--enable-experimental-web-platform-features"])
 
     # Pass the --headless=new flag to Chrome if WPT's own --headless flag was
     # set. '--headless' should always mean the new headless mode, as the old

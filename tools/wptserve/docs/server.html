@@ -51,6 +51,40 @@ run on port 8080 until it is killed:</p>
 <dt class="sig sig-object py" id="wptserve.server.BaseWebTestRequestHandler">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">BaseWebTestRequestHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.BaseWebTestRequestHandler" title="Link to this definition">¶</a></dt>
 <dd><p>RequestHandler for WebTestHttpd</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="wptserve.server.BaseWebTestRequestHandler.log_error">
+<span class="sig-name descname"><span class="pre">log_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.BaseWebTestRequestHandler.log_error" title="Link to this definition">¶</a></dt>
+<dd><p>Log an error.</p>
+<p>This is called when a request cannot be fulfilled.  By
+default it passes the message on to log_message().</p>
+<p>Arguments are the same as for log_message().</p>
+<p>XXX This should go to the separate error log.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wptserve.server.BaseWebTestRequestHandler.log_message">
+<span class="sig-name descname"><span class="pre">log_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.BaseWebTestRequestHandler.log_message" title="Link to this definition">¶</a></dt>
+<dd><p>Log an arbitrary message.</p>
+<p>This is used by all other logging functions.  Override
+it if you have specific logging wishes.</p>
+<p>The first argument, FORMAT, is a format string for the
+message to be logged.  If the format string contains
+any % escapes requiring parameters, they should be
+specified as subsequent arguments (it’s just like
+printf!).</p>
+<p>The client ip and current date/time are prefixed to
+every message.</p>
+<p>Unicode control characters are replaced with escaped hex
+before writing the output to stderr.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wptserve.server.BaseWebTestRequestHandler.log_request">
+<span class="sig-name descname"><span class="pre">log_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.BaseWebTestRequestHandler.log_request" title="Link to this definition">¶</a></dt>
+<dd><p>Log an accepted request.</p>
+<p>This is called by send_response().</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">

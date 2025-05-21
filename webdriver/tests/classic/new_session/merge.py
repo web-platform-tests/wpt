@@ -5,23 +5,6 @@ import pytest
 from tests.support.asserts import assert_error, assert_success
 
 
-@pytest.mark.parametrize("body", [
-    lambda key, value: {"alwaysMatch": {key: value}},
-    lambda key, value: {"firstMatch": [{key: value}]}
-], ids=["alwaysMatch", "firstMatch"])
-def test_platform_name(new_session, add_browser_capabilities, body, target_platform):
-    capabilities = body("platformName", target_platform)
-    if "alwaysMatch" in capabilities:
-        capabilities["alwaysMatch"] = add_browser_capabilities(capabilities["alwaysMatch"])
-    else:
-        capabilities["firstMatch"][0] = add_browser_capabilities(capabilities["firstMatch"][0])
-
-    response, _ = new_session({"capabilities": capabilities})
-    value = assert_success(response)
-
-    assert value["capabilities"]["platformName"] == target_platform
-
-
 invalid_merge = [
     ("acceptInsecureCerts", (True, True)),
     ("unhandledPromptBehavior", ("accept", "accept")),

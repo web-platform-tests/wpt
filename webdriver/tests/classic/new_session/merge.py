@@ -40,65 +40,45 @@ def test_merge_invalid(new_session, add_browser_capabilities, key, value):
     assert_error(response, "invalid argument")
 
 
-def test_merge_platform_name(new_session, add_browser_capabilities):
+@pytest.mark.parametrize("capability", ["browserName", "platformName"])
+def test_merge_firstMatch(new_session, add_browser_capabilities, capability):
     always_match = add_browser_capabilities({})
 
-    if "platformName" in always_match:
-        platform_name = always_match.pop("platformName")
+    if capability in always_match:
+        expected = always_match.pop(capability)
     else:
-        response, _ = new_session(
-            {"capabilities": {"alwaysMatch": always_match}})
+        response, _ = new_session({"capabilities": {"alwaysMatch": always_match}})
         value = assert_success(response)
-        platform_name = value["capabilities"]["platformName"]
+        expected = value["capabilities"][capability]
+
+    assert isinstance(expected, str)
 
     # Remove pageLoadStrategy so we can use it to validate the merging of the firstMatch
-    # capabilities, and guarantee platformName isn't simply ignored.
+    # capabilities, and guarantee the capability isn't simply ignored.
     if "pageLoadStrategy" in always_match:
         del always_match["pageLoadStrategy"]
 
-    response, _ = new_session({"capabilities": {
-        "alwaysMatch": always_match,
-        "firstMatch": [{
-            "platformName": platform_name.upper(),
-            "pageLoadStrategy": "none",
-        }, {
-            "platformName": platform_name,
-            "pageLoadStrategy": "eager",
-        }]}}, delete_existing_session=True)
+    response, _ = new_session({
+            "capabilities": {
+                "alwaysMatch": always_match,
+                "firstMatch": [
+                    {
+                        # This should be skipped, as it won't match.
+                        capability: expected + "invalid",
+                        "pageLoadStrategy": "none",
+                    },
+                    {
+                        # Whereas this should match, and set the pageLoadStrategy.
+                        capability: expected,
+                        "pageLoadStrategy": "eager",
+                    },
+                ],
+            }
+        },
+        delete_existing_session=True,
+    )
 
     value = assert_success(response)
 
-    assert value["capabilities"]["platformName"] == platform_name
-    assert value["capabilities"]["pageLoadStrategy"] == "eager"
-
-
-def test_merge_browserName(new_session, add_browser_capabilities):
-    always_match = add_browser_capabilities({})
-
-    if "browserName" in always_match:
-        browser_name = always_match.pop("browserName")
-    else:
-        response, _ = new_session(
-            {"capabilities": {"alwaysMatch": always_match}})
-        value = assert_success(response)
-        browser_name = value["capabilities"]["browserName"]
-
-    # Remove pageLoadStrategy so we can use it to validate the merging of the firstMatch
-    # capabilities, and guarantee browserName isn't simply ignored.
-    if "pageLoadStrategy" in always_match:
-        del always_match["pageLoadStrategy"]
-
-    response, _ = new_session({"capabilities": {
-        "alwaysMatch": always_match,
-        "firstMatch": [{
-            "browserName": browser_name + "invalid",
-            "pageLoadStrategy": "none",
-        }, {
-            "browserName": browser_name,
-            "pageLoadStrategy": "eager",
-        }]}}, delete_existing_session=True)
-
-    value = assert_success(response)
-
-    assert value["capabilities"]["browserName"] == browser_name
+    assert value["capabilities"][capability] == expected
     assert value["capabilities"]["pageLoadStrategy"] == "eager"

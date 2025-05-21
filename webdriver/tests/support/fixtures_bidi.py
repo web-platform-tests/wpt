@@ -2,7 +2,7 @@ import asyncio
 import base64
 import copy
 import json
-from typing import Any, Coroutine, Mapping
+from typing import Any, Coroutine, Mapping, Optional
 from urllib.parse import urlunsplit
 
 import pytest
@@ -499,9 +499,10 @@ async def create_user_context(bidi_session):
 
     user_contexts = []
 
-    async def create_user_context():
+    async def create_user_context(proxy: Optional[Mapping[str, Any]] = None):
         nonlocal user_contexts
-        user_context = await bidi_session.browser.create_user_context()
+        user_context = await bidi_session.browser.create_user_context(
+            proxy=proxy)
         user_contexts.append(user_context)
 
         return user_context

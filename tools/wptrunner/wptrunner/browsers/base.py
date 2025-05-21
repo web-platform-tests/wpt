@@ -106,7 +106,7 @@ class Browser:
     def __init__(self, logger: StructuredLogger, *, manager_number: int, **kwargs: Any):
         if kwargs:
             logger.warning(f"Browser.__init__ kwargs: {kwargs!r}")
-        super().__init__(**kwargs)
+        super().__init__()
         self.logger = logger
         self.manager_number = manager_number
 

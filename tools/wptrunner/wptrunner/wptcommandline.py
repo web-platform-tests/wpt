@@ -6,7 +6,7 @@ import sys
 from collections import OrderedDict
 from shutil import which
 from datetime import timedelta
-from typing import Mapping, Optional
+from typing import Any, Callable, Mapping, Optional
 
 from . import config
 from . import products
@@ -28,7 +28,8 @@ def url_or_path(path):
         return abs_path(path)
 
 
-def require_arg(kwargs, name, value_func=None):
+def require_arg(kwargs: Mapping[str, Any], name: str,
+                value_func: Optional[Callable[[Any], bool]] = None) -> None:
     if value_func is None:
         value_func = lambda x: x is not None
 

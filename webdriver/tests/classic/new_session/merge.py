@@ -40,13 +40,16 @@ def test_merge_invalid(new_session, add_browser_capabilities, key, value):
     assert_error(response, "invalid argument")
 
 
-def test_merge_platform_name(new_session, add_browser_capabilities, target_platform):
+def test_merge_platform_name(new_session, add_browser_capabilities):
     always_match = add_browser_capabilities({})
 
     if "platformName" in always_match:
         platform_name = always_match.pop("platformName")
     else:
-        platform_name = target_platform
+        response, _ = new_session(
+            {"capabilities": {"alwaysMatch": always_match}})
+        value = assert_success(response)
+        platform_name = value["capabilities"]["platformName"]
 
     # Remove pageLoadStrategy so we can use it to validate the merging of the firstMatch
     # capabilities, and guarantee platformName isn't simply ignored.
@@ -61,7 +64,7 @@ def test_merge_platform_name(new_session, add_browser_capabilities, target_platf
         }, {
             "platformName": platform_name,
             "pageLoadStrategy": "eager",
-        }]}})
+        }]}}, delete_existing_session=True)
 
     value = assert_success(response)
 

@@ -1,6 +1,5 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
-// META: global=window,dedicatedworker,shadowrealm-in-window
 
 idl_test(
   ["scoped-custom-elements-registry"],

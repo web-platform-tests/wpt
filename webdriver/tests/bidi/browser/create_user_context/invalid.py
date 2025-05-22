@@ -11,6 +11,12 @@ pytestmark = pytest.mark.asyncio
 # `create_user_context` fixture guarantees the mistakenly created user context
 # is destroyed.
 
+@pytest.mark.parametrize("value", [42, "foo", {}, []])
+async def test_accept_insecure_certs_invalid_type(create_user_context, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await create_user_context(accept_insecure_certs=value)
+
+
 @pytest.mark.parametrize("value", [False, 42, "foo", []])
 async def test_proxy_invalid_type(create_user_context, value):
     with pytest.raises(error.InvalidArgumentException):

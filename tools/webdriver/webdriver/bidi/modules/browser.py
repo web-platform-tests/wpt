@@ -27,9 +27,14 @@ class Browser(BidiModule):
         return result["clientWindows"]
 
     @command
-    def create_user_context(self,
-            proxy: Optional[Mapping[str, Any]] = None) -> Mapping[str, Any]:
+    def create_user_context(
+        self, accept_insecure_certs: Optional[bool] = None,
+        proxy: Optional[Mapping[str, Any]] = None
+    ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {}
+
+        if accept_insecure_certs is not None:
+            params["acceptInsecureCerts"] = accept_insecure_certs
 
         if proxy is not None:
             params["proxy"] = proxy

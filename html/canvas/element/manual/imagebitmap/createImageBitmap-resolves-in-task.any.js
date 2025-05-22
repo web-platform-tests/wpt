@@ -26,7 +26,7 @@ var testFuncs = {
             });
             Promise.resolve().then(() => {
                 try {
-                    assert_equals(rejected, true)
+                    assert_equals(rejected, true, 'The promise should be rejected synchronously')
                     resolve(t);
                 } catch (err) {
                     reject(err);
@@ -40,7 +40,7 @@ var testFuncs = {
             let taskRan = false;
             promiseFunc(source).then(() => {
                 try {
-                    assert_equals(taskRan, true)
+                    assert_equals(taskRan, true, 'The promise should be resolved asynchronously')
                     resolve(t);
                 } catch (err) {
                     reject(err)
@@ -59,7 +59,7 @@ var testFuncs = {
                     t.unreached_func('Expected this call to reject'),
                     () => {
                         try {
-                            assert_equals(taskRan, true)
+                            assert_equals(taskRan, tru, 'The promise should be rejected asynchronously')
                             resolve(t);
                         } catch (err) {
                             reject(err)

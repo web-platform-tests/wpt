@@ -105,7 +105,7 @@ imageSourceTypes.forEach(imageSourceType => {
             return imageSourceType.factory().then(source => {
                 const tester = testFuncs[testCase.resolution];
                 return tester(testCase.promiseTestFunction, source, t);
-            }).then(() => t.done())
+            })
         }, description);
 
     });

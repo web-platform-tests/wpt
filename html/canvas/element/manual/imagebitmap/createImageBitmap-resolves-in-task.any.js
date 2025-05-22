@@ -19,7 +19,7 @@ var testFuncs = {
     reject_sync: (promiseFunc, source, t) => {
         return new Promise((resolve, reject) => {
             let rejected = false;
-            promiseFunc(source).then(function() {
+            promiseFunc(source).then(() => {
                 reject(new Error('Expected this call to reject'));
             }, (err) => {
                 rejected = true;
@@ -38,7 +38,7 @@ var testFuncs = {
     resolve_async: (promiseFunc, source, t) => {
         return new Promise((resolve, reject) => {
             let taskRan = false;
-            promiseFunc(source).then(function() {
+            promiseFunc(source).then(() => {
                 try {
                     assert_equals(taskRan, true)
                     resolve(t);
@@ -54,10 +54,10 @@ var testFuncs = {
     reject_async: (promiseFunc, source, t) => {
         return new Promise((resolve, reject) => {
             let taskRan = false;
-            Promise.resolve().then(function() {
+            Promise.resolve().then(() => {
                 promiseFunc(source).then(
                     t.unreached_func('Expected this call to reject'),
-                    function() {
+                    () => {
                         try {
                             assert_equals(taskRan, true)
                             resolve(t);

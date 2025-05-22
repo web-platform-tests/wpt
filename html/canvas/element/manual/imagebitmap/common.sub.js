@@ -57,7 +57,7 @@ function makeVideo() {
   return makeMakeVideo("/images/pattern")();
 }
 
-var imageBitmapDataUrlVideoPromise = self.GLOBAL.isWorker()
+var imageBitmapDataUrlVideoPromise = self.GLOBAL && self.GLOBAL.isWorker()
     // /common/media.js can't load in a Worker so we don't have getVideoURI
     ? null
     : fetch(getVideoURI("/images/pattern"))

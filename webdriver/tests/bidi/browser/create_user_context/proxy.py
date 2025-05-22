@@ -6,35 +6,37 @@ pytestmark = pytest.mark.asyncio
 
 
 @pytest.fixture
-def create_user_context_with_proxy_and_assert_it_is_created(bidi_session,
-        create_user_context):
-    async def create_user_context_with_proxy_and_assert_it_is_created(proxy):
+def create_user_context_with_proxy(bidi_session, create_user_context):
+    async def create_user_context_with_proxy(proxy):
         user_context = await create_user_context(proxy=proxy)
-
-        # TODO: check the parameter is respected.
 
         assert user_context in await get_user_context_ids(bidi_session)
 
-    return create_user_context_with_proxy_and_assert_it_is_created
+        return user_context
+
+    return create_user_context_with_proxy
 
 
-async def test_system(create_user_context_with_proxy_and_assert_it_is_created):
-    await create_user_context_with_proxy_and_assert_it_is_created({
+async def test_system(create_user_context_with_proxy):
+    await create_user_context_with_proxy({
         "proxyType": "system"
     })
+    # TODO: check the proxy is actually set.
 
 
 async def test_autodetect(
-        create_user_context_with_proxy_and_assert_it_is_created):
-    await create_user_context_with_proxy_and_assert_it_is_created({
+        create_user_context_with_proxy):
+    await create_user_context_with_proxy({
         "proxyType": "autodetect"
     })
+    # TODO: check the proxy is actually set.
 
 
-async def test_direct(create_user_context_with_proxy_and_assert_it_is_created):
-    await create_user_context_with_proxy_and_assert_it_is_created({
+async def test_direct(create_user_context_with_proxy):
+    await create_user_context_with_proxy({
         "proxyType": "direct"
     })
+    # TODO: check the proxy is actually set.
 
 
 @pytest.mark.parametrize("ftpProxy", [None, "127.0.0.1:21"])
@@ -44,7 +46,7 @@ async def test_direct(create_user_context_with_proxy_and_assert_it_is_created):
 @pytest.mark.parametrize("socks", [None, {
     "socksProxy": "127.0.0.1:1080",
     "socksVersion": 5}])
-async def test_manual(create_user_context_with_proxy_and_assert_it_is_created,
+async def test_manual(create_user_context_with_proxy,
         ftpProxy, httpProxy, sslProxy,
         noProxy, socks):
     proxy = {
@@ -66,6 +68,7 @@ async def test_manual(create_user_context_with_proxy_and_assert_it_is_created,
     if socks is not None:
         proxy.update(socks)
 
-    await create_user_context_with_proxy_and_assert_it_is_created(proxy)
+    await create_user_context_with_proxy(proxy)
+    # TODO: check the proxy is actually set.
 
 # TODO: test "proxyType": "pac"

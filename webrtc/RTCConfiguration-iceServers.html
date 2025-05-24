@@ -38,7 +38,7 @@
   test(() => {
     const pc = new RTCPeerConnection();
     assert_array_equals(pc.getConfiguration().iceServers, []);
-  }, 'new RTCPeerConnection() should have default configuration.iceServers of undefined');
+  }, 'new RTCPeerConnection() should have default configuration.iceServers of []');
 
   config_test(makePc => {
     makePc({});
@@ -181,6 +181,14 @@
 
   }, `with one turns server, one turn server, username, credential should succeed`);
 
+  config_test(makePc => {
+    const pc = makePc({ iceServers: [{
+      urls: 'turn:turn.example.net',
+      username: (new Array(510)).join('a'), // 509 characters.
+      credential: 'cred'
+    }] });
+  }, `with a turn server and a username of 509 characters should succeed`);
+
   /*
     4.3.2.  To set a configuration
       11.4. If scheme name is turn or turns, and either of server.username or
@@ -231,6 +239,15 @@
         credential: 'cred'
       }] }));
   }, 'with turns server and only credential should throw InvalidAccessError');
+
+  config_test(makePc => {
+    assert_throws_dom('InvalidAccessError', () =>
+      makePc({ iceServers: [{
+        urls: 'turns:turn.example.net',
+        username: (new Array(511)).join('a'), // 510 characters.
+        credential: 'cred'
+      }] }));
+  }, `with too long username should throw InvalidAccessError`);
 
   /*
     4.3.2.  To set a configuration
@@ -284,6 +301,8 @@
     assert_throws_dom("SyntaxError", () =>
       makePc({ iceServers: [{
         urls: 'turn://example.org/foo?x=y'
+        // username and credential are not passed because the invalid url
+        // should be rejected before the check for those arguments.
       }] }));
   }, 'with invalid turn url should throw SyntaxError');
 

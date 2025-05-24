@@ -75,6 +75,8 @@ def fixture_new_session(configuration, current_session):
 
         if delete_existing_session:
             _delete_session(custom_session["sessionId"])
+            custom_session["capabilities"] = None
+            custom_session["sessionId"] = None
 
         response = transport.send("POST", "session", body)
         if response.status == 200:

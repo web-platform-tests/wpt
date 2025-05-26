@@ -21,7 +21,8 @@ async def test_user_contexts(
 
     # Set locale override.
     await bidi_session.emulation.set_locale_override(
-        user_contexts=[user_context], locale=some_locale)
+        user_contexts=[user_context],
+        locale=some_locale)
 
     # Assert the locale is emulated in user context.
     assert await get_current_locale(context_in_user_context) == some_locale
@@ -70,7 +71,8 @@ async def test_set_to_default_user_context(
 
     # Reset locale override.
     await bidi_session.emulation.set_locale_override(
-        user_contexts=["default"], locale=None
+        user_contexts=["default"],
+        locale=None
     )
 
 

@@ -25,11 +25,11 @@ async def initial_locale(get_current_locale, top_context):
 
 @pytest.fixture
 def some_locale(initial_locale):
-    """Returns some locale which is not equal to initial one."""
+    """Returns some locale which is not equal to the initial one."""
     return "es-ES" if initial_locale != "es-ES" else "it-IT"
 
 
 @pytest.fixture
 def another_locale(initial_locale):
-    """Returns some locale which is not equal to initial one."""
+    """Returns some locale which is not equal to the initial one."""
     return "de-DE" if initial_locale != "de-DE" else "fr-FR"

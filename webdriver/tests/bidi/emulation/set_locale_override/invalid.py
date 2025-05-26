@@ -100,7 +100,86 @@ async def test_params_locale_invalid_type(bidi_session, top_context, value):
         )
 
 
-@pytest.mark.parametrize("value", ["", "somestring_which_is_not_locale"])
+@pytest.mark.parametrize("value", [
+    # Is an empty string.
+    ""
+    # Language subtag is too short.
+    "a"
+    # Language subtag is too long.
+    "abcd"
+    # Language subtag contains invalid characters (numbers).
+    "12"
+    # Language subtag contains invalid characters (symbols).
+    "en$"
+    # Uses underscore instead of hyphen as a separator.
+    "en_US"
+    # Region subtag is too short.
+    "en-U"
+    # Region subtag is too long.
+    "en-USAX"
+    # Region subtag contains invalid characters (numbers not part of a valid UN M49 code).
+    "en-U1"
+    # Region subtag contains invalid characters (symbols).
+    "en-US$"
+    # Script subtag is too short.
+    "en-Lat"
+    # Script subtag is too long.
+    "en-Latin"
+    # Script subtag contains invalid characters (numbers).
+    "en-La1n"
+    # Script subtag contains invalid characters (symbols).
+    "en-Lat$"
+    # Variant subtag is too short (must be 5-8 alphanumeric chars, or 4 if starting with a digit).
+    "en-US-var"
+    # Variant subtag contains invalid characters (symbols).
+    "en-US-variant$"
+    # Extension subtag is malformed (singleton 'u' not followed by anything).
+    "en-u-"
+    # Extension subtag is malformed (singleton 't' not followed by anything).
+    "de-t-"
+    # Private use subtag 'x-' is not followed by anything.
+    "x-"
+    # Private use subtag contains invalid characters (underscore).
+    "en-x-private_use"
+    # Contains an empty subtag (double hyphen).
+    "en--US"
+    # Starts with a hyphen.
+    "-en-US"
+    # Ends with a hyphen.
+    "en-US-"
+    # Contains only a hyphen.
+    "-"
+    # Contains non-ASCII characters.
+    "en-US-ñ"
+    # Grandfathered tag with invalid structure.
+    "i-notarealtag"
+    # Language-like subtag that is not a registered language.
+    "zz"
+    # Invalid UN M49 region code (not 3 digits).
+    "en-01"
+    # Invalid UN M49 region code (contains letters).
+    "en-0A1"
+    # Malformed language tag with numbers.
+    "123"
+    # Locale with only script.
+    "Latn"
+    # Locale with only region.
+    "US"
+    # Locale with only variant.
+    "POSIX"
+    # Locale with script before language.
+    "Latn-en"
+    # Locale with region before language.
+    "US-en"
+    # Locale with variant before language.
+    "POSIX-en"
+    # Repeated separator.
+    "en--US"
+    # Invalid character in an otherwise valid structure.
+    "en-US-!"
+    # Too many subtags of a specific type (e.g., multiple script tags).
+    "en-Latn-Cyrl-US"
+])
 async def test_params_locale_invalid_value(bidi_session, top_context, value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_locale_override(

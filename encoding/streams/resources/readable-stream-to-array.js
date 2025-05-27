@@ -9,3 +9,4 @@ function readableStreamToArray(stream) {
   });
   return stream.pipeTo(writable).then(() => array);
 }
+globalThis.readableStreamToArray = readableStreamToArray;

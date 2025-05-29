@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+from typing import Any, Mapping
 webdriver = None
 
 
@@ -44,7 +45,7 @@ class BidiBluetoothAction:
             raise ValueError("Unexpected context type: %s" % context)
         return await self.execute(context, payload)
 
-    async def execute(self, context: str, payload):
+    async def execute(self, context: str, payload: Mapping[str, Any]) -> Any:
         raise NotImplementedError
 
 class BidiBluetoothHandleRequestDevicePrompt(BidiBluetoothAction):
@@ -55,7 +56,7 @@ class BidiBluetoothHandleRequestDevicePrompt(BidiBluetoothAction):
         self.logger = logger
         self.protocol = protocol
 
-    async def execute(self, context: str, payload):
+    async def execute(self, context: str, payload: Mapping[str, Any]) -> Any:
         prompt = payload["prompt"]
         accept = payload["accept"]
         device = payload["device"]
@@ -64,7 +65,7 @@ class BidiBluetoothHandleRequestDevicePrompt(BidiBluetoothAction):
 class BidiBluetoothSimulateAdapterAction(BidiBluetoothAction):
     name = "bidi.bluetooth.simulate_adapter"
 
-    async def execute(self, context: str, payload):
+    async def execute(self, context: str, payload: Mapping[str, Any]) -> Any:
         state = payload["state"]
         return await self.protocol.bidi_bluetooth.simulate_adapter(context,
                                                                    state)
@@ -72,13 +73,13 @@ class BidiBluetoothSimulateAdapterAction(BidiBluetoothAction):
 class BidiBluetoothDisableSimulationAction(BidiBluetoothAction):
     name = "bidi.bluetooth.disable_simulation"
 
-    async def execute(self, context: str, payload):
+    async def execute(self, context: str, payload: Mapping[str, Any]) -> Any:
         return await self.protocol.bidi_bluetooth.disable_simulation(context)
 
 class BidiBluetoothSimulatePreconnectedPeripheralAction(BidiBluetoothAction):
     name = "bidi.bluetooth.simulate_preconnected_peripheral"
 
-    async def execute(self, context: str, payload):
+    async def execute(self, context: str, payload: Mapping[str, Any]) -> Any:
         address = payload["address"]
         name = payload["name"]
         manufacturer_data = payload["manufacturerData"]
@@ -89,7 +90,7 @@ class BidiBluetoothSimulatePreconnectedPeripheralAction(BidiBluetoothAction):
 class BidiBluetoothGattConnectionResponseAction(BidiBluetoothAction):
     name = "bidi.bluetooth.simulate_gatt_connection_response"
 
-    async def execute(self, context: str, payload):
+    async def execute(self, context: str, payload: Mapping[str, Any]) -> Any:
         address = payload["address"]
         code = payload["code"]
         return await self.protocol.bidi_bluetooth.simulate_gatt_connection_response(
@@ -98,7 +99,7 @@ class BidiBluetoothGattConnectionResponseAction(BidiBluetoothAction):
 class BidiBluetoothGattDisconnectionAction(BidiBluetoothAction):
     name = "bidi.bluetooth.simulate_gatt_disconnection"
 
-    async def execute(self, context: str, payload):
+    async def execute(self, context: str, payload: Mapping[str, Any]) -> Any:
         address = payload["address"]
         return await self.protocol.bidi_bluetooth.simulate_gatt_disconnection(
             context, address)

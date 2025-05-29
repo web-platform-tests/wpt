@@ -328,7 +328,7 @@
                     },
                 },
                 /**
-                 * `bluetooth.RequestDevicePromptUpdatedParameters <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-requestdevicepromptupdated-event>`_
+                 * `bluetooth.GattConnectionAttemptedParameters <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-gattConnectionAttempted-event>`_
                  * event.
                  */
                 gatt_connection_attempted: {

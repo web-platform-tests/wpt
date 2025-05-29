@@ -87,7 +87,7 @@ class BidiBluetoothSimulatePreconnectedPeripheralAction(BidiBluetoothAction):
         return await self.protocol.bidi_bluetooth.simulate_preconnected_peripheral(
             context, address, name, manufacturer_data, known_service_uuids)
 
-class BidiBluetoothGattConnectionResponseAction(BidiBluetoothAction):
+class BidiBluetoothSimulateGattConnectionResponseAction(BidiBluetoothAction):
     name = "bidi.bluetooth.simulate_gatt_connection_response"
 
     async def execute(self, context: str, payload: Mapping[str, Any]) -> Any:
@@ -96,7 +96,7 @@ class BidiBluetoothGattConnectionResponseAction(BidiBluetoothAction):
         return await self.protocol.bidi_bluetooth.simulate_gatt_connection_response(
             context, address, code)
 
-class BidiBluetoothGattDisconnectionAction(BidiBluetoothAction):
+class BidiBluetoothSimulateGattDisconnectionAction(BidiBluetoothAction):
     name = "bidi.bluetooth.simulate_gatt_disconnection"
 
     async def execute(self, context: str, payload: Mapping[str, Any]) -> Any:
@@ -178,8 +178,8 @@ async_actions = [
     BidiBluetoothSimulateAdapterAction,
     BidiBluetoothDisableSimulationAction,
     BidiBluetoothSimulatePreconnectedPeripheralAction,
-    BidiBluetoothGattConnectionResponseAction,
-    BidiBluetoothGattDisconnectionAction,
+    BidiBluetoothSimulateGattConnectionResponseAction,
+    BidiBluetoothSimulateGattDisconnectionAction,
     BidiEmulationSetGeolocationOverrideAction,
     BidiPermissionsSetPermissionAction,
     BidiSessionSubscribeAction]

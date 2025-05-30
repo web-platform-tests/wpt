@@ -31,9 +31,10 @@
     assert_array_equals([...types], ["a", ".", "", "123"]);
   }, "ViewTransitionTypeSet behaves like an ordinary Set of strings");
 
-  promise_test(async () => {
+  promise_test(async (t) => {
     assert_implements(document.startViewTransition);
     const transition = document.startViewTransition();
+    t.add_cleanup(() => transition.skipTransition());
     transition.types.add("a");
     await transition.finished;
     assert_array_equals([...transition.types], ["a"]);

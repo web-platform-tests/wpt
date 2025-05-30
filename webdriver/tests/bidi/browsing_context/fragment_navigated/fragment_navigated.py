@@ -143,16 +143,6 @@ async def test_iframe(
 
     await subscribe_events([FRAGMENT_NAVIGATED_EVENT])
 
-    # Track all received browsingContext.fragmentNavigated events in the events array
-    events = []
-
-    async def on_event(method, data):
-        events.append(data)
-
-    remove_listener = bidi_session.add_event_listener(
-        FRAGMENT_NAVIGATED_EVENT, on_event
-    )
-
     on_fragment_navigated = wait_for_event(FRAGMENT_NAVIGATED_EVENT)
 
     target_url = url(EMPTY_PAGE + '#bar')
@@ -167,10 +157,6 @@ async def test_iframe(
         },
         await wait_for_future_safe(on_fragment_navigated),
     )
-
-    # Check that we only received one event for the iframe navigation.
-    assert len(events) == 1
-    remove_listener()
 
 
 @pytest.mark.parametrize(

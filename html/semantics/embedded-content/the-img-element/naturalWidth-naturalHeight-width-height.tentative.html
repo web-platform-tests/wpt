@@ -58,8 +58,28 @@ img {
      * The "title" attribute is a description of the scenario being tested, and
      it must be unique to satisfy the test harness requirements. -->
 
-<!-- FIRST PART OF TEST: No viewBox. Just a missing (or edge-casey, i.e.
-     negative or percent-valued) values, for the width and height attrs on the
+<!-- JPG images -->
+<img src="resources/cat.jpg"
+     title="raster image"
+     data-natural-width="320" data-natural-height="240">
+<img src="resources/cat.jpg" width="10" height="10"
+     title="raster image with width/height attributes"
+     data-natural-width="320" data-natural-height="240"
+     data-width="10" data-height="10">
+<!-- Use "size-comes-from-broken-image-icon" attribute to opt out of checking
+     img.width and img.height, because they come from the UA-dependent
+     size of the broken image icon: -->
+<img src="non-existent.jpg"
+     title="non existent image, no natural dimensions"
+     data-natural-width="0" data-natural-height="0"
+     size-comes-from-broken-image-icon>
+<img src="non-existent.jpg" width="10" height="10"
+     title="non existent image with width/height attributes, no natural dimensions"
+     data-natural-width="0" data-natural-height="0"
+     data-width="10" data-height="10">
+
+<!-- First group of SVG images: no viewBox, with a missing (or edge-casey, i.e.
+     negative or percent-valued) value for the width and/or height attr on the
      root svg element in a SVG image. -->
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'></svg>"
      title="SVG image, no natural dimensions"
@@ -95,7 +115,7 @@ img {
      title="SVG image, with natural height being negative"
      data-natural-width="300" data-natural-height="0">
 
-<!-- NEXT PART OF TEST: Same as above, but now with a viewBox that grants a
+<!-- Second group of SVG images: Same as above, but now with a viewBox that grants a
      3:1 aspect-ratio; whenever we know one natural dimension, that should
      combine with the aspect ratio to produce the other natural dimension.
 
@@ -137,7 +157,7 @@ img {
      title="SVG image, with natural height being negative, and aspect ratio from viewBox"
      data-natural-width="0" data-natural-height="0">
 
-<!-- THIRD PART OF TEST: Check a degenerate 0-sized viewBox for some of the
+<!-- Third group of SVG images: Check a degenerate 0-sized viewBox for some of the
      cases; it should have no impact. -->
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 0 0'></svg>"
      title="SVG image, no natural dimensions, viewBox with 0 width/height"
@@ -167,12 +187,15 @@ img {
      title="SVG image, with natural height, viewBox with 0 height"
      data-natural-width="300" data-natural-height="60">
 
-<!~- FINAL PART OF TEST: we have width/height/viewBox all specified on the
-     svg element. The width and height attrs should determine the natural
-     dimensions, with no impact from viewBox. -->
-<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 600 200'></svg>"
+<!~- Final group of SVG images: we have pixel-valued width/height on the root
+     svg element, and possibly viewBox as well. The width and height attrs should
+     determine the natural dimensions, with no impact from viewBox. -->
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='40'></svg>"
+     title="SVG image, with natural width and height"
+     data-natural-width="60" data-natural-height="40">
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 600 200'></svg>"
      title="SVG image, with natural width and height, and aspect ratio from viewBox"
-     data-natural-width="60" data-natural-height="60">
+     data-natural-width="60" data-natural-height="40">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='0' height='0' viewBox='0 0 600 200'></svg>"
      title="SVG image, with natural width and height of 0, and aspect ratio from viewBox"
      data-natural-width="0" data-natural-height="0">
@@ -207,16 +230,20 @@ onload = function() {
       assert_equals(img.naturalWidth, expectedNaturalWidth, 'naturalWidth');
       assert_equals(img.naturalHeight, expectedNaturalHeight, 'naturalHeight');
 
-      // If 'data-width' is provided, then we expect img.width to match it.
-      // Otherwise we expect img.width to match the 'data-natural-width'.
-      // (And similar for 'height'.)
-      const expectedWidth = 'width' in img.dataset ?
-            parseFloat(img.dataset.width) : expectedNaturalWidth;
-      const expectedHeight = 'height' in img.dataset ?
-            parseFloat(img.dataset.height) : expectedNaturalHeight;
-      assert_equals(img.width, expectedWidth, 'width');
-      assert_equals(img.height, expectedHeight, 'height');
+      let shouldCheckWidthAndHeight =
+          !img.hasAttribute("size-comes-from-broken-image-icon");
 
+      if (shouldCheckWidthAndHeight) {
+        // If 'data-width' is provided, then we expect img.width to match it.
+        // Otherwise we expect img.width to match the 'data-natural-width'.
+        // (And similar for 'height'.)
+        const expectedWidth = 'width' in img.dataset ?
+              parseFloat(img.dataset.width) : expectedNaturalWidth;
+        const expectedHeight = 'height' in img.dataset ?
+              parseFloat(img.dataset.height) : expectedNaturalHeight;
+        assert_equals(img.width, expectedWidth, 'width');
+        assert_equals(img.height, expectedHeight, 'height');
+      }
     }, `${img.title}`);
   });
   done();

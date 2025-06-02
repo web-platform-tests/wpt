@@ -65,7 +65,8 @@ img {
 <img src="resources/cat.jpg" width="10" height="10"
      title="raster image with width/height attributes"
      data-natural-width="320" data-natural-height="240"
-     data-width="10" data-height="10">
+     data-width="10" data-height="10"
+     data-not-rendered-width="10" data-not-rendered-height="10">
 <!-- Use "size-comes-from-broken-image-icon" attribute to opt out of checking
      img.width and img.height, because they come from the UA-dependent
      size of the broken image icon: -->
@@ -76,13 +77,30 @@ img {
 <img src="non-existent.jpg" width="10" height="10"
      title="non existent image with width/height attributes, no natural dimensions"
      data-natural-width="0" data-natural-height="0"
-     data-width="10" data-height="10">
+     data-width="10" data-height="10"
+     data-not-rendered-width="10" data-not-rendered-height="10">
 
 <!-- First group of SVG images: no viewBox, with a missing (or edge-casey, i.e.
      negative or percent-valued) value for the width and/or height attr on the
      root svg element in a SVG image. -->
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'></svg>"
      title="SVG image, no natural dimensions"
+     data-natural-width="300" data-natural-height="150">
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'></svg>"
+     width="40" height="10"
+     data-width="40" data-height="10"
+     data-not-rendered-width="40" data-not-rendered-height="10"
+     title="SVG image with width/height attrs, no natural dimensions"
+     data-natural-width="300" data-natural-height="150">
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'></svg>"
+     width="40"
+     data-width="40" data-not-rendered-width="40"
+     title="SVG image with width attr, no natural dimensions"
+     data-natural-width="300" data-natural-height="150">
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'></svg>"
+     height="10"
+     data-height="10" data-not-rendered-height="10"
+     title="SVG image with height attr, no natural dimensions"
      data-natural-width="300" data-natural-height="150">
 <!-- Note: percent values can't be resolved when determining natural
      dimensions, so the exact percentage shouldn't matter. -->
@@ -241,20 +259,39 @@ function cloneTemplateWithDensity(density) {
     const isUsingConcreteObjectHeight = (img.dataset.naturalHeight == "150");
 
     // Scale our 'data-natural-{width,height}' expectations by the density.
-    // But also, preserve the original 'data-natural-{width,height}' as the
+    // But also:
+    // * Preserve the original 'data-natural-{width,height}' as the
     // 'data-{width,height}' expectation if it's just the concrete object size
     // (which doesn't actually get scaled by the density in practice when
     // the image actually renders).
+    // * Preserve the original 'data-natural-{width,height}' as the
+    // 'data-not-rendered-{width,height}' expectation (if we don't already have
+    // one) since browsers don't do density-correction on .width and .height when
+    // the image is not being rendered, as discussed in
+    // https://github.com/whatwg/html/issues/11287#issuecomment-2923467541
     for (let name in img.dataset) {
       if (name.startsWith("natural")) {
         let origExpectation = img.dataset[name];
+
+        // Scale our img.natural{Width,Height} expectation:
         img.dataset[name] = origExpectation / density;
+
         let isWidthAxis = (name == "naturalWidth");
         let nameWithoutNatural = (isWidthAxis ? "width" : "height");
+
         let isConcreteObjectSize =
           (isWidthAxis ? isUsingConcreteObjectWidth : isUsingConcreteObjectHeight);
         if (isConcreteObjectSize && !(nameWithoutNatural in img.dataset)) {
           img.dataset[nameWithoutNatural] = origExpectation;
+        }
+
+        // Construct a string for "data-not-rendered-{width,height}" for
+        // whichever axis we're currently handling, and stash the
+        // origExpectation in there if we don't already have some expectation
+        // set there:
+        let notRenderedName = name.replace("natural", "notRendered");
+        if (!(notRenderedName in img.dataset)) {
+          img.dataset[notRenderedName] = origExpectation;
         }
       }
     }
@@ -280,11 +317,12 @@ containingBlock.appendChild(cloneTemplateWithDensity(2));
 // we run the various tests:
 onload = function() {
   Array.from(document.images).forEach(img => {
+    const expectedNaturalWidth = parseFloat(img.dataset.naturalWidth);
+    const expectedNaturalHeight = parseFloat(img.dataset.naturalHeight);
+
     test(function() {
       // We expect naturalWidth to match the provided data-natural-width
       // (and similar for 'height').
-      const expectedNaturalWidth = parseFloat(img.dataset.naturalWidth);
-      const expectedNaturalHeight = parseFloat(img.dataset.naturalHeight);
       assert_equals(img.naturalWidth, expectedNaturalWidth, 'naturalWidth');
       assert_equals(img.naturalHeight, expectedNaturalHeight, 'naturalHeight');
 
@@ -303,6 +341,35 @@ onload = function() {
         assert_equals(img.height, expectedHeight, 'height');
       }
     }, `${img.title}`);
+
+    test(function() {
+      // Now test what we get when the img is not rendered.
+      // * naturalWidth and naturalHeight shouldn't change.
+      // * width and height should generally match naturalWidth and
+      // naturalHeight. (Exceptions are indicated via the
+      // 'data-not-rendered-{width/height} attributes).
+      this.add_cleanup(function() {
+        img.style.display = "";
+      });
+
+      img.style.display = "none";
+      img.getBoundingClientRect(); // Flush layout.
+
+      assert_equals(img.naturalWidth, expectedNaturalWidth,
+                    'naturalWidth when not rendered');
+      assert_equals(img.naturalHeight, expectedNaturalHeight,
+                    'naturalHeight when not rendered');
+
+      const expectedNotRenderedWidth = 'notRenderedWidth' in img.dataset ?
+            parseFloat(img.dataset.notRenderedWidth) : expectedNaturalWidth;
+      const expectedNotRenderedHeight = 'notRenderedHeight' in img.dataset ?
+            parseFloat(img.dataset.notRenderedHeight) : expectedNaturalHeight;
+
+      assert_equals(img.width, expectedNotRenderedWidth,
+                    'width when not rendered');
+      assert_equals(img.height, expectedNotRenderedHeight,
+                    'height when not rendered');
+    }, `${img.title} (when not rendered)`);
   });
   done();
 };

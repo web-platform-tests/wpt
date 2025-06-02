@@ -214,9 +214,67 @@ img {
      the window onload event: -->
 <script>
 setup({explicit_done:true});
+
+// Utility function to generate a clone of imgTemplates using "srcset" and a
+// given density value, with expectations adjusted per the density:
+function cloneTemplateWithDensity(density) {
+  if (typeof(density) !== "number" || density <= 0) {
+    // If we get here, there's a bug in the test itself; throw an exception:
+    throw new Error("test error: param should be a positive number");
+  }
+  let clone = imgTemplates.content.cloneNode("true");
+
+  for (let img of clone.children) {
+    // Swap out "src" for "srcset":
+    // The srcset attribute uses a space-separated list of tokens,
+    // so we need to encode any spaces that are in the URI itself
+    // before we put it in srcset:
+    let srcVal = img.getAttribute("src").replaceAll(" ", "%20");
+    img.removeAttribute("src");
+    img.setAttribute("srcSet", `${srcVal} ${density}x`);
+
+    // Mention the density in the 'title' to keep the title values unique:
+    img.setAttribute("title",
+                     `${img.getAttribute("title")} (with srcset/${density}x)`);
+
+    const isUsingConcreteObjectWidth = (img.dataset.naturalWidth == "300");
+    const isUsingConcreteObjectHeight = (img.dataset.naturalHeight == "150");
+
+    // Scale our 'data-natural-{width,height}' expectations by the density.
+    // But also, preserve the original 'data-natural-{width,height}' as the
+    // 'data-{width,height}' expectation if it's just the concrete object size
+    // (which doesn't actually get scaled by the density in practice when
+    // the image actually renders).
+    for (let name in img.dataset) {
+      if (name.startsWith("natural")) {
+        let origExpectation = img.dataset[name];
+        img.dataset[name] = origExpectation / density;
+        let isWidthAxis = (name == "naturalWidth");
+        let nameWithoutNatural = (isWidthAxis ? "width" : "height");
+        let isConcreteObjectSize =
+          (isWidthAxis ? isUsingConcreteObjectWidth : isUsingConcreteObjectHeight);
+        if (isConcreteObjectSize && !(nameWithoutNatural in img.dataset)) {
+          img.dataset[nameWithoutNatural] = origExpectation;
+        }
+      }
+    }
+  }
+  return clone;
+}
+
 // Clone and append a copy of the contents of imgTemplates, for testing:
 let clone = imgTemplates.content.cloneNode("true");
 containingBlock.appendChild(clone);
+
+// Append additional clones, modified to use srcset with specified density.
+// Note:
+//  * '1' is the trivial case; we're just testing that for completeness,
+//    to be sure there aren't any unexpected differences between
+//    <img src="..."> and <img srcset="... 1x">).
+//  * It's best for whatever density we test here to be something that evenly
+//    divides all of the image sizes in this test (so 1 and 2 are easy choices).
+containingBlock.appendChild(cloneTemplateWithDensity(1));
+containingBlock.appendChild(cloneTemplateWithDensity(2));
 
 // After all the img elements have loaded (indicated by the window load event),
 // we run the various tests:

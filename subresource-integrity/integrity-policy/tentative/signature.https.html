@@ -41,7 +41,6 @@
         script.integrity = "ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
         script.onload = resolve;
         script.onerror = resolve;
-        
         script.src = "/content-security-policy/resources/ran.js?pipe=" + signature;
         document.body.appendChild(script);
       });

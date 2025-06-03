@@ -3,7 +3,6 @@
 <title>RTX codec integrity checks</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../RTCPeerConnection-helper.js"></script>
 <script>
 'use strict';
 
@@ -52,61 +51,35 @@ function getCodecsWithDirection(mimeType, direction) {
   return codecs;
 }
 
-// Returns an array of { mimeType, payloadType, sdpFmtpLine } entries in the
-// order that they appeared in the SDP.
+// Returns an array of { mimeType, payloadType, sdpFmtpLine } entries in codec
+// preference order from the first m-section of the SDP.
 function parseCodecsFromSdp(sdp) {
   const codecs = [];
-  // For each a=rtpmap:...
-  const kRtpMapLineRegex = /\r\na=rtpmap:/g;
-  for (const match of sdp.matchAll(kRtpMapLineRegex)) {
-    const rtpmapIndex = match.index + 11;
-    const rtpmapSpaceIndex = sdp.indexOf(' ', rtpmapIndex)
-    const payloadType = Number(sdp.slice(rtpmapIndex, rtpmapSpaceIndex));
-    const codecName = sdp.slice(rtpmapSpaceIndex + 1,
-                                sdp.indexOf('/', rtpmapSpaceIndex));
-    let sdpFmtpLine = undefined;  // Can be undefined e.g. VP8.
-    const fmtpLineWithPT = `\r\na=fmtp:${payloadType} `;
-    let fmtpIndex = sdp.indexOf(fmtpLineWithPT, rtpmapIndex);
-    if (fmtpIndex != -1) {
-      fmtpIndex += fmtpLineWithPT.length;
-      const fmtpLineEnd = sdp.indexOf('\r\n', fmtpIndex);
-      if (fmtpLineEnd == -1) {
-        throw 'Parse error: Missing expected end of FMTP line';
-      }
-      sdpFmtpLine = sdp.slice(fmtpIndex, fmtpLineEnd);
-    }
-    const codec = { mimeType: `video/${codecName}`, payloadType, sdpFmtpLine };
+  const kMLineRegex = /\r\nm=video \d+ [A-Z\/]+ (?<pts>[\d\s]+)\r\n/;
+  const {groups: {pts}} = kMLineRegex.exec(sdp);
+  for (const pt of pts.split(" ")) {
+    const rtpmapRegex = new RegExp(`\r\na=rtpmap:${pt} (?<name>[^ \/]+)\/`);
+    const {groups: {name}} = rtpmapRegex.exec(sdp);
+    const fmtpRegex = new RegExp(`\r\na=fmtp:${pt} (?<sdpFmtpLine>.*)\r\n`);
+    // Guard against there not being an fmtp line.
+    const {groups: {sdpFmtpLine} = {}} = fmtpRegex.exec(sdp) ?? {};
+    const codec = { mimeType: `video/${name}`, payloadType: pt, sdpFmtpLine };
     codecs.push(codec);
   }
   return codecs;
 }
 
-function replaceAllInSubstr(
-    str, startIndex, endIndex, pattern, replacement) {
-  return str.slice(0, startIndex) +
-         str.slice(startIndex, endIndex).replaceAll(pattern, replacement) +
-         str.slice(endIndex);
-}
-
 function replaceCodecInSdp(sdp, oldCodec, newCodec) {
   // Replace the payload type in the m=video line.
-  const mVideoStartIndex = sdp.indexOf('m=video');
-  const mVideoEndIndex = sdp.indexOf('\r\n', mVideoStartIndex);
-  if (mVideoStartIndex == -1 || mVideoEndIndex == -1) {
-    throw 'Failed to parse m=video line in the codec replace algorithm';
-  }
-  sdp = replaceAllInSubstr(
-      sdp, mVideoStartIndex, mVideoEndIndex, String(oldCodec.payloadType),
-      String(newCodec.payloadType));
-  // Replace the payload type in all the RTP map and FMTP lines.
-  const rtpStartIndex = sdp.indexOf('a=rtpmap:' + oldCodec.payloadType);
-  const rtpEndIndex = sdp.indexOf(oldCodec.sdpFmtpLine);
-  if (rtpStartIndex == -1 || rtpEndIndex == -1) {
-    throw 'Failed to parse RTP/FMTP lines in the codec replace algorithm';
-  }
-  sdp = replaceAllInSubstr(
-      sdp, rtpStartIndex, rtpEndIndex, ':' + oldCodec.payloadType,
-      ':' + newCodec.payloadType);
+  sdp = sdp.replace(
+      new RegExp(`(m=video [ \\dA-Z\/]+)${oldCodec.payloadType}`),
+      `$1${newCodec.payloadType}`
+  );
+  // Replace the payload type in all rtpmap, fmtp and rtcp-fb lines.
+  sdp = sdp.replaceAll(
+      new RegExp(`(a=(rtpmap|fmtp|rtcp-fb):)${oldCodec.payloadType}`, "g"),
+      `$1${newCodec.payloadType}`
+  );
   // Lastly, replace the actual "sdpFmtpLine" string.
   sdp = sdp.replace(oldCodec.sdpFmtpLine, newCodec.sdpFmtpLine);
   return sdp;

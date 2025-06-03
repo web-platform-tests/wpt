@@ -8,25 +8,26 @@
 <body>
 <script>
   promise_test(async () => {
-    // Generated using https://sha2.it/ed25519.html (In Chrome Canary, with Experimental Web Platform Features enabled)
+    // Generated using https://sha2.it/ed25519.html in a browser that supports Signature-Based SRI (e.g. Chrome 136+, with Experimental Web Platform Features enabled)
     const signature = encodeURIComponent(
       'header(Unencoded-Digest, sha-384=:tqyFpeo21WFM8HDeUtLqH20GUq\/q3D1R6mqTzW3RtyTZ3dAYZJhC1wUcnkgOE2ak:)' +
       '|header(Signature-Input, signature=\\("unencoded-digest";sf\\); keyid="JrQLj5P\/89iXES9+vFgrIy29clF9CC\/oPPsw3c5D0bs="; tag="sri")' +
       '|header(Signature, signature=:qM19uLskHm2TQG5LJcH/hY0n0BWWzYOJztVWYlwk0cZb3u0JdgUMre1J4Jn8Tma0x2u5/kPBfbXRMbB+X+vTBw==:)');
 
     const REMOTE_EXECUTOR =
-      `/common/dispatcher/remote-executor.html?pipe=`;
+      `/common/dispatcher/remote-executor.html`;
     const iframe_uuid = token();
 
-    const params = new URLSearchParams(location.search);
     let header =
       `header(Integrity-Policy,blocked-destinations=\\(script\\)\\, endpoints=\\(integrity-endpoint-1 integrity-endpoint-2\\))`;
     header +=
       `|header(Integrity-Policy-Report-Only,blocked-destinations=\\(script\\)\\, endpoints=\\(integrity-endpoint-3\\))`;
-    const iframe_url = `${REMOTE_EXECUTOR}${encodeURIComponent(header)}&uuid=${iframe_uuid}`;
+    const params = new URLSearchParams();
+    params.set('uuid', iframe_uuid);
+    params.set('pipe', header);
 
     const iframe = document.createElement('iframe');
-    iframe.src = iframe_url;
+    iframe.src = `${REMOTE_EXECUTOR}?${params}`;
     document.body.appendChild(iframe);
 
     // Execute code directly from the iframe.

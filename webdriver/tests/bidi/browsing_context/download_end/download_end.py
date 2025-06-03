@@ -89,6 +89,6 @@ async def test_subscribe(bidi_session, subscribe_events, new_tab, inline,
         }, event)
 
     # Assert file content is available.
-    with open(event['filepath'], encoding='utf-8') as file:
+    with open(event['filepath'], mode='r', encoding='utf-8') as file:
         file_content = file.read()
     assert file_content == CONTENT

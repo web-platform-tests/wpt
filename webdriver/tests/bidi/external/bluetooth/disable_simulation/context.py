@@ -12,7 +12,6 @@ async def test_contexts_are_isolated(bidi_session, top_context, test_page):
         type_hint="tab")
     await set_simulate_adapter(bidi_session, top_context, test_page,
                                "powered-on")
-    await bidi_session.bluetooth.disable_simulation(context=top_context["context"])
 
     await set_simulate_adapter(bidi_session, another_browsing_context,
                                test_page, "powered-on")

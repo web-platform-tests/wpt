@@ -5,12 +5,12 @@ function getResourceID(resourceName) {
       for (const entry of entries) {
         if (entry.name.endsWith(resourceName)) {
           observer.disconnect();
-          resolve(`${entry.name}/${entry.startTime}`);
+          resolve(entry.resourceId);
           return;
         }
       }
     });
-    observer.observe({ entryTypes: ["resource"] });
+    observer.observe({type: 'resource', buffered: true});
   });
 }
 
@@ -19,12 +19,11 @@ function getDocumentResourceID() {
     const observer = new PerformanceObserver((list) => {
       const entries = list.getEntriesByType("navigation");
       if (entries.length > 0) {
+        const {resourceId} = entries[0];
         observer.disconnect();
-        const [entry] = entries;
-        const { name, startTime } = entry;
-        resolve(`${name}/${startTime}`);
+        resolve(resourceId);
       }
     });
-    observer.observe({ entryTypes: ["navigation"] });
+    observer.observe({type: 'navigation', buffered: true});
   });
 }

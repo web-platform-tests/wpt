@@ -7,16 +7,15 @@
     <script src="/resources/testharnessreport.js"></script>
     <script>
         setup({ single_test: true });
-        var reload_frame;
+        let reload_frame;
 
         // Array of navigation timing entries dependent on Document Load Timing.
-        var navTimingAttributes = [
+        let navTimingAttributes = [
           'fetchStart',
           'loadEventEnd',
           'loadEventStart',
           'redirectCount',
           'redirectEnd',
-          'redirectStart',
           'responseEnd',
           'unloadEventEnd',
           'unloadEventStart',
@@ -36,8 +35,9 @@
           redirectStart, redirectEnd and redirectCount dependent on Document Load Timing.
         */
         function reload_the_frame() {
-            reload_frame.contentWindow.location.href =
-            "/common/redirect.py?location=/navigation-timing/resources/blank-page-green.html";
+            let baseUrl = "/common/redirect.py";
+            let params = "location=/navigation-timing/resources/blank-page-green.html";
+            reload_frame.contentWindow.location.href = baseUrl + '?' + params;
         }
 
         /*
@@ -45,8 +45,8 @@
           check if the values are greater than 0.
         */
         function do_test() {
-            var nav_frame = document.getElementById("frameContext").contentWindow;
-            var pnt1 = nav_frame.performance.getEntriesByType("navigation")[0];
+            let nav_frame = document.getElementById("frameContext").contentWindow;
+            let pnt1 = nav_frame.performance.getEntriesByType("navigation")[0];
             for (i in navTimingAttributes) {
                 assert_greater_than(pnt1[navTimingAttributes[i]], 0,
                 `Expected navigation timing entries: ${navTimingAttributes[i]} greater than 0`);
@@ -60,8 +60,8 @@
          check if the navigation timing entries of detached iframe are 0.
          */
         function remove() {
-            var nav_frame = document.getElementById("frameContext").contentWindow;
-            var pnt1 = nav_frame.performance.getEntriesByType("navigation")[0];
+            let nav_frame = document.getElementById("frameContext").contentWindow;
+            let pnt1 = nav_frame.performance.getEntriesByType("navigation")[0];
             document.body.removeChild(document.getElementById("frameContext"));
             for (i in navTimingAttributes) {
                 assert_equals(pnt1[navTimingAttributes[i]], 0,

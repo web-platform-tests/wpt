@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Content-Security-Policy Invalid Bytes Parsing Tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./support/helper.sub.js"></script>
+
+
+<body>
+<script>
+"use strict";
+
+// \x00, \x01 - \x08, \x0e, \x0f, \x10 - \x1f, \x7f.
+// In a source expression, non-whitespace characters outside ASCII 0x21-0x7E must be Punycode-encoded, as described in RFC 3492 (https://tools.ietf.org/html/rfc3492), if part of the hostname and percent-encoded, as described in RFC 3986, section 2.1 (http://tools.ietf.org/html/rfc3986#section-2.1), if part of the path.
+
+// \x00
+csp_parsing_test("frame-ancestors 'none'", "00", EXPECT_BLOCK, `CSP: "frame-ancestors 'none'\\x00" should block rendering (Network Error).`);
+csp_parsing_test("frame-ancestors 'none' http:", "00", EXPECT_BLOCK, `CSP: "frame-ancestors 'none' http:\\x00" should allow rendering (Network Error).`);
+csp_parsing_test("frame-ancestors 'self'", "00", EXPECT_BLOCK, `CSP: "frame-ancestors 'self'\\x00" should block rendering (Network Error).`);
+csp_parsing_test("frame-ancestors 'none'; script-src 'self'", "00", EXPECT_BLOCK, `CSP: "frame-ancestors 'none'; script-src 'self'\\x00" should block rendering (Network Error).`);  // No network error in Safari, flaky in Safari
+csp_parsing_test("frame-ancestors 'self'; script-src 'self'", "00", EXPECT_BLOCK, `CSP: "frame-ancestors 'self'; script-src 'self'\\x00" should block rendering (Network Error).`);
+csp_parsing_test("frame-ancestors 'self', frame-ancestors 'self'", "00", EXPECT_BLOCK, `CSP: "frame-ancestors 'self', frame-ancestors 'self'\\x00" should block rendering (Network Error).`);
+csp_parsing_test("frame-ancestors 'none', frame-ancestors 'self'", "00", EXPECT_BLOCK, `CSP: "frame-ancestors 'none', frame-ancestors 'self'\\x00" should block rendering (Network Error).`);  // No network error in Safari, flaky in Safari
+csp_parsing_test("frame-ancestors 'none', frame-ancestors", "00", EXPECT_BLOCK, `CSP: "frame-ancestors 'none', frame-ancestors\\x00" should block rendering (Network Error).`);  // No network error in Safari, flaky in Safari
+csp_parsing_test("frame-ancestors 'self', frame-ancestors", "00", EXPECT_BLOCK, `CSP: "frame-ancestors 'self', frame-ancestors\\x00" should block rendering (Network Error).`);
+
+
+// \x01
+csp_parsing_test("frame-ancestors 'none'", "01", EXPECT_LOAD, `CSP: "frame-ancestors 'none'\\x01" should allow rendering (Invalid directive ignored).`);
+csp_parsing_test("frame-ancestors 'none' http", "01", EXPECT_LOAD, `CSP: "frame-ancestors 'none' http:\\x01" should allow rendering (Invalid directive ignored).`);
+csp_parsing_test("frame-ancestors 'self'", "01", EXPECT_LOAD, `CSP: "frame-ancestors 'self'\\x01" should allow rendering (Invalid directive ignored).`);
+csp_parsing_test("frame-ancestors 'none'; script-src 'self'", "01", EXPECT_BLOCK, `CSP: "frame-ancestors 'none'; script-src 'self'\\x01" should block rendering.`);
+csp_parsing_test("frame-ancestors 'self'; script-src 'self'", "01", EXPECT_LOAD, `CSP: "frame-ancestors 'self'; script-src 'self'\\x01" should allow rendering.`);
+csp_parsing_test("frame-ancestors 'self', frame-ancestors 'self'", "01", EXPECT_LOAD, `CSP: "frame-ancestors 'self', frame-ancestors 'self'\\x01" should allow rendering.`);
+csp_parsing_test("frame-ancestors 'none', frame-ancestors 'self'", "01", EXPECT_BLOCK, `CSP: "frame-ancestors 'none', frame-ancestors 'self'\\x01" should block rendering.`);
+csp_parsing_test("frame-ancestors 'none', frame-ancestors", "01", EXPECT_BLOCK, `CSP: "frame-ancestors 'none', frame-ancestors\\x01" should block rendering.`);
+csp_parsing_test("frame-ancestors 'self', frame-ancestors", "01", EXPECT_LOAD, `CSP: "frame-ancestors 'self', frame-ancestors\\x01" should block rendering.`);
+
+
+// \x7f
+csp_parsing_test("frame-ancestors 'none'", "7f", EXPECT_LOAD, `CSP: "frame-ancestors 'none'\\x7f" should allow rendering (Invalid directive ignored).`);
+csp_parsing_test("frame-ancestors 'none' http", "7f", EXPECT_LOAD, `CSP: "frame-ancestors 'none' http:\\x7f" should allow rendering (Invalid directive ignored).`);
+csp_parsing_test("frame-ancestors 'self'", "7f", EXPECT_LOAD, `CSP: "frame-ancestors 'self'\\x7f" should allow rendering (Invalid directive ignored).`);
+csp_parsing_test("frame-ancestors 'none'; script-src 'self'", "7f", EXPECT_BLOCK, `CSP: "frame-ancestors 'none'; script-src 'self'\\x7f" should block rendering.`);
+csp_parsing_test("frame-ancestors 'self'; script-src 'self'", "7f", EXPECT_LOAD, `CSP: "frame-ancestors 'self'; script-src 'self'\\x7f" should allow rendering.`);
+csp_parsing_test("frame-ancestors 'self', frame-ancestors 'self'", "7f", EXPECT_LOAD, `CSP: "frame-ancestors 'self', frame-ancestors 'self'\\x7f" should allow rendering.`);
+csp_parsing_test("frame-ancestors 'none', frame-ancestors 'self'", "7f", EXPECT_BLOCK, `CSP: "frame-ancestors 'none', frame-ancestors 'self'\\x7f" should block rendering.`);
+csp_parsing_test("frame-ancestors 'none', frame-ancestors", "7f", EXPECT_BLOCK, `CSP: "frame-ancestors 'none', frame-ancestors\\x7f" should block rendering.`);
+csp_parsing_test("frame-ancestors 'self', frame-ancestors", "7f", EXPECT_LOAD, `CSP: "frame-ancestors 'self', frame-ancestors\\x7f" should block rendering.`);
+
+
+</script>

@@ -182,7 +182,6 @@ function runTests(data) {
 }
 
 promise_test(async function() {
-  const response = await fetch('resources/urlpatterntestdata.json');
-  const data = await response.json();
+  const data = await fetch_json('resources/urlpatterntestdata.json');
   runTests(data);
 }, 'Loading data...');

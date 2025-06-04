@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8">
+<title>ruby-position: under</title>
+<meta name="assert" content="ruby-position:under will make ruby appear under the base in horizontal text.">
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="http://www.w3.org/TR/css-ruby-1/#rubypos">
+<link rel="help" href="https://drafts.csswg.org/css-ruby-1/#rubypos">
+<style type="text/css">
+.test { margin: 20px;  padding: 40px; font-size: 110px; }
+rt { color: blue; }
+</style>
+<style type="text/css">/* this is the test */
+ruby { ruby-position: under; }
+</style>
+</head>
+<body>
+<p class="instructions">Test passes if the ruby text appears under the base.</p>
+<div class="test" lang="ja"><ruby>漢<rt>かん</rt>字<rt>じ</rt></ruby></div>
+<!-- Notes:
+-->
+</body>
+</html>

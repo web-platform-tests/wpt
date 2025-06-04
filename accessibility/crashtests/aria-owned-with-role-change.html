@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html class="test-wait">
 <!-- Test that setting the role an an aria-owns child does not crash. -->
+  <head>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      document.getElementById('paragraph1').role = 'tab';
+      document.getElementById('paragraph1').setAttribute("role", "tab");
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           document.documentElement.className = '';

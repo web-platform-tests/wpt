@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>KeyboardEvent.getModifierState() and 'AltGraph' modifier key</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+async_test(function() {
+  var event = "keydown";
+
+  window.onload = this.step_func(function() {
+    var target = document.getElementById("target");
+    target.addEventListener(event, this.step_func(function test_event(e) {
+      assert_equals(e.type, event);
+      if (e.getModifierState("AltGraph")) {
+        target.removeEventListener(event, test_event, true);
+        this.done();
+      }
+    }), true);
+  });
+});
+</script>
+
+<p>Some operating systems simulate the 'AltGraph' modifier key with the
+combination of the 'Alt' and 'Control' modifier keys. Implementations are
+encouraged to use the 'AltGraph' modifier key.</p>
+
+<p><input id="target" value=""></p>
+<ol class=instructions>
+  <li>Click in the above textbox using mouse
+  <li>Press and hold down '{CTRL}' key and then press '{ALT}' key on the keyboard
+</ol>
+
+<div id=log></div>

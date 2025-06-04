@@ -4,7 +4,7 @@ from webdriver.bidi.modules.script import ContextTarget
 from webdriver.error import TimeoutException
 from tests.support.sync import AsyncPoll
 
-from ... import recursive_compare
+from ... import any_int, int_interval, recursive_compare
 
 pytestmark = pytest.mark.asyncio
 
@@ -32,6 +32,7 @@ async def test_history_url_update(
     new_tab,
     url,
     subscribe_events,
+    current_time,
     hash_before,
     hash_after,
     history_method,
@@ -80,16 +81,15 @@ async def test_history_url_update(
             [
                 {
                     "context": target_context,
+                    "timestamp": any_int,
                     "url": target_url,
                 }
             ],
             history_updated_events,
         )
 
-        # browsingContext.historyUpdated should not contain any navigation id or
-        # any timestamp.
+        # browsingContext.historyUpdated should not contain any navigation id.
         assert "navigation" not in history_updated_events[0]
-        assert "timestamp" not in history_updated_events[0]
 
         assert len(fragment_navigated_events) == 0
     finally:
@@ -307,3 +307,39 @@ async def test_history_back_forward(
     finally:
         remove_fragment_navigated_listener()
         remove_history_updated_listener()
+
+
+async def test_timestamp(
+    bidi_session,
+    current_time,
+    subscribe_events,
+    url,
+    new_tab,
+    wait_for_event,
+    wait_for_future_safe,
+):
+    target_context = new_tab["context"]
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=url(EMPTY_PAGE), wait="complete"
+    )
+
+    await subscribe_events(events=[HISTORY_UPDATED_EVENT])
+
+    on_entry = wait_for_event(HISTORY_UPDATED_EVENT)
+    time_start = await current_time()
+
+    await bidi_session.script.evaluate(
+        expression="""history.pushState({}, "", "test1.html")""",
+        await_promise=False,
+        target=ContextTarget(target_context),
+    )
+    event = await wait_for_future_safe(on_entry)
+    time_end = await current_time()
+
+    recursive_compare(
+        {
+            "context": target_context,
+            "timestamp": int_interval(time_start, time_end),
+        },
+        event,
+    )

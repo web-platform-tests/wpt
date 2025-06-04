@@ -1043,7 +1043,7 @@ class Chrome(ChromeChromiumBase):
         of the Chrome for Testing downloads.
         """
         if self.platform in ("Linux", "Win"):
-            bits = "64" if uname.machine == "x86_64" else "32"
+            bits = "64" if uname.machine in ("x86_64", "AMD64") else "32"
         elif self.platform == "Mac":
             bits = "-arm64" if uname.machine == "arm64" else "-x64"
         else:

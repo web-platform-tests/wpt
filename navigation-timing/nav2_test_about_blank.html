@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+promise_test(async() => {
+    await new Promise((resolve) => {
+        let iframe = document.createElement('iframe');
+        iframe.src = 'about:blank';
+        document.body.appendChild(iframe);
+        assert_equals(iframe.contentWindow.performance.getEntriesByType('navigation').length, 0);
+        resolve();
+    })
+}, 'navigation entries should not exist in about:blank')
+</script>
+</body>
+</html>

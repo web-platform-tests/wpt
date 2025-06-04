@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test default handling of the Origin-Agent-Cluster header.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<!--
+  Load two iframes from two different same-site-different-origin domains, one
+  with an invalid Origin-Agent-Cluster: header, and one without the header.
+
+  This test is similar to document-domain.sub.https.html, but specifically
+  tests the default behaviour.
+-->
+<iframe id="noheader"
+        src="//{{domains[www1]}}:{{location[port]}}/html/browsers/origin/origin-keyed-agent-clusters/resources/frame.py">
+</iframe>
+<iframe id="malformed"
+        src="//{{domains[www2]}}:{{location[port]}}/html/browsers/origin/origin-keyed-agent-clusters/resources/frame.py?header=potato">
+</iframe>
+
+<script type="module">
+setup({ explicit_done: true });
+
+function setDomainAndCheck(t, frameid, expected_document_domain_changed) {
+  const frame = document.getElementById(frameid);
+  assert_true(frame instanceof HTMLIFrameElement);
+
+  const message = {
+    type: `set document.domain on iframe "${frameid}"`,
+    newValue: "{{host}}"
+  };
+  frame.contentWindow.postMessage(message, "*");
+  window.addEventListener("message", t.step_func(e => {
+    if (e.data.type ==  message.type) {
+      assert_true((e.data.result == "{{host}}") ==
+                   expected_document_domain_changed);
+      t.done();
+    }
+  }));
+}
+
+window.onload = () => {
+  async_test(t => {
+    setDomainAndCheck(t, "noheader", false);
+  }, "An absent Origin-Agent-Cluster header should not allow document.domain to be mutable.");
+  async_test(t => {
+    setDomainAndCheck(t, "malformed", false);
+  }, "An invalid Origin-Agent-Cluster header should not allow document.domain to be mutable.");
+  done();
+};
+</script>

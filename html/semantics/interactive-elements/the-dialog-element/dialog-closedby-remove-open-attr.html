@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>dialog element: showModal()</title>
+<link rel=help href="https://html.spec.whatwg.org/multipage/#the-dialog-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="../../popovers/resources/popover-utils.js"></script>
+<button id="outside">Outside</button>
+<dialog id="dialog">
+</dialog>
+<script>
+  promise_test(async function(t) {
+    t.add_cleanup(() => {
+      dialog.close();
+      dialog.removeAttribute('closedby');
+    });
+    dialog.setAttribute('closedby', 'any');
+    dialog.show();
+    dialog.removeAttribute('open');
+    dialog.setAttribute('open', '');
+    await clickOn(outside);
+    assert_true(dialog.open);
+  });
+  promise_test(async function(t) {
+    t.add_cleanup(() => {
+      dialog.close();
+      dialog.removeAttribute('closedby');
+    });
+    dialog.showModal();
+    dialog.removeAttribute('open');
+    dialog.setAttribute('open', '');
+    await new test_driver.send_keys(document.activeElement || document.documentElement,'\uE00C'); // Escape
+    assert_true(dialog.open);
+  });
+</script>

@@ -1,0 +1,7 @@
+{
+    "kty": "OKP",
+    "d": "vsJ1oX5NNi0IGdwGldiac75r-Utmq3Jq4LGv48Q_Qc4",
+    "crv": "X25519",
+    "kid": "X25519-01",
+    "x": "y3wJq3uXPHeoCO4FubvTc7VcBuqpvUrSvU6ZMbHDTCI"
+}

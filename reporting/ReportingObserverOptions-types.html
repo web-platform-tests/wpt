@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>ReportingObserverOptions: types member</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(() => {
+    const expectedException = {}
+    assert_throws_exactly(expectedException, () => {
+      new ReportingObserver(() => {}, { types: { *[Symbol.iterator]() { throw expectedException; } } });
+    });
+  }, "iterator that throws in `types`");
+
+  test(() => {
+    const expectedException = {}
+    assert_throws_exactly(expectedException, () => {
+      new ReportingObserver(() => {}, { types: [ { valueOf: () => { throw expectedException; } } ] });
+    });
+  }, "object that throws when getting `valueOf` in `types` array");
+</script>
+</body>
+</html>

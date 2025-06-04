@@ -67,7 +67,7 @@ async def test_subscribe(bidi_session, subscribe_events, new_tab, inline,
         context=new_tab["context"], url=url, wait="complete"
     )
 
-    await bidi_session.session.subscribe(events=[DOWNLOAD_END])
+    await subscribe_events(events=[DOWNLOAD_END])
     on_entry = wait_for_event(DOWNLOAD_END)
 
     await bidi_session.script.evaluate(

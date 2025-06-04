@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="UTF-8">
+    <title>Clipboard API - paste event fires even in non-editable context  - paste on document</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/_lib.js"></script>
+    <script>
+/** paste event fires even in non-editable context  */
+/* Events: paste */
+/* Targets: document */
+/* paste data: "pasted text" */
+/* Test HTML: <p>&nbsp;</p>*/
+function clipboard_api_test(e){
+    var passed = e.type === 'paste';
+    return passed;
+}
+
+    </script>
+</head>
+<body>
+
+    <p>FAILED (This TC requires JavaScript enabled)</p>
+    <p>&nbsp;</p>
+    <div id="log"></div>
+    <script>
+    (function(){
+        var t = async_test()
+        var dataToPaste="pasted text" ;
+        var extPassCond=null;
+        var eventTarget=document;
+        var eventType='paste';
+        setup(function(){
+                setupTest(t, eventTarget, eventType, dataToPaste, extPassCond );
+            });
+    })();
+    </script>
+</body></html>

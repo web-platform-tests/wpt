@@ -14,7 +14,7 @@
 <dialog data-description="No autofocus, no delegatesFocus, no siblings">
   <template class="turn-into-shadow-tree">
     <button disabled>Non-focusable</button>
-    <button>Focusable</button>
+    <button class="focus-me">Focusable</button>
     <button disabled>Non-focusable</button>
   </template>
 </dialog>
@@ -31,10 +31,10 @@
 <dialog data-description="No autofocus, no delegatesFocus, sibling after">
   <template class="turn-into-shadow-tree">
     <button disabled>Non-focusable</button>
-    <button>Focusable</button>
+    <button class="focus-me">Focusable</button>
     <button disabled>Non-focusable</button>
   </template>
-  <button class="focus-me">Focusable</button>
+  <button>Focusable</button>
 </dialog>
 
 <dialog data-description="No autofocus, yes delegatesFocus, no siblings">
@@ -128,7 +128,7 @@
 <dialog data-description="Autofocus on shadow host, no delegatesFocus, no siblings">
   <template class="turn-into-shadow-tree autofocus">
     <button disabled>Non-focusable</button>
-    <button>Focusable</button>
+    <button class="focus-me">Focusable</button>
     <button disabled>Non-focusable</button>
   </template>
 </dialog>
@@ -145,10 +145,10 @@
 <dialog data-description="Autofocus on shadow host, no delegatesFocus, sibling after">
   <template class="turn-into-shadow-tree autofocus">
     <button disabled>Non-focusable</button>
-    <button>Focusable</button>
+    <button class="focus-me">Focusable</button>
     <button disabled>Non-focusable</button>
   </template>
-  <button class="focus-me">Focusable</button>
+  <button>Focusable</button>
 </dialog>
 
 <dialog data-description="Autofocus inside shadow tree, yes delegatesFocus, no siblings">
@@ -160,10 +160,10 @@
 </dialog>
 
 <dialog data-description="Autofocus inside shadow tree, yes delegatesFocus, sibling before">
-  <button class="focus-me">Focusable</button>
+  <button>Focusable</button>
   <template class="turn-into-shadow-tree delegates-focus">
     <button>Focusable</button>
-    <button autofocus>Focusable</button>
+    <button autofocus class="focus-me">Focusable</button>
     <button disabled>Non-focusable</button>
   </template>
 </dialog>
@@ -180,16 +180,16 @@
 <dialog data-description="Autofocus inside shadow tree, no delegatesFocus, no siblings">
   <template class="turn-into-shadow-tree">
     <button>Focusable</button>
-    <button autofocus>Focusable</button>
+    <button autofocus class="focus-me">Focusable</button>
     <button disabled>Non-focusable</button>
   </template>
 </dialog>
 
 <dialog data-description="Autofocus inside shadow tree, no delegatesFocus, sibling before">
-  <button class="focus-me">Focusable</button>
+  <button>Focusable</button>
   <template class="turn-into-shadow-tree">
     <button>Focusable</button>
-    <button autofocus>Focusable</button>
+    <button autofocus class="focus-me">Focusable</button>
     <button disabled>Non-focusable</button>
   </template>
 </dialog>
@@ -197,44 +197,54 @@
 <dialog data-description="Autofocus inside shadow tree, no delegatesFocus, sibling after">
   <template class="turn-into-shadow-tree">
     <button>Focusable</button>
-    <button autofocus>Focusable</button>
+    <button autofocus class="focus-me">Focusable</button>
     <button disabled>Non-focusable</button>
   </template>
-  <button class="focus-me">Focusable</button>
+  <button>Focusable</button>
 </dialog>
 
 <dialog data-description="Two shadow trees, both delegatesFocus, first tree doesn't have autofocus element, second does">
   <template class="turn-into-shadow-tree delegates-focus">
     <button disabled>Non-focusable</button>
-    <button class="focus-me">Focusable</button>
+    <button>Focusable</button>
     <button disabled>Non-focusable</button>
   </template>
   <template class="turn-into-shadow-tree delegates-focus">
-    <button autofocus>Focusable</button>
+    <button autofocus class="focus-me">Focusable</button>
   </template>
 </dialog>
 
 <dialog data-description="No autofocus, no delegatesFocus, slotted target">
   <template class="turn-into-shadow-tree">
-    <button>Focusable</button>
+    <button class="focus-me">Focusable</button>
     <slot></slot>
     <button>Focusable</button>
   </template>
-  <button class="focus-me">Focusable</button>
+  <button>Focusable</button>
 </dialog>
 
 <dialog data-description="Shadowroot on child, no autofocus, no delegatesFocus">
   <div>
     <template class="turn-into-shadow-tree">
-      <button>Focusable</button>
+      <button class="focus-me">Focusable</button>
     </template>
   </div>
-  <button class="focus-me">Focusable</button>
+  <button>Focusable</button>
 </dialog>
+
+<section id="dialog-in-shadow-tree">
+ <button class="focus-me">Focusable</button>
+ <template shadowrootmode="open">
+  <dialog data-description="slotted target outside shadow tree, dialog in shadow tree.">
+   <slot></slot>
+  </dialog>
+ </template>
+</section>
 
 <script>
 for (const template of document.querySelectorAll(".turn-into-shadow-tree")) {
   const div = document.createElement("div");
+  div.classList.add('host');
   div.attachShadow({ mode: "open", delegatesFocus: template.classList.contains("delegates-focus")  });
 
   if (template.classList.contains("autofocus")) {
@@ -258,9 +268,10 @@ for (const dialog of document.querySelectorAll("dialog")) {
       if (expectedFocusOutsideShadowTree) {
         assert_equals(document.activeElement, expectedFocusOutsideShadowTree);
       } else {
-        const shadowHost = dialog.querySelector("div");
-        const expectedFocusInsideShadowTree = shadowHost.shadowRoot.querySelector(".focus-me");
-        if (expectedFocusInsideShadowTree) {
+        // Loop through all shadow hosts in dialog to find the element to be focused.
+        const shadowHost = Array.from(dialog.querySelectorAll(".host")).find((shadowHost) => shadowHost.shadowRoot.querySelector(".focus-me"));
+        if (shadowHost) {
+          const expectedFocusInsideShadowTree = shadowHost.shadowRoot.querySelector(".focus-me");
           assert_equals(document.activeElement, shadowHost);
           assert_equals(shadowHost.shadowRoot.activeElement, expectedFocusInsideShadowTree);
         } else {
@@ -271,4 +282,17 @@ for (const dialog of document.querySelectorAll("dialog")) {
     }, `${method}: ${dialog.dataset.description}`);
   }
 }
+
+// Test when the dialog is inside the shadow tree.
+const host = document.getElementById("dialog-in-shadow-tree");
+const dialog = host.shadowRoot.querySelector("dialog");
+for (const method of ["show", "showModal"]) {
+  test(t => {
+    dialog[method]();
+    t.add_cleanup(() => dialog.close());
+
+    assert_equals(document.activeElement, host.querySelector(".focus-me"));
+  }, `${method}: ${dialog.dataset.description}`);
+}
+
 </script>

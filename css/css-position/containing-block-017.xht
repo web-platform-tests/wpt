@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Positioned Layout Test: Containing Block - absolutely positioned element versus nearest positioned ('position: relative') ancestor which is an inline parent</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="author" title="Alan Gresley" href="alan@css-class.com" />
+        <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact" />
+        <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+        <link rel="help" href="https://www.w3.org/TR/css-position-3/#def-cb" />
+        <link rel="match" href="reference/containing-block-017-ref.html" />
+
+        <meta name="flags" content="" />
+        <meta name="assert" content="When the nearest (closest within containment hierarchy) positioned ancestor of an absolutely positioned element is an inline-level element, then the bounding box that serves as containing block for such absolutely positioned element are the padding boxes of the first and the last inline boxes generated for such inline-level element." />
+        <style type="text/css">
+            div
+            {
+                border: solid black;
+                padding: 100px;
+            }
+
+            span#first-box, span#last-box
+            {
+                color: silver;
+            }
+
+            span.position
+            {
+                height: 30px; /* arbitrary height value */
+                position: absolute;
+                width: 30px; /* arbitrary width value */
+            }
+
+            span#tl-control
+            {
+                background-image: url("support/swatch-red.png");
+                background-position: top left;
+                background-repeat: no-repeat;
+                background-size: 35px 30px;
+                /* width + span#test's border-left-width == 35px */
+                padding-top: 50px;
+            }
+
+            span#br-control
+            {
+                background-image: url("support/swatch-red.png");
+                background-position: bottom right;
+                background-repeat: no-repeat;
+                background-size: 35px 30px;
+                padding-bottom: 50px;
+            }
+
+            span.top-left
+            {
+                background: green;
+                left: 0;
+                top: 0;
+            }
+
+            span.bottom-right
+            {
+                background: green;
+                bottom: 0;
+                right: 0;
+            }
+
+            span#test
+            {
+                border: 5px solid silver;
+                padding: 50px;
+                position: relative;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is <strong>no red</strong>.</p>
+        <div>
+          <span id="tl-control">
+            <span id="br-control">
+              <span id="test">
+                <span id="first-box">First inline</span>
+                <span class="bottom-right position"></span>
+                <span class="top-left position"></span>
+                <span id="last-box">Last inline</span>
+              </span>
+            </span>
+          </span>
+        </div>
+    </body>
+</html>

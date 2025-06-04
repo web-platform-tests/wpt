@@ -1,0 +1,64 @@
+<!doctype html>
+<title>pending scripts after document.write</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+window.t1 = async_test(
+    "document.open() with a pending parsing blocking script");
+window.t2 = async_test(
+    "document.open() with a pending defer script");
+window.iframeLoadEventFired1 = false;
+window.iframeLoadEventFired2 = false;
+
+// Wait for 2.5 seconds to ensure the pending scripts are loaded.
+// This is because iframe load event might not be fired unexpectedly.
+
+t1.step_timeout(
+  () => {
+    const iframe = document.querySelector("#parsing-blocking");
+
+    assert_equals(iframe.contentDocument.body.textContent,
+        "document.write body contents\n");
+
+    // Because Step 6 of the "Otherwise" case checks whether the parser has
+    // been aborted, the pending parsing-blocking script at the time of
+    // document.open() is not evaluated.
+    // https://html.spec.whatwg.org/C/#parsing-main-incdata
+    assert_array_equals(iframe.contentWindow.log, []);
+
+    assert_true(iframeLoadEventFired1, "iframe.onload fired");
+    t1.done();
+  },
+  2500);
+
+t2.step_timeout(
+  () => {
+    const iframe = document.querySelector("#defer");
+
+    assert_equals(iframe.contentDocument.body.textContent,
+        "document.write body contents\n");
+
+    // The defer script before document.open() is not evaluated (spec needed?)
+    // while the defer script added by document.write() is evaluated.
+    assert_array_equals(iframe.contentWindow.log, [
+      new URL('pending-script.js?defer2', location.href).href
+    ]);
+
+    assert_true(iframeLoadEventFired2, "iframe.onload fired");
+    t2.done();
+  },
+  2500);
+
+</script>
+<iframe id="parsing-blocking"
+    src="pending-parsing-blocking-script-iframe.html"
+    onload="iframeLoadEventFired1 = true;"
+    onerror="t1.unreached_func('Error loading iframe')()"
+></iframe>
+
+<iframe id="defer"
+    src="pending-defer-script-iframe.html"
+    onload="iframeLoadEventFired2 = true;"
+    onerror="t2.unreached_func('Error loading iframe')()"
+></iframe>

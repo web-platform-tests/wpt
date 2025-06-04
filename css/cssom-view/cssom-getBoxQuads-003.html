@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<title>CSSOM View - getBoxQuads() returns correct values for different boxes</title>
+<link rel="help" href="https://drafts.csswg.org/cssom-view/#the-geometryutils-interface">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1746794">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+ <template id="wc-test-template">
+    <div style="width: 100%; height: 100%; position: absolute">
+        <div style="z-index: 1; position: absolute; left: 50px; top: 5px; width: 100px; height: 50px; rotate: -45deg; background: lightpink;">WC-test</div>
+    </div>
+</template>
+<div id="container" style="position: absolute; left: 100px; top: 400px; opacity: 0.4; overflow: visible;">
+    ABC
+    <button style="position: absolute; width: 41px; height: 37px; left: 50px; top: 5px; transform: perspective(50px) rotateX(45deg) ;">Test 2</button>
+    <button>Test</button>
+    <button style="position: absolute; left: 50px; top: 50px; transform: perspective(200px) rotateX(45deg) ;">Test 3</button>
+    <div id="example-element" class="transition-all layer" style="transform-style: flat; background: #623e3f;
+        border-radius: .75rem;
+        color: #fff;
+        transform: perspective(200px) rotateY(30deg);
+        position: relative;
+        perspective: 50px;top: 400px;left: 50px;">
+        <p>Parent</p>
+        <div style="background-color: #ffba08;
+        border-radius: .2rem;
+        color: #000;
+        margin: 1rem;
+        padding: .2rem;
+        transform: rotate3d(1, 1, 1, 45deg);"><code>rotate3d(1, 1, 1, 45deg)</code></div>
+    </div>
+
+    <wc-test style="position: absolute; left: 150px;"></wc-test>
+    <button style="position: absolute; left: 350px; top: 60px; rotate: 45deg;">Test Rotated</button>
+    <button
+        style="position: absolute; left: 350px; top: 360px; rotate: 70deg; width: 200px; height: 100px; padding: 40px; margin: 20px;">Test
+        Rotated</button>
+    <button style="position: absolute; left: 50px; top: 140px; width: 200px; height: 100px; padding: 20px;">Test
+        Padding</button>
+    <button
+        style="position: absolute; left: 50px; top: 260px; width: 200px; height: 100px; padding: 20px; border: 15px green solid;">Test
+        Padding 6 Border</button>
+
+    <div
+        style="position: absolute; left: 500px; top: 40px; width: 200px; height: 100px; background-color: lightgreen; rotate: -30deg;">
+        <div
+            style="position: absolute; left: 20px; top: 180px; width: 160px; height: 80px; background-color: lightpink; rotate: -30deg; transform: skewX(30deg) skewY(10deg) scaleY(1.4);">
+            <button style="position: absolute; left: 120px; top: 140px; padding: 10px; margin: 10px;">Inside of
+                2 Transformed divs</button>
+        </div>
+    </div>
+
+    <svg width="300" height="130" xmlns="http://www.w3.org/2000/svg"
+        style="position: absolute; left: 50px; top: 540px;">
+        <rect width="200" height="100" x="10" y="10" rx="20" ry="20" fill="blue" />
+    </svg>
+
+    <svg width="300" height="130" xmlns="http://www.w3.org/2000/svg"
+        style="position: absolute; left: 50px; top: 940px; rotate: 45deg;">
+        <rect width="200" height="100" x="30" y="10" rx="20" ry="20" fill="blue" />
+    </svg>
+
+    <div
+        style="position: absolute; left: 450px; top: 750px; width: 400px; height: 50px; rotate: 45deg; background:lightgray; display: grid; grid-template-columns: 1fr 1fr;">
+        <button>MathML</button>
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <msup>
+                <mrow>
+                    <mo>(</mo>
+                    <mfrac>
+                        <mrow>
+                            <mn>1</mn>
+                            <mo>+</mo>
+                            <mfrac>
+                                <mn>2</mn>
+                                <mn>3</mn>
+                            </mfrac>
+                        </mrow>
+                        <mn>4</mn>
+                    </mfrac>
+                    <mo>)</mo>
+                </mrow>
+                <mn>5</mn>
+            </msup>
+        </math>
+    </div>
+
+    <div
+        style="position: absolute; left: 50px; top: 1240px; width: 400px; height: 100px; rotate: 45deg; background:yellow; display: grid; grid-template-columns: 1fr 1fr;">
+        <button>Btn</button>
+        <svg width="300" height="130" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="100" x="30" y="10" rx="20" ry="20" fill="blue" />
+        </svg>
+    </div>
+    <div
+        style="position: absolute; left: 50px; top: 1640px; width: 400px; height: 100px; rotate: 75deg; background:yellow; display: grid; grid-template-columns: 1fr 1fr;">
+        <div
+            style="position: relative; left: 50px; top: 100px; width: 400px; height: 100px; rotate: 45deg; background:yellow; display: grid; grid-template-columns: 1fr 1fr;">
+            <button>AaAAAAA</button>
+            <svg width="300" height="130" xmlns="http://www.w3.org/2000/svg">
+                <rect width="200" height="100" x="30" y="10" rx="20" ry="20" fill="blue" />
+            </svg>
+        </div>
+    </div>
+</div>
+<script>
+//A webcomponent for test of shadowdom support
+let wcContent = null;
+customElements.define(
+    "wc-test",
+    class WcTest extends HTMLElement {
+        constructor() {
+            super();
+            const shadowRoot = this.attachShadow({ mode: "open" });
+            const template = (
+                document.getElementById("wc-test-template")
+            );
+            wcContent = template.content.cloneNode(true).children[0];
+            shadowRoot.appendChild(wcContent);
+        }
+    }
+);
+// End of webcomponent
+</script>
+<script>
+  test(function() {
+    let arr = [...document.querySelectorAll("#container > *")];
+    let quads = arr.map(x => x.getBoxQuads()[0]);
+
+    assert_approx_equals(parseInt(quads[0].p1.x), 154, 2, `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[0].p1.y), 413, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[0].p2.x), 186, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[0].p2.y), 413, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[0].p3.x), 198, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[0].p3.y), 441, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[0].p4.x), 142, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[0].p4.y), 441, 2, `getBoxQuads.p4.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[1].p1.x), 136, 2, `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[1].p1.y), 400, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[1].p2.x), 172, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[1].p2.y), 400, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[1].p3.x), 172, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[1].p3.y), 422, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[1].p4.x), 136, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[1].p4.y), 422, 2, `getBoxQuads.p4.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[2].p1.x), 150, 2, `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[2].p1.y), 453, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[2].p2.x), 196, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[2].p2.y), 453, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[2].p3.x), 198, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[2].p3.y), 469, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[2].p4.x), 149, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[2].p4.y), 469, 2, `getBoxQuads.p4.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[3].p1.x), 131, 2, `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[3].p1.y), 827, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[3].p2.x), 327, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[3].p2.y), 844, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[3].p3.x), 327, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[3].p3.y), 890, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[3].p4.x), 131, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[3].p4.y), 906, 2, `getBoxQuads.p4.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[4].p1.x), 250, 2, `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[4].p1.y), 512, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[4].p2.x), 250, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[4].p2.y), 512, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[4].p3.x), 250, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[4].p3.y), 512, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[4].p4.x), 250, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[4].p4.y), 512, 2, `getBoxQuads.p4.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[5].p1.x), 471, 2, `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[5].p1.y), 445, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[5].p2.x), 512, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[5].p2.y), 485, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[5].p3.x), 485, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[5].p3.y), 512, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[5].p4.x), 444, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[5].p4.y), 472, 2, `getBoxQuads.p4.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[6].p1.x), 582, 2, `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[6].p1.y), 718, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[6].p2.x), 651, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[6].p2.y), 906, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[6].p3.x), 557, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[6].p3.y), 941, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[6].p4.x), 488, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[6].p4.y), 753, 2, `getBoxQuads.p4.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[7].p1.x), 150, 2, `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[7].p1.y), 540, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[7].p2.x), 350, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[7].p2.y), 540, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[7].p3.x), 350, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[7].p3.y), 640, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[7].p4.x), 150, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[7].p4.y), 640, 2, `getBoxQuads.p4.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[8].p1.x), 150, 2, `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[8].p1.y), 660, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[8].p2.x), 350, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[8].p2.y), 660, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[8].p3.x), 350, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[8].p3.y), 760, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[8].p4.x), 150, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[8].p4.y), 760, 2, `getBoxQuads.p4.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[9].p1.x), 588, 2, `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[9].p1.y), 496, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[9].p2.x), 761, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[9].p2.y), 396, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[9].p3.x), 811, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[9].p3.y), 483, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[9].p4.x), 638, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[9].p4.y), 583, 2, `getBoxQuads.p4.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[10].p1.x), 150, 2,  `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[10].p1.y), 940, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[10].p2.x), 450, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[10].p2.y), 940, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[10].p3.x), 450, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[10].p3.y), 1070, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[10].p4.x), 150, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[10].p4.y), 1070, 2, `getBoxQuads.p4.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[11].p1.x), 239, 2, `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[11].p1.y), 1252, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[11].p2.x), 452, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[11].p2.y), 1465, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[11].p3.x), 360, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[11].p3.y), 1557, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[11].p4.x), 147, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[11].p4.y), 1344, 2, `getBoxQuads.p4.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[12].p1.x), 626, 2, `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[12].p1.y), 1015, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[12].p2.x), 909, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[12].p2.y), 1298, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[12].p3.x), 873, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[12].p3.y), 1334, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[12].p4.x), 590, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[12].p4.y), 1051, 2, `getBoxQuads.p4.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[13].p1.x), 243, 2, `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[13].p1.y), 1513, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[13].p2.x), 526, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[13].p2.y), 1796, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[13].p3.x), 456, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[13].p3.y), 1866, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[13].p4.x), 173, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[13].p4.y), 1583, 2, `getBoxQuads.p4.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[14].p1.x), 346, 2, `getBoxQuads.p1.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[14].p1.y), 1883, 2, `getBoxQuads.p1.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[14].p2.x), 450, 2, `getBoxQuads.p2.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[14].p2.y), 2270, 2, `getBoxQuads.p2.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[14].p3.x), 353, 2, `getBoxQuads.p3.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[14].p3.y), 2296, 2, `getBoxQuads.p3.y should be the correct value`);
+    assert_approx_equals(parseInt(quads[14].p4.x), 249, 2, `getBoxQuads.p4.x should be the correct value`);
+    assert_approx_equals(parseInt(quads[14].p4.y), 1909, 2, `getBoxQuads.p4.y should be the correct value`);
+
+
+
+    /* build assert cases */
+    /*
+    let t = '';
+    for (let i=0;i<arr.length;i++) {
+      let e=quads[i]
+
+      t += 'assert_approx_equals(parseInt(quads['+i+'].p1.x), ' + parseInt(e.p1.x)+', 2, `getBoxQuads.p1.x should be the correct value`);\n';
+      t += 'assert_approx_equals(parseInt(quads['+i+'].p1.y), ' + parseInt(e.p1.y)+', 2, `getBoxQuads.p1.y should be the correct value`);\n';
+      t += 'assert_approx_equals(parseInt(quads['+i+'].p2.x), ' + parseInt(e.p2.x)+', 2, `getBoxQuads.p2.x should be the correct value`);\n';
+      t += 'assert_approx_equals(parseInt(quads['+i+'].p2.y), ' + parseInt(e.p2.y)+', 2, `getBoxQuads.p2.y should be the correct value`);\n';
+      t += 'assert_approx_equals(parseInt(quads['+i+'].p3.x), ' + parseInt(e.p3.x)+', 2, `getBoxQuads.p3.x should be the correct value`);\n';
+      t += 'assert_approx_equals(parseInt(quads['+i+'].p3.y), ' + parseInt(e.p3.y)+', 2, `getBoxQuads.p3.y should be the correct value`);\n';
+      t += 'assert_approx_equals(parseInt(quads['+i+'].p4.x), ' + parseInt(e.p4.x)+', 2, `getBoxQuads.p4.x should be the correct value`);\n';
+      t += 'assert_approx_equals(parseInt(quads['+i+'].p4.y), ' + parseInt(e.p4.y)+', 2, `getBoxQuads.p4.y should be the correct value`);\n';
+    }
+    debugger;
+    */
+  });
+</script>

@@ -2,6 +2,9 @@ features:
 - name: abs-sign
   files:
   - signs-abs-*
+- name: calc-constants
+  files:
+  - calc-infinity-nan-*
 - name: cap
   files:
   - cap-*

@@ -59,7 +59,7 @@ var testFuncs = {
                     t.unreached_func('Expected this call to reject'),
                     () => {
                         try {
-                            assert_equals(taskRan, tru, 'The promise should be rejected asynchronously')
+                            assert_equals(taskRan, true, 'The promise should be rejected asynchronously')
                             resolve(t);
                         } catch (err) {
                             reject(err)

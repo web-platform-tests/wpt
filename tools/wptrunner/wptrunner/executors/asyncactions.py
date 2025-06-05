@@ -24,8 +24,6 @@ def get_browsing_context_id(context):
     raise ValueError("Unexpected context type: %s" % context)
 
 class BidiBluetoothAction:
-    name: str = "bidi.bluetooth"
-
     def __init__(self, logger, protocol):
         do_delayed_imports()
         self.logger = logger

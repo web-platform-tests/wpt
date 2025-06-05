@@ -314,8 +314,12 @@ The module provides access to [Web Bluetooth](https://webbluetoothcg.github.io/w
 .. js:autofunction:: test_driver.bidi.bluetooth.simulate_preconnected_peripheral
 .. js:autofunction:: test_driver.bidi.bluetooth.simulate_gatt_connection_response
 .. js:autofunction:: test_driver.bidi.bluetooth.simulate_gatt_disconnection
-.. js:autofunction:: test_driver.bidi.bluetooth.request_device_prompt_updated
-.. js:autofunction:: test_driver.bidi.bluetooth.gatt_connection_attempted
+.. js:autofunction:: test_driver.bidi.bluetooth.request_device_prompt_updated.subscribe
+.. js:autofunction:: test_driver.bidi.bluetooth.request_device_prompt_updated.on
+.. js:autofunction:: test_driver.bidi.bluetooth.request_device_prompt_updated.once
+.. js:autofunction:: test_driver.bidi.bluetooth.gatt_connection_attempted.subscribe
+.. js:autofunction:: test_driver.bidi.bluetooth.gatt_connection_attempted.on
+.. js:autofunction:: test_driver.bidi.bluetooth.gatt_connection_attempted.once
 ```
 
 ### Emulation ###

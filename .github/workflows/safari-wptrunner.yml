@@ -118,7 +118,7 @@ jobs:
       - name: Publish results
         uses: actions/upload-artifact@v4.1.0
         with:
-          name: ${{ inputs.artifact-name }}-${{ matrix.current-chunk }}
+          name: ${{ inputs.artifact-name }}${{ matrix.total-chunks > 1 && join(['-', matrix.current-chunk]) || ''}}
           path: |
             ${{ runner.temp }}/wpt_report_*.json
             ${{ runner.temp }}/wpt_screenshot_*.txt
@@ -127,7 +127,7 @@ jobs:
         if: inputs.safaridriver-diagnose
         uses: actions/upload-artifact@v4.1.0
         with:
-          name: ${{ inputs.artifact-name }}-safaridriver-logs-${{ matrix.current-chunk }}
+          name: ${{ inputs.artifact-name }}-safaridriver-logs${{ matrix.total-chunks > 1 && join(['-', matrix.current-chunk]) || ''}}
           path: ~/Library/Logs/com.apple.WebDriver/
           if-no-files-found: warn
       - name: Disable safaridriver diagnostics

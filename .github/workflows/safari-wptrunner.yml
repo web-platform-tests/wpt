@@ -145,4 +145,4 @@ jobs:
     needs: safari-results
     uses: ./.github/workflows/wpt_fyi_notify.yml
     with:
-      artifact-name: "${{ inputs.artifact-name }}-*"
+      artifact-name: "${{ inputs.artifact-name }}*"

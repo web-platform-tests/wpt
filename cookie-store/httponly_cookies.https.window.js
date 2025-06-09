@@ -2,7 +2,7 @@
 
 'use strict';
 
-cookie_test(async t => {
+promise_test(async t => {
   let eventPromise = observeNextCookieChangeEvent();
   await setCookieStringHttp('HTTPONLY-cookie=value; path=/; httponly');
   assert_equals(
@@ -29,6 +29,9 @@ cookie_test(async t => {
   eventPromise = observeNextCookieChangeEvent();
   await setCookieStringHttp(
       'HTTPONLY-cookie=DELETED; path=/; max-age=0; httponly');
+  t.add_cleanup(async () => {
+    await setCookieStringHttp(`HTTPONLY-cookie=DELETED; path=/; httponly; Max-Age=0`);
+  });
   assert_equals(
       await getCookieString(),
       undefined,
@@ -41,6 +44,9 @@ cookie_test(async t => {
   // HTTPONLY cookie changes should not have been observed; perform
   // a dummy change to verify that nothing else was queued up.
   await cookieStore.set('TEST', 'dummy');
+  t.add_cleanup(async () => {
+    await cookieStore.delete('TEST');
+  });
   await verifyCookieChangeEvent(
     eventPromise, {changed: [{name: 'TEST', value: 'dummy'}]},
     'HttpOnly cookie deletion was not observed');
@@ -67,3 +73,36 @@ cookie_test(async t => {
     'cookie1=value1; cookie2=value2; cookie3=value3',
     'httpOnly is not an option for CookieStore.set()');
 }, 'HttpOnly cookies can not be set by CookieStore');
+
+promise_test(async t => {
+  await setCookieStringHttp('HTTPONLY-cookie=value; path=/; httponly');
+  t.add_cleanup(async () => {
+    await setCookieStringHttp(`HTTPONLY-cookie=DELETED; path=/; httponly; Max-Age=0`);
+  });
+  assert_equals(
+      await getCookieString(),
+      undefined,
+      'HttpOnly cookie we wrote using HTTP in cookie jar' +
+        ' is invisible to script');
+  assert_equals(
+      await getCookieStringHttp(),
+      'HTTPONLY-cookie=value',
+    'HttpOnly cookie we wrote using HTTP in HTTP cookie jar');
+
+  try {
+    await cookieStore.set('HTTPONLY-cookie', 'dummy');
+  } catch(e) {}
+
+  assert_equals(
+      await getCookieString(),
+      undefined,
+      'HttpOnly cookie is not overwritten');
+
+  try {
+    await cookieStore.delete('HTTPONLY-cookie');
+  } catch(e) {}
+
+  assert_equals(await getCookieString(), undefined, 'HttpOnly cookie is not overwritten');
+
+  assert_equals(await getCookieStringHttp(), 'HTTPONLY-cookie=value', 'HttpOnly cookie is not deleted');
+}, 'HttpOnly cookies are not deleted/overwritten');

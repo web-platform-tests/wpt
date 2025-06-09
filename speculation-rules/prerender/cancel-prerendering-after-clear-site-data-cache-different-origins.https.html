@@ -1,27 +1,26 @@
 <!DOCTYPE html>
 <title>clear-site-data-cache cancels prerenders</title>
 <meta name="timeout" content="long">
-<body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/speculation-rules/resources/utils.js"></script>
-<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"></script>
+<script src="../resources/utils.js"></script>
+<script src="resources/utils.js"></script>
 <script>
 setup(() => assertSpeculationRulesIsSupported());
 
 promise_test(async t => {
 
-  const rcHelper = new RemoteContextHelper();
+  const rcHelper = new PrerenderingRemoteContextHelper();
   const referrerRC = await rcHelper.addWindow({
     origin: 'HTTPS_ORIGIN'
   }, {
     features: 'noopener'
   });
-  const prerenderedRC = await addPrerenderRC(referrerRC, {
+  const prerenderedRC = await referrerRC.addPrerender({
     origin: 'HTTPS_REMOTE_ORIGIN',
     headers: [
       ['Supports-Loading-Mode', 'credentialed-prerender']
@@ -40,16 +39,13 @@ promise_test(async t => {
       once: true
     });
   });
-  let cache_helper = "cache_helper=" + self.crypto.randomUUID() + "&";
-  window.open(differentOrigin + "/../../clear-site-data/support/clear-site-data-cache.py?" + cache_helper + "response=single_html&cache&clear_first=all");
+  window.open(differentOrigin + "/../../clear-site-data/support/clear-site-data-prerenderCache.py");
   await gotMessage;
 
   // Because Clear-Site-Data response header is sent on a different origin than
   // the initiator origin, the existing prerender is not expected to be
   // canceled.
   // And the prerender is expected to be activated.
-  await activatePrerenderRC(referrerRC, prerenderedRC);
+  await referrerRC.navigateExpectingPrerenderingActivation(prerenderedRC);
 });
 </script>
-</body>
-</html>

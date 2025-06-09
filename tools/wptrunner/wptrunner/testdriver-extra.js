@@ -160,7 +160,7 @@
         let cmd_id;
         const action_msg = {type: "action",
                             action: name,
-                            ...params};
+                            params};
         if (is_test_context()) {
             cmd_id = window.__wptrunner_message_queue.push(action_msg);
         } else {
@@ -260,6 +260,20 @@
         return () => event_target.removeEventListener(
                     'bluetooth.requestDevicePromptUpdated', on_event);
     };
+
+    window.test_driver_internal.bidi.emulation.set_geolocation_override =
+        function (params) {
+            if ('coordinates' in params && 'error' in params) {
+                throw new Error(
+                    "`coordinates` and `error` are mutually exclusive in set_geolocation_override");
+            }
+
+            return create_action("bidi.emulation.set_geolocation_override", {
+                // Default to the current window.
+                contexts: [window],
+                ...(params ?? {})
+            });
+        }
 
     window.test_driver_internal.bidi.log.entry_added.subscribe =
         function (params) {

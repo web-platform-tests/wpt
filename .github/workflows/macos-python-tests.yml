@@ -30,7 +30,7 @@ jobs:
         # See https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#macos
         run: |
           sudo mkdir -p /Users/runner/hostedtoolcache
-          sudo chown runner-user:runner-group /Users/runner/hostedtoolcache
+          sudo chown "$USER:$USER" /Users/runner/hostedtoolcache
       - uses: actions/setup-python@v5.0.0
         with:
           python-version: ${{ matrix.python-version }}

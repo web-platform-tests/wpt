@@ -59,3 +59,27 @@ jobs:
         --manifest MANIFEST.json
         --metadata infrastructure/metadata/
         --include infrastructure/
+
+  tools_unittest_mac:
+    name: "tools/ unittests: macOS"
+    needs: decision
+    if: contains(fromJSON(needs.decision.outputs.test_jobs), 'tools_unittest')
+    uses: ./.github/workflows/macos-python-tests.yml
+    with:
+      tox-directory: tools/
+
+  wptrunner_unittest_mac:
+    name: "tools/wptrunner/ unittests: macOS"
+    needs: decision
+    if: contains(fromJSON(needs.decision.outputs.test_jobs), 'wptrunner_unittest')
+    uses: ./.github/workflows/macos-python-tests.yml
+    with:
+      tox-directory: tools/wptrunner/
+
+  wpt_integration_mac:
+    name: "tools/wpt/ tests: macOS"
+    needs: decision
+    if: contains(fromJSON(needs.decision.outputs.test_jobs), 'wpt_integration')
+    uses: ./.github/workflows/macos-python-tests.yml
+    with:
+      tox-directory: tools/wpt/

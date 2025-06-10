@@ -1,0 +1,41 @@
+name: Run tox on macOS
+on:
+  workflow_call:
+    inputs:
+      tox-directory:
+        description: Directory to invoke tox in
+        required: true
+        type: string
+
+# We never interact with the GitHub API, thus we can simply disable all
+# permissions the GitHub token would have.
+permissions: {}
+
+jobs:
+  results:
+    name: Python ${{ matrix.python-version }}
+    runs-on:
+      - self-hosted
+      - webkit-ews
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - '3.8'
+          - '3.13'
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4.1.0
+      - name: Create hostedtoolcache for actions/setup-python
+        # See https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#macos
+        run: |
+          sudo mkdir -p /Users/runner/hostedtoolcache
+          sudo chown runner-user:runner-group /Users/runner/hostedtoolcache
+      - uses: actions/setup-python@v5.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: |
+          pip install tox
+      - working-directory: ${{ inputs.tox-directory }}
+        run: |-
+          tox -f "py$( echo ${{ matrix.python-version }} | sed 's/\.//' )"

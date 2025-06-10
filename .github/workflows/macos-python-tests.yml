@@ -29,13 +29,16 @@ jobs:
       - name: Create hostedtoolcache for actions/setup-python
         # See https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#macos
         run: |
+          set -eux
           sudo mkdir -p /Users/runner/hostedtoolcache
           sudo chown "$USER:$( id -ng )" /Users/runner/hostedtoolcache
       - uses: actions/setup-python@v5.0.0
         with:
           python-version: ${{ matrix.python-version }}
       - run: |
+          set -eux
           pip install tox
       - working-directory: ${{ inputs.tox-directory }}
-        run: |-
+        run: |
+          set -eux
           tox -f "py$( echo ${{ matrix.python-version }} | sed 's/\.//' )"

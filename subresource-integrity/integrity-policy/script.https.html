@@ -138,7 +138,7 @@
       cross_origin: true,
       integrity: "",
       policy_violation: false,
-      block: false,
+      block: true,
       endpoints: false,
       expected: {blocked: "", ran: false},
     },
@@ -148,7 +148,7 @@
       cross_origin: false,
       integrity: "",
       policy_violation: false,
-      block: false,
+      block: true,
       endpoints: false,
       expected: {blocked: "", ran: false},
     }
@@ -198,7 +198,13 @@
         const report_observed_promise = new Promise(r => {
           (new ReportingObserver((reports, observer) => {
             reports.forEach(report => {
-              if (report.body.blockedURL.endsWith(test_case.url)) {
+              // Match the tested URL against the stripped one:
+              // https://www.w3.org/TR/reporting-1/#strip-url-for-use-in-reports
+              // 1. If url’s scheme is not an HTTP(S) scheme, then return url’s scheme.
+              const test_url = test_case.url.startsWith("http") ?
+                test_case.url :
+                test_case.url.split(":")[0];
+              if (report.body.blockedURL.endsWith(test_url)) {
                 r(report.body);
                 observer.disconnect();
               }

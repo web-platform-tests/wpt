@@ -38,7 +38,7 @@
       cross_origin: true,
       integrity: "",
       policy_violation: true,
-      block: true,
+      add_blocking_header: true,
       endpoints: true,
       expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false},
     },
@@ -48,7 +48,7 @@
       cross_origin: true,
       integrity: "foobar-AAAAAAAAAAAAAAAAAAAa",
       policy_violation: true,
-      block: true,
+      add_blocking_header: true,
       endpoints: true,
       expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false},
     },
@@ -58,7 +58,7 @@
       cross_origin: true,
       integrity: "",
       policy_violation: true,
-      block: false,
+      add_blocking_header: false,
       endpoints: true,
       expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: true},
     },
@@ -68,7 +68,7 @@
       cross_origin: false,
       integrity: "sha384-tqyFpeo21WFM8HDeUtLqH20GUq/q3D1R6mqTzW3RtyTZ3dAYZJhC1wUcnkgOE2ak",
       policy_violation: true,
-      block: true,
+      add_blocking_header: true,
       endpoints: true,
       expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false},
     },
@@ -78,7 +78,7 @@
       cross_origin: false,
       integrity: "sha384-tqyFpeo21WFM8HDeUtLqH20GUq/q3D1R6mqTzW3RtyTZ3dAYZJhC1wUcnkgOE2ak",
       policy_violation: true,
-      block: true,
+      add_blocking_header: true,
       endpoints: false,
       expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false},
     },
@@ -88,7 +88,7 @@
       cross_origin: true,
       integrity: "sha384-tqyFpeo21WFM8HDeUtLqH20GUq/q3D1R6mqTzW3RtyTZ3dAYZJhC1wUcnkgOE2ak",
       policy_violation: false,
-      block: true,
+      add_blocking_header: true,
       endpoints: true,
       expected: {blocked: "", ran: true},
     },
@@ -98,7 +98,7 @@
       cross_origin: true,
       integrity: "",
       policy_violation: false,
-      block: true,
+      add_blocking_header: true,
       endpoints: true,
       expected: {blocked: "", ran: true},
     },
@@ -108,7 +108,7 @@
       cross_origin: false,
       integrity: "",
       policy_violation: false,
-      block: true,
+      add_blocking_header: true,
       endpoints: true,
       expected: {blocked: "", ran: true},
     },
@@ -118,7 +118,7 @@
       cross_origin: true,
       integrity: "",
       policy_violation: false,
-      block: true,
+      add_blocking_header: true,
       endpoints: true,
       expected: {blocked: "", ran: true},
     },
@@ -128,7 +128,7 @@
       cross_origin: false,
       integrity: "",
       policy_violation: false,
-      block: true,
+      add_blocking_header: true,
       endpoints: true,
       expected: {blocked: "", ran: true},
     },
@@ -138,7 +138,7 @@
       cross_origin: true,
       integrity: "",
       policy_violation: false,
-      block: true,
+      add_blocking_header: true,
       endpoints: false,
       expected: {blocked: "", ran: false},
     },
@@ -148,7 +148,7 @@
       cross_origin: false,
       integrity: "",
       policy_violation: false,
-      block: true,
+      add_blocking_header: true,
       endpoints: false,
       expected: {blocked: "", ran: false},
     }
@@ -171,7 +171,7 @@
       const reporting_uuid_3 = token();
       const reporting_endpoint = `${ORIGIN}/reporting/resources/report.py`;
       let header = "";
-      if (test_case.block) {
+      if (test_case.add_blocking_header) {
         header +=
           `header(Integrity-Policy,blocked-destinations=\\(script\\)\\, endpoints=\\(integrity-endpoint-1 integrity-endpoint-2\\))`;
       }
@@ -245,14 +245,14 @@
         assert_equals(result.body.blockedURL, test_case.expected.blocked);
         assert_true(result.body.documentURL.endsWith(iframe_url));
         assert_equals(result.body.destination, "script");
-        assert_equals(result.body.reportOnly, !test_case.block);
+        assert_equals(result.body.reportOnly, !test_case.add_blocking_header);
       } else {
         assert_equals(result.body, null, "No policy violation report should be observed");
       }
       if (test_case.endpoints && test_case.policy_violation) {
-        if (test_case.block) {
-          await check_report(reporting_endpoint, reporting_uuid_1, iframe_url, test_case.url, !test_case.block);
-          await check_report(reporting_endpoint, reporting_uuid_2, iframe_url, test_case.url, !test_case.block);
+        if (test_case.add_blocking_header) {
+          await check_report(reporting_endpoint, reporting_uuid_1, iframe_url, test_case.url, !test_case.add_blocking_header);
+          await check_report(reporting_endpoint, reporting_uuid_2, iframe_url, test_case.url, !test_case.add_blocking_header);
         }
         await check_report(reporting_endpoint, reporting_uuid_3, iframe_url, test_case.url, true);
       }

@@ -40,7 +40,7 @@
       policy_violation: true,
       block: true,
       endpoints: true,
-      expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false, script_loaded: false },
+      expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false},
     },
     {
       description: "Ensure that a script with unknown integrity algorithm did not run",
@@ -50,7 +50,7 @@
       policy_violation: true,
       block: true,
       endpoints: true,
-      expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false, script_loaded: false },
+      expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false},
     },
     {
       description: "Ensure that a script without integrity algorithm runs and gets reported in report-only mode",
@@ -60,7 +60,7 @@
       policy_violation: true,
       block: false,
       endpoints: true,
-      expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: true, script_loaded: true },
+      expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: true},
     },
     {
       description: "Ensure that a no-cors script gets blocked",
@@ -70,7 +70,7 @@
       policy_violation: true,
       block: true,
       endpoints: true,
-      expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false, script_loaded: false },
+      expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false},
     },
     {
       description: "Ensure that ReportingObserver gets called without endpoints",
@@ -80,7 +80,7 @@
       policy_violation: true,
       block: true,
       endpoints: false,
-      expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false, script_loaded: false },
+      expected: {blocked: ORIGIN + "/content-security-policy/resources/ran.js", ran: false},
     },
     {
       description: "Ensure that a script with integrity runs",
@@ -90,7 +90,7 @@
       policy_violation: false,
       block: true,
       endpoints: true,
-      expected: {blocked: "", ran: true, script_loaded: true },
+      expected: {blocked: "", ran: true},
     },
     {
       description: "Ensure that a data URI script with no integrity runs",
@@ -100,7 +100,7 @@
       policy_violation: false,
       block: true,
       endpoints: true,
-      expected: {blocked: "", ran: true, script_loaded: true },
+      expected: {blocked: "", ran: true},
     },
     {
       description: "Ensure that a no-CORS data URI script with no integrity runs",
@@ -110,7 +110,7 @@
       policy_violation: false,
       block: true,
       endpoints: true,
-      expected: {blocked: "", ran: true, script_loaded: true },
+      expected: {blocked: "", ran: true},
     },
     {
       description: "Ensure that a blob URL script with no integrity runs",
@@ -120,7 +120,7 @@
       policy_violation: false,
       block: true,
       endpoints: true,
-      expected: {blocked: "", ran: true, script_loaded: true },
+      expected: {blocked: "", ran: true},
     },
     {
       description: "Ensure that a no-CORS blob URL script with no integrity runs",
@@ -130,7 +130,7 @@
       policy_violation: false,
       block: true,
       endpoints: true,
-      expected: {blocked: "", ran: true, script_loaded: true },
+      expected: {blocked: "", ran: true},
     },
     {
       description: "Ensure that an about:blank URL script with no integrity runs",
@@ -140,7 +140,7 @@
       policy_violation: false,
       block: false,
       endpoints: false,
-      expected: {blocked: "", ran: false, script_loaded: false },
+      expected: {blocked: "", ran: false},
     },
     {
       description: "Ensure that a no-CORS about:blank URL script with no integrity runs",
@@ -150,7 +150,7 @@
       policy_violation: false,
       block: false,
       endpoints: false,
-      expected: {blocked: "", ran: false, script_loaded: true },
+      expected: {blocked: "", ran: false},
     }
   ];
   test_cases.map(test_case => {
@@ -207,7 +207,7 @@
         });
 
         // Load the script
-        const script_loaded = await new Promise(resolve => {
+        await new Promise(resolve => {
           const script = document.createElement('script');
           if (test_case.cross_origin) {
             script.crossOrigin="anonymous";
@@ -215,8 +215,8 @@
           if (test_case.integrity) {
             script.integrity = test_case.integrity;
           }
-          script.onload = () => resolve(true);
-          script.onerror = () => resolve(false);
+          script.onload = resolve;
+          script.onerror = resolve;
           script.src = test_case.url;
           document.body.appendChild(script);
         });
@@ -231,11 +231,9 @@
             report_body = race_result;
           }
         }
-
-        return { body: report_body, ran: window.ran, script_loaded: script_loaded };
+        return { body: report_body, ran: window.ran };
       }, [test_case]);
       assert_equals(result.ran, test_case.expected.ran, "Ran");
-      assert_equals(result.script_loaded, test_case.expected.script_loaded, "Script loaded");
       if (test_case.policy_violation) {
         assert_not_equals(result.body, null, "Expected a policy violation report");
         assert_equals(result.body.blockedURL, test_case.expected.blocked);

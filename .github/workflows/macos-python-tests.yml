@@ -36,10 +36,12 @@ jobs:
       - uses: actions/setup-python@v5.0.0
         with:
           python-version: ${{ matrix.python-version }}
-      - run: |
+      - name: Run pip install tox
+        run: |
           set -eux
           pip install tox
-      - working-directory: ${{ inputs.tox-directory }}
+      - name: Run tox
+        working-directory: ${{ inputs.tox-directory }}
         run: |
           set -eux
           tox -f "py$( echo ${{ matrix.python-version }} | sed 's/\.//' )"

@@ -63,7 +63,7 @@ jobs:
           set -eux
           tox -f "py$( echo ${{ matrix.python-version }} | sed 's/\.//' )"
       - name: Cleanup hosts
-        if: input.setup-wpt-hosts && always()
+        if: inputs.setup-wpt-hosts && always()
         run: |-
           set -ux
           sudo sed -i '' '/^# Start web-platform-tests hosts$/,/^# End web-platform-tests hosts$/d' /etc/hosts

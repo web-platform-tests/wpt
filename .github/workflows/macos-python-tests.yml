@@ -6,6 +6,13 @@ on:
         description: Directory to invoke tox in
         required: true
         type: string
+      fetch-depth:
+        required: false
+        type: number
+      setup-wpt-hosts:
+        description: Configure /etc/hosts with WPT hosts
+        required: false
+        type: boolean
 
 # We never interact with the GitHub API, thus we can simply disable all
 # permissions the GitHub token would have.
@@ -30,6 +37,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
+        with:
+          fetch-depth: ${{ inputs.fetch-depth || 1 }}
       - name: Create hostedtoolcache for actions/setup-python
         # See https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#macos
         run: |
@@ -39,6 +48,11 @@ jobs:
       - uses: actions/setup-python@v5.0.0
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Update hosts
+        if: inputs.setup-wpt-hosts
+        run: |-
+          set -eux -o pipefail
+          ./wpt make-hosts-file | sudo tee -a /etc/hosts
       - name: Run pip install tox
         run: |
           set -eux
@@ -48,3 +62,8 @@ jobs:
         run: |
           set -eux
           tox -f "py$( echo ${{ matrix.python-version }} | sed 's/\.//' )"
+      - name: Cleanup hosts
+        if: input.setup-wpt-hosts && always()
+        run: |-
+          set -ux
+          sudo sed -i '' '/^# Start web-platform-tests hosts$/,/^# End web-platform-tests hosts$/d' /etc/hosts

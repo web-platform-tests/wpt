@@ -83,5 +83,5 @@ jobs:
     uses: ./.github/workflows/macos-python-tests.yml
     with:
       tox-directory: tools/wpt/
-      fetch-depth: 2
+      fetch-depth: 0
       setup-wpt-hosts: true

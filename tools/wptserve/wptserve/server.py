@@ -6,6 +6,7 @@ import http.server
 import ipaddress
 import os
 import platform
+import selectors
 import socket
 import socketserver
 import ssl
@@ -182,6 +183,9 @@ class WebTestServer(http.server.ThreadingHTTPServer):
         :param latency: Delay in ms to wait before serving each response, or
                         callable that returns a delay in ms
         """
+        self._shutdown_event = threading.Event()
+        self._shutdown_write_fd = None
+
         self.router = router
         self.rewriter = rewriter
 
@@ -229,6 +233,43 @@ class WebTestServer(http.server.ThreadingHTTPServer):
                 self.socket = ssl_context.wrap_socket(self.socket,
                                                       do_handshake_on_connect=False,
                                                       server_side=True)
+
+    def serve_forever(self, poll_interval=0.5):
+        """Handle one request at a time until shutdown."""
+
+        shutdown_read_fd, self._shutdown_write_fd = os.pipe()
+        self._shutdown_event.clear()
+
+        try:
+            with selectors.DefaultSelector() as selector:
+                selector.register(self, selectors.EVENT_READ)
+                selector.register(shutdown_read_fd, selectors.EVENT_READ)
+
+                shutdown = False
+
+                while not shutdown:
+                    events = selector.select(timeout=poll_interval)
+                    for key, mask in events:
+                        if key.fd == shutdown_read_fd:
+                            os.read(shutdown_read_fd, 1)
+                            shutdown = True
+                            break
+                        elif key.fileobj == self:
+                            super()._handle_request_noblock()
+                        else:
+                            assert False
+                    else:
+                        self.service_actions()
+
+        finally:
+            os.close(shutdown_read_fd)
+            os.close(self._shutdown_write_fd)
+            self._shutdown_event.set()
+
+    def shutdown(self):
+        """Stops the serve_forever loop and waits for it to finish."""
+        os.write(self._shutdown_write_fd, b'x')
+        self._shutdown_event.wait()
 
     def server_bind(self):
         if platform.system() != "Darwin":

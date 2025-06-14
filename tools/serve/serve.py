@@ -958,7 +958,7 @@ def make_hosts_file(config, host):
 
     # Windows interpets the IP address 0.0.0.0 as non-existent, making it an
     # appropriate alias for non-existent hosts. However, UNIX-like systems
-    # interpret the same address to mean any IP address, which is inappropraite
+    # interpret the same address to mean any IP address, which is inappropriate
     # for this context. These systems do not reserve any value for this
     # purpose, so the inavailability of the domains must be taken for granted.
     #

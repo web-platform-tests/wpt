@@ -1005,6 +1005,7 @@ def start_servers(logger, host, ports, paths, routes, bind_address, config,
                 "h2": start_http2_server,
                 "ws": start_ws_server,
                 "wss": start_wss_server,
+                "webrtc": start_webrtc_server,
                 "webtransport-h3": start_webtransport_h3_server,
             }[scheme]
 
@@ -1088,6 +1089,8 @@ class WebSocketDaemon:
         cmd_args = ["-p", port,
                     "-d", doc_root,
                     "-w", handlers_root]
+
+        logger.info("Starting WebSocketDaemon(%s) on port %s", "wss" if ssl_config else "ws", port)
 
         if ssl_config is not None:
             cmd_args += ["--tls",
@@ -1183,6 +1186,18 @@ def start_webtransport_h3_server(logger, host, port, paths, routes, bind_address
             f"Failed to start WebTransport over HTTP/3 server: {error}")
         sys.exit(0)
 
+def start_webrtc_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
+    try:
+        from webrtc.webrtc_server import WebRTCServer  # type: ignore
+        return WebRTCServer(host=host,
+                            port=port,
+                            cert_path=config.ssl_config["cert_path"],
+                            key_path=config.ssl_config["key_path"],
+                            logger=logger)
+    except Exception as error:
+        logger.critical(
+            f"Failed to start WebRTC server: {error}")
+        sys.exit(0)
 
 def start(logger, config, routes, mp_context, log_handlers, **kwargs):
     host = config["server_host"]
@@ -1245,6 +1260,7 @@ class ConfigBuilder(config.ConfigBuilder):
             "https-public": ["auto"],
             "ws": ["auto"],
             "wss": ["auto"],
+            "webrtc": ["auto"],
             "webtransport-h3": ["auto"],
         },
         "check_subdomains": True,
@@ -1368,6 +1384,8 @@ def get_parser():
                         help=argparse.SUPPRESS)
     parser.add_argument("--no-h2", action="store_false", dest="h2", default=None,
                         help="Disable the HTTP/2.0 server")
+    parser.add_argument("--webrtc", action="store_true",
+                        help="Enable WebRTC server")
     parser.add_argument("--webtransport-h3", action="store_true",
                         help="Enable WebTransport over HTTP/3 server")
     parser.add_argument("--exit-after-start", action="store_true",

@@ -1,3 +1,5 @@
+// META: global=window,worker,shadowrealm
+
 // Run for enough iterations that we're likely to catch edge-cases, like
 // failing to set a reserved bit:
 const iterations = 256;

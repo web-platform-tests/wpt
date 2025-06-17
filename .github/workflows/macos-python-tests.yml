@@ -38,7 +38,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4.1.0
         with:
-          fetch-depth: ${{ inputs.fetch-depth || 1 }}
+          fetch-depth: ${{ inputs.fetch-depth }}
       - name: Create hostedtoolcache for actions/setup-python
         # See https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#macos
         run: |

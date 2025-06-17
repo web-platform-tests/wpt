@@ -49,15 +49,28 @@ test((test) => {
 
     const someElement = document.createElement('some-element', {customElementRegistry: registry});
     assert_true(someElement instanceof ScopedSomeElement);
-    someElement.innerHTML = '<other-element id="foo"><other-element id="bar"><other-element id="baz"></other-element></other-element></other-element>';
+    someElement.innerHTML = `
+        <other-element id="foo">
+            <other-element id="bar">
+                <div id="baz">
+                    <other-element id="nested-ce"></other-element>
+                </div>
+            </other-element
+        </other-element>
+        <div id="bux"></div>
+        <another-element></another-element>`
+
     assert_true(someElmeents.querySelector('#foo') instanceof ScopedOtherElement);
     assert_true(someElmeents.querySelector('#bar') instanceof ScopedOtherElement);
-    assert_true(someElmeents.querySelector('#baz') instanceof ScopedOtherElement);
+    assert_true(someElmeents.querySelector('#nested-ce') instanceof ScopedOtherElement);
 
     assert_true(someElements.querySelector('#foo').customElementRegistry === registry);
     assert_true(someElements.querySelector('#bar').customElementRegistry === registry);
     assert_true(someElements.querySelector('#baz').customElementRegistry === registry);
-}, 'nested children in innerHTML on a disconnected element should use the scoped registry it was created with');
+    assert_true(someElements.querySelector('#nested-ce').customElementRegistry === registry);
+    assert_true(someElements.querySelector('#bux').customElementRegistry === registry);
+    assert_true(someElements.querySelector('another-element').customElementRegistry === registry);
+}, 'nested descendants in innerHTML on a disconnected element should use the scoped registry it was created with');
 
 test((test) => {
     const registry1 = new CustomElementRegistry;

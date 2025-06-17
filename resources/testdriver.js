@@ -634,7 +634,7 @@
                     },
                 },
                 /**
-                 * `bluetooth.characteristicEventGenerated <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-characteristiceventgenerated-event>`_
+                 * `bluetooth.CharacteristicEventGeneratedParameters <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-characteristiceventgenerated-event>`_
                  * event.
                  */
                 characteristic_event_generated: {
@@ -701,7 +701,7 @@
                     },
                 },
                 /**
-                 * `bluetooth.descriptorEventGenerated <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-descriptoreventgenerated-event>`_
+                 * `bluetooth.DescriptorEventGeneratedParameters <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-descriptoreventgenerated-event>`_
                  * event.
                  */
                 descriptor_event_generated: {

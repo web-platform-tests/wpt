@@ -5,7 +5,7 @@ import traceback
 from http.client import HTTPConnection
 
 from abc import ABCMeta, abstractmethod
-from typing import Any, Awaitable, Callable, ClassVar, List, Mapping, Optional, \
+from typing import Any, Awaitable, Callable, ClassVar, Dict, List, Mapping, Optional, \
     Tuple, Type, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
@@ -453,7 +453,7 @@ class BidiBluetoothProtocolPart(ProtocolPart):
                                address: str,
                                service_uuid: str,
                                characteristic_uuid: str,
-                               characteristic_properties: dict,
+                               characteristic_properties: Dict[str, bool],
                                type: str) -> None:
         """
         Simulates a GATT characteristic.
@@ -474,7 +474,7 @@ class BidiBluetoothProtocolPart(ProtocolPart):
                                characteristic_uuid: str,
                                type: str,
                                code: int,
-                               data: list[int]) -> None:
+                               data: List[int]) -> None:
         """
         Simulates a GATT characteristic response.
         :param context: Browsing context the simulated characteristic belongs to.
@@ -515,7 +515,7 @@ class BidiBluetoothProtocolPart(ProtocolPart):
                                descriptor_uuid: str,
                                type: str,
                                code: int,
-                               data: list[int]) -> None:
+                               data: List[int]) -> None:
         """
         Simulates a GATT descriptor response.
         :param context: Browsing context to set the simulated descriptor to.

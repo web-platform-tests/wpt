@@ -50,7 +50,7 @@ from .protocol import (BaseProtocolPart,
                        DisplayFeaturesProtocolPart,
                        merge_dicts)
 
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Dict, Optional, Tuple
 from webdriver.client import Session
 from webdriver import error as webdriver_error
 from webdriver.bidi import error as webdriver_bidi_error
@@ -195,7 +195,7 @@ class WebDriverBidiBluetoothProtocolPart(BidiBluetoothProtocolPart):
             address: str,
             service_uuid: str,
             characteristic_uuid: str,
-            characteristic_properties: dict,
+            characteristic_properties: Dict[str, bool],
             type: str) -> None:
         await self.webdriver.bidi_session.bluetooth.simulate_characteristic(
             context=context,
@@ -227,7 +227,7 @@ class WebDriverBidiBluetoothProtocolPart(BidiBluetoothProtocolPart):
             address: str,
             service_uuid: str,
             characteristic_uuid: str,
-            descriptor_uuid: Any,
+            descriptor_uuid: str,
             type: str) -> None:
         await self.webdriver.bidi_session.bluetooth.simulate_descriptor(
             context=context,

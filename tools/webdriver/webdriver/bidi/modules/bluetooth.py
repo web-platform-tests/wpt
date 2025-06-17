@@ -1,4 +1,4 @@
-from typing import Any, List, Mapping
+from typing import Any, Dict, List, Mapping
 
 from ._module import BidiModule, command
 
@@ -113,13 +113,13 @@ class Bluetooth(BidiModule):
             address: str,
             service_uuid: str,
             characteristic_uuid: str,
-            characteristic_properties: dict,
+            characteristic_properties: Dict[str, bool],
             type: str) -> Mapping[str, Any]:
         """
         Represents a command `bluetooth.simulate_characteristic` specified in
         https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristic-command
         """
-        ret = {
+        ret: Dict[str, Any] = {
             "context": context,
             "address": address,
             "serviceUuid": service_uuid,
@@ -138,12 +138,12 @@ class Bluetooth(BidiModule):
             characteristic_uuid: str,
             type: str,
             code: int,
-            data: list[int]) -> Mapping[str, Any]:
+            data: List[int]) -> Mapping[str, Any]:
         """
         Represents a command `bluetooth.simulate_characteristic_response` specified in
         https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristicresponse-command
         """
-        ret = {
+        ret: Dict[str, Any] = {
             "context": context,
             "address": address,
             "serviceUuid": service_uuid,
@@ -185,12 +185,12 @@ class Bluetooth(BidiModule):
             descriptor_uuid: str,
             type: str,
             code: int,
-            data: list[int]) -> Mapping[str, Any]:
+            data: List[int]) -> Mapping[str, Any]:
         """
         Represents a command `bluetooth.simulate_descriptor` specified in
         https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptorresponse-command
         """
-        ret = {
+        ret: Dict[str, Any] = {
             "context": context,
             "address": address,
             "serviceUuid": service_uuid,

@@ -325,12 +325,12 @@ The module provides access to [Web Bluetooth](https://webbluetoothcg.github.io/w
 .. js:autofunction:: test_driver.bidi.bluetooth.gatt_connection_attempted.subscribe
 .. js:autofunction:: test_driver.bidi.bluetooth.gatt_connection_attempted.on
 .. js:autofunction:: test_driver.bidi.bluetooth.gatt_connection_attempted.once
-.. js:autofunction:: test_driver.bidi.bluetooth.characteristicEventGenerated.subscribe
-.. js:autofunction:: test_driver.bidi.bluetooth.characteristicEventGenerated.on
-.. js:autofunction:: test_driver.bidi.bluetooth.characteristicEventGenerated.once
-.. js:autofunction:: test_driver.bidi.bluetooth.descriptorEventGenerated.subscribe
-.. js:autofunction:: test_driver.bidi.bluetooth.descriptorEventGenerated.on
-.. js:autofunction:: test_driver.bidi.bluetooth.descriptorEventGenerated.once
+.. js:autofunction:: test_driver.bidi.bluetooth.characteristic_event_generated.subscribe
+.. js:autofunction:: test_driver.bidi.bluetooth.characteristic_event_generated.on
+.. js:autofunction:: test_driver.bidi.bluetooth.characteristic_event_generated.once
+.. js:autofunction:: test_driver.bidi.bluetooth.descriptor_event_generated.subscribe
+.. js:autofunction:: test_driver.bidi.bluetooth.descriptor_event_generated.on
+.. js:autofunction:: test_driver.bidi.bluetooth.descriptor_event_generated.once
 ```
 
 ### Emulation ###

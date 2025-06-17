@@ -179,6 +179,83 @@ class WebDriverBidiBluetoothProtocolPart(BidiBluetoothProtocolPart):
             context=context,
             address=address)
 
+    async def simulate_service(self,
+            context: str,
+            address: str,
+            uuid: str,
+            type: str) -> None:
+        await self.webdriver.bidi_session.bluetooth.simulate_service(
+            context=context,
+            address=address,
+            uuid=uuid,
+            type=type)
+
+    async def simulate_characteristic(self,
+            context: str,
+            address: str,
+            service_uuid: str,
+            characteristic_uuid: str,
+            characteristic_properties: dict,
+            type: str) -> None:
+        await self.webdriver.bidi_session.bluetooth.simulate_characteristic(
+            context=context,
+            address=address,
+            service_uuid=service_uuid,
+            characteristic_uuid=characteristic_uuid,
+            characteristic_properties=characteristic_properties,
+            type=type)
+
+    async def simulate_characteristic_response(self,
+            context: str,
+            address: str,
+            service_uuid: str,
+            characteristic_uuid: str,
+            type: str,
+            code: int,
+            data: List[int]) -> None:
+        await self.webdriver.bidi_session.bluetooth.simulate_characteristic_response(
+            context=context,
+            address=address,
+            service_uuid=service_uuid,
+            characteristic_uuid=characteristic_uuid,
+            type=type,
+            code=code,
+            data=data)
+
+    async def simulate_descriptor(self,
+            context: str,
+            address: str,
+            service_uuid: str,
+            characteristic_uuid: str,
+            descriptor_uuid: Any,
+            type: str) -> None:
+        await self.webdriver.bidi_session.bluetooth.simulate_descriptor(
+            context=context,
+            address=address,
+            service_uuid=service_uuid,
+            characteristic_uuid=characteristic_uuid,
+            descriptor_uuid=descriptor_uuid,
+            type=type)
+
+    async def simulate_descriptor_response(self,
+            context: str,
+            address: str,
+            service_uuid: str,
+            characteristic_uuid: str,
+            descriptor_uuid: str,
+            type: str,
+            code: int,
+            data: List[int]) -> None:
+        await self.webdriver.bidi_session.bluetooth.simulate_descriptor_response(
+            context=context,
+            address=address,
+            service_uuid=service_uuid,
+            characteristic_uuid=characteristic_uuid,
+            descriptor_uuid=descriptor_uuid,
+            type=type,
+            code=code,
+            data=data)
+
 class WebDriverBidiBrowsingContextProtocolPart(BidiBrowsingContextProtocolPart):
     def __init__(self, parent):
         super().__init__(parent)

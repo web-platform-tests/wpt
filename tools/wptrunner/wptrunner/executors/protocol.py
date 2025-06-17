@@ -432,6 +432,103 @@ class BidiBluetoothProtocolPart(ProtocolPart):
         """
         pass
 
+    @abstractmethod
+    async def simulate_service(self,
+                               context: str,
+                               address: str,
+                               uuid: str,
+                               type: str) -> None:
+        """
+        Simulates a GATT service.
+        :param context: Browsing context to set the simulated service to.
+        :param address: The address of the simulated bluetooth peripheral this service belongs to.
+        :param uuid: The uuid of the simulated GATT service.
+        :param type: The type of the GATT service simulation, either add or remove.
+        """
+        pass
+
+    @abstractmethod
+    async def simulate_characteristic(self,
+                               context: str,
+                               address: str,
+                               service_uuid: str,
+                               characteristic_uuid: str,
+                               characteristic_properties: dict,
+                               type: str) -> None:
+        """
+        Simulates a GATT characteristic.
+        :param context: Browsing context to set the simulated characteristic to.
+        :param address: The address of the simulated bluetooth peripheral the characterisitc belongs to.
+        :param service_uuid: The uuid of the simulated GATT service the characterisitc belongs to.
+        :param characteristic_uuid: The uuid of the simulated GATT characterisitc.
+        :param characteristic_properties: The properties of the simulated GATT characteristic.
+        :param type: The type of the GATT characterisitc simulation, either add or remove.
+        """
+        pass
+
+    @abstractmethod
+    async def simulate_characteristic_response(self,
+                               context: str,
+                               address: str,
+                               service_uuid: str,
+                               characteristic_uuid: str,
+                               type: str,
+                               code: int,
+                               data: list[int]) -> None:
+        """
+        Simulates a GATT characteristic response.
+        :param context: Browsing context the simulated characteristic belongs to.
+        :param address: The address of the simulated bluetooth peripheral the characterisitc belongs to.
+        :param service_uuid: The uuid of the simulated GATT service the characterisitc belongs to.
+        :param characteristic_uuid: The uuid of the simulated GATT characterisitc.
+        :param type: The type of the simulated GATT characteristic operation.
+        :param code: The simulated GATT characteristic response code.
+        :param data: The data along with the simulated GATT characteristic response.
+        """
+        pass
+
+    @abstractmethod
+    async def simulate_descriptor(self,
+                               context: str,
+                               address: str,
+                               service_uuid: str,
+                               characteristic_uuid: str,
+                               descriptor_uuid: str,
+                               type: str) -> None:
+        """
+        Simulates a GATT descriptor.
+        :param context: Browsing context to set the simulated descriptor to.
+        :param address: The address of the simulated bluetooth peripheral the descriptor belongs to.
+        :param service_uuid: The uuid of the simulated GATT service the descriptor belongs to.
+        :param characteristic_uuid: The uuid of the simulated GATT characterisitc the descriptor belongs to.
+        :param descriptor_uuid: The uuid of the simulated GATT descriptor.
+        :param type: The type of the GATT descriptor simulation, either add or remove.
+        """
+        pass
+
+    @abstractmethod
+    async def simulate_descriptor_response(self,
+                               context: str,
+                               address: str,
+                               service_uuid: str,
+                               characteristic_uuid: str,
+                               descriptor_uuid: str,
+                               type: str,
+                               code: int,
+                               data: list[int]) -> None:
+        """
+        Simulates a GATT descriptor response.
+        :param context: Browsing context to set the simulated descriptor to.
+        :param address: The address of the simulated bluetooth peripheral the descriptor belongs to.
+        :param service_uuid: The uuid of the simulated GATT service the descriptor belongs to.
+        :param characteristic_uuid: The uuid of the simulated GATT characterisitc the descriptor belongs to.
+        :param descriptor_uuid: The uuid of the simulated GATT descriptor.
+        :param type: The type of the simulated GATT descriptor operation.
+        :param code: The simulated GATT descriptor response code.
+        :param data: The data along with the simulated GATT descriptor response.
+        """
+        pass
+
 class BidiBrowsingContextProtocolPart(ProtocolPart):
     """Protocol part for managing BiDi events"""
     __metaclass__ = ABCMeta

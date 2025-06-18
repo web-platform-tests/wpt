@@ -170,6 +170,29 @@ class BidiPermissionsSetPermissionAction:
                                                                    state,
                                                                    origin)
 
+class BidiInstallWebExtensionAction:
+    name = "bidi.web_extensions.install_web_extension"
+
+    def __init__(self, logger, protocol):
+        do_delayed_imports()
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        return self.protocol.bidi_web_extensions.install_web_extension(payload['extension'])
+
+
+class BidiUninstallWebExtensionAction:
+    name = "bidi.web_extensions.uninstall_web_extension"
+
+    def __init__(self, logger, protocol):
+        do_delayed_imports()
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        return self.protocol.bidi_web_extensions.uninstall_web_extension(payload['extension'])
+
 
 async_actions = [
     BidiBluetoothHandleRequestDevicePrompt,
@@ -179,5 +202,7 @@ async_actions = [
     BidiBluetoothSimulateGattConnectionResponseAction,
     BidiBluetoothSimulateGattDisconnectionAction,
     BidiEmulationSetGeolocationOverrideAction,
+    BidiInstallWebExtensionAction,
     BidiPermissionsSetPermissionAction,
-    BidiSessionSubscribeAction]
+    BidiSessionSubscribeAction,
+    BidiUninstallWebExtensionAction]

@@ -522,7 +522,7 @@ class SetProtectedAudienceKAnonymityAction:
     def __call__(self, payload):
         owner, name, hashes = payload["owner"], payload["name"], payload["hashes"]
         return self.protocol.protected_audience.set_k_anonymity(owner, name, hashes)
-
+    
 class SetDisplayFeaturesAction:
     name = "set_display_features"
 
@@ -543,6 +543,28 @@ class ClearDisplayFeaturesAction:
 
     def __call__(self, payload):
         return self.protocol.display_features.clear_display_features()
+
+class InstallWebExtensionAction:
+    name = "install_web_extension"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("installing web extension")
+        return self.protocol.web_extensions.install_web_extension(payload["extension"])
+
+class UninstallWebExtensionAction:
+    name = "uninstall_web_extension"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("uninstalling web extension")
+        return self.protocol.web_extensions.uninstall_web_extension(payload["extension_id"])
 
 actions = [ClickAction,
            DeleteAllCookiesAction,
@@ -586,4 +608,6 @@ actions = [ClickAction,
            RemoveVirtualPressureSourceAction,
            SetProtectedAudienceKAnonymityAction,
            SetDisplayFeaturesAction,
-           ClearDisplayFeaturesAction]
+           ClearDisplayFeaturesAction,
+           InstallWebExtensionAction,
+           UninstallWebExtensionAction]

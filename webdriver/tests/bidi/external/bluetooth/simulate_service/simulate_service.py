@@ -65,4 +65,4 @@ async def test_simulate_service(bidi_session, top_context):
         uuid=HEART_RATE_SERVICE_UUID,
         type="remove")
     services = await get_services()
-    recursive_compare([], remote_array_to_list(services))
+    assert remote_array_to_list(services) == []

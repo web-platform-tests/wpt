@@ -282,7 +282,7 @@
                  * Matches the
                  * `bluetooth.SimulateServiceParameters:address <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateservice-command>`_
                  * value.
-                 * @param {string} params.type - The type of the GATT service simulation, either add or remove.
+                 * @param {string} params.type - The type of the GATT service simulation, either "add" or "remove".
                  * Matches the
                  * `bluetooth.SimulateServiceParameters:address <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateservice-command>`_
                  * value.
@@ -332,7 +332,7 @@
                 * Matches the
                 * `bluetooth.SimulateCharacteristicParameters:address <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristic-command>`_
                 * value.
-                * @param {string} params.type - The type of the GATT characterisitc simulation, either add or remove.
+                * @param {string} params.type - The type of the GATT characterisitc simulation, either "add" or "remove".
                 * Matches the
                 * `bluetooth.SimulateCharacteristicParameters:address <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristic-command>`_
                 * value.
@@ -375,7 +375,8 @@
                 * Matches the
                 * `bluetooth.SimulateCharacteristicResponseParameters:address <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristicresponse-command>`_
                 * value.
-                * @param {string} params.type - The type of the simulated GATT characteristic operation.
+                * @param {string} params.type - The type of the simulated GATT characteristic operation."
+                * Can be "read", "write", "subscribe-to-notifications" or "unsubscribe-from-notifications".
                 * Matches the
                 * `bluetooth.SimulateCharacteristicResponseParameters:address <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristicresponse-command>`_
                 * value.
@@ -429,7 +430,7 @@
                 *  Matches the
                 * `bluetooth.SimulateDescriptorParameters:address <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptor-command>`_
                 * value.*
-                * @param {string} params.type - The type of the GATT descriptor simulation, either add or remove.
+                * @param {string} params.type - The type of the GATT descriptor simulation, either "add" or "remove".
                 * Matches the
                 * `bluetooth.SimulateDescriptorParameters:address <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptor-command>`_
                 * value.

@@ -94,7 +94,6 @@ async def test_simulate_descriptor(bidi_session, top_context):
         characteristic_uuid=MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
         descriptor_uuid=CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID,
         type="remove")
-    recursive_compare([], remote_array_to_list(
-                          await get_descriptors(HEART_RATE_SERVICE_UUID,
-                                                MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID)))
+    assert remote_array_to_list(await get_descriptors(
+        HEART_RATE_SERVICE_UUID, MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID)) == []
 

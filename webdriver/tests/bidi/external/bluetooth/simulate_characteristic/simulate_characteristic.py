@@ -139,6 +139,4 @@ async def test_simulate_characteristic(bidi_session, top_context, property):
         characteristic_uuid=DATE_TIME_CHARACTERISTIC_UUID,
         characteristic_properties=None,
         type="remove")
-    recursive_compare([],
-                      remote_array_to_list(
-                          await get_characteristics(HEART_RATE_SERVICE_UUID)))
+    assert remote_array_to_list(await get_characteristics(HEART_RATE_SERVICE_UUID)) == []

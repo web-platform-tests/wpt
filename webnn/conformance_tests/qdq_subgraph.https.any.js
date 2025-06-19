@@ -418,6 +418,146 @@ const subgraphTests = [
     }
   },
   {
+    'name': 'quantized convTranspose2d',
+    'graph': {
+      'inputs': {
+        'input': {
+          'data': [
+            0.05605664849281311, 0.7114229798316956,
+            0.6529743671417236, 0.7114229798316956,
+          ],
+          'descriptor': {shape: [1, 2, 2, 1], dataType: 'float32'},
+          'constant': false
+        },
+        'inputScale': {
+          'data': [0.003921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputZeroPoint': {
+          'data': [-128],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'filter': {
+          'data': [
+            2, 3, 4, 5,
+          ],
+          'descriptor': {shape: [1, 2, 2, 1], dataType: 'int8'},
+          'constant': true
+        },
+        'filterScale': {
+          'data': [0.023458752938762234],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'filterZeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'bias': {
+          'data': [2],
+          'descriptor': {shape: [1], dataType: 'int32'},
+          'constant': true
+        },
+        'biasScale': {
+          'data': [0.000091995115004270],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'biasZeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int32'},
+          'constant': true
+        },
+        'outputScale': {
+          'data': [0.003921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'outputZeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'input'},
+            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+          ],
+          'outputs': 'quantizedInput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInput'},
+            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+          ],
+          'outputs': 'dequantizedInput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'filter'},
+            {'scale': 'filterScale', 'zeroPoint': 'filterZeroPoint'}
+          ],
+          'outputs': 'dequantizedFilter'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'bias'},
+            {'scale': 'biasScale', 'zeroPoint': 'biasZeroPoint'}
+          ],
+          'outputs': 'dequantizedBias'
+        },
+        {
+          'name': 'convTranspose2d',
+          'arguments': [
+            {'input': 'dequantizedInput'}, {'filter': 'dequantizedFilter'}, {
+              'options': {
+                'inputLayout': 'nhwc',
+                'bias': 'dequantizedBias',
+                'filterLayout': 'ohwi'
+              }
+            }
+          ],
+          'outputs': 'convTranspose2dOutput'
+        },
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'convTranspose2dOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'quantizedConvTranspose2dOutput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedConvTranspose2dOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'output'
+        }
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0.003921568859368563, 0.03921568766236305, 0.05098039656877518,
+            0.03529411926865578,  0.15294118225574493, 0.13333334028720856,
+            0.062745101749897,    0.14509804546833038, 0.08235294371843338,
+          ],
+          'descriptor': {shape: [1, 3, 3, 1], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
     'name': 'quantized element-wise binary add',
     'graph': {
       'inputs': {
@@ -1115,6 +1255,474 @@ const subgraphTests = [
             8.577322959899902, 6.17567253112793,
           ],
           'descriptor': {shape: [2, 2], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'quantized element-wise logical equal',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -2.549168109893799, 0.794857501983643,
+            8.413617134094238, 6.108623504638672
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'float32'},
+          'constant': false
+        },
+        'inputB': {
+          'data': [
+            -7, 2,
+            2, 30,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'int8'},
+          'constant': true
+        },
+        'scale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'zeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'inputA'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'quantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInputA'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'dequantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'inputB'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'dequantizedInputB'
+        },
+        {
+          'name': 'equal',
+          'arguments': [{'inputA': 'dequantizedInputA'},  {'inputB': 'dequantizedInputB'}],
+          'outputs': 'equalOutput'
+        },
+        {
+          'name': 'cast',
+          'arguments': [{'input': 'equalOutput'}, {'type': 'int32'}],
+          'outputs': 'output'
+        },
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            1, 1,
+            0, 0,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'int32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'quantized element-wise logical notEqual',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -2.549168109893799, 0.794857501983643,
+            8.413617134094238, 6.108623504638672
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'float32'},
+          'constant': false
+        },
+        'inputB': {
+          'data': [
+            -7, 2,
+            2, 30,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'int8'},
+          'constant': true
+        },
+        'scale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'zeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'inputA'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'quantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInputA'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'dequantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'inputB'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'dequantizedInputB'
+        },
+        {
+          'name': 'notEqual',
+          'arguments': [{'inputA': 'dequantizedInputA'},  {'inputB': 'dequantizedInputB'}],
+          'outputs': 'notEqualOutput'
+        },
+        {
+          'name': 'cast',
+          'arguments': [{'input': 'notEqualOutput'}, {'type': 'int32'}],
+          'outputs': 'output'
+        },
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0,
+            1, 1,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'int32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'quantized element-wise logical greater',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -2.549168109893799, 0.794857501983643,
+            8.413617134094238, 6.108623504638672
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'float32'},
+          'constant': false
+        },
+        'inputB': {
+          'data': [
+            -7, 2,
+            2, 30,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'int8'},
+          'constant': true
+        },
+        'scale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'zeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'inputA'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'quantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInputA'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'dequantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'inputB'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'dequantizedInputB'
+        },
+        {
+          'name': 'greater',
+          'arguments': [{'inputA': 'dequantizedInputA'},  {'inputB': 'dequantizedInputB'}],
+          'outputs': 'greaterOutput'
+        },
+        {
+          'name': 'cast',
+          'arguments': [{'input': 'greaterOutput'}, {'type': 'int32'}],
+          'outputs': 'output'
+        },
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0,
+            1, 0,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'int32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'quantized element-wise logical greaterOrEqual',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -2.549168109893799, 0.794857501983643,
+            8.413617134094238, 6.108623504638672
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'float32'},
+          'constant': false
+        },
+        'inputB': {
+          'data': [
+            -7, 2,
+            2, 30,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'int8'},
+          'constant': true
+        },
+        'scale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'zeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'inputA'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'quantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInputA'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'dequantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'inputB'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'dequantizedInputB'
+        },
+        {
+          'name': 'greaterOrEqual',
+          'arguments': [{'inputA': 'dequantizedInputA'},  {'inputB': 'dequantizedInputB'}],
+          'outputs': 'greaterOrEqualOutput'
+        },
+        {
+          'name': 'cast',
+          'arguments': [{'input': 'greaterOrEqualOutput'}, {'type': 'int32'}],
+          'outputs': 'output'
+        },
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            1, 1,
+            1, 0,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'int32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'quantized element-wise logical lesser',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -2.549168109893799, 0.794857501983643,
+            8.413617134094238, 6.108623504638672
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'float32'},
+          'constant': false
+        },
+        'inputB': {
+          'data': [
+            -7, 2,
+            2, 30,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'int8'},
+          'constant': true
+        },
+        'scale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'zeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'inputA'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'quantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInputA'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'dequantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'inputB'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'dequantizedInputB'
+        },
+        {
+          'name': 'lesser',
+          'arguments': [{'inputA': 'dequantizedInputA'},  {'inputB': 'dequantizedInputB'}],
+          'outputs': 'lesserOutput'
+        },
+        {
+          'name': 'cast',
+          'arguments': [{'input': 'lesserOutput'}, {'type': 'int32'}],
+          'outputs': 'output'
+        },
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0,
+            0, 1,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'int32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'quantized element-wise logical lesserOrEqual',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -2.549168109893799, 0.794857501983643,
+            8.413617134094238, 6.108623504638672
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'float32'},
+          'constant': false
+        },
+        'inputB': {
+          'data': [
+            -7, 2,
+            2, 30,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'int8'},
+          'constant': true
+        },
+        'scale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'zeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'inputA'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'quantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInputA'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'dequantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'inputB'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'dequantizedInputB'
+        },
+        {
+          'name': 'lesserOrEqual',
+          'arguments': [{'inputA': 'dequantizedInputA'},  {'inputB': 'dequantizedInputB'}],
+          'outputs': 'lesserOrEqualOutput'
+        },
+        {
+          'name': 'cast',
+          'arguments': [{'input': 'lesserOrEqualOutput'}, {'type': 'int32'}],
+          'outputs': 'output'
+        },
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            1, 1,
+            0, 1,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'int32'}
         }
       }
     }

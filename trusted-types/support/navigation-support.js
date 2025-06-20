@@ -4,7 +4,14 @@ function navigateToJavascriptURL(reportOnly) {
     if (!!params.get("defaultpolicy")) {
         trustedTypes.createPolicy("default", {
             createScript: s => {
-                return s.replace("continue", "defaultpolicywashere")
+                switch (params.get("defaultpolicy")) {
+                    case "replace":
+                        return s.replace("continue", "defaultpolicywashere");
+                    case "throw":
+                        throw new Error("Exception in createScript()");
+                    case "make-invalid":
+                        return "//make:invalid/";
+                }
             },
         });
     }
@@ -73,7 +80,8 @@ function navigateToJavascriptURL(reportOnly) {
       let {violations, exception} =
         await trusted_type_violations_and_exception_for(_ => navigationElement.click());
       violations.forEach(violationEvent => bounceEventToOpener(violationEvent));
-      if (!params.get("defaultpolicy") && violations.length == 0) {
+      if (violations.length == 0 &&
+	  [null, "throw", "make-invalid"].includes(params.get("defaultpolicy"))) {
         window.opener.postMessage("No securitypolicyviolation reported!", "*");
       }
     });

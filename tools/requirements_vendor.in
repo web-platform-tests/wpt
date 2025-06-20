@@ -1,0 +1,29 @@
+# This lists all the packages we use directly; these are unpinned here as we
+# can rely on the existing pinned versions in requirements_vendor.txt to
+# control when we do upgrades. It also makes this easier to audit, as
+# everything here should see actual usage outside of third_party.
+
+h2
+hpack
+html5lib
+hyperframe
+packaging
+pytest-asyncio
+pytest
+pywebsocket3
+six
+websockets
+
+# The following are pinned because we need to manually update their licenses in
+# pyproject.toml. We can, however, update these as we wish.
+
+atomicwrites==1.1.5
+webencodings==0.5.1
+
+# tooltool is referenced (by path) in tools/wpt/android.py, despite not being
+# directly imported anywhere.  We install from git because it is not
+# distributed on PyPI, and we need to pin a specific revision because uv pip
+# compile will otherwise always update the version, regardless of whether
+# --upgrade is passed to it.
+
+mozilla-tooltool-client@ git+https://github.com/mozilla-releng/tooltool.git@c1bda97eda1ec5246aa73a358c5e1d47e222380c#subdirectory=client

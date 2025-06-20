@@ -23,36 +23,62 @@
         }
     }
 
-    function getInViewCenterPoint(rect) {
-        var left = Math.max(0, rect.left);
-        var right = Math.min(window.innerWidth, rect.right);
-        var top = Math.max(0, rect.top);
-        var bottom = Math.min(window.innerHeight, rect.bottom);
-
-        var x = 0.5 * (left + right);
-        var y = 0.5 * (top + bottom);
+    function getCenterPoint(rect) {
+        const x = 0.5 * (rect.left + rect.right);
+        const y = 0.5 * (rect.top + rect.bottom);
 
         return [x, y];
     }
 
-    function getPointerInteractablePaintTree(element) {
-        let elementDocument = element.ownerDocument;
+    function getInViewCenterPoint(rect) {
+        const left = Math.max(0, rect.left);
+        const right = Math.min(window.innerWidth, rect.right);
+        const top = Math.max(0, rect.top);
+        const bottom = Math.min(window.innerHeight, rect.bottom);
+
+        const x = 0.5 * (left + right);
+        const y = 0.5 * (top + bottom);
+
+        return [x, y];
+    }
+
+    function rectConstrainedToViewport(rect) {
+        const left = Math.max(0, rect.left);
+        const right = Math.min(window.innerWidth, rect.right);
+        const top = Math.max(0, rect.top);
+        const bottom = Math.min(window.innerHeight, rect.bottom);
+
+        return new DOMRect(rect.x, rect.y, Math.max(right - left, 0), Math.max(bottom - top, 0));
+    }
+
+    function getElementListAtVisibleCenter(element) {
+        const elementDocument = element.ownerDocument;
         if (!elementDocument.contains(element)) {
             return [];
         }
-
-        var rectangles = element.getClientRects();
-
+        
+        const rectangles = element.getClientRects();
         if (rectangles.length === 0) {
             return [];
         }
+        
+        const clientRect = rectangles[0];
+        const rectInView = rectConstrainedToViewport(clientRect);
 
-        var centerPoint = getInViewCenterPoint(rectangles[0]);
+        // Ensure that at least 1px is visible to avoid issues due to elementsFromPoint()
+        // supporting fractional values, but mouse events flooring to integers.
+        const minimumVisibleAmount = 1;
+        if ((rectInView.width < clientRect.width && rectInView.width < minimumVisibleAmount)
+            || (rectInView.height < clientRect.height && rectInView.height < minimumVisibleAmount)) {
+            return [];
+        }
+
+        const centerPoint = getCenterPoint(rectInView);
 
         if ("elementsFromPoint" in elementDocument) {
             return elementDocument.elementsFromPoint(centerPoint[0], centerPoint[1]);
         } else if ("msElementsFromPoint" in elementDocument) {
-            var rv = elementDocument.msElementsFromPoint(centerPoint[0], centerPoint[1]);
+            const rv = elementDocument.msElementsFromPoint(centerPoint[0], centerPoint[1]);
             return Array.prototype.slice.call(rv ? rv : []);
         } else {
             throw new Error("document.elementsFromPoint unsupported");
@@ -60,8 +86,8 @@
     }
 
     function inView(element) {
-        var pointerInteractablePaintTree = getPointerInteractablePaintTree(element);
-        return pointerInteractablePaintTree.indexOf(element) !== -1;
+        const elementList = getElementListAtVisibleCenter(element);
+        return elementList.indexOf(element) !== -1;
     }
 
 
@@ -653,14 +679,13 @@
                                         inline: "nearest"});
             }
 
-            var pointerInteractablePaintTree = getPointerInteractablePaintTree(element);
-            if (pointerInteractablePaintTree.length === 0 ||
-                !element.contains(pointerInteractablePaintTree[0])) {
+            const elementList = getElementListAtVisibleCenter(element);
+            if (elementList.length === 0 || !element.contains(elementList[0])) {
                 return Promise.reject(new Error("element click intercepted error"));
             }
 
-            var rect = element.getClientRects()[0];
-            var centerPoint = getInViewCenterPoint(rect);
+            const rect = element.getClientRects()[0];
+            const centerPoint = getInViewCenterPoint(rect);
             return window.test_driver_internal.click(element,
                                                      {x: centerPoint[0],
                                                       y: centerPoint[1]});

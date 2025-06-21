@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/issues/9046">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div popover=auto>popover</div>
+
+<script>
+promise_test(async () => {
+  const popover = document.querySelector('div');
+
+  let gotToggle = false;
+  popover.addEventListener('toggle', () => gotToggle = true);
+
+  // Asserting inside the microtask callback causes a timeout, so pull the
+  // value out instead.
+  let gotToggleInTime = await new Promise(resolve => {
+    popover.showPopover();
+    queueMicrotask(() => {
+      resolve(gotToggle);
+    });
+  });
+  assert_true(gotToggleInTime, 'opening toggle');
+
+  gotToggle = false;
+  gotToggleInTime = false;
+
+  gotToggleInTime = await new Promise(resolve => {
+    popover.hidePopover();
+    queueMicrotask(() => {
+      resolve(gotToggle);
+    });
+  });
+  assert_true(gotToggleInTime, 'closing toggle');
+}, 'popover toggle events should be fired at microtask timing.');
+</script>

@@ -45,8 +45,10 @@ class Virtualenv:
 
     def create(self):
         if os.path.exists(self.path):
+            logger.warning(f"Removing existing venv at {self.path!r}")
             shutil.rmtree(self.path, ignore_errors=True)
             self._working_set = None
+        logger.info(f"Creating new venv at {self.path!r}")
         call(*self.virtualenv, self.path)
 
     def get_paths(self):

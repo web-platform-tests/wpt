@@ -31,7 +31,6 @@
             await p;
 
             assert_equals(status.state, "prompt", 'Now in "prompt" state');
-
         }, 'Transition "granted" -> "prompt" fires a "change" event');
 
         promise_test(async (t) => {

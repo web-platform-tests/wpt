@@ -15,13 +15,9 @@ def filename():
     return str(uuid.uuid4()) + '.txt'
 
 
-@pytest.fixture
-def download_link(request, filename, inline):
-    return inline("SOME_CONTEXT")
-
-
 async def test_status_complete(bidi_session, subscribe_events, new_tab, inline,
-        wait_for_event, wait_for_future_safe, download_link, filename):
+        wait_for_event, wait_for_future_safe, filename):
+    download_link = inline("SOME_CONTENT")
     url = inline(
         f"""<a id="download_link" href="{download_link}" download="{filename}">download</a>""")
 

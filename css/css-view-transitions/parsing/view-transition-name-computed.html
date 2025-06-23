@@ -22,6 +22,16 @@ test_computed_value("view-transition-name", "initial", "none");
 test_computed_value("view-transition-name", "inherit", "none");
 test_computed_value("view-transition-name", "revert", "none");
 test_computed_value("view-transition-name", "revert-layer", "none");
+
+// It seems the results are different in different browsers:
+// Gecko serializes this as "match-element",
+// WebKit doesn't serialize this, i.e. empty string.
+// However, it seems "match-element" makes more sense so we use it as the
+// result. Also, auto keyword is still under discussion, so we don't include it
+// for now. See https://github.com/w3c/csswg-drafts/issues/12091 for more
+// information.
+test_computed_value("view-transition-name", "match-element");
+test_computed_value("view-transition-name", "maTch-element", "match-element");
 </script>
 </body>
 </html>

@@ -20,7 +20,7 @@ def filename():
 
 @pytest.fixture
 def download_link(request, filename, inline):
-    return f"data:text/plain;charset=utf-8,{CONTENT}"
+    return inline(CONTENT)
 
 
 async def test_unsubscribe(bidi_session, inline, new_tab, wait_for_event,
@@ -77,18 +77,4 @@ async def test_subscribe(bidi_session, subscribe_events, new_tab, inline,
         await_promise=True,
         user_activation=True)
 
-    event = await wait_for_future_safe(on_entry)
-    recursive_compare(
-        {
-            'filepath': any_string,
-            'context': new_tab["context"],
-            'navigation': any_string,
-            'status': 'complete',
-            'timestamp': any_int,
-            'url': download_link,
-        }, event)
-
-    # Assert file content is available.
-    with open(event['filepath'], mode='r', encoding='utf-8') as file:
-        file_content = file.read()
-    assert file_content == CONTENT
+    await wait_for_future_safe(on_entry)

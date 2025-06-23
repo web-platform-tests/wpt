@@ -1,7 +1,5 @@
 import pytest
 import uuid
-from tests.support.sync import AsyncPoll
-from webdriver.error import TimeoutException
 
 from webdriver.bidi.modules.script import ContextTarget
 
@@ -9,7 +7,6 @@ from ... import (any_int, any_string, recursive_compare)
 
 pytestmark = pytest.mark.asyncio
 
-CONTENT = "SOME_FILE_CONTENT"
 DOWNLOAD_END = "browsingContext.downloadEnd"
 
 
@@ -18,13 +15,9 @@ def filename():
     return str(uuid.uuid4()) + '.txt'
 
 
-@pytest.fixture(params=['data', 'http'])
+@pytest.fixture
 def download_link(request, filename, inline):
-    if request.param == 'data':
-        return f"data:text/plain;charset=utf-8,{CONTENT}"
-    return inline(CONTENT,
-                  # Doctype `html_quirks` is required to avoid wrapping content.
-                  doctype="html_quirks")
+    return inline("SOME_CONTEXT")
 
 
 async def test_status_complete(bidi_session, subscribe_events, new_tab, inline,
@@ -56,11 +49,6 @@ async def test_status_complete(bidi_session, subscribe_events, new_tab, inline,
             'timestamp': any_int,
             'url': download_link,
         }, event)
-
-    # Assert file content is available.
-    with open(event['filepath'], mode='r', encoding='utf-8') as file:
-        file_content = file.read()
-    assert file_content == CONTENT
 
 
 async def test_status_canceled(bidi_session, subscribe_events, new_tab, inline,

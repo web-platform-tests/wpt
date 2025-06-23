@@ -21,7 +21,7 @@ run_applicable_tox () {
 if ./wpt test-jobs --all --includes tools_unittest; then
     pip install --user -U tox
     cd tools
-    run_applicable_tox
+    tox -f "$TOXENV"
     cd $WPT_ROOT
 else
     echo "Skipping tools unittest"
@@ -29,7 +29,7 @@ fi
 
 if ./wpt test-jobs --all --includes wptrunner_unittest; then
     cd tools/wptrunner
-    run_applicable_tox
+    tox -f "$TOXENV"
     cd $WPT_ROOT
 else
     echo "Skipping wptrunner unittest"

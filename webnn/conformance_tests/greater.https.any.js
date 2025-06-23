@@ -1,5 +1,5 @@
 // META: title=test WebNN API element-wise greater operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -991,7 +991,8 @@ const greaterTests = [
 if (navigator.ml) {
   greaterTests.forEach((test) => {
     webnn_conformance_test(
-        buildAndExecuteGraph, getGreaterPrecisionTolerance, test);
+        buildAndExecuteGraph, getGreaterPrecisionTolerance, test,
+        /*cast_to_supported_type=*/true);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

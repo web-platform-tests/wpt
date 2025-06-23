@@ -107,11 +107,8 @@ def check_args(**kwargs):
 def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs):
     browser_kwargs = {"binary": kwargs["binary"],
                       "package_name": None,
-                      "webdriver_binary": kwargs["webdriver_binary"],
-                      "webdriver_args": kwargs["webdriver_args"].copy(),
                       "prefs_root": kwargs["prefs_root"],
                       "extra_prefs": kwargs["extra_prefs"].copy(),
-                      "test_type": test_type,
                       "debug_info": kwargs["debug_info"],
                       "symbols_path": kwargs["symbols_path"],
                       "stackwalk_binary": kwargs["stackwalk_binary"],
@@ -120,22 +117,35 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
                       "e10s": kwargs["gecko_e10s"],
                       "disable_fission": kwargs["disable_fission"],
                       "stackfix_dir": kwargs["stackfix_dir"],
-                      "binary_args": kwargs["binary_args"].copy(),
-                      "timeout_multiplier": get_timeout_multiplier(test_type, run_info_data, **kwargs),
                       "leak_check": run_info_data["debug"] and (kwargs["leak_check"] is not False),
                       "asan": run_info_data.get("asan"),
                       "chaos_mode_flags": kwargs["chaos_mode_flags"],
                       "config": config,
                       "browser_channel": kwargs["browser_channel"],
                       "headless": kwargs["headless"],
-                      "preload_browser": kwargs["preload_browser"] and not kwargs["pause_after_test"] and not kwargs["num_test_groups"] == 1,
-                      "specialpowers_path": kwargs["specialpowers_path"],
                       "allow_list_paths": kwargs["allow_list_paths"],
                       "gmp_path": kwargs["gmp_path"] if "gmp_path" in kwargs else None,
                       "debug_test": kwargs["debug_test"]}
-    if test_type == "wdspec" and kwargs["binary"]:
-        browser_kwargs["webdriver_args"].extend(["--binary", kwargs["binary"]])
-    browser_kwargs["binary_args"].extend(subsuite.config.get("binary_args", []))
+
+    if test_type == "wdspec":
+        browser_kwargs["webdriver_binary"] = kwargs["webdriver_binary"]
+        browser_kwargs["webdriver_args"] = kwargs["webdriver_args"].copy()
+
+        if kwargs["binary"]:
+            browser_kwargs["webdriver_args"].extend(["--binary", kwargs["binary"]])
+
+    else:
+        browser_kwargs["binary_args"] = kwargs["binary_args"].copy()
+        browser_kwargs["binary_args"].extend(subsuite.config.get("binary_args", []))
+        browser_kwargs["preload_browser"] = (
+            kwargs["preload_browser"] and
+            not kwargs["pause_after_test"] and
+            not kwargs["num_test_groups"] == 1
+        )
+        browser_kwargs["specialpowers_path"] = kwargs["specialpowers_path"]
+        browser_kwargs["test_type"] = test_type
+        browser_kwargs["timeout_multiplier"] = get_timeout_multiplier(test_type, run_info_data, **kwargs)
+
     browser_kwargs["extra_prefs"].extend(subsuite.config.get("prefs", []))
     return browser_kwargs
 
@@ -219,8 +229,10 @@ def run_info_extras(logger, default_prefs=None, **kwargs):
           "sessionHistoryInParent": (not kwargs.get("disable_fission") or
                                      not bool_pref("fission.disableSessionHistoryInParent")),
           "swgl": bool_pref("gfx.webrender.software"),
-          "privateBrowsing": (kwargs["tags"] is not None and ("privatebrowsing" in kwargs["tags"])),
-          "remoteAsyncEvents": bool_pref("remote.events.async.enabled"),
+          "privateBrowsing": bool_pref("browser.privatebrowsing.autostart"),
+          "remoteAsyncEvents": bool_pref("remote.events.async.wheel.enabled"),
+          "remoteCNM": not bool_pref("remote.parent-navigation.enabled"),
+          "incOriginInit": os.environ.get("MOZ_ENABLE_INC_ORIGIN_INIT") == "1",
           }
     rv.update(run_info_browser_version(**kwargs))
 
@@ -245,12 +257,14 @@ def update_properties():
     return ([
         "os",
         "debug",
+        "display",
         "fission",
         "processor",
         "swgl",
         "asan",
         "tsan",
         "remoteAsyncEvents",
+        "remoteCNM"
         "sessionHistoryInParent",
         "subsuite"], {
         "os": ["version"],
@@ -376,7 +390,8 @@ class FirefoxInstanceManager:
                           self.e10s)
 
         args = self.binary_args[:] if self.binary_args else []
-        args += [cmd_arg("marionette"), "about:blank"]
+        args += [cmd_arg("marionette"),
+                 cmd_arg("remote-allow-system-access"), "about:blank"]
 
         debug_args, cmd = browser_command(self.binary,
                                           args,
@@ -750,6 +765,9 @@ class ProfileCreator:
 
         if self.test_type == "wdspec":
             profile.set_preferences({"remote.prefs.recommended": True})
+            profile.set_preferences({
+                "geo.provider.network.url": "https://web-platform.test:8444/webdriver/tests/support/http_handlers/geolocation_override.py"
+            })
 
         if self.debug_test:
             profile.set_preferences({"devtools.console.stdout.content": True})
@@ -818,9 +836,7 @@ class FirefoxBrowser(Browser):
                  browser_channel="nightly", headless=None, preload_browser=False,
                  specialpowers_path=None, debug_test=False, allow_list_paths=None,
                  gmp_path=None, **kwargs):
-        Browser.__init__(self, logger)
-
-        self.logger = logger
+        super().__init__(logger, **kwargs)
 
         if timeout_multiplier:
             self.init_timeout = self.init_timeout * timeout_multiplier
@@ -905,7 +921,8 @@ class FirefoxBrowser(Browser):
             extensions.append(self.specialpowers_path)
         return ExecutorBrowser, {"marionette_port": self.instance.marionette_port,
                                  "extensions": extensions,
-                                 "supports_devtools": True}
+                                 "supports_devtools": True,
+                                 "supports_window_resize": True}
 
     def check_crash(self, process, test):
         return log_gecko_crashes(self.logger,
@@ -925,7 +942,7 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
                  headless=None, debug_test=False, profile_creator_cls=ProfileCreator,
                  allow_list_paths=None, gmp_path=None, **kwargs):
 
-        super().__init__(logger, binary, webdriver_binary, webdriver_args)
+        super().__init__(logger, binary, webdriver_binary, webdriver_args, **kwargs)
         self.binary = binary
         self.package_name = package_name
         self.webdriver_binary = webdriver_binary

@@ -1,5 +1,5 @@
 // META: title=test WebNN API reduction operations
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -71,6 +71,30 @@ const reduceLogSumTests = [
         'reduceLogSumOutput': {
           'data': 4.167413234710693,
           'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceLogSum float32 1D constant tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceLogSumInput': {
+          'data': [64.54827117919922, 64.54827117919922],
+          'descriptor': {shape: [2], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceLogSum',
+        'arguments':
+            [{'input': 'reduceLogSumInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceLogSumOutput'
+      }],
+      'expectedOutputs': {
+        'reduceLogSumOutput': {
+          'data': [4.167413234710693, 4.167413234710693],
+          'descriptor': {shape: [2], dataType: 'float32'}
         }
       }
     }

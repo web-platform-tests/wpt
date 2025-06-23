@@ -1,5 +1,5 @@
 // META: title=test WebNN API subgraph with multiple operations
-// META: global=window,dedicatedworker
+// META: global=window,worker
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -2518,6 +2518,45 @@ const subgraphTests = [
       'expectedOutputs': {
         'output': {
           'data': [0.9, 1.0, 1.1, 1.2],
+          'descriptor': {shape: [4], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'float16 graph with float32 input and output',
+    'graph': {
+      'inputs': {
+        'input': {
+          'data': [1, 2, 3, 4],
+          'descriptor': {shape: [4], dataType: 'float32'}
+        },
+        'weight': {
+          'data': [2],
+          'descriptor': {shape: [], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [
+        {
+          'name': 'cast',
+          'arguments': [{'input': 'input'}, {'type': 'float16'}],
+          'outputs': 'castOutput',
+        },
+        {
+          'name': 'add',
+          'arguments': [{'a': 'castOutput'}, {'b': 'weight'}],
+          'outputs': 'addOutput'
+        },
+        {
+          'name': 'cast',
+          'arguments': [{'input': 'addOutput'}, {'type': 'float32'}],
+          'outputs': 'output'
+        },
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [3, 4, 5, 6],
           'descriptor': {shape: [4], dataType: 'float32'}
         }
       }

@@ -42,7 +42,27 @@ script
 |   "xxx"
 
 #data
+<a href="https://{{host}}/" onclick="2+2" one="two">
+#document
+| <a>
+|   href="https://{{host}}/"
+|   one="two"
+|   onclick="2+2"
+
+#data
+<a href="https://{{host}}/" onclick="2+2" one="two">
+#config
+{ "elements": ["a"], "attributes": ["href", "onclick", "one"]}
+#document
+| <a>
+|   href="https://{{host}}/"
+|   onclick="2+2"
+|   one="two"
+
+#data
 <img src="https://{{host}}/test-image" onclick="2+2" one="two">
+#config
+{ "elements": ["img"], "attributes": ["src", "onclick", "one"]}
 #document
 | <img>
 |   onclick="2+2"
@@ -50,11 +70,10 @@ script
 |   src="https://{{host}}/test-image"
 
 #data
-<img src="https://{{host}}/test-image" onclick="2+2" one="two">
-#config
-{ "attributes": ["src", "onclick", "one"]}
+<p data-x="1" data-y="2" data-z="3">
 #document
-| <img>
-|   onclick="2+2"
-|   one="two"
-|   src="https://{{host}}/test-image"
+| <p>
+|   data-x="1"
+|   data-y="2"
+|   data-z="3"
+

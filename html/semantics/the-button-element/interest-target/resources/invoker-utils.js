@@ -14,6 +14,11 @@ async function clickOn(element) {
       .send();
   await waitForRender();
 }
+async function focusOn(element) {
+  element.focus();
+  await waitForRender();
+  assert_equals(document.activeElement,element,'focus should be on element');
+}
 async function hoverOver(element) {
   await waitForRender();
   let rect = element.getBoundingClientRect();
@@ -25,37 +30,77 @@ async function hoverOver(element) {
       .send();
   await waitForRender();
 }
-let mousemoveInfo;
-function mouseOverAndRecord(element) {
-  mousemoveInfo?.controller.abort();
-  const controller = new AbortController();
-  mousemoveInfo = {element, controller, moved: false, started: performance.now()};
-  document.addEventListener("mousemove", (e) => {mousemoveInfo.moved = true;}, {signal: controller.signal});
-  return (new test_driver.Actions())
-    .pointerMove(0, 0, {origin: element})
+async function longPress(element) {
+  await waitForRender();
+  let rect = element.getBoundingClientRect();
+  // FIXME: Switch to pointerMove(0, 0, {origin: element}) once
+  // https://github.com/web-platform-tests/wpt/issues/41257 is fixed.
+  const x = Math.round(rect.x + rect.width / 2);
+  const y = Math.round(rect.y + rect.height / 2);
+  await new test_driver.Actions()
+    .addPointer("touchPointer", "touch")
+    .pointerMove(x, y, {sourceName: "touchPointer"})
+    .pointerDown({sourceName: "touchPointer"})
+    // This needs to be long enough to trigger long-press on all platforms:
+    .pause(1000, "pointer", {sourceName: "touchPointer"})
+    .pointerUp({sourceName: "touchPointer"})
     .send();
+  await waitForRender();
+}
+function mouseOverAndRecord(t,element) {
+  let timingInfo = {element, started: performance.now()};
+  return (new test_driver.Actions())
+      .pointerMove(0, 0, {origin: element})
+      .send()
+      .then(() => timingInfo);
+}
+function focusAndRecord(t,element) {
+  let timingInfo = {element, started: performance.now()};
+  element.focus();
+  return timingInfo;
+}
+async function hoverOrFocus(invokerMethod,element) {
+  if (invokerMethod === 'hover') {
+    await hoverOver(element);
+  } else {
+    assert_equals(invokerMethod,'focus');
+    element.focus();
+    await waitForRender();
+  }
+}
+async function mouseOverOrFocusAndRecord(t,invokerMethod,element) {
+  if (invokerMethod === 'hover') {
+    return await mouseOverAndRecord(t,element);
+  } else {
+    assert_equals(invokerMethod,'focus');
+    return focusAndRecord(t,element);
+  }
 }
 // Note that this may err on the side of being too large (reporting a number
 // that is larger than the actual time since the mouseover happened), due to how
-// `mousemoveInfo.started` is initialized, on first mouse move. However, this
+// `timingInfo.started` is initialized, on first mouse move. However, this
 // function is intended to be used as a detector for the test harness taking too
 // long for some tests, so it's ok to be conservative.
-function msSinceMouseOver() {
-  return performance.now() - mousemoveInfo.started;
-}
-function assertMouseStillOver(element) {
-  assert_equals(mousemoveInfo.element, element, 'Broken test harness');
-  assert_false(mousemoveInfo.moved,'Broken test harness');
+function msSinceMouseOver(timingInfo) {
+  return performance.now() - timingInfo.started;
 }
 async function waitForHoverTime(hoverWaitTimeMs) {
   await new Promise(resolve => step_timeout(resolve,hoverWaitTimeMs));
   await waitForRender();
 };
 
-function createPopoverAndInvokerForHoverTests(test, showdelayMs, hideDelayMs) {
+async function createPopoverAndInvokerForHoverTests(test, showdelayMs, hideDelayMs) {
+  const unrelated = document.createElement('div');
+  unrelated.tabIndex = 0;
+  document.body.appendChild(unrelated);
+  unrelated.textContent = 'Unrelated';
+  unrelated.setAttribute('style','position:fixed; top:0;');
+  // Ensure we never hover over or focus on an active interesttarget element.
+  unrelated.focus();
+  await hoverOver(unrelated);
   const popover = document.createElement('div');
   popover.popover = 'auto';
-  popover.setAttribute('style','top: 200px;');
+  popover.setAttribute('style','inset:auto; top: 100px;');
   popover.textContent = 'Popover';
   document.body.appendChild(popover);
   let invoker = document.createElement('button');
@@ -63,8 +108,8 @@ function createPopoverAndInvokerForHoverTests(test, showdelayMs, hideDelayMs) {
   invoker.setAttribute('style',`
     interest-target-show-delay: ${showdelayMs}ms;
     interest-target-hide-delay: ${hideDelayMs}ms;
-    position:relative;
-    top:100px;
+    position:fixed;
+    top:200px;
     width:fit-content;
     height:fit-content;
     `);
@@ -74,15 +119,30 @@ function createPopoverAndInvokerForHoverTests(test, showdelayMs, hideDelayMs) {
   assert_equals(actualShowDelay,showdelayMs,'interest-target-show-delay is incorrect');
   const actualHideDelay = Number(getComputedStyle(invoker).interestTargetHideDelay.slice(0,-1))*1000;
   assert_equals(actualHideDelay,hideDelayMs,'interest-target-hide-delay is incorrect');
-  const unrelated = document.createElement('div');
-  document.body.appendChild(unrelated);
-  unrelated.textContent = 'Unrelated';
-  unrelated.setAttribute('style','position:relative; top:0;');
-  test.add_cleanup(async () => {
+  test.add_cleanup(() => {
     popover.remove();
     invoker.remove();
     unrelated.remove();
-    await waitForRender();
   });
+  assert_false(popover.matches(':popover-open'),'The popover should start out closed');
   return {popover, invoker, unrelated};
+}
+async function sendLoseInterestHotkey() {
+  const kEscape = '\uE00C';
+  await new test_driver.Actions()
+    .keyDown(kEscape)
+    .keyUp(kEscape)
+    .send();
+  await waitForRender();
+}
+async function sendShowInterestHotkey() {
+  const kAlt = "\uE00A";
+  const kArrowUp = '\uE013';
+  await new test_driver.Actions()
+    .keyDown(kAlt)
+    .keyDown(kArrowUp)
+    .keyUp(kArrowUp)
+    .keyUp(kAlt)
+    .send();
+  await waitForRender();
 }

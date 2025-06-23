@@ -1,6 +1,6 @@
 from setuptools import setup
 
-PACKAGE_VERSION = '4.0.2'
+PACKAGE_VERSION = '4.0.3'
 deps = [
     "h2>=4.1.0",
     "pywebsocket3>=4.0.2",
@@ -19,7 +19,7 @@ setup(name='wptserve',
       author_email='james@hoppipolla.co.uk',
       url='http://wptserve.readthedocs.org/',
       license='BSD',
-      packages=['wptserve', 'wptserve.sslutils'],
+      packages=['wptserve', 'wptserve.sslutils', 'wptserve.cgi'],
       include_package_data=True,
       zip_safe=False,
       install_requires=deps

@@ -1,5 +1,5 @@
 // META: title=test WebNN API dequantizeLinear operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -100,7 +100,52 @@ const dequantizeLinearTests = [
     }
   },
   {
-    'name': 'dequantizeLinear uint8 1D constant tensor broadcasting zeroPoint',
+    'name': 'dequantizeLinear uint8 1D constant tensor',
+    'graph': {
+      'inputs': {
+        'dequantizeLinearInput': {
+          'data': [12, 24, 35, 123],
+          'descriptor': {shape: [4], dataType: 'uint8'},
+          'constant': true
+        },
+        'dequantizeLinearScale': {
+          'data': [
+            9.343092918395996,
+            0.2800687253475189,
+            4.617084980010986,
+            1.1202747821807861,
+          ],
+          'descriptor': {shape: [4], dataType: 'float32'},
+          'constant': true
+        },
+        'dequantizeLinearZeroPoint': {
+          'data': [128, 128, 128, 128],
+          'descriptor': {shape: [4], dataType: 'uint8'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'dequantizeLinear',
+        'arguments': [
+          {'input': 'dequantizeLinearInput'},
+          {'scale': 'dequantizeLinearScale'},
+          {'zeroPoint': 'dequantizeLinearZeroPoint'}
+        ],
+        'outputs': 'dequantizeLinearOutput'
+      }],
+      'expectedOutputs': {
+        'dequantizeLinearOutput': {
+          'data': [
+            -1083.798828125, -29.127147674560547, -429.388916015625,
+            -5.601373672485352
+          ],
+          'descriptor': {shape: [4], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'dequantizeLinear uint8 1D constant tensor with negative scale',
     'graph': {
       'inputs': {
         'dequantizeLinearInput': {
@@ -542,9 +587,7 @@ const dequantizeLinearTests = [
         },
         'dequantizeLinearScale': {
           'data': [
-            1.1202747821807861,
-            -4.617084980010986,
-            6.2405495643615723,
+            1.1202747821807861, -4.617084980010986, 6.2405495643615723,
             3.841923713684082
           ],
           'descriptor': {shape: [2, 2], dataType: 'float32'},
@@ -576,12 +619,163 @@ const dequantizeLinearTests = [
       }
     }
   },
+  {
+    'name': 'dequantizeLinear int32 1D tensor with float32 scalar scale',
+    'graph': {
+      'inputs': {
+        'dequantizeLinearInput': {
+          'data': [12345, 23946213],
+          'descriptor': {shape: [2], dataType: 'int32'},
+          'constant': false
+        },
+        'dequantizeLinearScale': {
+          'data': [1.1202747821807861, 0.2800687253475189],
+          'descriptor': {shape: [2], dataType: 'float32'},
+          'constant': true
+        },
+        'dequantizeLinearZeroPoint': {
+          'data': [32345, -2445234],
+          'descriptor': {shape: [2], dataType: 'int32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'dequantizeLinear',
+        'arguments': [
+          {'input': 'dequantizeLinearInput'},
+          {'scale': 'dequantizeLinearScale'},
+          {'zeroPoint': 'dequantizeLinearZeroPoint'}
+        ],
+        'outputs': 'dequantizeLinearOutput'
+      }],
+      'expectedOutputs': {
+        'dequantizeLinearOutput': {
+          'data': [-22405.495643615723, 7391418.921366602],
+          'descriptor': {shape: [2], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'dequantizeLinear as an intermediate node',
+    'graph': {
+      'inputs': {
+        'dequantizeLinearInput': {
+          'data': [34, 23],
+          'descriptor': {shape: [2, 1], dataType: 'int32'},
+          'constant': false
+        },
+        'dequantizeLinearScale': {
+          'data': [1.1202747821807861, 0.2800687253475189],
+          'descriptor': {shape: [2], dataType: 'float32'},
+          'constant': true
+        },
+        'dequantizeLinearZeroPoint': {
+          'data': [35, -24],
+          'descriptor': {shape: [2], dataType: 'int32'},
+          'constant': true
+        }
+      },
+      'operators': [
+        {
+          'name': 'transpose',
+          'arguments': [
+            {'input': 'dequantizeLinearInput'}, {
+              'options': {
+                'permutation': [1, 0],
+              }
+            }
+          ],
+          'outputs': 'transposeOutput'
+        },
+        {
+          'name': 'reshape',
+          'arguments': [{'input': 'transposeOutput'}, {'newShape': [1, 1, 2]}],
+          'outputs': 'reshapeOutput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'reshapeOutput'}, {'scale': 'dequantizeLinearScale'},
+            {'zeroPoint': 'dequantizeLinearZeroPoint'}
+          ],
+          'outputs': 'dequantizeLinearOutput'
+        }
+      ],
+      'expectedOutputs': {
+        'dequantizeLinearOutput': {
+          'data': [-1.1202747821807861, 13.163229942321777],
+          'descriptor': {shape: [1, 1, 2], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  ,
+  {
+    'name':
+        'quantizeLinear then dequantizeLinear with different scale and zero_point',
+    'graph': {
+      'inputs': {
+        'quantizeLinearInput': {
+          'data': [-1.1202747821807861, 13.163229942321777],
+          'descriptor': {shape: [2], dataType: 'float32'},
+          'constant': false
+        },
+        'quantizeLinearScale': {
+          'data': [0.1202747821807861, 1.2800687253475189],
+          'descriptor': {shape: [2], dataType: 'float32'},
+          'constant': true
+        },
+        'quantizeLinearZeroPoint': {
+          'data': [12, -21],
+          'descriptor': {shape: [2], dataType: 'int8'},
+          'constant': true
+        },
+        'dequantizeLinearScale': {
+          'data': [1.1202747821807861, 0.2800687253475189],
+          'descriptor': {shape: [2], dataType: 'float32'},
+          'constant': true
+        },
+        'dequantizeLinearZeroPoint': {
+          'data': [35, -24],
+          'descriptor': {shape: [2], dataType: 'int8'},
+          'constant': true
+        }
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'quantizeLinearInput'}, {'scale': 'quantizeLinearScale'},
+            {'zeroPoint': 'quantizeLinearZeroPoint'}
+          ],
+          'outputs': 'quantizeLinearOutput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizeLinearOutput'},
+            {'scale': 'dequantizeLinearScale'},
+            {'zeroPoint': 'dequantizeLinearZeroPoint'}
+          ],
+          'outputs': 'dequantizeLinearOutput'
+        }
+      ],
+      'expectedOutputs': {
+        'dequantizeLinearOutput': {
+          'data': [-35.848793029785156, 3.6408934593200684],
+          'descriptor': {shape: [2], dataType: 'float32'}
+        }
+      }
+    }
+  },
 ];
 
 if (navigator.ml) {
   dequantizeLinearTests.forEach((test) => {
     webnn_conformance_test(
-        buildAndExecuteGraph, getDequantizeLinearPrecisionTolerance, test);
+        buildAndExecuteGraph, getDequantizeLinearPrecisionTolerance, test,
+        /*cast_to_supported_type=*/ true);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

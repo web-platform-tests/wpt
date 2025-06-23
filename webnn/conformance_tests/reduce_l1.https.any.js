@@ -1,5 +1,5 @@
 // META: title=test WebNN API reduction operations
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -69,6 +69,29 @@ const reduceL1Tests = [
         'reduceL1Output': {
           'data': 5.50882625579834,
           'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceL1 float32 1D constant tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceL1Input': {
+          'data': [-5.50882625579834, 5.50882625579833],
+          'descriptor': {shape: [2], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceL1',
+        'arguments': [{'input': 'reduceL1Input'}, {'options': {'axes': []}}],
+        'outputs': 'reduceL1Output'
+      }],
+      'expectedOutputs': {
+        'reduceL1Output': {
+          'data': [5.50882625579834, 5.50882625579833],
+          'descriptor': {shape: [2], dataType: 'float32'}
         }
       }
     }
@@ -1106,6 +1129,64 @@ const reduceL1Tests = [
         'reduceL1Output': {
           'data': [108.4375, 315.5, 359.5, 309],
           'descriptor': {shape: [2, 1, 2, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'reduceL1 int32 4D tensor options.axes with options.keepDimensions=true',
+    'graph': {
+      'inputs': {
+        'reduceL1Input': {
+          'data': [
+            5,  50, 1,  84, 15, 52, 9,  28, 12, 11, 86, 64,
+            71, 76, 41, 97, 31, 6,  61, 69, 38, 52, 22, 99
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceL1',
+        'arguments': [
+          {'input': 'reduceL1Input'},
+          {'options': {'axes': [1, 3], 'keepDimensions': true}}
+        ],
+        'outputs': 'reduceL1Output'
+      }],
+      'expectedOutputs': {
+        'reduceL1Output': {
+          'data': [105, 312, 356, 307],
+          'descriptor': {shape: [2, 1, 2, 1], dataType: 'int32'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'reduceL1 uint32 4D tensor options.axes with options.keepDimensions=false',
+    'graph': {
+      'inputs': {
+        'reduceL1Input': {
+          'data': [
+            5,  50, 1,  84, 15, 52, 9,  28, 12, 11, 86, 64,
+            71, 76, 41, 97, 31, 6,  61, 69, 38, 52, 22, 99
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint32'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceL1',
+        'arguments': [
+          {'input': 'reduceL1Input'},
+          {'options': {'axes': [0, 2], 'keepDimensions': false}}
+        ],
+        'outputs': 'reduceL1Output'
+      }],
+      'expectedOutputs': {
+        'reduceL1Output': {
+          'data': [257, 172, 100, 133, 205, 213],
+          'descriptor': {shape: [2, 3], dataType: 'uint32'}
         }
       }
     }

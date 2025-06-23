@@ -51,6 +51,7 @@ TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.sxg
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.wbn
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.avif
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.annexb
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.crx
 
 ## .gitignore
 W3C-TEST.ORG: .gitignore
@@ -101,6 +102,7 @@ TRAILING WHITESPACE: webvtt/parsing/file-parsing/support/*.vtt
 TRAILING WHITESPACE: webvtt/parsing/file-parsing/tests/support/*.vtt
 TRAILING WHITESPACE: xhr/resources/headers-some-are-empty.asis
 TRAILING WHITESPACE: content-security-policy/support/manifest.json
+TRAILING WHITESPACE: dom/xslt/resources/testu1LINE.xml
 
 # Intentional use of print statements
 PRINT STATEMENT: dom/nodes/Document-createElement-namespace-tests/generate.py
@@ -124,6 +126,7 @@ CONSOLE: webaudio/resources/audit.js:41
 # Intentional use of console.*
 CONSOLE: infrastructure/webdriver/bidi/subscription.html
 CONSOLE: infrastructure/webdriver/bidi/subscription.window.js
+CONSOLE: html/editing/dnd/events/ua-shadow-contents-manual.html
 
 # use of console in a public library - annotation-model ensures
 # it is not actually used
@@ -170,6 +173,7 @@ SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
 SET TIMEOUT: encrypted-media/scripts/playback-temporary-events.js
 SET TIMEOUT: fedcm/support/fedcm-iframe.html
 SET TIMEOUT: fedcm/support/fedcm/disconnect-iframe.html
+SET TIMEOUT: fedcm/support/login_delay.html
 SET TIMEOUT: fetch/fetch-later/resources/fetch-later-helper.js
 SET TIMEOUT: fetch/metadata/resources/helper.sub.js
 SET TIMEOUT: fetch/metadata/resources/message-opener.html
@@ -261,6 +265,7 @@ SET TIMEOUT: resource-timing/resources/nested-contexts.js
 SET TIMEOUT: reporting/resources/first-csp-report.https.sub.html
 SET TIMEOUT: reporting/resources/second-csp-report.https.sub.html
 SET TIMEOUT: scheduler/tentative/yield/yield-inherit-across-promises.any.js
+SET TIMEOUT: scheduler/tentative/yield/yield-scheduling-state-cleared.any.js
 SET TIMEOUT: scheduler/tentative/yield/yield-priority-timers.any.js
 SET TIMEOUT: secure-contexts/basic-popup-and-iframe-tests.https.js
 SET TIMEOUT: service-workers/cache-storage/cache-abort.https.any.js
@@ -280,11 +285,17 @@ SET TIMEOUT: service-workers/service-worker/resources/opaque-response-being-prel
 SET TIMEOUT: service-workers/service-worker/resources/opaque-response-preloaded-xhr.html
 SET TIMEOUT: service-workers/service-worker/resources/performance-timeline-worker.js
 SET TIMEOUT: service-workers/service-worker/resources/resource-timing-worker.js
+SET TIMEOUT: soft-navigation-heuristics/smoke/tentative/task-attribution.html
 SET TIMEOUT: shadow-dom/Document-prototype-currentScript.html
 SET TIMEOUT: shadow-dom/scroll-to-the-fragment-in-shadow-tree.html
 SET TIMEOUT: shadow-dom/slotchange-event.html
+SET TIMEOUT: subresource-integrity/integrity-policy/script.https.html
 SET TIMEOUT: trusted-types/support/block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.js
 SET TIMEOUT: trusted-types/support/DOMWindowTimers-setTimeout-setInterval.js
+SET TIMEOUT: trusted-types/support/should-sink-type-mismatch-violation-be-blocked-by-csp-002-worker-multiple-violations.js
+SET TIMEOUT: trusted-types/support/should-sink-type-mismatch-violation-be-blocked-by-csp-location.js
+SET TIMEOUT: trusted-types/support/trusted-types-reporting-check-report-sink-mismatch.js
+SET TIMEOUT: trusted-types/support/trusted-types-reporting-for-DOMWindowTimers-setTimeout-setInterval.js
 SET TIMEOUT: user-timing/*
 SET TIMEOUT: web-animations/crashtests/reparent-animating-element-002.html
 SET TIMEOUT: web-animations/timing-model/animations/*
@@ -387,6 +398,7 @@ SET TIMEOUT: css/css-fonts/font-display/font-display-preload.html
 SET TIMEOUT: css/css-view-transitions/no-painting-while-render-blocked.html
 SET TIMEOUT: document-policy/font-display/override-to-optional.tentative.html
 SET TIMEOUT: feature-policy/experimental-features/resources/focus-without-user-activation-iframe-tentative.html
+SET TIMEOUT: geolocation/watchposition-timeout.https.window.js
 SET TIMEOUT: permissions-policy/experimental-features/resources/focus-without-user-activation-iframe-tentative.html
 SET TIMEOUT: html/browsers/windows/auxiliary-browsing-contexts/resources/close-opener.html
 SET TIMEOUT: html/cross-origin-embedder-policy/resources/reporting-worker.js
@@ -400,6 +412,7 @@ SET TIMEOUT: requestidlecallback/deadline-after-expired-timer.html
 SET TIMEOUT: resources/*
 SET TIMEOUT: scheduler/tentative/current-task-signal-async-abort.any.js
 SET TIMEOUT: scheduler/tentative/current-task-signal-async-priority.any.js
+SET TIMEOUT: screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html
 SET TIMEOUT: speculation-rules/prerender/resources/activation-start.html
 SET TIMEOUT: speculation-rules/prerender/resources/prerender-response-code.html
 SET TIMEOUT: speculation-rules/prerender/resources/prerender-while-prerender-outer.html
@@ -412,6 +425,7 @@ SET TIMEOUT: speculation-rules/prerender/resources/media-play.html
 SET TIMEOUT: html/browsers/browsing-the-web/back-forward-cache/timers.html
 SET TIMEOUT: dom/abort/crashtests/timeout-close.html
 SET TIMEOUT: storage-access-api/storage-access-beyond-cookies.locks.sub.https.window.js
+SET TIMEOUT: pointerevents/crashtests/longpress-crash.html
 
 # setTimeout use in reftests
 SET TIMEOUT: acid/acid3/test.html
@@ -653,6 +667,8 @@ AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-014-ref.html
 AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-metrics-override.html
 AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-metrics-override-ref.html
 AHEM SYSTEM FONT: css/css-fonts/line-gap-override.html
+AHEM SYSTEM FONT: css/css-fonts/matching/font-unicode-presented-as-emoji-outline.html
+AHEM SYSTEM FONT: css/css-fonts/matching/font-unicode-presented-as-emoji-outline-ref.html
 AHEM SYSTEM FONT: css/css-fonts/parsing/font-size-adjust-computed.html
 AHEM SYSTEM FONT: css/css-fonts/size-adjust-unicode-range-system-fallback.html
 AHEM SYSTEM FONT: css/css-overflow/line-clamp/block-ellipsis-010.html
@@ -691,7 +707,6 @@ TESTHARNESS-IN-OTHER-TYPE: css/css-text/white-space/pre-line-br-with-whitespace-
 TESTHARNESS-IN-OTHER-TYPE: css/css-text/white-space/pre-with-whitespace-crash.html
 TESTHARNESS-IN-OTHER-TYPE: css/css-writing-modes/bidi-inline-fragment-crash.html
 TESTHARNESS-IN-OTHER-TYPE: dom/svg-insert-crash.html
-TESTHARNESS-IN-OTHER-TYPE: editing/run/first-letter-crossing-engine-boundary-crash.html
 TESTHARNESS-IN-OTHER-TYPE: html/canvas/element/manual/wide-gamut-canvas/imagedata-no-color-settings-crash.html
 TESTHARNESS-IN-OTHER-TYPE: html/semantics/embedded-content/the-object-element/block-object-with-ruby-crash.html
 TESTHARNESS-IN-OTHER-TYPE: html/semantics/forms/the-input-element/time-datalist-crash.html
@@ -808,6 +823,7 @@ TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/change-shipping-address-manual.h
 TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/change-shipping-option-manual.https.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/payment-request-event-manual.https.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/supports-shipping-contact-delegation-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: speech-api/SpeechRecognition-phrases-manual.https.html
 
 # Tests automatically imported from the WebAssembly/spec repository that should be removed after getting fixed upstream.
 SET TIMEOUT: wasm/core/js/harness/testharness.js

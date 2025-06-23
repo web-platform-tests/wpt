@@ -1,5 +1,5 @@
 // META: title=test WebNN API element-wise logicalOr operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -414,7 +414,9 @@ const logicalOrTests = [
 
 if (navigator.ml) {
   logicalOrTests.forEach((test) => {
-    webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
+    webnn_conformance_test(
+        buildAndExecuteGraph, getPrecisionTolerance, test,
+        /*cast_to_supported_type=*/true);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

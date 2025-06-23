@@ -1,5 +1,5 @@
 // META: title=test WebNN API element-wise equal operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -987,7 +987,8 @@ const equalTests = [
 if (navigator.ml) {
   equalTests.forEach((test) => {
     webnn_conformance_test(
-        buildAndExecuteGraph, getEqualPrecisionTolerance, test);
+        buildAndExecuteGraph, getEqualPrecisionTolerance, test,
+        /*cast_to_supported_type=*/true);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

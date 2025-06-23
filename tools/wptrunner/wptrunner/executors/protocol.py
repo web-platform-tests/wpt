@@ -5,7 +5,11 @@ import traceback
 from http.client import HTTPConnection
 
 from abc import ABCMeta, abstractmethod
-from typing import Any, Awaitable, Callable, ClassVar, List, Mapping, Optional, Tuple, Type
+from typing import Any, Awaitable, Callable, ClassVar, List, Mapping, Optional, \
+    Tuple, Type, TYPE_CHECKING, Union
+
+if TYPE_CHECKING:
+    from webdriver.bidi.undefined import Undefined
 
 
 def merge_dicts(target, source):
@@ -331,10 +335,41 @@ class AccessibilityProtocolPart(ProtocolPart):
         pass
 
 
+class WebExtensionsProtocolPart(ProtocolPart):
+    """Protocol part for managing WebExtensions"""
+    __metaclass__ = ABCMeta
+
+    name = "web_extensions"
+
+    @abstractmethod
+    def install_web_extension(self, extension):
+        pass
+
+    @abstractmethod
+    def uninstall_web_extension(self, extension_id):
+        pass
+
+
 class BidiBluetoothProtocolPart(ProtocolPart):
     """Protocol part for managing BiDi events"""
     __metaclass__ = ABCMeta
     name = "bidi_bluetooth"
+
+    @abstractmethod
+    async def handle_request_device_prompt(self,
+                                           context: str,
+                                           prompt: str,
+                                           accept: bool,
+                                           device: str
+                                           ) -> None:
+        """
+        Handles a bluetooth device prompt.
+        :param context: Browsing context to set the simulated adapter to.
+        :param prompt: The id of a bluetooth device prompt.
+        :param accept: Whether to accept a bluetooth device prompt.
+        :param device: The device id from a bluetooth device prompt to be accepted.
+        """
+        pass
 
     @abstractmethod
     async def simulate_adapter(self,
@@ -347,6 +382,55 @@ class BidiBluetoothProtocolPart(ProtocolPart):
         """
         pass
 
+    @abstractmethod
+    async def disable_simulation(self,
+                                 context: str) -> None:
+        """
+        Disables bluetooth simulation.
+        :param context: Browsing context to disable the simulation for.
+        """
+        pass
+
+    @abstractmethod
+    async def simulate_preconnected_peripheral(self,
+                               context: str,
+                               address: str,
+                               name: str,
+                               manufacturer_data: List[Any],
+                               known_service_uuids: List[str]) -> None:
+        """
+        Creates a simulated bluetooth peripheral.
+        :param context: Browsing context to set the simulated peripheral to.
+        :param address: The address of the simulated bluetooth peripheral.
+        :param name: The name of the simulated bluetooth peripheral.
+        :param manufacturer_data: The manufacturer data of the simulated bluetooth peripheral.
+        :param known_service_uuids: The known service uuids of the simulated bluetooth peripheral.
+        """
+        pass
+
+    @abstractmethod
+    async def simulate_gatt_connection_response(self,
+                               context: str,
+                               address: str,
+                               code: int) -> None:
+        """
+        Simulates a GATT connection response from simulated bluetooth peripheral.
+        :param context: Browsing context to set the simulated peripheral to.
+        :param address: The address of the simulated bluetooth peripheral.
+        :param code: The GATT connection response code of the simulated bluetooth peripheral.
+        """
+        pass
+
+    @abstractmethod
+    async def simulate_gatt_disconnection(self,
+                               context: str,
+                               address: str) -> None:
+        """
+        Simulates a GATT disconnection from simulated bluetooth peripheral.
+        :param context: Browsing context to set the simulated peripheral to.
+        :param address: The address of the simulated bluetooth peripheral.
+        """
+        pass
 
 class BidiBrowsingContextProtocolPart(ProtocolPart):
     """Protocol part for managing BiDi events"""
@@ -409,6 +493,19 @@ class BidiPermissionsProtocolPart(ProtocolPart):
 
     @abstractmethod
     async def set_permission(self, descriptor, state, origin):
+        pass
+
+
+class BidiEmulationProtocolPart(ProtocolPart):
+    """Protocol part for emulation"""
+    __metaclass__ = ABCMeta
+    name = "bidi_emulation"
+
+    @abstractmethod
+    async def set_geolocation_override(self,
+            coordinates: Optional[Union[Mapping[str, Any], "Undefined"]],
+            error: Optional[Mapping[str, Any]],
+            contexts: List[str]) -> None:
         pass
 
 
@@ -976,9 +1073,33 @@ class VirtualPressureSourceProtocolPart(ProtocolPart):
         pass
 
     @abstractmethod
-    def update_virtual_pressure_source(self, source_type, sample):
+    def update_virtual_pressure_source(self, source_type, sample, own_contribution_estimate):
         pass
 
     @abstractmethod
     def remove_virtual_pressure_source(self, source_type):
+        pass
+
+class ProtectedAudienceProtocolPart(ProtocolPart):
+    """Protocol part for Protected Audience"""
+    __metaclass__ = ABCMeta
+
+    name = "protected_audience"
+
+    @abstractmethod
+    def set_k_anonymity(self, owner, name, hashes):
+        pass
+
+class DisplayFeaturesProtocolPart(ProtocolPart):
+    """Protocol part for Display Features/Viewport Segments"""
+    __metaclass__ = ABCMeta
+
+    name = "display_features"
+
+    @abstractmethod
+    def set_display_features(self, features):
+        pass
+
+    @abstractmethod
+    def clear_display_features(self):
         pass

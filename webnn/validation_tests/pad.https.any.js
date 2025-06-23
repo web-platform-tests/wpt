@@ -1,5 +1,5 @@
 // META: title=validation tests for WebNN API pad operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -77,6 +77,50 @@ const tests = [
     input: {dataType: 'float32', shape: [2, 3]},
     beginningPadding: [1, 0],
     endingPadding: [1, 2, 0],
+    options: {
+      mode: 'reflection',
+      label: label,
+    },
+  },
+  {
+    name:
+        '[pad] Throw if beginningPadding[index] is equal to inputShape[index] on reflection mode.',
+    input: {dataType: 'float32', shape: [2, 3]},
+    beginningPadding: [2, 0],
+    endingPadding: [1, 2],
+    options: {
+      mode: 'reflection',
+      label: label,
+    },
+  },
+  {
+    name:
+        '[pad] Throw if beginningPadding[index] is greater than inputShape[index] on reflection mode.',
+    input: {dataType: 'float32', shape: [2, 3]},
+    beginningPadding: [3, 0],
+    endingPadding: [1, 2],
+    options: {
+      mode: 'reflection',
+      label: label,
+    },
+  },
+  {
+    name:
+        '[pad] Throw if endingPadding[index] is equal to inputShape[index] on reflection mode.',
+    input: {dataType: 'float32', shape: [2, 3]},
+    beginningPadding: [1, 0],
+    endingPadding: [1, 3],
+    options: {
+      mode: 'reflection',
+      label: label,
+    },
+  },
+  {
+    name:
+        '[pad] Throw if endingPadding[index] is greater than inputShape[index] on reflection mode.',
+    input: {dataType: 'float32', shape: [2, 3]},
+    beginningPadding: [1, 0],
+    endingPadding: [1, 4],
     options: {
       mode: 'reflection',
       label: label,

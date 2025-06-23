@@ -23,10 +23,15 @@ html::view-transition-group(root) {
   display: none;
 }
 
-html::view-transition-group(green) {
+html::view-transition-group(*) {
   animation-play-state: paused;
   animation-duration: 3s;
   animation-timing-function: steps(2, start);
+}
+
+/* Make test fail if ID matches */
+::view-transition-group(green) {
+  border: 2px solid red;
 }
 
 #green {

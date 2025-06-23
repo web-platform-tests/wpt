@@ -1,5 +1,5 @@
 // META: title=test WebNN API concat operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -20,50 +20,6 @@ const getConcatPrecisionTolerance = (graphResources) => {
   const expectedDataType =
       getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
   return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
-const buildAndExecuteGraphWithConcat =
-    async (context, builder, graphResources) => {
-  const graphInputs = graphResources.inputs;
-  const operator = graphResources.operators[0];
-
-  const inputOperands = [];
-  const inputNameArray =
-      operator.arguments[0][Object.keys(operator.arguments[0])[0]];
-  for (const inputName of inputNameArray) {
-    const operand =
-        createOperand(context, builder, inputName, graphInputs[inputName]);
-    inputOperands.push(operand);
-  }
-
-  let outputOperand = builder[operator.name](
-      inputOperands,
-      operator.arguments[1][Object.keys(operator.arguments[1])[0]]);
-  const outputOperandName = Object.keys(graphResources.expectedOutputs)[0];
-  const expectedDescriptor =
-      graphResources.expectedOutputs[outputOperandName].descriptor;
-  if (!context.opSupportLimits().output.dataTypes.includes(
-          expectedDescriptor.dataType)) {
-    const compatibleType = findCompatibleType(
-        expectedDescriptor.dataType,
-        context.opSupportLimits().output.dataTypes);
-    outputOperand = builder.cast(outputOperand, compatibleType);
-    expectedDescriptor.castedType = compatibleType;
-  }
-
-  assertDescriptorsEquals(outputOperand, expectedDescriptor);
-
-  const namedOutputOperand = {};
-  namedOutputOperand[outputOperandName] = outputOperand;
-
-  // Compile the constructed graph.
-  const graph = await builder.build(namedOutputOperand);
-
-  // Execute the compiled graph.
-  const result = await computeGraph(
-      context, graph, graphInputs, graphResources.expectedOutputs);
-
-  return {result, namedOutputOperand};
 };
 
 const concatTests = [
@@ -2428,7 +2384,7 @@ const concatTests = [
 if (navigator.ml) {
   concatTests.forEach((test) => {
     webnn_conformance_test(
-        buildAndExecuteGraphWithConcat, getConcatPrecisionTolerance, test);
+      buildAndExecuteGraph, getConcatPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

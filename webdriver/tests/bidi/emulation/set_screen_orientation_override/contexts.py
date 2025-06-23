@@ -1,19 +1,11 @@
 import pytest
 
-from . import (SOME_BIDI_SCREEN_ORIENTATION, SOME_WEB_SCREEN_ORIENTATION,
-               ANOTHER_BIDI_SCREEN_ORIENTATION, ANOTHER_WEB_SCREEN_ORIENTATION)
-
 pytestmark = pytest.mark.asyncio
 
-TEST_PAIRS = [
-    (SOME_BIDI_SCREEN_ORIENTATION, SOME_WEB_SCREEN_ORIENTATION),
-    (ANOTHER_BIDI_SCREEN_ORIENTATION, ANOTHER_WEB_SCREEN_ORIENTATION)]
 
-
-@pytest.mark.parametrize("bidi_value,expected_web_value", TEST_PAIRS)
 async def test_contexts(
-        bidi_session, new_tab, top_context, url, get_screen_orientation,
-        bidi_value, expected_web_value):
+        bidi_session, new_tab, top_context, get_screen_orientation,
+        some_bidi_screen_orientation, some_web_screen_orientation):
     # Assert the default screen orientation is the same in both contexts.
     default_screen_orientation = await get_screen_orientation(new_tab)
     assert await get_screen_orientation(
@@ -22,11 +14,12 @@ async def test_contexts(
     # Set screen orientation override.
     await bidi_session.emulation.set_screen_orientation_override(
         contexts=[new_tab["context"]],
-        screen_orientation=bidi_value,
+        screen_orientation=some_bidi_screen_orientation,
     )
 
     # Assert screen orientation in the new context is updated.
-    assert await get_screen_orientation(new_tab) == expected_web_value
+    assert await get_screen_orientation(
+        new_tab) == some_web_screen_orientation
     # Assert screen orientation in the initial context is unchanged.
     assert await get_screen_orientation(
         top_context) == default_screen_orientation
@@ -42,10 +35,9 @@ async def test_contexts(
         top_context) == default_screen_orientation
 
 
-@pytest.mark.parametrize("bidi_value,expected_web_value", TEST_PAIRS)
 async def test_multiple_contexts(
-        bidi_session, new_tab, top_context, url, get_screen_orientation,
-        bidi_value, expected_web_value):
+        bidi_session, new_tab, top_context, get_screen_orientation,
+        some_bidi_screen_orientation, some_web_screen_orientation):
     # Assert the default screen orientation is the same in both contexts.
     default_screen_orientation = await get_screen_orientation(new_tab)
     assert await get_screen_orientation(
@@ -54,13 +46,13 @@ async def test_multiple_contexts(
     # Set screen orientation override.
     await bidi_session.emulation.set_screen_orientation_override(
         contexts=[top_context["context"], new_tab["context"]],
-        screen_orientation=bidi_value,
+        screen_orientation=some_bidi_screen_orientation,
     )
 
     # Assert screen orientations in both contexts are updated.
-    assert await get_screen_orientation(new_tab) == expected_web_value
+    assert await get_screen_orientation(new_tab) == some_web_screen_orientation
     assert await get_screen_orientation(
-        top_context) == expected_web_value
+        top_context) == some_web_screen_orientation
 
     # Reset screen orientation override o the new tab.
     await bidi_session.emulation.set_screen_orientation_override(
@@ -71,7 +63,7 @@ async def test_multiple_contexts(
     # Assert screen orientation on the new tab is the default.
     assert await get_screen_orientation(new_tab) == default_screen_orientation
     assert await get_screen_orientation(
-        top_context) == expected_web_value
+        top_context) == some_web_screen_orientation
 
     # Reset screen orientation override o the new tab.
     await bidi_session.emulation.set_screen_orientation_override(

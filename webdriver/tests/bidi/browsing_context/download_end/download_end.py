@@ -18,9 +18,13 @@ def filename():
     return str(uuid.uuid4()) + '.txt'
 
 
-@pytest.fixture
-def download_link(filename):
-    return f"data:text/plain;charset=utf-8,{CONTENT}"
+@pytest.fixture(params=['data', 'http'])
+def download_link(request, filename, inline):
+    if request.param == 'data':
+        return f"data:text/plain;charset=utf-8,{CONTENT}"
+    return inline(CONTENT,
+                  # Doctype `html_quirks` is required to avoid wrapping content.
+                  doctype="html_quirks")
 
 
 async def test_unsubscribe(bidi_session, inline, new_tab, wait_for_event,

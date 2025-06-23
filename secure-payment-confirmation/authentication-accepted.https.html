@@ -26,7 +26,8 @@ promise_test(async t => {
 
   const challenge = 'server challenge';
   const payeeOrigin = 'https://merchant.com';
-  const displayName = 'Troycard ***1234';
+  const displayName = 'Troycard';
+  const instrumentDetails = '***1234';
   const request = new PaymentRequest([{
     supportedMethods: 'secure-payment-confirmation',
     data: {
@@ -38,6 +39,7 @@ promise_test(async t => {
       instrument: {
         displayName,
         icon: ICON_URL,
+        details: instrumentDetails;
       },
     }
   }], PAYMENT_DETAILS);
@@ -65,6 +67,7 @@ promise_test(async t => {
   assert_equals(clientDataJSON.payment.total.currency, PAYMENT_DETAILS.total.amount.currency);
   assert_equals(clientDataJSON.payment.instrument.icon, ICON_URL);
   assert_equals(clientDataJSON.payment.instrument.displayName, displayName);
+  assert_equals(clientDataJSON.payment.instrument.details, instrumentDetails);
 
   // If the User Agent still supports the legacy 'rp' output parameter, it
   // should be identical to the 'rpId' output parameter. See

@@ -1,16 +1,13 @@
 import pytest
 
+from . import (SOME_BIDI_SCREEN_ORIENTATION, SOME_WEB_SCREEN_ORIENTATION,
+               ANOTHER_BIDI_SCREEN_ORIENTATION, ANOTHER_WEB_SCREEN_ORIENTATION)
+
 pytestmark = pytest.mark.asyncio
 
 TEST_PAIRS = [
-    ({
-         "natural": "landscape",
-         "type": "portrait-secondary"
-     }, {"angle": 270, "type": "portrait-secondary"}),
-    ({
-         "natural": "portrait",
-         "type": "landscape-primary"
-     }, {"angle": 90, "type": "landscape-primary"})]
+    (SOME_BIDI_SCREEN_ORIENTATION, SOME_WEB_SCREEN_ORIENTATION),
+    (ANOTHER_BIDI_SCREEN_ORIENTATION, ANOTHER_WEB_SCREEN_ORIENTATION)]
 
 
 @pytest.mark.parametrize("bidi_value,expected_web_value", TEST_PAIRS)

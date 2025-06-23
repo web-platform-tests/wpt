@@ -1828,6 +1828,203 @@ WebDriver BiDi command.</p>
 </dd></dl>
 
 <dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.bluetooth.simulate_service">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">simulate_service</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.simulate_service" title="Link to this definition">¶</a></dt>
+<dd><p>Simulates a GATT service.
+Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateservice-command">bluetooth.simulateService</a>
+WebDriver BiDi command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>object</em>) – Parameters for the command.</p></li>
+<li><p><strong>params.address</strong> (<em>string</em>) – The address of the simulated bluetooth peripheral this service belongs to. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateservice-command">bluetooth.SimulateServiceParameters:address</a> value.</p></li>
+<li><p><strong>params.uuid</strong> (<em>string</em>) – <p>The uuid of the simulated GATT service. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateservice-command">bluetooth.SimulateServiceParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.type</strong> (<em>string</em>) – <p>The type of the GATT service simulation, either “add” or “remove”. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateservice-command">bluetooth.SimulateServiceParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.context</strong> (<em>Context</em>) – The optional context parameter specifies in which browsing context the GATT service should be simulated. If not provided, the current browsing context is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the GATT service is simulated, or rejected if the operation fails.</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulate_service</span><span class="p">({</span>
+<span class="w">    </span><span class="s2">&quot;address&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;09:09:09:09:09:09&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;uuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;0000180d-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;add&quot;</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.bluetooth.simulate_characteristic">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">simulate_characteristic</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.simulate_characteristic" title="Link to this definition">¶</a></dt>
+<dd><p>Simulates a GATT characteristic.
+Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristic-command">bluetooth.simulateCharacteristic</a>
+WebDriver BiDi command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>object</em>) – Parameters for the command.</p></li>
+<li><p><strong>params.address</strong> (<em>string</em>) – The address of the simulated bluetooth peripheral the characterisitc belongs to. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristic-command">bluetooth.SimulateCharacteristicParameters:address</a> value.</p></li>
+<li><p><strong>params.serviceUuid</strong> (<em>string</em>) – <p>The uuid of the simulated GATT service the characterisitc belongs to. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristic-command">bluetooth.SimulateCharacteristicParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.characteristicUuid</strong> (<em>string</em>) – <p>The uuid of the simulated GATT characteristic. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristic-command">bluetooth.SimulateCharacteristicParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.characteristicProperties</strong> (<em>string</em>) – <p>The properties of the simulated GATT characteristic. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristic-command">bluetooth.SimulateCharacteristicParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.type</strong> (<em>string</em>) – <p>The type of the GATT characterisitc simulation, either “add” or “remove”. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristic-command">bluetooth.SimulateCharacteristicParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.context</strong> (<em>Context</em>) – The optional context parameter specifies in which browsing context the GATT characteristic should be simulated. If not provided, the current browsing context is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the GATT characteristic is simulated, or rejected if the operation fails.</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulate_characteristic</span><span class="p">({</span>
+<span class="w">    </span><span class="s2">&quot;address&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;09:09:09:09:09:09&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;serviceUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;0000180d-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;characteristicUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;00002a21-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;characteristicProperties&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="s2">&quot;read&quot;</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">     </span><span class="s2">&quot;write&quot;</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">     </span><span class="s2">&quot;notify&quot;</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;add&quot;</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.bluetooth.simulate_characteristic_response">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">simulate_characteristic_response</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.simulate_characteristic_response" title="Link to this definition">¶</a></dt>
+<dd><p>Simulates a GATT characteristic response.
+Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristicresponse-command">bluetooth.simulateCharacteristicResponse</a>
+WebDriver BiDi command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>object</em>) – Parameters for the command.</p></li>
+<li><p><strong>params.address</strong> (<em>string</em>) – The address of the simulated bluetooth peripheral. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristicresponse-command">bluetooth.SimulateCharacteristicResponseParameters:address</a> value.</p></li>
+<li><p><strong>params.serviceUuid</strong> (<em>string</em>) – <p>The uuid of the simulated GATT service the characterisitc belongs to. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristicresponse-command">bluetooth.SimulateCharacteristicResponseParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.characteristicUuid</strong> (<em>string</em>) – <p>The uuid of the simulated characteristic. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristicresponse-command">bluetooth.SimulateCharacteristicResponseParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.type</strong> (<em>string</em>) – <p>The type of the simulated GATT characteristic operation.” Can be “read”, “write”, “subscribe-to-notifications” or “unsubscribe-from-notifications”. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristicresponse-command">bluetooth.SimulateCharacteristicResponseParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.code</strong> (<em>string</em>) – <p>The simulated GATT characteristic response code. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristicresponse-command">bluetooth.SimulateCharacteristicResponseParameters:address</a> value.*</p>
+</p></li>
+<li><p><strong>params.data</strong> (<em>string</em>) – <p>The data along with the simulated GATT characteristic response. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatecharacteristicresponse-command">bluetooth.SimulateCharacteristicResponseParameters:address</a> value.**</p>
+</p></li>
+<li><p><strong>params.context</strong> (<em>Context</em>) – The optional context parameter specifies in which browsing context the GATT characteristic belongs to. If not provided, the current browsing context is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the GATT characteristic is simulated, or rejected if the operation fails.</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulate_characteristic</span><span class="p">({</span>
+<span class="w">    </span><span class="s2">&quot;address&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;09:09:09:09:09:09&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;serviceUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;0000180d-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;characteristicUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;00002a21-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;code&quot;</span><span class="o">:</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;data&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">]</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.bluetooth.simulate_descriptor">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">simulate_descriptor</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.simulate_descriptor" title="Link to this definition">¶</a></dt>
+<dd><p>Simulates a GATT descriptor.
+Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptor-command">bluetooth.simulateDescriptor</a>
+WebDriver BiDi command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>object</em>) – Parameters for the command.</p></li>
+<li><p><strong>params.address</strong> (<em>string</em>) – The address of the simulated bluetooth peripheral the descriptor belongs to. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptor-command">bluetooth.SimulateDescriptorParameters:address</a> value.</p></li>
+<li><p><strong>params.serviceUuid</strong> (<em>string</em>) – <p>The uuid of the simulated GATT service the descriptor belongs to. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptor-command">bluetooth.SimulateDescriptorParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.characteristicUuid</strong> (<em>string</em>) – <p>The uuid of the simulated GATT characterisitc the descriptor belongs to. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptor-command">bluetooth.SimulateDescriptorParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.descriptorUuid</strong> (<em>string</em>) – <p>The uuid of the simulated GATT descriptor. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptor-command">bluetooth.SimulateDescriptorParameters:address</a> value.*</p>
+</p></li>
+<li><p><strong>params.type</strong> (<em>string</em>) – <p>The type of the GATT descriptor simulation, either “add” or “remove”. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptor-command">bluetooth.SimulateDescriptorParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.context</strong> (<em>Context</em>) – The optional context parameter specifies in which browsing context the GATT descriptor should be simulated. If not provided, the current browsing context is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the GATT descriptor is simulated, or rejected if the operation fails.</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulate_descriptor</span><span class="p">({</span>
+<span class="w">    </span><span class="s2">&quot;address&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;09:09:09:09:09:09&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;serviceUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;0000180d-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;characteristicUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;00002a21-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;descriptorUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;00002901-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;add&quot;</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.bluetooth.simulate_descriptor_response">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">simulate_descriptor_response</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.simulate_descriptor_response" title="Link to this definition">¶</a></dt>
+<dd><p>Simulates a GATT descriptor response.
+Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptorresponse-command">bluetooth.simulateDescriptorResponse</a>
+WebDriver BiDi command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>object</em>) – Parameters for the command.</p></li>
+<li><p><strong>params.address</strong> (<em>string</em>) – The address of the simulated bluetooth peripheral the descriptor belongs to. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptorresponse-command">bluetooth.SimulateDescriptorResponseParameters:address</a> value.</p></li>
+<li><p><strong>params.serviceUuid</strong> (<em>string</em>) – <p>The uuid of the simulated GATT service the descriptor belongs to. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptorresponse-command">bluetooth.SimulateDescriptorResponseParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.characteristicUuid</strong> (<em>string</em>) – <p>The uuid of the simulated GATT characterisitc the descriptor belongs to. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptorresponse-command">bluetooth.SimulateDescriptorResponseParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.descriptorUuid</strong> (<em>string</em>) – <p>The uuid of the simulated GATT descriptor. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptorresponse-command">bluetooth.SimulateDescriptorResponseParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.type</strong> (<em>string</em>) – <p>The type of the simulated GATT descriptor operation. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptorresponse-command">bluetooth.SimulateDescriptorResponseParameters:address</a> value.</p>
+</p></li>
+<li><p><strong>params.code</strong> (<em>string</em>) – <p>The simulated GATT descriptor response code. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptorresponse-command">bluetooth.SimulateDescriptorResponseParameters:address</a> value.*</p>
+</p></li>
+<li><p><strong>params.data</strong> (<em>string</em>) – <p>The data along with the simulated GATT descriptor response. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulatedescriptorresponse-command">bluetooth.SimulateDescriptorResponseParameters:address</a> value.**</p>
+</p></li>
+<li><p><strong>params.context</strong> (<em>Context</em>) – The optional context parameter specifies in which browsing context the GATT descriptor belongs to. If not provided, the current browsing context is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the GATT descriptor response is simulated, or rejected if the operation fails.</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulate_descriptor_response</span><span class="p">({</span>
+<span class="w">    </span><span class="s2">&quot;address&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;09:09:09:09:09:09&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;serviceUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;0000180d-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;characteristicUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;00002a21-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;descriptorUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;00002901-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;code&quot;</span><span class="o">:</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">&quot;data&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">]</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.bidi.bluetooth.request_device_prompt_updated.subscribe">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">request_device_prompt_updated</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">subscribe</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.request_device_prompt_updated.subscribe" title="Link to this definition">¶</a></dt>
 <dd><p>Subscribes to the event. Events will be emitted only if
@@ -1921,6 +2118,104 @@ once and removed afterward.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>Promise.&lt;GattConnectionAttempted&gt;</strong> – The promise which is resolved with the event object when the event is emitted.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.bluetooth.characteristic_event_generated.subscribe">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">characteristic_event_generated</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">subscribe</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.characteristic_event_generated.subscribe" title="Link to this definition">¶</a></dt>
+<dd><p>Subscribes to the event. Events will be emitted only if
+there is a subscription for the event. This method does
+not add actual listeners. To listen to the event, use the
+<cite>on</cite> or <cite>once</cite> methods. The buffered events will be
+emitted before the command promise is resolved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>object</em>) – Parameters for the subscription.</p></li>
+<li><p><strong>params.contexts</strong> (<em>null|Array.&lt;(Context)&gt;</em>) – The optional contexts parameter specifies which browsing contexts to subscribe to the event on. It should be either an array of Context objects, or null. If null, the event will be subscribed to globally. If omitted, the event will be subscribed to on the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise.&lt;void&gt;</strong> – Resolves when the subscription is successfully done.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.bluetooth.characteristic_event_generated.on">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">characteristic_event_generated</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">on</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.characteristic_event_generated.on" title="Link to this definition">¶</a></dt>
+<dd><p>Adds an event listener for the event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>callback</strong> (<em>function</em>) – The callback to be called when the event is emitted. The callback is called with the event object as a parameter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>function</strong> – A function that removes the added event listener when called.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.bluetooth.characteristic_event_generated.once">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">characteristic_event_generated</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">once</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.characteristic_event_generated.once" title="Link to this definition">¶</a></dt>
+<dd><p>Adds an event listener for the event that is only called
+once and removed afterward.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Promise.&lt;CharacteristicEventGenerated&gt;</strong> – The promise which is resolved with the event object when the event is emitted.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.bluetooth.descriptor_event_generated.subscribe">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">descriptor_event_generated</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">subscribe</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.descriptor_event_generated.subscribe" title="Link to this definition">¶</a></dt>
+<dd><p>Subscribes to the event. Events will be emitted only if
+there is a subscription for the event. This method does
+not add actual listeners. To listen to the event, use the
+<cite>on</cite> or <cite>once</cite> methods. The buffered events will be
+emitted before the command promise is resolved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>object</em>) – Parameters for the subscription.</p></li>
+<li><p><strong>params.contexts</strong> (<em>null|Array.&lt;(Context)&gt;</em>) – The optional contexts parameter specifies which browsing contexts to subscribe to the event on. It should be either an array of Context objects, or null. If null, the event will be subscribed to globally. If omitted, the event will be subscribed to on the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise.&lt;void&gt;</strong> – Resolves when the subscription is successfully done.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.bluetooth.descriptor_event_generated.on">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">descriptor_event_generated</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">on</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.descriptor_event_generated.on" title="Link to this definition">¶</a></dt>
+<dd><p>Adds an event listener for the event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>callback</strong> (<em>function</em>) – The callback to be called when the event is emitted. The callback is called with the event object as a parameter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>function</strong> – A function that removes the added event listener when called.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.bluetooth.descriptor_event_generated.once">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">descriptor_event_generated</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">once</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.descriptor_event_generated.once" title="Link to this definition">¶</a></dt>
+<dd><p>Adds an event listener for the event that is only called
+once and removed afterward.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Promise.&lt;DescriptorEventGenerated&gt;</strong> – The promise which is resolved with the event object when the event is emitted.</p>
 </dd>
 </dl>
 </dd></dl>

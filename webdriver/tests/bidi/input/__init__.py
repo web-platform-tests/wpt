@@ -48,7 +48,7 @@ async def get_object_from_context(bidi_session, context, object_path):
 
 async def get_events(bidi_session, context):
     """Return list of key events recorded on the test_actions.html page."""
-    events = await get_object_from_context(bidi_session, context, "allEvents.events")
+    events = await get_object_from_context(bidi_session, context, "window.allEvents.events")
 
     # `key` values in `allEvents` may be escaped (see `escapeSurrogateHalf` in
     # test_actions.html), so this converts them back into unicode literals.

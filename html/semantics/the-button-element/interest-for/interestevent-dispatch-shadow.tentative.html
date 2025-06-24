@@ -58,8 +58,8 @@
     const shadow = host.attachShadow({ mode: "open" });
     const button = shadow.appendChild(document.createElement("button"));
     const interestee = host.appendChild(document.createElement("div"));
-    button.interestTargetElement = interestee;
-    button.style = "interest-target-delay: 0s";
+    button.interestForElement = interestee;
+    button.style = "interest-delay: 0s";
     let event = null;
     let eventTarget = null;
     let eventSource = null;

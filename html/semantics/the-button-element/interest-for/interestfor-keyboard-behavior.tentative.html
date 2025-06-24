@@ -11,49 +11,49 @@
 <script src="resources/invoker-utils.js"></script>
 <script src="/html/semantics/popovers/resources/popover-utils.js"></script>
 
-<button data-testcase="<button>" interesttarget=target>Button</button>
+<button data-testcase="<button>" interestfor=target>Button</button>
 
-<a data-testcase="<a>" href=foo interesttarget=target>Link</a>
+<a data-testcase="<a>" href=foo interestfor=target>Link</a>
 
 <img src="/images/blue.png" usemap="#map">
 <map id=map>
-  <area data-testcase="<area>" interesttarget=target href="/" shape=default>
+  <area data-testcase="<area>" interestfor=target href="/" shape=default>
 </map>
 
 <svg viewBox="0 0 100 100" style="width: 100px" xmlns="http://www.w3.org/2000/svg">
-  <a data-testcase="SVG <a>" href=foo interesttarget=target>
+  <a data-testcase="SVG <a>" href=foo interestfor=target>
     <text x=50 y=90>SVG A</text>
   </a>
 </svg>
 
 <div id=target popover>Popover</div>
 <button id="otherbutton">Other button</button>
-<button id="another" interesttarget=anothertarget>Another Button</button>
+<button id="another" interestfor=anothertarget>Another Button</button>
 <div id=anothertarget popover>Another Popover</div>
 
 <style>
-  [interesttarget] {
-    interest-target-delay: 0s;
+  [interestfor] {
+    interest-delay: 0s;
   }
-  [interesttarget].longhide {
-    interest-target-hide-delay: 10000s;
+  [interestfor].longhide {
+    interest-hide-delay: 10000s;
   }
 </style>
 
 <script>
-const allInterestTargetElements = document.querySelectorAll('[data-testcase]');
-assert_true(allInterestTargetElements.length > 0);
+const allInterestForElements = document.querySelectorAll('[data-testcase]');
+assert_true(allInterestForElements.length > 0);
 
 function verifyInterest(onlyElements,description) {
   if (!(onlyElements instanceof Array)) {
     onlyElements = [onlyElements];
   }
-  [...allInterestTargetElements, another].forEach(el => {
+  [...allInterestForElements, another].forEach(el => {
     const expectInterest = onlyElements.includes(el);
     assert_equals(el.matches(':has-interest'),expectInterest,`${description}, element ${el.dataset.testcase} should ${expectInterest ? "" : "NOT "}have interest`);
   })
 }
-allInterestTargetElements.forEach(el => {
+allInterestForElements.forEach(el => {
   const description = el.dataset.testcase;
   promise_test(async function (t) {
     t.add_cleanup(() => otherbutton.focus());

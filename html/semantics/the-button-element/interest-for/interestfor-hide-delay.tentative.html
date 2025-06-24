@@ -30,13 +30,13 @@ description = `method ${invokerMethod}`;
 // msSinceMouseOver() function is used to check that not-too-much time has
 // passed, and if it has, the test is simply skipped. Because of this
 // methodology, many/most of these tests will pass on browsers that do not
-// implement `interesttarget`. See the `interesttarget-basic-delays` test.
+// implement `interestfor`. See the `interestfor-basic-delays` test.
 const invokerHideDelay = 100; // The CSS delay setting.
 const hoverWaitTime = 200; // How long to wait to cover the delay for sure.
 
 async function makeTestParts(t) {
   // This ensures the tests in this file don't succeed sometimes, due to the above NOTE.
-  assert_true(HTMLAnchorElement.prototype.hasOwnProperty('interestTargetElement'),'interesttarget is not supported');
+  assert_true(HTMLAnchorElement.prototype.hasOwnProperty('interestForElement'),'interestfor is not supported');
   let {popover, invoker, unrelated} = await createPopoverAndInvokerForHoverTests(t, /*showdelayMs*/ 0, invokerHideDelay);
   let specificInvokerElement;
   invoker.innerHTML = '<span><span>Click me</span></span>';
@@ -67,7 +67,7 @@ promise_test(async (t) => {
   await hoverOrFocus(invokerMethod,unrelated);
   await waitForHoverTime(hoverWaitTime);
   assert_false(popover.matches(':popover-open'),'interest should be lost after delay');
-},`The interest-target-hide-delay causes interest to be lost after a delay, ${description}`);
+},`The interest-hide-delay causes interest to be lost after a delay, ${description}`);
 
 promise_test(async (t) => {
   const {popover,invoker,unrelated} = await makeTestParts(t);
@@ -87,7 +87,7 @@ promise_test(async (t) => {
   const {popover,invoker,unrelated} = await makeTestParts(t);
   await hoverOrFocus(invokerMethod,popover);
   await waitForHoverTime(hoverWaitTime);
-  assert_true(popover.matches(':popover-open'),'hovering the interest target element should keep it showing');
+  assert_true(popover.matches(':popover-open'),'hovering the interest for element should keep it showing');
   const token = await mouseOverOrFocusAndRecord(t,invokerMethod,unrelated);
   let showing = popover.matches(':popover-open');
   if (msSinceMouseOver(token) >= invokerHideDelay)
@@ -96,7 +96,7 @@ promise_test(async (t) => {
   await hoverOrFocus(invokerMethod,unrelated);
   await waitForHoverTime(hoverWaitTime);
   assert_false(popover.matches(':popover-open'),'hovering unrelated element should cause interest lost after delay');
-},`hovering/focusing the interest target element keeps the invoker from losing interest, ${description}`);
+},`hovering/focusing the interest for element keeps the invoker from losing interest, ${description}`);
 
 promise_test(async (t) => {
   const {popover,invoker,unrelated,specificInvokerElement} = await makeTestParts(t);

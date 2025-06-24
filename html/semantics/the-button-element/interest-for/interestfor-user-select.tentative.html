@@ -9,7 +9,7 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src='/resources/testdriver-vendor.js'></script>
 
-<button interesttarget=foo>ABCDEFGHI<span id=inside>JKLMNOPQ</span>RSTUVWXYZ</button>
+<button interestfor=foo>ABCDEFGHI<span id=inside>JKLMNOPQ</span>RSTUVWXYZ</button>
 <div>Something after the button</div>
 <div id=after>Something else</div>
 
@@ -27,5 +27,5 @@ promise_test(async function() {
   assert_not_equals(selection, "", "Something should be selected");
   assert_true(selection.includes("Something after"),'The selection should include the outside text');
   assert_false(selection.includes("RSTUVWXYZ"),'The selection should not include the button text');
-}, "Buttons with `interesttarget` should not be user-selectable");
+}, "Buttons with `interestfor` should not be user-selectable");
 </script>

@@ -12,14 +12,14 @@
 <script src="resources/invoker-utils.js"></script>
 
 <div id="interestee"></div>
-<map id="map1"><area shape="default" id="nohref" interesttarget="interestee"></map>
+<map id="map1"><area shape="default" id="nohref" interestfor="interestee"></map>
 <img id=nohref_img src="/images/blue.png" usemap="#map1">
-<map id="map2"><area href="/" shape="default" id="interestarea" interesttarget="interestee"></map>
+<map id="map2"><area href="/" shape="default" id="interestarea" interestfor="interestee"></map>
 <img id=interestarea_img src="/images/blue.png" usemap="#map2">
 <button id="otherbutton">Other Button</button>
 <style>
-  [interesttarget] {
-    interest-target-delay: 0s;
+  [interestfor] {
+    interest-delay: 0s;
   }
 </style>
 

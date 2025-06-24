@@ -35,21 +35,21 @@ description = `layout ${invokerLayout}, method ${invokerMethod}`;
 // that, the msSinceMouseOver() function is used to check that not-too-much time
 // has passed, and if it has, the test is simply skipped. Because of this
 // methodology, many/most of these tests will pass on browsers that do not
-// implement `interesttarget`. See the `interesttarget-basic-delays` test.
+// implement `interestfor`. See the `interestfor-basic-delays` test.
 
 const invokerShowDelayMs = 100; // The CSS delay setting.
 const hoverFocusWaitTimeMs = 200; // How long to wait to cover the delay for sure.
 
 async function makePopoverAndInvoker(test, invokerLayout, showdelayMs) {
   // This ensures the tests in this file don't succeed sometimes, due to the above NOTE.
-  assert_true(HTMLAnchorElement.prototype.hasOwnProperty('interestTargetElement'),'interesttarget is not supported');
+  assert_true(HTMLAnchorElement.prototype.hasOwnProperty('interestForElement'),'interestfor is not supported');
   if (showdelayMs === undefined) {
     showdelayMs = invokerShowDelayMs;
   }
   let {popover, invoker, unrelated} = await createPopoverAndInvokerForHoverTests(test, showdelayMs, /*hidedelayMs*/10000000);
   invoker.setAttribute('class','invoker');
   const originalInvoker = invoker;
-  const reassignInvokerTargetFn = (p) => {originalInvoker.interestTargetElement = p};
+  const reassignInvokerTargetFn = (p) => {originalInvoker.interestForElement = p};
   switch (invokerLayout) {
     case 'plain':
       // Invoker is just a button.
@@ -62,7 +62,7 @@ async function makePopoverAndInvoker(test, invokerLayout, showdelayMs) {
       break;
     case 'nested-offset':
       // Invoker is a child of the invoking button, and is not contained within
-      // the bounds of the interesttarget element.
+      // the bounds of the interestfor element.
       invoker.textContent = 'Invoker';
       // Reassign invoker to the child:
       invoker = invoker.appendChild(document.createElement('div'));
@@ -91,14 +91,14 @@ promise_test(async (t) => {
   assert_true(msSinceMouseOver(token) >= hoverFocusWaitTimeMs,'waitForHoverTime should wait the specified time');
   assert_true(popover.matches(':popover-open'),'interest should be shown after the delay');
   assert_true(hoverFocusWaitTimeMs > invokerShowDelayMs,'invokerShowDelayMs is the CSS setting, hoverFocusWaitTimeMs should be longer than that');
-},`interesttarget fires after a delay, ${description}`);
+},`interestfor fires after a delay, ${description}`);
 
 promise_test(async (t) => {
   const {popover,invoker} = await makePopoverAndInvoker(t,invokerLayout);
   assert_false(popover.matches(':popover-open'));
   invoker.click(); // Click the invoker
   assert_false(popover.matches(':popover-open'),'Clicking the invoker should not "show interest"');
-},`interesttarget should not trigger via mouse click, ${description}`);
+},`interestfor should not trigger via mouse click, ${description}`);
 
 promise_test(async (t) => {
   const longerHoverDelay = hoverFocusWaitTimeMs*2;
@@ -108,8 +108,8 @@ promise_test(async (t) => {
   showing = popover.matches(':popover-open');
   if (msSinceMouseOver(token) >= longerHoverDelay)
     return; // The WPT runner was too slow.
-  assert_false(showing,'interesttarget should respect CSS setting');
-},`interesttarget interest-target-show-delay is respected, ${description}`);
+  assert_false(showing,'interestfor should respect CSS setting');
+},`interestfor interest-show-delay is respected, ${description}`);
 
 promise_test(async (t) => {
   const longerHoverDelay = hoverFocusWaitTimeMs*4;
@@ -138,7 +138,7 @@ promise_test(async (t) => {
   assert_true(popover.matches(':popover-open'),'popover should stay showing after delay');
   assert_true(stillOpen,'popover should have been open before the delay also');
   assert_true(gotInterest,'interest event should still be fired');
-},`interesttarget does not close an already-open popover, ${description}`);
+},`interestfor does not close an already-open popover, ${description}`);
 
 promise_test(async (t) => {
   const {popover,invoker} = await makePopoverAndInvoker(t,invokerLayout);
@@ -152,7 +152,7 @@ promise_test(async (t) => {
   document.body.appendChild(popover);
   await waitForHoverTime(hoverFocusWaitTimeMs);
   assert_false(gotInterest,'interest should not be shown even when returned to the document');
-},`interesttarget does nothing when the target is moved out of the document, ${description}`);
+},`interestfor does nothing when the target is moved out of the document, ${description}`);
 
 promise_test(async (t) => {
   const {popover,invoker,reassignInvokerTargetFn} = await makePopoverAndInvoker(t,invokerLayout);
@@ -168,19 +168,19 @@ promise_test(async (t) => {
     return; // The WPT runner was too slow.
   assert_false(eitherShowing,'interest should should not be shown immediately');
   await waitForHoverTime(hoverFocusWaitTimeMs);
-  assert_false(popover.matches(':popover-open'),'old target should not receive interest, since interesttarget was reassigned');
-  assert_false(popover2.matches(':popover-open'),'new target should not receive interest, since interesttarget was reassigned');
-},`interesttarget does nothing when the target changes, ${description}`);
+  assert_false(popover.matches(':popover-open'),'old target should not receive interest, since interestfor was reassigned');
+  assert_false(popover2.matches(':popover-open'),'new target should not receive interest, since interestfor was reassigned');
+},`interestfor does nothing when the target changes, ${description}`);
 
 promise_test(async (t) => {
   const {popover,invoker,unrelated} = await makePopoverAndInvoker(t,invokerLayout,/*showdelayMs*/0);
   const invoker2 = document.createElement('button');
-  invoker2.interestTargetElement = popover;
+  invoker2.interestForElement = popover;
   document.body.appendChild(invoker2);
   t.add_cleanup(() => invoker2.remove());
   invoker2.setAttribute('style',`
-    interest-target-show-delay: 0s;
-    interest-target-hide-delay: 10000s;
+    interest-show-delay: 0s;
+    interest-hide-delay: 10000s;
     position:fixed;
     top:300px;
   `);

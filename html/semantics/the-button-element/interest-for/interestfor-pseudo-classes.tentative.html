@@ -12,7 +12,7 @@
 <script src="/html/semantics/popovers/resources/popover-utils.js"></script>
 
 <div id=unrelated tabindex=0>Unrelated</div>
-<button id=invoker interesttarget=target>Invoker</button>
+<button id=invoker interestfor=target>Invoker</button>
 <div id=target popover>Target popover with all kinds of focusable things
   <button id=target_button>contained button</button>
   <button id=target_button_2>contained button 2</button>
@@ -33,7 +33,7 @@
 <button id=after>Button after</button>
 <style>
   button {
-    interest-target-delay: 0s;
+    interest-delay: 0s;
   }
 </style>
 <script>
@@ -118,7 +118,7 @@ promise_test(async (t) => {
   checkPseudos(invoker,target,false,false,false,false,'initial');
   await focusOn(invoker);
   checkPseudos(invoker,target,true,true,true,true,'focusing invoker shows partial interest');
-  invoker.setAttribute('style',`interest-target-delay: 10000s`);
+  invoker.setAttribute('style',`interest-delay: 10000s`);
   await sendShowInterestHotkey();
   checkPseudos(invoker,target,false,true,false,true,'invoker now has full interest');
   assert_equals(document.activeElement,target_button,'focus moves to the target automatically');
@@ -129,7 +129,7 @@ promise_test(async (t) => {
   checkPseudos(invoker,target,false,false,false,false,'initial');
   await focusOn(invoker);
   checkPseudos(invoker,target,true,true,true,true,'focusing invoker shows partial interest');
-  invoker.setAttribute('style',`interest-target-delay: 10000s`);
+  invoker.setAttribute('style',`interest-delay: 10000s`);
   await hoverOver(target);
   checkPseudos(invoker,target,false,true,false,true,'invoker now has full interest');
   assert_equals(document.activeElement,invoker,'focus does not move in this case');
@@ -140,7 +140,7 @@ promise_test(async (t) => {
   checkPseudos(invoker,target,false,false,false,false,'initial');
   await focusOn(invoker);
   checkPseudos(invoker,target,true,true,true,true,'focusing invoker shows partial interest');
-  invoker.setAttribute('style',`interest-target-delay: 10000s`);
+  invoker.setAttribute('style',`interest-delay: 10000s`);
   await hoverOver(invoker);
   checkPseudos(invoker,target,false,true,false,true,'invoker now has full interest');
   assert_equals(document.activeElement,invoker,'focus does not move in this case');
@@ -168,7 +168,7 @@ promise_test(async (t) => {
   checkPseudos(invoker,target,false,false,false,false,'initial');
   await focusOn(invoker);
   checkPseudos(invoker,target,true,true,true,true,'focusing invoker shows partial interest');
-  invoker.setAttribute('style',`interest-target-delay: 10000s`);
+  invoker.setAttribute('style',`interest-delay: 10000s`);
   await sendLoseInterestHotkey();
   checkPseudos(invoker,target,false,false,false,false,'Hot key loses interest immediately (no delays)');
   await do_cleanup();
@@ -178,7 +178,7 @@ promise_test(async (t) => {
   checkPseudos(invoker,target,false,false,false,false,'initial');
   await focusOn(invoker);
   checkPseudos(invoker,target,true,true,true,true,'focusing invoker shows partial interest');
-  invoker.setAttribute('style',`interest-target-delay: 10000s`);
+  invoker.setAttribute('style',`interest-delay: 10000s`);
   target.hidePopover();
   checkPseudos(invoker,target,false,false,false,false,'closing the popover loses interest');
   assert_equals(document.activeElement,invoker,'focus does not move');
@@ -189,7 +189,7 @@ promise_test(async (t) => {
   checkPseudos(invoker,target,false,false,false,false,'initial');
   await hoverOver(invoker);
   checkPseudos(invoker,target,false,true,false,true,'hovering invoker shows full interest (and not partial interest)');
-  invoker.setAttribute('style',`interest-target-delay: 10000s`);
+  invoker.setAttribute('style',`interest-delay: 10000s`);
   target.hidePopover();
   checkPseudos(invoker,target,false,false,false,false,'closing the popover loses interest');
   await do_cleanup();
@@ -198,7 +198,7 @@ promise_test(async (t) => {
 const invokerDelayMs = 100; // The CSS delay setting.
 const hoverWaitTime = 200; // How long to wait to cover the delay for sure.
 promise_test(async (t) => {
-  invoker.setAttribute('style',`interest-target-delay: ${invokerDelayMs}ms`);
+  invoker.setAttribute('style',`interest-delay: ${invokerDelayMs}ms`);
   checkPseudos(invoker,target,false,false,false,false,'initial');
   const token1 = await mouseOverAndRecord(t,invoker);
   const immediate_result = invoker.matches(':has-interest') ||

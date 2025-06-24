@@ -95,7 +95,7 @@ async function createPopoverAndInvokerForHoverTests(test, showdelayMs, hideDelay
   document.body.appendChild(unrelated);
   unrelated.textContent = 'Unrelated';
   unrelated.setAttribute('style','position:fixed; top:0;');
-  // Ensure we never hover over or focus on an active interesttarget element.
+  // Ensure we never hover over or focus on an active interestfor element.
   unrelated.focus();
   await hoverOver(unrelated);
   const popover = document.createElement('div');
@@ -104,10 +104,10 @@ async function createPopoverAndInvokerForHoverTests(test, showdelayMs, hideDelay
   popover.textContent = 'Popover';
   document.body.appendChild(popover);
   let invoker = document.createElement('button');
-  invoker.interestTargetElement = popover;
+  invoker.interestForElement = popover;
   invoker.setAttribute('style',`
-    interest-target-show-delay: ${showdelayMs}ms;
-    interest-target-hide-delay: ${hideDelayMs}ms;
+    interest-show-delay: ${showdelayMs}ms;
+    interest-hide-delay: ${hideDelayMs}ms;
     position:fixed;
     top:200px;
     width:fit-content;
@@ -115,10 +115,10 @@ async function createPopoverAndInvokerForHoverTests(test, showdelayMs, hideDelay
     `);
   invoker.innerText = 'Invoker';
   document.body.appendChild(invoker);
-  const actualShowDelay = Number(getComputedStyle(invoker).interestTargetShowDelay.slice(0,-1))*1000;
-  assert_equals(actualShowDelay,showdelayMs,'interest-target-show-delay is incorrect');
-  const actualHideDelay = Number(getComputedStyle(invoker).interestTargetHideDelay.slice(0,-1))*1000;
-  assert_equals(actualHideDelay,hideDelayMs,'interest-target-hide-delay is incorrect');
+  const actualShowDelay = Number(getComputedStyle(invoker).interestShowDelay.slice(0,-1))*1000;
+  assert_equals(actualShowDelay,showdelayMs,'interest-show-delay is incorrect');
+  const actualHideDelay = Number(getComputedStyle(invoker).interestHideDelay.slice(0,-1))*1000;
+  assert_equals(actualHideDelay,hideDelayMs,'interest-hide-delay is incorrect');
   test.add_cleanup(() => {
     popover.remove();
     invoker.remove();

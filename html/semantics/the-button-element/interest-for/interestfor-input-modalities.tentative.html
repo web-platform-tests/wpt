@@ -14,17 +14,17 @@
 <meta name=variant content=?method=hover>
 <meta name=variant content=?method=focus>
 
-<button data-testcase="<button>" interesttarget=target>Button</button>
+<button data-testcase="<button>" interestfor=target>Button</button>
 
-<a data-testcase="<a>" href=foo interesttarget=target>Link</a>
+<a data-testcase="<a>" href=foo interestfor=target>Link</a>
 
 <img src="/images/blue.png" usemap="#map" id=areatarget>
 <map id=map>
-  <area data-testcase="<area>" data-hover="areatarget" interesttarget=target href="/" shape=default>
+  <area data-testcase="<area>" data-hover="areatarget" interestfor=target href="/" shape=default>
 </map>
 
 <svg viewBox="0 0 100 100" style="width: 100px" xmlns="http://www.w3.org/2000/svg">
-  <a data-testcase="SVG <a>" href=foo interesttarget=target>
+  <a data-testcase="SVG <a>" href=foo interestfor=target>
     <text x=50 y=90>SVG A</text>
   </a>
 </svg>
@@ -33,19 +33,19 @@
 <button id=otherbutton>Other button</button>
 
 <style>
-  [interesttarget] {
-    interest-target-delay: 0s;
+  [interestfor] {
+    interest-delay: 0s;
   }
 </style>
 
 <script>
-const allInterestTargetElements = document.querySelectorAll('[data-testcase]');
-assert_true(allInterestTargetElements.length > 0);
+const allInterestForElements = document.querySelectorAll('[data-testcase]');
+assert_true(allInterestForElements.length > 0);
 function verifyInterest(onlyElements,description) {
   if (!(onlyElements instanceof Array)) {
     onlyElements = [onlyElements];
   }
-  [...allInterestTargetElements, another].forEach(el => {
+  [...allInterestForElements, another].forEach(el => {
     const expectInterest = onlyElements.includes(el);
     assert_equals(el.matches(':has-interest'),expectInterest,`${description}, element ${el.dataset.testcase} should ${expectInterest ? "" : "NOT "}have interest`);
   })
@@ -67,7 +67,7 @@ function preventEvent(shouldCancel,el,type) {
 const urlParams = new URLSearchParams(window.location.search);
 method = urlParams.get('method');
 ['none','cancel-trigger','cancel-lose'].forEach(cancelEvent => {
-  allInterestTargetElements.forEach(el => {
+  allInterestForElements.forEach(el => {
     const description = `${el.dataset.testcase}, ${cancelEvent}, ${method}`;
     promise_test(async function (t) {
       t.add_cleanup(() => {

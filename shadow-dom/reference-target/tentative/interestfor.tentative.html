@@ -8,23 +8,23 @@
   <script src="/resources/testdriver-vendor.js"></script>
   <script src="/resources/testdriver-actions.js"></script>
   <script src="/wai-aria/scripts/aria-utils.js"></script>
-  <script src="/html/semantics/the-button-element/interest-target/resources/invoker-utils.js"></script>
+  <script src="/html/semantics/the-button-element/interest-for/resources/invoker-utils.js"></script>
 </head>
 
 <body>
   <style>
-      [interesttarget] {
-          interest-target-delay: 0s;
+      [interestfor] {
+          interest-delay: 0s;
       }
   </style>
-  <button id="toggle-button-1" interesttarget="x-popover-1">Toggle the popover</button>
+  <button id="toggle-button-1" interestfor="x-popover-1">Toggle the popover</button>
   <x-popover-1 id="x-popover-1">
     <template shadowrootmode="open" shadowrootreferencetarget="popover">
       <div id="popover" popover>Popover content inside shadow root</div>
     </template>
   </x-popover-1>
 
-  <button id="toggle-button-2" interesttarget="x-popover-2">Toggle the popover</button>
+  <button id="toggle-button-2" interestfor="x-popover-2">Toggle the popover</button>
   <x-popover-2 id="x-popover-2"></x-popover-2>
   <script>
     const customPopover2 = document.querySelector('x-popover-2');
@@ -40,7 +40,7 @@
   </x-popover-3>
 
   <script>
-    function testInterestTarget(popoverId, buttonId, name) {
+    function testInterestFor(popoverId, buttonId, name) {
         promise_test(async function () {
         const xPopover = document.getElementById(popoverId);
         const popover = xPopover.shadowRoot.getElementById("popover");
@@ -57,10 +57,10 @@
         assert_equals(showCount, 1, "showCount");
       }, name);
     }
-    testInterestTarget('x-popover-1', 'toggle-button-1', "Shadow root reference target works with interesttarget attribute.");
-    testInterestTarget('x-popover-2', 'toggle-button-2', "Shadow root reference target works with interesttarget attribute via options.");
-    document.getElementById('toggle-button-3').interestTargetElement = document.getElementById('x-popover-3');
-    testInterestTarget('x-popover-3', 'toggle-button-3', "Shadow root reference target works with .interestTargetElement property.");
+    testInterestFor('x-popover-1', 'toggle-button-1', "Shadow root reference target works with interestfor attribute.");
+    testInterestFor('x-popover-2', 'toggle-button-2', "Shadow root reference target works with interestfor attribute via options.");
+    document.getElementById('toggle-button-3').interestForElement = document.getElementById('x-popover-3');
+    testInterestFor('x-popover-3', 'toggle-button-3', "Shadow root reference target works with .interestForElement property.");
   </script>
 </body>
 

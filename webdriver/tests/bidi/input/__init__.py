@@ -1,5 +1,6 @@
 import json
 
+from tests.support.sync import DEFAULT_INTERVAL, DEFAULT_TIMEOUT, AsyncPoll
 from webdriver.bidi.modules.script import ContextTarget
 
 
@@ -74,3 +75,20 @@ async def get_keys_value(bidi_session, context):
     )
 
     return keys_value["value"]
+
+
+async def wait_for_events(
+    bidi_session,
+    context,
+    min_count,
+    timeout=DEFAULT_TIMEOUT,
+    interval=DEFAULT_INTERVAL
+):
+    async def check_events(_):
+        events = await get_events(bidi_session, context)
+        assert len(events) >= min_count, \
+            f"Didn't receive all events: expected at least {min_count}, got {len(events)}"
+        return events
+
+    wait = AsyncPoll(bidi_session, timeout=timeout, interval=interval)
+    return await wait.until(check_events)

@@ -4,9 +4,8 @@ from webdriver.bidi.error import MoveTargetOutOfBoundsException, NoSuchFrameExce
 from webdriver.bidi.modules.input import Actions, get_element_origin
 from webdriver.bidi.modules.script import ContextTarget
 
-from tests.support.sync import AsyncPoll
 from tests.support.keys import Keys
-from .. import get_events, get_object_from_context
+from .. import get_events, get_object_from_context, wait_for_events
 from . import get_shadow_root_from_test_page
 
 pytestmark = pytest.mark.asyncio
@@ -105,11 +104,7 @@ async def test_scroll_iframe(
     )
 
     # Chrome requires some time (~10-20ms) to process the event from the iframe, so we wait for it.
-    async def wait_for_events(_):
-        return len(await get_events(bidi_session, top_context["context"])) > 0
-
-    await AsyncPoll(bidi_session, timeout=0.5, interval=0.01, message='No wheel events emitted').until(wait_for_events)
-    events = await get_events(bidi_session, top_context["context"])
+    events = await wait_for_events(bidi_session, top_context["context"], 1, timeout=0.5, interval=0.02)
 
     assert len(events) == 1
     assert events[0]["type"] == "wheel"

@@ -26,6 +26,8 @@ def record_pointer_events(session, element):
     """,
         args=(element,),
     )
+
+
 def perform_actions(session, actions):
     return session.transport.send(
         "POST",

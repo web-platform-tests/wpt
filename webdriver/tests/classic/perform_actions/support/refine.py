@@ -17,6 +17,7 @@ def get_events(session):
         # tests expect ''.
         if "code" in e and e["code"] == "Unidentified":
             e["code"] = ""
+
     return events
 
 

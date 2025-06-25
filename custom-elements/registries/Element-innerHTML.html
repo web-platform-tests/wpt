@@ -73,6 +73,17 @@ test((test) => {
 }, 'nested descendants in innerHTML on a disconnected element should use the scoped registry the element was created with');
 
 test((test) => {
+    const registry = new CustomElementRegistry;
+
+    class ScopedSomeElement extends HTMLElement { };
+    registry.define('some-element', ScopedSomeElement);
+
+    const div = document.createElement('div', {customElementRegistry: registry});
+    div.innerHTML = '<span></span>';
+    assert_equals(div.querySelector('span').customElementRegistry, registry);
+}, 'innerHTML on a disconnected element should use the scoped registry it was created with when parsing a simple HTML');
+
+test((test) => {
     const registry1 = new CustomElementRegistry;
     const registry2 = new CustomElementRegistry;
 

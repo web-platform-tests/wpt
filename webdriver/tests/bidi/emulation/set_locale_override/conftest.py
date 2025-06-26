@@ -3,6 +3,8 @@ import pytest_asyncio
 
 from webdriver.bidi.modules.script import ContextTarget
 
+LOCALES = ["de-DE", "es-ES", "fr-FR", "it-IT"]
+
 
 @pytest_asyncio.fixture
 async def get_current_locale(bidi_session):
@@ -19,7 +21,7 @@ async def get_current_locale(bidi_session):
 
 
 @pytest_asyncio.fixture
-async def initial_locale(get_current_locale, top_context):
+async def default_locale(get_current_locale, top_context):
     """
     Returns default locale.
     """
@@ -27,18 +29,28 @@ async def initial_locale(get_current_locale, top_context):
 
 
 @pytest.fixture
-def some_locale(initial_locale):
+def some_locale(default_locale):
     """
-    Returns some locale which is not equal to `initial_locale` nor to
+    Returns some locale which is not equal to `default_locale` nor to
     `another_locale`.
     """
-    return "es-ES" if initial_locale != "es-ES" else "it-IT"
+    for locale in LOCALES:
+        if locale != default_locale:
+            return locale
+
+    raise Exception(
+        f"Unexpectedly could not find locale different from the default {default_locale}")
 
 
 @pytest.fixture
-def another_locale(initial_locale):
+def another_locale(default_locale, some_locale):
     """
-    Returns some locale which is not equal to `initial_locale` nor to
+    Returns some another locale which is not equal to `default_locale` nor to
     `some_locale`.
     """
-    return "de-DE" if initial_locale != "de-DE" else "fr-FR"
+    for locale in LOCALES:
+        if locale != default_locale and locale != another_locale:
+            return locale
+
+    raise Exception(
+        f"Unexpectedly could not find locale different from the default {default_locale}")

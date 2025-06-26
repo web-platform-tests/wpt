@@ -8,14 +8,14 @@ async def test_user_contexts(
         create_user_context,
         new_tab,
         get_current_locale,
-        initial_locale,
+        default_locale,
         some_locale
 ):
     user_context = await create_user_context()
     context_in_user_context = await bidi_session.browsing_context.create(
         user_context=user_context, type_hint="tab")
 
-    assert await get_current_locale(new_tab) == initial_locale
+    assert await get_current_locale(new_tab) == default_locale
 
     # Set locale override.
     await bidi_session.emulation.set_locale_override(
@@ -26,7 +26,7 @@ async def test_user_contexts(
     assert await get_current_locale(context_in_user_context) == some_locale
 
     # Assert the default user context is not affected.
-    assert await get_current_locale(new_tab) == initial_locale
+    assert await get_current_locale(new_tab) == default_locale
 
     # Create a new context in the user context.
     another_context_in_user_context = await bidi_session.browsing_context.create(
@@ -41,7 +41,7 @@ async def test_set_to_default_user_context(
         new_tab,
         create_user_context,
         get_current_locale,
-        initial_locale,
+        default_locale,
         some_locale
 ):
     user_context = await create_user_context()
@@ -56,7 +56,7 @@ async def test_set_to_default_user_context(
 
     # Make sure that the locale changes are only applied to the context
     # associated with default user context.
-    assert await get_current_locale(context_in_user_context) == initial_locale
+    assert await get_current_locale(context_in_user_context) == default_locale
     assert await get_current_locale(new_tab) == some_locale
 
     # Create a new context in the default context.
@@ -102,7 +102,7 @@ async def test_set_to_user_context_and_then_to_context(
         create_user_context,
         new_tab,
         get_current_locale,
-        initial_locale,
+        default_locale,
         some_locale,
         another_locale
 ):
@@ -144,4 +144,4 @@ async def test_set_to_user_context_and_then_to_context(
     )
 
     # Make sure that the locale override was reset.
-    assert await get_current_locale(context_in_user_context_1) == initial_locale
+    assert await get_current_locale(context_in_user_context_1) == default_locale

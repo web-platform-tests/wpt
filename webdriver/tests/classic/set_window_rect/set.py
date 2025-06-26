@@ -213,7 +213,7 @@ def test_partial_input(session, rect):
         fields = ("width", "height")
     else:
         fields = ("x", "y", "width", "height")
-    
+
     for field in fields:
         if field in rect:
             assert value[field] == rect[field]

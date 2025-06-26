@@ -57,7 +57,7 @@ async def test_params_screen_orientation_invalid_type(bidi_session, top_context,
         )
 
 
-@pytest.mark.parametrize("value", [False, 42, [], {}])
+@pytest.mark.parametrize("value", [None, False, 42, [], {}])
 async def test_params_screen_orientation_natural_invalid_type(bidi_session,
         top_context, value):
     with pytest.raises(error.InvalidArgumentException):
@@ -81,7 +81,7 @@ async def test_params_screen_orientation_natural_invalid_value(bidi_session,
             })
 
 
-@pytest.mark.parametrize("value", [False, 42, [], {}])
+@pytest.mark.parametrize("value", [None, False, 42, [], {}])
 async def test_params_screen_orientation_type_invalid_type(bidi_session,
         top_context, value):
     with pytest.raises(error.InvalidArgumentException):
@@ -118,7 +118,7 @@ async def test_params_contexts_and_user_contexts(bidi_session,
             user_contexts=[user_context])
 
 
-@pytest.mark.parametrize("value", [True, "foo", 42, {}])
+@pytest.mark.parametrize("value", [None, False, "foo", 42, {}])
 async def test_params_user_contexts_invalid_type(bidi_session, value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_screen_orientation_override(

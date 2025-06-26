@@ -9,9 +9,7 @@ pytestmark = pytest.mark.asyncio
                                    "landscape-primary", "landscape-secondary"])
 @pytest.mark.parametrize("natural", ["portrait", "landscape"])
 async def test_screen_orientation(bidi_session, top_context,
-        get_screen_orientation, _type, natural):
-    default_screen_orientation = await get_screen_orientation(top_context)
-
+        get_screen_orientation, _type, natural, default_screen_orientation):
     # Set screen orientation override.
     await bidi_session.emulation.set_screen_orientation_override(
         contexts=[top_context["context"]],

@@ -234,7 +234,7 @@ class WebTestServer(http.server.ThreadingHTTPServer):
         if platform.system() != "Darwin":
             super().server_bind()
         else:
-            # We override this on macOS to workaround gethostbyattr triggering the local
+            # We override this on macOS to workaround gethostbyaddr triggering the local
             # network alert even when passed "localhost" (rdar://153097791); this should
             # be the same as the superclass implementation except for the addition of
             # our check.

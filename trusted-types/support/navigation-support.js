@@ -1,10 +1,32 @@
+// Test what happens when navigating current page to a javascript: URL when
+// clicking an anchor element, and transmit the information back to the opener.
+// @param reportOnly whether the CSP rule for this page is "report-only" rather
+//   than "enforce"
+// The following query strings are considered:
+//   - "defaultpolicy": a string indicating the default policy that will be
+//      created before setting the location.
+//      - "replace": Default policy replaces "continue" with
+//        "defaultpolicywashere".
+//      - "throw": Default policy throws an exception.
+//      - "make-invalid": Default policy returns an invalid URL.
+//   - "navigationattempted": whether the page was already navigated once.
+//   - "frame": whether the navigation target is "frame" rather than "_self".
+//   - "form-submission": navigate via a <input type="button"> element rather
+//      than an <a> element.
 function navigateToJavascriptURL(reportOnly) {
     const params = new URLSearchParams(location.search);
 
     if (!!params.get("defaultpolicy")) {
         trustedTypes.createPolicy("default", {
             createScript: s => {
-                return s.replace("continue", "defaultpolicywashere")
+                switch (params.get("defaultpolicy")) {
+                    case "replace":
+                        return s.replace("continue", "defaultpolicywashere");
+                    case "throw":
+                        throw new Error("Exception in createScript()");
+                    case "make-invalid":
+                        return "//make:invalid/";
+                }
             },
         });
     }
@@ -73,7 +95,8 @@ function navigateToJavascriptURL(reportOnly) {
       let {violations, exception} =
         await trusted_type_violations_and_exception_for(_ => navigationElement.click());
       violations.forEach(violationEvent => bounceEventToOpener(violationEvent));
-      if (!params.get("defaultpolicy") && violations.length == 0) {
+      if (violations.length == 0 &&
+          [null, "throw", "make-invalid"].includes(params.get("defaultpolicy"))) {
         window.opener.postMessage("No securitypolicyviolation reported!", "*");
       }
     });

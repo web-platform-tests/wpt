@@ -24,10 +24,10 @@ const els = document.querySelectorAll('[data-expect-match]');
 const tests = [
   {args: ['1'], match: [1]},
   {args: ['2'], match: [2]},
-  {args: ['3'], match: [1]},
-  {args: ['4'], match: [1]},
-  {args: ['5'], match: [1]},
-  {args: ['6'], match: [1]},
+  {args: ['3'], match: [3]},
+  {args: ['4'], match: [4]},
+  {args: ['5'], match: [5]},
+  {args: ['6'], match: [6]},
   {args: ['7'], match: []},
   {args: ['8'], match: []},
   {args: ['9'], match: []},
@@ -39,6 +39,10 @@ const tests = [
   {args: ['2n'], match: [2, 4, 6]},
   {args: ['2n+1'], match: [1, 3, 5]},
   {args: ['2n+2'], match: [2, 4, 6]},
+  {args: ['-n+3'], match: [1, 2, 3]},
+  {args: ['2n', '3n'], match: [2, 3, 4, 6]},
+  {args: ['even'], match: [2, 4, 6]},
+  {args: ['odd'], match: [1, 3, 5]},
 ];
 for (const el of els) {
   const testName = el.outerHTML + (el.parentNode === document.body ? '' : ' in ' + el.parentNode.localName);

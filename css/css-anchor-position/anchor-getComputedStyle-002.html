@@ -67,6 +67,8 @@ body {
 }
 </style>
 <script>
+setup({ explicit_done: true });
+
 test(() => {
   const target = test1.querySelector('.target');
   const style = getComputedStyle(target);
@@ -115,5 +117,7 @@ document.fonts.ready.then(() => {
     assert_equals(style2.left, '0px');
     assert_equals(style2.right, '0px');
   }, 'getComputedStyle() with fragmented containing block in inline layout');
+
+  done();
 })
 </script>

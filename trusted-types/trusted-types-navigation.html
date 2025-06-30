@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <head>
+  <meta name="timeout" content="long">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="support/navigation-support.js"></script>
@@ -70,18 +71,21 @@
     });
   }
 
-  const kFormSubmission = "form-submission";
   // When adding more elements, adapt all functions consuming the existing elements.
   const kNavigationElements =
   [
     "anchor",
-    kFormSubmission,
+    "area",
+    "form-submission",
   ];
 
-  function maybeAddFormSubmissionToSearchParams(navigationElement, searchParams) {
-    return Object.assign(
-      navigationElement == kFormSubmission ? {kFormSubmission: 1} : {},
-      searchParams);
+  function maybeAddNavigationElementToSearchParams(navigationElement, searchParams) {
+    if (navigationElement == "anchor") {
+      return searchParams;
+    }
+    let extraParam = {};
+    extraParam[navigationElement] = 1;
+    return Object.assign(extraParam, searchParams);
   }
 
   function joinToHref(searchParams, originAndPathName) {
@@ -98,7 +102,7 @@
 
   for (const navigationElement of kNavigationElements) {
     promise_test(t => {
-      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {});
+      const params = maybeAddNavigationElementToSearchParams(navigationElement, {});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupport)}`, [
         loadedMessage(params, kNavigationSupport),
         violationMessage("Location href"),
@@ -106,7 +110,7 @@
     }, `Navigate a window via ${navigationElement} with javascript:-urls in enforcing mode.`);
 
     promise_test(t => {
-      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {defaultpolicy: 'replace'});
+      const params = maybeAddNavigationElementToSearchParams(navigationElement, {defaultpolicy: 'replace'});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupport)}`, [
         loadedMessage(params, kNavigationSupport),
         loadedMessage(Object.assign({navigationattempted: 1, defaultpolicywashere: 1}, params), kNavigationSupport),
@@ -114,7 +118,7 @@
     }, `Navigate a window via ${navigationElement} with javascript:-urls w/ default policy in enforcing mode.`);
 
     promise_test(t => {
-      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {});
+      const params = maybeAddNavigationElementToSearchParams(navigationElement, {});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`, [
         loadedMessage(params, kNavigationSupportReportOnly),
         violationMessage("Location href"),
@@ -123,7 +127,7 @@
     }, `Navigate a window via ${navigationElement} with javascript:-urls in report-only mode.`);
 
     promise_test(t => {
-      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {defaultpolicy: 'replace'});
+      const params = maybeAddNavigationElementToSearchParams(navigationElement, {defaultpolicy: 'replace'});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`, [
         loadedMessage(params, kNavigationSupportReportOnly),
         loadedMessage(Object.assign({navigationattempted: 1, defaultpolicywashere: 1}, params), kNavigationSupport),
@@ -131,7 +135,7 @@
     }, `Navigate a window via ${navigationElement} with javascript:-urls w/ default policy in report-only mode.`);
 
     promise_test(t => {
-      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {frame: 1});
+      const params = maybeAddNavigationElementToSearchParams(navigationElement, {frame: 1});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupport)}`, [
         loadedMessage(params, kNavigationSupport),
         violationMessage("Location href"),
@@ -139,7 +143,7 @@
     }, `Navigate a frame via ${navigationElement} with javascript:-urls in enforcing mode.`);
 
     promise_test(t => {
-      const params = maybeAddFormSubmissionToSearchParams(navigationElement,
+      const params = maybeAddNavigationElementToSearchParams(navigationElement,
         {defaultpolicy: 'replace', frame: 1});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupport)}`, [
         loadedMessage(params, kNavigationSupport),
@@ -148,7 +152,7 @@
     }, `Navigate a frame via ${navigationElement} with javascript:-urls w/ default policy in enforcing mode.`);
 
     promise_test(t => {
-      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {frame: 1})
+      const params = maybeAddNavigationElementToSearchParams(navigationElement, {frame: 1})
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`, [
         loadedMessage(params, kNavigationSupportReportOnly),
         violationMessage("Location href"),
@@ -157,7 +161,7 @@
     }, `Navigate a frame via ${navigationElement} with javascript:-urls in report-only mode.`);
 
     promise_test(t => {
-      const params = maybeAddFormSubmissionToSearchParams(navigationElement,
+      const params = maybeAddNavigationElementToSearchParams(navigationElement,
                                                           {defaultpolicy: 'replace', frame: 1});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`, [
         loadedMessage(params, kNavigationSupportReportOnly),
@@ -171,7 +175,7 @@
       // "require-trusted-types-for Pre-Navigation check" returns "Blocked"
       // per step 4 of https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-pre-navigation-check
       // Then a violation is reported and the navigation is blocked per steps 4 and 5 of https://w3c.github.io/webappsec-csp/#should-block-navigation-request
-      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {defaultpolicy: 'throw'});
+      const params = maybeAddNavigationElementToSearchParams(navigationElement, {defaultpolicy: 'throw'});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupport)}`, [
         loadedMessage(params, kNavigationSupport),
         violationMessage("Location href"),
@@ -185,7 +189,7 @@
       // per step 4 of https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-pre-navigation-check
       // Then a violation is reported per step 4 of https://w3c.github.io/webappsec-csp/#should-block-navigation-request
       // The "location.href=..." is executed, causing a second navigation.
-      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {defaultpolicy: 'throw'});
+      const params = maybeAddNavigationElementToSearchParams(navigationElement, {defaultpolicy: 'throw'});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`, [
         loadedMessage(params, kNavigationSupportReportOnly),
         violationMessage("Location href"),
@@ -199,7 +203,7 @@
       // "require-trusted-types-for Pre-Navigation check" returns "Blocked"
       // per step 6 of https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-pre-navigation-check
       // Then a violation is reported and the navigation is blocked per steps 4 and 5 of https://w3c.github.io/webappsec-csp/#should-block-navigation-request
-      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {defaultpolicy: 'make-invalid'});
+      const params = maybeAddNavigationElementToSearchParams(navigationElement, {defaultpolicy: 'make-invalid'});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupport)}`, [
         loadedMessage(params, kNavigationSupport),
         violationMessage("Location href"),
@@ -213,7 +217,7 @@
       // per step 6 of https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-pre-navigation-check
       // Then a violation is reported per step 4 of https://w3c.github.io/webappsec-csp/#should-block-navigation-request
       // The "location.href=..." is executed, causing a second navigation.
-      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {defaultpolicy: 'make-invalid'});
+      const params = maybeAddNavigationElementToSearchParams(navigationElement, {defaultpolicy: 'make-invalid'});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`, [
         loadedMessage(params, kNavigationSupportReportOnly),
         violationMessage("Location href"),

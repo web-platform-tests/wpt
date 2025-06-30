@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <head>
   <meta name="timeout" content="long">
+  <meta name="variant" content="?01-05">
+  <meta name="variant" content="?06-10">
+  <meta name="variant" content="?11-15">
+  <meta name="variant" content="?16-20">
+  <meta name="variant" content="?21-25">
+  <meta name="variant" content="?26-30">
+  <meta name="variant" content="?31-35">
+  <meta name="variant" content="?36-last">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="support/navigation-support.js"></script>
+  <script src="/common/subset-tests.js"></script>
 </head>
 <body>
 <script>
@@ -101,7 +110,7 @@
   const kNavigationSupportReportOnly = "navigation-report-only-support.html";
 
   for (const navigationElement of kNavigationElements) {
-    promise_test(t => {
+    subsetTest(promise_test, t => {
       const params = maybeAddNavigationElementToSearchParams(navigationElement, {});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupport)}`, [
         loadedMessage(params, kNavigationSupport),
@@ -109,7 +118,7 @@
       ]);
     }, `Navigate a window via ${navigationElement} with javascript:-urls in enforcing mode.`);
 
-    promise_test(t => {
+    subsetTest(promise_test, t => {
       const params = maybeAddNavigationElementToSearchParams(navigationElement, {defaultpolicy: 'replace'});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupport)}`, [
         loadedMessage(params, kNavigationSupport),
@@ -117,7 +126,7 @@
       ]);
     }, `Navigate a window via ${navigationElement} with javascript:-urls w/ default policy in enforcing mode.`);
 
-    promise_test(t => {
+    subsetTest(promise_test, t => {
       const params = maybeAddNavigationElementToSearchParams(navigationElement, {});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`, [
         loadedMessage(params, kNavigationSupportReportOnly),
@@ -126,7 +135,7 @@
       ]);
     }, `Navigate a window via ${navigationElement} with javascript:-urls in report-only mode.`);
 
-    promise_test(t => {
+    subsetTest(promise_test, t => {
       const params = maybeAddNavigationElementToSearchParams(navigationElement, {defaultpolicy: 'replace'});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`, [
         loadedMessage(params, kNavigationSupportReportOnly),
@@ -134,7 +143,7 @@
       ]);
     }, `Navigate a window via ${navigationElement} with javascript:-urls w/ default policy in report-only mode.`);
 
-    promise_test(t => {
+    subsetTest(promise_test, t => {
       const params = maybeAddNavigationElementToSearchParams(navigationElement, {frame: 1});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupport)}`, [
         loadedMessage(params, kNavigationSupport),
@@ -142,7 +151,7 @@
       ]);
     }, `Navigate a frame via ${navigationElement} with javascript:-urls in enforcing mode.`);
 
-    promise_test(t => {
+    subsetTest(promise_test, t => {
       const params = maybeAddNavigationElementToSearchParams(navigationElement,
         {defaultpolicy: 'replace', frame: 1});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupport)}`, [
@@ -151,7 +160,7 @@
       ]);
     }, `Navigate a frame via ${navigationElement} with javascript:-urls w/ default policy in enforcing mode.`);
 
-    promise_test(t => {
+    subsetTest(promise_test, t => {
       const params = maybeAddNavigationElementToSearchParams(navigationElement, {frame: 1})
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`, [
         loadedMessage(params, kNavigationSupportReportOnly),
@@ -160,7 +169,7 @@
       ]);
     }, `Navigate a frame via ${navigationElement} with javascript:-urls in report-only mode.`);
 
-    promise_test(t => {
+    subsetTest(promise_test, t => {
       const params = maybeAddNavigationElementToSearchParams(navigationElement,
                                                           {defaultpolicy: 'replace', frame: 1});
       return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`, [
@@ -169,7 +178,7 @@
       ]);
     }, `Navigate a frame via ${navigationElement} with javascript:-urls w/ default policy in report-only mode.`);
 
-    promise_test(t => {
+    subsetTest(promise_test, t => {
       // This test navigates to a 'javascript:location.href=...' URL with a CSP
       // policy in enforcing mode and a default policy throwing an exception.
       // "require-trusted-types-for Pre-Navigation check" returns "Blocked"
@@ -182,7 +191,7 @@
       ]);
     }, `Navigate a window via ${navigationElement} with javascript:-urls w/ a default policy throwing an exception in enforcing mode.`);
 
-    promise_test(t => {
+    subsetTest(promise_test, t => {
       // This test navigates to a 'javascript:location.href=...' URL with a CSP
       // policy in report-only mode and a default policy throwing an exception.
       // "require-trusted-types-for Pre-Navigation check" returns "Blocked"
@@ -197,7 +206,7 @@
       ]);
     }, `Navigate a window via ${navigationElement} with javascript:-urls w/ a default policy throwing an exception in report-only mode.`);
 
-    promise_test(t => {
+    subsetTest(promise_test, t => {
       // This test navigates to a 'javascript:location.href=...' URL with a CSP
       // policy in enforcing mode and a default policy making the URL invalid.
       // "require-trusted-types-for Pre-Navigation check" returns "Blocked"
@@ -210,7 +219,7 @@
       ]);
     }, `Navigate a window via ${navigationElement} with javascript:-urls w/ a default policy making the URL invalid in enforcing mode.`);
 
-    promise_test(t => {
+    subsetTest(promise_test, t => {
       // This test navigates to a 'javascript:location.href=...' URL with a CSP
       // policy in report-only mode and a default policy making the URL invalid.
       // "require-trusted-types-for Pre-Navigation check" returns "Blocked"

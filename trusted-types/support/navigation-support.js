@@ -1,3 +1,89 @@
+//                                                         lineNumber
+function setWindowLocationToJavaScriptURLCode() {       // 2
+// 4567890123456789 columnNumber                        // 3
+  window.location = `javascript:${kJavaScriptURLCode}`; // see csp-violations.js
+}
+
+const kJavaScriptURLCode = `executeJavaScript()${';'.repeat(100)}`;
+
+function createDefaultPolicy(defaultpolicy) {
+  if (!defaultpolicy) {
+    return;
+  }
+  trustedTypes.createPolicy("default", {
+    createScript: s => {
+      switch (defaultpolicy) {
+      case "replace":
+        return s.replace("continue", "defaultpolicywashere");
+      case "replace-js-execution":
+        return s.replace("executeJavaScript", "executeModifiedJavaScript");
+      case "throw":
+        throw new Error("Exception in createScript()");
+      case "make-invalid":
+        return "//make:invalid/";
+      }
+    },
+  });
+}
+
+// Test what happens when setting window.location to a javascript: URL.
+// @param defaultpolicy: a string indicating the default policy that will be
+//    created before setting the location. If not specified then no default
+//    policy is created.
+//    - "replace-js-execution": Default policy rewrites the URL.
+//    - "throw": Default policy throws an exception.
+//    - "make-invalid": Default policy returns an invalid URL.
+// @return an object with the following keys:
+//    - exception: any exception reported by the operation.
+//    - javaScriptExecuted whether the original code specified in the javascript
+//      URL was executed.
+//    - javaScriptExecuted whether the JavaScript code after modification by the
+//      default policy was executed (for "replace-js-execution").
+//    - violations: an array of reported violations for the operation.
+async function setLocationToJavaScriptURL(defaultpolicy) {
+  window.javaScriptExecuted = false;
+  window.executeJavaScript = function() {
+    window.javaScriptExecuted = true;
+  }
+  window.modifiedJavaScriptExecuted = false;
+  window.executeModifiedJavaScript = function() {
+    window.modifiedJavaScriptExecuted = true;
+  }
+
+  createDefaultPolicy(defaultpolicy);
+
+  let {violations, exception} =
+      await trusted_type_violations_and_exception_for(async _ => {
+        setWindowLocationToJavaScriptURLCode();
+        // Wait for the navigation to be attempted before reporting the
+        // observed violations, otherwise we could miss the corresponding
+        // pre-navigation check CSP violation.
+        if (window.requestIdleCallback) {
+          await new Promise(resolve => requestIdleCallback(resolve));
+        }
+      });
+
+  return {
+    exception: exception,
+    javaScriptExecuted: window.javaScriptExecuted,
+    modifiedJavaScriptExecuted: window.modifiedJavaScriptExecuted,
+    // Clone relevant violation fields in an object, so they can be transferred
+    // via cross-window via postMessage.
+    violations: violations.map(violation => {
+      const clonedViolation = {};
+      for (const field of ["originalPolicy",
+                           "violatedDirective",
+                           "disposition",
+                           "sample",
+                           "lineNumber",
+                           "columnNumber"]) {
+        clonedViolation[field] = violation[field];
+      }
+      return clonedViolation;
+    }),
+  };
+}
+
 // Test what happens when navigating current page to a javascript: URL when
 // clicking an anchor element, and transmit the information back to the opener.
 // @param reportOnly whether the CSP rule for this page is "report-only" rather
@@ -18,20 +104,7 @@
 function navigateToJavascriptURL(reportOnly) {
     const params = new URLSearchParams(location.search);
 
-    if (!!params.get("defaultpolicy")) {
-        trustedTypes.createPolicy("default", {
-            createScript: s => {
-                switch (params.get("defaultpolicy")) {
-                    case "replace":
-                        return s.replace("continue", "defaultpolicywashere");
-                    case "throw":
-                        throw new Error("Exception in createScript()");
-                    case "make-invalid":
-                        return "//make:invalid/";
-                }
-            },
-        });
-    }
+    createDefaultPolicy(params.get("defaultpolicy"));
 
     function bounceEventToOpener(e) {
         const msg = {};

@@ -197,6 +197,9 @@ class ProfileCreator(FirefoxProfileCreator):
 
         if self.test_type == "wdspec":
             profile.set_preferences({"remote.prefs.recommended": True})
+        else:
+            # Except for wdspec dispatch wheel scroll as widget event by default.
+            profile.set_preferences({"remote.events.async.wheel.enabled": True})
 
         profile.set_preferences({"fission.autostart": True})
         if self.disable_fission:

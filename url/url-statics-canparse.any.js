@@ -39,6 +39,21 @@
     "url": "a",
     "base": "https://b/",
     "expected": true
+  },
+  {
+    "url": "C:\\path\\file.node",
+    "base": undefined,
+    "expected": true
+  },
+  {
+    "url": "D:\\foo\\bar.exe",
+    "base": undefined,
+    "expected": true
+  },
+  {
+    "url": "C:/path/file.node",
+    "base": undefined,
+    "expected": true
   }
 ].forEach(({ url, base, expected }) => {
   test(() => {

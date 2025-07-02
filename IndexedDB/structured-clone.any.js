@@ -227,6 +227,23 @@ cloneObjectTest(new Set([1,2,3,4]), (orig, clone) => {
   assert_equals(orig.message, clone.message);
 }));
 
+[
+  new SuppressedError(),
+  new SuppressedError(new Error('resulted'), new Error('suppressed')),
+].forEach(value => cloneObjectTest(value, (orig, clone) => {
+  assert_equals(orig.name, clone.name);
+  assert_equals(orig.error.message, clone.error.message);
+  assert_equals(orig.suppressed.message, clone.suppressed.message);
+}));
+
+[
+  new AggregateError([]),
+  new AggregateError([new Error('hello')], 'abc'),
+].forEach(value => cloneObjectTest(value, (orig, clone) => {
+  assert_equals(orig.name, clone.name);
+  assert_equals(orig.errors[0].message, clone.errors[0].message);
+}));
+
 // Arrays
 [
   [],

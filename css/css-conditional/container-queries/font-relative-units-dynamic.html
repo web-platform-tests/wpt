@@ -171,12 +171,14 @@ test_template(document.currentScript.previousElementSibling, (t) => {
   </div>
 </template>
 <script>
-test_template(document.currentScript.previousElementSibling, (t) => {
-  t.add_cleanup(() => main.classList.remove("larger"));
-  assert_equals(getComputedStyle(main.querySelector("#test")).color, red);
-  main.classList.add("larger");
-  assert_equals(getComputedStyle(main.querySelector("#test")).color, green);
-}, 'cap units respond to changes');
+document.fonts.load("10px Ahem").then(() => {
+  test_template(document.currentScript.previousElementSibling, (t) => {
+    t.add_cleanup(() => main.classList.remove("larger"));
+    assert_equals(getComputedStyle(main.querySelector("#test")).color, red);
+    main.classList.add("larger");
+    assert_equals(getComputedStyle(main.querySelector("#test")).color, green);
+  }, 'cap units respond to changes');
+})
 </script>
 
 <template>
@@ -319,10 +321,12 @@ test_template(document.currentScript.previousElementSibling, (t) => {
   </div>
 </template>
 <script>
-test_template(document.currentScript.previousElementSibling, (t) => {
-  t.add_cleanup(() => document.documentElement.classList.remove("larger"));
-  assert_equals(getComputedStyle(main.querySelector("#test")).color, red);
-  document.documentElement.classList.add("larger");
-  assert_equals(getComputedStyle(main.querySelector("#test")).color, green);
-}, 'rcap units respond to changes');
+document.fonts.load("10px Ahem").then(() => {
+  test_template(document.currentScript.previousElementSibling, (t) => {
+    t.add_cleanup(() => document.documentElement.classList.remove("larger"));
+    assert_equals(getComputedStyle(main.querySelector("#test")).color, red);
+    document.documentElement.classList.add("larger");
+    assert_equals(getComputedStyle(main.querySelector("#test")).color, green);
+  }, 'rcap units respond to changes');
+})
 </script>

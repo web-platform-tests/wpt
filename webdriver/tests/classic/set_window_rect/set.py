@@ -187,7 +187,7 @@ def test_width_height_floats(session):
 
     {"width": None, "height": None, "x": None, "y": None},
 ])
-def test_no_change(session, rect):
+def test_with_none_values(session, rect):
     original = session.window.rect
     response = set_window_rect(session, rect)
     assert_success(response, original)
@@ -208,17 +208,13 @@ def test_partial_input(session, rect):
     response = set_window_rect(session, rect)
     value = assert_success(response, session.window.rect)
 
+    assert value["width"] == rect.get("width", original["width"])
+    assert value["height"] == rect.get("height", original["height"])
     # Wayland doesn't return correct coordinates after changing window position.
-    if is_wayland() and ('x' in rect or 'y' in rect):
-        fields = ("width", "height")
-    else:
-        fields = ("x", "y", "width", "height")
+    if not is_wayland():
+        assert value["x"] == rect.get("x", original["x"])
+        assert value["y"] == rect.get("y", original["y"])
 
-    for field in fields:
-        if field in rect:
-            assert value[field] == rect[field]
-        else:
-            assert value[field] == original[field]
 
 def test_set_to_available_size(
     session, available_screen_size, minimal_screen_position

@@ -238,7 +238,7 @@ test(function() {
   // 15.1.4 Constructor Properties of the Global Object
   ["Object", "Function", "Array", "String", "Boolean", "Number", "Date",
    "RegExp", "Error", "EvalError", "RangeError", "ReferenceError",
-   "SyntaxError", "TypeError", "URIError"].forEach(function(id) {
+   "SyntaxError", "TypeError", "URIError", "AggregateError", "SuppressedError"].forEach(function(id) {
     test(function() {
       assert_true(id in window, id + " in window");
       assert_data_propdesc(Object.getOwnPropertyDescriptor(window, id),

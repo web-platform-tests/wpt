@@ -132,6 +132,7 @@ class RunInfo(Dict[str, Any]):
         if adb_binary:
             self["adb_binary"] = adb_binary
 
+        print(device_serials)
         if device_serials:
             # Assume all emulators are identical, so query an arbitrary one.
             self._update_with_emulator_info(device_serials[0])
@@ -150,43 +151,47 @@ class RunInfo(Dict[str, Any]):
     def _update_with_emulator_info(self, device_serial):
         """Override system info taken from the host if using an Android
         emulator."""
-        try:
-            self._adb_run(device_serial, ["wait-for-device"])
-            emulator_info = {
-                "os": "android",
-                "os_version": self._adb_get_property(
-                    device_serial,
-                    "ro.build.version.release",
-                    encoding="utf-8",
-                ),
-                "android_version": self._adb_get_property(
-                    device_serial,
-                    "ro.build.version.sdk",
-                    encoding="utf-8",
-                )
-            }
-            emulator_info["version"] = emulator_info["os_version"]
+        for i in range(10):
+            try:
+                self._adb_run(device_serial, ["wait-for-device"])
+                emulator_info = {
+                    "os": "android",
+                    "os_version": self._adb_get_property(
+                        device_serial,
+                        "ro.build.version.release",
+                        encoding="utf-8",
+                    ),
+                    "android_version": self._adb_get_property(
+                        device_serial,
+                        "ro.build.version.sdk",
+                        encoding="utf-8",
+                    )
+                }
+                emulator_info["version"] = emulator_info["os_version"]
 
-            # Detect CPU info (https://developer.android.com/ndk/guides/abis#sa)
-            abi64, *_ = self._adb_get_property(
-                device_serial,
-                "ro.product.cpu.abilist64",
-                encoding="utf-8",
-            ).split(',')
-            if abi64:
-                emulator_info["processor"] = abi64
-                emulator_info["bits"] = 64
-            else:
-                emulator_info["processor"], *_ = self._adb_get_property(
+                # Detect CPU info (https://developer.android.com/ndk/guides/abis#sa)
+                abi64, *_ = self._adb_get_property(
                     device_serial,
-                    "ro.product.cpu.abilist32",
+                    "ro.product.cpu.abilist64",
                     encoding="utf-8",
                 ).split(',')
-                emulator_info["bits"] = 32
+                if abi64:
+                    emulator_info["processor"] = abi64
+                    emulator_info["bits"] = 64
+                else:
+                    emulator_info["processor"], *_ = self._adb_get_property(
+                        device_serial,
+                        "ro.product.cpu.abilist32",
+                        encoding="utf-8",
+                    ).split(',')
+                    emulator_info["bits"] = 32
 
-            self.update(emulator_info)
-        except (OSError, subprocess.CalledProcessError):
-            pass
+                self.update(emulator_info)
+            except (OSError, subprocess.CalledProcessError) as e:
+                print(f"Updating mozinfo failed: {e}")
+                pass
+            else:
+                break
 
     def _update_mozinfo(self, metadata_root):
         """Add extra build information from a mozinfo.json file in a parent

@@ -186,7 +186,14 @@ def test_width_height_floats(session):
     {"height": None, "Y": None},
 
     {"width": None, "height": None, "x": None, "y": None},
+])
+def test_with_none_values(session, rect):
+    original = session.window.rect
+    response = set_window_rect(session, rect)
+    assert_success(response, original)
 
+
+@pytest.mark.parametrize("rect", [
     {"width": 200},
     {"height": 200},
     {"x": 200},
@@ -196,10 +203,17 @@ def test_width_height_floats(session):
     {"width": 200, "y": 200},
     {"height": 200, "y": 200},
 ])
-def test_no_change(session, rect):
+def test_partial_input(session, rect):
     original = session.window.rect
     response = set_window_rect(session, rect)
-    assert_success(response, original)
+    value = assert_success(response, session.window.rect)
+
+    assert value["width"] == rect.get("width", original["width"])
+    assert value["height"] == rect.get("height", original["height"])
+    # Wayland doesn't return correct coordinates after changing window position.
+    if not is_wayland():
+        assert value["x"] == rect.get("x", original["x"])
+        assert value["y"] == rect.get("y", original["y"])
 
 
 def test_set_to_available_size(

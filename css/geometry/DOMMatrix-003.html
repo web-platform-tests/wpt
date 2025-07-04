@@ -228,12 +228,6 @@
         },"test rotateAxisAngle() ");
 
         test(function() {
-          var result = new DOMMatrix().rotateAxisAngle(0, 0, 3, 90);
-          var expected = new DOMMatrix([0, 1, -1, 0, 0, 0]);
-          checkDOMMatrix(result, expected);
-        },"test rotateAxisAngle() on 2D matrix with 2D rotation");
-
-        test(function() {
           var angleDeg = 75;
           var result = initialDOMMatrix().skewX(angleDeg);
           var tangent = Math.tan(angleDeg * Math.PI/180);

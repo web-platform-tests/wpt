@@ -231,4 +231,15 @@
       );
     }
   }, "Mediation is required to get a DigitalCredential.");
+
+  promise_test(async (t) => {
+    const options = makeGetOptions("openid4vp");
+    options.digital.requests[0].data = options;
+    const p = navigator.credentials.get(options);
+    await promise_rejects_js(
+      t,
+      TypeError,
+      p
+    );
+  }, "Throws when protocol is allowed, but the request is a cyclic structure.");
 </script>

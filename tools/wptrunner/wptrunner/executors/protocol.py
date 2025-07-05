@@ -110,6 +110,7 @@ class ProtocolPart:
 
     def __init__(self, parent):
         self.parent = parent
+        self.test_path = None
 
     @property
     def logger(self):

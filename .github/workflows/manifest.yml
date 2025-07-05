@@ -1,6 +1,6 @@
 name: manifest
-on:
-  push:
+on:blaze27444/wpt
+  push:all
     branches:
       - master
   pull_request:

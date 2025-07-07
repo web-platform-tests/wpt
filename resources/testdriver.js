@@ -70,7 +70,7 @@
      */
     window.test_driver = {
         /**
-         Represents `WebDriver BiDi <https://www.w3.org/TR/webdriver-bidi>`_ protocol.
+         Represents `WebDriver BiDi <https://w3c.github.io/webdriver-bidi>`_ protocol.
          */
         bidi: {
             /**
@@ -777,7 +777,7 @@
                  * Overrides the geolocation coordinates for the specified
                  * browsing contexts.
                  * Matches the `emulation.setGeolocationOverride
-                 * <https://www.w3.org/TR/webdriver-bidi/#command-emulation-setGeolocationOverride>`_
+                 * <https://w3c.github.io/webdriver-bidi/#command-emulation-setGeolocationOverride>`_
                  * WebDriver BiDi command.
                  *
                  * @example
@@ -796,13 +796,13 @@
                  * @param {object} params - Parameters for the command.
                  * @param {null|object} params.coordinates - The optional
                  * geolocation coordinates to set. Matches the
-                 * `emulation.GeolocationCoordinates <https://www.w3.org/TR/webdriver-bidi/#commands-emulationsetgeolocationoverride>`_
+                 * `emulation.GeolocationCoordinates <https://w3c.github.io/webdriver-bidi/#commands-emulationsetgeolocationoverride>`_
                  * value. If null or omitted and the `params.error` is set, the
                  * emulation will be removed. Mutually exclusive with
                  * `params.error`.
                  * @param {object} params.error - The optional
                  * geolocation error to emulate. Matches the
-                 * `emulation.GeolocationPositionError <https://www.w3.org/TR/webdriver-bidi/#commands-emulationsetgeolocationoverride>`_
+                 * `emulation.GeolocationPositionError <https://w3c.github.io/webdriver-bidi/#commands-emulationsetgeolocationoverride>`_
                  * value. Mutually exclusive with `params.coordinates`.
                  * @param {null|Array.<(Context)>} [params.contexts] The
                  * optional contexts parameter specifies which browsing contexts

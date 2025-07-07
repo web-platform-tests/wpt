@@ -2286,6 +2286,36 @@ WebDriver BiDi command.</p>
 </div>
 </dd></dl>
 
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.emulation.set_screen_orientation_override">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">emulation</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_screen_orientation_override</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.emulation.set_screen_orientation_override" title="Link to this definition">¶</a></dt>
+<dd><p>Overrides the screen orientation for the specified browsing
+contexts.
+Matches the <a class="reference external" href="https://www.w3.org/TR/webdriver-bidi/#commands-emulationsetscreenorientationoverride">emulation.setScreenOrientationOverride</a>
+WebDriver BiDi command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>object</em>) – Parameters for the command.</p></li>
+<li><p><strong>params.screenOrientation</strong> (<em>null|object</em>) – The optional screen orientation. Matches the <a class="reference external" href="https://www.w3.org/TR/webdriver-bidi/#cddl-type-emulationscreenorientation">emulation.ScreenOrientation</a> type. If null or omitted, the override will be removed.</p></li>
+<li><p><strong>params.contexts</strong> (<em>null|Array.&lt;(Context)&gt;</em>) – The optional contexts parameter specifies which browsing contexts to set the screen orientation override on. It should be either an array of Context objects (window or browsing context id), or null. If null or omitted, the override will be set on the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise.&lt;void&gt;</strong> – Resolves when the screen orientation override is successfully set.</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">emulation</span><span class="p">.</span><span class="nx">set_screen_orientation_override</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">screenOrientation</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">natural</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;portrait&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;landscape-secondary&#39;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 </section>
 </section>

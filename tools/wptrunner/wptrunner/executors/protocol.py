@@ -610,6 +610,12 @@ class BidiEmulationProtocolPart(ProtocolPart):
             contexts: List[str]) -> None:
         pass
 
+    @abstractmethod
+    async def set_screen_orientation_override(self,
+            screen_orientation: Optional[Mapping[str, Any]],
+            contexts: List[str]) -> None:
+        pass
+
 
 class BidiScriptProtocolPart(ProtocolPart):
     """Protocol part for executing BiDi scripts"""

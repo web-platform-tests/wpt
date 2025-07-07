@@ -197,6 +197,29 @@ class BidiEmulationSetGeolocationOverrideAction:
             coordinates, error, contexts)
 
 
+class BidiEmulationSetLocaleOverrideAction:
+    name = "bidi.emulation.set_locale_override"
+
+    def __init__(self, logger, protocol):
+        do_delayed_imports()
+        self.logger = logger
+        self.protocol = protocol
+
+    async def __call__(self, payload):
+        locale = payload['locale'] if 'locale' in payload else None
+
+        if "contexts" not in payload:
+            raise ValueError("Missing required parameter: contexts")
+        contexts = []
+        for context in payload["contexts"]:
+            contexts.append(get_browsing_context_id(context))
+        if len(contexts) == 0:
+            raise ValueError("At least one context must be provided")
+
+        return await self.protocol.bidi_emulation.set_locale_override(locale,
+                                                                      contexts)
+
+
 class BidiSessionSubscribeAction:
     name = "bidi.session.subscribe"
 
@@ -245,5 +268,6 @@ async_actions = [
     BidiBluetoothSimulateDescriptorAction,
     BidiBluetoothSimulateDescriptorResponseAction,
     BidiEmulationSetGeolocationOverrideAction,
+    BidiEmulationSetLocaleOverrideAction,
     BidiPermissionsSetPermissionAction,
     BidiSessionSubscribeAction]

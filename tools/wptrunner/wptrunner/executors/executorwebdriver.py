@@ -372,6 +372,10 @@ class WebDriverBidiEmulationProtocolPart(BidiEmulationProtocolPart):
         return await self.webdriver.bidi_session.emulation.set_geolocation_override(
             coordinates=coordinates, error=error, contexts=contexts)
 
+    async def set_locale_override(self, locale, contexts):
+        return await self.webdriver.bidi_session.emulation.set_locale_override(
+            locale=locale, contexts=contexts)
+
 
 class WebDriverBidiPermissionsProtocolPart(BidiPermissionsProtocolPart):
     def __init__(self, parent):

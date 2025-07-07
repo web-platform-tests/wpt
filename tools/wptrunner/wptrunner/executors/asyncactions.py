@@ -220,6 +220,31 @@ class BidiEmulationSetLocaleOverrideAction:
                                                                       contexts)
 
 
+class BidiEmulationSetScreenOrientationOverrideAction:
+    name = "bidi.emulation.set_screen_orientation_override"
+
+    def __init__(self, logger, protocol):
+        do_delayed_imports()
+        self.logger = logger
+        self.protocol = protocol
+
+    async def __call__(self, payload):
+        screen_orientation = payload['screenOrientation'] \
+            if 'screenOrientation' in payload \
+            else None
+
+        if "contexts" not in payload:
+            raise ValueError("Missing required parameter: contexts")
+        contexts = []
+        for context in payload["contexts"]:
+            contexts.append(get_browsing_context_id(context))
+        if len(contexts) == 0:
+            raise ValueError("At least one context must be provided")
+
+        return await self.protocol.bidi_emulation.set_screen_orientation_override(
+            screen_orientation, contexts)
+
+
 class BidiSessionSubscribeAction:
     name = "bidi.session.subscribe"
 
@@ -269,5 +294,6 @@ async_actions = [
     BidiBluetoothSimulateDescriptorResponseAction,
     BidiEmulationSetGeolocationOverrideAction,
     BidiEmulationSetLocaleOverrideAction,
+    BidiEmulationSetScreenOrientationOverrideAction,
     BidiPermissionsSetPermissionAction,
     BidiSessionSubscribeAction]

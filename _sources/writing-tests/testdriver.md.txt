@@ -339,4 +339,5 @@ Emulation of browser APIs via [WebDriver BiDi Emulation](https://www.w3.org/TR/w
 
 ```eval_rst
 .. js:autofunction:: test_driver.bidi.emulation.set_geolocation_override
+.. js:autofunction:: test_driver.bidi.emulation.set_locale_override
 ```

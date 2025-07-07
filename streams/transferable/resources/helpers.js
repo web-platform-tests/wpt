@@ -98,7 +98,11 @@
         }
       }, {once: true});
     });
-    postMessage(original, '*', [original]);
+    if (GLOBAL.isShadowRealm()) {
+      structuredClone(original, {transfer: [original]});
+    } else {
+      postMessage(original, '*', [original]);
+    }
     return promise;
   }
 
@@ -117,7 +121,11 @@
         }
       }, {once: true});
     });
-    postMessage(original, '*', [original]);
+    if (GLOBAL.isShadowRealm()) {
+      structuredClone(original, {transfer: [original]});
+    } else {
+      postMessage(original, '*', [original]);
+    }
     return promise;
   }
 

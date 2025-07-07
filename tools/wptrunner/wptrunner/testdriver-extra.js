@@ -160,7 +160,7 @@
         let cmd_id;
         const action_msg = {type: "action",
                             action: name,
-                            ...params};
+                            params};
         if (is_test_context()) {
             cmd_id = window.__wptrunner_message_queue.push(action_msg);
         } else {
@@ -235,9 +235,81 @@
         });
     }
 
+    window.test_driver_internal.bidi.bluetooth.disable_simulation =
+        function(params) {
+        return create_action('bidi.bluetooth.disable_simulation', {
+            // Default to the current window.
+            context: window,
+            ...params
+        });
+    }
+
     window.test_driver_internal.bidi.bluetooth.simulate_preconnected_peripheral =
         function(params) {
         return create_action('bidi.bluetooth.simulate_preconnected_peripheral', {
+            // Default to the current window.
+            context: window,
+            ...params
+        });
+    }
+
+    window.test_driver_internal.bidi.bluetooth.simulate_gatt_connection_response =
+        function(params) {
+        return create_action('bidi.bluetooth.simulate_gatt_connection_response', {
+            // Default to the current window.
+            context: window,
+            ...params
+        });
+    }
+
+    window.test_driver_internal.bidi.bluetooth.simulate_gatt_disconnection =
+        function(params) {
+        return create_action('bidi.bluetooth.simulate_gatt_disconnection', {
+            // Default to the current window.
+            context: window,
+            ...params
+        });
+    }
+
+    window.test_driver_internal.bidi.bluetooth.simulate_service =
+        function(params) {
+        return create_action('bidi.bluetooth.simulate_service', {
+            // Default to the current window.
+            context: window,
+            ...params
+        });
+    }
+
+    window.test_driver_internal.bidi.bluetooth.simulate_characteristic =
+        function(params) {
+        return create_action('bidi.bluetooth.simulate_characteristic', {
+            // Default to the current window.
+            context: window,
+            ...params
+        });
+    }
+
+    window.test_driver_internal.bidi.bluetooth.simulate_characteristic_response =
+        function(params) {
+        return create_action('bidi.bluetooth.simulate_characteristic_response', {
+            // Default to the current window.
+            context: window,
+            ...params
+        });
+    }
+
+    window.test_driver_internal.bidi.bluetooth.simulate_descriptor =
+        function(params) {
+        return create_action('bidi.bluetooth.simulate_descriptor', {
+            // Default to the current window.
+            context: window,
+            ...params
+        });
+    }
+
+    window.test_driver_internal.bidi.bluetooth.simulate_descriptor_response =
+        function(params) {
+        return create_action('bidi.bluetooth.simulate_descriptor_response', {
             // Default to the current window.
             context: window,
             ...params
@@ -261,6 +333,57 @@
                     'bluetooth.requestDevicePromptUpdated', on_event);
     };
 
+    window.test_driver_internal.bidi.bluetooth.gatt_connection_attempted.subscribe =
+        function(params) {
+        return subscribe(
+            {params, events: ['bluetooth.gattConnectionAttempted']})
+    };
+
+    window.test_driver_internal.bidi.bluetooth.gatt_connection_attempted.on =
+        function(callback) {
+        const on_event = (event) => {
+            callback(event.payload);
+        };
+        event_target.addEventListener(
+            'bluetooth.gattConnectionAttempted', on_event);
+        return () => event_target.removeEventListener(
+                    'bluetooth.gattConnectionAttempted', on_event);
+    };
+
+    window.test_driver_internal.bidi.bluetooth.characteristic_event_generated.subscribe =
+        function(params) {
+        return subscribe(
+            {params, events: ['bluetooth.characteristicEventGenerated']})
+    };
+
+    window.test_driver_internal.bidi.bluetooth.characteristic_event_generated.on =
+        function(callback) {
+        const on_event = (event) => {
+            callback(event.payload);
+        };
+        event_target.addEventListener(
+            'bluetooth.characteristicEventGenerated', on_event);
+        return () => event_target.removeEventListener(
+                    'bluetooth.characteristicEventGenerated', on_event);
+    };
+
+    window.test_driver_internal.bidi.bluetooth.descriptor_event_generated.subscribe =
+        function(params) {
+        return subscribe(
+            {params, events: ['bluetooth.descriptorEventGenerated']});
+    };
+
+    window.test_driver_internal.bidi.bluetooth.descriptor_event_generated.on =
+        function(callback) {
+        const on_event = (event) => {
+            callback(event.payload);
+        };
+        event_target.addEventListener(
+            'bluetooth.descriptorEventGenerated', on_event);
+        return () => event_target.removeEventListener(
+                    'bluetooth.descriptorEventGenerated', on_event);
+    };
+
     window.test_driver_internal.bidi.emulation.set_geolocation_override =
         function (params) {
             if ('coordinates' in params && 'error' in params) {
@@ -274,6 +397,14 @@
                 ...(params ?? {})
             });
         }
+
+    window.test_driver_internal.bidi.emulation.set_locale_override = function (params) {
+        return create_action("bidi.emulation.set_locale_override", {
+            // Default to the current window.
+            contexts: [window],
+            ...params
+        });
+    };
 
     window.test_driver_internal.bidi.log.entry_added.subscribe =
         function (params) {

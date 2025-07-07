@@ -27,7 +27,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const detector = await createLanguageDetector();
-  const results = await detector.detect('Hello world!');
+  const results = await detector.detect(kTestPrompt);
 
   // must at least have the 'und' result.
   assert_greater_than_equal(results.length, 1);
@@ -66,16 +66,7 @@ promise_test(async t => {
 }, 'LanguageDetector.detect() returns valid results');
 
 promise_test(async t => {
-  const error = new Error('CreateMonitorCallback threw an error');
-  function monitor(m) {
-    m.addEventListener('downloadprogress', e => {
-      assert_unreached(
-          'This should never be reached since monitor throws an error.');
-    });
-    throw error;
-  }
-
-  await promise_rejects_exactly(t, error, createLanguageDetector({monitor}));
+  await testCreateMonitorCallbackThrowsError(t, createLanguageDetector);
 }, 'If monitor throws an error, LanguageDetector.create() rejects with that error');
 
 promise_test(async t => {
@@ -98,35 +89,17 @@ promise_test(async t => {
 }, 'Aborting createLanguageDetector().');
 
 promise_test(async t => {
-  const detector = await createLanguageDetector();
-
-  const text = 'Hello world!';
-  const promises = [detector.detect(text), detector.measureInputUsage(text)];
-
-  detector.destroy();
-
-  promises.push(detector.detect(text), detector.measureInputUsage(text));
-
-  for (const promise of promises) {
-    await promise_rejects_dom(t, 'AbortError', promise);
-  }
+  await testDestroy(t, createLanguageDetector, {}, [
+    detector => detector.detect(kTestPrompt),
+    detector => detector.measureInputUsage(kTestPrompt),
+  ]);
 }, 'Calling LanguageDetector.destroy() aborts calls to detect and measureInputUsage.');
 
 promise_test(async t => {
-  const controller = new AbortController();
-  const detector = await createLanguageDetector({signal: controller.signal});
-
-  const text = 'Hello world!';
-  const promises = [detector.detect(text), detector.measureInputUsage(text)];
-
-  const error = new Error('The create abort signal was aborted.');
-  controller.abort(error);
-
-  promises.push(detector.detect(text), detector.measureInputUsage(text));
-
-  for (const promise of promises) {
-    await promise_rejects_exactly(t, error, promise);
-  }
+  await testCreateAbort(t, createLanguageDetector, {}, [
+    detector => detector.detect(kTestPrompt),
+    detector => detector.measureInputUsage(kTestPrompt),
+  ]);
 }, 'LanguageDetector.create()\'s abort signal destroys its LanguageDetector after creation.');
 
 promise_test(async t => {
@@ -135,7 +108,7 @@ promise_test(async t => {
 
   const detector = await createLanguageDetector();
   const detectPromise =
-      detector.detect('Hello world!', {signal: controller.signal});
+    detector.detect(kTestPrompt, { signal: controller.signal });
 
   await promise_rejects_dom(t, 'AbortError', detectPromise);
 }, 'LanguageDetector.detect() call with an aborted signal.');
@@ -143,7 +116,7 @@ promise_test(async t => {
 promise_test(async t => {
   const detector = await createLanguageDetector();
   await testAbortPromise(t, signal => {
-    return detector.detect('Hello world!', {signal});
+    return detector.detect(kTestPrompt, { signal });
   });
 }, 'Aborting LanguageDetector.detect().');
 
@@ -172,7 +145,7 @@ promise_test(async t => {
 
   const detector = await createLanguageDetector();
   const measureInputUsagePromise =
-      detector.measureInputUsage('hello', {signal: controller.signal});
+    detector.measureInputUsage(kTestPrompt, { signal: controller.signal });
 
   await promise_rejects_dom(t, 'AbortError', measureInputUsagePromise);
 }, 'LanguageDetector.measureInputUsage() call with an aborted signal.');
@@ -180,7 +153,7 @@ promise_test(async t => {
 promise_test(async t => {
   const detector = await createLanguageDetector();
   await testAbortPromise(t, signal => {
-    return detector.measureInputUsage('hello', {signal});
+    return detector.measureInputUsage(kTestPrompt, { signal });
   });
 }, 'Aborting LanguageDetector.measureInputUsage().');
 

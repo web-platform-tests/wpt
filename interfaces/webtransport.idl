@@ -27,6 +27,7 @@ interface WebTransport {
   constructor(USVString url, optional WebTransportOptions options = {});
 
   Promise<WebTransportConnectionStats> getStats();
+  [NewObject] Promise<ArrayBuffer> exportKeyingMaterial(BufferSource label, optional BufferSource context);
   readonly attribute Promise<undefined> ready;
   readonly attribute WebTransportReliabilityMode reliability;
   readonly attribute WebTransportCongestionControl congestionControl;
@@ -155,6 +156,7 @@ interface WebTransportBidirectionalStream {
 [Exposed=*, SecureContext]
 interface WebTransportWriter : WritableStreamDefaultWriter {
   Promise<undefined> atomicWrite(optional any chunk);
+  undefined commit();
 };
 
 [Exposed=(Window,Worker), Serializable, SecureContext]

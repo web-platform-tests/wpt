@@ -1,8 +1,7 @@
-// META: title=Translator Translate
+// META: title=Optional Translator tests
 // META: global=window
 // META: timeout=long
 // META: script=../resources/util.js
-// META: script=../resources/language_codes.js
 // META: script=/resources/testdriver.js
 // META: script=resources/util.js
 //
@@ -50,20 +49,27 @@ promise_test(async () => {
   assert_equals(await translator.translate('hello'), 'こんにちは');
 }, 'Simple Translator.translateStreaming() call');
 
+promise_test(async () => {
+  const translator =
+      await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
+  const streamingResponse = translator.translateStreaming('hello');
+  gc();
+  assert_equals(Object.prototype.toString.call(streamingResponse),
+                '[object ReadableStream]');
+  let result = '';
+  for await (const value of streamingResponse) {
+    result += value;
+    gc();
+  }
+assert_greater_than(result.length, 0, 'The result should not be empty.');
+}, 'Translate Streaming API must continue even after GC has been performed.');
+
 promise_test(async t => {
   const translator =
       await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
   assert_equals(translator.sourceLanguage, 'en');
   assert_equals(translator.targetLanguage, 'ja');
 }, 'Translator: sourceLanguage and targetLanguage are equal to their respective option passed in to Translator.create.');
-
-promise_test(async (t) => {
-  const translator =
-      await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
-  translator.destroy();
-  await promise_rejects_dom(
-      t, 'InvalidStateError', translator.translate('hello'));
-}, 'Translator.translate() fails after destroyed');
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -103,9 +109,41 @@ promise_test(async t => {
 }, 'Aborting Translator.translate().');
 
 promise_test(async t => {
+  await testDestroy(
+    t, createTranslator, { sourceLanguage: 'en', targetLanguage: 'ja' }, [
+    translator => translator.translate(kTestPrompt),
+    translator => translator.measureInputUsage(kTestPrompt),
+  ]);
+}, 'Calling Translator.destroy() aborts calls to write and measureInputUsage.');
+
+promise_test(async (t) => {
+  const translator =
+    await createTranslator({ sourceLanguage: 'en', targetLanguage: 'ja' });
+  const stream = translator.translateStreaming(kTestPrompt);
+
+  translator.destroy();
+
+  await promise_rejects_dom(
+    t, 'AbortError', stream.pipeTo(new WritableStream()));
+}, 'Translator.translateStreaming() fails after destroyed');
+
+promise_test(async t => {
+  await testCreateAbort(
+    t, createTranslator, { sourceLanguage: 'en', targetLanguage: 'ja' }, [
+    translator => translator.translate(kTestPrompt),
+    translator => translator.measureInputUsage(kTestPrompt),
+  ]);
+}, 'Translator.create()\'s abort signal destroys its Translator after creation.');
+
+promise_test(async t => {
   await testMonitor(
       createTranslator, {sourceLanguage: 'en', targetLanguage: 'ja'});
 }, 'Translator.create() notifies its monitor on downloadprogress');
+
+promise_test(async t => {
+  await testCreateMonitorWithAbort(
+      t, createTranslator, {sourceLanguage: 'en', targetLanguage: 'ja'});
+}, 'Progress events are not emitted after aborted.');
 
 promise_test(async t => {
   const translator =

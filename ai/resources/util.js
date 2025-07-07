@@ -3,6 +3,12 @@ const kValidAvailabilities =
 const kAvailableAvailabilities = ['downloadable', 'downloading', 'available'];
 
 const kTestPrompt = 'Please write a sentence in English.';
+const kTestContext = 'This is a test; this is only a test.';
+
+const getId = (() => {
+  let idCount = 0;
+  return () => idCount++;
+})();
 
 // Takes an array of dictionaries mapping keys to value arrays, e.g.:
 //   [ {Shape: ["Square", "Circle", undefined]}, {Count: [1, 2]} ]
@@ -174,4 +180,92 @@ async function testMonitor(createFunc, options = {}) {
     lastProgressEventLoaded = progressEvent.loaded;
   }
   return result;
+}
+
+async function testCreateMonitorCallbackThrowsError(
+    t, createFunc, options = {}) {
+  const error = new Error('CreateMonitorCallback threw an error');
+  function monitor(m) {
+    m.addEventListener('downloadprogress', e => {
+      assert_unreached(
+          'This should never be reached since monitor throws an error.');
+    });
+    throw error;
+  }
+
+  await promise_rejects_exactly(t, error, createFunc({...options, monitor}));
+}
+
+function run_iframe_test(iframe, test_name) {
+  const id = getId();
+  iframe.contentWindow.postMessage({id, type: test_name}, '*');
+  const {promise, resolve, reject} = Promise.withResolvers();
+  window.onmessage = message => {
+    if (message.data.id !== id) {
+      return;
+    }
+    if (message.data.success) {
+      resolve(message.data.success);
+    } else {
+      reject(message.data.err)
+    }
+  };
+  return promise;
+}
+
+function load_iframe(src, permission_policy) {
+  let iframe = document.createElement('iframe');
+  const {promise, resolve} = Promise.withResolvers();
+  iframe.onload = () => {
+    resolve(iframe);
+  };
+  iframe.src = src;
+  iframe.allow = permission_policy;
+  document.body.appendChild(iframe);
+  return promise;
+}
+
+async function createSummarizer(options = {}) {
+  await test_driver.bless();
+  return await Summarizer.create(options);
+}
+
+async function createWriter(options = {}) {
+  await test_driver.bless();
+  return await Writer.create(options);
+}
+
+async function createRewriter(options = {}) {
+  await test_driver.bless();
+  return await Rewriter.create(options);
+}
+
+async function testDestroy(t, createMethod, options, instanceMethods) {
+  const instance = await createMethod(options);
+
+  const promises = instanceMethods.map(method => method(instance));
+
+  instance.destroy();
+
+  promises.push(...instanceMethods.map(method => method(instance)));
+
+  for (const promise of promises) {
+    await promise_rejects_dom(t, 'AbortError', promise);
+  }
+}
+
+async function testCreateAbort(t, createMethod, options, instanceMethods) {
+  const controller = new AbortController();
+  const instance = await createMethod({...options, signal: controller.signal});
+
+  const promises = instanceMethods.map(method => method(instance));
+
+  const error = new Error('The create abort signal was aborted.');
+  controller.abort(error);
+
+  promises.push(...instanceMethods.map(method => method(instance)));
+
+  for (const promise of promises) {
+    await promise_rejects_exactly(t, error, promise);
+  }
 }

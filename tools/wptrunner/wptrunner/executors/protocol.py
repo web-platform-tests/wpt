@@ -605,6 +605,11 @@ class BidiEmulationProtocolPart(ProtocolPart):
             contexts: List[str]) -> None:
         pass
 
+    @abstractmethod
+    async def set_locale_override(self, locale: Optional[str],
+            contexts: List[str]) -> None:
+        pass
+
 
 class BidiScriptProtocolPart(ProtocolPart):
     """Protocol part for executing BiDi scripts"""

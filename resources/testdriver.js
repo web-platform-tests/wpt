@@ -70,7 +70,7 @@
      */
     window.test_driver = {
         /**
-         Represents `WebDriver BiDi <https://w3c.github.io/webdriver-bidi>`_ protocol.
+         Represents `WebDriver BiDi <https://www.w3.org/TR/webdriver-bidi>`_ protocol.
          */
         bidi: {
             /**
@@ -777,7 +777,7 @@
                  * Overrides the geolocation coordinates for the specified
                  * browsing contexts.
                  * Matches the `emulation.setGeolocationOverride
-                 * <https://w3c.github.io/webdriver-bidi/#command-emulation-setGeolocationOverride>`_
+                 * <https://www.w3.org/TR/webdriver-bidi/#command-emulation-setGeolocationOverride>`_
                  * WebDriver BiDi command.
                  *
                  * @example
@@ -796,13 +796,13 @@
                  * @param {object} params - Parameters for the command.
                  * @param {null|object} params.coordinates - The optional
                  * geolocation coordinates to set. Matches the
-                 * `emulation.GeolocationCoordinates <https://w3c.github.io/webdriver-bidi/#commands-emulationsetgeolocationoverride>`_
+                 * `emulation.GeolocationCoordinates <https://www.w3.org/TR/webdriver-bidi/#commands-emulationsetgeolocationoverride>`_
                  * value. If null or omitted and the `params.error` is set, the
                  * emulation will be removed. Mutually exclusive with
                  * `params.error`.
                  * @param {object} params.error - The optional
                  * geolocation error to emulate. Matches the
-                 * `emulation.GeolocationPositionError <https://w3c.github.io/webdriver-bidi/#commands-emulationsetgeolocationoverride>`_
+                 * `emulation.GeolocationPositionError <https://www.w3.org/TR/webdriver-bidi/#commands-emulationsetgeolocationoverride>`_
                  * value. Mutually exclusive with `params.coordinates`.
                  * @param {null|Array.<(Context)>} [params.contexts] The
                  * optional contexts parameter specifies which browsing contexts
@@ -819,6 +819,34 @@
                     return window.test_driver_internal.bidi.emulation.set_geolocation_override(
                         params);
                 },
+                /**
+                 * Overrides the locale for the specified browsing contexts.
+                 * Matches the `emulation.setLocaleOverride
+                 * <https://www.w3.org/TR/webdriver-bidi/#commands-emulationsetlocaleoverride>`_
+                 * WebDriver BiDi command.
+                 *
+                 * @example
+                 * await test_driver.bidi.emulation.set_locale_override({
+                 *     locale: 'de-DE'
+                 * });
+                 *
+                 * @param {object} params - Parameters for the command.
+                 * @param {null|string} params.locale - The optional
+                 * locale to set.
+                 * @param {null|Array.<(Context)>} [params.contexts] The
+                 * optional contexts parameter specifies which browsing contexts
+                 * to set the locale override on. It should be either an array
+                 * of Context objects (window or browsing context id), or null.
+                 * If null or omitted, the override will be set on the current
+                 * browsing context.
+                 * @returns {Promise<void>} Resolves when the locale override
+                 * is successfully set.
+                 */
+                set_locale_override: function (params) {
+                    assertBidiIsEnabled();
+                    return window.test_driver_internal.bidi.emulation.set_locale_override(
+                        params);
+                }
             },
             /**
              * `log <https://www.w3.org/TR/webdriver-bidi/#module-log>`_ module.
@@ -2181,6 +2209,10 @@
                 set_geolocation_override: function (params) {
                     throw new Error(
                         "bidi.emulation.set_geolocation_override is not implemented by testdriver-vendor.js");
+                },
+                set_locale_override: function (params) {
+                    throw new Error(
+                        "bidi.emulation.set_locale_override is not implemented by testdriver-vendor.js");
                 }
             },
             log: {

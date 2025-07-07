@@ -256,13 +256,15 @@ class WebTestServer(http.server.ThreadingHTTPServer):
     def serve_forever(self, poll_interval=0.5):
         """Handle one request at a time until shutdown.
 
-        This overrides the superclass implementation to use a pipe to
-        process shutdown requests, avoiding waiting the poll_interval
-        before shutting down.
-
-        It does, however, still call service_actions() every
+        On POSIX-like platforms, this overrides the superclass implementation to use a
+        pipe to process shutdown requests, avoiding waiting the poll_interval before
+        shutting down. It does, however, still call service_actions() every
         poll_interval.
+
         """
+        if os.name != "posix":
+            super().serve_forever(poll_interval=poll_interval)
+            return
 
         shutdown_read_fd, self._shutdown_write_fd = os.pipe()
         self._shutdown_event.clear()
@@ -298,6 +300,10 @@ class WebTestServer(http.server.ThreadingHTTPServer):
 
     def shutdown(self):
         """Stops the serve_forever loop and waits for it to finish."""
+        if os.name != "posix":
+            super().shutdown()
+            return
+
         os.write(self._shutdown_write_fd, b'x')
         self._shutdown_event.wait()
 

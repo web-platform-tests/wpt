@@ -42,7 +42,7 @@ async def test_beforeunload(bidi_session, subscribe_events, wait_for_event,
 
 @pytest.mark.parametrize("handler", ["accept", "dismiss", "ignore"])
 @pytest.mark.parametrize("prompt", ["alert", "confirm", "prompt", "default"])
-async def test_js_handle(bidi_session, subscribe_events, wait_for_event,
+async def test_simple_prompts(bidi_session, subscribe_events, wait_for_event,
         wait_for_future_safe, create_user_context, prompt, handler):
     script = prompt if (prompt is not None and prompt != 'default') else 'alert'
     user_context = await create_user_context(

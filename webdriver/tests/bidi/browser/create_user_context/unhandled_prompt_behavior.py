@@ -44,7 +44,7 @@ async def test_beforeunload(bidi_session, subscribe_events, wait_for_event,
 @pytest.mark.parametrize("prompt", ["alert", "confirm", "prompt", "default"])
 async def test_simple_prompts(bidi_session, subscribe_events, wait_for_event,
         wait_for_future_safe, create_user_context, prompt, handler):
-    script = prompt if (prompt is not None and prompt != 'default') else 'alert'
+    prompt_type = prompt if (prompt is not None and prompt != 'default') else 'alert'
     user_context = await create_user_context(
         unhandled_prompt_behavior={prompt: handler})
     new_tab = await bidi_session.browsing_context.create(
@@ -59,7 +59,7 @@ async def test_simple_prompts(bidi_session, subscribe_events, wait_for_event,
     # Schedule script opening prompt but don't wait for the result.
     asyncio.create_task(
         bidi_session.script.evaluate(
-            expression=f"window.{script}('some message')",
+            expression=f"window.{prompt_type}('some message')",
             target=ContextTarget(new_tab["context"]),
             await_promise=False,
         )
@@ -74,7 +74,7 @@ async def test_simple_prompts(bidi_session, subscribe_events, wait_for_event,
     recursive_compare({
         'context': new_tab["context"],
         'handler': expected_handler,
-        'type': script,
+        'type': prompt_type,
     }, resp)
 
 

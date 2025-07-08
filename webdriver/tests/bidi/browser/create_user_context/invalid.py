@@ -47,7 +47,6 @@ async def test_proxy_proxy_type_invalid_value(create_user_context):
                 "proxyType": "SOME_UNKNOWN_TYPE"
             })
 
-
 async def test_proxy_proxy_type_manual_socks_version_without_socks_proxy(
         create_user_context):
     with pytest.raises(error.InvalidArgumentException):
@@ -170,3 +169,34 @@ async def test_params_autoconfig_missing(create_user_context, value):
         await create_user_context(
             proxy={"proxyType": "pac"}
         )
+
+
+@pytest.mark.parametrize("value", [False, 42, "foo", []])
+async def test_unhandled_prompt_behavior_invalid_type(create_user_context,
+        value):
+    with pytest.raises(error.InvalidArgumentException):
+        await create_user_context(unhandled_prompt_behavior=value)
+
+
+@pytest.mark.parametrize("handler",
+                         ["alert", "beforeUnload", "confirm", "default", "file",
+                          "prompt"])
+@pytest.mark.parametrize("value", [42, True, [], {}, None])
+async def test_unhandled_prompt_behavior_handler_invalid_type(
+        create_user_context, handler, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await create_user_context(unhandled_prompt_behavior={
+            handler: value
+        })
+
+
+@pytest.mark.parametrize("handler",
+                         ["alert", "beforeUnload", "confirm", "default", "file",
+                          "prompt"])
+@pytest.mark.parametrize("value", [42, True, [], {}, None])
+async def test_unhandled_prompt_behavior_handler_invalid_value(
+        create_user_context, handler, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await create_user_context(unhandled_prompt_behavior={
+            handler: "invalid_value"
+        })

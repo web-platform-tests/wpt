@@ -9,12 +9,12 @@ pytestmark = pytest.mark.asyncio
 USER_PROMPT_OPENED_EVENT = "browsingContext.userPromptOpened"
 
 
-@pytest.mark.parametrize("handle", ["accept", "dismiss", "ignore"])
+@pytest.mark.parametrize("handler", ["accept", "dismiss", "ignore"])
 async def test_beforeunload(bidi_session, subscribe_events, wait_for_event,
-        wait_for_future_safe, create_user_context, handle,
+        wait_for_future_safe, create_user_context, handler,
         setup_beforeunload_page, inline):
     user_context = await create_user_context(
-        unhandled_prompt_behavior={"beforeUnload": handle})
+        unhandled_prompt_behavior={"beforeUnload": handler})
     new_tab = await bidi_session.browsing_context.create(
         type_hint="tab",
         user_context=user_context
@@ -35,18 +35,18 @@ async def test_beforeunload(bidi_session, subscribe_events, wait_for_event,
     resp = await wait_for_future_safe(on_entry)
     recursive_compare({
         'context': new_tab["context"],
-        'handler': handle,
+        'handler': handler,
         'type': "beforeunload",
     }, resp)
 
 
-@pytest.mark.parametrize("handle", ["accept", "dismiss", "ignore"])
+@pytest.mark.parametrize("handler", ["accept", "dismiss", "ignore"])
 @pytest.mark.parametrize("prompt", ["alert", "confirm", "prompt", "default"])
 async def test_js_handle(bidi_session, subscribe_events, wait_for_event,
-        wait_for_future_safe, create_user_context, prompt, handle):
+        wait_for_future_safe, create_user_context, prompt, handler):
     script = prompt if (prompt is not None and prompt != 'default') else 'alert'
     user_context = await create_user_context(
-        unhandled_prompt_behavior={prompt: handle})
+        unhandled_prompt_behavior={prompt: handler})
     new_tab = await bidi_session.browsing_context.create(
         type_hint="tab",
         user_context=user_context
@@ -66,23 +66,23 @@ async def test_js_handle(bidi_session, subscribe_events, wait_for_event,
     )
 
     # Default behavior for js prompts is `dismiss`.
-    expected_handle = handle if handle is not None \
+    expected_handler = handler if handler is not None \
         else 'dismiss'
 
     # Wait for prompt to appear.
     resp = await wait_for_future_safe(on_entry)
     recursive_compare({
         'context': new_tab["context"],
-        'handler': expected_handle,
+        'handler': expected_handler,
         'type': script,
     }, resp)
 
 
-@pytest.mark.parametrize("handle", ["accept", "dismiss", "ignore"])
-async def test_file(bidi_session, create_user_context, handle,
+@pytest.mark.parametrize("handler", ["accept", "dismiss", "ignore"])
+async def test_file(bidi_session, create_user_context, handler,
         assert_file_dialog_not_canceled, assert_file_dialog_canceled):
     user_context = await create_user_context(
-        unhandled_prompt_behavior={"file": handle})
+        unhandled_prompt_behavior={"file": handler})
 
     new_tab = await bidi_session.browsing_context.create(
         type_hint="tab",
@@ -90,7 +90,7 @@ async def test_file(bidi_session, create_user_context, handle,
     )
 
     # Unless explicitly set to `ignore`, the file behavior is `dismiss`.
-    if handle == 'ignore':
+    if handler == 'ignore':
         assert_file_dialog_not_canceled(new_tab)
     else:
         assert_file_dialog_canceled(new_tab)

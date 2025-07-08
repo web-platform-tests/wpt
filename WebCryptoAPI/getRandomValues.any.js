@@ -60,9 +60,14 @@ for (const array of arrays) {
 
     test(function() {
         const maxlength = 65536 / ctor.BYTES_PER_ELEMENT;
-        assert_throws_dom("QuotaExceededError", function() {
-            self.crypto.getRandomValues(new ctor(maxlength + 1))
-        }, "crypto.getRandomValues length over 65536")
+
+        try {
+            self.crypto.getRandomValues(new ctor(maxlength + 1));
+        } catch (e) {
+            assert_equals(e.constructor, globalThis.QuotaExceededError, "QuotaExceededError constructor match");
+            assert_equals(e.quota, null, "quota");
+            assert_equals(e.requested, null, "requested");
+        }
     }, "Large length: " + array);
 
     test(function() {

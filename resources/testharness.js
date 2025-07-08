@@ -2296,7 +2296,6 @@
                 NETWORK_ERR: 'NetworkError',
                 ABORT_ERR: 'AbortError',
                 URL_MISMATCH_ERR: 'URLMismatchError',
-                QUOTA_EXCEEDED_ERR: 'QuotaExceededError',
                 TIMEOUT_ERR: 'TimeoutError',
                 INVALID_NODE_TYPE_ERR: 'InvalidNodeTypeError',
                 DATA_CLONE_ERR: 'DataCloneError'

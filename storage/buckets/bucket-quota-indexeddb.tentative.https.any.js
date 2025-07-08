@@ -37,7 +37,10 @@ promise_test(async t => {
   try {
     await transactionPromise(txn);
   } catch (e) {
-    assert_equals(e.name, 'QuotaExceededError');
+    assert_equals(e.constructor, globalThis.QuotaExceededError,
+                  'QuotaExceededError constructor match');
+    assert_equals(e.quota, null, 'quota');
+    assert_equals(e.requested, null, 'requested');
   }
 
   db.close();

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSSColorValue.parse() with all color functions</title>
+<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-csscolorvalue-parse">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+test(() => {
+  const testCases = [
+    {
+      input: 'rgb(255, 0, 0)',
+      expected: {
+        type: CSSRGB,
+        r: { value: 255, unit: 'number' },
+        g: { value: 0, unit: 'number' },
+        b: { value: 0, unit: 'number' },
+        alpha: { value: 1, unit: 'number' }
+      }
+    },
+    {
+      input: 'rgba(255, 0, 0, 0.5)',
+      expected: {
+        type: CSSRGB,
+        r: { value: 255, unit: 'number' },
+        g: { value: 0, unit: 'number' },
+        b: { value: 0, unit: 'number' },
+        alpha: { value: 0.5, unit: 'number' }
+      }
+    },
+    {
+      input: 'hsl(120, 100%, 50%)',
+      expected: {
+        type: CSSHSL,
+        h: { value: 120, unit: 'deg' },
+        s: { value: 100, unit: 'percent' },
+        l: { value: 50, unit: 'percent' },
+        alpha: { value: 1, unit: 'number' }
+      }
+    },
+    {
+      input: 'hsla(120, 100%, 50%, 0.5)',
+      expected: {
+        type: CSSHSL,
+        h: { value: 120, unit: 'deg' },
+        s: { value: 100, unit: 'percent' },
+        l: { value: 50, unit: 'percent' },
+        alpha: { value: 0.5, unit: 'number' }
+      }
+    },
+    {
+      input: 'hwb(120 0% 0%)',
+      expected: {
+        type: CSSHWB,
+        h: { value: 120, unit: 'deg' },
+        w: { value: 0, unit: 'percent' },
+        b: { value: 0, unit: 'percent' },
+        alpha: { value: 1, unit: 'number' }
+      }
+    },
+    {
+      input: 'lab(50% 40 30)',
+      expected: {
+        type: CSSLab,
+        l: { value: 50, unit: 'percent' },
+        a: { value: 40, unit: 'number' },
+        b: { value: 30, unit: 'number' },
+        alpha: { value: 1, unit: 'number' }
+      }
+    },
+    {
+      input: 'lch(50% 50 120)',
+      expected: {
+        type: CSSLCH,
+        l: { value: 50, unit: 'percent' },
+        c: { value: 50, unit: 'number' },
+        h: { value: 120, unit: 'deg' },
+        alpha: { value: 1, unit: 'number' }
+      }
+    },
+    {
+      input: 'oklab(0.5 0.1 0.2)',
+      expected: {
+        type: CSSOKLab,
+        l: { value: 0.5, unit: 'number' },
+        a: { value: 0.1, unit: 'number' },
+        b: { value: 0.2, unit: 'number' },
+        alpha: { value: 1, unit: 'number' }
+      }
+    },
+    {
+      input: 'oklch(0.5 0.1 120)',
+      expected: {
+        type: CSSOKLCH,
+        l: { value: 0.5, unit: 'number' },
+        c: { value: 0.1, unit: 'number' },
+        h: { value: 120, unit: 'deg' },
+        alpha: { value: 1, unit: 'number' }
+      }
+    },
+    {
+      input: 'color(srgb 1 0 0)',
+      expected: {
+        type: CSSColor,
+        colorSpace: 'srgb',
+        components: [
+          { value: 1, unit: 'number' },
+          { value: 0, unit: 'number' },
+          { value: 0, unit: 'number' }
+        ]
+      }
+    }
+  ];
+
+  for (const testCase of testCases) {
+    const result = CSSColorValue.parse(testCase.input);
+    assert_true(result instanceof testCase.expected.type, `Expected ${testCase.input} to be parsed as ${testCase.expected.type.name}`);
+
+    if (result instanceof CSSRGB) {
+      assert_equals(result.r.value, testCase.expected.r.value, 'r value mismatch');
+      assert_equals(result.r.unit, testCase.expected.r.unit, 'r unit mismatch');
+      assert_equals(result.g.value, testCase.expected.g.value, 'g value mismatch');
+      assert_equals(result.g.unit, testCase.expected.g.unit, 'g unit mismatch');
+      assert_equals(result.b.value, testCase.expected.b.value, 'b value mismatch');
+      assert_equals(result.b.unit, testCase.expected.b.unit, 'b unit mismatch');
+      assert_equals(result.alpha.value, testCase.expected.alpha.value, 'alpha value mismatch');
+      assert_equals(result.alpha.unit, testCase.expected.alpha.unit, 'alpha unit mismatch');
+    } else if (result instanceof CSSHSL) {
+      assert_equals(result.h.value, testCase.expected.h.value, 'h value mismatch');
+      assert_equals(result.h.unit, testCase.expected.h.unit, 'h unit mismatch');
+      assert_equals(result.s.value, testCase.expected.s.value, 's value mismatch');
+      assert_equals(result.s.unit, testCase.expected.s.unit, 's unit mismatch');
+      assert_equals(result.l.value, testCase.expected.l.value, 'l value mismatch');
+      assert_equals(result.l.unit, testCase.expected.l.unit, 'l unit mismatch');
+      assert_equals(result.alpha.value, testCase.expected.alpha.value, 'alpha value mismatch');
+      assert_equals(result.alpha.unit, testCase.expected.alpha.unit, 'alpha unit mismatch');
+    } else if (result instanceof CSSHWB) {
+      assert_equals(result.h.value, testCase.expected.h.value, 'h value mismatch');
+      assert_equals(result.h.unit, testCase.expected.h.unit, 'h unit mismatch');
+      assert_equals(result.w.value, testCase.expected.w.value, 'w value mismatch');
+      assert_equals(result.w.unit, testCase.expected.w.unit, 'w unit mismatch');
+      assert_equals(result.b.value, testCase.expected.b.value, 'b value mismatch');
+      assert_equals(result.b.unit, testCase.expected.b.unit, 'b unit mismatch');
+      assert_equals(result.alpha.value, testCase.expected.alpha.value, 'alpha value mismatch');
+      assert_equals(result.alpha.unit, testCase.expected.alpha.unit, 'alpha unit mismatch');
+    } else if (result instanceof CSSLab) {
+      assert_equals(result.l.value, testCase.expected.l.value, 'l value mismatch');
+      assert_equals(result.l.unit, testCase.expected.l.unit, 'l unit mismatch');
+      assert_equals(result.a.value, testCase.expected.a.value, 'a value mismatch');
+      assert_equals(result.a.unit, testCase.expected.a.unit, 'a unit mismatch');
+      assert_equals(result.b.value, testCase.expected.b.value, 'b value mismatch');
+      assert_equals(result.b.unit, testCase.expected.b.unit, 'b unit mismatch');
+      assert_equals(result.alpha.value, testCase.expected.alpha.value, 'alpha value mismatch');
+      assert_equals(result.alpha.unit, testCase.expected.alpha.unit, 'alpha unit mismatch');
+    } else if (result instanceof CSSLCH) {
+      assert_equals(result.l.value, testCase.expected.l.value, 'l value mismatch');
+      assert_equals(result.l.unit, testCase.expected.l.unit, 'l unit mismatch');
+      assert_equals(result.c.value, testCase.expected.c.value, 'c value mismatch');
+      assert_equals(result.c.unit, testCase.expected.c.unit, 'c unit mismatch');
+      assert_equals(result.h.value, testCase.expected.h.value, 'h value mismatch');
+      assert_equals(result.h.unit, testCase.expected.h.unit, 'h unit mismatch');
+      assert_equals(result.alpha.value, testCase.expected.alpha.value, 'alpha value mismatch');
+      assert_equals(result.alpha.unit, testCase.expected.alpha.unit, 'alpha unit mismatch');
+    } else if (result instanceof CSSOKLab) {
+      assert_equals(result.l.value, testCase.expected.l.value, 'l value mismatch');
+      assert_equals(result.l.unit, testCase.expected.l.unit, 'l unit mismatch');
+      assert_equals(result.a.value, testCase.expected.a.value, 'a value mismatch');
+      assert_equals(result.a.unit, testCase.expected.a.unit, 'a unit mismatch');
+      assert_equals(result.b.value, testCase.expected.b.value, 'b value mismatch');
+      assert_equals(result.b.unit, testCase.expected.b.unit, 'b unit mismatch');
+      assert_equals(result.alpha.value, testCase.expected.alpha.value, 'alpha value mismatch');
+      assert_equals(result.alpha.unit, testCase.expected.alpha.unit, 'alpha unit mismatch');
+    } else if (result instanceof CSSOKLCH) {
+      assert_equals(result.l.value, testCase.expected.l.value, 'l value mismatch');
+      assert_equals(result.l.unit, testCase.expected.l.unit, 'l unit mismatch');
+      assert_equals(result.c.value, testCase.expected.c.value, 'c value mismatch');
+      assert_equals(result.c.unit, testCase.expected.c.unit, 'c unit mismatch');
+      assert_equals(result.h.value, testCase.expected.h.value, 'h value mismatch');
+      assert_equals(result.h.unit, testCase.expected.h.unit, 'h unit mismatch');
+      assert_equals(result.alpha.value, testCase.expected.alpha.value, 'alpha value mismatch');
+      assert_equals(result.alpha.unit, testCase.expected.alpha.unit, 'alpha unit mismatch');
+    } else if (result instanceof CSSColor) {
+      assert_equals(result.colorSpace, testCase.expected.colorSpace, 'color space mismatch');
+      assert_equals(result.components.length, testCase.expected.components.length, 'components length mismatch');
+      for (let i = 0; i < result.components.length; i++) {
+        assert_equals(result.components[i].value, testCase.expected.components[i].value, `component ${i} value mismatch`);
+        assert_equals(result.components[i].unit, testCase.expected.components[i].unit, `component ${i} unit mismatch`);
+      }
+    }
+  }
+}, 'CSSColorValue.parse() parses all color functions correctly');
+</script>

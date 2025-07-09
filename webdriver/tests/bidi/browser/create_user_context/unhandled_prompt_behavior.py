@@ -65,7 +65,7 @@ async def test_simple_prompts(bidi_session, subscribe_events, wait_for_event,
         )
     )
 
-    # Default behavior for js prompts is `dismiss`.
+    # Default behavior for simple prompts is `dismiss`.
     expected_handler = handler if handler is not None \
         else 'dismiss'
 

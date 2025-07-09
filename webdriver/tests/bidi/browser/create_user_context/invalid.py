@@ -47,6 +47,7 @@ async def test_proxy_proxy_type_invalid_value(create_user_context):
                 "proxyType": "SOME_UNKNOWN_TYPE"
             })
 
+
 async def test_proxy_proxy_type_manual_socks_version_without_socks_proxy(
         create_user_context):
     with pytest.raises(error.InvalidArgumentException):

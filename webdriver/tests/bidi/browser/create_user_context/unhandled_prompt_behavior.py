@@ -52,7 +52,7 @@ async def test_simple_prompts(assert_simple_prompt, prompt, handler):
 
 @pytest.mark.parametrize("handler", ["accept", "dismiss", "ignore"])
 @pytest.mark.parametrize("prompt", ["alert", "confirm", "prompt"])
-async def test_simple_prompts(assert_simple_prompt, prompt, handler):
+async def test_default_handler(assert_simple_prompt, prompt, handler):
     await assert_simple_prompt({"default": handler}, prompt, handler)
 
 

@@ -208,12 +208,16 @@ def test_partial_input(session, rect):
     response = set_window_rect(session, rect)
     value = assert_success(response, session.window.rect)
 
-    assert value["width"] == rect.get("width", original["width"])
-    assert value["height"] == rect.get("height", original["height"])
-    # Wayland doesn't return correct coordinates after changing window position.
-    if not is_wayland():
-        assert value["x"] == rect.get("x", original["x"])
-        assert value["y"] == rect.get("y", original["y"])
+    if is_wayland() and ('x' in rect or 'y' in rect):
+        fields = ("width", "height")
+    else:
+        fields = ("x", "y", "width", "height")
+
+    for field in fields:
+        if field in rect:
+            assert value[field] == rect[field]
+        else:
+            assert value[field] == original[field]
 
 
 def test_set_to_available_size(

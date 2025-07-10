@@ -208,17 +208,15 @@ def test_partial_input(session, rect):
     response = set_window_rect(session, rect)
     value = assert_success(response, session.window.rect)
 
+    assert value["width"] == rect.get("width", original["width"])
+    assert value["height"] == rect.get("height", original["height"])
     # Unlike X11, Wayland does not permit applications to change their window position programmatically.
-    if is_wayland() and ('x' in rect or 'y' in rect):
-        fields = ("width", "height")
+    if not is_wayland():
+        assert value["x"] == rect.get("x", original["x"])
+        assert value["y"] == rect.get("y", original["y"])
     else:
-        fields = ("x", "y", "width", "height")
-
-    for field in fields:
-        if field in rect:
-            assert value[field] == rect[field]
-        else:
-            assert value[field] == original[field]
+        value["x"] == original["x"]
+        value["y"] == original["y"]
 
 
 def test_set_to_available_size(

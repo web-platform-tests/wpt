@@ -17,6 +17,8 @@ const TEST_COLORS = [
 const rgb_attributes = ['r', 'g', 'b', 'alpha']
 const hsl_attributes = ['h', 's', 'l', 'alpha']
 const hwb_attributes = ['h', 'w', 'b', 'alpha']
+const lab_attributes = ['l', 'a', 'b', 'alpha']
+const lch_attributes = ['l', 'c', 'h', 'alpha']
 
 for (const color of TEST_COLORS) {
   const hsl_color_degrees = new CSSHSL(CSS.deg(color.hsl[0]), color.hsl[1], color.hsl[2])
@@ -114,6 +116,14 @@ const PARSING_COLOR_TEST_CASES = [
     expected: new CSSRGB(CSS.number(100), CSS.number(255), CSS.number(255), CSS.percent(100)),
   },
   {
+    value: 'rgb(100% 100% 100%)',
+    expected: new CSSRGB(CSS.percent(100), CSS.percent(100), CSS.percent(100)),
+  },
+  {
+    value: 'rgb(50% 75% 100% / 50%)',
+    expected: new CSSRGB(CSS.percent(50), CSS.percent(75), CSS.percent(100), CSS.percent(50)),
+  },
+  {
     value: "#00bfff",
     expected: new CSSRGB(CSS.number(0), CSS.number(191), CSS.number(255)),
   },
@@ -124,6 +134,14 @@ const PARSING_COLOR_TEST_CASES = [
   {
     value: "hsla(123, 100%, 20%, .5)",
     expected: new CSSHSL(CSS.deg(123), CSS.percent(100), CSS.percent(20), CSS.percent(50)),
+  },
+  {
+    value: 'hsl(180 75% 90%)',
+    expected: new CSSHSL(CSS.deg(180), CSS.percent(75), CSS.percent(90)),
+  },
+  {
+    value: 'hsl(180 75% 90% / 0.75)',
+    expected: new CSSHSL(CSS.deg(180), CSS.percent(75), CSS.percent(90), CSS.percent(75)),
   },
   {
     value: "hwb(200 31% 38%)",
@@ -141,6 +159,38 @@ const PARSING_COLOR_TEST_CASES = [
     value: "transparent",
     expected: new CSSRGB(CSS.number(0), CSS.number(0), CSS.number(0), CSS.percent(0)),
   },
+  {
+    value: 'lch(100% 50% 90deg)',
+    expected: new CSSLCH(CSS.percent(100), CSS.percent(50), CSS.deg(90)),
+  },
+  {
+    value: 'lch(70% 60% 90deg / 75%)',
+    expected: new CSSLCH(CSS.percent(70), CSS.percent(60), CSS.deg(90), CSS.percent(75)),
+  },
+  {
+    value: 'lab(41% 63 -75)',
+    expected: new CSSLab(CSS.percent(41), CSS.number(63), CSS.number(-75)),
+  },
+  {
+    value: 'lab(41% 63 -75 / 75%)',
+    expected: new CSSLab(CSS.percent(41), CSS.number(63), CSS.number(-75), CSS.percent(75)),
+  },
+  {
+    value: 'oklch(80% 20% 225)',
+    expected: new CSSLCH(CSS.percent(80), CSS.percent(20), CSS.deg(225)),
+  },
+  {
+    value: 'oklch(85% 20% 10deg / 100%)',
+    expected: new CSSLCH(CSS.percent(85), CSS.percent(20), CSS.deg(10), CSS.percent(100)),
+  },
+  {
+    value: 'oklab(72% 0.195 -0.027)',
+    expected: new CSSOKLab(CSS.percent(72), CSS.number(0.195), CSS.number(-0.027)),
+  },
+  {
+    value: 'oklab(72% 0.195 -0.027 / 50%)',
+    expected: new CSSOKLab(CSS.percent(72), CSS.number(0.195), CSS.number(-0.027), CSS.percent(50)),
+  },
 ]
 
 for(const testCase of PARSING_COLOR_TEST_CASES) {
@@ -155,7 +205,15 @@ for(const testCase of PARSING_COLOR_TEST_CASES) {
         attrs = hsl_attributes;
         break;
       case "CSSHWB":
-        attrs = hwb_attributes
+        attrs = hwb_attributes;
+              break;
+      case "CSSLab":
+      case "CSSOKLab":
+        attrs = lab_attributes;
+        break;
+      case "CSSLCH":
+      case "CSSOKLCH":
+        attrs = lch_attributes;
     }
 
     for (const attr of attrs) {

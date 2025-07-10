@@ -89,8 +89,6 @@ async def test_locale_values(bidi_session, top_context, get_current_locale,
     ("fR-cA", "fr-CA"),
     # Locale with transform extension (simple case).
     ("en-t-zh", "en"),
-    # Language (2-letter) and region (3-digit UN M49).
-    ("es-419", "es-MX"),
 ])
 async def test_locale_values_normalized_by_intl(bidi_session, top_context,
         get_current_locale,

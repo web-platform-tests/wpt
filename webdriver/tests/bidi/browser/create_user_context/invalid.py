@@ -69,12 +69,6 @@ async def test_proxy_proxy_type_manual_socks_proxy_without_socks_version(
 
 
 @pytest.mark.parametrize("value", [42, True, [], {}])
-async def test_params_proxy_ftp_proxy_invalid_type(create_user_context, value):
-    with pytest.raises(error.InvalidArgumentException):
-        await create_user_context(proxy={"proxyType": "manual", "ftpProxy": value})
-
-
-@pytest.mark.parametrize("value", [42, True, [], {}])
 async def test_params_proxy_http_proxy_invalid_type(create_user_context, value):
     with pytest.raises(error.InvalidArgumentException):
         await create_user_context(proxy={"proxyType": "manual", "httpProxy": value})

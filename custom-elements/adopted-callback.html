@@ -127,7 +127,7 @@ document_types().forEach(function (entry) {
 
             calls = [];
             doc.documentElement.appendChild(shadowRoot);
-            assert_array_equals(calls, ['disconnected', 'adopted', document, doc, 'connected']);
+            assert_array_equals(calls, ['adopted', document, doc, 'disconnected', 'connected']);
         });
     }, 'Moving the shadow host\'s shadow of a custom element from the owner document into ' + documentName + ' must enqueue and invoke adoptedCallback');
 

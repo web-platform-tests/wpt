@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "basic-wasm": "./resources/js-wasm-cycle.wasm",
+    "mapped-dep": "./resources/resolve-export.wasm",
+    "wasm:js-string": "./resources/string-builtins-polyfill.js",
+    "./resources/relative-dep": "./resources/js-wasm-cycle.wasm"
+  }
+}
+</script>
+
+<script type="module">
+promise_test(async () => {
+  const wasmModule = await import("basic-wasm");
+  assert_true(typeof wasmModule === "object");
+}, "Import maps should resolve bare specifiers to WebAssembly modules");
+
+promise_test(async () => {
+  const wasmModule = await import("./resources/import-map-test.wasm");
+  
+  // This module imports:
+  // - "mapped-dep" (mapped to resolve-export.wasm)
+  // - "wasm:js-string" (mapped to string-builtins-polyfill.js)
+  // - "./relative-dep" (mapped to js-wasm-cycle.wasm)
+  assert_true(typeof wasmModule === "object");
+
+  // Test that existing builtins work natively unaffected by import map
+  assert_equals(wasmModule.testExistingBuiltin("hello"), 5);
+  
+  // Test that builtins can be polyfilled
+  assert_equals(wasmModule.testNewBuiltin("test"), "polyfill:test");
+}, "WebAssembly modules with mapped imports should work correctly");
+
+</script>

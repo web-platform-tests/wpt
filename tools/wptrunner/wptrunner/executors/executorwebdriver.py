@@ -50,6 +50,8 @@ from .protocol import (BaseProtocolPart,
                        DisplayFeaturesProtocolPart,
                        merge_dicts)
 
+from .executorplatformaccessibility import (PlatformAccessibilityProtocolPart)
+
 from typing import Any, List, Dict, Optional, Tuple
 from webdriver.client import Session
 from webdriver import error as webdriver_error
@@ -856,10 +858,12 @@ class WebDriverProtocol(Protocol):
                   WebDriverStorageProtocolPart,
                   WebDriverVirtualPressureSourceProtocolPart,
                   WebDriverProtectedAudienceProtocolPart,
-                  WebDriverDisplayFeaturesProtocolPart]
+                  WebDriverDisplayFeaturesProtocolPart,
+                  PlatformAccessibilityProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)
+        self.product_name = browser.product_name
         self.capabilities = capabilities
         if hasattr(browser, "capabilities"):
             if self.capabilities is None:

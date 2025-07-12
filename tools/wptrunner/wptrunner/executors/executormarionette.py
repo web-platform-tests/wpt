@@ -50,6 +50,7 @@ from .protocol import (AccessibilityProtocolPart,
                        WebExtensionsProtocolPart,
                        merge_dicts)
 
+from .executorplatformaccessibility import (PlatformAccessibilityProtocolPart)
 
 def do_delayed_imports():
     global errors, marionette, Addons, WebAuthn
@@ -781,12 +782,14 @@ class MarionetteProtocol(Protocol):
                   MarionetteDevicePostureProtocolPart,
                   MarionetteVirtualPressureSourceProtocolPart,
                   MarionetteDisplayFeaturesProtocolPart,
-                  MarionetteWebExtensionsProtocolPart]
+                  MarionetteWebExtensionsProtocolPart,
+                  PlatformAccessibilityProtocolPart]
 
     def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1, e10s=True, ccov=False):
         do_delayed_imports()
 
         super().__init__(executor, browser)
+        self.product_name = browser.product_name
         self.marionette = None
         self.marionette_port = browser.marionette_port
         self.capabilities = capabilities

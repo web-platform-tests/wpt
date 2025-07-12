@@ -1,0 +1,114 @@
+<!doctype html>
+<meta charset=utf-8>
+<html>
+<head>
+  <title>role button with non false value for aria-pressed</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/core-aam/scripts/aam-utils.js"></script>
+</head>
+<body>
+
+<p>
+  This test is marked tentative because it uses an experimental testing API
+  that is presently under development.
+</p>
+
+<div id=test1 role=button aria-haspopup=true>click me</div>
+<div id=test2 role=button aria-haspopup=menu>click me</div>
+<div id=test3 role=button aria-haspopup=listbox>click me</div>
+<div id=test4 role=button aria-haspopup=tree>click me</div>
+<div id=test5 role=button aria-haspopup=grid>click me</div>
+<div id=test6 role=button aria-haspopup=dialog>click me</div>
+
+<script>
+  var test_statements =  {
+     "Atspi" : [
+        [
+           "property",
+           "role",
+           "is",
+           "push button"
+        ]
+     ],
+     "AXAPI" : [
+        [
+           "property",
+           "AXRole",
+           "is",
+           "AXPopUpButton"
+        ],
+        [
+           "property",
+           "AXSubrole",
+           "is",
+           "<nil>"
+        ],
+        [
+           "property",
+           "actions",
+           "contains",
+           "AXShowMenu"
+        ]
+     ],
+     "IAccessible2" : [
+        [
+           "property",
+           "msaaRole",
+           "is",
+           "ROLE_SYSTEM_PUSHBUTTON"
+        ]
+     ],
+     "UIA" : [
+        [
+           "property",
+           "ControlType",
+           "is",
+           "Button"
+        ]
+     ]
+  };
+
+
+
+  AAMUtils.verifyAPI(
+    'role=button aria-haspopup=true',
+    'test1',
+    test_statements
+  );
+
+  AAMUtils.verifyAPI(
+    'role=button aria-haspopup=menu',
+    'test2',
+    test_statements
+  );
+
+  AAMUtils.verifyAPI(
+    'role=button aria-haspopup=listbox',
+    'test3',
+    test_statements
+  );
+
+  AAMUtils.verifyAPI(
+    'role=button aria-haspopup=tree',
+    'test4',
+    test_statements
+  );
+
+  AAMUtils.verifyAPI(
+    'role=button aria-haspopup=grid',
+    'test5',
+    test_statements
+  );
+
+  AAMUtils.verifyAPI(
+    'role=button aria-haspopup=dialog',
+    'test6',
+    test_statements
+  );
+
+</script>
+</body>

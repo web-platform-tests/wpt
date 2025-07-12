@@ -643,5 +643,9 @@
 
     window.test_driver_internal.clear_display_features = function(context=null) {
         return create_context_action("clear_display_features", context, {});
-    }
+    };
+
+    window.test_driver_internal.test_accessibility_api = function(dom_id, test, api, url) {
+        return create_action("test_accessibility_api", {dom_id, test, api, url});
+    };
 })();

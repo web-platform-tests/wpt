@@ -343,7 +343,7 @@ class TestRunnerManager(threading.Thread):
                  pause_after_test=False, pause_on_unexpected=False,
                  restart_on_unexpected=True, debug_info=None,
                  capture_stdio=True, restart_on_new_group=True, recording=None,
-                 max_restarts=5, max_restart_backoff=0):
+                 max_restarts=5, max_restart_backoff=0, product_name=None):
         """Thread that owns a single TestRunner process and any processes required
         by the TestRunner (e.g. the Firefox binary).
 
@@ -363,6 +363,7 @@ class TestRunnerManager(threading.Thread):
         self.manager_number = index
         self.test_implementation_key = None
         self.test_implementations = test_implementations
+        self.product_name = product_name
 
         # Flags used to shut down this thread if we get a sigint
         self.parent_stop_flag = stop_flag
@@ -647,6 +648,7 @@ class TestRunnerManager(threading.Thread):
         executor_kwargs["group_metadata"] = self.state.group_metadata
         executor_kwargs["browser_settings"] = self.browser.browser_settings
         executor_browser_cls, executor_browser_kwargs = self.browser.browser.executor_browser()
+        executor_browser_kwargs["product_name"] = self.product_name
         return ExecutorImplementation(impl.executor_cls,
                                       executor_kwargs,
                                       executor_browser_cls,
@@ -1047,8 +1049,10 @@ class ManagerGroup:
                  restart_on_new_group=True,
                  recording=None,
                  max_restarts=5,
-                 max_restart_backoff=0):
+                 max_restart_backoff=0,
+                 product_name=None):
         self.suite_name = suite_name
+        self.product_name = product_name
         self.test_queue_builder = test_queue_builder
         self.test_implementations = test_implementations
         self.pause_after_test = pause_after_test
@@ -1096,7 +1100,8 @@ class ManagerGroup:
                                         self.restart_on_new_group,
                                         recording=self.recording,
                                         max_restarts=self.max_restarts,
-                                        max_restart_backoff=self.max_restart_backoff)
+                                        max_restart_backoff=self.max_restart_backoff,
+                                        product_name=self.product_name)
             manager.start()
             self.pool.add(manager)
         self.wait()

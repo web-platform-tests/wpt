@@ -1,16 +1,23 @@
-test(function() {
+test(t => {
     sessionStorage.clear();
 
     var index = 0;
     var key = "name";
     var val = "x".repeat(1024);
 
-    assert_throws_dom("QUOTA_EXCEEDED_ERR", function() {
+    t.add_cleanup(() => {
+        sessionStorage.clear();
+    });
+
+    try {
         while (true) {
             index++;
             sessionStorage.setItem("" + key + index, "" + val + index);
         }
-    });
+    } catch (e) {
+        assert_equals(e.constructor, globalThis.QuotaExceededError, "QuotaExceededError constructor match");
+        assert_equals(e.quota, null, "quota");
+        assert_equals(e.requested, null, "requested");
+    }
 
-    sessionStorage.clear();
 }, "Throws QuotaExceededError when the quota has been exceeded");

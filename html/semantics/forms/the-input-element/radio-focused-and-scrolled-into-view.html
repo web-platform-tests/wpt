@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Radio buttons should scroll into view when focused (if off-screen)</title>
+  <link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#keyboard-accessibility-navigation-radios">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <style>
+    input[type="radio"] {
+      display: block;
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Radio buttons should scroll into view when focused (if off-screen)</h1>
+  <form id="radios"></form>
+
+  <script>
+
+    async function simulateArrowDown() {
+      return new test_driver.Actions()
+        .keyDown("\uE015") // "ArrowDown" code point: https://www.w3.org/TR/webdriver2/#keyboard-actions
+        .send();
+    }
+      const form = document.getElementById("radios");
+      for (let i = 0; i < 120; i++) {
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "scroll-test";
+        input.id = i === 85 ? "offscreen" : `radio-${i}`;
+        form.appendChild(input);
+      }
+
+    promise_test(async () => {
+      await new Promise(r => requestAnimationFrame(r));
+      window.scrollTo(0, 0);
+
+      const radios = Array.from(document.querySelectorAll("input[name='scroll-test']"));
+      radios[0].focus();
+      assert_equals(document.activeElement, radios[0], "Initial keyboard focus should be on the first radio");
+
+      for (let i = 1; i < radios.length; i++) {
+        await simulateArrowDown();
+        radios[i].focus();
+
+        await new Promise(r => setTimeout(r, 10));
+
+        if (radios[i].id === "offscreen") {
+          const scrollTop = document.scrollingElement.scrollTop;
+          const expectedTop = radios[i].offsetTop;
+          assert_greater_than(scrollTop, 0, `"offscreen" radio should trigger scroll — scrollTop=${scrollTop}`);
+          assert_approx_equals(scrollTop, expectedTop, 800, `scrollTop (${scrollTop}) should be close to the offsetTop (${expectedTop}) of "offscreen" radio`);
+          return;
+        }
+      }
+
+      assert_unreached('"offscreen" radio was not reached during navigation');
+    }, "Focusing 'offscreen' radio via keyboard arrow navigation should scroll it into view");
+  </script>
+
+</body>
+</html>

@@ -43,7 +43,7 @@
 
       const radios = Array.from(document.querySelectorAll("input[name='scroll-test']"));
       radios[0].focus();
-      assert_equals(document.activeElement, radios[0], "Initial keyboard focus should be on the first radio");
+      assert_equals(document.activeElement, radios[0], "Initial keyboard focus should be on the first radio button");
 
       for (let i = 1; i < radios.length; i++) {
         await simulateArrowDown();
@@ -54,14 +54,14 @@
         if (radios[i].id === "offscreen") {
           const scrollTop = document.scrollingElement.scrollTop;
           const expectedTop = radios[i].offsetTop;
-          assert_greater_than(scrollTop, 0, `"offscreen" radio should trigger scroll — scrollTop=${scrollTop}`);
+          assert_greater_than(scrollTop, 0, `out-of-viewport radio should trigger scroll — scrollTop=${scrollTop}`);
           assert_approx_equals(scrollTop, expectedTop, 800, `scrollTop (${scrollTop}) should be close to the offsetTop (${expectedTop}) of "offscreen" radio`);
           return;
         }
       }
 
-      assert_unreached('"offscreen" radio was not reached during navigation');
-    }, "Focusing 'offscreen' radio via keyboard arrow navigation should scroll it into view");
+      assert_unreached('out-of-viewport radio button was not reached during navigation');
+    }, "Focusing out-of-viewport radio button via keyboard arrow navigation should scroll it into view");
   </script>
 
 </body>

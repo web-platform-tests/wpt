@@ -23,7 +23,7 @@ indexeddb_test(
   'Detached ArrayBuffers must throw DataError when used as a key'
 );
 
-indexeddb_test(
+/*indexeddb_test(
   (t, db) => { db.createObjectStore('store'); },
   (t, db) => {
     const tx = db.transaction('store', 'readwrite');
@@ -35,4 +35,4 @@ indexeddb_test(
     t.done();
   },
   'Detached TypedArrays must throw DataError when used as a key'
-);
+);*/

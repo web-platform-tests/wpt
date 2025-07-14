@@ -4,32 +4,19 @@
 <meta charset="utf-8">
 <title>CSS Test: GCPM string-set to attribute value</title>
 <link rel="author" title="Dave Cramer" href="mailto:dauwhe@gmail.com">
-<link rel="help" href="http://www.w3.org/TR/css-gcpm-3/#setting-named-strings-the-string-set-pro">
-<link rel="match" href="reference/string-set-012-ref.html"/>
+<link rel="author" title="Mike Bremford" href="http://bfo.com">
 <meta name="flags" content="paged">
-<meta name="assert" content="Test checks that a string can be set to the value of an attribute ">
-
 <style>
   @page {
    margin: 72px;
    @top-center {
-   content: string(header);
+   content: "Hello, World"
    }
   }
-
- h1 {
- string-set: header attr(title);
- }
-
-
 </style>
 </head>
 <body>
-<h1 title="Hello, World">Chapter Title</h1>
+<h1>Chapter Title</h1>
 <p>Test passes if running head text reads “Hello, World”.
-
-
-
-
 </body>
 </html>

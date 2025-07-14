@@ -1,7 +1,7 @@
 import base64
 
 import pytest
-from webdriver.error import NoSuchAlertException
+from webdriver.error import NoSuchAlertException, NoSuchWindowException
 
 from tests.support.image import png_dimensions, ImageDifference
 from tests.support.sync import Poll
@@ -127,12 +127,12 @@ def create_dialog(session):
             }, 0);
             """, args=(dialog_type, text))
 
-        wait = Poll(
-            session,
-            timeout=15,
-            ignored_exceptions=NoSuchAlertException,
-            message="No user prompt with text '{}' detected".format(text))
-        wait.until(lambda s: s.alert.text == text)
+        def check_alert_text(s):
+            assert s.alert.text == text, f"No user prompt with text '{text}' detected"
+
+        wait = Poll(session, timeout=15,
+                    ignored_exceptions=NoSuchAlertException)
+        wait.until(check_alert_text)
 
     return create_dialog
 
@@ -153,6 +153,26 @@ def create_frame(session):
         return session.execute_script(append)
 
     return create_frame
+
+
+@pytest.fixture
+def http_new_tab(session):
+    """Create a new tab to run the test isolated."""
+    original_handle = session.window_handle
+    new_handle = session.new_window(type_hint="tab")
+
+    session.window_handle = new_handle
+
+    yield
+
+    try:
+        # Make sure to close the correct tab that we opened before.
+        session.window_handle = new_handle
+        session.window.close()
+    except NoSuchWindowException:
+        pass
+
+    session.window_handle = original_handle
 
 
 @pytest.fixture

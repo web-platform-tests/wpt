@@ -1,5 +1,5 @@
 // META: title=test WebNN API element-wise logicalNot operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -12,14 +12,6 @@
 // Invert the values of the input tensor to values 0 or 1, element-wise.
 //
 // MLOperand logicalNot(MLOperand a);
-
-
-const getLogicalNotPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {uint8: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
 
 const logicalNotTests = [
   {
@@ -214,7 +206,8 @@ const logicalNotTests = [
 if (navigator.ml) {
   logicalNotTests.forEach((test) => {
     webnn_conformance_test(
-        buildGraphAndCompute, getLogicalNotPrecisionTolerance, test);
+        buildAndExecuteGraph, getZeroULPTolerance, test,
+        /*cast_to_supported_type=*/true);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

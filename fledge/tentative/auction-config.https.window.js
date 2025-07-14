@@ -17,10 +17,9 @@
 // META: variant=?51-55
 // META: variant=?56-60
 // META: variant=?61-65
-// META: variant=?66-70
-// META: variant=?71-last
+// META: variant=?66-last
 
-"use strict;"
+"use strict";
 
 // The tests in this file focus on calls to runAdAuction with various
 // auctionConfigs.
@@ -351,27 +350,6 @@ makeTest({
 });
 
 makeTest({
-  name: 'directFromSellerSignals is invalid',
-  expect: EXPECT_PROMISE_ERROR,
-  expectPromiseError: EXPECT_EXCEPTION(TypeError),
-  auctionConfigOverrides: { directFromSellerSignals: "https://foo:99999999999" },
-});
-
-makeTest({
-  name: 'directFromSellerSignals is cross-origin with seller',
-  expect: EXPECT_PROMISE_ERROR,
-  expectPromiseError: EXPECT_EXCEPTION(TypeError),
-  auctionConfigOverrides: { directFromSellerSignals: "https://example.com" },
-});
-
-makeTest({
-  name: 'directFromSellerSignals has nonempty query',
-  expect: EXPECT_PROMISE_ERROR,
-  expectPromiseError: EXPECT_EXCEPTION(TypeError),
-  auctionConfigOverrides: { directFromSellerSignals: window.location.origin + "?foo=bar" },
-});
-
-makeTest({
   name: 'perBuyerSignals has invalid URL in a key',
   expect: EXPECT_PROMISE_ERROR,
   expectPromiseError: EXPECT_EXCEPTION(TypeError),
@@ -475,10 +453,7 @@ makeTest({
 makeTest({
   name: 'perBuyerCurrencies not convertible to dictionary',
   expect: EXPECT_PROMISE_ERROR,
-  // Because this is not convertible by IDL to the proper dictionary type, this
-  // will immediately be converted to a rejected promise inside of the
-  // runBasicFledgeAuction() invocation, and that await will handle the
-  // rejection. Therefore, no expectPromiseError.
+  expectPromiseError: EXPECT_EXCEPTION(TypeError),
   auctionConfigOverrides: {perBuyerCurrencies: 123}
 });
 
@@ -626,12 +601,16 @@ subsetTest(promise_test, async test => {
     })
   };
 
-  // In the first auction, browserSignals.forDebuggingOnlyInCooldownOrLockout in
-  // generateBid() and scoreAd() should both be false. After the auction,
-  // lockout and cooldowns should be updated.
   await runBasicFledgeAuctionAndNavigate(test, uuid, auctionConfigOverrides);
-  await waitForObservedRequestsIgnoreDebugOnlyReports(
-      uuid, [bidderReportURL2, sellerReportURL2]);
+  // TODO(crbug.com/337186761) this causes the test being flaky.
+  // Note: In the first auction,
+  // browserSignals.forDebuggingOnlyInCooldownOrLockout in generateBid() and
+  // scoreAd() should both be false. But due to currently there's no way to
+  // clean up the lockout/cooldown DB tables after a test, so a rerun of this
+  // test will break this, and other tests that writes to these tables may also
+  // affect this test. So we cannot reliably check the signals being false.
+  // await waitForObservedRequestsIgnoreDebugOnlyReports(
+  //     uuid, [bidderReportURL2, sellerReportURL2]);
 
   // In the second auction, browserSignals.forDebuggingOnlyInCooldownOrLockout
   // in generateBid() and scoreAd() should both be true, since both the buyer

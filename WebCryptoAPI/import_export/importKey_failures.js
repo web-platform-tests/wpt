@@ -192,4 +192,98 @@ function run_test(algorithmNames) {
             });
         });
     });
+
+    // Missing mandatory "name" field on algorithm
+    testVectors.forEach(function(vector) {
+        var name = vector.name;
+        // We just need *some* valid keydata, so pick the first available algorithm.
+        var algorithm = allAlgorithmSpecifiersFor(name)[0];
+        getValidKeyData(algorithm).forEach(function(test) {
+            validUsages(vector, test.format, test.data).forEach(function(usages) {
+                [true, false].forEach(function(extractable) {
+                    testError(test.format, {}, test.data, name, usages, extractable, "TypeError", "Missing algorithm name");
+                });
+            });
+        });
+    });
+
+    // The 'kty' field is not correct.
+    testVectors.forEach(function(vector) {
+        var name = vector.name;
+        allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
+            getValidKeyData(algorithm).forEach(function(test) {
+                if (test.format === "jwk") {
+                    var data = {crv: test.data.crv, kty: test.data.kty, d: test.data.d, x: test.data.x, y: test.data.y};
+                    data.kty = getMismatchedKtyField(algorithm);
+                    var usages =  validUsages(vector, 'jwk', test.data);
+                    testError('jwk', algorithm, data, name, usages, true, "DataError", "Invalid 'kty' field");
+                }
+            });
+        });
+    });
+
+    // The 'ext' field is not correct.
+    testVectors.forEach(function(vector) {
+        var name = vector.name;
+        allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
+            getValidKeyData(algorithm).forEach(function(test) {
+                if (test.format === "jwk") {
+                    var data = {crv: test.data.crv, kty: test.data.kty, d: test.data.d, x: test.data.x, y: test.data.y};
+                    data.ext = false;
+                    var usages =  validUsages(vector, 'jwk', test.data);
+                    testError('jwk', algorithm, data, name, usages, true, "DataError", "Import from a non-extractable");
+                }
+            });
+        });
+    });
+
+    // The 'use' field is incorrect.
+    testVectors.forEach(function(vector) {
+        var name = vector.name;
+        allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
+            getValidKeyData(algorithm).forEach(function(test) {
+                if (test.format === "jwk") {
+                    var data = {crv: test.data.crv, kty: test.data.kty, d: test.data.d, x: test.data.x, d: test.data.d};
+                    data.use = "invalid";
+                    var usages =  validUsages(vector, 'jwk', test.data);
+                    if (usages.length !== 0)
+                        testError('jwk', algorithm, data, name, usages, true, "DataError", "Invalid 'use' field");
+                }
+            });
+        });
+    });
+
+    // The 'crv' field is incorrect.
+    testVectors.forEach(function(vector) {
+        var name = vector.name;
+        allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
+            getValidKeyData(algorithm).forEach(function(test) {
+                if (test.format === "jwk") {
+                    var data = {crv: test.data.crv, kty: test.data.kty, d: test.data.d, x: test.data.x, y: test.data.y};
+                    data.crv = getMismatchedCrvField(algorithm)
+                    var usages =  validUsages(vector, 'jwk', test.data);
+                    testError('jwk', algorithm, data, name, usages, true, "DataError", "Invalid 'crv' field");
+                }
+            });
+        });
+    });
+
+    // Use an 'alg' field with incorrect casing.
+    testVectors.forEach(function(vector) {
+        var name = vector.name;
+        if (name !== "Ed25519" && name !== "Ed448")
+            return; // The rest ignore the 'alg' field.
+        allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
+            getValidKeyData(algorithm).forEach(function(test) {
+                if (test.format === "jwk") {
+                    var data = {crv: test.data.crv, kty: test.data.kty, d: test.data.d, x: test.data.x, y: test.data.y};
+                    var usages =  validUsages(vector, 'jwk', test.data);
+                    [name.toLowerCase(), name.toUpperCase()].forEach(function(algName) {
+                        data.alg = algName;
+                        testError('jwk', algorithm, data, name, usages, true, "DataError", "Invalid 'alg' field '" + data.alg + "'");
+                    });
+                }
+            });
+        });
+    });
 }

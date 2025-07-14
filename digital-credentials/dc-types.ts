@@ -1,4 +1,6 @@
-export type ProviderType = "default" | "openid4vp";
+export type GetProtocol = "default" | "openid4vp";
+export type CreateProtocol = "default" | "openid4vci";
+
 export type CredentialMediationRequirement =
   | "conditional"
   | "optional"
@@ -6,31 +8,45 @@ export type CredentialMediationRequirement =
   | "silent";
 
 /**
- * @see https://wicg.github.io/digital-credentials/#dom-identityrequestprovider
+ * @see https://w3c-fedid.github.io/digital-credentials/#dom-digitalcredentialrequest
  */
-export interface IdentityRequestProvider {
+export interface DigitalCredentialGetRequest {
   protocol: string;
-  request: object;
+  data: object;
 }
 
 /**
- * @see https://wicg.github.io/digital-credentials/#dom-digitalcredentialrequestoptions
+ * @see https://w3c-fedid.github.io/digital-credentials/#dom-digitalcredentialrequestoptions
  */
 export interface DigitalCredentialRequestOptions {
   /**
-   * The list of identity request providers
+   * The list of credential requests.
    */
-  providers: IdentityRequestProvider[] | any;
+  requests: DigitalCredentialGetRequest[] | any;
 }
 
 /**
- * @see https://wicg.github.io/digital-credentials/#extensions-to-credentialrequestoptions-dictionary
+ * @see https://w3c-fedid.github.io/digital-credentials/#extensions-to-credentialrequestoptions
  */
 export interface CredentialRequestOptions {
-  /**
-   * The digital credential request options.
-   */
   digital: DigitalCredentialRequestOptions;
+  mediation: CredentialMediationRequirement;
+}
+
+export interface DigitalCredentialCreateRequest {
+  protocol: string;
+  data: object;
+}
+
+export interface DigitalCredentialCreationOptions {
+  /**
+   * The list of credential requests.
+   */
+  requests: DigitalCredentialCreateRequest[] | any;
+}
+
+export interface CredentialCreationOptions {
+  digital: DigitalCredentialCreationOptions;
   mediation: CredentialMediationRequirement;
 }
 

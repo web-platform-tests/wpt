@@ -3,11 +3,10 @@ import pytest
 from webdriver.bidi.modules.network import AuthCredentials
 from webdriver.error import TimeoutException
 
-from tests.support.sync import AsyncPoll
-
-from ... import number_interval
+from tests.bidi import wait_for_bidi_events
 from .. import (
     assert_response_event,
+    get_network_event_timerange,
     AUTH_REQUIRED_EVENT,
     PAGE_EMPTY_HTML,
 )
@@ -116,7 +115,7 @@ async def test_request_timing_info(
     await wait_for_future_safe(on_auth_required)
 
     time_end = await current_time()
-    time_range = number_interval(time_start, time_end)
+    time_range = get_network_event_timerange(time_start, time_end, bidi_session)
 
     assert len(events) == 1
     expected_request = {"method": "GET", "url": auth_url}
@@ -150,8 +149,8 @@ async def test_with_wrong_credentials(setup_blocked_request, bidi_session):
     async def on_event(method, data):
         events.append(data)
 
-    remove_listener = bidi_session.add_event_listener(AUTH_REQUIRED_EVENT, on_event)
-    wait = AsyncPoll(bidi_session, timeout=1)
+    remove_listener = bidi_session.add_event_listener(
+        AUTH_REQUIRED_EVENT, on_event)
 
     wrong_credentials = AuthCredentials(username=username, password="wrong_password")
     await bidi_session.network.continue_with_auth(
@@ -159,18 +158,17 @@ async def test_with_wrong_credentials(setup_blocked_request, bidi_session):
     )
 
     # We expect to get authRequired event after providing wrong credentials
-    await wait.until(lambda _: len(events) > 0)
+    await wait_for_bidi_events(bidi_session, events, 1, timeout=1)
 
     await bidi_session.network.continue_with_auth(
         request=request, action="provideCredentials", credentials=wrong_credentials
     )
 
     # We expect to get another authRequired event after providing wrong credentials
-    await wait.until(lambda _: len(events) > 1)
+    await wait_for_bidi_events(bidi_session, events, 2, timeout=1)
 
     # Check no other authRequired event was received
-    wait = AsyncPoll(bidi_session, timeout=1)
     with pytest.raises(TimeoutException):
-        await wait.until(lambda _: len(events) > 2)
+        await wait_for_bidi_events(bidi_session, events, 3, timeout=1)
 
     remove_listener()

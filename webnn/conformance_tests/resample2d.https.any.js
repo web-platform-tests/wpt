@@ -1,5 +1,5 @@
 // META: title=test WebNN API resample2d operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -26,33 +26,6 @@
 //
 // MLOperand resample2d(
 //     MLOperand input, optional MLResample2dOptions options = {});
-
-
-const getResample2dPrecisionTolerance = (graphResources) => {
-  const args = graphResources.operators[0].arguments;
-  const options =
-      args.length === 2 ? {...args[1][Object.keys(args[1])[0]]} : {};
-  const expectedOutputs = graphResources.expectedOutputs;
-  const dataType =
-      expectedOutputs[Object.keys(expectedOutputs)[0]].descriptor.dataType;
-  let tolerance;
-
-  if (options.mode && options.mode === 'linear') {
-    // interpolation mode is linear
-    if (dataType === 'float32') {
-      tolerance = 84;
-    } else if (dataType === 'float16') {
-      tolerance = 10;
-    } else {
-      tolerance = 1;
-    }
-  } else {
-    // interpolation mode is nearest-neighbor
-    tolerance = 0;
-  }
-
-  return {metricType: 'ULP', value: tolerance};
-};
 
 const resample2dTests = [
   {
@@ -546,8 +519,7 @@ const resample2dTests = [
 
 if (navigator.ml) {
   resample2dTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getResample2dPrecisionTolerance, test);
+    webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

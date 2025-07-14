@@ -8,10 +8,10 @@ on:
 jobs:
   wpt-fyi-notify:
     name: "Notify wpt.fyi"
-    runs-on:
-      - ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: "wpt.fyi"
+        if: ${{ !cancelled() }}
         uses: fjogeleit/http-request-action@v1
         with:
           url: 'https://wpt.fyi/api/checks/github-actions/'
@@ -27,6 +27,7 @@ jobs:
             ) }}
 
       - name: "staging.wpt.fyi"
+        if: ${{ !cancelled() }}
         uses: fjogeleit/http-request-action@v1
         with:
           url: 'https://staging.wpt.fyi/api/checks/github-actions/'

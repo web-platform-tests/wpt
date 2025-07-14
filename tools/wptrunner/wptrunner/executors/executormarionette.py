@@ -46,6 +46,8 @@ from .protocol import (AccessibilityProtocolPart,
                        VirtualSensorProtocolPart,
                        DevicePostureProtocolPart,
                        VirtualPressureSourceProtocolPart,
+                       DisplayFeaturesProtocolPart,
+                       WebExtensionsProtocolPart,
                        merge_dicts)
 
 
@@ -721,11 +723,38 @@ class MarionetteVirtualPressureSourceProtocolPart(VirtualPressureSourceProtocolP
     def create_virtual_pressure_source(self, source_type, metadata):
         raise NotImplementedError("create_virtual_pressure_source not yet implemented")
 
-    def update_virtual_pressure_source(self, source_type, sample):
+    def update_virtual_pressure_source(self, source_type, sample, own_contribution_estimate):
         raise NotImplementedError("update_virtual_pressure_source not yet implemented")
 
     def remove_virtual_pressure_source(self, source_type):
         raise NotImplementedError("remove_virtual_pressure_source not yet implemented")
+
+class MarionetteDisplayFeaturesProtocolPart(DisplayFeaturesProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def set_display_features(self, features):
+        raise NotImplementedError("set_display_features not yet implemented")
+
+    def clear_display_features(self):
+        raise NotImplementedError("clear_display_features not yet implemented")
+
+
+class MarionetteWebExtensionsProtocolPart(WebExtensionsProtocolPart):
+    def setup(self):
+        self.addons = Addons(self.parent.marionette)
+
+    def install_web_extension(self, extension):
+        if extension["type"] == "base64":
+            extension_id = self.addons.install(data=extension["value"], temp=True)
+        else:
+            path = self.parent.test_dir + extension["path"]
+            extension_id = self.addons.install(path, temp=True)
+
+        return {'extension': extension_id}
+
+    def uninstall_web_extension(self, extension_id):
+        return self.addons.uninstall(extension_id)
 
 
 class MarionetteProtocol(Protocol):
@@ -750,7 +779,9 @@ class MarionetteProtocol(Protocol):
                   MarionetteAccessibilityProtocolPart,
                   MarionetteVirtualSensorProtocolPart,
                   MarionetteDevicePostureProtocolPart,
-                  MarionetteVirtualPressureSourceProtocolPart]
+                  MarionetteVirtualPressureSourceProtocolPart,
+                  MarionetteDisplayFeaturesProtocolPart,
+                  MarionetteWebExtensionsProtocolPart]
 
     def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1, e10s=True, ccov=False):
         do_delayed_imports()
@@ -914,6 +945,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         self.debug_test = debug_test
 
         self.install_extensions = browser.extensions
+        self.initial_window_size = None
 
         self.original_pref_values = {}
 
@@ -928,6 +960,10 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
             addons.install(extension_path)
 
         self.protocol.testharness.load_runner(self.last_environment["protocol"])
+        try:
+            self.initial_window_size = self.protocol.window.get_rect()
+        except Exception:
+            pass
 
     def is_alive(self):
         return self.protocol.is_alive()
@@ -939,6 +975,10 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
             self.protocol.testharness.load_runner(new_environment["protocol"])
 
     def do_test(self, test):
+        # TODO: followup to do this properly, pass test as state on the CallbackHandler:
+        # https://phabricator.services.mozilla.com/D244400?id=1030480#inline-1369921
+        self.protocol.test_dir = os.path.dirname(test.path)
+
         timeout = (test.timeout * self.timeout_multiplier if self.debug_info is None
                    else None)
 
@@ -974,6 +1014,9 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
 
         test_window = protocol.base.create_window()
         self.protocol.base.set_window(test_window)
+        # Restore the window to the initial position
+        if self.browser.supports_window_resize and self.initial_window_size:
+            self.protocol.window.set_rect(self.initial_window_size)
 
         if self.debug_test and self.browser.supports_devtools:
             self.protocol.debug.load_devtools()

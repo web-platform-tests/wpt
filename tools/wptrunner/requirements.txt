@@ -1,3 +1,4 @@
+comtypes; sys_platform == 'win32' # For executorplatformaccessibility
 html5lib==1.1
 mozdebug==0.3.1
 mozinfo==1.2.3  # https://bugzilla.mozilla.org/show_bug.cgi?id=1621226
@@ -6,6 +7,8 @@ mozprocess==1.3.1
 packaging==25.0
 pillow==10.4.0; python_version < '3.9'
 pillow==11.3.0; python_version >= '3.9'
+pyobjc-framework-Accessibility; sys_platform == 'darwin' # For executorplatformaccessibility
+pyobjc-framework-ApplicationServices; sys_platform == 'darwin' # For executorplatformaccessibility
 requests==2.32.3
 types-requests==2.32.0.20241016
 urllib3==2.2.2

@@ -1,4 +1,4 @@
-from ..executors.ia2.constants import *
+from ..platformaccessibility.ia2.constants import *
 
 import json
 import sys

@@ -242,7 +242,9 @@ async def bidi_session(capabilities, configuration):
 
 @pytest.fixture(scope="function")
 def current_session():
-    return _current_session
+    session = _current_session
+    assert session is not None
+    return session
 
 
 @pytest.fixture

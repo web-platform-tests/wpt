@@ -10,7 +10,7 @@
 <script>
 'use strict';
 
-promise_test(async t => {
+async function triggerSpc(t, dataOverrides) {
   const authenticator = await window.test_driver.add_virtual_authenticator(
       AUTHENTICATOR_OPTS);
   t.add_cleanup(() => {
@@ -27,21 +27,23 @@ promise_test(async t => {
   const challenge = 'server challenge';
   const payeeOrigin = 'https://merchant.com';
   const displayName = 'Troycard';
-  const instrumentDetails = '***1234';
+
+  let data = {
+    credentialIds: [credential.rawId],
+    challenge: Uint8Array.from(challenge, c => c.charCodeAt(0)),
+    payeeOrigin,
+    rpId: window.location.hostname,
+    timeout: 60000,
+    instrument: {
+      displayName,
+      icon: ICON_URL,
+    },
+  };
+
+  data = Object.assign(data, dataOverrides);
+
   const request = new PaymentRequest([{
-    supportedMethods: 'secure-payment-confirmation',
-    data: {
-      credentialIds: [credential.rawId],
-      challenge: Uint8Array.from(challenge, c => c.charCodeAt(0)),
-      payeeOrigin,
-      rpId: window.location.hostname,
-      timeout: 60000,
-      instrument: {
-        displayName,
-        icon: ICON_URL,
-        details: instrumentDetails,
-      },
-    }
+    supportedMethods: 'secure-payment-confirmation', data
   }], PAYMENT_DETAILS);
 
   await test_driver.bless('user activation');
@@ -53,7 +55,12 @@ promise_test(async t => {
   const cred = response.details;
   assert_equals(cred.id, credential.id);
 
-  const clientDataJSON = JSON.parse(arrayBufferToString(cred.response.clientDataJSON));
+  return JSON.parse(arrayBufferToString(cred.response.clientDataJSON));
+}
+
+promise_test(async t => {
+  const clientDataJSON = await triggerSpc(t, /*dataOverrides=*/{});
+
   assert_equals(clientDataJSON.type, 'payment.get');
   assert_equals(clientDataJSON.challenge, base64UrlEncode(challenge));
   assert_equals(clientDataJSON.origin, window.location.origin);
@@ -67,7 +74,6 @@ promise_test(async t => {
   assert_equals(clientDataJSON.payment.total.currency, PAYMENT_DETAILS.total.amount.currency);
   assert_equals(clientDataJSON.payment.instrument.icon, ICON_URL);
   assert_equals(clientDataJSON.payment.instrument.displayName, displayName);
-  assert_equals(clientDataJSON.payment.instrument.details, instrumentDetails);
 
   // If the User Agent still supports the legacy 'rp' output parameter, it
   // should be identical to the 'rpId' output parameter. See
@@ -78,5 +84,14 @@ promise_test(async t => {
 
   // TODO: Verify cred.response.signature, to validate that it covers all fields
   // from clientDataJSON.
-}, 'Successful SPC authentication');
+}, 'Successful SPC authentication - mandatory fields');
+
+promise_test(async t => {
+  const instrumentDetails = '***1234';
+  const clientDataJSON = await triggerSpc(t,
+      /*dataOverrides=*/{instrument: {details: instrumentDetails}});
+
+  // Payment-specific information.
+  assert_equals(clientDataJSON.payment.instrument.details, instrumentDetails);
+}, 'Successful SPC authentication - optional fields');
 </script>

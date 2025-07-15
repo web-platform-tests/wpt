@@ -16,7 +16,7 @@ def main(request, response):
    "given_name": "John",
    "name": "John Doe",
    "email": "john_doe@idp.example",
-   "picture": "https://idp.example/profile/123",
+   "picture": "https://localhost/profile/123",
    "approved_clients": ["123", "456", "789"]
   }
   ]

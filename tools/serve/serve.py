@@ -983,7 +983,7 @@ def start_servers(logger, host, ports, paths, routes, bind_address, config,
 
         # Skip HTTP/2 server if it is disabled or if incompatible.
         if scheme == "h2":
-            if not kwargs.get("h2"):
+            if not kwargs.get("h2", True):
                 logging.warning("HTTP/2 server disabled")
                 continue
 

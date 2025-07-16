@@ -7,4 +7,3 @@ features:
   - fill_alpha_false.html
   - fillRect_alpha_false.html
   - reset_color_alpha_false.html
-  - getContextAttributes.html

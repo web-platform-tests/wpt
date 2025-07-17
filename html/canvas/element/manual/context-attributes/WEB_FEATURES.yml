@@ -1,5 +1,5 @@
 features:
-- name: canvas-context-alpha
+- name: canvas-2d-alpha
   files:
   - initial_color_alpha_false.html
   - clearRect_alpha_false.html

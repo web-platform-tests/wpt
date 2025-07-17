@@ -42,24 +42,29 @@ def pytest_sessionfinish():
 
 
 @pytest.fixture
-def default_capabilities():
+def default_capabilities(configuration):
     """Default capabilities to use for a new WebDriver session."""
-    return {}
+    assert isinstance(configuration["capabilities"], dict)
+    caps = copy.deepcopy(configuration["capabilities"])
+    if caps and "alwaysMatch" in caps or "firstMatch" in caps:
+        return caps
+    else:
+        return {"alwaysMatch": caps}
 
 
 @pytest.fixture
 def capabilities(request, default_capabilities):
     """Merges default capabilities with any test-specific capabilities from a marker."""
+    caps = default_capabilities
+
     marker = request.node.get_closest_marker("capabilities")
     if marker and marker.args:
         # Ensure the first positional argument is a dictionary
         assert isinstance(
             marker.args[0], dict), "capabilities marker must use a dictionary"
-        caps = copy.deepcopy(default_capabilities)
         deep_update(caps, marker.args[0])
-        return caps
 
-    return default_capabilities  # Use defaults if no marker is present
+    return caps
 
 
 @pytest.fixture
@@ -165,12 +170,6 @@ async def session(capabilities, configuration):
     """
     global _current_session
 
-    # Update configuration capabilities with custom ones from the
-    # capabilities fixture, which can be set by tests
-    caps = copy.deepcopy(configuration["capabilities"])
-    deep_update(caps, capabilities)
-    caps = {"alwaysMatch": caps}
-
     await reset_current_session_if_necessary(caps)
 
     if _current_session is None:
@@ -179,22 +178,28 @@ async def session(capabilities, configuration):
             configuration["port"],
             capabilities=caps)
 
-    _current_session.start()
+    try:
+        _current_session.start()
 
-    # Enforce a fixed default window size and position
-    if _current_session.capabilities.get("setWindowRect"):
-        _current_session.window.size = defaults.WINDOW_SIZE
-        _current_session.window.position = defaults.WINDOW_POSITION
+        # Enforce a fixed default window size and position
+        if _current_session.capabilities.get("setWindowRect"):
+            _current_session.window.size = defaults.WINDOW_SIZE
+            _current_session.window.position = defaults.WINDOW_POSITION
 
-    # Set default timeouts
-    multiplier = configuration["timeout_multiplier"]
-    _current_session.timeouts.implicit = IMPLICIT_WAIT_TIMEOUT * multiplier
-    _current_session.timeouts.page_load = PAGE_LOAD_TIMEOUT * multiplier
-    _current_session.timeouts.script = SCRIPT_TIMEOUT * multiplier
+        # Set default timeouts
+        multiplier = configuration["timeout_multiplier"]
+        _current_session.timeouts.implicit = IMPLICIT_WAIT_TIMEOUT * multiplier
+        _current_session.timeouts.page_load = PAGE_LOAD_TIMEOUT * multiplier
+        _current_session.timeouts.script = SCRIPT_TIMEOUT * multiplier
 
-    yield _current_session
+        yield _current_session
 
-    cleanup_session(_current_session)
+        cleanup_session(_current_session)
+
+    except Exception:
+        # Make sure we end up in a known state if something goes wrong.
+        _current_session.end()
+        raise
 
 
 @pytest_asyncio.fixture(scope="function")
@@ -210,34 +215,41 @@ async def bidi_session(capabilities, configuration):
     """
     global _current_session
 
-    # Update configuration capabilities with custom ones from the
-    # capabilities fixture, which can be set by tests
-    caps = copy.deepcopy(configuration["capabilities"])
-    caps.update({"webSocketUrl": True})
-    deep_update(caps, capabilities)
-    caps = {"alwaysMatch": caps}
+    # Ensure we have the webSocketUrl capability set before we reset the current
+    # session.
+    capabilities = copy.deepcopy(capabilities)
+    capabilities.setdefault("alwaysMatch", {})["webSocketUrl"] = True
 
-    await reset_current_session_if_necessary(caps)
+    await reset_current_session_if_necessary(capabilities)
 
     if _current_session is None:
         _current_session = webdriver.Session(
             configuration["host"],
             configuration["port"],
-            capabilities=caps,
+            capabilities=capabilities,
             enable_bidi=True)
 
-    _current_session.start()
-    await _current_session.bidi_session.start()
+    try:
+        _current_session.start()
 
-    # Enforce a fixed default window size and position
-    if _current_session.capabilities.get("setWindowRect"):
-        _current_session.window.size = defaults.WINDOW_SIZE
-        _current_session.window.position = defaults.WINDOW_POSITION
+        try:
+            await _current_session.bidi_session.start()
 
-    yield _current_session.bidi_session
+            # Enforce a fixed default window size and position
+            if _current_session.capabilities.get("setWindowRect"):
+                _current_session.window.size = defaults.WINDOW_SIZE
+                _current_session.window.position = defaults.WINDOW_POSITION
 
-    await _current_session.bidi_session.end()
-    cleanup_session(_current_session)
+            yield _current_session.bidi_session
+
+        finally:
+            await _current_session.bidi_session.end()
+
+        cleanup_session(_current_session)
+
+    except Exception:
+        # Make sure we end up in a known state if something goes wrong.
+        _current_session.end()
 
 
 @pytest.fixture(scope="function")

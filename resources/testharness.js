@@ -1288,6 +1288,7 @@
     expose(promise_test, 'promise_test');
     expose(promise_rejects_js, 'promise_rejects_js');
     expose(promise_rejects_dom, 'promise_rejects_dom');
+    expose(promise_rejects_quotaexceedederror, 'promise_rejects_quotaexceedederror');
     expose(promise_rejects_exactly, 'promise_rejects_exactly');
     expose(generate_tests, 'generate_tests');
     expose(setup, 'setup');

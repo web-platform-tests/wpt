@@ -133,14 +133,7 @@ promise_test(async t => {
   const detectPromise = detector.detect(text);
 
   if (inputUsage >= detector.inputQuota) {
-    try {
-      await detectPromise;
-    } catch (e) {
-      assert_equals(e.constructor, globalThis.QuotaExceededError,
-                    'QuotaExceededError constructor match');
-      assert_equals(e.quota, detector.inputQuota, 'quota');
-      assert_not_equals(e.requested, null, 'requested');
-    }
+    await promise_rejects_quotaexceedederror(t, detectPromise, requested => requested !== null, detector.inputQuota);
   } else {
     await detectPromise;
   }

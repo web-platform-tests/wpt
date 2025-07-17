@@ -36,7 +36,8 @@ promise_test(async _ => {
 test(_ => {
   const uuid = token();
   const requestUrl = generateSetBeaconURL(uuid, {host: HTTPS_ORIGIN});
-  try {
+
+  assert_throws_quotaexceedederror(() => {
     fetchLater(requestUrl, {
           activateAfter: 0,
           method: 'POST',
@@ -44,10 +45,5 @@ test(_ => {
               getRemainingQuota(QUOTA_PER_ORIGIN, requestUrl, headers) + 1,
               dataType),
         });
-  } catch (e) {
-    assert_equals(e.constructor, globalThis.QuotaExceededError,
-                  'QuotaExceededError constructor match');
-    assert_equals(e.quota, null, 'quota');
-    assert_equals(e.requested, null, 'requested');
-  }
+  }, null, null);
 }, `fetchLater() rejects max+1 payload in a POST request body of ${dataType}.`);

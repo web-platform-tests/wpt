@@ -170,14 +170,10 @@ backgroundFetchTest(async (test, backgroundFetch) => {
 
   // Very large download total that will definitely exceed the quota.
   const options = {downloadTotal: Number.MAX_SAFE_INTEGER};
-  try {
-    await backgroundFetch.fetch(registrationId, 'resources/feature-name.txt', options);
-  } catch (e) {
-    assert_equals(e.constructor, globalThis.QuotaExceededError,
-                  'QuotaExceededError constructor match');
-    assert_equals(e.quota, null, 'quota');
-    assert_equals(e.requested, null, 'requested');
-  }
+  await promise_rejects_quotaexceedederror(
+    test, backgroundFetch.fetch(registrationId, 'resources/feature-name.txt', options),
+    null, null
+  );
 
 }, 'Background Fetch that exceeds the quota throws a QuotaExceededError');
 

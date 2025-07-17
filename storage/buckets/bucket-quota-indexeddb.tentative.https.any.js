@@ -17,6 +17,9 @@ promise_test(async t => {
       await indexedDbOpenRequest(t, bucket.indexedDB, dbname, (db_to_upgrade) => {
         db_to_upgrade.createObjectStore(objectStoreName);
       });
+  t.add_cleanup(() => {
+      db.close();
+  });
 
   const txn = db.transaction(objectStoreName, 'readwrite');
   const buffer = new ArrayBuffer(arraySize);
@@ -34,14 +37,5 @@ promise_test(async t => {
     type: 'binary/random'
   }), 2);
 
-  try {
-    await transactionPromise(txn);
-  } catch (e) {
-    assert_equals(e.constructor, globalThis.QuotaExceededError,
-                  'QuotaExceededError constructor match');
-    assert_equals(e.quota, null, 'quota');
-    assert_equals(e.requested, null, 'requested');
-  }
-
-  db.close();
+  await promise_rejects_quotaexceedederror(t, transactionPromise(txn), null, null);
 }, 'IDB respects bucket quota');

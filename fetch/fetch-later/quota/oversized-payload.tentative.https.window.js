@@ -10,19 +10,14 @@ for (const dataType in BeaconDataType) {
   // Test making a POST request with oversized payload, which should be rejected
   // by fetchLater API.
   test(() => {
-    try {
+    assert_throws_quotaexceedederror(() => {
       fetchLater('/', {
         activateAfter: 0,
         method: 'POST',
         body: makeBeaconData(
             generatePayload(OVERSIZED_REQUEST_BODY_SIZE), dataType),
       });
-    } catch (e) {
-      assert_equals(e.constructor, globalThis.QuotaExceededError,
-                    'QuotaExceededError constructor match');
-      assert_equals(e.quota, null, 'quota');
-      assert_equals(e.requested, null, 'requested');
-    }
+    }, null, null);
   }, `fetchLater() does not accept payload[size=${
           OVERSIZED_REQUEST_BODY_SIZE}] exceeding per-origin quota in a POST request body of ${
           dataType}.`);

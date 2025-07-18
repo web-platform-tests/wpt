@@ -902,9 +902,9 @@
         } else {
             constructor = self.QuotaExceededError;
             promise = promiseOrConstructor;
-            requested = quotaOrRequested;
-            quota = descriptionOrQuota;
-            description = maybeDescription;
+            requested = requestedOrPromise;
+            quota = quotaOrRequested;
+            description = descriptionOrQuota;
             assert(maybeDescription === undefined,
                    "Too many args passed to no-constructor version of promise_rejects_quotaexceedederror, or accidentally explicitly passed undefined");
         }

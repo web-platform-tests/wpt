@@ -653,14 +653,14 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">restart</span><span class="o">-</span><span class="n">backoff</span> <span class="n">MAX_RESTART_BACKOFF</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">capture</span><span class="o">-</span><span class="n">stdio</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">fail</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">unexpected</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">fail</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">unexpected</span><span class="o">-</span><span class="k">pass</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">restart</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">new</span><span class="o">-</span><span class="n">group</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">list</span><span class="o">-</span><span class="n">test</span><span class="o">-</span><span class="n">groups</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">list</span><span class="o">-</span><span class="n">disabled</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="nb">list</span><span class="o">-</span><span class="n">tests</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">log</span><span class="o">-</span><span class="n">full</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="nb">list</span><span class="o">-</span><span class="n">tests</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">list</span><span class="o">-</span><span class="n">tests</span><span class="o">-</span><span class="n">json</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">log</span><span class="o">-</span><span class="n">full</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">repeat</span><span class="o">-</span><span class="n">loop</span> <span class="n">VERIFY_REPEAT_LOOP</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">repeat</span><span class="o">-</span><span class="n">restart</span> <span class="n">VERIFY_REPEAT_RESTART</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">chaos</span><span class="o">-</span><span class="n">mode</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">chaos</span><span class="o">-</span><span class="n">mode</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">REPEAT_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">wdspec</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">reftest</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">subsuite</span><span class="o">-</span><span class="n">file</span> <span class="n">SUBSUITE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">subsuite</span> <span class="n">SUBSUITES</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">small</span><span class="o">-</span><span class="n">subsuite</span><span class="o">-</span><span class="n">size</span> <span class="n">SMALL_SUBSUITE_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
@@ -841,7 +841,11 @@ channel.) This flag overrides –browser-channel.</p>
 <p>Default: False</p>
 </dd>
 <dt><kbd>--list-tests</kbd></dt>
-<dd><p>List all tests that will run</p>
+<dd><p>List all tests included in the given test_list (whether or not they would be executed)</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--list-tests-json</kbd></dt>
+<dd><p>List details of all tests included in the given test_list in JSON format</p>
 <p>Default: False</p>
 </dd>
 <dt><kbd>--verify</kbd></dt>
@@ -889,9 +893,9 @@ channel.) This flag overrides –browser-channel.</p>
 <h4>Test Selection<a class="headerlink" href="#test-selection" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: wdspec, testharness, crashtest, reftest, print-reftest</p>
+<dd><p>Possible choices: reftest, crashtest, wdspec, testharness, print-reftest</p>
 <p>Test types to run</p>
-<p>Default: {‘wdspec’, ‘testharness’, ‘crashtest’, ‘reftest’, ‘print-reftest’}</p>
+<p>Default: {‘reftest’, ‘crashtest’, ‘wdspec’, ‘testharness’, ‘print-reftest’}</p>
 </dd>
 <dt><kbd>--subsuite-file</kbd></dt>
 <dd><p>Path to JSON file containing subsuite configuration</p>

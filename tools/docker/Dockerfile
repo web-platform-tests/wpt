@@ -20,6 +20,9 @@ RUN apt-get -qqy update \
     glib-networking-services \
     gstreamer1.0-plugins-bad \
     gstreamer1.0-gl \
+    libatspi2.0-0 \
+    libcairo2-dev \
+    libgirepository1.0-dev \
     libosmesa6-dev \
     libproxy1-plugin-webkit \
     libvirt-daemon-system \
@@ -28,6 +31,7 @@ RUN apt-get -qqy update \
     libxcb-shape0-dev \
     locales \
     openjdk-17-jre-headless \
+    pkg-config \
     pulseaudio \
     python3 \
     python3-dev \

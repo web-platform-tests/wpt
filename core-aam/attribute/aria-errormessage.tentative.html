@@ -1,0 +1,78 @@
+<!doctype html>
+<meta charset=utf-8>
+<html>
+<head>
+  <title>aria-flowto</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/core-aam/scripts/aam-utils.js"></script>
+</head>
+<body>
+
+<p>
+  This test is marked tentative because it uses an experimental testing API
+  that is presently under development.
+</p>
+
+<div role='checkbox' id='test' aria-errormessage='error1 error2' aria-invalid='true'>content</div>
+<div id='error1'>hello</div>
+<div id='error2'>world</div>
+
+<script>
+  AAMUtils.verifyAPI(
+    'aria-flowto',
+    'test',
+    {
+      "Atspi" : [
+        [
+          "relation",
+          "RELATION_ERROR_MESSAGE",
+          "is",
+          ['error1', 'error2']
+        ],
+        [
+          "reverseRelation",
+          "RELATION_ERROR_FOR",
+          "is",
+          ['error1', 'error2']
+        ]
+      ],
+      "AXAPI" : [
+        [
+          "property",
+          "AXErrorMessageElements",
+          "is",
+          ['error1', 'error2']
+        ]
+      ],
+      "IAccessible2" : [
+        [
+          "relation",
+          "IA2_RELATION_ERROR",
+          "is",
+          ['error1', 'error2']
+        ],
+        [
+          "reverseRelation",
+          "IA2_RELATION_ERROR_FOR",
+          "is",
+          ['error1', 'error2']
+        ]
+      ],
+      "UIA" : [
+        [
+          "property",
+          "ControllerFor",
+          "is",
+          ['error1', 'error2']
+        ]
+      ]
+    }
+  );
+</script>
+
+</body>
+</html>

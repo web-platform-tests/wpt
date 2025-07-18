@@ -906,7 +906,7 @@
             quota = quotaOrRequested;
             description = descriptionOrQuota;
             assert(maybeDescription === undefined,
-                   "Too many args passed to no-constructor version of promise_rejects_quotaexceedederror, or accidentally explicitly passed undefined");
+                   "Too many args passed to no-constructor version of promise_rejects_quotaexceedederror");
         }
         return bring_promise_to_current_realm(promise)
             .then(test.unreached_func("Should have rejected: " + description))
@@ -2483,7 +2483,7 @@
             quota = quotaOrRequested;
             description = descriptionOrQuota;
             assert(maybeDescription === undefined,
-                   "Too many args passed to no-constructor version of assert_throws_quotaexceedederror, or accidentally explicitly passed undefined");
+                   "Too many args passed to no-constructor version of assert_throws_quotaexceedederror");
         }
         assert_throws_quotaexceedederror_impl(func, requested, quota, description, "assert_throws_quotaexceedederror", constructor);
     }

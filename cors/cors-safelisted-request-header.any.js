@@ -69,3 +69,12 @@ function safelist(headers, expectPreflight = false) {
 ].forEach(([value, preflight = false]) => {
   safelist({"range": value}, preflight);
 });
+
+[
+  ["abc123"],
+  ["\"", true],
+  ["e5p3n<3k0k0s", true],
+  ["012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678", true],
+].forEach(([value, preflight = false]) => {
+  safelist({"last-event-id": value}, preflight);
+});

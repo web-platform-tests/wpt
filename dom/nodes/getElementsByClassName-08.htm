@@ -5,11 +5,11 @@
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
  </head>
- <body class="a">
+ <body class="a a">
   <div id="log"></div>
   <script> test(function() {
-                  document.getElementsByClassName("a\fa"), [document.body]
-                })
+                  assert_array_equals(document.getElementsByClassName("a\fa"), [document.body]
+  );})
   </script>
  </body>
 </html>

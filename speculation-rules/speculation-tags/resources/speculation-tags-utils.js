@@ -26,22 +26,6 @@
     return type;
   }
 
-  function assertHeaders(headers, expectedTag, preloadingType) {
-    if (expectedTag === undefined) {
-      // If `tag` is invalid, preloading should not be
-      // triggered, and the navigation should fall back to network. Confirm
-      // this behavior by checking the request headers.
-      assert_false(headers.has("sec-purpose"));
-      assert_false(headers.has("sec-speculation-tags"));
-    } else {
-      // Make sure the page is preloaded.
-      assert_equals(
-        headers.get("sec-purpose"),
-        preloadingType === "prefetch" ? "prefetch" : "prefetch;prerender");
-      assert_equals(headers.get("sec-speculation-tags"), expectedTag);
-    }
-  }
-
   function testRulesetTag(tag, expectedTag, description) {
     promise_test(async t => {
         const rcHelper = new RemoteContextHelper();
@@ -51,7 +35,7 @@
         const preloadingType = getPreloadingType();
         const preloadedRC = await referrerRC.helper.createContext({
             executorCreator(url) {
-              return referrerRC.executeScript((preloadingType, tag, url, expectedTag) => {
+              return referrerRC.executeScript((preloadingType, tag, url) => {
                   const script = document.createElement("script");
                   script.type = "speculationrules";
                   script.textContent = JSON.stringify({
@@ -63,16 +47,8 @@
                         }
                       ]
                   });
-
-                  if (expectedTag === undefined) {
-                    return new Promise(resolve => {
-                      script.addEventListener('error', resolve, { once: true });
-                      document.head.append(script);
-                    });
-                  }
-
                   document.head.append(script);
-              }, [preloadingType, tag, url, expectedTag]);
+              }, [preloadingType, tag, url]);
             }, extraConfig
         });
 
@@ -80,7 +56,11 @@
         referrerRC.navigateTo(preloadedRC.url);
 
         const headers = await preloadedRC.getRequestHeaders();
-        assertHeaders(headers, expectedTag, preloadingType);
+        // Make sure the page is preloaded.
+        assert_equals(
+          headers.get("sec-purpose"),
+          preloadingType === "prefetch" ? "prefetch" : "prefetch;prerender");
+        assert_equals(headers.get("sec-speculation-tags"), expectedTag);
     }, "Sec-Speculation-Tags [ruleset-based]: " + description);
   }
 
@@ -114,7 +94,21 @@
         referrerRC.navigateTo(preloadedRC.url);
 
         const headers = await preloadedRC.getRequestHeaders();
-        assertHeaders(headers, expectedTag, preloadingType);
+
+        if (expectedTag === undefined) {
+          // If `tag` on the rule level is invalid, preloading should not be
+          // triggered, and the navigation should fall back to network. Confirm
+          // this behavior by checking the request headers.
+          assert_false(headers.has("sec-purpose"));
+          assert_false(headers.has("sec-speculation-tags"));
+        } else {
+          // Make sure the page is preloaded.
+          assert_equals(
+            headers.get("sec-purpose"),
+            preloadingType === "prefetch" ? "prefetch" : "prefetch;prerender");
+          assert_equals(headers.get("sec-speculation-tags"), expectedTag);
+        }
+
     }, "Sec-Speculation-Tags [rule-based]: " + description);
   }
 
@@ -130,7 +124,7 @@
   // Runs the test function for invalid tag cases based on the tag level.
   globalThis.testInvalidTag = (tag, description) => {
     if (getTagLevel() === 'ruleset') {
-      testRulesetTag(tag, undefined, description);
+      testRulesetTag(tag, 'null', description);
     } else {
       // Pass `undefined` to indicate this preloading is expected to fail.
       testRuleTag(tag, undefined, description);

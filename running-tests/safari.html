@@ -34,55 +34,33 @@
             
   <section id="safari">
 <h1>Safari<a class="headerlink" href="#safari" title="Link to this heading">¶</a></h1>
-<p>To run Safari on macOS, some manual setup is required. Some steps are different
-for Safari and Safari Technology Preview.</p>
+<p>To run Safari on macOS, some manual setup is required.</p>
+<p>To enable Remote Automation, run either:</p>
 <ul class="simple">
-<li><p>Allow Safari to be controlled by SafariDriver:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">safaridriver</span> <span class="pre">--enable</span></code> or</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">&quot;/Applications/Safari</span> <span class="pre">Technology</span> <span class="pre">Preview.app/Contents/MacOS/safaridriver&quot;</span> <span class="pre">--enable</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">safaridriver</span> <span class="pre">--enable</span></code>, for Safari, or</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;/Applications/Safari</span> <span class="pre">Technology</span> <span class="pre">Preview.app/Contents/MacOS/safaridriver&quot;</span> <span class="pre">--enable</span></code>,
+for Safari Technology Preview.</p></li>
 </ul>
-</li>
-<li><p>Allow pop-up windows:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">defaults</span> <span class="pre">write</span> <span class="pre">com.apple.Safari</span> <span class="pre">WebKitJavaScriptCanOpenWindowsAutomatically</span> <span class="pre">1</span></code> or</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">defaults</span> <span class="pre">write</span> <span class="pre">com.apple.SafariTechnologyPreview</span> <span class="pre">WebKitJavaScriptCanOpenWindowsAutomatically</span> <span class="pre">1</span></code></p></li>
-</ul>
-</li>
-<li><p>Turn on additional experimental features Safari Technology Preview:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">defaults</span> <span class="pre">write</span> <span class="pre">com.apple.SafariTechnologyPreview</span> <span class="pre">ExperimentalServerTimingEnabled</span> <span class="pre">1</span></code></p></li>
-</ul>
-</li>
-<li><p>Trust the certificate:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">security</span> <span class="pre">add-trusted-cert</span> <span class="pre">-k</span> <span class="pre">&quot;$(security</span> <span class="pre">default-keychain</span> <span class="pre">|</span> <span class="pre">cut</span> <span class="pre">-d\&quot;</span> <span class="pre">-f2)&quot;</span> <span class="pre">tools/certs/cacert.pem</span></code></p></li>
-</ul>
-</li>
-<li><p>Set <code class="docutils literal notranslate"><span class="pre">no_proxy='*'</span></code> in your environment. This is a
-workaround for a known
-<a class="reference external" href="https://github.com/web-platform-tests/wpt/issues/9007">macOS High Sierra issue</a>.</p></li>
-</ul>
+<p>You must also ensure you have
+<a class="reference external" href="from-local-system.html#hosts-file-setup">configured the <code class="docutils literal notranslate"><span class="pre">hosts</span></code> file</a>.</p>
 <p>Now, run the tests using the <code class="docutils literal notranslate"><span class="pre">safari</span></code> product:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="n">safari</span> <span class="p">[</span><span class="n">test_list</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>This will use the <code class="docutils literal notranslate"><span class="pre">safaridriver</span></code> found on the path, which will be stable Safari.
-To run Safari Technology Preview instead, use the <code class="docutils literal notranslate"><span class="pre">--channel=preview</span></code> argument:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">channel</span><span class="o">=</span><span class="n">preview</span> <span class="n">safari</span> <span class="p">[</span><span class="n">test_list</span><span class="p">]</span>
+<p>This will default to <code class="docutils literal notranslate"><span class="pre">--channel=preview</span></code> and run Safari Technology Preview.
+To run the system Safari instead, use the <code class="docutils literal notranslate"><span class="pre">--channel=stable</span></code> argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">channel</span><span class="o">=</span><span class="n">stable</span> <span class="n">safari</span> <span class="p">[</span><span class="n">test_list</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="debugging">
 <h2>Debugging<a class="headerlink" href="#debugging" title="Link to this heading">¶</a></h2>
 <p>To debug problems with <code class="docutils literal notranslate"><span class="pre">safaridriver</span></code>, add the <code class="docutils literal notranslate"><span class="pre">--webdriver-arg=--diagnose</span></code>
-argument:</p>
+option:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">channel</span><span class="o">=</span><span class="n">preview</span> <span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">arg</span><span class="o">=--</span><span class="n">diagnose</span> <span class="n">safari</span> <span class="p">[</span><span class="n">test_list</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>The logs will be in <code class="docutils literal notranslate"><span class="pre">~/Library/Logs/com.apple.WebDriver/</span></code>.
-See <code class="docutils literal notranslate"><span class="pre">man</span> <span class="pre">safaridriver</span></code> for more information.</p>
-<p>To enable safaridriver diagnostics in Azure Pipelines, set
-<code class="docutils literal notranslate"><span class="pre">safaridriver_diagnose</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code> in <code class="docutils literal notranslate"><span class="pre">.azure-pipelines.yml</span></code>.</p>
+See <code class="docutils literal notranslate"><span class="pre">man</span> <span class="pre">1</span> <span class="pre">safaridriver</span></code> for more information.</p>
 </section>
 </section>
 

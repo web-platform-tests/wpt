@@ -4,11 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <body>
-  <script>
-    let iframeLoadResolve;
-    let iframeLoadPromise = new Promise((r) => { iframeLoadResolve = r; });
-  </script>
-  <iframe id="iframe" onload="iframeLoadResolve()">
+  <iframe id="iframe">
   </iframe>
   <section id="new-parent">
   </section>
@@ -32,7 +28,6 @@
   </style>
   <script>
     promise_test(async t => {
-      await iframeLoadPromise;
       const iframe = document.querySelector("#iframe");
       const style = document.querySelector("#style");
       iframe.contentDocument.head.append(style.cloneNode(true));

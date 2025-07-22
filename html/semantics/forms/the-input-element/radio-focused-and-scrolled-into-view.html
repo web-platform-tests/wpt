@@ -29,13 +29,11 @@
 </form>
 
 <script>
-    function simulateArrowDown() {
-     new test_driver.Actions()
-        .keyDown("\uE015")
-        .send();
-    }
-
-// "ArrowDown" code point: https://www.w3.org/TR/webdriver2/#keyboard-actions
+  function simulateArrowDown() {
+    new test_driver.Actions()
+      .keyDown("\uE015")      // "ArrowDown" code point: https://www.w3.org/TR/webdriver2/#keyboard-actions
+      .send();
+  }
 
   promise_test(async () => {
     const firstRadio = document.getElementById("radio1");

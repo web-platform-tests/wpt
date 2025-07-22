@@ -1,7 +1,7 @@
 test(() => {
   const contentDocument = document.implementation.createHTMLDocument();
   assert_throws_dom("NotSupportedError", () => customElements.initialize(contentDocument));
-  assert_throws_dom("NotSupportedError", () => customElements.initialize(contentDocument.createElement("x"))); 
+  assert_throws_dom("NotSupportedError", () => customElements.initialize(contentDocument.createElement("x")));
 }, "initialize() of global registry should throw for nodes from another document");
 
 test(() => {

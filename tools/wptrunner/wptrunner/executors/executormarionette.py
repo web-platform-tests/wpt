@@ -474,6 +474,9 @@ class MarionetteTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
 
+    def run(self, url, script_resume, test_window=None):
+        pass
+
     def send_message(self, cmd_id, message_type, status, message=None):
         obj = {
             "cmd_id": cmd_id,
@@ -483,6 +486,9 @@ class MarionetteTestDriverProtocolPart(TestDriverProtocolPart):
         if message:
             obj["message"] = str(message)
         self.parent.base.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
+
+    def get_next_message(self, url, script_resume, test_window):
+        pass
 
     def _switch_to_frame(self, index_or_elem):
         try:

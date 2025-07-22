@@ -30,16 +30,16 @@
 
 <script>
   function simulateArrowDown() {
-    new test_driver.Actions()
-      .keyDown("\uE015")      // "ArrowDown" code point: https://www.w3.org/TR/webdriver2/#keyboard-actions
+    return new test_driver.Actions()
+      .keyDown("\uE015") // "ArrowDown" code point: https://www.w3.org/TR/webdriver2/#keyboard-actions
       .send();
   }
 
-  promise_test(async () => {
+  promise_test(async t => {
     const firstRadio = document.getElementById("radio1");
     const offscreenRadio = document.getElementById("offscreen-radio");
     const focusPromise = new Promise(resolve =>
-      offscreenRadio.onfocus = () => setTimeout(resolve, 50)
+      offscreenRadio.onfocus = () => t.step_timeout(resolve, 50)
     );
 
     firstRadio.focus();
@@ -52,6 +52,7 @@
     assert_equals(offscreenRadio, document.activeElement, 'offscreen radio is focused');
     assert_greater_than(scrollTop, 500, `out-of-viewport radio should trigger scroll — scrollTop=${scrollTop}`);
   }, 'Focusing offscreen radio via keyboard should scroll it into view');
+
 </script>
 
 </body>

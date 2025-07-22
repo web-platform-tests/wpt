@@ -630,8 +630,14 @@ class FirefoxAndroid(Browser):
         if dest is None:
             dest = os.pwd
 
+        branches = {
+            "stable": "mozilla-release",
+            "beta": "mozilla-beta",
+        }
+        branch = branches.get(channel, "mozilla-central")
+
         resp = get_taskcluster_artifact(
-            "gecko.v2.mozilla-central.shippable.latest.mobile.android-x86_64-opt",
+            f"gecko.v2.{branch}.shippable.latest.mobile.android-x86_64-opt",
             "public/build/geckoview-test_runner.apk")
 
         filename = "geckoview-test_runner.apk"

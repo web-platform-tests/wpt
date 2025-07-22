@@ -2,12 +2,7 @@ import gi
 
 gi.require_version("Atspi", "2.0")
 from gi.repository import Atspi
-import json
-import threading
 import time
-
-import sys
-
 
 def poll_for_tab(root, product, url):
     """Poll until the tab with the test url is loaded and available in the

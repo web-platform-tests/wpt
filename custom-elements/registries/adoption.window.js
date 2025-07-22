@@ -104,7 +104,7 @@ test(t => {
   const element = document.createElement('div');
   const scoped = new CustomElementRegistry();
   const elementShadow = element.attachShadow({ mode: "closed", customElementRegistry: scoped });
-  assert_equals(elementShadow.customElementRegistry, customElements);
+  assert_equals(elementShadow.customElementRegistry, scoped);
 
   contentDocument.body.appendChild(element);
   assert_equals(elementShadow.customElementRegistry, scoped);
@@ -146,7 +146,7 @@ test(t => {
   const element = document.createElement('div');
   const scoped = new CustomElementRegistry();
   const elementShadow = element.attachShadow({ mode: "closed", customElementRegistry: scoped });
-  assert_equals(elementShadow.customElementRegistry, customElements);
+  assert_equals(elementShadow.customElementRegistry, scoped);
 
   const scoped2 = new CustomElementRegistry();
   const scopedElement = contentDocument.createElement('div', { customElementRegistry: scoped2 });
@@ -254,7 +254,7 @@ test(t => {
   const element = document.createElement('div');
   const scoped = new CustomElementRegistry();
   const elementShadow = element.attachShadow({ mode: "closed", customElementRegistry: scoped });
-  assert_equals(elementShadow.customElementRegistry, customElements);
+  assert_equals(elementShadow.customElementRegistry, scoped);
 
   contentDocument.body.appendChild(element);
   assert_equals(elementShadow.customElementRegistry, scoped);
@@ -293,7 +293,7 @@ test(t => {
   const element = document.createElement('div');
   const scoped = new CustomElementRegistry();
   const elementShadow = element.attachShadow({ mode: "closed", customElementRegistry: scoped });
-  assert_equals(elementShadow.customElementRegistry, customElements);
+  assert_equals(elementShadow.customElementRegistry, scoped);
 
   const scoped2 = new CustomElementRegistry();
   const scopedElement = contentDocument.createElement('div', { customElementRegistry: scoped2 });

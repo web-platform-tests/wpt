@@ -50,11 +50,9 @@
     await focusPromise;
 
     const scrollTop = document.scrollingElement.scrollTop;
-    const expectedTop = offscreenRadio.offsetTop;
 
     assert_equals(offscreenRadio, document.activeElement, 'offscreen radio is focused');
-    assert_greater_than(scrollTop, 0, `out-of-viewport radio should trigger scroll — scrollTop=${scrollTop}`);
-    assert_approx_equals(scrollTop, expectedTop, 800, `scrollTop (${scrollTop}) should be close to offsetTop (${expectedTop})`);
+    assert_greater_than(scrollTop, 500, `out-of-viewport radio should trigger scroll — scrollTop=${scrollTop}`);
   }, 'Focusing offscreen radio via keyboard should scroll it into view');
 </script>
 

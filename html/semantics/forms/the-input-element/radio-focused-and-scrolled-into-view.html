@@ -38,8 +38,6 @@
 // "ArrowDown" code point: https://www.w3.org/TR/webdriver2/#keyboard-actions
 
   promise_test(async () => {
-    window.scrollTo(0, 0);
-
     const firstRadio = document.getElementById("radio1");
     const offscreenRadio = document.getElementById("offscreen-radio");
     const focusPromise = new Promise(resolve =>

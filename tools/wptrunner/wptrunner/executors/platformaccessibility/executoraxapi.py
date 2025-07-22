@@ -10,9 +10,6 @@ from Cocoa import (
     NSWorkspace,
 )
 
-import json
-
-
 def find_browser(name):
     """Find the AXUIElement representing the browser.
 
@@ -48,7 +45,6 @@ def find_active_tab(browser):
     """
 
     stack = [browser]
-    tabs = []
     while stack:
         node = stack.pop()
 

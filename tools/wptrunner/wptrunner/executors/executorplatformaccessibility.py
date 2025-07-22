@@ -1,6 +1,5 @@
 from .protocol import ProtocolPart
 
-from abc import ABCMeta
 from sys import platform
 
 linux = False
@@ -47,6 +46,6 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
         # for example, Windows API tests passed to Linux. Ideally, this will
         # be fixed with a "not applicable".
         if not valid_api_for_platform(api):
-          return ""
+            return ""
 
         return self.impl.test_accessibility_api(dom_id, test, api, url)

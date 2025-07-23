@@ -202,4 +202,11 @@
       await promise_rejects_js(t, TypeError, navigator.credentials.get(options));
     }
   }, "Mediation is required to get a DigitalCredential.");
+
+  promise_test(async (t) => {
+    await promise_rejects_js(
+      t,
+      TypeError,
+      navigator.credentials.get({digital: {}}));
+  }, "`requests` field is required in the options object.");
 </script>

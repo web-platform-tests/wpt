@@ -241,6 +241,7 @@ scheme host and port.""")
                               help="Extra argument for the WebDriver binary")
     config_group.add_argument("--metadata", type=abs_path, dest="metadata_root",
                               help="Path to root directory containing test metadata")
+    # TODO(web-platform-tests/wpt#53939): Deprecate in favor of `wpt --tests-root`.
     config_group.add_argument("--tests", type=abs_path, dest="tests_root",
                               help="Path to root directory containing test files")
     config_group.add_argument("--manifest", type=abs_path, dest="manifest_path",
@@ -731,6 +732,7 @@ def create_parser_metadata_update(product_choices=None):
     parser.add_argument("--config", type=abs_path, help="Path to config file")
     parser.add_argument("--metadata", type=abs_path, dest="metadata_root",
                         help="Path to the folder containing test metadata")
+    # TODO(web-platform-tests/wpt#53939): Deprecate in favor of `wpt --tests-root`.
     parser.add_argument("--tests", type=abs_path, dest="tests_root",
                         help="Path to web-platform-tests")
     parser.add_argument("--manifest", type=abs_path, dest="manifest_path",

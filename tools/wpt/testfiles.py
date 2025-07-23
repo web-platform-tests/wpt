@@ -31,12 +31,12 @@ wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 logger = logging.getLogger()
 
 
-def display_branch_point() -> None:
-    print(branch_point())
+def display_branch_point(**kwargs: Any) -> None:
+    print(branch_point(kwargs["tests_root"]))
 
 
-def branch_point() -> Optional[Text]:
-    git = get_git_cmd(wpt_root)
+def branch_point(tests_root: str = wpt_root) -> Optional[Text]:
+    git = get_git_cmd(tests_root)
     if git is None:
         raise Exception("git not found")
 
@@ -66,7 +66,7 @@ def branch_point() -> Optional[Text]:
         proc = subprocess.Popen(cmd,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
-                                cwd=wpt_root)
+                                cwd=tests_root)
         commits_bytes, _ = proc.communicate(b"\n".join(item.encode("ascii") for item in not_heads))
         if proc.returncode != 0:
             raise subprocess.CalledProcessError(proc.returncode,
@@ -133,8 +133,11 @@ def compile_ignore_rule(rule: Text) -> Pattern[Text]:
     return re.compile("^%s$" % "/".join(re_parts))
 
 
-def repo_files_changed(revish: Text, include_uncommitted: bool = False, include_new: bool = False) -> Set[Text]:
-    git = get_git_cmd(wpt_root)
+def repo_files_changed(revish: Text,
+                       include_uncommitted: bool = False,
+                       include_new: bool = False,
+                       tests_root: str = wpt_root) -> Set[Text]:
+    git = get_git_cmd(tests_root)
     if git is None:
         raise Exception("git not found")
 
@@ -170,7 +173,9 @@ def repo_files_changed(revish: Text, include_uncommitted: bool = False, include_
     return files
 
 
-def exclude_ignored(files: Iterable[Text], ignore_rules: Optional[Sequence[Text]]) -> Tuple[List[Text], List[Text]]:
+def exclude_ignored(files: Iterable[Text],
+                    ignore_rules: Optional[Sequence[Text]],
+                    tests_root: str = wpt_root) -> Tuple[List[Text], List[Text]]:
     if ignore_rules is None:
         ignore_rules = DEFAULT_IGNORE_RULES
     compiled_ignore_rules = [compile_ignore_rule(item) for item in set(ignore_rules)]
@@ -178,7 +183,7 @@ def exclude_ignored(files: Iterable[Text], ignore_rules: Optional[Sequence[Text]
     changed = []
     ignored = []
     for item in sorted(files):
-        fullpath = os.path.join(wpt_root, item)
+        fullpath = os.path.join(tests_root, item)
         rule_path = item.replace(os.path.sep, "/")
         for rule in compiled_ignore_rules:
             if rule.match(rule_path):
@@ -193,8 +198,8 @@ def exclude_ignored(files: Iterable[Text], ignore_rules: Optional[Sequence[Text]
 def files_changed(revish: Text,
                   ignore_rules: Optional[Sequence[Text]] = None,
                   include_uncommitted: bool = False,
-                  include_new: bool = False
-                  ) -> Tuple[List[Text], List[Text]]:
+                  include_new: bool = False,
+                  tests_root: str = wpt_root) -> Tuple[List[Text], List[Text]]:
     """Find files changed in certain revisions.
 
     The function passes `revish` directly to `git diff`, so `revish` can have a
@@ -203,51 +208,54 @@ def files_changed(revish: Text,
     """
     files = repo_files_changed(revish,
                                include_uncommitted=include_uncommitted,
-                               include_new=include_new)
+                               include_new=include_new,
+                               tests_root=tests_root)
     if not files:
         return [], []
 
-    return exclude_ignored(files, ignore_rules)
+    return exclude_ignored(files, ignore_rules, tests_root=tests_root)
 
 
-def _in_repo_root(full_path: Text) -> bool:
-    rel_path = os.path.relpath(full_path, wpt_root)
+def _in_repo_root(full_path: Text, tests_root: str = wpt_root) -> bool:
+    rel_path = os.path.relpath(full_path, tests_root)
     path_components = rel_path.split(os.sep)
     return len(path_components) < 2
 
 
-def load_manifest(manifest_path: Optional[Text] = None, manifest_update: bool = True) -> manifest.Manifest:
+def load_manifest(manifest_path: Optional[Text] = None,
+                  manifest_update: bool = True,
+                  tests_root: str = wpt_root) -> manifest.Manifest:
     if manifest_path is None:
-        manifest_path = os.path.join(wpt_root, "MANIFEST.json")
-    return manifest.load_and_update(wpt_root, manifest_path, "/",
+        manifest_path = os.path.join(tests_root, "MANIFEST.json")
+    return manifest.load_and_update(tests_root, manifest_path, "/",
                                     update=manifest_update)
 
 
 def affected_testfiles(files_changed: Iterable[Text],
                        skip_dirs: Optional[Set[Text]] = None,
                        manifest_path: Optional[Text] = None,
-                       manifest_update: bool = True
-                       ) -> Tuple[Set[Text], Set[Text]]:
+                       manifest_update: bool = True,
+                       tests_root: str = wpt_root) -> Tuple[Set[Text], Set[Text]]:
     """Determine and return list of test files that reference changed files."""
     if skip_dirs is None:
         skip_dirs = {"conformance-checkers", "docs", "tools"}
     affected_testfiles = set()
     # Exclude files that are in the repo root, because
     # they are not part of any test.
-    files_changed = [f for f in files_changed if not _in_repo_root(f)]
+    files_changed = [f for f in files_changed if not _in_repo_root(f, tests_root=tests_root)]
     nontests_changed = set(files_changed)
-    wpt_manifest = load_manifest(manifest_path, manifest_update)
+    wpt_manifest = load_manifest(manifest_path, manifest_update, tests_root=tests_root)
 
     test_types = ["crashtest", "print-reftest", "reftest", "testharness", "wdspec"]
-    support_files = {os.path.join(wpt_root, path)
+    support_files = {os.path.join(tests_root, path)
                      for _, path, _ in wpt_manifest.itertypes("support")}
-    wdspec_test_files = {os.path.join(wpt_root, path)
+    wdspec_test_files = {os.path.join(tests_root, path)
                          for _, path, _ in wpt_manifest.itertypes("wdspec")}
-    test_files = {os.path.join(wpt_root, path)
+    test_files = {os.path.join(tests_root, path)
                   for _, path, _ in wpt_manifest.itertypes(*test_types)}
 
-    interface_dir = os.path.join(wpt_root, 'interfaces')
-    interfaces_files = {os.path.join(wpt_root, 'interfaces', filename)
+    interface_dir = os.path.join(tests_root, 'interfaces')
+    interfaces_files = {os.path.join(tests_root, 'interfaces', filename)
                         for filename in os.listdir(interface_dir)}
 
     interfaces_changed = interfaces_files.intersection(nontests_changed)
@@ -258,15 +266,15 @@ def affected_testfiles(files_changed: Iterable[Text],
     nontest_changed_paths = set()
     rewrites: Dict[Text, Text] = {"/resources/webidl2/lib/webidl2.js": "/resources/WebIDLParser.js"}
     for full_path in nontests_changed:
-        rel_path = os.path.relpath(full_path, wpt_root)
+        rel_path = os.path.relpath(full_path, tests_root)
         path_components = rel_path.split(os.sep)
         top_level_subdir = path_components[0]
         if top_level_subdir in skip_dirs:
             continue
-        repo_path = "/" + os.path.relpath(full_path, wpt_root).replace(os.path.sep, "/")
+        repo_path = "/" + os.path.relpath(full_path, tests_root).replace(os.path.sep, "/")
         if repo_path in rewrites:
             repo_path = rewrites[repo_path]
-            full_path = os.path.join(wpt_root, repo_path[1:].replace("/", os.path.sep))
+            full_path = os.path.join(tests_root, repo_path[1:].replace("/", os.path.sep))
         nontest_changed_paths.add((full_path, repo_path))
 
     interfaces_changed_names = [os.path.splitext(os.path.basename(interface))[0]
@@ -296,10 +304,10 @@ def affected_testfiles(files_changed: Iterable[Text],
                         return True
         return False
 
-    for root, dirs, fnames in os.walk(wpt_root):
+    for root, dirs, fnames in os.walk(tests_root):
         # Walk top_level_subdir looking for test files containing either the
         # relative filepath or absolute filepath to the changed files.
-        if root == wpt_root:
+        if root == tests_root:
             for dir_name in skip_dirs:
                 dirs.remove(dir_name)
         for fname in fnames:
@@ -364,47 +372,52 @@ def get_parser_affected() -> argparse.ArgumentParser:
 def get_revish(**kwargs: Any) -> Text:
     revish = kwargs.get("revish")
     if revish is None:
-        revish = "%s..HEAD" % branch_point()
+        revish = "%s..HEAD" % branch_point(kwargs.get("tests_root", wpt_root))
     return revish.strip()
 
 
 def run_changed_files(**kwargs: Any) -> None:
+    tests_root = kwargs["tests_root"]
     revish = get_revish(**kwargs)
     changed, _ = files_changed(revish,
                                kwargs["ignore_rule"],
                                include_uncommitted=kwargs["modified"],
-                               include_new=kwargs["new"])
+                               include_new=kwargs["new"],
+                               tests_root=tests_root)
 
     separator = "\0" if kwargs["null"] else "\n"
 
     for item in sorted(changed):
-        line = os.path.relpath(item, wpt_root) + separator
+        line = os.path.relpath(item, tests_root) + separator
         sys.stdout.write(line)
 
 
 def run_tests_affected(**kwargs: Any) -> None:
+    tests_root = kwargs["tests_root"]
     revish = get_revish(**kwargs)
     changed, _ = files_changed(revish,
                                kwargs["ignore_rule"],
                                include_uncommitted=kwargs["modified"],
-                               include_new=kwargs["new"])
+                               include_new=kwargs["new"],
+                               tests_root=tests_root)
     manifest_path = os.path.join(kwargs["metadata_root"], "MANIFEST.json")
     tests_changed, dependents = affected_testfiles(
         changed,
         {"conformance-checkers", "docs", "tools"},
-        manifest_path=manifest_path
+        manifest_path=manifest_path,
+        tests_root=tests_root,
     )
 
     message = "{path}"
     if kwargs["show_type"]:
-        wpt_manifest = load_manifest(manifest_path)
+        wpt_manifest = load_manifest(manifest_path, tests_root=tests_root)
         message = "{path}\t{item_type}"
 
     message += "\0" if kwargs["null"] else "\n"
 
     for item in sorted(tests_changed | dependents):
         results = {
-            "path": os.path.relpath(item, wpt_root)
+            "path": os.path.relpath(item, tests_root)
         }
         if kwargs["show_type"]:
             item_types = {i.item_type for i in wpt_manifest.iterpath(results["path"])}

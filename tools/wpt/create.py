@@ -42,6 +42,7 @@ def get_parser():
                    help="Create a mismatch reftest")
     p.add_argument("--wait", action="store_true",
                    help="Create a reftest that waits until takeScreenshot() is called")
+    # TODO(web-platform-tests/wpt#53939): Deprecate in favor of `wpt --tests-root`.
     p.add_argument("--tests-root", default=os.path.join(here, "..", ".."),
                    help="Path to the root of the wpt directory")
     p.add_argument("path", help="Path to the test file")

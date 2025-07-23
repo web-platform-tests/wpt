@@ -947,12 +947,14 @@ def setup_wptrunner(venv, **kwargs):
     affected_revish = kwargs.get("affected")
     if affected_revish is not None:
         files_changed, _ = testfiles.files_changed(
-            affected_revish, include_uncommitted=True, include_new=True)
+            affected_revish, include_uncommitted=True, include_new=True,
+            tests_root=kwargs["tests_root"])
         # TODO: Perhaps use wptrunner.testloader.ManifestLoader here
         # and remove the manifest-related code from testfiles.
         # https://github.com/web-platform-tests/wpt/issues/14421
         tests_changed, tests_affected = testfiles.affected_testfiles(
-            files_changed, manifest_path=kwargs.get("manifest_path"), manifest_update=kwargs["manifest_update"])
+            files_changed, manifest_path=kwargs.get("manifest_path"),
+            manifest_update=kwargs["manifest_update"], tests_root=kwargs["tests_root"])
         test_list = tests_changed | tests_affected
         logger.info("Identified %s affected tests" % len(test_list))
         test_list = [os.path.relpath(item, wpt_root) for item in test_list]

@@ -71,6 +71,7 @@ def create_parser() -> argparse.ArgumentParser:
         help="Turn on verbose logging")
     parser.add_argument(
         "-p", "--path", type=abs_path, help="Path to manifest file.")
+    # TODO(web-platform-tests/wpt#53939): Deprecate in favor of `wpt --tests-root`.
     parser.add_argument(
         "--tests-root", type=abs_path, default=wpt_root, help="Path to root of tests.")
     parser.add_argument(

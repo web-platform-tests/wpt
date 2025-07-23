@@ -31,7 +31,7 @@ wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 logger = logging.getLogger()
 
 
-def display_branch_point() -> None:
+def display_branch_point(**kwargs: Any) -> None:
     print(branch_point())
 
 

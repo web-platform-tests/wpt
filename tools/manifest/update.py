@@ -72,8 +72,6 @@ def create_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-p", "--path", type=abs_path, help="Path to manifest file.")
     parser.add_argument(
-        "--tests-root", type=abs_path, default=wpt_root, help="Path to root of tests.")
-    parser.add_argument(
         "-r", "--rebuild", action="store_true",
         help="Force a full rebuild of the manifest.")
     parser.add_argument(

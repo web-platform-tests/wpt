@@ -3,8 +3,6 @@
 import subprocess
 import os
 
-here = os.path.dirname(__file__)
-
 template_prefix = """<!doctype html>
 %(documentElement)s<meta charset=utf-8>
 """
@@ -42,8 +40,6 @@ def get_parser():
                    help="Create a mismatch reftest")
     p.add_argument("--wait", action="store_true",
                    help="Create a reftest that waits until takeScreenshot() is called")
-    p.add_argument("--tests-root", default=os.path.join(here, "..", ".."),
-                   help="Path to the root of the wpt directory")
     p.add_argument("path", help="Path to the test file")
     return p
 

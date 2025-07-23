@@ -39,6 +39,7 @@ from .protocol import (BaseProtocolPart,
                        VirtualSensorProtocolPart,
                        BidiBluetoothProtocolPart,
                        BidiBrowsingContextProtocolPart,
+                       BidiEmulationProtocolPart,
                        BidiEventsProtocolPart,
                        BidiPermissionsProtocolPart,
                        BidiScriptProtocolPart,
@@ -46,9 +47,10 @@ from .protocol import (BaseProtocolPart,
                        StorageProtocolPart,
                        VirtualPressureSourceProtocolPart,
                        ProtectedAudienceProtocolPart,
+                       DisplayFeaturesProtocolPart,
                        merge_dicts)
 
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Dict, Optional, Tuple
 from webdriver.client import Session
 from webdriver import error as webdriver_error
 from webdriver.bidi import error as webdriver_bidi_error
@@ -139,10 +141,14 @@ class WebDriverBidiBluetoothProtocolPart(BidiBluetoothProtocolPart):
 
     async def simulate_adapter(self,
           context: str,
-          state: str,
-          type_: str) -> None:
+          state: str) -> None:
         await self.webdriver.bidi_session.bluetooth.simulate_adapter(
-            context=context, state=state, type_=type_)
+            context=context, state=state)
+
+    async def disable_simulation(self,
+          context: str) -> None:
+        await self.webdriver.bidi_session.bluetooth.disable_simulation(
+            context=context)
 
     async def simulate_preconnected_peripheral(self,
             context: str,
@@ -157,6 +163,98 @@ class WebDriverBidiBluetoothProtocolPart(BidiBluetoothProtocolPart):
             manufacturer_data=manufacturer_data,
             known_service_uuids=known_service_uuids)
 
+    async def simulate_gatt_connection_response(self,
+            context: str,
+            address: str,
+            code: int) -> None:
+        await self.webdriver.bidi_session.bluetooth.simulate_gatt_connection_response(
+            context=context,
+            address=address,
+            code=code)
+
+    async def simulate_gatt_disconnection(self,
+            context: str,
+            address: str) -> None:
+        await self.webdriver.bidi_session.bluetooth.simulate_gatt_disconnection(
+            context=context,
+            address=address)
+
+    async def simulate_service(self,
+            context: str,
+            address: str,
+            uuid: str,
+            type: str) -> None:
+        await self.webdriver.bidi_session.bluetooth.simulate_service(
+            context=context,
+            address=address,
+            uuid=uuid,
+            type=type)
+
+    async def simulate_characteristic(self,
+            context: str,
+            address: str,
+            service_uuid: str,
+            characteristic_uuid: str,
+            characteristic_properties: Dict[str, bool],
+            type: str) -> None:
+        await self.webdriver.bidi_session.bluetooth.simulate_characteristic(
+            context=context,
+            address=address,
+            service_uuid=service_uuid,
+            characteristic_uuid=characteristic_uuid,
+            characteristic_properties=characteristic_properties,
+            type=type)
+
+    async def simulate_characteristic_response(self,
+            context: str,
+            address: str,
+            service_uuid: str,
+            characteristic_uuid: str,
+            type: str,
+            code: int,
+            data: List[int]) -> None:
+        await self.webdriver.bidi_session.bluetooth.simulate_characteristic_response(
+            context=context,
+            address=address,
+            service_uuid=service_uuid,
+            characteristic_uuid=characteristic_uuid,
+            type=type,
+            code=code,
+            data=data)
+
+    async def simulate_descriptor(self,
+            context: str,
+            address: str,
+            service_uuid: str,
+            characteristic_uuid: str,
+            descriptor_uuid: str,
+            type: str) -> None:
+        await self.webdriver.bidi_session.bluetooth.simulate_descriptor(
+            context=context,
+            address=address,
+            service_uuid=service_uuid,
+            characteristic_uuid=characteristic_uuid,
+            descriptor_uuid=descriptor_uuid,
+            type=type)
+
+    async def simulate_descriptor_response(self,
+            context: str,
+            address: str,
+            service_uuid: str,
+            characteristic_uuid: str,
+            descriptor_uuid: str,
+            type: str,
+            code: int,
+            data: List[int]) -> None:
+        await self.webdriver.bidi_session.bluetooth.simulate_descriptor_response(
+            context=context,
+            address=address,
+            service_uuid=service_uuid,
+            characteristic_uuid=characteristic_uuid,
+            descriptor_uuid=descriptor_uuid,
+            type=type,
+            code=code,
+            data=data)
 
 class WebDriverBidiBrowsingContextProtocolPart(BidiBrowsingContextProtocolPart):
     def __init__(self, parent):
@@ -225,6 +323,11 @@ class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
         self._subscriptions.append((events, top_contexts))
         return result
 
+    async def unsubscribe(self, subscriptions):
+        self.logger.info("Unsubscribing from subscriptions %s" % subscriptions)
+        await self.webdriver.bidi_session.session.unsubscribe(
+            subscriptions=subscriptions)
+
     async def unsubscribe_all(self):
         self.logger.info("Unsubscribing from all the events")
         while self._subscriptions:
@@ -235,6 +338,12 @@ class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
             except webdriver_bidi_error.NoSuchFrameException:
                 # The browsing context is already removed. Nothing to do.
                 pass
+            except webdriver_bidi_error.InvalidArgumentException as e:
+                if e.message == "No subscription found":
+                    # The subscription is already removed, nothing to do.
+                    pass
+                else:
+                    raise e
             except Exception as e:
                 self.logger.error("Failed to unsubscribe from events %s in %s: %s" % (events, contexts, e))
                 # Re-raise the exception to identify regressions.
@@ -260,6 +369,28 @@ class WebDriverBidiScriptProtocolPart(BidiScriptProtocolPart):
             arguments=arguments,
             target=target,
             await_promise=True)
+
+
+class WebDriverBidiEmulationProtocolPart(BidiEmulationProtocolPart):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.webdriver = None
+
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    async def set_geolocation_override(self, coordinates, error, contexts):
+        return await self.webdriver.bidi_session.emulation.set_geolocation_override(
+            coordinates=coordinates, error=error, contexts=contexts)
+
+    async def set_locale_override(self, locale, contexts):
+        return await self.webdriver.bidi_session.emulation.set_locale_override(
+            locale=locale, contexts=contexts)
+
+    async def set_screen_orientation_override(self, screen_orientation,
+            contexts):
+        return await self.webdriver.bidi_session.emulation.set_screen_orientation_override(
+            screen_orientation=screen_orientation, contexts=contexts)
 
 
 class WebDriverBidiPermissionsProtocolPart(BidiPermissionsProtocolPart):
@@ -390,7 +521,7 @@ class WebDriverClickProtocolPart(ClickProtocolPart):
         self.webdriver = self.parent.webdriver
 
     def element(self, element):
-        self.logger.info("click " + repr(element))
+        self.logger.debug("click " + repr(element))
         return element.click()
 
 
@@ -399,15 +530,15 @@ class WebDriverCookiesProtocolPart(CookiesProtocolPart):
         self.webdriver = self.parent.webdriver
 
     def delete_all_cookies(self):
-        self.logger.info("Deleting all cookies")
+        self.logger.debug("Deleting all cookies")
         return self.webdriver.send_session_command("DELETE", "cookie")
 
     def get_all_cookies(self):
-        self.logger.info("Getting all cookies")
+        self.logger.debug("Getting all cookies")
         return self.webdriver.send_session_command("GET", "cookie")
 
     def get_named_cookie(self, name):
-        self.logger.info("Getting cookie named %s" % name)
+        self.logger.debug("Getting cookie named %s" % name)
         try:
             return self.webdriver.send_session_command("GET", "cookie/%s" % name)
         except webdriver_error.NoSuchCookieException:
@@ -419,15 +550,15 @@ class WebDriverWindowProtocolPart(WindowProtocolPart):
         self.webdriver = self.parent.webdriver
 
     def minimize(self):
-        self.logger.info("Minimizing")
+        self.logger.debug("Minimizing")
         return self.webdriver.window.minimize()
 
     def set_rect(self, rect):
-        self.logger.info("Restoring")
+        self.logger.debug("Restoring")
         self.webdriver.window.rect = rect
 
     def get_rect(self):
-        self.logger.info("Getting rect")
+        self.logger.debug("Getting rect")
         return self.webdriver.window.rect
 
 
@@ -685,8 +816,8 @@ class WebDriverVirtualPressureSourceProtocolPart(VirtualPressureSourceProtocolPa
         body.update(metadata)
         return self.webdriver.send_session_command("POST", "pressuresource", body)
 
-    def update_virtual_pressure_source(self, source_type, sample, estimate):
-        body = {"sample": sample, "estimate": estimate}
+    def update_virtual_pressure_source(self, source_type, sample, own_contribution_estimate):
+        body = {"sample": sample, "own_contribution_estimate": own_contribution_estimate}
         return self.webdriver.send_session_command("POST", "pressuresource/%s" % source_type, body)
 
     def remove_virtual_pressure_source(self, source_type):
@@ -699,6 +830,17 @@ class WebDriverProtectedAudienceProtocolPart(ProtectedAudienceProtocolPart):
     def set_k_anonymity(self, owner, name, hashes):
         body = {"owner": owner, "name": name, "hashes": hashes}
         return self.webdriver.send_session_command("POST", "protected_audience/set_k_anonymity", body)
+
+class WebDriverDisplayFeaturesProtocolPart(DisplayFeaturesProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def set_display_features(self, features):
+        body = {"features": features}
+        return self.webdriver.send_session_command("POST", "displayfeatures", body)
+
+    def clear_display_features(self):
+        return self.webdriver.send_session_command("DELETE", "displayfeatures")
 
 class WebDriverProtocol(Protocol):
     enable_bidi = False
@@ -724,7 +866,8 @@ class WebDriverProtocol(Protocol):
                   WebDriverDevicePostureProtocolPart,
                   WebDriverStorageProtocolPart,
                   WebDriverVirtualPressureSourceProtocolPart,
-                  WebDriverProtectedAudienceProtocolPart]
+                  WebDriverProtectedAudienceProtocolPart,
+                  WebDriverDisplayFeaturesProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)
@@ -797,6 +940,7 @@ class WebDriverBidiProtocol(WebDriverProtocol):
     enable_bidi = True
     implements = [WebDriverBidiBluetoothProtocolPart,
                   WebDriverBidiBrowsingContextProtocolPart,
+                  WebDriverBidiEmulationProtocolPart,
                   WebDriverBidiEventsProtocolPart,
                   WebDriverBidiPermissionsProtocolPart,
                   WebDriverBidiScriptProtocolPart,

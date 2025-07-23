@@ -80,6 +80,10 @@ def cleanup_session(session):
 
         session.window_handle = current_window
 
+    # Do not try to clean up already ended session.
+    if session.session_id is None:
+        return
+
     _restore_timeouts(session)
     _ensure_valid_window(session)
     _dismiss_user_prompts(session)
@@ -292,15 +296,10 @@ def get_origin_from_url(url):
 def wait_for_new_handle(session, handles_before):
     def find_new_handle(session):
         new_handles = list(set(session.handles) - set(handles_before))
-        if new_handles and len(new_handles) == 1:
-            return new_handles[0]
-        return None
+        assert len(new_handles) == 1, "No new window was opened"
+        return new_handles[0]
 
-    wait = Poll(
-        session,
-        timeout=5,
-        message="No new window has been opened")
-
+    wait = Poll(session, timeout=5)
     return wait.until(find_new_handle)
 
 

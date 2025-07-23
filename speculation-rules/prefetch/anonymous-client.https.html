@@ -10,12 +10,11 @@
 
   promise_test(async t => {
     let agent = await spawnWindow(t);
-    let nextUrl = agent.getExecutorURL({ hostname: PREFETCH_PROXY_BYPASS_HOST, page: 2 });
+    let nextUrl = agent.getExecutorURL({ hostname: CROSS_ORIGIN_HOST_THAT_WORKS_WITH_ACIWCO, page: 2 });
     await agent.forceSinglePrefetch(nextUrl, { requires: ["anonymous-client-ip-when-cross-origin"] });
     await agent.navigate(nextUrl);
 
     let requestHeaders = await agent.getRequestHeaders();
-    assert_in_array(requestHeaders.purpose, ["", "prefetch"], "The vendor-specific header Purpose, if present, must be 'prefetch'.");
-    assert_equals(requestHeaders.sec_purpose, "prefetch;anonymous-client-ip");
+    assert_prefetched_anonymous_client_ip(requestHeaders);
   }, "test anonymous-client url prefetch for cross origin pages");
 </script>

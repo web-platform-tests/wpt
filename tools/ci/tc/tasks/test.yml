@@ -4,7 +4,7 @@ components:
     workerType: ci
     schedulerId: taskcluster-github
     deadline: "24 hours"
-    image: ghcr.io/web-platform-tests/wpt:1
+    image: ghcr.io/web-platform-tests/wpt:2
     maxRunTime: 7200
     artifacts:
       public/results:
@@ -256,6 +256,12 @@ tasks:
             - vars:
                 browser: firefox_android
                 channel: nightly
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                browser: firefox_android
+                channel: stable
               use:
                 - trigger-daily
                 - trigger-push

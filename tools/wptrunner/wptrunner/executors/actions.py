@@ -544,6 +544,20 @@ class ClearDisplayFeaturesAction:
     def __call__(self, payload):
         return self.protocol.display_features.clear_display_features()
 
+class TestAccessibilityAPIAction:
+    name = "test_accessibility_api"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        dom_id = payload["dom_id"]
+        test = payload["test"]
+        api = payload["api"]
+        url = payload["url"]
+        return self.protocol.platform_accessibility.test_accessibility_api(dom_id, test, api, url)
+
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -586,4 +600,6 @@ actions = [ClickAction,
            RemoveVirtualPressureSourceAction,
            SetProtectedAudienceKAnonymityAction,
            SetDisplayFeaturesAction,
-           ClearDisplayFeaturesAction]
+           ClearDisplayFeaturesAction,
+           TestAccessibilityAPIAction]
+

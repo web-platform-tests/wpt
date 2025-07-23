@@ -278,6 +278,8 @@ scheme host and port.""")
                               help="Write the stacktrace for exceptions in server handlers")
     config_group.add_argument("--ws-extra", action="append",
                               help="Extra paths containing websockets handlers")
+    config_group.add_argument( "--force-accessibility", action="store_true",
+                              dest="force_accessibility",help="Turn on accessibility.")
 
     build_type = parser.add_mutually_exclusive_group()
     build_type.add_argument("--debug-build", dest="debug", action="store_true",

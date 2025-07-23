@@ -807,7 +807,6 @@ class TestFileData:
                     if subtest_id is None:
                         item_expected = test_expected
                     else:
-                        subtest_id = subtest_id
                         item_expected = test_expected.get_subtest(subtest_id)
 
                     if prop == "status":

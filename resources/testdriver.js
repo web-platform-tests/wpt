@@ -81,6 +81,72 @@
             /**
              * `bluetooth <https://webbluetoothcg.github.io/web-bluetooth>`_ module.
              */
+            /*# RFC N: Add test-only APIs to improve the speculation rules prefetch tests   
+                (*Note: N should be replaced by the PR number*)
+
+                ## Summary
+
+                Add testdriver.js support for the [Prefetch Status Updated command].
+                This will allow tests to subscribe to the `speculation.prefetch_status_updated`
+                event and verify that the prefetch status is updated correctly.
+                [Prefetch Status Updated command]: *https://w3c.github.io/webdriver-bidi/#command-speculation-prefetch-status-updated* (not real yet)
+            */
+            speculation: {
+                prefetch_status_updated: {
+                    /**
+                     * @typedef {object} PrefetchStatusUpdated
+                     * `speculation.PrefetchStatusUpdateParameters <https://w3c.github.io --->
+                     */
+
+                    /**
+                     * Subscribes to the event. Events will be emitted only if
+                     * there is a subscription for the event. This method does
+                     * not add actual listeners. To listen to the event, use the
+                     * `on` or `once` methods. The buffered events will be
+                     * emitted before the command promise is resolved.
+                     *
+                     * @param {object} [params] Parameters for the subscription.
+                     * @param {null|Array.<(Context)>} [params.contexts] The
+                     * optional contexts parameter specifies which browsing
+                     * contexts to subscribe to the event on. It should be
+                     * either an array of Context objects, or null. If null, the
+                     * event will be subscribed to globally. If omitted, the
+                     * event will be subscribed to on the current browsing
+                     * context.
+                     * @returns {Promise<void>} Resolves when the subscription
+                     * is successfully done.
+                     */
+                    subscribe: async function(params = {}) {
+                        assertBidiIsEnabled();
+                        return window.test_driver_internal.bidi.speculation.prefetch_status_updated.subscribe(params);
+                    },
+                    /**
+                     * Adds an event listener for the event.
+                     *
+                     * @param {function(PrefetchStatusUpdate): void} callback The
+                     * callback to be called when the event is emitted. The
+                     * callback is called with the event object as a parameter.
+                     * @returns {function(): void} A function that removes the
+                     * added event listener when called.
+                     */
+                    on: function(callback) {
+                        assertBidiIsEnabled();
+                        return window.test_driver_internal.bidi.speculation.prefetch_status_updated.on(callback);
+                    },
+
+                    once: function() {
+                        assertBidiIsEnabled();
+                        return new Promise(resolve => {
+                            const remove_handler =
+                                window.test_driver_internal.bidi.speculation
+                                    .prefetch_status_updated.on(event => {
+                                    resolve(event);
+                                    remove_handler();
+                                });
+                        });
+                    },
+            },
+        },
             bluetooth: {
                 /**
                  * Handle a bluetooth device prompt with the given params. Matches the

@@ -230,6 +230,23 @@
 
     window.test_driver_internal.in_automation = true;
 
+    window.test_driver_internal.bidi.speculation.prefetch_status_updated.subscribe =
+        function(params) {
+        return subscribe(
+            {params, events: ['speculation.prefetchStatusUpdated']})
+    };
+
+    window.test_driver_internal.bidi.speculation.prefetch_status_updated.on =
+        function(callback) {
+        const on_event = (event) => {
+            callback(event.payload);
+        };
+        event_target.addEventListener(
+            'speculation.prefetchStatusUpdated', on_event);
+        return () => event_target.removeEventListener(
+                    'speculation.prefetchStatusUpdated', on_event);
+    };
+
     window.test_driver_internal.bidi.bluetooth.handle_request_device_prompt =
         function(params) {
         return create_action('bidi.bluetooth.handle_request_device_prompt', {

@@ -22,9 +22,9 @@
 <!-- various role capitalization styles and their fallbacks -->
 <!-- all of these subtests have data-expectedrole="indeterminate" thus, should fail in order to observe role return values (without specifying what "correct" spec-conformant values should be) -->
 
-<div role="hEaDiNG" aria-level="2" data-testname="div[role=hEaDiNG]" data-expectedrole="indeterminate" class="ex">x</div>
-<nav role="GROUP" data-testname="nav[role=GROUP]" aria-label="x" data-expectedrole="indeterminate" class="ex">x</nav>
-<button role="Link" data-testname="button[role=Link]" data-expectedrole="indeterminate" class="ex"></button>
+<div role="hEaDiNG" aria-level="2" data-testname="div[role=hEaDiNG], has heading role" data-expectedrole="indeterminate" class="ex">x</div>
+<nav role="GROUP" data-testname="nav[role=GROUP], has group role" aria-label="x" data-expectedrole="indeterminate" class="ex">x</nav>
+<button role="Link" data-testname="button[role=Link], has link role" data-expectedrole="indeterminate" class="ex"></button>
 
 <script>
 

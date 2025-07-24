@@ -11,7 +11,20 @@
 </head>
 <body>
 
-<p>Tests most <a href="https://w3c.github.io/aria/#role_definitions">ARIA role definitions</a>. See comments for more info.</p>
+<h1>Tests most <a href="https://w3c.github.io/aria/#role_definitions">ARIA role definitions</a>. See comments for more info.</h1>
+
+<h2>Testing simple role assignment</h2>
+
+<!-- Tested via AriaUtils.assignAndVerifyRolesByRoleNames() in <script> block below  -->
+
+<h2>Testing role capitalization style</h2>
+
+<!-- various role capitalization styles and their fallbacks -->
+<!-- all of these subtests have data-expectedrole="indeterminate" thus, should fail in order to observe role return values (without specifying what "correct" spec-conformant values should be) -->
+
+<div role="hEaDiNG" aria-level="2" data-testname="div[role=hEaDiNG]" data-expectedrole="indeterminate" class="ex">x</div>
+<nav role="GROUP" data-testname="nav[role=GROUP]" aria-label="x" data-expectedrole="indeterminate" class="ex">x</nav>
+<button role="Link" data-testname="button[role=Link]" data-expectedrole="indeterminate" class="ex"></button>
 
 <script>
 
@@ -134,6 +147,7 @@ AriaUtils.assignAndVerifyRolesByRoleNames([
   // "widget" -> ./abstract-roles.html
   // "window" -> ./abstract-roles.html
 ]);
+AriaUtils.verifyRolesBySelector(".ex");
 
 </script>
 </body>

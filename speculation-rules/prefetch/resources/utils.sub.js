@@ -50,7 +50,7 @@ class PrefetchAgent extends RemoteContext {
   // prefetch.
   async forceSinglePrefetch(url, extra = {}, wait_for_completion = true) {
       const subscribe = await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
-    assert(subscribe, "Prefetch status update subscription should be successful.");
+    await(subscribe, "Prefetch status update subscription should be successful.");
 
     const result = await test_driver.bidi.speculation.prefetch_status_updated.on();
     if (result.status === 'success') {

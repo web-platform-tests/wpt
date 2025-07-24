@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/common/utils.js"></script>
 <script src="../resources/utils.js"></script>
@@ -17,15 +19,53 @@
   // This is split across four test variants due to the test timeouts.
   let { from_protocol, to_protocol } = Object.fromEntries(new URLSearchParams(location.search));
   promise_test(async t => {
-    let agent = await spawnWindow(t, { protocol: from_protocol });
-    let nextUrl = agent.getExecutorURL({ protocol: to_protocol, page: 2 });
-    await agent.forceSinglePrefetch(nextUrl);
-    await agent.navigate(nextUrl);
+    // Subscribe to prefetch status updates
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    
+    // Array to collect all status events
+    const statusEvents = [];
+    
+    // Set up event listener to capture prefetch status updates
+    const removeListener = test_driver.bidi.speculation.prefetch_status_updated.on((event) => {
+      console.log('Prefetch status event received:', event);
+      statusEvents.push(event);
+    });
+    
+    try {
+      let agent = await spawnWindow(t, { protocol: from_protocol });
+      let nextUrl = agent.getExecutorURL({ protocol: to_protocol, page: 2 });
+      
+      console.log(`Starting prefetch for ${nextUrl} from a ${from_protocol} url.`);
+      
+      await agent.forceSinglePrefetch(nextUrl);
+      
+      // Wait a bit for prefetch status events to be processed
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Log prefetch status results
+      console.log(`Total prefetch status events received: ${statusEvents.length}`);
+      if (statusEvents.length > 0) {
+        statusEvents.forEach((event, index) => {
+          console.log(`Event ${index + 1}:`, {
+            url: event.url || 'unknown',
+            status: event.status || 'unknown',
+            initiator: event.initiator || 'unknown'
+          });
+        });
+      } else {
+        console.log('No prefetch status events received');
+      }
+      
+      await agent.navigate(nextUrl);
 
-    if (to_protocol == "https") {
-      assert_prefetched(await agent.getRequestHeaders(), "Prefetch should work for HTTPS urls.");
-    } else {
-      assert_not_prefetched(await agent.getRequestHeaders(), "Prefetch should not work for HTTP urls.");
+      if (to_protocol == "https") {
+        assert_prefetched(await agent.getRequestHeaders(), "Prefetch should work for HTTPS urls.");
+      } else {
+        assert_not_prefetched(await agent.getRequestHeaders(), "Prefetch should not work for HTTP urls.");
+      }
+    } finally {
+      // Clean up the event listener
+      removeListener();
     }
-  }, `test single ${to_protocol} url prefetch from a ${from_protocol} url`);
 </script>
+</html>

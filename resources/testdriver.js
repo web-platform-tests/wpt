@@ -2248,6 +2248,18 @@
         in_automation: false,
 
         bidi: {
+            speculation: {
+                prefetch_status_updated: {
+                    subscribe: function() {
+                        throw new Error(
+                            'bidi.speculation.prefetch_status_updated.subscribe is not implemented by testdriver-vendor.js');
+                    },
+                    on: function() {
+                        throw new Error(
+                            'bidi.speculation.prefetch_status_updated.on is not implemented by testdriver-vendor.js');
+                    }
+                }
+            },
             bluetooth: {
                 handle_request_device_prompt: function() {
                     throw new Error(

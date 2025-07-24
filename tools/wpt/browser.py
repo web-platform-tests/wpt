@@ -1787,7 +1787,7 @@ class Edge(Browser):
 
         try:
             # MojoJS version url must match the browser binary version exactly.
-            url = ("https://msedgedriver.azureedge.net/wpt-mojom/"
+            url = ("https://msedgedriver.microsoft.com/wpt-mojom/"
                    f"{edge_version}/linux64/mojojs.zip")
             # Check the status without downloading the content (this is a
             # streaming request).
@@ -1888,7 +1888,7 @@ class Edge(Browser):
         elif self.platform == "win":
             bits = "win64" if uname[4] == "x86_64" else "win32"
 
-        url = f"https://msedgedriver.azureedge.net/{version}/edgedriver_{bits}.zip"
+        url = f"https://msedgedriver.microsoft.com/{version}/edgedriver_{bits}.zip"
         self.logger.info(f"Downloading MSEdgeDriver from {url}")
         unzip(get(url).raw, dest)
         edgedriver_path = which("msedgedriver", path=dest)

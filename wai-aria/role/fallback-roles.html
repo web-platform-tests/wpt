@@ -52,10 +52,10 @@ button" data-testname="div[role=button] ignoring line break" aria-label="x" data
   <!-- all of these subtests have data-expectedrole="indeterminate" thus, should fail in order to observe role return values (without specifying what "correct" spec-conformant values should be) -->
 
   <div role="foo Link" data-testname="div[role=foo Link] with tabindex=0, illegal role and capitalized fallback role, has Link role" aria-label="x" tabindex="0" data-expectedrole="indeterminate" class="ex">x</div>
-  <button role="foo Link" data-testname="button[role=foo Link] with illegal role and capitalized fallback, has Link role" data-expectedrole="indeterminate" class="ex"></button>
-  <nav role="foo GROUP" data-testname="nav[role=foo GROUP] with illegal role and all upper case fallback, has group role" aria-label="x" data-expectedrole="indeterminate" class="ex">x</nav>
-  <div role="foo ReGiOn" data-testname="div[role=foo ReGiOn] with illegal role and alternating case fallback, has region role" aria-label="x" data-expectedrole="indeterminate" class="ex">x</div>
-  <div role="ReGiOn foo" data-testname="div[role=ReGiOn foo] with alternating case role and illegal fallback without accname, has generic role" class="ex-generic">x</div>
+  <button role="foo Link" data-testname="button[role=foo Link] with illegal role and capitalized fallback role, has Link role" data-expectedrole="indeterminate" class="ex"></button>
+  <nav role="foo GROUP" data-testname="nav[role=foo GROUP] with illegal role and all upper case fallback role, has group role" aria-label="x" data-expectedrole="indeterminate" class="ex">x</nav>
+  <div role="foo ReGiOn" data-testname="div[role=foo ReGiOn] with illegal role and alternating case fallback role, has region role" aria-label="x" data-expectedrole="indeterminate" class="ex">x</div>
+  <div role="ReGiOn foo" data-testname="div[role=ReGiOn foo] with alternating case role and illegal fallback role without accname, has generic role" class="ex-generic">x</div>
   <div role="ReGiOn foo" data-testname="div[role=ReGiOn foo,aria-label] with alternating case role and illegal fallback role, has region role" aria-label="x" data-expectedrole="indeterminate" class="ex">x</div>
 
   <div role="BUTTON LINK" data-testname="div[role=BUTTON LINK] with tabindex=0" aria-label="x" tabindex="0" data-expectedrole="indeterminate" class="ex">x</div>

@@ -37,10 +37,11 @@
 failIfNot(document.startViewTransition, "Missing document.startViewTransition");
 
 function runTransition() {
-  let t = document.startViewTransition();
+  let t = document.startViewTransition(() => {
+    container.classList.add("fragment")
+  });
   t.ready.then(() => {
     requestAnimationFrame(() => {
-      container.classList.add("fragment")
       requestAnimationFrame(takeScreenshot);
     });
   });

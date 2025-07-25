@@ -36,8 +36,15 @@ def test_no_browsing_context(session, closed_frame, mouse_chain):
 def test_pointer_down_closes_browsing_context(
     session, configuration, http_new_tab, inline, mouse_chain
 ):
-    session.url = inline(
-        """<input onpointerdown="window.close()">close</input>""")
+    url = inline("""<input onpointerdown="window.close()">close</input>""")
+
+    # Open a new window.
+    new_window = session.execute_script(f"return window.open('{url}')")
+
+    # Switch to the new window.
+    session.window_handle = new_window.id
+
+    # Get the input element.
     origin = session.find.css("input", all=False)
 
     with pytest.raises(NoSuchWindowException):

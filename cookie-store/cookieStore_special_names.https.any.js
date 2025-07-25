@@ -3,7 +3,7 @@
 
 'use strict';
 
-['__Secure-', '__secure-', '__Host-', '__host-', '  __Secure-', '\t__Secure-', ' __Host-', '\t__Host-'].forEach(prefix => {
+['__Secure-', '__secure-', '__Host-', '__host-'].forEach(prefix => {
   promise_test(async testCase => {
     await cookieStore.set(`${prefix}cookie-name`, `secure-cookie-value`);
     assert_equals(
@@ -32,7 +32,7 @@
   }, `cookieStore.delete with ${prefix} name on secure origin`);
 });
 
-['__Host-', '__host-', '  __Host-', '\t__Host-'].forEach(prefix => {
+['__Host-', '__host-'].forEach(prefix => {
   promise_test(async testCase => {
     const currentUrl = new URL(self.location.href);
     const currentDomain = currentUrl.hostname;

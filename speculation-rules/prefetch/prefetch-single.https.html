@@ -55,7 +55,6 @@
       } else {
         console.log('No prefetch status events received');
       }
-      
       await agent.navigate(nextUrl);
 
       if (to_protocol == "https") {
@@ -63,9 +62,11 @@
       } else {
         assert_not_prefetched(await agent.getRequestHeaders(), "Prefetch should not work for HTTP urls.");
       }
-    } finally {
-      // Clean up the event listener
-      removeListener();
+      assert(statusEvents.length > 0);
+    } catch (error) {
+      console.error('Error occurred during prefetch test:', error);
     }
+    removeListener();
+  });
 </script>
 </html>

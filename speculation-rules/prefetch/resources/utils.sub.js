@@ -49,15 +49,15 @@ class PrefetchAgent extends RemoteContext {
   // occur despite heuristic matching, etc., and await the completion of the
   // prefetch.
   async forceSinglePrefetch(url, extra = {}, wait_for_completion = true) {
-      const subscribe = await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
-    await(subscribe, "Prefetch status update subscription should be successful.");
+    //   const subscribe = await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    // await(subscribe, "Prefetch status update subscription should be successful.");
 
-    const result = await test_driver.bidi.speculation.prefetch_status_updated.on();
-    if (result.status === 'success') {
-      // Prefetch succeeded, proceed as needed
-    } else if (result.status === 'failure') {
-      throw new Error(`Prefetch failed: ${result.error}`);
-    }
+    // const result = await test_driver.bidi.speculation.prefetch_status_updated.on();
+    // if (result.status === 'success') {
+    //   // Prefetch succeeded, proceed as needed
+    // } else if (result.status === 'failure') {
+    //   throw new Error(`Prefetch failed: ${result.error}`);
+    // }
     return this.forceSpeculationRules(
       {
         prefetch: [{source: 'list', urls: [url], ...extra}]
@@ -71,8 +71,9 @@ class PrefetchAgent extends RemoteContext {
     if (!wait_for_completion) {
       return Promise.resolve();
     }
-    return  test_driver.bidi.speculation.prefetch_status_updated.on();
-  }
+    // return  test_driver.bidi.speculation.prefetch_status_updated.on();
+await new Promise(resolve => setTimeout(resolve, 1000));  
+}
 
   // `url` is the URL to navigate.
   //

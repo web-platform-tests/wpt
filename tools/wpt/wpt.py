@@ -76,6 +76,10 @@ def parse_args(argv, commands=load_commands()):
                         help="Whether to use the virtualenv as-is. Must set --venv as well")
     parser.add_argument("--debug", action="store_true",
                         help="Run the debugger in case of an exception")
+    parser.add_argument("--tests-root",
+                        default=wpt_root,
+                        type=abs_path,
+                        help="Path to root directory containing test files")
     subparsers = parser.add_subparsers(dest="command")
     for command, props in commands.items():
         subparsers.add_parser(command, help=props["help"], add_help=False)
@@ -87,6 +91,10 @@ def parse_args(argv, commands=load_commands()):
     args, extra = parser.parse_known_args(argv)
 
     return args, extra
+
+
+def abs_path(path):
+    return os.path.abspath(os.path.expanduser(path))
 
 
 def import_command(prog, command, props):
@@ -220,6 +228,9 @@ def main(prog=None, argv=None):
     else:
         extras = ()
         kwargs = {}
+
+    if kwargs.get("tests_root") is None:
+        kwargs["tests_root"] = main_args.tests_root
 
     if venv is not None:
         if not main_args.skip_venv_setup:

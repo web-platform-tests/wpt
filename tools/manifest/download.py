@@ -18,9 +18,6 @@ from .utils import git
 from . import log
 
 
-here = os.path.dirname(__file__)
-
-wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 logger = log.get_logger()
 
 
@@ -169,8 +166,6 @@ def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-p", "--path", type=abs_path, help="Path to manifest file.")
-    parser.add_argument(
-        "--tests-root", type=abs_path, default=wpt_root, help="Path to root of tests.")
     parser.add_argument(
         "--force", action="store_true",
         help="Always download, even if the existing manifest is recent")

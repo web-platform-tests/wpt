@@ -23,8 +23,6 @@ def create_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--src-root", type=abs_path, help="Path to root of sourcetree.")
     parser.add_argument(
-        "--tests-root", type=abs_path, default=wpt_root, help="Path to root of tests.")
-    parser.add_argument(
         "--no-update", dest="update", action="store_false",
         help="Don't update manifest before continuing")
     parser.add_argument(

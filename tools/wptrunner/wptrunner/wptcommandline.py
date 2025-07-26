@@ -241,8 +241,8 @@ scheme host and port.""")
                               help="Extra argument for the WebDriver binary")
     config_group.add_argument("--metadata", type=abs_path, dest="metadata_root",
                               help="Path to root directory containing test metadata")
-    config_group.add_argument("--tests", type=abs_path, dest="tests_root",
-                              help="Path to root directory containing test files")
+    # TODO(web-platform-tests/wpt#53939): Deprecated in favor of `wpt --tests-root`.
+    config_group.add_argument("--tests", type=abs_path, dest="tests_root", help=argparse.SUPPRESS)
     config_group.add_argument("--manifest", type=abs_path, dest="manifest_path",
                               help="Path to test manifest (default is ${metadata_root}/MANIFEST.json)")
     config_group.add_argument("--run-info", type=abs_path,
@@ -731,8 +731,8 @@ def create_parser_metadata_update(product_choices=None):
     parser.add_argument("--config", type=abs_path, help="Path to config file")
     parser.add_argument("--metadata", type=abs_path, dest="metadata_root",
                         help="Path to the folder containing test metadata")
-    parser.add_argument("--tests", type=abs_path, dest="tests_root",
-                        help="Path to web-platform-tests")
+    # TODO(web-platform-tests/wpt#53939): Deprecated in favor of `wpt --tests-root`.
+    parser.add_argument("--tests", type=abs_path, dest="tests_root", help=argparse.SUPPRESS)
     parser.add_argument("--manifest", type=abs_path, dest="manifest_path",
                         help="Path to test manifest (default is ${metadata_root}/MANIFEST.json)")
     parser.add_argument("--full", action="store_true",

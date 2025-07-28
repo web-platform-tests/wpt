@@ -8,26 +8,47 @@
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
 
-<meta name="variant" content="?status=200&should_prefetch=true">
-<meta name="variant" content="?status=250&should_prefetch=true">
-<meta name="variant" content="?status=299&should_prefetch=true">
-<meta name="variant" content="?status=400&should_prefetch=false">
-<meta name="variant" content="?status=500&should_prefetch=false">
 
 <script>
   setup(() => assertSpeculationRulesIsSupported());
-
-  // This is split across four test variants due to the test timeouts.
-  let { status, should_prefetch } = Object.fromEntries(new URLSearchParams(location.search));
+  
   promise_test(async t => {
-    let agent = await spawnWindow(t);
-    let nextUrl = agent.getExecutorURL({ page: 2, pipe: `status(${status})` });
-    await agent.forceSinglePrefetch(nextUrl);
-    await agent.navigate(nextUrl);
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    
+    let Got_statuses;
+    const Got_statuses_promise = new Promise((resolve) => {
+      Got_statuses = { resolve };
+    });
+    
+    const eventStatus = [];
 
-    if (should_prefetch == 'true')
-      assert_prefetched(await agent.getRequestHeaders(), `Prefetch should work for request status:${status}.`);
-    else
-      assert_not_prefetched(await agent.getRequestHeaders(), `Prefetch should not work for request statue:${status}.`);
-  }, "Check that only prefetched requests with status in 200-299 range are used.");
+    let agent = await spawnWindow(t, { protocol: "https" });
+    let nextUrl = agent.getExecutorURL({ protocol: "https", page: 2 });
+
+    const removeHandler = test_driver.bidi.speculation.prefetch_status_updated.on(async (event) => {
+      console.log('I GOT AN EVENT', event);
+      eventStatus.push(event.status); // Push just the status, not the whole event
+      
+      if (event.status === "running") {
+        console.log("Prefetch is running");
+      } else if (event.status === "ready") {
+        console.log("Prefetch is ready");
+        await agent.navigate(nextUrl);
+      } else if (event.status === "success") {
+        console.log("Prefetch succeeded");
+        assert_equals(eventStatus.length, 3, "Should have received 3 status events");
+        assert_array_equals(eventStatus, ["running", "ready", "success"], "Should receive statuses in correct order");
+        
+        const headers = await agent.getRequestHeaders();
+        assert_prefetched(headers, "Prefetch should work for HTTPS urls.");
+        
+        removeHandler();
+        Got_statuses.resolve();
+      }
+    });
+    
+    await agent.forceSinglePrefetch(nextUrl, {}, true);
+    await Got_statuses_promise;
+  }, "Prefetch status updates should be received");
 </script>
+</html>

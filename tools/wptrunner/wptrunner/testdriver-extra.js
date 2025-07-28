@@ -217,6 +217,11 @@
             contexts: [window],
             ...params
         });
+    const subscribe_global = async function (params) {
+        const action_result = await create_action("bidi.session.subscribe", {
+            // Default to subscribing to the window's events.
+            ...params
+        });
         const subscription_id = action_result["subscription"];
 
         return async ()=>{
@@ -232,7 +237,7 @@
 
     window.test_driver_internal.bidi.speculation.prefetch_status_updated.subscribe =
         function(params) {
-        return subscribe(
+        return subscribe_global(
             {params, events: ['speculation.prefetchStatusUpdated']})
     };
 

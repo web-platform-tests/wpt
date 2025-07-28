@@ -144,9 +144,9 @@
                                     remove_handler();
                                 });
                         });
-                    },
+                    }
+                }
             },
-        },
             bluetooth: {
                 /**
                  * Handle a bluetooth device prompt with the given params. Matches the
@@ -2258,7 +2258,7 @@
                         throw new Error(
                             'bidi.speculation.prefetch_status_updated.on is not implemented by testdriver-vendor.js');
                     }
-                }
+                },
             },
             bluetooth: {
                 handle_request_device_prompt: function() {

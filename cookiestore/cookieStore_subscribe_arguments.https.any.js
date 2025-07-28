@@ -8,7 +8,7 @@ promise_test(async testCase => {
   if (self.GLOBAL.isWindow()) {
     const registration = await service_worker_unregister_and_register(
         testCase, 'resources/empty_sw.js',
-        '/cookie-store/resources/does/not/exist');
+        '/cookiestore/resources/does/not/exist');
     testCase.add_cleanup(() => registration.unregister());
 
     // Must wait for the service worker to enter the 'activated' state before
@@ -41,7 +41,7 @@ promise_test(async testCase => {
   if (self.GLOBAL.isWindow()) {
     const registration = await service_worker_unregister_and_register(
         testCase, 'resources/empty_sw.js',
-        '/cookie-store/resources/does/not/exist');
+        '/cookiestore/resources/does/not/exist');
     testCase.add_cleanup(() => registration.unregister());
 
     // Must wait for the service worker to enter the 'activated' state before
@@ -66,7 +66,7 @@ promise_test(async testCase => {
   if (self.GLOBAL.isWindow()) {
     const registration = await service_worker_unregister_and_register(
         testCase, 'resources/empty_sw.js',
-        '/cookie-store/resources/does/not/exist');
+        '/cookiestore/resources/does/not/exist');
     testCase.add_cleanup(() => registration.unregister());
 
     // Must wait for the service worker to enter the 'activated' state before
@@ -103,7 +103,7 @@ promise_test(async testCase => {
   if (self.GLOBAL.isWindow()) {
     const registration = await service_worker_unregister_and_register(
         testCase, 'resources/empty_sw.js',
-        '/cookie-store/resources/does/not/exist');
+        '/cookiestore/resources/does/not/exist');
     testCase.add_cleanup(() => registration.unregister());
 
     // Must wait for the service worker to enter the 'activated' state before

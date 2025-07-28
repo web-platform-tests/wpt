@@ -2383,8 +2383,7 @@
                 VersionError: 0,
                 OperationError: 0,
                 NotAllowedError: 0,
-                OptOutError: 0,
-                QuotaExceededError: 0
+                OptOutError: 0
             };
 
             var code_name_map = {};
@@ -2400,7 +2399,11 @@
             if (typeof type === "number") {
                 if (type === 0) {
                     throw new AssertionError('Test bug: ambiguous DOMException code 0 passed to assert_throws_dom()');
-                } else if (!(type in code_name_map)) {
+                }
+                if (type === 22) {
+                    throw new AssertionError('Test bug: QuotaExceededError needs to be tested for using assert_throws_quotaexceedederror()');
+                }
+                if (!(type in code_name_map)) {
                     throw new AssertionError('Test bug: unrecognized DOMException code "' + type + '" passed to assert_throws_dom()');
                 }
                 name = code_name_map[type];
@@ -2534,7 +2537,7 @@
                    {quota});
 
             const required_props = {
-                code: 0,
+                code: 22,
                 name: "QuotaExceededError"
             };
             if (typeof requested !== "function") {

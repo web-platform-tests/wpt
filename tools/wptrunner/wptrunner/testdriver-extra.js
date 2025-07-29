@@ -233,7 +233,7 @@
                 ...params
             });
     };
-    window.test_driver.in_automation = true;
+    // window.test_driver.in_automation = true;
 
     window.test_driver_internal.bidi.speculation.prefetch_status_updated.subscribe = function(params = {}) {
     return subscribe_global({

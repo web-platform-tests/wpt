@@ -17,7 +17,7 @@ promise_test(async testCase => {
   let scope;
 
   if (self.GLOBAL.isWindow()) {
-    scope = '/cookie-store/resources/does/not/exist';
+    scope = '/cookiestore/resources/does/not/exist';
 
     const registration = await service_worker_unregister_and_register(
         testCase, 'resources/empty_sw.js', scope);
@@ -29,7 +29,7 @@ promise_test(async testCase => {
 
     self.registration = registration;
   } else {
-    scope = '/cookie-store/does/not/exist';
+    scope = '/cookiestore/does/not/exist';
 
     // Must wait for the service worker to enter the 'activated' state before
     // subscribing to cookiechange events.

@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset='utf-8'>
 <title>Async Cookies: cookieStore basic API across origins</title>
-<link rel='help' href='https://github.com/WICG/cookie-store'>
+<link rel='help' href='https://cookiestore.spec.whatwg.org/'>
 <link rel='author' href='jarrydg@chromium.org' title='Jarryd Goodman'>
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
@@ -11,7 +11,7 @@
 <script>
 'use strict';
 
-const kPath = '/cookie-store/resources/helper_iframe.sub.html';
+const kPath = '/cookiestore/resources/helper_iframe.sub.html';
 const kCorsBase = `https://{{domains[www1]}}:{{ports[https][0]}}`;
 const kCorsUrl = `${kCorsBase}${kPath}`;
 

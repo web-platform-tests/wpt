@@ -217,11 +217,6 @@
             contexts: [window],
             ...params
         });
-    const subscribe_global = async function (params) {
-        const action_result = await create_action("bidi.session.subscribe", {
-            // Default to subscribing to the window's events.
-            ...params
-        });
         const subscription_id = action_result["subscription"];
 
         return async ()=>{
@@ -232,18 +227,33 @@
             });
         }
     };
-
+    const subscribe_global = function (params) {
+            return create_action("bidi.session.subscribe", {
+                // Don't limit context to window.
+                // Useful for prefetch events
+                //contexts: [window],
+                ...params
+            });
+        console.log("subscribing_global in testdriver-extra :p", params);
+    };
     window.test_driver_internal.in_automation = true;
 
     window.test_driver_internal.bidi.speculation.prefetch_status_updated.subscribe =
         function(params) {
         return subscribe_global(
             {params, events: ['speculation.prefetchStatusUpdated']})
+            .then(() => {
+                console.log("Testdriver-extra: Successfully subscribed to prefetch_status_updated");
+            })
+            .catch((error) => {
+                console.error("Testdriver-extra: Failed to subscribe to prefetch_status_updated", error);
+            });
     };
 
     window.test_driver_internal.bidi.speculation.prefetch_status_updated.on =
         function(callback) {
         const on_event = (event) => {
+            console.log("Testdriver extra: prefetch_status_updated event received");
             callback(event.payload);
         };
         event_target.addEventListener(
@@ -679,4 +689,4 @@
     window.test_driver_internal.clear_display_features = function(context=null) {
         return create_context_action("clear_display_features", context, {});
     }
-})();
+});

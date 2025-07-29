@@ -62,10 +62,7 @@ body > * {
             elem.style = d + ';' + o + ';' + p + ';'
             elem.className = c;
             let option = document.createElement("option");
-            option.append(document.createTextNode("FAIL"));
-            elem.append(option);
-            option = document.createElement("option");
-            option.append(document.createTextNode("FAIL"));
+            option.append(document.createTextNode("PASS"));
             elem.append(option);
             body.append(elem);
           }

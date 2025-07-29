@@ -56,7 +56,8 @@ body > * {
             let elem = document.createElement(t);
             elem.style = d + ';' + o + ';' + p + ';'
             elem.className = c;
-            let option = document.createElement("option"); // need an empty option to get same line-height
+            let option = document.createElement("option");
+            option.append(document.createTextNode("PASS"));
             elem.append(option);
             body.append(elem);
           }

@@ -733,7 +733,7 @@
                      */
                     subscribe: async function(params = {}) {
                         assertBidiIsEnabled();
-                        return window.test_driver_internal.bidi.bluetooth
+                        return window.test_driver.bidi.bluetooth
                             .characteristic_event_generated.subscribe(params);
                     },
                     /**
@@ -747,7 +747,7 @@
                      */
                     on: function(callback) {
                         assertBidiIsEnabled();
-                        return window.test_driver_internal.bidi.bluetooth
+                        return window.test_driver.bidi.bluetooth
                             .characteristic_event_generated.on(callback);
                     },
                     /**
@@ -2250,18 +2250,18 @@
         in_automation: false,
 
         bidi: {
-            speculation: {
-                prefetch_status_updated: {
-                    subscribe: function() {
-                        throw new Error(
-                            'bidi.speculation.prefetch_status_updated.subscribe is not implemented by testdriver-vendor.js');
-                    },
-                    on: function() {
-                        throw new Error(
-                            'bidi.speculation.prefetch_status_updated.on is not implemented by testdriver-vendor.js');
-                    }
-                },
-            },
+            // speculation: {
+            //     // prefetch_status_updated: {
+            //     //     subscribe: function() {
+            //     //         throw new Error(
+            //     //             'bidi.speculation.prefetch_status_updated.subscribe is not implemented by testdriver-vendor.js');
+            //     //     },
+            //     //     on: function() {
+            //     //         throw new Error(
+            //     //             'bidi.speculation.prefetch_status_updated.on is not implemented by testdriver-vendor.js');
+            //     //     }
+            //     // },
+            // },
             bluetooth: {
                 handle_request_device_prompt: function() {
                     throw new Error(

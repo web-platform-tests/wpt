@@ -228,28 +228,19 @@
         }
     };
     const subscribe_global = function (params) {
+            console.log("subscribing_global in testdriver-extra :p", params);
             return create_action("bidi.session.subscribe", {
-                // Don't limit context to window.
-                // Useful for prefetch events
-                //contexts: [window],
                 ...params
             });
-        console.log("subscribing_global in testdriver-extra :p", params);
     };
-    window.test_driver_internal.in_automation = true;
+    window.test_driver.in_automation = true;
 
-    window.test_driver_internal.bidi.speculation.prefetch_status_updated.subscribe =
-        function(params) {
-        return subscribe_global(
-            {params, events: ['speculation.prefetchStatusUpdated']})
-            .then(() => {
-                console.log("Testdriver-extra: Successfully subscribed to prefetch_status_updated");
-            })
-            .catch((error) => {
-                console.error("Testdriver-extra: Failed to subscribe to prefetch_status_updated", error);
-            });
-    };
-
+    window.test_driver_internal.bidi.speculation.prefetch_status_updated.subscribe = function(params = {}) {
+    return subscribe_global({
+        ...params,
+        events: ['speculation.prefetchStatusUpdated']
+    });
+};
     window.test_driver_internal.bidi.speculation.prefetch_status_updated.on =
         function(callback) {
         const on_event = (event) => {
@@ -259,7 +250,7 @@
         event_target.addEventListener(
             'speculation.prefetchStatusUpdated', on_event);
         return () => event_target.removeEventListener(
-                    'speculation.prefetchStatusUpdated', on_event);
+                        'speculation.prefetchStatusUpdated', on_event);
     };
 
     window.test_driver_internal.bidi.bluetooth.handle_request_device_prompt =

@@ -3,7 +3,7 @@
 
 'use strict';
 
-const kScope = '/cookie-store/does/not/exist';
+const kScope = '/cookiestore/does/not/exist';
 
 // Resolves when the service worker receives the 'activate' event.
 function WorkerActivationPromise() {

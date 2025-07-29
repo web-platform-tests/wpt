@@ -1,5 +1,5 @@
 This directory contains tests for the
-[Cookie Store API](https://github.com/WICG/cookie-store).
+[Cookie Store API](https://cookiestore.spec.whatwg.org/).
 
 ## Note on cookie naming conventions
 

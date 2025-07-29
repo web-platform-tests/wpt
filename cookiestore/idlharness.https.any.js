@@ -5,10 +5,10 @@
 // META: script=/service-workers/service-worker/resources/test-helpers.sub.js
 'use strict';
 
-// https://wicg.github.io/cookie-store/
+// https://cookiestore.spec.whatwg.org/
 
 idl_test(
-  ['cookie-store'],
+  ['cookiestore'],
   ['service-workers', 'html', 'dom'],
   async (idl_array, t) => {
     const isServiceWorker = 'ServiceWorkerGlobalScope' in self

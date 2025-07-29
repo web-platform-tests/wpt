@@ -1,9 +1,9 @@
-// META: title=Cookie Store API: oncookiechange event in ServiceWorker with single subscription
+// META: title=Cookie Store API: cookiechange event in ServiceWorker with single subscription
 // META: global=serviceworker
 
 'use strict';
 
-const kScope = '/cookie-store/does/not/exist';
+const kScope = '/cookiestore/does/not/exist';
 
 // Resolves when the service worker receives the 'activate' event.
 const kServiceWorkerActivatedPromise = new Promise((resolve) => {
@@ -12,7 +12,7 @@ const kServiceWorkerActivatedPromise = new Promise((resolve) => {
 
 // Resolves when a cookiechange event is received.
 const kCookieChangeReceivedPromise = new Promise(resolve => {
-  self.oncookiechange = event => { resolve(event); };
+  self.addEventListener('cookiechange', event => { resolve(event); });
 });
 
 promise_test(async testCase => {

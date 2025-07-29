@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset='utf-8'>
 <title>Async Cookies: cookieStore basic API on creation URL with fragments</title>
-<link rel='help' href='https://github.com/WICG/cookie-store'>
+<link rel='help' href='https://cookiestore.spec.whatwg.org/'>
 <link rel='author' href='baku@mozilla.com' title='Andrea Marchesini'>
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
@@ -11,7 +11,7 @@
 <script>
 'use strict';
 
-const kUrl = '/cookie-store/resources/helper_iframe.sub.html';
+const kUrl = '/cookiestore/resources/helper_iframe.sub.html';
 
 promise_test(async t => {
   const url = new URL(kUrl, location);

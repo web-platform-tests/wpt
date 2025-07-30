@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 from ..platformaccessibility.ia2.constants import *  # noqa: F403
 
 import time
@@ -12,8 +14,8 @@ from comtypes import IServiceProvider
 CHILDID_SELF = 0
 OBJID_CLIENT = -4
 
-user32 = ctypes.windll.user32
-oleacc = ctypes.oledll.oleacc
+user32 = ctypes.windll.user32  # type: ignore
+oleacc = ctypes.oledll.oleacc  # type: ignore
 oleacc_mod = comtypes.client.GetModule("oleacc.dll")
 IAccessible = oleacc_mod.IAccessible  # noqa: N816
 

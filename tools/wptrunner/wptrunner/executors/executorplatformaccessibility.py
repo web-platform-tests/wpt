@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 from .protocol import ProtocolPart
 
 from sys import platform

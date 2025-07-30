@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import gi
 
 gi.require_version("Atspi", "2.0")

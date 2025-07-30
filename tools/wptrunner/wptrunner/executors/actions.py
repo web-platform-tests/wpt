@@ -602,4 +602,3 @@ actions = [ClickAction,
            SetDisplayFeaturesAction,
            ClearDisplayFeaturesAction,
            TestAccessibilityAPIAction]
-

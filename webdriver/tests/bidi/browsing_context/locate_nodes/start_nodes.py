@@ -278,14 +278,54 @@ async def test_locate_with_document_context_node(bidi_session, inline, top_conte
     recursive_compare(expected, result["nodes"])
 
 
-@pytest.mark.parametrize("type,value", [
-    ("css", "circle"),
+@pytest.mark.parametrize("type,value,expected", [
+    ("css", "circle", [{
+        "type": "node",
+        "sharedId": any_string,
+        "value": {
+            "childNodeCount": 0,
+            "localName": "circle",
+            "namespaceURI": "http://www.w3.org/2000/svg",
+            "nodeType": 1,
+        }
+    }]),
+    ("xpath", ".//*[name()='circle']", [{
+        "type": "node",
+        "sharedId": any_string,
+        "value": {
+            "childNodeCount": 0,
+            "localName": "circle",
+            "namespaceURI": "http://www.w3.org/2000/svg",
+            "nodeType": 1,
+        }
+    }]),
+    ("innerText", "foo", [{
+        "type": "node",
+        "sharedId": any_string,
+        "value": {
+            "childNodeCount": 1,
+            "localName": "p",
+            "namespaceURI": "http://www.w3.org/1999/xhtml",
+            "nodeType": 1,
+        }
+    }]),
+    ("accessibility", {"role": "banner", "name": "bar"}, [{
+        "type": "node",
+        "sharedId": any_string,
+        "value": {
+            "childNodeCount": 1,
+            "localName": "p",
+            "namespaceURI": "http://www.w3.org/1999/xhtml",
+            "nodeType": 1,
+        }
+    }]),
 ])
 @pytest.mark.asyncio
-async def test_locate_with_svg_context_node(bidi_session, inline, top_context, type, value):
+async def test_locate_with_svg_context_node(bidi_session, inline, top_context, type, value, expected):
     url = inline("""
       <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="5" cy="5" r="5" />
+        <circle aria-label="circle" cx="5" cy="5" r="5" />
+        <p role="banner" aria-label="bar">foo</p>
       </svg>
     """)
     await bidi_session.browsing_context.navigate(
@@ -303,18 +343,5 @@ async def test_locate_with_svg_context_node(bidi_session, inline, top_context, t
         locator={ "type": type, "value": value },
         start_nodes=[context_node]
     )
-
-    expected = [
-        {
-            "type": "node",
-            "sharedId": any_string,
-            "value": {
-                "childNodeCount": 0,
-                "localName": "circle",
-                "namespaceURI": "http://www.w3.org/2000/svg",
-                "nodeType": 1,
-            }
-        }
-    ]
 
     recursive_compare(expected, result["nodes"])

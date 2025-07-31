@@ -72,7 +72,8 @@ class PrefetchAgent extends RemoteContext {
       return Promise.resolve();
     }
     // return  test_driver.bidi.speculation.prefetch_status_updated.on();
-await new Promise(resolve => setTimeout(resolve, 1000));  
+        // return  test_driver.bidi.speculation.prefetch_status_updated.on();
+    await new Promise(resolve => setTimeout(resolve, 1000));  
 }
 
   // `url` is the URL to navigate.

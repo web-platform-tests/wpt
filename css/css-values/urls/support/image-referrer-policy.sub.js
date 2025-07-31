@@ -1,8 +1,8 @@
 function make_test_url(type, policy, expected) {
   if (type == "cross-origin")
-    return `url("http://{{hosts[][]}}:{{ports[http][1]}}/css/css-values/urls/support/image-referrerpolicy.py?expected_referrer=${expected}&origin=${location.origin}/&url=${document.URL}"${policy ? ` referrerpolicy(${policy})` : ``})`;
+    return `url("http://{{hosts[][]}}:{{ports[http][1]}}/css/css-values/urls/support/image-referrer-policy.py?expected_referrer=${expected}&origin=${location.origin}/&url=${document.URL}"${policy ? ` referrer-policy(${policy})` : ``})`;
   if (type == "same-origin")
-    return `url("http://{{hosts[][]}}:{{ports[http][0]}}/css/css-values/urls/support/image-referrerpolicy.py?expected_referrer=${expected}&origin=${location.origin}/&url=${document.URL}"${policy ? ` referrerpolicy(${policy})` : ``})`;
+    return `url("http://{{hosts[][]}}:{{ports[http][0]}}/css/css-values/urls/support/image-referrer-policy.py?expected_referrer=${expected}&origin=${location.origin}/&url=${document.URL}"${policy ? ` referrer-policy(${policy})` : ``})`;
   throw `Unknown type: ${type}`;
 }
 

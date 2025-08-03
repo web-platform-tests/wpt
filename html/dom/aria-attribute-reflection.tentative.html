@@ -6,6 +6,8 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
+<h1>Tentative ARIA attribute reflection tests</h1>
+
 <script>
 function testNullable(element, jsAttr, contentAttr) {
     var originalValue = element[jsAttr];
@@ -55,6 +57,453 @@ test(function(t) {
         assert_equals(element.getAttribute("aria-rowindextext"), "y");
         testNullable(element, "ariaRowIndexText", "aria-rowindextext");
     }, "aria-rowindextext attribute reflects.");
+</script>
+
+<!-- tentative: https://github.com/w3c/aria/pull/2484 -->
+<!-- ARIA attributes to be converted to enumerated:
+    - aria-atomic
+    - aria-autocomplete
+    - aria-busy
+    - aria-checked
+    - aria-current
+    - aria-disabled
+    - aria-expanded
+    - aria-haspopup
+    - aria-hidden
+    - aria-invalid
+    - aria-live
+    - aria-modal
+    - aria-multiline
+    - aria-multiselectable
+    - aria-orientation
+    - aria-pressed
+    - aria-readonly
+    - aria-required
+    - aria-selected
+    - aria-sort
+-->
+<!-- aria-atomic -->
+<div id="aria_atomic"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_atomic");
+    assert_equals(el.ariaAtomic, null);
+
+    el.ariaAtomic = "true";
+    assert_equals(el.ariaAtomic, "true");
+    el.ariaAtomic = "false";
+    assert_equals(el.ariaAtomic, "false");
+    el.ariaAtomic = "";     // this test may be removable as it maps to "false" state (invalid value)
+    assert_equals(el.ariaAtomic, "false");
+
+    el.ariaAtomic = "$%1FoOBaR";
+    assert_equals(el.ariaAtomic, "false");
+}, "aria-atomic enumerated attribute reflects.");
+</script>
+
+<!-- aria-autocomplete -->
+<div id="aria_autocomplete"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_autocomplete");
+    assert_equals(el.ariaAutoComplete, "none");
+
+    el.ariaAutoComplete = "inline";
+    assert_equals(el.ariaAutoComplete, "inline");
+    el.ariaAutoComplete = "list";
+    assert_equals(el.ariaAutoComplete, "list");
+    el.ariaAutoComplete = "both";
+    assert_equals(el.ariaAutoComplete, "both");
+    el.ariaAutoComplete = "none";
+    assert_equals(el.ariaAutoComplete, "none");
+
+    el.ariaAutoComplete = "$%1FoOBaR";
+    assert_equals(el.ariaAutoComplete, "none");
+}, "aria-autocomplete enumerated attribute reflects.");
+</script>
+
+<!-- aria-busy -->
+<div id="aria_busy"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_busy");
+    assert_equals(el.ariaBusy, "false");
+
+    el.ariaBusy = "true";
+    assert_equals(el.ariaBusy, "true");
+    el.ariaBusy = "false";
+    assert_equals(el.ariaBusy, "false");
+    el.ariaBusy = "";       // this test may be removable as it maps to "false" state (invalid value)
+    assert_equals(el.ariaBusy, "false")
+
+    el.ariaBusy = "$%1FoOBaR";
+    assert_equals(el.ariaBusy, "false");
+}, "aria-busy enumerated attribute reflects.");
+</script>
+
+<!-- aria-checked -->
+<div id="aria_checked"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_checked");
+    assert_equals(el.ariaChecked, null);
+
+    el.ariaChecked = "true";
+    assert_equals(el.ariaChecked, "true");
+    el.ariaChecked = "false";
+    assert_equals(el.ariaChecked, "false");
+    el.ariaChecked = "mixed";
+    assert_equals(el.ariaChecked, "mixed");
+    el.ariaChecked = "";        // this test may be removable as it maps to null (invalid value)
+    assert_equals(el.ariaChecked, null);
+    el.ariaChecked = "undefined";       // this test may be removable as it maps to null (invalid value)
+    assert_equals(el.ariaChecked, null);
+
+    el.ariaChecked = "$%1FoOBaR";
+    assert_equals(el.ariaChecked, null);
+}, "aria-checked enumerated attribute reflects.");
+</script>
+
+<!-- aria-current -->
+<div id="aria_current"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_current");
+    assert_equals(el.ariaCurrent, "false");
+
+    el.ariaCurrent = "page";
+    assert_equals(el.ariaCurrent, "page");
+    el.ariaCurrent = "step";
+    assert_equals(el.ariaCurrent, "step");
+    el.ariaCurrent = "location";
+    assert_equals(el.ariaCurrent, "location");
+    el.ariaCurrent = "date";
+    assert_equals(el.ariaCurrent, "date");
+    el.ariaCurrent = "time";
+    assert_equals(el.ariaCurrent, "time");
+    el.ariaCurrent = "true";
+    assert_equals(el.ariaCurrent, "true");
+    el.ariaCurrent = "false";
+    assert_equals(el.ariaCurrent, "false");
+    el.ariaCurrent = "undefined";
+    assert_equals(el.ariaCurrent, "false");
+    el.ariaCurrent = "";
+    assert_equals(el.ariaCurrent, "false");
+
+    el.ariaCurrent = "$%1FoOBaR";
+    assert_equals(el.ariaCurrent, "true");
+}, "aria-current enumerated attribute reflects.");
+</script>
+
+<!-- aria-disabled -->
+<div id="aria_disabled"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_disabled");
+    assert_equals(el.ariaDisabled, "false");
+
+    el.ariaDisabled = "true";
+    assert_equals(el.ariaDisabled, "true");
+    el.ariaDisabled = "false";
+    assert_equals(el.ariaDisabled, "false");
+    el.ariaDisabled = "";       // this test may be removable as it maps to "false" state (invalid value)
+    assert_equals(el.ariaDisabled, "false");
+
+    el.ariaDisabled = "$%1FoOBaR";
+    assert_equals(el.ariaDisabled, "false");
+}, "aria-disabled enumerated attribute reflects.");
+</script>
+
+<!-- aria-expanded -->
+<div id="aria_expanded"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_expanded");
+    assert_equals(el.ariaExpanded, null);
+
+    el.ariaExpanded = "true";
+    assert_equals(el.ariaExpanded, "true");
+    el.ariaExpanded = "false";
+    assert_equals(el.ariaExpanded, "false");
+    el.ariaExpanded = "undefined";      // this test may be removable as it maps to null (invalid value)
+    assert_equals(el.ariaExpanded, null);
+    el.ariaExpanded = "";       // this test may be removable as it maps to null (invalid value)
+    assert_equals(el.ariaExpanded, null);
+
+    el.ariaExpanded = "$%1FoOBaR";
+    assert_equals(el.ariaExpanded, null);
+}, "aria-expanded enumerated attribute reflects.");
+</script>
+
+<!-- aria-haspopup -->
+<div id="aria_haspopup"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_haspopup");
+    assert_equals(el.ariaHasPopup, null);
+
+    el.ariaHasPopup = "false";
+    assert_equals(el.ariaHasPopup, "false");
+    el.ariaHasPopup = "menu";
+    assert_equals(el.ariaHasPopup, "menu");
+    el.ariaHasPopup = "true";
+    assert_equals(el.ariaHasPopup, "true");
+    el.ariaHasPopup = "dialog";
+    assert_equals(el.ariaHasPopup, "dialog");
+    el.ariaHasPopup = "listbox";
+    assert_equals(el.ariaHasPopup, "listbox");
+    el.ariaHasPopup = "tree";
+    assert_equals(el.ariaHasPopup, "tree");
+    el.ariaHasPopup = "grid";
+    assert_equals(el.ariaHasPopup, "grid");
+
+    el.ariaHasPopup = "$%1FoOBaR";
+    assert_equals(el.ariaHasPopup, "false");
+}, "aria-haspopup enumerated attribute reflects.");
+</script>
+
+<!-- aria-hidden -->
+<div id="aria_hidden"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_hidden");
+    assert_equals(el.ariaHidden, "False");
+
+    el.ariaHidden = "true";
+    assert_equals(el.ariaHidden, "true");
+    el.ariaHidden = "false";
+    assert_equals(el.ariaHidden, "false");
+    el.ariaHidden = "undefined";        // this test may be removable as it maps to "false" state (invalid value)
+    assert_equals(el.ariaHidden, "false");
+    el.ariaHidden = "";     // this test may be removable as it maps to "false" state (invalid value)
+    assert_equals(el.ariaHidden, "false");
+
+    el.ariaHidden = "$%1FoOBaR";
+    assert_equals(el.ariaHidden, "false");
+}, "aria-hidden enumerated attribute reflects.");
+</script>
+
+<!-- aria-invalid -->
+<div id="aria_invalid"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_invalid");
+    assert_equals(el.ariaInvalid, "false");
+
+    el.ariaInvalid = "true";
+    assert_equals(el.ariaInvalid, "true");
+    el.ariaInvalid = "grammar";
+    assert_equals(el.ariaInvalid, "grammar");
+    el.ariaInvalid = "spelling";
+    assert_equals(el.ariaInvalid, "spelling");
+    el.ariaInvalid = "false";
+    assert_equals(el.ariaInvalid, "false");
+    el.ariaInvalid = "";
+    assert_equals(el.ariaInvalid, "false");
+
+    el.ariaInvalid = "$%1FoOBaR";
+    assert_equals(el.ariaInvalid, "true");
+}, "aria-invalid enumerated attribute reflects.");
+</script>
+
+<!-- aria-live -->
+<div id="aria_live"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_live");
+    assert_equals(el.ariaLive, "off");
+
+    el.ariaLive = "polite";
+    assert_equals(el.ariaLive, "polite");
+    el.ariaLive = "assertive";
+    assert_equals(el.ariaLive, "assertive");
+    el.ariaLive = "off";
+    assert_equals(el.ariaLive, "off");
+
+    el.ariaLive = "$%1FoOBaR";
+    assert_equals(el.ariaLive, "off");
+}, "aria-live enumerated attribute reflects.");
+</script>
+
+<!-- aria-modal -->
+<div id="aria_modal"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_modal");
+    assert_equals(el.ariaModal, "false");
+
+    el.ariaModal = "true";
+    assert_equals(el.ariaModal, "true");
+    el.ariaModal = "false";
+    assert_equals(el.ariaModal, "false");
+    el.ariaModal = "";      // this test may be removable as it maps to "false" state (invalid value)
+    assert_equals(el.ariaModal, "false");
+
+    el.ariaModal = "$%1FoOBaR";
+    assert_equals(el.ariaModal, "false");
+}, "aria-modal enumerated attribute reflects.");
+</script>
+
+<!-- aria-multiline -->
+<div id="aria_multiline"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_multiline");
+    assert_equals(el.ariaMultiLine, "false");
+
+    el.ariaMultiLine = "true";
+    assert_equals(el.ariaMultiLine, "true");
+    el.ariaMultiLine = "false";
+    assert_equals(el.ariaMultiLine, "false");
+    el.ariaMultiLine = "";
+    assert_equals(el.ariaMultiLine, "false");
+
+    el.ariaMultiLine = "$%1FoOBaR";
+    assert_equals(el.ariaMultiLine, "false");
+}, "aria-multiline enumerated attribute reflects.");
+</script>
+
+<!-- aria-multiselectable -->
+<div id="aria_multiselectable"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_multiselectable");
+    assert_equals(el.ariaMultiSelectable, "false");
+
+    el.ariaMultiSelectable = "true";
+    assert_equals(el.ariaMultiSelectable, "true");
+    el.ariaMultiSelectable = "false";
+    assert_equals(el.ariaMultiSelectable, "false");
+    el.ariaMultiSelectable = "";
+    assert_equals(el.ariaMultiSelectable, "false");
+
+    el.ariaMultiSelectable = "$%1FoOBaR";
+    assert_equals(el.ariaMultiSelectable, "false");
+}, "aria-multiselectable enumerated attribute reflects.");
+</script>
+
+<!-- aria-orientation -->
+<div id="aria_orientation"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_orientation");
+    assert_equals(el.ariaOrientation, null);
+
+    el.ariaOrientation = "horizontal";
+    assert_equals(el.ariaOrientation, "horizontal");
+    el.ariaOrientation = "vertical";
+    assert_equals(el.ariaOrientation, "vertical");
+    el.ariaOrientation = "undefined";       // this test may be removable as it maps to  null (invalid value)
+    assert_equals(el.ariaOrientation, null);
+    el.ariaOrientation = "";        // this test may be removable as it maps to null (invalid value)
+    assert_equals(el.ariaOrientation, null);
+
+    el.ariaOrientation = "$%1FoOBaR";
+    assert_equals(el.ariaOrientation, null);
+}, "aria-orientation enumerated attribute reflects.");
+</script>
+
+<!-- aria-pressed -->
+<div id="aria_pressed"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_pressed");
+    assert_equals(el.ariaPressed, null);
+
+    el.ariaPressed = "true";
+    assert_equals(el.ariaPressed, "true");
+    el.ariaPressed = "false";
+    assert_equals(el.ariaPressed, "false");
+    el.ariaPressed = "mixed";
+    assert_equals(el.ariaPressed, "mixed");
+    el.ariaPressed = "undefined";       // this test may be removable as it maps to null (invalid value)
+    assert_equals(el.ariaPressed, null);
+    el.ariaPressed = "";        // this test may be removable as it maps to null (invalid value)
+    assert_equals(el.ariaPressed, null);
+
+    el.ariaPressed = "$%1FoOBaR";
+    assert_equals(el.ariaPressed, null);
+}, "aria-pressed enumerated attribute reflects.");
+</script>
+
+<!-- aria-readonly -->
+<div id="aria_readonly"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_readonly");
+    assert_equals(el.ariaReadOnly, "false");
+
+    el.ariaReadOnly = "true";
+    assert_equals(el.ariaReadOnly, "true");
+    el.ariaReadOnly = "false";
+    assert_equals(el.ariaReadOnly, "false");
+    el.ariaReadOnly = "";       // this test may be removable as it maps to "false" state (invalid value)
+    assert_equals(el.ariaReadOnly, "false");
+
+    el.ariaReadOnly = "$%1FoOBaR";
+    assert_equals(el.ariaReadOnly, "false");
+}, "aria-readonly enumerated attribute reflects.");
+</script>
+
+<!-- aria-required -->
+<div id="aria_required"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_required");
+    assert_equals(el.ariaRequired, "false");
+
+    el.ariaRequired = "true";
+    assert_equals(el.ariaRequired, "true");
+    el.ariaRequired = "false";
+    assert_equals(el.ariaRequired, "false");
+    el.ariaRequired = "";       // this test may be removable as it maps to "false" state (invalid value)
+    assert_equals(el.ariaRequired, "false");
+
+    el.ariaRequired = "$%1FoOBaR";
+    assert_equals(el.ariaRequired, "false");
+}, "aria-required enumerated attribute reflects.");
+</script>
+
+<!-- aria-selected -->
+<div id="aria_selected"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_selected");
+    assert_equals(el.ariaSelected, null);
+
+    el.ariaSelected = "true";
+    assert_equals(el.ariaSelected, "true");
+    el.ariaSelected = "false";
+    assert_equals(el.ariaSelected, "false");
+    el.ariaSelected = "undefined";      // this test may be removable as it maps to null (invalid value)
+    assert_equals(el.ariaSelected, null);
+    el.ariaSelected = "";       // this test may be removable as it maps to null (invalid value)
+    assert_equals(el.ariaSelected, null);
+
+    el.ariaSelected = "$%1FoOBaR";
+    assert_equals(el.ariaSelected, null);
+}, "aria-selected enumerated attribute reflects.");
+</script>
+
+<!-- aria-sort -->
+<div id="aria_sort"></div>
+<script>
+test(function(t) {
+    let el = document.getElementById("aria_sort");
+    assert_equals(el.ariaSort, "none");
+
+    el.ariaSort = "ascending";
+    assert_equals(el.ariaSort, "ascending");
+    el.ariaSort = "descending";
+    assert_equals(el.ariaSort, "descending");
+    el.ariaSort = "other";
+    assert_equals(el.ariaSort, "other");
+    el.ariaSort = "none";
+    assert_equals(el.ariaSort, "none");
+
+    el.ariaSort = "$%1FoOBaR";
+    assert_equals(el.ariaSort, "none");
+}, "aria-sort enumerated attribute reflects.");
 </script>
 
 </html>

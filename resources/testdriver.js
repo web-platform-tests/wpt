@@ -118,7 +118,7 @@
                      */
                     subscribe: async function(params = {}) {
                         assertBidiIsEnabled();
-                        console.log("Testdriver.js .subscribe :)");
+                        console.log("Testdriver.js .subscribe");
                         return window.test_driver_internal.bidi.speculation
                             .prefetch_status_updated.subscribe(params);
                     },
@@ -133,7 +133,7 @@
                      */
                     on: function(callback) {
                         assertBidiIsEnabled();
-                        console.log("Testdriver.js .on :)");
+                        console.log("Testdriver.js .on");
                         return window.test_driver_internal.bidi.speculation
                             .prefetch_status_updated.on(callback);
                     },

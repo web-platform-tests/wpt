@@ -11,7 +11,7 @@ from .base import (get_free_port,
                    cmd_arg,
                    browser_command)
 from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # noqa: F401
-                                            MarionetteRefTestExecutorAndroid,  # noqa: F401
+                                            MarionetteRefTestExecutor,  # noqa: F401
                                             MarionetteCrashtestExecutor,  # noqa: F401
                                             MarionetteWdspecExecutor)  # noqa: F401
 from .base import (Browser,
@@ -30,7 +30,7 @@ __wptrunner__ = {"product": "firefox_android",
                  "browser": {None: "FirefoxAndroidBrowser",
                              "wdspec": "FirefoxAndroidWdSpecBrowser"},
                  "executor": {"testharness": "MarionetteTestharnessExecutor",
-                              "reftest": "MarionetteRefTestExecutorAndroid",
+                              "reftest": "MarionetteRefTestExecutor",
                               "crashtest": "MarionetteCrashtestExecutor",
                               "wdspec": "MarionetteWdspecExecutor"},
                  "browser_kwargs": "browser_kwargs",
@@ -271,8 +271,7 @@ class FirefoxAndroidBrowser(Browser):
                           "lsan_max_stack_depth": test.lsan_max_stack_depth,
                           "mozleak_allowed": self.leak_check and test.mozleak_allowed,
                           "mozleak_thresholds": self.leak_check and test.mozleak_threshold,
-                          "special_powers": self.specialpowers_path and test.url_base == "/_mozilla/",
-                          "testdriver": test.test_type == "testharness"}
+                          "special_powers": self.specialpowers_path and test.url_base == "/_mozilla/"}
         return self._settings
 
     def start(self, **kwargs):
@@ -371,8 +370,7 @@ class FirefoxAndroidBrowser(Browser):
                                  # that doesn't work on Android; instead they are in the profile
                                  "extensions": [],
                                  "supports_devtools": False,
-                                 "supports_window_resize": False,
-                                 "testdriver": self._settings["testdriver"]}
+                                 "supports_window_resize": False}
 
     def check_crash(self, process, test):
         if not os.environ.get("MINIDUMP_STACKWALK", "") and self.stackwalk_binary:

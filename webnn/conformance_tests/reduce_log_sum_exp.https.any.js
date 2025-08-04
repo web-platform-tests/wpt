@@ -20,13 +20,6 @@
 // MLOperand reduceLogSumExp(MLOperand input, optional MLReduceOptions options
 // = {});
 
-const getReductionOperatorsPrecisionTolerance = (graphResources) => {
-  return {
-    metricType: 'ULP',
-    value: getReducedElementCount(graphResources) * 2 + 18,
-  };
-};
-
 const reduceLogSumExpTests = [
   {
     'name': 'reduceLogSumExp float32 0D constant tensor default options',
@@ -1218,9 +1211,8 @@ const reduceLogSumExpTests = [
 ];
 
 if (navigator.ml) {
-  reduceLogSumExpTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getReductionOperatorsPrecisionTolerance, test);
+  reduceLogSumExpTests.filter(isTargetTest).forEach((test) => {
+    webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

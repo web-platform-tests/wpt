@@ -19,11 +19,6 @@
 //     MLOperand input, MLOperand indices,
 //     optional MLGatherOptions options = {});
 
-
-const getGatherElementsPrecisionTolerance = () => {
-  return {metricType: 'ULP', value: 0};
-};
-
 const gatherElementsTests = [
   {
     'name': 'gatherElements float32 2D input and uint32 indices options.axis=1',
@@ -408,9 +403,8 @@ const gatherElementsTests = [
 ];
 
 if (navigator.ml) {
-  gatherElementsTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getGatherElementsPrecisionTolerance, test);
+  gatherElementsTests.filter(isTargetTest).forEach((test) => {
+    webnn_conformance_test(buildAndExecuteGraph, getZeroULPTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

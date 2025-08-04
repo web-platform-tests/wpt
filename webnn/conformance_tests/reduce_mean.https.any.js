@@ -19,13 +19,6 @@
 //
 // MLOperand reduceMean(MLOperand input, optional MLReduceOptions options = {});
 
-const getReductionOperatorsPrecisionTolerance = (graphResources) => {
-  return {
-    metricType: 'ULP',
-    value: getReducedElementCount(graphResources) + 2,
-  };
-};
-
 const reduceMeanTests = [
   {
     'name': 'reduceMean float32 0D constant tensor default options',
@@ -1162,9 +1155,8 @@ const reduceMeanTests = [
 ];
 
 if (navigator.ml) {
-  reduceMeanTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getReductionOperatorsPrecisionTolerance, test);
+  reduceMeanTests.filter(isTargetTest).forEach((test) => {
+    webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

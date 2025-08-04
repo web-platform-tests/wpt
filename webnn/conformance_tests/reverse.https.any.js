@@ -17,7 +17,6 @@
 //
 // MLOperand reverse(MLOperand input, optional MLReverseOptions options = {});
 
-
 const reverseTests = [
   {
     'name': 'reverse float32 2D input with default options',
@@ -264,8 +263,8 @@ const reverseTests = [
 ];
 
 if (navigator.ml) {
-  reverseTests.forEach((test) => {
-    webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
+  reverseTests.filter(isTargetTest).forEach((test) => {
+    webnn_conformance_test(buildAndExecuteGraph, getZeroULPTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

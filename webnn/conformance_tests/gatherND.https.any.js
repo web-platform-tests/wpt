@@ -16,11 +16,6 @@
 //     MLOperand input, MLOperand indices,
 //     optional MLOperatorOptions options = {});
 
-
-const getGatherNDPrecisionTolerance = () => {
-  return {metricType: 'ULP', value: 0};
-};
-
 const gatherNDTests = [
   {
     'name': 'gatherND float32 3D input and 2D indices',
@@ -577,9 +572,8 @@ const gatherNDTests = [
 ];
 
 if (navigator.ml) {
-  gatherNDTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getGatherNDPrecisionTolerance, test);
+  gatherNDTests.filter(isTargetTest).forEach((test) => {
+    webnn_conformance_test(buildAndExecuteGraph, getZeroULPTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

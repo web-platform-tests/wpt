@@ -20,13 +20,6 @@
 // MLOperand reduceSumSquare(MLOperand input, optional MLReduceOptions options
 // = {});
 
-const getReductionOperatorsPrecisionTolerance = (graphResources) => {
-  return {
-    metricType: 'ULP',
-    value: getReducedElementCount(graphResources) * 2,
-  };
-};
-
 const reduceSumSquareTests = [
   {
     'name': 'reduceSumSquare float32 0D constant tensor default options',
@@ -1222,9 +1215,8 @@ const reduceSumSquareTests = [
 ];
 
 if (navigator.ml) {
-  reduceSumSquareTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getReductionOperatorsPrecisionTolerance, test);
+  reduceSumSquareTests.filter(isTargetTest).forEach((test) => {
+    webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

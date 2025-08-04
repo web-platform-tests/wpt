@@ -413,9 +413,9 @@ const logicalAndTests = [
 ];
 
 if (navigator.ml) {
-  logicalAndTests.forEach((test) => {
+  logicalAndTests.filter(isTargetTest).forEach((test) => {
     webnn_conformance_test(
-        buildAndExecuteGraph, getPrecisionTolerance, test,
+        buildAndExecuteGraph, getZeroULPTolerance, test,
         /*cast_to_supported_type=*/true);
   });
 } else {

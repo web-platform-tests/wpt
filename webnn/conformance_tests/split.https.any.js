@@ -20,11 +20,6 @@
 //     ([EnforceRange] unsigned long or sequence<[EnforceRange] unsigned long>)
 //     splits, optional MLSplitOptions options = {});
 
-
-const getSplitPrecisionTolerance = () => {
-  return {metricType: 'ULP', value: 0};
-};
-
 const splitTests = [
   {
     'name': 'split float32 1D constant tensor number splits default options',
@@ -924,9 +919,8 @@ const splitTests = [
 ];
 
 if (navigator.ml) {
-  splitTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getSplitPrecisionTolerance, test);
+  splitTests.filter(isTargetTest).forEach((test) => {
+    webnn_conformance_test(buildAndExecuteGraph, getZeroULPTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

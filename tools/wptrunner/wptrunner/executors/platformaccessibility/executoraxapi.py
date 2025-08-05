@@ -120,7 +120,7 @@ class AXAPIExecutorImpl:
         self.root = find_browser(self.product_name)
 
         if not self.root:
-            self.logger.error(
+            self.logger.warning(
                 f"Couldn't find browser {self.product_name} in accessibility API AX API. Accessibility API queries will not succeeded."
             )
 

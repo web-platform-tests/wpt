@@ -70,16 +70,28 @@ function run_test(algorithmNames) {
     // or a string, tested against the error name.
     function testError(algorithm, extractable, usages, expectedError, testTag) {
         promise_test(function(test) {
-            return crypto.subtle.generateKey(algorithm, extractable, usages)
+            let microtaskTriggered = false;
+            let promise = crypto.subtle.generateKey(algorithm, extractable, usages)
             .then(function(result) {
                 assert_unreached("Operation succeeded, but should not have");
             }, function(err) {
+                if (testTag === "Empty usages" || testTag === "Bad usages") {
+                    // Error checked by the generate key operation
+                    assert_true(microtaskTriggered, "promise rejected too early");
+                } else {
+                    // Error checked by the algorithm normalization
+                    assert_false(microtaskTriggered, "promise rejected too late");
+                }
                 if (typeof expectedError === "number") {
                     assert_equals(err.code, expectedError, testTag + " not supported");
                 } else {
                     assert_equals(err.name, expectedError, testTag + " not supported");
                 }
             });
+            Promise.resolve().then(() => {
+                microtaskTriggered = true;
+            });
+            return promise;
         }, testTag + ": generateKey" + parameterString(algorithm, extractable, usages));
     }
 

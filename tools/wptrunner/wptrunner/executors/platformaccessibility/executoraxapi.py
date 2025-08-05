@@ -117,6 +117,7 @@ class AXAPIExecutorImpl:
         :logger: Logger for logging errors.
         """
         self.product_name = product_name
+        self.logger = logger
         self.root = find_browser(self.product_name)
 
         if not self.root:

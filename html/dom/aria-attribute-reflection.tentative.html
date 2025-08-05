@@ -91,9 +91,13 @@ test(function(t) {
 
     el.ariaAtomic = "true";
     assert_equals(el.ariaAtomic, "true");
+    el.ariaAtomic = "tRuE";
+    assert_equals(el.ariaAtomic, "true");
+    el.ariaAtomic = "   true";
+    assert_equals(el.ariaAtomic, "true");
     el.ariaAtomic = "false";
     assert_equals(el.ariaAtomic, "false");
-    el.ariaAtomic = "";     // this test may be removable as it maps to "false" state (invalid value)
+    el.ariaAtomic = "";
     assert_equals(el.ariaAtomic, "false");
 
     el.ariaAtomic = "$%1FoOBaR";
@@ -109,6 +113,10 @@ test(function(t) {
     assert_equals(el.ariaAutoComplete, "none");
 
     el.ariaAutoComplete = "inline";
+    assert_equals(el.ariaAutoComplete, "inline");
+    el.ariaAutoComplete = "InLiNe";
+    assert_equals(el.ariaAutoComplete, "inline");
+    el.ariaAutoComplete = "   inline";
     assert_equals(el.ariaAutoComplete, "inline");
     el.ariaAutoComplete = "list";
     assert_equals(el.ariaAutoComplete, "list");
@@ -131,9 +139,13 @@ test(function(t) {
 
     el.ariaBusy = "true";
     assert_equals(el.ariaBusy, "true");
+    el.ariaBusy = "TrUe";
+    assert_equals(el.ariaBusy, "true");
+    el.ariaBusy = "   true";
+    assert_equals(el.ariaBusy, "true");
     el.ariaBusy = "false";
     assert_equals(el.ariaBusy, "false");
-    el.ariaBusy = "";       // this test may be removable as it maps to "false" state (invalid value)
+    el.ariaBusy = "";
     assert_equals(el.ariaBusy, "false")
 
     el.ariaBusy = "$%1FoOBaR";
@@ -150,13 +162,17 @@ test(function(t) {
 
     el.ariaChecked = "true";
     assert_equals(el.ariaChecked, "true");
+    el.ariaChecked = "TrUe";
+    assert_equals(el.ariaChecked, "true");
+    el.ariaChecked = "   true";
+    assert_equals(el.ariaChecked, "true");
     el.ariaChecked = "false";
     assert_equals(el.ariaChecked, "false");
     el.ariaChecked = "mixed";
     assert_equals(el.ariaChecked, "mixed");
-    el.ariaChecked = "";        // this test may be removable as it maps to null (invalid value)
+    el.ariaChecked = "";
     assert_equals(el.ariaChecked, null);
-    el.ariaChecked = "undefined";       // this test may be removable as it maps to null (invalid value)
+    el.ariaChecked = "undefined";
     assert_equals(el.ariaChecked, null);
 
     el.ariaChecked = "$%1FoOBaR";
@@ -172,6 +188,10 @@ test(function(t) {
     assert_equals(el.ariaCurrent, "false");
 
     el.ariaCurrent = "page";
+    assert_equals(el.ariaCurrent, "page");
+    el.ariaCurrent = "PaGe";
+    assert_equals(el.ariaCurrent, "page");
+    el.ariaCurrent = "   page";
     assert_equals(el.ariaCurrent, "page");
     el.ariaCurrent = "step";
     assert_equals(el.ariaCurrent, "step");
@@ -204,9 +224,13 @@ test(function(t) {
 
     el.ariaDisabled = "true";
     assert_equals(el.ariaDisabled, "true");
+    el.ariaDisabled = "TrUe";
+    assert_equals(el.ariaDisabled, "true");
+    el.ariaDisabled = "   true";
+    assert_equals(el.ariaDisabled, "true");
     el.ariaDisabled = "false";
     assert_equals(el.ariaDisabled, "false");
-    el.ariaDisabled = "";       // this test may be removable as it maps to "false" state (invalid value)
+    el.ariaDisabled = "";
     assert_equals(el.ariaDisabled, "false");
 
     el.ariaDisabled = "$%1FoOBaR";
@@ -223,11 +247,15 @@ test(function(t) {
 
     el.ariaExpanded = "true";
     assert_equals(el.ariaExpanded, "true");
+    el.ariaExpanded = "TrUe";
+    assert_equals(el.ariaExpanded, "true");
+    el.ariaExpanded = "   true";
+    assert_equals(el.ariaExpanded, "true");
     el.ariaExpanded = "false";
     assert_equals(el.ariaExpanded, "false");
-    el.ariaExpanded = "undefined";      // this test may be removable as it maps to null (invalid value)
+    el.ariaExpanded = "undefined";
     assert_equals(el.ariaExpanded, null);
-    el.ariaExpanded = "";       // this test may be removable as it maps to null (invalid value)
+    el.ariaExpanded = "";
     assert_equals(el.ariaExpanded, null);
 
     el.ariaExpanded = "$%1FoOBaR";
@@ -244,6 +272,10 @@ test(function(t) {
 
     el.ariaHasPopup = "false";
     assert_equals(el.ariaHasPopup, "false");
+    el.ariaHasPopup = "MeNu";
+    assert_equals(el.ariaHasPopup, "menu");
+    el.ariaHasPopup = "   menu";
+    assert_equals(el.ariaHasPopup, "menu");
     el.ariaHasPopup = "menu";
     assert_equals(el.ariaHasPopup, "menu");
     el.ariaHasPopup = "true";
@@ -267,15 +299,19 @@ test(function(t) {
 <script>
 test(function(t) {
     let el = document.getElementById("aria_hidden");
-    assert_equals(el.ariaHidden, "False");
+    assert_equals(el.ariaHidden, "false");
 
     el.ariaHidden = "true";
     assert_equals(el.ariaHidden, "true");
+    el.ariaHidden = "TrUe";
+    assert_equals(el.ariaHidden, "true");
+    el.ariaHidden = "   true";
+    assert_equals(el.ariaHidden, "true");
     el.ariaHidden = "false";
     assert_equals(el.ariaHidden, "false");
-    el.ariaHidden = "undefined";        // this test may be removable as it maps to "false" state (invalid value)
+    el.ariaHidden = "undefined";
     assert_equals(el.ariaHidden, "false");
-    el.ariaHidden = "";     // this test may be removable as it maps to "false" state (invalid value)
+    el.ariaHidden = "";
     assert_equals(el.ariaHidden, "false");
 
     el.ariaHidden = "$%1FoOBaR";
@@ -293,6 +329,10 @@ test(function(t) {
     el.ariaInvalid = "true";
     assert_equals(el.ariaInvalid, "true");
     el.ariaInvalid = "grammar";
+    assert_equals(el.ariaInvalid, "grammar");
+    el.ariaInvalid = "GrAmMaR";
+    assert_equals(el.ariaInvalid, "grammar");
+    el.ariaInvalid = "   grammar";
     assert_equals(el.ariaInvalid, "grammar");
     el.ariaInvalid = "spelling";
     assert_equals(el.ariaInvalid, "spelling");
@@ -315,6 +355,10 @@ test(function(t) {
 
     el.ariaLive = "polite";
     assert_equals(el.ariaLive, "polite");
+    el.ariaLive = "PoLiTe";
+    assert_equals(el.ariaLive, "polite");
+    el.ariaLive = "   polite";
+    assert_equals(el.ariaLive, "polite");
     el.ariaLive = "assertive";
     assert_equals(el.ariaLive, "assertive");
     el.ariaLive = "off";
@@ -334,9 +378,13 @@ test(function(t) {
 
     el.ariaModal = "true";
     assert_equals(el.ariaModal, "true");
+    el.ariaModal = "TrUe";
+    assert_equals(el.ariaModal, "true");
+    el.ariaModal = "   true";
+    assert_equals(el.ariaModal, "true");
     el.ariaModal = "false";
     assert_equals(el.ariaModal, "false");
-    el.ariaModal = "";      // this test may be removable as it maps to "false" state (invalid value)
+    el.ariaModal = "";
     assert_equals(el.ariaModal, "false");
 
     el.ariaModal = "$%1FoOBaR";
@@ -352,6 +400,10 @@ test(function(t) {
     assert_equals(el.ariaMultiLine, "false");
 
     el.ariaMultiLine = "true";
+    assert_equals(el.ariaMultiLine, "true");
+    el.ariaMultiLine = "TrUe";
+    assert_equals(el.ariaMultiLine, "true");
+    el.ariaMultiLine = "   true";
     assert_equals(el.ariaMultiLine, "true");
     el.ariaMultiLine = "false";
     assert_equals(el.ariaMultiLine, "false");
@@ -371,6 +423,10 @@ test(function(t) {
     assert_equals(el.ariaMultiSelectable, "false");
 
     el.ariaMultiSelectable = "true";
+    assert_equals(el.ariaMultiSelectable, "true");
+    el.ariaMultiSelectable = "TrUe";
+    assert_equals(el.ariaMultiSelectable, "true");
+    el.ariaMultiSelectable = "   true";
     assert_equals(el.ariaMultiSelectable, "true");
     el.ariaMultiSelectable = "false";
     assert_equals(el.ariaMultiSelectable, "false");
@@ -393,9 +449,13 @@ test(function(t) {
     assert_equals(el.ariaOrientation, "horizontal");
     el.ariaOrientation = "vertical";
     assert_equals(el.ariaOrientation, "vertical");
-    el.ariaOrientation = "undefined";       // this test may be removable as it maps to  null (invalid value)
+    el.ariaOrientation = "VeRtIcAl";
+    assert_equals(el.ariaOrientation, "vertical");
+    el.ariaOrientation = "   vertical";
+    assert_equals(el.ariaOrientation, "vertical");
+    el.ariaOrientation = "undefined";
     assert_equals(el.ariaOrientation, null);
-    el.ariaOrientation = "";        // this test may be removable as it maps to null (invalid value)
+    el.ariaOrientation = "";
     assert_equals(el.ariaOrientation, null);
 
     el.ariaOrientation = "$%1FoOBaR";
@@ -416,9 +476,13 @@ test(function(t) {
     assert_equals(el.ariaPressed, "false");
     el.ariaPressed = "mixed";
     assert_equals(el.ariaPressed, "mixed");
-    el.ariaPressed = "undefined";       // this test may be removable as it maps to null (invalid value)
+    el.ariaPressed = "MiXeD";
+    assert_equals(el.ariaPressed, "mixed");
+    el.ariaPressed = "   mixed";
+    assert_equals(el.ariaPressed, "mixed");
+    el.ariaPressed = "undefined";
     assert_equals(el.ariaPressed, null);
-    el.ariaPressed = "";        // this test may be removable as it maps to null (invalid value)
+    el.ariaPressed = "";
     assert_equals(el.ariaPressed, null);
 
     el.ariaPressed = "$%1FoOBaR";
@@ -435,9 +499,13 @@ test(function(t) {
 
     el.ariaReadOnly = "true";
     assert_equals(el.ariaReadOnly, "true");
+    el.ariaReadOnly = "TrUe";
+    assert_equals(el.ariaReadOnly, "true");
+    el.ariaReadOnly = "   true";
+    assert_equals(el.ariaReadOnly, "true");
     el.ariaReadOnly = "false";
     assert_equals(el.ariaReadOnly, "false");
-    el.ariaReadOnly = "";       // this test may be removable as it maps to "false" state (invalid value)
+    el.ariaReadOnly = "";
     assert_equals(el.ariaReadOnly, "false");
 
     el.ariaReadOnly = "$%1FoOBaR";
@@ -454,9 +522,13 @@ test(function(t) {
 
     el.ariaRequired = "true";
     assert_equals(el.ariaRequired, "true");
+    el.ariaRequired = "TrUe";
+    assert_equals(el.ariaRequired, "true");
+    el.ariaRequired = "   true";
+    assert_equals(el.ariaRequired, "true");
     el.ariaRequired = "false";
     assert_equals(el.ariaRequired, "false");
-    el.ariaRequired = "";       // this test may be removable as it maps to "false" state (invalid value)
+    el.ariaRequired = "";
     assert_equals(el.ariaRequired, "false");
 
     el.ariaRequired = "$%1FoOBaR";
@@ -473,11 +545,15 @@ test(function(t) {
 
     el.ariaSelected = "true";
     assert_equals(el.ariaSelected, "true");
+    el.ariaSelected = "TrUe";
+    assert_equals(el.ariaSelected, "true");
+    el.ariaSelected = "   true";
+    assert_equals(el.ariaSelected, "true");
     el.ariaSelected = "false";
     assert_equals(el.ariaSelected, "false");
-    el.ariaSelected = "undefined";      // this test may be removable as it maps to null (invalid value)
+    el.ariaSelected = "undefined";
     assert_equals(el.ariaSelected, null);
-    el.ariaSelected = "";       // this test may be removable as it maps to null (invalid value)
+    el.ariaSelected = "";
     assert_equals(el.ariaSelected, null);
 
     el.ariaSelected = "$%1FoOBaR";
@@ -493,6 +569,10 @@ test(function(t) {
     assert_equals(el.ariaSort, "none");
 
     el.ariaSort = "ascending";
+    assert_equals(el.ariaSort, "ascending");
+    el.ariaSort = "AsCeNdInG";
+    assert_equals(el.ariaSort, "ascending");
+    el.ariaSort = "   ascending";
     assert_equals(el.ariaSort, "ascending");
     el.ariaSort = "descending";
     assert_equals(el.ariaSort, "descending");

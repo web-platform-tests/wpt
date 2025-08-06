@@ -1,0 +1,298 @@
+# SPDX-License-Identifier: MIT
+
+[build-system]
+requires = ["hatchling", "hatch-vcs", "hatch-fancy-pypi-readme>=23.2.0"]
+build-backend = "hatchling.build"
+
+
+[project]
+name = "attrs"
+authors = [{ name = "Hynek Schlawack", email = "hs@ox.cx" }]
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.8"
+description = "Classes Without Boilerplate"
+keywords = ["class", "attribute", "boilerplate"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Typing :: Typed",
+]
+dependencies = []
+dynamic = ["version", "readme"]
+
+[project.optional-dependencies]
+tests-mypy = [
+  'pytest-mypy-plugins; platform_python_implementation == "CPython" and python_version >= "3.10"',
+  # Since the mypy error messages keep changing, we have to keep updating this
+  # pin.
+  'mypy>=1.11.1; platform_python_implementation == "CPython" and python_version >= "3.10"',
+]
+tests = [
+  # For regression test to ensure cloudpickle compat doesn't break.
+  'cloudpickle; platform_python_implementation == "CPython"',
+  "hypothesis",
+  "pympler",
+  # 4.3.0 dropped last use of `convert`
+  "pytest>=4.3.0",
+  "pytest-xdist[psutil]",
+  "attrs[tests-mypy]",
+]
+cov = [
+  "attrs[tests]",
+  # Ensure coverage is new enough for `source_pkgs`.
+  "coverage[toml]>=5.3",
+]
+benchmark = ["pytest-codspeed", "pytest-xdist[psutil]", "attrs[tests]"]
+docs = [
+  "cogapp",
+  "furo",
+  "myst-parser",
+  "sphinx",
+  "sphinx-notfound-page",
+  "sphinxcontrib-towncrier",
+  "towncrier",
+]
+dev = ["attrs[tests]", "pre-commit-uv"]
+
+[project.urls]
+Documentation = "https://www.attrs.org/"
+Changelog = "https://www.attrs.org/en/stable/changelog.html"
+GitHub = "https://github.com/python-attrs/attrs"
+Funding = "https://github.com/sponsors/hynek"
+Tidelift = "https://tidelift.com/subscription/pkg/pypi-attrs?utm_source=pypi-attrs&utm_medium=pypi"
+
+
+[tool.hatch.version]
+source = "vcs"
+raw-options = { local_scheme = "no-local-version" }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/attr", "src/attrs"]
+
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/markdown"
+
+# PyPI doesn't support the <picture> tag.
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+text = """<p align="center">
+  <a href="https://www.attrs.org/">
+    <img src="https://raw.githubusercontent.com/python-attrs/attrs/main/docs/_static/attrs_logo.svg" width="35%" alt="attrs" />
+  </a>
+</p>
+"""
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.md"
+start-after = "<!-- teaser-begin -->"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+text = """
+
+## Release Information
+
+"""
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "CHANGELOG.md"
+pattern = "\n(###.+?\n)## "
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+text = """
+
+---
+
+[Full changelog →](https://www.attrs.org/en/stable/changelog.html)
+"""
+
+# Point sponsor image URLs to versions.
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = 'docs\/_static\/sponsors'
+replacement = 'https://www.attrs.org/en/$HFPR_VERSION/_static/sponsors'
+
+[[tool.sponcon.sponsors]]
+title = "Variomedia AG"
+url = "https://www.variomedia.de/"
+img = "Variomedia.svg"
+
+[[tool.sponcon.sponsors]]
+title = "Tidelift"
+url = "https://tidelift.com/?utm_source=lifter&utm_medium=referral&utm_campaign=hynek"
+img = "Tidelift.svg"
+
+[[tool.sponcon.sponsors]]
+title = "Klaviyo"
+url = "https://klaviyo.com/"
+img = "Klaviyo.svg"
+
+[[tool.sponcon.sponsors]]
+title = "Privacy Solutions"
+url = "https://privacy-solutions.org/"
+img = "Privacy-Solutions.svg"
+
+[[tool.sponcon.sponsors]]
+title = "emsys renewables"
+url = "https://www.emsys-renewables.com/"
+img = "emsys-renewables.svg"
+
+[[tool.sponcon.sponsors]]
+title = "FilePreviews"
+url = "https://filepreviews.io/"
+img = "FilePreviews.svg"
+
+[[tool.sponcon.sponsors]]
+title = "Polar"
+url = "https://polar.sh/"
+img = "Polar.svg"
+
+
+[tool.pytest.ini_options]
+addopts = ["-ra", "--strict-markers", "--strict-config"]
+xfail_strict = true
+testpaths = "tests"
+filterwarnings = ["once::Warning", "ignore:::pympler[.*]"]
+
+
+[tool.coverage.run]
+parallel = true
+branch = true
+source_pkgs = ["attr", "attrs"]
+
+[tool.coverage.paths]
+source = ["src", ".tox/py*/**/site-packages"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_lines = [
+  "pragma: no cover",
+  # PyPy is unacceptably slow under coverage.
+  "if PYPY:",
+  # not meant to be executed
+  ': \.\.\.$',
+  '^ +\.\.\.$',
+]
+
+
+[tool.interrogate]
+omit-covered-files = true
+verbose = 2
+fail-under = 100
+whitelist-regex = ["test_.*"]
+
+
+[tool.check-wheel-contents]
+toplevel = ["attr", "attrs"]
+
+
+[tool.ruff]
+src = ["src", "tests", "conftest.py", "docs"]
+line-length = 79
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "A001",    # shadowing is fine
+  "A002",    # shadowing is fine
+  "A003",    # shadowing is fine
+  "ANN",     # Mypy is better at this
+  "ARG",     # unused arguments are normal when implementing interfaces
+  "C901",    # we're complex software
+  "COM",     # ruff format takes care of our commas
+  "D",       # We prefer our own docstring style.
+  "E501",    # leave line-length enforcement to ruff format
+  "ERA001",  # we need to keep around some notes
+  "FBT",     # we don't hate bool args around here
+  "FIX",     # Yes, we want XXX as a marker.
+  "ISC001",  # conflicts with ruff format
+  "N",       # we need more naming freedom
+  "PD",      # we're not pandas
+  "PLR0912", # we're complex software
+  "PLR0913", # yes, many arguments, but most have defaults
+  "PLR0915", # we're complex software
+  "PLR2004", # numbers are sometimes fine
+  "PLW0603", # sometimes we need globals
+  "S307",    # eval FTW
+  "SLF001",  # private members are accessed by friendly functions
+  "TC",      # TYPE_CHECKING blocks break autodocs
+  "TD",      # we don't follow other people's todo style
+  "TRY301",  # I'm sorry, but this makes not sense for us.
+  "UP031",   # format() is slow as molasses; % and f'' FTW.
+]
+
+[tool.ruff.lint.per-file-ignores]
+"bench/**" = [
+  "INP001", # Benchmarks don't have to be importable.
+]
+"**/test_*" = [
+  "B015",    # pointless comparison in tests aren't pointless
+  "B017",    # pytest.raises(Exception) is fine
+  "B018",    # pointless expressions in tests aren't pointless
+  "DTZ",     # datetime best practices don't matter in tests
+  "EM",      # no need for exception msg hygiene in tests
+  "PLE0309", # hash doesn't have to return anything in tests
+  "PLR0124", # pointless comparison in tests aren't pointless
+  "PT011",   # broad is fine
+  "PT012",   # sometimes we need more than a single stmt
+  "RUF012",  # we don't do ClassVar annotations in tests
+  "S",       # security concerns don't matter in tests
+  "SIM201",  # sometimes we need to check `not ==`
+  "SIM202",  # sometimes we need to check `not ==`
+  "SIM300",  # Yoda rocks in asserts
+  "TRY",     # exception best practices don't matter in tests
+]
+
+"src/*/*.pyi" = ["ALL"] # TODO
+"tests/test_annotations.py" = ["FA100"]
+"tests/typing_example.py" = [
+  "E741",   # ambiguous variable names don't matter in type checks
+  "B018",   # useless expressions aren't useless in type checks
+  "B015",   # pointless comparison in type checks aren't pointless
+  "UP037",  # we test some older syntaxes on purpose
+]
+
+[tool.ruff.lint.isort]
+lines-between-types = 1
+lines-after-imports = 2
+
+
+[tool.towncrier]
+name = "attrs"
+directory = "changelog.d"
+filename = "CHANGELOG.md"
+start_string = "<!-- towncrier release notes start -->\n"
+template = "changelog.d/towncrier_template.md.jinja"
+title_format = ""
+issue_format = "[#{issue}](https://github.com/python-attrs/attrs/issues/{issue})"
+underlines = ["", "", ""]
+
+[[tool.towncrier.section]]
+path = ""
+
+[[tool.towncrier.type]]
+directory = "breaking"
+name = "Backwards-incompatible Changes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "deprecation"
+name = "Deprecations"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "change"
+name = "Changes"
+showcontent = true
+
+
+[tool.mypy]
+pretty = true
+disallow_untyped_defs = true
+check_untyped_defs = true

@@ -1,12 +1,16 @@
 // META: title=Cookie Store API: cookieListItem attributes
-// META: global=window,serviceworker
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: global=window
 
 'use strict';
 
 const kCurrentHostname = (new URL(self.location.href)).hostname;
 
 const kOneDay = 24 * 60 * 60 * 1000;
+const kFourHundredDays = 400 * kOneDay;
 const kTenYears = 10 * 365 * kOneDay;
+const kFourHundredDaysFromNow = Date.now() + kFourHundredDays;
 const kTenYearsFromNow = Date.now() + kTenYears;
 
 function assert_cookie_keys(cookie) {
@@ -26,6 +30,17 @@ promise_test(async testCase => {
   assert_equals(cookie.name, 'cookie-name');
   assert_equals(cookie.value, 'cookie-value');
   assert_cookie_keys(cookie);
+
+  const internalCookie = await test_driver.get_named_cookie('cookie-name');
+  assert_equals(internalCookie.name, 'cookie-name');
+  assert_equals(internalCookie.value, 'cookie-value');
+  assert_equals(internalCookie.path, '/');
+  // I'm not sure how to translate WebDriver domain to what we expect here.
+  // assert_equals(internalCookie.domain, '');
+  assert_true(internalCookie.secure);
+  assert_false(internalCookie.httpOnly);
+  assert_equals(internalCookie.expiry, undefined);
+  assert_equals(internalCookie.sameSite, 'Strict');
 }, 'CookieListItem - cookieStore.set defaults with positional name and value');
 
 promise_test(async testCase => {
@@ -39,6 +54,17 @@ promise_test(async testCase => {
   assert_equals(cookie.name, 'cookie-name');
   assert_equals(cookie.value, 'cookie-value');
   assert_cookie_keys(cookie);
+
+  const internalCookie = await test_driver.get_named_cookie('cookie-name');
+  assert_equals(internalCookie.name, 'cookie-name');
+  assert_equals(internalCookie.value, 'cookie-value');
+  assert_equals(internalCookie.path, '/');
+  // I'm not sure how to translate WebDriver domain to what we expect here.
+  // assert_equals(internalCookie.domain, '');
+  assert_true(internalCookie.secure);
+  assert_false(internalCookie.httpOnly);
+  assert_equals(internalCookie.expiry, undefined);
+  assert_equals(internalCookie.sameSite, 'Strict');
 }, 'CookieListItem - cookieStore.set defaults with name and value in options');
 
 promise_test(async testCase => {
@@ -53,6 +79,9 @@ promise_test(async testCase => {
   assert_equals(cookie.name, 'cookie-name');
   assert_equals(cookie.value, 'cookie-value');
   assert_cookie_keys(cookie);
+
+  const internalCookie = await test_driver.get_named_cookie('cookie-name');
+  assert_approx_equals(internalCookie.expiry, kFourHundredDaysFromNow, kOneDay);
 }, 'CookieListItem - cookieStore.set with expires set to a timestamp 10 ' +
    'years in the future');
 
@@ -68,6 +97,9 @@ promise_test(async testCase => {
   assert_equals(cookie.name, 'cookie-name');
   assert_equals(cookie.value, 'cookie-value');
   assert_cookie_keys(cookie);
+
+  const internalCookie = await test_driver.get_named_cookie('cookie-name');
+  assert_approx_equals(internalCookie.expiry, kFourHundredDaysFromNow, kOneDay);
 }, 'CookieListItem - cookieStore.set with expires set to a Date 10 ' +
    'years in the future');
 
@@ -83,6 +115,9 @@ promise_test(async testCase => {
   assert_equals(cookie.name, 'cookie-name');
   assert_equals(cookie.value, 'cookie-value');
   assert_cookie_keys(cookie);
+
+  const internalCookie = await test_driver.get_named_cookie('cookie-name');
+  assert_equals(internalCookie.domain, kCurrentHostname);
 }, 'CookieListItem - cookieStore.set with domain set to the current hostname');
 
 promise_test(async testCase => {
@@ -101,6 +136,10 @@ promise_test(async testCase => {
   assert_equals(cookie.name, 'cookie-name');
   assert_equals(cookie.value, 'cookie-value');
   assert_cookie_keys(cookie);
+
+  const internalCookie = await test_driver.get_named_cookie('cookie-name');
+  assert_equals(internalCookie.path, currentDirectory);
+
 }, 'CookieListItem - cookieStore.set with path set to the current directory');
 
 promise_test(async testCase => {
@@ -118,6 +157,9 @@ promise_test(async testCase => {
   assert_equals(cookie.name, 'cookie-name');
   assert_equals(cookie.value, 'cookie-value');
   assert_cookie_keys(cookie);
+
+  const internalCookie = await test_driver.get_named_cookie('cookie-name');
+  assert_equals(internalCookie.path, currentDirectory);
 }, 'CookieListItem - cookieStore.set does not add / to path if it does not end with /');
 
 ['strict', 'lax', 'none'].forEach(sameSiteValue => {
@@ -133,6 +175,9 @@ promise_test(async testCase => {
     assert_equals(cookie.name, 'cookie-name');
     assert_equals(cookie.value, 'cookie-value');
     assert_cookie_keys(cookie);
+
+    const internalCookie = await test_driver.get_named_cookie('cookie-name');
+    assert_equals(internalCookie.sameSite, sameSiteValue.charAt(0).toUpperCase() + sameSiteValue.slice(1));
   }, `CookieListItem - cookieStore.set with sameSite set to ${sameSiteValue}`);
 
 });
@@ -153,5 +198,8 @@ if (self.GLOBAL.isWindow()) {
     assert_equals(cookie.name, 'cookie-name');
     assert_equals(cookie.value, '1');
     assert_cookie_keys(cookie);
+
+    const internalCookie = await test_driver.get_named_cookie('cookie-name');
+    assert_approx_equals(internalCookie.expiry, kFourHundredDaysFromNow, kOneDay);
   }, "Test max-age attribute over the 400 days");
 }

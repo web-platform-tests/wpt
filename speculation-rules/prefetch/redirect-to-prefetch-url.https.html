@@ -10,6 +10,8 @@
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
 <script src="resources/redirect-helper.sub.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 
 <script>
 setup(() => assertSpeculationRulesIsSupported());
@@ -22,6 +24,14 @@ for (const prefetchTiming of
     ['redirect-received-before-navigation-start',
      'redirect-received-after-navigation-start']) {
   promise_test(async t => {
+    // Subscribe to the BiDi prefetch_status_updated event and set up a promise to await it.
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let prefetchStatusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
+
     const {agent,
            prefetchInitialUrl,
            prefetchFinalUrl,
@@ -31,6 +41,9 @@ for (const prefetchTiming of
     await agent.forceSinglePrefetch(prefetchInitialUrl);
     await agent.navigate(redirectToPrefetchInitialUrl,
                          {expectedDestinationUrl: prefetchFinalUrl});
+
+    // Wait for the BiDi prefetch_status_updated event before assertions
+    await prefetchStatusPromise;
 
     assert_not_prefetched(await agent.getRequestHeaders(),
         'Prefetched response should not be used by navigation.');

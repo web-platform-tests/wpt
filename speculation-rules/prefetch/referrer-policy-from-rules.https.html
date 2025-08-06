@@ -8,7 +8,8 @@
 <script src="/common/get-host-info.sub.js"></script>
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
-
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 <!--Split test cases due to the use of timeouts in speculation rules test utilities.-->
 <meta name="variant" content="?1-1">
 <meta name="variant" content="?2-2">
@@ -25,6 +26,14 @@
 setup(() => assertSpeculationRulesIsSupported());
 
 subsetTest(promise_test, async t => {
+  // Subscribe to the BiDi prefetch_status_updated event and set up a promise to await it.
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("strict-origin-when-cross-origin");
   const expectedReferrer = agent.getExecutorURL().origin + "/";
@@ -33,12 +42,22 @@ subsetTest(promise_test, async t => {
   await agent.forceSinglePrefetch(nextURL, { referrer_policy: "strict-origin" });
   await agent.navigate(nextURL);
 
+  // Wait for the BiDi prefetch_status_updated event before assertions
+  await prefetchStatusPromise;
+
   const headers = await agent.getRequestHeaders();
   assert_prefetched(headers, "must be prefetched");
   assert_equals(headers.referer, expectedReferrer, "must send the origin as the referrer");
 }, 'with "strict-origin" referrer policy in rule set overriding "strict-origin-when-cross-origin" of referring page');
 
 subsetTest(promise_test, async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   const next_url = agent.getExecutorURL({ page: 2 });
   await agent.execute_script((url) => {
@@ -49,6 +68,8 @@ subsetTest(promise_test, async t => {
   await new Promise(resolve => t.step_timeout(resolve, 2000));
   await agent.navigate(next_url);
 
+  await prefetchStatusPromise;
+
   const headers = await agent.getRequestHeaders();
   assert_prefetched(headers, 'must be prefetched');
   const expected_referrer = next_url.origin + '/';
@@ -56,12 +77,21 @@ subsetTest(promise_test, async t => {
 }, 'with "strict-origin" referrer policy in rule set override "no-referrer" of link');
 
 subsetTest(promise_test, async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("unsafe-url");
 
   const nextURL = agent.getExecutorURL({ hostname: get_host_info().NOTSAMESITE_HOST, page: 2 });
   await agent.forceSinglePrefetch(nextURL, { referrer_policy: "no-referrer" });
   await agent.navigate(nextURL);
+
+  await prefetchStatusPromise;
 
   // This referring page's referrer policy would not be eligible for
   // cross-site prefetching, but setting a sufficiently strict policy in the
@@ -72,6 +102,13 @@ subsetTest(promise_test, async t => {
 }, 'with "no-referrer" referrer policy in rule set overriding "unsafe-url" of cross-site referring page');
 
 subsetTest(promise_test, async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("strict-origin-when-cross-origin");
 
@@ -79,11 +116,20 @@ subsetTest(promise_test, async t => {
   await agent.forceSinglePrefetch(nextURL, { referrer_policy: "no-referrrrrrrer" });
   await agent.navigate(nextURL);
 
+  await prefetchStatusPromise;
+
   const headers = await agent.getRequestHeaders();
   assert_not_prefetched(headers, "must not be prefetched");
 }, 'unrecognized policies invalidate the rule');
 
 subsetTest(promise_test, async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("strict-origin");
   const expectedReferrer = agent.getExecutorURL().origin + "/";
@@ -97,12 +143,21 @@ subsetTest(promise_test, async t => {
   await new Promise(resolve => t.step_timeout(resolve, 2000));
   await agent.navigate(nextURL);
 
+  await prefetchStatusPromise;
+
   const headers = await agent.getRequestHeaders();
   assert_prefetched(headers, "must be prefetched");
   assert_equals(headers.referer, expectedReferrer, "must send the origin as the referrer");
 }, 'unrecognized policies in link referrerpolicy attribute are ignored');
 
 subsetTest(promise_test, async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("strict-origin-when-cross-origin");
 
@@ -110,11 +165,20 @@ subsetTest(promise_test, async t => {
   await agent.forceSinglePrefetch(nextURL, { referrer_policy: "never" });
   await agent.navigate(nextURL);
 
+  await prefetchStatusPromise;
+
   const headers = await agent.getRequestHeaders();
   assert_not_prefetched(headers, "must not be prefetched");
 }, 'treat legacy referrer policy values as invalid');
 
 subsetTest(promise_test, async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("strict-origin");
   const expectedReferrer = agent.getExecutorURL().origin + "/";
@@ -122,6 +186,8 @@ subsetTest(promise_test, async t => {
   const nextURL = agent.getExecutorURL({ hostname: get_host_info().NOTSAMESITE_HOST, page: 2 });
   await agent.forceSinglePrefetch(nextURL, { referrer_policy: "unsafe-url" });
   await agent.navigate(nextURL);
+
+  await prefetchStatusPromise;
 
   // This referring page's referrer policy would normally make it eligible for
   // cross-site prefetching, but setting an unacceptable policy in the rule
@@ -132,6 +198,13 @@ subsetTest(promise_test, async t => {
 }, 'with "unsafe-url" referrer policy in rule set overriding "strict-origin" of cross-site referring page');
 
 subsetTest(promise_test, async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("strict-origin");
   const expectedReferrer = agent.getExecutorURL().origin + "/";
@@ -141,6 +214,8 @@ subsetTest(promise_test, async t => {
   // treated as if the key were omitted.
   await agent.forceSinglePrefetch(nextURL, { referrer_policy: "" });
   await agent.navigate(nextURL);
+
+  await prefetchStatusPromise;
 
   const headers = await agent.getRequestHeaders();
   assert_prefetched(headers, "must be prefetched");

@@ -1,4 +1,3 @@
-console.log("testdriver-extra.js loaded");
 "use strict";
 
 (function() {
@@ -236,7 +235,6 @@ console.log("testdriver-extra.js loaded");
     window.test_driver_internal.in_automation = true;
 
     window.test_driver_internal.bidi.speculation.prefetch_status_updated.subscribe = function(params) {
-        console.log("Testdriver extra: subscribe()");
         return subscribe_global({
             ...params, events: ['speculation.prefetchStatusUpdated']
         });
@@ -245,7 +243,7 @@ console.log("testdriver-extra.js loaded");
 
     window.test_driver_internal.bidi.speculation.prefetch_status_updated.on = function(callback) {
         const on_event = (event) => {
-            console.log("Testdriver extra: prefetch_status_updated event received");
+            // console.log("Testdriver extra: prefetch_status_updated event received");
             callback(event.payload);
         };
         event_target.addEventListener(

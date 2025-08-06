@@ -2,6 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/common/utils.js"></script>
@@ -19,10 +20,21 @@
   // This is split across four test variants due to the test timeouts.
   let { from_protocol, to_protocol } = Object.fromEntries(new URLSearchParams(location.search));
   promise_test(async t => {
+    // Subscribe to the BiDi prefetch_status_updated event and set up a promise to await it.
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let prefetchStatusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
+
     let agent = await spawnWindow(t, { protocol: from_protocol });
     let nextUrl = agent.getExecutorURL({ protocol: to_protocol, page: 2 });
     await agent.forceSinglePrefetch(nextUrl);
     await agent.navigate(nextUrl);
+
+    // Wait for the BiDi prefetch_status_updated event before assertions
+    await prefetchStatusPromise;
 
     if (to_protocol == "https") {
       assert_prefetched(await agent.getRequestHeaders(), "Prefetch should work for HTTPS urls.");

@@ -8,6 +8,8 @@
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 
 <meta name="variant" content="?same-site">
 <meta name="variant" content="?cross-site">
@@ -16,6 +18,14 @@
 setup(() => assertSpeculationRulesIsSupported());
 
 promise_test(async t => {
+  // Subscribe to the BiDi prefetch_status_updated event and set up a promise to await it.
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const is_same_site = location.search === '?same-site';
   const initiator = await spawnWindow(t);
   const url1 = initiator.getExecutorURL({
@@ -49,6 +59,8 @@ promise_test(async t => {
       'Navigation response should not have been from the HTTP Cache.');
   }
 
+  // Wait for the BiDi prefetch_status_updated event before the next assertions
+  await prefetchStatusPromise;
 
   await initiator.forceSinglePrefetch(url2);
   initiator.navigate(url2);

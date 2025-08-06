@@ -15,10 +15,6 @@
   promise_test(async t => {
     await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
     
-    // let Got_statuses;
-    // const Got_statuses_promise = new Promise((resolve) => {
-    //   Got_statuses = { resolve };
-    ;
     const eventStatus = [];
 
     let agent = await spawnWindow(t, { protocol: "https" });
@@ -42,7 +38,6 @@
         assert_prefetched(headers, "Prefetch should work for HTTPS urls.");
         
         removeHandler();
-        // Got_statuses.resolve();
       }
     });
     await agent.forceSinglePrefetch(nextUrl, {}, true);

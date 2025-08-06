@@ -660,7 +660,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">REPEAT_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">crashtest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">crashtest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">subsuite</span><span class="o">-</span><span class="n">file</span> <span class="n">SUBSUITE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">subsuite</span> <span class="n">SUBSUITES</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">small</span><span class="o">-</span><span class="n">subsuite</span><span class="o">-</span><span class="n">size</span> <span class="n">SMALL_SUBSUITE_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
@@ -688,6 +688,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">inject</span><span class="o">-</span><span class="n">script</span> <span class="n">INJECT_SCRIPT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">headless</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">headless</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">instrument</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">file</span> <span class="n">INSTRUMENT_TO_FILE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">suppress</span><span class="o">-</span><span class="n">handler</span><span class="o">-</span><span class="n">traceback</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">suppress</span><span class="o">-</span><span class="n">handler</span><span class="o">-</span><span class="n">traceback</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">update</span><span class="o">-</span><span class="n">status</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">crash</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">update</span><span class="o">-</span><span class="n">status</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">crash</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">ws</span><span class="o">-</span><span class="n">extra</span> <span class="n">WS_EXTRA</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="o">-</span><span class="n">build</span> <span class="o">|</span> <span class="o">--</span><span class="n">release</span><span class="o">-</span><span class="n">build</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">total</span><span class="o">-</span><span class="n">chunks</span> <span class="n">TOTAL_CHUNKS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">this</span><span class="o">-</span><span class="n">chunk</span> <span class="n">THIS_CHUNK</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">chunk</span><span class="o">-</span><span class="nb">type</span> <span class="p">{</span><span class="n">none</span><span class="p">,</span><span class="nb">hash</span><span class="p">,</span><span class="n">id_hash</span><span class="p">,</span><span class="n">dir_hash</span><span class="p">}]</span>
@@ -893,9 +894,9 @@ channel.) This flag overrides –browser-channel.</p>
 <h4>Test Selection<a class="headerlink" href="#test-selection" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: crashtest, testharness, wdspec, reftest, print-reftest</p>
+<dd><p>Possible choices: crashtest, testharness, reftest, print-reftest, wdspec</p>
 <p>Test types to run</p>
-<p>Default: {‘crashtest’, ‘testharness’, ‘wdspec’, ‘reftest’, ‘print-reftest’}</p>
+<p>Default: {‘crashtest’, ‘testharness’, ‘reftest’, ‘print-reftest’, ‘wdspec’}</p>
 </dd>
 <dt><kbd>--subsuite-file</kbd></dt>
 <dd><p>Path to JSON file containing subsuite configuration</p>
@@ -1106,6 +1107,13 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 <dt><kbd>--no-suppress-handler-traceback</kbd></dt>
 <dd><p>Write the stacktrace for exceptions in server handlers</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--update-status-on-crash</kbd></dt>
+<dd><p>Update test status to CRASH if a crash dump is found</p>
+</dd>
+<dt><kbd>--no-update-status-on-crash</kbd></dt>
+<dd><p>Don’t update test status to CRASH if a crash dump is found</p>
 <p>Default: True</p>
 </dd>
 <dt><kbd>--ws-extra</kbd></dt>

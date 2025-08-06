@@ -2312,7 +2312,7 @@
         /**
          * Test properties of API's accessibility node. This test API endpoint
          * is still under development and subject to change, and for now should
-         * only be used for core-aam and html-aam tests.
+         * only be used for /core-aam and /html-aam tests.
          *
          * @param {id}         id of element
          * @param {test}       an object of tests

@@ -6,7 +6,7 @@
 
 'use strict';
 
-const currentHostname = (new URL(self.location.href)).hostname;
+const currentHostname = location.hostname;
 
 const oneDayInSeconds = 24 * 60 * 60;
 const fourHundredDaysInSeconds = 400 * oneDayInSeconds;
@@ -36,8 +36,7 @@ promise_test(async testCase => {
   assert_equals(internalCookie.name, 'cookie-name');
   assert_equals(internalCookie.value, 'cookie-value');
   assert_equals(internalCookie.path, '/');
-  // TODO: I'm not sure how to translate WebDriver domain to what we expect here.
-  // assert_equals(internalCookie.domain, '');
+  assert_equals(internalCookie.domain, currentHostname);
   assert_true(internalCookie.secure);
   assert_false(internalCookie.httpOnly);
   assert_equals(internalCookie.expiry, undefined);
@@ -60,8 +59,7 @@ promise_test(async testCase => {
   assert_equals(internalCookie.name, 'cookie-name');
   assert_equals(internalCookie.value, 'cookie-value');
   assert_equals(internalCookie.path, '/');
-  // TODO: I'm not sure how to translate WebDriver domain to what we expect here.
-  // assert_equals(internalCookie.domain, '');
+  assert_equals(internalCookie.domain, currentHostname);
   assert_true(internalCookie.secure);
   assert_false(internalCookie.httpOnly);
   assert_equals(internalCookie.expiry, undefined);

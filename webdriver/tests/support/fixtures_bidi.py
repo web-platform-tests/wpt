@@ -15,6 +15,7 @@ from webdriver.bidi.error import (
     InvalidArgumentException,
     NoSuchFrameException,
     NoSuchInterceptException,
+    NoSuchNetworkCollectorException,
     NoSuchRequestException,
     NoSuchScriptException,
     NoSuchUserContextException,
@@ -734,6 +735,44 @@ async def setup_network_test(
     # cleanup
     for remove_listener in listeners:
         remove_listener()
+
+
+@pytest_asyncio.fixture
+async def add_data_collector(bidi_session):
+    """Add a network data collector, and ensure the collector is removed at the
+    end of the test."""
+
+    collectors = []
+
+    async def add_data_collector(
+        collector_type="blob",
+        data_types=["response"],
+        max_encoded_data_size=1000,
+        contexts=None,
+        user_contexts=None,
+    ):
+        nonlocal collectors
+        collector = await bidi_session.network.add_data_collector(
+            collector_type=collector_type,
+            data_types=data_types,
+            max_encoded_data_size=max_encoded_data_size,
+            contexts=contexts,
+            user_contexts=user_contexts,
+        )
+        collectors.append(collector)
+
+        return collector
+
+    yield add_data_collector
+
+    # Remove all added collectors at the end of the test
+    for collector in collectors:
+        try:
+            await bidi_session.network.remove_data_collector(collector=collector)
+        except NoSuchNetworkCollectorException:
+            # Ignore exceptions in case a specific collector was already removed
+            # during the test.
+            pass
 
 
 @pytest_asyncio.fixture

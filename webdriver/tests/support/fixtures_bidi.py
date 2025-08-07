@@ -672,6 +672,51 @@ async def setup_beforeunload_page(bidi_session, url):
 
 
 @pytest_asyncio.fixture
+async def setup_collected_response(
+    bidi_session,
+    subscribe_events,
+    wait_for_event,
+    wait_for_future_safe,
+    top_context,
+    url,
+    fetch,
+    setup_network_test,
+    add_data_collector,
+):
+    """Adds a global data collector and triggers a request which should match
+    the collector and waits for the network.responseCompleted event.
+    Collector can be configured (size, types) when calling the fixture.
+    Returns the request id of the triggered request.
+    """
+
+    async def _setup_collected_response(
+        collector_type="blob",
+        data_types=["response"],
+        max_encoded_data_size=10000,
+        fetch_url=url("/webdriver/tests/bidi/network/support/empty.txt"),
+        context=top_context,
+    ):
+        collector = await add_data_collector(
+            collector_type=collector_type,
+            data_types=data_types,
+            max_encoded_data_size=max_encoded_data_size,
+        )
+        await setup_network_test(
+            events=[
+                "network.responseCompleted",
+            ]
+        )
+        on_response_completed = wait_for_event("network.responseCompleted")
+
+        await fetch(fetch_url, context=context)
+        response_completed_event = await on_response_completed
+        request = response_completed_event["request"]["request"]
+        return [request, collector]
+
+    return _setup_collected_response
+
+
+@pytest_asyncio.fixture
 async def setup_network_test(
     bidi_session,
     subscribe_events,

@@ -52,7 +52,7 @@ def do_delayed_imports(logger, test_paths):
             (", ".join(failed), serve_root))
         sys.exit(1)
 
-def generate_hash_certificate(host: str) -> str:
+def generate_hash_certificate(host: str) -> Dict[str, Any]:
     private_key = ec.generate_private_key(ec.SECP256R1())
     subject = issuer = x509.Name([
         x509.NameAttribute(NameOID.COUNTRY_NAME, "AA"),
@@ -74,15 +74,17 @@ def generate_hash_certificate(host: str) -> str:
     )
     fingerprint = certificate.fingerprint(hashes.SHA256())
     server_certificate_hash = ":".join(f"{byte:02x}" for byte in fingerprint)
-    return { "certificate": certificate.public_bytes(
-             encoding=serialization.Encoding.PEM
-             ),
-             "private_key": private_key.private_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.TraditionalOpenSSL,
-                encryption_algorithm=serialization.NoEncryption()),
-             "hash": server_certificate_hash
-            }
+    return {
+        "certificate": 
+        certificate.public_bytes(
+            encoding=serialization.Encoding.PEM
+        ),
+        "private_key": private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption()),
+        "hash": server_certificate_hash
+    }
 
 def serve_path(test_paths):
     return test_paths["/"].tests_path

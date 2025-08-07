@@ -34,7 +34,7 @@ from aioquic.tls import SessionTicket  # type: ignore
 from tools import localpaths  # noqa: F401
 from wptserve import stash
 from .capsule import H3Capsule, H3CapsuleDecoder, CapsuleType
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler
 
 """
 A WebTransport over HTTP/3 server for testing.
@@ -530,7 +530,7 @@ class WebTransportH3Server:
 
     def __init__(self, host: str, port: int, doc_root: str, cert_mode: WebTransportCertificateGeneration,
                  cert_path: Optional[str], key_path: Optional[str], logger: Optional[logging.Logger],
-                 cert_hash_info: Optional[Dict]) -> None:
+                 cert_hash_info: Optional[Dict[str,Any]]) -> None:
         self.host = host
         self.port = port
         self.doc_root = doc_root
@@ -580,10 +580,10 @@ class WebTransportH3Server:
 
         if self.cert_mode == WebTransportCertificateGeneration.USE_PREGENERATED:
             configuration.load_cert_chain(self.cert_path, self.key_path)
-        else: # GENERATE_VALID_SERVER_CERTIFICATE_HASH_CERT case
+        else:  # GENERATE_VALID_SERVER_CERTIFICATE_HASH_CERT case
             assert self.cert_mode == WebTransportCertificateGeneration.GENERATE_VALID_SERVER_CERTIFICATE_HASH_CERT, \
-                    f"Unexpected mode for certificate generation: {self.cert_mode}"
-            configuration.private_key =  serialization.load_pem_private_key(self.cert_hash_info["private_key"],
+                f"Unexpected mode for certificate generation: {self.cert_mode}"
+            configuration.private_key = serialization.load_pem_private_key(self.cert_hash_info["private_key"],
                                                                             password=None
                                                                             )
             configuration.certificate = x509.load_pem_x509_certificate(self.cert_hash_info["certificate"])

@@ -34,7 +34,6 @@ from aioquic.tls import SessionTicket  # type: ignore
 from tools import localpaths  # noqa: F401
 from wptserve import stash
 from .capsule import H3Capsule, H3CapsuleDecoder, CapsuleType
-from http.server import BaseHTTPRequestHandler
 
 """
 A WebTransport over HTTP/3 server for testing.
@@ -583,9 +582,10 @@ class WebTransportH3Server:
         else:  # GENERATE_VALID_SERVER_CERTIFICATE_HASH_CERT case
             assert self.cert_mode == WebTransportCertificateGeneration.GENERATE_VALID_SERVER_CERTIFICATE_HASH_CERT, \
                 f"Unexpected mode for certificate generation: {self.cert_mode}"
-            configuration.private_key = serialization.load_pem_private_key(self.cert_hash_info["private_key"],
-                                                                            password=None
-                                                                            )
+            configuration.private_key = serialization.load_pem_private_key(
+                self.cert_hash_info["private_key"],
+                password=None
+            )
             configuration.certificate = x509.load_pem_x509_certificate(self.cert_hash_info["certificate"])
             configuration.certificate_chain = []
 

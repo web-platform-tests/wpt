@@ -75,7 +75,7 @@ def generate_hash_certificate(host: str) -> Dict[str, Any]:
     fingerprint = certificate.fingerprint(hashes.SHA256())
     server_certificate_hash = ":".join(f"{byte:02x}" for byte in fingerprint)
     return {
-        "certificate": 
+        "certificate":
         certificate.public_bytes(
             encoding=serialization.Encoding.PEM
         ),

@@ -10,7 +10,7 @@ import socket
 import sys
 import time
 import datetime
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import hashes, serialization

@@ -104,7 +104,7 @@
                         const action = "get";
                         const options = {
                             digital: {
-                                // Results in TypeError when allowed (since the requests list is empty), 
+                                // Results in TypeError when allowed (since the requests list is empty),
                                 // NotAllowedError when disallowed
                                 requests: [],
                             },
@@ -123,7 +123,7 @@
                         const { name, message } = data;
                         const fullMessage = `${iframe.outerHTML} - ${message}`;
                         if (expectIsAllowed) {
-                            // When the call is allowed, result in a TypeError since no valid requests 
+                            // When the call is allowed, result in a TypeError since no valid requests
                             // were passed to the call.
                             assert_true(name == "TypeError", fullMessage);
                         } else {

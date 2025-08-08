@@ -63,7 +63,8 @@ def env_extras(**kwargs):
 
 
 def env_options():
-    return {}
+# prevents failure on certificate building for webtransport
+    return {"server_host": "127.0.0.1"}
 
 
 class OperaBrowser(ChromeBrowser):

@@ -58,11 +58,8 @@ for (const el of els) {
     const selector = `:heading(${t.args.join(', ')})`;
     test(() => {
       const matches = el.matches(selector);
-      let shouldMatch = false;
       const expectMatchLevel = parseInt(el.dataset.expectMatch, 10);
-      if (t.match.includes(expectMatchLevel)) {
-        shouldMatch = true;
-      }
+      const shouldMatch = t.match.includes(expectMatchLevel);
       assert_equals(matches, shouldMatch, selector);
     }, testName + ' ' + selector);
   }

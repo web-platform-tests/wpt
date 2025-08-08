@@ -161,6 +161,11 @@ scheme host and port.""")
                                       action="append",
                                       choices=["not-implementing", "backlog", "implementing"],
                                       help="Skip tests that have the given implementation status")
+    test_selection_group.add_argument("--enable-accessibility-api",
+                                      dest="enable_accessibility_api",
+                                      action="store_true",
+                                      default=None,
+                                      help="Enable test infrastructure and browser configurations for accessibility API tests")
     # TODO(bashi): Remove this when WebTransport over HTTP/3 server is enabled by default.
     test_selection_group.add_argument("--enable-webtransport-h3",
                                       action="store_true",
@@ -283,8 +288,6 @@ scheme host and port.""")
                               help="Don't update test status to CRASH if a crash dump is found")
     config_group.add_argument("--ws-extra", action="append",
                               help="Extra paths containing websockets handlers")
-    config_group.add_argument("--force-accessibility", action="store_true",
-                              dest="force_accessibility",help="Turn on accessibility.")
 
     build_type = parser.add_mutually_exclusive_group()
     build_type.add_argument("--debug-build", dest="debug", action="store_true",

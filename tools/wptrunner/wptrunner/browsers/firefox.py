@@ -167,7 +167,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
         cache_screenshots = True
         if run_info_data["os"] == "android":
             try:
-                major_version  = int(run_info_data["version"].split(".", 1)[0])
+                major_version = int(run_info_data["version"].split(".", 1)[0])
             except ValueError:
                 pass
             else:

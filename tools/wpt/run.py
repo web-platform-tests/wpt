@@ -949,6 +949,10 @@ def setup_wptrunner(venv, **kwargs):
     if not venv.skip_virtualenv_setup:
         requirements = [os.path.join(wpt_root, "tools", "wptrunner", "requirements.txt")]
         requirements.extend(setup_cls.requirements())
+
+        if kwargs["enable_accessibility_api"]:
+            requirements.append(os.path.join(wpt_root, "tools", "wptrunner", "requirements_platform_accessibility.txt"))
+
         venv.install_requirements(*requirements)
 
     affected_revish = kwargs.get("affected")

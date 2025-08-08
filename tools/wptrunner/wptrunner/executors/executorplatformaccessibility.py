@@ -9,13 +9,10 @@ mac = False
 windows = False
 if platform == "linux":
     linux = True
-    from .platformaccessibility.executoratspi import AtspiExecutorImpl
 if platform == "darwin":
     mac = True
-    from .platformaccessibility.executoraxapi import AXAPIExecutorImpl
 if platform == "win32":
     windows = True
-    from .platformaccessibility.executorwindowsaccessibility import WindowsAccessibilityExecutorImpl
 
 def valid_api_for_platform(api):
     if (linux and api == "Atspi"):
@@ -33,13 +30,37 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
     def setup(self):
         self.product_name = self.parent.product_name
         self.impl = None
+        self.__init_platform_executor()
+
+
+    def __init_platform_executor(self):
         if linux:
+            try:
+                from .platformaccessibility.executoratspi import AtspiExecutorImpl
+            except ModuleNotFoundError:
+                self.logger.warning("Accessibility API testing was not enabled, accessibility API tests will fail.")
+                return
+
             self.impl = AtspiExecutorImpl()
             self.impl.setup(self.product_name, self.logger)
+
         if mac:
+            try:
+                from .platformaccessibility.executoraxapi import AXAPIExecutorImpl
+            except ModuleNotFoundError:
+                self.logger.warning("Accessibility API testing was not enabled, accessibility API tests will fail.")
+                return
+
             self.impl = AXAPIExecutorImpl()
             self.impl.setup(self.product_name, self.logger)
+
         if windows:
+            try:
+                from .platformaccessibility.executorwindowsaccessibility import WindowsAccessibilityExecutorImpl
+            except ModuleNotFoundError:
+                self.logger.warning("Accessibility API testing was not enabled, accessibility API tests will fail.")
+                return
+
             self.impl = WindowsAccessibilityExecutorImpl()
             self.impl.setup(self.product_name, self.logger)
 
@@ -49,5 +70,12 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
         # be fixed with a "not applicable".
         if not valid_api_for_platform(api):
             return ""
+
+        # self.impl will not exist if --enable-accessibility-api was not included
+        # or the necessary python requirements for accessibility API tests have not
+        # been installed.
+        if (not self.impl):
+            subtests = len(test[api]) if test[api] else 1
+            return ["Accessibility API testing not enabled."] * subtests
 
         return self.impl.test_accessibility_api(dom_id, test, api, url)

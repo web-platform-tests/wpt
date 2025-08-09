@@ -4,24 +4,22 @@
 <meta charset="utf-8">
 <title>CSS Test: using 'first-except' property of named strings</title>
 <link rel="author" title="Dave Cramer" href="mailto:dauwhe@gmail.com">
-<link rel="help" href="http://www.w3.org/TR/css-gcpm-3/#string-first-except">
-<link rel="match" href="reference/using-strings-004-ref.html"/>
+<link rel="author" title="Mike Bremford" href="http://bfo.com">
 <meta name="flags" content="paged">
-<meta name="assert" content="Test checks that if string is set to first-except, it is omitted on the page where the string is set, but appears on subsequent pages">
 <style>
+  @page :first {
+   margin: 72px;
+   @top-center {
+   content: none;
+   }
+  }
   @page {
    margin: 72px;
    @top-center {
-   content: string(title, first-except);
+   content: "Chapter Title";
    }
   }
-
- h1 {
- string-set: title content();
- }
-
 #s2, #s3, #s4 { page-break-before: always; }
-
 </style>
 </head>
 <body>

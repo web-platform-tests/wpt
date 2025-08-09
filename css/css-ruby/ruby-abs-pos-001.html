@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Ruby Test: absolutely positioned ruby base unit boxes and absolutely positioned ruby text unit boxes inside a relatively positioned ruby container element</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-ruby-1/#formatting-context">
+  <link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+  <link rel="match" href="reference/ruby-abs-pos-001-ref.html">
+
+  <meta content="" name="flags">
+  <meta content="This test checks that the containing block for internal ruby boxes (ruby base units and ruby text units) when the ruby container element is relatively positioned is the ruby container element itself.">
+
+  <style>
+  body
+    {
+      font-family: Ahem;
+    }
+
+  div , ruby
+    {
+      position: relative;
+    }
+
+  div
+    {
+      border: black dotted 2px;
+      color: blue;
+      font-size: 60px;
+      line-height: 2;
+      margin-bottom: 8px;
+    }
+
+  ruby
+    {
+      color: lime;
+    }
+
+  rb#first-subtest, rt#second-subtest
+    {
+      color: orange;
+      left: 100%;
+      position: absolute;
+    }
+
+  rb#third-subtest, rt#fourth-subtest
+    {
+      color: orange;
+      position: absolute;
+      right: 0%;
+    }
+
+  /*
+
+    Color meaning
+    -------------
+
+    A blue rectangle == a glyph before or after a ruby container element.
+    Such glyph may be overlapped by an absolutely positioned internal ruby
+    unit box.
+
+    A lime square == a statically positioned ruby base unit or ruby text unit
+
+    An orange square == an absolutely positioned ruby base unit or ruby text unit
+
+  */
+
+  </style>
+
+  <div id="first">A<ruby><rb id="first-subtest">B<rt>C</ruby>D</div>
+
+  <div id="second">E<ruby><rb>F<rt id="second-subtest">G</ruby>H</div>
+
+  <div id="third">I<ruby><rb id="third-subtest">J<rt>K</ruby>L</div>
+
+  <div id="fourth">M<ruby><rb>N<rt id="fourth-subtest">O</ruby>Q</div>

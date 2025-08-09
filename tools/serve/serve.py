@@ -883,6 +883,11 @@ class ServerProc:
             logger.critical(traceback.format_exc())
             raise
 
+        # Handle case where WebSocket servers return None due to configuration issues
+        if self.daemon is None:
+            logger.info(f"Server {self.scheme} on port {port} was not started due to configuration issues")
+            return
+
         if self.daemon:
             try:
                 self.daemon.start()
@@ -1140,30 +1145,54 @@ class WebSocketDaemon:
 
 
 def start_ws_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
+    # Validate ws_doc_root configuration before attempting to spawn WebSocketDaemon
+    ws_doc_root = config.paths.get("ws_doc_root")
+    
+    if ws_doc_root is None:
+        logger.warning("WebSocket server not started: ws_doc_root is not configured")
+        return None
+    
+    # Validate that the ws_doc_root path exists
+    if not os.path.exists(ws_doc_root):
+        logger.warning(f"WebSocket server not started: ws_doc_root path does not exist: {ws_doc_root}")
+        return None
+    
     try:
         return WebSocketDaemon(host,
                                str(port),
                                repo_root,
-                               config.paths["ws_doc_root"],
+                               ws_doc_root,
                                bind_address,
                                ssl_config=None,
                                extra_handler_paths=config.paths["ws_extra"])
     except Exception as error:
-        logger.critical(f"start_ws_server: Caught exception from WebSocketDomain: {error}")
+        logger.critical(f"start_ws_server: Caught exception from WebSocketDaemon: {error}")
         startup_failed(logger)
 
 
 def start_wss_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
+    # Validate ws_doc_root configuration before attempting to spawn WebSocketDaemon
+    ws_doc_root = config.paths.get("ws_doc_root")
+    
+    if ws_doc_root is None:
+        logger.warning("WebSocket Secure server not started: ws_doc_root is not configured")
+        return None
+    
+    # Validate that the ws_doc_root path exists
+    if not os.path.exists(ws_doc_root):
+        logger.warning(f"WebSocket Secure server not started: ws_doc_root path does not exist: {ws_doc_root}")
+        return None
+    
     try:
         return WebSocketDaemon(host,
                                str(port),
                                repo_root,
-                               config.paths["ws_doc_root"],
+                               ws_doc_root,
                                bind_address,
                                config.ssl_config,
                                extra_handler_paths=config.paths["ws_extra"])
     except Exception as error:
-        logger.critical(f"start_wss_server: Caught exception from WebSocketDomain: {error}")
+        logger.critical(f"start_wss_server: Caught exception from WebSocketDaemon: {error}")
         startup_failed(logger)
 
 
@@ -1295,9 +1324,15 @@ class ConfigBuilder(config.ConfigBuilder):
                 )
 
     def _get_ws_doc_root(self, data):
-        if data["ws_doc_root"] is not None:
+        # Handle explicit null configuration
+        if data["ws_doc_root"] is None:
+            # Return None to indicate no WebSocket handlers should be loaded
+            # This allows the server startup functions to handle this gracefully
+            return None
+        elif data["ws_doc_root"] is not None:
             return data["ws_doc_root"]
         else:
+            # Fallback to default path when ws_doc_root is not specified
             return os.path.join(data["doc_root"], "websockets", "handlers")
 
     def _get_paths(self, data):

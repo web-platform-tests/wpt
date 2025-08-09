@@ -52,6 +52,23 @@
 </svg>
 <br>
 
+<h2>SVG a[aria-labelledby="{[aria-label]} {[aria-label]} {[xlink:title]} {* > [title]}"]</h2>
+<svg viewbox="0 0 300 100">
+  <a id="nolan" href="#" aria-label="Nolan"><circle cx="26" cy="26" r="25"></circle></a>
+  <a id="gilliam" href="#" aria-label="Gilliam"><ellipse cx="250" cy="50" rx="30" ry="15"></ellipse></a>
+  <a id="kaufman" href="#" xlink:title="Kaufman"><rect x="60" y="1" width="50" height="50"></rect></a>
+  <polygon id="villeneuve" points="100,100 150,25 150,75 200,0" fill="none" stroke="black"><title>Villeneuve</title></polygon>
+</svg><br>
+<svg viewbox="0 0 200 90">
+  <a href="#" aria-labelledby="nolan gilliam kaufman villeneuve" data-expectedlabel="Nolan Gilliam Kaufman Villeneuve" xlink:title="group link label" data-testname="[aria-labelledby=&quot;{[aria-label]} {[xlink:title]} {* > [title]}&quot;] > g" class="ex">
+  <g fill="white" stroke="green" stroke-width="5">
+    <circle cx="40" cy="40" r="25" />
+    <circle cx="60" cy="60" r="25" />
+  </g>
+  </a>
+</svg>
+<br>
+
 <script>
 AriaUtils.verifyLabelsBySelector(".ex");
 </script>

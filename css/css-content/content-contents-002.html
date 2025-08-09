@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Test the "contents" value of content can be interleaved with generated content</title>
+  <link rel="author" title="Mike Bremford" href="http://bfo.com">
+  <link rel="help" href="https://drafts.csswg.org/css-content-3/#element-content">
+  <meta name="flags" content="Ahem">
+  <meta name="assert" content="The 'contents' value of content can be interleaved with generated content">
+  <link rel="match" href="reference/content-contents-002-ref.html">
+  <link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+  <style>
+  span::before {
+      content: "X" contents "X";
+      color: green;
+  }
+  span {
+      font: 100px Ahem;
+      content: none;
+      color: red;
+  }
+  </style>
+ </head>
+ <body>
+ <p>Test passes if you see a green rectangle and no red.</p>
+ <span>X</span>
+</body>
+</html>

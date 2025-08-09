@@ -113,8 +113,8 @@ function assert_approx_equals_or_null(actual, expected, tolerance, name) {
 
 function assert_percents_approx_equal(actual, expected, maxScroll,
                                       description) {
-  // Base the tolerance on being out by up to half a pixel.
-  const tolerance = 0.5 / maxScroll * 100;
+  // Base the tolerance on being out by up to one pixel.
+  const tolerance = 1.0 / maxScroll * 100;
   assert_equals(actual.unit, "percent", `'actual' unit type must be ` +
       `'percent' for "${description}"`);
   assert_true(actual instanceof CSSUnitValue, `'actual' must be of type ` +

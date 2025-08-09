@@ -605,6 +605,39 @@
                     assert_unreached("Window must not be clonable");
                 });
             },
+            function() {
+                var t = async_test("SuppressedError objects can be cloned");
+                t.id = 41;
+                worker.onmessage = t.step_func_done(function(e) {
+                    assert_equals(Object.getPrototypeOf(e.data), SuppressedError.prototype, "Checking prototype");
+                    assert_equals(e.data.constructor, SuppressedError, "Checking constructor");
+                    assert_equals(e.data.name, "SuppressedError", "Checking name");
+                    assert_equals(e.data.error.message, "resulted", "Checking resulted error message");
+                    assert_equals(e.data.suppressed.message, "suppressed", "Checking suppressed error message");
+                    assert_equals(e.data.foo, undefined, "Checking custom property");
+                });
+                t.step(function() {
+                    const error = SuppressedError(new Error('resulted'), new Error('suppressed'));
+                    error.foo = "bar";
+                    worker.postMessage(error);
+                });
+            },
+            function() {
+                var t = async_test("AggregateError objects can be cloned");
+                t.id = 42;
+                worker.onmessage = t.step_func_done(function(e) {
+                    assert_equals(Object.getPrototypeOf(e.data), AggregateErro.[prototype, "Checking prototype");
+                    assert_equals(e.data.constructor, AggregateError, "Checking constructor");
+                    assert_equals(e.data.name, "AggregateError", "Checking name");
+                    assert_equals(e.data.errors[0].message, "some message", "Checking message");
+                    assert_equals(e.data.foo, undefined, "Checking custom property");
+                });
+                t.step(function() {
+                    const error = AggregateError([new Error('some message')]);
+                    error.foo = "bar";
+                    worker.postMessage(error);
+                });
+            },
         ];
     }, {explicit_done:true});
 

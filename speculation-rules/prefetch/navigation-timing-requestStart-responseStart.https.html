@@ -6,6 +6,8 @@
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
 <script src="/common/subset-tests-by-key.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 
 <meta name="variant" content="?include=noPrefetch">
 <meta name="variant" content="?include=afterResponse">
@@ -40,7 +42,14 @@ subsetTestByKey('noPrefetch', promise_test, async t => {
 subsetTestByKey('afterResponse', promise_test, async t => {
   const agent = await spawnWindow(t);
   const landingUrl = agent.getExecutorURL({page: 2});
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let statusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
   await agent.forceSinglePrefetch(landingUrl);
+  await statusPromise;
 
   await agent.navigate(landingUrl);
   assert_prefetched(await agent.getRequestHeaders(), `${landingUrl} should have been prefetched.`);
@@ -56,6 +65,12 @@ subsetTestByKey('afterResponse', promise_test, async t => {
 subsetTestByKey('waitingForResponse', promise_test, async t => {
   const agent = await spawnWindow(t);
   const landingUrl = agent.getExecutorURL({executor: 'slow-executor.py', delay: '3', page: 2});
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let statusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
   await agent.forceSinglePrefetch(landingUrl, {}, /*wait_for_completion=*/false);
 
   // Chromium, at least, will give up the prefetch if the response head doesn't
@@ -63,6 +78,7 @@ subsetTestByKey('waitingForResponse', promise_test, async t => {
   // 3 seconds to respond, we wait 2.5 seconds before navigating, to ensure the
   // response comes back within about 0.5 seconds.
   await new Promise(resolve => t.step_timeout(resolve, 2_500));
+  await statusPromise;
 
   await agent.navigate(landingUrl);
   assert_prefetched(await agent.getRequestHeaders(), `${landingUrl} should have been prefetched.`);
@@ -81,10 +97,17 @@ subsetTestByKey('waitingForRedirect', promise_test, async t => {
   const agent = await spawnWindow(t);
   const landingUrl = agent.getExecutorURL({page: 2});
   const slowRedirectUrl = new URL(`/common/slow-redirect.py?delay=3&location=${encodeURIComponent(landingUrl)}`, document.baseURI);
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let statusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
   await agent.forceSinglePrefetch(slowRedirectUrl, {}, /*wait_for_completion=*/false);
 
   // Considerations here are the same as for `waitingForResponse`.
   await new Promise(resolve => t.step_timeout(resolve, 2_500));
+  await statusPromise;
 
   await agent.navigate(slowRedirectUrl, {expectedDestinationUrl: landingUrl});
   assert_prefetched(await agent.getRequestHeaders(), `${landingUrl} should have been prefetched.`);

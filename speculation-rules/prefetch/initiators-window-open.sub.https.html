@@ -6,6 +6,8 @@
 <script src="/common/utils.js"></script>
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 
 <meta name="variant" content="?cross-site">
 <meta name="variant" content="?same-site">
@@ -17,6 +19,12 @@
   // `sourceDocument` (instead of `navigable`'s active document) should be
   // used as the referring document for prefetch.
   promise_test(async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     const win = await spawnWindow(t, { protocol: 'https' });
 
     const hostname =
@@ -24,6 +32,7 @@
     const nextUrl = win.getExecutorURL({ protocol: 'https', hostname, page: 2 });
 
     await win.forceSinglePrefetch(nextUrl);
+    await statusPromise;
 
     await win.execute_script((url) => {
       window.executor.suspend(() => {
@@ -45,6 +54,12 @@
   }, `window.open()`);
 
   promise_test(async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     const win = await spawnWindow(t, { protocol: 'https' });
 
     const hostname =
@@ -52,6 +67,7 @@
     const nextUrl = win.getExecutorURL({ protocol: 'https', hostname, page: 2 });
 
     await win.forceSinglePrefetch(nextUrl);
+    await statusPromise;
 
     await win.execute_script((url) => {
       window.executor.suspend(() => {

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="../resources/utils.js"></script>
@@ -32,20 +34,36 @@
 
   subsetTestByKey('defaultPredicate', promise_test, async t => {
     const url = getPrefetchUrl();
+
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
+
     addLink(url);
     insertDocumentRule();
+    await statusPromise;
     await new Promise(resolve => t.step_timeout(resolve, 2000));
 
     assert_equals(await isUrlPrefetched(url), 1);
   }, 'test document rule with no predicate');
 
   subsetTestByKey('hrefMatches', promise_test, async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     insertDocumentRule({ href_matches: '*\\?uuid=*&foo=bar' });
 
     const url_1 = getPrefetchUrl({foo: 'bar'});
     addLink(url_1);
     const url_2 = getPrefetchUrl({foo: 'buzz'});
-    addLink(url_2)
+    addLink(url_2);
+    await statusPromise;
     await new Promise(resolve => t.step_timeout(resolve, 2000));
 
     assert_equals(await isUrlPrefetched(url_1), 1);
@@ -53,6 +71,12 @@
   }, 'test href_matches document rule');
 
   subsetTestByKey('and', promise_test, async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     insertDocumentRule({
       'and': [
         { href_matches: '*\\?*foo=bar*' },
@@ -63,6 +87,7 @@
     const url_2 = getPrefetchUrl({fizz: 'buzz'});
     const url_3 = getPrefetchUrl({foo: 'bar', fizz: 'buzz'});
     [url_1, url_2, url_3].forEach(url => addLink(url));
+    await statusPromise;
     await new Promise(resolve => t.step_timeout(resolve, 2000));
 
     assert_equals(await isUrlPrefetched(url_1), 0);
@@ -71,6 +96,12 @@
   }, 'test document rule with conjunction predicate');
 
   subsetTestByKey('or', promise_test, async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     insertDocumentRule({
       'or': [
         { href_matches: '*\\?*foo=bar*' },
@@ -81,6 +112,7 @@
     const url_2 = getPrefetchUrl({ fizz: 'buzz' });
     const url_3 = getPrefetchUrl({ foo: 'bar'});
     [url_1, url_2, url_3].forEach(url => addLink(url));
+    await statusPromise;
     await new Promise(resolve => t.step_timeout(resolve, 2000));
 
     assert_equals(await isUrlPrefetched(url_1), 0);
@@ -89,12 +121,19 @@
   }, 'test document rule with disjunction predicate');
 
   subsetTestByKey('not', promise_test, async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     insertDocumentRule({ not: { href_matches: '*\\?uuid=*&foo=bar' } });
 
     const url_1 = getPrefetchUrl({foo: 'bar'});
     addLink(url_1);
     const url_2 = getPrefetchUrl({foo: 'buzz'});
-    addLink(url_2)
+    addLink(url_2);
+    await statusPromise;
     await new Promise(resolve => t.step_timeout(resolve, 2000));
 
     assert_equals(await isUrlPrefetched(url_1), 0);
@@ -111,6 +150,12 @@
   }, 'invalid predicate should not throw error or start prefetch');
 
   subsetTestByKey('linkInShadowTree', promise_test, async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     insertDocumentRule();
 
     // Create shadow root.
@@ -120,6 +165,7 @@
 
     const url = getPrefetchUrl();
     addLink(url, shadowRoot);
+    await statusPromise;
     await new Promise(resolve => t.step_timeout(resolve, 2000));
 
     assert_equals(await isUrlPrefetched(url), 1);
@@ -152,13 +198,20 @@
   }, 'test that adding a second rule set triggers prefetch');
 
   subsetTestByKey('selectorMatches', promise_test, async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     insertDocumentRule({ selector_matches: 'a.important-link' });
 
     const url_1 = getPrefetchUrl({foo: 'bar'});
     const importantLink = addLink(url_1);
     importantLink.className = 'important-link';
     const url_2 = getPrefetchUrl({foo: 'buzz'});
-    addLink(url_2)
+    addLink(url_2);
+    await statusPromise;
     await new Promise(resolve => t.step_timeout(resolve, 2000));
 
     assert_equals(await isUrlPrefetched(url_1), 1);
@@ -166,6 +219,12 @@
   }, 'test selector_matches document rule');
 
   subsetTestByKey('selectorMatchesScopingRoot', promise_test, async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     insertDocumentRule({ selector_matches: ':root > body > a' });
 
     const url_1 = getPrefetchUrl({ foo: 'bar' });
@@ -176,6 +235,7 @@
     document.body.appendChild(extraContainer);
     addLink(url_2, extraContainer);
 
+    await statusPromise;
     await new Promise(resolve => t.step_timeout(resolve, 2000));
 
     assert_equals(await isUrlPrefetched(url_1), 1);
@@ -183,6 +243,12 @@
   }, 'test selector_matches with :root');
 
   subsetTestByKey('selectorMatchesDisplayNone', promise_test, async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     const style = document.createElement('style');
     style.innerText = ".important-section { display: none; }";
     document.head.appendChild(style);
@@ -194,6 +260,7 @@
     const url = getPrefetchUrl();
     addLink(url, importantSection);
 
+    await statusPromise;
     await new Promise(resolve => t.step_timeout(resolve, 2000));
     assert_equals(await isUrlPrefetched(url), 0);
 
@@ -203,6 +270,12 @@
   }, 'test selector_matches with link inside display:none container');
 
   subsetTestByKey('selectorMatchesDisplayLocked', promise_test, async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     const style = document.createElement('style');
     style.innerText = ".important-section { content-visibility: hidden; }";
     document.head.appendChild(style);
@@ -214,6 +287,7 @@
     const url = getPrefetchUrl();
     addLink(url, importantSection);
 
+    await statusPromise;
     await new Promise(resolve => t.step_timeout(resolve, 2000));
     assert_equals(await isUrlPrefetched(url), 0);
 
@@ -223,6 +297,12 @@
   }, 'test selector_matches with link inside display locked container');
 
   subsetTestByKey('unslottedLink', promise_test, async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     insertDocumentRule();
 
     // Create shadow root.
@@ -235,10 +315,17 @@
     addLink(url, shadowHost);
 
     await new Promise(resolve => t.step_timeout(resolve, 2000));
+    await statusPromise;
     assert_equals(await isUrlPrefetched(url), 0);
   }, 'test that unslotted link never matches document rule');
 
   subsetTestByKey('immediateMutation', promise_test, async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     // Add a link and allow it to get its style computed.
     // (Double RAF lets this happen normally.)
     const url = getPrefetchUrl();
@@ -250,11 +337,18 @@
     document.body.className = 'late-class';
 
     await new Promise(resolve => t.step_timeout(resolve, 2000));
+    await statusPromise;
     assert_equals(await isUrlPrefetched(url), 1);
   }, 'test that selector_matches predicates respect changes immediately');
 
   const baseURLChangedTestFixture = (testName, modifyBaseURLFunc) => {
     return subsetTestByKey(testName, promise_test, async t => {
+      await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+      let statusPromise = new Promise(resolve => {
+        test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+          if (event && event.status !== undefined) resolve(event.status);
+        });
+      });
       const url = getPrefetchUrl();
       const link = addLink(url);
       const url_pattern_string = `prefetch.py${url.search}`;
@@ -272,6 +366,7 @@
       modifyBaseURLFunc(url);
       assert_true((new URLPattern(url_pattern_string, document.baseURI)).test(url));
       await new Promise(resolve => t.step_timeout(resolve, 2000));
+      await statusPromise;
       assert_equals(await isUrlPrefetched(url), 1);
     });
   }
@@ -287,11 +382,18 @@
   });
 
   subsetTestByKey('linkToSelfFragment', promise_test, async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     const url = getPrefetchUrl();
     history.pushState({}, "", url);
     addLink(new URL('#fragment', url));
     insertDocumentRule();
     await new Promise(resolve => t.step_timeout(resolve, 2000));
+    await statusPromise;
     assert_equals(await isUrlPrefetched(url), 0);
   }, 'test that a fragment link to the current document does not prefetch');
 

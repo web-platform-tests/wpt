@@ -7,6 +7,8 @@
 <script src="/common/get-host-info.sub.js"></script>
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 
 <meta name="variant" content="?cross-origin=true">
 <meta name="variant" content="?cross-origin=false">
@@ -16,6 +18,14 @@
 
   let cross_origin = Object.fromEntries(new URLSearchParams(location.search))["cross-origin"] === "true";
   promise_test(async t => {
+    // Subscribe to the BiDi prefetch_status_updated event and set up a promise to await it.
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let prefetchStatusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
+
     let executor = "authenticate.py";
     let credentials = { username: "user", password: "pass" };
     let agent = await spawnWindow(t, { executor, ...credentials });
@@ -27,6 +37,9 @@
     let nextUrl = agent.getExecutorURL({ page: 2, executor, ...host });
     await agent.forceSinglePrefetch(nextUrl);
     await agent.navigate(nextUrl);
+
+    // Wait for the BiDi prefetch_status_updated event before assertions
+    await prefetchStatusPromise;
 
     let requestHeaders = await agent.getRequestHeaders();
     request_credentials = await agent.getRequestCredentials();

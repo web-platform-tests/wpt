@@ -44,7 +44,8 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
 
 
 def env_options():
-    return {}
+    # prevents failure on certificate building for webtransport
+    return {"server_host": "127.0.0.1"}
 
 
 def env_extras(**kwargs):

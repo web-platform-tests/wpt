@@ -10,7 +10,7 @@ import socket
 import sys
 import time
 import datetime
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import hashes, serialization
@@ -52,13 +52,13 @@ def do_delayed_imports(logger, test_paths):
             (", ".join(failed), serve_root))
         sys.exit(1)
 
-def generate_hash_certificate(host: str) -> str:
+def generate_hash_certificate(host: str) -> Dict[str, Any]:
     private_key = ec.generate_private_key(ec.SECP256R1())
     subject = issuer = x509.Name([
-        x509.NameAttribute(NameOID.COUNTRY_NAME, "DE"),
-        x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "Berlin"),
-        x509.NameAttribute(NameOID.LOCALITY_NAME, "Berlin"),
-        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Wpt tests"),
+        x509.NameAttribute(NameOID.COUNTRY_NAME, "AA"),
+        x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "State or Province Name (full name)"),
+        x509.NameAttribute(NameOID.LOCALITY_NAME, "Locality Name (eg, city)"),
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Web Platform Tests"),
         x509.NameAttribute(NameOID.COMMON_NAME, host),
     ])
     now = datetime.datetime.now(datetime.timezone.utc)
@@ -74,15 +74,17 @@ def generate_hash_certificate(host: str) -> str:
     )
     fingerprint = certificate.fingerprint(hashes.SHA256())
     server_certificate_hash = ":".join(f"{byte:02x}" for byte in fingerprint)
-    return { "certificate": certificate.public_bytes(
-             encoding=serialization.Encoding.PEM
-             ),
-             "private_key": private_key.private_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.TraditionalOpenSSL,
-                encryption_algorithm=serialization.NoEncryption()),
-             "hash": server_certificate_hash
-            }
+    return {
+        "certificate":
+        certificate.public_bytes(
+            encoding=serialization.Encoding.PEM
+        ),
+        "private_key": private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption()),
+        "hash": server_certificate_hash
+    }
 
 def serve_path(test_paths):
     return test_paths["/"].tests_path

@@ -15,7 +15,6 @@ import time
 import traceback
 import urllib
 import uuid
-import datetime
 from collections import defaultdict, OrderedDict
 from io import IOBase
 from itertools import chain, product
@@ -1180,7 +1179,7 @@ def start_webtransport_h3_server(logger, host, port, paths, routes, bind_address
         return WebTransportH3Server(host=host,
                                     port=port,
                                     doc_root=paths["doc_root"],
-                                    cert_mode=WebTransportCertificateGeneration.USEPREGENERATED,
+                                    cert_mode=WebTransportCertificateGeneration.USE_PREGENERATED,
                                     cert_path=config.ssl_config["cert_path"],
                                     key_path=config.ssl_config["key_path"],
                                     logger=logger,
@@ -1199,7 +1198,7 @@ def start_webtransport_h3_server_cert_hash(logger, host, port, paths, routes, bi
         return WebTransportH3Server(host=host,
                                     port=port,
                                     doc_root=paths["doc_root"],
-                                    cert_mode=WebTransportCertificateGeneration.GENERATEDVALIDSERVERCERTIFICATEHASHCERT,
+                                    cert_mode=WebTransportCertificateGeneration.GENERATE_VALID_SERVER_CERTIFICATE_HASH_CERT,
                                     cert_path=None,
                                     key_path=None,
                                     logger=logger,

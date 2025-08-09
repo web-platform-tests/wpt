@@ -109,7 +109,9 @@ def env_extras(**kwargs):
 
 
 def env_options():
-    return {"supports_debugger": False}
+    # prevents failure on certificate building for webtransport
+    return {"supports_debugger": False,
+    "server_host": "127.0.0.1"}
 
 
 def get_tar(url, dest):

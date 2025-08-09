@@ -1,4 +1,4 @@
-// META: global=window,worker
+// META: global=window,worker,shadowrealm
 // META: script=resources/readable-stream-from-array.js
 // META: script=resources/readable-stream-to-array.js
 

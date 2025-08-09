@@ -1,0 +1,12 @@
+.mixed-text {
+  font-family: "Noto Sans Japanese"
+}
+
+
+@font-face {
+  font-family: "Noto Sans Japanese";
+  src:
+    url("NotoSansJP-Thin.woff2") format('woff2');
+
+  unicode-range: U+4e00 - U+9faf;
+}

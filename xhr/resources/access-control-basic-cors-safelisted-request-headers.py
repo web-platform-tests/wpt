@@ -11,6 +11,6 @@ def main(request, response):
     response.headers.set(b"Access-Control-Allow-Credentials", b"true")
     response.headers.set(b"Access-Control-Allow-Origin", request.headers.get(b"origin"))
 
-    for header in [b"Accept", b"Accept-Language", b"Content-Language", b"Content-Type"]:
+    for header in [b"Accept", b"Accept-Language", b"Content-Language", b"Content-Type", b"Last-Event-ID"]:
         value = request.headers.get(header)
         response.content += isomorphic_decode(header) + u": " + (isomorphic_decode(value) if value else u"<None>") + u'\n'

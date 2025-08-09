@@ -16,7 +16,7 @@ parent.test(function () {
 parent.test(function () {
         parent.assert_equals( document.referrer, lastUrl );
 }, 'document.referrer should use the pushed state (before onload)');
-try { history.pushState('','','010-4.html?2345'); } catch(e) {}
+try { history.replaceState('','','010-4.html?2345'); } catch(e) {}
 location.href = '010-5.html?pipe=sub';
                 </script>
 

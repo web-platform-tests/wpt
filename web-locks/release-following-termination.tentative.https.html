@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Web Locks API: Release of locks following termination</title>
+<link rel=help href="https://wicg.github.io/web-locks/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<body>
+<script>
+'use strict';
+const queue = [];
+addEventListener('message', (event) => {
+  queue.push(event.data);
+});
+
+async function getMessage(name) {
+  const value = await new Promise(function check(resolve) {
+    if (queue.length) {
+      resolve(queue.shift());
+      return;
+    }
+
+    addEventListener('message', () => check(resolve), { once: true });
+  });
+
+  if (!('result' in value)) {
+    throw value;
+  }
+
+  return value.result;
+}
+
+promise_test(async () => {
+  const iframe = document.createElement('iframe');
+  iframe.src = `resources/request-around-navigation.html?${token()}_first`;
+  document.body.appendChild(iframe);
+
+  {
+    const { firstRequestGranted, secondRequestGranted } = await getMessage('1');
+    assert_true(firstRequestGranted, 'before navigation, first request');
+    assert_false(secondRequestGranted, 'before navigation, second request');
+  }
+
+  {
+    const { firstRequestGranted, secondRequestGranted } = await getMessage('2');
+    assert_true(firstRequestGranted, 'after navigation, first request');
+    assert_false(secondRequestGranted, 'after navigation, second request');
+  }
+});
+</script>
+</body>

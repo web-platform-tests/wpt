@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script';">
+</head>
+<body>
+<script>
+'use strict';
+[
+  ['div', 'onabort'],
+  ['div', 'onauxclick'],
+  ['body', 'onafterprint'],
+  ['body', 'onbeforeprint'],
+  ['body', 'onbeforeunload'],
+  ['div', 'onblur'],
+  ['div', 'oncancel'],
+  ['div', 'oncanplay'],
+  ['div', 'oncanplaythrough'],
+  ['div', 'onchange'],
+  ['div', 'onclick'],
+  ['div', 'onclose'],
+  ['div', 'oncontextmenu'],
+  ['div', 'oncopy'],
+  ['div', 'oncuechange'],
+  ['div', 'oncut'],
+  ['div', 'ondblclick'],
+  ['div', 'ondrag'],
+  ['div', 'ondragend'],
+  ['div', 'ondragenter'],
+  ['div', 'ondragleave'],
+  ['div', 'ondragover'],
+  ['div', 'ondragstart'],
+  ['div', 'ondrop'],
+  ['div', 'ondurationchange'],
+  ['div', 'onemptied'],
+  ['div', 'onended'],
+  ['div', 'onerror'],
+  ['div', 'onfocus'],
+  ['div', 'onformdata'],
+  ['body', 'onhashchange'],
+  ['div', 'oninput'],
+  ['div', 'oninvalid'],
+  ['div', 'onkeydown'],
+  ['div', 'onkeypress'],
+  ['div', 'onkeyup'],
+  ['body', 'onlanguagechange'],
+  ['div', 'onload'],
+  ['div', 'onloadeddata'],
+  ['div', 'onloadedmetadata'],
+  ['div', 'onloadstart'],
+  ['body', 'onmessage'],
+  ['body', 'onmessageerror'],
+  ['div', 'onmousedown'],
+  ['div', 'onmouseenter'],
+  ['div', 'onmouseleave'],
+  ['div', 'onmousemove'],
+  ['div', 'onmouseout'],
+  ['div', 'onmouseover'],
+  ['div', 'onmouseup'],
+  ['body', 'onoffline'],
+  ['body', 'ononline'],
+  ['body', 'onpagehide'],
+  ['body', 'onpageshow'],
+  ['div', 'onpaste'],
+  ['div', 'onpause'],
+  ['div', 'onplay'],
+  ['div', 'onplaying'],
+  ['body', 'onpopstate'],
+  ['div', 'onprogress'],
+  ['div', 'onratechange'],
+  ['div', 'onreset'],
+  ['div', 'onresize'],
+  ['body', 'onrejectionhandled'],
+  ['div', 'onscroll'],
+  ['div', 'onsecuritypolicyviolation'],
+  ['div', 'onseeked'],
+  ['div', 'onseeking'],
+  ['div', 'onselect'],
+  ['div', 'onslotchange'],
+  ['div', 'onstalled'],
+  ['body', 'onstorage'],
+  ['div', 'onsubmit'],
+  ['div', 'onsuspend'],
+  ['div', 'ontimeupdate'],
+  ['div', 'ontoggle'],
+  ['body', 'onunhandledrejection'],
+  ['body', 'onunload'],
+  ['div', 'onvolumechange'],
+  ['div', 'onwaiting'],
+  ['div', 'onwheel'],
+].forEach(([tagName, attribute]) => {
+  test((t) => {
+    const subject = document.createElement(tagName);
+
+    subject.setAttribute(attribute, trustedTypes.emptyScript);
+    // BODY attributes are mirrored on the global object; these must be removed
+    // to avoid interference with subsequent tests.
+    t.add_cleanup(() => subject.removeAttribute(attribute));
+
+    assert_not_equals(subject[attribute], null);
+    assert_equals(typeof subject[attribute], 'function');
+    assert_equals(subject.getAttribute(attribute), '');
+  }, `${tagName}[${attribute}] accepts trusted types`);
+
+  test(() => {
+    const subject = document.createElement(tagName);
+
+    assert_throws_js(TypeError, () => {
+      subject.setAttribute(attribute, 'Why hello there');
+    });
+    assert_equals(subject[attribute], null, 'property access');
+    assert_equals(subject.getAttribute(attribute), null, 'attribute access');
+  }, `${tagName}[${attribute}] rejects primitive string values`);
+});
+</script>
+</html>

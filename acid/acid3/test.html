@@ -2261,7 +2261,7 @@
       assert(test.htmlFor != test.getAttribute('htmlFor'), "pots: htmlFor attribute equals htmlFor property");
       assert(!('for' in test), "pots: element has for property");
       test['for'] = "oil";
-      assert(test.htmlFor != "oil", "pots: for property affected htmlFor");
+      assert(test.htmlFor == "oil", "pots: for property did not affect htmlFor");
       // <meta http-equiv="">
       test = document.createElement('meta');
       test.setAttribute('http-equiv', 'boxes');

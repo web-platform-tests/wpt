@@ -22,6 +22,11 @@ corsPreflight("CORS [chicken], server refuses", corsUrl, "chicken", false);
 corsPreflight("CORS [GET] [x-test-header: allowed], server allows", corsUrl, "GET", true, [["x-test-header1", "allowed"]]);
 corsPreflight("CORS [GET] [x-test-header: refused], server refuses", corsUrl, "GET", false, [["x-test-header1", "refused"]]);
 
+corsPreflight("CORS [POST] [Content-Type: text/plain;charset=UTF-8,text/xml], server allows", corsUrl, "POST", true, [["Content-Type", "text/plain;charset=UTF-8,text/xml"]]);
+corsPreflight("CORS [POST] [Content-Type: text/plain;charset=UTF-8,text/xml], server refuses", corsUrl, "POST", false, [["Content-Type", "text/plain;charset=UTF-8,text/xml"]]);
+corsPreflight("CORS [POST] [Content-Type: text/plain;charset=UTF-8, Content-Type: text/xml], server allows", corsUrl, "POST", true, [["Content-Type", "text/xml"]], [["Content-Type", "text/plain;charset=UTF-8"]]);
+corsPreflight("CORS [POST] [Content-Type: text/plain;charset=UTF-8, Content-Type: text/xml], server refuses", corsUrl, "POST", false, [["Content-Type", "text/xml"]], [["Content-Type", "text/plain;charset=UTF-8"]]);
+
 var headers = [
     ["x-test-header1", "allowedOrRefused"],
     ["x-test-header2", "allowedOrRefused"],

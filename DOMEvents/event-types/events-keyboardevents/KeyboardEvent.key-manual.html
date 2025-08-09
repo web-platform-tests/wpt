@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>KeyboardEvent Object Property: key</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+async_test(function() {
+  var event = "keydown";
+  window.onload = this.step_func(function() {
+    var target = document.getElementById("target");
+    target.addEventListener(event, this.step_func_done(function(e) {
+      assert_equals(e.type, event);
+      assert_equals(e.key, "a");
+    }), true);
+  });
+});
+</script>
+<p>KeyboardEvent Object Property key holds the key value of the key pressed</p>
+
+<p><input id="target" value=""></p>
+<ol class=instructions>
+  <li>Type 'a' in the above textbox using keyboard
+</ol>
+
+<div id=log></div>

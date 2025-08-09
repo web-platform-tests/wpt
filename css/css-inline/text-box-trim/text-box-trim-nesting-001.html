@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>Tests nested boxes are trimmed at text-over/text-under baselines</title>
+<meta description="Verify that a nested ex trimmed text has a height of 1ex" />
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#leading-trim">
+<link rel="match" href="text-box-trim-nesting-001-ref.html">
+
+<style>
+div {
+  display: inline-flex;
+  font-size: 72px;
+  border-top: 2px solid orange;
+  /* hide the text as this test is about the box height */
+  color: transparent;
+}
+
+section {
+  text-box-trim: both;
+  text-box-edge: ex alphabetic;
+}
+
+span {
+  outline: 1px solid blue;
+  /* limit the height to 1ex using overflow */
+  text-box-trim: both;
+  text-box-edge: ex alphabetic;
+}
+</style>
+
+<div>
+  <section>a
+    <span>test</span>
+  </section>
+</div>

@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <link rel="author" title="Mike Bremford" href="http://bfo.com"/>
+  <meta name="flags" content="paged" />
+  <style>
+  @page :first {
+      @top-center {
+          content: none;
+      }
+  }
+  @page {
+      margin: 72px;
+      @top-center {
+          content: "This should say pass: PASS";
+      }
+  }
+  div {
+      break-before: page;
+  }
+  </style>
+ </head>
+ <body>
+  <p>This test has two pages. This page has no other content</p>
+  <div></div>
+ </body>
+</html>

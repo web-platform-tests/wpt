@@ -9,7 +9,7 @@
 
 <body>
   <iframe id="same-origin"></iframe>
-  <iframe id="cross-origin"></iframe>
+  <iframe id="cross-origin" allow="digital-credentials-create"></iframe>
 </body>
 
 <script type="module">
@@ -89,7 +89,11 @@
 
   promise_test(async (t) => {
     for (const request of [undefined, []]) {
-      const options = makeCreateOptions(request);
+      const options = {
+        digital: {
+          requests: request
+        },
+      };
       await test_driver.bless("user activation");
       await promise_rejects_js(t, TypeError, navigator.credentials.create(options));
     }
@@ -99,7 +103,11 @@
     iframeSameOrigin.focus();
     const { contentWindow: iframeWindow } = iframeSameOrigin;
     for (const request of [undefined, []]) {
-      const options = makeCreateOptions(request);
+      const options = {
+        digital: {
+          requests: request
+        },
+      };
       await test_driver.bless("user activation");
       await promise_rejects_js(
         t,
@@ -112,7 +120,11 @@
   promise_test(async (t) => {
     iframeCrossOrigin.focus();
     for (const request of [undefined, []]) {
-      const options = makeCreateOptions(request);
+      const options = {
+        digital: {
+          requests: request
+        },
+      };
       const result = await sendMessage(iframeCrossOrigin, {
         action: "create",
         options,

@@ -72,7 +72,7 @@ def is_bad_port(port: int) -> bool:
     Bad port as per https://fetch.spec.whatwg.org/#port-blocking
     """
     return port in [
-        0,
+        # 0, Blocking this here breaks WPT infrastructure.
         1,     # tcpmux
         7,     # echo
         9,     # discard
@@ -160,14 +160,14 @@ def is_bad_port(port: int) -> bool:
 
 def get_port(host: str = '') -> int:
     host = host or '127.0.0.1'
-    port = -1
+    port = 0
     while True:
         free_socket = _open_socket(host, 0)
         port = free_socket.getsockname()[1]
         free_socket.close()
         if not is_bad_port(port):
             break
-    return 0 if port == -1 else port
+    return port
 
 def http2_compatible() -> bool:
     # The HTTP/2 server requires OpenSSL 1.0.2+.

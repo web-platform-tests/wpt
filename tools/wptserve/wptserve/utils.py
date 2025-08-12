@@ -160,14 +160,14 @@ def is_bad_port(port: int) -> bool:
 
 def get_port(host: str = '') -> int:
     host = host or '127.0.0.1'
-    port = 0
+    port = -1
     while True:
         free_socket = _open_socket(host, 0)
         port = free_socket.getsockname()[1]
         free_socket.close()
         if not is_bad_port(port):
             break
-    return port
+    return 0 if port == -1 else port
 
 def http2_compatible() -> bool:
     # The HTTP/2 server requires OpenSSL 1.0.2+.

@@ -5,6 +5,8 @@
 <script src="/common/utils.js"></script>
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 
 <meta name="variant" content="?prefetch=true&bypass_cache=true">
 <meta name="variant" content="?prefetch=false&bypass_cache=true">
@@ -25,8 +27,17 @@ promise_test(async t => {
     const prefetchUrl =
       bypassCache ? agent.getExecutorURL({ a: "b" }) : agent.getExecutorURL();
 
-    if (prefetchEnabled)
+    let statusPromise;
+    if (prefetchEnabled) {
+      await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+      statusPromise = new Promise(resolve => {
+        test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+          if (event && event.status !== undefined) resolve(event.status);
+        });
+      });
       await agent.forceSinglePrefetch(prefetchUrl);
+      await statusPromise;
+    }
 
     await agent.navigate(prefetchUrl);
 

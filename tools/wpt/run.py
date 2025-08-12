@@ -485,6 +485,7 @@ class Chrome(BrowserSetup):
                     webdriver_binary = None
 
             if webdriver_binary is None:
+                # logger.info("Downloading chromedriver")
                 install = self.prompt_install("chromedriver")
 
                 if install:

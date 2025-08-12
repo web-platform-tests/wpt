@@ -7,6 +7,8 @@
 <script src="/common/utils.js"></script>
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 
 <script>
 "use strict";
@@ -16,10 +18,21 @@ setup(() => assertSpeculationRulesIsSupported());
 // https://wicg.github.io/nav-speculation/prefetch.html#create-a-navigation-request
 
 promise_test(async t => {
+  // Subscribe to the BiDi prefetch_status_updated event and set up a promise to await it.
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   const nextUrl = agent.getExecutorURL({ page: 2 });
   await agent.forceSinglePrefetch(nextUrl);
   await agent.navigate(nextUrl);
+
+  // Wait for the BiDi prefetch_status_updated event before assertions
+  await prefetchStatusPromise;
 
   const headers = await agent.getRequestHeaders();
   assert_prefetched(headers, "must be prefetched");
@@ -27,10 +40,19 @@ promise_test(async t => {
 }, 'Sec-Fetch-Dest');
 
 promise_test(async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   const nextUrl = agent.getExecutorURL({ page: 2 });
   await agent.forceSinglePrefetch(nextUrl);
   await agent.navigate(nextUrl);
+
+  await prefetchStatusPromise;
 
   const headers = await agent.getRequestHeaders();
   assert_prefetched(headers, "must be prefetched");
@@ -38,12 +60,21 @@ promise_test(async t => {
 }, 'Sec-Fetch-Mode');
 
 promise_test(async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   const nextUrl = new URL('/common/redirect.py', location.href);
   const finalUrl = agent.getExecutorURL({ page: 2 });
   nextUrl.searchParams.set('location', finalUrl);
   await agent.forceSinglePrefetch(nextUrl);
   await agent.navigate(nextUrl, {expectedDestinationUrl: finalUrl});
+
+  await prefetchStatusPromise;
 
   const headers = await agent.getRequestHeaders();
   assert_prefetched(headers, "must be prefetched");
@@ -51,12 +82,21 @@ promise_test(async t => {
 }, 'Sec-Fetch-Dest with redirects');
 
 promise_test(async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   const nextUrl = new URL('/common/redirect.py', location.href);
   const finalUrl = agent.getExecutorURL({ page: 2 });
   nextUrl.searchParams.set('location', finalUrl);
   await agent.forceSinglePrefetch(nextUrl);
   await agent.navigate(nextUrl, {expectedDestinationUrl: finalUrl});
+
+  await prefetchStatusPromise;
 
   const headers = await agent.getRequestHeaders();
   assert_prefetched(headers, "must be prefetched");

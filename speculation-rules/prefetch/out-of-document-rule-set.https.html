@@ -7,6 +7,8 @@
 <script src="/common/get-host-info.sub.js"></script>
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 
 <meta name="variant" content="?include=BaseCase">
 <meta name="variant" content="?include=FollowRedirect">
@@ -28,6 +30,14 @@
   setup(() => assertSpeculationRulesIsSupported());
 
   async function runSpeculationRulesFetchTest(t, options) {
+    // Subscribe to the BiDi prefetch_status_updated event and set up a promise to await it.
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let prefetchStatusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
+
     options = {
       // Whether a prefetch is expected to succeed.
       shouldPrefetch: true,
@@ -94,6 +104,9 @@
     await agent.navigate(nextUrl);
 
     await new Promise(resolve => t.step_timeout(resolve, 2000));
+
+    // Wait for the BiDi prefetch_status_updated event before assertions
+    await prefetchStatusPromise;
 
     let test_case_desc = JSON.stringify(options);
     if (options.shouldPrefetch)

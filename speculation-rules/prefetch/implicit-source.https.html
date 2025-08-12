@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/common/utils.js"></script>
 <script src="../resources/utils.js"></script>
@@ -10,6 +12,12 @@
   setup(() => assertSpeculationRulesIsSupported());
 
   promise_test(async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     let urls = getPrefetchUrlList(2);
 
     let a = document.createElement('a');
@@ -24,6 +32,7 @@
       {where: {selector_matches: '.prefetch-me'}, eagerness: 'immediate'},
     ]});
 
+    await statusPromise;
     await new Promise(resolve => t.step_timeout(resolve, 2000));
 
     let wasPrefetched = urls.map(isUrlPrefetched);

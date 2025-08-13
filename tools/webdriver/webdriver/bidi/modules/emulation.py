@@ -1,4 +1,5 @@
-from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
+from typing import Any, Dict, List, Literal, Mapping, MutableMapping, Optional, \
+    Union
 
 from ._module import BidiModule, command
 from ..undefined import UNDEFINED, Undefined
@@ -73,7 +74,7 @@ class Emulation(BidiModule):
     @command
     def set_scripting_enabled(
         self,
-        enabled: Union[False, None],
+        enabled: Literal[False, None],
         contexts: Optional[List[str]] = None,
         user_contexts: Optional[List[str]] = None,
     ) -> Mapping[str, Any]:

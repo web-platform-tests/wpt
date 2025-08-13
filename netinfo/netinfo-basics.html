@@ -37,7 +37,7 @@ test(function() {
   assert_less_than_equal(downlinkKbps, 10000);
 
   // Verify that downlinkKbps is a multiple of 25.
-  var quotient = parseInt(downlinkKbps  / 25, 10);
+  var quotient = parseInt(downlinkKbps / 25, 10);
   // mod is the remainder left after dividing downlinkKbps by 25 while
   // restricting the quotient to an integer. For example, if downlinkKbps is
   // 1025, then mod will be 0. If downlinkKpbps is 1030, mod will be 5.

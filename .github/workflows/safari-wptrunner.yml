@@ -71,6 +71,14 @@ jobs:
       - name: Set display color profile
         run: |-
           ./wpt macos-color-profile
+      - name: 'Enable "classic" scrollbars'
+        # See:
+        # https://github.com/web-platform-tests/wpt/issues/10972
+        # https://github.com/web-platform-tests/wpt/issues/36422
+        # https://github.com/web-platform-tests/wpt/issues/44195
+        # https://github.com/web-platform-tests/wpt/issues/44196
+        run: |-
+          defaults write -g AppleShowScrollBars Always
       - name: Enable safaridriver diagnostics
         if: inputs.safaridriver-diagnose
         run: |-

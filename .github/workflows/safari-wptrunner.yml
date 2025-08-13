@@ -50,6 +50,7 @@ jobs:
     env:
       CURRENT_CHUNK: ${{ matrix.current-chunk || 1 }}
       TOTAL_CHUNKS: ${{ matrix.total-chunks || 1 }}
+      DEFAULTS_DOMAIN: ${{ inputs.safari-technology-preview && 'com.apple.SafariTechnologyPreview' || 'com.apple.Safari' }}
     runs-on:
       - self-hosted
       - webkit-ews

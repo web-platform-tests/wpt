@@ -71,6 +71,24 @@ class Emulation(BidiModule):
         return params
 
     @command
+    def set_scripting_enabled(
+        self,
+        enabled: Union[False, None],
+        contexts: Optional[List[str]] = None,
+        user_contexts: Optional[List[str]] = None,
+    ) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "enabled": enabled
+        }
+
+        if contexts is not None:
+            params["contexts"] = contexts
+        if user_contexts is not None:
+            params["userContexts"] = user_contexts
+
+        return params
+
+    @command
     def set_screen_orientation_override(
         self,
         screen_orientation:Dict[str, Any],

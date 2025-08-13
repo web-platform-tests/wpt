@@ -71,7 +71,7 @@ jobs:
       - name: Set display color profile
         run: |-
           ./wpt macos-color-profile
-      - name: 'Enable "classic" scrollbars'
+      - name: Enable "classic" scrollbars
         # See:
         # https://github.com/web-platform-tests/wpt/issues/10972
         # https://github.com/web-platform-tests/wpt/issues/36422

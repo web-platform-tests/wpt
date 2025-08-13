@@ -79,6 +79,11 @@ jobs:
         # https://github.com/web-platform-tests/wpt/issues/44196
         run: |-
           defaults write -g AppleShowScrollBars Always
+      - name: Set system accessibility style to "classic"
+        # See:
+        # https://github.com/web-platform-tests/wpt/issues/46453
+        run: |-
+          defaults write com.apple.mediaaccessibility MACaptionActiveProfile -string MACaptionProfile-Classic
       - name: Enable safaridriver diagnostics
         if: inputs.safaridriver-diagnose
         run: |-

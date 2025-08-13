@@ -74,20 +74,27 @@ async def test_set_to_multiple_user_contexts(
         create_user_context,
         is_scripting_enabled,
 ):
+    # Create the first user context.
     user_context_1 = await create_user_context()
+    # Create a browsing context within the first user context.
     context_in_user_context_1 = await bidi_session.browsing_context.create(
         user_context=user_context_1, type_hint="tab"
     )
+    # Create the second user context.
     user_context_2 = await create_user_context()
+    # Create a browsing context within the second user context.
     context_in_user_context_2 = await bidi_session.browsing_context.create(
         user_context=user_context_2, type_hint="tab"
     )
+    # Disable scripting for both user contexts.
     await bidi_session.emulation.set_scripting_enabled(
         user_contexts=[user_context_1, user_context_2],
         enabled=False
     )
 
+    # Assert scripting is disabled in the browsing context of the first user context.
     assert await is_scripting_enabled(context_in_user_context_1) is False
+    # Assert scripting is disabled in the browsing context of the second user context.
     assert await is_scripting_enabled(context_in_user_context_2) is False
 
 

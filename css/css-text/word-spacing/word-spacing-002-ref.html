@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="/fonts/ahem.css">
+<meta name="flags" content="ahem">
+<style>
+@font-face {
+  font-family: Ahem;
+  src: url(/fonts/Ahem.ttf);
+}
+div { font-family: Ahem, monospace; font-size: 20px; }
+</style>
+<body>
+  <p>Test passes if the space between the words starts at zero and increases by
+  an even amount on each subsequent line.</p>
+  <div>ABcDefGhij</div>
+  <div>A Bc Def Ghij</div>
+  <div>A &nbsp;Bc &nbsp;Def &nbsp;Ghij</div>
+  <div>A &nbsp;&nbsp;Bc &nbsp;&nbsp;Def &nbsp;&nbsp;Ghij</div>
+  <div>A &nbsp;&nbsp;&nbsp;Bc &nbsp;&nbsp;&nbsp;Def &nbsp;&nbsp;&nbsp;Ghij</div>
+</body>

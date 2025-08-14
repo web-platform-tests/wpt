@@ -1,5 +1,6 @@
+// META: global=worker,shadowrealm
+
 "use strict";
-importScripts("/resources/testharness.js");
 
 setup({ allow_uncaught_exception: true });
 
@@ -14,10 +15,10 @@ promise_test(t => {
     assert_equals(e.defaultPrevented, true);
   });
 
-  setTimeout(() => thisFunctionDoesNotExist(), 0);
+  queueMicrotask(() => thisFunctionDoesNotExist());
 
   return promise;
-}, "error event is weird (return true cancels; many args) on WorkerGlobalScope, with a runtime error");
+}, "error event is weird (return true cancels; many args) on non-Window global scope, with a runtime error");
 
 promise_test(t => {
   self.onerror = t.step_func(function (message, filename, lineno, colno, error) {
@@ -31,10 +32,8 @@ promise_test(t => {
     return true;
   });
 
-  setTimeout(() => thisFunctionDoesNotExist(), 0);
+  queueMicrotask(() => thisFunctionDoesNotExist());
 
   const eventWatcher = new EventWatcher(t, self, "error");
   return eventWatcher.wait_for("error");
-}, "error event has the right 5 args on WorkerGlobalScope, with a runtime error");
-
-done();
+}, "error event has the right 5 args on non-Window global scope, with a runtime error");

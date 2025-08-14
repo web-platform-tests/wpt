@@ -37,7 +37,7 @@
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetFirstPartyCookieAndUnsetStorageAccessPermission(altWww);
+    await SetFirstPartyCookie(altWww);
 
     const frame = await SetUpResponderFrame(t, altWwwResponder);
 
@@ -52,7 +52,7 @@
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetFirstPartyCookieAndUnsetStorageAccessPermission(altWww);
+    await SetFirstPartyCookie(altWww);
 
     const frame = await SetUpResponderFrame(t, altWwwResponder);
 
@@ -60,13 +60,13 @@
 
     assert_true(await FrameHasStorageAccess(frame), "frame has storage access after refresh.");
     assert_true(await HasUnpartitionedCookie(frame), "frame has access to cookies after refresh.");
-    let cookieOnLoad = await GetHTTPCookiesFromFrame(frame);
+  let cookieOnLoad = await GetHTTPCookiesFromFrame(frame);
     assert_true(cookieStringHasCookie("cookie", "unpartitioned", cookieOnLoad), "innermost frame has cookie in initial load");
   }, "Self-initiated same-origin navigations preserve storage access");
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetFirstPartyCookieAndUnsetStorageAccessPermission(altWww);
+    await SetFirstPartyCookie(altWww);
 
     const frame = await SetUpResponderFrame(t, altWwwResponder);
 
@@ -83,7 +83,7 @@
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetFirstPartyCookieAndUnsetStorageAccessPermission(altWww);
+    await SetFirstPartyCookie(altWww);
 
     const frame = await SetUpResponderFrame(t, altWwwResponder);
 

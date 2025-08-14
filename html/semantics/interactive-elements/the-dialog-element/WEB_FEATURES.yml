@@ -6,7 +6,7 @@ features:
   - "dialog-cancel-events.html"
   - "dialog-canceling.html"
 - name: dialog-closedby
-  tests:
+  files:
   - dialog-closedby.html
   - dialog-closedby-*
   - dialog-popover-closedby-*

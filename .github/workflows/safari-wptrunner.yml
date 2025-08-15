@@ -50,6 +50,7 @@ jobs:
     env:
       CURRENT_CHUNK: ${{ matrix.current-chunk || 1 }}
       TOTAL_CHUNKS: ${{ matrix.total-chunks || 1 }}
+      DEFAULTS_DOMAIN: ${{ inputs.safari-technology-preview && 'com.apple.SafariTechnologyPreview' || 'com.apple.Safari' }}
     runs-on:
       - self-hosted
       - webkit-ews
@@ -71,6 +72,19 @@ jobs:
       - name: Set display color profile
         run: |-
           ./wpt macos-color-profile
+      - name: Enable "classic" scrollbars
+        # See:
+        # https://github.com/web-platform-tests/wpt/issues/10972
+        # https://github.com/web-platform-tests/wpt/issues/36422
+        # https://github.com/web-platform-tests/wpt/issues/44195
+        # https://github.com/web-platform-tests/wpt/issues/44196
+        run: |-
+          defaults write -g AppleShowScrollBars Always
+      - name: Set system accessibility style to "classic"
+        # See:
+        # https://github.com/web-platform-tests/wpt/issues/46453
+        run: |-
+          defaults write com.apple.mediaaccessibility MACaptionActiveProfile -string MACaptionProfile-Classic
       - name: Enable safaridriver diagnostics
         if: inputs.safaridriver-diagnose
         run: |-
@@ -81,13 +95,17 @@ jobs:
         run: |-
           set -eux -o pipefail
           sudo safaridriver --enable
-      - name: Enable safaridriver (Safari Technology Preview)
+      - name: Install Safari Technology Preview
         if: ${{ inputs.safari-technology-preview }}
         run: |-
           set -eux -o pipefail
           export SYSTEM_VERSION_COMPAT=0
           ./wpt install --channel preview --download-only -d . --rename STP safari browser
           sudo installer -pkg STP.pkg -target LocalSystem
+      - name: Enable safaridriver (Safari Technology Preview)
+        if: ${{ inputs.safari-technology-preview }}
+        run: |-
+          set -eux -o pipefail
           sudo /Applications/Safari\ Technology\ Preview.app/Contents/MacOS/safaridriver --enable
       - name: Update hosts
         run: |-

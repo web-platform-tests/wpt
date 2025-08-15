@@ -102,7 +102,7 @@ def to_camelcase(name: str) -> str:
     return "".join(parts)
 
 
-def remove_undefined(obj: Mapping[str, Any]) -> Mapping[str, Any]:
+def remove_undefined(obj: Any) -> Any:
     """
     Removes entries from a dictionary where the value is UNDEFINED.
     Recursively processes nested dictionaries.

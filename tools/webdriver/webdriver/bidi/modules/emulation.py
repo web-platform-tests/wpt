@@ -1,7 +1,7 @@
-from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
+from typing import Any, Dict, List, Mapping, MutableMapping, Union
 
 from ._module import BidiModule, command
-from ..undefined import UNDEFINED, Undefined
+from ..undefined import UNDEFINED, Undefined, Undefinable
 
 
 class CoordinatesOptions(Dict[str, Any]):
@@ -9,24 +9,24 @@ class CoordinatesOptions(Dict[str, Any]):
         self,
         latitude: float,
         longitude: float,
-        accuracy: Optional[float] = None,
-        altitude: Optional[float] = None,
-        altitude_accuracy: Optional[float] = None,
-        heading: Optional[float] = None,
-        speed: Optional[float] = None,
+        accuracy: Undefinable[float] = UNDEFINED,
+        altitude: Undefinable[float] = UNDEFINED,
+        altitude_accuracy: Undefinable[float] = UNDEFINED,
+        heading: Undefinable[float] = UNDEFINED,
+        speed: Undefinable[float] = UNDEFINED,
     ):
         self["latitude"] = latitude
         self["longitude"] = longitude
 
-        if accuracy is not None:
+        if accuracy is not UNDEFINED:
             self["accuracy"] = accuracy
-        if altitude is not None:
+        if altitude is not UNDEFINED:
             self["altitude"] = altitude
-        if altitude_accuracy is not None:
+        if altitude_accuracy is not UNDEFINED:
             self["altitudeAccuracy"] = altitude_accuracy
-        if heading is not None:
+        if heading is not UNDEFINED:
             self["heading"] = heading
-        if speed is not None:
+        if speed is not UNDEFINED:
             self["speed"] = speed
 
 
@@ -34,20 +34,20 @@ class Emulation(BidiModule):
     @command
     def set_geolocation_override(
         self,
-        coordinates: Union[CoordinatesOptions, Undefined] = UNDEFINED,
-        error: Optional[Dict[str, Any]] = None,
-        contexts: Optional[List[str]] = None,
-        user_contexts: Optional[List[str]] = None,
+        coordinates: Undefinable[CoordinatesOptions] = UNDEFINED,
+        error: Undefinable[Dict[str, Any]] = UNDEFINED,
+        contexts: Undefinable[List[str]] = UNDEFINED,
+        user_contexts: Undefinable[List[str]] = UNDEFINED,
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {}
 
         if coordinates is not UNDEFINED:
             params["coordinates"] = coordinates
-        if error is not None:
+        if error is not UNDEFINED:
             params["error"] = error
-        if contexts is not None:
+        if contexts is not UNDEFINED:
             params["contexts"] = contexts
-        if user_contexts is not None:
+        if user_contexts is not UNDEFINED:
             params["userContexts"] = user_contexts
 
         return params
@@ -56,16 +56,16 @@ class Emulation(BidiModule):
     def set_locale_override(
         self,
         locale: Union[str, None],
-        contexts: Optional[List[str]] = None,
-        user_contexts: Optional[List[str]] = None,
+        contexts: Undefinable[List[str]] = UNDEFINED,
+        user_contexts: Undefinable[List[str]] = UNDEFINED,
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "locale": locale
         }
 
-        if contexts is not None:
+        if contexts is not UNDEFINED:
             params["contexts"] = contexts
-        if user_contexts is not None:
+        if user_contexts is not UNDEFINED:
             params["userContexts"] = user_contexts
 
         return params
@@ -74,16 +74,16 @@ class Emulation(BidiModule):
     def set_screen_orientation_override(
         self,
         screen_orientation:Dict[str, Any],
-        contexts: Optional[List[str]] = None,
-        user_contexts: Optional[List[str]] = None,
+        contexts: Undefinable[List[str]] = UNDEFINED,
+        user_contexts: Undefinable[List[str]] = UNDEFINED,
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "screenOrientation": screen_orientation
         }
 
-        if contexts is not None:
+        if contexts is not UNDEFINED:
             params["contexts"] = contexts
-        if user_contexts is not None:
+        if user_contexts is not UNDEFINED:
             params["userContexts"] = user_contexts
 
         return params
@@ -92,16 +92,16 @@ class Emulation(BidiModule):
     def set_timezone_override(
             self,
             timezone: Union[str, None],
-            contexts: Optional[List[str]] = None,
-            user_contexts: Optional[List[str]] = None,
+            contexts: Undefinable[List[str]] = UNDEFINED,
+            user_contexts: Undefinable[List[str]] = UNDEFINED,
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "timezone": timezone
         }
 
-        if contexts is not None:
+        if contexts is not UNDEFINED:
             params["contexts"] = contexts
-        if user_contexts is not None:
+        if user_contexts is not UNDEFINED:
             params["userContexts"] = user_contexts
 
         return params

@@ -1,12 +1,13 @@
 import pytest
 
 import webdriver.bidi.error as error
+from tests.bidi import get_invalid_cases
 from webdriver.bidi.undefined import UNDEFINED
 
 pytestmark = pytest.mark.asyncio
 
 
-@pytest.mark.parametrize("value", [False, 42, "foo", {}])
+@pytest.mark.parametrize("value", get_invalid_cases("list"))
 async def test_params_contexts_invalid_type(bidi_session, value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_scripting_enabled(
@@ -22,7 +23,7 @@ async def test_params_contexts_empty_list(bidi_session):
             contexts=[])
 
 
-@pytest.mark.parametrize("value", [None, False, 42, [], {}])
+@pytest.mark.parametrize("value", get_invalid_cases("string"))
 async def test_params_contexts_entry_invalid_type(bidi_session, value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_scripting_enabled(
@@ -57,7 +58,7 @@ async def test_params_contexts_iframe(bidi_session, new_tab, get_test_page):
         )
 
 
-@pytest.mark.parametrize("value", [False, "foo", 42, {}])
+@pytest.mark.parametrize("value", get_invalid_cases("list"))
 async def test_params_user_contexts_invalid_type(bidi_session, value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_scripting_enabled(
@@ -74,7 +75,7 @@ async def test_params_user_contexts_empty_list(bidi_session):
         )
 
 
-@pytest.mark.parametrize("value", [None, False, 42, {}, []])
+@pytest.mark.parametrize("value", get_invalid_cases("string"))
 async def test_params_user_contexts_entry_invalid_type(bidi_session, value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_scripting_enabled(
@@ -92,6 +93,13 @@ async def test_params_user_contexts_entry_invalid_value(bidi_session, value):
         )
 
 
+async def test_params_missing_contexts_and_user_contexts(bidi_session):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.emulation.set_scripting_enabled(
+            enabled=False
+        )
+
+
 async def test_params_enabled_missing(bidi_session, top_context):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_scripting_enabled(
@@ -100,7 +108,7 @@ async def test_params_enabled_missing(bidi_session, top_context):
         )
 
 
-@pytest.mark.parametrize("value", ["foo", 42, {}, [], UNDEFINED])
+@pytest.mark.parametrize("value", get_invalid_cases("boolean", nullable=True))
 async def test_params_enabled_invalid_type(bidi_session, top_context, value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_scripting_enabled(

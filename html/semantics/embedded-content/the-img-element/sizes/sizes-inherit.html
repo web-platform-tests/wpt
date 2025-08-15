@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <title>Sources without sizes should take their sizes from the img</title>
+  <link
+    rel="author"
+    title="Jake Archibald"
+    href="mailto:jarchibald@mozilla.com"
+  />
+  <link rel="match" href="reference/sizes-inherit-ref.html" />
+  <iframe
+    width="200"
+    height="200"
+    srcdoc='<!doctype html><picture><source srcset="/images/red-16x16.png 100w, /images/green-16x16.png 10w"><img style="width: 100px" srcset="/images/red-16x16.png" sizes="(min-width: 100px) 1px, 500px"></picture>'
+  ></iframe>
+</html>

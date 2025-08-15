@@ -73,15 +73,15 @@ class Emulation(BidiModule):
 
     @command
     def set_scripting_enabled(
-        self,
-        enabled: Literal[False, None],
-        contexts: Optional[List[str]] = None,
-        user_contexts: Optional[List[str]] = None,
+            self,
+            enabled: Union[Literal[False, None], Undefined],
+            contexts: Optional[List[str]] = None,
+            user_contexts: Optional[List[str]] = None,
     ) -> Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {
-            "enabled": enabled
-        }
+        params: MutableMapping[str, Any] = {}
 
+        if enabled is not UNDEFINED:
+            params["enabled"] = enabled
         if contexts is not None:
             params["contexts"] = contexts
         if user_contexts is not None:

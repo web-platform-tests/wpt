@@ -556,7 +556,7 @@ proceed. [`Test.step_timeout()`](#Test.step_timeout) is preferred in other cases
 Note that timeouts generally need to be a few seconds long in order to
 produce stable results in all test environments. However, the use of timeouts should be avoided whenever possible in favor of event-driven approaches. Prefer to wait for an event (e.g., `load`, `DOMContentLoaded`, or custom events) to indicate readiness, or use two `requestAnimationFrame` calls to ensure rendering steps have completed. These alternatives improve reliability and consistency across different environments.
 
-In some cases, such as reftests that compare frames after a specific animation duration (e.g., APNG tests), use of `step_timeout()` may be acceptable. When doing so, consider documenting the reason, and ensure the timeout is whitelisted if required.
+In some cases, such as reftests that compare frames after a specific animation duration (e.g., APNG tests), use of `step_timeout()` may be acceptable. When doing so, consider documenting the reason
 For [single page tests](#single-page-tests),
 [step_timeout](#step_timeout) is also available as a global function.
 

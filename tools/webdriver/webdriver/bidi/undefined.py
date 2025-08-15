@@ -1,6 +1,21 @@
-class Undefined:
-    def __init__(self) -> None:
-        raise RuntimeError('Import UNDEFINED instead.')
+import enum
+from enum import Enum
+from typing import TypeVar, Union
 
 
-UNDEFINED = Undefined.__new__(Undefined)
+class Undefined(Enum):
+    """
+    Class representin special value that indicates that a property is notset.
+    """
+
+    UNDEFINED = enum.auto()
+
+
+UNDEFINED = Undefined.UNDEFINED
+"""A special value that indicates that a property is not set."""
+
+T = TypeVar("T")
+
+#: A type hint for a value that can be of a specific type or UNDEFINED.
+#: For example, ``Undefinable[str]`` is equivalent to ``Union[str, Undefined]``.
+Undefinable = Union[T, Undefined]

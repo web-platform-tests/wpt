@@ -72,7 +72,7 @@ def is_bad_port(port: int) -> bool:
     Bad port as per https://fetch.spec.whatwg.org/#port-blocking
     """
     return port in [
-        # 0, Blocking this here breaks WPT infrastructure.
+        0,
         1,     # tcpmux
         7,     # echo
         9,     # discard

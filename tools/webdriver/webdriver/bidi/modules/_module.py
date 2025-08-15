@@ -103,4 +103,51 @@ def to_camelcase(name: str) -> str:
 
 
 def remove_undefined(obj: Mapping[str, Any]) -> Mapping[str, Any]:
-    return {key: value for key, value in obj.items() if value != UNDEFINED}
+    """
+    Removes entries from a dictionary where the value is UNDEFINED.
+    Recursively processes nested dictionaries.
+
+    >>> from ..undefined import UNDEFINED
+    >>> remove_undefined({"a": 1, "b": UNDEFINED, "c": 3})
+    {'a': 1, 'c': 3}
+
+    >>> remove_undefined({"a": 1, "b": {"x": UNDEFINED, "y": 2}, "c": UNDEFINED})
+    {'a': 1, 'b': {'y': 2}}
+
+    >>> remove_undefined({"a": 1, "b": [1, UNDEFINED, 3], "c": UNDEFINED})
+    {'a': 1, 'b': [1, 3]}
+
+    >>> remove_undefined({"a": 1, "b": [{"x": UNDEFINED, "y": 2}], "c": UNDEFINED})
+    {'a': 1, 'b': [{'y': 2}]}
+
+    >>> remove_undefined({"a": UNDEFINED, "b": {"x": UNDEFINED}})
+    {'b': {}}
+
+    >>> remove_undefined({})
+    {}
+
+    >>> remove_undefined([])
+    []
+
+    >>> remove_undefined(1)
+    1
+
+    >>> remove_undefined("foo")
+    'foo'
+
+    >>> remove_undefined(None)
+
+    """
+    if isinstance(obj, Mapping):
+        new_obj = {}
+        for key, value in obj.items():
+            if value is not UNDEFINED:
+                new_obj[key] = remove_undefined(value)
+        return new_obj
+    elif isinstance(obj, list):
+        new_list = []
+        for item in obj:
+            if item is not UNDEFINED:
+                new_list.append(remove_undefined(item))
+        return new_list
+    return obj

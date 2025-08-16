@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html><head>
+    <title>Tests for 'delete window.opener' (popup - helper window)</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<p>window.opener test helper window</p>
+
+<script type="text/javascript">
+    /*
+        Page is opened with query string ?0 then with ?1 etc to make sure the tests do not interfere with each other.
+    */
+
+    var tests = [
+        {name:'simple delete', code:'del_return_val = delete window.opener;'},
+        {name:'define without var, then delete', code:'opener="hi"; del_return_val = delete opener;'},
+        {name:'define with var, then delete', code:'var opener="hi"; del_return_val = delete opener;'}
+    ];
+
+    var testidx = location.search.match(/idx=(\d+)/)[1];
+    var _opener = opener, del_return_val='NOT TESTED', in_value='NOT TESTED', stringified='NOT TESTED';
+
+    document.open();
+    document.write('<script>' + tests[testidx].code + '<\/script>');
+    document.close();
+
+    in_value = 'opener' in window;
+    stringified = ''+window.opener;
+
+    _opener.postMessage({idx:testidx, name:tests[testidx].name, total:tests.length, del_return_val: del_return_val, in_value: in_value, stringified: stringified}, '*');
+    setTimeout(function() {
+        window.close();
+    }, 10);
+</script>
+
+</body></html>

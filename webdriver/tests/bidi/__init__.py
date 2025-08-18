@@ -2,6 +2,7 @@ from typing import Any, Callable, Dict, List, Mapping, Literal
 
 from tests.support.sync import AsyncPoll
 from webdriver.bidi.modules.script import ContextTarget
+from webdriver.bidi.undefined import UNDEFINED
 
 
 def get_invalid_cases(

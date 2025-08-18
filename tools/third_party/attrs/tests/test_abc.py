@@ -7,10 +7,12 @@ import pytest
 
 import attrs
 
-from attr._compat import PY310, PY_3_12_PLUS
+from attr._compat import PY_3_10_PLUS, PY_3_12_PLUS
 
 
-@pytest.mark.skipif(not PY310, reason="abc.update_abstractmethods is 3.10+")
+@pytest.mark.skipif(
+    not PY_3_10_PLUS, reason="abc.update_abstractmethods is 3.10+"
+)
 class TestUpdateAbstractMethods:
     def test_abc_implementation(self, slots):
         """

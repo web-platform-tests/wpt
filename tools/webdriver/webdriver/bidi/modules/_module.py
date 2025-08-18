@@ -104,8 +104,9 @@ def to_camelcase(name: str) -> str:
 
 def remove_undefined(obj: Any) -> Any:
     """
-    Removes entries from a dictionary where the value is UNDEFINED.
-    Recursively processes nested dictionaries.
+    Removes entries from a dictionary where the value is UNDEFINED. Also removes
+    UNDEFINED values from lists. Recursively processes nested dictionaries and
+    lists.
 
     >>> from ..undefined import UNDEFINED
     >>> remove_undefined({"a": 1, "b": UNDEFINED, "c": 3})

@@ -17,5 +17,5 @@ UNDEFINED = Undefined.UNDEFINED
 T = TypeVar("T")
 
 #: A type hint for a value that can be of a specific type or UNDEFINED.
-#: For example, ``Undefinable[str]`` is equivalent to ``Union[str, Undefined]``.
-Undefinable = Union[T, Undefined]
+#: For example, ``Maybe[str]`` is equivalent to ``Union[str, Undefined]``.
+Maybe = Union[T, Undefined]

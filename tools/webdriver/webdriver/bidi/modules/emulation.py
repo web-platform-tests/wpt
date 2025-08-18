@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Literal, Mapping, Optional
 
 from ._module import BidiModule, command
-from ..undefined import UNDEFINED, Undefinable
+from ..undefined import UNDEFINED, Maybe
 
 
 class CoordinatesOptions(Dict[str, Any]):
@@ -9,11 +9,11 @@ class CoordinatesOptions(Dict[str, Any]):
             self,
             latitude: float,
             longitude: float,
-            accuracy: Undefinable[float] = UNDEFINED,
-            altitude: Undefinable[Optional[float]] = UNDEFINED,
-            altitude_accuracy: Undefinable[Optional[float]] = UNDEFINED,
-            heading: Undefinable[Optional[float]] = UNDEFINED,
-            speed: Undefinable[Optional[float]] = UNDEFINED,
+            accuracy: Maybe[float] = UNDEFINED,
+            altitude: Maybe[Optional[float]] = UNDEFINED,
+            altitude_accuracy: Maybe[Optional[float]] = UNDEFINED,
+            heading: Maybe[Optional[float]] = UNDEFINED,
+            speed: Maybe[Optional[float]] = UNDEFINED,
     ):
         self["latitude"] = latitude
         self["longitude"] = longitude
@@ -28,10 +28,10 @@ class Emulation(BidiModule):
     @command
     def set_geolocation_override(
             self,
-            coordinates: Undefinable[Optional[CoordinatesOptions]] = UNDEFINED,
-            error: Undefinable[Dict[str, Any]] = UNDEFINED,
-            contexts: Undefinable[List[str]] = UNDEFINED,
-            user_contexts: Undefinable[List[str]] = UNDEFINED,
+            coordinates: Maybe[Optional[CoordinatesOptions]] = UNDEFINED,
+            error: Maybe[Dict[str, Any]] = UNDEFINED,
+            contexts: Maybe[List[str]] = UNDEFINED,
+            user_contexts: Maybe[List[str]] = UNDEFINED,
     ) -> Mapping[str, Any]:
         return {
             "coordinates": coordinates,
@@ -44,8 +44,8 @@ class Emulation(BidiModule):
     def set_locale_override(
             self,
             locale: Optional[str],
-            contexts: Undefinable[List[str]] = UNDEFINED,
-            user_contexts: Undefinable[List[str]] = UNDEFINED,
+            contexts: Maybe[List[str]] = UNDEFINED,
+            user_contexts: Maybe[List[str]] = UNDEFINED,
     ) -> Mapping[str, Any]:
         return {
             "locale": locale,
@@ -57,8 +57,8 @@ class Emulation(BidiModule):
     def set_scripting_enabled(
             self,
             enabled: Literal[False, None],
-            contexts: Undefinable[List[str]] = UNDEFINED,
-            user_contexts: Undefinable[List[str]] = UNDEFINED,
+            contexts: Maybe[List[str]] = UNDEFINED,
+            user_contexts: Maybe[List[str]] = UNDEFINED,
     ) -> Mapping[str, Any]:
         return {
             "enabled": enabled,
@@ -70,8 +70,8 @@ class Emulation(BidiModule):
     def set_screen_orientation_override(
             self,
             screen_orientation: Optional[Dict[str, Any]],
-            contexts: Undefinable[List[str]] = UNDEFINED,
-            user_contexts: Undefinable[List[str]] = UNDEFINED,
+            contexts: Maybe[List[str]] = UNDEFINED,
+            user_contexts: Maybe[List[str]] = UNDEFINED,
     ) -> Mapping[str, Any]:
         return {
             "screenOrientation": screen_orientation,
@@ -83,8 +83,8 @@ class Emulation(BidiModule):
     def set_timezone_override(
             self,
             timezone: Optional[str],
-            contexts: Undefinable[List[str]] = UNDEFINED,
-            user_contexts: Undefinable[List[str]] = UNDEFINED,
+            contexts: Maybe[List[str]] = UNDEFINED,
+            user_contexts: Maybe[List[str]] = UNDEFINED,
     ) -> Mapping[str, Any]:
         return {
             "timezone": timezone,

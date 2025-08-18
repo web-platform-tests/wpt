@@ -117,6 +117,7 @@ jobs:
             -- \
             safari
       - name: Publish results
+        if: "!cancelled()"
         uses: actions/upload-artifact@v4.1.0
         with:
           name: ${{ inputs.artifact-name }}-${{ env.CURRENT_CHUNK }}

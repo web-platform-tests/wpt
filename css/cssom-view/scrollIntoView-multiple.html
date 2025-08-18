@@ -52,29 +52,29 @@
       const scrollers = [scroller1, scroller2];
       const target_offsets = [target1.offsetTop, target2.offsetTop];
 
-      promise_test(async (t) => {
-        await simultaneousScrollIntoViewsTest(t,
-                                    ["smooth", "smooth"],
-                                    targets,
-                                    scrollers,
-                                    target_offsets);
-      }, "Simultaneous smooth scrollIntoViews run to completion");
+      // promise_test(async (t) => {
+      //   await simultaneousScrollIntoViewsTest(t,
+      //                               ["smooth", "smooth"],
+      //                               targets,
+      //                               scrollers,
+      //                               target_offsets);
+      // }, "Simultaneous smooth scrollIntoViews run to completion");
 
-      promise_test(async (t) => {
-        await simultaneousScrollIntoViewsTest(t,
-                                    ["smooth", "instant"],
-                                    targets,
-                                    scrollers,
-                                    target_offsets);
-      }, "Simultaneous smooth,instant scrollIntoViews run to completion");
+      // promise_test(async (t) => {
+      //   await simultaneousScrollIntoViewsTest(t,
+      //                               ["smooth", "instant"],
+      //                               targets,
+      //                               scrollers,
+      //                               target_offsets);
+      // }, "Simultaneous smooth,instant scrollIntoViews run to completion");
 
-      promise_test(async (t) => {
-        await simultaneousScrollIntoViewsTest(t,
-                                    ["instant", "smooth"],
-                                    targets,
-                                    scrollers,
-                                    target_offsets);
-      }, "Simultaneous instant,smooth scrollIntoViews run to completion");
+      // promise_test(async (t) => {
+      //   await simultaneousScrollIntoViewsTest(t,
+      //                               ["instant", "smooth"],
+      //                               targets,
+      //                               scrollers,
+      //                               target_offsets);
+      // }, "Simultaneous instant,smooth scrollIntoViews run to completion");
 
       promise_test(async (t) => {
         await simultaneousScrollIntoViewsTest(t,

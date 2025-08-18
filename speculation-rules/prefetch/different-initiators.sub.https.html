@@ -7,6 +7,8 @@
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 
 <meta name="variant" content="?cross-site-1">
 <meta name="variant" content="?cross-site-2">
@@ -29,7 +31,16 @@ promise_test(async t => {
 
   // Start speculation rules prefetch from `initiator1`.
   const nextUrl = initiator1.getExecutorURL({ protocol: 'https', page: 2 });
+
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let statusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   await initiator1.forceSinglePrefetch(nextUrl);
+  await statusPromise; // Wait for prefetch status update
 
   // Register a SW for `nextUrl` -- this is a trick to make the prefetched
   // result to put in `PrefetchService::prefetches_ready_to_serve_` in

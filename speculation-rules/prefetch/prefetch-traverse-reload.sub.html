@@ -2,17 +2,30 @@
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/websockets/constants.sub.js"></script>
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 <script>
 setup(() => assertSpeculationRulesIsSupported());
 
 promise_test(async t => {
   let agent = await spawnWindow(t, { protocol: 'https', pipe: 'header(Cache-Control, no-store)' });
   let previousUrl = await agent.execute_script(() => location.href);
+
+  // Subscribe and wait for prefetch status update
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let statusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   await agent.execute_script(async () => {
     window.preventBfcache = new WebSocket('wss://{{ports[wss][0]}}/echo');
   });
@@ -21,6 +34,8 @@ promise_test(async t => {
   await agent.navigate(nextUrl);
 
   await agent.forceSinglePrefetch(previousUrl);
+  await statusPromise; // Wait for prefetch status update
+
   await agent.execute_script(() => {
     window.executor.suspend(() => history.go(-1));
   });
@@ -32,6 +47,15 @@ promise_test(async t => {
 promise_test(async t => {
   let agent = await spawnWindow(t, { protocol: 'https', pipe: 'header(Cache-Control, no-store)' });
   let previousUrl = await agent.execute_script(() => location.href);
+
+  // Subscribe and wait for prefetch status update
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let statusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   await agent.execute_script(async () => {
     window.preventBfcache = new WebSocket('wss://{{ports[wss][0]}}/echo');
   });
@@ -40,6 +64,8 @@ promise_test(async t => {
   await agent.navigate(nextUrl);
 
   await agent.forceSinglePrefetch(previousUrl);
+  await statusPromise; // Wait for prefetch status update
+
   // In https://html.spec.whatwg.org/multipage/nav-history-apis.html#delta-traverse,
   // `sourceDocument` is `History`'s relevant global object's associated
   // Document. In this case, it's `iframe.contentDocument`, and thus the

@@ -227,8 +227,30 @@
             });
         }
     };
-
+    const subscribe_global = async function (params) {
+        return create_action("bidi.session.subscribe", {
+        ...params
+    });        
+    };
     window.test_driver_internal.in_automation = true;
+
+    window.test_driver_internal.bidi.speculation.prefetch_status_updated.subscribe = function(params) {
+        return subscribe_global({
+            ...params, events: ['speculation.prefetchStatusUpdated']
+        });
+    };
+    console.log("Assigned prefetch_status_updated.subscribe in testdriver-extra.js");
+
+    window.test_driver_internal.bidi.speculation.prefetch_status_updated.on = function(callback) {
+        const on_event = (event) => {
+            // console.log("Testdriver extra: prefetch_status_updated event received");
+            callback(event.payload);
+        };
+        event_target.addEventListener(
+            'speculation.prefetchStatusUpdated', on_event);
+        return () => event_target.removeEventListener(
+                        'speculation.prefetchStatusUpdated', on_event);
+    };
 
     window.test_driver_internal.bidi.bluetooth.handle_request_device_prompt =
         function(params) {

@@ -2,6 +2,9 @@
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="../resources/utils.js"></script>
@@ -22,8 +25,14 @@ promise_test(async t => {
   // The Documents #2 and #4 are different, but the same RenderFrameHost is
   // used before https://crbug.com/936696 is done.
 
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let statusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
   await win.forceSinglePrefetch(nextUrl);
-
+  await statusPromise; // Wait for prefetch status update
   // Register a SW for `nextUrl` -- this is a trick to make the prefetched
   // result to put in `PrefetchService::prefetches_ready_to_serve_` in
   // Chromium implementation but actually not used by this navigation.

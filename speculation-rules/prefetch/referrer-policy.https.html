@@ -7,6 +7,8 @@
 <script src="/common/utils.js"></script>
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 
 <!--Split test cases due to the use of timeouts in speculation rules test utilities.-->
 <meta name="variant" content="?1-1">
@@ -20,6 +22,14 @@
 setup(() => assertSpeculationRulesIsSupported());
 
 subsetTest(promise_test, async t => {
+  // Subscribe to the BiDi prefetch_status_updated event and set up a promise to await it.
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("strict-origin-when-cross-origin");
   const expectedReferrer = agent.getExecutorURL().href;
@@ -28,12 +38,22 @@ subsetTest(promise_test, async t => {
   await agent.forceSinglePrefetch(nextURL);
   await agent.navigate(nextURL);
 
+  // Wait for the BiDi prefetch_status_updated event before assertions
+  await prefetchStatusPromise;
+
   const headers = await agent.getRequestHeaders();
   assert_prefetched(headers, "must be prefetched");
   assert_equals(headers.referer, expectedReferrer, "must send the full URL as the referrer");
 }, 'with "strict-origin-when-cross-origin" referrer policy');
 
 subsetTest(promise_test, async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("strict-origin");
   const expectedReferrer = agent.getExecutorURL().origin + "/";
@@ -42,12 +62,21 @@ subsetTest(promise_test, async t => {
   await agent.forceSinglePrefetch(nextURL);
   await agent.navigate(nextURL);
 
+  await prefetchStatusPromise;
+
   const headers = await agent.getRequestHeaders();
   assert_prefetched(headers, "must be prefetched");
   assert_equals(headers.referer, expectedReferrer, "must send the origin as the referrer");
 }, 'with "strict-origin" referrer policy');
 
 subsetTest(promise_test, async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("no-referrer");
 
@@ -55,12 +84,21 @@ subsetTest(promise_test, async t => {
   await agent.forceSinglePrefetch(nextURL);
   await agent.navigate(nextURL);
 
+  await prefetchStatusPromise;
+
   const headers = await agent.getRequestHeaders();
   assert_prefetched(headers, "must be prefetched");
   assert_equals(headers.referer, undefined, "must send no referrer");
 }, 'with "no-referrer" referrer policy');
 
 subsetTest(promise_test, async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("no-referrer");
 
@@ -72,6 +110,8 @@ subsetTest(promise_test, async t => {
   }, [next_url]);
   await new Promise(resolve => t.step_timeout(resolve, 2000));
   await agent.navigate(next_url);
+
+  await prefetchStatusPromise;
 
   const headers = await agent.getRequestHeaders();
   const expected_referrer = next_url.origin + '/';

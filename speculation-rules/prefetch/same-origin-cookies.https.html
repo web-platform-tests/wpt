@@ -2,7 +2,8 @@
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 <script src='/resources/testdriver-vendor.js'></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/common/subset-tests.js"></script>
@@ -18,6 +19,14 @@
   setup(() => assertSpeculationRulesIsSupported());
 
   subsetTest(promise_test, async t => {
+    // Subscribe to the BiDi prefetch_status_updated event and set up a promise to await it.
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let prefetchStatusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
+
     await test_driver.delete_all_cookies();
 
     let executor = 'cookies.py';
@@ -33,6 +42,9 @@
     await agent.forceSinglePrefetch(nextUrl);
     await agent.navigate(nextUrl);
 
+    // Wait for the BiDi prefetch_status_updated event before assertions
+    await prefetchStatusPromise;
+
     response_cookies = await agent.getResponseCookies();
     request_cookies = await agent.getRequestCookies();
     assert_equals(request_cookies["count"], "1");
@@ -45,6 +57,13 @@
 
   // Regression test for https://crbug.com/1524338
   subsetTest(promise_test, async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let prefetchStatusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
+
     await test_driver.delete_all_cookies();
 
     let executor = 'cookies.py';
@@ -61,6 +80,8 @@
     let nextUrl = agent.getExecutorURL({ executor, page: 2 });
     await agent.forceSinglePrefetch(nextUrl);
     await agent.navigate(nextUrl);
+
+    await prefetchStatusPromise;
 
     response_cookies = await agent.getResponseCookies();
     request_cookies = await agent.getRequestCookies();

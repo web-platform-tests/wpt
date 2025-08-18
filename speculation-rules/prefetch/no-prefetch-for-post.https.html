@@ -6,19 +6,28 @@
 <script src="/common/utils.js"></script>
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 <script>
   setup(() => assertSpeculationRulesIsSupported());
 
   promise_test(async t => {
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+    let statusPromise = new Promise(resolve => {
+      test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+        if (event && event.status !== undefined) resolve(event.status);
+      });
+    });
     let agent = await spawnWindow(t);
     let nextUrl = agent.getExecutorURL({ executor: 'post-navigation-handler.py', protocol: 'https', page: 2 });
     await agent.forceSinglePrefetch(nextUrl);
+    await statusPromise;
 
-  await agent.execute_script(async (nextUrl) => {
-    window.executor.suspend(() => {
-        navigate_by_form_generated_post(nextUrl);
-    });
-  }, [nextUrl]);
+    await agent.execute_script(async (nextUrl) => {
+      window.executor.suspend(() => {
+          navigate_by_form_generated_post(nextUrl);
+      });
+    }, [nextUrl]);
 
     assert_not_prefetched(await agent.getRequestHeaders());
   }, "post navigations should not use cached prefetch");

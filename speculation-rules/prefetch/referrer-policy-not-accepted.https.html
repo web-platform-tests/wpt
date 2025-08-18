@@ -8,6 +8,8 @@
 <script src="/common/get-host-info.sub.js"></script>
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 
 <!--Split test cases due to the use of timeouts in speculation rules test utilities.-->
 <meta name="variant" content="?1-1">
@@ -20,6 +22,14 @@
 setup(() => assertSpeculationRulesIsSupported());
 
 subsetTest(promise_test, async t => {
+  // Subscribe to the BiDi prefetch_status_updated event and set up a promise to await it.
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("unsafe-url");
   const expectedReferrer = agent.getExecutorURL().href;
@@ -28,6 +38,9 @@ subsetTest(promise_test, async t => {
   await agent.forceSinglePrefetch(nextURL);
   await agent.navigate(nextURL);
 
+  // Wait for the BiDi prefetch_status_updated event before assertions
+  await prefetchStatusPromise;
+
   const headers = await agent.getRequestHeaders();
   // The referrer policy restriction does not apply to same-site prefetch.
   assert_prefetched(headers, "must be prefetched");
@@ -35,6 +48,13 @@ subsetTest(promise_test, async t => {
 }, 'with "unsafe-url" referrer policy on same-site referring page');
 
 subsetTest(promise_test, async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("unsafe-url");
   const expectedReferrer = agent.getExecutorURL().href;
@@ -44,12 +64,21 @@ subsetTest(promise_test, async t => {
   await agent.forceSinglePrefetch(nextURL);
   await agent.navigate(nextURL);
 
+  await prefetchStatusPromise;
+
   const headers = await agent.getRequestHeaders();
   assert_not_prefetched(headers, "must not be prefetched");
   assert_equals(headers.referer, expectedReferrer, "must send the full URL as the referrer");
 }, 'with "unsafe-url" referrer policy on cross-site referring page');
 
 subsetTest(promise_test, async t => {
+  await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let prefetchStatusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("unsafe-url");
   const expectedReferrer = agent.getExecutorURL().href;
@@ -62,6 +91,8 @@ subsetTest(promise_test, async t => {
   }, [nextURL]);
   await new Promise(resolve => t.step_timeout(resolve, 2000));
   await agent.navigate(nextURL);
+
+  await prefetchStatusPromise;
 
   const headers = await agent.getRequestHeaders();
   assert_not_prefetched(headers, "must not be prefetched");

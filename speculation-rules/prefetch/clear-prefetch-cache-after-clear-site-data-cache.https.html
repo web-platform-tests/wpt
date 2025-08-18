@@ -5,6 +5,8 @@
 <script src="/common/utils.js"></script>
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 <script>
   setup(() => assertSpeculationRulesIsSupported());
 
@@ -12,7 +14,16 @@
   promise_test(async t => {
     let agent = await spawnWindow(t, { protocol: 'https' });
     let nextUrl = agent.getExecutorURL({protocol: 'https', page: 2 });
+    
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let statusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
     await agent.forceSinglePrefetch(nextUrl);
+    await statusPromise;
 
     // Open new window with url to clear cache data through Clear-Site-Data header.
     // Ensure that the cache is cleared before the navigation.
@@ -37,7 +48,16 @@
   promise_test(async t => {
     let agent = await spawnWindow(t, { protocol: 'https' });
     let nextUrl = agent.getExecutorURL({protocol: 'https', page: 2 });
+
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let statusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+  
     await agent.forceSinglePrefetch(nextUrl);
+    await statusPromise;
 
     // Open new window with url to clear cache data through Clear-Site-Data header.
     // Ensure that the cache is cleared before the navigation.

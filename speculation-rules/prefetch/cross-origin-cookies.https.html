@@ -2,7 +2,8 @@
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-extra.js"></script>
 <script src='/resources/testdriver-vendor.js'></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/common/utils.js"></script>
@@ -25,7 +26,16 @@
     assert_equals(response_cookies["type"], "navigate");
 
     let nextUrl = agent.getExecutorURL({ executor, hostname: get_host_info().NOTSAMESITE_HOST, page: 2 });
+
+    await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+  let statusPromise = new Promise(resolve => {
+    test_driver.bidi.speculation.prefetch_status_updated.on(event => {
+      if (event && event.status !== undefined) resolve(event.status);
+    });
+  });
+
     await agent.forceSinglePrefetch(nextUrl);
+    await statusPromise; // Wait for prefetch status update
     await agent.navigate(nextUrl);
 
     response_cookies = await agent.getResponseCookies();

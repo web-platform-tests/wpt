@@ -1,3 +1,4 @@
+import copy
 import pytest
 
 from webdriver.transport import HTTPWireProtocol
@@ -12,31 +13,46 @@ def flatten(a):
 
 
 @pytest.fixture(name="add_browser_capabilities")
-def fixture_add_browser_capabilities(configuration):
+def fixture_add_browser_capabilities(capabilities):
+    existing_capabilities = capabilities
+
     def add_browser_capabilities(capabilities):
+        existing_alwaysMatch = existing_capabilities.setdefault("alwaysMatch", {})
+
         # Make sure there aren't keys in common.
-        assert not set(configuration["capabilities"]).intersection(
+        assert not set(existing_capabilities.get("alwaysMatch", {})).intersection(
             set(capabilities))
-        result = dict(configuration["capabilities"])
-        result.update(capabilities)
+        result = copy.deepcopy(existing_capabilities)
+        result.setdefault("alwaysMatch", {}).update(capabilities)
 
         return result
 
     return add_browser_capabilities
 
 
-@pytest.fixture(name="configuration")
-def fixture_configuration(configuration):
+@pytest.fixture(name="default_capabilities")
+def fixture_default_capabilities(default_capabilities):
     """Remove "acceptInsecureCerts" from capabilities if it exists.
 
-  Some browser configurations add acceptInsecureCerts capability by default.
-  Remove it during new_session tests to avoid interference.
-  """
+    Some browser configurations add acceptInsecureCerts capability by default.
+    Remove it during new_session tests to avoid interference.
+    """
 
-    if "acceptInsecureCerts" in configuration["capabilities"]:
-        configuration = dict(configuration)
-        del configuration["capabilities"]["acceptInsecureCerts"]
-    return configuration
+    # Check we aren't somehow dealing with capabilities without alwaysMatch/firstMatch:
+    assert "acceptInsecureCerts" not in default_capabilities
+
+    capabilities = copy.deepcopy(default_capabilities)
+
+    alwaysMatch = capabilities.get("alwaysMatch", {})
+    if "acceptInsecureCerts" in alwaysMatch:
+        del alwaysMatch["acceptInsecureCerts"]
+
+    firstMatch = capabilities.get("firstMatch", [])
+    for caps in firstMatch:
+        if "acceptInsecureCerts" in firstMatch:
+            del firstMatch["acceptInsecureCerts"]
+
+    return capabilities
 
 
 @pytest.fixture(name="new_session")

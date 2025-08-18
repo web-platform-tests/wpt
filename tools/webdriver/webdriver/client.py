@@ -385,10 +385,9 @@ class Session:
                  extension=None):
 
         if enable_bidi:
-            if capabilities is not None:
-                capabilities.setdefault("alwaysMatch", {}).update({"webSocketUrl": True})
-            else:
-                capabilities = {"alwaysMatch": {"webSocketUrl": True}}
+            if capabilities is None:
+                capabilities = {}
+            capabilities.setdefault("alwaysMatch", {})["webSocketUrl"] = True
 
         self.transport = transport.HTTPWireProtocol(host, port, url_prefix)
         self.requested_capabilities = capabilities
@@ -397,7 +396,7 @@ class Session:
         self.timeouts = None
         self.window = None
         self.find = None
-        self.enable_bidi = enable_bidi
+        self.enable_bidi = enable_bidi or capabilities.get("alwaysMatch", {}).get("webSocketUrl", False)
         self.bidi_session = None
         self.extension = None
         self.extension_cls = extension
@@ -446,40 +445,44 @@ class Session:
         if self.requested_capabilities is not None:
             body["capabilities"] = self.requested_capabilities
 
-        value = self.send_command("POST", "session", body=body)
-        assert isinstance(value["sessionId"], str)
-        assert isinstance(value["capabilities"], Dict)
+        try:
+            value = self.send_command("POST", "session", body=body)
+            assert isinstance(value["sessionId"], str)
+            assert isinstance(value["capabilities"], Dict)
 
-        self.session_id = value["sessionId"]
-        self.capabilities = value["capabilities"]
+            self.session_id = value["sessionId"]
+            self.capabilities = value["capabilities"]
 
-        if "webSocketUrl" in self.capabilities:
-            self.bidi_session = BidiSession.from_http(self.session_id,
-                                                      self.capabilities)
-        elif self.enable_bidi:
+            if "webSocketUrl" in self.capabilities:
+                self.bidi_session = BidiSession.from_http(self.session_id,
+                                                          self.capabilities)
+            elif self.enable_bidi:
+                self.end()
+                raise error.SessionNotCreatedException(
+                    "Requested bidi session, but webSocketUrl capability not found")
+
+            if self.extension_cls:
+                self.extension = self.extension_cls(self)
+
+            return value
+
+        except Exception:
+            # Make sure we end up back in a consistent state.
             self.end()
-            raise error.SessionNotCreatedException(
-                "Requested bidi session, but webSocketUrl capability not found")
-
-        if self.extension_cls:
-            self.extension = self.extension_cls(self)
-
-        return value
+            raise
 
     def end(self):
         """Try to close the active session."""
-        if self.session_id is None:
-            return
-
-        if not isinstance(self.session_id, str):
-            raise TypeError("Session.session_id must be a str or None")
-
         try:
-            self.send_command("DELETE", "session/%s" % self.session_id)
+            if self.session_id is not None:
+                self.send_command("DELETE", "session/%s" % self.session_id)
         except (OSError, error.InvalidSessionIdException):
             pass
         finally:
             self.session_id = None
+            self.capabilities = None
+            self.bidi_session = None
+            self.extension = None
             self.transport.close()
 
     def send_command(self, method, url, body=None, timeout=None):

@@ -660,7 +660,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">REPEAT_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">wdspec</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">crashtest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">testharness</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">subsuite</span><span class="o">-</span><span class="n">file</span> <span class="n">SUBSUITE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">subsuite</span> <span class="n">SUBSUITES</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">small</span><span class="o">-</span><span class="n">subsuite</span><span class="o">-</span><span class="n">size</span> <span class="n">SMALL_SUBSUITE_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
@@ -705,7 +705,8 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">user</span><span class="o">-</span><span class="n">stylesheet</span> <span class="n">USER_STYLESHEETS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">mojojs</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">mojojs</span><span class="o">-</span><span class="n">path</span> <span class="n">MOJOJS_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">swiftshader</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">experimental</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">enable</span><span class="o">-</span><span class="n">experimental</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">sanitizer</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reuse</span><span class="o">-</span><span class="n">window</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">browser</span> <span class="n">SAUCE_BROWSER</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">sanitizer</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reuse</span><span class="o">-</span><span class="n">window</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">trace</span><span class="o">-</span><span class="n">categories</span> <span class="p">[</span><span class="n">CATEGORIES</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">browser</span> <span class="n">SAUCE_BROWSER</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">platform</span> <span class="n">SAUCE_PLATFORM</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">version</span> <span class="n">SAUCE_VERSION</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">build</span> <span class="n">SAUCE_BUILD</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">tags</span> <span class="p">[</span><span class="n">SAUCE_TAGS</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">tunnel</span><span class="o">-</span><span class="nb">id</span> <span class="n">SAUCE_TUNNEL_ID</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">user</span> <span class="n">SAUCE_USER</span><span class="p">]</span>
@@ -894,9 +895,9 @@ channel.) This flag overrides –browser-channel.</p>
 <h4>Test Selection<a class="headerlink" href="#test-selection" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: wdspec, reftest, print-reftest, testharness, crashtest</p>
+<dd><p>Possible choices: reftest, wdspec, print-reftest, crashtest, testharness</p>
 <p>Test types to run</p>
-<p>Default: {‘wdspec’, ‘reftest’, ‘print-reftest’, ‘testharness’, ‘crashtest’}</p>
+<p>Default: {‘reftest’, ‘wdspec’, ‘print-reftest’, ‘crashtest’, ‘testharness’}</p>
 </dd>
 <dt><kbd>--subsuite-file</kbd></dt>
 <dd><p>Path to JSON file containing subsuite configuration</p>
@@ -1255,6 +1256,9 @@ channel.) This flag overrides –browser-channel.</p>
 <dt><kbd>--reuse-window</kbd></dt>
 <dd><p>Reuse a window across <cite>testharness.js</cite> tests where possible, which can speed up testing. Also useful for ensuring that the renderer process has a stable PID for a debugger to attach to.</p>
 <p>Default: False</p>
+</dd>
+<dt><kbd>--trace-categories</kbd></dt>
+<dd><p>Record traces under the given categories for each test.</p>
 </dd>
 </dl>
 </section>

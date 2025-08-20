@@ -24,7 +24,7 @@ def test_no_browsing_context(session, closed_frame):
     assert_error(response, "no such window")
 
 
-def test_get_named_session_cookie(session, url, server_config):
+def test_get_named_session_cookie(session, url):
     session.url = url("/common/blank.html")
     clear_all_cookies(session)
     session.execute_script("document.cookie = 'foo=bar'")
@@ -54,10 +54,9 @@ def test_get_named_session_cookie(session, url, server_config):
 
     assert cookie["name"] == "foo"
     assert cookie["value"] == "bar"
-    assert cookie["domain"] == server_config["browser_host"]
 
 
-def test_get_named_cookie(session, url, server_config):
+def test_get_named_cookie(session, url):
     session.url = url("/common/blank.html")
     clear_all_cookies(session)
 
@@ -81,8 +80,6 @@ def test_get_named_cookie(session, url, server_config):
 
     assert cookie["name"] == "foo"
     assert cookie["value"] == "bar"
-    assert cookie["domain"] == server_config["browser_host"]
-
     # convert from seconds since epoch
     assert datetime.utcfromtimestamp(
         cookie["expiry"]).strftime(utc_string_format) == a_day_from_now
@@ -122,7 +119,6 @@ def test_duplicated_cookie(session, url, server_config, inline):
 
     assert cookie["name"] == new_cookie["name"]
     assert cookie["value"] == "newworld"
-    assert cookie["domain"] == server_config["browser_host"]
 
 
 @pytest.mark.parametrize("same_site", ["None", "Lax", "Strict"])

@@ -265,6 +265,7 @@ def run_info_browser_version(**kwargs):
 def update_properties():
     return ([
         "os",
+        "os_version",
         "debug",
         "display",
         "fission",

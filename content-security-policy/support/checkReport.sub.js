@@ -72,12 +72,11 @@
           assert_equals(data.length, 0,
                         "CSP report sent, but not expecting one.");
         } else {
+          let reportedBody;
           // With the 'report-uri' directive, the report is contained in
           // `data[0]["csp-report"]`. With the 'report-to' directive, the report
           // is contained in `data[0]["body"]`.
-          const reportBody = data[0]["body"]
-                ? data[0]["body"]
-                : data[0]["csp-report"];
+          if (data[0]) reportBody = data[0]["body"] ? data[0]["body"] : data[0]["csp-report"];
 
           assert_true(reportBody !== undefined,
                       "No CSP report sent, but expecting one.");

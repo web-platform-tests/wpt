@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+  <title>Name Comp: Name From Pseudo Content Marker</title>
+  <meta charset="utf-8">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+  <style type="text/css">
+
+    #ul-custom::marker {
+      content: "🚅 ";
+    }
+
+    #ol-custom::marker {
+      content: "🥈 "
+    }
+
+  </style>
+</head>
+<body>
+
+<p>Tests the <a href="https://w3c.github.io/accname/#comp_name_from_content_pseudo_element_marker">#comp_name_from_content_pseudo_element_marker</a> portions of the AccName <em>Name Computation</em> algorithm.</p>
+
+<ul>
+  <li id="ul-default">the Blue Sky</li>
+  <li id="ul-custom">from Osaka to Kobe</li>
+</ul>
+
+<ol>
+  <li id="ol-default">does not simply walk into Mordor</li>
+  <li id="ol-custom">winner!</li>
+</ol>
+
+<button
+  class="ex"
+  aria-labelledby="ul-default"
+  data-testname="name from ul > listitem with default ::marker"
+  data-expectedlabel="• the Blue Sky"
+>Label</button>
+
+<button
+  class="ex"
+  aria-labelledby="ul-custom"
+  data-testname="name from ul > listitem with custom ::marker"
+  data-expectedlabel="🚅 from Osaka to Kobe"
+>Label</button>
+
+<button
+  class="ex"
+  aria-labelledby="ol-default"
+  data-testname="name from ol > listitem with default ::marker"
+  data-expectedlabel="1. does not simply walk into Mordor"
+>Label</button>
+
+<button
+  class="ex"
+  aria-labelledby="ol-custom"
+  data-testname="name from ol > listitem with custom ::marker"
+  data-expectedlabel="🥈 winner!"
+>Label</button>
+
+<script>
+AriaUtils.verifyLabelsBySelector(".ex");
+</script>
+</body>
+</html>

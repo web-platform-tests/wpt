@@ -122,3 +122,32 @@ If you spot an issue with a test and are not comfortable providing a
 pull request per above to fix it, please
 [file a new issue](https://github.com/web-platform-tests/wpt/issues/new).
 Thank you!
+
+
+## Local Development
+
+If you would like to build the site locally, follow these instructions.
+
+1.  Install the system dependencies. The free and open source software tools
+    [Python](https://www.python.org/) (version 3.6 or newer) and
+    [Git](https://git-scm.com/) are required.
+
+2.  Download the source code. In your terminal, clone this repository using the
+    full `git clone` command:
+
+        git clone https://github.com/web-platform-tests/wpt.git
+
+3.  Navigate into the project folder and install the Python dependencies:
+
+        cd wpt
+        pip install -r docs/requirements.txt
+
+4.  Build the documentation.
+
+    * On macOS or Linux:
+
+            ./wpt build-docs
+
+    * On Windows:
+
+            python wpt build-docs

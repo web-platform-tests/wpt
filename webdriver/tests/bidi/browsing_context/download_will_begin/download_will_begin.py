@@ -1,3 +1,5 @@
+import random
+
 import pytest
 from webdriver.bidi.modules.script import ContextTarget
 from webdriver.error import TimeoutException
@@ -11,7 +13,7 @@ DOWNLOAD_WILL_BEGIN = "browsingContext.downloadWillBegin"
 
 
 async def test_unsubscribe(bidi_session, inline, new_tab):
-    filename = 'some_file_name.txt'
+    filename = f'some_file_name{random.random()}.txt'
     download_link = "data:text/plain;charset=utf-8,"
     url = inline(
         f"""<a id="download_link" href="{download_link}" download="{filename}">download</a>""")
@@ -48,7 +50,7 @@ async def test_unsubscribe(bidi_session, inline, new_tab):
 async def test_subscribe(
     bidi_session, new_tab, inline, wait_for_event, wait_for_future_safe
 ):
-    filename = 'some_file_name.txt'
+    filename = f'some_file_name{random.random()}.txt'
     download_link = "data:text/plain;charset=utf-8,"
     url = inline(
         f"""<a id="download_link" href="{download_link}" download="{filename}">download</a>""")

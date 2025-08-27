@@ -45,7 +45,7 @@
       container.appendChild(script);
     });
     assert_array_equals(messages, ["SET", "APPEND", "CREATE_SCRIPT", "HTMLScriptElement text", "RUN_TRUSTED_SCRIPT"]);
-  }, "Default policy's calls when setting script source via HTMLElement.innerText.");
+  }, "Verify when the default policy is called for script source via HTMLElement.innerText.");
 
   promise_test(async t => {
     let messages = await script_messages_for(_ => {
@@ -67,7 +67,7 @@
       container.appendChild(script);
     });
     assert_array_equals(messages, ["SET", "APPEND", "CREATE_SCRIPT", "HTMLScriptElement text", "RUN_TRUSTED_SCRIPT"]);
-  }, "Default policy's calls when setting script source via Node.textContent.");
+  }, "Verify when the default policy is called for script source set via Node.textContent.");
 
   promise_test(async t => {
     let messages = await script_messages_for(_ => {

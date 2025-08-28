@@ -536,14 +536,6 @@
         return create_context_action("set_permission", context, {permission_params});
     };
 
-    window.test_driver_internal.get_global_privacy_control = function(context=null) {
-        return create_context_action("get_global_privacy_control", context, {});
-    };
-
-    window.test_driver_internal.set_global_privacy_control = function(gpc, context=null) {
-        return create_context_action("set_global_privacy_control", context, {gpc});
-    };
-
     window.test_driver_internal.add_virtual_authenticator = function(config, context=null) {
         return create_context_action("add_virtual_authenticator", context, {config});
     };
@@ -665,4 +657,12 @@
     window.test_driver_internal.clear_display_features = function(context=null) {
         return create_context_action("clear_display_features", context, {});
     }
+
+    window.test_driver_internal.get_global_privacy_control = function(context=null) {
+        return create_action("get_global_privacy_control", {});
+    };
+
+    window.test_driver_internal.set_global_privacy_control = function(gpc, context=null) {
+        return create_action("set_global_privacy_control", {gpc});
+    };
 })();

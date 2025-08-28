@@ -1408,32 +1408,6 @@
         },
 
         /**
-         * Gets the current globally-applied privacy control status
-         *
-         * @returns {Promise} Fulfils with an object with boolean property `gpc`
-         *                    that encodes the current "do not sell or share"
-         *                    signal the browser is configured to convey.
-         */
-        get_global_privacy_control: function() {
-            return window.test_driver_internal.get_global_privacy_control();
-        },
-
-        /**
-         * Gets the current globally-applied privacy control status
-         *
-         * @param {bool} newValue - The a boolean that is true if the browers
-         *                          should convey a "do not sell or share" signal
-         *                          and false otherwise
-         *
-         * @returns {Promise} Fulfils with an object with boolean property `gpc`
-         *                    that encodes the new "do not sell or share"
-         *                    after applying the new value.
-         */
-        set_global_privacy_control: function(newValue) {
-            return window.test_driver_internal.set_global_privacy_control(newValue);
-        },
-
-        /**
          * Creates a virtual authenticator
          *
          * This function creates a virtual authenticator for use with
@@ -2195,6 +2169,32 @@
          */
         clear_display_features: function(context=null) {
             return window.test_driver_internal.clear_display_features(context);
+        },
+
+        /**
+         * Gets the current globally-applied privacy control status
+         *
+         * @returns {Promise} Fulfils with an object with boolean property `gpc`
+         *                    that encodes the current "do not sell or share"
+         *                    signal the browser is configured to convey.
+         */
+        get_global_privacy_control: function() {
+            return window.test_driver_internal.get_global_privacy_control();
+        },
+
+        /**
+         * Gets the current globally-applied privacy control status
+         *
+         * @param {bool} newValue - The a boolean that is true if the browers
+         *                          should convey a "do not sell or share" signal
+         *                          and false otherwise
+         *
+         * @returns {Promise} Fulfils with an object with boolean property `gpc`
+         *                    that encodes the new "do not sell or share"
+         *                    after applying the new value.
+         */
+        set_global_privacy_control: function(newValue) {
+            return window.test_driver_internal.set_global_privacy_control(newValue);
         }
     };
 
@@ -2390,14 +2390,6 @@
             throw new Error("set_permission() is not implemented by testdriver-vendor.js");
         },
 
-        async set_global_privacy_control(newValue, context=null) {
-            throw new Error("set_global_privacy_control() is not implemented by testdriver-vendor.js");
-        },
-
-        async get_global_privacy_control(context=null) {
-            throw new Error("get_global_privacy_control() is not implemented by testdriver-vendor.js");
-        },
-
         async add_virtual_authenticator(config, context=null) {
             throw new Error("add_virtual_authenticator() is not implemented by testdriver-vendor.js");
         },
@@ -2520,6 +2512,14 @@
 
         async clear_display_features(context=null) {
             throw new Error("clear_display_features() is not implemented by testdriver-vendor.js");
+        },
+
+        async set_global_privacy_control(newValue) {
+            throw new Error("set_global_privacy_control() is not implemented by testdriver-vendor.js");
+        },
+
+        async get_global_privacy_control() {
+            throw new Error("get_global_privacy_control() is not implemented by testdriver-vendor.js");
         }
     };
 })();

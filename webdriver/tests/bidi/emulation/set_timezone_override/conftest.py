@@ -32,8 +32,7 @@ async def default_timezone(get_current_timezone, top_context):
 @pytest.fixture
 def some_timezone(default_timezone):
     """
-    Returns some timezone which is not equal to `default_timezone` nor to
-    `another_timezone`.
+    Returns some timezone which is not equal to `default_timezone`.
     """
     for timezone in TIMEZONES:
         if timezone != default_timezone:
@@ -50,11 +49,11 @@ def another_timezone(default_timezone, some_timezone):
     `some_timezone`.
     """
     for timezone in TIMEZONES:
-        if timezone != default_timezone and timezone != another_timezone:
+        if timezone != default_timezone and timezone != some_timezone:
             return timezone
 
     raise Exception(
-        f"Unexpectedly could not find timezone different from the default {default_timezone}")
+        f"Unexpectedly could not find timezone different from the default {default_timezone} and {some_timezone}")
 
 
 @pytest_asyncio.fixture

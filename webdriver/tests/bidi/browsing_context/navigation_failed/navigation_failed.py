@@ -230,7 +230,7 @@ async def test_with_new_navigation(
     wait_for_future_safe,
 ):
     slow_page_url = url(
-        "/webdriver/tests/bidi/browsing_context/support/empty.html?pipe=trickle(d10)"
+        "/webdriver/tests/support/html/default.html?pipe=trickle(d10)"
     )
     # Depending on implementation, the `trickle(d10)` page can or can not yet
     # create a new document. Depending on this, `aborted` or `failed` event
@@ -346,7 +346,7 @@ async def test_close_context(
 ):
     new_context = await bidi_session.browsing_context.create(type_hint=type_hint)
     slow_page_url = url(
-        "/webdriver/tests/bidi/browsing_context/support/empty.html?pipe=trickle(d10)"
+        "/webdriver/tests/support/html/default.html?pipe=trickle(d10)"
     )
     # Depending on implementation, the `trickle(d10)` page can or can not yet
     # create a new document. Depending on this, `aborted` or `failed` event
@@ -412,7 +412,7 @@ async def test_close_iframe(
     iframe_context = contexts[0]["children"][0]["context"]
 
     slow_page_url = url(
-        "/webdriver/tests/bidi/browsing_context/support/empty.html?pipe=trickle(d10)"
+        "/webdriver/tests/support/html/default.html?pipe=trickle(d10)"
     )
     # Navigate in the iframe.
     result = await bidi_session.browsing_context.navigate(

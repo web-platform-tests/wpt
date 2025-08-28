@@ -67,7 +67,7 @@ async def test_slow_image_blocks_load(bidi_session, inline, new_tab, wait, expec
 )
 async def test_slow_page(bidi_session, new_tab, url, wait, expect_timeout):
     page_url = url(
-        "/webdriver/tests/bidi/browsing_context/support/empty.html?pipe=trickle(d10)"
+        "/webdriver/tests/support/html/default.html?pipe=trickle(d10)"
     )
 
     await wait_for_navigation(bidi_session, new_tab["context"], page_url, wait, expect_timeout)

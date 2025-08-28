@@ -97,7 +97,7 @@ async def test_slow_page(
     wait_for_future_safe,
 ):
     url = url(
-        "/webdriver/tests/bidi/browsing_context/support/empty.html?pipe=trickle(d3)"
+        "/webdriver/tests/support/html/default.html?pipe=trickle(d3)"
     )
 
     await bidi_session.browsing_context.navigate(

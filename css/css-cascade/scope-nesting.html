@@ -10,8 +10,8 @@
 <template id=test_nest_scope_end>
   <div>
     <style>
-      /* (.b) behaves like (:where(:scope) .b), due & mapping to :where(:scope).*/
-      @scope (.a) to (& .b) {
+      /* (& > .b) behaves like (:where(:scope) > .b), due & mapping to :where(:scope).*/
+      @scope (.a) to (& > .b) {
         :scope { z-index:1; }
       }
 
@@ -125,7 +125,7 @@ test((t) => {
   main.append(test_inner_nest.content.cloneNode(true));
 
   assert_equals(getComputedStyle(div).zIndex, '2');
-}, 'Nesting-selector in the scope\'s <stylesheet>');
+}, 'Nested nesting-selectors within scope\'s <stylesheet> select inclusive descendants of the scope root');
 </script>
 
 <template id=test_parent_in_pseudo_scope>

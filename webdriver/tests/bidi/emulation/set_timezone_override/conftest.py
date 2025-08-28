@@ -10,10 +10,10 @@ TIMEZONES = [
 
 @pytest_asyncio.fixture
 async def get_current_timezone(bidi_session):
-    async def get_current_timezone(context):
+    async def get_current_timezone(context, sandbox=None):
         result = await bidi_session.script.evaluate(
             expression="Intl.DateTimeFormat().resolvedOptions().timeZone",
-            target=ContextTarget(context["context"]),
+            target=ContextTarget(context["context"], sandbox=sandbox),
             await_promise=False,
         )
         return result["value"]

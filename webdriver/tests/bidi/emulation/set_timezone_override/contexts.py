@@ -1,4 +1,5 @@
 import pytest
+from webdriver.bidi.modules.script import ContextTarget
 
 pytestmark = pytest.mark.asyncio
 
@@ -92,3 +93,34 @@ async def test_iframe(
 
     # Assert timezone is emulated in the iframe context.
     assert await get_current_timezone(iframe) == another_timezone
+
+
+async def test_timezone_override_applies_to_new_sandbox(
+    bidi_session, new_tab, some_timezone, get_current_timezone
+):
+    await bidi_session.emulation.set_timezone_override(
+        contexts=[new_tab["context"]], timezone=some_timezone
+    )
+
+    # Make sure the override got applied to the newly created sandbox.
+    assert await get_current_timezone(new_tab, "test") == some_timezone
+
+
+async def test_timezone_override_applies_to_existing_sandbox(
+    bidi_session,
+    new_tab,
+    default_timezone,
+    another_timezone,
+    get_current_timezone
+):
+    sandbox_name = "test"
+
+    # Create a sandbox.
+    assert await get_current_timezone(new_tab, sandbox_name) == default_timezone
+
+    await bidi_session.emulation.set_timezone_override(
+        contexts=[new_tab["context"]], timezone=another_timezone
+    )
+
+    # Make sure the override got applied to the existing sandbox.
+    assert await get_current_timezone(new_tab, sandbox_name) == another_timezone

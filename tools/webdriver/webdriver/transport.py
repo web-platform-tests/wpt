@@ -2,7 +2,9 @@
 
 import json
 import select
+import shutil
 import socket
+import tempfile
 
 from http.client import HTTPConnection
 from typing import Dict, List, Mapping, Sequence, Tuple
@@ -88,12 +90,22 @@ class Response:
 
     @classmethod
     def from_http(cls, http_response, decoder=json.JSONDecoder, **kwargs):
-        try:
-            body = json.load(http_response, cls=decoder, **kwargs)
-            headers = ResponseHeaders(http_response.getheaders())
-        except ValueError:
-            raise ValueError("Failed to decode response body as JSON:\n" +
-                             repr(http_response.read()))
+        # Copy the response body to a temporary file (stored in memory until it is
+        # greater than 1 MiB) so we can then output the whole response body when the
+        # JSON fails to decode.
+        with tempfile.SpooledTemporaryFile(max_size=2**20) as temp_http_response_body:
+            shutil.copyfileobj(http_response, temp_http_response_body)
+            temp_http_response_body.seek(0)
+
+            try:
+                body = json.load(temp_http_response_body, cls=decoder, **kwargs)
+            except (json.JSONDecodeError, UnicodeDecodeError) as e:
+                temp_http_response_body.seek(0)
+                raise ValueError(
+                    f"Failed to decode response body as JSON:\n{temp_http_response_body.read()!r}"
+                ) from e
+
+        headers = ResponseHeaders(http_response.getheaders())
 
         return cls(http_response.status, body, headers)
 

@@ -274,7 +274,7 @@ jobs:
        eq(variables['Build.SourceBranch'], 'refs/heads/triggers/edge_stable'),
        and(eq(variables['Build.Reason'], 'Manual'), variables['run_all_edge_stable']))
   strategy:
-    parallel: 10 # chosen to make runtime ~2h
+    parallel: 12 # chosen to make runtime ~2h
   timeoutInMinutes: 180
   pool:
     vmImage: 'windows-latest'
@@ -310,7 +310,7 @@ jobs:
        eq(variables['Build.SourceBranch'], 'refs/heads/triggers/edge_dev'),
        and(eq(variables['Build.Reason'], 'Manual'), variables['run_all_edge_dev']))
   strategy:
-    parallel: 10 # chosen to make runtime ~2h
+    parallel: 12 # chosen to make runtime ~2h
   timeoutInMinutes: 180
   pool:
     vmImage: 'windows-latest'
@@ -347,7 +347,7 @@ jobs:
        eq(variables['Build.SourceBranch'], 'refs/heads/triggers/edge_canary'),
        and(eq(variables['Build.Reason'], 'Manual'), variables['run_all_edge_canary']))
   strategy:
-    parallel: 10 # chosen to make runtime ~2h
+    parallel: 12 # chosen to make runtime ~2h
   timeoutInMinutes: 180
   pool:
     vmImage: 'windows-latest'

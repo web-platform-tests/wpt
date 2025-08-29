@@ -24,11 +24,11 @@ steps:
         # Configure dump type (2 = full dump with all memory)
         Set-ItemProperty -Path $localDumpsPath -Name "DumpType" -Value 2 -Type DWord -Force
         Write-Host "✓ Dump type set to full dump"
-        
-        # Keep up to 3 crash dumps to avoid filling disk space
-        Set-ItemProperty -Path $localDumpsPath -Name "DumpCount" -Value 3 -Type DWord -Force
-        Write-Host "✓ Dump count limit set to 3"
-        
+
+        # Keep up to 10 crash dumps to avoid filling disk space
+        Set-ItemProperty -Path $localDumpsPath -Name "DumpCount" -Value 10 -Type DWord -Force
+        Write-Host "✓ Dump count limit set to 10"
+
         Write-Host ""
         Write-Host "Windows Error Reporting configured successfully!"
         Write-Host "Any browser or WebDriver crashes will generate crash dumps in the artifacts."

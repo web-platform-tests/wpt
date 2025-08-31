@@ -395,8 +395,7 @@ class FirefoxPrefs:
             tags.append((tuple(order), tag))
         if not tags:
             raise ValueError(f"No tag found for version {version} channel {channel}")
-        tags.sort()
-        return f"{tags[-1][1]}"
+        return max(tags)[1]
 
 
 class FirefoxAndroidPrefs(FirefoxPrefs):
@@ -430,8 +429,7 @@ class FirefoxAndroidPrefs(FirefoxPrefs):
 
         if not tags:
             raise ValueError(f"No tag found for {version} beta")
-        tags.sort()
-        return f"{tags[-1][1]}"
+        return max(tags)[1]
 
 
 class Firefox(Browser):

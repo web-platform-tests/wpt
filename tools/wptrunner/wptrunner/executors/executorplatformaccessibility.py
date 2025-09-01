@@ -65,7 +65,7 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
         # or the necessary python requirements for accessibility API tests have not
         # been installed.
         if not self.impl:
-            subtests = len(test[api]) if test[api] else 1
+            subtests = len(test) if test else 1
             return ["Accessibility API testing not enabled."] * subtests
 
         return self.impl.test_accessibility_api(dom_id, test, api, url)

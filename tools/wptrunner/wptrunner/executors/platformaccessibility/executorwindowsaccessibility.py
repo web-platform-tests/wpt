@@ -129,7 +129,7 @@ class WindowsAccessibilityExecutorImpl:
         """Execute a test of the accessibility API.
 
         :param dom_id: The dom id of the node to test.
-        :param test: The test statement.
+        :param test: List of test statements.
         :param api: The API to test.
         :param url: The url of the test.
         """
@@ -143,7 +143,7 @@ class WindowsAccessibilityExecutorImpl:
             raise Exception(f"Couldn't find node with ID {dom_id}.")
 
         results = []
-        for test_statement in test["AXAPI"]:
+        for test_statement in test:
             results.append("Fail: Test not implemented.")
 
         return results

@@ -2315,7 +2315,7 @@
          * only be used for /core-aam and /html-aam tests.
          *
          * @param {id}         id of element
-         * @param {test}       an object of tests
+         * @param {test}       list of test statements
          * @param {api}        string indicating the API to test
          * @returns {Promise}  The string "match" when the test succeeds,
          *                     a failure message otherwise

@@ -156,7 +156,7 @@ class AtspiExecutorImpl:
         """Execute a test of the accessibility API.
 
         :param dom_id: The dom id of the node to test.
-        :param test: The test statement.
+        :param test: List of test statements.
         :param api: The API to test.
         :param url: The url of the test.
         """
@@ -170,7 +170,7 @@ class AtspiExecutorImpl:
             )
 
         results = []
-        for test_statement in test["Atspi"]:
+        for test_statement in test:
             results.append(test_node.run_test_statement(TestStatement(test_statement)))
 
         return results

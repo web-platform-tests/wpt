@@ -41,7 +41,7 @@ const AAMUtils = {
         promise_test(async t => {
           let results = await test_driver.test_accessibility_api(
             id,
-            map,
+            map[api],
             api
           );
 

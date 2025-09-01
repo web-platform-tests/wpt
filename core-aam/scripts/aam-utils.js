@@ -13,10 +13,11 @@ const AAMUtils = {
       return;
     }
 
-    if (results.length !== test_statements.length)
-      assert_unreached(`Recieved a different number of results than test statements: ${results}`)
+    if (results.length !== test_statements.length) {
+      assert_unreached(`Recieved a different number of results than test statements: ${results}`);
+    }
 
-    for (i = 0; i < results.length; i++) {
+    for (let i = 0; i < results.length; i++) {
       assert_equals(results[i], "Pass", `${test_statements[i].join(' ')}`)
     }
   },
@@ -25,9 +26,9 @@ const AAMUtils = {
   /*
     Creates a subtest for each API. Runs no asserts for APIs not found.
 
-    id:     id of element to test the accessibility node of
-    map:    entry in role-map.js, or similar
-    name:   name of the test
+    test_name: name of the test
+    id:        id of element to test the accessibility node of
+    map:       map of APIs to lists of test statements
   */
 
   verifyAPI: function(test_name, id, map) {

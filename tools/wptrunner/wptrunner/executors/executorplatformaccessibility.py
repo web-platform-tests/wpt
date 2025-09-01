@@ -4,22 +4,12 @@ from .protocol import ProtocolPart
 
 from sys import platform
 
-linux = False
-mac = False
-windows = False
-if platform == "linux":
-    linux = True
-if platform == "darwin":
-    mac = True
-if platform == "win32":
-    windows = True
-
 def valid_api_for_platform(api):
-    if (linux and api == "Atspi"):
+    if platform == "linux" and api == "Atspi":
         return True
-    if (mac and api == "AXAPI"):
+    if platform == "darwin" and api == "AXAPI":
         return True
-    if (windows and (api == "UIA" or api == "IAccessible2")):
+    if platform == "win32" and (api == "UIA" or api == "IAccessible2"):
         return True
     return False
 
@@ -34,7 +24,7 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
 
 
     def __init_platform_executor(self):
-        if linux:
+        if platform == "linux":
             try:
                 from .platformaccessibility.executoratspi import AtspiExecutorImpl
             except ModuleNotFoundError:
@@ -44,7 +34,7 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
             self.impl = AtspiExecutorImpl()
             self.impl.setup(self.product_name, self.logger)
 
-        if mac:
+        if platform == "darwin":
             try:
                 from .platformaccessibility.executoraxapi import AXAPIExecutorImpl
             except ModuleNotFoundError:
@@ -54,7 +44,7 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
             self.impl = AXAPIExecutorImpl()
             self.impl.setup(self.product_name, self.logger)
 
-        if windows:
+        if platform == "win32":
             try:
                 from .platformaccessibility.executorwindowsaccessibility import WindowsAccessibilityExecutorImpl
             except ModuleNotFoundError:
@@ -74,7 +64,7 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
         # self.impl will not exist if --enable-accessibility-api was not included
         # or the necessary python requirements for accessibility API tests have not
         # been installed.
-        if (not self.impl):
+        if not self.impl:
             subtests = len(test[api]) if test[api] else 1
             return ["Accessibility API testing not enabled."] * subtests
 

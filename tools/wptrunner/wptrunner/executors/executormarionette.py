@@ -51,7 +51,7 @@ from .protocol import (AccessibilityProtocolPart,
                        WindowProtocolPart,
                        merge_dicts)
 
-from .executorplatformaccessibility import (PlatformAccessibilityProtocolPart)
+from .executorplatformaccessibility import PlatformAccessibilityProtocolPart
 
 def do_delayed_imports():
     global errors, marionette, Addons, WebAuthn

@@ -2322,7 +2322,7 @@
          */
         test_accessibility_api: async function(dom_id, test, api) {
             return window.test_driver_internal.test_accessibility_api(
-              dom_id, test, api, location.href
+                dom_id, test, api, location.href
             );
         }
     };

@@ -9,7 +9,7 @@ import time
 def poll_for_tab(root, product, url):
     """Poll until the tab with the test url is loaded and available in the
        accessibility API. Assumes wptrunner has already started a browser
-       process and navigated to the test test page.
+       process and navigated to the test page.
 
     :param root: The node in the accessibility API representing the browser process.
     :param product: The name of the browser.
@@ -254,9 +254,8 @@ class TestNode:
         relations_dict = self.get_relations_dictionary()
         if expected_relation not in relations_dict:
             return f"Fail: relation not in list: {list(relations_dict.keys())}"
-        id_str = ",".join(relations_dict[expected_relation])
-        expected_ids.sort()
-        expected_id_str = ",".join(expected_ids)
+        id_str = ",".join(relations_dict[expected_relation].sort())
+        expected_id_str = ",".join(expected_ids.sort())
         if id_str != expected_id_str:
             return f"Fail: {expected_relation}={relations_dict[expected_relation]}"
         return "Pass"

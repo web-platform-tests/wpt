@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html data-expected-width="2048">
+    <head>
+        <title>Viewport: Verify page dimension after Navigation</title>
+        <link rel="author" title="Shubham Gupta" href="mailto:shubham13297@gmail.com">
+        <link rel="help" href="https://github.com/servo/servo/issues/39002">
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=0.5">
+        <script src="../../resources/testharness.js"></script>
+        <script src="../../resources/testharnessreport.js"></script>
+        <script src="../../resources/check-layout-th.js"></script>
+    </head>
+    <body onload="checkLayout('html')">
+        <h1>Viewport: Verify page dimension after Navigation</h1>
+        <p>Test passes if page opens with width: 2048px</p>
+    </body>
+</html>

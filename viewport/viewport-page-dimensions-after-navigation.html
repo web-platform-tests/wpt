@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Viewport: Verify page dimension after Navigation</title>
+    <link rel="author" title="Shubham Gupta" href="mailto:shubham13297@gmail.com">
+    <link rel="help" href="https://github.com/servo/servo/issues/39002">
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta name="assert" content="Checks the page dimensions after navigation.">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script>
+        function runTest() {
+            const url = "resources/viewport-page-dimensions-after-navigation-inner.html";
+            window.location.replace(new URL(url, window.location));
+        }
+        onload = () => runTest();
+    </script>
+</head>
+</html>

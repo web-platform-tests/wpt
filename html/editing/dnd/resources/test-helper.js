@@ -51,3 +51,10 @@ function dragDropTest(dragElement, dropElement, onDropCallBack, testDescription,
     }
   }, testDescription));
 }
+
+// Drop callback used for `dropEffect` tests in `dnd/drop/`
+function dropEffectOnDropCallBack(event) {
+  assert_equals(event.target.textContent, event.dataTransfer.dropEffect);
+  assert_equals(event.target.textContent, event.dataTransfer.effectAllowed);
+  return true;
+}

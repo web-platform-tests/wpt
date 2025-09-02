@@ -463,7 +463,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
             self.logger.warning("Connection reset during h2 setup")
             return
 
-        # Dict of { stream_id: (thread, queue) }
+        # Dict of { stream_id: (task, queue) }
         stream_queues = {}
 
         try:
@@ -492,13 +492,14 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                         self.close_connection = True
 
                         # Flood all the streams with connection terminated, this will cause them to stop
-                        for stream_id, (thread, queue) in stream_queues.items():
+                        for stream_id, (task, queue) in stream_queues.items():
                             queue.put_nowait(frame)
 
                     elif hasattr(frame, 'stream_id'):
                         if frame.stream_id not in stream_queues:
                             queue = asyncio.Queue()
-                            stream_queues[frame.stream_id] = (self.start_stream_thread(frame, queue), queue)
+                            task = self.start_stream_task(frame, queue)
+                            stream_queues[frame.stream_id] = (task, queue)
                         stream_queues[frame.stream_id][1].put_nowait(frame)
 
                         if isinstance(frame, StreamEnded) or getattr(frame, "stream_ended", False):
@@ -513,7 +514,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
         finally:
             for (_, queue) in stream_queues.values():
                 queue.put_nowait(None)
-            await asyncio.wait(thread for (thread, _) in stream_queues.values())
+            await asyncio.wait(task for (task, _) in stream_queues.values())
             self.writer.close()
             await self.writer.wait_closed()
             transport.close()
@@ -536,21 +537,19 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
         return True
 
-    def start_stream_thread(self, frame, queue):
+    def start_stream_task(self, frame, queue):
         """
-        This starts a new thread to handle frames for a specific stream.
+        This starts a new task to handle frames for a specific stream.
         :param frame: The first frame on the stream
-        :param queue: A queue object that the thread will use to check for new frames
-        :return: The thread object that has already been started
+        :param queue: A queue object that the task will use to check for new frames
+        :return: The task object that has already been started
         """
         if self._is_extended_connect_frame(frame):
-            target = Http2WebTestRequestHandler._stream_ws_thread
+            return asyncio.create_task(self._stream_ws_task(frame.stream_id, queue))
         else:
-            target = Http2WebTestRequestHandler._stream_thread
-        t = asyncio.create_task(target(self, frame.stream_id, queue))
-        return t
+            return asyncio.create_task(self._stream_task(frame.stream_id, queue))
 
-    async def _stream_ws_thread(self, stream_id, queue):
+    async def _stream_ws_task(self, stream_id, queue):
         frame = await queue.get()
 
         if frame is None:
@@ -596,10 +595,10 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
             request_wrapper._dispatcher = dispatcher
 
-            # we need two threads:
+            # we need two tasks:
             # - one to handle the frame queue
             # - one to handle the request (dispatcher.transfer_data is blocking)
-            t = asyncio.create_task(self._stream_ws_sub_thread(request_wrapper, stream_handler, queue))
+            dispatcher_task = asyncio.create_task(self._stream_ws_dispatcher_task(request_wrapper, stream_handler, queue))
 
             while not self.close_connection:
                 try:
@@ -612,12 +611,12 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                     if frame.stream_ended:
                         raise NotImplementedError("frame.stream_ended")
                 elif frame is None or isinstance(frame, (StreamReset, StreamEnded, ConnectionTerminated)):
-                    self.logger.error(f'({self.uid} - {stream_id}) Stream Reset, Thread Closing')
+                    self.logger.error(f'({self.uid} - {stream_id}) Stream Reset, Task Closing')
                     break
 
-        await t
+        await dispatcher_task
 
-    async def _stream_ws_sub_thread(self, request, stream_handler, queue):
+    async def _stream_ws_dispatcher_task(self, request, stream_handler, queue):
         dispatcher = request._dispatcher
         try:
             loop = asyncio.get_event_loop()
@@ -639,9 +638,9 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                 pass
         await queue.put(None)
 
-    async def _stream_thread(self, stream_id, queue):
+    async def _stream_task(self, stream_id, queue):
         """
-        This thread processes frames for a specific stream. It waits for frames to be placed
+        This task processes frames for a specific stream. It waits for frames to be placed
         in the queue, and processes them. When it receives a request frame, it will start processing
         immediately, even if there are data frames to follow. One of the reasons for this is that it
         can detect invalid requests before needing to read the rest of the frames.
@@ -706,7 +705,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                     await loop.run_in_executor(None, req_handler.handle_data, frame, request, response)
 
             elif frame is None or isinstance(frame, (StreamReset, StreamEnded, ConnectionTerminated)):
-                self.logger.debug(f'({self.uid} - {stream_id}) Stream Reset, Thread Closing')
+                self.logger.debug(f'({self.uid} - {stream_id}) Stream Reset, Task Closing')
                 break
 
             if request is not None:

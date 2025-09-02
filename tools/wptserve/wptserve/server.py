@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+import asyncio
 import errno
 import http
 import http.server
@@ -15,7 +16,6 @@ import time
 import traceback
 import uuid
 from collections import OrderedDict
-from queue import Empty, Queue
 from typing import Dict
 
 from h2.config import H2Configuration
@@ -214,21 +214,22 @@ class WebTestServer(http.server.ThreadingHTTPServer):
         self.certificate = certificate
         self.encrypt_after_connect = use_ssl and encrypt_after_connect
 
-        if use_ssl and not encrypt_after_connect:
-            if http2:
-                ssl_context = ssl.create_default_context(purpose=ssl.Purpose.CLIENT_AUTH)
-                ssl_context.load_cert_chain(keyfile=self.key_file, certfile=self.certificate)
-                ssl_context.set_alpn_protocols(['h2'])
-                self.socket = ssl_context.wrap_socket(self.socket,
-                                                      do_handshake_on_connect=False,
-                                                      server_side=True)
+        if not use_ssl:
+            self.ssl_context = None
 
+        else:
+            if http2:
+                self.ssl_context = ssl.create_default_context(purpose=ssl.Purpose.CLIENT_AUTH)
+                self.ssl_context.load_cert_chain(keyfile=self.key_file, certfile=self.certificate)
+                self.ssl_context.set_alpn_protocols(['h2'])
             else:
-                ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-                ssl_context.load_cert_chain(keyfile=self.key_file, certfile=self.certificate)
-                self.socket = ssl_context.wrap_socket(self.socket,
-                                                      do_handshake_on_connect=False,
-                                                      server_side=True)
+                self.ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+                self.ssl_context.load_cert_chain(keyfile=self.key_file, certfile=self.certificate)
+
+            if not http2 and not encrypt_after_connect:
+                self.socket = self.ssl_context.wrap_socket(self.socket,
+                                                           do_handshake_on_connect=False,
+                                                           server_side=True)
 
     def server_bind(self):
         if platform.system() != "Darwin":
@@ -358,10 +359,8 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
         response.write()
         if self.server.encrypt_after_connect:
             self.logger.debug("Enabling SSL for connection")
-            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-            ssl_context.load_cert_chain(keyfile=self.server.key_file, certfile=self.server.certificate)
-            self.request = ssl_context.wrap_socket(self.connection,
-                                                   server_side=True)
+            self.request = self.server.ssl_context.wrap_socket(self.connection,
+                                                               server_side=True)
             self.setup()
         return
 
@@ -409,7 +408,9 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
         Because there can be multiple H2 connections active at the same
         time, a UUID is created for each so that it is easier to tell them apart in the logs.
         """
+        asyncio.run(self._handle_one_request_async())
 
+    async def _handle_one_request_async(self):
         config = H2Configuration(client_side=False)
         self.conn = H2ConnectionGuard(H2Connection(config=config))
         self.close_connection = False
@@ -419,7 +420,30 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
         self.logger.debug('(%s) Initiating h2 Connection' % self.uid)
 
-        with self.conn as connection:
+        if isinstance(self.request, ssl.SSLSocket):
+            raise TypeError("Socket is already an SSL socket")
+
+        # Set up asyncio streams for the connection
+        loop = asyncio.get_event_loop()
+        reader = asyncio.StreamReader()
+        protocol = asyncio.StreamReaderProtocol(reader)
+
+        try:
+            transport, _ = await loop.connect_accepted_socket(
+                lambda: protocol,
+                self.request,
+                ssl=self.server.ssl_context
+            )
+        except ConnectionResetError:
+            if self.server.ssl_context is not None:
+                self.logger.warning("Connection reset during SSL handshake")
+            else:
+                self.logger.warning("Unexpected connection reset")
+            return
+
+        self.writer = asyncio.StreamWriter(transport, protocol, reader, loop)
+
+        async with self.conn as connection:
             # Bootstrapping WebSockets with HTTP/2 specification requires
             # ENABLE_CONNECT_PROTOCOL to be set in order to enable WebSocket
             # over HTTP/2
@@ -433,7 +457,8 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
             window_size = connection.remote_settings.initial_window_size
 
         try:
-            self.request.sendall(data)
+            self.writer.write(data)
+            await self.writer.drain()
         except ConnectionResetError:
             self.logger.warning("Connection reset during h2 setup")
             return
@@ -443,13 +468,19 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
         try:
             while not self.close_connection:
-                data = self.request.recv(window_size)
-                if data == '':
+                try:
+                    data = await reader.read(window_size)
+                except ConnectionResetError:
+                    self.logger.debug('(%s) Connection reset' % self.uid)
+                    self.close_connection = True
+                    break
+
+                if data == b'':
                     self.logger.debug('(%s) Socket Closed' % self.uid)
                     self.close_connection = True
                     continue
 
-                with self.conn as connection:
+                async with self.conn as connection:
                     frames = connection.receive_data(data)
                     window_size = connection.remote_settings.initial_window_size
 
@@ -462,13 +493,13 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
                         # Flood all the streams with connection terminated, this will cause them to stop
                         for stream_id, (thread, queue) in stream_queues.items():
-                            queue.put(frame)
+                            queue.put_nowait(frame)
 
                     elif hasattr(frame, 'stream_id'):
                         if frame.stream_id not in stream_queues:
-                            queue = Queue()
+                            queue = asyncio.Queue()
                             stream_queues[frame.stream_id] = (self.start_stream_thread(frame, queue), queue)
-                        stream_queues[frame.stream_id][1].put(frame)
+                        stream_queues[frame.stream_id][1].put_nowait(frame)
 
                         if isinstance(frame, StreamEnded) or getattr(frame, "stream_ended", False):
                             del stream_queues[frame.stream_id]
@@ -480,9 +511,12 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
         except Exception as e:
             self.logger.error(f'({self.uid}) Unexpected Error - \n{str(e)}')
         finally:
-            for stream_id, (thread, queue) in stream_queues.items():
-                queue.put(None)
-                thread.join()
+            for (_, queue) in stream_queues.values():
+                queue.put_nowait(None)
+            await asyncio.wait(thread for (thread, _) in stream_queues.values())
+            self.writer.close()
+            await self.writer.wait_closed()
+            transport.close()
 
     def _is_extended_connect_frame(self, frame):
         if not isinstance(frame, RequestReceived):
@@ -513,15 +547,11 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
             target = Http2WebTestRequestHandler._stream_ws_thread
         else:
             target = Http2WebTestRequestHandler._stream_thread
-        t = threading.Thread(
-            target=target,
-            args=(self, frame.stream_id, queue)
-        )
-        t.start()
+        t = asyncio.create_task(target(self, frame.stream_id, queue))
         return t
 
-    def _stream_ws_thread(self, stream_id, queue):
-        frame = queue.get(True, None)
+    async def _stream_ws_thread(self, stream_id, queue):
+        frame = await queue.get()
 
         if frame is None:
             return
@@ -544,7 +574,8 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
             handshaker = WsH2Handshaker(request_wrapper, dispatcher)
             try:
-                handshaker.do_handshake()
+                loop = asyncio.get_event_loop()
+                await loop.run_in_executor(None, handshaker.do_handshake)
             except HandshakeException as e:
                 self.logger.info("Handshake failed")
                 h2response.set_error(e.status, e)
@@ -568,20 +599,12 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
             # we need two threads:
             # - one to handle the frame queue
             # - one to handle the request (dispatcher.transfer_data is blocking)
-            # the alternative is to have only one (blocking) thread. That thread
-            # will call transfer_data. That would require a special case in
-            # handle_one_request, to bypass the queue and write data to wfile
-            # directly.
-            t = threading.Thread(
-                target=Http2WebTestRequestHandler._stream_ws_sub_thread,
-                args=(self, request_wrapper, stream_handler, queue)
-            )
-            t.start()
+            t = asyncio.create_task(self._stream_ws_sub_thread(request_wrapper, stream_handler, queue))
 
             while not self.close_connection:
                 try:
-                    frame = queue.get(True, 1)
-                except Empty:
+                    frame = await asyncio.wait_for(queue.get(), timeout=1.0)
+                except asyncio.TimeoutError:
                     continue
 
                 if isinstance(frame, DataReceived):
@@ -592,35 +615,39 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                     self.logger.error(f'({self.uid} - {stream_id}) Stream Reset, Thread Closing')
                     break
 
-        t.join()
+        await t
 
-    def _stream_ws_sub_thread(self, request, stream_handler, queue):
+    async def _stream_ws_sub_thread(self, request, stream_handler, queue):
         dispatcher = request._dispatcher
         try:
-            dispatcher.transfer_data(request)
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(None, dispatcher.transfer_data, request)
         except (StreamClosedError, ProtocolError):
             # work around https://github.com/web-platform-tests/wpt/issues/27786
             # The stream was already closed.
-            queue.put(None)
+            await queue.put(None)
             return
 
         stream_id = stream_handler.h2_stream_id
-        with stream_handler.conn as connection:
+        async with stream_handler.conn as connection:
             try:
                 connection.end_stream(stream_id)
                 data = connection.data_to_send()
-                stream_handler.request.sendall(data)
+                self.writer.write(data)
+                await self.writer.drain()
             except (StreamClosedError, ProtocolError):  # maybe the stream has already been closed
                 pass
-        queue.put(None)
+        await queue.put(None)
 
-    def _stream_thread(self, stream_id, queue):
+    async def _stream_thread(self, stream_id, queue):
         """
         This thread processes frames for a specific stream. It waits for frames to be placed
         in the queue, and processes them. When it receives a request frame, it will start processing
         immediately, even if there are data frames to follow. One of the reasons for this is that it
         can detect invalid requests before needing to read the rest of the frames.
         """
+
+        loop = asyncio.get_event_loop()
 
         # The file-like pipe object that will be used to share data to request object if data is received
         wfile = None
@@ -645,8 +672,8 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
         while not self.close_connection:
             try:
-                frame = queue.get(True, 1)
-            except Empty:
+                frame = await asyncio.wait_for(queue.get(), timeout=1.0)
+            except asyncio.TimeoutError:
                 # Restart to check for close_connection
                 continue
 
@@ -667,16 +694,16 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
                 if hasattr(req_handler, "frame_handler"):
                     # Convert this to a handler that will utilise H2 specific functionality, such as handling individual frames
-                    req_handler = self.frame_handler(request, response, req_handler)
+                    req_handler = await loop.run_in_executor(None, self.frame_handler, request, response, req_handler)
 
                 if hasattr(req_handler, 'handle_headers'):
-                    req_handler.handle_headers(frame, request, response)
+                    await loop.run_in_executor(None, req_handler.handle_headers, frame, request, response)
 
             elif isinstance(frame, DataReceived):
                 wfile.write(frame.data)
 
                 if hasattr(req_handler, 'handle_data'):
-                    req_handler.handle_data(frame, request, response)
+                    await loop.run_in_executor(None, req_handler.handle_data, frame, request, response)
 
             elif frame is None or isinstance(frame, (StreamReset, StreamEnded, ConnectionTerminated)):
                 self.logger.debug(f'({self.uid} - {stream_id}) Stream Reset, Thread Closing')
@@ -687,7 +714,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
             if getattr(frame, "stream_ended", False):
                 try:
-                    self.finish_handling(request, response, req_handler)
+                    await loop.run_in_executor(None, self.finish_handling, request, response, req_handler)
                 except StreamClosedError:
                     self.logger.debug('(%s - %s) Unable to write response; stream closed' %
                                     (self.uid, stream_id))
@@ -709,17 +736,23 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
 class H2ConnectionGuard:
     """H2Connection objects are not threadsafe, so this keeps thread safety"""
-    lock = threading.Lock()
-
     def __init__(self, obj):
         assert isinstance(obj, H2Connection)
         self.obj = obj
+        self.lock = threading.Lock()
 
     def __enter__(self):
         self.lock.acquire()
         return self.obj
 
     def __exit__(self, exception_type, exception_value, traceback):
+        self.lock.release()
+
+    async def __aenter__(self):
+        await asyncio.to_thread(self.lock.acquire)
+        return self.obj
+
+    async def __aexit__(self, exception_type, exception_value, traceback):
         self.lock.release()
 
 
@@ -754,8 +787,9 @@ class H2HandlerCopy:
         self.client_address = handler.client_address
         self.raw_requestline = ''
         self.rfile = rfile
-        self.request = handler.request
+        self.writer = handler.writer
         self.conn = handler.conn
+
 
 class Http1WebTestRequestHandler(BaseWebTestRequestHandler):
     protocol_version = "HTTP/1.1"

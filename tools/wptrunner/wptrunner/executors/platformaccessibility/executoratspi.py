@@ -70,7 +70,7 @@ def is_ready(tab, product, url):
         return not Atspi.StateSet.contains(state_set, Atspi.StateType.BUSY)
 
     # Chromium family browsers do not use "BUSY", but you can
-    # tell if the document can be queried by URL attribute. If the 'URL'
+    # tell if the document can be queried by URL attribute. If the 'URI'
     # attribute is not here, we need to query for a new accessible object.
     document = Atspi.Accessible.get_document_iface(tab)
     document_attributes = Atspi.Document.get_document_attributes(document)

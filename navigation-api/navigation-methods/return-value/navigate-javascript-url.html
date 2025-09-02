@@ -15,7 +15,10 @@ promise_test(async t => {
   navigation.onnavigatesuccess = t.unreached_func("onnavigatesuccess should not be called");
   navigation.onnavigateerror = t.unreached_func("onnavigateerror should not be called");
 
-  const result = navigation.navigate("javascript:void 0", { history: "push" });
+  let result = navigation.navigate("javascript:void 0");
   await assertBothRejectDOM(t, result, "NotSupportedError");
-}, "navigate() to a javascript: URL with { history: 'push' }");
+
+  result = navigation.navigate("javascript:void 0", { history: "replace" });
+  await assertBothRejectDOM(t, result, "NotSupportedError");
+}, "navigate() to a javascript: URL with (auto) or { history: 'replace' }");
 </script>

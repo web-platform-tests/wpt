@@ -439,6 +439,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                 self.logger.warning("Connection reset during SSL handshake")
             else:
                 self.logger.warning("Unexpected connection reset")
+            transport.close()
             return
 
         self.writer = asyncio.StreamWriter(transport, protocol, reader, loop)
@@ -461,6 +462,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
             await self.writer.drain()
         except ConnectionResetError:
             self.logger.warning("Connection reset during h2 setup")
+            transport.close()
             return
 
         # Dict of { stream_id: (task, queue) }
@@ -514,7 +516,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
         finally:
             for (_, queue) in stream_queues.values():
                 queue.put_nowait(None)
-            await asyncio.wait(task for (task, _) in stream_queues.values())
+            await asyncio.wait([task for (task, _) in stream_queues.values()])
             self.writer.close()
             await self.writer.wait_closed()
             transport.close()
@@ -748,7 +750,8 @@ class H2ConnectionGuard:
         self.lock.release()
 
     async def __aenter__(self):
-        await asyncio.to_thread(self.lock.acquire)
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self.lock.acquire)
         return self.obj
 
     async def __aexit__(self, exception_type, exception_value, traceback):

@@ -16,25 +16,27 @@
 <meta name="variant" content="?imperative" />
 
 <div data-candidate="form controls inside" data-count="2">
-  <button command="toggle-popover">Toggle popover</button>
+  <button tabindex=0 command="toggle-popover">Toggle popover</button>
   <div popover id="popover1">
-    <input type="text" data-expected="1" />
-    <input type="text" data-expected="2" />
-    <button command="hide-popover" data-expected="close">Close popover</button>
+    <input tabindex=0 type="text" data-expected="1" />
+    <input tabindex=0 type="text" data-expected="2" />
+    <button tabindex=0 command="hide-popover" data-expected="close">Close popover</button>
   </div>
 </div>
-<button data-expected="after">
+<button tabindex=0 data-expected="after">
   This button is where focus should land after traversing this popover
 </button>
 
 <div data-candidate="a details element inside" data-count="1">
-  <button command="toggle-popover">Toggle popover</button>
+  <button tabindex=0 command="toggle-popover">Toggle popover</button>
   <div popover id="popover2">
-    <details data-expected="1">A details element</details>
-    <button command="hide-popover" data-expected="close">Close popover</button>
+    <details data-expected="1">
+      <summary tabindex=0>A details element</summary>
+    </details>
+    <button tabindex=0 command="hide-popover" data-expected="close">Close popover</button>
   </div>
 </div>
-<button data-expected="after">
+<button tabindex=0 data-expected="after">
   This button is where focus should land after traversing this popover
 </button>
 
@@ -42,13 +44,13 @@
   data-candidate="a details element inside, and the after button adjacent to invoker"
   data-count="1"
 >
-  <button command="toggle-popover">Toggle popover</button>
-  <button data-expected="after">
+  <button tabindex=0 command="toggle-popover">Toggle popover</button>
+  <button tabindex=0 data-expected="after">
     This button is where focus should land after traversing this popover
   </button>
   <div popover id="popover3">
     <details data-expected="1">A details element</details>
-    <button command="hide-popover" data-expected="close">Close popover</button>
+    <button tabindex=0 command="hide-popover" data-expected="close">Close popover</button>
   </div>
 </div>
 
@@ -56,17 +58,17 @@
   data-candidate="a custom-element with delegatesfocus inside"
   data-count="1"
 >
-  <button command="toggle-popover">Toggle popover</button>
+  <button tabindex=0 command="toggle-popover">Toggle popover</button>
   <div popover id="popover4">
     <my-element data-expected="1">
       <template shadowrootmode="open" delegatesfocus>
-        <button></button>
+        <button tabindex=0></button>
       </template>
     </my-element>
-    <button command="hide-popover" data-expected="close">Close popover</button>
+    <button tabindex=0 command="hide-popover" data-expected="close">Close popover</button>
   </div>
 </div>
-<button data-expected="after">
+<button tabindex=0 data-expected="after">
   This button is where focus should land after traversing popover
 </button>
 
@@ -74,18 +76,18 @@
   data-candidate="a custom-element with a slotted button inside"
   data-count="1"
 >
-  <button command="toggle-popover">Toggle popover</button>
+  <button tabindex=0 command="toggle-popover">Toggle popover</button>
   <div popover id="popover5">
     <my-element>
       <template shadowrootmode="open">
         <slot></slot>
       </template>
-      <button data-expected="1"></button>
+      <button tabindex=0 data-expected="1"></button>
     </my-element>
-    <button command="hide-popover" data-expected="close">Close popover</button>
+    <button tabindex=0 command="hide-popover" data-expected="close">Close popover</button>
   </div>
 </div>
-<button data-expected="after">
+<button tabindex=0 data-expected="after">
   This button is where focus should land after traversing popover
 </button>
 
@@ -93,19 +95,23 @@
   data-candidate="custom-element with a slotted button, followed by a details element, where the after button is adjacent to the invoker"
   data-count="2"
 >
-  <button command="toggle-popover">Toggle popover</button>
-  <button data-expected="after">
+  <button tabindex=0 command="toggle-popover">Toggle popover</button>
+  <button tabindex=0 data-expected="after">
     This button is where focus should land after traversing popover
   </button>
   <div popover id="popover6">
     <my-element>
       <template shadowrootmode="open">
         <slot></slot>
-        <details data-expected="2">A details element</details>
+        <details data-expected="2">
+          <summary tabindex=0>
+            A details element
+          </summary>
+        </details>
       </template>
-      <button data-expected="1"></button>
+      <button tabindex=0 data-expected="1"></button>
     </my-element>
-    <button command="hide-popover" data-expected="close">Close popover</button>
+    <button tabindex=0 command="hide-popover" data-expected="close">Close popover</button>
   </div>
 </div>
 

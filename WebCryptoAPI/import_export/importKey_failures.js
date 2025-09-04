@@ -63,9 +63,22 @@ function run_test(algorithmNames) {
     function testError(format, algorithm, keyData, keySize, usages, extractable, expectedError, testTag) {
         promise_test(async() => {
             let key;
+            let microtaskTriggered = false;
             try {
-                key = await subtle.importKey(format, keyData, algorithm, extractable, usages);
+                let promise = subtle.importKey(format, keyData, algorithm, extractable, usages);
+                Promise.resolve().then(() => {
+                    microtaskTriggered = true;
+                });
+                key = await promise;
             } catch(err) {
+                if (testTag === "Missing algorithm name") {
+                    // Error checked by the algorithm normalization
+                    assert_false(microtaskTriggered, "promise rejected too late");
+                } else {
+                    // Error checked by the import key operation
+                    assert_true(microtaskTriggered, "promise rejected too early");
+                }
+
                 let actualError = typeof expectedError === "number" ? err.code : err.name;
                 assert_equals(actualError, expectedError, testTag + " not supported.");
             }

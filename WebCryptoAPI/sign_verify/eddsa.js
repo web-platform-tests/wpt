@@ -13,9 +13,17 @@ function run_test(algorithmName) {
       promise_test(async() => {
           let isVerified = false;
           let key;
+          let microtaskTriggered = false;
           try {
               key = await subtle.importKey("spki", vector.publicKeyBuffer, algorithm, false, ["verify"]);
-              isVerified = await subtle.verify(algorithm, key, vector.signature, vector.data)
+              let promise = subtle.verify(algorithm, key, vector.signature, vector.data).then(isVerified => {
+                assert_true(microtaskTriggered, "promise resolved too early");
+                return isVerified;
+              });
+              Promise.resolve().then(() => {
+                  microtaskTriggered = true;
+              });
+              isVerified = await promise;
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
               assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
@@ -118,7 +126,15 @@ function run_test(algorithmName) {
           try {
               privateKey = await subtle.importKey("pkcs8", vector.privateKeyBuffer, algorithm, false, ["sign"]);
               publicKey = await subtle.importKey("spki", vector.publicKeyBuffer, algorithm, false, ["verify"]);
-              signature = await subtle.sign(algorithm, privateKey, vector.data);
+              let microtaskTriggered = false;
+              let promise = subtle.sign(algorithm, privateKey, vector.data).then(signature => {
+                assert_true(microtaskTriggered, "promise resolved too early");
+                return signature;
+              });
+              Promise.resolve().then(() => {
+                  microtaskTriggered = true;
+              });
+              signature = await promise;
               isVerified = await subtle.verify(algorithm, publicKey, vector.signature, vector.data)
           } catch (err) {
               assert_false(publicKey === undefined || privateKey === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");

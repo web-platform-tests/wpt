@@ -61,8 +61,10 @@ function run_test(algorithmNames, slowTest) {
         // testTag is a string to prepend to the test name.
 
         promise_test(function(test) {
-            return subtle.generateKey(algorithm, extractable, usages)
+            let microtaskTriggered = false;
+            let promise = subtle.generateKey(algorithm, extractable, usages)
             .then(function(result) {
+                assert_true(microtaskTriggered, "promise resolved too early");
                 if (resultType === "CryptoKeyPair") {
                     assert_goodCryptoKey(result.privateKey, algorithm, extractable, usages, "private");
                     assert_goodCryptoKey(result.publicKey, algorithm, true, usages, "public");
@@ -102,8 +104,14 @@ function run_test(algorithmNames, slowTest) {
                     }
                 }
             }, function(err) {
+                if (err instanceof AssertionError)
+                    throw err;
                 assert_unreached("exportKey threw an unexpected error: " + err.toString());
-            })
+            });
+            Promise.resolve().then(() => {
+                microtaskTriggered = true;
+            });
+            return promise;
         }, testTag + ": generateKey" + parameterString(algorithm, extractable, usages));
     }
 

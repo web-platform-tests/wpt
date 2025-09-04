@@ -171,10 +171,7 @@
         );
         break;
       default:
-        assert_true(
-          false,
-          `unknown style - ${style} - expected one of imperative,commandfor,commandforelement,popovertarget,popovertargetelement`,
-        );
+        assert_unreached();
     }
     invoker.focus();
     assert_equals(document.activeElement, invoker);

@@ -2,6 +2,9 @@ features:
 - name: abs-sign
   files:
   - signs-abs-*
+- name: attr
+  files:
+  - attr-*
 - name: cap
   files:
   - cap-*
@@ -18,6 +21,9 @@ features:
 - name: ric
   files:
   - ric-*
+- name: if
+  files:
+  - if-*
 - name: lh
   files:
   - lh-*

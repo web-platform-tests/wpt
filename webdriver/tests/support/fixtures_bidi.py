@@ -15,6 +15,7 @@ from webdriver.bidi.error import (
     InvalidArgumentException,
     NoSuchFrameException,
     NoSuchInterceptException,
+    NoSuchNetworkCollectorException,
     NoSuchRequestException,
     NoSuchScriptException,
     NoSuchUserContextException,
@@ -165,12 +166,15 @@ def wait_for_events(bidi_session, configuration):
             self.events = []
 
         async def get_events(self, predicate, timeout: float = 2.0):
+            async def check_predicate(_):
+                assert predicate(self.events), "Didn't receive expected events"
+
             wait = AsyncPoll(
                 bidi_session,
                 timeout=timeout * configuration["timeout_multiplier"],
-                message="Didn't receive expected events"
             )
-            await wait.until(lambda _: predicate(self.events))
+            await wait.until(check_predicate)
+
             return self.events
 
         def __enter__(self):
@@ -499,9 +503,13 @@ async def create_user_context(bidi_session):
 
     user_contexts = []
 
-    async def create_user_context():
+    async def create_user_context(accept_insecure_certs=None, proxy=None,
+            unhandled_prompt_behavior=None):
         nonlocal user_contexts
-        user_context = await bidi_session.browser.create_user_context()
+        user_context = await bidi_session.browser.create_user_context(
+            accept_insecure_certs=accept_insecure_certs, proxy=proxy,
+            unhandled_prompt_behavior=unhandled_prompt_behavior
+        )
         user_contexts.append(user_context)
 
         return user_context
@@ -548,7 +556,7 @@ async def add_cookie(bidi_session):
             cookie_string += f";path={path}"
             cookie["path"] = path
 
-        if same_site != "none":
+        if same_site != "default":
             cookie_string += f";SameSite={same_site}"
 
         if secure is True:
@@ -664,6 +672,51 @@ async def setup_beforeunload_page(bidi_session, url):
 
 
 @pytest_asyncio.fixture
+async def setup_collected_response(
+    bidi_session,
+    subscribe_events,
+    wait_for_event,
+    wait_for_future_safe,
+    top_context,
+    url,
+    fetch,
+    setup_network_test,
+    add_data_collector,
+):
+    """Adds a global data collector and triggers a request which should match
+    the collector and waits for the network.responseCompleted event.
+    Collector can be configured (size, types) when calling the fixture.
+    Returns the request id of the triggered request.
+    """
+
+    async def _setup_collected_response(
+        collector_type="blob",
+        data_types=["response"],
+        max_encoded_data_size=10000,
+        fetch_url=url("/webdriver/tests/bidi/network/support/empty.txt"),
+        context=top_context,
+    ):
+        collector = await add_data_collector(
+            collector_type=collector_type,
+            data_types=data_types,
+            max_encoded_data_size=max_encoded_data_size,
+        )
+        await setup_network_test(
+            events=[
+                "network.responseCompleted",
+            ]
+        )
+        on_response_completed = wait_for_event("network.responseCompleted")
+
+        await fetch(fetch_url, context=context)
+        response_completed_event = await on_response_completed
+        request = response_completed_event["request"]["request"]
+        return [request, collector]
+
+    return _setup_collected_response
+
+
+@pytest_asyncio.fixture
 async def setup_network_test(
     bidi_session,
     subscribe_events,
@@ -727,6 +780,44 @@ async def setup_network_test(
     # cleanup
     for remove_listener in listeners:
         remove_listener()
+
+
+@pytest_asyncio.fixture
+async def add_data_collector(bidi_session):
+    """Add a network data collector, and ensure the collector is removed at the
+    end of the test."""
+
+    collectors = []
+
+    async def add_data_collector(
+        collector_type="blob",
+        data_types=["response"],
+        max_encoded_data_size=1000,
+        contexts=None,
+        user_contexts=None,
+    ):
+        nonlocal collectors
+        collector = await bidi_session.network.add_data_collector(
+            collector_type=collector_type,
+            data_types=data_types,
+            max_encoded_data_size=max_encoded_data_size,
+            contexts=contexts,
+            user_contexts=user_contexts,
+        )
+        collectors.append(collector)
+
+        return collector
+
+    yield add_data_collector
+
+    # Remove all added collectors at the end of the test
+    for collector in collectors:
+        try:
+            await bidi_session.network.remove_data_collector(collector=collector)
+        except NoSuchNetworkCollectorException:
+            # Ignore exceptions in case a specific collector was already removed
+            # during the test.
+            pass
 
 
 @pytest_asyncio.fixture
@@ -855,8 +946,13 @@ async def setup_blocked_request(
         # Wait for the first blocked request. When testing a navigation where
         # navigate_url is different from blocked_url, non-blocked events will
         # be received before the blocked request.
+        def check_has_blocked_request(_):
+            assert len(events) >= 1, "No BiDi events were received"
+            assert any(
+                e["isBlocked"] is True for e in events), "Not all requests are blocked"
+
         wait = AsyncPoll(bidi_session, timeout=2)
-        await wait.until(lambda _: any(e["isBlocked"] is True for e in events))
+        await wait.until(check_has_blocked_request)
 
         [blocked_event] = [e for e in events if e["isBlocked"] is True]
         request = blocked_event["request"]["request"]
@@ -895,3 +991,59 @@ def origin(server_config, domain_value):
         return urlunsplit((protocol, domain_value(domain, subdomain), "", "", ""))
 
     return origin
+
+
+@pytest_asyncio.fixture
+async def assert_file_dialog_canceled(bidi_session, inline, top_context):
+    async def assert_file_dialog_canceled(context=None):
+        context = context or top_context
+        cancel_event = await bidi_session.script.evaluate(
+            expression="""
+                new Promise(resolve => {
+                    const picker = document.createElement('input');
+                    picker.type = 'file';
+                    picker.addEventListener('cancel', (event) => {
+                        resolve(event.isTrusted);
+                    });
+                    picker.click();
+                })""",
+            target=ContextTarget(context["context"]),
+            await_promise=True,
+            user_activation=True
+        )
+
+        # Assert the `cancel` event is dispatched and the event is trusted.
+        assert cancel_event == {
+            'type': 'boolean',
+            'value': True
+        }
+
+    yield assert_file_dialog_canceled
+
+
+@pytest_asyncio.fixture
+async def assert_file_dialog_not_canceled(bidi_session, inline, top_context,
+        wait_for_future_safe):
+    async def assert_file_dialog_not_canceled(context=None):
+        context = context or top_context
+        cancel_event_future = asyncio.create_task(bidi_session.script.evaluate(
+            expression="""
+                        new Promise(resolve => {
+                            const picker = document.createElement('input');
+                            picker.type = 'file';
+                            picker.addEventListener('cancel', (event) => {
+                                resolve(event.isTrusted);
+                            });
+                            picker.click();
+                        })""",
+            target=ContextTarget(context["context"]),
+            await_promise=True,
+            user_activation=True
+        ))
+
+        with pytest.raises(TimeoutException):
+            await wait_for_future_safe(cancel_event_future, timeout=0.5)
+
+        cancel_event_future.cancel()
+
+    yield assert_file_dialog_not_canceled

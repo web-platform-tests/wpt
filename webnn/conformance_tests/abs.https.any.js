@@ -14,11 +14,8 @@
 // MLOperand abs(MLOperand input);
 
 
-const getAbsPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
+const getAbsPrecisionTolerance = () => {
+  return {metricType: 'ULP', value: 0};
 };
 
 const absTests = [
@@ -538,14 +535,124 @@ const absTests = [
         }
       }
     }
+  },
+  {
+    'name': 'abs float16 6D tensor',
+    'graph': {
+      'inputs': {
+        'absInput': {
+          'data': [
+            49.84375,  82.0625,  3.19921875, 85.1875,     88.9375,   -91.0625,
+            31.453125, -29.3125, -92.4375,   -15.5234375, 80.9375,   -38.21875,
+            53.0625,   99.625,   -21.28125,  90,          18.328125, -33.0625,
+            30.09375,  -74.1875, 95.625,     6.61328125,  31.28125,  -53.21875
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'abs',
+        'arguments': [{'input': 'absInput'}],
+        'outputs': 'absOutput'
+      }],
+      'expectedOutputs': {
+        'absOutput': {
+          'data': [
+            49.84375,  82.0625, 3.19921875, 85.1875,    88.9375,   91.0625,
+            31.453125, 29.3125, 92.4375,    15.5234375, 80.9375,   38.21875,
+            53.0625,   99.625,  21.28125,   90,         18.328125, 33.0625,
+            30.09375,  74.1875, 95.625,     6.61328125, 31.28125,  53.21875
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+
+  // int8 tests
+  {
+    'name': 'abs int8 4D tensor',
+    'graph': {
+      'inputs': {
+        'absInput': {
+          'data': [
+            // int8 range: [/* -(2**7) */ -128, /* 2**7 - 1 */ 127]
+            // abs(-128) would overflow when data type is int8
+            -127, 0, 126, 127
+          ],
+          'descriptor': {shape: [1, 2, 2, 1], dataType: 'int8'}
+        }
+      },
+      'operators': [{
+        'name': 'abs',
+        'arguments': [{'input': 'absInput'}],
+        'outputs': 'absOutput'
+      }],
+      'expectedOutputs': {
+        'absOutput': {
+          'data': [127, 0, 126, 127],
+          'descriptor': {shape: [1, 2, 2, 1], dataType: 'int8'}
+        }
+      }
+    }
+  },
+
+  // int32 tests
+  {
+    'name': 'abs int32 4D tensor',
+    'graph': {
+      'inputs': {
+        'absInput': {
+          'data': [
+            // int32 range: [/* -(2**31) */ -2147483648, /* 2**31 - 1 */ 2147483647]
+            // abs(-2147483648) would overflow when data type is int32
+            -2147483647, 0, 2147483646, 2147483647
+          ],
+          'descriptor': {shape: [1, 2, 2, 1], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'abs',
+        'arguments': [{'input': 'absInput'}],
+        'outputs': 'absOutput'
+      }],
+      'expectedOutputs': {
+        'absOutput': {
+          'data': [2147483647, 0, 2147483646, 2147483647],
+          'descriptor': {shape: [1, 2, 2, 1], dataType: 'int32'}
+        }
+      }
+    }
+  },
+
+  // int64 tests
+  {
+    'name': 'abs int64 4D tensor',
+    'graph': {
+      'inputs': {
+        'absInput': {
+          'data': [
+            // int64 range: [/* -(2**63) */ –9223372036854775808,
+            //               /* 2**63 - 1 */ 92233720368547758087]
+            BigInt(-(2 ** 63)) + 1n, -100n, 0n, 100n, BigInt(2 ** 63) - 1n
+          ],
+          'descriptor': {shape: [1, 1, 1, 5], dataType: 'int64'}
+        }
+      },
+      'operators': [{
+        'name': 'abs',
+        'arguments': [{'input': 'absInput'}],
+        'outputs': 'absOutput'
+      }],
+      'expectedOutputs': {
+        'absOutput': {
+          'data': [BigInt(2 ** 63) - 1n, 100n, 0n, 100n, BigInt(2 ** 63) - 1n],
+          'descriptor': {shape: [1, 1, 1, 5], dataType: 'int64'}
+        }
+      }
+    }
   }
 ];
 
-if (navigator.ml) {
-  absTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getAbsPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    absTests, buildAndExecuteGraph, getAbsPrecisionTolerance);

@@ -12,14 +12,6 @@
 // Compute the element-wise binary maximum of the two input tensors.
 // MLOperand max(MLOperand a, MLOperand b);
 
-
-const getMaxPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 1, float16: 1};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const maxTests = [
   {
     'name': 'max float32 1D constant tensors',
@@ -928,11 +920,4 @@ const maxTests = [
   }
 ];
 
-if (navigator.ml) {
-  maxTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getMaxPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(maxTests, buildAndExecuteGraph, getPrecisionTolerance);

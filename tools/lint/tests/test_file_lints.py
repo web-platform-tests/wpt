@@ -243,6 +243,16 @@ def test_html_invalid_syntax():
             assert errors == [("HTML INVALID SYNTAX", "Test-file line has a non-void HTML tag with /> syntax", filename, 1)]
 
 
+def test_testdriver_internal():
+    error_map = check_with_files(b"  test_driver_internal.foo()")
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind not in {"web-strict", "python"}:
+            assert errors == [("TEST DRIVER INTERNAL", "Test-file uses test_driver_internal API", filename, 1)]
+
+
 def test_meta_timeout():
     code = b"""
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -1214,23 +1224,42 @@ def test_valid_web_features_file(monkeypatch, files, yml, expected_errors):
     assert errors == expected_errors
 
 
-def test_invalid_web_features_file():
-    code = b"""\
+@pytest.mark.parametrize("contents,expected_errors", [
+    (
+        b"""\
 - test
-"""
+""",
+        [
+            ('INVALID-WEB-FEATURES-FILE',
+            'The WEB_FEATURES.yml file contains an invalid structure',
+            "css/WEB_FEATURES.yml",
+            None),
+        ]
+    ),
+    (
+        b"""\
+features:
+- name: feature1
+  files:
+  - "**"
+""",
+        [
+            ('INVALID-WEB-FEATURES-FILE',
+            'The WEB_FEATURES.yml file contains an invalid structure',
+            "css/WEB_FEATURES.yml",
+            None),
+        ]
+    ),
+])
+def test_invalid_web_features_file(contents, expected_errors):
     # Check when the value is named correctly. It should find the error.
-    errors = check_file_contents("", "css/WEB_FEATURES.yml", io.BytesIO(code))
+    errors = check_file_contents("", "css/WEB_FEATURES.yml", io.BytesIO(contents))
     check_errors(errors)
 
-    assert errors == [
-        ('INVALID-WEB-FEATURES-FILE',
-         'The WEB_FEATURES.yml file contains an invalid structure',
-         "css/WEB_FEATURES.yml",
-         None),
-    ]
+    assert errors == expected_errors
 
     # Check when the value is named incorrectly. It should not find the error.
-    errors = check_file_contents("", "css/OTHER_WEB_FEATURES.yml", io.BytesIO(code))
+    errors = check_file_contents("", "css/OTHER_WEB_FEATURES.yml", io.BytesIO(contents))
     check_errors(errors)
 
     assert errors == []

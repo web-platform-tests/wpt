@@ -6,11 +6,12 @@
 
 <script type="module">
 import { Recorder, hasVariant } from "./resources/helpers.mjs";
+import { ensureWindowLoadEventFired } from "../resources/helpers.mjs";
 
 promise_test(async t => {
   // Wait for after the load event so that the navigation doesn't get converted
   // into a replace navigation.
-  await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
+  await ensureWindowLoadEventFired(t);
 
   const from = navigation.currentEntry;
 
@@ -42,6 +43,7 @@ promise_test(async t => {
     ["AbortSignal abort", "#1", { from, navigationType: "push" }],
     ["navigateerror", "#1", { from, navigationType: "push" }],
     ["committed fulfilled", "#1", null],
+    ["transition.committed fulfilled", "#1", null],
     ["promise microtask", "#1", null],
     ["finished rejected", "#1", null],
     ["transition.finished rejected", "#1", null],

@@ -27,6 +27,7 @@ interface WebTransport {
   constructor(USVString url, optional WebTransportOptions options = {});
 
   Promise<WebTransportConnectionStats> getStats();
+  [NewObject] Promise<ArrayBuffer> exportKeyingMaterial(BufferSource label, optional BufferSource context);
   readonly attribute Promise<undefined> ready;
   readonly attribute WebTransportReliabilityMode reliability;
   readonly attribute WebTransportCongestionControl congestionControl;
@@ -73,6 +74,7 @@ dictionary WebTransportOptions {
   [EnforceRange] unsigned short? anticipatedConcurrentIncomingUnidirectionalStreams = null;
   [EnforceRange] unsigned short? anticipatedConcurrentIncomingBidirectionalStreams = null;
   sequence<DOMString> protocols = [];
+  DatagramsReadableMode datagramsReadableMode;
 };
 
 enum WebTransportCongestionControl {
@@ -80,6 +82,8 @@ enum WebTransportCongestionControl {
   "throughput",
   "low-latency",
 };
+
+enum DatagramsReadableMode { "bytes" };
 
 dictionary WebTransportCloseInfo {
   unsigned long closeCode = 0;
@@ -155,6 +159,7 @@ interface WebTransportBidirectionalStream {
 [Exposed=*, SecureContext]
 interface WebTransportWriter : WritableStreamDefaultWriter {
   Promise<undefined> atomicWrite(optional any chunk);
+  undefined commit();
 };
 
 [Exposed=(Window,Worker), Serializable, SecureContext]

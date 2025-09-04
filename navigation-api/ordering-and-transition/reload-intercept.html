@@ -6,11 +6,12 @@
 
 <script type="module">
 import { Recorder, hasVariant } from "./resources/helpers.mjs";
+import { ensureWindowLoadEventFired } from "../resources/helpers.mjs";
 
 promise_test(async t => {
   // Wait for after the load event so that the navigation doesn't get converted
   // into a replace navigation.
-  await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
+  await ensureWindowLoadEventFired(t);
 
   const from = navigation.currentEntry;
 
@@ -38,6 +39,7 @@ promise_test(async t => {
     ["currententrychange", "", { from, navigationType: "reload" }],
     ["handler run", "", { from, navigationType: "reload" }],
     ["committed fulfilled", "", { from, navigationType: "reload" }],
+    ["transition.committed fulfilled", "", { from, navigationType: "reload" }],
     ["promise microtask", "", { from, navigationType: "reload" }],
     ["navigatesuccess", "", { from, navigationType: "reload" }],
     ["finished fulfilled", "", null],

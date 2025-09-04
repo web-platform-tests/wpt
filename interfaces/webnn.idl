@@ -36,6 +36,8 @@ interface MLContext {
   undefined dispatch(MLGraph graph, MLNamedTensors inputs, MLNamedTensors outputs);
 
   Promise<MLTensor> createTensor(MLTensorDescriptor descriptor);
+  Promise<MLTensor> createConstantTensor(
+    MLOperandDescriptor descriptor, AllowSharedBufferSource inputData);
 
   Promise<ArrayBuffer> readTensor(MLTensor tensor);
   Promise<undefined> readTensor(MLTensor tensor, AllowSharedBufferSource outputData);
@@ -133,6 +135,7 @@ interface MLTensor {
   readonly attribute FrozenArray<unsigned long> shape;
   readonly attribute boolean readable;
   readonly attribute boolean writable;
+  readonly attribute boolean constant;
 
   undefined destroy();
 };
@@ -153,6 +156,9 @@ interface MLGraphBuilder {
 
   // Create a scalar operand from the specified number of the specified type.
   MLOperand constant(MLOperandDataType type, MLNumber value);
+
+  // Create an operand from a specified constant tensor.
+  MLOperand constant(MLTensor tensor);
 
   // Compile the graph up to the specified output operands asynchronously.
   Promise<MLGraph> build(MLNamedOperands outputs);
@@ -363,6 +369,8 @@ partial interface MLGraphBuilder {
   MLOperand logicalXor(MLOperand a,
                        MLOperand b,
                        optional MLOperatorOptions options = {});
+  MLOperand isNaN(MLOperand a, optional MLOperatorOptions options = {});
+  MLOperand isInfinite(MLOperand a, optional MLOperatorOptions options = {});
 };
 
 dictionary MLLogicalNotSupportLimits {
@@ -381,6 +389,8 @@ partial dictionary MLOpSupportLimits {
   MLBinarySupportLimits logicalAnd;
   MLBinarySupportLimits logicalOr;
   MLBinarySupportLimits logicalXor;
+  MLLogicalNotSupportLimits isNaN;
+  MLLogicalNotSupportLimits isInfinite;
 };
 
 partial interface MLGraphBuilder {
@@ -394,6 +404,7 @@ partial interface MLGraphBuilder {
   MLOperand log(MLOperand input, optional MLOperatorOptions options = {});
   MLOperand neg(MLOperand input, optional MLOperatorOptions options = {});
   MLOperand reciprocal(MLOperand input, optional MLOperatorOptions options = {});
+  MLOperand roundEven(MLOperand input, optional MLOperatorOptions options = {});
   MLOperand sin(MLOperand input, optional MLOperatorOptions options = {});
   MLOperand sign(MLOperand input, optional MLOperatorOptions options = {});
   MLOperand sqrt(MLOperand input, optional MLOperatorOptions options = {});
@@ -411,6 +422,7 @@ partial dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits log;
   MLSingleInputSupportLimits neg;
   MLSingleInputSupportLimits reciprocal;
+  MLSingleInputSupportLimits roundEven;
   MLSingleInputSupportLimits sin;
   MLSingleInputSupportLimits sign;
   MLSingleInputSupportLimits sqrt;
@@ -793,8 +805,7 @@ partial dictionary MLOpSupportLimits {
 enum MLPaddingMode {
   "constant",
   "edge",
-  "reflection",
-  "symmetric"
+  "reflection"
 };
 
 dictionary MLPadOptions : MLOperatorOptions {

@@ -196,7 +196,7 @@ def test_click_element_in_shadow_tree(
 
 def test_click_navigation(session, url, inline):
     destination = url("/webdriver/tests/support/html/test_actions.html")
-    start = inline("<a href=\"{}\" id=\"link\">destination</a>".format(destination))
+    start = inline(f"<a href=\"{destination}\" id=\"link\">destination</a>")
 
     def click(link):
         mouse_chain = session.actions.sequence(
@@ -204,14 +204,21 @@ def test_click_navigation(session, url, inline):
         mouse_chain.click(element=link).perform()
 
     session.url = start
-    error_message = "Did not navigate to %s" % destination
 
     click(session.find.css("#link", all=False))
-    Poll(session, message=error_message).until(lambda s: s.url == destination)
+
+    def assert_page_loaded(s):
+        assert s.url == destination, "Target page did not load"
+
+    wait = Poll(session)
+    wait.until(assert_page_loaded)
+
     # repeat steps to check behaviour after document unload
     session.url = start
     click(session.find.css("#link", all=False))
-    Poll(session, message=error_message).until(lambda s: s.url == destination)
+
+    wait = Poll(session)
+    wait.until(assert_page_loaded)
 
 
 @pytest.mark.parametrize("x, y, event_count", [
@@ -309,7 +316,11 @@ def test_move_to_origin_position_within_frame(
 
     events = get_events(session)
     assert len(events) == 1
-    assert events[0] == target_point
+
+    # For now we are allowing any of floor, ceil, or precise values, because
+    # it's unclear what the actual spec requirements really are
+    assert events[0][0] == pytest.approx(target_point[0], abs=1.0)
+    assert events[0][1] == pytest.approx(target_point[1], abs=1.0)
 
 
 @pytest.mark.parametrize("missing", ["x", "y"])

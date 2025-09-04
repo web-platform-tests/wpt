@@ -3,25 +3,26 @@
 // (https://github.com/w3c/webref)
 // Source: Web Speech API (https://webaudio.github.io/web-speech-api/)
 
-[Exposed=Window]
+[SecureContext, Exposed=Window]
 interface SpeechRecognition : EventTarget {
     constructor();
 
     // recognition parameters
+    attribute SpeechGrammarList grammars;
     attribute DOMString lang;
     attribute boolean continuous;
     attribute boolean interimResults;
     attribute unsigned long maxAlternatives;
-    attribute SpeechRecognitionMode mode;
-    attribute SpeechRecognitionPhraseList phrases;
+    attribute boolean processLocally;
+    attribute ObservableArray<SpeechRecognitionPhrase> phrases;
 
     // methods to drive the speech interaction
     undefined start();
     undefined start(MediaStreamTrack audioTrack);
     undefined stop();
     undefined abort();
-    static Promise<AvailabilityStatus> availableOnDevice(DOMString lang);
-    static Promise<boolean> installOnDevice(DOMString lang);
+    static Promise<AvailabilityStatus> available(SpeechRecognitionOptions options);
+    static Promise<boolean> install(SpeechRecognitionOptions options);
 
     // event methods
     attribute EventHandler onaudiostart;
@@ -37,6 +38,11 @@ interface SpeechRecognition : EventTarget {
     attribute EventHandler onend;
 };
 
+dictionary SpeechRecognitionOptions {
+  required sequence<DOMString> langs;
+  boolean processLocally = false;
+};
+
 enum SpeechRecognitionErrorCode {
     "no-speech",
     "aborted",
@@ -48,12 +54,6 @@ enum SpeechRecognitionErrorCode {
     "phrases-not-supported"
 };
 
-enum SpeechRecognitionMode {
-    "ondevice-preferred", // On-device speech recognition if available, otherwise use Cloud speech recognition as a fallback.
-    "ondevice-only", // On-device speech recognition only. Returns an error if on-device speech recognition is not available.
-    "cloud-only", // Cloud speech recognition only.
-};
-
 enum AvailabilityStatus {
     "unavailable",
     "downloadable",
@@ -61,7 +61,7 @@ enum AvailabilityStatus {
     "available"
 };
 
-[Exposed=Window]
+[SecureContext, Exposed=Window]
 interface SpeechRecognitionErrorEvent : Event {
     constructor(DOMString type, SpeechRecognitionErrorEventInit eventInitDict);
     readonly attribute SpeechRecognitionErrorCode error;
@@ -74,14 +74,14 @@ dictionary SpeechRecognitionErrorEventInit : EventInit {
 };
 
 // Item in N-best list
-[Exposed=Window]
+[SecureContext, Exposed=Window]
 interface SpeechRecognitionAlternative {
     readonly attribute DOMString transcript;
     readonly attribute float confidence;
 };
 
 // A complete one-shot simple response
-[Exposed=Window]
+[SecureContext, Exposed=Window]
 interface SpeechRecognitionResult {
     readonly attribute unsigned long length;
     getter SpeechRecognitionAlternative item(unsigned long index);
@@ -89,14 +89,14 @@ interface SpeechRecognitionResult {
 };
 
 // A collection of responses (used in continuous mode)
-[Exposed=Window]
+[SecureContext, Exposed=Window]
 interface SpeechRecognitionResultList {
     readonly attribute unsigned long length;
     getter SpeechRecognitionResult item(unsigned long index);
 };
 
 // A full response, which could be interim or final, part of a continuous response or not
-[Exposed=Window]
+[SecureContext, Exposed=Window]
 interface SpeechRecognitionEvent : Event {
     constructor(DOMString type, SpeechRecognitionEventInit eventInitDict);
     readonly attribute unsigned long resultIndex;
@@ -108,22 +108,31 @@ dictionary SpeechRecognitionEventInit : EventInit {
     required SpeechRecognitionResultList results;
 };
 
-// The object representing a phrase for contextual biasing.
+// The object representing a speech grammar. This interface has been deprecated and exists in this spec for the sole purpose of maintaining backwards compatibility.
 [Exposed=Window]
+interface SpeechGrammar {
+    attribute DOMString src;
+    attribute float weight;
+};
+
+// The object representing a speech grammar collection. This interface has been deprecated and exists in this spec for the sole purpose of maintaining backwards compatibility.
+[Exposed=Window]
+interface SpeechGrammarList {
+    constructor();
+    readonly attribute unsigned long length;
+    getter SpeechGrammar item(unsigned long index);
+    undefined addFromURI(DOMString src,
+                    optional float weight = 1.0);
+    undefined addFromString(DOMString string,
+                    optional float weight = 1.0);
+};
+
+// The object representing a phrase for contextual biasing.
+[SecureContext, Exposed=Window]
 interface SpeechRecognitionPhrase {
     constructor(DOMString phrase, optional float boost = 1.0);
     readonly attribute DOMString phrase;
     readonly attribute float boost;
-};
-
-// The object representing a list of phrases for contextual biasing.
-[Exposed=Window]
-interface SpeechRecognitionPhraseList {
-    constructor(sequence<SpeechRecognitionPhrase> phrases);
-    readonly attribute unsigned long length;
-    SpeechRecognitionPhrase item(unsigned long index);
-    undefined addItem(SpeechRecognitionPhrase item);
-    undefined removeItem(unsigned long index);
 };
 
 [Exposed=Window]

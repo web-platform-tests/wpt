@@ -19,13 +19,6 @@
 //
 // MLOperand reduceSum(MLOperand input, optional MLReduceOptions options = {});
 
-const getReductionOperatorsPrecisionTolerance = (graphResources) => {
-  return {
-    metricType: 'ULP',
-    value: getReducedElementCount(graphResources),
-  };
-};
-
 const reduceSumTests = [
   {
     'name': 'reduceSum float32 0D constant tensor default options',
@@ -1135,11 +1128,5 @@ const reduceSumTests = [
   }
 ];
 
-if (navigator.ml) {
-  reduceSumTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getReductionOperatorsPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    reduceSumTests, buildAndExecuteGraph, getPrecisionTolerance);

@@ -20,13 +20,6 @@
 // MLOperand reduceProduct(MLOperand input, optional MLReduceOptions options
 // = {});
 
-const getReductionOperatorsPrecisionTolerance = (graphResources) => {
-  return {
-    metricType: 'ULP',
-    value: getReducedElementCount(graphResources),
-  };
-};
-
 const reduceProductTests = [
   {
     'name': 'reduceProduct float32 0D constant tensor default options',
@@ -1040,11 +1033,5 @@ const reduceProductTests = [
   }
 ];
 
-if (navigator.ml) {
-  reduceProductTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getReductionOperatorsPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    reduceProductTests, buildAndExecuteGraph, getPrecisionTolerance);

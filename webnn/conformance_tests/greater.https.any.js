@@ -13,14 +13,6 @@
 //
 // MLOperand greater(MLOperand a, MLOperand b);
 
-
-const getGreaterPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {uint8: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const greaterTests = [
   {
     'name': 'greater float32 0D scalar',
@@ -988,11 +980,4 @@ const greaterTests = [
   }
 ];
 
-if (navigator.ml) {
-  greaterTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getGreaterPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(greaterTests, buildAndExecuteGraph, getZeroULPTolerance);

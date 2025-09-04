@@ -7,7 +7,8 @@ permissions: {}
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: [epochs]
+    workflows:
+      - epochs
     types:
       - completed
   push:
@@ -17,7 +18,7 @@ on:
 
 jobs:
   check-workflow-run:
-    name: "Check for appropriate epochs"
+    name: Check for appropriate epochs
     uses: ./.github/workflows/check-workflow-run.yml
     with:
       check-refs: '["refs/heads/epochs/daily"]'
@@ -28,9 +29,12 @@ jobs:
     name: "All Tests: Safari (stable)"
     needs: check-workflow-run
     if: |
-      github.event_name != 'workflow_run' || fromJSON(needs.check-workflow-run.outputs.updated-refs)[0] != null
+      github.event_name != 'workflow_run' || fromJSON(needs.check-workflow-run.outputs.updated-refs)['refs/heads/epochs/daily'] != null
     uses: ./.github/workflows/safari-wptrunner.yml
     with:
-      artifact-name: "safari-results"
+      artifact-name: safari-results
       safari-technology-preview: false
       safaridriver-diagnose: false
+      matrix: '{"current-chunk": [1, 2, 3, 4, 5, 6, 7, 8], "total-chunks": [8]}'
+      extra-options: --no-fail-on-unexpected
+      fetch-ref: ${{ fromJSON(needs.check-workflow-run.outputs.updated-refs)['refs/heads/epochs/daily'] }}

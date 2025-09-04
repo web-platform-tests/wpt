@@ -200,39 +200,39 @@
       assert_equals(
         document.activeElement?.getAttribute("data-expected"),
         String(i),
-        `active element ${i} should now have focus`,
+        `tab press should move to active element ${i}`,
       );
     }
     await sendTab();
     assert_equals(
       document.activeElement?.getAttribute("data-expected"),
       "close",
-      "close popover button should now have focus",
+      "tab press should move to close popover button",
     );
     await sendShiftTab();
     assert_equals(
       document.activeElement?.getAttribute("data-expected"),
       String(count),
-      "last active element should now have focus",
+      "shift+tab should move back to last active element",
     );
     await sendTab();
     assert_equals(
       document.activeElement,
       popoverClose,
-      "close popover button should now have focus",
+      "tab should move forward to re-land on close popover again",
     );
     await sendTab();
     assert_equals(
       document.activeElement?.getAttribute("data-expected"),
       "after",
-      "element after",
+      "tab should move forward to land on the button after the popover contents",
     );
     await sendShiftTab();
     popoverClose.click();
     assert_equals(
       document.activeElement,
       invoker,
-      "focus should have returned to initial invoker",
+      "popover now closed - focus should have returned to initial invoker",
     );
   }
 

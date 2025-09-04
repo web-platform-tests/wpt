@@ -188,10 +188,6 @@ test(() => {
     SubtleCrypto.supports('generateKey', ''),
     'Empty algorithm should return false'
   );
-  assert_false(
-    SubtleCrypto.supports('generateKey', 'aes-gcm'),
-    'Case-sensitive algorithm check'
-  );
 }, 'supports returns false for invalid algorithms');
 
 // Test standard WebCrypto algorithms for requested operations

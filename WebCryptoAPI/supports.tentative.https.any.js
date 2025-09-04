@@ -241,58 +241,7 @@ for (const [algorithmName, algorithmInfo] of Object.entries(
       if (isSupported) {
         assert_true(result, `${algorithmName} should support ${operation}`);
       } else {
-        if (
-          (operation === 'sign' || operation === 'verify') &&
-          (algorithmName.startsWith('AES-') || algorithmName.startsWith('SHA-'))
-        ) {
-          assert_false(
-            result,
-            `${algorithmName} should not support ${operation}`
-          );
-        }
-        if (
-          (operation === 'encrypt' || operation === 'decrypt') &&
-          (algorithmName === 'ECDSA' ||
-            algorithmName === 'Ed25519' ||
-            algorithmName === 'HMAC' ||
-            algorithmName.startsWith('SHA-'))
-        ) {
-          assert_false(
-            result,
-            `${algorithmName} should not support ${operation}`
-          );
-        }
-        if (
-          operation === 'deriveBits' &&
-          ((algorithmName.startsWith('RSA-') && algorithmName !== 'RSA-OAEP') ||
-            algorithmName === 'ECDSA' ||
-            algorithmName === 'Ed25519' ||
-            algorithmName.startsWith('AES-') ||
-            algorithmName === 'HMAC' ||
-            algorithmName.startsWith('SHA-'))
-        ) {
-          assert_false(
-            result,
-            `${algorithmName} should not support ${operation}`
-          );
-        }
-        if (
-          operation === 'generateKey' &&
-          (algorithmName.startsWith('SHA-') ||
-            algorithmName === 'HKDF' ||
-            algorithmName === 'PBKDF2')
-        ) {
-          assert_false(
-            result,
-            `${algorithmName} should not support ${operation}`
-          );
-        }
-        if (operation === 'digest' && !algorithmName.startsWith('SHA-')) {
-          assert_false(
-            result,
-            `${algorithmName} should not support ${operation}`
-          );
-        }
+        assert_false(result, `${algorithmName} should not support ${operation}`);
       }
     }, `supports(${operation}, ${algorithmName})`);
   }

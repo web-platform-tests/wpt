@@ -77,6 +77,31 @@
     “User agents MUST NOT resolve aria-owns when it is set on an element that
     has been excluded from the accessibility tree.”
   -->
+  <h2>A hidden element failing to re-parent text from a content-named element using aria-owns</h2>
+  <h3
+    class="ex-label"
+    data-testname="A hidden element failing to re-parent text from a content-named element using aria-owns"
+    data-expectedlabel="sand"
+  >
+    <span hidden aria-owns="pearl">
+      This oyster contains...
+    </span>
+    <mark>sand</mark>
+  </h3>
+  <h4
+    class="ex-label"
+    data-testname="A content-named element that still has its contents after a failed aria-owns re-parenting"
+    data-expectedlabel="a pearl"
+  >
+    <!-- TODO: Can a test be written to assert that this text node remains? -->
+    <mark id="pearl">a pearl</mark>
+  </h4>
+
+  <!--
+    Re: https://github.com/w3c/aria/pull/1839
+    “User agents MUST NOT resolve aria-owns when it is set on an element that
+    has been excluded from the accessibility tree.”
+  -->
   <h2>An aria-hidden element failing to re-parent text using aria-owns</h2>
   <h3
     class="ex-label"
@@ -126,7 +151,6 @@
   <div hidden>
     <span id="new-window-warning-3"> (opens in a new window)</span>
   </div>
-
 
   <h2>A link failing to concatenate aria-hidden text using aria-owns</h2>
   <a

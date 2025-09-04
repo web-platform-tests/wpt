@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+import asyncio
 import json
 import uuid
 import traceback
@@ -449,7 +450,8 @@ class H2Response(Response):
 class H2ResponseWriter:
 
     def __init__(self, handler, response):
-        self.socket = handler.request
+        self._loop = asyncio.get_running_loop()
+        self._writer = handler.writer
         self.h2conn = handler.conn
         self._response = response
         self._handler = handler
@@ -655,15 +657,18 @@ class H2ResponseWriter:
             return min(connection.remote_settings.max_frame_size, connection.local_flow_control_window(stream_id)) - 9
 
     def write(self, connection):
-        self.content_written = True
         data = connection.data_to_send()
-        self.socket.sendall(data)
+        self.write_raw(data)
 
     def write_raw(self, raw_data):
         """Used for sending raw bytes/data through the socket"""
 
+        asyncio.run_coroutine_threadsafe(self._write_raw_async(raw_data), self._loop).result()
+
+    async def _write_raw_async(self, raw_data):
         self.content_written = True
-        self.socket.sendall(raw_data)
+        self._writer.write(raw_data)
+        await self._writer.drain()
 
     def decode(self, data):
         """Convert bytes to unicode according to response.encoding."""

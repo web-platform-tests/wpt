@@ -148,12 +148,10 @@ promise_test(async (test) => {
             secondConnection.ondatachannel = (event) => {
                 remoteChannel = event.channel;
                 test.step_timeout(() => {
-                    try {
+                    assert_throws_dom('DataCloneError', () => {
                         worker.postMessage({channel: remoteChannel}, [remoteChannel]);
-                        reject("postMessage ok");
-                    } catch(e) {
-                        resolve();
-                    }
+                    });
+                    resolve();
                 }, 0);
             };
         });

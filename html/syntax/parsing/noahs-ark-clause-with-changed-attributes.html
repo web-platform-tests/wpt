@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Test that the Noah's Ark Clause compares attributes as they were when the elements were created by the parser</title>
+<link rel="author" href="mailto:psychpsyo@gmail.com">
+<link rel="help" href="https://html.spec.whatwg.org/#push-onto-the-list-of-active-formatting-elements">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<span>
+  <i>
+    <script>
+      document.querySelector("i").dataset.foo = "bar";
+    </script>
+    <i data-foo="bar">
+      <i data-foo="bar">
+        <i data-foo="bar">
+</span>
+<span id="wrapped">This should be wrapped in 4 i-elements.</span>
+<script>
+promise_test(async function(t) {
+    assert_equals(String(document.querySelector("i > i > i > i > #wrapped")), "[object HTMLSpanElement]");
+}, "Modifications done to an element after creation need to be ignored by the list of active formatting elements. (by the 'Noah's Ark Clause' in particular)");
+</script>

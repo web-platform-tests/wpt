@@ -11,7 +11,7 @@ promise_test(async t => {
   await ensureWindowLoadEventFired(t);
 
   await navigation.navigate("#push").finished;
-  navigation.onnavigate = () => history.replaceState(null, "", "#");
+  navigation.addEventListener("navigate", () => history.replaceState(null, "", "#"), {once: true});
   await assertBothRejectDOM(t, navigation.back(), "AbortError");
 }, "replaceState inside a navigate event for navigation.back()");
 </script>

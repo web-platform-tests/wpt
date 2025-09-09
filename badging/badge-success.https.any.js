@@ -1,4 +1,3 @@
-// META: script=/resources/testharness.js
 // META: timeout=long
 
 "use strict";

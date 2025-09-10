@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Selectors: selector list containing invalid selector</title>
+    <link rel="help" href="https://drafts.csswg.org/selectors-4/#grouping">
+    <meta name="assert" content="If a selector is invalid, the entire selector list is invalid.">
+    <meta name="assert" content="Pseudo-elements are not valid within :is :not :where.">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+      .a, .b, .c {
+        color: lime;
+      }
+
+      .a, :nonsense {
+        color: red;
+      }
+
+      /* Pseudo-elements cannot be represented by the matches-any pseudo-class; they are not valid within :is(). */
+      .b, :is(::before) {
+        color: red;
+      }
+      .b, :not(::before) {
+        color: red;
+      }
+      .b, :where(::before) {
+        color: red;
+      }
+
+      .c:is(*, :nonsense) {
+        color: red;
+      }
+      .c:not(*, :nonsense) {
+        color: red;
+      }
+      .c:where(*, :nonsense) {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="a" class="a">
+    </div>
+    <div id="b" class="b">
+    </div>
+    <div id="c" class="c">
+    </div>
+    <script>
+      const lime = "rgb(0, 255, 0)";
+
+      test(() => {
+        assert_equals(getComputedStyle(a).color, lime);
+      }, "If a selector is invalid, the entire selector list is invalid.");
+
+      test(() => {
+        assert_equals(getComputedStyle(b).color, lime);
+      }, "Pseudo-elements are not valid within :is :not :where.");
+
+      test(() => {
+        assert_equals(getComputedStyle(c).color, lime);
+      }, "If a selector in :is :not :where is invalid, the entire selector is invalid.");
+    </script>
+  </body>
+</html>

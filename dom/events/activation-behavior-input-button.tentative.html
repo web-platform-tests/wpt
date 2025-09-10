@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Activation behavior of input button</title>
+<link rel="author" title="Edgar Chen" href="mailto:echen@mozilla.com">
+<link rel="help" href="https://dom.spec.whatwg.org/#eventtarget-activation-behavior">
+<link rel="help" href="https://dom.spec.whatwg.org/#concept-event-dispatch">
+<link rel="help" href="https://html.spec.whatwg.org/#button-state-(type=button)">
+<link rel="help" href="https://github.com/whatwg/html/issues/1568">
+<link rel="help" href="https://github.com/whatwg/html/issues/1576">
+<link rel="help" href="https://github.com/whatwg/html/issues/10032">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+
+<div id=test_container></div>
+
+<!--
+    Two classes:
+    activates
+        The element that expect to trigger the activation behavior.
+    container
+        The element to which input button element is appended.
+-->
+<template>
+    <input class="container activates" type="checkbox" oninput="activated(this)">
+    <input class="container activates" type="radio" oninput="activated(this)">
+    <form onsubmit="activated(firstElementChild); return false">
+        <input class="container activates" type="submit">
+    </form>
+    <form onsubmit="activated(firstElementChild); return false">
+        <input class="container activates" type="image">
+    </form>
+    <form onreset="activated(firstElementChild)">
+        <input class="container activates" type="reset">
+    </form>
+    <form onsubmit="activated(firstElementChild); return false">
+        <button class="container activates" type="submit"></button>
+    </form>
+    <form onreset="activated(firstElementChild)">
+        <button class="container activates" type="reset"></button>
+    </form>
+    <details ontoggle="activated(firstElementChild)">
+        <summary class="container activates"></summary>
+    </details>
+    <a href="javascript:activated(document.querySelector('a.activates'))" class="container activates"></a>
+    <area href="javascript:activated(document.querySelector('area.activates'))" class="container activates">
+    <!-- The activation behavior of a label element for events targeted at interactive content descendants of a label element,
+         and any descendants of those interactive content descendants, must be to do nothing. -->
+    <label class="container">
+      <input type="checkbox" onclick="activated(parent)">
+    </label>
+</template>
+
+<script>
+let activations = [];
+function activated(e) {
+    activations.push(e);
+}
+
+function getContainer(e) {
+  return e.getElementsByClassName("container")[0];
+}
+
+function getExpectedActivations(e) {
+  return e.getElementsByClassName("activates");
+}
+
+function toString(e) {
+  const children = Array.from(e.children);
+  const childstr = (children.map(toString)).join("");
+  const tag = e.tagName;
+  const typestr = e.type ? " type="+e.type : "";
+  return `<${tag}${typestr}>${childstr}</${tag}>`;
+}
+
+const test_container = document.getElementById("test_container");
+const input_button = document.createElement("input");
+input_button.type = "button";
+
+const template = document.querySelector("template");
+const elements = Array.from(template.content.children);
+for (const test_element of elements) {
+  promise_test(async t => {
+    activations = [];
+    test_container.appendChild(test_element);
+    t.add_cleanup(function() {
+      test_element.remove();
+    });
+
+    getContainer(test_container).appendChild(input_button);
+    input_button.click();
+
+    // This is for a/area where JavaScript is executed in a queued task.
+    await new Promise(resolve => {
+      t.step_timeout(() => {
+        t.step_timeout(() => {
+          assert_array_equals(activations, getExpectedActivations(test_container));
+          resolve();
+        }, 0);
+      }, 0);
+    });
+  }, `Click child input button of parent ${toString(test_element)}.`);
+}
+</script>

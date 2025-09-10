@@ -20,21 +20,21 @@ to the Timing-Allow-Origin header.
 <iframe id="frameContext"></iframe>
 <script>
 const {ORIGIN} = get_host_info();
-const url = `${ORIGIN}/resource-timing/resources/TAOResponse.py`;
+const url = `${ORIGIN}/common/CustomCorsResponse.py`;
 const frame_content = `data:text/html;utf8,<body>
   <script src="${ORIGIN}/resources/testharness.js"></` + `script>
   <script src="${ORIGIN}/resource-timing/resources/entry-invariants.js">
   </` + `script>
   <script>
-    attribute_test(fetch, "${url}?tao=null",
-      invariants.assert_tao_pass_no_redirect_http,
-      "An opaque origin should be authorized to see resource timings when the" +
-      "TAO header is the string 'null'");
-    attribute_test(fetch, "${url}?tao=Null",
-      invariants.assert_tao_failure_resource,
-      "An opaque origin must not be authorized to see resource timings when " +
-      "the TAO header is the string 'Null'. (The check for 'null' must be " +
-      "case-sensitive)");
+attribute_test(fetch, "${url}?headers=${encodeURIComponent('{%22Access-Control-Allow-Origin%22:%22null%22,%22Timing-Allow-Origin%22:%22null%22}')}",
+  invariants.assert_tao_pass_no_redirect_http,
+  "An opaque origin should be authorized to see resource timings when the" +
+  "TAO header is the string 'null'");
+attribute_test(fetch, "${url}?headers=${encodeURIComponent('{%22Access-Control-Allow-Origin%22:%22null%22,%22Timing-Allow-Origin%22:%22Null%22}')}",
+  invariants.assert_tao_failure_resource,
+  "An opaque origin must not be authorized to see resource timings when " +
+  "the TAO header is the string 'Null'. (The check for 'null' must be " +
+  "case-sensitive)");
   </` + `script>
 </body>`;
 

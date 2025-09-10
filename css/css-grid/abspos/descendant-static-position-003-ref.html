@@ -17,7 +17,9 @@
 }
 .absolute {
   position: absolute;
+  inset: 0;
   grid-column: 1 / 2;
+  grid-row: 1 / 2;
 }
 .content {
   float: left;
@@ -34,35 +36,35 @@
 There should be no red:
 
 <div class="grid">
-    <div class="absolute" style="margin-top:2px">
+    <div class="absolute">
       <div class="content"></div>
       <div class="content"></div>
     </div>
 </div>
 
 <div class="grid" style="grid-template-columns: 43px">
-    <div class="absolute" style="margin-top:2px; margin-left:3px">
+    <div class="absolute" style="margin-left:3px">
       <div class="content"></div>
       <div class="content"></div>
     </div>
 </div>
 
 <div class="grid" style="grid-template-columns: 43px">
-    <div class="absolute" style="margin-top:2px; border-left:2px solid black; padding-left:1px">
+    <div class="absolute" style="border-left:2px solid black; padding-left:1px">
       <div class="content"></div>
       <div class="content"></div>
     </div>
 </div>
 
 <div class="grid" style="padding-bottom: 14px">
-    <div class="absolute" style="margin-top:10px">
+    <div class="absolute" style="margin-top:8px">
       <div class="content"></div>
       <div class="content"></div>
     </div>
 </div>
 
 <div class="grid" style="grid-template-columns: 43px; padding-left:8px">
-    <div class="absolute" style="margin-top:2px; margin-left:3px">
+    <div class="absolute" style="margin-left:3px">
       <div class="content"></div>
       <div class="content"></div>
     </div>

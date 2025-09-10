@@ -949,13 +949,10 @@ class WebDriverGlobalPrivacyControlProtocolPart(GlobalPrivacyControlProtocolPart
         self.webdriver = self.parent.webdriver
 
     def set_global_privacy_control(self, gpc):
-        body = {
-            "gpc": gpc,
-        }
-        return self.webdriver.send_session_command("POST", "privacy", body)
+        return self.webdriver.set_global_privacy_control(gpc)
 
     def get_global_privacy_control(self):
-        return self.webdriver.send_session_command("GET", "privacy")
+        return self.webdriver.get_global_privacy_control()
 
 
 class WebDriverProtocol(Protocol):

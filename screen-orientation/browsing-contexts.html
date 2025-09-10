@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+  import {
+    getOppositeOrientation,
+    loadIframe,
+  } from "/screen-orientation/resources/orientation-utils.js";
+
+  promise_test(async t => {
+    const iframe = await loadIframe();
+    await test_driver.bless("request full screen", () => {
+      return document.documentElement.requestFullscreen();
+    });
+    const newOrientation = getOppositeOrientation();
+    const promiseToLockIFrame = iframe.contentWindow.screen.orientation.lock(
+      `${newOrientation}-secondary`
+    );
+    const p = screen.orientation.lock(`${newOrientation}-primary`);
+    await promise_rejects(
+      t,
+      "AbortError",
+      promiseToLockIFrame,
+      "Descendant browsing context's pending promise is rejected"
+    );
+    await p;
+    screen.orientation.unlock();
+    await document.exitFullscreen();
+    iframe.remove();
+  }, "Browsing contexts test");
+
+  promise_test(async t => {
+    const iframe = await loadIframe();
+    const promiseToChange = new Promise(resolve => {
+      screen.orientation.addEventListener("change", resolve);
+    });
+    await test_driver.bless("request full screen", () => {
+      return document.documentElement.requestFullscreen();
+    });
+    const newOrientation = getOppositeOrientation();
+    await iframe.contentWindow.screen.orientation.lock(newOrientation);
+    window.location.href = "https://not-web-platform.test:8443";
+    await promiseToChange;
+    assert_equals(
+      screen.orientation.type,
+      originalOrientation,
+      "Navigating from iframe to new top-level browsing context unlocks orientation"
+    );
+    screen.orientation.unlock();
+    await document.exitFullscreen();
+    iframe.remove();
+  }, "Navigating a nested browsing context causes the orientation to unlock()");
+
+  promise_test(async t => {
+    const promiseToChange = new Promise(resolve => {
+      screen.orientation.addEventListener("change", resolve);
+    });
+    const { type: currentOrientation } = screen.orientation;
+    const isPortrait = currentOrientation.includes("portrait");
+    const newOrientation = `${isPortrait ? "landscape" : "portrait"}`;
+    const popWindow = window.open(
+      "./resources/blank.html",
+      "popup test",
+      "width=500,height=300"
+    );
+    const loadPromise = new Promise(r => {
+      if (popWindow.document.readyState === "complete") {
+        r();
+      }
+      popWindow.onload = () => r();
+    });
+    await loadPromise;
+    await test_driver.bless("request full screen", () => {
+      return document.documentElement.requestFullscreen();
+    });
+    await popWindow.screen.orientation.lock(newOrientation);
+    await promiseToChange;
+    assert_equals(
+      screen.orientation.type,
+      newOrientation,
+      "The active orientation lock should be the latest focused document's orientation lock"
+    );
+    popWindow.onload = function navigation() {
+      popWindow.location.href = "https://not-web-platform.test:8443";
+    };
+    await promiseToChange;
+    assert_equals(
+      screen.orientation.type,
+      currentOrientation,
+      "Navigating the popup window causes the screen orientation to unlock"
+    );
+    screen.orientation.unlock();
+    window.close();
+    await document.exitFullscreen();
+  }, "Opening pop-up window test");
+</script>

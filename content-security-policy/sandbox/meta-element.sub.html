@@ -10,7 +10,7 @@
 // https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-content-security-policy
 // `sandbox` directives must be ignored when delivered via `<meta>`.
 test(() => {
-  assert_equals(location.origin, "{{location[scheme]}}://{{location[host]}}");
+  assert_equals(window.origin, "{{location[scheme]}}://{{location[host]}}");
 }, "Document shouldn't be sandboxed by <meta>");
 
 // Note: sandbox directive for workers are not yet specified.

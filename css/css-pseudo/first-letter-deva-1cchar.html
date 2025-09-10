@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>CSS3 Pseudo: hindi, base character with 1 combining character</title>
+<meta name="assert" id="assert" content=":first-letter will select a devanagari letter and a following combining character at the start of a line.">
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#first-letter-pseudo">
+<link rel="match" href="first-letter-deva-1cchar-ref.html">
+<link rel="author" title="r12a" href="mailto:r12a@w3.org">
+<style>
+@font-face {
+font-family: 'webfont';
+src: url('../../../fonts/noto/NotoSerifDevanagari-regular.woff2') format('woff');
+font-weight: normal;
+font-style: normal;
+}
+.test { font-family: webfont, serif; font-size: 36px; margin-left: 1em; }
+.instructions:first-letter { color: #00ff00; }
+/* the CSS above is not part of the test */
+
+.test p:first-letter { font-size: 3em; }
+</style>
+</head>
+<body>
+<p class="instructions"><em>Skip if the 's' at the start of this line is not green.</em></p>
+
+
+<div class="test" lang="hi">
+<p>अंग्रेज़ी</p>
+<p>कॊशिश</p>
+<p>किताब</p>
+</div>
+
+
+</body>
+</html>

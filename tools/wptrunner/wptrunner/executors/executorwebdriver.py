@@ -48,6 +48,7 @@ from .protocol import (BaseProtocolPart,
                        VirtualPressureSourceProtocolPart,
                        ProtectedAudienceProtocolPart,
                        DisplayFeaturesProtocolPart,
+                       WebExtensionsProtocolPart,
                        merge_dicts)
 
 from typing import Any, List, Dict, Optional, Tuple
@@ -405,6 +406,31 @@ class WebDriverBidiPermissionsProtocolPart(BidiPermissionsProtocolPart):
         return await self.webdriver.bidi_session.permissions.set_permission(
             descriptor=descriptor, state=state, origin=origin)
 
+class WebDriverBidiWebExtensionsProtocolPart(WebExtensionsProtocolPart):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.webdriver = None
+
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+
+    def install_web_extension(self, type, path, value):
+        params = {"type": type}
+        if path is not None:
+            params["path"] = self._resolve_path(path)
+        else:
+            params["value"] = value
+
+        return self.webdriver.loop.run_until_complete(self.webdriver.bidi_session.web_extension.install(params))
+
+    def uninstall_web_extension(self, extension_id):
+        return self.webdriver.loop.run_until_complete(self.webdriver.bidi_session.web_extension.uninstall(extension_id))
+
+    def _resolve_path(self, path):
+        if self.parent.test_path is not None:
+            return self.parent.test_path.rsplit("/", 1)[0] + path
+        return path
 
 class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
     def setup(self):
@@ -943,6 +969,25 @@ class WebDriverDisplayFeaturesProtocolPart(DisplayFeaturesProtocolPart):
     def clear_display_features(self):
         return self.webdriver.send_session_command("DELETE", "displayfeatures")
 
+class WebDriverWebExtensionsProtocolPart(WebExtensionsProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def install_web_extension(self, type, path, value):
+        if path is not None:
+            path = self._resolve_path(path)
+
+        return self.webdriver.web_extensions.install(type, path, value)
+
+    def uninstall_web_extension(self, extension_id):
+        return self.webdriver.web_extensions.uninstall(extension_id)
+
+    def _resolve_path(self, path):
+        if self.parent.test_path is not None:
+            return self.parent.test_path.rsplit("/", 1)[0] + path
+        return path
+
+
 class WebDriverProtocol(Protocol):
     enable_bidi = False
     implements = [WebDriverBaseProtocolPart,
@@ -968,7 +1013,8 @@ class WebDriverProtocol(Protocol):
                   WebDriverStorageProtocolPart,
                   WebDriverVirtualPressureSourceProtocolPart,
                   WebDriverProtectedAudienceProtocolPart,
-                  WebDriverDisplayFeaturesProtocolPart]
+                  WebDriverDisplayFeaturesProtocolPart,
+                  WebDriverWebExtensionsProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)
@@ -1045,6 +1091,7 @@ class WebDriverBidiProtocol(WebDriverProtocol):
                   WebDriverBidiEventsProtocolPart,
                   WebDriverBidiPermissionsProtocolPart,
                   WebDriverBidiScriptProtocolPart,
+                  WebDriverBidiWebExtensionsProtocolPart,
                   *(part for part in WebDriverProtocol.implements)
                   ]
 
@@ -1147,6 +1194,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
 
     def do_test(self, test):
         url = self.test_url(test)
+        self.protocol.test_path = test.path
 
         timeout = (test.timeout * self.timeout_multiplier if self.debug_info is None
                    else None)

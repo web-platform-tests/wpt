@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.sub.js?pipe=sub"></script>
+</head>
+<body>
+<script>
+const SCOPE = 'resources/';
+const SCRIPT = 'matchAll-in-fetch-event-handler-worker.js';
+
+function loadFrame(url) {
+    const frame = document.createElement('iframe');
+    frame.src = url;
+    frame.style.width = '100%';
+    const promise = new Promise((resolve, reject) => {
+        frame.onload = resolve;
+        setTimeout(() => reject("load timed out"), 2000);
+    });
+    document.body.appendChild(frame);
+    document.body.appendChild(document.createElement('br'));
+    return promise;
+}
+
+promise_test(async test => {
+  const registration = await service_worker_unregister_and_register(test, SCRIPT, SCOPE);
+  await wait_for_state(test, registration.installing, 'activated');
+}, 'global setup');
+
+promise_test(async t => {
+    const frame = await loadFrame(SCOPE + '?waitForGetBeforeAnswering'); 
+}, "clients.get before answering fetch event handler");
+
+promise_test(async t => {
+    const frame = await loadFrame(SCOPE + '?waitForGetAfterSendingResponse'); 
+}, "clients.get after providing response to fetch event handler");
+
+promise_test(async t => {
+    const frame = await loadFrame(SCOPE + '?waitForGetAfterSendingPartialBody'); 
+}, "clients.get after providing response and partial body to fetch event handler");
+
+promise_test(async t => {
+    const frame = await loadFrame(SCOPE + '?waitForGetAfterSendingDelayedPartialBody'); 
+}, "clients.get after providing response and delayed partial body to fetch event handler");
+
+promise_test(async t => {
+    const frame = await loadFrame(SCOPE + '?waitForMatchAllControlled'); 
+}, "matchAll controlled before answering fetch event handler");
+
+promise_test(async t => {
+    const frame = await loadFrame(SCOPE + '?waitForMatchAllUncontrolled'); 
+}, "matchAll uncontrolled before answering fetch event handler");
+</script>
+</body>
+</html>

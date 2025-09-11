@@ -24,3 +24,4 @@ def main(request, response):
     response.content = json.dumps({
         "headers": headers_dict
     })
+

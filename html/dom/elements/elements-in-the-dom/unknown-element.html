@@ -19,4 +19,9 @@
     assert_true(window.HTMLSpanElement && !(elt instanceof HTMLSpanElement), "an instance of HTMLSpanElement");
   }, `<${name}> is an HTMLUnknownElement`);
 });
+
+test(() => {
+  const elt = document.createElementNS("http://www.w3.org/1999/xhtml", "image");
+  assert_true(elt instanceof HTMLUnknownElement, "not an instance of HTMLUnknownElement");
+}, `<image> is an HTMLUnknownElement`);
 </script>

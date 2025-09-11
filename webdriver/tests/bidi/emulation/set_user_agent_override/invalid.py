@@ -95,7 +95,7 @@ async def test_params_user_contexts_entry_invalid_value(bidi_session, value):
         )
 
 
-async def test_params_contexts_and_user_contexts(bidi_session,top_context):
+async def test_params_contexts_and_user_contexts(bidi_session, top_context):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_user_agent_override(
             user_agent=SOME_USER_AGENT,

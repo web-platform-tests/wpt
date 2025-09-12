@@ -49,7 +49,6 @@ button" data-testname="div[role=button] ignoring line break" aria-label="x" data
   <div role="⠀ button" data-testname="div[role=button] ignoring braille whitespace char" aria-label="x" data-expectedrole="button" class="ex">x</div>
 
   <!-- various role capitalization styles and their fallbacks -->
-  
   <div role="foo Link" data-testname="div[role='foo Link'][tabindex=0], illegal role and capitalized fallback role, has link role" aria-label="x" tabindex="0" data-expectedrole="link" class="ex">x</div>
   <button role="foo Link" data-testname="button[role='foo Link'] with illegal role and capitalized fallback role, has link role" data-expectedrole="link" class="ex"></button>
   <nav role="foo GROUP" data-testname="nav[role='foo GROUP'] with illegal role and all upper case fallback role, has group role" aria-label="x" data-expectedrole="group" class="ex">x</nav>

@@ -60,10 +60,10 @@
     “User agents MUST NOT resolve aria-owns when it is set on an element that
     has been excluded from the accessibility tree.”
   -->
-  <h2>A hidden element failing to re-parent text using aria-owns</h2>
+  <h2>A hidden element failing to adopt text using aria-owns</h2>
   <h3
     class="ex-label"
-    data-testname="A hidden element failing to re-parent text using aria-owns"
+    data-testname="A hidden element failing to adopt text using aria-owns"
     data-expectedlabel="treasure"
   >
     <span hidden aria-owns="treasure">
@@ -77,10 +77,10 @@
     “User agents MUST NOT resolve aria-owns when it is set on an element that
     has been excluded from the accessibility tree.”
   -->
-  <h2>A hidden element failing to re-parent text from a content-named element using aria-owns</h2>
+  <h2>A hidden element failing to adopt text from a content-named element using aria-owns</h2>
   <h3
     class="ex-label"
-    data-testname="A hidden element failing to re-parent text from a content-named element using aria-owns"
+    data-testname="A hidden element failing to adopt text from a content-named element using aria-owns"
     data-expectedlabel="sand"
   >
     <span hidden aria-owns="pearl">
@@ -90,7 +90,7 @@
   </h3>
   <h4
     class="ex-label"
-    data-testname="A content-named element that still has its contents after a failed aria-owns re-parenting"
+    data-testname="A content-named element that still has its contents after another element fails to adopt the contents using aria-owns"
     data-expectedlabel="a pearl"
   >
     <!-- TODO: Can a test be written to assert that this text node remains? -->
@@ -102,10 +102,10 @@
     “User agents MUST NOT resolve aria-owns when it is set on an element that
     has been excluded from the accessibility tree.”
   -->
-  <h2>An aria-hidden element failing to re-parent text using aria-owns</h2>
+  <h2>An aria-hidden element failing to adopt text using aria-owns</h2>
   <h3
     class="ex-label"
-    data-testname="An aria-hidden element failing to re-parent text using aria-owns"
+    data-testname="An aria-hidden element failing to adopt text using aria-owns"
     data-expectedlabel="reflection"
   >
     <span aria-hidden="true" aria-owns="reflection">

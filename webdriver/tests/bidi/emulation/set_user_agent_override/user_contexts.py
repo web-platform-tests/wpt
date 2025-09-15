@@ -3,29 +3,7 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 SOME_USER_AGENT = "SOME_USER_AGENT"
-
-
-async def test_contexts(bidi_session, new_tab, top_context, default_user_agent,
-        assert_user_agent):
-    # Set user-agent override
-    await bidi_session.emulation.set_user_agent_override(
-        contexts=[new_tab["context"]],
-        user_agent=SOME_USER_AGENT
-    )
-
-    # Assert user-agent override is set only in the required context.
-    await assert_user_agent(new_tab, SOME_USER_AGENT)
-    await assert_user_agent(top_context, default_user_agent)
-
-    # Reset user-agent override.
-    await bidi_session.emulation.set_user_agent_override(
-        contexts=[new_tab["context"]],
-        user_agent=None
-    )
-
-    # Assert user-agent override is reset.
-    await assert_user_agent(new_tab, default_user_agent)
-    await assert_user_agent(top_context, default_user_agent)
+ANOTHER_USER_AGENT = "ANOTHER_USER_AGENT"
 
 
 async def test_user_contexts(bidi_session, create_user_context, new_tab,
@@ -117,41 +95,56 @@ async def test_set_to_multiple_user_contexts(bidi_session, create_user_context,
 async def test_set_to_user_context_and_then_to_context(bidi_session,
         create_user_context, new_tab, assert_user_agent, default_user_agent, ):
     user_context = await create_user_context()
-    context_in_user_context_1 = await bidi_session.browsing_context.create(
+    context_in_user_context = await bidi_session.browsing_context.create(
         user_context=user_context, type_hint="tab"
     )
 
-    # Apply user-agent override to the user context.
+    # Add user context override.
     await bidi_session.emulation.set_user_agent_override(
         user_contexts=[user_context],
         user_agent=SOME_USER_AGENT
     )
 
-    # Apply user-agent override now only to the context.
+    # Add context override.
     await bidi_session.emulation.set_user_agent_override(
-        contexts=[context_in_user_context_1["context"]],
+        contexts=[context_in_user_context["context"]],
+        user_agent=ANOTHER_USER_AGENT
+    )
+    # Assert context override is applied.
+    await assert_user_agent(context_in_user_context, ANOTHER_USER_AGENT)
+
+    # Reload and assert context override is still applied.
+    await bidi_session.browsing_context.reload(
+        context=context_in_user_context["context"], wait="complete"
+    )
+    await assert_user_agent(context_in_user_context, ANOTHER_USER_AGENT)
+
+    # Remove context override.
+    await bidi_session.emulation.set_user_agent_override(
+        contexts=[context_in_user_context["context"]],
         user_agent=None
     )
-    await assert_user_agent(context_in_user_context_1, default_user_agent)
 
+    # Assert user context override is applied.
+    await assert_user_agent(context_in_user_context, SOME_USER_AGENT)
+
+    # Reload and assert user context override is still applied.
     await bidi_session.browsing_context.reload(
-        context=context_in_user_context_1["context"], wait="complete"
+        context=context_in_user_context["context"], wait="complete"
     )
+    await assert_user_agent(context_in_user_context, SOME_USER_AGENT)
 
-    # Make sure that after reload the user-agent override is still applied.
-    await assert_user_agent(context_in_user_context_1, default_user_agent)
-
-    # Create a new context in the user context.
-    context_in_user_context_2 = await bidi_session.browsing_context.create(
-        user_context=user_context, type_hint="tab"
-    )
-    # Make sure that the user-agent override for the user context is applied.
-    await assert_user_agent(context_in_user_context_2, SOME_USER_AGENT)
-
+    # Remove user context override.
     await bidi_session.emulation.set_user_agent_override(
-        contexts=[context_in_user_context_1["context"]],
+        contexts=[context_in_user_context["context"]],
         user_agent=None,
     )
 
-    # Make sure that the user-agent override was reset.
-    await assert_user_agent(context_in_user_context_1, default_user_agent)
+    # Assert the overrides are removed.
+    await assert_user_agent(context_in_user_context, default_user_agent)
+
+    # Reload and assert the overrides are still removed.
+    await bidi_session.browsing_context.reload(
+        context=context_in_user_context["context"], wait="complete"
+    )
+    await assert_user_agent(context_in_user_context, SOME_USER_AGENT)

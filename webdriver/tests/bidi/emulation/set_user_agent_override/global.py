@@ -101,7 +101,7 @@ async def test_user_agent_set_override_and_reset_per_user_context_and_per_contex
     # The override for default user context should be active.
     await assert_user_agent(top_context, ANOTHER_USER_AGENT)
 
-    # Reset global override.
+    # Reset override for default user context.
     await bidi_session.emulation.set_user_agent_override(
         user_contexts=["default"],
         user_agent=ANOTHER_USER_AGENT

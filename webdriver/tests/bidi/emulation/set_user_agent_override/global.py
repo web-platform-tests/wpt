@@ -98,7 +98,7 @@ async def test_user_agent_set_override_and_reset_per_user_context_and_per_contex
         user_agent=None
     )
 
-    # The global override should be active.
+    # The override for default user context should be active.
     await assert_user_agent(top_context, ANOTHER_USER_AGENT)
 
     # Reset global override.

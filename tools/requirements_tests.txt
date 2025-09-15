@@ -2,6 +2,6 @@ httpx[http2]==0.27.2
 json-e==4.7.0
 jsonschema==4.17.3
 pyyaml==6.0.1
-types-pyyaml==6.0.12.20241230
+types-pyyaml==6.0.12.20250915
 taskcluster==86.0.2
 mozterm==1.0.0

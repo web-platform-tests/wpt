@@ -98,13 +98,14 @@
     const x = rect.left + characterWidth * characterIndex;
     const y = rect.top + rect.height / 2;
     const range = document.caretRangeFromPoint(x, y);
+    const point = document.caretPositionFromPoint(x, y);
     assert_true(range instanceof Range);
-    assert_equals(range.startContainer, document.body);
-    assert_equals(range.endContainer, document.body);
+    assert_equals(range.startContainer, point.offsetNode);
+    assert_equals(range.endContainer, point.offsetNode);
     assert_equals(range.startOffset, characterIndex);
     assert_equals(range.endOffset, characterIndex);
     assert_true(range.collapsed);
-  }, "document.caretRangeFromPoint() on a shadow should return a Range pointing at document.body");
+  }, "document.caretRangeFromPoint() on a shadow should return a Range pointing at the same node as caretPositionFromPoint");
 
   test(() => {
     const rect = canvas.getBoundingClientRect();

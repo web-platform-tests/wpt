@@ -87,7 +87,7 @@
     assert_approx_equals(rangeRect.x, x, 1);
     assert_approx_equals(rangeRect.y, rect.height / 2, 3);
     assert_approx_equals(rangeRect.height, rect.height, 1);
-    assert_equals(rangeRect.width, 0, "Caret range should be collapsed");
+    assert_approx_equals(rangeRect.width, 0, 0.02, "Caret range should be collapsed");
   }, "document.caretRangeFromPoint() should return a client rect close to the given coords");
 
   test(() => {

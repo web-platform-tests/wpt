@@ -16,14 +16,18 @@ function run_test() {
         var promise = importVectorKeys(vector, ["verify", "sign"])
         .then(function(vector) {
             promise_test(function(test) {
-                var operation = subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, vector.signature, vector.plaintext)
+                let microtaskTriggered = false;
+                let promise = subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, vector.signature, vector.plaintext)
                 .then(function(is_verified) {
+                    assert_true(microtaskTriggered, "promise resolved too early");
                     assert_true(is_verified, "Signature verified");
                 }, function(err) {
                     assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
                 });
-
-                return operation;
+                Promise.resolve().then(() => {
+                    microtaskTriggered = true;
+                });
+                return promise;
             }, vector.name + " verification");
 
         }, function(err) {
@@ -42,8 +46,8 @@ function run_test() {
         var promise = importVectorKeys(vector, ["verify", "sign"])
         .then(function(vector) {
             promise_test(function(test) {
-                var signature = copyBuffer(vector.signature);
-                var operation = subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, signature, vector.plaintext)
+                let signature = copyBuffer(vector.signature);
+                let promise = subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, signature, vector.plaintext)
                 .then(function(is_verified) {
                     assert_true(is_verified, "Signature is not verified");
                 }, function(err) {
@@ -51,7 +55,7 @@ function run_test() {
                 });
 
                 signature[0] = 255 - signature[0];
-                return operation;
+                return promise;
             }, vector.name + " verification with altered signature after call");
         }, function(err) {
             promise_test(function(test) {
@@ -68,7 +72,7 @@ function run_test() {
         .then(function(vector) {
             promise_test(function(test) {
                 var plaintext = copyBuffer(vector.plaintext);
-                var operation = subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, vector.signature, plaintext)
+                let promise = subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, vector.signature, plaintext)
                 .then(function(is_verified) {
                     assert_true(is_verified, "Signature verified");
                 }, function(err) {
@@ -76,7 +80,7 @@ function run_test() {
                 });
 
                 plaintext[0] = 255 - plaintext[0];
-                return operation;
+                return promise;
             }, vector.name + " with altered plaintext after call");
         }, function(err) {
             promise_test(function(test) {
@@ -115,8 +119,11 @@ function run_test() {
         var promise = importVectorKeys(vector, ["verify", "sign"])
         .then(function(vectors) {
             promise_test(function(test) {
-                return subtle.sign({name: "HMAC", hash: vector.hash}, vector.key, vector.plaintext)
+                let microtaskTriggered = false;
+                let promise = subtle.sign({name: "HMAC", hash: vector.hash}, vector.key, vector.plaintext)
                 .then(function(signature) {
+                    assert_true(microtaskTriggered, "promise resolved too early");
+
                     assert_true(equalBuffers(signature, vector.signature), "Signing did not give the expected output");
                     // Can we get the verify the new signature?
                     return subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, signature, vector.plaintext)
@@ -127,6 +134,10 @@ function run_test() {
                         assert_unreached("verify error for test " + vector.name + ": " + err.message + "'");
                     });
                 });
+                Promise.resolve().then(() => {
+                    microtaskTriggered = true;
+                });
+                return promise;
             }, vector.name + " round trip");
 
         }, function(err) {
@@ -148,14 +159,14 @@ function run_test() {
             return importVectorKeys(vector, ["verify", "sign"])
             .then(function(vectors) {
                 promise_test(function(test) {
-                    var operation = subtle.sign({name: "HMAC", hash: vector.hash}, wrongKey.privateKey, vector.plaintext)
+                    let promise = subtle.sign({name: "HMAC", hash: vector.hash}, wrongKey.privateKey, vector.plaintext)
                     .then(function(signature) {
                         assert_unreached("Signing should not have succeeded for " + vector.name);
                     }, function(err) {
                         assert_equals(err.name, "InvalidAccessError", "Should have thrown InvalidAccessError instead of '" + err.message + "'");
                     });
 
-                    return operation;
+                    return promise;
                 }, vector.name + " signing with wrong algorithm name");
 
             }, function(err) {
@@ -182,14 +193,14 @@ function run_test() {
             return importVectorKeys(vector, ["verify", "sign"])
             .then(function(vector) {
                 promise_test(function(test) {
-                    var operation = subtle.verify({name: "HMAC", hash: vector.hash}, wrongKey.publicKey, vector.signature, vector.plaintext)
+                    let promise = subtle.verify({name: "HMAC", hash: vector.hash}, wrongKey.publicKey, vector.signature, vector.plaintext)
                     .then(function(signature) {
                         assert_unreached("Verifying should not have succeeded for " + vector.name);
                     }, function(err) {
                         assert_equals(err.name, "InvalidAccessError", "Should have thrown InvalidAccessError instead of '" + err.message + "'");
                     });
 
-                    return operation;
+                    return promise;
                 }, vector.name + " verifying with wrong algorithm name");
 
             }, function(err) {
@@ -215,14 +226,14 @@ function run_test() {
             var plaintext = copyBuffer(vector.plaintext);
             plaintext[0] = 255 - plaintext[0];
             promise_test(function(test) {
-                var operation = subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, vector.signature, plaintext)
+                let promise = subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, vector.signature, plaintext)
                 .then(function(is_verified) {
                     assert_false(is_verified, "Signature is NOT verified");
                 }, function(err) {
                     assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
                 });
 
-                return operation;
+                return promise;
             }, vector.name + " verification failure due to wrong plaintext");
 
         }, function(err) {
@@ -240,17 +251,17 @@ function run_test() {
     testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify", "sign"])
         .then(function(vector) {
-            var signature = copyBuffer(vector.signature);
+            let signature = copyBuffer(vector.signature);
             signature[0] = 255 - signature[0];
             promise_test(function(test) {
-                var operation = subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, signature, vector.plaintext)
+                let promise = subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, signature, vector.plaintext)
                 .then(function(is_verified) {
                     assert_false(is_verified, "Signature is NOT verified");
                 }, function(err) {
                     assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
                 });
 
-                return operation;
+                return promise;
             }, vector.name + " verification failure due to wrong signature");
 
         }, function(err) {
@@ -268,16 +279,16 @@ function run_test() {
     testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify", "sign"])
         .then(function(vector) {
-            var signature = vector.signature.slice(1); // Drop first byte
+            let signature = vector.signature.slice(1); // Drop first byte
             promise_test(function(test) {
-                var operation = subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, signature, vector.plaintext)
+                let promise = subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, signature, vector.plaintext)
                 .then(function(is_verified) {
                     assert_false(is_verified, "Signature is NOT verified");
                 }, function(err) {
                     assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
                 });
 
-                return operation;
+                return promise;
             }, vector.name + " verification failure due to short signature");
 
         }, function(err) {

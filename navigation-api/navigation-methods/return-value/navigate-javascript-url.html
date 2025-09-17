@@ -25,6 +25,6 @@ for (const iframe of iframes) {
 
     const result = win.navigation.navigate(url, { history: "replace" });
     await assertBothRejectDOM(t, result, "NotSupportedError", win);
-  }, `navigate() to ${format_value(url)} with (auto) or { history: 'replace' }`);
+  }, `navigate() to ${format_value(url)} with { history: 'replace' }`);
 }
 </script>

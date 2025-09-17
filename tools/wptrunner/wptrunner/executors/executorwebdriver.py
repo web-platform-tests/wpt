@@ -332,7 +332,7 @@ class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
         self.logger.info("Unsubscribing from all the events")
         while self._subscriptions:
             subscription = self._subscriptions.pop()
-            self.logger.debug("Unsubscribing from events %s in %s" % (events, contexts))
+            self.logger.debug("Unsubscribing from event %s" % subscription)
             try:
                 await self.webdriver.bidi_session.session.unsubscribe(subscriptions=[subscription])
             except webdriver_bidi_error.NoSuchFrameException:
@@ -345,7 +345,7 @@ class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
                 else:
                     raise e
             except Exception as e:
-                self.logger.error("Failed to unsubscribe from events %s in %s: %s" % (events, contexts, e))
+                self.logger.error("Failed to unsubscribe from event %s: %s" % (subscription, e))
                 # Re-raise the exception to identify regressions.
                 # TODO: consider to continue the loop in case of the exception.
                 raise e

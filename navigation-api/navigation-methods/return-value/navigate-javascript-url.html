@@ -14,7 +14,9 @@ for (const iframe of iframes) {
   promise_test(async t => {
     // Wait for after the load event so that we are definitely testing the
     // javascript: URL as the cause of the rejections.
-    await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
+    if (document.readyState !== 'complete') {
+      await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
+    }
 
     const win = iframe.contentWindow;
     win.navigation.onnavigate = t.unreached_func("onnavigate should not be called");

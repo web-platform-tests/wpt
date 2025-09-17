@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>opacity</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/web-animations/testcommon.js"></script>
+
+<div id="log"></div>
+
+<script> // kvndy
+
+test(t => {
+  const element = createDiv(t);
+  const frames = [{ opacity:-1},{opacity:-1}];
+  const timing = {
+    duration: Infinity,
+    easing: "linear",
+    fill: "backwards",
+    composite: "add"
+  };
+  const effect = new KeyframeEffect(element, frames, timing);
+  const animation = new Animation(effect, document.timeline);
+  animation.play();
+  const actual = Number(getComputedStyle(element).getPropertyValue("opacity"));
+  const expected = 1;
+  animation.cancel();
+  assert_equals(actual, expected);
+}, "Opacity clamping should conform to Firefox behavior");
+
+test(t => {
+  const element = createDiv(t);
+  const frames = [{ opacity:-1},{opacity:-1}];
+  const timing = {
+    duration: Infinity,
+    easing: "linear",
+    fill: "backwards",
+    composite: "add"
+  };
+  const effect = new KeyframeEffect(element, frames, timing);
+  const animation = new Animation(effect, document.timeline);
+  animation.play();
+  const actual = Number(getComputedStyle(element).getPropertyValue("opacity"));
+  const expected = 0;
+  animation.cancel();
+  assert_equals(actual, expected);
+}, "Opacity clamping should conform to Chromium behavior");
+
+</script>

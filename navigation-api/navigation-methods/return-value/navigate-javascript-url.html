@@ -23,8 +23,8 @@ for (const iframe of iframes) {
     win.navigation.onnavigatesuccess = t.unreached_func("onnavigatesuccess should not be called");
     win.navigation.onnavigateerror = t.unreached_func("onnavigateerror should not be called");
 
-    const result = win.navigation.navigate(url, { history: "push" });
+    const result = win.navigation.navigate(url, { history: "replace" });
     await assertBothRejectDOM(t, result, "NotSupportedError", win);
-  }, `navigate() to ${format_value(url)} with { history: 'push' }`);
+  }, `navigate() to ${format_value(url)} with { history: 'replace' }`);
 }
 </script>

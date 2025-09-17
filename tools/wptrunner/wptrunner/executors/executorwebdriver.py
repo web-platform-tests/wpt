@@ -273,7 +273,7 @@ class WebDriverBidiBrowsingContextProtocolPart(BidiBrowsingContextProtocolPart):
 
 
 class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
-    _subscriptions: List[Tuple[List[str], Optional[List[str]]]] = []
+    _subscriptions: List[str] = []
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -320,7 +320,7 @@ class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
         result = await self.webdriver.bidi_session.session.subscribe(events=events, contexts=contexts)
         # The `subscribe` method either raises an exception or adds subscription. The command is atomic, meaning in case
         # of exception no subscription is added.
-        self._subscriptions.append((events, top_contexts))
+        self._subscriptions.append(result["subscription"])
         return result
 
     async def unsubscribe(self, subscriptions):
@@ -331,10 +331,10 @@ class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
     async def unsubscribe_all(self):
         self.logger.info("Unsubscribing from all the events")
         while self._subscriptions:
-            events, contexts = self._subscriptions.pop()
+            subscription = self._subscriptions.pop()
             self.logger.debug("Unsubscribing from events %s in %s" % (events, contexts))
             try:
-                await self.webdriver.bidi_session.session.unsubscribe(events=events, contexts=contexts)
+                await self.webdriver.bidi_session.session.unsubscribe(subscriptions=[subscription])
             except webdriver_bidi_error.NoSuchFrameException:
                 # The browsing context is already removed. Nothing to do.
                 pass

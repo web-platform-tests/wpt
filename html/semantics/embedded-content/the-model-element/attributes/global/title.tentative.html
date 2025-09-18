@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="help"
+      href="https://html.spec.whatwg.org/multipage/embedded-content-other.html#the-model-element"
+    />
+    <title>Test for the functionality of the title attribute</title>
+  </head>
+  <body>
+    <model width="200" height="200" id="subject" title="A Chrome ball">
+      <source src="../../resources/chromeball.usdz" type="model/vnd.usdz+zip" />
+      <source src="../../resources/chromeball.glb" type="model/gltf-binary" />
+    </model>
+    <p></p>
+  </body>
+
+  <!-- Include the test harness -->
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script>
+    test(() => {
+      assert_equals(
+        subject.title,
+        "A Chrome ball",
+        "Model's Title attribute is accessible by script"
+      );
+    }, "model honors title attribute");
+  </script>
+</html>

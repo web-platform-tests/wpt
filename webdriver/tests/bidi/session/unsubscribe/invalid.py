@@ -1,6 +1,6 @@
 import pytest
 
-from webdriver.bidi.error import InvalidArgumentException, NoSuchFrameException
+from webdriver.bidi.error import InvalidArgumentException
 
 from ... import create_console_api_message
 

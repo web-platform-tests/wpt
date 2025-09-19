@@ -14,19 +14,45 @@
     <input type="text" id="inputscroller"
     value="qwertyuiopasddfghjklzxcvbnmqwertyuiopasddfghjklzxcvbnmqwer">
     <script>
-      promise_test(async() => {
+      promise_test(async t => {
         const inputscroller = document.getElementById("inputscroller");
+        t.add_cleanup(() => {
+          return new Promise(resolve => {
+            inputscroller.addEventListener("scrollend", resolve, { once: true });
+            inputscroller.scrollLeft = 0;
+          });
+        });
         assert_equals(inputscroller.scrollLeft, 0,
           "text input field is not initially scrolled.");
 
         const scrollend_promise = new Promise((resolve) => {
-          inputscroller.addEventListener("scrollend", resolve);
+          inputscroller.addEventListener("scrollend", resolve, { once: true });
         });
         inputscroller.scrollLeft = 10;
         await scrollend_promise;
         assert_equals(inputscroller.scrollLeft, 10,
           "text input field is scrolled by the correct amount");
       }, "scrolled input field should receive scrollend.");
+
+      promise_test(async t => {
+        const inputscroller = document.getElementById("inputscroller");
+        t.add_cleanup(() => {
+          return new Promise(resolve => {
+            inputscroller.addEventListener("scrollend", resolve, { once: true });
+            inputscroller.scrollLeft = 0;
+          });
+        });
+        assert_equals(inputscroller.scrollLeft, 0,
+          "text input field is not initially scrolled.");
+
+        const scrollend_promise = new Promise((resolve) => {
+          inputscroller.addEventListener("scrollend", resolve, { once: true });
+        });
+        inputscroller.scrollBy({ left: 10, behavior: "smooth" });
+        await scrollend_promise;
+        assert_equals(inputscroller.scrollLeft, 10,
+          "text input field is scrolled by the correct amount");
+      }, "scrolled input field should receive scrollend for animated scroll.");
     </script>
   </body>
 </html>

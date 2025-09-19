@@ -67,7 +67,7 @@
   <button tabindex="0" command="toggle-popover">Toggle popover</button>
   <div popover id="popover4">
     <my-element data-expected="1">
-      <template shadowrootmode="open" delegatesfocus>
+      <template shadowrootmode="open" shadowrootdelegatesfocus>
         <button tabindex="0" data-expected="shadow-1"></button>
       </template>
     </my-element>
@@ -126,6 +126,13 @@
 </div>
 
 <script>
+  // The active element might be an element within the expected focus candidate,e.g. a summary
+  // inside a details, we should traverse the tree to find the nearest `[data-expected]` element
+  // to ensure we're not failing a test for chosing to focus an interior element.
+  function getExpectedValue()  {
+    return document.activeElement?.closest('[data-expected]')?.getAttribute("data-expected")
+  }
+
   async function testCandidate(el, style, signal) {
     const count = parseInt(el.getAttribute("data-count"));
     const invoker = el.querySelector("button:first-child");
@@ -198,7 +205,7 @@
     for (let i = 1; i <= count; i += 1) {
       await sendTab();
       assert_equals(
-        document.activeElement?.getAttribute("data-expected"),
+        getExpectedValue(),
         String(i),
         `tab press should move to active element ${i}`,
       );
@@ -214,13 +221,13 @@
     }
     await sendTab();
     assert_equals(
-      document.activeElement?.getAttribute("data-expected"),
+      getExpectedValue(),
       "close",
       "tab press should move to close popover button",
     );
     await sendShiftTab();
     assert_equals(
-      document.activeElement?.getAttribute("data-expected"),
+      getExpectedValue(),
       String(count),
       "shift+tab should move back to last active element",
     );
@@ -232,7 +239,7 @@
     );
     await sendTab();
     assert_equals(
-      document.activeElement?.getAttribute("data-expected"),
+      getExpectedValue(),
       "after",
       "tab should move forward to land on the button after the popover contents",
     );

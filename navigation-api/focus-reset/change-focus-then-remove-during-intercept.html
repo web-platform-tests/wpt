@@ -24,11 +24,8 @@ promise_test(async t => {
 
   const finished = navigation.navigate("#1").finished;
 
-  let onfocus_called = false;
-  document.body.onfocus = onfocus_called = true;
   button.remove();
   assert_equals(document.activeElement, document.body, "Removing the element reset focus");
-  assert_true(onfocus_called);
 
   document.body.onfocus = t.unreached_func("onfocus shouldn't fire a second time due to focus reset");
   intercept_resolve();

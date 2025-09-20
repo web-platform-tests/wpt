@@ -25,7 +25,7 @@
   }
 </style>
 
-<body style="margin:0" onload=runTest()>
+<body style="margin:0">
   <div id="targetDiv">
     <!-- This test uses button elements as a consistent mechanism for
       ensuring that focus is on the correct scrolling element when
@@ -81,10 +81,8 @@
     assert_equals(scrolling_element.scrollTop, 0);
 
     let scrollend_promise = waitForScrollendEvent(test, listening_element).then(
-      (/*resolve*/) => {
-        assert_true(false, "no scroll, so no scrollend expected");
-      },
-      (/*reject*/) => { /* Did not see scrollend, which is okay. */ }
+      /* resolve */ test.unreached_func("no scroll, so no scrollend expected"),
+      /* reject */  () => { /* Did not see scrollend, which is okay. */ }
     );
     await upwardScroll(scrolling_element, button_element, scroll_type);
     await scrollend_promise;
@@ -111,4 +109,5 @@
                                             document, docButton, "keys");
     }, "No scroll via keys on document shouldn't fire scrollend.")
   }
+  window.onload = runTest;
 </script>

@@ -254,3 +254,4 @@ test(
     }
   }, `IDBIndex ${method}() method with throwing/invalid keys`);
 });
+

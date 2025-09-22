@@ -63,21 +63,22 @@
 <li><p><a class="reference internal" href="#bounce-tracking-mitigations" id="id23">Bounce Tracking Mitigations</a></p></li>
 <li><p><a class="reference internal" href="#compute-pressure" id="id24">Compute Pressure</a></p></li>
 <li><p><a class="reference internal" href="#viewport-segments" id="id25">Viewport Segments</a></p></li>
-<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id26">Using test_driver in other browsing contexts</a></p></li>
-<li><p><a class="reference internal" href="#actions" id="id27">Actions</a></p>
+<li><p><a class="reference internal" href="#global-privacy-control" id="id26">Global Privacy Control</a></p></li>
+<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id27">Using test_driver in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#actions" id="id28">Actions</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id2" id="id28">Markup</a></p></li>
-<li><p><a class="reference internal" href="#id3" id="id29">API</a></p></li>
-<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id30">Using in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id29">Markup</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id30">API</a></p></li>
+<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id31">Using in other browsing contexts</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#log" id="id31">Log</a></p>
+<li><p><a class="reference internal" href="#log" id="id32">Log</a></p>
 <ul>
-<li><p><a class="reference internal" href="#entry-added" id="id32">Entry added</a></p></li>
+<li><p><a class="reference internal" href="#entry-added" id="id33">Entry added</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#bluetooth" id="id33">Bluetooth</a></p></li>
-<li><p><a class="reference internal" href="#emulation" id="id34">Emulation</a></p></li>
+<li><p><a class="reference internal" href="#bluetooth" id="id34">Bluetooth</a></p></li>
+<li><p><a class="reference internal" href="#emulation" id="id35">Emulation</a></p></li>
 </ul>
 </li>
 </ul>
@@ -1155,6 +1156,41 @@ WebDriver command.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the display features override has been removed. Rejected in case the WebDriver command errors out.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="global-privacy-control">
+<h3>Global Privacy Control<a class="headerlink" href="#global-privacy-control" title="Link to this heading">¶</a></h3>
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.set_global_privacy_control">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_global_privacy_control</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newValue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_global_privacy_control" title="Link to this definition">¶</a></dt>
+<dd><p>Gets the current globally-applied privacy control status</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>newValue</strong> (<em>bool</em>) – The a boolean that is true if the browers should convey a “do not sell or share” signal and false otherwise</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfils with an object with boolean property <cite>gpc</cite> that encodes the new “do not sell or share” after applying the new value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.set_global_privacy_control">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_global_privacy_control</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newValue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_global_privacy_control" title="Link to this definition">¶</a></dt>
+<dd><p>Gets the current globally-applied privacy control status</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>newValue</strong> (<em>bool</em>) – The a boolean that is true if the browers should convey a “do not sell or share” signal and false otherwise</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfils with an object with boolean property <cite>gpc</cite> that encodes the new “do not sell or share” after applying the new value.</p>
 </dd>
 </dl>
 </dd></dl>

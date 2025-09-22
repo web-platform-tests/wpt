@@ -9,11 +9,10 @@ async def test_allow_and_reset(bidi_session, new_tab, temp_dir,
         "type": "allowed",
         "destinationFolder": temp_dir
     })
-    assert await is_download_allowed(new_tab["context"]) == True
+    assert await is_download_allowed(new_tab) == True
 
     await bidi_session.browser.set_download_behavior(download_behavior=None)
-    assert await is_download_allowed(
-        new_tab["context"]) == await default_is_download_allowed
+    assert await is_download_allowed(new_tab) == default_is_download_allowed
 
 
 async def test_allow_and_reset_no_destination_folder(bidi_session, new_tab,
@@ -21,11 +20,10 @@ async def test_allow_and_reset_no_destination_folder(bidi_session, new_tab,
     await bidi_session.browser.set_download_behavior(download_behavior={
         "type": "allowed"
     })
-    assert await is_download_allowed(new_tab["context"]) == True
+    assert await is_download_allowed(new_tab) == True
 
     await bidi_session.browser.set_download_behavior(download_behavior=None)
-    assert await is_download_allowed(
-        new_tab["context"]) == await default_is_download_allowed
+    assert await is_download_allowed(new_tab) == default_is_download_allowed
 
 
 async def test_destination_folder(bidi_session, new_tab, temp_dir,
@@ -34,7 +32,7 @@ async def test_destination_folder(bidi_session, new_tab, temp_dir,
         "type": "allowed",
         "destinationFolder": temp_dir
     })
-    event = await trigger_download(new_tab["context"])
+    event = await trigger_download(new_tab)
     # Assert download is allowed.
     assert event["status"] == "complete"
     # Assert `destinationFolder` is respected.

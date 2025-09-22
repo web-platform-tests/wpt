@@ -1,6 +1,7 @@
 import tempfile
 
 import pytest
+import pytest_asyncio
 
 from webdriver.bidi.modules.script import ContextTarget
 
@@ -11,13 +12,14 @@ DOWNLOAD_END = "browsingContext.downloadEnd"
 def temp_dir():
     return tempfile.mkdtemp()
 
+
 @pytest.fixture
 def trigger_download(bidi_session, subscribe_events, wait_for_event,
         wait_for_future_safe, inline):
     async def trigger_download(context):
         page_with_download_link = inline(
             f"""<a id="download_link" href="{inline("")}" download="some_file.txt">download</a>""")
-        await bidi_session.browsing_context.navigate(context=context,
+        await bidi_session.browsing_context.navigate(context=context["context"],
                                                      url=page_with_download_link,
                                                      wait="complete")
 
@@ -27,7 +29,7 @@ def trigger_download(bidi_session, subscribe_events, wait_for_event,
         # Trigger download by clicking the link.
         await bidi_session.script.evaluate(
             expression="download_link.click()",
-            target=ContextTarget(context),
+            target=ContextTarget(context["context"]),
             await_promise=True,
             user_activation=True,
         )
@@ -46,6 +48,6 @@ def is_download_allowed(trigger_download):
     return is_download_allowed
 
 
-@pytest.fixture
-def default_is_download_allowed(is_download_allowed, new_tab):
-    return is_download_allowed(new_tab["context"])
+@pytest_asyncio.fixture
+async def default_is_download_allowed(is_download_allowed, new_tab):
+    return await is_download_allowed(new_tab)

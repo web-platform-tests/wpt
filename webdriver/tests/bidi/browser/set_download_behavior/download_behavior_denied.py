@@ -9,8 +9,7 @@ async def test_deny_and_reset(bidi_session, new_tab, temp_dir,
     await bidi_session.browser.set_download_behavior(download_behavior={
         "type": "denied"
     })
-    assert await is_download_allowed(new_tab["context"]) == False
+    assert await is_download_allowed(new_tab) == False
 
     await bidi_session.browser.set_download_behavior(download_behavior=None)
-    assert await is_download_allowed(
-        new_tab["context"]) == await default_is_download_allowed
+    assert await is_download_allowed(new_tab) == default_is_download_allowed

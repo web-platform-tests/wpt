@@ -13,14 +13,6 @@
 //
 // MLOperand lesser(MLOperand a, MLOperand b);
 
-
-const getLesserPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {uint8: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const lesserTests = [
   {
     'name': 'lesser float32 0D scalar',
@@ -995,11 +987,4 @@ const lesserTests = [
   }
 ];
 
-if (navigator.ml) {
-  lesserTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getLesserPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(lesserTests, buildAndExecuteGraph, getZeroULPTolerance);

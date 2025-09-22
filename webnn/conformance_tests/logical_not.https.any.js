@@ -13,14 +13,6 @@
 //
 // MLOperand logicalNot(MLOperand a);
 
-
-const getLogicalNotPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {uint8: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const logicalNotTests = [
   {
     'name': 'logicalNot uint8 0D scalar',
@@ -31,7 +23,7 @@ const logicalNotTests = [
       },
       'operators': [{
         'name': 'logicalNot',
-        'arguments': [{'input': 'logicalNotInput'}],
+        'arguments': [{'a': 'logicalNotInput'}],
         'outputs': 'logicalNotOutput'
       }],
       'expectedOutputs': {
@@ -55,7 +47,7 @@ const logicalNotTests = [
       },
       'operators': [{
         'name': 'logicalNot',
-        'arguments': [{'input': 'logicalNotInput'}],
+        'arguments': [{'a': 'logicalNotInput'}],
         'outputs': 'logicalNotOutput'
       }],
       'expectedOutputs': {
@@ -83,7 +75,7 @@ const logicalNotTests = [
       },
       'operators': [{
         'name': 'logicalNot',
-        'arguments': [{'input': 'logicalNotInput'}],
+        'arguments': [{'a': 'logicalNotInput'}],
         'outputs': 'logicalNotOutput'
       }],
       'expectedOutputs': {
@@ -111,7 +103,7 @@ const logicalNotTests = [
       },
       'operators': [{
         'name': 'logicalNot',
-        'arguments': [{'input': 'logicalNotInput'}],
+        'arguments': [{'a': 'logicalNotInput'}],
         'outputs': 'logicalNotOutput'
       }],
       'expectedOutputs': {
@@ -139,7 +131,7 @@ const logicalNotTests = [
       },
       'operators': [{
         'name': 'logicalNot',
-        'arguments': [{'input': 'logicalNotInput'}],
+        'arguments': [{'a': 'logicalNotInput'}],
         'outputs': 'logicalNotOutput'
       }],
       'expectedOutputs': {
@@ -167,7 +159,7 @@ const logicalNotTests = [
       },
       'operators': [{
         'name': 'logicalNot',
-        'arguments': [{'input': 'logicalNotInput'}],
+        'arguments': [{'a': 'logicalNotInput'}],
         'outputs': 'logicalNotOutput'
       }],
       'expectedOutputs': {
@@ -195,7 +187,7 @@ const logicalNotTests = [
       },
       'operators': [{
         'name': 'logicalNot',
-        'arguments': [{'input': 'logicalNotInput'}],
+        'arguments': [{'a': 'logicalNotInput'}],
         'outputs': 'logicalNotOutput'
       }],
       'expectedOutputs': {
@@ -211,11 +203,5 @@ const logicalNotTests = [
   }
 ];
 
-if (navigator.ml) {
-  logicalNotTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getLogicalNotPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    logicalNotTests, buildAndExecuteGraph, getZeroULPTolerance);

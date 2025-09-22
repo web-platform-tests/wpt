@@ -2345,7 +2345,7 @@ const subgraphTests = [
         },
         {
           'name': 'softmax',
-          'arguments': [{'input': 'convTranspose2dOutput'}, , {'axis': 1}],
+          'arguments': [{'input': 'convTranspose2dOutput'}, {'axis': 1}],
           'outputs': 'output'
         },
       ],
@@ -2394,7 +2394,7 @@ const subgraphTests = [
         },
         {
           'name': 'softmax',
-          'arguments': [{'input': 'convTranspose2dOutput'}, , {'axis': 1}],
+          'arguments': [{'input': 'convTranspose2dOutput'}, {'axis': 1}],
           'outputs': 'output'
         },
       ],
@@ -2524,142 +2524,45 @@ const subgraphTests = [
     }
   },
   {
-    'name': 'quantized conv2d',
+    'name': 'float16 graph with float32 input and output',
     'graph': {
       'inputs': {
         'input': {
-          'data': [0.05605664849281311, 0.7114229798316956, 0.6529743671417236],
-          'descriptor': {shape: [1, 1, 1, 3], dataType: 'float32'},
-          'constant': false
+          'data': [1, 2, 3, 4],
+          'descriptor': {shape: [4], dataType: 'float32'}
         },
-        'inputScale': {
-          'data': [0.003921568859368563],
-          'descriptor': {shape: [1], dataType: 'float32'},
+        'weight': {
+          'data': [2],
+          'descriptor': {shape: [], dataType: 'float16'},
           'constant': true
-        },
-        'inputZeroPoint': {
-          'data': [-128],
-          'descriptor': {shape: [1], dataType: 'int8'},
-          'constant': true
-        },
-        'filter': {
-          'data': [2, 3, 4],
-          'descriptor': {shape: [1, 1, 1, 3], dataType: 'int8'},
-          'constant': true
-        },
-        'filterScale': {
-          'data': [0.023458752938762234],
-          'descriptor': {shape: [1], dataType: 'float32'},
-          'constant': true
-        },
-        'filterZeroPoint': {
-          'data': [0],
-          'descriptor': {shape: [1], dataType: 'int8'},
-          'constant': true
-        },
-        'bias': {
-          'data': [1],
-          'descriptor': {shape: [1], dataType: 'int32'},
-          'constant': true
-        },
-        'biasScale': {
-          'data': [0.000091995115004270],
-          'descriptor': {shape: [1], dataType: 'float32'},
-          'constant': true
-        },
-        'biasZeroPoint': {
-          'data': [0],
-          'descriptor': {shape: [1], dataType: 'int32'},
-          'constant': true
-        },
-        'outputScale': {
-          'data': [0.003921568859368563],
-          'descriptor': {shape: [1], dataType: 'float32'},
-          'constant': true
-        },
-        'outputZeroPoint': {
-          'data': [0],
-          'descriptor': {shape: [1], dataType: 'int8'},
-          'constant': true
-        },
+        }
       },
       'operators': [
         {
-          'name': 'quantizeLinear',
-          'arguments': [
-            {'input': 'input'},
-            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
-          ],
-          'outputs': 'quantizedInput'
+          'name': 'cast',
+          'arguments': [{'input': 'input'}, {'type': 'float16'}],
+          'outputs': 'castOutput',
         },
         {
-          'name': 'dequantizeLinear',
-          'arguments': [
-            {'input': 'quantizedInput'},
-            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
-          ],
-          'outputs': 'dequantizedInput'
+          'name': 'add',
+          'arguments': [{'a': 'castOutput'}, {'b': 'weight'}],
+          'outputs': 'addOutput'
         },
         {
-          'name': 'dequantizeLinear',
-          'arguments': [
-            {'input': 'filter'},
-            {'scale': 'filterScale', 'zeroPoint': 'filterZeroPoint'}
-          ],
-          'outputs': 'dequantizedFilter'
-        },
-        {
-          'name': 'dequantizeLinear',
-          'arguments': [
-            {'input': 'bias'},
-            {'scale': 'biasScale', 'zeroPoint': 'biasZeroPoint'}
-          ],
-          'outputs': 'dequantizedBias'
-        },
-        {
-          'name': 'conv2d',
-          'arguments': [
-            {'input': 'dequantizedInput'}, {'filter': 'dequantizedFilter'}, {
-              'options': {
-                'inputLayout': 'nhwc',
-                'bias': 'dequantizedBias',
-                'filterLayout': 'ohwi'
-              }
-            }
-          ],
-          'outputs': 'conv2dOutput'
-        },
-        {
-          'name': 'quantizeLinear',
-          'arguments': [
-            {'input': 'conv2dOutput'},
-            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
-          ],
-          'outputs': 'quantizedConv2dOutput'
-        },
-        {
-          'name': 'dequantizeLinear',
-          'arguments': [
-            {'input': 'quantizedConv2dOutput'},
-            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
-          ],
+          'name': 'cast',
+          'arguments': [{'input': 'addOutput'}, {'type': 'float32'}],
           'outputs': 'output'
-        }
+        },
       ],
       'expectedOutputs': {
         'output': {
-          'data': [0.11372549831867218],
-          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float32'}
+          'data': [3, 4, 5, 6],
+          'descriptor': {shape: [4], dataType: 'float32'}
         }
       }
     }
   },
 ];
 
-if (navigator.ml) {
-  subgraphTests.forEach((test) => {
-    webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    subgraphTests, buildAndExecuteGraph, getPrecisionTolerance);

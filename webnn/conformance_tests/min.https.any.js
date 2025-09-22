@@ -12,14 +12,6 @@
 // Compute the element-wise binary minimum of the two input tensors.
 // MLOperand min(MLOperand a, MLOperand b);
 
-
-const getMinPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const minTests = [
   {
     'name': 'min float32 1D constant tensors',
@@ -938,11 +930,4 @@ const minTests = [
   }
 ];
 
-if (navigator.ml) {
-  minTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getMinPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(minTests, buildAndExecuteGraph, getPrecisionTolerance);

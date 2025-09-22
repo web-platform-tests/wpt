@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>DBSC multiple registrations</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="helper.js" type="module"></script>
@@ -12,13 +11,12 @@
     await setupShardedServerState();
     const expectedCookieAndValue1 = "auth_cookie=abcdef0123";
     const expectedCookieAndAttributes1 = `${expectedCookieAndValue1};Domain=${location.hostname};Path=/device-bound-session-credentials`;
-    addCookieAndSessionCleanup(t, expectedCookieAndAttributes1);
     const expectedCookieAndValue2 = "other_cookie=ghijkl4567";
     const expectedCookieAndAttributes2 = `${expectedCookieAndValue2};Domain=${location.hostname};Path=/device-bound-session-credentials`;
-    addCookieAndSessionCleanup(t, expectedCookieAndAttributes2);
+    addCookieAndSessionCleanup(t);
 
     // Configure server to configure cookies for next two created sessions.
-    configureServer({
+    await configureServer({
       cookieDetailsForNextRegisteredSessions: [[{ nameAndValue: expectedCookieAndValue1 }], [{ nameAndValue: expectedCookieAndValue2 }]]
     });
 

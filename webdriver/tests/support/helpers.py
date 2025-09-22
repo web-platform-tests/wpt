@@ -12,9 +12,12 @@ from tests.support.sync import Poll
 
 
 def ignore_exceptions(f):
-    def inner(*args, **kwargs):
+    def inner(session, *args, **kwargs):
+        # Do not try to clean up already ended session.
+        if session.session_id is None:
+            return
         try:
-            return f(*args, **kwargs)
+            return f(session, *args, **kwargs)
         except webdriver.error.WebDriverException as e:
             print("Ignored exception %s" % e, file=sys.stderr)
     inner.__name__ = f.__name__
@@ -292,15 +295,10 @@ def get_origin_from_url(url):
 def wait_for_new_handle(session, handles_before):
     def find_new_handle(session):
         new_handles = list(set(session.handles) - set(handles_before))
-        if new_handles and len(new_handles) == 1:
-            return new_handles[0]
-        return None
+        assert len(new_handles) == 1, "No new window was opened"
+        return new_handles[0]
 
-    wait = Poll(
-        session,
-        timeout=5,
-        message="No new window has been opened")
-
+    wait = Poll(session, timeout=5)
     return wait.until(find_new_handle)
 
 

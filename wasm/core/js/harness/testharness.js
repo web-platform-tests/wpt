@@ -132,7 +132,7 @@ policies and contribution forms [3].
     };
 
     WindowTestEnvironment.prototype._forEach_windows = function(callback) {
-        // Iterate of the the windows [self ... top, opener]. The callback is passed
+        // Iterate of the windows [self ... top, opener]. The callback is passed
         // two objects, the first one is the windows object itself, the second one
         // is a boolean indicating whether or not its on the same origin as the
         // current window.
@@ -1210,7 +1210,6 @@ policies and contribution forms [3].
                 NETWORK_ERR: 'NetworkError',
                 ABORT_ERR: 'AbortError',
                 URL_MISMATCH_ERR: 'URLMismatchError',
-                QUOTA_EXCEEDED_ERR: 'QuotaExceededError',
                 TIMEOUT_ERR: 'TimeoutError',
                 INVALID_NODE_TYPE_ERR: 'InvalidNodeTypeError',
                 DATA_CLONE_ERR: 'DataCloneError'
@@ -1237,7 +1236,6 @@ policies and contribution forms [3].
                 NetworkError: 19,
                 AbortError: 20,
                 URLMismatchError: 21,
-                QuotaExceededError: 22,
                 TimeoutError: 23,
                 InvalidNodeTypeError: 24,
                 DataCloneError: 25,

@@ -44,6 +44,13 @@ class SessionManager:
         self.refresh_sends_challenge = True
         self.refresh_url = "/device-bound-session-credentials/refresh_session.py"
         self.include_site = True
+        self.refresh_endpoint_unavailable = False
+        self.response_session_id_override = None
+        self.allowed_refresh_initiators = ["*"]
+        self.provider_session_id = None
+        self.provider_url = None
+        self.provider_key = None
+        self.use_empty_response = False
 
     def next_session_id(self):
         return len(self.session_to_key_map)
@@ -117,6 +124,34 @@ class SessionManager:
         if include_site is not None:
             self.include_site = include_site
 
+        refresh_endpoint_unavailable = configuration.get("refreshEndpointUnavailable")
+        if refresh_endpoint_unavailable is not None:
+            self.refresh_endpoint_unavailable = refresh_endpoint_unavailable
+
+        response_session_id_override = configuration.get("responseSessionIdOverride")
+        if response_session_id_override is not None:
+            self.response_session_id_override = response_session_id_override
+
+        allowed_refresh_initiators = configuration.get("allowedRefreshInitiators")
+        if allowed_refresh_initiators is not None:
+            self.allowed_refresh_initiators = allowed_refresh_initiators
+
+        provider_session_id = configuration.get("providerSessionId")
+        if provider_session_id is not None:
+            self.provider_session_id = provider_session_id
+
+        provider_url = configuration.get("providerUrl")
+        if provider_url is not None:
+            self.provider_url = provider_url
+
+        provider_key = configuration.get("providerKey")
+        if provider_key is not None:
+            self.provider_key = provider_key
+
+        use_empty_response = configuration.get("useEmptyResponse")
+        if use_empty_response is not None:
+            self.use_empty_response = use_empty_response
+
     def get_should_refresh_end_session(self):
         return self.should_refresh_end_session
 
@@ -167,12 +202,16 @@ class SessionManager:
         return [("Set-Cookie", header_value) for header_value in header_values]
 
     def get_session_instructions_response(self, session_id, request):
+        response_session_id = session_id
+        if self.response_session_id_override is not None:
+            response_session_id = self.response_session_id_override
+
         scope_origin = ""
         if self.scope_origin is not None:
             scope_origin = self.scope_origin
 
         response_body = {
-            "session_identifier": str(session_id),
+            "session_identifier": str(response_session_id),
             "refresh_url": self.refresh_url,
             "scope": {
                 "origin": scope_origin,
@@ -184,11 +223,25 @@ class SessionManager:
                     { "type": "exclude", "domain": request.url_parts.hostname, "path": "/device-bound-session-credentials/set_cookie.py" },
                 ]
             },
-            "credentials": self.get_sessions_instructions_response_credentials(session_id, request)
+            "credentials": self.get_sessions_instructions_response_credentials(session_id, request),
+            "allowed_refresh_initiators": self.allowed_refresh_initiators,
         }
         headers = self.get_session_instructions_response_set_cookie_headers(session_id, request) + [
             ("Content-Type", "application/json"),
             ("Cache-Control", "no-store")
         ]
 
-        return (200, headers, json.dumps(response_body))
+        response_body = "" if self.use_empty_response else json.dumps(response_body)
+        return (200, headers, response_body)
+
+    def get_refresh_endpoint_unavailable(self):
+        return self.refresh_endpoint_unavailable
+
+    def get_provider_session_id(self):
+        return self.provider_session_id
+
+    def get_provider_url(self):
+        return self.provider_url
+
+    def get_provider_key(self):
+        return self.provider_key

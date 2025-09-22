@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>float:right with display:none should clean up render tree</title>
+<link rel="help" href="https://bugs.webkit.org/show_bug.cgi?id=150271">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=544290">
+<link rel="author" title="Riya Kanani" href="https://github.com/riyak145">
+<link rel="match" href="float-displaynone-001-ref.html">
+
+<style>
+  .container {
+    width: 300px;
+    height: 150px;
+    border: 2px solid black;
+  }
+  .box {
+    width: 100px;
+    height: 100px;
+    float: right;
+    background: red;
+    display: none; /* here the bug case */
+  }
+</style>
+
+<div class="container">
+  <div class="box"></div>
+</div>

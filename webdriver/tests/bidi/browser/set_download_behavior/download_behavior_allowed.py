@@ -3,8 +3,8 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 
-async def test_allow_and_reset(bidi_session, new_tab, temp_dir, is_download_allowed,
-        default_is_download_allowed):
+async def test_allow_and_reset(bidi_session, new_tab, temp_dir,
+        is_download_allowed, trigger_download, default_is_download_allowed):
     await bidi_session.browser.set_download_behavior(download_behavior={
         "type": "allowed",
         "destinationFolder": temp_dir
@@ -14,3 +14,28 @@ async def test_allow_and_reset(bidi_session, new_tab, temp_dir, is_download_allo
     await bidi_session.browser.set_download_behavior(download_behavior=None)
     assert await is_download_allowed(
         new_tab["context"]) == await default_is_download_allowed
+
+
+async def test_allow_and_reset_no_destination_folder(bidi_session, new_tab,
+        is_download_allowed, default_is_download_allowed):
+    await bidi_session.browser.set_download_behavior(download_behavior={
+        "type": "allowed"
+    })
+    assert await is_download_allowed(new_tab["context"]) == True
+
+    await bidi_session.browser.set_download_behavior(download_behavior=None)
+    assert await is_download_allowed(
+        new_tab["context"]) == await default_is_download_allowed
+
+
+async def test_destination_folder(bidi_session, new_tab, temp_dir,
+        trigger_download):
+    await bidi_session.browser.set_download_behavior(download_behavior={
+        "type": "allowed",
+        "destinationFolder": temp_dir
+    })
+    event = await trigger_download(new_tab["context"])
+    # Assert download is allowed.
+    assert event["status"] == "complete"
+    # Assert `destinationFolder` is respected.
+    assert event["filepath"].startswith(temp_dir)

@@ -13,6 +13,44 @@ def temp_dir():
     return tempfile.mkdtemp()
 
 
+@pytest_asyncio.fixture(params=["new", "default"])
+async def user_context_invariant(request, create_user_context):
+    if request.param == "default":
+        return "default"
+    return await create_user_context()
+
+
+@pytest.fixture(params=[True, False])
+def is_download_allowed_invariant(request, temp_dir):
+    return request.param
+
+
+@pytest.fixture
+def some_download_behavior(is_download_allowed_invariant, temp_dir):
+    """
+    Returns a download behavior matching `is_download_allowed_invariant`.
+    """
+    if is_download_allowed_invariant:
+        return {
+            "type": "allowed",
+            "destinationFolder": temp_dir
+        }
+    return {"type": "denied"}
+
+
+@pytest.fixture
+def opposite_download_behavior(is_download_allowed_invariant, temp_dir):
+    """
+    Returns a download behavior opposite to `is_download_allowed_invariant`.
+    """
+    if is_download_allowed_invariant:
+        return {"type": "denied"}
+    return {
+        "type": "allowed",
+        "destinationFolder": temp_dir
+    }
+
+
 @pytest.fixture
 def trigger_download(bidi_session, subscribe_events, wait_for_event,
         wait_for_future_safe, inline):

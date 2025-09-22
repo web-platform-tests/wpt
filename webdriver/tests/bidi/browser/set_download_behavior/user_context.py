@@ -3,12 +3,11 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 
-@pytest.mark.parametrize("allow", [True, False])
-@pytest.mark.parametrize("user_context", ["new", "default"])
 async def test_user_contexts(bidi_session, temp_dir, is_download_allowed,
-        trigger_download, create_user_context, allow, user_context):
-    affected_user_context = await create_user_context() if user_context == "new" else "default"
-    not_affected_user_context = "default" if user_context == "new" else await create_user_context()
+        is_download_allowed_invariant, trigger_download, create_user_context,
+        some_download_behavior, user_context_invariant):
+    affected_user_context = await create_user_context() if user_context_invariant == "new" else "default"
+    not_affected_user_context = "default" if user_context_invariant == "new" else await create_user_context()
 
     context_in_affected_user_context = await bidi_session.browsing_context.create(
         user_context=affected_user_context, type_hint="tab")
@@ -22,21 +21,19 @@ async def test_user_contexts(bidi_session, temp_dir, is_download_allowed,
 
     # Set custom download behavior.
     await bidi_session.browser.set_download_behavior(
-        download_behavior={
-            "type": "allowed",
-            "destinationFolder": temp_dir
-        } if allow else {"type": "denied"},
+        download_behavior=some_download_behavior,
         user_contexts=[affected_user_context])
 
     # Assert behavior is set in affected user context.
-    assert await is_download_allowed(context_in_affected_user_context) == allow
+    assert await is_download_allowed(
+        context_in_affected_user_context) == is_download_allowed_invariant
 
     # Create a new context in the affected user context.
     another_context_in_affected_user_context = await bidi_session.browsing_context.create(
         user_context=affected_user_context, type_hint="tab")
     # Assert behavior is set in a new browsing context of the affected user context.
     assert await is_download_allowed(
-        another_context_in_affected_user_context) == allow
+        another_context_in_affected_user_context) == is_download_allowed_invariant
 
     # Assert behavior is not set in not affected user context.
     assert await is_download_allowed(

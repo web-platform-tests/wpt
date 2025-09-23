@@ -63,3 +63,11 @@ features:
   - viewport-units-parsing.html
   - viewport-units-writing-mode-font-size.html
   - viewport-units-writing-mode.html
+- name: min-max-clamp
+  files:
+  - min-*
+  - minmax-*
+  - max-*
+  - attr-in-max.html
+  - calc-in-max.html
+  - clamp-*

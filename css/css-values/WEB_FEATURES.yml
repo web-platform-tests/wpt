@@ -47,6 +47,10 @@ features:
   files:
   - acos-asin-atan-atan2-*
   - sin-cos-tan-*
+- name: calc
+  files:
+  - calc-*
+  - "!calc-infinity-*"
 - name: calc-constants
   files:
   - calc-infinity-*

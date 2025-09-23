@@ -5,7 +5,7 @@ from typing import TypeVar, Union
 
 class Undefined(Enum):
     """
-    Class representing special value that indicates that a property is notset.
+    Class representing special value that indicates that a property is not set.
     """
 
     UNDEFINED = enum.auto()

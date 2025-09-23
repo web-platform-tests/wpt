@@ -7,7 +7,8 @@
 <meta name="assert" content="Absolute positioned boxes inside a line-clamp container are shown if their containing block is after the clamp point. This test specifically tests that this is the case where the container is an other-wise empty, zero-height div, which does fit before the clamp point.">
 <style>
 .clamp {
-  line-clamp: 4;
+  line-clamp: auto;
+  max-height: 4lh;
   font: 16px / 32px serif;
   background-color: yellow;
 }

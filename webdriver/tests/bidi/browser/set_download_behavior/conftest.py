@@ -3,6 +3,7 @@ import tempfile
 import pytest
 import pytest_asyncio
 
+from webdriver import TimeoutException
 from webdriver.bidi.modules.script import ContextTarget
 
 DOWNLOAD_END = "browsingContext.downloadEnd"
@@ -54,6 +55,12 @@ def opposite_download_behavior(is_download_allowed_invariant, temp_dir):
 @pytest.fixture
 def trigger_download(bidi_session, subscribe_events, wait_for_event,
         wait_for_future_safe, inline):
+    """
+    Triggers download and returns either `browsingContext.downloadEnd` event or
+    None if the download was not ended (e.g. if User Agent showed file save
+    dialog).
+    """
+
     async def trigger_download(context):
         page_with_download_link = inline(
             f"""<a id="download_link" href="{inline("")}" download="some_file.txt">download</a>""")
@@ -72,15 +79,28 @@ def trigger_download(bidi_session, subscribe_events, wait_for_event,
             user_activation=True,
         )
 
-        return await wait_for_future_safe(on_download_will_begin)
+        try:
+            return await wait_for_future_safe(
+                on_download_will_begin, timeout=0.5)
+        except TimeoutException:
+            # User Agent showed file save dialog.
+            return None
 
     return trigger_download
 
 
 @pytest.fixture
 def is_download_allowed(trigger_download):
+    """
+    Returns True, if download is allowed, False if download is not allowed, or
+    "timeout" if download is not finished (e.g. if User Agent showed file save
+    dialog).
+    """
+
     async def is_download_allowed(context):
         event = await trigger_download(context)
+        if event is None:
+            return "timeout"
         return event["status"] == "complete"
 
     return is_download_allowed

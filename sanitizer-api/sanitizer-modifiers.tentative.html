@@ -515,6 +515,25 @@ test(() => {
     replaceWithChildrenElements: []
   });
 
+  // If element["attributes"] or element["removeAttributes"] exists:
+  //  The user agent may report a warning to the console that this operation is not supported.
+  //  Return false.
+  assert_false(s.allowElement({name: "a", attributes: ["dir"]}));
+  assert_config(s.get(), {
+    removeElements: ["a"],
+    replaceWithChildrenElements: []
+  });
+  assert_false(s.allowElement({name: "a", removeAttributes: ["dir"]}));
+  assert_config(s.get(), {
+    removeElements: ["a"],
+    replaceWithChildrenElements: []
+  });
+  assert_false(s.allowElement({name: "a", attributes: ["title"], removeAttributes: ["dir"]}));
+  assert_config(s.get(), {
+    removeElements: ["a"],
+    replaceWithChildrenElements: []
+  });
+
   assert_true(s.allowElement("a"));
   assert_config(s.get(), {
     removeElements: [],
@@ -569,6 +588,23 @@ test(() => {
   assert_false(s.allowElement("p"));
   assert_config(s.get(), {
     elements: [{name: "p", attributes: undefined, removeAttributes: undefined}]
+  });
+
+  // Set element["attributes"] to remove duplicates from element["attributes"].
+  assert_true(s.allowElement({name: "p", attributes: ["dir", "dir"]}));
+  assert_config(s.get(), {
+    elements: [{name: "p", attributes: ["dir"], removeAttributes: undefined}]
+  });
+
+  // Set element["removeAttributes"] to remove duplicates from element["removeAttributes"].
+  assert_true(s.allowElement({name: "p", removeAttributes: ["id", "id"]}));
+  assert_config(s.get(), {
+    elements: [{name: "p", attributes: undefined, removeAttributes: ["id"]}]
+  });
+
+  assert_true(s.allowElement({name: "p", attributes: ["dir", "dir"], removeAttributes: ["id", "id"]}));
+  assert_config(s.get(), {
+    elements: [{name: "p", attributes: ["dir"], removeAttributes: ["id"]}]
   });
 }, "sanitizer.allowElement() with global elements and attributes");
 

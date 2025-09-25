@@ -19,7 +19,4 @@ def main(request, response):
     if b"Content-Type" not in response.headers:
         response.headers.set(b"Content-Type", "text/plain")
 
-    if b"content" in request.GET:
-        response.content = request.GET.first(b"content")
-    else:
-        response.content = "HTTP Response Headers"
+    response.content = "HTTP Response Headers"

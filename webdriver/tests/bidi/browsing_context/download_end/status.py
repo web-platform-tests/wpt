@@ -40,7 +40,7 @@ async def test_status_complete(bidi_session, subscribe_events, new_tab, inline,
         {
             'filepath': any_string,
             'context': new_tab["context"],
-            'navigation': None,
+            'navigation': any_string,
             'status': 'complete',
             'timestamp': any_int,
             'url': download_link,
@@ -70,7 +70,7 @@ async def test_status_canceled(bidi_session, subscribe_events, new_tab, inline,
     recursive_compare(
         {
             'context': new_tab["context"],
-            'navigation': None,
+            'navigation': any_string,
             'status': 'canceled',
             'timestamp': any_int,
             'url': any_string,

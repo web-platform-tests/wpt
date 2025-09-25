@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <title>HTML-AAM Role Verification Tests</title>
+  <link rel="author" href="mailto:wpt@keithcirkel.co.uk" title="Keith Cirkel">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+<body>
+
+<p>This is a standalone test to ensure that documents with contenteditable do not incorrectly influence other tests.</p>
+
+<div contenteditable>
+  <table data-testname="el-table-not-being-rendered" data-expectedrole="table">
+  </table>
+</div>
+
+<script>
+AriaUtils.verifyRolesBySelector("table");
+</script>
+
+</body>
+</html>

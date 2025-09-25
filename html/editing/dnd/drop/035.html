@@ -1,0 +1,41 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="support/dropEffect-test-helper.js"></script>
+<script src="../resources/test-helper.js"></script>
+
+<head>
+  <title>Test all effectAllowed against copy dropEffect on dragEnd</title>
+  <style>
+    div {
+      display: inline-block;
+      vertical-align: top;
+      background-color: olive;
+      color: white;
+      margin-left: 20px;
+      margin-top: 20px;
+      width: 75px;
+      height: 75px;
+      font-size: small;
+    }
+
+  </style>
+</head>
+
+<body>
+  <p>These are the draggable elements with different effectAllowed
+    settings:
+  <p id="drag-container"> </p>
+  </p>
+  <p> Drop targets with different dropEffects:
+  <div id="drop-copy" ondragOver="onDragOver(event, 'copy')">copy</div>
+  </p>
+</body>
+<script>
+  runDropEffectTest(/*testDropEvent=*/false, 'copy');
+</script>
+
+</html>

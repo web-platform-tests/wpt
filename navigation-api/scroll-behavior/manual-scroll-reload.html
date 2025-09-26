@@ -27,20 +27,24 @@ promise_test(async t => {
   let reload_promises = navigation.reload();
   await reload_promises.committed;
 
-  // removing the <div id="buffer"> should scroll up 1000px.
+  // Removing the <div id="buffer"> should scroll up 1000px if scroll anchoring is enabled.
   assert_equals(window.scrollY, scrollY_frag_plus_10);
   buffer.remove();
   let scrollY_after_buffer_remove = window.scrollY;
-  assert_equals(scrollY_after_buffer_remove, scrollY_frag_plus_10 - 1000);
+  // Don't assert the exact value after buffer removal since it depends on scroll anchoring.
 
-  // scroll() should scroll to #frag, which is 10px up from the current location
+  // After restoration, we should be at #frag's position
+  // The scroll should be restored to make #frag visible at the same viewport position
   navigate_event.scroll();
-  assert_equals(window.scrollY, scrollY_after_buffer_remove - 10);
+  let frag_element = document.getElementById("frag");
+  let frag_top = frag_element.offsetTop;
+  assert_equals(window.scrollY, frag_top);
+  assert_not_equals(window.scrollY, scrollY_after_buffer_remove);
 
   // Finishing should not scroll.
   intercept_resolve();
   await reload_promises.finished;
-  assert_equals(window.scrollY, scrollY_after_buffer_remove - 10);
+  assert_equals(window.scrollY, frag_top);
 }, "scroll: scroll() should work on a reload navigation");
 </script>
 </body>

@@ -10,11 +10,13 @@ class Permissions(BidiModule):
                     descriptor: Union[Optional[Mapping[str, Any]], Undefined] = UNDEFINED,
                     state: Union[Optional[str], Undefined] = UNDEFINED,
                     origin: Union[Optional[str], Undefined] = UNDEFINED,
+                    topLevelOrigin: Union[Optional[str], Undefined] = UNDEFINED,
                     user_context: Union[Optional[str], Undefined] = UNDEFINED) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "descriptor": descriptor,
             "state": state,
             "origin": origin,
+            "topLevelOrigin": topLevelOrigin,
             "userContext": user_context,
         }
         return params

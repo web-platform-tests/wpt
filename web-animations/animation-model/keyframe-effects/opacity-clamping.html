@@ -7,25 +7,7 @@
 
 <div id="log"></div>
 
-<script> // kvndy
-
-test(t => {
-  const element = createDiv(t);
-  const frames = [{ opacity:-1},{opacity:-1}];
-  const timing = {
-    duration: Infinity,
-    easing: "linear",
-    fill: "backwards",
-    composite: "add"
-  };
-  const effect = new KeyframeEffect(element, frames, timing);
-  const animation = new Animation(effect, document.timeline);
-  animation.play();
-  const actual = Number(getComputedStyle(element).getPropertyValue("opacity"));
-  const expected = 1;
-  animation.cancel();
-  assert_equals(actual, expected);
-}, "Opacity clamping should conform to Firefox behavior");
+<script>
 
 test(t => {
   const element = createDiv(t);
@@ -43,6 +25,137 @@ test(t => {
   const expected = 0;
   animation.cancel();
   assert_equals(actual, expected);
-}, "Opacity clamping should conform to Chromium behavior");
+}, "opacity should allow negative number values in keyframes");
+
+test(t => {
+  const element = createDiv(t);
+  const frames = [{ opacity:-2},{opacity:-2}];
+  const timing = {
+    duration: Infinity,
+    easing: "linear",
+    fill: "backwards",
+    composite: "add"
+  };
+  const effect = new KeyframeEffect(element, frames, timing);
+  const animation = new Animation(effect, document.timeline);
+  animation.play();
+  const actual = Number(getComputedStyle(element).getPropertyValue("opacity"));
+  const expected = 0;
+  animation.cancel();
+  assert_equals(actual, expected);
+}, "opacity should allow negative number values in keyframes and clamp after additive compositing");
+
+test(t => {
+  const element = createDiv(t);
+  const frames = [{ opacity:"-100%"},{opacity:"-100%"}];
+  const timing = {
+    duration: Infinity,
+    easing: "linear",
+    fill: "backwards",
+    composite: "add"
+  };
+  const effect = new KeyframeEffect(element, frames, timing);
+  const animation = new Animation(effect, document.timeline);
+  animation.play();
+  const actual = Number(getComputedStyle(element).getPropertyValue("opacity"));
+  const expected = 0;
+  animation.cancel();
+  assert_equals(actual, expected);
+}, "opacity should allow negative percentage values in keyframes");
+
+test(t => {
+  const element = createDiv(t);
+  const frames = [{ opacity:"-200%"},{opacity:"-200%"}];
+  const timing = {
+    duration: Infinity,
+    easing: "linear",
+    fill: "backwards",
+    composite: "add"
+  };
+  const effect = new KeyframeEffect(element, frames, timing);
+  const animation = new Animation(effect, document.timeline);
+  animation.play();
+  const actual = Number(getComputedStyle(element).getPropertyValue("opacity"));
+  const expected = 0;
+  animation.cancel();
+  assert_equals(actual, expected);
+}, "opacity should allow negative percentage values in keyframes and clamp after additive compositing");
+
+
+test(t => {
+  const element = createDiv(t);
+  element.style.opacity = -1; // this is a valid <number>
+  const frames = [{ opacity:2},{opacity:2}];
+  const timing = {
+    duration: Infinity,
+    easing: "linear",
+    fill: "backwards",
+    composite: "add"
+  };
+  const effect = new KeyframeEffect(element, frames, timing);
+  const animation = new Animation(effect, document.timeline);
+  animation.play();
+  const actual = Number(getComputedStyle(element).getPropertyValue("opacity"));
+  const expected = 1;
+  animation.cancel();
+  assert_equals(actual, expected);
+}, "opacity should allow number values greater than one in keyframes");
+
+test(t => {
+  const element = createDiv(t);
+  element.style.opacity = 0;
+  const frames = [{ opacity:2},{opacity:2}];
+  const timing = {
+    duration: Infinity,
+    easing: "linear",
+    fill: "backwards",
+    composite: "add"
+  };
+  const effect = new KeyframeEffect(element, frames, timing);
+  const animation = new Animation(effect, document.timeline);
+  animation.play();
+  const actual = Number(getComputedStyle(element).getPropertyValue("opacity"));
+  const expected = 1;
+  animation.cancel();
+  assert_equals(actual, expected);
+}, "opacity should allow number values greater than one in keyframes and clamp after additive compositing");
+
+test(t => {
+  const element = createDiv(t);
+  element.style.opacity = -1; // this is a valid <number>
+  const frames = [{ opacity:"200%"},{opacity:"200%"}];
+  const timing = {
+    duration: Infinity,
+    easing: "linear",
+    fill: "backwards",
+    composite: "add"
+  };
+  const effect = new KeyframeEffect(element, frames, timing);
+  const animation = new Animation(effect, document.timeline);
+  animation.play();
+  const actual = Number(getComputedStyle(element).getPropertyValue("opacity"));
+  const expected = 1;
+  animation.cancel();
+  assert_equals(actual, expected);
+}, "opacity should allow percentage values greater than 100 in keyframes");
+
+test(t => {
+  const element = createDiv(t);
+  element.style.opacity = 0;
+  const frames = [{ opacity:"200%"},{opacity:"200%"}];
+  const timing = {
+    duration: Infinity,
+    easing: "linear",
+    fill: "backwards",
+    composite: "add"
+  };
+  const effect = new KeyframeEffect(element, frames, timing);
+  const animation = new Animation(effect, document.timeline);
+  animation.play();
+  const actual = Number(getComputedStyle(element).getPropertyValue("opacity"));
+  const expected = 1;
+  animation.cancel();
+  assert_equals(actual, expected);
+}, "opacity should allow percentage values greater than 100 in keyframes and clamp after additive compositing");
 
 </script>

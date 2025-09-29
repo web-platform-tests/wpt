@@ -339,6 +339,16 @@ function assert_trap(action, source) {
     }, `A wast module that must trap at runtime. (${source})`);
 }
 
+function assert_exception(action, source) {
+    let result = action();
+
+    _assert(result instanceof Result);
+
+    uniqueTest(() => {
+        assert_true(result.isError(), 'expected error result');
+    }, `A wast module that must throw an exception at runtime. (${source})`);
+}
+
 let StackOverflow;
 try { (function f() { 1 + f() })() } catch (e) { StackOverflow = e.constructor }
 

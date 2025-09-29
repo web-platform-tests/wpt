@@ -281,6 +281,26 @@ function assert_trap(action, source) {
     .catch(_ => {});
 }
 
+function assert_exception(action, source) {
+  const test = `Test that a WebAssembly code throws an exception (${source})`;
+  const loc = new Error().stack.toString().replace("Error", "");
+  chain = Promise.all([chain, action()])
+    .then(
+      result => {
+        uniqueTest(_ => {
+          assert_true(false, loc);
+        }, test);
+      },
+      error => {
+        uniqueTest(_ => {
+          // Pass
+        }, test);
+      }
+    )
+    // Clear all exceptions, so that subsequent tests get executed.
+    .catch(_ => {});
+}
+
 function assert_return(action, source, ...expected) {
   const test = `Test that a WebAssembly code returns a specific result (${source})`;
   const loc = new Error().stack.toString().replace("Error", "");
@@ -355,7 +375,7 @@ try {
 }
 
 function assert_exhaustion(action) {
-  const test = "Test that a WebAssembly code exhauts the stack space";
+  const test = "Test that a WebAssembly code exhausts the stack space";
   const loc = new Error().stack.toString().replace("Error", "");
   chain = Promise.all([action(), chain])
     .then(

@@ -125,6 +125,31 @@ function dragDropTest(dragElement, dropElement, onDropCallBack, testDescription,
   }, testDescription));
 }
 
+// Similar to `dragDropTest`, but instead of listening to the `drop` event on the
+// `dropElement`, this function listens to `dragend` on the `dragElement`.
+function dragEndTest(dragElement, dropElement, onDropCallBack, testDescription,
+  dragIframe = undefined, dropIframe = undefined) {
+  promise_test((t) => new Promise(async (resolve, reject) => {
+    dragElement.addEventListener('dragend', t.step_func((event) => {
+      if (onDropCallBack(event) == true) {
+        resolve();
+      } else {
+        reject();
+      }
+    }));
+    try {
+      var actions = new test_driver.Actions();
+      actions = movePointerToCenter(dragElement, dragIframe, actions)
+        .pointerDown();
+      actions = movePointerToCenter(dropElement, dropIframe, actions)
+        .pointerUp();
+      await actions.send();
+    } catch (e) {
+      reject(e);
+    }
+  }, testDescription));
+}
+
 // The dragDropTestNoDropEvent function performs a drag-and-drop test but expects
 // no drop event to occur. This is useful for testing scenarios where drag-and-drop
 // should be blocked or ignored (e.g., dropping on root scrollbars). The test

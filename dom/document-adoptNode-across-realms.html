@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<body>
+<script>
+promise_test(async _ => {
+  // A <div>.
+  const div = document.createElement("div");
+  document.body.appendChild(div);
+
+  // A <div> adopted from an iframe.
+  const iframe = document.createElement("iframe");
+  iframe.srcdoc = "<!DOCTYPE html><div></div>";
+  await new Promise(resolve => {
+    iframe.addEventListener("load", resolve);
+    document.body.appendChild(iframe);
+  });
+  const adopted_div =
+        document.adoptNode(iframe.contentDocument.body.firstElementChild);
+
+  assert_true(div.constructor !== adopted_div.constructor);
+}, "Should adoptNode change the adoptee's associated realm?");
+</script>

@@ -14,3 +14,7 @@ features:
   - date*
   - time*
   - input-valueasdate*
+- name: input-file
+  files:
+  - type-change-file-to-text-crash.html
+  - input-value-invalidstateerr.html

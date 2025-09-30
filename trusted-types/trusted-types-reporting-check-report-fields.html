@@ -27,7 +27,7 @@ function trial({description, expected, act}) {
     'header(Cache-Control,no-store\\, no-cache\\, must-revalidate)|' +
     'header(Cache-Control,post-check=0\\, pre-check=0\\, false)|' +
     'header(Pragma,no-cache)|' +
-    `header(Content-Security-Policy-Report-Only,trusted-types one three; report-uri ../content-security-policy/support/report.py?op=put%26reportID=${id})`;
+    `header(Content-Security-Policy-Report-Only,trusted-types one three; report-uri /reporting/resources/report.py?op=put%26reportID=${id})`;
   document.body.appendChild(iframe);
 
   return new Promise((resolve) => iframe.onload = resolve)
@@ -78,8 +78,6 @@ Promise.all([
       fieldValue: 'two',
     },
     act(childWindow) {
-      childWindow.trustedTypes.createPolicy('one', {});
-      childWindow.trustedTypes.createPolicy('three', {});
       childWindow.trustedTypes.createPolicy('two', {});
     }
   }),

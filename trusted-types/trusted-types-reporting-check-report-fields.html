@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/common/utils.js"></script>
+  <title>Check Trusted Type violation reports (fields)</title>
+</head>
+<body>
+  <script>
+setup({ explicit_done: true });
+
+// The HTTP report testing utility provided by the CSP test suite is capable of
+// verifying only one field for a given report. Use it in the context of an
+// iframe to schedule multiple concurrent subtests from a single test.
+function trial({description, expected, act}) {
+  const id = token();
+  const iframe = document.createElement('iframe');
+  const testName = expected ? `${description}: ${expected.fieldName}` : description;
+  const expectationQueryString = expected ?
+    `reportField=${expected.fieldName}&reportValue=${expected.fieldValue}` :
+    'reportExists=false';
+  const creationTest = async_test(`set up for test titled, "${testName}"`);
+
+  iframe.src = '/common/blank.html?pipe=' +
+    'header(Expires,Mon\\, 26 Jul 1997 05:00:00 GMT)|' +
+    'header(Cache-Control,no-store\\, no-cache\\, must-revalidate)|' +
+    'header(Cache-Control,post-check=0\\, pre-check=0\\, false)|' +
+    'header(Pragma,no-cache)|' +
+    `header(Content-Security-Policy-Report-Only,trusted-types one three; report-uri ../content-security-policy/support/report.py?op=put%26reportID=${id})`;
+  document.body.appendChild(iframe);
+
+  return new Promise((resolve) => iframe.onload = resolve)
+    .then(() => {
+      act(iframe.contentWindow);
+      const script = document.createElement('script');
+      script.setAttribute('src', `../content-security-policy/support/checkReport.sub.js?testName=${testName}&reportID=${id}&${expectationQueryString}`);
+      document.body.appendChild(script);
+      return new Promise((resolve) => script.onload = resolve);
+    })
+    .then(() => iframe.remove())
+    .then(() => creationTest.done(), creationTest.step_func((error) => { throw error; }));
+}
+
+Promise.all([
+  trial({
+    description: 'no report for accepted usage',
+    expected: null,
+    act(childWindow) {
+      childWindow.trustedTypes.createPolicy('one', {});
+      childWindow.trustedTypes.createPolicy('three', {});
+    }
+  }),
+  trial({
+    description: 'disallowed policy',
+    expected: {
+      fieldName: 'violated-directive',
+      fieldValue: 'trusted-types'
+    },
+    act(childWindow) {
+      childWindow.trustedTypes.createPolicy('two', {});
+    }
+  }),
+  trial({
+    description: 'disallowed policy',
+    expected: {
+      fieldName: 'disposition',
+      fieldValue: 'report'
+    },
+    act(childWindow) {
+      childWindow.trustedTypes.createPolicy('two', {});
+    }
+  }),
+  trial({
+    description: 'disallowed policy',
+    expected: {
+      fieldName: 'script-sample',
+      fieldValue: 'two',
+    },
+    act(childWindow) {
+      childWindow.trustedTypes.createPolicy('one', {});
+      childWindow.trustedTypes.createPolicy('three', {});
+      childWindow.trustedTypes.createPolicy('two', {});
+    }
+  }),
+  trial({
+    description: 'duplicated policy',
+    expected: {
+      fieldName: 'violated-directive',
+      fieldValue: 'trusted-types'
+    },
+    act(childWindow) {
+      childWindow.trustedTypes.createPolicy('one', {});
+      childWindow.trustedTypes.createPolicy('one', {});
+    }
+  }),
+  trial({
+    description: 'duplicated policy',
+    expected: {
+      fieldName: 'disposition',
+      fieldValue: 'report'
+    },
+    act(childWindow) {
+      childWindow.trustedTypes.createPolicy('one', {});
+      childWindow.trustedTypes.createPolicy('one', {});
+    }
+  }),
+  trial({
+    description: 'duplicated policy',
+      expected: {
+      fieldName: 'script-sample',
+      fieldValue: 'one'
+    },
+    act(childWindow) {
+      childWindow.trustedTypes.createPolicy('one', {});
+      childWindow.trustedTypes.createPolicy('one', {});
+    }
+  })
+]).then(() => done());
+  </script>
+</body>
+</html>

@@ -9,3 +9,8 @@ features:
 - name: show-picker-input
   files:
   - show-picker-*
+- name: input-date-time
+  files:
+  - date*
+  - time*
+  - input-valueasdate*

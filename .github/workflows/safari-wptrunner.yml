@@ -68,9 +68,9 @@ jobs:
           REV: ${{ inputs.test-rev }}
         run: |-
           git switch --force --progress -d "$REV"
-      - name: Set display color profile
+      - name: Reconfigure the display(s)
         run: |-
-          ./wpt macos-color-profile
+          ./wpt macos-display-configuration
       - name: Enable safaridriver diagnostics
         if: inputs.safaridriver-diagnose
         run: |-

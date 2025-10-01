@@ -12,7 +12,19 @@ body {
 }
 
 .flexbox {
+    position: relative;
+    background-color: green;
+}
+
+/* Don't use a red background on .flexbox as it might show behind scrollbars on platforms where the track may be transparent */
+.flexbox::before {
+    content: "";
     background-color: red;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: -1;
 }
 
 .vertical-rl {

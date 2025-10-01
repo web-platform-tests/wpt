@@ -9,3 +9,6 @@ features:
   files:
   - caretPositionFromPoint-with-transformation.html
   - caretPositionFromPoint.html
+- name: all
+  files:
+  - "*-all-*"

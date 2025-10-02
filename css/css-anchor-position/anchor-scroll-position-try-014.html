@@ -52,18 +52,24 @@
 <script>
 promise_test(async () => {
   await waitUntilNextAnimationFrame();
+  await waitUntilNextAnimationFrame();
+
   assert_fallback_position(abspos, anchor, 'bottom');
 });
 
 promise_test(async () => {
-  scroller.scrollTop = -100;
+  scroller.scrollTop = -110;
   await waitUntilNextAnimationFrame();
+  await waitUntilNextAnimationFrame();
+
   assert_fallback_position(abspos, anchor, 'top');
 });
 
 promise_test(async () => {
-  scroller.scrollTop = -50;
+  scroller.scrollTop = -40;
   await waitUntilNextAnimationFrame();
+  await waitUntilNextAnimationFrame();
+
   assert_fallback_position(abspos, anchor, 'bottom');
 });
 </script>

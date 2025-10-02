@@ -5,3 +5,6 @@ features:
 - name: steps-easing
   files:
   - step-timing-functions-*
+- name: cubic-bezier-easing
+  files:
+  - cubic-bezier-timing-functions-output.html

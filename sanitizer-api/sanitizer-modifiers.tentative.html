@@ -517,7 +517,7 @@ test(() => {
     replaceWithChildrenElements: []
   });
 
-  // If element["attributes"] or element["removeAttributes"] exists:
+  // If element["attributes"] exists or element["removeAttributes"] with default « » is not empty:
   //  The user agent may report a warning to the console that this operation is not supported.
   //  Return false.
   assert_false(s.allowElement({name: "a", attributes: ["dir"]}));
@@ -535,8 +535,7 @@ test(() => {
     removeElements: ["a"],
     replaceWithChildrenElements: []
   });
-
-  assert_true(s.allowElement("a"));
+  assert_true(s.allowElement({name: "a", removeAttributes: [] }));
   assert_config(s.get(), {
     removeElements: [],
     replaceWithChildrenElements: []

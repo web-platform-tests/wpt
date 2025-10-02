@@ -6,3 +6,9 @@ features:
 - name: display-animation
   files:
   - display-interpolation.html
+- name: steps-easing
+  files:
+  - animation-base-response-*
+  - animation-important-*
+  - animation-timing-function-009-manual.html
+  - animation-timing-function-010-manual.html

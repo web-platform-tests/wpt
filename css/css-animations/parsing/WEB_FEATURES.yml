@@ -5,3 +5,9 @@ features:
 - name: steps-easing
   files:
   - animation-timing-function-invalid.html
+- name: animations-css
+  # Everything which does not belong to some other feature, above
+  files:
+  - "*"
+  - "!animation-composition-*"
+  - "!animation-timing-function-invalid.html"

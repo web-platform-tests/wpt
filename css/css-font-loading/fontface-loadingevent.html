@@ -11,7 +11,7 @@ promise_test(async t => {
   fontSet.addEventListener("loading", () => {
     loadingFired = true;
   });
-  
+
   const TestFont = new FontFace("GoodFont", "url(/fonts/Ahem.ttf)");
   fontSet.add(TestFont);
   await TestFont.load();

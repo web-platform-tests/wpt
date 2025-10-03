@@ -531,13 +531,13 @@ async def create_user_context(bidi_session):
 
 
 @pytest_asyncio.fixture
-async def add_cookie(bidi_session):
+async def add_document_cookie(bidi_session):
     """
     Add a cookie with `document.cookie` and remove them after the test is finished.
     """
     cookies = []
 
-    async def add_cookie(
+    async def add_document_cookie(
         context,
         name,
         value,
@@ -574,7 +574,7 @@ async def add_cookie(bidi_session):
 
         cookies.append(cookie)
 
-    yield add_cookie
+    yield add_document_cookie
 
     for cookie in reversed(cookies):
         cookie_string = f"""{cookie["name"]}="""

@@ -17,12 +17,18 @@ function run_test() {
         var promise = importVectorKey(vector, ["encrypt", "decrypt"])
         .then(function(vector) {
             promise_test(function(test) {
-                return subtle.encrypt(vector.algorithm, vector.key, vector.plaintext)
+                let microtaskTriggered = false;
+                let promise = subtle.encrypt(vector.algorithm, vector.key, vector.plaintext)
                 .then(function(result) {
+                    assert_true(microtaskTriggered, "promise resolved too early");
                     assert_true(equalBuffers(result, vector.result), "Should return expected result");
                 }, function(err) {
                     assert_unreached("encrypt error for test " + vector.name + ": " + err.message);
                 });
+                Promise.resolve().then(() => {
+                    microtaskTriggered = true;
+                });
+                return promise;
             }, vector.name);
         }, function(err) {
             // We need a failed test if the importVectorKey operation fails, so
@@ -66,12 +72,18 @@ function run_test() {
         var promise = importVectorKey(vector, ["encrypt", "decrypt"])
         .then(function(vector) {
             promise_test(function(test) {
-                return subtle.decrypt(vector.algorithm, vector.key, vector.result)
+                let microtaskTriggered = false;
+                let promise = subtle.decrypt(vector.algorithm, vector.key, vector.result)
                 .then(function(result) {
+                    assert_true(microtaskTriggered, "promise resolved too early");
                     assert_true(equalBuffers(result, vector.plaintext), "Should return expected result");
                 }, function(err) {
                     assert_unreached("decrypt error for test " + vector.name + ": " + err.message);
                 });
+                Promise.resolve().then(() => {
+                    microtaskTriggered = true;
+                });
+                return promise;
             }, vector.name + " decryption");
         }, function(err) {
             // We need a failed test if the importVectorKey operation fails, so

@@ -586,7 +586,7 @@ def start(**kwargs: Any) -> int:
         elif kwargs["list_tests_json"]:
             list_tests_json(**kwargs)
         elif kwargs["verify"] or kwargs["stability"]:
-            rv = check_stability(**kwargs)
+            rv = check_stability(**kwargs) or 0
         else:
             rv = not run_tests(**kwargs)[0]
     finally:

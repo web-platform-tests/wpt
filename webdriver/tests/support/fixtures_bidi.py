@@ -721,6 +721,53 @@ async def setup_collected_response(
 
 
 @pytest_asyncio.fixture
+async def setup_collected_request(
+        bidi_session,
+        subscribe_events,
+        wait_for_event,
+        wait_for_future_safe,
+        top_context,
+        url,
+        fetch,
+        setup_network_test,
+        add_data_collector,
+):
+    """Adds a global request data collector and triggers a request which should
+    match the collector and waits for the network.responseStarted event.
+    Collector can be configured (size, types) when calling the fixture.
+    Returns the request id of the triggered request.
+    """
+
+    async def _setup_collected_request(
+            collector_type="blob",
+            data_types=["request"],
+            post_data="SOME_POST_DATA",
+            max_encoded_data_size=10_000,
+            fetch_url=url("/webdriver/tests/bidi/network/support/empty.txt"),
+            context=top_context,
+    ):
+        collector = await add_data_collector(
+            collector_type=collector_type,
+            data_types=data_types,
+            max_encoded_data_size=max_encoded_data_size,
+        )
+        # Even though `network.beforeRequestSent` is enough for request data,
+        # wait for response to be present to test the response and request
+        # collectors are independent.
+        await setup_network_test(events=["network.responseCompleted"])
+        on_before_request_sent = wait_for_event("network.responseCompleted")
+
+        await fetch(fetch_url, context=context, method="POST",
+                    post_data=post_data)
+
+        before_request_sent_event = await on_before_request_sent
+        request = before_request_sent_event["request"]["request"]
+        return [request, collector]
+
+    return _setup_collected_request
+
+
+@pytest_asyncio.fixture
 async def setup_network_test(
     bidi_session,
     subscribe_events,

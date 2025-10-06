@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSSOM View - 5 - extensions to the Document interface</title>
+    <link rel="author" title="Luke Warlow" href="mailto:lwarlow@igalia.com">
+    <link rel="help" href="http://www.w3.org/TR/cssom-view/#extensions-to-the-document-interface">
+    <meta name="flags" content="dom">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+        html,body {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <span>Text Content</span>
+    <script>
+        var spanRect = document.querySelector("span").getBoundingClientRect();
+        var elements = document.elementsFromPoint(spanRect.x + 1, spanRect.y + 1);
+
+        test(() => {
+            assert_equals(elements.length, 3);
+            assert_equals(elements[0].tagName, "SPAN");
+            assert_equals(elements[1].tagName, "BODY");
+            assert_equals(elements[2].tagName, "HTML");
+        }, "elementsFromPoint should include display:inline elements");
+    </script>
+</body>
+</html>

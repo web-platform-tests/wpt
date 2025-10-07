@@ -2,3 +2,6 @@ features:
 - name: text-indent-each-line
   files:
   - text-indent.html
+- name: background-attachment
+  files:
+  - background-attachment.html

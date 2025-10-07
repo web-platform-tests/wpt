@@ -7,3 +7,8 @@ features:
   files:
   - border-image*
   - css3-border-image*
+- name: background-attachment
+  files:
+  - background-attachment-*
+  - local-attachment-content-box-scroll.html
+  - table-cell-background-local*

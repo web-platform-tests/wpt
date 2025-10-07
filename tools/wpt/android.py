@@ -20,7 +20,7 @@ CMDLINE_TOOLS_VERSION_STRING = "12.0"
 CMDLINE_TOOLS_VERSION = "11076708"
 
 AVD_MANIFEST_X86_64 = {
-    "emulator_package": "system-images;android-26;default;x86_64",
+    "emulator_package": "system-images;android-34;default;x86_64",
     "emulator_avd_name": "mozemulator-x86_64",
     "emulator_extra_args": [
         "-skip-adb-auth",

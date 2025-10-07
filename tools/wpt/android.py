@@ -20,8 +20,8 @@ CMDLINE_TOOLS_VERSION_STRING = "12.0"
 CMDLINE_TOOLS_VERSION = "11076708"
 
 AVD_MANIFEST_X86_64 = {
-    "emulator_package": "system-images;android-34;default;x86_64",
-    "emulator_avd_name": "mozemulator-x86_64",
+    "emulator_package": "system-images;android-34;google_apis;x86_64",
+    "emulator_avd_name": "mozemulator-android34-x86_64",
     "emulator_extra_args": [
         "-skip-adb-auth",
         "-verbose",
@@ -30,18 +30,17 @@ AVD_MANIFEST_X86_64 = {
         "-selinux", "permissive",
         "-memory", "3072",
         "-cores", "4",
-        "-skin", "800x1280",
+        "-skin", "1080x1920",
         "-gpu", "on",
         "-no-snapstorage",
         "-no-snapshot",
         "-no-window",
-        "-no-accel",
         "-prop", "ro.test_harness=true"
     ],
     "emulator_extra_config": {
         "hw.keyboard": "yes",
         "hw.lcd.density": "320",
-        "disk.dataPartition.size": "4000MB",
+        "disk.dataPartition.size": "8192MB",
         "sdcard.size": "600M"
     }
 }

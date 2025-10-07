@@ -769,6 +769,33 @@
                     },
                 }
             },
+            speculation: {
+                prefetch_status_updated: {
+                    subscribe: async function(params = {}) {
+                        assertBidiIsEnabled();
+                        return window.test_driver_internal.bidi.speculation
+                            .prefetch_status_updated.subscribe(params);
+                    },
+
+                    on: function(callback) {
+                        assertBidiIsEnabled();
+                        return window.test_driver_internal.bidi.speculation
+                            .prefetch_status_updated.on(callback);
+                    },
+
+                    once: function() {
+                        assertBidiIsEnabled();
+                        return new Promise(resolve => {
+                            const remove_handler =
+                                window.test_driver_internal.bidi.speculation
+                                    .prefetch_status_updated.on(event => {
+                                    resolve(event);
+                                    remove_handler();
+                                });
+                        });
+                    }
+                }
+            },
             /**
              * `emulation <https://www.w3.org/TR/webdriver-bidi/#module-emulation>`_ module.
              */
@@ -2271,6 +2298,18 @@
                     throw new Error(
                         "bidi.permissions.set_permission() is not implemented by testdriver-vendor.js");
                 }
+            },
+            speculation: {
+                prefetch_status_updated: {
+                    async subscribe() {
+                        throw new Error(
+                            'bidi.speculation.prefetch_status_updated.subscribe is not implemented by testdriver-vendor.js');
+                    },
+                    on() {
+                        throw new Error(
+                            'bidi.speculation.prefetch_status_updated.on is not implemented by testdriver-vendor.js');
+                    }
+                },
             }
         },
 

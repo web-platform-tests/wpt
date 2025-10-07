@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/bidi-speculation-helper.js"></script>
+
+<script>
+    promise_setup(async () => {
+        await waitForDocumentReady();
+        console.log('Document ready');
+        await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+        console.log('Setup: Subscribed to prefetch_status_updated events');
+    });
+
+    promise_test(async t => {
+        console.log('Test 1: Starting basic prefetch test');
+
+        const receivedEvents = [];
+        const expectedEvents = ['pending', 'ready'];
+
+        // Create a promise that resolves when we receive the 'ready' event
+        
+        const readyEventPromise = new Promise((resolve, reject) => {
+            const removeHandler = test_driver.bidi.speculation.prefetch_status_updated.on((event) => {
+                receivedEvents.push(event);
+                
+                // Status should be one of the expected values
+                const validStatuses = ['pending', 'running', 'ready', 'success', 'failure'];
+                assert_true(validStatuses.includes(event.status), 
+                           `Event status should be one of ${validStatuses.join(', ')}, got: ${event.status}`);
+
+                console.log("URL: " + event.url + " with event status: " + event.status + " received");
+                
+                // When we receive the ready event, clean up and resolve
+                if (event.status === 'ready') {
+                    console.log('Received ready event, completing test');
+                    removeHandler();
+                    resolve();
+                }
+            });
+
+        });
+
+
+        // Create prefetch rules for our target page in resources
+        const targetUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/target.html";
+
+        const speculationRules = {
+            prefetch: [{
+                source: "list", 
+                urls: [targetUrl]
+            }]
+        };
+    
+        // Use helper function to add both speculation rules and link
+        const { script, link } = addSpeculationRulesAndLink(speculationRules, targetUrl);
+        
+        // Await the ready event
+        await readyEventPromise;
+        
+        console.log(`Test 1 completed, received ${receivedEvents.length} events`);
+
+        // Assert that we received the expected events
+        assert_true(receivedEvents.length >= 2, 
+                   `Should have received at least 2 events, but only received ${receivedEvents.length}. Events: ${receivedEvents.map(e => e.status).join(', ')}`);
+        assert_array_equals(
+            receivedEvents.map(e => e.status),
+            expectedEvents,
+            'Should have received pending and ready events in order'
+        );
+        console.log('✅ Test 1 passed: received expected events');
+
+    }, "prefetch_status_updated event subscription and structure validation");
+
+    promise_test(async t => {
+        console.log('Test 2: Starting prefetch with navigation test');
+        
+        const receivedEvents = [];
+        const expectedEvents = ['pending', 'ready', 'success'];
+        let newWindow = null;
+        
+        console.log('Starting prefetch with navigation test');
+
+        // Create a promise that resolves when we receive the 'success' event
+        const successEventPromise = new Promise((resolve, reject) => {
+            const removeHandler = test_driver.bidi.speculation.prefetch_status_updated.on((event) => {
+                console.log('Test 2: Received prefetch event:', event);
+                receivedEvents.push(event);
+                
+                // Status should be one of the expected values
+                const validStatuses = ['pending', 'running', 'ready', 'success', 'failure'];
+                assert_true(validStatuses.includes(event.status), 
+                           `Event status should be one of ${validStatuses.join(', ')}, got: ${event.status}`);
+
+                console.log("Test 2 - URL: " + event.url + " with event status: " + event.status + " received");
+                
+                // When we receive the ready event, navigate to trigger success
+                if (event.status === 'ready') {
+                    console.log('Test 2: Received ready event, opening prefetched page in new window...');
+                    // Open the prefetched page in a new window to trigger success
+                    newWindow = window.open(event.url, '_blank');
+
+                } else if (event.status === 'success') {
+                    console.log('Test 2: Received success event, completing test');
+                    removeHandler();
+                    resolve();
+                }
+            });
+        });
+
+        // Create prefetch rules for our target page in resources (different URL to avoid caching)
+        const targetUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/target.html?test=2";
+        console.log('Setting up prefetch for:', targetUrl);
+        
+        const speculationRules = {
+            prefetch: [{
+                source: "list", 
+                urls: [targetUrl]
+            }]
+        };
+        
+        console.log('Adding speculation rules:', JSON.stringify(speculationRules));
+        
+        // Use helper function to add both speculation rules and link
+        const { script, link } = addSpeculationRulesAndLink(speculationRules, targetUrl);
+        
+        console.log('Speculation rules and link added, waiting for success event...');
+        
+        // Await the success event
+        await successEventPromise;
+        
+        console.log(`Test 2 completed, received ${receivedEvents.length} events`);
+
+        // Assert that we received the expected events
+        assert_true(receivedEvents.length >= 3, 
+                   `Should have received at least 3 events, but only received ${receivedEvents.length}. Events: ${receivedEvents.map(e => e.status).join(', ')}`);
+        assert_array_equals(
+            receivedEvents.map(e => e.status),
+            expectedEvents,
+            'Should have received pending, ready, and success events in order'
+        );
+        console.log('✅ Test 2 passed: received expected events including success');
+
+        t.add_cleanup(() => {
+            if (newWindow && !newWindow.closed) {
+                newWindow.close();
+            }
+        });
+
+    }, "prefetch_status_updated event with navigation to success");
+
+    promise_test(async t => {
+        console.log('Test 3: Starting prefetch failure test');
+        
+        const receivedEvents = [];
+        const expectedEvents = ['pending', 'failure'];
+        
+        console.log('Starting prefetch failure test');
+
+        // Create a promise that resolves when we receive the 'failure' event
+        const failureEventPromise = new Promise((resolve, reject) => {
+            const removeHandler = test_driver.bidi.speculation.prefetch_status_updated.on((event) => {
+                console.log('Test 3: Received prefetch event:', event);
+                receivedEvents.push(event);
+                
+                // Status should be one of the expected values
+                const validStatuses = ['pending', 'running', 'ready', 'success', 'failure'];
+                assert_true(validStatuses.includes(event.status), 
+                           `Event status should be one of ${validStatuses.join(', ')}, got: ${event.status}`);
+
+                console.log("Test 3 - URL: " + event.url + " with event status: " + event.status + " received");
+                
+                // When we receive the failure event, we're done
+                if (event.status === 'failure') {
+                    console.log('Test 3: Received failure event, completing test');
+                    removeHandler();
+                    resolve();
+                }
+            });
+        });
+
+        // Create prefetch rules for a non-existent page that should fail with 404
+        const errorUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/nonexistent-404-page.html";
+        console.log('Setting up prefetch for non-existent page:', errorUrl);
+        
+        const speculationRules = {
+            prefetch: [{
+                source: "list", 
+                urls: [errorUrl]
+            }]
+        };
+        
+        console.log('Adding speculation rules:', JSON.stringify(speculationRules));
+        
+        // Use helper function to add both speculation rules and link
+        const { script, link } = addSpeculationRulesAndLink(speculationRules, errorUrl);
+        
+        console.log('Speculation rules and link added, waiting for failure event...');
+        
+        // Await the failure event
+        await failureEventPromise;
+        
+        console.log(`Test 3 completed, received ${receivedEvents.length} events`);
+
+        // Assert that we received the expected events
+        assert_true(receivedEvents.length >= 2, 
+                   `Should have received at least 2 events, but only received ${receivedEvents.length}. Events: ${receivedEvents.map(e => e.status).join(', ')}`);
+        assert_array_equals(
+            receivedEvents.map(e => e.status),
+            expectedEvents,
+            'Should have received pending and failure events in order'
+        );
+        console.log('✅ Test 3 passed: received expected events including failure');
+
+    }, "prefetch_status_updated event with prefetch failure");
+
+</script>

@@ -19,16 +19,18 @@
         const receivedEvents = [];
         const expectedEvents = ['pending', 'ready'];
 
+        // Create target url with unique id to ensure events are from this test
+        const uuid = self.crypto.randomUUID();
+        const targetUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/target.html?" + uuid;
+
         // Create a promise that resolves when we receive the 'ready' event
-        
         const readyEventPromise = new Promise((resolve, reject) => {
             const removeHandler = test_driver.bidi.speculation.prefetch_status_updated.on((event) => {
+                // Ignore events from other tests that could be running in parallel.
+                if (event.url !== targetUrl) {
+                    return;
+                }
                 receivedEvents.push(event);
-                
-                // Status should be one of the expected values
-                const validStatuses = ['pending', 'running', 'ready', 'success', 'failure'];
-                assert_true(validStatuses.includes(event.status), 
-                           `Event status should be one of ${validStatuses.join(', ')}, got: ${event.status}`);
                 
                 // When we receive the ready event, clean up and resolve
                 if (event.status === 'ready') {
@@ -41,8 +43,6 @@
 
 
         // Create prefetch rules for our target page in resources
-        const targetUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/target.html";
-
         const speculationRules = {
             prefetch: [{
                 source: "list", 
@@ -57,8 +57,6 @@
         await readyEventPromise;
 
         // Assert that we received the expected events
-        assert_true(receivedEvents.length >= 2, 
-                   `Should have received at least 2 events, but only received ${receivedEvents.length}. Events: ${receivedEvents.map(e => e.status).join(', ')}`);
         assert_array_equals(
             receivedEvents.map(e => e.status),
             expectedEvents,
@@ -73,15 +71,18 @@
         const expectedEvents = ['pending', 'ready', 'success'];
         let newWindow = null;
 
+        // Create target url with unique id to ensure events are from this test
+        const uuid = self.crypto.randomUUID();
+        const targetUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/target.html?" + uuid;
+
         // Create a promise that resolves when we receive the 'success' event
         const successEventPromise = new Promise((resolve, reject) => {
             const removeHandler = test_driver.bidi.speculation.prefetch_status_updated.on((event) => {
+                // Ignore events from other tests that could be running in parallel.
+                if (event.url !== targetUrl) {
+                    return;
+                }
                 receivedEvents.push(event);
-                
-                // Status should be one of the expected values
-                const validStatuses = ['pending', 'running', 'ready', 'success', 'failure'];
-                assert_true(validStatuses.includes(event.status), 
-                           `Event status should be one of ${validStatuses.join(', ')}, got: ${event.status}`);
                 
                 // When we receive the ready event, navigate to trigger success
                 if (event.status === 'ready') {
@@ -94,9 +95,6 @@
                 }
             });
         });
-
-        // Create prefetch rules for our target page in resources (different URL to avoid caching)
-        const targetUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/target.html?test=2";
         
         const speculationRules = {
             prefetch: [{
@@ -112,8 +110,6 @@
         await successEventPromise;
 
         // Assert that we received the expected events
-        assert_true(receivedEvents.length >= 3, 
-                   `Should have received at least 3 events, but only received ${receivedEvents.length}. Events: ${receivedEvents.map(e => e.status).join(', ')}`);
         assert_array_equals(
             receivedEvents.map(e => e.status),
             expectedEvents,
@@ -133,15 +129,18 @@
         const receivedEvents = [];
         const expectedEvents = ['pending', 'failure'];
 
+        // Create prefetch rules for a non-existent page that should fail with 404
+        const uuid = self.crypto.randomUUID();
+        const errorUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/nonexistent-404-page.html?" + uuid;
+
         // Create a promise that resolves when we receive the 'failure' event
         const failureEventPromise = new Promise((resolve, reject) => {
             const removeHandler = test_driver.bidi.speculation.prefetch_status_updated.on((event) => {
+                // Ignore events from other tests that could be running in parallel.
+                if (event.url !== errorUrl) {
+                    return;
+                }
                 receivedEvents.push(event);
-                
-                // Status should be one of the expected values
-                const validStatuses = ['pending', 'running', 'ready', 'success', 'failure'];
-                assert_true(validStatuses.includes(event.status), 
-                           `Event status should be one of ${validStatuses.join(', ')}, got: ${event.status}`);
                 
                 // When we receive the failure event, we're done
                 if (event.status === 'failure') {
@@ -150,9 +149,6 @@
                 }
             });
         });
-
-        // Create prefetch rules for a non-existent page that should fail with 404
-        const errorUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/nonexistent-404-page.html";
         
         const speculationRules = {
             prefetch: [{
@@ -168,8 +164,6 @@
         await failureEventPromise;
 
         // Assert that we received the expected events
-        assert_true(receivedEvents.length >= 2, 
-                   `Should have received at least 2 events, but only received ${receivedEvents.length}. Events: ${receivedEvents.map(e => e.status).join(', ')}`);
         assert_array_equals(
             receivedEvents.map(e => e.status),
             expectedEvents,

@@ -220,23 +220,6 @@
         const subscription_id = action_result["subscription"];
 
         return async ()=>{
-            console.log("!!@@## unsubscribing")
-            await create_action("bidi.session.unsubscribe", {
-                // Default to subscribing to the window's events.
-                subscriptions: [subscription_id]
-            });
-        }
-    };
-
-    const subscribe_global = async function (params) {
-        const action_result = await create_action("bidi.session.subscribe", {
-            // Subscribe to all contexts.
-            ...params
-        });
-        const subscription_id = action_result["subscription"];
-
-        return async ()=>{
-            console.log("!!@@## unsubscribing")
             await create_action("bidi.session.unsubscribe", {
                 // Default to subscribing to the window's events.
                 subscriptions: [subscription_id]
@@ -684,9 +667,8 @@
   
     window.test_driver_internal.bidi.speculation.prefetch_status_updated.subscribe =
         function(params) {
-        return subscribe_global(
-            {params, events: ['speculation.prefetchStatusUpdated']}
-        );
+        return subscribe(
+            {...params, events: ['speculation.prefetchStatusUpdated'], contexts: null});
     };
 
     window.test_driver_internal.bidi.speculation.prefetch_status_updated.on =

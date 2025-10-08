@@ -314,4 +314,6 @@ async_actions = [
     BidiEmulationSetScreenOrientationOverrideAction,
     BidiPermissionsSetPermissionAction,
     BidiSessionSubscribeAction,
-    BidiSessionUnsubscribeAction]
+    BidiSessionUnsubscribeAction,
+    BidiPermissionsSetPermissionAction,
+    BidiSessionSubscribeAction]

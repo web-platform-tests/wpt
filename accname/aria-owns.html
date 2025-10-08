@@ -60,41 +60,24 @@
     “User agents MUST NOT resolve aria-owns when it is set on an element that
     has been excluded from the accessibility tree.”
   -->
-  <h2>A hidden element failing to adopt text using aria-owns</h2>
+  <h2>Ignore aria-owns when on an element that is hidden from all users</h2>
   <h3
     class="ex-label"
-    data-testname="A hidden element failing to adopt text using aria-owns"
+    data-testname="Ignore aria-owns when on an element that is hidden from all users"
     data-expectedlabel="treasure"
   >
-    <span hidden aria-owns="treasure">
+    <span hidden aria-owns="treasure scrolls">
       This ninja can’t steal the...
     </span>
     <mark id="treasure">treasure</mark>
   </h3>
-
-  <!--
-    Re: https://github.com/w3c/aria/pull/1839
-    “User agents MUST NOT resolve aria-owns when it is set on an element that
-    has been excluded from the accessibility tree.”
-  -->
-  <h2>A hidden element failing to adopt text from a content-named element using aria-owns</h2>
-  <h3
-    class="ex-label"
-    data-testname="A hidden element failing to adopt text from a content-named element using aria-owns"
-    data-expectedlabel="sand"
-  >
-    <span hidden aria-owns="pearl">
-      This oyster contains...
-    </span>
-    <mark>sand</mark>
-  </h3>
   <h4
     class="ex-label"
-    data-testname="A content-named element that still has its contents after another element fails to adopt the contents using aria-owns"
-    data-expectedlabel="a pearl"
+    data-testname="Name persists on targeted element after aria-owns is ignored in previous subtest"
+    data-expectedlabel="scrolls"
   >
     <!-- TODO: Can a test be written to assert that this text node remains? -->
-    <mark id="pearl">a pearl</mark>
+    <mark id="scrolls">scrolls</mark>
   </h4>
 
   <!--
@@ -102,10 +85,10 @@
     “User agents MUST NOT resolve aria-owns when it is set on an element that
     has been excluded from the accessibility tree.”
   -->
-  <h2>An aria-hidden element failing to adopt text using aria-owns</h2>
+  <h2>Ignore aria-owns when on an element with aria-hidden</h2>
   <h3
     class="ex-label"
-    data-testname="An aria-hidden element failing to adopt text using aria-owns"
+    data-testname="Ignore aria-owns when on an element with aria-hidden"
     data-expectedlabel="reflection"
   >
     <span aria-hidden="true" aria-owns="reflection">
@@ -119,10 +102,10 @@
     “User agents MUST NOT resolve aria-owns when it references an element
     that is, or has a DOM ancestor that is, hidden from all users.”
   -->
-  <h2>A link failing to concatenate hidden text using aria-owns</h2>
+  <h2>Ignore aria-owns when it targets an element that is hidden from all users</h2>
   <a
     class="ex-label"
-    data-testname="A link failing to concatenate hidden text using aria-owns"
+    data-testname="Ignore aria-owns when it targets an element that is hidden from all users"
     data-expectedlabel="World Wide Web Consortium"
     href="https://www.w3.org/"
     aria-owns="new-window-warning-2"
@@ -138,10 +121,10 @@
     “User agents MUST NOT resolve aria-owns when it references an element
     that is, or has a DOM ancestor that is, hidden from all users.”
   -->
-  <h2>A link failing to concatenate text from a hidden ancestor using aria-owns</h2>
+  <h2>Ignore aria-owns when it targets an element with an ancestor that is hidden from all users</h2>
   <a
     class="ex-label"
-    data-testname="A link failing to concatenate text from a hidden ancestor using aria-owns"
+    data-testname="Ignore aria-owns when it targets an element with an ancestor that is hidden from all users"
     data-expectedlabel="World Wide Web Consortium"
     href="https://www.w3.org/"
     aria-owns="new-window-warning-3"
@@ -152,10 +135,10 @@
     <span id="new-window-warning-3"> (opens in a new window)</span>
   </div>
 
-  <h2>A link failing to concatenate aria-hidden text using aria-owns</h2>
+  <h2>aria-hidden remains in effect on an element after it is relocated using aria-owns</h2>
   <a
     class="ex-label"
-    data-testname="A link failing to concatenate aria-hidden text using aria-owns"
+    data-testname="aria-hidden remains in effect on an element after it is relocated using aria-owns"
     data-expectedlabel="World Wide Web Consortium"
     href="https://www.w3.org/"
     aria-owns="new-window-warning-4"

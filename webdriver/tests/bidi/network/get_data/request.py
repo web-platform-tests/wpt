@@ -1,5 +1,4 @@
 import pytest
-import webdriver.bidi.error as error
 
 from .. import PAGE_EMPTY_IMAGE, PAGE_EMPTY_TEXT, PAGE_OTHER_TEXT
 
@@ -27,3 +26,15 @@ async def test_request_base64_file(
 
     assert data["type"] == "base64"
     assert isinstance(data["value"], str)
+
+
+async def test_request_empty_response(
+    bidi_session, inline, setup_collected_response,
+):
+    empty_url = inline("", doctype="js")
+    [request, _] = await setup_collected_response(fetch_url=empty_url)
+
+    data = await bidi_session.network.get_data(request=request, data_type="response")
+
+    assert data["type"] == "string"
+    assert data["value"] == ""

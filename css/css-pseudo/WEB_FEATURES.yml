@@ -24,3 +24,5 @@ features:
 - name: first-line
   files:
   - first-line-*
+- name: z-index
+  files: highlight-z-index-*

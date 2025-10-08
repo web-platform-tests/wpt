@@ -12,3 +12,19 @@ features:
   - background-attachment-*
   - local-attachment-content-box-scroll.html
   - table-cell-background-local*
+- name: background-color
+  files:
+  - background-color-*
+  # The above pattern matches a number of tests which do not use the
+  # `background-color` property but which nonetheless test relevant semantics
+  # via the `background` shorthand:
+  # - background-color-body-propagation-004.html
+  # - background-color-body-propagation-005.html
+  # - background-color-body-propagation-006.html
+  # - background-color-body-propagation-007.html
+  # - background-color-root-propagation-001.html
+  # - background-color-root-propagation-002.html
+  - background-none-none-and-color.html
+  - background_color_padding_box.htm
+  - bg-color-with-gradient.html
+  - color-behind-images.htm

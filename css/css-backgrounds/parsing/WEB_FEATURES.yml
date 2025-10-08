@@ -8,3 +8,6 @@ features:
 - name: background-attachment
   files:
   - background-attachment-*
+- name: background-color
+  files:
+  - background-color-*

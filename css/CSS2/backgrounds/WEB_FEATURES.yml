@@ -20,3 +20,7 @@ features:
   - background-attachment-applies-to-*
   - background-attachment-applies-to-*
   - background-attachment-applies-to-*
+- name: background-color
+  files:
+  - background-color-*
+  - background-root-003.xht

@@ -5,3 +5,6 @@ features:
 - name: background-attachment
   files:
   - background-attachment.html
+- name: background-blend-mode
+  files:
+  - background-blend-mode.html

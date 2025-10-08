@@ -210,8 +210,30 @@ dedicated worker tests and shared worker
 tests</a>, it is
 automatically invoked for tests defined using the “multi-global” pattern.</p>
 </section>
-<section id="other-features-of-window-js-worker-js-and-any-js">
-<h2>Other features of <code class="docutils literal notranslate"><span class="pre">.window.js</span></code>, <code class="docutils literal notranslate"><span class="pre">.worker.js</span></code> and <code class="docutils literal notranslate"><span class="pre">.any.js</span></code><a class="headerlink" href="#other-features-of-window-js-worker-js-and-any-js" title="Link to this heading">¶</a></h2>
+<section id="extension-tests-extension-js">
+<h2>Extension tests (<code class="docutils literal notranslate"><span class="pre">.extension.js</span></code>)<a class="headerlink" href="#extension-tests-extension-js" title="Link to this heading">¶</a></h2>
+<p>Create a JavaScript file whose name ends in <code class="docutils literal notranslate"><span class="pre">.extension.js</span></code> to have the necessary HTML boilerplate
+generated for you at <code class="docutils literal notranslate"><span class="pre">.extension.html</span></code>.</p>
+<p>Extension tests leverage the <code class="docutils literal notranslate"><span class="pre">browser.test</span></code> API rather than interacting with the <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code>
+framework directly.</p>
+<p>For example, one could write a test for <code class="docutils literal notranslate"><span class="pre">browser.runtime.getURL()</span></code> by creating a
+<code class="docutils literal notranslate"><span class="pre">web-extensions/browser.runtime.extension.js</span></code> file as follows:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">runTestsWithWebExtension</span><span class="p">(</span><span class="s2">&quot;/resources/runtime/&quot;</span><span class="p">)</span>
+<span class="c1">// ==&gt; this method assumes that the extension resources (manifest, scripts, etc.) exist at the path</span>
+</pre></div>
+</div>
+<p>And by creating a <code class="docutils literal notranslate"><span class="pre">web-extensions/resources/runtime/background.js</span></code> file as follows:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">browser</span><span class="p">.</span><span class="nx">test</span><span class="p">.</span><span class="nx">runTests</span><span class="p">([</span>
+<span class="w">  </span><span class="kd">function</span><span class="w"> </span><span class="nx">getURLWithNoParameter</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">browser</span><span class="p">.</span><span class="nx">test</span><span class="p">.</span><span class="nx">assertThrows</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">browser</span><span class="p">.</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">getURL</span><span class="p">())</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+<p>This test could then be run from <code class="docutils literal notranslate"><span class="pre">web-extensions/browser.runtime.extension.html</span></code>.</p>
+</section>
+<section id="other-features-of-window-js-worker-js-any-js-and-extension-js">
+<h2>Other features of <code class="docutils literal notranslate"><span class="pre">.window.js</span></code>, <code class="docutils literal notranslate"><span class="pre">.worker.js</span></code>, <code class="docutils literal notranslate"><span class="pre">.any.js</span></code> and <code class="docutils literal notranslate"><span class="pre">.extension.js</span></code><a class="headerlink" href="#other-features-of-window-js-worker-js-any-js-and-extension-js" title="Link to this heading">¶</a></h2>
 <section id="specifying-a-test-title">
 <h3>Specifying a test title<a class="headerlink" href="#specifying-a-test-title" title="Link to this heading">¶</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">META:</span> <span class="pre">title=This</span> <span class="pre">is</span> <span class="pre">the</span> <span class="pre">title</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">test</span></code> at the beginning of the resource.</p>

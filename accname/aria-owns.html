@@ -24,6 +24,18 @@
 <body>
 
   <h1>Accname tests for assorted combinations of <code>aria-owns</code>, <code>aria-hidden</code>, and host language hiding techniques</h1>
+
+  <!-- 
+    These subtests verify the following normative statements added to the ARIA
+    spec in https://github.com/w3c/aria/pull/1839:
+    
+      1. User agents MUST NOT resolve aria-owns when it is set on an element
+         that has been excluded from the accessibility tree.
+
+      2. User agents MUST NOT resolve aria-owns when it references an element
+         that is, or has a DOM ancestor that is, hidden from all users.
+  -->
+
   <p><span aria-hidden="true">Text enclosed in a dashed red outline</span> is <code>aria-hidden="true"</code>.</p>
   <p><span id="foo">Bold text with a yellow background</span> is the target of another element’s <code>aria-owns</code>.</p>
 
@@ -55,11 +67,6 @@
     <span id="new-window-warning-1"> (opens in a new window)</span>
   </div>
 
-  <!--
-    Re: https://github.com/w3c/aria/pull/1839
-    “User agents MUST NOT resolve aria-owns when it is set on an element that
-    has been excluded from the accessibility tree.”
-  -->
   <h2>Ignore aria-owns when on an element that is hidden from all users</h2>
   <h3
     class="ex-label"
@@ -80,11 +87,6 @@
     <mark id="scrolls">scrolls</mark>
   </h4>
 
-  <!--
-    Re: https://github.com/w3c/aria/pull/1839
-    “User agents MUST NOT resolve aria-owns when it is set on an element that
-    has been excluded from the accessibility tree.”
-  -->
   <h2>Ignore aria-owns when on an element with aria-hidden</h2>
   <h3
     class="ex-label"
@@ -97,11 +99,6 @@
     <mark id="reflection">reflection</mark>
   </h3>
 
-  <!--
-    Re: https://github.com/w3c/aria/pull/1839
-    “User agents MUST NOT resolve aria-owns when it references an element
-    that is, or has a DOM ancestor that is, hidden from all users.”
-  -->
   <h2>Ignore aria-owns when it targets an element that is hidden from all users</h2>
   <a
     class="ex-label"
@@ -116,11 +113,6 @@
     <span id="new-window-warning-2" hidden> (opens in a new window)</span>
   </div>
 
-  <!--
-    Re: https://github.com/w3c/aria/pull/1839
-    “User agents MUST NOT resolve aria-owns when it references an element
-    that is, or has a DOM ancestor that is, hidden from all users.”
-  -->
   <h2>Ignore aria-owns when it targets an element with an ancestor that is hidden from all users</h2>
   <a
     class="ex-label"

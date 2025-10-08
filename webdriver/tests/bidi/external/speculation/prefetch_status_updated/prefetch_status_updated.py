@@ -248,18 +248,8 @@ async def test_subscribe_unsubscribe_event_emission(
     with wait_for_events(["speculation.prefetchStatusUpdated"]) as waiter:
         await add_speculation_rules_and_link(new_tab, speculation_rules_2, prefetch_target_2)
         
-        # Wait briefly and then check if no events were received
-        try:
-            # This should timeout since no events should come
+        with pytest.raises(TimeoutException):
             await waiter.get_events(lambda events: len(events) >= 1, timeout=2)
-            assert False, "Should not have received any events after unsubscribing"
-        except TimeoutException:
-            # This is expected - no events should be received
-            pass
-
-    # Double check that no events were collected
-    assert len(waiter.events) == 0, f"Expected no events after unsubscribing, got {len(waiter.events)}: {waiter.events}"
-
 
 @pytest.mark.asyncio
 async def test_subscribe_unsubscribe_module_subscription(
@@ -319,17 +309,8 @@ async def test_subscribe_unsubscribe_module_subscription(
     with wait_for_events(["speculation.prefetchStatusUpdated"]) as waiter:
         await add_speculation_rules_and_link(new_tab, speculation_rules_2, prefetch_target_2)
         
-        # Wait briefly and then check if no events were received
-        try:
-            # This should timeout since no events should come
-            await waiter.get_events(lambda events: len(events) >= 1, timeout=3)
-            assert False, "Should not have received any events after unsubscribing from module"
-        except TimeoutException:
-            # This is expected - no events should be received
-            pass
-    
-    # Double check that no events were collected
-    assert len(waiter.events) == 0, f"Expected no events after unsubscribing from module, got {len(waiter.events)}: {waiter.events}"
+        with pytest.raises(TimeoutException):
+            await waiter.get_events(lambda events: len(events) >= 1, timeout=2)
 
 @pytest.mark.asyncio
 async def test_unsubscribe_from_prefetch_status_updated(

@@ -65,6 +65,7 @@
   </a>
   <div aria-hidden="true">
     <span id="new-window-warning-1"> (opens in a new window)</span>
+    <!-- Label concatenation works here because, due to the aria-owns reassignment, the "new window" span no longer inherits the aria-hidden status. -->
   </div>
 
   <h2>Ignore aria-owns when on an element that is hidden from all users</h2>
@@ -133,6 +134,7 @@
   </a>
   <div>
     <span id="new-window-warning-2" hidden> (opens in a new window)</span>
+    <!-- Label concatenation is ignored because aria-owns does not override the display:none rendering due to the hidden attr. -->
   </div>
 
   <h2>Ignore aria-owns when it targets an element with an ancestor that is hidden from all users</h2>
@@ -147,6 +149,7 @@
   </a>
   <div hidden>
     <span id="new-window-warning-3"> (opens in a new window)</span>
+    <!-- Label concatenation is ignored because ancestor is display:none via the hidden attr. -->
   </div>
 
   <h2>aria-hidden remains in effect on an element after it is relocated using aria-owns</h2>
@@ -161,6 +164,7 @@
   </a>
   <div>
     <span id="new-window-warning-4" aria-hidden="true"> (opens in a new window)</span>
+    <!-- Label concatenation is ignored because aria-owns does not override the aria-hidden status, like it could be if hidden but referenced directly in a aria-labelledby computation. -->
   </div>
 
   <script>

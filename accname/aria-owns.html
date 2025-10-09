@@ -111,6 +111,21 @@
     <mark id="pearl">a pearl</mark>
   </h4>
 
+  <h2>Computed name of parent heading excludes content relocated by aria-owns</h2>
+  <h3>
+    <span aria-owns="car">
+      The dog that caught the
+    </span>
+  </h3>
+  <h4
+    class="ex-label"
+    data-testname="Computed name of parent heading excludes content relocated by aria-owns"
+    data-expectedlabel="Speeding"
+  >
+    Speeding
+    <mark id="car">car</mark>
+  </h4>
+
   <h2>Ignore aria-owns when on an element with aria-hidden</h2>
   <h3
     class="ex-label"

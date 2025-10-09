@@ -82,6 +82,7 @@
 
   <h2>Computed name of parent heading persists when aria-owns fails to relocate its contents</h2>
   <h3>
+    <!-- This span is hidden, so aria-owns is ignored, and the would-be relocated contents will act as the computed label in its original DOM location, as part of the following test. -->
     <span hidden aria-owns="pearl">
       This oyster contains...
     </span>

@@ -70,6 +70,7 @@
     });
     location.hash = "foo";
   };
+  instant();
 
   function smooth() {
     document.documentElement.className = "";
@@ -109,9 +110,4 @@
   };
 
   testContainer.style.display = "none";
-
-  // Setting location.hash while loading results in a replace load, which we don't want.
-  window.onload = () => {
-    step_timeout(instant, 0);
-  }
 </script>

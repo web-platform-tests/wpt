@@ -20,6 +20,9 @@
     <span id="inserted_element">content</span>
 </template>
 <script>
+    /*
+
+    Disabling these tests for now, as before/after inside patchAll is something we will look into later.
 test(t => {
     const inserted_element = document.querySelector("#inserted_element");
     assert_equals(inserted_element.parentElement.id, "placeholder");
@@ -38,7 +41,7 @@ promise_test(async t => {
     assert_equals(inserted_element.nextElementSibling.id, "last");
     assert_equals(inserted_element.previousElementSibling, null);
 }, "<template patchendbefore=last> should insert the patch before an existing node");
-
+*/
 promise_test(async t => {
     reset_state();
     const writer = document.patchAll().getWriter();

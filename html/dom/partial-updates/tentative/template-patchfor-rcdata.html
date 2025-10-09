@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8" />
+<title id="title">Patching into RCDATA elements (title/textarea)</title>
+<link rel=help href="https://github.com/WICG/declarative-partial-updates">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<textarea id="textarea">Old content</textarea>
+
+<template patchfor="title">Patched title</template>
+<template patchfor="textarea">Patched textarea</template>
+<script>
+test(() => {
+    assert_equals(document.title, "Patched title");
+    assert_equals(document.querySelector("#textarea").value.trim(), "Patched textarea");
+}, "<template patchfor> should apply to titles & textareas");
+
+</script>

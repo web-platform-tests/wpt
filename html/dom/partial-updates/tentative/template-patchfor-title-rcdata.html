@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8" />
+<title id="title">Patching into title uses RCDATA</title>
+<link rel=help href="https://github.com/WICG/declarative-partial-updates">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+    window.did_execute = false;
+</script>
+<body>
+<template patchfor="title"><script>window.did_execute = true</script></template>
+<script>
+test(() => {
+    assert_equals(document.title, "<script>window.did_execute = true</" + "script>");
+    assert_equals(window.did_execute, false);
+}, "<template patchfor> into a title should not parse as HTML");
+
+</script>

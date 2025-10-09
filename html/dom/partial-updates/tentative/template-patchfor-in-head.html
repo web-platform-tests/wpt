@@ -1,0 +1,13 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8" />
+<title id="title">HTML partial updates: patches should work in head</title>
+<link rel=help href="https://github.com/WICG/declarative-partial-updates">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<template patchfor="title">New content</template>
+<script>
+test(() => {
+    assert_equals(document.title, "New content");
+});
+</script>

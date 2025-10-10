@@ -111,16 +111,22 @@
     // extrable is true, export the key and verify that it matches the input.
     function testFormat(format, algorithm, keyData, keySize, usages, extractable) {
         promise_test(function(test) {
-            return subtle.importKey(format, keyData[format], algorithm, extractable, usages).
+            let microtaskTriggered = false;
+            let promise = subtle.importKey(format, keyData[format], algorithm, extractable, usages).
             then(function(key) {
+                assert_true(microtaskTriggered, "promise resolved too early");
+
                 assert_equals(key.constructor, CryptoKey, "Imported a CryptoKey object");
                 assert_goodCryptoKey(key, algorithm, extractable, usages, (format === 'pkcs8' || (format === 'jwk' && keyData[format].d)) ? 'private' : 'public');
                 if (!extractable) {
                     return;
                 }
 
-                return subtle.exportKey(format, key).
+                microtaskTriggered = false;
+                let promise = subtle.exportKey(format, key).
                 then(function(result) {
+                    assert_true(microtaskTriggered, "promise resolved too early");
+
                     if (format !== "jwk") {
                         assert_true(equalBuffers(keyData[format], result), "Round trip works");
                     } else {
@@ -129,9 +135,17 @@
                 }, function(err) {
                     assert_unreached("Threw an unexpected error: " + err.toString());
                 });
+                Promise.resolve().then(() => {
+                    microtaskTriggered = true;
+                });
+                return promise;
             }, function(err) {
                 assert_unreached("Threw an unexpected error: " + err.toString());
             });
+            Promise.resolve().then(() => {
+                microtaskTriggered = true;
+            });
+            return promise;
         }, "Good parameters: " + keySize.toString() + " bits " + parameterString(format, keyData[format], algorithm, extractable, usages));
     }
 
@@ -140,12 +154,18 @@
     function testEmptyUsages(format, algorithm, keyData, keySize, extractable) {
         const usages = [];
         promise_test(function(test) {
-            return subtle.importKey(format, keyData[format], algorithm, extractable, usages).
+            let microtaskTriggered = false;
+            let promise = subtle.importKey(format, keyData[format], algorithm, extractable, usages).
             then(function(key) {
                 assert_unreached("importKey succeeded but should have failed with SyntaxError");
             }, function(err) {
+                assert_true(microtaskTriggered, "promise rejected too early");
                 assert_equals(err.name, "SyntaxError", "Should throw correct error, not " + err.name + ": " + err.message);
             });
+            Promise.resolve().then(() => {
+                microtaskTriggered = true;
+            });
+            return promise;
         }, "Empty Usages: " + keySize.toString() + " bits " + parameterString(format, keyData, algorithm, extractable, usages));
     }
 

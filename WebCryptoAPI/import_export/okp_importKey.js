@@ -42,16 +42,22 @@ function runTests(algorithmName) {
 function testFormat(format, algorithm, keyData, keySize, usages, extractable) {
     [algorithm, algorithm.name].forEach((alg) => {
         promise_test(function(test) {
-            return subtle.importKey(format, keyData[format], alg, extractable, usages).
+            let microtaskTriggered = false;
+            let promise = subtle.importKey(format, keyData[format], alg, extractable, usages).
                 then(function(key) {
+                    assert_true(microtaskTriggered, "promise resolved too early");
+
                     assert_equals(key.constructor, CryptoKey, "Imported a CryptoKey object");
                     assert_goodCryptoKey(key, algorithm, extractable, usages, (format === 'pkcs8' || (format === 'jwk' && keyData[format].d)) ? 'private' : 'public');
                     if (!extractable) {
                         return;
                     }
 
-                    return subtle.exportKey(format, key).
+                    microtaskTriggered = false;
+                    let promise = subtle.exportKey(format, key).
                         then(function(result) {
+                            assert_true(microtaskTriggered, "promise resolved too early");
+
                             if (format !== "jwk") {
                                 assert_true(equalBuffers(keyData[format], result), "Round trip works");
                             } else {
@@ -60,9 +66,17 @@ function testFormat(format, algorithm, keyData, keySize, usages, extractable) {
                         }, function(err) {
                             assert_unreached("Threw an unexpected error: " + err.toString());
                         });
+                    Promise.resolve().then(() => {
+                        microtaskTriggered = true;
+                    });
+                    return promise;
                 }, function(err) {
                     assert_unreached("Threw an unexpected error: " + err.toString());
                 });
+            Promise.resolve().then(() => {
+                microtaskTriggered = true;
+            });
+            return promise;
         }, "Good parameters: " + keySize.toString() + " bits " + parameterString(format, keyData[format], alg, extractable, usages));
     });
 }

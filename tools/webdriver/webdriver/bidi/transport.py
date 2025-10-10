@@ -28,7 +28,7 @@ class Transport:
             msg_handler: Callable[
                 [Mapping[str, Any]], Coroutine[Any, Any, None]],
             loop: Optional[asyncio.AbstractEventLoop] = None,
-            on_closed: Optional[Callable] = None):
+            on_closed: Optional[Callable[[], None]] = None):
         self.url = url
         self.connection: Optional[websockets.WebSocketClientProtocol] = None
         self.msg_handler = msg_handler

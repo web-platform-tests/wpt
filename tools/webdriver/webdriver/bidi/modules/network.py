@@ -336,7 +336,7 @@ class Network(BidiModule):
     @command
     def set_extra_headers(
             self,
-            headers: List[Dict[str, any]],
+            headers: List[Dict[str, Any]],
             contexts: Maybe[List[str]] = UNDEFINED,
             user_contexts: Maybe[List[str]] = UNDEFINED,
     ) -> Mapping[str, Any]:

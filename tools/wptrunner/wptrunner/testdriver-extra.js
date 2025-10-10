@@ -668,7 +668,7 @@
     window.test_driver_internal.bidi.speculation.prefetch_status_updated.subscribe =
         function(params) {
         return subscribe(
-            {...params, events: ['speculation.prefetchStatusUpdated'], contexts: null});
+            {...params, events: ['speculation.prefetchStatusUpdated']})
     };
 
     window.test_driver_internal.bidi.speculation.prefetch_status_updated.on =

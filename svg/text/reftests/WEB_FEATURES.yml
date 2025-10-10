@@ -1,0 +1,10 @@
+features:
+- name: writing-mode-svg-values
+  files:
+  - text-inline-size-002.svg
+  - text-inline-size-201.svg
+  - text-multiline-002.svg
+  - text-shape-inside-002.svg
+  - text-text-anchor-002.svg
+  - text-text-anchor-102.svg
+  - text-text-anchor-202.svg

@@ -241,7 +241,30 @@ def current_time(bidi_session, top_context):
 
 
 @pytest.fixture
-def add_and_remove_iframe(bidi_session):
+def create_iframe(bidi_session):
+    """
+    Create an iframe and wait for it to load. Return the iframe's context id.
+    """
+
+    async def create_iframe(context, url):
+        resp = await bidi_session.script.call_function(
+            function_declaration="""(url) => {
+                const iframe = document.createElement("iframe");
+                iframe.src = url;
+                document.documentElement.lastElementChild.append(iframe);
+                return new Promise(resolve => iframe.onload = () => resolve(iframe.contentWindow));
+            }""",
+            arguments=[{"type": "string", "value": url}],
+            target=ContextTarget(context["context"]),
+            await_promise=True)
+        assert resp["type"] == "window"
+        return resp["value"]
+
+    return create_iframe
+
+
+@pytest.fixture
+def add_and_remove_iframe(bidi_session, create_iframe):
     """Create a frame, wait for load, and remove it.
 
     Return the frame's context id, which allows to test for invalid

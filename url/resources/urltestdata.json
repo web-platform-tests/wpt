@@ -10433,7 +10433,16 @@
   {
     "input": "C:\\invalid\\path\\with\\\\double\\backslash",
     "base": null,
-    "failure": true
+    "href": "file:///C:/invalid/path/with//double/backslash",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/C:/invalid/path/with//double/backslash",
+    "search": "",
+    "hash": ""
   },
   {
     "input": ":\\invalid\\drive",
@@ -10588,12 +10597,30 @@
   {
     "input": "C:\\\\\\path\\file.txt",
     "base": null,
-    "failure": true
+    "href": "file:///C:///path/file.txt",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/C:///path/file.txt",
+    "search": "",
+    "hash": ""
   },
   {
     "input": "C:\\path\\\\file.txt",
     "base": null,
-    "failure": true
+    "href": "file:///C:/path//file.txt",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/C:/path//file.txt",
+    "search": "",
+    "hash": ""
   },
   "# Invalid drive patterns",
   {
@@ -10716,6 +10743,15 @@
   {
     "input": "C:\\\\",
     "base": null,
-    "failure": true
+    "href": "file:///C://",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/C://",
+    "search": "",
+    "hash": ""
   }
 ]

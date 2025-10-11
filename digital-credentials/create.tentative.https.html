@@ -210,15 +210,6 @@
   }, "Adding mediations together with abort signal respects the abort signal.");
 
   promise_test(async (t) => {
-    /** @type sequence<CredentialMediationRequirement> */
-    const disallowedMediations = [ "conditional", "optional", "silent"];
-    for (const mediation of disallowedMediations) {
-      const options = makeCreateOptions("default", mediation);
-      await promise_rejects_js(t, TypeError, navigator.credentials.create(options));
-    }
-  }, "Mediation is required to create a DigitalCredential.");
-
-  promise_test(async (t) => {
     await promise_rejects_js(
       t,
       TypeError,

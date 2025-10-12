@@ -9,13 +9,19 @@
   <style>
   html
     {
-      writing-mode: vertical-lr;
+       writing-mode: sideways-lr; /* modifying to mirror the test's <html> value */
     }
 
-  div
+      body
+    {
+      writing-mode: vertical-lr;
+      margin: 0;
+    }
+
+  /* div  
     {
       text-orientation: upright;
-    }
+    } */
   </style>
 
 

@@ -1,0 +1,28 @@
+<!doctype html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<title>float:right becomes display:none -> render tree cleanup</title>
+<link rel="help" href="https://www.w3.org/TR/CSS22/visuren.html#floats">
+<link rel="author" title="Riya Kanani" href="https://github.com/riyak145">
+<link rel="match" href="reference/float-displaynone-001-ref.html">
+<style>
+  .container { width: 300px; border: 2px solid black; }
+  .floaty   { float: right; width: 100px; height: 100px; }
+  .block    { height: 100px; background: lightgray; }
+</style>
+<div class="container" id="c">
+  <div id="f" class="floaty"></div>
+  <div class="block"></div>
+</div>
+<script>
+  // Remove the float at runtime; then flush; then allow snapshot.
+  requestAnimationFrame(() => {
+    const f = document.getElementById('f');
+    f.style.display = 'none';
+    getComputedStyle(document.getElementById('c')).width; // flush
+    requestAnimationFrame(() => {
+      document.documentElement.classList.remove('reftest-wait');
+    });
+  });
+</script>
+</html>

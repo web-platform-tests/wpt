@@ -17,22 +17,25 @@ promise_test(async t => {
   // Create requires user activation when availability is 'downloadable'.
   const languagePair = {sourceLanguage: 'en', targetLanguage: 'ja'};
   console.log('test 1');
-  assert_implements_optional(await Translator.availability(languagePair) == 'downloadable');
-  console.log('test 2');
+  const availability = await Translator.availability(languagePair);
+  assert_implements_optional(availability == 'downloadable');
+  console.log(`test 2 | availability = ${availability}`);
   assert_false(navigator.userActivation.isActive);
   console.log('test 3');
   await promise_rejects_dom(t, 'NotAllowedError', Translator.create(languagePair));
   console.log('test 4');
-  await test_driver.bless('Translator.create', async () => { await Translator.create(languagePair); });
+  await test_driver.bless('Translator.create');
   console.log('test 5');
+  await Translator.create(languagePair);
+  console.log('test 6');
 
   // Create does not require user activation when availability is 'available'.
   assert_equals(await Translator.availability(languagePair), 'available');
-  console.log('test 6');
-  assert_false(navigator.userActivation.isActive);
   console.log('test 7');
-  await Translator.create(languagePair);
+  assert_false(navigator.userActivation.isActive);
   console.log('test 8');
+  await Translator.create(languagePair);
+  console.log('test 9');
 }, 'Create requires user activation when availability is "downloadable"');
 
 promise_test(async t => {

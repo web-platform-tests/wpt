@@ -123,15 +123,15 @@ async def test_set_permission_iframe(bidi_session, new_tab, test_page_cross_orig
     await bidi_session.permissions.set_permission(
         descriptor={"name": "storage-access"},
         state="prompt",
-        origin=iframe_orgin,
-        topLevelOrigin=tab_origin,
+        origin=tab_origin,
+        embedded_origin=iframe_orgin,
     )
     assert await get_permission_state(bidi_session, iframe_context, "storage-access") == "prompt"
 
     await bidi_session.permissions.set_permission(
         descriptor={"name": "storage-access"},
         state="granted",
-        origin=iframe_orgin,
-        topLevelOrigin=tab_origin,
+        origin=tab_origin,
+        embedded_origin=iframe_orgin,
     )
     assert await get_permission_state(bidi_session, iframe_context, "storage-access") == "granted"

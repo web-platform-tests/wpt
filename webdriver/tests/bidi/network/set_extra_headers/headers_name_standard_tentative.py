@@ -3,23 +3,6 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 
-async def test_set_and_remove_headers(bidi_session, top_context,
-        get_headers_methods_invariant):
-    original_headers = await get_headers_methods_invariant(top_context)
-    await bidi_session.network.set_extra_headers(
-        headers=[{
-            "name": "some_header_name",
-            "value": {
-                "type": "string",
-                "value": "some_header_value"
-            }}])
-    new_headers = await get_headers_methods_invariant(top_context)
-    assert new_headers["some_header_name"] == ["some_header_value"]
-
-    await bidi_session.network.set_extra_headers(headers=[])
-    assert original_headers == await get_headers_methods_invariant(top_context)
-
-
 @pytest.mark.parametrize(
     "header_name, header_value",
     [
@@ -50,14 +33,18 @@ async def test_set_and_remove_headers(bidi_session, top_context,
         ("proxy-custom-header", "some nonsense value"),
     ],
 )
-async def test_set_special_headers(bidi_session, top_context, header_name,
-        header_value, get_headers_methods_invariant):
-    await bidi_session.network.set_extra_headers(
+async def test_set_standard_headers(bidi_session, top_context, prepare_context,
+        header_name, header_value, get_headers_methods_invariant,
+        set_extra_headers):
+    await prepare_context(top_context)
+
+    await set_extra_headers(
         headers=[{
             "name": header_name,
             "value": {
                 "type": "string",
                 "value": header_value
-            }}])
+            }}],
+        contexts=[top_context["context"]])
     new_headers = await get_headers_methods_invariant(top_context)
     assert new_headers[header_name] == [header_value]

@@ -13,17 +13,26 @@
 
 // TODO(crbug.com/390246212): Support model state controls for WPTs.
 promise_test(async t => {
+  console.log('test 0');
   // Create requires user activation when availability is 'downloadable'.
   const languagePair = {sourceLanguage: 'en', targetLanguage: 'ja'};
+  console.log('test 1');
   assert_implements_optional(await Translator.availability(languagePair) == 'downloadable');
+  console.log('test 2');
   assert_false(navigator.userActivation.isActive);
+  console.log('test 3');
   await promise_rejects_dom(t, 'NotAllowedError', Translator.create(languagePair));
+  console.log('test 4');
   await test_driver.bless('Translator.create', async () => { await Translator.create(languagePair); });
+  console.log('test 5');
 
   // Create does not require user activation when availability is 'available'.
   assert_equals(await Translator.availability(languagePair), 'available');
+  console.log('test 6');
   assert_false(navigator.userActivation.isActive);
+  console.log('test 7');
   await Translator.create(languagePair);
+  console.log('test 8');
 }, 'Create requires user activation when availability is "downloadable"');
 
 promise_test(async t => {

@@ -164,7 +164,7 @@ class BidiSession:
     def on_transport_closed(self):
         for future in self.pending_commands.values():
             if future is not None and not future.done():
-                future.set_exception(UnknownErrorException("connection closed"))
+                future.set_exception(UnknownErrorException("WebSocket connection closed"))
 
     async def send_command(
         self,

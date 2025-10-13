@@ -26,7 +26,7 @@ promise_test(async t => {
   console.log('test 4');
   await test_driver.bless('Translator.create');
   console.log('test 5');
-  const translator = await Translator.create({
+  const translatorPromise = Translator.create({
     sourceLanguage: 'es',
     targetLanguage: 'ja',
     monitor(m) {
@@ -35,8 +35,9 @@ promise_test(async t => {
       });
     }
   });
-  console.log('test 6');
-
+  console.log('test 6.1');
+  await translatorPromise;
+  console.log('test 6.2');
   // Create does not require user activation when availability is 'available'.
   assert_equals(await Translator.availability(languagePair), 'available');
   console.log('test 7');

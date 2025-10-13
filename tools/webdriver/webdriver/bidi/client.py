@@ -144,8 +144,9 @@ class BidiSession:
     async def start_transport(self,
                               loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
         if self.transport is None:
-            self.transport = Transport(self.websocket_url, self.on_message,
-                                       loop=loop,
+            self.transport = Transport(self.websocket_url, 
+                 self.on_message,
+                 loop=loop,
                                        on_closed=self.on_transport_closed)
             await self.transport.start()
         elif loop is not None and loop is not self.event_loop:

@@ -26,7 +26,7 @@ promise_test(async t => {
   dynamicFace.load();
   const readyPromise2 = fontSet.ready;
   assert_not_equals(readyPromise1, readyPromise2, "A new FontFace added should create a new document.fonts.ready promise");
-  
+
   await readyPromise2;
   assert_equals(fontSet.status, "loaded", "document.fonts.status should be 'loaded'");
 }, "document.fonts.ready is replaced as new fonts are loaded");

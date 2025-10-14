@@ -398,9 +398,9 @@ class WebDriverBidiPermissionsProtocolPart(BidiPermissionsProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    async def set_permission(self, descriptor, state, origin):
+    async def set_permission(self, descriptor, state, origin, embedding_origin=None):
         return await self.webdriver.bidi_session.permissions.set_permission(
-            descriptor=descriptor, state=state, origin=origin)
+            descriptor=descriptor, state=state, origin=origin, embedding_origin=embedding_origin)
 
 class WebDriverBidiWebExtensionsProtocolPart(WebExtensionsProtocolPart):
     def __init__(self, parent):

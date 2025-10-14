@@ -122,7 +122,10 @@ async def test_set_permission_iframe(
     iframe_orgin = await get_context_origin(bidi_session, iframe_context)
 
     # Ensure the initial permission for the frame is prompt.
-    assert await get_permission_state(bidi_session, iframe_context, "storage-access") == "prompt"
+    assert (
+        await get_permission_state(bidi_session, iframe_context, "storage-access")
+        == "prompt"
+    )
 
     # Set permissions for the top-level context's origin.
     tab_origin = await get_context_origin(bidi_session, new_tab)

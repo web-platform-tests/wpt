@@ -48,7 +48,7 @@ def do_delayed_imports(paths):
             "-memory",
             "4096",
             "-cores",
-            "8",
+            "4",
             "-prop",
             "ro.test_harness=true",
             "-no-snapstorage",

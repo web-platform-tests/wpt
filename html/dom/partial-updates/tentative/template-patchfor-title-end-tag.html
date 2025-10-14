@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8" />
+<title id="title">Patching into title allows title end tag</title>
+<link rel=help href="https://github.com/WICG/declarative-partial-updates">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<template patchfor="title">before </title> after</template>
+<script>
+test(() => {
+    assert_equals(document.title, "before </title> after");
+}, "<template patchfor> into a title should not parse HTML");
+
+</script>

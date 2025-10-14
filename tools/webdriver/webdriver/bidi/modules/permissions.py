@@ -16,7 +16,7 @@ class Permissions(BidiModule):
             "descriptor": descriptor,
             "state": state,
             "origin": origin,
-            "embeddedOrigin": embedded_origin,
             "userContext": user_context,
+            "embeddedOrigin": embedded_origin,
         }
         return params

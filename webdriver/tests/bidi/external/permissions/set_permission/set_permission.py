@@ -104,7 +104,9 @@ async def test_set_permission_origin_unknown(bidi_session, new_tab, origin, url)
 
 
 @pytest.mark.asyncio
-async def test_set_permission_iframe(bidi_session, new_tab, test_page_cross_origin_frame):
+async def test_set_permission_iframe(
+    bidi_session, new_tab, test_page_cross_origin_frame
+):
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"],
         url=test_page_cross_origin_frame,
@@ -113,9 +115,9 @@ async def test_set_permission_iframe(bidi_session, new_tab, test_page_cross_orig
     contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
 
     frames = contexts[0]["children"]
-    assert(len(frames) == 1)
+    assert len(frames) == 1
     iframe_context_id = frames[0]["context"]
-    assert(iframe_context_id)
+    assert iframe_context_id
     iframe_context = {"context": iframe_context_id}
     iframe_orgin = await get_context_origin(bidi_session, iframe_context)
 
@@ -130,7 +132,10 @@ async def test_set_permission_iframe(bidi_session, new_tab, test_page_cross_orig
         origin=tab_origin,
     )
     # Assert the frame's permission is still prompt.
-    assert await get_permission_state(bidi_session, iframe_context, "storage-access") == "prompt"
+    assert (
+        await get_permission_state(bidi_session, iframe_context, "storage-access")
+        == "prompt"
+    )
 
     # Set permissions for the frame's origin.
     await bidi_session.permissions.set_permission(
@@ -139,4 +144,7 @@ async def test_set_permission_iframe(bidi_session, new_tab, test_page_cross_orig
         origin=tab_origin,
         embedded_origin=iframe_orgin,
     )
-    assert await get_permission_state(bidi_session, iframe_context, "storage-access") == "granted"
+    assert (
+        await get_permission_state(bidi_session, iframe_context, "storage-access")
+        == "granted"
+    )

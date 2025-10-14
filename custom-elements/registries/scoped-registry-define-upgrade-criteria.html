@@ -123,6 +123,36 @@ test(t => {
 
 test(t => {
   const name = nextCustomElementName();
+  const node = document.body.appendChild(document.createElement(name));
+
+  const registry = new CustomElementRegistry;
+  const shadow = attachShadowForTest(t, registry);
+  shadow.appendChild(node);
+
+  class TestElement extends HTMLElement {};
+  customElements.define(name, TestElement);
+
+  assert_true(node instanceof TestElement);
+}, 'Adding definition to global registry should upgrade nodes even after the node is moved into a separate shadow tree.');
+
+test(t => {
+  const name = nextCustomElementName();
+
+  const registry = new CustomElementRegistry;
+  const shadow1 = attachShadowForTest(t, registry);
+  const node = insertNewElementIntoShadow(shadow1, name);
+
+  const shadow2 = attachShadowForTest(t, new CustomElementRegistry);
+  shadow2.appendChild(node);
+
+  class TestElement extends HTMLElement {};
+  registry.define(name, TestElement);
+
+  assert_true(node instanceof TestElement);
+}, 'Adding definition to scoped registry should upgrade nodes even after the node is moved to a separate shadow tree using a different registry.');
+
+test(t => {
+  const name = nextCustomElementName();
 
   const registry = new CustomElementRegistry;
   const shadow1 = attachShadowForTest(t, registry);

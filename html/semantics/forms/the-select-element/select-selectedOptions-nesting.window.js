@@ -18,10 +18,10 @@ for (const optionParentElementName of ["option", "hr", "select"]) {
     const option = optionParent.appendChild(document.createElement("option"));
     option.setAttribute("selected", "");
     option.textContent = "2";
-    
+
     assert_equals(selectedOptions.length, 1);
     assert_equals(selectedOptions[0], select.firstChild);
-    assert_equals(select.value, "1");      
+    assert_equals(select.value, "1");
   }, `<select> containing <${optionParentElementName}><option selected>`);
 }
 

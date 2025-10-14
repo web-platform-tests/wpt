@@ -118,16 +118,20 @@ async def test_set_permission_iframe(bidi_session, new_tab, test_page_cross_orig
     iframe_context = {"context": iframe_context_id}
     iframe_orgin = await get_context_origin(bidi_session, iframe_context)
 
-    # Ensure permission for the frame is prompt.
+    # Ensure the initial permission for the frame is prompt.
+    assert await get_permission_state(bidi_session, iframe_context, "storage-access") == "prompt"
+
+    # Set permissions for the top-level context's origin.
     tab_origin = await get_context_origin(bidi_session, new_tab)
     await bidi_session.permissions.set_permission(
         descriptor={"name": "storage-access"},
         state="prompt",
         origin=tab_origin,
-        embedded_origin=iframe_orgin,
     )
+    # Assert the frame's permission is still prompt.
     assert await get_permission_state(bidi_session, iframe_context, "storage-access") == "prompt"
 
+    # Set permissions for the frame's origin.
     await bidi_session.permissions.set_permission(
         descriptor={"name": "storage-access"},
         state="granted",

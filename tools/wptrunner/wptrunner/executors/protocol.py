@@ -598,7 +598,7 @@ class BidiPermissionsProtocolPart(ProtocolPart):
     name = "bidi_permissions"
 
     @abstractmethod
-    async def set_permission(self, descriptor, state, origin, embedded_origin=None):
+    async def set_permission(self, descriptor, state, origin, embedded_origin: Optional[str] = None):
         pass
 
 

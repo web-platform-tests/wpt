@@ -977,7 +977,8 @@
                  *                 permission for. If omitted, the permission is set for the
                  *                 current window's origin.
                  * @param {string} [params.embeddedOrigin] - an optional embedded `origin` string to set the
-                 *                 permission for. If omitted, the top-level origin is used as the embedded origin.
+                 *                 permission for. If omitted, the top-level `origin` is used as the
+                 *                 embedded origin.
                  * @returns {Promise} fulfilled after the permission is set, or rejected if setting
                  *                    the permission fails.
                  */

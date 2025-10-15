@@ -41,7 +41,7 @@ test(() => {
     const clone = host.cloneNode(true);
     const shadowRoot1 = clone.querySelector('#shadow-host-1').shadowRoot;
     const element = shadowRoot1.querySelector('#shadow-host-1-child');
-    
+
     const registry1 = new CustomElementRegistry;
     registry1.initialize(shadowRoot1);
     assert_equals(element.customElementRegistry, registry1);
@@ -55,7 +55,7 @@ test(() => {
     const shadowRoot1 = clone.querySelector('#shadow-host-1').shadowRoot;
     const shadowRoot2 = clone.querySelector('#shadow-host-2').shadowRoot;
     const element = shadowRoot1.querySelector('#shadow-host-1-child');
-    
+
     const registry1 = new CustomElementRegistry;
     const registry2 = new CustomElementRegistry;
     registry1.initialize(shadowRoot1);

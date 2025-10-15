@@ -6,7 +6,6 @@ import os
 import socket
 import threading
 import traceback
-from typing import Awaitable
 from urllib.parse import urljoin
 
 from .base import (AsyncCallbackHandler,
@@ -405,7 +404,7 @@ class WebDriverBidiPermissionsProtocolPart(BidiPermissionsProtocolPart):
         state: str,
         origin: str,
         embedded_origin: Optional[str] = None,
-    ) -> Awaitable[Any]:
+    ) -> Any:
         params = {"descriptor": descriptor, "state": state, "origin": origin}
         if embedded_origin is not None:
             params["embeddedOrigin"] = embedded_origin

@@ -604,7 +604,7 @@ class BidiPermissionsProtocolPart(ProtocolPart):
         state: str,
         origin: str,
         embedded_origin: Optional[str] = None,
-    ) -> None:
+    ) -> Awaitable[Any]:
         pass
 
 

@@ -1,4 +1,4 @@
 features:
 - name: absolute-positioning
   files:
-  - '*absolute*'
+  - 'position-absolute-*'

@@ -59,7 +59,7 @@ def another_locale(default_locale, some_locale):
 
 @pytest_asyncio.fixture
 async def get_current_navigator_language(bidi_session):
-    async def get_navigator_language(context, sandbox=None):
+    async def get_current_navigator_language(context, sandbox=None):
         result = await bidi_session.script.evaluate(
             expression="navigator.language",
             target=ContextTarget(context["context"], sandbox=sandbox),

@@ -3,34 +3,34 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 
-async def test_locale_set_override_and_reset(bidi_session, top_context,
+async def test_locale_set_override_and_reset(bidi_session, new_tab,
     some_locale, another_locale,
     assert_locale_against_default, assert_locale_against_value):
-    await assert_locale_against_default(top_context)
+    await assert_locale_against_default(new_tab)
 
     # Set locale override.
     await bidi_session.emulation.set_locale_override(
-        contexts=[top_context["context"]],
+        contexts=[new_tab["context"]],
         locale=some_locale
     )
 
-    await assert_locale_against_value(some_locale, top_context)
+    await assert_locale_against_value(some_locale, new_tab)
 
-    # Set locale override.
+    # Set another locale override.
     await bidi_session.emulation.set_locale_override(
-        contexts=[top_context["context"]],
+        contexts=[new_tab["context"]],
         locale=another_locale
     )
 
-    await assert_locale_against_value(another_locale, top_context)
+    await assert_locale_against_value(another_locale, new_tab)
 
-    # Set locale override.
+    # Reset locale override.
     await bidi_session.emulation.set_locale_override(
-        contexts=[top_context["context"]],
+        contexts=[new_tab["context"]],
         locale=None
     )
 
-    await assert_locale_against_default(top_context)
+    await assert_locale_against_default(new_tab)
 
 
 @pytest.mark.parametrize("value", [

@@ -68,7 +68,7 @@ async def get_current_navigator_language(bidi_session):
 
         return result["value"]
 
-    return get_navigator_language
+    return get_current_navigator_language
 
 
 @pytest_asyncio.fixture
@@ -81,13 +81,12 @@ async def get_current_navigator_languages(bidi_session):
         )
 
         arr = []
-        if result["type"] == "array":
-            for item in result["value"]:
-                arr.append(item["value"])
+        for item in result["value"]:
+            arr.append(item["value"])
 
         return arr
 
-    return get_navigator_languages
+    return get_current_navigator_languages
 
 
 @pytest_asyncio.fixture
@@ -148,7 +147,11 @@ async def assert_locale_against_value(
     Assert JS locale and navigator.language/s against provided value
     """
 
-    async def assert_locale_against_value(value, context=top_context):
+    async def assert_locale_against_value(value, context):
+        assert (
+            context != top_context
+        ), "Provided context should be different from top_context"
+
         assert await get_current_locale(context) == value
         assert await get_current_navigator_language(context) == value
         assert await get_current_navigator_languages(context) == [value]

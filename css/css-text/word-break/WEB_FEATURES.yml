@@ -1,0 +1,12 @@
+features:
+- name: word-break-break-word
+  files:
+  - word-break-break-word-crash-001.html
+  - word-break-break-word-overflow-wrap-interactions.html
+  - word-break-min-content-001.html
+  - word-break-min-content-002.html
+  - word-break-min-content-003.html
+  - word-break-min-content-004.html
+  - word-break-min-content-005.html
+  - word-break-min-content-006.html
+  - word-break-min-content-007.html

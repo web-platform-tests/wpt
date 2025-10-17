@@ -1,11 +1,19 @@
 features:
-- name: text-wrap-balance
-  files:
-  - text-wrap-balance-*
-- name: text-wrap-nowrap
-  files:
-  - text-wrap-nowrap-*
-- name: white-space-collapse
-  files:
-  - white-space-collapse-*
-  - line-edge-white-space-collapse-*
+  - name: text-wrap-balance
+    files:
+      - text-wrap-balance-*
+  - name: text-wrap-nowrap
+    files:
+      - text-wrap-nowrap-*
+  - name: white-space-collapse
+    files:
+      - white-space-collapse-*
+      - line-edge-white-space-collapse-*
+  - name: word-break-break-word
+    files:
+      - break-spaces-003.html
+      - break-spaces-004.html
+      - break-spaces-009.html
+      - break-spaces-with-ideographic-space-*
+      - break-spaces-with-overflow-wrap-009.html
+      - break-spaces-with-overflow-wrap-010.html

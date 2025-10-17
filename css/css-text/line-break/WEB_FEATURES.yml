@@ -1,3 +1,10 @@
 features:
 - name: line-break
   files: "**"
+- name: word-break
+  files:
+  - line-break-anywhere-004.html
+  - line-break-loose-hyphens-002.html
+  - line-break-normal-hyphens-002.html
+  - line-break-strict-hyphens-002.html
+  - line-breaking/line-breaking-atomic-008.html

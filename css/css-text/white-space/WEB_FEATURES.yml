@@ -17,3 +17,6 @@ features:
       - break-spaces-with-ideographic-space-*
       - break-spaces-with-overflow-wrap-009.html
       - break-spaces-with-overflow-wrap-010.html
+  - name: word-break
+    files:
+      - break-spaces-with-word-break-001.html

@@ -16,6 +16,7 @@ features:
   - white-space-collapse-*
 - name: text-wrap
   files:
+  # No wildcard here to avoid capturing text-wrap-mode-*.
   - text-wrap-computed.html
   - text-wrap-invalid.html
   - text-wrap-valid.html
@@ -25,7 +26,6 @@ features:
 - name: word-spacing
   files: word-spacing-*
 - name: word-break-break-word
-  files:
-  - word-break-computed.html
-  - word-break-invalid.html
-  - word-break-valid.html
+  files: word-break-*
+- name: word-break
+  files: word-break-*

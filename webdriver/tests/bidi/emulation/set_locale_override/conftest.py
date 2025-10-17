@@ -107,7 +107,6 @@ async def default_navigator_languages(get_current_navigator_languages, top_conte
 
 @pytest_asyncio.fixture
 async def assert_locale_against_default(
-    top_context,
     get_current_locale,
     get_current_navigator_language,
     get_current_navigator_languages,
@@ -123,7 +122,7 @@ async def assert_locale_against_default(
     for each API.
     """
 
-    async def assert_locale_against_default(context=top_context):
+    async def assert_locale_against_default(context):
         assert await get_current_locale(context) == default_locale
         assert (
             await get_current_navigator_language(context) == default_navigator_language

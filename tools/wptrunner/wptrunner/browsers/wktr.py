@@ -81,8 +81,10 @@ class WKTRBrowser(Browser):
     interact with WebKitTestRunner through its protocol mode.
     """
 
-    def __init__(self, logger, binary="WebKitTestRunner", binary_args=[], **kwargs):
+    def __init__(self, logger, binary="WebKitTestRunner", binary_args=None, **kwargs):
         super().__init__(logger, **kwargs)
+        if binary_args is None:
+            binary_args = []
 
         self._args = [binary] + binary_args
         self._proc = None

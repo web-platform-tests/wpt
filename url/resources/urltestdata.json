@@ -10311,20 +10311,12 @@
     "search": "",
     "hash": ""
   },
-  "# UNC paths should be handled correctly",
+  "# UNC paths without base URL should fail (no special UNC handling)",
   {
     "input": "\\\\server\\share\\file.txt",
     "base": null,
-    "href": "file://server/share/file.txt",
-    "protocol": "file:",
-    "username": "",
-    "password": "",
-    "host": "server",
-    "hostname": "server",
-    "port": "",
-    "pathname": "/share/file.txt",
-    "search": "",
-    "hash": ""
+    "failure": true,
+    "comment": "UNC paths are not specially handled; without a base they fail to parse"
   },
   "# Mixed separators should be normalized",
   {
@@ -10449,20 +10441,12 @@
     "base": null,
     "failure": true
   },
-  "# Network paths",
+  "# Network paths without base URL should fail (no special UNC handling)",
   {
     "input": "\\\\server.domain.com\\share\\folder\\file.txt",
     "base": null,
-    "href": "file://server.domain.com/share/folder/file.txt",
-    "protocol": "file:",
-    "username": "",
-    "password": "",
-    "host": "server.domain.com",
-    "hostname": "server.domain.com",
-    "port": "",
-    "pathname": "/share/folder/file.txt",
-    "search": "",
-    "hash": ""
+    "failure": true,
+    "comment": "UNC paths are not specially handled; without a base they fail to parse"
   },
   "# Case sensitivity tests",
   {
@@ -10622,21 +10606,32 @@
     "search": "",
     "hash": ""
   },
-  "# Invalid drive patterns",
+  "# Non-Windows drive patterns (multi-letter or non-alpha) are parsed as normal URLs",
   {
     "input": "CC:\\path\\file.txt",
-    "base": null,
-    "failure": true
+    "base": "about:blank",
+    "href": "cc:\\path\\file.txt",
+    "protocol": "cc:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "\\path\\file.txt",
+    "search": "",
+    "hash": ""
   },
   {
     "input": "1:\\path\\file.txt",
-    "base": null,
-    "failure": true
+    "base": "about:blank",
+    "failure": true,
+    "comment": "Schemes must start with an ASCII letter, not a digit"
   },
   {
     "input": "@:\\path\\file.txt",
-    "base": null,
-    "failure": true
+    "base": "about:blank",
+    "failure": true,
+    "comment": "@ is not a valid scheme character"
   },
   "# Drive letter edge cases",
   {

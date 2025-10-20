@@ -409,7 +409,8 @@ WebDriver BiDi command.</p>
 <li><p><strong>params</strong> (<em>object</em>) – Parameters for the command.</p></li>
 <li><p><strong>params.descriptor</strong> (<em>PermissionDescriptor</em>) – a <a class="reference external" href="https://w3c.github.io/permissions/#dom-permissiondescriptor">PermissionDescriptor</a> or derived object.</p></li>
 <li><p><strong>params.state</strong> (<em>PermissionState</em>) – a <a class="reference external" href="https://w3c.github.io/permissions/#dom-permissionstate">PermissionState</a> value.</p></li>
-<li><p><strong>params.origin</strong> (<em>string</em>) – an optional <cite>origin</cite> string to set the permission for. If omitted, the permission is set for the current window’s origin.</p></li>
+<li><p><strong>params.origin</strong> (<em>string</em>) – an optional top-level <cite>origin</cite> string to set the permission for. If omitted, the permission is set for the current window’s origin.</p></li>
+<li><p><strong>params.embeddedOrigin</strong> (<em>string</em>) – an optional embedded <cite>origin</cite> string to set the permission for. If omitted, the top-level <cite>origin</cite> is used as the embedded origin.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

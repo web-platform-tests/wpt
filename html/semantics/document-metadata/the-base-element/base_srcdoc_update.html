@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>base element added in the parent Document should be reflect insrcdoc document's base URL</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/urls-and-fetching.html#fallback-base-url">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<iframe srcdoc=""></iframe>
+<script>
+var t = async_test();
+addEventListener("load", t.step_func_done(function() {
+  var doc = frames[0].document;
+  var b = doc.createElement("base");
+  b.setAttribute("href", "test");
+  var newBaseValue = location.href.replace(/\/[^/]*$/, "/") + "test";
+  assert_equals(b.href, newBaseValue);
+  assert_equals(doc.baseURI, location.href);
+  // This <base> is added to the parent Document.
+  document.head.appendChild(b);
+  // And is reflected in <iframe srcdoc>'s base URI.
+  assert_equals(doc.baseURI, newBaseValue);
+}));
+</script>

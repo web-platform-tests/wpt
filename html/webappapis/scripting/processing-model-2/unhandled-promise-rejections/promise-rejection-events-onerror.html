@@ -4,6 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <link rel="help" href="https://html.spec.whatwg.org/#runtime-script-errors">
 <link rel="help" href="https://html.spec.whatwg.org/#unhandled-promise-rejections">
+<body>
 <script>
 'use strict';
 setup({
@@ -37,11 +38,12 @@ async_test(function(t) {
 
 // This function queues a task in "DOM manipulation task source"
 function queueTask(f) {
-  var d = document.createElement("details");
-  d.ontoggle = function() {
+  const script = document.createElement('script');
+  script.setAttribute('src', ' ');
+  script.addEventListener('error', () => {
+    script.remove();
     f();
-  };
-
-  d.setAttribute("open", "");
+  });
+  document.body.appendChild(script);
 }
 </script>

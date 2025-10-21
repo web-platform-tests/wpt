@@ -20,3 +20,6 @@ features:
 - name: background-position
   files:
   - background-position-*
+- name: background-repeat
+  files:
+  - background-repeat-*

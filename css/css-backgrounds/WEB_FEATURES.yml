@@ -49,3 +49,7 @@ features:
   files:
   - background-position-*
   - scroll-positioned-multiple-background-images.html
+- name: background-repeat
+  files:
+  - background-repeat-*
+  - background_repeat_*

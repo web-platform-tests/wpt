@@ -42,3 +42,6 @@ features:
   # `background-position` property but which nonetheless test relevant
   # semantics via the `background` shorthand:
   - background-bg-pos-*
+- name: background-repeat
+  files:
+  - background-repeat-*

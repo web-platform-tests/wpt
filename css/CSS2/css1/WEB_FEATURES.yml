@@ -8,3 +8,7 @@ features:
 - name: background-position
   files:
   - c536-bgpos-*
+- name: background-repeat
+  files:
+  - c534-bgre-*
+  - c534-bgreps-*

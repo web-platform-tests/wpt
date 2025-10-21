@@ -8,3 +8,6 @@ features:
 - name: background-position
   files:
   - table-backgrounds-*
+- name: background-repeat
+  files:
+  - background-table-*

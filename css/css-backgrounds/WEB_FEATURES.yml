@@ -53,3 +53,9 @@ features:
   files:
   - background-repeat-*
   - background_repeat_*
+- name: background-size
+  files:
+  - background-image-cover-zoomed-1.html
+  - background-image-large-with-auto.html
+  - background-size-*
+  - css3-background-size*

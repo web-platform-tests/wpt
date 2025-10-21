@@ -12,3 +12,6 @@ features:
 - name: background-position
   files:
   - background-position-*
+- name: background-size
+  files:
+  - background-size-interpolation.html

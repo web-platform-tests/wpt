@@ -14,3 +14,6 @@ features:
 - name: background-position
   files:
   - background-position.html
+- name: background-size
+  files:
+  - background-size.html

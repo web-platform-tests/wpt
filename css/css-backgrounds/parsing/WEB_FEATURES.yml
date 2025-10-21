@@ -23,3 +23,6 @@ features:
 - name: background-repeat
   files:
   - background-repeat-*
+- name: background-size
+  files:
+  - background-size-*

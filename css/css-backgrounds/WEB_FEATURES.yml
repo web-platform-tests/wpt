@@ -41,3 +41,7 @@ features:
   - none-as-image-layer.htm
   - order-of-images.htm
   - scroll-positioned-multiple-background-images.html
+- name: background-origin
+  files:
+  - background-origin-*
+  - css3-background-origin-*

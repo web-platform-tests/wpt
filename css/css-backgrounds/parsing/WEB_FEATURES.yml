@@ -11,3 +11,6 @@ features:
 - name: background-color
   files:
   - background-color-*
+- name: background-image
+  files:
+  - background-image-*

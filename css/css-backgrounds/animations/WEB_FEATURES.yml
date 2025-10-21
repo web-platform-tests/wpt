@@ -6,3 +6,6 @@ features:
   files:
   - background-color-*
   - two-background-color-*
+- name: background-image
+  files:
+  - background-image-interpolation.html

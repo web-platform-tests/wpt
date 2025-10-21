@@ -1,0 +1,7 @@
+features:
+- name: background-image
+  files:
+  - table-background*
+  - table-layer-transparency-003.xht
+  - table-layer-transparency-005.xht
+  - table-layer-transparency-008.xht

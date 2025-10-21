@@ -24,3 +24,11 @@ features:
   files:
   - background-color-*
   - background-root-003.xht
+- name: background-image
+  files:
+  - background-006.xht
+  - background-006a.xht
+  # The following pattern matches a `background-image-cover-003.xht` which does
+  # not use the `background-image` property but which nonetheless test relevant
+  # semantics via the `background` shorthand:
+  - background-image-*

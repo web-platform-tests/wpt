@@ -28,3 +28,16 @@ features:
   - background_color_padding_box.htm
   - bg-color-with-gradient.html
   - color-behind-images.htm
+- name: background-image
+  files:
+  - background-image-0*
+  - background-image-first-letter.html
+  - background-image-first-line.html
+  - background-image-large-with-auto.html
+  - background-image-shared-stylesheet.html
+  - background-image-table-cells-straddling-no-repeat.html
+  - background-image-table-cells-zoomed.html
+  - color-behind-images.htm
+  - none-as-image-layer.htm
+  - order-of-images.htm
+  - scroll-positioned-multiple-background-images.html

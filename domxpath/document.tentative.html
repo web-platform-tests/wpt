@@ -28,4 +28,72 @@ test(function() {
   }
   assert_array_equals(matched, [document]);
 });
+
+// Root-adjacent comment: create a comment node as a sibling of documentElement
+test(function() {
+  var comment = document.createComment("root-adjacent comment");
+  document.insertBefore(comment, document.documentElement);
+  try {
+    var result = document.evaluate("..", // expression
+                                  comment, // context node
+                                  null, // resolver
+                                  XPathResult.ANY_TYPE, // type
+                                  null); // result
+    var matched = [];
+    var cur;
+    while ((cur = result.iterateNext()) !== null) {
+      matched.push(cur);
+    }
+    assert_array_equals(matched, [document]);
+  } finally {
+    // Clean up so other tests are not affected
+    document.removeChild(comment);
+  }
+});
+
+// Processing instruction: create via DOM and place adjacent to the documentElement
+test(function() {
+  if (typeof document.createProcessingInstruction !== 'function') {
+    // Not all HTML-oriented implementations expose this; mark test as effectively skipped
+    assert_true(true, "createProcessingInstruction not supported in this environment");
+    return;
+  }
+  var pi = document.createProcessingInstruction("test-pi", "data");
+  document.insertBefore(pi, document.documentElement);
+  try {
+    var result = document.evaluate("..", // expression
+                                  pi, // context node
+                                  null, // resolver
+                                  XPathResult.ANY_TYPE, // type
+                                  null); // result
+    var matched = [];
+    var cur;
+    while ((cur = result.iterateNext()) !== null) {
+      matched.push(cur);
+    }
+    assert_array_equals(matched, [document]);
+  } finally {
+    document.removeChild(pi);
+  }
+});
+
+// DocumentType: if present, its parent should be the Document; ensure XPath sees the parent
+test(function() {
+  var dt = document.doctype;
+  if (!dt) {
+    assert_true(true, "No doctype in this document");
+    return;
+  }
+  var result = document.evaluate("..", // expression
+                                dt, // context node
+                                null, // resolver
+                                XPathResult.ANY_TYPE, // type
+                                null); // result
+  var matched = [];
+  var cur;
+  while ((cur = result.iterateNext()) !== null) {
+    matched.push(cur);
+  }
+  assert_array_equals(matched, [document]);
+});
 </script>

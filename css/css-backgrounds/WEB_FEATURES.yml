@@ -45,3 +45,7 @@ features:
   files:
   - background-origin-*
   - css3-background-origin-*
+- name: background-position
+  files:
+  - background-position-*
+  - scroll-positioned-multiple-background-images.html

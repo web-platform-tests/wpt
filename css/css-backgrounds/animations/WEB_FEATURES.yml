@@ -9,3 +9,6 @@ features:
 - name: background-image
   files:
   - background-image-interpolation.html
+- name: background-position
+  files:
+  - background-position-*

@@ -17,3 +17,6 @@ features:
 - name: background-origin
   files:
   - background-origin-*
+- name: background-position
+  files:
+  - background-position-*

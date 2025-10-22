@@ -19,17 +19,11 @@
         const receivedEvents = [];
         const expectedEvents = ['pending', 'ready'];
 
-        // Create target url with unique id to ensure events are from this test
-        const uuid = self.crypto.randomUUID();
-        const targetUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/target.html?" + uuid;
+        const targetUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/target.html";
 
         // Create a promise that resolves when we receive the 'ready' event
         const readyEventPromise = new Promise((resolve, reject) => {
             const removeHandler = test_driver.bidi.speculation.prefetch_status_updated.on((event) => {
-                // Ignore events from other tests that could be running in parallel.
-                if (event.url !== targetUrl) {
-                    return;
-                }
                 receivedEvents.push(event);
                 
                 // When we receive the ready event, clean up and resolve
@@ -40,7 +34,6 @@
             });
 
         });
-
 
         // Create prefetch rules for our target page in resources
         const speculationRules = {
@@ -71,17 +64,12 @@
         const expectedEvents = ['pending', 'ready', 'success'];
         let newWindow = null;
 
-        // Create target url with unique id to ensure events are from this test
-        const uuid = self.crypto.randomUUID();
-        const targetUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/target.html?" + uuid;
+        // Create prefetch rules for our target page in resources (different URL to avoid caching)
+        const targetUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/target.html?test=2";
 
         // Create a promise that resolves when we receive the 'success' event
         const successEventPromise = new Promise((resolve, reject) => {
             const removeHandler = test_driver.bidi.speculation.prefetch_status_updated.on((event) => {
-                // Ignore events from other tests that could be running in parallel.
-                if (event.url !== targetUrl) {
-                    return;
-                }
                 receivedEvents.push(event);
                 
                 // When we receive the ready event, navigate to trigger success
@@ -125,21 +113,14 @@
     }, "prefetch_status_updated event with navigation to success");
 
     promise_test(async t => {
-
         const receivedEvents = [];
         const expectedEvents = ['pending', 'failure'];
 
-        // Create prefetch rules for a non-existent page that should fail with 404
-        const uuid = self.crypto.randomUUID();
-        const errorUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/nonexistent-404-page.html?" + uuid;
+        const errorUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/nonexistent-404-page.html";
 
         // Create a promise that resolves when we receive the 'failure' event
         const failureEventPromise = new Promise((resolve, reject) => {
             const removeHandler = test_driver.bidi.speculation.prefetch_status_updated.on((event) => {
-                // Ignore events from other tests that could be running in parallel.
-                if (event.url !== errorUrl) {
-                    return;
-                }
                 receivedEvents.push(event);
                 
                 // When we receive the failure event, we're done

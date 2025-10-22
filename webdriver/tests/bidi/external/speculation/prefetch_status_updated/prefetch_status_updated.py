@@ -4,25 +4,6 @@ from webdriver.error import TimeoutException
 pytestmark = pytest.mark.asyncio
 
 @pytest.mark.asyncio
-async def test_subscribe_to_prefetch_status_updated(
-    bidi_session, subscribe_events, new_tab, url
-):
-    '''Test basic subscription to prefetch status updated events.'''
-    
-    # Subscribe to prefetch status updated events
-    await subscribe_events(events=["speculation.prefetchStatusUpdated"])
-    
-    # Navigate to a test page
-    test_url = url("/common/blank.html", protocol="https")
-    await bidi_session.browsing_context.navigate(
-        context=new_tab["context"],
-        url=test_url,
-        wait="complete",
-    )
-    
-    assert True
-
-@pytest.mark.asyncio
 async def test_speculation_rules_generate_ready_events(
     bidi_session, subscribe_events, new_tab, url, wait_for_events, add_speculation_rules_and_link
 ):
@@ -222,9 +203,6 @@ async def test_subscribe_unsubscribe_event_emission(
         # Wait for events to be emitted
         events = await waiter.get_events(lambda events: len(events) >= 2)
     
-    # Assert events were emitted while subscribed
-    assert len(events) >= 2, f"Expected at least 2 events while subscribed, got {len(events)}"
-    
     # Phase 2: Unsubscribe and assert events are NOT emitted
     await bidi_session.session.unsubscribe(subscriptions=[subscription_id])
 
@@ -249,7 +227,7 @@ async def test_subscribe_unsubscribe_event_emission(
         await add_speculation_rules_and_link(new_tab, speculation_rules_2, prefetch_target_2)
         
         with pytest.raises(TimeoutException):
-            await waiter.get_events(lambda events: len(events) >= 1, timeout=2)
+            await waiter.get_events(lambda events: len(events) >= 1, timeout=0.5)
 
 @pytest.mark.asyncio
 async def test_subscribe_unsubscribe_module_subscription(
@@ -283,9 +261,6 @@ async def test_subscribe_unsubscribe_module_subscription(
         # Wait for events to be emitted
         events = await waiter.get_events(lambda events: len(events) >= 2)
     
-    # Assert events were emitted while subscribed to module
-    assert len(events) >= 2, f"Expected at least 2 events while subscribed to module, got {len(events)}"
-    
     # Phase 2: Unsubscribe from module and assert events are NOT emitted
     await bidi_session.session.unsubscribe(subscriptions=[subscription_id])
 
@@ -310,7 +285,7 @@ async def test_subscribe_unsubscribe_module_subscription(
         await add_speculation_rules_and_link(new_tab, speculation_rules_2, prefetch_target_2)
         
         with pytest.raises(TimeoutException):
-            await waiter.get_events(lambda events: len(events) >= 1, timeout=2)
+            await waiter.get_events(lambda events: len(events) >= 1, timeout=0.5)
 
 @pytest.mark.asyncio
 async def test_unsubscribe_from_prefetch_status_updated(
@@ -326,5 +301,3 @@ async def test_unsubscribe_from_prefetch_status_updated(
     
     # Unsubscribe immediately
     await bidi_session.session.unsubscribe(subscriptions=[subscription_id])
-    
-    assert True

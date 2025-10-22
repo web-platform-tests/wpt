@@ -23,28 +23,6 @@ def add_speculation_rules(bidi_session):
     
     return add_speculation_rules
 
-
-@pytest.fixture
-def add_prefetch_link(bidi_session):
-    """Helper for adding links to the page that can be targeted by speculation rules."""
-    
-    async def add_link(context: Mapping[str, Any], href: str, text: str = "Test Link", link_id: str = "prefetch-page"):
-        """Add a link to the page for prefetch targeting."""
-        await bidi_session.script.evaluate(
-            expression=f"""
-                const link = document.createElement('a');
-                link.href = '{href}';
-                link.textContent = '{text}';
-                link.id = '{link_id}';
-                document.body.appendChild(link);
-            """,
-            target={"context": context["context"]},
-            await_promise=False
-        )
-    
-    return add_link
-
-
 @pytest.fixture
 def add_speculation_rules_and_link(bidi_session):
     """Helper for adding both speculation rules and a prefetch link to a page."""

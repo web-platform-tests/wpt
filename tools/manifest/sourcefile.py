@@ -29,6 +29,8 @@ from .item import (ConformanceCheckerTest,
                    WebDriverSpecTest)
 from .utils import cached_property
 
+from . import parseTestRecord
+
 # Cannot do `from ..metadata.webfeatures.schema import WEB_FEATURES_YML_FILENAME`
 # because relative import beyond toplevel throws *ImportError*!
 from metadata.webfeatures.schema import WEB_FEATURES_YML_FILENAME  # type: ignore
@@ -422,6 +424,12 @@ class SourceFile:
                 (self.type_flag == "print" or "print" in self.dir_path.split(os.path.sep)))
 
     @property
+    def name_is_test262(self) -> bool:
+        """Check if the file name matches the conditions for the file to be a
+        test262 file"""
+        return ("test262" in self.dir_path.split(os.path.sep) and self.ext == ".js")
+
+    @property
     def markup_type(self) -> Optional[Text]:
         """Return the type of markup contained in a file, based on its extension,
         or None if it doesn't contain markup"""
@@ -471,11 +479,22 @@ class SourceFile:
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='pac']")
 
     @cached_property
+    def test262_test_record(self):
+        if self.name_is_test262:
+            with open(self.path, encoding='ISO-8859-1') as f:
+                return parseTestRecord.parseTestRecord(f.read(), self.path)
+        else:
+            return None
+
+    @cached_property
     def script_metadata(self) -> Optional[List[Tuple[Text, Text]]]:
         if self.name_is_worker or self.name_is_multi_global or self.name_is_window or self.name_is_extension:
             regexp = js_meta_re
         elif self.name_is_webdriver:
             regexp = python_meta_re
+        elif self.name_is_test262:
+            return [('script', "/resources/test262/%s" % filename)
+                    for filename in self.test262_test_record.get("includes", [])]
         else:
             return None
 
@@ -917,6 +936,9 @@ class SourceFile:
         if self.name_is_window:
             return {TestharnessTest.item_type}
 
+        if self.name_is_test262:
+            return {TestharnessTest.item_type}
+
         if self.name_is_extension:
             return {TestharnessTest.item_type}
 
@@ -1094,6 +1116,35 @@ class SourceFile:
                     test_url + variant,
                     timeout=self.timeout,
                     pac=self.pac,
+                    script_metadata=self.script_metadata
+                )
+                for variant in self.test_variants
+            ]
+            rv = TestharnessTest.item_type, tests
+
+        elif self.name_is_test262:
+            if self.test262_test_record is None:
+                return None
+
+            test_feature_flags = self.test262_test_record.get("features", [])
+            suffix = ".test262"
+            if "module" in self.test262_test_record:
+                suffix += "-module"
+            elif "onlyStrict" in self.test262_test_record:
+                # Modules are always strict mode, so only append strict for
+                # non-module tests.
+                suffix += ".strict"
+            suffix += ".html"
+            test_url = replace_end(self.rel_url, ".js", suffix)
+            tests = [
+                TestharnessTest(
+                    self.tests_root,
+                    self.rel_path,
+                    self.url_base,
+                    test_url + variant,
+                    timeout=self.timeout,
+                    pac=self.pac,
+                    testdriver_features=self.testdriver_features,
                     script_metadata=self.script_metadata
                 )
                 for variant in self.test_variants

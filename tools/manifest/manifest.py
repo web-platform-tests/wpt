@@ -54,7 +54,10 @@ item_classes: Dict[Text, Type[ManifestItem]] = {"testharness": TestharnessTest,
 
 def compute_manifest_items(source_file: SourceFile) -> Optional[Tuple[Tuple[Text, ...], Text, Set[ManifestItem], Text]]:
     rel_path_parts = source_file.rel_path_parts
-    new_type, manifest_items = source_file.manifest_items()
+    result = source_file.manifest_items()
+    if result is None:
+        return None
+    new_type, manifest_items = result
     file_hash = source_file.hash
     return rel_path_parts, new_type, set(manifest_items), file_hash
 

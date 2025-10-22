@@ -31,3 +31,11 @@ async function createRTCEncodedFrameFromScratch(kind) {
   const {data} = await new Promise(r => worker.onmessage = r);
   return data;
 }
+
+function areArrayBuffersEqual(a, b) {
+  if (a.byteLength != b.byteLength) {
+    return false;
+  }
+  const ui8b = new Uint8Array(b);
+  return new Uint8Array(a).every((val, i) => val === ui8b[i]);
+}

@@ -1,0 +1,6 @@
+features:
+- name: barprop
+  files:
+  - BarProp-target.html
+  - window-open-popup-target.html
+  - windowFeature-values-target.html

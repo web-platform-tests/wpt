@@ -10,5 +10,3 @@ features:
   - "*3d*"
   - backface-visibility-*
   - perspective-*
-- name: z-index
-  files: z-index-does-not-apply.html

@@ -1,3 +1,0 @@
-features:
-- name: z-index
-  files: will-change-stacking-context-z-index-*

@@ -4,4 +4,11 @@ const deflateRawChunkValue = new Uint8Array([
     0x4b, 0xad, 0x28, 0x48, 0x4d, 0x2e, 0x49, 0x4d, 0x51, 0xc8,
     0x2f, 0x2d, 0x29, 0x28, 0x2d, 0x01, 0x00,
 ]);
-const trueChunkValue = new TextEncoder().encode('expected output');
+
+const compressedBytes = [
+  ["deflate", deflateChunkValue],
+  ["gzip", gzipChunkValue],
+  ["deflate-raw", deflateRawChunkValue],
+];
+
+const expectedChunkValue = new TextEncoder().encode('expected output');

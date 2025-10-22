@@ -1,4 +1,7 @@
 features:
+- name: background
+  files:
+  - c537-bgfxps-000.xht
 - name: background-attachment
   files:
   - c535-bg-fixd-000.xht

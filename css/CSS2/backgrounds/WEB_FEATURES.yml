@@ -1,4 +1,27 @@
 features:
+- name: background
+  files:
+  - background-0*
+  - background-1*
+  - background-2*
+  - background-3*
+  - background-alpha-*
+  - background-animated-001.xht
+  - background-applies-to-*
+  - background-attachment-004.xht
+  - background-attachment-005.xht
+  - background-attachment-006.xht
+  - background-attachment-007.xht
+  - background-attachment-008.xht
+  - background-body-*
+  - background-cover-*
+  - background-html-body-001.xht
+  - background-iframes-001.xht
+  - background-intrinsic-*
+  - background-reset-001.xht
+  - background-root-*
+  - "!background-root-003.xht"
+  - background-transparency-001.xht
 - name: background-attachment
   files:
   - background-attachment-001.xht

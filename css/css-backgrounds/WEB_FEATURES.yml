@@ -1,4 +1,8 @@
 features:
+- name: background
+  files:
+  - background-3*
+  - background_color_padding_box.htm
 - name: background-clip
   files:
   - background-clip*

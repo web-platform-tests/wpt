@@ -1,4 +1,7 @@
 features:
+- name: background
+  files:
+  - background-shorthand-serialization.html
 - name: background-clip
   files:
   - background-clip-*

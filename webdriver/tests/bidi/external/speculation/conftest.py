@@ -3,26 +3,6 @@ from typing import Any, Mapping
 
 from webdriver.bidi.modules.script import ContextTarget
 
-
-@pytest.fixture
-def add_speculation_rules(bidi_session):
-    """Helper for adding speculation rules to a page."""
-    
-    async def add_speculation_rules(context: Mapping[str, Any], rules: str):
-        """Add speculation rules script to the page."""
-        await bidi_session.script.evaluate(
-            expression=f"""
-                const script = document.createElement('script');
-                script.type = 'speculationrules';
-                script.textContent = `{rules}`;
-                document.head.appendChild(script);
-            """,
-            target=ContextTarget(context["context"]),
-            await_promise=False
-        )
-    
-    return add_speculation_rules
-
 @pytest.fixture
 def add_speculation_rules_and_link(bidi_session):
     """Helper for adding both speculation rules and a prefetch link to a page."""

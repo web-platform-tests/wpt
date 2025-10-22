@@ -1,3 +1,4 @@
 features:
 - name: z-index
-  files: '*z-index*'
+  files:
+  - '*z-index*'

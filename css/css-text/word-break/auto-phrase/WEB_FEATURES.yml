@@ -1,3 +1,4 @@
 features:
 - name: word-break-auto-phrase
-  files: '*'
+  files:
+  - '*'

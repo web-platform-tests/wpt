@@ -1111,3 +1111,31 @@ async def assert_file_dialog_not_canceled(bidi_session, inline, top_context,
         cancel_event_future.cancel()
 
     yield assert_file_dialog_not_canceled
+
+
+@pytest_asyncio.fixture
+async def get_fetch_headers(bidi_session, url):
+    async def get_fetch_headers(context):
+        echo_link = url("webdriver/tests/support/http_handlers/headers_echo.py")
+        result = await bidi_session.script.evaluate(
+            expression=f"fetch('{echo_link}').then(r => r.text())",
+            target=ContextTarget(context["context"]),
+            await_promise=True,
+        )
+
+        return (json.JSONDecoder().decode(result["value"]))["headers"]
+
+    return get_fetch_headers
+
+
+@pytest_asyncio.fixture
+def assert_header_present(get_fetch_headers):
+    async def assert_header_present(context, header_name, header_value):
+        actual_headers = await get_fetch_headers(context)
+        assert header_name in actual_headers, \
+            f"header '{header_name}' should be present"
+        assert [header_value] == actual_headers[header_name], \
+            f"header '{header_name}' should have value '{header_value}'"
+
+    return assert_header_present
+

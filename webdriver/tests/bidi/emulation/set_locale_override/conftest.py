@@ -55,3 +55,23 @@ def another_locale(default_locale, some_locale):
     raise Exception(
         f"Unexpectedly could not find locale different from the default {default_locale} and {some_locale}"
     )
+
+
+@pytest_asyncio.fixture
+async def default_accept_language(get_fetch_headers, top_context):
+    """
+    Returns default value of `Accept-Language` header.
+    """
+    headers = await get_fetch_headers(top_context)
+    return headers["Accept-Language"]
+
+
+@pytest_asyncio.fixture
+async def assert_accept_language(assert_header_present):
+    """
+    Assert value of `Accept-Language` header.
+    """
+    async def assert_accept_language(context, value):
+        await assert_header_present(context, "Accept-Language", value)
+
+    return assert_accept_language

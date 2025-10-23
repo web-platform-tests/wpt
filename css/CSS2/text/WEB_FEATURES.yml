@@ -1,0 +1,4 @@
+features:
+- name: bdo
+  files:
+  - white-space-bidirectionality-001.xht

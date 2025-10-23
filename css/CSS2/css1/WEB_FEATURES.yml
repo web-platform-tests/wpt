@@ -15,3 +15,8 @@ features:
   files:
   - c534-bgre-*
   - c534-bgreps-*
+- name: width-height
+  files:
+  - '*width*'
+  - '*height*'
+  - '*blockw*'

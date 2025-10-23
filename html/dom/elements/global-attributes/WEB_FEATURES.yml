@@ -1,0 +1,5 @@
+features:
+- name: bdi
+  files:
+  - dir-bdi-script.html
+  - dir_auto-contained-bdi-*

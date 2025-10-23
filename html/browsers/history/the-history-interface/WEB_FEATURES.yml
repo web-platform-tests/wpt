@@ -1,0 +1,4 @@
+features:
+- name: beforeunload
+  files:
+  - traverse-during-beforeunload.html

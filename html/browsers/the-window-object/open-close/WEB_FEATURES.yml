@@ -1,0 +1,6 @@
+features:
+- name: beforeunload
+  files:
+  - close_beforeunload.html
+  - close_noopener_beforeunload.html
+  - self-close.html

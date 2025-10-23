@@ -603,7 +603,7 @@ class Session:
         return self.send_session_command("POST", "frame", body=body)
 
     def switch_to_parent_frame(self):
-        return self.send_session_command("POST", "frame/parent")   
+        return self.send_session_command("POST", "frame/parent")
 
     @property
     def handles(self):

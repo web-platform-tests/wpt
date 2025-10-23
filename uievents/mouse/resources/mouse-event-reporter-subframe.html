@@ -3,7 +3,7 @@
 <style>
   body, html {
     margin: 0;
-    padding; 0;
+    padding: 0;
     background-color: #bfb;
   }
 </style>
@@ -15,23 +15,24 @@
   let cancel_mousedown = false;
 
   window.addEventListener("load", () => {
-      window.addEventListener("message", event => {
-          let data = event.data;
-          if (data.type == "cancel-mousedown")
-              cancel_mousedown = data.param;
-      });
+    window.addEventListener("message", event => {
+      let data = event.data;
+      if (data.type == "cancel-mousedown")
+        cancel_mousedown = data.param;
+    });
 
-      window.addEventListener("mousedown", e => {
-          let msg = "not-canceled";
-          if (cancel_mousedown) {
-              e.preventDefault();
-              msg = "canceled";
-          }
-          sendMessage(window.top, "mousedown", msg);
-      });
+    window.addEventListener("mousedown", e => {
+      let msg = "not-canceled";
+      if (cancel_mousedown) {
+        e.preventDefault();
+        msg = "canceled";
+      }
+      sendMessage(window.top, "mousedown", msg);
+    });
 
-      window.addEventListener("mouseup", e => sendMessage(window.top, "mouseup"));
+    window.addEventListener("mousemove", e => sendMessage(window.top, "mousemove"));
+    window.addEventListener("mouseup", e => sendMessage(window.top, "mouseup"));
 
-      sendMessage(parent, "load");
+    sendMessage(parent, "load");
   });
 </script>

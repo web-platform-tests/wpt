@@ -2,7 +2,7 @@
 <meta charset=utf-8>
 <html>
 <head>
-  <title>aria-flowto</title>
+  <title>aria-errormessage</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/resources/testdriver.js"></script>
@@ -23,7 +23,7 @@
 
 <script>
   AAMUtils.verifyAPI(
-    'aria-flowto',
+    "div[role=checkbox][aria-errormessage='error1 error2'][aria-invalid='true']",
     'test',
     {
       "Atspi" : [

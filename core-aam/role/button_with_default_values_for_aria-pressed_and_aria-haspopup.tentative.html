@@ -65,11 +65,11 @@
     ]
   };
 
-  AAMUtils.verifyAPI('role=button', 'test1', test_statements);
-  AAMUtils.verifyAPI('role=button aria-pressed', 'test2', test_statements);
-  AAMUtils.verifyAPI('role=button aria-pressed aria-haspopup', 'test3', test_statements);
-  AAMUtils.verifyAPI('role=button aria-haspopup', 'test4', test_statements);
-  AAMUtils.verifyAPI('role=button aria-haspopup=false', 'test5', test_statements);
+  AAMUtils.verifyAPI('div[role="button"]', 'test1', test_statements);
+  AAMUtils.verifyAPI('div[role="button"][aria-pressed]', 'test2', test_statements);
+  AAMUtils.verifyAPI('div[role="button"][aria-pressed][aria-haspopup]', 'test3', test_statements);
+  AAMUtils.verifyAPI('div[role="button"][aria-haspopup]', 'test4', test_statements);
+  AAMUtils.verifyAPI('div[role="button"][aria-haspopup="false"]', 'test5', test_statements);
 </script>
 
 </body>

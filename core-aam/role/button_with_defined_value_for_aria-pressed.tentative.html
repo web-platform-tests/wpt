@@ -67,7 +67,7 @@
     ]
   };
 
-  AAMUtils.verifyAPI('role=button aria-pressed=true', 'test1', test_statements);
-  AAMUtils.verifyAPI('role=button aria-pressed=false','test2', test_statements);
+  AAMUtils.verifyAPI('div[role="button"][aria-pressed="true"]', 'test1', test_statements);
+  AAMUtils.verifyAPI('div[role="button"][aria-pressed="false"]','test2', test_statements);
 </script>
 </body>

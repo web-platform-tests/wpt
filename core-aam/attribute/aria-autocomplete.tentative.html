@@ -23,7 +23,7 @@
 
 <script>
   AAMUtils.verifyAPI(
-    'aria-autocomplete=both',
+    'input[role=combobox][aria-autocomplete=both]',
     'test1',
     {
       "Atspi" : [
@@ -58,7 +58,7 @@
   );
 
   AAMUtils.verifyAPI(
-    'aria-autocomplete=inline',
+    'input[role=combobox][aria-autocomplete=inline]',
     'test2',
     {
       "Atspi" : [
@@ -93,7 +93,7 @@
   );
 
   AAMUtils.verifyAPI(
-    'aria-autocomplete=list',
+    'input[role=combobox][aria-autocomplete=list]',
     'test3',
     {
       "Atspi" : [

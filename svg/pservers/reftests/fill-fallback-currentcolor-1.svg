@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml">
   <h:link rel="match" href="reference/green-100x100.svg"/>
+  <h:meta name="fuzzy" content="0-1;0-3939" />
   <linearGradient id="lg">
     <stop stop-color="#008000"/>
   </linearGradient>

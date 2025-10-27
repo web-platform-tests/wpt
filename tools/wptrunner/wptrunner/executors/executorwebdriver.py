@@ -793,7 +793,7 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
             raise ValueError from e
 
     def _switch_to_parent_frame(self):
-        self.webdriver.switch_frame("parent")
+        self.webdriver.switch_to_parent_frame()
 
 
 class WebDriverGenerateTestReportProtocolPart(GenerateTestReportProtocolPart):

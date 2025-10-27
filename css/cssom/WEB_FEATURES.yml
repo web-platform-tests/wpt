@@ -9,3 +9,6 @@ features:
   files:
   - caretPositionFromPoint-with-transformation.html
   - caretPositionFromPoint.html
+- name: where
+  files:
+  - insert-invalid-where-rule-crash.html

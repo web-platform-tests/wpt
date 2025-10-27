@@ -1,0 +1,4 @@
+features:
+- name: white-space
+  files:
+  - text-multiline-*

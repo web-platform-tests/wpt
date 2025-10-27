@@ -1,0 +1,4 @@
+features:
+  - name: writing-mode
+    files:
+      - "writing-mode-*"

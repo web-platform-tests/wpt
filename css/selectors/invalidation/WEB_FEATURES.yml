@@ -19,3 +19,7 @@ features:
 - name: state
   files:
   - state-in-has.html
+- name: where
+  files:
+  - is-where-*
+  - where.html

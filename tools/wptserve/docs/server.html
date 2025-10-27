@@ -246,9 +246,24 @@ False to run on a separate thread.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="wptserve.server.WebTestServer.serve_forever">
+<span class="sig-name descname"><span class="pre">serve_forever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">poll_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestServer.serve_forever" title="Link to this definition">¶</a></dt>
+<dd><p>Handle one request at a time until shutdown.</p>
+<p>This overrides the superclass implementation to use a socket pair to process
+shutdown requests, avoiding waiting the poll_interval before shutting down.
+It does, however, still call service_actions() every poll_interval.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="wptserve.server.WebTestServer.server_bind">
 <span class="sig-name descname"><span class="pre">server_bind</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestServer.server_bind" title="Link to this definition">¶</a></dt>
 <dd><p>Override server_bind to store the server name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wptserve.server.WebTestServer.shutdown">
+<span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestServer.shutdown" title="Link to this definition">¶</a></dt>
+<dd><p>Stops the serve_forever loop and waits for it to finish.</p>
 </dd></dl>
 
 </dd></dl>

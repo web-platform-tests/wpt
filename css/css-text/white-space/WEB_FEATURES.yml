@@ -5,6 +5,34 @@ features:
 - name: text-wrap-nowrap
   files:
   - text-wrap-nowrap-*
+- name: white-space
+  files:
+  - append-whitespace-only-node-crash-001.html
+  - break-spaces-*
+  - control-chars-*
+  - display-contents-remove-whitespace-change.html
+  - eol-spaces-bidi-*
+  - full-width-leading-spaces-*
+  - hanging-whitespace-*
+  - lone-cr-001.tentative.html
+  - nowrap-wbr-and-space-crash.html
+  - pre-*
+  - remove-slotted-with-whitespace-sibling.html
+  - tab-*
+  - textarea-*
+  - trailing-*
+  - white-space-applies-to-text-001.html
+  - white-space-empty-text-sibling.html
+  - white-space-intrinsic-size-*
+  - white-space-letter-spacing-001.html
+  - white-space-normal-011.html
+  - white-space-nowrap-011.html
+  - white-space-pre-*
+  - white-space-trim-discard-inner-001.xht
+  - white-space-vs-joiners-*
+  - white-space-wrap-after-nowrap-001.html
+  - white-space-zero-fontsize-*
+  - ws-break-spaces-applies-to-*
 - name: white-space-collapse
   files:
   - white-space-collapse-*

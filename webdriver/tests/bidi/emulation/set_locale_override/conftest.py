@@ -63,7 +63,7 @@ async def default_accept_language(get_fetch_headers, top_context):
     Returns default value of `Accept-Language` header.
     """
     headers = await get_fetch_headers(top_context)
-    return headers["Accept-Language"]
+    return headers["Accept-Language"] if "Accept-Language" in headers else None
 
 
 @pytest_asyncio.fixture

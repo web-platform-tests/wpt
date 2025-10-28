@@ -649,8 +649,8 @@ class RefTestImplementation:
 
         if self.executor.is_print:
             # In the print case, viewport_size is in cm.
-            vh, vw = viewport_size
-            viewport_size = (round(vh * dpcm), round(vw * dpcm))
+            vw, vh = viewport_size
+            viewport_size = (round(vw * dpcm), round(vh * dpcm))
 
         if success:
             if not isinstance(data, list):

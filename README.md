@@ -122,3 +122,16 @@ If you spot an issue with a test and are not comfortable providing a
 pull request per above to fix it, please
 [file a new issue](https://github.com/web-platform-tests/wpt/issues/new).
 Thank you!
+
+## Hacktoberfest Contributor
+This repository was forked and edited by [Mehwish-14](https://github.com/Mehwish-14) as part of Hacktoberfest 2025.
+
+Before: If you spot an issue with a test and are not comfortable providing a
+pull request per above to fix it, please
+[file a new issue](https://github.com/web-platform-tests/wpt/issues/new).
+Thank you!
+
+After: If you spot an issue with a test and are not comfortable providing a
+pull request to fix it, please
+[file a new issue](https://github.com/web-platform-tests/wpt/issues/new).
+Thank you for your contribution!

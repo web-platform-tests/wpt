@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CSS.supports condition text for supports_condition_in_parens</title>
+<link rel="author" title="Adobe" href="http://html.adobe.com">
+<link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
+<link rel="help" href="http://www.w3.org/TR/css3-conditional/#the-css-interface">
+<meta name="assert" content="CSS.supports appropriately matches the supports_condition_in_parens production with no additional logical operators.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='css-supports-utils.js'></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+
+function buildTestCases(items) {
+    return items.map(function(item) {
+        return [item[0], CSS.supports(item[0]), item[1]];
+    });
+}
+
+generate_tests(assert_equals, buildTestCases(parentheticals));
+
+</script>
+</body>
+</html>

@@ -736,7 +736,7 @@ class H2HandlerCopy:
         self.path = self.headers['path']
         self.h2_stream_id = req_frame.stream_id
         self.server = handler.server
-        self.protocol_version = handler.protocol_version
+        self.protocol_version = "HTTP/2.0"
         self.client_address = handler.client_address
         self.raw_requestline = ''
         self.rfile = rfile

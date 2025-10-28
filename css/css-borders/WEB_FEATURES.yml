@@ -2,3 +2,6 @@ features:
 - name: border-radius
   files:
   - border-radius-greater-than-width.html
+- name: borders
+  files:
+  - border-width-rounding.tentative.html

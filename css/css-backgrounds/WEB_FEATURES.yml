@@ -72,3 +72,9 @@ features:
   - border-radius-*
   - "!border-radius-clip*"
   - css-border-radius-001.html
+- name: borders
+  files:
+  - border-*
+  - "!border-image*"
+  - "!border-*radius-*"
+  - ttwf-css3background-border-*

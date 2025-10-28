@@ -99,7 +99,8 @@ def test_read_element_text(session, inline):
     ("foo bar", "Foo Bar"),
     ("foo-bar", "Foo-Bar"),
     ("foo_bar", "Foo_bar"),
-], ids=["space", "dash", "underscore"])
+    ("foo bár", "Foo Bár"),
+], ids=["space", "dash", "underscore", "accent"])
 def test_transform_capitalize(session, inline, text, expected):
     session.url = inline(
         f"""<div style="text-transform: capitalize;">{text}""")

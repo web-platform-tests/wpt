@@ -20,6 +20,25 @@ test_invalid_value("animation-name", 'one, unset');
 test_invalid_value("animation-name", 'default, two');
 test_invalid_value("animation-name", 'revert, three');
 test_invalid_value("animation-name", 'revert-layer, four');
+
+test_invalid_value("animation-name", '""');
+
+// Restricted keywords as strings
+test_invalid_value("animation-name", '"none"');
+test_invalid_value("animation-name", '"NoNe"');
+test_invalid_value("animation-name", '"initial"');
+test_invalid_value("animation-name", '"INITIAL"');
+test_invalid_value("animation-name", '"inherit"');
+test_invalid_value("animation-name", '"INHERIT"');
+test_invalid_value("animation-name", '"revert"');
+test_invalid_value("animation-name", '"REVERT"');
+test_invalid_value("animation-name", '"revert-layer"');
+test_invalid_value("animation-name", '"REVERT-LAYER"');
+test_invalid_value("animation-name", '"unset"');
+test_invalid_value("animation-name", '"UNSET"');
+test_invalid_value("animation-name", '"default"');
+test_invalid_value("animation-name", '"DEFAULT"');
+
 </script>
 </body>
 </html>

@@ -26,7 +26,7 @@ promise_test(async (t) => {
   const pc = new RTCPeerConnection;
   t.add_cleanup(() => pc.close());
 
-  const dc1 = pc.createDataChannel('');
+  const dc1 = pc.createDataChannel('client_ids');
   const ids = new UniqueSet();
 
   const offer = await pc.createOffer();
@@ -56,7 +56,7 @@ promise_test(async (t) => {
   const pc = new RTCPeerConnection;
   t.add_cleanup(() => pc.close());
 
-  const dc1 = pc.createDataChannel('');
+  const dc1 = pc.createDataChannel('server_ids');
   const ids = new UniqueSet();
 
   const offer = await pc.createOffer();
@@ -92,7 +92,7 @@ promise_test(async (t) => {
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  const dc1 = pc1.createDataChannel('', {
+  const dc1 = pc1.createDataChannel('ignore_id_prop', {
     negotiated: false,
     id: 42
   });
@@ -100,7 +100,7 @@ promise_test(async (t) => {
     dc1.send(':(');
   });
 
-  const dc2 = pc2.createDataChannel('', {
+  const dc2 = pc2.createDataChannel('ignore_id_prop', {
     negotiated: false,
     id: 42
   });
@@ -139,7 +139,7 @@ promise_test(async (t) => {
   // Create 10 DCEP-negotiated channels with pc1
   // Note: These should not have any associated valid ID at this point
   for (let i = 0; i < 10; ++i) {
-    const dc = pc1.createDataChannel('before-connection');
+    const dc = pc1.createDataChannel(`before-connection-${i}`);
     assert_equals(dc.id, null, 'Channel id must be null before DTLS role has been determined');
     dcs.push(dc);
   }
@@ -179,7 +179,7 @@ promise_test(async (t) => {
 
   // Create 10 channels with pc1
   for (let i = 0; i < 10; ++i) {
-    const dc = pc1.createDataChannel('after-connection');
+    const dc = pc1.createDataChannel(`after-connection-${i}`);
     assert_equals(dc.id % 2, 1,
       `Channel created by the DTLS server role must be odd (was ${dc.id})`);
     dcs.push(dc);

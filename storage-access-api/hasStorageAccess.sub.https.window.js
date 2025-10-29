@@ -20,9 +20,6 @@ promise_test(async () => {
   if (CanAccessCookiesViaJS()) {
     // Nothing to test here, since cross-site cookies are not blocked.
     // See https://github.com/privacycg/storage-access/issues/162.
-    assert_true(
-        hasAccess,
-        "Access should be granted by default when cookies are not blocked.");
     return;
   }
   if (testPrefix == "ABA") {

@@ -79,7 +79,7 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
             attribute to data.
    */
   promise_test(t => {
-    return createDataChannelPair(t, options)
+    return createDataChannelPairWithLabel(t, 'string', options)
     .then(([channel1, channel2]) => {
       channel1.send(helloString);
       return awaitMessage(channel2)
@@ -92,7 +92,7 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
   }, `${mode} should be able to send simple string and receive as string`);
 
   promise_test(t => {
-    return createDataChannelPair(t, options)
+    return createDataChannelPairWithLabel(t, 'unicode', options)
     .then(([channel1, channel2]) => {
       channel1.send(unicodeString);
       return awaitMessage(channel2)
@@ -104,7 +104,7 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
     });
   }, `${mode} should be able to send unicode string and receive as unicode string`);
   promise_test(t => {
-    return createDataChannelPair(t, options)
+    return createDataChannelPairWithLabel(t, 'recv_string', options)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel1.send(helloString);
@@ -117,7 +117,7 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
     });
   }, `${mode} should ignore binaryType and always receive string message as string`);
   promise_test(t => {
-    return createDataChannelPair(t, options)
+    return createDataChannelPairWithLabel(t, 'emptystring', options)
     .then(([channel1, channel2]) => {
       channel1.send(emptyString);
       // Send a non-empty string in case the implementation ignores empty messages
@@ -153,7 +153,7 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
         Float32Array or Float64Array or DataView) ArrayBufferView;
    */
   promise_test(t => {
-    return createDataChannelPair(t, options)
+    return createDataChannelPairWithLabel(t, 'array_to_arraybuffer', options)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel1.send(helloBuffer);
@@ -175,7 +175,7 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
             ArrayBuffer in bytes.
    */
   promise_test(t => {
-    return createDataChannelPair(t, options)
+    return createDataChannelPairWithLabel(t, 'arraybuffer', options)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel1.send(helloBuffer.buffer);
@@ -189,7 +189,7 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
   }, `${mode} should be able to send ArrayBuffer message and receive as ArrayBuffer`);
 
   promise_test(t => {
-    return createDataChannelPair(t, options)
+    return createDataChannelPairWithLabel(t, 'empty_arraybuffer', options)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel1.send(emptyBuffer.buffer);
@@ -212,7 +212,7 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
             the bufferedAmount attribute by the size of data, in bytes.
    */
   promise_test(t => {
-    return createDataChannelPair(t, options)
+    return createDataChannelPairWithLabel(t, 'blob_to_arraybuffer', options)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel1.send(helloBlob);
@@ -233,7 +233,7 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
             to a new Blob object that represents data as its raw data.
    */
   promise_test(t => {
-    return createDataChannelPair(t, options)
+    return createDataChannelPairWithLabel(t, 'arraybuffer_to_blob', options)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'blob';
       channel1.send(helloBuffer);
@@ -261,7 +261,7 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
         be initialized to the string "blob".
    */
   promise_test(t => {
-    return createDataChannelPair(t, options)
+    return createDataChannelPairWithLabel(t, 'arraybuffer_recv', options)
     .then(([channel1, channel2]) => {
       assert_equals(channel2.binaryType, 'arraybuffer',
         'Expect initial binaryType value to be arraybuffer');
@@ -293,7 +293,7 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
       }
     });
 
-    createDataChannelPair(t, options)
+    return createDataChannelPairWithLabel(t, 'multitype', options)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel2.addEventListener('message', onMessage);
@@ -340,8 +340,8 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
     const pc2 = new RTCPeerConnection();
     pc1.addTransceiver('audio');
     pc1.addTransceiver('video');
-    const channel1 = pc1.createDataChannel('foo', {id: 1, ordered: false, negotiated: true});
-    const channel2 = pc2.createDataChannel('foo', {id: 1, ordered: false, negotiated: true});
+    const channel1 = pc1.createDataChannel('foo1', {id: 1, ordered: false, negotiated: true});
+    const channel2 = pc2.createDataChannel('foo2', {id: 1, ordered: false, negotiated: true});
     const channel1Open = new Promise(r => channel1.onopen = r);
     const channel2Open = new Promise(r => channel2.onopen = r);
     exchangeIceCandidates(pc1, pc2);

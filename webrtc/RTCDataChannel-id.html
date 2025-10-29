@@ -4,6 +4,7 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src="RTCPeerConnection-helper.js"></script>
+<script src="RTCDataChannel-helper.js"></script>
 <script>
 'use strict';
 
@@ -211,6 +212,36 @@ promise_test(async (t) => {
     assert_equals(dc.id, id, 'Negotiated channels should keep their assigned ID');
   }
 }, 'Odd/even role should not be violated when mixing with negotiated channels');
+
+promise_test(async t => {
+  const offerer = new RTCPeerConnection();
+  const answerer = new RTCPeerConnection();
+  t.add_cleanup(() => offerer.close());
+  t.add_cleanup(() => answerer.close());
+
+  const pairPromise = openChannelPair(offerer, answerer, 'foo');
+  await negotiate(offerer, answerer);
+
+  const [dco, dca] = await pairPromise;
+
+  const id = dco.id;
+  assert_equals(dca.id, id, 'ids should match');
+
+  async function waitForCloseThenReCreate(channel, pc) {
+    await new Promise(r => channel.onclose = r);
+    return pc.createDataChannel('bar', {negotiated: true, id});
+  }
+
+  dco.close();
+
+  const [dco2, dca2] = await Promise.all([
+    waitForCloseThenReCreate(dco, offerer),
+    waitForCloseThenReCreate(dca, answerer)
+  ]);
+
+  assert_equals(dco2.id, id, 'Id should be reused (closer)');
+  assert_equals(dca2.id, id, 'Id should be reused (closee)');
+}, 'Test that ids are reusable after close event');
 
 /*
   Create 32768 (client), 32767 (server) channels to make sure all ids are exhausted AFTER

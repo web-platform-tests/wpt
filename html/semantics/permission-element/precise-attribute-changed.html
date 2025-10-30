@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Permission Element: invalid if precise attribute is changed</title>
+    <link rel="help" href="https://github.com/WICG/PEPC/blob/main/explainer.md" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+      promise_test(async (t) => {
+        let is_element_valid = false;
+        const element = document.createElement("permission");
+        element.setAttribute("type", "geolocation");
+        element.onvalidationstatuschange = t.step_func(() => {
+          if (element.invalidReason == "") {
+            is_element_valid = true;
+          }
+          if (element.invalidReason == "attribute_changed") {
+            is_element_valid = false;
+          }
+        });
+        document.body.appendChild(element);
+
+        // wait for the element to be ready.
+        await t.step_wait(() => is_element_valid === true);
+
+        // setting the preciselocation attribute should temporarily disable the element.
+        element.setAttribute("preciselocation", "");
+        await t.step_wait(() => is_element_valid === false);
+        await t.step_wait(() => is_element_valid === true);
+
+        // uusetting the preciselocation attribute should temporarily disable the element.
+        element.removeAttribute("preciselocation");
+        await t.step_wait(() => is_element_valid === false);
+        await t.step_wait(() => is_element_valid === true);
+      }, "Permission element is invalid temporarily if the precise attribute is changed.");
+    </script>
+  </body>
+</html>

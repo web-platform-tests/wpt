@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js" ></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./support/namespaces.js"></script>
+<script src="./support/attributes.js"></script>
+<meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script';">
+<iframe id="iframe"></iframe>
+<script>
+  const noOpPolicy = trustedTypes.createPolicy("no-op", {
+    createHTML: s => s,
+    createScript: s => s,
+    createScriptURL: s => s,
+  });
+
+  test(t => {
+    const element = document.createElement("div");
+    const otherElement = document.createElement("div");
+    element.setAttribute("onclick", noOpPolicy.createScript("foo"));
+    assert_throws_js(TypeError, () => {
+      otherElement.setAttributeNode(element.attributes[0]);
+    });
+  }, "setAttributeNode runs Trusted Types check before inuse checks");
+
+  test(t => {
+    const element = document.createElement("div");
+    const otherElement = document.createElement("div");
+    element.setAttribute("onclick", noOpPolicy.createScript("foo"));
+    assert_throws_js(TypeError, () => {
+      otherElement.setAttributeNodeNS(element.attributes[0]);
+    });
+  }, "setAttributeNodeNS runs Trusted Types check before inuse checks");
+
+  test(t => {
+    const element = document.createElement("div");
+    const otherElement = document.createElement("div");
+    element.setAttribute("onclick", noOpPolicy.createScript("foo"));
+    assert_throws_js(TypeError, () => {
+      otherElement.attributes.setNamedItem(element.attributes[0]);
+    });
+  }, "setNamedItem runs Trusted Types check before inuse checks");
+
+  test(t => {
+    const element = document.createElement("div");
+    const otherElement = document.createElement("div");
+    element.setAttribute("onclick", noOpPolicy.createScript("foo"));
+    assert_throws_js(TypeError, () => {
+      otherElement.attributes.setNamedItemNS(element.attributes[0]);
+    });
+  }, "setNamedItemNS runs Trusted Types check before inuse checks");
+
+  test(t => {
+    const element = document.createElement("div");
+    const otherElement = document.createElement("div");
+    element.setAttribute("onclick", noOpPolicy.createScript("foo"));
+    assert_throws_js(TypeError, () => {
+      element.setAttributeNode(element.attributes[0]);
+    });
+  }, "setAttributeNode runs Trusted Types check before same attribute early return");
+
+  test(t => {
+    const element = document.createElement("div");
+    const otherElement = document.createElement("div");
+    element.setAttribute("onclick", noOpPolicy.createScript("foo"));
+    assert_throws_js(TypeError, () => {
+      element.setAttributeNodeNS(element.attributes[0]);
+    });
+  }, "setAttributeNodeNS runs Trusted Types check before same attribute early return");
+
+  test(t => {
+    const element = document.createElement("div");
+    const otherElement = document.createElement("div");
+    element.setAttribute("onclick", noOpPolicy.createScript("foo"));
+    assert_throws_js(TypeError, () => {
+      element.attributes.setNamedItem(element.attributes[0]);
+    });
+  }, "setNamedItem runs Trusted Types check before same attribute early return");
+
+  test(t => {
+    const element = document.createElement("div");
+    const otherElement = document.createElement("div");
+    element.setAttribute("onclick", noOpPolicy.createScript("foo"));
+    assert_throws_js(TypeError, () => {
+      element.attributes.setNamedItemNS(element.attributes[0]);
+    });
+  }, "setNamedItemNS runs Trusted Types check before same attribute early return");
+
+  test(t => {
+    const element = document.createElement("div");
+    assert_throws_dom("InvalidCharacterError", () => {
+      element.setAttribute(" ", "");
+    });
+  }, "setAttribute validates qualifiedName before Trusted Types check");
+
+  test(t => {
+    const element = document.createElement("div");
+    assert_throws_dom("InvalidCharacterError", () => {
+      element.setAttributeNS(null, " ", "");
+    });
+  }, "setAttributeNS validates qualifiedName before Trusted Types check");
+</script>

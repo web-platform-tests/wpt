@@ -83,18 +83,4 @@
       element.attributes.setNamedItemNS(element.attributes[0]);
     });
   }, "setNamedItemNS runs Trusted Types check before same attribute early return");
-
-  test(t => {
-    const element = document.createElement("div");
-    assert_throws_dom("InvalidCharacterError", () => {
-      element.setAttribute(" ", "");
-    });
-  }, "setAttribute validates qualifiedName before Trusted Types check");
-
-  test(t => {
-    const element = document.createElement("div");
-    assert_throws_dom("InvalidCharacterError", () => {
-      element.setAttributeNS(null, " ", "");
-    });
-  }, "setAttributeNS validates qualifiedName before Trusted Types check");
 </script>

@@ -4,8 +4,10 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_locale_set_override_and_reset(bidi_session, top_context,
-        get_current_locale, default_locale, some_locale, another_locale):
+        get_current_locale, default_locale, some_locale, another_locale,
+        assert_accept_language, default_accept_language):
     assert await get_current_locale(top_context) == default_locale
+    await assert_accept_language(top_context, default_accept_language)
 
     # Set locale override.
     await bidi_session.emulation.set_locale_override(
@@ -14,6 +16,7 @@ async def test_locale_set_override_and_reset(bidi_session, top_context,
     )
 
     assert await get_current_locale(top_context) == some_locale
+    await assert_accept_language(top_context, some_locale)
 
     # Set locale override.
     await bidi_session.emulation.set_locale_override(
@@ -22,6 +25,7 @@ async def test_locale_set_override_and_reset(bidi_session, top_context,
     )
 
     assert await get_current_locale(top_context) == another_locale
+    await assert_accept_language(top_context, another_locale)
 
     # Set locale override.
     await bidi_session.emulation.set_locale_override(
@@ -30,6 +34,7 @@ async def test_locale_set_override_and_reset(bidi_session, top_context,
     )
 
     assert await get_current_locale(top_context) == default_locale
+    await assert_accept_language(top_context, default_accept_language)
 
 
 @pytest.mark.parametrize("value", [

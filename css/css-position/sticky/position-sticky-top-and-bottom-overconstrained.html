@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<title>position:sticky elements with height larger than the space available between top and bottom</title>
+<link rel="help" href="https://www.w3.org/TR/css-position-3/#sticky-pos" />
+<meta name="assert" content="This test checks that the end edge is adjusted when the sticky view rectangle height ends up smaller than the height of the sticky element border box" />
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+
+.scroller {
+  height: 100px;
+  overflow: auto;
+  position: relative;
+}
+.padding {
+  height: 200px;
+}
+.sticky {
+  position: sticky;
+  background: green;
+  top: 20px;
+  bottom: 0;
+  height: 200px;
+}
+</style>
+
+<body>
+  <div class="scroller">
+    <div class="padding"></div>
+    <div class="sticky"></div>
+    <div class="padding"></div>
+  </div>
+</body>
+
+<script>
+test(() => {
+  const scroller = document.querySelector('.scroller');
+  const element = document.querySelector('.sticky');
+  scroller.scrollTop = 0;
+  assert_equals(element.offsetTop, 20);
+}, 'initially the sticky box should be pushed down by the sticky view rectangles top edge, the bottom edge being adjusted to accommodate the sticky element');
+
+test(() => {
+    const scroller = document.querySelector('.scroller');
+    const element = document.querySelector('.sticky');
+    scroller.scrollTop = 160;
+    assert_equals(element.offsetTop, 180);
+}, 'when we just above the flow position the sticky box should still be pushed down by the top edge, the bottom edge being adjusted to accommodate the sticky element');
+
+test(() => {
+    const scroller = document.querySelector('.scroller');
+    const element = document.querySelector('.sticky');
+    scroller.scrollTop = 220;
+    assert_equals(element.offsetTop, 240);
+}, 'when we scroll past the flow position the sticky box should still be pushed down by the top edge, the bottom edge being adjusted to accommodate the sticky element');
+
+test(() => {
+  const scroller = document.querySelector('.scroller');
+  const element = document.querySelector('.sticky');
+  scroller.scrollTop = 500;
+  assert_equals(element.offsetTop, 400);
+}, 'at the end the ticky box should be pushed up by the end of the scroll container');
+</script>

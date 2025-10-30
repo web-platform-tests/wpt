@@ -132,9 +132,9 @@
         element.setAttributeNS(testData.attrNS, testData.attrName,
                                createTrustedOutput(testData.type,
                                                     other_string));
+        treatDefaultPolicyAsNoOp = false;
         attributeNodeInCallback = findAttribute(element, testData.attrNS,
                                                 testData.attrName);
-        treatDefaultPolicyAsNoOp = false;
       };
       const returnValue = setterData.runSetter(element, testData.attrNS,
                                                testData.attrName,

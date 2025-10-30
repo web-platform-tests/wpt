@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js" ></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="./support/namespaces.js"></script>
-<script src="./support/attributes.js"></script>
 <meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script';">
-<iframe id="iframe"></iframe>
 <script>
   const noOpPolicy = trustedTypes.createPolicy("no-op", {
     createHTML: s => s,
@@ -12,7 +9,7 @@
     createScriptURL: s => s,
   });
 
-  test(t => {
+  test(() => {
     const element = document.createElement("div");
     const otherElement = document.createElement("div");
     element.setAttribute("onclick", noOpPolicy.createScript("foo"));
@@ -21,7 +18,7 @@
     });
   }, "setAttributeNode runs Trusted Types check before inuse checks");
 
-  test(t => {
+  test(() => {
     const element = document.createElement("div");
     const otherElement = document.createElement("div");
     element.setAttribute("onclick", noOpPolicy.createScript("foo"));
@@ -30,7 +27,7 @@
     });
   }, "setAttributeNodeNS runs Trusted Types check before inuse checks");
 
-  test(t => {
+  test(() => {
     const element = document.createElement("div");
     const otherElement = document.createElement("div");
     element.setAttribute("onclick", noOpPolicy.createScript("foo"));
@@ -39,7 +36,7 @@
     });
   }, "setNamedItem runs Trusted Types check before inuse checks");
 
-  test(t => {
+  test(() => {
     const element = document.createElement("div");
     const otherElement = document.createElement("div");
     element.setAttribute("onclick", noOpPolicy.createScript("foo"));
@@ -48,36 +45,32 @@
     });
   }, "setNamedItemNS runs Trusted Types check before inuse checks");
 
-  test(t => {
+  test(() => {
     const element = document.createElement("div");
-    const otherElement = document.createElement("div");
     element.setAttribute("onclick", noOpPolicy.createScript("foo"));
     assert_throws_js(TypeError, () => {
       element.setAttributeNode(element.attributes[0]);
     });
   }, "setAttributeNode runs Trusted Types check before same attribute early return");
 
-  test(t => {
+  test(() => {
     const element = document.createElement("div");
-    const otherElement = document.createElement("div");
     element.setAttribute("onclick", noOpPolicy.createScript("foo"));
     assert_throws_js(TypeError, () => {
       element.setAttributeNodeNS(element.attributes[0]);
     });
   }, "setAttributeNodeNS runs Trusted Types check before same attribute early return");
 
-  test(t => {
+  test(() => {
     const element = document.createElement("div");
-    const otherElement = document.createElement("div");
     element.setAttribute("onclick", noOpPolicy.createScript("foo"));
     assert_throws_js(TypeError, () => {
       element.attributes.setNamedItem(element.attributes[0]);
     });
   }, "setNamedItem runs Trusted Types check before same attribute early return");
 
-  test(t => {
+  test(() => {
     const element = document.createElement("div");
-    const otherElement = document.createElement("div");
     element.setAttribute("onclick", noOpPolicy.createScript("foo"));
     assert_throws_js(TypeError, () => {
       element.attributes.setNamedItemNS(element.attributes[0]);

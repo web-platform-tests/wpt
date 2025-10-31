@@ -1,4 +1,7 @@
+// META: variant=?excludeIDLMember=PerformanceEventTiming\.targetSelector
+// META: variant=?includeIDLMember=PerformanceEventTiming\.targetSelector
 // META: global=window
+// META: script=/common/subset-tests-by-key.js
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 

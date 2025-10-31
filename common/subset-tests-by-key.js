@@ -5,13 +5,13 @@
   var collectCounts = false;
   var keys = {};
   var exclude = false;
+  var filterIDLMember = false
   if (location.search) {
-    match = /(?:^\?|&)(include|exclude)=([^&]+)?/.exec(location.search);
+    match = /(?:^\?|&)(include|includeIDLMember|exclude|excludeIDLMember)=([^&]+)?/.exec(location.search);
     if (match) {
       subTestKeyPattern = new RegExp(`^${match[2]}$`);
-      if (match[1] === 'exclude') {
-        exclude = true;
-      }
+      exclude = match[1] === 'exclude' || match[1] === 'excludeIDLMember';
+      filterIDLMember = match[1] === 'includeIDLMember' || match[1] === 'excludeIDLMember';
     }
     // Below is utility code to generate <meta> for copy/paste into tests.
     // Sample usage:
@@ -47,9 +47,9 @@
    * @param {string} key
    * @returns {boolean}
    */
-  function shouldRunSubTest(key) {
+  function shouldRunSubTest(key, idlAttribute) {
     if (key && subTestKeyPattern) {
-      var found = subTestKeyPattern.test(key);
+      var found = subTestKeyPattern.test(filterIDLMember ? idlAttribute : key);
       if (exclude) {
         return !found;
       }

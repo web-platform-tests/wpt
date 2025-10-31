@@ -2163,7 +2163,7 @@ IdlInterface.prototype.test_member_const = function(member)
 
 IdlInterface.prototype.test_member_attribute = function(member)
   {
-    if (!shouldRunSubTest(this.name)) {
+    if (!shouldRunSubTest(this.name, `${this.name}.${member.name}`)) {
         return;
     }
     var a_test = subsetTestByKey(this.name, async_test, this.name + " interface: attribute " + member.name);
@@ -2256,7 +2256,7 @@ IdlInterface.prototype.test_member_attribute = function(member)
 
 IdlInterface.prototype.test_member_operation = function(member)
 {
-    if (!shouldRunSubTest(this.name)) {
+    if (!shouldRunSubTest(this.name, `${this.name}.${member.name}`)) {
         return;
     }
     var a_test = subsetTestByKey(this.name, async_test, this.name + " interface: operation " + member);
@@ -3351,7 +3351,7 @@ IdlNamespace.prototype.do_member_operation_asserts = function (memberHolderObjec
 
 IdlNamespace.prototype.test_member_operation = function(member)
 {
-    if (!shouldRunSubTest(this.name)) {
+    if (!shouldRunSubTest(this.name, `${this.name}.${member.name}`)) {
         return;
     }
     var a_test = subsetTestByKey(
@@ -3370,7 +3370,7 @@ IdlNamespace.prototype.test_member_operation = function(member)
 
 IdlNamespace.prototype.test_member_attribute = function (member)
 {
-    if (!shouldRunSubTest(this.name)) {
+    if (!shouldRunSubTest(this.name, `${this.name}.${member.name}`)) {
         return;
     }
     var a_test = subsetTestByKey(

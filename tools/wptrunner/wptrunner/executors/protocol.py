@@ -353,6 +353,18 @@ class AccessibilityProtocolPart(ProtocolPart):
         :param element: A protocol-specific handle to an element."""
         pass
 
+    def get_element_accessible_node(self, element):
+        """Return the accessibility properties for a specific element.
+
+        :param element: A protocol-specific handle to an element."""
+        pass
+
+    def get_accessible_node(self, id):
+        """Return the properties for a specific accessible node.
+
+        :param id: The id of the accessible node."""
+        pass
+
 
 class WebExtensionsProtocolPart(ProtocolPart):
     """Protocol part for managing WebExtensions"""

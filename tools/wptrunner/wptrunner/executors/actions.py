@@ -26,6 +26,19 @@ class DeleteAllCookiesAction:
         self.protocol.cookies.delete_all_cookies()
 
 
+class GetAccessibleNodeAction:
+    name = "get_accessible_node"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        id = payload["accId"]
+        self.logger.debug("Getting accessible node: %s" % id)
+        return self.protocol.accessibility.get_accessible_node(id)
+
+
 class GetAllCookiesAction:
     name = "get_all_cookies"
 
@@ -64,6 +77,20 @@ class GetComputedRoleAction:
         element = self.protocol.select.element_by_selector_array(selectors)
         self.logger.debug("Getting computed role for element: %s" % element)
         return self.protocol.accessibility.get_computed_role(element)
+
+
+class GetElementAccessibleNodeAction:
+    name = "get_element_accessible_node"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        selector = payload["selector"]
+        element = self.protocol.select.element_by_selector(selector)
+        self.logger.debug("Getting accessible node for element: %s" % element)
+        return self.protocol.accessibility.get_element_accessible_node(element)
 
 
 class GetNamedCookieAction:
@@ -600,6 +627,8 @@ actions = [ClickAction,
            GetNamedCookieAction,
            GetComputedLabelAction,
            GetComputedRoleAction,
+           GetElementAccessibleNodeAction,
+           GetAccessibleNodeAction,
            SendKeysAction,
            MinimizeWindowAction,
            SetWindowRectAction,

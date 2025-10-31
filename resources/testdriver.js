@@ -1267,6 +1267,32 @@
         },
 
         /**
+         * Get accessibility properties for an element.
+         *
+         * @param {Element} element
+         * @returns {Promise} fulfilled after the accessibility properties are
+         *                    returned, or rejected in the cases the WebDriver
+         *                    command errors
+         */
+        get_element_accessible_node: async function(element) {
+            let acc = await window.test_driver_internal.get_element_accessible_node(element);
+            return acc;
+        },
+
+        /**
+         * Get properties for an accessible node.
+         *
+         * @param {String} id
+         * @returns {Promise} fulfilled after the accessibility properties are
+         *                    returned, or rejected in the cases the WebDriver
+         *                    command errors
+         */
+        get_accessible_node: async function(accId) {
+            let acc = await window.test_driver_internal.get_accessible_node(accId);
+            return acc;
+        },
+
+        /**
          * Send keys to an element.
          *
          * If ``element`` isn't inside the
@@ -2452,6 +2478,14 @@
 
         async get_computed_name(element) {
             throw new Error("get_computed_name is a testdriver.js function which cannot be run in this context.");
+        },
+
+        async get_element_accessible_node(element) {
+            throw new Error("get_element_accessible_node is a testdriver.js function which cannot be run in this context.");
+        },
+
+        async get_accessible_node(accId) {
+            throw new Error("get_accessible_node is a testdriver.js function which cannot be run in this context.");
         },
 
         async send_keys(element, keys) {

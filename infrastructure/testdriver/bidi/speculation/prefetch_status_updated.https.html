@@ -11,7 +11,6 @@
 <script>
     promise_setup(async () => {
         await waitForDocumentReady();
-        await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
     });
 
     promise_test(async t => {
@@ -20,6 +19,12 @@
         const expectedEvents = ['pending', 'ready'];
 
         const targetUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/target.html";
+
+        await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+        
+        t.add_cleanup(async () => {
+            await test_driver.bidi.speculation.prefetch_status_updated.unsubscribe();
+        });
 
         // Create a promise that resolves when we receive the 'ready' event
         const readyEventPromise = new Promise((resolve, reject) => {
@@ -46,6 +51,12 @@
         // Use helper function to add both speculation rules and link
         const { script, link } = addSpeculationRulesAndLink(speculationRules, targetUrl);
         
+        // Register cleanup to remove DOM elements
+        t.add_cleanup(() => {
+            script.remove();
+            link.remove();
+        });
+        
         // Await the ready event
         await readyEventPromise;
 
@@ -66,6 +77,12 @@
 
         // Create prefetch rules for our target page in resources (different URL to avoid caching)
         const targetUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/target.html?test=2";
+
+        await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+        
+        t.add_cleanup(async () => {
+            await test_driver.bidi.speculation.prefetch_status_updated.unsubscribe();
+        });
 
         // Create a promise that resolves when we receive the 'success' event
         const successEventPromise = new Promise((resolve, reject) => {
@@ -93,6 +110,15 @@
         
         // Use helper function to add both speculation rules and link
         const { script, link } = addSpeculationRulesAndLink(speculationRules, targetUrl);
+        
+        // Register cleanup to remove DOM elements and close window
+        t.add_cleanup(() => {
+            script.remove();
+            link.remove();
+            if (newWindow && !newWindow.closed) {
+                newWindow.close();
+            }
+        });
     
         // Await the success event
         await successEventPromise;
@@ -104,12 +130,6 @@
             'Should have received pending, ready, and success events in order'
         );
 
-        t.add_cleanup(() => {
-            if (newWindow && !newWindow.closed) {
-                newWindow.close();
-            }
-        });
-
     }, "prefetch_status_updated event with navigation to success");
 
     promise_test(async t => {
@@ -117,6 +137,12 @@
         const expectedEvents = ['pending', 'failure'];
 
         const errorUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/nonexistent-404-page.html";
+
+        await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
+        
+        t.add_cleanup(async () => {
+            await test_driver.bidi.speculation.prefetch_status_updated.unsubscribe();
+        });
 
         // Create a promise that resolves when we receive the 'failure' event
         const failureEventPromise = new Promise((resolve, reject) => {
@@ -140,6 +166,12 @@
         
         // Use helper function to add both speculation rules and link
         const { script, link } = addSpeculationRulesAndLink(speculationRules, errorUrl);
+        
+        // Register cleanup to remove DOM elements
+        t.add_cleanup(() => {
+            script.remove();
+            link.remove();
+        });
         
         // Await the failure event
         await failureEventPromise;

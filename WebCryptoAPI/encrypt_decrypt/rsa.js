@@ -21,12 +21,18 @@ function run_test() {
             }
 
             promise_test(function(test) {
-                return subtle.decrypt(vector.algorithm, vector.privateKey, vector.ciphertext)
+                let microtaskTriggered = false;
+                let promise = subtle.decrypt(vector.algorithm, vector.privateKey, vector.ciphertext)
                 .then(function(plaintext) {
+                    assert_true(microtaskTriggered, "promise resolved too early");
                     assert_true(equalBuffers(plaintext, vector.plaintext, "Decryption works"));
                 }, function(err) {
                     assert_unreached("Decryption should not throw error " + vector.name + ": " + err.message + "'");
                 });
+                Promise.resolve().then(() => {
+                    microtaskTriggered = true;
+                });
+                return promise;
             }, vector.name + " decryption");
 
         }, function(err) {
@@ -175,8 +181,11 @@ function run_test() {
         var promise = importVectorKeys(vector, ["encrypt"], ["decrypt"])
         .then(function(vectors) {
             promise_test(function(test) {
-                return subtle.encrypt(vector.algorithm, vector.publicKey, vector.plaintext)
+                let microtaskTriggered = false;
+                let promise = subtle.encrypt(vector.algorithm, vector.publicKey, vector.plaintext)
                 .then(function(ciphertext) {
+                    assert_true(microtaskTriggered, "promise resolved too early");
+
                     assert_equals(ciphertext.byteLength * 8, vector.privateKey.algorithm.modulusLength, "Ciphertext length matches modulus length");
 
                     // Can we get the original plaintext back via decrypt?
@@ -199,6 +208,10 @@ function run_test() {
                 }, function(err) {
                     assert_unreached("decrypt error for test " + vector.name + ": '" + err.message + "'");
                 });
+                Promise.resolve().then(() => {
+                    microtaskTriggered = true;
+                });
+                return promise;
             }, vector.name);
 
         }, function(err) {

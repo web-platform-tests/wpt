@@ -152,7 +152,7 @@
         assert_true(
             receivedStatuses.size === expectedStatuses.size && 
             [...expectedStatuses].every(status => receivedStatuses.has(status)),
-            'Should have received only failure event'
+            'Should have received only failure event. Expected: [${[...expectedStatuses].join(', ')}], Received: [${[...receivedStatuses].join(', ')}]'
         );
 
     }, "prefetch_status_updated event with prefetch failure");

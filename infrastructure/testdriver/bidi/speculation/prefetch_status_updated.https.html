@@ -116,9 +116,10 @@
 
     promise_test(async t => {
         const receivedEvents = new Set();
-        const expectedStatuses = new Set(['pending', 'failure']);
+        const expectedStatuses = new Set(['failure']);
 
-        const errorUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/nonexistent-404-page.html";
+        // Set error url to fail at network layer and only expect failure event
+        const errorUrl = "http://0.0.0.0:1/test.html";
 
         // Create a promise that resolves when we receive the 'failure' event
         const failureEventPromise = new Promise((resolve, reject) => {
@@ -151,9 +152,9 @@
         assert_true(
             receivedStatuses.size === expectedStatuses.size && 
             [...expectedStatuses].every(status => receivedStatuses.has(status)),
-            'Should have received pending and failure events'
+            'Should have received only failure event'
         );
 
-    }, "prefetch_status_updated event with prefetch failure", { timeout: 30000 });
+    }, "prefetch_status_updated event with prefetch failure");
 
 </script>

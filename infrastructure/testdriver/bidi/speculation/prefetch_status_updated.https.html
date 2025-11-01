@@ -164,12 +164,10 @@
         await failureEventPromise;
 
         // Assert that we received the expected events
-        const receivedStatusesArray = [...receivedStatuses];
-        const expectedStatusesArray = [...expectedStatuses];
         assert_true(
             receivedStatuses.size === expectedStatuses.size && 
             [...expectedStatuses].every(status => receivedStatuses.has(status)),
-            `Should have received only failure event. Expected: [${expectedStatusesArray.join(', ')}], Received: [${receivedStatusesArray.join(', ')}]`
+            'Should have received only failure event.'
         );
 
         t.add_cleanup(async () => {

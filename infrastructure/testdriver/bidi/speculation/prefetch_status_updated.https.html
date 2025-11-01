@@ -18,16 +18,18 @@
         // Subscribe for this test only
         const unsubscribe = await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
 
-        // Multiple events for the same status can be sent for network retries, etc.
-        const receivedStatuses = new Set();
-        const expectedStatuses = new Set(['pending', 'ready']);
+        const receivedStatuses = [];
+        const expectedStatuses = ['pending', 'ready'];
 
         const targetUrl = window.location.origin + "/infrastructure/testdriver/bidi/speculation/resources/target.html";
 
         // Create a promise that resolves when we receive the 'ready' event
         const readyEventPromise = new Promise((resolve, reject) => {
             const removeHandler = test_driver.bidi.speculation.prefetch_status_updated.on((event) => {
-                receivedStatuses.add(event.status);
+                // Multiple events for the same status can be sent in cases of network retries, etc.
+                if (!receivedStatuses.includes(event.status)) {
+                    receivedStatuses.push(event.status);
+                }
                 
                 // When we receive the ready event, clean up and resolve
                 if (event.status === 'ready') {
@@ -53,11 +55,7 @@
         await readyEventPromise;
 
         // Assert that we received the expected events
-        assert_true(
-            receivedStatuses.size === expectedStatuses.size && 
-            [...expectedStatuses].every(status => receivedStatuses.has(status)),
-            'Should have received pending and ready events'
-        );
+        assert_array_equals(receivedStatuses, expectedStatuses, 'Should have received pending and ready events');
 
         t.add_cleanup(async () => {
             await unsubscribe();
@@ -70,9 +68,8 @@
         // Subscribe for this test only
         const unsubscribe = await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
         
-        // Multiple events for the same status can be sent for network retries, etc.
-        const receivedStatuses = new Set();
-        const expectedStatuses = new Set(['pending', 'ready', 'success']);
+        const receivedStatuses = [];
+        const expectedStatuses = ['pending', 'ready', 'success'];
         let newWindow = null;
 
         // Create prefetch rules for our target page in resources (different URL to avoid caching)
@@ -81,7 +78,10 @@
         // Create a promise that resolves when we receive the 'success' event
         const successEventPromise = new Promise((resolve, reject) => {
             const removeHandler = test_driver.bidi.speculation.prefetch_status_updated.on((event) => {
-                receivedStatuses.add(event.status);
+                // Multiple events for the same status can be sent for network retries, etc.
+                if (!receivedStatuses.includes(event.status)) {
+                    receivedStatuses.push(event.status);
+                }
                 
                 // When we receive the ready event, navigate to trigger success
                 if (event.status === 'ready') {
@@ -109,11 +109,7 @@
         await successEventPromise;
 
         // Assert that we received the expected events
-        assert_true(
-            receivedStatuses.size === expectedStatuses.size && 
-            [...expectedStatuses].every(status => receivedStatuses.has(status)),
-            'Should have received pending, ready, and success events'
-        );
+        assert_array_equals(receivedStatuses, expectedStatuses, 'Should have received pending, ready, and success events');
 
         t.add_cleanup(async () => {
             await unsubscribe();
@@ -129,9 +125,8 @@
         // Subscribe for this test only
         const unsubscribe = await test_driver.bidi.speculation.prefetch_status_updated.subscribe();
 
-        // Multiple events for the same status can be sent for network retries, etc.
-        const receivedStatuses = new Set();
-        const expectedStatuses = new Set(['failure']);
+        const receivedStatuses = [];
+        const expectedStatuses = ['failure'];
 
         // Set error url to fail at network layer and only expect failure event
         const errorUrl = "http://0.0.0.0:1/test.html";
@@ -140,7 +135,10 @@
         const failureEventPromise = new Promise((resolve, reject) => {
             const removeHandler = test_driver.bidi.speculation.prefetch_status_updated.on((event) => {
                 console.log('Failure test - Received event with status:', event.status, 'for URL:', event.url);
-                receivedStatuses.add(event.status);
+                // Multiple events for the same status can be sent for network retries, etc.
+                if (!receivedStatuses.includes(event.status)) {
+                    receivedStatuses.push(event.status);
+                }
                 
                 // When we receive the failure event, we're done
                 if (event.status === 'failure') {
@@ -164,11 +162,7 @@
         await failureEventPromise;
 
         // Assert that we received the expected events
-        assert_true(
-            receivedStatuses.size === expectedStatuses.size && 
-            [...expectedStatuses].every(status => receivedStatuses.has(status)),
-            'Should have received only failure event.'
-        );
+        assert_array_equals(receivedStatuses, expectedStatuses, 'Should have received only failure event');
 
         t.add_cleanup(async () => {
             await unsubscribe();

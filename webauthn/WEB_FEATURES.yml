@@ -1,4 +1,9 @@
 features:
+- name: webauthn
+  files:
+  - '*'
+  - '!createcredential-getpublickey.https.html'
+  - '!signal-*'
 - name: webauthn-public-key-easy
   files:
   - createcredential-getpublickey.https.html

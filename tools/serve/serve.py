@@ -311,6 +311,21 @@ class WindowHandler(HtmlWrapperHandler):
 <script src="%(path)s"></script>
 """
 
+class ExtensionHandler(HtmlWrapperHandler):
+    path_replace = [(".extension.html", ".extension.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=extensions"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/web-extensions-helper.js"></script>
+%(script)s
+<div id=log></div>
+<script src="%(path)s"></script>
+"""
+
 
 class WindowModulesHandler(HtmlWrapperHandler):
     global_type = "window-module"
@@ -772,6 +787,7 @@ class RoutesBuilder:
             ("GET", "*.worker.html", WorkersHandler),
             ("GET", "*.worker-module.html", WorkerModulesHandler),
             ("GET", "*.window.html", WindowHandler),
+            ("GET", "*.extension.html", ExtensionHandler),
             ("GET", "*.any.html", AnyHtmlHandler),
             ("GET", "*.any.sharedworker.html", SharedWorkersHandler),
             ("GET", "*.any.sharedworker-module.html", SharedWorkerModulesHandler),
@@ -801,6 +817,7 @@ class RoutesBuilder:
             ("*", "/.well-known/private-aggregation/*", handlers.PythonScriptHandler),
             ("GET", "/.well-known/shared-storage/trusted-origins", handlers.PythonScriptHandler),
             ("*", "/.well-known/web-identity", handlers.PythonScriptHandler),
+            ("*", "/.well-known/device-bound-sessions", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)
         ]

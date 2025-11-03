@@ -77,8 +77,7 @@
         return animation;
       }
       function setupAnimationTrigger(view_timeline) {
-        const trigger = new AnimationTrigger({
-              behavior: "repeat",
+        const trigger = new TimelineTrigger({
               timeline: view_timeline,
               rangeStart: `${TRIGGER_START_PX}px`,
               rangeEnd: `${TRIGGER_END_PX}px`
@@ -97,12 +96,12 @@
         assert_equals(scroller.scrollTop, 0, "scroller is not scrolled, i.e. " +
           "not within the trigger range");
 
-        trigger1.addAnimation(animation);
-        trigger2.addAnimation(animation);
+        trigger1.addAnimation(animation, "play-forwards", "reset");
+        trigger2.addAnimation(animation, "play-forwards", "reset");
 
         // Test preconditions.
         assert_equals(animation.playState, "paused", "animation is idle");
-        assert_equals(animation.currentTime, 0, "currentTime is null");
+        assert_equals(animation.currentTime, 0, "currentTime is 0");
 
         await rangeBoundaries1.enterTriggerRange();
         await animation.finished;
@@ -145,8 +144,8 @@
         assert_equals(scroller.scrollTop, 0, "scroller is not scrolled, i.e. " +
           "not within the trigger range");
 
-        trigger1.addAnimation(animation);
-        trigger2.addAnimation(animation);
+        trigger1.addAnimation(animation, "play-forwards", "reset");
+        trigger2.addAnimation(animation, "play-forwards", "reset");
 
         // Test preconditions.
         assert_equals(animation.playState, "paused", "animation is paused");

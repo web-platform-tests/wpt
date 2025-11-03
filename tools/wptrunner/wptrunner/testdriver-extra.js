@@ -475,6 +475,14 @@
         return create_context_action("get_all_cookies", context, {});
     };
 
+    window.test_driver_internal.install_web_extension = function (params, context=null) {
+        return create_context_action("install_web_extension", context, {...params});
+    }
+
+    window.test_driver_internal.uninstall_web_extension = function (extension_id, context=null) {
+        return create_context_action("uninstall_web_extension", context, {extension_id});
+    }
+
     window.test_driver_internal.get_computed_label = function(element) {
         const selector = get_selector(element);
         const context = get_context(element);
@@ -657,4 +665,12 @@
     window.test_driver_internal.clear_display_features = function(context=null) {
         return create_context_action("clear_display_features", context, {});
     }
+
+    window.test_driver_internal.get_global_privacy_control = function(context=null) {
+        return create_action("get_global_privacy_control", {});
+    };
+
+    window.test_driver_internal.set_global_privacy_control = function(gpc, context=null) {
+        return create_action("set_global_privacy_control", {gpc});
+    };
 })();

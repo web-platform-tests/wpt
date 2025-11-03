@@ -92,8 +92,7 @@
         return animation;
       }
       function setupAnimationTrigger(use_default_trigger=false) {
-        const trigger = new AnimationTrigger({
-              behavior: "alternate",
+        const trigger = new TimelineTrigger({
               timeline: view_timeline,
               rangeStart: `${TRIGGER_START_PX}px`,
               rangeEnd: `${TRIGGER_END_PX}px`
@@ -110,7 +109,7 @@
         assert_equals(animation.playState, "idle", "animation is idle.");
         // Attaching the trigger should simply keep the animaiton paused at
         // zero currentTime.
-        trigger.addAnimation(animation);
+        trigger.addAnimation(animation, "play-forwards", "play-backwards");
         await waitForNextFrame();
         assert_times_equal(animation.currentTime, 0,
             "animation is paused at currentTime zero.");

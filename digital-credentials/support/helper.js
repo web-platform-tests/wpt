@@ -39,6 +39,7 @@ function _makeOptionsInternal(requestsInputArray, mediation, requestMapping) {
 const allMappings = {
   get: {
     "openid4vp-v1-unsigned": () => makeOID4VPDict(),
+    "openid4vp-v1-signed": () => makeOID4VPDict(),
     "default": () => makeDigitalCredentialGetRequest(undefined, undefined),
   },
   create: {
@@ -96,7 +97,7 @@ function _makeOptionsUnified(type, requestsToUse, mediation) {
 /**
  * Creates options for getting credentials.
  * @export
- * @param {string | string[]} [requestsToUse] - Request types ('default', 'openid4vp-v1-unsigned', or an array). Defaults to ['default'].
+ * @param {string | string[]} [requestsToUse] - Request types ('default', 'openid4vp-v1-unsigned', 'openid4vp-v1-signed', or an array). Defaults to ['default'].
  * @param {string} [mediation="required"] - Credential mediation requirement ("required", "optional", "silent").
  * @returns {{ digital: { requests: any[] }, mediation: string }}
  */

@@ -225,7 +225,7 @@
       abort: "after",
       action: "get",
       needsActivation: true,
-      options: makeGetOptions("openid4vp-v1-unsigned"),
+      options: makeGetOptions("openid4vp-v1-signed"),
     });
     assert_equals(result.constructor, "DOMException");
     assert_equals(result.name, "AbortError");

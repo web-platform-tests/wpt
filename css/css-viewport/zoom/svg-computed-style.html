@@ -117,6 +117,7 @@
 
     // cleanup
     svg.style.removeProperty(property);
+    target.style.removeProperty("zoom");
     if (requiredProperties) {
       for (const [prop, reqValue] of Object.entries(requiredProperties)) {
         svg.style.removeProperty(reqValue);

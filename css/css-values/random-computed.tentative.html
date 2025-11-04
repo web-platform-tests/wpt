@@ -164,8 +164,8 @@ function test_random_computed_value_has_fixed(property, specified, minPercentage
       let [fixedString, fixedValue] = fixedComponent.split(' ');
 
       assert_equals(fixedString, 'fixed', specified);
-      assert_greater_than_equal(parseFloat(fixedValue), '0', specified);
-      assert_less_than_equal(parseFloat(fixedValue), '1', specified);
+      assert_greater_than_equal(parseFloat(fixedValue), 0, specified);
+      assert_less_than(parseFloat(fixedValue), 1, specified);
       assert_equals(minComponent, minPercentage, specified);
       assert_equals(maxComponent, maxPercentage, specified);
     }

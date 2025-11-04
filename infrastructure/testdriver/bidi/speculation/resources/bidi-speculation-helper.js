@@ -1,9 +1,7 @@
 'use strict';
-
 /**
  * Helper functions for speculation rules BiDi testdriver tests
  */
-
 /**
  * Waits until the document has finished loading.
  * @returns {Promise<void>} Resolves if the document is already completely
@@ -14,13 +12,11 @@ function waitForDocumentReady() {
     if (document.readyState === 'complete') {
       resolve();
     }
-
     window.addEventListener('load', () => {
       resolve();
     }, {once: true});
   });
 }
-
 /**
  * Adds speculation rules and a corresponding link to the page.
  * @param {Object} speculationRules - The speculation rules object to add
@@ -34,12 +30,10 @@ function addSpeculationRulesAndLink(speculationRules, targetUrl, linkText = 'Tes
   script.type = 'speculationrules';
   script.textContent = JSON.stringify(speculationRules);
   document.head.appendChild(script);
-  
   // Also add a link to the page (some implementations might need this)
   const link = document.createElement('a');
   link.href = targetUrl;
   link.textContent = linkText;
   document.body.appendChild(link);
-  
   return { script, link };
 }

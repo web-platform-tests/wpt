@@ -53,30 +53,30 @@ def test_get_pause_after_test() -> None:
     manifest = WPTManifest.from_json("/", manifest_json)
     test_manifests = {manifest: {"metadata_path": ""}}
 
-    manifest_filters = [TestFilter(test_manifests, include=["/a/foo.html", "/a/reffoo.html"])]
+    manifest_filters = [TestFilter(test_manifests, include=["/a/foo.html", "/a/reffoo.html"])]  # type: ignore[arg-type]
 
     subsuites = {}
     subsuites[""] = Subsuite("", config={})
 
     # This has two testharness tests, so shouldn't set pause_after_test
-    loader = TestLoader(test_manifests, ["testharness"], None, subsuites)
+    loader = TestLoader(test_manifests, ["testharness"], None, subsuites)  # type: ignore[arg-type]
 
     assert get_pause_after_test(loader, **kwargs) is False
 
     # This has one testharness test, so should set pause_after_test
-    loader = TestLoader(test_manifests, ["testharness"], None, subsuites,
+    loader = TestLoader(test_manifests, ["testharness"], None, subsuites,  # type: ignore[arg-type]
                         manifest_filters=manifest_filters)
 
     assert get_pause_after_test(loader, **kwargs) is True
 
     # This has one testharness test, and one reftest so shouldn't set pause_after_test
-    loader = TestLoader(test_manifests, ["testharness", "reftest"], None, subsuites,
+    loader = TestLoader(test_manifests, ["testharness", "reftest"], None, subsuites,  # type: ignore[arg-type]
                         manifest_filters=manifest_filters)
 
     assert get_pause_after_test(loader, **kwargs) is False
 
     # This has one reftest so shouldn't set pause_after_test
-    loader = TestLoader(test_manifests, ["reftest"], None, subsuites)
+    loader = TestLoader(test_manifests, ["reftest"], None, subsuites)  # type: ignore[arg-type]
 
     assert get_pause_after_test(loader, **kwargs) is False
 
@@ -85,7 +85,7 @@ def test_get_pause_after_test() -> None:
     multi_subsuites["extra"] = Subsuite("extra", config={}, include=["/a/foo.html"])
 
     # This has one testharness test per subsuite, so shouldn't set pause_after_test
-    loader = TestLoader(test_manifests, ["testharness"], None, multi_subsuites,
+    loader = TestLoader(test_manifests, ["testharness"], None, multi_subsuites,  # type: ignore[arg-type]
                         manifest_filters=manifest_filters)
     print(loader.tests)
     assert get_pause_after_test(loader, **kwargs) is False

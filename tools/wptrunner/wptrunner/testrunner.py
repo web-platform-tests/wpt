@@ -305,7 +305,7 @@ class BrowserManager:
 
 
 class TestSource:
-    def __init__(self, logger: structuredlog.StructuredLogger, test_queue: testloader.ReadQueue):
+    def __init__(self, logger: structuredlog.StructuredLogger, test_queue: testloader.ReadQueue[testloader.TestGroup]):
         self.logger = logger
         self.test_queue = test_queue
         self.current_group: Optional[testloader.TestGroup] = None

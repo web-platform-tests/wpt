@@ -1,12 +1,3 @@
-# mypy: allow-untyped-defs
-
-from collections import deque
-
-from .wptmanifest.backends import static
-from .wptmanifest.backends.base import ManifestItem
-
-from . import expected
-
 """Manifest structure used to store expected results of a test.
 
 Each manifest file is represented by an ExpectedManifest that
@@ -15,8 +6,43 @@ Each TestNode has zero or more SubtestNode children, one for each
 known subtest of the test.
 """
 
+# mypy: allow-untyped-defs
 
-def data_cls_getter(output_node, visited_node):
+from __future__ import annotations
+
+from collections import deque
+from typing import Mapping, cast, overload
+
+from . import expected
+from .wptmanifest.backends import static
+from .wptmanifest.backends.base import ManifestItem
+
+
+@overload
+def data_cls_getter(
+    output_node: None, visited_node: object
+) -> type[ExpectedManifest]:
+    ...
+
+
+@overload
+def data_cls_getter(
+    output_node: ExpectedManifest, visited_node: object
+) -> type[TestNode]:
+    ...
+
+
+@overload
+def data_cls_getter(
+    output_node: TestNode, visited_node: object
+) -> type[SubtestNode]:
+    ...
+
+
+def data_cls_getter(
+    output_node: ExpectedManifest | TestNode | None,
+    visited_node: object,
+) -> type[ExpectedManifest | TestNode | SubtestNode]:
     # visited_node is intentionally unused
     if output_node is None:
         return ExpectedManifest
@@ -492,7 +518,9 @@ class SubtestNode(TestNode):
         return True
 
 
-def get_manifest(metadata_root, test_path, run_info):
+def get_manifest(
+    metadata_root: str, test_path: str, run_info: Mapping[str, object]
+) -> ExpectedManifest | None:
     """Get the ExpectedManifest for a particular test path, or None if there is no
     metadata stored for that test path.
 
@@ -504,15 +532,22 @@ def get_manifest(metadata_root, test_path, run_info):
     manifest_path = expected.expected_path(metadata_root, test_path)
     try:
         with open(manifest_path, "rb") as f:
-            return static.compile(f,
-                                  run_info,
-                                  data_cls_getter=data_cls_getter,
-                                  test_path=test_path)
+            return cast(
+                "ExpectedManifest",
+                static.compile(  # type: ignore[no-untyped-call]
+                    f,
+                    run_info,
+                    data_cls_getter=data_cls_getter,
+                    test_path=test_path,
+                ),
+            )
     except OSError:
         return None
 
 
-def get_dir_manifest(path, run_info):
+def get_dir_manifest(
+    path: str, run_info: Mapping[str, object]
+) -> DirectoryManifest | None:
     """Get the ExpectedManifest for a particular test path, or None if there is no
     metadata stored for that test path.
 
@@ -522,8 +557,13 @@ def get_dir_manifest(path, run_info):
     """
     try:
         with open(path, "rb") as f:
-            return static.compile(f,
-                                  run_info,
-                                  data_cls_getter=lambda x,y: DirectoryManifest)
+            return cast(
+                "DirectoryManifest",
+                static.compile(  # type: ignore[no-untyped-call]
+                    f,
+                    run_info,
+                    data_cls_getter=lambda x, y: DirectoryManifest,
+                ),
+            )
     except OSError:
         return None

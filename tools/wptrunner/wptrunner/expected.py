@@ -1,9 +1,7 @@
-# mypy: allow-untyped-defs
-
-import os
+import os.path
 
 
-def expected_path(metadata_path, test_path):
+def expected_path(metadata_path: str, test_path: str) -> str:
     """Path to the expectation data file for a given test path.
 
     This is defined as metadata_path + relative_test_path + .ini

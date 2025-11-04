@@ -1,13 +1,17 @@
 # mypy: allow-untyped-calls
 
-from pathlib import Path
-from typing import List, Optional, Tuple
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 from unittest.mock import Mock
 
-from ..testloader import TestQueueBuilder
+from ..testloader import ManifestPathData, TestQueueBuilder
 from ..wptcommandline import TestRoot
 from ..wptrunner import get_loader, get_pause_after_test
 from .test_testloader import Subsuite, TestFilter, TestLoader, WPTManifest
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 TestQueueBuilder.__test__ = None  # type: ignore[attr-defined]
 TestRoot.__test__ = None  # type: ignore[attr-defined]
@@ -51,7 +55,14 @@ def test_get_pause_after_test() -> None:
     }
 
     manifest = WPTManifest.from_json("/", manifest_json)
-    test_manifests = {manifest: {"metadata_path": ""}}
+    test_manifests: dict[WPTManifest, ManifestPathData] = {
+        manifest: {
+            "metadata_path": "",
+            "url_base": "/",
+            "tests_path": "",
+            "manifest_path": "",
+        }
+    }
 
     manifest_filters = [TestFilter(test_manifests, include=["/a/foo.html", "/a/reffoo.html"])]
 
@@ -59,24 +70,24 @@ def test_get_pause_after_test() -> None:
     subsuites[""] = Subsuite("", config={})
 
     # This has two testharness tests, so shouldn't set pause_after_test
-    loader = TestLoader(test_manifests, ["testharness"], None, subsuites)
+    loader = TestLoader(test_manifests, ["testharness"], {}, subsuites)
 
     assert get_pause_after_test(loader, **kwargs) is False
 
     # This has one testharness test, so should set pause_after_test
-    loader = TestLoader(test_manifests, ["testharness"], None, subsuites,
+    loader = TestLoader(test_manifests, ["testharness"], {}, subsuites,
                         manifest_filters=manifest_filters)
 
     assert get_pause_after_test(loader, **kwargs) is True
 
     # This has one testharness test, and one reftest so shouldn't set pause_after_test
-    loader = TestLoader(test_manifests, ["testharness", "reftest"], None, subsuites,
+    loader = TestLoader(test_manifests, ["testharness", "reftest"], {}, subsuites,
                         manifest_filters=manifest_filters)
 
     assert get_pause_after_test(loader, **kwargs) is False
 
     # This has one reftest so shouldn't set pause_after_test
-    loader = TestLoader(test_manifests, ["reftest"], None, subsuites)
+    loader = TestLoader(test_manifests, ["reftest"], {}, subsuites)
 
     assert get_pause_after_test(loader, **kwargs) is False
 
@@ -85,19 +96,18 @@ def test_get_pause_after_test() -> None:
     multi_subsuites["extra"] = Subsuite("extra", config={}, include=["/a/foo.html"])
 
     # This has one testharness test per subsuite, so shouldn't set pause_after_test
-    loader = TestLoader(test_manifests, ["testharness"], None, multi_subsuites,
+    loader = TestLoader(test_manifests, ["testharness"], {}, multi_subsuites,
                         manifest_filters=manifest_filters)
-    print(loader.tests)
     assert get_pause_after_test(loader, **kwargs) is False
 
 
 def get_loader_with_fakes(
     tmp_path: Path,
-    include: Optional[List[str]] = None,
-    include_file: Optional[str] = None,
-    exclude: Optional[List[str]] = None,
-    exclude_file: Optional[str] = None,
-) -> Tuple[TestQueueBuilder, TestLoader]:
+    include: list[str] | None = None,
+    include_file: str | None = None,
+    exclude: list[str] | None = None,
+    exclude_file: str | None = None,
+) -> tuple[TestQueueBuilder, TestLoader]:
     repo_root = tmp_path / "wpt"
     repo_root.mkdir()
 

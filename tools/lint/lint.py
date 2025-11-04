@@ -360,6 +360,7 @@ regexps: Sequence[rules.Regexp] = [
         rules.AssertPreconditionRegexp,
         rules.HTMLInvalidSyntaxRegexp,
         rules.TestDriverInternalRegexp,
+        rules.NavigatorIdRegexp,
     )
 ]
 

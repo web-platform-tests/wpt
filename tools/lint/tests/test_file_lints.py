@@ -253,6 +253,33 @@ def test_testdriver_internal():
             assert errors == [("TEST DRIVER INTERNAL", "Test-file uses test_driver_internal API", filename, 1)]
 
 
+@pytest.mark.parametrize(
+    "attribute",
+    [
+        "appCodeName",
+        "appName",
+        "appVersion",
+        "platform",
+        "product",
+        "productSub",
+        "userAgent",
+        "userAgentData",
+        "vendor",
+        "vendorSub",
+        "taintEnabled",
+        "oscpu",
+    ],
+)
+def test_navigatorid(attribute):
+    error_map = check_with_files(b"<script>navigator.%s</script>" % attribute.encode("ascii"))
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind != "python":
+            assert errors == [("NAVIGATORID", f"navigator.{attribute} used", filename, 1)]
+
+
 def test_meta_timeout():
     code = b"""
 <html xmlns="http://www.w3.org/1999/xhtml">

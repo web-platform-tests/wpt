@@ -565,3 +565,23 @@ class TestDriverInternalRegexp(Regexp):
     file_extensions = EXTENSIONS["js_all"]
     description = "Test-file uses test_driver_internal API"
     to_fix = """Only use test_driver public API"""
+
+
+class NavigatorIdRegexp(Regexp):
+    pattern = br"""(?x) \bnavigator\.(
+      appCodeName
+    | appName
+    | appVersion
+    | platform
+    | product
+    | productSub
+    | userAgent
+    | userAgentData
+    | vendor
+    | vendorSub
+    | taintEnabled
+    | oscpu)\b"""
+    name = "NAVIGATORID"
+    file_extensions = EXTENSIONS["js_all"]
+    description = "navigator.%s used"
+    to_fix = """Avoid user-agent sniffing within tests"""

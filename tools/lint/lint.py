@@ -339,25 +339,29 @@ def filter_ignorelist_errors(data: Ignorelist, errors: Sequence[rules.Error]) ->
     return [item for i, item in enumerate(errors) if not skipped[i]]
 
 
-regexps = [item() for item in  # type: ignore
-           [rules.TrailingWhitespaceRegexp,
-            rules.TabsRegexp,
-            rules.CRRegexp,
-            rules.SetTimeoutRegexp,
-            rules.W3CTestOrgRegexp,
-            rules.WebPlatformTestRegexp,
-            rules.Webidl2Regexp,
-            rules.ConsoleRegexp,
-            rules.GenerateTestsRegexp,
-            rules.PrintRegexp,
-            rules.LayoutTestsRegexp,
-            rules.MissingDepsRegexp,
-            rules.SpecialPowersRegexp,
-            rules.AssertThrowsRegexp,
-            rules.PromiseRejectsRegexp,
-            rules.AssertPreconditionRegexp,
-            rules.HTMLInvalidSyntaxRegexp,
-            rules.TestDriverInternalRegexp]]
+regexps: Sequence[rules.Regexp] = [
+    item()
+    for item in (
+        rules.TrailingWhitespaceRegexp,
+        rules.TabsRegexp,
+        rules.CRRegexp,
+        rules.SetTimeoutRegexp,
+        rules.W3CTestOrgRegexp,
+        rules.WebPlatformTestRegexp,
+        rules.Webidl2Regexp,
+        rules.ConsoleRegexp,
+        rules.GenerateTestsRegexp,
+        rules.PrintRegexp,
+        rules.LayoutTestsRegexp,
+        rules.MissingDepsRegexp,
+        rules.SpecialPowersRegexp,
+        rules.AssertThrowsRegexp,
+        rules.PromiseRejectsRegexp,
+        rules.AssertPreconditionRegexp,
+        rules.HTMLInvalidSyntaxRegexp,
+        rules.TestDriverInternalRegexp,
+    )
+]
 
 
 def check_regexp_line(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]:
@@ -367,8 +371,13 @@ def check_regexp_line(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.E
 
     for i, line in enumerate(f):
         for regexp in applicable_regexps:
-            if regexp.search(line):
-                errors.append((regexp.name, regexp.description, path, i+1))
+            m = regexp.search(line)
+            if m:
+                groups = tuple(
+                    g.decode("ascii", "backslashreplace") if g is not None else None
+                    for g in m.groups()
+                )
+                errors.append(regexp.error(path, context=groups, line_no=i+1))
 
     return errors
 

@@ -390,17 +390,9 @@ EXTENSIONS["markup"] = EXTENSIONS["html"] + EXTENSIONS["xhtml"] + EXTENSIONS["sv
 EXTENSIONS["js_all"] = EXTENSIONS["markup"] + EXTENSIONS["js"]
 
 
-class Regexp(metaclass=abc.ABCMeta):
+class Regexp(Rule, metaclass=abc.ABCMeta):
     @abc.abstractproperty
     def pattern(self) -> bytes:
-        pass
-
-    @abc.abstractproperty
-    def name(self) -> Text:
-        pass
-
-    @abc.abstractproperty
-    def description(self) -> Text:
         pass
 
     file_extensions: Optional[List[Text]] = None
@@ -506,7 +498,7 @@ class LayoutTestsRegexp(Regexp):
     pattern = br"(eventSender|testRunner|internals)\."
     name = "LAYOUTTESTS APIS"
     file_extensions = EXTENSIONS["js_all"]
-    description = "eventSender/testRunner/internals used; these are LayoutTests-specific APIs (WebKit/Blink)"
+    description = "%s used; this is a LayoutTests-specific API (WebKit/Blink)"
 
 
 class MissingDepsRegexp(Regexp):
@@ -560,10 +552,10 @@ class HTMLInvalidSyntaxRegexp(Regexp):
                br"dfn|dialog|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h[1-6]|head|header|html|i|iframe|ins|kbd|label|legend|li|"
                br"main|map|mark|menu|meter|nav|noscript|object|ol|optgroup|option|output|p|picture|pre|progress|q|rp|rt|ruby|s|samp|script|"
                br"search|section|select|slot|small|span|strong|style|sub|summary|sup|table|tbody|td|template|textarea|tfoot|th|thead|time|"
-               br"title|tr|u|ul|var|video)(\s+[^>]+)?\s*/>")
+               br"title|tr|u|ul|var|video)(?:\s+[^>]+)?\s*/>")
     name = "HTML INVALID SYNTAX"
     file_extensions = EXTENSIONS["html"]
-    description = "Test-file line has a non-void HTML tag with /> syntax"
+    description = "Test-file line has a non-void HTML %s tag with /> syntax"
     to_fix = """Replace with start tag and end tag"""
 
 

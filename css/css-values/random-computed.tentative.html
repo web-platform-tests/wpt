@@ -245,8 +245,8 @@ test_random_computed_value(property, 'random(10, infinity, infinity)', '0');
 test_random_computed_value(property, 'calc(10 + random(10, infinity))', '0');
 test_random_computed_value(property, 'calc(10 + random(10, infinity, 10))', '0');
 test_random_computed_value(property, 'calc(10 + random(10, infinity, infinity))', '0');
-test_random_computed_value(property, 'random(10, 100, infinity)', '0');
-test_random_computed_value(property, 'calc(10 + random(10, 100, infinity))', '0');
+test_random_computed_value(property, 'random(10, 100, infinity)', '10');
+test_random_computed_value(property, 'calc(10 + random(10, 100, infinity))', '20');
 // Negative steps, even infinitely negative steps, are ignored.
 test_random_computed_value_in_range(property, 'random(10, 100, -infinity)', '10', '100');
 test_random_computed_value_in_range(property, 'calc(10 + random(10, 100, -infinity))', '20', '110');

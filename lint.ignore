@@ -59,7 +59,6 @@ W3C-TEST.ORG: .gitignore
 ## Documentation ##
 
 W3C-TEST.ORG: README.md
-W3C-TEST.ORG: */README.md
 W3C-TEST.ORG: docs/*
 WEB-PLATFORM.TEST:*/README.md
 WEB-PLATFORM.TEST:docs/*
@@ -87,7 +86,6 @@ CR AT EOL: html/semantics/forms/the-textarea-element/multiline-placeholder-crlf.
 CR AT EOL: html/semantics/forms/the-input-element/multiline-placeholder-cr.html
 CR AT EOL: html/semantics/forms/the-input-element/multiline-placeholder-crlf.html
 CR AT EOL: webvtt/parsing/file-parsing/tests/support/newlines.vtt
-CR AT EOL: css/css-text/ellisize-rtl-text-crash.html
 CR AT EOL: html/syntax/charset/after-head-after-1kb-crlf.html
 CR AT EOL: html/syntax/charset/after-head-in-1kb-crlf.html
 
@@ -173,8 +171,6 @@ SET TIMEOUT: encrypted-media/polyfill/chrome-polyfill.js
 SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
 SET TIMEOUT: encrypted-media/scripts/playback-temporary-events.js
 SET TIMEOUT: fedcm/support/fedcm-helper.sub.js
-SET TIMEOUT: fedcm/support/fedcm-iframe.html
-SET TIMEOUT: fedcm/support/fedcm/disconnect-iframe.html
 SET TIMEOUT: fedcm/support/login_delay.html
 SET TIMEOUT: fetch/fetch-later/resources/fetch-later-helper.js
 SET TIMEOUT: fetch/metadata/resources/helper.sub.js
@@ -187,7 +183,6 @@ SET TIMEOUT: focus/support/iframe-contentwindow-focus-with-different-site-interm
 SET TIMEOUT: focus/support/iframe-contentwindow-focus-with-different-site-intermediate-frame-middle.sub.html
 SET TIMEOUT: focus/support/iframe-focuses-parent-different-site-inner.html
 SET TIMEOUT: focus/support/iframe-focuses-parent-same-site-inner.html
-SET TIMEOUT: generic-sensor/resources/iframe_sensor_handler.html
 SET TIMEOUT: html/browsers/browsing-the-web/back-forward-cache/resources/inflight-fetch-helper.js
 SET TIMEOUT: html/browsers/browsing-the-web/history-traversal/*
 SET TIMEOUT: html/browsers/browsing-the-web/navigating-across-documents/*
@@ -228,7 +223,6 @@ SET TIMEOUT: mixed-content/generic/sanity-checker.js
 SET TIMEOUT: navigation-api/navigation-history-entry/entries-after-bfcache-in-iframe.html
 SET TIMEOUT: navigation-timing/*
 SET TIMEOUT: old-tests/submission/Microsoft/history/history_000.htm
-SET TIMEOUT: paint-timing/resources/subframe-painting.html
 SET TIMEOUT: performance-timeline/resources/navigation-id-detached-frame-page.html
 SET TIMEOUT: png/apng/acTL-plays-one.html
 SET TIMEOUT: png/apng/acTL-plays-two.html
@@ -306,7 +300,6 @@ SET TIMEOUT: web-animations/crashtests/reparent-animating-element-002.html
 SET TIMEOUT: web-animations/timing-model/animations/*
 SET TIMEOUT: web-locks/crashtests/after-worker-termination.https.html
 SET TIMEOUT: webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/mediaElementAudioSourceToScriptProcessorTest.html
-SET TIMEOUT: webauthn/*timeout.https.html
 SET TIMEOUT: webdriver/*
 SET TIMEOUT: webmessaging/*
 SET TIMEOUT: webrtc-encoded-transform/script-metadata-transform-worker.js
@@ -324,7 +317,6 @@ GENERATE_TESTS: resources/test/tests/functional/generate-callback.html
 GENERATE_TESTS: resources/testharness.js
 
 # generate_tests usage (should be got rid of)
-GENERATE_TESTS: html/canvas/element/drawing-images-to-the-canvas/*
 GENERATE_TESTS: html/canvas/element/manual/drawing-images-to-the-canvas/*
 GENERATE_TESTS: css/css-shapes/shape-outside/values/*
 GENERATE_TESTS: css/css-tables/bounding-box-computation-1.html
@@ -332,7 +324,6 @@ GENERATE_TESTS: css/css-tables/bounding-box-computation-2.html
 GENERATE_TESTS: css/css-tables/bounding-box-computation-3.html
 GENERATE_TESTS: css/css-tables/caption-side-1.html
 GENERATE_TESTS: css/css-tables/fixed-layout-1.html
-GENERATE_TESTS: css/css-tables/fixed-layout-2.html
 GENERATE_TESTS: css/css-tables/height-distribution/computing-row-measure-0.html
 GENERATE_TESTS: css/css-tables/height-distribution/computing-row-measure-1.html
 GENERATE_TESTS: css/css-tables/height-distribution/percentage-sizing-of-table-cell-children.html
@@ -342,7 +333,6 @@ GENERATE_TESTS: css/css-tables/html5-table-formatting-1.html
 GENERATE_TESTS: css/css-tables/html5-table-formatting-2.html
 GENERATE_TESTS: css/css-tables/html5-table-formatting-3.html
 GENERATE_TESTS: css/css-tables/html5-table-formatting-fixed-layout-1.html
-GENERATE_TESTS: css/css-tables/table-model-fixup-2.html
 GENERATE_TESTS: css/css-tables/table-model-fixup.html
 GENERATE_TESTS: css/css-tables/visibility-collapse-col-001.html
 GENERATE_TESTS: css/css-tables/visibility-collapse-row-001.html
@@ -419,7 +409,6 @@ SET TIMEOUT: scheduler/tentative/current-task-signal-async-abort.any.js
 SET TIMEOUT: scheduler/tentative/current-task-signal-async-priority.any.js
 SET TIMEOUT: screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html
 SET TIMEOUT: speculation-rules/prerender/resources/activation-start.html
-SET TIMEOUT: speculation-rules/prerender/resources/prerender-response-code.html
 SET TIMEOUT: speculation-rules/prerender/resources/prerender-while-prerender-outer.html
 SET TIMEOUT: speculation-rules/prerender/resources/deferred-promise-utils.js
 SET TIMEOUT: speculation-rules/prerender/resources/session-history-harness.js
@@ -446,9 +435,6 @@ SET TIMEOUT: acid/acid3/test.html
 *: css/css-writing-modes/tools/generators/.gitignore
 *: resources/.gitignore
 *: webaudio/.gitignore
-
-## Third party data files
-TRAILING WHITESPACE: resources/chromium/*
 
 ## Test plans and implementation reports
 *: css/*/test-plan/*
@@ -496,8 +482,6 @@ TRAILING WHITESPACE: css/css-fonts/support/fonts/gsubtest-lookup3.ufo/features.f
 SET TIMEOUT: css/compositing/mix-blend-mode/mix-blend-mode-parent-with-3D-transform-and-transition.html
 SET TIMEOUT: css/compositing/mix-blend-mode/mix-blend-mode-sibling-with-3D-transform-and-transition.html
 SET TIMEOUT: css/css-transitions/events-007.html
-SET TIMEOUT: css/css-transitions/support/generalParallelTest.js
-SET TIMEOUT: css/css-transitions/support/runParallelAsyncHarness.js
 SET TIMEOUT: css/css-transitions/transitioncancel-001.html
 SET TIMEOUT: css/css-values/reference/vh-update-and-transition-in-subframe-ref.html
 SET TIMEOUT: css/css-values/reference/vh-update-and-transition-in-subframe-iframe-ref.html
@@ -545,8 +529,6 @@ SET TIMEOUT: css/CSS2/selectors/dom-hover-002.xht
 SET TIMEOUT: css/CSS2/tables/tables-102.xht
 SET TIMEOUT: css/mediaqueries/min-width-tables-001.html
 SET TIMEOUT: css/css-text/crashtests/rendering-rtl-bidi-override-crash.html
-SET TIMEOUT: css/css-backgrounds/color-mix-currentcolor-border-repaint-parent.html
-SET TIMEOUT: svg/painting/currentcolor-fill-stroke-repaint.html
 SET TIMEOUT: resource-timing/resources/run-async-tasks-promise.js
 
 # CSS tests that used to be at the top level and weren't subject to lints
@@ -611,7 +593,6 @@ MISSING-LINK: css/geometry/*.any.js
 MISSING-LINK: css/filter-effects/*.any.js
 
 # Tests that use WebKit/Blink testing APIs
-LAYOUTTESTS APIS: import-maps/data-driven/resources/test-helper-iframe.js
 LAYOUTTESTS APIS: resources/chromium/enable-hyperlink-auditing.js
 LAYOUTTESTS APIS: resources/chromium/webxr-test.js
 LAYOUTTESTS APIS: webxr/resources/webxr_util.js
@@ -626,7 +607,6 @@ WEB-PLATFORM.TEST:web-bundle/resources/generate-test-wbns.sh
 WEB-PLATFORM.TEST:web-bundle/resources/nested/*.wbn
 WEB-PLATFORM.TEST:web-bundle/resources/wbn/*.wbn
 WEB-PLATFORM.TEST:web-bundle/subresource-loading/*.html
-WEB-PLATFORM.TEST:web-bundle/subresource-loading/resources/*.js
 
 # The /.well-known/shared-stored/trusted-origins file uses hard-coded hosts
 WEB-PLATFORM.TEST:shared-storage/resources/trusted-origins.py
@@ -669,20 +649,16 @@ AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-012-ref.html
 AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-013.html
 AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-013-ref.html
 AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-014.html
-AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-014-ref.html
 AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-metrics-override.html
 AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-metrics-override-ref.html
 AHEM SYSTEM FONT: css/css-fonts/line-gap-override.html
 AHEM SYSTEM FONT: css/css-fonts/matching/font-unicode-presented-as-emoji-outline.html
 AHEM SYSTEM FONT: css/css-fonts/matching/font-unicode-presented-as-emoji-outline-ref.html
 AHEM SYSTEM FONT: css/css-fonts/parsing/font-size-adjust-computed.html
-AHEM SYSTEM FONT: css/css-fonts/size-adjust-unicode-range-system-fallback.html
 AHEM SYSTEM FONT: css/css-text/zwnj-renders-invisible.html
 AHEM SYSTEM FONT: css/css-overflow/line-clamp/block-ellipsis-010.html
 AHEM SYSTEM FONT: css/css-overflow/line-clamp/reference/block-ellipsis-010-ref.html
 AHEM SYSTEM FONT: css/css-overflow/line-clamp/reference/block-ellipsis-010-alt-ref.html
-AHEM SYSTEM FONT: html/dom/render-blocking/remove-attr-unblocks-rendering.optional.html
-AHEM SYSTEM FONT: html/dom/render-blocking/remove-element-unblocks-rendering.optional.html
 
 # TODO: The following should be deleted along with the Ahem web font cleanup
 # PR (https://github.com/web-platform-tests/wpt/pull/18702)
@@ -774,7 +750,6 @@ SET TIMEOUT: editing/crashtests/make-editable-div-inline-and-set-contenteditable
 SET TIMEOUT: editing/crashtests/outdent-across-svg-boundary.html
 SET TIMEOUT: editing/crashtests/textarea-will-be-blurred-by-focus-event-listener.html
 SET TIMEOUT: mathml/crashtests/mozilla/*
-SET TIMEOUT: selection/crashtests/selection-modify-line-boundary-around-empty-details.html
 PARSE-FAILED: mathml/crashtests/mozilla/289180-1.xml
 
 # Invalid HTML syntax /> on non-void elements
@@ -834,9 +809,7 @@ TESTDRIVER-IN-UNSUPPORTED-TYPE: speech-api/SpeechRecognition-phrases-manual.http
 
 # Tests automatically imported from the WebAssembly/spec repository that should be removed after getting fixed upstream.
 SET TIMEOUT: wasm/core/js/harness/testharness.js
-ASSERT_THROWS: wasm/core/js/harness/testharness.js
 GENERATE_TESTS: wasm/core/js/harness/testharness.js
-PROMISE_REJECTS: wasm/core/js/harness/testharness.js
 
 # Legitimate use of test_driver_internal
 TEST DRIVER INTERNAL: resources/testdriver.js

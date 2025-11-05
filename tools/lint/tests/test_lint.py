@@ -32,23 +32,23 @@ def test_filter_ignorelist_errors():
     filteredfile = 'svg/test.html'
     unfilteredfile = 'html/test.html'
     # Tests for passing no errors
-    filtered = filter_ignorelist_errors(ignorelist, [])
+    filtered = filter_ignorelist_errors(ignorelist, [], {})
     assert filtered == []
-    filtered = filter_ignorelist_errors(ignorelist, [])
+    filtered = filter_ignorelist_errors(ignorelist, [], {})
     assert filtered == []
     # Tests for filtering on file and line number
-    filtered = filter_ignorelist_errors(ignorelist, [['CONSOLE', '', filteredfile, 12]])
+    filtered = filter_ignorelist_errors(ignorelist, [['CONSOLE', '', filteredfile, 12]], {})
     assert filtered == []
-    filtered = filter_ignorelist_errors(ignorelist, [['CONSOLE', '', unfilteredfile, 12]])
+    filtered = filter_ignorelist_errors(ignorelist, [['CONSOLE', '', unfilteredfile, 12]], {})
     assert filtered == [['CONSOLE', '', unfilteredfile, 12]]
-    filtered = filter_ignorelist_errors(ignorelist, [['CONSOLE', '', filteredfile, 11]])
+    filtered = filter_ignorelist_errors(ignorelist, [['CONSOLE', '', filteredfile, 11]], {})
     assert filtered == [['CONSOLE', '', filteredfile, 11]]
     # Tests for filtering on just file
-    filtered = filter_ignorelist_errors(ignorelist, [['INDENT TABS', '', filteredfile, 12]])
+    filtered = filter_ignorelist_errors(ignorelist, [['INDENT TABS', '', filteredfile, 12]], {})
     assert filtered == []
-    filtered = filter_ignorelist_errors(ignorelist, [['INDENT TABS', '', filteredfile, 11]])
+    filtered = filter_ignorelist_errors(ignorelist, [['INDENT TABS', '', filteredfile, 11]], {})
     assert filtered == []
-    filtered = filter_ignorelist_errors(ignorelist, [['INDENT TABS', '', unfilteredfile, 11]])
+    filtered = filter_ignorelist_errors(ignorelist, [['INDENT TABS', '', unfilteredfile, 11]], {})
     assert filtered == [['INDENT TABS', '', unfilteredfile, 11]]
 
 
@@ -361,6 +361,33 @@ def test_ignore_glob(caplog):
             assert mocked_check_file_contents.call_count == 3
             assert "TRAILING WHITESPACE" in caplog.text
             assert "ABSOLUTE-URL-REF" in caplog.text
+
+
+def test_unused_ignorelist_entry(caplog):
+    """Test that unused ignorelist entries are detected."""
+    # This test should detect that the ignorelist entry for unused_entry.html
+    # is not being used (file has no errors)
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["unused_entry.html"], "normal")
+            assert rv == 1
+            assert mocked_check_path.call_count == 1
+            assert mocked_check_file_contents.call_count == 1
+    assert "UNUSED-IGNORELIST" in caplog.text
+    assert "TRAILING WHITESPACE" in caplog.text
+
+
+def test_used_ignorelist_entry(caplog):
+    """Test that used ignorelist entries are not reported."""
+    # This test should NOT report the ignorelist entry for used_entry.html
+    # because it's actually being used (file has trailing whitespace that is ignored)
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["used_entry.html"], "normal")
+            assert rv == 0
+            assert mocked_check_path.call_count == 1
+            assert mocked_check_file_contents.call_count == 1
+    assert caplog.text == ""
 
 
 def test_all_filesystem_paths():

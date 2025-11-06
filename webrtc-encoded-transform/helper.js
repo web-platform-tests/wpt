@@ -11,7 +11,7 @@ async function createRTCEncodedFrameFromScratch(kind) {
         const reader = readable.getReader();
         const {value, done} = await reader.read();
         if (done) throw {name: "done"};
-        self.postMessage(value, {transfer: [value.data]});
+        self.postMessage(value);
       } catch (e) {
         self.postMessage(e.name);
       }

@@ -9,11 +9,9 @@ pytestmark = pytest.mark.asyncio
 async def test_request(
     bidi_session,
     url,
-    setup_collected_response,
+    setup_collected_data,
 ):
-    [request, collector] = await setup_collected_response(
-        fetch_url=url(PAGE_EMPTY_TEXT)
-    )
+    [request, collector] = await setup_collected_data(fetch_url=url(PAGE_EMPTY_TEXT))
     await bidi_session.network.disown_data(
         request=request, data_type="response", collector=collector
     )

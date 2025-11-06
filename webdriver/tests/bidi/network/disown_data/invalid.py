@@ -78,12 +78,12 @@ async def test_params_collector_removed_collector(bidi_session):
 
 
 async def test_params_collector_not_in_collected_data(
-    bidi_session, url, add_data_collector, setup_collected_response
+    bidi_session, url, add_data_collector, setup_collected_data
 ):
     too_small_collector = await add_data_collector(
         data_types=["response"], max_encoded_data_size=1
     )
-    [request, _] = await setup_collected_response(fetch_url=url(PAGE_EMPTY_TEXT))
+    [request, _] = await setup_collected_data(fetch_url=url(PAGE_EMPTY_TEXT))
 
     with pytest.raises(error.NoSuchNetworkDataException):
         await bidi_session.network.disown_data(

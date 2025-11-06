@@ -36,6 +36,25 @@ async def test_params_data_type_invalid_value(
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.network.get_data(request=request, data_type=value)
 
+@pytest.mark.parametrize(
+    "collector_data_type", ["request", "response"]
+)
+async def test_params_data_type_mismatch(
+    bidi_session, url, setup_collected_data, collector_data_type
+):
+    [request, collector] = await setup_collected_data(
+        fetch_url=url(PAGE_EMPTY_TEXT),
+        data_types=[collector_data_type],
+    )
+
+    if collector_data_type == "request":
+        data_type = "response"
+    else:
+        data_type = "request"
+
+    with pytest.raises(error.NoSuchNetworkDataException):
+        await bidi_session.network.get_data(request=request, data_type=data_type)
+
 
 @pytest.mark.parametrize("value", [False, 42, {}, []])
 async def test_params_collector_invalid_type(

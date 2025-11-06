@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 jobs:
   update:
-    runs-on: ubuntu-24.04
+    runs-on: Android Enterprise
     if: github.repository == 'web-platform-tests/wpt'
     steps:
     - name: Set up Python

@@ -9,9 +9,9 @@ pytestmark = pytest.mark.asyncio
     "file, expected_value", [(PAGE_EMPTY_TEXT, "empty\n"), (PAGE_OTHER_TEXT, "other\n")]
 )
 async def test_request_text_file(
-    bidi_session, url, setup_collected_response, file, expected_value
+    bidi_session, url, setup_collected_data, file, expected_value
 ):
-    [request, _] = await setup_collected_response(fetch_url=url(file))
+    [request, _] = await setup_collected_data(fetch_url=url(file))
     data = await bidi_session.network.get_data(request=request, data_type="response")
 
     assert data["type"] == "string"
@@ -19,9 +19,11 @@ async def test_request_text_file(
 
 
 async def test_request_base64_file(
-    bidi_session, url, setup_collected_response,
+    bidi_session,
+    url,
+    setup_collected_data,
 ):
-    [request, _] = await setup_collected_response(fetch_url=url(PAGE_EMPTY_IMAGE))
+    [request, _] = await setup_collected_data(fetch_url=url(PAGE_EMPTY_IMAGE))
     data = await bidi_session.network.get_data(request=request, data_type="response")
 
     assert data["type"] == "base64"
@@ -49,10 +51,12 @@ async def test_request_data_scheme_image(
 
 
 async def test_request_empty_response(
-    bidi_session, inline, setup_collected_response,
+    bidi_session,
+    inline,
+    setup_collected_data,
 ):
     empty_url = inline("", doctype="js")
-    [request, _] = await setup_collected_response(fetch_url=empty_url)
+    [request, _] = await setup_collected_data(fetch_url=empty_url)
 
     data = await bidi_session.network.get_data(request=request, data_type="response")
 

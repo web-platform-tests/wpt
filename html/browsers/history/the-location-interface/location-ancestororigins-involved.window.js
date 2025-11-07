@@ -1,5 +1,9 @@
 // META: script=/common/get-host-info.sub.js
 
+function checkSupported() {
+  assert_implements('ancestorOrigins' in location, 'location.ancestorOrigins should be supported');
+}
+
 const embedPath = new URL("resources/ancestororigins-embed.py", location.href).pathname,
       info = get_host_info(),
       localOrigin = info.HTTP_ORIGIN,
@@ -11,10 +15,11 @@ const embedPath = new URL("resources/ancestororigins-embed.py", location.href).p
 let id = 0;
 
 async_test(t => {
+  checkSupported();
   const iframe = document.createElement("iframe"),
         localId = ++id;
   iframe.sandbox = "allow-scripts";
-  iframe.src = localEmbed + "?iframe=|" + remoteEmbed + "?id=" + localId;
+  iframe.src = localEmbed + "?iframe=|" + encodeURIComponent(remoteEmbed) + "?id=" + localId;
   document.body.appendChild(iframe);
   t.add_cleanup(() => iframe.remove());
 
@@ -70,6 +75,7 @@ async_test(t => {
   }
 ].forEach(val => {
   async_test(t => {
+    checkSupported();
     if(!val.intermediateResults) {
       val.intermediateResults = [val.results[1]];
     }
@@ -130,6 +136,7 @@ async_test(t => {
   }
 ].forEach(val => {
   async_test(t => {
+    checkSupported();
     const iframe = document.createElement("iframe"),
           localId = ++id;
     iframe.src = remoteEmbed + "?iframe=|" + remoteEmbed + "?iframe=no-referrer%257C" + val.innerinnerEmbed + "?id=" + localId;
@@ -146,6 +153,7 @@ async_test(t => {
 });
 
 async_test(t => {
+  checkSupported();
   const iframe = document.createElement("iframe"),
         localId = ++id;
   document.body.appendChild(iframe);

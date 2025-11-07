@@ -1,8 +1,14 @@
+function checkSupported() {
+  assert_implements('ancestorOrigins' in location, 'location.ancestorOrigins should be supported');
+}
+
 test(() => {
+  checkSupported();
   assert_equals(location.ancestorOrigins.length, 0)
 }, "location.ancestorOrigins basic check");
 
 async_test(t => {
+  checkSupported();
   const frame = document.createElement("iframe"),
         rp = document.createElement("meta");
   frame.onload = t.step_func_done(() => {
@@ -30,6 +36,7 @@ async_test(t => {
 }, "location.ancestorOrigins cannot be masked by a dynamic referrer policy");
 
 async_test(t => {
+  checkSupported();
   const frame = document.createElement("iframe");
   frame.onload = t.step_func_done(() => {
     const ancestorOrigins = frame.contentWindow.location.ancestorOrigins;
@@ -43,6 +50,7 @@ async_test(t => {
 }, "location.ancestorOrigins can be masked by a predetermined referrer policy");
 
 async_test(t => {
+  checkSupported();
   const frame = document.createElement("iframe");
   t.add_cleanup(() => frame.remove());
   frame.src = new URL("resources/ancestororigins-embed.py?id=123&iframe=|./ancestororigins-embed.py%3Fid=1234", location.href.replace("://", "://天気の良い日.")).href;

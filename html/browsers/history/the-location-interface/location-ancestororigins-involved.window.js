@@ -159,16 +159,19 @@ async_test(t => {
   document.body.appendChild(iframe);
   t.add_cleanup(() => iframe.remove());
 
-  const a = document.createElement("a");
-  a.rel = "noreferrer";
-  a.href = localEmbed + "?id=" + localId;
-  iframe.contentDocument.body.appendChild(a);
-  a.click();
+  iframe.addEventListener('load', () => {
+    const a = document.createElement("a");
+    a.rel = "noreferrer";
+    a.href = localEmbed + "?id=" + localId;
+    a.textContent = 'click here';
+    iframe.contentDocument.body.appendChild(a);
 
-  self.addEventListener("message", t.step_func(e => {
-    if(e.data.id === localId) {
-      assert_array_equals(e.data.output, ["null"]);
-      t.done();
-    }
-  }));
+    self.addEventListener("message", t.step_func(e => {
+      if(e.data.id === localId) {
+        assert_array_equals(e.data.output, ["null"]);
+        t.done();
+      }
+    }));
+    a.click();
+  }, {once: true});
 }, "rel=noreferrer should redact");

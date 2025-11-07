@@ -1,5 +1,6 @@
 def main(request, response):
-    body = ""
+    headers = [("Content-Type", "text/html; charset=utf-8")]
+    body = "<!doctype html>"
 
     if b"iframe" in request.GET:
         frame = request.GET.first(b"iframe").split(b"|")
@@ -8,7 +9,7 @@ def main(request, response):
         if frameReferrer != "":
             frameReferrer = " referrerpolicy=" + frameReferrer
 
-        body = ("<iframe src=\"%s\"%s></iframe>" % (frameURL, frameReferrer)) + "\n"
+        body = body + ("<iframe src=\"%s\"%s></iframe>" % (frameURL, frameReferrer)) + "\n"
 
     if b"id" in request.GET:
         body = body + """<script>
@@ -17,6 +18,6 @@ top.postMessage({ id: %s, output }, "*");
 </script>
 """ % request.GET.first(b"id").decode("utf-8")
 
-    if body == "":
+    if body == "<!doctype html>":
         return "Please specify either or both the 'iframe' and 'id' GET parameters."
-    return body
+    return (headers, body)

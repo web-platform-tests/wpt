@@ -152,10 +152,13 @@ async_test(t => {
   }, val.desc);
 });
 
+// rel=noreferrer sets https://html.spec.whatwg.org/#document-state-request-referrer-policy
+// but does not affect https://html.spec.whatwg.org/#policy-container-referrer-policy
 async_test(t => {
   checkSupported();
   const iframe = document.createElement("iframe"),
         localId = ++id;
+  iframe.src = '/common/blank.html';
   document.body.appendChild(iframe);
   t.add_cleanup(() => iframe.remove());
 
@@ -168,10 +171,10 @@ async_test(t => {
 
     self.addEventListener("message", t.step_func(e => {
       if(e.data.id === localId) {
-        assert_array_equals(e.data.output, ["null"]);
+        assert_array_equals(e.data.output, [localOrigin]);
         t.done();
       }
     }));
     a.click();
   }, {once: true});
-}, "rel=noreferrer should redact");
+}, "rel=noreferrer should not affect ancestorOrigins");

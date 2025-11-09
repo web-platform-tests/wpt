@@ -71,6 +71,8 @@ function runTest() {
 
     await new test_driver.Actions()
       .addWheel("wheel1")
+      .scroll(2, 2, 0, 10, {origin: "viewport"})
+      .pause(1)
       .scroll(2, 2, 0, 30, {origin: "viewport"})
       .pause(1)
       .scroll(2, 2, 0, 30, {origin: "viewport"})

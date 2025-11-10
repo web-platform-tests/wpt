@@ -14,15 +14,17 @@
   </svg>
 </div>
 <script>
-  function assert_identity(m, prefix) {
-    assert_equals(m.a, 1, prefix + "a");
-    assert_equals(m.d, 1, prefix + "d");
+  function assert_identity(m) {
+    assert_equals(m.a, 1, "a");
+    assert_equals(m.d, 1, "d");
     for (let member of ["b", "c", "e", "f"]) {
-      assert_equals(m[member], 0, prefix + member);
+      assert_equals(m[member], 0, member);
     }
   }
   test(function () {
-    assert_identity(document.querySelector(".viewport").getCTM(), "getCTM: ");
-    assert_identity(document.querySelector(".viewport").getScreenCTM(), "getScreenCTM: ");
-  });
+    assert_identity(document.querySelector(".viewport").getCTM());
+  }, "getCTM");
+  test(function() {
+    assert_identity(document.querySelector(".viewport").getScreenCTM());
+  }, "getScreenCTM");
 </script>

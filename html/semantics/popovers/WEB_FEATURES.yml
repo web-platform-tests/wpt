@@ -4,7 +4,3 @@ features:
 - name: closewatcher
   files:
   - "popover-close-request.html"
-- name: backdrop
-  files:
-  - popover-backdrop-appearance.html
-  - popover-dialog-appearance.html

@@ -1,54 +1,41 @@
 <!DOCTYPE html>
 <title>
-    CSS Gap Decorations: flex gaps are painted when the container is fragmented and row gap is suppressed.
+    CSS Gap Decorations: Flex gaps are painted with different outsets in interior end segment endpoints.
 </title>
-<link rel="help" href="https://drafts.csswg.org/css-gaps-1/">
+<link rel="help" href="https://www.w3.org/TR/css-gaps-1/#outset">
 <link rel="match" href="flex-gap-decorations-030-ref.html">
 <link rel="author" title="Javier Contreras" href="mailto:javiercon@microsoft.com">
 <style>
-    .multi-column {
-        columns: 4;
-        height: 30px;
-        column-width: 170px;
-        width: 680px;
-    }
-
     body {
         margin: 0px;
     }
-
-    #flexbox {
-        border: 2px solid rgb(96 139 168);
+    .flex {
         display: flex;
-        column-gap: 10px;
-        row-gap: 10px;
-        row-rule-style: solid;
-        row-rule-color: blue;
-        row-rule-width: 10px;
-        column-rule-style: solid;
-        column-rule-color: red;
-        column-rule-width: 10px;
-        width: 170px;
         flex-wrap: wrap;
+        gap: 20px;
+        left: 0px;
+        top: 0px;
+        width: 340px;
+        row-rule: 3px solid gray;
+        row-rule-break: intersection;
+        row-rule-interior-start-inset: 0;
+        row-rule-interior-end-inset: 1px;
+        column-rule: 3px solid red;
+        column-rule-break: intersection;
+        column-rule-interior-start-inset: 0;
+        column-rule-interior-end-inset: -6px;
+        column-rule-edge-end-inset: -8px;
     }
-
-    .items {
-        background-color: rgb(96 139 168 / 0.2);
-        flex-shrink: 1;
-        width: 50px;
-        height: 50px;
-    }
-
-    #four {
+    .item {
         width: 100px;
+        height: 100px;
+        background: lightgray;
     }
 </style>
-<div class="multi-column">
-    <div id="flexbox">
-        <div class="items">One</div>
-        <div class="items">Two</div>
-        <div class="items">Three</div>
-        <div class="items" id="four">Four</div>
-        <div class="items">Five</div>
-    </div>
+<div class="flex">
+    <div class="item" style="width: 200px;"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
 </div>

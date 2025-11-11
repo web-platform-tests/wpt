@@ -89,9 +89,7 @@ def get_file_github(repo: str, ref: str, path: str) -> bytes:
     return data
 
 
-class Browser:
-    __metaclass__ = ABCMeta
-
+class Browser(metaclass=ABCMeta):
     def __init__(self, logger):
         self.logger = logger
 
@@ -1584,7 +1582,7 @@ class HeadlessShell(ChromeChromiumBase):
         return "N/A"
 
 
-class ChromeAndroidBase(Browser):
+class ChromeAndroidBase(Browser, metaclass=ABCMeta):
     """A base class for ChromeAndroid and AndroidWebView.
 
     On Android, WebView is based on Chromium open source project, and on some
@@ -1592,7 +1590,6 @@ class ChromeAndroidBase(Browser):
     a very similar WPT runner implementation.
     Includes webdriver installation.
     """
-    __metaclass__ = ABCMeta  # This is an abstract class.
 
     def __init__(self, logger):
         super().__init__(logger)
@@ -2271,11 +2268,12 @@ class Servo(Browser):
     requirements = None
 
     def platform_components(self):
-        platform = {
-            "Linux": "linux",
-            "Windows": "win",
-            "Darwin": "mac"
-        }.get(uname[0])
+        platform, triple = {
+            ("Darwin", "arm64"): ("mac-arm64", "aarch64-apple-darwin"),
+            ("Darwin", "x86_64"): ("mac", "x86_64-apple-darwin"),
+            ("Linux", "x86_64"): ("linux", "x86_64-linux-gnu"),
+            ("Windows", "AMD64"): ("win", "x86_64-windows-msvc"),
+        }.get((uname[0], uname[4]), (None, None))
 
         if platform is None:
             raise ValueError("Unable to construct a valid Servo package for current platform")
@@ -2283,27 +2281,28 @@ class Servo(Browser):
         if platform == "linux":
             extension = ".tar.gz"
             decompress = untar
-        elif platform == "win" or platform == "mac":
+        elif platform in ["win", "mac", "mac-arm64"]:
             raise ValueError("Unable to construct a valid Servo package for current platform")
 
-        return (platform, extension, decompress)
+        default_filename = f"servo-{triple}"
+        return (platform, default_filename, extension, decompress)
 
     def _get(self, channel="nightly"):
         if channel != "nightly":
             raise ValueError("Only nightly versions of Servo are available")
 
-        platform, extension, _ = self.platform_components()
-        url = "https://download.servo.org/nightly/%s/servo-latest%s" % (platform, extension)
-        return get(url)
+        platform, filename, extension, _ = self.platform_components()
+        artifact = f"{filename}{extension}"
+        return get(f"https://download.servo.org/nightly/{platform}/{artifact}")
 
     def download(self, dest=None, channel="nightly", rename=None):
         if dest is None:
             dest = os.pwd
 
         resp = self._get(dest, channel)
-        _, extension, _ = self.platform_components()
+        _, default_filename, extension, _ = self.platform_components()
 
-        filename = rename if rename is not None else "servo-latest"
+        filename = rename if rename is not None else default_filename
         with open(os.path.join(dest, "%s%s" % (filename, extension,)), "w") as f:
             f.write(resp.content)
 
@@ -2312,7 +2311,7 @@ class Servo(Browser):
         if dest is None:
             dest = os.pwd
 
-        _, _, decompress = self.platform_components()
+        _, _, _, decompress = self.platform_components()
 
         resp = self._get(channel)
         decompress(resp.raw, dest=dest)

@@ -266,13 +266,7 @@ class TestsApiHandler(ApiHandler):
             test = split[0]
             test_query = split[1]
 
-        query = "token={}&timeout={}&https_port={}&web_root={}&{}".format(
-                token,
-                test_timeout,
-                self._wpt_ssl_port,
-                self._web_root,
-                test_query
-        )
+        query = f"token={token}&timeout={test_timeout}&https_port={self._wpt_ssl_port}&web_root={self._web_root}&{test_query}"
 
         return self._generate_url(
             protocol=protocol,
@@ -296,4 +290,4 @@ class TestsApiHandler(ApiHandler):
             query = ""
         if protocol is None:
             protocol = "http"
-        return urlunsplit([protocol, "{}:{}".format(hostname, port), uri, query, ''])
+        return urlunsplit([protocol, f"{hostname}:{port}", uri, query, ''])

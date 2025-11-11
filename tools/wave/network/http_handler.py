@@ -116,5 +116,5 @@ class HttpHandler:
             message = "Failed to perform proxy request"
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            logger.error("{}: {}: {}".format(message, info[0].__name__, info[1].args[0]))
+            logger.error(f"{message}: {info[0].__name__}: {info[1].args[0]}")
             response.status = 500

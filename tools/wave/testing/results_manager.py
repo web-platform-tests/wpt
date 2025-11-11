@@ -218,7 +218,7 @@ class ResultsManager:
         api_directory = os.path.join(self._results_directory_path, token, api)
         if not os.path.isdir(api_directory):
             return None
-        return "/results/{}/{}/all.html".format(token, api)
+        return f"/results/{token}/{api}/all.html"
 
     def read_results_wpt_multi_report_uri(self, tokens, api):
         comparison_directory_name = self.get_comparison_identifier(tokens)
@@ -234,7 +234,7 @@ class ResultsManager:
         if not os.path.isdir(api_directory_path):
             self.generate_multi_report(tokens, api)
 
-        return "/results/{}/all.html".format(relative_api_directory_path)
+        return f"/results/{relative_api_directory_path}/all.html"
 
     def delete_results(self, token):
         results_directory = os.path.join(self._results_directory_path, token)
@@ -547,7 +547,7 @@ class ResultsManager:
     def export_results_overview(self, token):
         session = self._sessions_manager.read_session(token)
         if session is None:
-            raise NotFoundException("Could not find session {}".format(token))
+            raise NotFoundException(f"Could not find session {token}")
 
         tmp_file_name = str(time.time()) + ".zip"
         zip = zipfile.ZipFile(tmp_file_name, "w")
@@ -598,7 +598,7 @@ class ResultsManager:
     def import_results(self, blob):
         if not self.is_import_results_enabled:
             raise PermissionDeniedException()
-        tmp_file_name = "{}.zip".format(str(time.time()))
+        tmp_file_name = f"{str(time.time())}.zip"
 
         with open(tmp_file_name, "w") as file:
             file.write(blob)

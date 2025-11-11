@@ -76,7 +76,7 @@ class SessionsManager:
 
         for test_type in test_types:
             if test_type != "automatic" and test_type != "manual":
-                raise InvalidDataException("Unknown type '{}'".format(test_type))
+                raise InvalidDataException(f"Unknown type '{test_type}'")
 
         if expiration_date is not None and not isinstance(expiration_date, int):
             expiration_date = iso_to_millis(expiration_date)
@@ -458,7 +458,7 @@ class SessionsManager:
             pattern = re.compile("^" + include_test)
             if pattern.match(test) is not None:
                 query_string += query + "&"
-        return "{}?{}".format(test, query_string)
+        return f"{test}?{query_string}"
 
     def find_token(self, fragment):
         if len(fragment) < 8:

@@ -54,7 +54,7 @@ def get_run_parameters():
     operation = arguments[1].lower()
 
     if operation != START and operation != DOWNLOAD_REFERENCE_BROWSERS:
-        raise Exception("Unknown operation {}".format(operation))
+        raise Exception(f"Unknown operation {operation}")
 
     parameters["operation"] = operation
 
@@ -69,7 +69,7 @@ def get_run_parameters():
             parameters["configuration_file_path"] = path
             continue
 
-        raise Exception("Unknown option {}".format(argument))
+        raise Exception(f"Unknown option {argument}")
 
     if "configuration_file_path" not in parameters:
         configuration_file_path = os.path.join(os.getcwd(), "config.json")
@@ -100,14 +100,14 @@ def download_reference_browsers():
     for id in REFERENCE_BROWSERS:
         browser = REFERENCE_BROWSERS[id]
         browser["zip"] = browser["url"].split("/")[-1]
-        printt("Downloading {} results ...".format(browser["name"]))
+        printt(f"Downloading {browser['name']} results ...")
         dest_path = os.path.join(result_directory, browser["zip"])
         download_file(browser["url"], dest_path)
         print(" done.")
 
     for id in REFERENCE_BROWSERS:
         browser = REFERENCE_BROWSERS[id]
-        printt("Extracting {} results ...".format(browser["name"]))
+        printt(f"Extracting {browser['name']} results ...")
         dest_path = os.path.join(result_directory, browser["name"])
         zip_file = zipfile.ZipFile(dest_path)
         zip_file.extractall(result_directory)

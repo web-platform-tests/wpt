@@ -13,7 +13,7 @@ from ...data.exceptions.not_found_exception import NotFoundException
 
 class DevicesApiHandler(ApiHandler):
     def __init__(self, devices_manager, event_dispatcher, web_root):
-        super(DevicesApiHandler, self).__init__(web_root)
+        super().__init__(web_root)
         self._devices_manager = devices_manager
         self._event_dispatcher = event_dispatcher
 

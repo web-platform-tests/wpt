@@ -22,7 +22,7 @@ class SessionsApiHandler(ApiHandler):
         web_root,
         read_sessions_enabled,
     ):
-        super(SessionsApiHandler, self).__init__(web_root)
+        super().__init__(web_root)
         self._sessions_manager = sessions_manager
         self._results_manager = results_manager
         self._event_dispatcher = event_dispatcher

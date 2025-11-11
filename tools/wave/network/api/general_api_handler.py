@@ -16,7 +16,7 @@ class GeneralApiHandler(ApiHandler):
         test_type_selection_enabled,
         test_file_selection_enabled
     ):
-        super(GeneralApiHandler, self).__init__(web_root)
+        super().__init__(web_root)
         self.read_sessions_enabled = read_sessions_enabled
         self.import_results_enabled = import_results_enabled
         self.reports_enabled = reports_enabled

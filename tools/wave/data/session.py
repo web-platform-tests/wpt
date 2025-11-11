@@ -13,7 +13,7 @@ WMAS = "wmas"
 DPCTF = "dpctf"
 
 
-class Session(object):
+class Session:
     def __init__(
             self,
             token=None,

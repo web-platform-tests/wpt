@@ -23,7 +23,7 @@ DEFAULT_TEST_AUTOMATIC_TIMEOUT = 60000
 DEFAULT_TEST_MANUAL_TIMEOUT = 300000
 
 
-class SessionsManager(object):
+class SessionsManager:
     def initialize(
         self,
         test_loader,

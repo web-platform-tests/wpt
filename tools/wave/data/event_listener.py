@@ -1,6 +1,6 @@
 # mypy: allow-untyped-defs
 
-class EventListener(object):
+class EventListener:
     def __init__(self, dispatcher_token):
         super(EventListener, self).__init__()
         self.dispatcher_token = dispatcher_token

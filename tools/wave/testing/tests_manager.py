@@ -10,7 +10,7 @@ from ..data.exceptions.not_found_exception import NotFoundException
 from ..data.session import COMPLETED, ABORTED
 
 
-class TestsManager(object):
+class TestsManager:
     def initialize(self, test_loader, sessions_manager, results_manager, event_dispatcher):
         self._test_loader = test_loader
         self._sessions_manager = sessions_manager

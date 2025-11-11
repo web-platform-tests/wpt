@@ -9,7 +9,7 @@ import traceback
 global logger
 logger = logging.getLogger("wave-api-handler")
 
-class HttpHandler(object):
+class HttpHandler:
     def __init__(
         self,
         static_handler=None,

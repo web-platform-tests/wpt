@@ -23,7 +23,7 @@ RESULTS_FILE_REGEX = r"^\w\w\d\d\d?\.json$"
 RESULTS_FILE_PATTERN = re.compile(RESULTS_FILE_REGEX)
 
 
-class ResultsManager(object):
+class ResultsManager:
     def initialize(
         self,
         results_directory_path,

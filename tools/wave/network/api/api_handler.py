@@ -11,7 +11,7 @@ global logger
 logger = logging.getLogger("wave-api-handler")
 
 
-class ApiHandler(object):
+class ApiHandler:
     def __init__(self, web_root):
         self._web_root = web_root
 

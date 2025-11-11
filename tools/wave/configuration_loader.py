@@ -2,7 +2,6 @@
 
 import json
 import os
-from io import open
 
 from tools.wpt import wpt
 

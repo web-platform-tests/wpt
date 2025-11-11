@@ -1,7 +1,6 @@
 # mypy: allow-untyped-defs
 
 import os
-from io import open
 
 
 class StaticHandler:

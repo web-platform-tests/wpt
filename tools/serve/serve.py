@@ -24,7 +24,7 @@ from typing import ClassVar, List, Optional, Set, Tuple
 from localpaths import repo_root  # type: ignore
 
 from manifest.sourcefile import read_script_metadata, js_meta_re, parse_variants  # type: ignore
-from ..manifest.test262 import TestRecord
+from manifest.test262 import TestRecord
 from wptserve import server as wptserve, handlers
 from wptserve import stash
 from wptserve import config
@@ -365,15 +365,16 @@ class Test262WindowTestHandler(HtmlWrapperHandler):
         path = self._get_filesystem_path(request)
         with open(path, encoding='ISO-8859-1') as f:
             test_record = TestRecord.parse(f.read(), path)
-        yield from [('script', "/test262/harness/%s" % filename)
-                    for filename in test_record.get("includes", [])]
+        yield from (('script', "/test262/harness/%s" % filename)
+                    for filename in test_record.get("includes", []))
         expected_error = test_record.get('negative', {}).get('type', None)
         if expected_error is not None:
             yield ('negative', expected_error)
 
-    def _meta_replacement(self, key, value):
+    def _meta_replacement(self, key: str, value: str) -> Optional[str]:
         if key == 'negative':
             return """<script>test262Negative('%s')</script>""" % value
+        return None
 
 
 class Test262WindowModuleHandler(Test262WindowHandler):

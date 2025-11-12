@@ -34,6 +34,9 @@ features:
   - color-behind-images.htm
 - name: background-image
   files:
+  # The presence of a number of unrelated test files whose name begins with
+  # `background-color-` makes the `0` in following pattern the most
+  # stable/concise way to express this classifier.
   - background-image-0*
   - background-image-first-letter.html
   - background-image-first-line.html

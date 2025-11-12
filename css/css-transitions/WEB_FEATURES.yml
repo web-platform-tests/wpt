@@ -5,7 +5,3 @@ features:
 - name: transition-behavior
   files:
   - transition-behavior.html
-- name: background-position
-  files:
-  - transition-background-position-with-edge-offset.html
-  - transition-property-006-manual.html

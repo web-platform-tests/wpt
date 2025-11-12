@@ -113,16 +113,22 @@
             [format] = format.split("_compressed");
         }
         promise_test(function(test) {
-            return subtle.importKey(format, keyData, algorithm, extractable, usages).
+            let microtaskTriggered = false;
+            let promise = subtle.importKey(format, keyData, algorithm, extractable, usages).
             then(function(key) {
+                assert_true(microtaskTriggered, "promise resolved too early");
+
                 assert_equals(key.constructor, CryptoKey, "Imported a CryptoKey object");
                 assert_goodCryptoKey(key, algorithm, extractable, usages, (format === 'pkcs8' || (format === 'jwk' && keyData.d)) ? 'private' : 'public');
                 if (!extractable) {
                     return;
                 }
 
-                return subtle.exportKey(format, key).
+                microtaskTriggered = false;
+                let promise = subtle.exportKey(format, key).
                 then(function(result) {
+                    assert_true(microtaskTriggered, "promise resolved too early");
+
                     if (format !== "jwk") {
                         assert_true(equalBuffers(data[format], result), "Round trip works");
                     } else {
@@ -131,6 +137,10 @@
                 }, function(err) {
                     assert_unreached("Threw an unexpected error: " + err.toString());
                 });
+                Promise.resolve().then(() => {
+                    microtaskTriggered = true;
+                });
+                return promise;
             }, function(err) {
                 if (compressed && err.name === "DataError") {
                     assert_implements_optional(false, "Compressed point format not supported: " + err.toString());
@@ -138,6 +148,10 @@
                     assert_unreached("Threw an unexpected error: " + err.toString());
                 }
             });
+            Promise.resolve().then(() => {
+                microtaskTriggered = true;
+            });
+            return promise;
         }, "Good parameters: " + keySize.toString() + " bits " + parameterString(format, compressed, keyData, algorithm, extractable, usages));
     }
 

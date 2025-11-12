@@ -51,48 +51,64 @@
             var mixedCase = upCase.substr(0, 1) + downCase.substr(1);
 
             promise_test(function(test) {
-                var promise = subtle.digest({name: upCase}, sourceData[size])
+                let microtaskTriggered = false;
+                let promise = subtle.digest({name: upCase}, sourceData[size])
                 .then(function(result) {
+                    assert_true(microtaskTriggered, "promise resolved too early");
                     assert_true(equalBuffers(result, digestedData[alg][size]), "digest() yielded expected result for " + alg + ":" + size);
                 }, function(err) {
                     assert_unreached("digest() threw an error for " + alg + ":" + size + " - " + err.message);
                 });
-
+                Promise.resolve().then(() => {
+                    microtaskTriggered = true;
+                });
                 return promise;
             }, upCase + " with " + size + " source data");
 
             promise_test(function(test) {
-                var promise = subtle.digest({name: downCase}, sourceData[size])
+                let microtaskTriggered = false;
+                let promise = subtle.digest({name: downCase}, sourceData[size])
                 .then(function(result) {
+                    assert_true(microtaskTriggered, "promise resolved too early");
                     assert_true(equalBuffers(result, digestedData[alg][size]), "digest() yielded expected result for " + alg + ":" + size);
                 }, function(err) {
                     assert_unreached("digest() threw an error for " + alg + ":" + size + " - " + err.message);
                 });
-
+                Promise.resolve().then(() => {
+                    microtaskTriggered = true;
+                });
                 return promise;
             }, downCase + " with " + size + " source data");
 
             promise_test(function(test) {
-                var promise = subtle.digest({name: mixedCase}, sourceData[size])
+                let microtaskTriggered = false;
+                let promise = subtle.digest({name: mixedCase}, sourceData[size])
                 .then(function(result) {
+                    assert_true(microtaskTriggered, "promise resolved too early");
                     assert_true(equalBuffers(result, digestedData[alg][size]), "digest() yielded expected result for " + alg + ":" + size);
                 }, function(err) {
                     assert_unreached("digest() threw an error for " + alg + ":" + size + " - " + err.message);
                 });
-
+                Promise.resolve().then(() => {
+                    microtaskTriggered = true;
+                });
                 return promise;
             }, mixedCase + " with " + size + " source data");
 
             promise_test(function(test) {
-                var copiedBuffer = copyBuffer(sourceData[size]);
-                var promise = subtle.digest({name: upCase}, copiedBuffer)
+                let copiedBuffer = copyBuffer(sourceData[size]);
+                let microtaskTriggered = false;
+                let promise = subtle.digest({name: upCase}, copiedBuffer)
                 .then(function(result) {
+                    assert_true(microtaskTriggered, "promise resolved too early");
                     assert_true(equalBuffers(result, digestedData[alg][size]), "digest() yielded expected result for " + alg + ":" + size);
                 }, function(err) {
                     assert_unreached("digest() threw an error for " + alg + ":" + size + " - " + err.message);
                 });
-
                 copiedBuffer[0] = 255 - copiedBuffer;
+                Promise.resolve().then(() => {
+                    microtaskTriggered = true;
+                });
                 return promise;
             }, upCase + " with " + size + " source data and altered buffer after call");
 
@@ -105,13 +121,17 @@
         badNames.forEach(function(badName) {
 
             promise_test(function(test) {
-                var promise = subtle.digest({name: badName}, sourceData[size])
+                let microtaskTriggered = false;
+                let promise = subtle.digest({name: badName}, sourceData[size])
                 .then(function(result) {
                     assert_unreached("digest() should not have worked for " + badName + ":" + size);
                 }, function(err) {
+                    assert_false(microtaskTriggered, "promise rejected too late");
                     assert_equals(err.name, "NotSupportedError", "Bad algorithm name should cause NotSupportedError")
                 });
-
+                Promise.resolve().then(() => {
+                    microtaskTriggered = true;
+                });
                 return promise;
             }, badName + " with " + size);
 
@@ -121,13 +141,17 @@
     // Call digest() with empty algorithm object
     Object.keys(sourceData).forEach(function(size) {
         promise_test(function(test) {
-            var promise = subtle.digest({}, sourceData[size])
+            let microtaskTriggered = false;
+            let promise = subtle.digest({}, sourceData[size])
             .then(function(result) {
                 assert_unreached("digest() with missing algorithm name should have thrown a TypeError");
             }, function(err) {
+                assert_false(microtaskTriggered, "promise rejected too late");
                 assert_equals(err.name, "TypeError", "Missing algorithm name should cause TypeError")
             });
-
+            Promise.resolve().then(() => {
+                microtaskTriggered = true;
+            });
             return promise;
         }, "empty algorithm object with " + size);
     });

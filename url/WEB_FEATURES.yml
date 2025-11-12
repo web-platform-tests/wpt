@@ -2,6 +2,3 @@ features:
 - name: url-canparse
   files:
   - url-statics-canparse.*
-- name: base
-  files:
-  - a-element*

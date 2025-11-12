@@ -2,18 +2,3 @@ features:
 - name: text-indent-each-line
   files:
   - text-indent.html
-- name: background-attachment
-  files:
-  - background-attachment.html
-- name: background-blend-mode
-  files:
-  - background-blend-mode.html
-- name: background-origin
-  files:
-  - background-origin.html
-- name: background-position
-  files:
-  - background-position.html
-- name: background-size
-  files:
-  - background-size.html

@@ -24,7 +24,7 @@ from typing import ClassVar, List, Optional, Set, Tuple
 from localpaths import repo_root  # type: ignore
 
 from manifest.sourcefile import read_script_metadata, js_meta_re, parse_variants  # type: ignore
-from manifest.parseTestRecord import parseTestRecord
+from ..manifest.test262 import TestRecord
 from wptserve import server as wptserve, handlers
 from wptserve import stash
 from wptserve import config
@@ -346,7 +346,7 @@ class Test262WindowTestHandler(HtmlWrapperHandler):
     headers = [('Cross-Origin-Opener-Policy', 'same-origin'),
                ('Cross-Origin-Embedder-Policy', 'require-corp')]
 
-    path_replace = [(".test262-test.html", ".js")]
+    path_replace: list[tuple[str, str]] | list[tuple[str, str, str]] = [(".test262-test.html", ".js")]
 
     pre_wrapper = """<!doctype html>
 <meta charset=utf-8>
@@ -364,7 +364,7 @@ class Test262WindowTestHandler(HtmlWrapperHandler):
     def _get_metadata(self, request):
         path = self._get_filesystem_path(request)
         with open(path, encoding='ISO-8859-1') as f:
-            test_record = parseTestRecord(f.read(), path)
+            test_record = TestRecord.parse(f.read(), path)
         yield from [('script', "/test262/harness/%s" % filename)
                     for filename in test_record.get("includes", [])]
         expected_error = test_record.get('negative', {}).get('type', None)

@@ -4,6 +4,8 @@ import logging
 import os
 import pickle
 import platform
+import unittest
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -132,20 +134,23 @@ def test_inject_script_after_head():
         </body>
     </html>"""
     assert INJECT_SCRIPT_MARKER in html
-    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER) == html
+    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""),
+                         INJECT_SCRIPT_MARKER) == html
 
 
 def test_inject_script_no_html_head():
     html = b"""<!DOCTYPE html>
     <!-- inject here --><div></div>"""
     assert INJECT_SCRIPT_MARKER in html
-    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER) == html
+    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""),
+                         INJECT_SCRIPT_MARKER) == html
 
 
 def test_inject_script_no_doctype():
     html = b"""<!-- inject here --><div></div>"""
     assert INJECT_SCRIPT_MARKER in html
-    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER) == html
+    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""),
+                         INJECT_SCRIPT_MARKER) == html
 
 
 def test_inject_script_parse_error():
@@ -153,4 +158,96 @@ def test_inject_script_parse_error():
     assert INJECT_SCRIPT_MARKER in html
     # On a parse error, the script should not be injected and the original content should be
     # returned.
-    assert INJECT_SCRIPT_MARKER not in inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER)
+    assert INJECT_SCRIPT_MARKER not in inject_script(html.replace(INJECT_SCRIPT_MARKER, b""),
+                                                 INJECT_SCRIPT_MARKER)
+
+class TestTest262Handlers(unittest.TestCase):
+    def setUp(self) -> None:
+        from tools.serve.serve import (
+            Test262WindowTestHandler,
+            Test262WindowModuleTestHandler)
+        self.Test262WindowTestHandler = Test262WindowTestHandler
+        self.Test262WindowModuleTestHandler = Test262WindowModuleTestHandler
+
+        self.tests_root = os.path.join(os.path.dirname(__file__), "tests", "testdata")
+        self.url_base = "/"
+
+        # Create dummy test files for TestRecord.parse to read
+        os.makedirs(os.path.join(self.tests_root, "test262"), exist_ok=True)
+        with open(os.path.join(self.tests_root, "test262", "basic.js"), "w") as f:
+            f.write("""/*---\ndescription: A basic test
+includes: [assert.js, sta.js]
+---*/
+assert.sameValue(1, 1);
+""")
+        with open(os.path.join(self.tests_root, "test262", "negative.js"), "w") as f:
+            f.write("""/*---\ndescription: A negative test
+negative:
+  phase: runtime
+  type: TypeError
+---*/
+throw new TypeError();
+""")
+        with open(os.path.join(self.tests_root, "test262", "module.js"), "w") as f:
+            f.write("""/*---\ndescription: A module test
+flags: [module]
+---*/
+import {} from 'some-module';
+""")
+
+    def tearDown(self) -> None:
+        # Clean up dummy test files and directories
+        os.remove(os.path.join(self.tests_root, "test262", "basic.js"))
+        os.remove(os.path.join(self.tests_root, "test262", "negative.js"))
+        os.remove(os.path.join(self.tests_root, "test262", "module.js"))
+        os.rmdir(os.path.join(self.tests_root, "test262"))
+        os.rmdir(self.tests_root)
+
+    def _create_mock_request(self, path: str) -> MagicMock:
+        mock_request = MagicMock()
+        mock_request.url_parts.path = path
+        mock_request.url_parts.query = ""
+        return mock_request
+
+    def test_test262_window_test_handler_path_replace(self) -> None:
+        handler = self.Test262WindowTestHandler(base_path=self.tests_root, url_base=self.url_base)
+        self.assertEqual(handler.path_replace, [(".test262-test.html", ".js")])
+
+    def test_test262_window_test_handler_get_metadata_includes(self) -> None:
+        handler = self.Test262WindowTestHandler(base_path=self.tests_root, url_base=self.url_base)
+        mock_request = self._create_mock_request("/test262/basic.test262-test.html")
+        metadata = list(handler._get_metadata(mock_request))
+        self.assertIn(('script', '/test262/harness/assert.js'), metadata)
+        self.assertIn(('script', '/test262/harness/sta.js'), metadata)
+
+    def test_test262_window_test_handler_get_metadata_negative(self) -> None:
+        handler = self.Test262WindowTestHandler(base_path=self.tests_root, url_base=self.url_base)
+        mock_request = self._create_mock_request("/test262/negative.test262-test.html")
+        metadata = list(handler._get_metadata(mock_request))
+        self.assertIn(('negative', 'TypeError'), metadata)
+
+    def test_test262_window_test_handler_wrapper_content(self) -> None:
+        handler = self.Test262WindowTestHandler(base_path=self.tests_root, url_base=self.url_base)
+        mock_request = self._create_mock_request("/test262/basic.test262-test.html")
+        mock_response = MagicMock()
+        handler.handle_request(mock_request, mock_response)
+        content = mock_response.content
+        self.assertIn("<script src=\"/resources/test262/testharness-client.js\"></script>", content)
+        self.assertIn("<script src=\"/test262/harness/assert.js\"></script>", content)
+        self.assertIn("<script src=\"/test262/harness/sta.js\"></script>", content)
+        self.assertIn("<script>test262Setup()</script>", content)
+        self.assertIn("<script src=\"/test262/basic.js\"></script>", content)
+        self.assertIn("<script>test262Done()</script>", content)
+
+    def test_test262_window_module_test_handler_path_replace(self) -> None:
+        handler = self.Test262WindowModuleTestHandler(base_path=self.tests_root, url_base=self.url_base)
+        self.assertEqual(handler.path_replace, [(".test262-module-test.html", ".js")])
+
+    def test_test262_window_module_test_handler_wrapper_content(self) -> None:
+        handler = self.Test262WindowModuleTestHandler(base_path=self.tests_root, url_base=self.url_base)
+        mock_request = self._create_mock_request("/test262/module.test262-module-test.html")
+        mock_response = MagicMock()
+        handler.handle_request(mock_request, mock_response)
+        content = mock_response.content
+        self.assertIn("<script type=\"module\">", content)
+        self.assertIn("import {} from \"/test262/module.js\";", content)

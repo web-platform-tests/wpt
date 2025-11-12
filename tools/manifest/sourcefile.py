@@ -29,7 +29,7 @@ from .item import (ConformanceCheckerTest,
                    WebDriverSpecTest)
 from .utils import cached_property
 
-from . import parseTestRecord
+from . import test262
 
 # Cannot do `from ..metadata.webfeatures.schema import WEB_FEATURES_YML_FILENAME`
 # because relative import beyond toplevel throws *ImportError*!
@@ -479,10 +479,10 @@ class SourceFile:
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='pac']")
 
     @cached_property
-    def test262_test_record(self):
+    def test262_test_record(self) -> Optional[Dict[Text, Any]]:
         if self.name_is_test262:
             with open(self.path, encoding='ISO-8859-1') as f:
-                return parseTestRecord.parseTestRecord(f.read(), self.path)
+                return test262.TestRecord.parse(f.read(), self.path)
         else:
             return None
 
@@ -493,6 +493,8 @@ class SourceFile:
         elif self.name_is_webdriver:
             regexp = python_meta_re
         elif self.name_is_test262:
+            if self.test262_test_record is None:
+                return None
             return [('script', "/resources/test262/%s" % filename)
                     for filename in self.test262_test_record.get("includes", [])]
         else:
@@ -1124,32 +1126,35 @@ class SourceFile:
 
         elif self.name_is_test262:
             if self.test262_test_record is None:
-                return None
-
-            test_feature_flags = self.test262_test_record.get("features", [])
-            suffix = ".test262"
-            if "module" in self.test262_test_record:
-                suffix += "-module"
-            elif "onlyStrict" in self.test262_test_record:
-                # Modules are always strict mode, so only append strict for
-                # non-module tests.
-                suffix += ".strict"
-            suffix += ".html"
-            test_url = replace_end(self.rel_url, ".js", suffix)
-            tests = [
-                TestharnessTest(
-                    self.tests_root,
-                    self.rel_path,
-                    self.url_base,
-                    test_url + variant,
-                    timeout=self.timeout,
-                    pac=self.pac,
-                    testdriver_features=self.testdriver_features,
-                    script_metadata=self.script_metadata
-                )
-                for variant in self.test_variants
-            ]
-            rv = TestharnessTest.item_type, tests
+                rv = "support", [
+                    SupportFile(
+                        self.tests_root,
+                        self.rel_path
+                    )]
+            else:
+                suffix = ".test262"
+                if "module" in self.test262_test_record:
+                    suffix += "-module"
+                elif "onlyStrict" in self.test262_test_record:
+                    # Modules are always strict mode, so only append strict for
+                    # non-module tests.
+                    suffix += ".strict"
+                suffix += ".html"
+                test_url = replace_end(self.rel_url, ".js", suffix)
+                tests = [
+                    TestharnessTest(
+                        self.tests_root,
+                        self.rel_path,
+                        self.url_base,
+                        test_url + variant,
+                        timeout=self.timeout,
+                        pac=self.pac,
+                        testdriver_features=self.testdriver_features,
+                        script_metadata=self.script_metadata
+                    )
+                    for variant in self.test_variants
+                ]
+                rv = TestharnessTest.item_type, tests
 
         elif self.content_is_css_manual and not self.name_is_reference:
             rv = ManualTest.item_type, [

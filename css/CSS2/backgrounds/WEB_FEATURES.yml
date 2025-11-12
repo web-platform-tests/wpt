@@ -8,11 +8,6 @@ features:
   - background-alpha-*
   - background-animated-001.xht
   - background-applies-to-*
-  - background-attachment-004.xht
-  - background-attachment-005.xht
-  - background-attachment-006.xht
-  - background-attachment-007.xht
-  - background-attachment-008.xht
   - background-body-*
   - background-cover-*
   - background-html-body-001.xht
@@ -24,25 +19,7 @@ features:
   - background-transparency-001.xht
 - name: background-attachment
   files:
-  - background-attachment-001.xht
-  - background-attachment-002.xht
-  - background-attachment-003.xht
-  - background-attachment-009.xht
-  - background-attachment-010.xht
-  - background-attachment-applies-to-*
-  - background-attachment-applies-to-*
-  - background-attachment-applies-to-*
-  - background-attachment-applies-to-*
-  - background-attachment-applies-to-*
-  - background-attachment-applies-to-*
-  - background-attachment-applies-to-*
-  - background-attachment-applies-to-*
-  - background-attachment-applies-to-*
-  - background-attachment-applies-to-*
-  - background-attachment-applies-to-*
-  - background-attachment-applies-to-*
-  - background-attachment-applies-to-*
-  - background-attachment-applies-to-*
+  - background-attachment-*
 - name: background-color
   files:
   - background-color-*

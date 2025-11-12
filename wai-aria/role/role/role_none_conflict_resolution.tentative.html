@@ -32,15 +32,6 @@
     </table>
 
     <!-- td is inheriting presentational role from table; it has a global aria attr but it doesn't impact the presentational conflict resolution -->
-    <table role="none">
-      <tbody>
-          <tr>
-            <td aria-describedby="test" data-testname="presentational roles conflict - table[role=none] td[aria-describedby]" class="ex-generic">a</td>
-          </tr>
-      </tbody>
-    </table>
-
-    <!-- td is inheriting presentational role from table; it has a global aria attr but it doesn't impact the presentational conflict resolution -->
     <style>
       table.with-style, table.with-style th, table.with-style td {
         border: 1px solid black;

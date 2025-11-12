@@ -1,4 +1,0 @@
-features:
-- name: background-attachment
-  files:
-  - kind-of-widget-fallback-*-background-attachment-*

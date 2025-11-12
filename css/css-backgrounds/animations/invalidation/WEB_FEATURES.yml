@@ -1,3 +1,4 @@
 features:
 - name: background-color
-  files: "**"
+  files:
+  - background-color-*

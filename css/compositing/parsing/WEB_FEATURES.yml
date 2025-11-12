@@ -1,4 +1,4 @@
 features:
 - name: background-blend-mode
   files:
-  - background-*
+  - background-blend-mode-*

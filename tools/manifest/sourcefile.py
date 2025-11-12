@@ -24,6 +24,7 @@ from .item import (ConformanceCheckerTest,
                    RefTest,
                    SpecItem,
                    SupportFile,
+                   Test262Test,
                    TestharnessTest,
                    VisualTest,
                    WebDriverSpecTest)
@@ -939,7 +940,7 @@ class SourceFile:
             return {TestharnessTest.item_type}
 
         if self.name_is_test262:
-            return {TestharnessTest.item_type}
+            return {Test262Test.item_type}
 
         if self.name_is_extension:
             return {TestharnessTest.item_type}
@@ -1142,7 +1143,7 @@ class SourceFile:
                 suffix += ".html"
                 test_url = replace_end(self.rel_url, ".js", suffix)
                 tests = [
-                    TestharnessTest(
+                    Test262Test(
                         self.tests_root,
                         self.rel_path,
                         self.url_base,
@@ -1154,7 +1155,7 @@ class SourceFile:
                     )
                     for variant in self.test_variants
                 ]
-                rv = TestharnessTest.item_type, tests
+                rv = Test262Test.item_type, tests
 
         elif self.content_is_css_manual and not self.name_is_reference:
             rv = ManualTest.item_type, [

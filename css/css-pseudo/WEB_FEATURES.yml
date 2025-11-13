@@ -30,7 +30,5 @@ features:
   - backdrop-animate.html
 - name: before-after
   files:
-  - CSSPseudoElement-identity.html
   - before-*
-  - focus-visible-originating-element.html
   - pseudo-replaced-elements.html

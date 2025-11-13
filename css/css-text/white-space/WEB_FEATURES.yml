@@ -9,6 +9,3 @@ features:
   files:
   - white-space-collapse-*
   - line-edge-white-space-collapse-*
-- name: bdo
-  files:
-  - tab-bidi-001.html

@@ -939,9 +939,6 @@ class SourceFile:
         if self.name_is_test262:
             return {Test262Test.item_type, SupportFile.item_type}
 
-        if self.name_is_test262:
-            return {Test262Test.item_type}
-
         if self.name_is_extension:
             return {TestharnessTest.item_type}
 

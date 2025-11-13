@@ -534,8 +534,6 @@ class Test262Test(TestharnessTest):
     test_type = "test262"
 
 
-
-
 class ReftestTest(Test):
     """A reftest
 

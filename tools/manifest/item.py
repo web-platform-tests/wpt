@@ -204,8 +204,6 @@ class Test262Test(TestharnessTest):
     item_type = "test262"
 
 
-
-
 class RefTest(URLManifestItem):
     __slots__ = ("references",)
 

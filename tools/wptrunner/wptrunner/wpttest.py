@@ -10,7 +10,8 @@ from urllib.parse import urljoin
 from .wptmanifest.parser import atoms
 
 atom_reset = atoms["Reset"]
-enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest", "test262"}
+enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest"}
+all_test_types = enabled_tests | {"test262"}
 
 
 class Result(ABC):

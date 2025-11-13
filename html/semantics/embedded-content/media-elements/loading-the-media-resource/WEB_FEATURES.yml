@@ -1,4 +1,0 @@
-features:
-- name: beforeunload
-  files:
-  - stable-state-beforeunload-manual.html

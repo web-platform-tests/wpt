@@ -1,5 +1,4 @@
 features:
 - name: beforeunload
   files:
-  - "*"
-  - "!pagehide-on-history-forward.html"
+  - "*beforeunload*"

@@ -1,6 +1,0 @@
-features:
-- name: body
-  files:
-  - body-onload.html
-  - event-handler-attributes-body-window.html
-  - event-handler-onresize.html

@@ -1,4 +1,0 @@
-features:
-- name: beforeunload
-  files:
-  - event-global-is-still-set-when-coercing-beforeunload-result.html

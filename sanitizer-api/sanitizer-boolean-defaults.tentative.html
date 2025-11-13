@@ -70,16 +70,26 @@ test(t => {
   assert_true(try_safe({sanitizer:{}}));
 
   // Explicitly set to true.
-  const with_dataAttributes = {attributes:[], dataAttributes: true};
-  assert_true(new Sanitizer(with_dataAttributes).get().dataAttributes);
-  assert_true(try_unsafe({sanitizer:with_dataAttributes}));
-  assert_true(try_safe({sanitizer:with_dataAttributes}));
+  const dataAttributes_is_true = {attributes:[], dataAttributes: true};
+  assert_true(new Sanitizer(dataAttributes_is_true).get().dataAttributes);
+  assert_true(try_unsafe({sanitizer:dataAttributes_is_true}));
+  assert_true(try_safe({sanitizer:dataAttributes_is_true}));
 
   // Explicitly set to false.
-  const without_dataAttributes = {attributes:[], dataAttributes: false};
-  assert_false(new Sanitizer(without_dataAttributes).get().dataAttributes);
-  assert_false(try_unsafe({sanitizer:without_dataAttributes}));
-  assert_false(try_safe({sanitizer:without_dataAttributes}));
+  const dataAttributes_is_false = {attributes:[], dataAttributes: false};
+  assert_false(new Sanitizer(dataAttributes_is_false).get().dataAttributes);
+  assert_false(try_unsafe({sanitizer:dataAttributes_is_false}));
+  assert_false(try_safe({sanitizer:dataAttributes_is_false}));
+
+  // dataAttributes not set.
+  // (This case is different from the "empty dictionary" case above, because
+  // constructing from an empty dictionary adds a removeAttributes key and thus
+  // dataAttributes is removed, too. But this case has an explicit attributes
+  // key and thus dataAttributes should be added by the canonicalization.)
+  const dataAttributes_is_not_set = {attributes:[]};
+  assert_true(new Sanitizer(dataAttributes_is_not_set).get().dataAttributes);
+  assert_true(try_unsafe({sanitizer:dataAttributes_is_not_set}));
+  assert_false(try_safe({sanitizer:dataAttributes_is_not_set}));
 }, "data attributes");
 
 </script>

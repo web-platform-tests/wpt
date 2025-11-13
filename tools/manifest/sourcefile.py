@@ -903,9 +903,6 @@ class SourceFile:
     def possible_types(self) -> Set[Text]:
         """Determines the set of possible types without reading the file"""
 
-        if self.items_cache:
-            return {self.items_cache[0]}
-
         if self.name_is_non_test:
             return {SupportFile.item_type}
 
@@ -938,6 +935,9 @@ class SourceFile:
 
         if self.name_is_window:
             return {TestharnessTest.item_type}
+
+        if self.name_is_test262:
+            return {Test262Test.item_type, SupportFile.item_type}
 
         if self.name_is_test262:
             return {Test262Test.item_type}

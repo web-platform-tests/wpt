@@ -1,0 +1,4 @@
+features:
+- name: sizes-auto
+  files:
+  - img-sizes-auto.html

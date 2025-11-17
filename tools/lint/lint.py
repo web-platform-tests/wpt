@@ -279,6 +279,55 @@ def check_unique_case_insensitive_paths(repo_root: Text, paths: List[Text]) -> L
     return errors
 
 
+def check_unused_ignorelist(repo_root: Text,
+                           paths: List[Text],
+                           ignorelist: Ignorelist,
+                           used_entries: Dict[str, Dict[str, Set[Optional[int]]]]) -> List[rules.Error]:
+    """
+    Check for ignorelist entries that were never used during this lint run.
+    Only reports unused entries if the corresponding file pattern matches
+    files in the currently linted paths.
+
+    :param repo_root: the repository root
+    :param paths: list of currently linted paths
+    :param ignorelist: the parsed ignorelist
+    :param used_entries: dict tracking which ignorelist entries were used
+    :returns: a list of errors for unused ignorelist entries
+    """
+    errors = []
+
+    normalized_paths = {os.path.normcase(path) for path in paths}
+
+    for error_type, file_patterns in ignorelist.items():
+        for file_match, allowed_lines in file_patterns.items():
+            # Allow non-matching patterns like `CR AT EOL: *.png`.
+            if "/" not in file_match and file_match.startswith("*."):
+                continue
+
+            used_allowed_lines = used_entries.get(error_type, {}).get(file_match, set())
+            if used_allowed_lines == allowed_lines:
+                continue
+
+            assert used_allowed_lines.issubset(allowed_lines)
+
+            matches_linted_path = any(
+                fnmatch.fnmatchcase(norm_path, file_match)
+                for norm_path in normalized_paths
+            )
+
+            if not matches_linted_path:
+                continue
+
+            for missing_allowed_line in allowed_lines - used_allowed_lines:
+                line_suffix = "" if missing_allowed_line is None else f":{missing_allowed_line}"
+                errors.append(rules.UnusedIgnorelistEntry.error(
+                    "lint.ignore",
+                    (error_type, file_match + line_suffix)
+                ))
+
+    return errors
+
+
 def parse_ignorelist(f: IO[Text]) -> Tuple[Ignorelist, Set[Text]]:
     """
     Parse the ignorelist file given by `f`, and return the parsed structure.
@@ -315,9 +364,16 @@ def parse_ignorelist(f: IO[Text]) -> Tuple[Ignorelist, Set[Text]]:
     return data, skipped_files
 
 
-def filter_ignorelist_errors(data: Ignorelist, errors: Sequence[rules.Error]) -> List[rules.Error]:
+def filter_ignorelist_errors(data: Ignorelist,
+                            errors: Sequence[rules.Error],
+                            used_entries: Dict[str, Dict[str, Set[Optional[int]]]]) -> List[rules.Error]:
     """
     Filter out those errors that are ignored in `data`.
+
+    :param data: the ignorelist data structure
+    :param errors: the list of errors to filter
+    :param used_entries: dict to track which ignorelist entries were used
+    :returns: filtered list of errors
     """
 
     if not errors:
@@ -335,6 +391,11 @@ def filter_ignorelist_errors(data: Ignorelist, errors: Sequence[rules.Error]) ->
                 if None in allowed_lines or line in allowed_lines:
                     if fnmatch.fnmatchcase(normpath, file_match):
                         skipped[i] = True
+                        used_lines = used_entries.setdefault(error_type, {}).setdefault(file_match, set())
+                        if None in allowed_lines:
+                            used_lines.add(None)
+                        else:
+                            used_lines.add(line)
 
     return [item for i, item in enumerate(errors) if not skipped[i]]
 
@@ -1008,6 +1069,8 @@ def lint(repo_root: Text,
     if ignore_glob:
         skipped_files |= set(ignore_glob)
 
+    used_ignorelist_entries: Dict[str, Dict[str, Set[Optional[int]]]] = {}
+
     output_errors = {"json": output_errors_json,
                      "markdown": output_errors_markdown,
                      "normal": output_errors_text}[output_format]
@@ -1021,7 +1084,7 @@ def lint(repo_root: Text,
                   a tuple of the error type and the path otherwise
         """
 
-        errors = filter_ignorelist_errors(ignorelist, errors)
+        errors = filter_ignorelist_errors(ignorelist, errors, used_ignorelist_entries)
         if not errors:
             return None
 
@@ -1078,6 +1141,9 @@ def lint(repo_root: Text,
 
         errors = check_all_paths(repo_root, paths)
         last = process_errors(errors) or last
+
+    unused_errors = check_unused_ignorelist(repo_root, paths, ignorelist, used_ignorelist_entries)
+    last = process_errors(unused_errors) or last
 
     if output_format in ("normal", "markdown"):
         output_error_count(error_count)

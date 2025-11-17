@@ -25,7 +25,6 @@ test(() => {
         alg: -7,
       },
     ],
-    hints: ["duplicated-value", "duplicated-value"]
   });
   let expected = {
     rp: {
@@ -46,7 +45,7 @@ test(() => {
     ],
     // The spec defaults the following fields:
     attestation: "none",
-    hints: ["duplicated-value", "duplicated-value"]
+    hints: [],
   };
 
   assertJsonEquals(actual.rp, expected.rp);
@@ -240,3 +239,52 @@ test(() => {
         'prf ebc');
   }
 }, "parseCreationOptionsFromJSON() with extensions");
+
+test(() => {
+  let actual = PublicKeyCredential.parseCreationOptionsFromJSON({
+    rp: {
+      id: "example.com",
+      name: "Example Inc",
+    },
+    user: {
+      id: test_b64,
+      name: "test@example.com",
+      displayName: "test user"
+    },
+    challenge: test_b64,
+    pubKeyCredParams: [
+      {
+        type: "public-key",
+        alg: -7,
+      },
+    ],
+    hints: ["duplicated-value", "duplicated-value"]
+  });
+  let expected = {
+    rp: {
+      id: "example.com",
+      name: "Example Inc",
+    },
+    user: {
+      id: test_bytes,
+      name: "test@example.com",
+      displayName: "test user"
+    },
+    challenge: test_bytes,
+    pubKeyCredParams: [
+      {
+        type: "public-key",
+        alg: -7,
+      },
+    ],
+    // The spec defaults the following fields:
+    attestation: "none",
+    hints: ["duplicated-value", "duplicated-value"]
+  };
+
+  assert_equals(actual.attestation, expected.attestation);
+  if (actual.hasOwnProperty('hints')) {
+    // Not all implementations support hints yet.
+    assertJsonEquals(actual.hints, expected.hints);
+  }
+}, "parseCreationOptionsFromJSON() with duplicated hints");

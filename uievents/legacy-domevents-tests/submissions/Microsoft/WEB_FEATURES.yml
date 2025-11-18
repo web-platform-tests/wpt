@@ -1,4 +1,7 @@
 features:
+- name: draganddrop
+  files:
+  - TextEvent.inputMode.drop.html
 - name: mutation-events
   files:
   - DOMNodeInserted.html

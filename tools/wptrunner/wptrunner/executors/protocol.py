@@ -110,6 +110,7 @@ class ProtocolPart:
 
     def __init__(self, parent):
         self.parent = parent
+        self.test_path = None
 
     @property
     def logger(self):
@@ -342,7 +343,7 @@ class WebExtensionsProtocolPart(ProtocolPart):
     name = "web_extensions"
 
     @abstractmethod
-    def install_web_extension(self, extension):
+    def install_web_extension(self, type, path, value):
         pass
 
     @abstractmethod
@@ -597,7 +598,13 @@ class BidiPermissionsProtocolPart(ProtocolPart):
     name = "bidi_permissions"
 
     @abstractmethod
-    async def set_permission(self, descriptor, state, origin):
+    async def set_permission(
+        self,
+        descriptor: Dict[str, Any],
+        state: str,
+        origin: str,
+        embedded_origin: Optional[str] = None,
+    ) -> Any:
         pass
 
 

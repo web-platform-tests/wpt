@@ -292,9 +292,11 @@ class BidiPermissionsSetPermissionAction:
         descriptor = payload['descriptor']
         state = payload['state']
         origin = payload['origin']
+        embedded_origin = payload.get('embeddedOrigin')
         return await self.protocol.bidi_permissions.set_permission(descriptor,
                                                                    state,
-                                                                   origin)
+                                                                   origin,
+                                                                   embedded_origin)
 
 
 async_actions = [
@@ -314,4 +316,6 @@ async_actions = [
     BidiEmulationSetScreenOrientationOverrideAction,
     BidiPermissionsSetPermissionAction,
     BidiSessionSubscribeAction,
-    BidiSessionUnsubscribeAction]
+    BidiSessionUnsubscribeAction,
+    BidiPermissionsSetPermissionAction,
+    BidiSessionSubscribeAction]

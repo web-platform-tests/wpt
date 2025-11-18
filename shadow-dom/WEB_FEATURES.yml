@@ -4,6 +4,13 @@ features:
 - name: slot-assign
   files:
   - imperative-slot-*
+- name: slot
+  files:
+  - HTMLSlotElement-interface.html
+  - Slottable-mixin.html
+  - layout-slot-*
+  - slotchange*.html
+  - slots*.html
 - name: document-caretpositionfrompoint
   files:
   - Document-caretPositionFromPoint.tentative.html

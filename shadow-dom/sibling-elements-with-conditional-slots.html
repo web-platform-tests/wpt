@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<head>
+  <title>Shadow DOM: Sibling Elements with Conditional Slots</title>
+  <meta name="author" title="Jesse Jurman" href="mailto:j.r.jurman@gmail.com">
+  <meta name="assert" content="It should be possible to conditionally render slots in sibling elements">
+  <link rel=help href="https://bugs.webkit.org/show_bug.cgi?id=280399">
+
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+</head>
+
+
+<body>
+  <my-app></my-app>
+  <script>
+    customElements.define('my-app', class extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+      }
+      connectedCallback() {
+        this.shadowRoot.innerHTML = `
+          <my-header>Headline</my-header>
+          <my-toggle>Some Content</my-toggle>
+        `;
+      }
+    });
+
+    customElements.define('my-header', class extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+      }
+      connectedCallback() {
+        this.shadowRoot.innerHTML = `
+          <div>
+            <slot></slot>
+          </div>
+        `;
+      }
+    });
+
+    customElements.define('my-toggle', class extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+      }
+
+      connectedCallback() {
+        this.shadowRoot.innerHTML = `
+          <button>Toggle</button>
+          ${this.hasAttribute('open') ? '<div><slot></slot></div>' : ''}
+        `;
+
+        this.shadowRoot.querySelector('button').addEventListener('click', () => {
+          this.toggleAttribute('open');
+          this.connectedCallback();
+        });
+      }
+    });
+  </script>
+</body>
+
+<script>
+'use strict';
+
+// test that we can toggle the slot in and still see the originally slotted element
+promise_test(async () => {
+  const myApp = document.querySelector('my-app');
+  const myHeader = myApp.shadowRoot.querySelector('my-header');
+  const myToggle = myApp.shadowRoot.querySelector('my-toggle');
+  const myToggleButton = myToggle.shadowRoot.querySelector('button');
+
+  // first validate that the header element has some width
+  assert_greater_than(myHeader.getBoundingClientRect().width, 0);
+
+  // click on the toggle control
+  myToggleButton.click();
+
+  // validate that the header element has not disappeared
+  assert_greater_than(myHeader.getBoundingClientRect().width, 0);
+}, 'conditional slot does not interfere with other slotted elements');
+
+</script>

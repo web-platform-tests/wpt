@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Draggable button</title>
+    <title>Draggable input image</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="/resources/testdriver.js"></script>
@@ -13,17 +13,17 @@
   </head>
   <body>
 
-    <p>Press your mouse button down on the orange block and drag downwards. It should drag the button.</p>
-    <p>Press your mouse button down on the text and drag rightward. It should drag the button.</p>
+    <p>Press your mouse button down on the orange block and drag downwards. It should drag the input image.</p>
+    <p>Press your mouse button down on the image and drag downwards. It should drag the input image.</p>
     <div id="outer">
-      <button draggable="true" id="inner">Dummy text</button>
+      <input type="image" src="../resources/circle.png" value="Dummy text" draggable="true" id="inner">
     </div>
 
     <script>
     const outer = document.getElementById("outer");
     const inner = document.getElementById("inner");
 
-    function testDragButton(dragActionFun, msg) {
+    function testDragInputImageButton(dragActionFun, msg) {
       promise_test(t => {
         return new Promise((resolve, reject) => {
           let result = {};
@@ -52,7 +52,11 @@
       }, msg);
     }
 
-    testDragButton(async () => {
+    promise_test(async t => {
+      await new EventWatcher(t, window, "load").wait_for("load");
+    }, "Wait for image load");
+
+    testDragInputImageButton(async () => {
       const centerH = inner.getBoundingClientRect().height / 2;
       new test_driver.Actions()
         // Move pointer to the center of the top-border.
@@ -62,19 +66,18 @@
         .pointerMove(0, 0, { origin: inner })
         .pointerUp()
         .send();
-    }, "Button inside draggable element should be draggable from border");
+    }, "Draggable input image button should be draggable from border");
 
-    testDragButton(async () => {
-      const centerW = inner.getBoundingClientRect().width / 2;
+    testDragInputImageButton(async () => {
       new test_driver.Actions()
-        // Move pointer to the start of the button text.
-        .pointerMove(5 - centerW, 10, { origin: inner })
-        .pointerDown()
-        // Move pointer rightward.
+        // Move pointer to the center of the image.
         .pointerMove(0, 10, { origin: inner })
+        .pointerDown()
+        // Move pointer downwards.
+        .pointerMove(0, 30, { origin: inner })
         .pointerUp()
         .send();
-    }, "Button inside draggable element should be draggable from button text");
+    }, "Draggable input image button should be draggable from image");
     </script>
 
   </body>

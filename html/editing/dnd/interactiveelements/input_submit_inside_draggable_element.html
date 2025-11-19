@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Draggable button</title>
+    <title>Input submit inside draggable element</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="/resources/testdriver.js"></script>
@@ -13,17 +13,17 @@
   </head>
   <body>
 
-    <p>Press your mouse button down on the orange block and drag downwards. It should drag the button.</p>
-    <p>Press your mouse button down on the text and drag rightward. It should drag the button.</p>
-    <div id="outer">
-      <button draggable="true" id="inner">Dummy text</button>
+    <p>Press your mouse button down on the orange block and drag downwards. It should drag the draggable element.</p>
+    <p>Press your mouse button down on the text and drag rightward. It should drag the draggable element.</p>
+    <div draggable="true" id="outer">
+      <input type="submit" value="Dummy text" id="inner">
     </div>
 
     <script>
     const outer = document.getElementById("outer");
     const inner = document.getElementById("inner");
 
-    function testDragButton(dragActionFun, msg) {
+    function testDragInputSubmitButton(dragActionFun, msg) {
       promise_test(t => {
         return new Promise((resolve, reject) => {
           let result = {};
@@ -45,14 +45,14 @@
           dragActionFun();
         }).then(result => {
           assert_true(result.didReceiveDragStart, "dragstart should not fire");
-          assert_equals(result.targetId, "inner", "should drag inner element");
+          assert_equals(result.targetId, "outer", "should drag outer element");
           assert_equals(result.dataTransferItemsCount, 0, "dataTransfer should have no items");
           assert_equals(result.dataTransferTypesCount, 0, "dataTransfer should have no types");
         });
       }, msg);
     }
 
-    testDragButton(async () => {
+    testDragInputSubmitButton(async () => {
       const centerH = inner.getBoundingClientRect().height / 2;
       new test_driver.Actions()
         // Move pointer to the center of the top-border.
@@ -62,9 +62,9 @@
         .pointerMove(0, 0, { origin: inner })
         .pointerUp()
         .send();
-    }, "Button inside draggable element should be draggable from border");
+    }, "Input submit button inside draggable element should be draggable from border");
 
-    testDragButton(async () => {
+    testDragInputSubmitButton(async () => {
       const centerW = inner.getBoundingClientRect().width / 2;
       new test_driver.Actions()
         // Move pointer to the start of the button text.
@@ -74,7 +74,7 @@
         .pointerMove(0, 10, { origin: inner })
         .pointerUp()
         .send();
-    }, "Button inside draggable element should be draggable from button text");
+    }, "Input submit button inside draggable element should be draggable from button text");
     </script>
 
   </body>

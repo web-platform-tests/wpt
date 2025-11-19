@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Draggable button</title>
+    <title>Draggable input reset</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="/resources/testdriver.js"></script>
@@ -13,17 +13,17 @@
   </head>
   <body>
 
-    <p>Press your mouse button down on the orange block and drag downwards. It should drag the button.</p>
-    <p>Press your mouse button down on the text and drag rightward. It should drag the button.</p>
+    <p>Press your mouse button down on the orange block and drag downwards. It should drag the input reset.</p>
+    <p>Press your mouse button down on the text and drag rightward. It should drag the input reset.</p>
     <div id="outer">
-      <button draggable="true" id="inner">Dummy text</button>
+      <input type="reset" value="Dummy text" draggable="true" id="inner">
     </div>
 
     <script>
     const outer = document.getElementById("outer");
     const inner = document.getElementById("inner");
 
-    function testDragButton(dragActionFun, msg) {
+    function testDragInputResetButton(dragActionFun, msg) {
       promise_test(t => {
         return new Promise((resolve, reject) => {
           let result = {};
@@ -52,7 +52,7 @@
       }, msg);
     }
 
-    testDragButton(async () => {
+    testDragInputResetButton(async () => {
       const centerH = inner.getBoundingClientRect().height / 2;
       new test_driver.Actions()
         // Move pointer to the center of the top-border.
@@ -62,19 +62,19 @@
         .pointerMove(0, 0, { origin: inner })
         .pointerUp()
         .send();
-    }, "Button inside draggable element should be draggable from border");
+    }, "Draggable input reset button should be draggable from border");
 
-    testDragButton(async () => {
+    testDragInputResetButton(async () => {
       const centerW = inner.getBoundingClientRect().width / 2;
       new test_driver.Actions()
-        // Move pointer to the start of the button text.
+        // Move pointer to the start of the input button text.
         .pointerMove(5 - centerW, 10, { origin: inner })
         .pointerDown()
         // Move pointer rightward.
         .pointerMove(0, 10, { origin: inner })
         .pointerUp()
         .send();
-    }, "Button inside draggable element should be draggable from button text");
+    }, "Draggable input reset button should be draggable from button text");
     </script>
 
   </body>

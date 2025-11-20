@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<body>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    let key = urlParams.get("key");
+    let result = localStorage.getItem(key);
+    if (urlParams.has("store")) {
+      localStorage.setItem(key, urlParams.get("store"));
+    }
+    parent.postMessage({
+      type: "result",
+      value: result,
+      key,
+    }, "*");
+  </script>

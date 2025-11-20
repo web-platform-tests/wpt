@@ -1,0 +1,54 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    async function getResultPromise(key) {
+      return new Promise((resolve) => {
+        window.addEventListener("message", (event) => {
+          if (event.data?.type != "result" || event.data?.key != key) {
+            return;
+          }
+          resolve(event.data.value);
+        });
+      });
+    }
+    localStorage.setItem("aba", "unpartitioned");
+    localStorage.setItem("aaa", "unpartitioned");
+    localStorage.setItem("aa-sw-redir", "unpartitioned");
+    let resultDataABA = getResultPromise("aba");
+    let resultDataAAA = getResultPromise("aaa");
+    let resultDataAASW = getResultPromise("aa-sw-redir");
+  </script>
+  <iframe src="//{{hosts[alt][www]}}:{{ports[https][0]}}{{location[path]}}/../resources/middle-frame.sub.html?key=aba"></iframe>
+  <iframe src="//{{hosts[][]}}:{{ports[https][0]}}{{location[path]}}/../resources/middle-frame.sub.html?key=aaa"></iframe>
+  <iframe id="aa-sw-redir"></iframe>
+  <script>
+    promise_test(async function() {
+      let value = await resultDataABA;
+      assert_equals(value, null, "Expected partitioned data in A(B(A)) nested frame");
+      localStorage.removeItem("aba");
+    }, "Expected partitioned data in A(B(A)) nested frame")
+
+    promise_test(async function() {
+      let value = await resultDataAAA;
+      assert_equals(value, "unpartitioned", "Expected unpartitioned data in A(A(A)) nested frame");
+      localStorage.removeItem("aaa");
+    }, "Expected unpartitioned data in A(A(A)) nested frame")
+
+    promise_test(async function() {
+      let registration = await navigator.serviceWorker.register("./resources/intercepting-worker.sub.js");
+      this.add_cleanup(async function() {
+        await registration.unregister();
+      });
+
+      let innerFrame = document.getElementById("aa-sw-redir");
+      innerFrame.src ="//{{hosts[][]}}:{{ports[https][0]}}{{location[path]}}/../resources/post-storage.html?key=aa-sw-redir&intercept";
+
+      let value = await resultDataAASW;
+      assert_equals(value, "unpartitioned", "Expected unpartitioned data in same-origin subframe redirected by service worker");
+
+      localStorage.removeItem("aa-sw-redir");
+    }, "Expected unpartitioned data in same-origin subframe redirected by service worker")
+  </script>

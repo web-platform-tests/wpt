@@ -5,8 +5,8 @@
 <link rel="match" href="column-auto-repeat-023-ref.html">
 <link rel="author" title="Alison Maher" href="mailto:almaher@microsoft.com">
 <style>
-.masonry {
-    display: masonry;
+.grid-lanes {
+    display: grid-lanes;
     background: gray;
     item-tolerance: 0;
     grid-template-columns: 100px repeat(auto-fit, 100px);
@@ -14,13 +14,13 @@
     width: 300px;
 }
 
-.masonry > div {
+.grid-lanes > div {
     width: 100%;
     height: 100px;
 }
 </style>
 <body>
-  <div class="masonry">
+  <div class="grid-lanes">
     <!-- Only column 2 should get collapsed -->
     <div style="background: lightskyblue; grid-column: 3;">
       Number 1

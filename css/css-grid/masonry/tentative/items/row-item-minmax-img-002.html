@@ -6,8 +6,8 @@
 <link rel="help" href="https://drafts.csswg.org/css-grid-2/#algo-single-span-items">
 <link rel="match" href="row-item-minmax-img-002-ref.html">
 <style>
-.masonry {
-    display: inline-masonry;
+.grid-lanes {
+    display: inline-grid-lanes;
     masonry-direction: row;
     grid-template-rows: minmax(auto, 0);
     border: 5px solid goldenrod;
@@ -27,10 +27,10 @@ img {
     justify-self: start;
 }
 </style>
-<div class="masonry">
+<div class="grid-lanes">
   <img class="stretch" src="support/100x100-green.png">
 </div>
 <div class="spacer"></div>
-<div class="masonry">
+<div class="grid-lanes">
   <img class="start" src="support/100x100-green.png">
 </div>

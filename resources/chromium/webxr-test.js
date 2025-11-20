@@ -6,10 +6,10 @@ import {GamepadHand, GamepadMapping} from '/gen/device/gamepad/public/mojom/game
 // https://github.com/immersive-web/webxr-test-api
 
 const defaultMojoFromStage = {
-  matrix: [1, 0,     0, 0,
-           0, 1,     0, 0,
-           0, 0,     1, 0,
-           0, -1.65, 0, 1]
+  data: { matrix: [1, 0,     0, 0,
+                   0, 1,     0, 0,
+                   0, 0,     1, 0,
+                   0, -1.65, 0, 1] }
 };
 const default_stage_parameters = {
   mojoFromStage: defaultMojoFromStage,
@@ -57,7 +57,7 @@ function getPoseFromTransform(transform) {
 }
 
 function composeGFXTransform(fakeTransformInit) {
-  return {matrix: getMatrixFromTransform(fakeTransformInit)};
+  return {data: {matrix: getMatrixFromTransform(fakeTransformInit)}};
 }
 
 // Value equality for camera image init objects - they must contain `width` &
@@ -382,6 +382,7 @@ class MockRuntime {
     this.send_mojo_space_reset_ = false;
     this.stageParameters_ = null;
     this.stageParametersId_ = 1;
+    this.nextVisibilityMaskId_ = 1;
 
     this.service_ = service;
 
@@ -533,7 +534,7 @@ class MockRuntime {
 
     // floorOrigin is passed in as mojoFromStage.
     this.stageParameters_.mojoFromStage =
-        {matrix: getMatrixFromTransform(floorOrigin)};
+        {data: {matrix: getMatrixFromTransform(floorOrigin)}};
 
     this._onStageParametersUpdated();
   }
@@ -886,6 +887,18 @@ class MockRuntime {
         break;
     }
 
+    let visibilityMask = null;
+    if (fakeXRViewInit.visibilityMask) {
+      let maskInit = fakeXRViewInit.visibilityMask;
+      visibilityMask = {
+        unvalidatedIndices: maskInit.indices,
+        vertices: []
+      };
+      for (let i = 0; i + 1 < maskInit.vertices.length; i+= 2) {
+        visibilityMask.vertices.push( { x: maskInit.vertices[i], y: maskInit.vertices[i+1]});
+      }
+    }
+
     return {
       eye: viewEye,
       geometry: {
@@ -903,7 +916,8 @@ class MockRuntime {
       },
       isFirstPersonObserver: fakeXRViewInit.isFirstPersonObserver ? true : false,
       viewOffset: composeGFXTransform(fakeXRViewInit.viewOffset),
-      visibilityMaskId: { idValue : 0 }
+      visibilityMask: visibilityMask,
+      visibilityMaskId: { idValue : this.nextVisibilityMaskId_++ }
     };
 
   }
@@ -1564,10 +1578,10 @@ class MockRuntime {
       this.depthSensingData_.height,
       MockRuntime._depthDataFormatToMojoMap[this.depthSensingData_.depthFormat],
       sourceProjectionMatrix,
-      sourceViewOffset.matrix,
+      sourceViewOffset.data.matrix,
       this.depthConfiguration_.depthDataFormat,
       targetProjectionMatrix,
-      targetViewOffset.matrix
+      targetViewOffset.data.matrix
     )};
   }
 
@@ -1894,7 +1908,7 @@ class MockRuntime {
   }
 
   _getMojoFromViewerWithOffset(viewOffset) {
-    return { matrix: XRMathHelper.mul4x4(this._getMojoFromViewer(), viewOffset.matrix) };
+    return {data: { matrix: XRMathHelper.mul4x4(this._getMojoFromViewer(), viewOffset.data.matrix) }};
   }
 
   _getMojoFromNativeOrigin(nativeOriginInformation) {
@@ -1916,7 +1930,7 @@ class MockRuntime {
             console.warn("Standing transform not available.");
             return null;
           }
-          return this.stageParameters_.mojoFromStage.matrix;
+          return this.stageParameters_.mojoFromStage.data.matrix;
         case vrMojom.XRReferenceSpaceType.kViewer:
           return mojo_from_viewer;
         case vrMojom.XRReferenceSpaceType.kBoundedFloor:
@@ -2219,7 +2233,7 @@ class MockXRInputSource {
           // that. If we don't, then we'll just set the pointer offset directly,
           // using identity as set above.
           if (this.mojo_from_input_) {
-            mojo_from_input = this.mojo_from_input_.matrix;
+            mojo_from_input = this.mojo_from_input_.data.matrix;
           }
           break;
         default:
@@ -2232,8 +2246,9 @@ class MockXRInputSource {
       // multiplying.
       let input_from_mojo = XRMathHelper.inverse(mojo_from_input);
       input_desc.inputFromPointer = {};
-      input_desc.inputFromPointer.matrix =
-        XRMathHelper.mul4x4(input_from_mojo, this.mojo_from_pointer_.matrix);
+      input_desc.inputFromPointer.data = {
+        matrix : XRMathHelper.mul4x4(input_from_mojo,
+                                     this.mojo_from_pointer_.data.matrix)};
 
       input_desc.profiles = this.profiles_;
 
@@ -2337,7 +2352,7 @@ class MockXRInputSource {
   }
 
   _getMojoFromInputSource(mojo_from_viewer) {
-    return this.mojo_from_pointer_.matrix;
+    return this.mojo_from_pointer_.data.matrix;
   }
 }
 

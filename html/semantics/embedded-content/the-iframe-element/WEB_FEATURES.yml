@@ -2,8 +2,3 @@ features:
 - name: loading-lazy
   files:
   - iframe-loading-lazy*
-- name: download
-  files:
-    - iframe_sandbox_anchor_download*
-    - iframe_sandbox_navigation_download*
-    - iframe_sandbox_window_open_download*

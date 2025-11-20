@@ -36,7 +36,7 @@
           requests: [
             {
               data,
-              protocol: "openid4vp",
+              protocol: "openid4vp-v1-unsigned",
             },
           ],
         },
@@ -206,7 +206,7 @@
   promise_test(async (t) => {
     const abortController = new AbortController();
     const { signal } = abortController;
-    const options = makeGetOptions("openid4vp");
+    const options = makeGetOptions("openid4vp-v1-unsigned");
     options.signal = signal;
     await test_driver.bless("user activation");
     const promise = promise_rejects_dom(
@@ -225,7 +225,7 @@
       abort: "after",
       action: "get",
       needsActivation: true,
-      options: makeGetOptions("openid4vp"),
+      options: makeGetOptions("openid4vp-v1-signed"),
     });
     assert_equals(result.constructor, "DOMException");
     assert_equals(result.name, "AbortError");
@@ -252,7 +252,7 @@ promise_test(async t => {
   ];
 
   for (const badValue of throwingValues) {
-    const options = makeGetOptions("openid4vp");
+    const options = makeGetOptions("openid4vp-v1-multisigned");
     options.digital.requests[0].data = badValue;
 
     await promise_rejects_js(

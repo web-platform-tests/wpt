@@ -1,0 +1,6 @@
+features:
+- name: xml-serializer
+  files:
+  - XMLSerializer-serializeToString.html
+  - xml-serialization.xhtml
+  - xml-parse-serialize-roundtrip.html

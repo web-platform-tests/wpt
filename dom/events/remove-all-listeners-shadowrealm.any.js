@@ -1,0 +1,90 @@
+// META: global=shadowrealm
+
+// The non-ShadowRealm version of this test is in remove-all-listeners.html.
+
+test(function() {
+  var type = "foo";
+  var target = new EventTarget();
+
+  var listener1CallCount = 0;
+  var listener2CallCount = 0;
+  var listener3CallCount = 0;
+  function listener1() {
+    listener1CallCount++;
+    target.removeEventListener(type, listener1);
+    target.removeEventListener(type, listener2);
+    target.addEventListener(type, listener3);
+  }
+  function listener2() {
+    listener2CallCount++;
+  }
+  function listener3() {
+    listener3CallCount++;
+  }
+
+  target.addEventListener(type, listener1);
+  target.addEventListener(type, listener2);
+
+  // Dispatch the event. Only listener1 should be called because
+  // it removes listener2. And listener3 is added when we've already
+  // started iterating, so it shouldn't be called either.
+  target.dispatchEvent(new Event(type));
+  assert_equals(listener1CallCount, 1);
+  assert_equals(listener2CallCount, 0);
+  assert_equals(listener3CallCount, 0);
+
+  // Now that only listener3 is set, dispatch another event. Only
+  // listener3 should be called.
+  target.dispatchEvent(new Event(type));
+  assert_equals(listener1CallCount, 1);
+  assert_equals(listener2CallCount, 0);
+  assert_equals(listener3CallCount, 1);
+}, "Removing all listeners and then adding a new one should work.");
+
+test(function() {
+  var type = "foo";
+  var target = new EventTarget();
+
+  var listener1CallCount = 0;
+  var listener2CallCount = 0;
+  var listener3CallCount = 0;
+  function listener1() {
+    listener1CallCount++;
+    // Recursively dispatch another event from this listener.
+    // This will only call listener2 because listener1 is a "once" listener.
+    target.dispatchEvent(new Event(type));
+    assert_equals(listener1CallCount, 1);
+    assert_equals(listener2CallCount, 1);
+    assert_equals(listener3CallCount, 0);
+
+    // Now all listeners are removed - the two "once" listeners have already both
+    // been called once. Add another listener.
+    target.addEventListener(type, listener3);
+  }
+  function listener2() {
+    listener2CallCount++;
+  }
+  function listener3() {
+    listener3CallCount++;
+  }
+
+  // Add two "once" listeners.
+  target.addEventListener(type, listener1, { once: true });
+  target.addEventListener(type, listener2, { once: true });
+
+  // Dispatch the event.
+  target.dispatchEvent(new Event(type));
+
+  // The listener call counts should still match what they were
+  // at the end of listener1.
+  assert_equals(listener1CallCount, 1);
+  assert_equals(listener2CallCount, 1);
+  assert_equals(listener3CallCount, 0);
+
+  // Now that only listener3 is set, dispatch another event. Only
+  // listener3 should be called.
+  target.dispatchEvent(new Event(type));
+  assert_equals(listener1CallCount, 1);
+  assert_equals(listener2CallCount, 1);
+  assert_equals(listener3CallCount, 1);
+}, "Nested usage of once listeners should work.");

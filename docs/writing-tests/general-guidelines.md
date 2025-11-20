@@ -181,6 +181,7 @@ not uniformly enforced throughout the existing tests, but will be for
 new tests. Any of these rules may be broken if the test demands it:
 
  * No trailing whitespace
+ * Trailing whitespace often causes unnecessary diffs and may cause tests to fail lint checks. Keeping lines clean avoids formatting noise during review.
  * Use spaces rather than tabs for indentation
  * Use UNIX-style line endings (i.e. no CR characters at EOL)
 

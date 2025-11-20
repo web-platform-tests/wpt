@@ -17,6 +17,14 @@ test(() => {
 
 test(() => {
   const div = document.createElement("div");
+  div.setHTMLUnsafe(`<div><template shadowrootmode=open shadowrootserializable></template></div>`);
+  assert_equals(div.firstChild.firstChild, null);
+  assert_equals(div.firstChild.shadowRoot.customElementRegistry, customElements);
+  assert_equals(div.getHTML({ serializableShadowRoots: true }), "<div><template shadowrootmode=\"open\" shadowrootserializable=\"\"></template></div>");
+}, "Serializing a ShadowRoot with a global registry");
+
+test(() => {
+  const div = document.createElement("div");
   div.setHTMLUnsafe(`<div><template shadowrootmode=open shadowrootcustomelementregistry shadowrootserializable></template></div>`);
   const registry = new CustomElementRegistry();
   registry.initialize(div.firstChild.shadowRoot);
@@ -29,7 +37,7 @@ test(() => {
   assert_equals(div.customElementRegistry, null);
   div.setHTMLUnsafe(`<div><template shadowrootmode=open shadowrootcustomelementregistry shadowrootserializable></template></div>`);
   assert_equals(div.firstChild.shadowRoot.customElementRegistry, null);
-  assert_equals(div.getHTML({ serializableShadowRoots: true }), "<div><template shadowrootmode=\"open\" shadowrootserializable=\"\" shadowrootcustomelementregistry=\"\"></template></div>");
+  assert_equals(div.getHTML({ serializableShadowRoots: true }), "<div><template shadowrootmode=\"open\" shadowrootserializable=\"\"></template></div>");
 }, "Serializing a ShadowRoot with a null registry with a null registry host document");
 
 test(() => {

@@ -1,6 +1,8 @@
 features:
 - name: shadow-dom
-  files: "**"
+  files:
+  - "**"
+  - "!DocumentOrShadowRoot-prototype-elementFromPoint.html"
 - name: slot-assign
   files:
   - imperative-slot-*

@@ -102,7 +102,7 @@ test(() => {
     registry.initialize(element);
     assert_equals(element.customElementRegistry, registry);
     assert_equals(element.__proto__.constructor.name, 'ABElement');
-    assert_true(element instanceof ABElement);        
+    assert_true(element instanceof ABElement);
 }, `CustomElementRegistry.prototype.initialize upgrades already initialized elements`);
 
 </script>

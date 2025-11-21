@@ -28,7 +28,6 @@ features:
   - user-valid.html
 - name: where
   files:
-  - is-where-*
   - is-default-ns-*
   - not-default-ns-*
   - pseudo-where-crash.html

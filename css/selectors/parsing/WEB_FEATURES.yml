@@ -17,5 +17,4 @@ features:
   - parse-not.html
 - name: where
   files:
-  - parse-is-where.html
   - parse-where.html

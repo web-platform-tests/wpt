@@ -2,6 +2,8 @@
 <meta charset=utf-8>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
 <body>
   <script>
     async function getResultPromise(key) {
@@ -20,11 +22,21 @@
     let resultDataABA = getResultPromise("aba");
     let resultDataAAA = getResultPromise("aaa");
     let resultDataAASW = getResultPromise("aa-sw-redir");
+    let resultDataPopup = getResultPromise("popup");
   </script>
   <iframe src="//{{hosts[alt][www]}}:{{ports[https][0]}}{{location[path]}}/../resources/middle-frame.sub.html?key=aba"></iframe>
   <iframe src="//{{hosts[][]}}:{{ports[https][0]}}{{location[path]}}/../resources/middle-frame.sub.html?key=aaa"></iframe>
   <iframe id="aa-sw-redir"></iframe>
   <script>
+    promise_test(async function() {
+      document.cookie = "unpartitioned=true; Secure; SameSite=None";
+      let win = window.open("//{{hosts[][]}}:{{ports[https][0]}}{{location[path]}}/../resources/popup.sub.html?key=popup&cookie");
+      let value = await resultDataPopup;
+      assert_equals(value, "", "Expected partitioned data in sandboxA(B) iframe");
+      win?.close();
+      this.add_cleanup(test_driver.delete_all_cookies);
+    }, "Expected partitioned data in sandboxA(B) iframe")
+
     promise_test(async function() {
       let value = await resultDataABA;
       assert_equals(value, null, "Expected partitioned data in A(B(A)) nested frame");
@@ -44,7 +56,7 @@
       });
 
       let innerFrame = document.getElementById("aa-sw-redir");
-      innerFrame.src ="//{{hosts[][]}}:{{ports[https][0]}}{{location[path]}}/../resources/post-storage.html?key=aa-sw-redir&intercept";
+      innerFrame.src ="//{{hosts[][]}}:{{ports[https][0]}}{{location[path]}}/../resources/post-storage.sub.html?key=aa-sw-redir&intercept";
 
       let value = await resultDataAASW;
       assert_equals(value, "unpartitioned", "Expected unpartitioned data in same-origin subframe redirected by service worker");

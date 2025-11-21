@@ -10,5 +10,6 @@
       window.opener.postMessage(event.data, "*");
     });
     let innerFrame = document.getElementById("innerFrame");
-    innerFrame.src ="//{{hosts[alt][www]}}:{{ports[https][0]}}{{location[path]}}/../../resources/post-storage.html{{location[query]}}";
+    let queryParams = "{{location[query]}}".replace("&amp;", "&"); // un-escape the templated string.
+    innerFrame.src ="//{{hosts[alt][www]}}:{{ports[https][0]}}{{location[path]}}/../../resources/post-storage.sub.html" + queryParams;
   </script>

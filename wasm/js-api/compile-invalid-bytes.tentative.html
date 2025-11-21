@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>WebAssembly.compile rejects invalid module bytes</title>
+<link rel="help" href="https://www.w3.org/TR/wasm-js-api-1/">
+<link rel="author" title="prasanth reddy padala" href="mailto:your-email@example.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+test(() => {
+  // These bytes are not a valid WebAssembly module.
+  // (Real modules start with 0x00 0x61 0x73 0x6d and a version.)
+  const invalidBytes = new Uint8Array([0x00, 0x01, 0x02, 0x03]);
+
+  assert_throws_js(
+    TypeError,
+    () => { WebAssembly.compile(invalidBytes); },
+    "WebAssembly.compile must throw TypeError for invalid module bytes"
+  );
+}, "WebAssembly.compile throws TypeError for invalid module bytes");
+</script>
+

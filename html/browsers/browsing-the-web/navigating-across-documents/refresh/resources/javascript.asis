@@ -4,3 +4,4 @@ Content-Type:text/html
 
 I don't understand.
 <meta http-equiv=refresh content=0;javascript:x=3/>
+<script>x=1</script>

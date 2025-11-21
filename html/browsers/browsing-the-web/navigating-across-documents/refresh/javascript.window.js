@@ -5,8 +5,9 @@ async_test(t => {
   frame.src = path;
   frame.onload = t.step_func(() => {
     assert_equals(frame.contentWindow.location.href, new URL(path, self.location).href);
+    assert_equals(frame.contentWindow.x, 1);
     t.step_timeout(() => {
-      assert_equals(frame.contentWindow.x, undefined);
+      assert_equals(frame.contentWindow.x, 1);
       t.done();
     }, 100);
   });

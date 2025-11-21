@@ -841,3 +841,5 @@ PROMISE_REJECTS: wasm/core/js/harness/testharness.js
 
 # Legitimate use of test_driver_internal
 TEST DRIVER INTERNAL: resources/testdriver.js
+
+*: tc39/*

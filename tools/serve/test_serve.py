@@ -1,9 +1,12 @@
 # mypy: allow-untyped-defs
+# mypy: disable-error-code="no-untyped-call"
 
 import logging
 import os
 import pickle
 import platform
+from unittest.mock import MagicMock
+from typing import Any, Generator, Tuple
 
 import pytest
 
@@ -132,20 +135,23 @@ def test_inject_script_after_head():
         </body>
     </html>"""
     assert INJECT_SCRIPT_MARKER in html
-    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER) == html
+    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""),
+                         INJECT_SCRIPT_MARKER) == html
 
 
 def test_inject_script_no_html_head():
     html = b"""<!DOCTYPE html>
     <!-- inject here --><div></div>"""
     assert INJECT_SCRIPT_MARKER in html
-    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER) == html
+    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""),
+                         INJECT_SCRIPT_MARKER) == html
 
 
 def test_inject_script_no_doctype():
     html = b"""<!-- inject here --><div></div>"""
     assert INJECT_SCRIPT_MARKER in html
-    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER) == html
+    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""),
+                         INJECT_SCRIPT_MARKER) == html
 
 
 def test_inject_script_parse_error():
@@ -153,4 +159,113 @@ def test_inject_script_parse_error():
     assert INJECT_SCRIPT_MARKER in html
     # On a parse error, the script should not be injected and the original content should be
     # returned.
-    assert INJECT_SCRIPT_MARKER not in inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER)
+    assert INJECT_SCRIPT_MARKER not in inject_script(html.replace(INJECT_SCRIPT_MARKER, b""),
+                                                 INJECT_SCRIPT_MARKER)
+
+
+@pytest.fixture
+def test262_handlers(request: Any) -> Generator[Tuple[str, str], None, None]:
+    # Create dummy test files for TestRecord.parse to read
+    tests_root = os.path.join(os.path.dirname(__file__), "tests", "testdata")
+    url_base = "/"
+
+    os.makedirs(os.path.join(tests_root, "test262"), exist_ok=True)
+    with open(os.path.join(tests_root, "test262", "basic.js"), "w") as f:
+        f.write("""/*---\ndescription: A basic test
+includes: [assert.js, sta.js]
+---*/
+assert.sameValue(1, 1);
+""")
+    with open(os.path.join(tests_root, "test262", "negative.js"), "w") as f:
+        f.write("""/*---\ndescription: A negative test
+negative:
+  phase: runtime
+  type: TypeError
+---*/
+throw new TypeError();
+""")
+    with open(os.path.join(tests_root, "test262", "module.js"), "w") as f:
+        f.write("""/*---\ndescription: A module test
+flags: [module]
+---*/
+import {} from 'some-module';
+""")
+
+    def finalizer() -> None:
+        # Clean up dummy test files and directories
+        os.remove(os.path.join(tests_root, "test262", "basic.js"))
+        os.remove(os.path.join(tests_root, "test262", "negative.js"))
+        os.remove(os.path.join(tests_root, "test262", "module.js"))
+        os.rmdir(os.path.join(tests_root, "test262"))
+        os.rmdir(tests_root)
+    request.addfinalizer(finalizer)
+
+    yield tests_root, url_base
+
+
+def _create_mock_request(path: str) -> MagicMock:
+    mock_request = MagicMock()
+    mock_request.url_parts.path = path
+    mock_request.url_parts.query = ""
+    return mock_request
+
+
+def test_test262_window_test_handler_path_replace(test262_handlers: Any) -> None:
+    from tools.serve.serve import Test262WindowTestHandler
+    tests_root, url_base = test262_handlers
+    handler = Test262WindowTestHandler(base_path=tests_root, url_base=url_base)
+    assert handler.path_replace == [(".test262-test.html", ".js")]
+
+
+def test_test262_window_test_handler_get_metadata_includes(test262_handlers: Any) -> None:
+    from tools.serve.serve import Test262WindowTestHandler
+    tests_root, url_base = test262_handlers
+    handler = Test262WindowTestHandler(base_path=tests_root, url_base=url_base)
+    mock_request = _create_mock_request("/test262/basic.test262-test.html")
+    metadata = list(handler._get_metadata(mock_request))
+    assert ('script', '/tc39/test262/harness/assert.js') in metadata
+    assert ('script', '/tc39/test262/harness/sta.js') in metadata
+
+
+def test_test262_window_test_handler_get_metadata_negative(test262_handlers: Any) -> None:
+    from tools.serve.serve import Test262WindowTestHandler
+    tests_root, url_base = test262_handlers
+    handler = Test262WindowTestHandler(base_path=tests_root, url_base=url_base)
+    mock_request = _create_mock_request("/test262/negative.test262-test.html")
+    metadata = list(handler._get_metadata(mock_request))
+    assert ('negative', 'TypeError') in metadata
+
+
+def test_test262_window_test_handler_wrapper_content(test262_handlers: Any) -> None:
+    from tools.serve.serve import Test262WindowTestHandler
+    tests_root, url_base = test262_handlers
+    handler = Test262WindowTestHandler(base_path=tests_root, url_base=url_base)
+    mock_request = _create_mock_request("/test262/basic.test262-test.html")
+    mock_response = MagicMock()
+    handler.handle_request(mock_request, mock_response)
+    content = mock_response.content
+    assert "<script src=\"/resources/test262/testharness-client.js\"></script>" in content
+    assert "<script src=\"/tc39/test262/harness/assert.js\"></script>" in content
+    assert "<script src=\"/tc39/test262/harness/sta.js\"></script>" in content
+    assert "<script>test262Setup()</script>" in content
+    assert "<script src=\"/test262/basic.js\"></script>" in content
+    assert "<script>test262Done()</script>" in content
+
+
+def test_test262_window_module_test_handler_path_replace(test262_handlers: Any) -> None:
+    from tools.serve.serve import Test262WindowModuleTestHandler
+    tests_root, url_base = test262_handlers
+    handler = Test262WindowModuleTestHandler(base_path=tests_root, url_base=url_base)
+    assert handler.path_replace == [(".test262-module-test.html", ".js")]
+
+
+def test_test262_window_module_test_handler_wrapper_content(test262_handlers: Any) -> None:
+    from tools.serve.serve import Test262WindowModuleTestHandler
+    tests_root, url_base = test262_handlers
+    handler = Test262WindowModuleTestHandler(base_path=tests_root, url_base=url_base)
+    mock_request = _create_mock_request("/test262/module.test262-module-test.html")
+    mock_response = MagicMock()
+    handler.handle_request(mock_request, mock_response)
+    content = mock_response.content
+    assert "<script type=\"module\">" in content
+    assert "import {} from \"/test262/module.js\";" in content

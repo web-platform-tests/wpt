@@ -2,4 +2,3 @@ features:
 - name: wheel-events
   files:
   - historical.html
-  - idlharness.window.js

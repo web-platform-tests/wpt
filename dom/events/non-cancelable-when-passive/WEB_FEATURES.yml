@@ -5,4 +5,3 @@ features:
   - non-passive-wheel-event-listener-*
   - passive-mousewheel-event-listener-*
   - passive-wheel-event-listener-*
-  - synthetic-events-cancelable.html

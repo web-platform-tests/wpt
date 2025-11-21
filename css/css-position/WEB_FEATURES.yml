@@ -1,0 +1,10 @@
+features:
+- name: absolute-positioning
+  files:
+  - 'position-absolute-*'
+- name: backdrop
+  files:
+  - backdrop-inherit-computed.html
+  - backdrop-inherit-rendered.html
+  - backdrop-tree-abiding-slotted.html
+  - replaced-object-backdrop.html

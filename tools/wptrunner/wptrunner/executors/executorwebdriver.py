@@ -49,6 +49,7 @@ from .protocol import (BaseProtocolPart,
                        ProtectedAudienceProtocolPart,
                        DisplayFeaturesProtocolPart,
                        GlobalPrivacyControlProtocolPart,
+                       WebExtensionsProtocolPart,
                        merge_dicts)
 
 from typing import Any, List, Dict, Optional
@@ -397,10 +398,43 @@ class WebDriverBidiPermissionsProtocolPart(BidiPermissionsProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    async def set_permission(self, descriptor, state, origin):
-        return await self.webdriver.bidi_session.permissions.set_permission(
-            descriptor=descriptor, state=state, origin=origin)
+    async def set_permission(
+        self,
+        descriptor: Dict[str, Any],
+        state: str,
+        origin: str,
+        embedded_origin: Optional[str] = None,
+    ) -> Any:
+        params = {"descriptor": descriptor, "state": state, "origin": origin}
+        if embedded_origin is not None:
+            params["embedded_origin"] = embedded_origin
 
+        return await self.webdriver.bidi_session.permissions.set_permission(**params)
+
+class WebDriverBidiWebExtensionsProtocolPart(WebExtensionsProtocolPart):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.webdriver = None
+
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def install_web_extension(self, type, path, value):
+        params = {"type": type}
+        if path is not None:
+            params["path"] = self._resolve_path(path)
+        else:
+            params["value"] = value
+
+        return self.webdriver.loop.run_until_complete(self.webdriver.bidi_session.web_extension.install(params))
+
+    def uninstall_web_extension(self, extension_id):
+        return self.webdriver.loop.run_until_complete(self.webdriver.bidi_session.web_extension.uninstall(extension_id))
+
+    def _resolve_path(self, path):
+        if self.parent.test_path is not None:
+            return self.parent.test_path.rsplit("/", 1)[0] + path
+        return path
 
 class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
     def setup(self):
@@ -753,13 +787,13 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
 
     def _switch_to_frame(self, index_or_elem):
         try:
-            self.webdriver.switch_frame(index_or_elem)
+            self.webdriver.switch_to_frame(index_or_elem)
         except (webdriver_error.StaleElementReferenceException,
                 webdriver_error.NoSuchFrameException) as e:
             raise ValueError from e
 
     def _switch_to_parent_frame(self):
-        self.webdriver.switch_frame("parent")
+        self.webdriver.switch_to_parent_frame()
 
 
 class WebDriverGenerateTestReportProtocolPart(GenerateTestReportProtocolPart):
@@ -949,6 +983,24 @@ class WebDriverGlobalPrivacyControlProtocolPart(GlobalPrivacyControlProtocolPart
     def get_global_privacy_control(self):
         return self.webdriver.get_global_privacy_control()
 
+class WebDriverWebExtensionsProtocolPart(WebExtensionsProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def install_web_extension(self, type, path, value):
+        if path is not None:
+            path = self._resolve_path(path)
+
+        return self.webdriver.web_extensions.install(type, path, value)
+
+    def uninstall_web_extension(self, extension_id):
+        return self.webdriver.web_extensions.uninstall(extension_id)
+
+    def _resolve_path(self, path):
+        if self.parent.test_path is not None:
+            return self.parent.test_path.rsplit("/", 1)[0] + path
+        return path
+
 
 class WebDriverProtocol(Protocol):
     enable_bidi = False
@@ -976,7 +1028,8 @@ class WebDriverProtocol(Protocol):
                   WebDriverVirtualPressureSourceProtocolPart,
                   WebDriverProtectedAudienceProtocolPart,
                   WebDriverDisplayFeaturesProtocolPart,
-                  WebDriverGlobalPrivacyControlProtocolPart]
+                  WebDriverGlobalPrivacyControlProtocolPart,
+                  WebDriverWebExtensionsProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)
@@ -1053,6 +1106,7 @@ class WebDriverBidiProtocol(WebDriverProtocol):
                   WebDriverBidiEventsProtocolPart,
                   WebDriverBidiPermissionsProtocolPart,
                   WebDriverBidiScriptProtocolPart,
+                  WebDriverBidiWebExtensionsProtocolPart,
                   *(part for part in WebDriverProtocol.implements)
                   ]
 
@@ -1155,6 +1209,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
 
     def do_test(self, test):
         url = self.test_url(test)
+        self.protocol.test_path = test.path
 
         timeout = (test.timeout * self.timeout_multiplier if self.debug_info is None
                    else None)

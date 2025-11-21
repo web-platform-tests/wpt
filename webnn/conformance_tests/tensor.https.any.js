@@ -38,7 +38,6 @@ const getDescriptorFromTensor = (tensor) => {
     shape: tensor.shape,
     readable: tensor.readable,
     writable: tensor.writable,
-    exportableToGPU: tensor.exportableToGPU,
   };
 };
 
@@ -1362,14 +1361,16 @@ const assert_gpu_buffer_data_equals =
  * Export to GPU operation test.
  * @param {String} testName - The name of the test operation.
  */
-const testExportToGPU = (testName) => {
+const testExportToGPU = (testName, dataType) => {
   let gpuAdapter;
   let gpuDevice;
   let mlContext;
   let mlGraph;
-  const shape = [2, 2];
+  const shape = [24, 2];
   let gpuComputePipeline;
   let isExportToGPUSupported = true;
+  const typedArray = dataType == 'float16' ? Float16Array : Float32Array;
+
   promise_setup(async () => {
     // Initialize GPU
     gpuAdapter = navigator.gpu && await navigator.gpu.requestAdapter();
@@ -1378,7 +1379,8 @@ const testExportToGPU = (testName) => {
       return;
     }
 
-    gpuDevice = await gpuAdapter.requestDevice();
+    gpuDevice =
+        await gpuAdapter.requestDevice({requiredFeatures: ['shader-f16']});
     if (!gpuDevice) {
       isExportToGPUSupported = false;
       return;
@@ -1386,18 +1388,24 @@ const testExportToGPU = (testName) => {
 
     // Construct a GPU custom op which increments each number of the input
     // buffer by 1.
+    const bufferType = dataType == 'float16' ? 'f16' : 'f32';
     const gpuComputeShaderCode = `
-        @group(0) @binding(0) var<storage, read> inputBuffer: array<f32>;
-        @group(0) @binding(1) var<storage, read_write> outputBuffer: array<f32>;
+       ${bufferType == 'f16' ? 'enable f16;' : ''}
+        @group(0) @binding(0) var<storage, read> inputBuffer: array<${
+        bufferType}>;
+        @group(0) @binding(1) var<storage, read_write> outputBuffer: array<${
+        bufferType}>;
 
         @compute @workgroup_size(1)
         fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
             let index = global_id.x;
-            outputBuffer[index] = inputBuffer[index] + 1.0;
+            outputBuffer[index] = inputBuffer[index] + 1.0${
+        bufferType == 'f16' ? 'h' : ''};
         }`;
 
     const gpuShaderModule =
         gpuDevice.createShaderModule({code: gpuComputeShaderCode});
+
     gpuComputePipeline = gpuDevice.createComputePipeline({
       layout: 'auto',
       compute: {module: gpuShaderModule, entryPoint: 'main'},
@@ -1405,7 +1413,7 @@ const testExportToGPU = (testName) => {
 
     // Initialize WebNN
     try {
-      mlContext = await navigator.ml.createContext(gpuDevice);
+      mlContext = await navigator.ml.createContext(contextOptions);
     } catch (e) {
       throw new AssertionError(
           `Unable to create context for ${variant} variant. ${e}`);
@@ -1413,11 +1421,8 @@ const testExportToGPU = (testName) => {
 
     // Check if WebNN interop is supported.
     try {
-      let mlTensor = await mlContext.createTensor({
-        dataType: 'float32',
-        shape: shape,
-        exportableToGPU: true,
-      });
+      let mlTensor =
+          await mlContext.createExportableTensor({dataType, shape}, gpuDevice);
       await mlContext.exportToGPU(mlTensor);
     } catch (e) {
       if (e.name === 'NotSupportedError') {
@@ -1429,7 +1434,7 @@ const testExportToGPU = (testName) => {
 
     // Construct a simple graph: OUTPUT = LHS + RHS.
     const mlBuilder = new MLGraphBuilder(mlContext);
-    const mlOperandDescriptor = {dataType: 'float32', shape};
+    const mlOperandDescriptor = {dataType, shape};
     const lhsOperand = mlBuilder.input('lhs', mlOperandDescriptor);
     const rhsOperand = mlBuilder.input('rhs', mlOperandDescriptor);
     mlGraph = await mlBuilder.build(
@@ -1463,13 +1468,10 @@ const testExportToGPU = (testName) => {
       return;
     }
 
-    const mlTensorDescriptor = {
-      dataType: 'float32',
-      shape: shape,
-      exportableToGPU: true
-    };
+    const mlTensorDescriptor = {dataType, shape};
+    const mlTensor = await mlContext.createExportableTensor(mlTensorDescriptor,
+      gpuDevice);
 
-    const mlTensor = await mlContext.createTensor(mlTensorDescriptor);
     const gpuTensorBuffer = await mlContext.exportToGPU(mlTensor);
 
     assert_equals(
@@ -1484,11 +1486,7 @@ const testExportToGPU = (testName) => {
       return;
     }
 
-    const mlTensor = await mlContext.createTensor({
-      dataType: 'float32',
-      shape: shape,
-      exportableToGPU: false,
-    });
+    const mlTensor = await mlContext.createTensor({dataType, shape});
 
     await promise_rejects_js(t, TypeError, mlContext.exportToGPU(mlTensor));
   }, `${testName} / export wrong tensor`);
@@ -1499,14 +1497,11 @@ const testExportToGPU = (testName) => {
     }
 
     const maxBufferSizeOOB = gpuDevice.limits.maxBufferSize + 1;
-    const elementSize = Float32Array.BYTES_PER_ELEMENT;
+    const elementSize = typedArray.BYTES_PER_ELEMENT;
     const shape = [maxBufferSizeOOB / elementSize];
 
-    const mlTensor = await mlContext.createTensor({
-      dataType: 'float32',
-      shape: shape,
-      exportableToGPU: true,
-    });
+    const mlTensor =
+        await mlContext.createExportableTensor({dataType, shape}, gpuDevice);
 
     await mlContext.exportToGPU(mlTensor);
   }, `${testName} / export big tensor`)
@@ -1516,16 +1511,11 @@ const testExportToGPU = (testName) => {
       return;
     }
 
-    const mlTensorDescriptor = {
-      dataType: 'float32',
-      shape: shape,
-      exportableToGPU: true,
-      readable: true,
-      writable: true
-    };
+    const mlTensorDescriptor =
+        {dataType, shape, readable: true, writable: true};
 
-    let mlTensor = await mlContext.createTensor(mlTensorDescriptor);
-    const inputData = new Float32Array(sizeOfShape(shape)).fill(1.0);
+    let mlTensor = await mlContext.createExportableTensor(mlTensorDescriptor, gpuDevice);
+    const inputData = new typedArray(sizeOfShape(shape)).fill(1.0);
     mlContext.writeTensor(mlTensor, inputData);
 
     const gpuTensorBuffer = await mlContext.exportToGPU(mlTensor);
@@ -1539,16 +1529,11 @@ const testExportToGPU = (testName) => {
       return;
     }
 
-    const mlTensorDescriptor = {
-      dataType: 'float32',
-      shape: shape,
-      exportableToGPU: true,
-      writable: true
-    };
+    const mlTensorDescriptor = {dataType, shape, writable: true};
 
-    let mlTensor = await mlContext.createTensor(mlTensorDescriptor);
+    let mlTensor = await mlContext.createExportableTensor(mlTensorDescriptor, gpuDevice);
 
-    const inputData = new Float32Array(sizeOfShape(shape)).fill(1.0);
+    const inputData = new typedArray(sizeOfShape(shape)).fill(1.0);
     mlContext.writeTensor(mlTensor, inputData);
 
     const gpuTensorBuffer = await mlContext.exportToGPU(mlTensor);
@@ -1562,16 +1547,13 @@ const testExportToGPU = (testName) => {
       return;
     }
 
-    const mlTensor = await mlContext.createTensor({
-      dataType: 'float32',
-      shape: shape,
-      exportableToGPU: true,
-    });
+    const mlTensor =
+        await mlContext.createExportableTensor({dataType, shape}, gpuDevice);
     await mlContext.exportToGPU(mlTensor);
     assert_throws_js(
         TypeError,
         () => mlContext.writeTensor(
-            mlTensor, new Float32Array([1.0, 2.0, 3.0, 4.0])));
+            mlTensor, new typedArray([1.0, 2.0, 3.0, 4.0])));
   }, `${testName} / write tensor after export`);
 
   promise_test(async t => {
@@ -1579,11 +1561,8 @@ const testExportToGPU = (testName) => {
       return;
     }
 
-    const mlTensor = await mlContext.createTensor({
-      dataType: 'float32',
-      shape: shape,
-      exportableToGPU: true,
-    });
+    const mlTensor =
+        await mlContext.createExportableTensor({dataType, shape}, gpuDevice);
 
     // Second call rejects because the first export is still pending and multiple
     // exports aren’t allowed.
@@ -1602,18 +1581,14 @@ const testExportToGPU = (testName) => {
     }
 
     // Initialize the tensor buffers from WebNN.
-    let mlTensorInput = await mlContext.createTensor({
-      dataType: 'float32',
-      shape: shape,
-      exportableToGPU: true,
-      writable: true
-    });
+    let mlTensorInput = await mlContext.createExportableTensor(
+        {dataType, shape, writable: true}, gpuDevice);
 
-    const inputData1 = new Float32Array(sizeOfShape(shape)).fill(1.0);
+    const inputData1 = new typedArray(sizeOfShape(shape)).fill(1.0);
     mlContext.writeTensor(mlTensorInput, inputData1);
 
-    let mlTensorOutput = await mlContext.createTensor(
-        {dataType: 'float32', shape: shape, exportableToGPU: true});
+    let mlTensorOutput =
+        await mlContext.createExportableTensor({dataType, shape}, gpuDevice);
 
     let gpuTensorBufferInput = await mlContext.exportToGPU(mlTensorInput);
     let gpuTensorBufferOutput = await mlContext.exportToGPU(mlTensorOutput);
@@ -1626,7 +1601,7 @@ const testExportToGPU = (testName) => {
     gpuTensorBufferOutput.destroy();
 
     // Write different data to the input tensor.
-    const inputData2 = new Float32Array(sizeOfShape(shape)).fill(2.0);
+    const inputData2 = new typedArray(sizeOfShape(shape)).fill(2.0);
     mlContext.writeTensor(mlTensorInput, inputData2);
 
     gpuTensorBufferInput = await mlContext.exportToGPU(mlTensorInput);
@@ -1646,22 +1621,14 @@ const testExportToGPU = (testName) => {
     }
 
     // Initialize the tensor buffers from WebNN.
-    let mlTensorInput = await mlContext.createTensor({
-      dataType: 'float32',
-      shape: shape,
-      exportableToGPU: true,
-      writable: true
-    });
+    let mlTensorInput = await mlContext.createExportableTensor(
+        {dataType, shape, writable: true}, gpuDevice);
 
-    const inputData = new Float32Array(sizeOfShape(shape)).fill(1.0);
+    const inputData = new typedArray(sizeOfShape(shape)).fill(1.0);
     mlContext.writeTensor(mlTensorInput, inputData);
 
-    let mlTensorOutput = await mlContext.createTensor({
-      dataType: 'float32',
-      shape: shape,
-      exportableToGPU: true,
-      readable: true
-    });
+    let mlTensorOutput = await mlContext.createExportableTensor(
+        {dataType, shape, readable: true}, gpuDevice);
 
     let gpuTensorBufferInput = await mlContext.exportToGPU(mlTensorInput);
     let gpuTensorBufferOutput = await mlContext.exportToGPU(mlTensorOutput);
@@ -1688,18 +1655,14 @@ const testExportToGPU = (testName) => {
     }
 
     // Initialize the tensor buffers from WebNN.
-    let mlTensorInput = await mlContext.createTensor({
-      dataType: 'float32',
-      shape: shape,
-      exportableToGPU: true,
-      writable: true
-    });
+    let mlTensorInput = await mlContext.createExportableTensor(
+        {dataType, shape, writable: true}, gpuDevice);
 
-    const inputData = new Float32Array(sizeOfShape(shape)).fill(1.0);
+    const inputData = new typedArray(sizeOfShape(shape)).fill(1.0);
     mlContext.writeTensor(mlTensorInput, inputData);
 
-    let mlTensorOutput = await mlContext.createTensor(
-        {dataType: 'float32', shape: shape, exportableToGPU: true});
+    let mlTensorOutput =
+        await mlContext.createExportableTensor({dataType, shape}, gpuDevice);
 
     let gpuTensorBufferInput = await mlContext.exportToGPU(mlTensorInput);
     let gpuTensorBufferOutput = await mlContext.exportToGPU(mlTensorOutput);
@@ -1729,7 +1692,7 @@ const testExportToGPU = (testName) => {
 
     await assert_gpu_buffer_data_equals(
         gpuDevice, gpuTensorBufferOutput,
-        new Float32Array(sizeOfShape(shape)).fill(5.0));
+        new typedArray(sizeOfShape(shape)).fill(5.0));
   }, `${testName} / dispatch from webgpu then webnn`);
 
   promise_test(async () => {
@@ -1737,16 +1700,12 @@ const testExportToGPU = (testName) => {
       return;
     }
 
-    let anotherMLContext = await navigator.ml.createContext(gpuDevice);
+    let anotherMLContext = await navigator.ml.createContext(contextOptions);
 
-    let mlTensor = await anotherMLContext.createTensor({
-      dataType: 'float32',
-      shape: shape,
-      exportableToGPU: true,
-      writable: true
-    });
+    let mlTensor = await anotherMLContext.createExportableTensor(
+        {dataType, shape, writable: true}, gpuDevice);
 
-    const inputData = new Float32Array(sizeOfShape(shape)).fill(1.0);
+    const inputData = new typedArray(sizeOfShape(shape)).fill(1.0);
     anotherMLContext.writeTensor(mlTensor, inputData);
 
     const gpuTensorBuffer = await anotherMLContext.exportToGPU(mlTensor);
@@ -1762,18 +1721,14 @@ const testExportToGPU = (testName) => {
     }
 
     let anotherGPUAdapter = await navigator.gpu.requestAdapter();
-    let anotherGPUDevice = await anotherGPUAdapter.requestDevice();
-    let anotherMLContext = await navigator.ml.createContext(anotherGPUDevice);
+    let anotherGPUDevice = await anotherGPUAdapter.requestDevice(
+        {requiredFeatures: ['shader-f16']});
+    let anotherMLContext = await navigator.ml.createContext(contextOptions);
 
-    let mlTensor = await anotherMLContext.createTensor({
-      dataType: 'float32',
-      shape: shape,
-      exportableToGPU: true,
-      readable: true,
-      writable: true
-    });
+    let mlTensor = await anotherMLContext.createExportableTensor(
+        {dataType, shape, readable: true, writable: true}, anotherGPUDevice);
 
-    const inputData = new Float32Array(sizeOfShape(shape)).fill(1.0);
+    const inputData = new typedArray(sizeOfShape(shape)).fill(1.0);
     anotherMLContext.writeTensor(mlTensor, inputData);
 
     const gpuTensorBuffer = await anotherMLContext.exportToGPU(mlTensor);
@@ -1782,8 +1737,7 @@ const testExportToGPU = (testName) => {
 
     gpuTensorBuffer.destroy();
 
-    await promise_rejects_dom(
-        t, 'InvalidStateError', anotherMLContext.readTensor(mlTensor));
+    await assert_tensor_data_equals(anotherMLContext, mlTensor, inputData);
   }, `${testName} / destroy device after export`);
 
   promise_test(async t => {
@@ -1792,18 +1746,13 @@ const testExportToGPU = (testName) => {
     }
 
     let anotherGPUAdapter = await navigator.gpu.requestAdapter();
-    let anotherGPUDevice = await anotherGPUAdapter.requestDevice();
-    let anotherMLContext = await navigator.ml.createContext(anotherGPUDevice);
+    let anotherGPUDevice = await anotherGPUAdapter.requestDevice(
+        {requiredFeatures: ['shader-f16']});
+    let anotherMLContext = await navigator.ml.createContext(contextOptions);
 
-    let mlTensor = await anotherMLContext.createTensor({
-      dataType: 'float32',
-      shape: shape,
-      exportableToGPU: true,
-      readable: true,
-      writable: true
-    });
-
-    const inputData = new Float32Array(sizeOfShape(shape)).fill(1.0);
+    let mlTensor = await anotherMLContext.createExportableTensor(
+        {dataType, shape, readable: true, writable: true}, anotherGPUDevice);
+    const inputData = new typedArray(sizeOfShape(shape)).fill(1.0);
     anotherMLContext.writeTensor(mlTensor, inputData);
 
     anotherGPUDevice.destroy();
@@ -1838,7 +1787,8 @@ if (navigator.ml) {
   testReadTensor('read');
   testWriteTensor('write');
   testDispatchTensor('dispatch');
-  testExportToGPU('interop');
+  testExportToGPU('interop float16', 'float16');
+  testExportToGPU('interop float32', 'float32');
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
 }

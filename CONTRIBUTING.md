@@ -4,8 +4,8 @@ Documentation
 -------------
 
 See [web-platform-tests.org](https://web-platform-tests.org/).
+This site provides guidance on writing tests, reviewing changes, and understanding the WPT contribution workflow.
 
 Code of Conduct
 ---------------
 
-See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

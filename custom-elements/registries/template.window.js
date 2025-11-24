@@ -57,5 +57,5 @@ test(() => {
   assert_equals(hostDocument.customElementRegistry, registry);
   const host = hostDocument.createElement('div');
   const shadow = host.attachShadow({ mode: "closed", serializable: true, customElementRegistry: null });
-  assert_equals(host.getHTML({ serializableShadowRoots: true }), `<div><template shadowrootmode="closed" shadowrootserializable shadowrootcustomelementregistry></template></div>`);
+  assert_equals(host.getHTML({ serializableShadowRoots: true }), `<template shadowrootmode="closed" shadowrootserializable="" shadowrootcustomelementregistry=""></template>`);
 }, "Serializing a ShadowRoot with a null registry with a scoped registry host document");

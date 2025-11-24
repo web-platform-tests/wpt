@@ -59,3 +59,11 @@ test(() => {
   const shadow = host.attachShadow({ mode: "closed", serializable: true, customElementRegistry: null });
   assert_equals(host.getHTML({ serializableShadowRoots: true }), `<template shadowrootmode="closed" shadowrootserializable="" shadowrootcustomelementregistry=""></template>`);
 }, "Serializing a ShadowRoot with a null registry with a scoped registry host document");
+
+test(() => {
+  const registry = new CustomElementRegistry();
+  const element = document.createElement('a-b', { customElementRegistry: registry });
+  element.setHTMLUnsafe(`<a-b><template shadowrootmode="open"></template></a-b>`);
+  assert_equals(element.firstChild.customElementRegistry, registry);
+  assert_equals(element.firstChild.shadowRoot.customElementRegistry, customElements);
+}, "A declarative shadow root gets its default registry from its node document");

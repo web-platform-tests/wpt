@@ -1,13 +1,9 @@
-// Verify that an about:blank or about:srcdoc document remembers the baseURI
+// Verify that an about:srcdoc document remembers the baseURI
 // it was created with even after it's detached.
-const runTest = (frame_type) => {
+const runTest = () => {
   async_test((t) => {
     const frame = document.createElement('iframe');
-
-    if (frame_type == "about:blank")
-      frame.src = "about:blank";
-    else
-      frame.srcdoc = "foo";
+    frame.srcdoc = "foo";
 
     frame.onload = () => {
       const frame_doc = frame.contentDocument;
@@ -25,10 +21,9 @@ const runTest = (frame_type) => {
     };
 
     document.body.appendChild(frame);
-  }, frame_type);
+  }, "about:srcdoc");
 };
 
 onload = () => {
-  runTest("about:blank");
-  runTest("about:srcdoc");
+  runTest();
 };

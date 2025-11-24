@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout WPT repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: wpt
       - name: Checkout Wasm repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: WebAssembly/spec
           path: wasm-spec

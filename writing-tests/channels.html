@@ -285,11 +285,11 @@ object in this realm.</p>
 <p>test.html</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
 <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>call example<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;</span>
-<span class="o">&lt;</span><span class="nx">script</span><span class="w"> </span><span class="nx">src</span><span class="o">=</span><span class="s2">&quot;/resources/testharnessreport.js&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="nx">script</span><span class="w"> </span><span class="nx">src</span><span class="o">=</span><span class="s2">&quot;/resources/channel.js&quot;</span><span class="o">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/channels.sub.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 
-<span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="nx">promise_test</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="nx">remote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">RemoteGlobal</span><span class="p">();</span>
 <span class="w">  </span><span class="nb">window</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="sb">`child.html?uuid=</span><span class="si">${</span><span class="nx">remote</span><span class="p">.</span><span class="nx">uuid</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_blank&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;noopener&quot;</span><span class="p">);</span>
@@ -302,11 +302,12 @@ object in this realm.</p>
 </pre></div>
 </div>
 <p>child.html</p>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/channel.js&quot;</span><span class="p">&gt;</span>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/channels.sub.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 
-<span class="o">&lt;</span><span class="nx">p</span><span class="w"> </span><span class="nx">id</span><span class="o">=</span><span class="s2">&quot;nottest&quot;</span><span class="o">&gt;</span><span class="nx">FAIL</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-<span class="o">&lt;</span><span class="nx">p</span><span class="w"> </span><span class="nx">id</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="o">&gt;</span><span class="nx">PASS</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-<span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;nottest&quot;</span><span class="p">&gt;</span>FAIL<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">&gt;</span>PASS<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="nx">start_global_channel</span><span class="p">();</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>

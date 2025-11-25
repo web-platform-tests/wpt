@@ -34,15 +34,8 @@ dialog {
 
 function testFocus(element, expectFocus) {
     test(function() {
-        var focusedElement = null;
-        element.addEventListener('focus', function() { focusedElement = element; }, false);
         element.focus();
-        var theElement = element;
-        if (expectFocus) {
-            assert_equals(focusedElement, theElement);
-        } else {
-            assert_not_equals(focusedElement, theElement);
-        }
+        assert_equals(element === document.activeElement, expectFocus);
     }, `#${CSS.escape(element.id)} is ${expectFocus ? "" : "not "} focusable`);
 }
 

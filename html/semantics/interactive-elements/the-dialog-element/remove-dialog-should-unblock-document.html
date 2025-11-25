@@ -12,11 +12,8 @@
 <script>
 "use strict";
 function testFocus(element, expectFocus) {
-    var focusedElement = null;
-    element.addEventListener('focus', function() { focusedElement = element; }, false);
     element.focus();
-    var theElement = element;
-    assert_equals(focusedElement === theElement, expectFocus, element.id);
+    assert_equals(element === document.activeElement, expectFocus);
 }
 
 test(function() {

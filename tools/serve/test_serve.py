@@ -223,8 +223,8 @@ def test_test262_window_test_handler_get_metadata_includes(test262_handlers: Any
     handler = Test262WindowTestHandler(base_path=tests_root, url_base=url_base)
     mock_request = _create_mock_request("/test262/basic.test262-test.html")
     metadata = list(handler._get_metadata(mock_request))
-    assert ('script', '/tc39/test262/harness/assert.js') in metadata
-    assert ('script', '/tc39/test262/harness/sta.js') in metadata
+    assert ('script', '/third_party/test262/harness/assert.js') in metadata
+    assert ('script', '/third_party/test262/harness/sta.js') in metadata
 
 
 def test_test262_window_test_handler_get_metadata_negative(test262_handlers: Any) -> None:
@@ -245,8 +245,8 @@ def test_test262_window_test_handler_wrapper_content(test262_handlers: Any) -> N
     handler.handle_request(mock_request, mock_response)
     content = mock_response.content
     assert "<script src=\"/resources/test262/testharness-client.js\"></script>" in content
-    assert "<script src=\"/tc39/test262/harness/assert.js\"></script>" in content
-    assert "<script src=\"/tc39/test262/harness/sta.js\"></script>" in content
+    assert "<script src=\"/third_party/test262/harness/assert.js\"></script>" in content
+    assert "<script src=\"/third_party/test262/harness/sta.js\"></script>" in content
     assert "<script>test262Setup()</script>" in content
     assert "<script src=\"/test262/basic.js\"></script>" in content
     assert "<script>test262Done()</script>" in content

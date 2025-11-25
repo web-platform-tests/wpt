@@ -21,8 +21,19 @@ jobs:
           path: test262-spec
       - name: Copy Test262 tests to WPT
         run: |
-          rsync -a --delete test262-spec/test/ wpt/tc39/test262/test/
-          rsync -a --delete test262-spec/harness/ wpt/tc39/test262/harness/
+          LATEST_SHA=$(git -C test262-spec rev-parse HEAD)
+          echo "Latest remote Test262 SHA: $LATEST_SHA"
+
+          mkdir -p wpt/third_party/test262/test/
+          mkdir -p wpt/third_party/test262/harness/
+          rsync -a --delete test262-spec/test/ wpt/third_party/test262/test/
+          rsync -a --delete test262-spec/harness/ wpt/third_party/test262/harness/
+          cat <<EOF > wpt/third_party/test262/vendored.toml
+[test262]
+source = "https://github.com/tc39/test262"
+rev = "${LATEST_SHA}"
+EOF
+
       - name: Commit changes
         id: commit
         continue-on-error: true
@@ -32,8 +43,8 @@ jobs:
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
           git config user.name "$GIT_AUTHOR_NAME"
           git config user.email "$GIT_AUTHOR_EMAIL"
-          git checkout -b $BRANCH_NAME
-          git add tc39/test262/
+          git checkout -B $BRANCH_NAME
+          git add third_party/test262/
           git commit -m "$COMMIT_TITLE"
         env:
           GIT_AUTHOR_NAME: "wpt-pr-bot"

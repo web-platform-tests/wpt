@@ -6,3 +6,6 @@ features:
   - creation.html
   - cross-origin.html
   - ended.html
+- name: capture-stream-canvas
+  files:
+  - HTMLCanvasElement-*

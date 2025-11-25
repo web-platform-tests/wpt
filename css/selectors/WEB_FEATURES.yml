@@ -4,6 +4,9 @@ features:
   - dir-pseudo-*
   - dir-selector-*
   - dir-style-*
+- name: empty
+  files:
+  - selectors-empty-001.xml
 - name: focus-visible
   files:
   - focus-visible-*

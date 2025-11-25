@@ -24,7 +24,7 @@ from typing import ClassVar, List, Optional, Set, Tuple
 from localpaths import repo_root  # type: ignore
 
 from manifest.sourcefile import read_script_metadata, js_meta_re, parse_variants  # type: ignore
-from manifest.test262 import TestRecord
+from manifest.test262 import TestRecord # type: ignore
 from wptserve import server as wptserve, handlers
 from wptserve import stash
 from wptserve import config
@@ -352,8 +352,8 @@ class Test262WindowTestHandler(HtmlWrapperHandler):
 <meta charset=utf-8>
 <title>%(path)s</title>
 <script src="/resources/test262/testharness-client.js"></script>
-<script src="/tc39/test262/harness/assert.js"></script>
-<script src="/tc39/test262/harness/sta.js"></script>
+<script src="/third_party/test262/harness/assert.js"></script>
+<script src="/third_party/test262/harness/sta.js"></script>
 <script src="/resources/test262/harness-adapter.js"></script>
 %(meta)s
 %(script)s"""
@@ -365,7 +365,7 @@ class Test262WindowTestHandler(HtmlWrapperHandler):
         path = self._get_filesystem_path(request)
         with open(path, encoding='ISO-8859-1') as f:
             test_record = TestRecord.parse(f.read(), path)
-        yield from (('script', "/tc39/test262/harness/%s" % filename)
+        yield from (('script', "/third_party/test262/harness/%s" % filename)
                     for filename in test_record.get("includes", []))
         expected_error = test_record.get('negative', {}).get('type', None)
         if expected_error is not None:

@@ -13,11 +13,11 @@ jobs:
       with:
         python-version: '3.12'
     - name: Checkout wpt
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         path: wpt
     - name: Checkout wpt-metadata
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         path: wpt-metadata
         repository: web-platform-tests/wpt-metadata

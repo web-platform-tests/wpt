@@ -13,6 +13,9 @@ features:
 - name: read-write-pseudos
   files:
   - selector-read-write-*
+- name: scope
+  files:
+  - scope-*
 - name: modal
   files:
   - modal-pseudo-class.html

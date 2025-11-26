@@ -2,3 +2,6 @@ features:
 - name: has-slotted
   files:
   - has-slotted-*
+- name: scope
+  files:
+  - scope-psuedo*

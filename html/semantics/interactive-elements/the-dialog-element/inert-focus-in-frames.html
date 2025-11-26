@@ -36,7 +36,7 @@ promise_test(async () => {
   await framesLoadedPromise;
   // Chrome and edge auto-focus the URL bar when the browser is launched.
   // This is needed to ensure the 'focus' events fire below.
-  await test_driver.click(document.body);
+  await test_driver.click(document.documentElement);
 
   function testFocus(element, expectFocus) {
     let focusedElement = null;

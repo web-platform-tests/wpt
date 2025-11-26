@@ -134,6 +134,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     chrome_options["args"].append("--disable-infobars")
     # For WebNN tests.
     chrome_options["args"].append("--enable-features=WebMachineLearningNeuralNetwork")
+    chrome_options["args"].append("--disable-location-bar-focus-on-startup-for-testing")
     # For Web Speech API tests.
     chrome_options["args"].append("--enable-features=" + ",".join([
         "InstallOnDeviceSpeechRecognition",

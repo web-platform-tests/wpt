@@ -7,3 +7,6 @@ features:
 - name: clipboard-custom-format
   files:
   - async-custom-formats-*
+- name: clipboard-events
+  files:
+  - clipboard-events-synthetic.html

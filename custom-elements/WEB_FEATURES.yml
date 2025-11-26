@@ -9,6 +9,7 @@ features:
   - "!Document-createElementNS-customized-builtins.html"
   - "!HTMLElement-constructor-customized-builtins.html"
   - "!pseudo-class-defined-customized-builtins.html"
+  - "!CustomElementRegistry*"
 - name: customized-built-in-elements
   files:
   # Keep in sync with above list.
@@ -18,3 +19,6 @@ features:
   - Document-createElementNS-customized-builtins.html
   - HTMLElement-constructor-customized-builtins.html
   - pseudo-class-defined-customized-builtins.html
+- name: scoped-custom-element-registries
+  files:
+  - "CustomElementRegistry*"

@@ -2,4 +2,8 @@ features:
 - name: async-clipboard
   files:
   - async-*
+  - "!async-custom-formats-*"
   - clipboard-item.https.html
+- name: clipboard-custom-format
+  files:
+  - async-custom-formats-*

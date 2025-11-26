@@ -10,3 +10,10 @@ features:
   files:
   - "return_call.wast.js.html"
   - "return_call_indirect.wast.js.html"
+- name: wasm-typed-fun-refs
+  files:
+  - "br_on_non_null.wast.js.html"
+  - "br_on_null.wast.js.html"
+  - "call_ref.wast.js.html"
+  - "ref_as_non_null.wast.js.html"
+  - "return_call_ref.wast.js.html"

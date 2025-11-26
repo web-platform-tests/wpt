@@ -1,0 +1,5 @@
+features:
+- name: wasm-mutable-globals
+  files:
+  - "global-exports-live-bindings.tentative.any.js"
+  - "mutable-global-sharing.tentative.any.js"

@@ -14,3 +14,4 @@ features:
 - name: ruby-overhang
   files:
   - ruby-overhang*
+# Make sure to add an exclusion to the "ruby" match when adding a new feature

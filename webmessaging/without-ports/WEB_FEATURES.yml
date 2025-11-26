@@ -4,3 +4,9 @@ features:
   - 023.html
   - 024.html
   - 025.html
+- name: postmessage
+  files:
+  - "*"
+  - "!023.html"
+  - "!024.html"
+  - "!025.html"

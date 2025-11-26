@@ -6,3 +6,6 @@ features:
 - name: writing-mode-svg-values
   files:
   - writing-mode-parsing-svg1-001.html
+- name: clip
+  files:
+  - clip-rect-*

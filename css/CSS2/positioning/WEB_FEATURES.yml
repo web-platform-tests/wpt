@@ -1,0 +1,5 @@
+features:
+- name: static-positioning
+  files:
+  - position-001.xht
+  - "position-static-*.xht"

@@ -1,0 +1,7 @@
+features:
+- name: execcommand
+  files:
+    - 'exec-command-*'
+    - 'legacy-edit-command.html'
+    - 'non-html-document.html'
+    - 'restoration.html'

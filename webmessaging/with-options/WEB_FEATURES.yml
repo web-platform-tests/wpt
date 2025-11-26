@@ -1,0 +1,4 @@
+features:
+- name: channel-messaging
+  files:
+  - message-channel-transferable.html

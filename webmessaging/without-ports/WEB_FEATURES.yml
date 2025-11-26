@@ -1,0 +1,6 @@
+features:
+- name: channel-messaging
+  files:
+  - 023.html
+  - 024.html
+  - 025.html

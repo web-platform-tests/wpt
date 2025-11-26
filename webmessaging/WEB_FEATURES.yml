@@ -3,3 +3,8 @@ features:
   files:
   - messageerror.html
   - postMessage_CryptoKey_insecure.sub.html
+- name: channel-messaging
+  files:
+  - Channel_*
+  - MessagePort_*
+  - event.ports.sub.htm

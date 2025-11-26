@@ -1,0 +1,5 @@
+features:
+- name: channel-messaging
+  files:
+  - messagechannel.any.js
+  - transfer-errors.window.js

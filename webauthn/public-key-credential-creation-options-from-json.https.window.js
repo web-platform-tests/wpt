@@ -277,7 +277,6 @@ test(() => {
         alg: -7,
       },
     ],
-    // The spec defaults the following fields:
     attestation: "none",
     hints: ["duplicated-value", "duplicated-value"]
   };

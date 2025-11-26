@@ -20,3 +20,6 @@ features:
   - '*width*'
   - '*height*'
   - '*blockw*'
+- name: word-spacing
+  files:
+  - c541-word-sp*

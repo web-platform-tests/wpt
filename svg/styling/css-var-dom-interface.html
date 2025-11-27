@@ -39,7 +39,6 @@ test(() => {
   const rect = document.getElementById('rect-number');
   const width = rect.width.baseVal;
 
-  // CSS variable with number should resolve to user units
   assert_equals(width.value, 0);
   assert_equals(width.valueInSpecifiedUnits, 0);
   assert_equals(width.unitType, SVGLength.SVG_LENGTHTYPE_UNKNOWN);

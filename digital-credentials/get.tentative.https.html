@@ -233,16 +233,18 @@
 
   promise_test(async (t) => {
     /** @type sequence<CredentialMediationRequirement> */
-    const disallowedMediations = ["conditional", "optional", "silent"];
-    for (const mediation of disallowedMediations) {
-      const options = makeGetOptions("default", mediation);
-      await promise_rejects_js(
-        t,
-        TypeError,
-        navigator.credentials.get(options)
-      );
+    const mediations = ["silent", "optional", "conditional", "required"];
+    const abortController = new AbortController();
+    const { signal } = abortController;
+    abortController.abort();
+    for (const mediation of mediations) {
+      const requestPromise = navigator.credentials.get({
+        mediation,
+        signal,
+      });
+      await promise_rejects_dom(t, "AbortError", requestPromise);
     }
-  }, "Mediation is required to get a DigitalCredential.");
+  }, "Mediation is implicitly required and hence ignored. Request is aborted regardless.");
 
 promise_test(async t => {
   const throwingValues = [

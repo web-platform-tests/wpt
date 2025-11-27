@@ -38,7 +38,9 @@ function _makeOptionsInternal(requestsInputArray, mediation, requestMapping) {
 
 const allMappings = {
   get: {
-    "openid4vp": () => makeOID4VPDict(),
+    "openid4vp-v1-unsigned": () => makeOID4VPDict("openid4vp-v1-unsigned"),
+    "openid4vp-v1-signed": () => makeOID4VPDict("openid4vp-v1-signed"),
+    "openid4vp-v1-multisigned": () => makeOID4VPDict("openid4vp-v1-multisigned"),
     "default": () => makeDigitalCredentialGetRequest(undefined, undefined),
   },
   create: {
@@ -96,7 +98,7 @@ function _makeOptionsUnified(type, requestsToUse, mediation) {
 /**
  * Creates options for getting credentials.
  * @export
- * @param {string | string[]} [requestsToUse] - Request types ('default', 'openid4vp', or an array). Defaults to ['default'].
+ * @param {string | string[]} [requestsToUse] - Request types ('default', 'openid4vp-v1-unsigned', 'openid4vp-v1-signed', 'openid4vp-v1-multisigned', or an array). Defaults to ['default'].
  * @param {string} [mediation="required"] - Credential mediation requirement ("required", "optional", "silent").
  * @returns {{ digital: { requests: any[] }, mediation: string }}
  */
@@ -133,10 +135,11 @@ function makeDigitalCredentialGetRequest(protocol = "protocol", data = {}) {
 /**
  * Representation of an OpenID4VP request.
  *
+ * @param {string} identifier
  * @returns {DigitalCredentialGetRequest}
  **/
-function makeOID4VPDict() {
-  return makeDigitalCredentialGetRequest("openid4vp", {
+function makeOID4VPDict(identifier = "openid4vp-v1-unsigned") {
+  return makeDigitalCredentialGetRequest(identifier, {
     // Canonical example of an OpenID4VP request coming soon.
   });
 }

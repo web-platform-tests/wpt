@@ -204,8 +204,8 @@ export function sendMessage(iframe, data) {
  */
 export function loadIframe(iframe, url) {
   return new Promise((resolve, reject) => {
-    iframe.addEventListener("load", resolve, { once: true });
-    iframe.addEventListener("error", reject, { once: true });
+    iframe.addEventListener("load", () => resolve(), { once: true });
+    iframe.addEventListener("error", (event) => reject(event.error), { once: true });
     if (!iframe.isConnected) {
       document.body.appendChild(iframe);
     }

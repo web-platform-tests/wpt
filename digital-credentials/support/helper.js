@@ -134,7 +134,7 @@ function makeDigitalCredentialGetRequest(protocol = "protocol", data = {}) {
 
 /**
  * Representation of an OpenID4VP request.
- * 
+ *
  * @param {string} identifier
  * @returns {DigitalCredentialGetRequest}
  **/

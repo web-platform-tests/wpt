@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Custom Elements: CustomElementRegistry is per global</title>
+<title>Custom Elements: window.customElements is per document</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#custom-elements-api">
@@ -10,5 +10,5 @@
 <body>
 <script>
 "use strict";
-testIsPerWindow("customElements");
+testIsPerDocument("customElements");
 </script>

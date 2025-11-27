@@ -10,6 +10,7 @@
  * @typedef {import('../dc-types').CredentialCreationOptions} CredentialCreationOptions
  * @typedef {import('../dc-types').DigitalCredentialCreationOptions} DigitalCredentialCreationOptions
  * @typedef {import('../dc-types').SendMessageData} SendMessageData
+ * @typedef {import('../dc-types').DigitalCredential} DigitalCredential
  */
 
 /**
@@ -18,32 +19,38 @@
  * @private
  * @param {string[]} requestsInputArray - An array of request type strings.
  * @param {string} mediation - The mediation requirement.
- * @param {object} requestMapping - The specific mapping object for the operation type.
+ * @param {Record<string, Function>} requestMapping - The specific mapping object for the operation type.
+ * @param {object} [data={}] - Optional data to include in the request.
  * @returns {{ digital: { requests: any[] }, mediation: string }} - The final options structure.
  * @throws {Error} If an unknown request type string is encountered within the array.
  */
-function _makeOptionsInternal(requestsInputArray, mediation, requestMapping) {
+function makeOptionsInternal(requestsInputArray, mediation, requestMapping, data = {}) {
   const requests = [];
   for (const request of requestsInputArray) {
     const factoryFunction = requestMapping[request];
     if (factoryFunction) {
-      requests.push(factoryFunction()); // Call the mapped function
+      requests.push(factoryFunction(data));
     } else {
-      // This error means a string *within the array* was unknown
       throw new Error(`Unknown request type within array: ${request}`);
     }
   }
-  return { digital: { requests }, mediation };
+  return { digital: { requests }, mediation: mediation };
 }
+
+// Detect supported protocols at module load time
+const SUPPORTED_GET_PROTOCOL = ['org-iso-mdoc', 'openid4vp']
+  .find(DigitalCredential.userAgentAllowsProtocol);
+
+const SUPPORTED_CREATE_PROTOCOL = ['openid4vci']
+  .find(DigitalCredential.userAgentAllowsProtocol);
 
 const allMappings = {
   get: {
-    "openid4vp": () => makeOID4VPDict(),
-    "default": () => makeDigitalCredentialGetRequest(undefined, undefined),
+    "openid4vp": makeOpenIDPresentationRequest,
+    "org-iso-mdoc": makeMdocPresentationRequest,
   },
   create: {
-    "openid4vci": () => makeOID4VCIDict(),
-    "default": () => makeDigitalCredentialCreateRequest(),
+    "openid4vci": makeOpenIDIssuanceRequest,
   },
 };
 
@@ -52,78 +59,70 @@ const allMappings = {
  * Routes calls from specific public functions.
  * @private
  * @param {'get' | 'create'} type - The type of operation.
- * @param {string | string[]} [requestsToUse] - Raw input for request types from public function.
- * @param {string} mediation - Mediation requirement (default handled by public function).
+ * @param {string | string[]} [protocol] - Raw input for protocol types from public function.
+ * @param {string} [mediation="required"] - Mediation requirement (default handled by public function).
+ * @param {object} [data={}] - Optional data to include in the request.
  * @returns {{ digital: { requests: any[] }, mediation: string }}
  * @throws {Error} If type is invalid internally, or input strings are invalid.
  */
-function _makeOptionsUnified(type, requestsToUse, mediation) {
-  // 1. Get mapping (Type validation primarily happens via caller)
+function makeOptionsUnified(type, protocol, mediation = "required", data = {}) {
   const mapping = allMappings[type];
-   // Added safety check, though public functions should prevent this.
-  if (!mapping) {
-    throw new Error(`Internal error: Invalid options type specified: ${type}`);
+
+  // Handle case where no protocols are supported by the browser
+  if (protocol === undefined) {
+    return { digital: { requests: [] }, mediation: mediation };
   }
 
-  // 2. Handle default for requestsToUse
-  const actualRequestsToUse = requestsToUse === undefined ? ["default"] : requestsToUse;
-
-  // 3. Handle single string input
-  if (typeof actualRequestsToUse === 'string') {
-    if (mapping[actualRequestsToUse]) {
-      // Valid single string: Pass as array to the core array helper
-      return _makeOptionsInternal([actualRequestsToUse], mediation, mapping);
+  if (typeof protocol === 'string') {
+    if (protocol in mapping) {
+      return makeOptionsInternal([protocol], mediation, mapping, data);
     } else {
-      // Invalid single string for this type
-      throw new Error(`Unknown request type string '${actualRequestsToUse}' provided for operation type '${type}'`);
+      throw new Error(`Unknown protocol '${protocol}' provided for operation type '${type}'`);
     }
   }
 
-  // 4. Handle array input
-  if (Array.isArray(actualRequestsToUse)) {
-    if (actualRequestsToUse.length === 0) {
-      // Handle empty array explicitly
-      return { digital: { requests: [] }, mediation };
+  if (Array.isArray(protocol)) {
+    if (protocol.length === 0) {
+      return { digital: { requests: [] }, mediation: mediation };
     }
-    // Pass valid non-empty array to the core array helper
-    return _makeOptionsInternal(actualRequestsToUse, mediation, mapping);
+    return makeOptionsInternal(protocol, mediation, mapping, data);
   }
 
-  // 5. Handle invalid input types (neither string nor array)
-  return { digital: { requests: [] }, mediation };
+  return { digital: { requests: [] }, mediation: mediation };
 }
 
 /**
  * Creates options for getting credentials.
  * @export
- * @param {string | string[]} [requestsToUse] - Request types ('default', 'openid4vp', or an array). Defaults to ['default'].
- * @param {string} [mediation="required"] - Credential mediation requirement ("required", "optional", "silent").
+ * @param {string | string[]} [protocol] - Protocol types ('openid4vp', 'org-iso-mdoc', or an array). Defaults to first supported protocol.
+ * @param {string} [mediation="required"] - Credential mediation requirement ("required", "optional", "conditional", "silent").
+ * @param {object} [data={}] - Optional data to include in the request.
  * @returns {{ digital: { requests: any[] }, mediation: string }}
  */
-export function makeGetOptions(requestsToUse, mediation = "required") {
-  // Pass type 'get', the user's input, and the final mediation value
-  return _makeOptionsUnified('get', requestsToUse, mediation);
+export function makeGetOptions(protocol = SUPPORTED_GET_PROTOCOL, mediation = "required", data = {}) {
+  return makeOptionsUnified('get', protocol, mediation, data);
 }
 
 /**
  * Creates options for creating credentials.
  * @export
- * @param {string | string[]} [requestsToUse] - Request types ('default', 'openid4vci', or an array). Defaults to ['default'].
- * @param {string} [mediation="required"] - Credential mediation requirement ("required", "optional", "silent").
- * @returns {{ digital: { requests: any[] }, mediation: string }} // Adjust inner array type if known
+ * @param {string | string[]} [protocol] - Protocol types ('openid4vci', or an array). Defaults to first supported protocol.
+ * @param {string} [mediation="required"] - Credential mediation requirement ("required", "optional", "conditional", "silent").
+ * @returns {{ digital: { requests: any[] }, mediation: string }}
  */
-export function makeCreateOptions(requestsToUse, mediation = "required") {
-  // Pass type 'create', the user's input, and the final mediation value
-  return _makeOptionsUnified('create', requestsToUse, mediation);
+export function makeCreateOptions(protocol = SUPPORTED_CREATE_PROTOCOL, mediation = "required") {
+  return makeOptionsUnified('create', protocol, mediation);
 }
 
 /**
- *
  * @param {string} protocol
  * @param {object} data
  * @returns {DigitalCredentialGetRequest}
  */
-function makeDigitalCredentialGetRequest(protocol = "protocol", data = {}) {
+function makeDigitalCredentialGetRequest(protocol, data = {}) {
+  if (!protocol) {
+    throw new Error('Protocol is required for DigitalCredentialGetRequest');
+  }
   return {
     protocol,
     data,
@@ -131,23 +130,44 @@ function makeDigitalCredentialGetRequest(protocol = "protocol", data = {}) {
 }
 
 /**
- * Representation of an OpenID4VP request.
+ * Creates an OpenID for Verifiable Presentations request.
  *
+ * @param {object} [data={}] - Optional data to include in the request.
  * @returns {DigitalCredentialGetRequest}
  **/
-function makeOID4VPDict() {
-  return makeDigitalCredentialGetRequest("openid4vp", {
-    // Canonical example of an OpenID4VP request coming soon.
-  });
+function makeOpenIDPresentationRequest(data = {}) {
+  return makeDigitalCredentialGetRequest("openid4vp", data);
 }
 
 /**
+ * Creates a mobile document (mDoc) presentation request following ISO/IEC 18013-7 Annex C.
  *
+ * @param {object} [data={}] - Optional data to include in the request.
+ * @returns {DigitalCredentialGetRequest}
+ **/
+function makeMdocPresentationRequest(data = {}) {
+  // For mDoc, we need to provide default data if none is specified, but override completely if data is provided
+  const defaultData = {
+    deviceRequest:
+      "omd2ZXJzaW9uYzEuMGtkb2NSZXF1ZXN0c4GhbGl0ZW1zUmVxdWVzdNgYWIKiZ2RvY1R5cGV1b3JnLmlzby4xODAxMy41LjEubURMam5hbWVTcGFjZXOhcW9yZy5pc28uMTgwMTMuNS4xpWthZ2Vfb3Zlcl8yMfRqZ2l2ZW5fbmFtZfRrZmFtaWx5X25hbWX0cmRyaXZpbmdfcHJpdmlsZWdlc_RocG9ydHJhaXT0",
+    encryptionInfo:
+      "gmVkY2FwaaJlbm9uY2VYICBetSsDkKlE_G9JSIHwPzr3ctt6Ol9GgmCH8iGdGQNJcnJlY2lwaWVudFB1YmxpY0tleaQBAiABIVggKKm1iPeuOb9bDJeeJEL4QldYlWvY7F_K8eZkmYdS9PwiWCCm9PLEmosiE_ildsE11lqq4kDkjhfQUKPpbX-Hm1ZSLg",
+  };
+
+  // If data is empty object, use defaults; otherwise use provided data directly
+  const finalData = Object.keys(data).length === 0 ? defaultData : data;
+  return makeDigitalCredentialGetRequest("org-iso-mdoc", finalData);
+}
+
+/**
  * @param {string} protocol
  * @param {object} data
  * @returns {DigitalCredentialCreateRequest}
  */
-function makeDigitalCredentialCreateRequest(protocol = "protocol", data = {}) {
+function makeDigitalCredentialCreateRequest(protocol, data = {}) {
+  if (!protocol) {
+    throw new Error('Protocol is required for DigitalCredentialCreateRequest');
+  }
   return {
     protocol,
     data,
@@ -155,14 +175,12 @@ function makeDigitalCredentialCreateRequest(protocol = "protocol", data = {}) {
 }
 
 /**
- * Representation of an OpenID4VCI request.
+ * Creates an OpenID for Verifiable Credential Issuance request.
  *
  * @returns {DigitalCredentialCreateRequest}
  **/
-function makeOID4VCIDict() {
-  return makeDigitalCredentialCreateRequest("openid4vci", {
-    // Canonical example of an OpenID4VCI request coming soon.
-  });
+function makeOpenIDIssuanceRequest() {
+  return makeDigitalCredentialCreateRequest("openid4vci", {});
 }
 
 /**
@@ -201,8 +219,8 @@ export function sendMessage(iframe, data) {
  */
 export function loadIframe(iframe, url) {
   return new Promise((resolve, reject) => {
-    iframe.addEventListener("load", resolve, { once: true });
-    iframe.addEventListener("error", reject, { once: true });
+    iframe.addEventListener("load", () => resolve(), { once: true });
+    iframe.addEventListener("error", (event) => reject(event.error), { once: true });
     if (!iframe.isConnected) {
       document.body.appendChild(iframe);
     }

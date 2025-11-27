@@ -1,4 +1,4 @@
-export type GetProtocol = "default" | "openid4vp";
+export type GetProtocol = "default" | "openid4vp" | "org-iso-mdoc";
 export type CreateProtocol = "default" | "openid4vci";
 
 export type CredentialMediationRequirement =
@@ -96,4 +96,25 @@ export interface EventData {
 export interface SendMessageData {
   action: IframeActionType;
   options?: CredentialRequestOptions;
+}
+
+/**
+ * The DigitalCredential interface - W3C Standard
+ * @see https://w3c-fedid.github.io/digital-credentials/#dom-digitalcredential
+ */
+export interface DigitalCredential {
+  /**
+   * Checks if the user agent allows a specific protocol.
+   * @see https://w3c-fedid.github.io/digital-credentials/#dom-digitalcredential-useragentallowsprotocol
+   * @param protocol - The protocol to check
+   * @returns true if the protocol is allowed, false otherwise
+   */
+  userAgentAllowsProtocol(protocol: string): boolean;
+}
+
+/**
+ * Global DigitalCredential object
+ */
+declare global {
+  const DigitalCredential: DigitalCredential;
 }

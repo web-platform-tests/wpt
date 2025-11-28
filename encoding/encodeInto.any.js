@@ -1,4 +1,4 @@
-// META: global=window,worker
+// META: global=window,worker,shadowrealm
 // META: script=/common/sab.js
 
 [
@@ -152,7 +152,7 @@ test(() => {
   let { read, written } = new TextEncoder().encodeInto("", view);
   assert_equals(read, 0);
   assert_equals(written, 0);
-  new MessageChannel().port1.postMessage(buffer, [buffer]);
+  buffer.transfer();
   ({ read, written } = new TextEncoder().encodeInto("", view));
   assert_equals(read, 0);
   assert_equals(written, 0);

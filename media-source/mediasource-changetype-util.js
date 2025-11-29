@@ -116,13 +116,12 @@ function appendBuffer(test, sourceBuffer, data) {
   sourceBuffer.appendBuffer(data);
 }
 
-function trimBuffered(test, mediaSource, sourceBuffer, minimumPreviousDuration, newDuration, skip_duration_prechecks) {
+function trimBuffered(test, mediaSource, sourceBuffer, newDuration, skip_duration_prechecks) {
   if (!skip_duration_prechecks) {
-    assert_less_than(newDuration, minimumPreviousDuration,
-        "trimBuffered newDuration must be less than minimumPreviousDuration");
-    assert_less_than(minimumPreviousDuration, mediaSource.duration,
-        "trimBuffered minimumPreviousDuration must be less than mediaSource.duration");
+    assert_less_than_equal(newDuration, mediaSource.duration);
   }
+  if (mediaSource.duration <= newDuration)
+    return;
   test.expectEvent(sourceBuffer, "update");
   test.expectEvent(sourceBuffer, "updateend");
   sourceBuffer.remove(newDuration, Infinity);
@@ -130,9 +129,10 @@ function trimBuffered(test, mediaSource, sourceBuffer, minimumPreviousDuration, 
 
 function trimDuration(test, mediaElement, mediaSource, newDuration, skip_duration_prechecks) {
   if (!skip_duration_prechecks) {
-    assert_less_than(newDuration, mediaSource.duration,
-        "trimDuration newDuration must be less than mediaSource.duration");
+    assert_less_than_equal(newDuration, mediaSource.duration);
   }
+  if (mediaSource.duration == newDuration)
+    return;
   test.expectEvent(mediaElement, "durationchange");
   mediaSource.duration = newDuration;
 }
@@ -285,7 +285,7 @@ function runChangeTypeTest(test, mediaElement, mediaSource, metadataA, typeA, da
   // Trim duration to 2 seconds, then play through to end.
   test.waitForExpectedEvents(() => {
     // If negative testing, then skip fragile assertions.
-    trimBuffered(test, mediaSource, sourceBuffer, 2.1, 2, negative_test);
+    trimBuffered(test, mediaSource, sourceBuffer, 2, negative_test);
   });
 
   test.waitForExpectedEvents(() => {

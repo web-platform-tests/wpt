@@ -4,6 +4,10 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 
+# default value for unhandledPromptBehavior capability should be dismiss and notify
+async def test_no_capabilities(assert_file_dialog_canceled):
+    await assert_file_dialog_canceled()
+
 @pytest.mark.capabilities({"unhandledPromptBehavior": 'dismiss'})
 async def test_string_dismiss(assert_file_dialog_canceled):
     await assert_file_dialog_canceled()

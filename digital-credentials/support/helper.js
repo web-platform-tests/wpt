@@ -22,10 +22,11 @@
  * @param {string[]} requestsInputArray - An array of request type strings.
  * @param {CredentialMediationRequirement} mediation - The mediation requirement.
  * @param {Record<string, () => any>} requestMapping - The specific mapping object for the operation type.
- * @returns {{ digital: { requests: any[] }, mediation: CredentialMediationRequirement }} - The final options structure.
+ * @param {AbortSignal} [signal] - Optional abort signal.
+ * @returns {{ digital: { requests: any[] }, mediation: CredentialMediationRequirement, signal?: AbortSignal }} - The final options structure.
  * @throws {Error} If an unknown request type string is encountered within the array.
  */
-function _makeOptionsInternal(requestsInputArray, mediation, requestMapping) {
+function _makeOptionsInternal(requestsInputArray, mediation, requestMapping, signal) {
   const requests = [];
   for (const request of requestsInputArray) {
     const factoryFunction = requestMapping[request];
@@ -36,7 +37,11 @@ function _makeOptionsInternal(requestsInputArray, mediation, requestMapping) {
       throw new Error(`Unknown request type within array: ${request}`);
     }
   }
-  return { digital: { requests }, mediation };
+  const result = { digital: { requests }, mediation };
+  if (signal !== undefined) {
+    result.signal = signal;
+  }
+  return result;
 }
 
 const allMappings = {
@@ -59,10 +64,11 @@ const allMappings = {
  * @param {'get' | 'create'} type - The type of operation.
  * @param {string | string[]} protocol - Protocol(s) to use.
  * @param {CredentialMediationRequirement} mediation - Mediation requirement.
- * @returns {{ digital: { requests: any[] }, mediation: CredentialMediationRequirement }}
+ * @param {AbortSignal} [signal] - Optional abort signal.
+ * @returns {{ digital: { requests: any[] }, mediation: CredentialMediationRequirement, signal?: AbortSignal }}
  * @throws {Error} If type is invalid internally, or input strings are invalid.
  */
-function _makeOptionsUnified(type, protocol, mediation) {
+function _makeOptionsUnified(type, protocol, mediation, signal) {
   // 1. Get mapping (Type validation primarily happens via caller)
   const mapping = allMappings[type];
    // Added safety check, though public functions should prevent this.
@@ -74,7 +80,7 @@ function _makeOptionsUnified(type, protocol, mediation) {
   if (typeof protocol === 'string') {
     if (protocol in mapping) {
       // Valid single string: Pass as array to the core array helper
-      return _makeOptionsInternal([protocol], mediation, mapping);
+      return _makeOptionsInternal([protocol], mediation, mapping, signal);
     } else {
       // Invalid single string for this type
       throw new Error(`Unknown request type string '${protocol}' provided for operation type '${type}'`);
@@ -85,14 +91,22 @@ function _makeOptionsUnified(type, protocol, mediation) {
   if (Array.isArray(protocol)) {
     if (protocol.length === 0) {
       // Handle empty array explicitly
-      return { digital: { requests: [] }, mediation };
+      const result = { digital: { requests: [] }, mediation };
+      if (signal !== undefined) {
+        result.signal = signal;
+      }
+      return result;
     }
     // Pass valid non-empty array to the core array helper
-    return _makeOptionsInternal(protocol, mediation, mapping);
+    return _makeOptionsInternal(protocol, mediation, mapping, signal);
   }
 
   // 4. Handle invalid input types (neither string nor array)
-  return { digital: { requests: [] }, mediation };
+  const result = { digital: { requests: [] }, mediation };
+  if (signal !== undefined) {
+    result.signal = signal;
+  }
+  return result;
 }
 
 /**
@@ -102,8 +116,8 @@ function _makeOptionsUnified(type, protocol, mediation) {
  * @returns {CredentialRequestOptions}
  */
 export function makeGetOptions(config = {}) {
-  const { protocol = "default", mediation = "required" } = config;
-  return _makeOptionsUnified('get', protocol, mediation);
+  const { protocol = "default", mediation = "required", signal } = config;
+  return _makeOptionsUnified('get', protocol, mediation, signal);
 }
 
 /**
@@ -113,8 +127,8 @@ export function makeGetOptions(config = {}) {
  * @returns {CredentialCreationOptions}
  */
 export function makeCreateOptions(config = {}) {
-  const { protocol = "default", mediation = "required" } = config;
-  return _makeOptionsUnified('create', protocol, mediation);
+  const { protocol = "default", mediation = "required", signal } = config;
+  return _makeOptionsUnified('create', protocol, mediation, signal);
 }
 
 /**

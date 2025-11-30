@@ -136,7 +136,7 @@
     const abortController = new AbortController();
     const { signal } = abortController;
     abortController.abort();
-    for (const options of [{ signal }, { signal, ...makeCreateOptions({protocol: []}) }]) {
+    for (const options of [{ signal }, makeCreateOptions({protocol: [], signal})]) {
       await promise_rejects_dom(
         t,
         "AbortError",
@@ -151,7 +151,7 @@
     const abortController = new iframeWindow.AbortController();
     const { signal } = abortController;
     abortController.abort();
-    for (const options of [{ signal }, { signal, ...makeCreateOptions({protocol: []}) }]) {
+    for (const options of [{ signal }, makeCreateOptions({protocol: [], signal})]) {
       await test_driver.bless("user activation");
       await promise_rejects_dom(
         t,
@@ -182,8 +182,7 @@
   promise_test(async (t) => {
     const abortController = new AbortController();
     const { signal } = abortController;
-    const options = makeCreateOptions({protocol: "openid4vci"});
-    options.signal = signal;
+    const options = makeCreateOptions({ protocol: "openid4vci", signal });
     await test_driver.bless("user activation");
     const promise = promise_rejects_dom(
       t,

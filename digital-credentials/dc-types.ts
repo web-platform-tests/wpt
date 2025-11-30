@@ -8,6 +8,34 @@ export type CredentialMediationRequirement =
   | "silent";
 
 /**
+ * Configuration for makeGetOptions function
+ */
+export interface MakeGetOptionsConfig {
+  /**
+   * Protocol(s) to use for the request
+   */
+  protocol?: GetProtocol | GetProtocol[];
+  /**
+   * Credential mediation requirement
+   */
+  mediation?: CredentialMediationRequirement;
+}
+
+/**
+ * Configuration for makeCreateOptions function
+ */
+export interface MakeCreateOptionsConfig {
+  /**
+   * Protocol(s) to use for the request
+   */
+  protocol?: CreateProtocol | CreateProtocol[];
+  /**
+   * Credential mediation requirement
+   */
+  mediation?: CredentialMediationRequirement;
+}
+
+/**
  * @see https://w3c-fedid.github.io/digital-credentials/#the-digitalcredentialgetrequest-dictionary
  */
 export interface DigitalCredentialGetRequest {

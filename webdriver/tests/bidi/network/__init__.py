@@ -34,7 +34,7 @@ def assert_headers(event_headers, expected_headers):
     # are included in the request's headers.
     assert len(event_headers) >= len(expected_headers)
     for header in expected_headers:
-        assert next(h for h in event_headers if header == h) is not None
+        assert any(header == h for h in event_headers)
 
 
 def assert_timing_info(timing_info, expected_time_range=None):

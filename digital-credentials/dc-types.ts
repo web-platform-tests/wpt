@@ -27,7 +27,7 @@ export interface MobileDocumentRequest {
  */
 export interface DigitalCredentialGetRequest {
   protocol: GetProtocol;
-  data: object | mDocRequest;
+  data: object | MobileDocumentRequest;
 }
 
 /**

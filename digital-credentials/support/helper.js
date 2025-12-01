@@ -122,10 +122,18 @@ function buildRequests(protocols, mapping, data) {
   return requests;
 }
 
-/** @type {{
+/**
+ * Factory functions for creating protocol-specific request objects.
+ *
+ * Note: Passing explicit data to these factory functions will override the
+ * canonical request objects entirely. The canonical objects are only used as
+ * defaults when no data argument is provided.
+ *
+ * @type {{
  *   get: Record<GetProtocol, (data?: object) => DigitalCredentialGetRequest>;
  *   create: Record<CreateProtocol, (data?: object) => DigitalCredentialCreateRequest>;
- * }} */
+ * }}
+ */
 const allMappings = {
   get: {
     "org-iso-mdoc": (data = { ...CANONICAL_REQUEST_OBJECTS["org-iso-mdoc"] }) => {

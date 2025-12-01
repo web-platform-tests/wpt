@@ -1,9 +1,10 @@
 features:
 - name: async-clipboard
   files:
+  # `clipboard-item.https.html` tests both `async-clipboard` and
+  # `clipboard-supports`
   - async-*
   - "!async-custom-formats-*"
-  - clipboard-item.https.html
 - name: clipboard-custom-format
   files:
   - async-custom-formats-*

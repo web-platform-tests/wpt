@@ -895,7 +895,8 @@ def output_error_count(error_count: Dict[Text, int]) -> None:
 
 def changed_files(wpt_root: Text) -> List[Text]:
     revish = testfiles.get_revish(revish=None)
-    changed, _ = testfiles.files_changed(revish, None, include_uncommitted=True, include_new=True)
+    changed, _ = testfiles.files_changed(revish, None, include_uncommitted=True, include_new=True,
+                                         tests_root=wpt_root)
     return [os.path.relpath(item, wpt_root) for item in changed]
 
 

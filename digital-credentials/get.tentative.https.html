@@ -227,13 +227,14 @@
     const mediations = ["silent", "optional", "conditional", "required"];
     const abortController = new AbortController();
     const { signal } = abortController;
-    abortController.abort();
     for (const mediation of mediations) {
-      const requestPromise = navigator.credentials.get({
+      await test_driver.bless("user activation");
+      const requestPromise = navigator.credentials.get(makeGetOptions({
         mediation,
         signal,
-      });
-      await promise_rejects_dom(t, "AbortError", requestPromise);
+      }));
+      abortController.abort(new Error("Aborted for testing"));
+      await promise_rejects_js(t, Error, requestPromise);
     }
   }, "Mediation is implicitly required and hence ignored. Request is aborted regardless.");
 

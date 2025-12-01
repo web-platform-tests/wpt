@@ -6,12 +6,6 @@ export type OpenIDIssuanceProtocol = "openid4vci";
 export type GetProtocol = OpenIDPresentationProtocol | "org-iso-mdoc";
 export type CreateProtocol = OpenIDIssuanceProtocol;
 
-export type CredentialMediationRequirement =
-  | "conditional"
-  | "optional"
-  | "required"
-  | "silent";
-
 /**
  * @see https://www.iso.org/obp/ui#iso:std:iso-iec:ts:18013:-7:ed-2:v1:en
  */
@@ -29,55 +23,11 @@ export interface MobileDocumentRequest {
 }
 
 /**
- * Configuration for makeGetOptions function
- */
-export interface MakeGetOptionsConfig {
-  /**
-   * Protocol(s) to use for the request
-   */
-  protocol?: GetProtocol | GetProtocol[];
-  /**
-   * Credential mediation requirement
-   */
-  mediation?: CredentialMediationRequirement;
-  /**
-   * Optional data to include in the request
-   */
-  data?: object;
-  /**
-   * Optional AbortSignal for request cancellation
-   */
-  signal?: AbortSignal;
-}
-
-/**
- * Configuration for makeCreateOptions function
- */
-export interface MakeCreateOptionsConfig {
-  /**
-   * Protocol(s) to use for the request
-   */
-  protocol?: CreateProtocol | CreateProtocol[];
-  /**
-   * Credential mediation requirement
-   */
-  mediation?: CredentialMediationRequirement;
-  /**
-   * Optional data to include in the request
-   */
-  data?: object;
-  /**
-   * Optional AbortSignal for request cancellation
-   */
-  signal?: AbortSignal;
-}
-
-/**
  * @see https://w3c-fedid.github.io/digital-credentials/#the-digitalcredentialgetrequest-dictionary
  */
 export interface DigitalCredentialGetRequest {
-  protocol: string;
-  data: object;
+  protocol: GetProtocol;
+  data: object | mDocRequest;
 }
 
 /**
@@ -87,7 +37,7 @@ export interface DigitalCredentialRequestOptions {
   /**
    * The list of credential requests.
    */
-  requests: DigitalCredentialGetRequest[] | any;
+  requests: DigitalCredentialGetRequest[];
 }
 
 /**
@@ -95,7 +45,7 @@ export interface DigitalCredentialRequestOptions {
  */
 export interface CredentialRequestOptions {
   digital: DigitalCredentialRequestOptions;
-  mediation?: CredentialMediationRequirement;
+  mediation?:CredentialMediationRequirement;
   signal?: AbortSignal;
 }
 
@@ -103,7 +53,7 @@ export interface CredentialRequestOptions {
  * @see https://w3c-fedid.github.io/digital-credentials/#the-digitalcredentialcreaterequest-dictionary
  */
 export interface DigitalCredentialCreateRequest {
-  protocol: string;
+  protocol: CreateProtocol;
   data: object;
 }
 
@@ -114,7 +64,7 @@ export interface DigitalCredentialCreationOptions {
   /**
    * The list of credential requests.
    */
-  requests: DigitalCredentialCreateRequest[] | any;
+  requests: DigitalCredentialCreateRequest[];
 }
 
 /**
@@ -123,7 +73,6 @@ export interface DigitalCredentialCreationOptions {
 export interface CredentialCreationOptions {
   digital: DigitalCredentialCreationOptions;
   mediation?: CredentialMediationRequirement;
-  signal?: AbortSignal;
 }
 
 /**
@@ -166,15 +115,24 @@ export interface SendMessageData {
 }
 
 /**
- * The DigitalCredential interface
+ * The DigitalCredential interface - W3C Standard
+ * @see https://w3c-fedid.github.io/digital-credentials/#dom-digitalcredential
  */
-export interface DigitalCredentialStatic {
+export interface DigitalCredential {
   /**
-   * Check if the user agent allows a specific protocol
+   * Checks if the user agent allows a specific protocol.
+   * @see https://w3c-fedid.github.io/digital-credentials/#dom-digitalcredential-useragentallowsprotocol
+   * @param protocol - The protocol to check
+   * @returns true if the protocol is allowed, false otherwise
    */
-  userAgentAllowsProtocol(protocol: string): boolean;
+  userAgentAllowsProtocol(
+    protocol: GetProtocol | CreateProtocol | string,
+  ): boolean;
 }
 
+/**
+ * Global DigitalCredential object
+ */
 declare global {
-  var DigitalCredential: DigitalCredentialStatic;
+  const DigitalCredential: DigitalCredential;
 }

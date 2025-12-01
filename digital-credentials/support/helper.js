@@ -1,30 +1,29 @@
 // @ts-check
-// Import the types from the TypeScript file
 /**
- * @typedef {import('../dc-types').GetProtocol} GetProtocol
- * @typedef {import('../dc-types').DigitalCredentialGetRequest} DigitalCredentialGetRequest
- * @typedef {import('../dc-types').DigitalCredentialRequestOptions} DigitalCredentialRequestOptions
- * @typedef {import('../dc-types').CredentialRequestOptions} CredentialRequestOptions
- * @typedef {import('../dc-types').CreateProtocol} CreateProtocol
- * @typedef {import('../dc-types').DigitalCredentialCreateRequest} DigitalCredentialCreateRequest
- * @typedef {import('../dc-types').CredentialCreationOptions} CredentialCreationOptions
- * @typedef {import('../dc-types').DigitalCredentialCreationOptions} DigitalCredentialCreationOptions
- * @typedef {import('../dc-types').SendMessageData} SendMessageData
- * @typedef {import('../dc-types').MakeGetOptionsConfig} MakeGetOptionsConfig
- * @typedef {import('../dc-types').MakeCreateOptionsConfig} MakeCreateOptionsConfig
- * @typedef {import('../dc-types').CredentialMediationRequirement} CredentialMediationRequirement
- * @typedef {import('../dc-types').MobileDocumentRequest} MobileDocumentRequest
- * @typedef {import('../dc-types').OpenIDPresentationProtocol} OpenIDPresentationProtocol
- * @typedef {import('../dc-types').OpenIDIssuanceProtocol} OpenIDIssuanceProtocol
+ * @typedef {import("../dc-types").CreateProtocol} CreateProtocol
+ * @typedef {import("../dc-types").CredentialCreationOptions} CredentialCreationOptions
+ * @typedef {import("../dc-types").CredentialRequestOptions} CredentialRequestOptions
+ * @typedef {import("../dc-types").DigitalCredentialCreateRequest} DigitalCredentialCreateRequest
+ * @typedef {import("../dc-types").DigitalCredentialGetRequest} DigitalCredentialGetRequest
+ * @typedef {import("../dc-types").DigitalCredential} DigitalCredential
+ * @typedef {import("../dc-types").GetProtocol} GetProtocol
+ * @typedef {import("../dc-types").MobileDocumentRequest} MobileDocumentRequest
+ *
  * @typedef {GetProtocol | CreateProtocol} Protocol
- */
-
-/**
- * @typedef {{ digital: { requests: any[] }, mediation?: CredentialMediationRequirement, signal?: AbortSignal }} InternalOptions
- */
-
-/**
- * @typedef {import('../dc-types').DigitalCredentialGetRequest} Request
+ * @typedef {DigitalCredentialCreateRequest | DigitalCredentialGetRequest} Request
+ * @typedef {{ digital: { requests: Request[] }, mediation?: CredentialMediationRequirement, signal?: AbortSignal }} InternalOptions
+ *
+ * @typedef {Object} MakeGetOptionsConfig
+ * @property {GetProtocol | GetProtocol[]} [protocol] - Protocol types. Defaults to UA first allowed protocol.
+ * @property {CredentialMediationRequirement} [mediation] - Request mediation
+ * @property {object} [data] - Optional data to include in the request
+ * @property {AbortSignal} [signal] - Optional AbortSignal for request cancellation
+ *
+ * @typedef {Object} MakeCreateOptionsConfig
+ * @property {CreateProtocol | CreateProtocol[]} [protocol] - Protocol types. Defaults to UA first allowed protocol.
+ * @property {CredentialMediationRequirement} [mediation] - Credential mediation requirement
+ * @property {object} [data] - Optional data to include in the request
+ * @property {AbortSignal} [signal] - Optional AbortSignal for request cancellation
  */
 
 /** @type {GetProtocol[]} */

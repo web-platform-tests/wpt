@@ -50,13 +50,13 @@ def find_active_tab(browser):
     while stack:
         node = stack.pop()
 
-        (err, role) = AXUIElementCopyAttributeValue(node, "AXRole", None)
+        err, role = AXUIElementCopyAttributeValue(node, "AXRole", None)
         if err:
             continue
         if role == "AXWebArea":
             return node
 
-        (err, children) = AXUIElementCopyAttributeValue(node, "AXChildren", None)
+        err, children = AXUIElementCopyAttributeValue(node, "AXChildren", None)
         if err:
             continue
         stack.extend(children)
@@ -75,17 +75,17 @@ def find_node(root, attribute, expected_value):
     while stack:
         node = stack.pop()
 
-        (err, attributes) = AXUIElementCopyAttributeNames(node, None)
+        err, attributes = AXUIElementCopyAttributeNames(node, None)
         if err:
             continue
         if attribute in attributes:
-            (err, value) = AXUIElementCopyAttributeValue(node, attribute, None)
+            err, value = AXUIElementCopyAttributeValue(node, attribute, None)
             if err:
                 continue
             if value == expected_value:
                 return node
 
-        (err, children) = AXUIElementCopyAttributeValue(node, "AXChildren", None)
+        err, children = AXUIElementCopyAttributeValue(node, "AXChildren", None)
         if err:
             continue
         stack.extend(children)
@@ -99,11 +99,11 @@ def serialize_node(node):
     """
     props = {}
     props["API"] = "axapi"
-    (err, role) = AXUIElementCopyAttributeValue(node, "AXRole", None)
+    err, role = AXUIElementCopyAttributeValue(node, "AXRole", None)
     props["role"] = role
-    (err, name) = AXUIElementCopyAttributeValue(node, "AXTitle", None)
+    err, name = AXUIElementCopyAttributeValue(node, "AXTitle", None)
     props["name"] = name
-    (err, description) = AXUIElementCopyAttributeValue(node, "AXDescription", None)
+    err, description = AXUIElementCopyAttributeValue(node, "AXDescription", None)
     props["description"] = description
 
     return props

@@ -182,7 +182,7 @@
   promise_test(async (t) => {
     const abortController = new AbortController();
     const { signal } = abortController;
-    const options = makeCreateOptions({ protocol: "openid4vci", signal });
+    const options = makeCreateOptions({ signal });
     await test_driver.bless("user activation");
     const promise = promise_rejects_dom(
       t,
@@ -200,7 +200,7 @@
       abort: "after",
       action: "create",
       needsActivation: true,
-      options: makeCreateOptions({protocol: "openid4vci"}),
+      options: makeCreateOptions(),
     });
     assert_equals(result.constructor, "DOMException");
     assert_equals(result.name, "AbortError");
@@ -236,7 +236,7 @@
     ];
 
     for (const badValue of throwingValues) {
-      const options = makeCreateOptions({protocol: "openid4vci"});
+      const options = makeCreateOptions();
       options.digital.requests[0].data = badValue;
 
       await promise_rejects_js(

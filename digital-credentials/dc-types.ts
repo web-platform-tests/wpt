@@ -9,7 +9,7 @@ export type CreateProtocol = OpenIDIssuanceProtocol;
 /**
  * @see https://www.iso.org/obp/ui#iso:std:iso-iec:ts:18013:-7:ed-2:v1:en
  */
-export interface mDocRequest {
+export interface MobileDocumentRequest {
   readonly encryptionInfo: string;
   readonly deviceRequest: string;
 }
@@ -19,7 +19,7 @@ export interface mDocRequest {
  */
 export interface DigitalCredentialGetRequest {
   protocol: GetProtocol;
-  data: object | mDocRequest;
+  data: object | MobileDocumentRequest;
 }
 
 /**

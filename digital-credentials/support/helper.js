@@ -7,7 +7,7 @@
  * @typedef {import("../dc-types").DigitalCredentialGetRequest} DigitalCredentialGetRequest
  * @typedef {import("../dc-types").DigitalCredential} DigitalCredential
  * @typedef {import("../dc-types").GetProtocol} GetProtocol
- * @typedef {import("../dc-types").mDocRequest} mDocRequest
+ * @typedef {import("../dc-types").MobileDocumentRequest} MobileDocumentRequest
  *
  * @typedef {GetProtocol | CreateProtocol} Protocol
  * @typedef {DigitalCredentialCreateRequest | DigitalCredentialGetRequest} Request
@@ -44,7 +44,7 @@ const SUPPORTED_CREATE_PROTOCOL = CREATE_PROTOCOLS.find(
   (protocol) => DigitalCredential.userAgentAllowsProtocol(protocol)
 );
 
-/** @type {Record<Protocol, object | mDocRequest>} */
+/** @type {Record<Protocol, object | MobileDocumentRequest>} */
 const CANONICAL_REQUEST_OBJECTS = {
   "openid4vci": {
     /* Canonical object coming soon */
@@ -58,7 +58,7 @@ const CANONICAL_REQUEST_OBJECTS = {
   "openid4vp-v1-multisigned": {
     /* Canonical object coming soon */
   },
-  /** @type mDocRequest **/
+  /** @type MobileDocumentRequest **/
   "org-iso-mdoc": {
     deviceRequest:
       "omd2ZXJzaW9uYzEuMGtkb2NSZXF1ZXN0c4GhbGl0ZW1zUmVxdWVzdNgYWIKiZ2RvY1R5cGV1b3JnLmlzby4xODAxMy41LjEubURMam5hbWVTcGFjZXOhcW9yZy5pc28uMTgwMTMuNS4xpWthZ2Vfb3Zlcl8yMfRqZ2l2ZW5fbmFtZfRrZmFtaWx5X25hbWX0cmRyaXZpbmdfcHJpdmlsZWdlc_RocG9ydHJhaXT0",

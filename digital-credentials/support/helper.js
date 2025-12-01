@@ -210,9 +210,9 @@ function makeOptionsUnified(type, protocol, mediation, data, signal) {
  * @returns {CredentialRequestOptions}
  */
 export function makeGetOptions(config = {}) {
-  const { protocol = SUPPORTED_GET_PROTOCOL, mediation = "required", data, signal } = config;
+  const { protocol = SUPPORTED_GET_PROTOCOL, mediation, data, signal } = config;
   if (!protocol) {
-    throw new Error("No protocol. Can't make get options.");
+    throw new Error("No Protocol. Can't make get options.");
   }
   return /** @type {CredentialRequestOptions} */ (
     makeOptionsUnified("get", protocol, mediation, data, signal)
@@ -226,7 +226,7 @@ export function makeGetOptions(config = {}) {
  * @returns {CredentialCreationOptions}
  */
 export function makeCreateOptions(config = {}) {
-  const { protocol = SUPPORTED_CREATE_PROTOCOL, mediation = "required", data, signal } = config;
+  const { protocol = SUPPORTED_CREATE_PROTOCOL, mediation, data, signal } = config;
   if (!protocol) {
     throw new Error("No protocol. Can't make create options.");
   }
@@ -236,60 +236,10 @@ export function makeCreateOptions(config = {}) {
 }
 
 /**
- *
- * @param {string} protocol
- * @param {object} data
- * @returns {DigitalCredentialGetRequest}
- */
-function makeDigitalCredentialGetRequest(protocol = "protocol", data = {}) {
-  return {
-    protocol,
-    data,
-  };
-}
-
-/**
- * Representation of an OpenID4VP request.
- *
- * @param {string} identifier
- * @returns {DigitalCredentialGetRequest}
- **/
-function makeOID4VPDict(identifier = "openid4vp-v1-unsigned") {
-  return makeDigitalCredentialGetRequest(identifier, {
-    // Canonical example of an OpenID4VP request coming soon.
-  });
-}
-
-/**
- *
- * @param {string} protocol
- * @param {object} data
- * @returns {DigitalCredentialCreateRequest}
- */
-function makeDigitalCredentialCreateRequest(protocol = "protocol", data = {}) {
-  return {
-    protocol,
-    data,
-  };
-}
-
-
-/**
- * Representation of an mDoc request.
- *
- * @returns {DigitalCredentialGetRequest}
- **/
-function makeMDocRequest() {
-  return makeDigitalCredentialGetRequest("org-iso-mdoc", {
-    // Canonical example of an mDoc request coming soon.
-  });
-}
-
-/**
  * Sends a message to an iframe and return the response.
  *
  * @param {HTMLIFrameElement} iframe - The iframe element to send the message to.
- * @param {SendMessageData} data - The data to be sent to the iframe.
+ * @param {import("../dc-types").SendMessageData} data - The data to be sent to the iframe.
  * @returns {Promise<any>} - A promise that resolves with the response from the iframe.
  */
 export function sendMessage(iframe, data) {
@@ -297,8 +247,8 @@ export function sendMessage(iframe, data) {
     if (!iframe.contentWindow) {
       reject(
         new Error(
-          "iframe.contentWindow is undefined, cannot send message (something is wrong with the test that called this)."
-        )
+          "iframe.contentWindow is undefined, cannot send message (something is wrong with the test that called this).",
+        ),
       );
       return;
     }
@@ -322,7 +272,9 @@ export function sendMessage(iframe, data) {
 export function loadIframe(iframe, url) {
   return new Promise((resolve, reject) => {
     iframe.addEventListener("load", () => resolve(), { once: true });
-    iframe.addEventListener("error", (event) => reject(event.error), { once: true });
+    iframe.addEventListener("error", (event) => reject(event.error), {
+      once: true,
+    });
     if (!iframe.isConnected) {
       document.body.appendChild(iframe);
     }

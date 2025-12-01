@@ -52,7 +52,7 @@ from .protocol import (BaseProtocolPart,
                        WebExtensionsProtocolPart,
                        merge_dicts)
 
-from .executorplatformaccessibility import (PlatformAccessibilityProtocolPart)
+from .executorplatformaccessibility import PlatformAccessibilityProtocolPart
 
 from typing import Any, List, Dict, Optional, Tuple
 from webdriver.client import Session

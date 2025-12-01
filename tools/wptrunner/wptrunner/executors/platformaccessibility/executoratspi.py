@@ -74,9 +74,7 @@ def is_ready(tab, product, url):
     # attribute is not here, we need to query for a new accessible object.
     document = Atspi.Accessible.get_document_iface(tab)
     document_attributes = Atspi.Document.get_document_attributes(document)
-    if "URI" in document_attributes and document_attributes["URI"] == url:
-        return True
-    return False
+    return "URI" in document_attributes and document_attributes["URI"] == url
 
 
 def find_browser(name):

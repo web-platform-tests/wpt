@@ -7,6 +7,7 @@ features:
   - "!async-custom-formats-*"
   - "!async-svg-read-write.tentative.https.html"
   - "!async-unsanitized-*"
+  - "!async-navigator-clipboard-change-event.tentative.https.html"
 - name: clipboard-custom-format
   files:
   - async-custom-formats-*
@@ -19,3 +20,6 @@ features:
 - name: clipboard-unsanitized-formats
   files:
   - async-unsanitized-*
+- name: clipboardchange
+  files:
+  - async-navigator-clipboard-change-event.tentative.https.html

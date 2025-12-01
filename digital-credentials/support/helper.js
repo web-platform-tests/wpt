@@ -246,8 +246,8 @@ export function sendMessage(iframe, data) {
     if (!iframe.contentWindow) {
       reject(
         new Error(
-          "iframe.contentWindow is undefined, cannot send message (something is wrong with the test that called this).",
-        ),
+          "iframe.contentWindow is undefined, cannot send message (something is wrong with the test that called this)."
+        )
       );
       return;
     }

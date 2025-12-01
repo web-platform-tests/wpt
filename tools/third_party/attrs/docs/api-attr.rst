@@ -1,6 +1,13 @@
 API Reference for the ``attr`` Namespace
 ========================================
 
+.. note::
+
+   These are the traditional APIs whose creation predates type annotations.
+   They are **not** deprecated, but we suggest using the :mod:`attrs` namespace for new code, because they look nicer and have better defaults.
+
+   See also :doc:`names`.
+
 .. module:: attr
 
 
@@ -8,10 +15,6 @@ Core
 ----
 
 .. autofunction:: attr.s(these=None, repr_ns=None, repr=None, cmp=None, hash=None, init=None, slots=False, frozen=False, weakref_slot=True, str=False, auto_attribs=False, kw_only=False, cache_hash=False, auto_exc=False, eq=None, order=None, auto_detect=False, collect_by_mro=False, getstate_setstate=None, on_setattr=None, field_transformer=None, match_args=True, unsafe_hash=None)
-
-   .. note::
-
-      *attrs* also comes with a serious-business alias ``attr.attrs``.
 
    For example:
 
@@ -75,6 +78,9 @@ Core
           ...
       ValueError: x must be positive
 
+.. function:: attrs
+
+   Serious business alias for `attr.s`.
 
 .. function:: define
 
@@ -136,7 +142,7 @@ Helpers
 
 .. function:: fields_dict
 
-   Same as `attr.fields_dict`.
+   Same as `attrs.fields_dict`.
 
 .. function:: has
 

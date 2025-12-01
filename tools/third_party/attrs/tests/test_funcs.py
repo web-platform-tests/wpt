@@ -600,9 +600,7 @@ class TestAssoc:
         AttrsAttributeNotFoundError.
         """
         # No generated class will have a four letter attribute.
-        with pytest.raises(
-            AttrsAttributeNotFoundError
-        ) as e, pytest.deprecated_call():
+        with pytest.raises(AttrsAttributeNotFoundError) as e:
             assoc(C(), aaaa=2)
 
         assert (f"aaaa is not an attrs attribute on {C!r}.",) == e.value.args
@@ -783,26 +781,13 @@ class TestEvolve:
             obj1a, param1=obj2b
         )
 
-    def test_inst_kw(self):
-        """
-        If `inst` is passed per kw argument, a warning is raised.
-        See #1109
-        """
-
-        @attr.s
-        class C:
-            pass
-
-        with pytest.warns(DeprecationWarning) as wi:
-            evolve(inst=C())
-
-        assert __file__ == wi.list[0].filename
-
     def test_no_inst(self):
         """
         Missing inst argument raises a TypeError like Python would.
         """
-        with pytest.raises(TypeError, match=r"evolve\(\) missing 1"):
+        with pytest.raises(
+            TypeError, match=r"evolve\(\) takes 1 positional argument"
+        ):
             evolve(x=1)
 
     def test_too_many_pos_args(self):

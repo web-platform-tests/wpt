@@ -32,3 +32,7 @@ features:
   files:
   - before-*
   - pseudo-replaced-elements.html
+- name: text-decoration-selection
+  files:
+  - active-selection-014.html
+  - active-selection-021.html

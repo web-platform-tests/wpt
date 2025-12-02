@@ -482,9 +482,9 @@ class Session:
 
     def __eq__(self, other):
         return (
-            self.session_id is not None
-            and isinstance(other, Session)
-            and self.session_id == other.session_id
+            self.session_id is not None and
+            isinstance(other, Session) and
+            self.session_id == other.session_id
         )
 
     def __enter__(self):
@@ -608,10 +608,10 @@ class Session:
             https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/14641972
             """
             if (
-                url == "session"
-                and method == "POST"
-                and "sessionId" in response.body
-                and "sessionId" not in value
+                url == "session" and
+                method == "POST" and
+                "sessionId" in response.body and
+                "sessionId" not in value
             ):
                 value["sessionId"] = response.body["sessionId"]
         else:
@@ -868,9 +868,9 @@ class WebElement:
 
     def __eq__(self, other):
         return (
-            isinstance(other, WebElement)
-            and self.id == other.id
-            and self.session == other.session
+            isinstance(other, WebElement) and
+            self.id == other.id and
+            self.session == other.session
         )
 
     @classmethod
@@ -986,9 +986,9 @@ class WebFrame:
 
     def __eq__(self, other):
         return (
-            isinstance(other, WebFrame)
-            and self.id == other.id
-            and self.session == other.session
+            isinstance(other, WebFrame) and
+            self.id == other.id and
+            self.session == other.session
         )
 
     @classmethod
@@ -1011,9 +1011,9 @@ class WebWindow:
 
     def __eq__(self, other):
         return (
-            isinstance(other, WebWindow)
-            and self.id == other.id
-            and self.session == other.session
+            isinstance(other, WebWindow) and
+            self.id == other.id and
+            self.session == other.session
         )
 
     @classmethod

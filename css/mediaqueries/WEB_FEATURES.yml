@@ -47,3 +47,21 @@ features:
 - name: device-queries
   files:
   - device-aspect-ratio-*
+- name: media-queries
+  files:
+  - media-queries-*.xht
+  - min-width-*.xht
+  - min-width-*.html
+  - aspect-ratio-*.html
+  - mq-calc-*.html
+  - relative-units-*.html
+  - mq-deprecated-*.html
+  - mq-invalid-media-type-*.html
+  - at-custom-media-*.html
+  - match-media-parsing.html
+  - negation-*.html
+  - mq-case-insensitive-*.html
+  - media-query-matches-in-iframe.html
+  - mq-dynamic-empty-children.html
+  - duplicate-media-stylesheet-crash.html
+  - viewport-script-dynamic.html

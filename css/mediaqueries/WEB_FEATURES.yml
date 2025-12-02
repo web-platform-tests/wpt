@@ -33,3 +33,7 @@ features:
   files:
   - prefers-reduced-data.html
   - preferences-reducedData.tentative.https.html
+- name: prefers-reduced-motion
+  files:
+  - prefers-reduced-motion.html
+  - preferences-reducedMotion.tentative.https.html

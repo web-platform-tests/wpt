@@ -820,6 +820,7 @@ class ShadowRoot:
     @classmethod
     def from_json(cls, json, session):
         uuid = json[ShadowRoot.identifier]
+        assert isinstance(uuid, str)
 
         return cls(session, uuid)
 
@@ -875,6 +876,7 @@ class WebElement:
     @classmethod
     def from_json(cls, json, session):
         uuid = json[WebElement.identifier]
+        assert isinstance(uuid, str)
 
         return cls(session, uuid)
 
@@ -992,6 +994,7 @@ class WebFrame:
     @classmethod
     def from_json(cls, json, session):
         uuid = json[WebFrame.identifier]
+        assert isinstance(uuid, str)
 
         return cls(session, uuid)
 
@@ -1016,5 +1019,6 @@ class WebWindow:
     @classmethod
     def from_json(cls, json, session):
         uuid = json[WebWindow.identifier]
+        assert isinstance(uuid, str)
 
         return cls(session, uuid)

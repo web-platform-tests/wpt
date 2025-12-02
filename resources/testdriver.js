@@ -23,6 +23,14 @@
         }
     }
 
+    function assertTestIsTentative(){
+        const testPath = location.pathname;
+        const tentative = testPath.includes('.tentative') || testPath.includes('/tentative');
+        if (!tentative) {
+            throw new Error("Method in testdriver.js intended for tentative tests used in non-tentative test");
+        }
+    }
+
     function getInViewCenterPoint(rect) {
         var left = Math.max(0, rect.left);
         var right = Math.min(window.innerWidth, rect.right);
@@ -1275,6 +1283,7 @@
          *                    command errors
          */
         get_element_accessible_node: async function(element) {
+            assertTestIsTentative();
             let acc = await window.test_driver_internal.get_element_accessible_node(element);
             return acc;
         },

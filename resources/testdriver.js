@@ -1297,6 +1297,7 @@
          *                    command errors
          */
         get_accessible_node: async function(accId) {
+            assertTestIsTentative();
             let acc = await window.test_driver_internal.get_accessible_node(accId);
             return acc;
         },

@@ -37,3 +37,6 @@ features:
   files:
   - prefers-reduced-motion.html
   - preferences-reducedMotion.tentative.https.html
+- name: inverted-colors
+  files:
+  - inverted-colors.html

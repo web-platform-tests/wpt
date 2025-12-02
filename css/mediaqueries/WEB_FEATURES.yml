@@ -29,3 +29,7 @@ features:
   files:
   - scripting.html
   - scripting-*
+- name: prefers-reduced-data
+  files:
+  - prefers-reduced-data.html
+  - preferences-reducedData.tentative.https.html

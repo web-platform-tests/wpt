@@ -44,3 +44,6 @@ features:
   files:
   - mq-range-*
   - mq-negative-range-*
+- name: device-queries
+  files:
+  - device-aspect-ratio-*

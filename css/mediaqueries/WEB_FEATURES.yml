@@ -40,3 +40,7 @@ features:
 - name: inverted-colors
   files:
   - inverted-colors.html
+- name: media-query-range-syntax
+  files:
+  - mq-range-*
+  - mq-negative-range-*

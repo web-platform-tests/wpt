@@ -51,7 +51,6 @@ function define_tests() {
       var algorithmName = vector.algorithm;
       var password = vector.password;
 
-      // Key for normal operations
       promises.push(
         subtle
           .importKey('raw-secret', password, algorithmName, false, [

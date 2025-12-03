@@ -2,3 +2,6 @@ features:
 - name: scrollbar-gutter
   files:
   - scrollbar-gutter-*
+- name: text-overflow
+  files:
+  - text-overflow-*

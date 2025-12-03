@@ -11,3 +11,7 @@ features:
   - "!overflow-auto-scrollbar-gutter-intrinsic-*"
   - "!overflow-scroll-*"
   - "!overflow-no-interpolation.html" # depends on transition-behavior
+- name: text-overflow
+  files:
+  - text-overflow-*
+  - overflow-ellipsis-dynamic-001.html

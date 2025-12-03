@@ -19,3 +19,6 @@ features:
   files:
   - caret-color-*
   - caret-eol-*
+- name: unset-value
+  files:
+  - native-appearance-disabled-for-value-unset.html

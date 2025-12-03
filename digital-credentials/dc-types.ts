@@ -15,7 +15,7 @@ export type CredentialMediationRequirement =
 /**
  * @see https://www.iso.org/obp/ui#iso:std:iso-iec:ts:18013:-7:ed-2:v1:en
  */
-export interface mDocRequest {
+export interface MobileDocumentRequest {
   /**
    * Information required for encryption, typically a base64-encoded string or JSON object as a string.
    * The format should comply with the requirements specified in ISO/IEC TS 18013-7.

@@ -12,6 +12,9 @@ features:
   - Screen-pixelDepth-Screen-colorDepth001.html
   - cssom-view-window-screen-interface.html
   - window-screen*
+- name: scroll-behavior
+  files:
+  - scroll-behavior-*
 - name: scroll-into-view
   files:
   - scrollIntoView-*

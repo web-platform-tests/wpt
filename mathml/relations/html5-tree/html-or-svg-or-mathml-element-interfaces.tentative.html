@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>MathML 'HTMLOrForeignElement` Mixin Tests</title>
+    <title>MathML 'HTMLOrSVGOrMathMLElement` Mixin Tests</title>
     <link rel="help" href="https://w3c.github.io/mathml-core/#dom-and-javascript"/>
     <style>
       mi {
@@ -14,7 +14,7 @@
     </style>
     <meta
       name="assert"
-      content="MathMLElements incorporate a functional HTMLOrForeignElement interface"
+      content="MathMLElements incorporate a functional HTMLOrSVGOrMathMLElement interface"
     />
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
@@ -22,7 +22,7 @@
   <body tabindex="-1">
     <span tabindex="-1"
       >This tests the presence and functionality of features of
-      `HTMLOrForeignElement` (currently `HTMLOrSVGElement`)</span
+      `HTMLOrSVGOrMathMLElement` (currently `HTMLOrSVGElement`)</span
     >
     <math tabindex="-1">
       <mi>E</mi>

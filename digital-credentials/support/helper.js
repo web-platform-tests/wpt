@@ -13,7 +13,7 @@
  * @typedef {import('../dc-types').MakeGetOptionsConfig} MakeGetOptionsConfig
  * @typedef {import('../dc-types').MakeCreateOptionsConfig} MakeCreateOptionsConfig
  * @typedef {import('../dc-types').CredentialMediationRequirement} CredentialMediationRequirement
- * @typedef {import('../dc-types').mDocRequest} mDocRequest
+ * @typedef {import('../dc-types').MobileDocumentRequest} MobileDocumentRequest
  */
 
 /** @type {GetProtocol[]} */

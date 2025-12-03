@@ -1,0 +1,4 @@
+features:
+- name: text-shadow
+  files:
+  - highlight-currentcolor-painting-text-shadow-*

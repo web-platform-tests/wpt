@@ -1,7 +1,4 @@
 features:
-- name: clip
-  files:
-  - clip-rect-*
 - name: text-shadow
   files:
   - text-shadow-*

@@ -1,11 +1,14 @@
-# mypy: allow-untyped-defs
-
 import multiprocessing
+from typing import TYPE_CHECKING, Optional
 
-_context = None
+if TYPE_CHECKING:
+    from multiprocessing.context import SpawnContext
 
 
-def get_context():
+_context: Optional["SpawnContext"] = None
+
+
+def get_context() -> "SpawnContext":
     global _context
 
     if _context is None:

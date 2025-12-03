@@ -18,3 +18,6 @@ features:
 - name: word-spacing
   files:
     - c541-word-sp*
+- name: text-decoration
+  files:
+  - c543-txt-decor-000.xht

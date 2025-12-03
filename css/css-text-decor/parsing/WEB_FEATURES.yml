@@ -2,3 +2,7 @@ features:
 - name: text-emphasis
   files:
   - "*"
+  - "!text-decoration-*"
+- name: text-decoration
+  files:
+  - "text-decoration-*"

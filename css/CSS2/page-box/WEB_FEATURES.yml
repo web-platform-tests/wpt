@@ -1,0 +1,5 @@
+features:
+- name: page-breaks
+  files:
+  - page-container-003.xht
+  - page-selectors-001.xht

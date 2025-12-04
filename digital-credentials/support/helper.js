@@ -37,13 +37,6 @@ const GET_PROTOCOLS = /** @type {const} */ ([
 /** @type {CreateProtocol[]} */
 const CREATE_PROTOCOLS = /** @type {const} */ (["openid4vci"]);
 
-const SUPPORTED_GET_PROTOCOL = GET_PROTOCOLS.find(
-  (protocol) => DigitalCredential.userAgentAllowsProtocol(protocol)
-);
-const SUPPORTED_CREATE_PROTOCOL = CREATE_PROTOCOLS.find(
-  (protocol) => DigitalCredential.userAgentAllowsProtocol(protocol)
-);
-
 /** @type {Record<Protocol, object | MobileDocumentRequest>} */
 const CANONICAL_REQUEST_OBJECTS = {
   "openid4vci": {
@@ -209,7 +202,7 @@ function makeOptionsUnified(type, protocol, mediation, data, signal) {
  * @returns {CredentialRequestOptions}
  */
 export function makeGetOptions(config = {}) {
-  const { protocol = SUPPORTED_GET_PROTOCOL, mediation, data, signal } = config;
+  const { protocol = ["openid4vp-v1-unsigned", "org-iso-mdoc"], mediation, data, signal } = config;
   if (!protocol) {
     throw new Error("No Protocol. Can't make get options.");
   }
@@ -225,7 +218,7 @@ export function makeGetOptions(config = {}) {
  * @returns {CredentialCreationOptions}
  */
 export function makeCreateOptions(config = {}) {
-  const { protocol = SUPPORTED_CREATE_PROTOCOL, mediation, data, signal } = config;
+  const { protocol = ["openid4vci"], mediation, data, signal } = config;
   if (!protocol) {
     throw new Error("No protocol. Can't make create options.");
   }

@@ -56,7 +56,7 @@ promise_test(async t => {
   }
 
   assert_greater_than(remoteTrackIds.size, 1);
-}, 'Remote audio track ID');
+}, 'Remote audio track ID is different on different PCs');
 
 promise_test(async t => {
   const [localTrack, localStream] = await createTrackAndStreamWithCleanup(t, "video");

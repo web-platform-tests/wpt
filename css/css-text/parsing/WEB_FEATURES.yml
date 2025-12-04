@@ -32,3 +32,12 @@ features:
 - name: text-autospace
   files:
   - text-autospace-*
+- name: text-align
+  files:
+  - "text-align-all-*"
+  - text-align-computed.html
+  - text-align-invalid.html
+  - text-align-valid.html
+- name: text-align-last
+  files:
+  - "text-align-last-*"

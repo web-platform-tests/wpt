@@ -19,6 +19,10 @@ export interface MakeGetOptionsConfig {
    * Credential mediation requirement
    */
   mediation?: CredentialMediationRequirement;
+  /**
+   * Optional AbortSignal for request cancellation
+   */
+  signal?: AbortSignal;
 }
 
 /**
@@ -33,6 +37,10 @@ export interface MakeCreateOptionsConfig {
    * Credential mediation requirement
    */
   mediation?: CredentialMediationRequirement;
+  /**
+   * Optional AbortSignal for request cancellation
+   */
+  signal?: AbortSignal;
 }
 
 /**
@@ -59,6 +67,7 @@ export interface DigitalCredentialRequestOptions {
 export interface CredentialRequestOptions {
   digital: DigitalCredentialRequestOptions;
   mediation: CredentialMediationRequirement;
+  signal?: AbortSignal;
 }
 
 /**
@@ -85,6 +94,7 @@ export interface DigitalCredentialCreationOptions {
 export interface CredentialCreationOptions {
   digital: DigitalCredentialCreationOptions;
   mediation: CredentialMediationRequirement;
+  signal?: AbortSignal;
 }
 
 /**

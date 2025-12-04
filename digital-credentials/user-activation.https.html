@@ -25,8 +25,7 @@
   promise_test(async (t) => {
     await test_driver.bless();
     const abort = new AbortController();
-    const options = makeGetOptions({protocol: "openid4vp-v1-unsigned"});
-    options.signal = abort.signal;
+    const options = makeGetOptions({protocol: "openid4vp-v1-unsigned", signal: abort.signal});
     assert_true(
       navigator.userActivation.isActive,
       "User activation should be active after test_driver.bless()."

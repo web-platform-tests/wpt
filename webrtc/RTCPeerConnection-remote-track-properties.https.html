@@ -60,7 +60,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const [localTrack, localStream] = await createTrackAndStreamWithCleanup(t, "video");
-  const remoteTracks = new Set();
+  const remoteTrackIds = new Set();
   for (let i = 0; i < 10; ++i) {
     const [remoteTrack, remoteStream] = await setupPeerConnectionAndWaitForTrack(t, localTrack, localStream);
     remoteTrackIds.add(remoteTrack.id);

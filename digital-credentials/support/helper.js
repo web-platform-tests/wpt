@@ -1,112 +1,205 @@
 // @ts-check
-// Import the types from the TypeScript file
 /**
- * @typedef {import('../dc-types').GetProtocol} GetProtocol
- * @typedef {import('../dc-types').DigitalCredentialGetRequest} DigitalCredentialGetRequest
- * @typedef {import('../dc-types').DigitalCredentialRequestOptions} DigitalCredentialRequestOptions
- * @typedef {import('../dc-types').CredentialRequestOptions} CredentialRequestOptions
- * @typedef {import('../dc-types').CreateProtocol} CreateProtocol
- * @typedef {import('../dc-types').DigitalCredentialCreateRequest} DigitalCredentialCreateRequest
- * @typedef {import('../dc-types').CredentialCreationOptions} CredentialCreationOptions
- * @typedef {import('../dc-types').DigitalCredentialCreationOptions} DigitalCredentialCreationOptions
- * @typedef {import('../dc-types').SendMessageData} SendMessageData
- * @typedef {import('../dc-types').MakeGetOptionsConfig} MakeGetOptionsConfig
- * @typedef {import('../dc-types').MakeCreateOptionsConfig} MakeCreateOptionsConfig
- * @typedef {import('../dc-types').CredentialMediationRequirement} CredentialMediationRequirement
+ * @typedef {import("../dc-types").CreateProtocol} CreateProtocol
+ * @typedef {import("../dc-types").CredentialCreationOptions} CredentialCreationOptions
+ * @typedef {import("../dc-types").CredentialRequestOptions} CredentialRequestOptions
+ * @typedef {import("../dc-types").DigitalCredentialCreateRequest} DigitalCredentialCreateRequest
+ * @typedef {import("../dc-types").DigitalCredentialGetRequest} DigitalCredentialGetRequest
+ * @typedef {import("../dc-types").DigitalCredential} DigitalCredential
+ * @typedef {import("../dc-types").GetProtocol} GetProtocol
+ * @typedef {import("../dc-types").MobileDocumentRequest} MobileDocumentRequest
+ *
+ * @typedef {GetProtocol | CreateProtocol} Protocol
+ * @typedef {DigitalCredentialCreateRequest | DigitalCredentialGetRequest} Request
+ * @typedef {{ digital: { requests: Request[] }, mediation?: CredentialMediationRequirement, signal?: AbortSignal }} InternalOptions
+ *
+ * @typedef {Object} MakeGetOptionsConfig
+ * @property {GetProtocol | GetProtocol[]} [protocol] - Protocol types. Defaults to UA first allowed protocol.
+ * @property {CredentialMediationRequirement} [mediation] - Request mediation
+ * @property {object} [data] - Optional data to include in the request
+ * @property {AbortSignal} [signal] - Optional AbortSignal for request cancellation
+ *
+ * @typedef {Object} MakeCreateOptionsConfig
+ * @property {CreateProtocol | CreateProtocol[]} [protocol] - Protocol types. Defaults to UA first allowed protocol.
+ * @property {CredentialMediationRequirement} [mediation] - Credential mediation requirement
+ * @property {object} [data] - Optional data to include in the request
+ * @property {AbortSignal} [signal] - Optional AbortSignal for request cancellation
  */
+
+/** @type {GetProtocol[]} */
+const GET_PROTOCOLS = /** @type {const} */ ([
+  "openid4vp-v1-unsigned",
+  "openid4vp-v1-signed",
+  "openid4vp-v1-multisigned",
+  "org-iso-mdoc",
+]);
+
+/** @type {CreateProtocol[]} */
+const CREATE_PROTOCOLS = /** @type {const} */ (["openid4vci"]);
+
+const SUPPORTED_GET_PROTOCOL = GET_PROTOCOLS.find(
+  (protocol) => DigitalCredential.userAgentAllowsProtocol(protocol)
+);
+const SUPPORTED_CREATE_PROTOCOL = CREATE_PROTOCOLS.find(
+  (protocol) => DigitalCredential.userAgentAllowsProtocol(protocol)
+);
+
+/** @type {Record<Protocol, object | MobileDocumentRequest>} */
+const CANONICAL_REQUEST_OBJECTS = {
+  "openid4vci": {
+    /* Canonical object coming soon */
+  },
+  "openid4vp-v1-unsigned": {
+    /* Canonical object coming soon */
+  },
+  "openid4vp-v1-signed": {
+    /* Canonical object coming soon */
+  },
+  "openid4vp-v1-multisigned": {
+    /* Canonical object coming soon */
+  },
+  /** @type MobileDocumentRequest **/
+  "org-iso-mdoc": {
+    deviceRequest:
+      "omd2ZXJzaW9uYzEuMGtkb2NSZXF1ZXN0c4GhbGl0ZW1zUmVxdWVzdNgYWIKiZ2RvY1R5cGV1b3JnLmlzby4xODAxMy41LjEubURMam5hbWVTcGFjZXOhcW9yZy5pc28uMTgwMTMuNS4x9pWthZ2Vfb3Zlcl8yMfRqZ2l2ZW5fbmFtZfRrZmFtaWx5X25hbWX0cmRyaXZpbmdfcHJpdmlsZWdlc_RocG9ydHJhaXT0",
+    encryptionInfo:
+      "gmVkY2FwaaJlbm9uY2VYICBetSsDkKlE_G9JSIHwPzr3ctt6Ol9GgmCH8iGdGQNJcnJlY2lwaWVudFB1YmxpY0tleaQBAiABIVggKKm1iPeuOb9bDJeeJEL4QldYlWvY7F_K8eZkmYdS9PwiWCCm9PLEmosiE_ildsE11lqq4kDkjhfQUKPpbX-Hm1ZSLg",
+  },
+};
 
 /**
  * Internal helper to build the request array from validated input.
- * Assumes requestsInputArray is a non-empty array of strings.
- * @private
- * @param {string[]} requestsInputArray - An array of request type strings.
- * @param {CredentialMediationRequirement} mediation - The mediation requirement.
- * @param {Record<string, () => any>} requestMapping - The specific mapping object for the operation type.
- * @param {AbortSignal} [signal] - Optional abort signal.
- * @returns {{ digital: { requests: any[] }, mediation: CredentialMediationRequirement, signal?: AbortSignal }} - The final options structure.
- * @throws {Error} If an unknown request type string is encountered within the array.
+ * Assumes protocols is a non-empty array of Protocols.
+ *
+ * @param {Protocol[]} protocols
+ * @param {Record<string, (data?: object) => Request>} requestMapping
+ * @param {object} [data={}]
+ * @param {CredentialMediationRequirement} [mediation]
+ * @param {AbortSignal} [signal]
+ *
+ * @returns {InternalOptions}
  */
-function _makeOptionsInternal(requestsInputArray, mediation, requestMapping, signal) {
-  const requests = [];
-  for (const request of requestsInputArray) {
-    const factoryFunction = requestMapping[request];
-    if (factoryFunction) {
-      requests.push(factoryFunction()); // Call the mapped function
-    } else {
-      // This error means a string *within the array* was unknown
-      throw new Error(`Unknown request type within array: ${request}`);
-    }
+function makeOptionsInternal(protocols, requestMapping, data, mediation, signal) {
+  const requests = buildRequests(protocols, requestMapping, data);
+
+  /** @type {InternalOptions} */
+  const result = { digital: { requests } };
+
+  if (mediation !== undefined) {
+    result.mediation = mediation;
   }
-  const result = { digital: { requests }, mediation };
+
   if (signal !== undefined) {
     result.signal = signal;
   }
+
   return result;
 }
 
+/**
+ * Small helper to build a list of request objects from a protocol list
+ * and a mapping table.
+ *
+ * @template Req
+ * @param {Protocol[]} protocols
+ * @param {Record<string, (data?: object) => Req>} mapping
+ * @param {object} [data]
+ * @returns {Req[]}
+ * @throws {Error} If an unknown protocol string is encountered.
+ */
+function buildRequests(protocols, mapping, data) {
+  /** @type {Req[]} */
+  const requests = [];
+  for (const protocol of protocols) {
+    if (protocol in mapping) {
+      const factoryFunction = mapping[protocol];
+      requests.push(factoryFunction(data));
+    } else {
+      throw new Error(`Unknown request type within array: ${protocol}`);
+    }
+  }
+  return requests;
+}
+
+/** @type {{
+ *   get: Record<GetProtocol, (data?: object) => DigitalCredentialGetRequest>;
+ *   create: Record<CreateProtocol, (data?: object) => DigitalCredentialCreateRequest>;
+ * }} */
 const allMappings = {
   get: {
-    "openid4vp-v1-unsigned": () => makeOID4VPDict("openid4vp-v1-unsigned"),
-    "openid4vp-v1-signed": () => makeOID4VPDict("openid4vp-v1-signed"),
-    "openid4vp-v1-multisigned": () => makeOID4VPDict("openid4vp-v1-multisigned"),
-    "default": () => makeDigitalCredentialGetRequest(undefined, undefined),
+    "org-iso-mdoc": (data = { ...CANONICAL_REQUEST_OBJECTS["org-iso-mdoc"] }) => {
+      return { protocol: "org-iso-mdoc", data };
+    },
+    "openid4vp-v1-unsigned": (
+      data = { ...CANONICAL_REQUEST_OBJECTS["openid4vp-v1-unsigned"] },
+    ) => {
+      return { protocol: "openid4vp-v1-unsigned", data };
+    },
+    "openid4vp-v1-signed": (
+      data = { ...CANONICAL_REQUEST_OBJECTS["openid4vp-v1-signed"] },
+    ) => {
+      return { protocol: "openid4vp-v1-signed", data };
+    },
+    "openid4vp-v1-multisigned": (
+      data = { ...CANONICAL_REQUEST_OBJECTS["openid4vp-v1-multisigned"] },
+    ) => {
+      return { protocol: "openid4vp-v1-multisigned", data };
+    },
   },
   create: {
-    "openid4vci": () => makeOID4VCIDict(),
-    "default": () => makeDigitalCredentialCreateRequest(),
+    openid4vci: (data = { ...CANONICAL_REQUEST_OBJECTS["openid4vci"] }) => {
+      return { protocol: "openid4vci", data };
+    },
   },
 };
 
 /**
  * Internal unified function to handle option creation logic.
  * Routes calls from specific public functions.
- * @private
- * @param {'get' | 'create'} type - The type of operation.
- * @param {string | string[]} protocol - Protocol(s) to use.
- * @param {CredentialMediationRequirement} mediation - Mediation requirement.
- * @param {AbortSignal} [signal] - Optional abort signal.
- * @returns {{ digital: { requests: any[] }, mediation: CredentialMediationRequirement, signal?: AbortSignal }}
- * @throws {Error} If type is invalid internally, or input strings are invalid.
+ *
+ * @param {"get" | "create"} type
+ * @param {Protocol | Protocol[]} protocol
+ * @param {CredentialMediationRequirement} [mediation]
+ * @param {object} [data={}]
+ * @param {AbortSignal} [signal]
+ * @returns {InternalOptions}
  */
-function _makeOptionsUnified(type, protocol, mediation, signal) {
-  // 1. Get mapping (Type validation primarily happens via caller)
+function makeOptionsUnified(type, protocol, mediation, data, signal) {
   const mapping = allMappings[type];
-   // Added safety check, though public functions should prevent this.
-  if (!mapping) {
-    throw new Error(`Internal error: Invalid options type specified: ${type}`);
-  }
 
-  // 2. Handle single string input
-  if (typeof protocol === 'string') {
+  if (typeof protocol === "string") {
     if (protocol in mapping) {
-      // Valid single string: Pass as array to the core array helper
-      return _makeOptionsInternal([protocol], mediation, mapping, signal);
-    } else {
-      // Invalid single string for this type
-      throw new Error(`Unknown request type string '${protocol}' provided for operation type '${type}'`);
+      return makeOptionsInternal([protocol], mapping, data, mediation, signal);
     }
+    throw new Error(
+      `Unknown protocol "${protocol}"" provided for operation type "${type}"`,
+    );
   }
 
-  // 3. Handle array input
   if (Array.isArray(protocol)) {
     if (protocol.length === 0) {
-      // Handle empty array explicitly
-      const result = { digital: { requests: [] }, mediation };
-      if (signal !== undefined) {
-        result.signal = signal;
+      /** @type {InternalOptions} */
+      const emptyResult = { digital: { requests: [] } };
+      if (mediation !== undefined) {
+        emptyResult.mediation = mediation;
       }
-      return result;
+      if (signal !== undefined) {
+        emptyResult.signal = signal;
+      }
+      return emptyResult;
     }
-    // Pass valid non-empty array to the core array helper
-    return _makeOptionsInternal(protocol, mediation, mapping, signal);
+    return makeOptionsInternal(protocol, mapping, data, mediation, signal);
   }
 
-  // 4. Handle invalid input types (neither string nor array)
-  const result = { digital: { requests: [] }, mediation };
-  if (signal !== undefined) {
-    result.signal = signal;
+  /** @type {InternalOptions} */
+  const fallbackResult = { digital: { requests: [] } };
+  if (mediation !== undefined) {
+    fallbackResult.mediation = mediation;
   }
-  return result;
+  if (signal !== undefined) {
+    fallbackResult.signal = signal;
+  }
+  return fallbackResult;
 }
 
 /**
@@ -116,8 +209,13 @@ function _makeOptionsUnified(type, protocol, mediation, signal) {
  * @returns {CredentialRequestOptions}
  */
 export function makeGetOptions(config = {}) {
-  const { protocol = "default", mediation = "required", signal } = config;
-  return _makeOptionsUnified('get', protocol, mediation, signal);
+  const { protocol = SUPPORTED_GET_PROTOCOL, mediation, data, signal } = config;
+  if (!protocol) {
+    throw new Error("No Protocol. Can't make get options.");
+  }
+  return /** @type {CredentialRequestOptions} */ (
+    makeOptionsUnified("get", protocol, mediation, data, signal)
+  );
 }
 
 /**
@@ -127,64 +225,20 @@ export function makeGetOptions(config = {}) {
  * @returns {CredentialCreationOptions}
  */
 export function makeCreateOptions(config = {}) {
-  const { protocol = "default", mediation = "required", signal } = config;
-  return _makeOptionsUnified('create', protocol, mediation, signal);
-}
-
-/**
- *
- * @param {string} protocol
- * @param {object} data
- * @returns {DigitalCredentialGetRequest}
- */
-function makeDigitalCredentialGetRequest(protocol = "protocol", data = {}) {
-  return {
-    protocol,
-    data,
-  };
-}
-
-/**
- * Representation of an OpenID4VP request.
- *
- * @param {string} identifier
- * @returns {DigitalCredentialGetRequest}
- **/
-function makeOID4VPDict(identifier = "openid4vp-v1-unsigned") {
-  return makeDigitalCredentialGetRequest(identifier, {
-    // Canonical example of an OpenID4VP request coming soon.
-  });
-}
-
-/**
- *
- * @param {string} protocol
- * @param {object} data
- * @returns {DigitalCredentialCreateRequest}
- */
-function makeDigitalCredentialCreateRequest(protocol = "protocol", data = {}) {
-  return {
-    protocol,
-    data,
-  };
-}
-
-/**
- * Representation of an OpenID4VCI request.
- *
- * @returns {DigitalCredentialCreateRequest}
- **/
-function makeOID4VCIDict() {
-  return makeDigitalCredentialCreateRequest("openid4vci", {
-    // Canonical example of an OpenID4VCI request coming soon.
-  });
+  const { protocol = SUPPORTED_CREATE_PROTOCOL, mediation, data, signal } = config;
+  if (!protocol) {
+    throw new Error("No protocol. Can't make create options.");
+  }
+  return /** @type {CredentialCreationOptions} */ (
+    makeOptionsUnified("create", protocol, mediation, data, signal)
+  );
 }
 
 /**
  * Sends a message to an iframe and return the response.
  *
  * @param {HTMLIFrameElement} iframe - The iframe element to send the message to.
- * @param {SendMessageData} data - The data to be sent to the iframe.
+ * @param {import("../dc-types").SendMessageData} data - The data to be sent to the iframe.
  * @returns {Promise<any>} - A promise that resolves with the response from the iframe.
  */
 export function sendMessage(iframe, data) {
@@ -217,7 +271,9 @@ export function sendMessage(iframe, data) {
 export function loadIframe(iframe, url) {
   return new Promise((resolve, reject) => {
     iframe.addEventListener("load", () => resolve(), { once: true });
-    iframe.addEventListener("error", (event) => reject(event.error), { once: true });
+    iframe.addEventListener("error", (event) => reject(event.error), {
+      once: true,
+    });
     if (!iframe.isConnected) {
       document.body.appendChild(iframe);
     }

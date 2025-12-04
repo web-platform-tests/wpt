@@ -1,54 +1,33 @@
-export type GetProtocol = "default" | "openid4vp-v1-unsigned" | "openid4vp-v1-signed" | "openid4vp-v1-multisigned";
-export type CreateProtocol = "default" | "openid4vci";
-
-export type CredentialMediationRequirement =
-  | "conditional"
-  | "optional"
-  | "required"
-  | "silent";
-
-/**
- * Configuration for makeGetOptions function
- */
-export interface MakeGetOptionsConfig {
-  /**
-   * Protocol(s) to use for the request
-   */
-  protocol?: GetProtocol | GetProtocol[];
-  /**
-   * Credential mediation requirement
-   */
-  mediation?: CredentialMediationRequirement;
-  /**
-   * Optional AbortSignal for request cancellation
-   */
-  signal?: AbortSignal;
-}
+export type OpenIDPresentationProtocol =
+  | "openid4vp-v1-unsigned"
+  | "openid4vp-v1-signed"
+  | "openid4vp-v1-multisigned";
+export type OpenIDIssuanceProtocol = "openid4vci";
+export type GetProtocol = OpenIDPresentationProtocol | "org-iso-mdoc";
+export type CreateProtocol = OpenIDIssuanceProtocol;
 
 /**
- * Configuration for makeCreateOptions function
+ * @see https://www.iso.org/obp/ui#iso:std:iso-iec:ts:18013:-7:ed-2:v1:en
  */
-export interface MakeCreateOptionsConfig {
+export interface MobileDocumentRequest {
   /**
-   * Protocol(s) to use for the request
+   * Information required for encryption, typically a base64-encoded string or JSON object as a string.
+   * The format should comply with the requirements specified in ISO/IEC TS 18013-7.
    */
-  protocol?: CreateProtocol | CreateProtocol[];
+  readonly encryptionInfo: string;
   /**
-   * Credential mediation requirement
+   * The device request payload, usually a stringified JSON object containing the request details.
+   * This should follow the structure defined in ISO/IEC TS 18013-7 for device requests.
    */
-  mediation?: CredentialMediationRequirement;
-  /**
-   * Optional AbortSignal for request cancellation
-   */
-  signal?: AbortSignal;
+  readonly deviceRequest: string;
 }
 
 /**
  * @see https://w3c-fedid.github.io/digital-credentials/#the-digitalcredentialgetrequest-dictionary
  */
 export interface DigitalCredentialGetRequest {
-  protocol: string;
-  data: object;
+  protocol: GetProtocol;
+  data: object | MobileDocumentRequest;
 }
 
 /**
@@ -58,7 +37,7 @@ export interface DigitalCredentialRequestOptions {
   /**
    * The list of credential requests.
    */
-  requests: DigitalCredentialGetRequest[] | any;
+  requests: DigitalCredentialGetRequest[];
 }
 
 /**
@@ -66,7 +45,7 @@ export interface DigitalCredentialRequestOptions {
  */
 export interface CredentialRequestOptions {
   digital: DigitalCredentialRequestOptions;
-  mediation: CredentialMediationRequirement;
+  mediation?:CredentialMediationRequirement;
   signal?: AbortSignal;
 }
 
@@ -74,7 +53,7 @@ export interface CredentialRequestOptions {
  * @see https://w3c-fedid.github.io/digital-credentials/#the-digitalcredentialcreaterequest-dictionary
  */
 export interface DigitalCredentialCreateRequest {
-  protocol: string;
+  protocol: CreateProtocol;
   data: object;
 }
 
@@ -85,7 +64,7 @@ export interface DigitalCredentialCreationOptions {
   /**
    * The list of credential requests.
    */
-  requests: DigitalCredentialCreateRequest[] | any;
+  requests: DigitalCredentialCreateRequest[];
 }
 
 /**
@@ -93,8 +72,7 @@ export interface DigitalCredentialCreationOptions {
  */
 export interface CredentialCreationOptions {
   digital: DigitalCredentialCreationOptions;
-  mediation: CredentialMediationRequirement;
-  signal?: AbortSignal;
+  mediation?: CredentialMediationRequirement;
 }
 
 /**
@@ -134,4 +112,27 @@ export interface EventData {
 export interface SendMessageData {
   action: IframeActionType;
   options?: CredentialRequestOptions;
+}
+
+/**
+ * The DigitalCredential interface - W3C Standard
+ * @see https://w3c-fedid.github.io/digital-credentials/#dom-digitalcredential
+ */
+export interface DigitalCredential {
+  /**
+   * Checks if the user agent allows a specific protocol.
+   * @see https://w3c-fedid.github.io/digital-credentials/#dom-digitalcredential-useragentallowsprotocol
+   * @param protocol - The protocol to check
+   * @returns true if the protocol is allowed, false otherwise
+   */
+  userAgentAllowsProtocol(
+    protocol: GetProtocol | CreateProtocol | string,
+  ): boolean;
+}
+
+/**
+ * Global DigitalCredential object
+ */
+declare global {
+  const DigitalCredential: DigitalCredential;
 }

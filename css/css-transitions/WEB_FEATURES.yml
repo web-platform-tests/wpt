@@ -3,7 +3,7 @@ features:
   files:
   - "*"
   - "!starting-style-*"
-  - "!transition-behavior.html"
+  - "!transition-behavior*"
   - "!transition-timing-function-010-manual.html"
   - "!transition-timing-function-002-manual.html"
   - "!transition-timing-function-003-manual.html"
@@ -16,7 +16,7 @@ features:
   - starting-style-*
 - name: transition-behavior
   files:
-  - transition-behavior.html
+  - "transition-behavior*"
 - name: steps-easing
   files:
   - transition-timing-function-010-manual.html

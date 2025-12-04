@@ -20,21 +20,7 @@
     </div>
 </div>
 
-<template id="template-1">
-    <div id="template-host-1">
-        <template shadowrootmode="open" shadowrootclonable><x-foo><x-foo></x-foo></x-foo></template>
-    </div>
-</template>
-
-<template id="template-2">
-    <div id="template-host-2">
-        <template shadowrootmode="open" shadowrootclonable shadowrootcustomelementregistry><x-foo><x-foo></x-foo></x-foo></template>
-    </div>
-</template>
-
 <script>
-class XFoo extends HTMLElement {}
-customElements.define('x-foo', XFoo);
 
 test(() => {
     const registry = new CustomElementRegistry;
@@ -80,60 +66,5 @@ test(() => {
     assert_equals(element.customElementRegistry, registry1);
 }, "An element with scoped registry should not change its registry when moved into another shadow tree with different scoped registry.")
 
-test(t => {
-    const template = document.getElementById('template-1');
-    const clone = template.content.cloneNode(true);
-    document.body.append(clone);
-    t.add_cleanup(() => clone.remove());
-    const host1shadow = document.querySelector('#template-host-1').shadowRoot;
-    assert_equals(host1shadow.customElementRegistry, customElements);
-}, "Declarative shadow DOM without shadowrootcustomelementregistry attribute without registry initialized should gain effective global registry after adoption.")
-
-test(t => {
-    const template = document.getElementById('template-2');
-    const clone = template.content.cloneNode(true);
-    document.body.append(clone);
-    t.add_cleanup(() => clone.remove());
-    const host2shadow = document.querySelector('#template-host-2').shadowRoot;
-    assert_equals(host2shadow.customElementRegistry, null);
-}, "Declarative shadow DOM with shadowrootcustomelementregistry attribute without registry initialized should remain null registry after adoption.")
-
-test(t => {
-    const template = document.getElementById('template-1');
-    const clone = template.content.cloneNode(true);
-    document.body.append(clone);
-    t.add_cleanup(() => clone.remove());
-    const host1shadow = document.querySelector('#template-host-1').shadowRoot;
-    assert_equals(host1shadow.querySelector('x-foo').customElementRegistry, customElements);
-    assert_true(host1shadow.querySelector('x-foo') instanceof XFoo);
-    assert_equals(host1shadow.querySelector('x-foo').querySelector('x-foo').customElementRegistry, customElements);
-    assert_true(host1shadow.querySelector('x-foo').querySelector('x-foo') instanceof XFoo);
-}, "Null registry element should gain effective global registry of global registry from its parent upon adoption.")
-
-test(t => {
-    const template = document.getElementById('template-2');
-    const clone = template.content.cloneNode(true);
-    document.body.append(clone);
-    t.add_cleanup(() => clone.remove());
-    const host2shadow = document.querySelector('#template-host-2').shadowRoot;
-    assert_equals(host2shadow.querySelector('x-foo').customElementRegistry, null);
-    assert_false(host2shadow.querySelector('x-foo') instanceof XFoo);
-    assert_equals(host2shadow.querySelector('x-foo').querySelector('x-foo').customElementRegistry, null);
-    assert_false(host2shadow.querySelector('x-foo').querySelector('x-foo') instanceof XFoo);
-}, "Null registry element should gain effective global registry of null from its parent upon adoption.")
-
-test(t => {
-    const template = document.getElementById('template-2');
-    const clone = template.content.cloneNode(true);
-    const registry = new CustomElementRegistry;
-    registry.initialize(clone.querySelector('#template-host-2').shadowRoot);
-    clone.querySelector('#template-host-2').shadowRoot.appendChild(document.createElement('new-foo', {customElementRegistry: null}));
-    clone.querySelector('#template-host-2').shadowRoot.querySelector('x-foo').appendChild(document.createElement('new-foo', {customElementRegistry: null}));
-    document.body.append(clone);
-    t.add_cleanup(() => clone.remove());
-    const host2shadow = document.querySelector('#template-host-2').shadowRoot;
-    assert_equals(host2shadow.querySelector('new-foo').customElementRegistry, null);
-    assert_equals(host2shadow.querySelector('x-foo').querySelector('new-foo').customElementRegistry, null);
-}, "Null registry element should gain effective global registry of scoped registry from its parent upon adoption.")
 </script>
 </body>

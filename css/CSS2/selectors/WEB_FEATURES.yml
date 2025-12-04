@@ -1,0 +1,5 @@
+features:
+- name: link-selectors
+  files:
+  - "link-visited-selector*"
+  - pseudo-009.xht

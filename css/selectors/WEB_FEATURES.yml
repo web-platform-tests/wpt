@@ -29,6 +29,7 @@ features:
   files:
   - user-invalid.html
   - user-valid.html
-- name: caret-color
+- name: link-selectors
   files:
-  - caret-color-visited-inheritance.html
+  - "*visited*"
+  - "!has-visited*"

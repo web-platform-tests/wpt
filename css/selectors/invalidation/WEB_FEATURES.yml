@@ -28,3 +28,6 @@ features:
   - part-dir.html
   - part-lang.html
   - part-pseudo.html
+- name: link-selectors
+  files:
+  - "any-link-*"

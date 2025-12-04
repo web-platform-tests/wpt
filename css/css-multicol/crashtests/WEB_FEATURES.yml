@@ -39,3 +39,8 @@ features:
   - video-container-become-multicol.html
   - zero-column-height.html
   - "!*spanner*"
+- name: column-span
+  files:
+  - "*spanner*"
+  - "!body-becomes-spanner-html-becomes-vertical-rl.html"
+  - "!oof-becomes-spanner.html"

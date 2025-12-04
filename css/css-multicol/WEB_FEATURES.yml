@@ -83,3 +83,25 @@ features:
   - resize-multicol-with-fixed-size-children*
   - subpixel-scroll-crash.html
   - with-custom-layout-on-same-element-crash.https.html
+- name: column-span
+  files:
+  - "*spanner*"
+  - "!change-transform-in-spanner.html"
+  - "*-span-*"
+  - "*column-span*"
+  - baseline-003.html
+  - baseline-004.html
+  - baseline-005.html
+  - baseline-006.html
+  - baseline-007.html
+  - change-out-of-flow-type-and-remove-inner-multicol-crash.html
+  - column-balancing-paged-001-print.html
+  - intrinsic-size-002.html
+  - intrinsic-size-003.html
+  - intrinsic-size-004.html
+  - intrinsic-size-005.html
+  - multicol-fill-auto-block-children-001.xht
+  - multicol-fill-auto-block-children-002.xht
+  - multicol-width-004.html
+  - multicol-width-005.html
+  - spanning-legend-*

@@ -55,7 +55,7 @@ promise_test(async t => {
     remoteTracks.add(remoteTrack.id);
   }
 
-  assert_greater_than(remoteTracks.size, 1);
+  assert_greater_than(remoteTrackIds.size, 1);
 }, 'Remote audio track ID');
 
 promise_test(async t => {

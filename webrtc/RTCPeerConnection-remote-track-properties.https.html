@@ -52,7 +52,7 @@ promise_test(async t => {
   const remoteTrackIds = new Set();
   for (let i = 0; i < 10; ++i) {
     const [remoteTrack, remoteStream] = await setupPeerConnectionAndWaitForTrack(t, localTrack, localStream);
-    remoteTracks.add(remoteTrack.id);
+    remoteTrackIds.add(remoteTrack.id);
   }
 
   assert_greater_than(remoteTrackIds.size, 1);

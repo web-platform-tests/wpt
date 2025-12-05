@@ -137,8 +137,11 @@ class AXAPIExecutorImpl:
         node = find_node(tab, "AXDOMIdentifier", dom_id)
         if not node:
             raise Exception(
-                f"Couldn't find node with ID {dom_id}. Did you turn on accessibility?"
+                f"Couldn't find node with ID {dom_id} in accessibility API AXAPI."
             )
+        self.logger.debug(
+            f"Found node with id {dom_id} in accessibility API AXAPI: {serialize_node(node)}"
+        )
 
         results = []
         for test_statement in test:

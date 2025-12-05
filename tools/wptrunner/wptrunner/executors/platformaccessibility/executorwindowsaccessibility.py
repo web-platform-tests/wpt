@@ -122,8 +122,9 @@ def serialize_node(node):
 
 
 class WindowsAccessibilityExecutorImpl:
-    def setup(self, product_name):
+    def setup(self, product_name, logger):
         self.product_name = product_name
+        self.logger = logger
 
     def test_accessibility_api(self, dom_id, test, api, url):
         """Execute a test of the accessibility API.
@@ -141,6 +142,9 @@ class WindowsAccessibilityExecutorImpl:
         node = find_ia2_node(tab, dom_id)
         if not node:
             raise Exception(f"Couldn't find node with ID {dom_id}.")
+        self.logger.debug(
+            f"Found node with id {dom_id} in accessibility API IA2: {serialize_node(node)}"
+        )
 
         results = []
         for test_statement in test:

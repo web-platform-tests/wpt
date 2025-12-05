@@ -166,6 +166,9 @@ class AtspiExecutorImpl:
             raise Exception(
                 f"Couldn't find node with id {dom_id} in accessibility API ATSPI."
             )
+        self.logger.debug(
+            f"Found node with id {dom_id} in accessibility API ATSPI: {test_node.serialize()}"
+        )
 
         results = []
         for test_statement in test:

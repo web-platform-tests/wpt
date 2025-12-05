@@ -26,8 +26,8 @@ class DeleteAllCookiesAction:
         self.protocol.cookies.delete_all_cookies()
 
 
-class GetAccessibleNodeAction:
-    name = "get_accessible_node"
+class GetAccessiblePropertiesAction:
+    name = "get_accessible_properties"
 
     def __init__(self, logger, protocol):
         self.logger = logger
@@ -35,8 +35,8 @@ class GetAccessibleNodeAction:
 
     def __call__(self, payload):
         id = payload["accId"]
-        self.logger.debug("Getting accessible node: %s" % id)
-        return self.protocol.accessibility.get_accessible_node(id)
+        self.logger.debug("Getting accessible properties: %s" % id)
+        return self.protocol.accessibility.get_accessible_properties(id)
 
 
 class GetAllCookiesAction:
@@ -79,8 +79,8 @@ class GetComputedRoleAction:
         return self.protocol.accessibility.get_computed_role(element)
 
 
-class GetElementAccessibleNodeAction:
-    name = "get_element_accessible_node"
+class GetElementAccessiblePropertiesAction:
+    name = "get_element_accessible_properties"
 
     def __init__(self, logger, protocol):
         self.logger = logger
@@ -89,8 +89,8 @@ class GetElementAccessibleNodeAction:
     def __call__(self, payload):
         selector = payload["selector"]
         element = self.protocol.select.element_by_selector(selector)
-        self.logger.debug("Getting accessible node for element: %s" % element)
-        return self.protocol.accessibility.get_element_accessible_node(element)
+        self.logger.debug("Getting accessible properties for element: %s" % element)
+        return self.protocol.accessibility.get_element_accessible_properties(element)
 
 
 class GetNamedCookieAction:
@@ -627,8 +627,8 @@ actions = [ClickAction,
            GetNamedCookieAction,
            GetComputedLabelAction,
            GetComputedRoleAction,
-           GetElementAccessibleNodeAction,
-           GetAccessibleNodeAction,
+           GetElementAccessiblePropertiesAction,
+           GetAccessiblePropertiesAction,
            SendKeysAction,
            MinimizeWindowAction,
            SetWindowRectAction,

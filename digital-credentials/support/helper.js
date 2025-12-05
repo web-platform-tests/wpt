@@ -3,28 +3,16 @@
 /**
  * @typedef {import('../dc-types').GetProtocol} GetProtocol
  * @typedef {import('../dc-types').DigitalCredentialGetRequest} DigitalCredentialGetRequest
- * @typedef {import('../dc-types').DigitalCredentialRequestOptions} DigitalCredentialRequestOptions
  * @typedef {import('../dc-types').CredentialRequestOptions} CredentialRequestOptions
  * @typedef {import('../dc-types').CreateProtocol} CreateProtocol
  * @typedef {import('../dc-types').DigitalCredentialCreateRequest} DigitalCredentialCreateRequest
  * @typedef {import('../dc-types').CredentialCreationOptions} CredentialCreationOptions
- * @typedef {import('../dc-types').DigitalCredentialCreationOptions} DigitalCredentialCreationOptions
  * @typedef {import('../dc-types').SendMessageData} SendMessageData
  * @typedef {import('../dc-types').MakeGetOptionsConfig} MakeGetOptionsConfig
  * @typedef {import('../dc-types').MakeCreateOptionsConfig} MakeCreateOptionsConfig
  * @typedef {import('../dc-types').CredentialMediationRequirement} CredentialMediationRequirement
  * @typedef {import('../dc-types').MobileDocumentRequest} MobileDocumentRequest
- * @typedef {import('../dc-types').OpenIDPresentationProtocol} OpenIDPresentationProtocol
- * @typedef {import('../dc-types').OpenIDIssuanceProtocol} OpenIDIssuanceProtocol
  * @typedef {GetProtocol | CreateProtocol} Protocol
- */
-
-/**
- * @typedef {{ digital: { requests: any[] }, mediation?: CredentialMediationRequirement, signal?: AbortSignal }} InternalOptions
- */
-
-/**
- * @typedef {import('../dc-types').DigitalCredentialGetRequest} Request
  */
 
 /** @type {GetProtocol[]} */
@@ -38,16 +26,16 @@ const GET_PROTOCOLS = /** @type {const} */ ([
 /** @type {CreateProtocol[]} */
 const CREATE_PROTOCOLS = /** @type {const} */ (["openid4vci"]);
 
-const SUPPORTED_GET_PROTOCOL = GET_PROTOCOLS.find(
-  (protocol) => DigitalCredential.userAgentAllowsProtocol(protocol)
+const SUPPORTED_GET_PROTOCOL = GET_PROTOCOLS.find((protocol) =>
+  DigitalCredential.userAgentAllowsProtocol(protocol)
 );
-const SUPPORTED_CREATE_PROTOCOL = CREATE_PROTOCOLS.find(
-  (protocol) => DigitalCredential.userAgentAllowsProtocol(protocol)
+const SUPPORTED_CREATE_PROTOCOL = CREATE_PROTOCOLS.find((protocol) =>
+  DigitalCredential.userAgentAllowsProtocol(protocol)
 );
 
 /** @type {Record<Protocol, object | MobileDocumentRequest>} */
 const CANONICAL_REQUEST_OBJECTS = {
-  "openid4vci": {
+  openid4vci: {
     /* Canonical object coming soon */
   },
   "openid4vp-v1-unsigned": {
@@ -69,66 +57,60 @@ const CANONICAL_REQUEST_OBJECTS = {
 };
 
 /**
- * Internal helper to build the request array from validated input.
- * Assumes protocols is a non-empty array of Protocols.
+ * Internal helper to create final options from a list of requests.
  *
- * @param {Protocol[]} protocols
- * @param {Record<string, (data?: object) => Request>} requestMapping
- * @param {object} [data={}]
+ * @template {DigitalCredentialGetRequest[] | DigitalCredentialCreateRequest[]} TRequests
+ * @template {CredentialRequestOptions | CredentialCreationOptions} TOptions
+ * @param {TRequests} requests
  * @param {CredentialMediationRequirement} [mediation]
  * @param {AbortSignal} [signal]
- *
- * @returns {InternalOptions}
+ * @returns {TOptions}
  */
-function makeOptionsInternal(protocols, requestMapping, data, mediation, signal) {
-  const requests = buildRequests(protocols, requestMapping, data);
+function makeOptionsFromRequests(requests, mediation, signal) {
+  /** @type {TOptions} */
+  const options = /** @type {TOptions} */ ({ digital: { requests } });
 
-  /** @type {InternalOptions} */
-  const result = { digital: { requests } };
-
-  if (mediation !== undefined) {
-    result.mediation = mediation;
+  if (mediation) {
+    options.mediation = mediation;
   }
 
-  if (signal !== undefined) {
-    result.signal = signal;
+  if (signal) {
+    options.signal = signal;
   }
 
-  return result;
+  return options;
 }
 
 /**
- * Small helper to build a list of request objects from a protocol list
- * and a mapping table.
+ * Build requests from protocols, using canonical data for each protocol.
+ * For create operations with explicit data, uses that data for all protocols.
  *
  * @template Req
  * @param {Protocol[]} protocols
- * @param {Record<string, (data?: object) => Req>} mapping
- * @param {object} [data]
+ * @param {Record<Protocol, (data?: MobileDocumentRequest | object) => Req>} mapping
+ * @param {MobileDocumentRequest | object} [explicitData] - Explicit data for create operations
  * @returns {Req[]}
  * @throws {Error} If an unknown protocol string is encountered.
  */
-function buildRequests(protocols, mapping, data) {
-  /** @type {Req[]} */
-  const requests = [];
-  for (const protocol of protocols) {
-    if (protocol in mapping) {
-      const factoryFunction = mapping[protocol];
-      requests.push(factoryFunction(data));
-    } else {
+function buildRequestsFromProtocols(protocols, mapping, explicitData) {
+  return protocols.map((protocol) => {
+    if (!(protocol in mapping)) {
       throw new Error(`Unknown request type within array: ${protocol}`);
     }
-  }
-  return requests;
+    // Use explicit data if provided (for create with data), otherwise canonical data
+    return mapping[protocol](explicitData);
+  });
 }
 
 /** @type {{
- *   get: Record<GetProtocol, (data?: object) => DigitalCredentialGetRequest>;
+ *   get: Record<GetProtocol, (data?: MobileDocumentRequest | object) => DigitalCredentialGetRequest>;
  *   create: Record<CreateProtocol, (data?: object) => DigitalCredentialCreateRequest>;
  * }} */
 const allMappings = {
   get: {
-    "org-iso-mdoc": (data = { ...CANONICAL_REQUEST_OBJECTS["org-iso-mdoc"] }) => {
+    "org-iso-mdoc": (
+      data = { ...CANONICAL_REQUEST_OBJECTS["org-iso-mdoc"] },
+    ) => {
       return { protocol: "org-iso-mdoc", data };
     },
     "openid4vp-v1-unsigned": (
@@ -148,59 +130,41 @@ const allMappings = {
     },
   },
   create: {
-    openid4vci: (data = { ...CANONICAL_REQUEST_OBJECTS["openid4vci"] }) => {
+    "openid4vci": (data = { ...CANONICAL_REQUEST_OBJECTS["openid4vci"] }) => {
       return { protocol: "openid4vci", data };
     },
   },
 };
 
 /**
- * Internal unified function to handle option creation logic.
- * Routes calls from specific public functions.
- *
- * @param {"get" | "create"} type
- * @param {Protocol | Protocol[]} protocol
- * @param {CredentialMediationRequirement} [mediation]
- * @param {object} [data={}]
- * @param {AbortSignal} [signal]
- * @returns {InternalOptions}
+ * Generic helper to create credential options from config with protocol already set.
+ * @template {MakeGetOptionsConfig | MakeCreateOptionsConfig} TConfig
+ * @template {DigitalCredentialGetRequest | DigitalCredentialCreateRequest} TRequest
+ * @template {CredentialRequestOptions | CredentialCreationOptions} TOptions
+ * @param {TConfig} config - Configuration options with protocol already defaulted
+ * @param {Record<string, (data?: MobileDocumentRequest | object) => TRequest>} mapping - Protocol to request mapping
+ * @returns {TOptions}
  */
-function makeOptionsUnified(type, protocol, mediation, data, signal) {
-  const mapping = allMappings[type];
+function makeCredentialOptionsFromConfig(config, mapping) {
+  const { protocol, requests = [], mediation = "required", signal } = config;
 
-  if (typeof protocol === "string") {
-    if (protocol in mapping) {
-      return makeOptionsInternal([protocol], mapping, data, mediation, signal);
-    }
-    throw new Error(
-      `Unknown protocol "${protocol}"" provided for operation type "${type}"`,
-    );
+  // Validate that we have either a protocol or requests
+  if (!protocol && !requests?.length) {
+    throw new Error("No protocol. Can't make options.");
   }
 
-  if (Array.isArray(protocol)) {
-    if (protocol.length === 0) {
-      /** @type {InternalOptions} */
-      const emptyResult = { digital: { requests: [] } };
-      if (mediation !== undefined) {
-        emptyResult.mediation = mediation;
-      }
-      if (signal !== undefined) {
-        emptyResult.signal = signal;
-      }
-      return emptyResult;
-    }
-    return makeOptionsInternal(protocol, mapping, data, mediation, signal);
+  /** @type {TRequest[]} */
+  const  allRequests = [];
+
+  allRequests.push(.../** @type {TRequest[]} */ (requests));
+
+  if (protocol) {
+    const protocolArray = Array.isArray(protocol) ? protocol : [protocol];
+    const protocolRequests = buildRequestsFromProtocols(protocolArray, mapping);
+    allRequests.push(...protocolRequests);
   }
 
-  /** @type {InternalOptions} */
-  const fallbackResult = { digital: { requests: [] } };
-  if (mediation !== undefined) {
-    fallbackResult.mediation = mediation;
-  }
-  if (signal !== undefined) {
-    fallbackResult.signal = signal;
-  }
-  return fallbackResult;
+  return /** @type {TOptions} */ (makeOptionsFromRequests(allRequests, mediation, signal));
 }
 
 /**
@@ -210,12 +174,13 @@ function makeOptionsUnified(type, protocol, mediation, data, signal) {
  * @returns {CredentialRequestOptions}
  */
 export function makeGetOptions(config = {}) {
-  const { protocol = SUPPORTED_GET_PROTOCOL, mediation = "required", data, signal } = config;
-  if (!protocol) {
-    throw new Error("No protocol. Can't make get options.");
-  }
+  const configWithDefaults = {
+    ...config,
+    protocol: config.protocol ?? SUPPORTED_GET_PROTOCOL,
+  };
+
   return /** @type {CredentialRequestOptions} */ (
-    makeOptionsUnified("get", protocol, mediation, data, signal)
+    makeCredentialOptionsFromConfig(configWithDefaults, allMappings.get)
   );
 }
 
@@ -226,63 +191,14 @@ export function makeGetOptions(config = {}) {
  * @returns {CredentialCreationOptions}
  */
 export function makeCreateOptions(config = {}) {
-  const { protocol = SUPPORTED_CREATE_PROTOCOL, mediation = "required", data, signal } = config;
-  if (!protocol) {
-    throw new Error("No protocol. Can't make create options.");
-  }
+  const configWithDefaults = {
+    ...config,
+    protocol: config.protocol ?? SUPPORTED_CREATE_PROTOCOL,
+  };
+
   return /** @type {CredentialCreationOptions} */ (
-    makeOptionsUnified("create", protocol, mediation, data, signal)
+    makeCredentialOptionsFromConfig(configWithDefaults, allMappings.create)
   );
-}
-
-/**
- *
- * @param {string} protocol
- * @param {object} data
- * @returns {DigitalCredentialGetRequest}
- */
-function makeDigitalCredentialGetRequest(protocol = "protocol", data = {}) {
-  return {
-    protocol,
-    data,
-  };
-}
-
-/**
- * Representation of an OpenID4VP request.
- *
- * @param {string} identifier
- * @returns {DigitalCredentialGetRequest}
- **/
-function makeOID4VPDict(identifier = "openid4vp-v1-unsigned") {
-  return makeDigitalCredentialGetRequest(identifier, {
-    // Canonical example of an OpenID4VP request coming soon.
-  });
-}
-
-/**
- *
- * @param {string} protocol
- * @param {object} data
- * @returns {DigitalCredentialCreateRequest}
- */
-function makeDigitalCredentialCreateRequest(protocol = "protocol", data = {}) {
-  return {
-    protocol,
-    data,
-  };
-}
-
-
-/**
- * Representation of an mDoc request.
- *
- * @returns {DigitalCredentialGetRequest}
- **/
-function makeMDocRequest() {
-  return makeDigitalCredentialGetRequest("org-iso-mdoc", {
-    // Canonical example of an mDoc request coming soon.
-  });
 }
 
 /**
@@ -297,8 +213,8 @@ export function sendMessage(iframe, data) {
     if (!iframe.contentWindow) {
       reject(
         new Error(
-          "iframe.contentWindow is undefined, cannot send message (something is wrong with the test that called this)."
-        )
+          "iframe.contentWindow is undefined, cannot send message (something is wrong with the test that called this).",
+        ),
       );
       return;
     }
@@ -322,7 +238,9 @@ export function sendMessage(iframe, data) {
 export function loadIframe(iframe, url) {
   return new Promise((resolve, reject) => {
     iframe.addEventListener("load", () => resolve(), { once: true });
-    iframe.addEventListener("error", (event) => reject(event.error), { once: true });
+    iframe.addEventListener("error", (event) => reject(event.error), {
+      once: true,
+    });
     if (!iframe.isConnected) {
       document.body.appendChild(iframe);
     }

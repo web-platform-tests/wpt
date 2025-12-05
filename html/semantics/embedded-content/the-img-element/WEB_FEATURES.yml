@@ -13,3 +13,8 @@ features:
   - document-base-url.html
   - image-base-url.html
   - image-loading-lazy-base-url.html
+- name: srcset
+  files:
+  - responsive-image-select-print.html
+  - update-the-source-set.html
+  - null-image-source.html

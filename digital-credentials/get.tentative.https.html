@@ -36,7 +36,7 @@
           requests: [
             {
               data,
-              protocol: "openid4vp",
+              protocol: "openid4vp-v1-unsigned",
             },
           ],
         },
@@ -160,7 +160,7 @@
     const abortController = new AbortController();
     const { signal } = abortController;
     abortController.abort();
-    for (const options of [{ signal }, { signal, ...makeGetOptions([]) }]) {
+    for (const options of [{ signal }, makeGetOptions({protocol: [], signal})]) {
       await promise_rejects_dom(
         t,
         "AbortError",
@@ -175,7 +175,7 @@
     const abortController = new iframeWindow.AbortController();
     const { signal } = abortController;
     abortController.abort();
-    for (const options of [{ signal }, { signal, ...makeGetOptions([]) }]) {
+    for (const options of [{ signal }, makeGetOptions({protocol: [], signal})]) {
       await test_driver.bless("user activation");
       await promise_rejects_dom(
         t,
@@ -192,7 +192,7 @@
 
   promise_test(async (t) => {
     iframeCrossOrigin.focus();
-    for (const options of [undefined, {}, makeGetOptions([])]) {
+    for (const options of [undefined, {}, makeGetOptions({protocol: []})]) {
       const result = await sendMessage(iframeCrossOrigin, {
         abort: "before",
         action: "get",
@@ -206,8 +206,7 @@
   promise_test(async (t) => {
     const abortController = new AbortController();
     const { signal } = abortController;
-    const options = makeGetOptions("openid4vp");
-    options.signal = signal;
+    const options = makeGetOptions({signal});
     await test_driver.bless("user activation");
     const promise = promise_rejects_dom(
       t,
@@ -225,7 +224,7 @@
       abort: "after",
       action: "get",
       needsActivation: true,
-      options: makeGetOptions("openid4vp"),
+      options: makeGetOptions(),
     });
     assert_equals(result.constructor, "DOMException");
     assert_equals(result.name, "AbortError");
@@ -233,16 +232,18 @@
 
   promise_test(async (t) => {
     /** @type sequence<CredentialMediationRequirement> */
-    const disallowedMediations = ["conditional", "optional", "silent"];
-    for (const mediation of disallowedMediations) {
-      const options = makeGetOptions("default", mediation);
-      await promise_rejects_js(
-        t,
-        TypeError,
-        navigator.credentials.get(options)
-      );
+    const mediations = ["silent", "optional", "conditional", "required"];
+    const abortController = new AbortController();
+    const { signal } = abortController;
+    abortController.abort();
+    for (const mediation of mediations) {
+      const requestPromise = navigator.credentials.get({
+        mediation,
+        signal,
+      });
+      await promise_rejects_dom(t, "AbortError", requestPromise);
     }
-  }, "Mediation is required to get a DigitalCredential.");
+  }, "Mediation is implicitly required and hence ignored. Request is aborted regardless.");
 
 promise_test(async t => {
   const throwingValues = [
@@ -252,7 +253,7 @@ promise_test(async t => {
   ];
 
   for (const badValue of throwingValues) {
-    const options = makeGetOptions("openid4vp");
+    const options = makeGetOptions();
     options.digital.requests[0].data = badValue;
 
     await promise_rejects_js(

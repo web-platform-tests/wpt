@@ -27,7 +27,7 @@ promise_test(async t => {
   assert_equals(option2.label, "option2");
 }, "listbox explicit tree");
 
-AriaUtils.verifyAccessibilityTree("#listbox", {
+AriaUtils.verifyAccessibilitySubtree("#listbox", {
   role: "listbox",
   label: "listbox",
   children: [

@@ -201,10 +201,10 @@ const AriaUtils = {
 
 
   /*
-  Asserts that the tree for a given accessible node matches the specified tree
-  structure.
-  This takes an accessible node and is not wrapped in a test. Most test files
-  will want to use verifyAccessibilityTree instead.
+  Asserts that the subtree for a given accessible node matches the specified
+  tree structure.
+  This takes an accessible properties object and is not wrapped in a test. Most
+  test files will want to use verifyAccessibilitySubtree instead.
   For example:
   <div id="listbox" role="listbox" aria-label="listbox">
     <div id="option1" role="option" aria-label="option1"></div>
@@ -212,7 +212,7 @@ const AriaUtils = {
   </div>
   ...
   const listbox = await test_driver.get_element_accessible_properties(document.getElementById("listbox"));
-  await AriaUtils.assertAccessibilityTree(listbox, {
+  await AriaUtils.assertAccessibilitySubtree(listbox, {
     role: "listbox",
     label: "listbox",
     children: [
@@ -221,14 +221,14 @@ const AriaUtils = {
     ],
   }, "#listbox");
   */
-  assertAccessibilityTree: async function(acc, tree, position) {
+  assertAccessibilitySubtree: async function(acc, tree, position) {
     for (const key in tree) {
       if (key == "children") {
         assert_equals(acc.children.length, tree.children.length, `${position} children.length`);
         for (let c = 0; c < acc.children.length; ++c) {
           const childId = acc.children[c];
           const childAcc = await test_driver.get_accessible_properties(childId);
-          await AriaUtils.assertAccessibilityTree(childAcc, tree.children[c], `${position}[${c}]`);
+          await AriaUtils.assertAccessibilitySubtree(childAcc, tree.children[c], `${position}[${c}]`);
         }
         continue;
       }
@@ -238,23 +238,23 @@ const AriaUtils = {
 
 
   /*
-  Verifies that the tree for a given accessible node matches the specified tree
-  structure.
-  This calls assertAccessibilityTree, but it accepts a CSS selector and wraps
+  Verifies that the subtree for a given accessible node matches the specified
+  tree structure.
+  This calls assertAccessibilitySubtree, but it accepts a CSS selector and wraps
   the call in promise_test.
   For example:
   <div id="listbox"> ... </div>
   ...
-  AriaUtils.verifyAccessibilityTree("#listbox", { ... });
+  AriaUtils.verifyAccessibilitySubtree("#listbox", { ... });
   */
-  verifyAccessibilityTree: function(selector, tree) {
+  verifyAccessibilitySubtree: function(selector, tree) {
     const el = document.querySelector(selector);
     if (!el) {
       throw `selector passed to verifyAccessibilityTree("${selector}") doesn't match an element`;
     }
     promise_test(async t => {
       const acc = await test_driver.get_element_accessible_properties(el);
-      await AriaUtils.assertAccessibilityTree(acc, tree, selector);
+      await AriaUtils.assertAccessibilitySubtree(acc, tree, selector);
     }, `accessibility tree for ${selector}`);
   },
 };

@@ -1,5 +1,7 @@
 # mypy: allow-untyped-defs
 
+from .base import PlatformAccessibilityNotEnabled
+
 from .protocol import ProtocolPart
 
 from sys import platform
@@ -21,7 +23,6 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
         self.product_name = self.parent.product_name
         self.impl = None
         self.__init_platform_executor()
-
 
     def __init_platform_executor(self):
         if platform == "linux":
@@ -61,11 +62,10 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
         if not valid_api_for_platform(api):
             return ""
 
-        # self.impl will not exist if --enable-accessibility-api was not included
+        # self.impl will not exist ifo --enable-accessibility-api was not included
         # or the necessary python requirements for accessibility API tests have not
         # been installed.
         if not self.impl:
-            subtests = len(test) if test else 1
-            return ["Accessibility API testing not enabled."] * subtests
+            raise PlatformAccessibilityNotEnabled()
 
         return self.impl.test_accessibility_api(dom_id, test, api, url)

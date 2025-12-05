@@ -1,0 +1,8 @@
+features:
+  - name: focus-events
+    files:
+      - focus-automated-blink-webkit.html
+      - focus-contained.html
+      - focus.html
+      - focus-management-expectations.html
+      - legacy-manual.html

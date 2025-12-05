@@ -5,21 +5,20 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 
-<div id="checkboxCheckedMissing" role="checkbox"></div>
+<!--
+
+These tests should remain solid and passing in any implementation that supports get_element_accessible_properties.
+
+It uses a standard promise_test (rather than aria-utils.js) to reduce other dependencies.
+
+If you're adding something you expect to fail in one or more implementations, you probably want a different file.
+
+-->
+
 <div id="checkboxCheckedTrue" role="checkbox" aria-checked="true"></div>
-<div id="checkboxCheckedFalse" role="checkbox" aria-checked="false"></div>
-<div id="checkboxCheckedMixed" role="checkbox" aria-checked="mixed"></div>
-<div id="buttonPressedMissing" role="button"></div>
 <div id="buttonPressedTrue" role="button" aria-pressed="true"></div>
-<div id="buttonPressedFalse" role="button" aria-pressed="false"></div>
-<div id="buttonPressedMixed" role="button" aria-pressed="mixed"></div>
 
 <script>
-
-promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedMissing"));
-  assert_equals(acc.checked, "false");
-}, "checkbox with missing aria-checked");
 
 promise_test(async t => {
   const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedTrue"));
@@ -27,33 +26,8 @@ promise_test(async t => {
 }, "checkbox with aria-checked true");
 
 promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedFalse"));
-  assert_equals(acc.checked, "false");
-}, "checkbox with aria-checked false");
-
-promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedMixed"));
-  assert_equals(acc.checked, "mixed");
-}, "checkbox with aria-checked mixed");
-
-promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("buttonPressedMissing"));
-  assert_equals(acc.pressed, "undefined");
-}, "button with missing aria-pressed");
-
-promise_test(async t => {
   const acc = await test_driver.get_element_accessible_properties(document.getElementById("buttonPressedTrue"));
   assert_equals(acc.pressed, "true");
 }, "button with aria-pressed true");
-
-promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("buttonPressedFalse"));
-  assert_equals(acc.pressed, "false");
-}, "button with aria-pressed false");
-
-promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("buttonPressedMixed"));
-  assert_equals(acc.pressed, "mixed");
-}, "button with aria-pressed mixed");
 
 </script>

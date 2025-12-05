@@ -17,42 +17,42 @@
 <script>
 
 promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_node(document.getElementById("checkboxCheckedMissing"));
+  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedMissing"));
   assert_equals(acc.checked, "false");
 }, "checkbox with missing aria-checked");
 
 promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_node(document.getElementById("checkboxCheckedTrue"));
+  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedTrue"));
   assert_equals(acc.checked, "true");
 }, "checkbox with aria-checked true");
 
 promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_node(document.getElementById("checkboxCheckedFalse"));
+  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedFalse"));
   assert_equals(acc.checked, "false");
 }, "checkbox with aria-checked false");
 
 promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_node(document.getElementById("checkboxCheckedMixed"));
+  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedMixed"));
   assert_equals(acc.checked, "mixed");
 }, "checkbox with aria-checked mixed");
 
 promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_node(document.getElementById("buttonPressedMissing"));
+  const acc = await test_driver.get_element_accessible_properties(document.getElementById("buttonPressedMissing"));
   assert_equals(acc.pressed, "undefined");
 }, "button with missing aria-pressed");
 
 promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_node(document.getElementById("buttonPressedTrue"));
+  const acc = await test_driver.get_element_accessible_properties(document.getElementById("buttonPressedTrue"));
   assert_equals(acc.pressed, "true");
 }, "button with aria-pressed true");
 
 promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_node(document.getElementById("buttonPressedFalse"));
+  const acc = await test_driver.get_element_accessible_properties(document.getElementById("buttonPressedFalse"));
   assert_equals(acc.pressed, "false");
 }, "button with aria-pressed false");
 
 promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_node(document.getElementById("buttonPressedMixed"));
+  const acc = await test_driver.get_element_accessible_properties(document.getElementById("buttonPressedMixed"));
   assert_equals(acc.pressed, "mixed");
 }, "button with aria-pressed mixed");
 

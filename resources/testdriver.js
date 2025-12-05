@@ -1282,9 +1282,9 @@
          *                    returned, or rejected in the cases the WebDriver
          *                    command errors
          */
-        get_element_accessible_node: async function(element) {
+        get_element_accessible_properties: async function(element) {
             assertTestIsTentative();
-            let acc = await window.test_driver_internal.get_element_accessible_node(element);
+            let acc = await window.test_driver_internal.get_element_accessible_properties(element);
             return acc;
         },
 
@@ -1296,9 +1296,9 @@
          *                    returned, or rejected in the cases the WebDriver
          *                    command errors
          */
-        get_accessible_node: async function(accId) {
+        get_accessible_properties: async function(accId) {
             assertTestIsTentative();
-            let acc = await window.test_driver_internal.get_accessible_node(accId);
+            let acc = await window.test_driver_internal.get_accessible_properties(accId);
             return acc;
         },
 
@@ -2490,12 +2490,12 @@
             throw new Error("get_computed_name is a testdriver.js function which cannot be run in this context.");
         },
 
-        async get_element_accessible_node(element) {
-            throw new Error("get_element_accessible_node is a testdriver.js function which cannot be run in this context.");
+        async get_element_accessible_properties(element) {
+            throw new Error("get_element_accessible_properties is a testdriver.js function which cannot be run in this context.");
         },
 
-        async get_accessible_node(accId) {
-            throw new Error("get_accessible_node is a testdriver.js function which cannot be run in this context.");
+        async get_accessible_properties(accId) {
+            throw new Error("get_accessible_properties is a testdriver.js function which cannot be run in this context.");
         },
 
         async send_keys(element, keys) {

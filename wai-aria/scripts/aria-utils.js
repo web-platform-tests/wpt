@@ -211,7 +211,7 @@ const AriaUtils = {
     <div id="option2" role="option" aria-label="option2"></div>
   </div>
   ...
-  const listbox = await test_driver.get_element_accessible_node(document.getElementById("listbox"));
+  const listbox = await test_driver.get_element_accessible_properties(document.getElementById("listbox"));
   await AriaUtils.assertAccessibilityTree(listbox, {
     role: "listbox",
     label: "listbox",
@@ -227,7 +227,7 @@ const AriaUtils = {
         assert_equals(acc.children.length, tree.children.length, `${position} children.length`);
         for (let c = 0; c < acc.children.length; ++c) {
           const childId = acc.children[c];
-          const childAcc = await test_driver.get_accessible_node(childId);
+          const childAcc = await test_driver.get_accessible_properties(childId);
           await AriaUtils.assertAccessibilityTree(childAcc, tree.children[c], `${position}[${c}]`);
         }
         continue;
@@ -253,7 +253,7 @@ const AriaUtils = {
       throw `selector passed to verifyAccessibilityTree("${selector}") doesn't match an element`;
     }
     promise_test(async t => {
-      const acc = await test_driver.get_element_accessible_node(el);
+      const acc = await test_driver.get_element_accessible_properties(el);
       await AriaUtils.assertAccessibilityTree(acc, tree, selector);
     }, `accessibility tree for ${selector}`);
   },

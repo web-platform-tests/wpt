@@ -14,14 +14,14 @@
 <script>
 
 promise_test(async t => {
-  const listbox = await test_driver.get_element_accessible_node(document.getElementById("listbox"));
+  const listbox = await test_driver.get_element_accessible_properties(document.getElementById("listbox"));
   assert_equals(listbox.children.length, 2);
-  const option1 = await test_driver.get_accessible_node(listbox.children[0]);
+  const option1 = await test_driver.get_accessible_properties(listbox.children[0]);
   assert_equals(option1.id, listbox.children[0]);
   assert_equals(option1.parent, listbox.id);
   assert_equals(option1.role, "option");
   assert_equals(option1.label, "option1");
-  const option2 = await test_driver.get_accessible_node(listbox.children[1]);
+  const option2 = await test_driver.get_accessible_properties(listbox.children[1]);
   assert_equals(option2.id, listbox.children[1]);
   assert_equals(option2.parent, listbox.id);
   assert_equals(option2.label, "option2");

@@ -509,14 +509,14 @@
         return create_context_action("get_computed_role", context, {selectors});
     };
 
-    window.test_driver_internal.get_element_accessible_node = function(element) {
+    window.test_driver_internal.get_element_accessible_properties = function(element) {
         const selector = get_selector(element);
         const context = get_context(element);
-        return create_context_action("get_element_accessible_node", context, {selector});
+        return create_context_action("get_element_accessible_properties", context, {selector});
     };
 
-    window.test_driver_internal.get_accessible_node = function(accId, context=null) {
-        return create_context_action("get_accessible_node", context, { accId });
+    window.test_driver_internal.get_accessible_properties = function(accId, context=null) {
+        return create_context_action("get_accessible_properties", context, { accId });
     };
 
     window.test_driver_internal.get_named_cookie = function(name, context=null) {

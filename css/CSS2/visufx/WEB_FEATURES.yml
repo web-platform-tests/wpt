@@ -1,4 +1,7 @@
 features:
+- name: visibility
+  files:
+  - 'visibility-*'
 - name: clip
   files:
   - clip-*

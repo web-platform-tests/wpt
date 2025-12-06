@@ -1,6 +1,11 @@
 # mypy: allow-untyped-defs
 
-from ..platformaccessibility.ia2.constants import *  # noqa: F403
+from ..platformaccessibility.ia2.constants import ( # type: ignore[attr-defined]
+    IAccessible2,
+    Role,
+    get_msaa_state_list,
+    get_state_list,
+)
 
 import time
 
@@ -19,7 +24,6 @@ oleacc = ctypes.oledll.oleacc  # type: ignore
 oleacc_mod = comtypes.client.GetModule("oleacc.dll")
 IAccessible = oleacc_mod.IAccessible  # noqa: N816
 
-# CoCreateInstance of UIA also initializes IA2
 uia_mod = comtypes.client.GetModule("UIAutomationCore.dll")
 uia_client = comtypes.CoCreateInstance(
     uia_mod.CUIAutomation._reg_clsid_,
@@ -64,7 +68,7 @@ def get_browser_hwnd(product_name):
 
 def to_ia2(node):
     service = node.QueryInterface(IServiceProvider)
-    return service.QueryService(IAccessible2._iid_, IAccessible2)  # noqa: F405
+    return service.QueryService(IAccessible2._iid_, IAccessible2)
 
 
 def find_browser(product_name):
@@ -84,7 +88,7 @@ def poll_for_tab(url, root):
 def find_tab(url, root):
     for i in range(1, root.accChildCount + 1):
         child = to_ia2(root.accChild(i))
-        if child.accRole(CHILDID_SELF) == ROLE_SYSTEM_DOCUMENT:  # noqa: F405
+        if child.accRole(CHILDID_SELF) == Role.ROLE_SYSTEM_DOCUMENT:
             if child.accValue(CHILDID_SELF) == url:
                 return child
             # No need to search within documents.
@@ -111,12 +115,12 @@ def serialize_node(node):
 
     # MSAA properties
     node_dictionary["name"] = node.accName(CHILDID_SELF)
-    node_dictionary["msaa_role"] = role_to_string[node.accRole(CHILDID_SELF)]  # noqa: F405
-    node_dictionary["msaa_states"] = get_msaa_state_list(node.accState(CHILDID_SELF))  # noqa: F405
+    node_dictionary["msaa_role"] = Role(node.accRole(CHILDID_SELF)).name
+    node_dictionary["msaa_states"] = get_msaa_state_list(node.accState(CHILDID_SELF))
 
     # IAccessible2 properties
-    node_dictionary["ia2_role"] = role_to_string[node.role()]  # noqa: F405
-    node_dictionary["ia2_states"] = get_state_list(node.states)  # noqa: F405
+    node_dictionary["ia2_role"] = Role(node.role()).name
+    node_dictionary["ia2_states"] = get_state_list(node.states)
 
     return node_dictionary
 

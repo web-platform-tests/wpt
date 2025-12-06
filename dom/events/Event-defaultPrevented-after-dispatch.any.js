@@ -1,18 +1,12 @@
-<!DOCTYPE html>
-<meta charset=utf-8>
-<title>Event.defaultPrevented is not reset after dispatchEvent()</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-</head>
-<body>
-<div id=log></div>
-<input id="target" type="hidden" value=""/>
-<script>
+// META: title=Event.defaultPrevented is not reset after dispatchEvent()
+
+// There is another version of this test depending on document.createEvent() and
+// DOM elements, in Event-defaultPrevented-after-dispatch-createEvent.html.
+
 test(function() {
     var EVENT = "foo";
-    var TARGET = document.getElementById("target");
-    var evt = document.createEvent("Event");
-    evt.initEvent(EVENT, true, true);
+    var TARGET = new EventTarget();
+    var evt = new Event(EVENT, { bubbles: true, cancelable: true });
 
     TARGET.addEventListener(EVENT, this.step_func(function(e) {
         e.preventDefault();
@@ -27,9 +21,8 @@ test(function() {
 
 test(function() {
     var EVENT = "foo";
-    var TARGET = document.getElementById("target");
-    var evt = document.createEvent("Event");
-    evt.initEvent(EVENT, true, true);
+    var TARGET = new EventTarget();
+    var evt = new Event(EVENT, { bubbles: true, cancelable: true });
 
     TARGET.addEventListener(EVENT, this.step_func(function(e) {
         e.returnValue = false;
@@ -41,4 +34,3 @@ test(function() {
     assert_equals(evt.target, TARGET);
     assert_equals(evt.srcElement, TARGET);
 }, "Default prevention via returnValue");
-</script>

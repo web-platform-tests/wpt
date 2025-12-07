@@ -136,10 +136,9 @@ test(() => {
     "Type: childList | Target: option | Added: [#text: \"two\"] | After: span",
     "Type: childList | Target: select | Added: [#text: \"\"] | After: option",
     "Type: childList | Target: select | Added: [option] | After: #text: \"\"",
-    "Type: childList | Target: selectedcontent | Removed: [span, #text: \"one\"]",
     "Type: childList | Target: option | Added: [span]",
     "Type: childList | Target: span | Added: [#text: \"span\"]",
-    "Type: childList | Target: selectedcontent | Added: [span]",
+    "Type: childList | Target: selectedcontent | Added: [span] | Removed: [span, #text: \"one\"]",
     "Type: childList | Target: select | Added: [#text: \"three\"] | After: option",
     "Type: childList | Target: div#target | Added: [#text: \"\"] | After: select"
   ];

@@ -14,3 +14,7 @@ features:
 - name: z-index
   files:
   - '*z-index*'
+- name: box-sizing
+  files:
+  - position-absolute-center-003.html
+  - position-absolute-center-004.html

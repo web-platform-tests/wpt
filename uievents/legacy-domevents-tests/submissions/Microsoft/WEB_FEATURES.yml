@@ -1,6 +1,4 @@
 features:
   - name: focus-events
     files:
-      - focusin.html
-      - focusin.relatedTarget.html
-      - focusout.relatedTarget.html
+      - focus*

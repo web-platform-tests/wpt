@@ -1,4 +1,4 @@
 features:
   - name: focus-events
     files:
-      - focus-events.svg
+      - focus-*

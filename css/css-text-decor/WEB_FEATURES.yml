@@ -5,3 +5,6 @@ features:
 - name: text-underline-offset
   files:
   - text-underline-offset-*
+- name: text-underline-position
+  files:
+  - text-underline-position-*

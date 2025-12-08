@@ -5,3 +5,9 @@ features:
 - name: text-combine-upright
   files:
   - "text-combine-upright-*"
+- name: text-underline-position
+  files:
+  - text-underline-position-*
+- name: text-orientation
+  files:
+  - text-orientation-*

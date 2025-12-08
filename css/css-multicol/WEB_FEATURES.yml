@@ -109,6 +109,9 @@ features:
   - multicol-width-004.html
   - multicol-width-005.html
   - spanning-legend-*
+- name: column-pseudo
+  files:
+  - column-pseudo-background-color.html
 - name: multi-column
   files:
   - "*"
@@ -216,3 +219,5 @@ features:
   - "!multicol-width-004.html"
   - "!multicol-width-005.html"
   - "!spanning-legend-*"
+  # The following patterns are intended to match every file that isn't matched by "column-pseudo" above.
+  - "!column-pseudo-background-color.html"

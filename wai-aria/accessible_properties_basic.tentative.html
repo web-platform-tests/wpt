@@ -4,7 +4,20 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
-<script src="/wai-aria/scripts/aria-utils.js"></script>
+
+<!--
+
+These tests should remain solid and passing in any implementation that supports
+get_element_accessible_properties and get_accessible_properties.
+
+It uses a standard promise_test (rather than aria-utils.js) to reduce other dependencies.
+
+If you're adding something you expect to fail in one or more implementations, you probably want a different file.
+
+-->
+
+<div id="ariaCheckbox" role="checkbox" aria-checked="true"></div>
+<input type="checkbox" id="htmlCheckbox" checked>
 
 <div id="tablist" role="tablist" aria-label="tablist">
   <div id="tab1" role="tab" aria-label="tab1"></div>
@@ -12,6 +25,16 @@
 </div>
 
 <script>
+
+promise_test(async t => {
+  const acc = await test_driver.get_element_accessible_properties(document.getElementById("ariaCheckbox"));
+  assert_equals(acc.checked, "true");
+}, "ARIA checkbox with aria-checked true");
+
+promise_test(async t => {
+  const acc = await test_driver.get_element_accessible_properties(document.getElementById("htmlCheckbox"));
+  assert_equals(acc.pressed, "true");
+}, "HTML checkbox with checked true");
 
 promise_test(async t => {
   const tablist = await test_driver.get_element_accessible_properties(document.getElementById("tablist"));
@@ -26,15 +49,6 @@ promise_test(async t => {
   assert_equals(tab2.parent, tablist.id);
   assert_equals(tab2.role, "tab");
   assert_equals(tab2.label, "tab2");
-}, "tablist explicit tree");
-
-AriaUtils.verifyAccessibilitySubtree("#tablist", {
-  role: "tablist",
-  label: "tablist",
-  children: [
-    { role: "tab", label: "tab1", children: [] },
-    { role: "tab", label: "tab2", children: [] },
-  ],
-});
+}, "tablist subtree");
 
 </script>

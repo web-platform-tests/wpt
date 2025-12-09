@@ -19,3 +19,9 @@ features:
   files:
   - caret-color-*
   - caret-eol-*
+- name: cursor
+  files:
+  - canvas-cursor-*
+  - cgrsor-*
+  - cursor-*
+  - select-cursor-*

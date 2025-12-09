@@ -8,3 +8,6 @@ features:
 - name: caret-color
   files:
   - caret-color-*
+- name: cursor
+  files:
+  - cursor-*

@@ -1,0 +1,33 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Client ancestorOrigins with iframe referrerpolicy</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const A = window.origin;
+const B = "https://{{hosts[alt][]}}:{{ports[https][0]}}";
+const tests = [
+  {policy: "",            origin: A, expect: [A]},
+  {policy: "no-referrer", origin: A, expect: ["null"]},
+  {policy: "same-origin", origin: A, expect: [A]},
+  {policy: "same-origin", origin: B, expect: ["null"]},
+];
+for (const test of tests) {
+  promise_test(async (t) => {
+    const iframe = document.createElement('iframe');
+    t.add_cleanup(() => { iframe.remove(); });
+    const id = `${test.policy},${test.origin}`;
+    iframe.name = id;
+    iframe.referrerPolicy = test.policy;
+    iframe.src = `${test.origin}/service-workers/service-worker/resources/ancestorOrigins.html?id=${id}`;
+    document.body.append(iframe);
+    const result = await new Promise(resolve => {
+      addEventListener('message', e => { resolve(e.data); }, {once: true});
+    });
+    assert_equals(result.id, id, 'id');
+    assert_equals(result.swAO, test.expect, 'windowClient.ancestorOrigins');
+    assert_equals(result.locationAO, test.expect, 'location.ancestorOrigins');
+  }, `iframe referrerpolicy="${test.policy}", origin ${test.origin}`);
+}
+</script>

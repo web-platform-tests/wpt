@@ -43,3 +43,19 @@ features:
   - contain-html-w-m-003.html
   - contain-size-*
   - "!contain-size-014.html"
+- name: contain-style
+  files:
+  - contain-body-bg-004.html
+  - contain-body-dir-004.html
+  - contain-body-overflow-004.html
+  - contain-body-t-o-004.html
+  - contain-body-w-m-004.html
+  - contain-html-bg-004.html
+  - contain-html-dir-004.html
+  - contain-html-overflow-004.html
+  - contain-html-t-o-004.html
+  - contain-html-w-m-004.html
+  - contain-style-*
+  - "!contain-style-remove-element-crash.html"
+  - counter-scoping-*
+  - quote-scoping-*

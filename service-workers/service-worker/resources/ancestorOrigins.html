@@ -4,14 +4,18 @@
 <script>
 (async function() {
   const registration = await navigator.serviceWorker.register("ancestorOrigins.js", { scope: './' });
-  const activeWorker = registration.installing;
-  await new Promise(resolve => {
-    activeWorker.addEventListener('statechange', () => {
-      if (activeWorker.state === "activated") {
-        resolve();
-      }
+  let activeWorker = registration.installing;
+  if (activeWorker) {
+    await new Promise(resolve => {
+      activeWorker.addEventListener('statechange', () => {
+        if (activeWorker.state === "activated") {
+          resolve();
+        }
+      });
     });
-  });
+  } else {
+    activeWorker = registration.active;
+  }
 
   async function gimmeAncestorOrigins() {
     activeWorker.postMessage("gimme!");

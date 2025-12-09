@@ -2,3 +2,16 @@ features:
 - name: contain-inline-size
   files:
   - contain-inline-size-*
+- name: contain-layout
+  files:
+  - contain-body-bg-001.html
+  - contain-body-dir-001.html
+  - contain-body-overflow-001.html
+  - contain-body-t-o-001.html
+  - contain-body-w-m-001.html
+  - contain-html-bg-001.html
+  - contain-html-dir-001.html
+  - contain-html-overflow-001.html
+  - contain-html-t-o-001.html
+  - contain-html-w-m-001.html
+  - contain-layout-*

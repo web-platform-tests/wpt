@@ -11,7 +11,6 @@
 <link rel="modulepreload" href="resources/module1.js?frame" as="frame" data-as="frame">
 <link rel="modulepreload" href="resources/module1.js?iframe" as="iframe" data-as="iframe">
 <link rel="modulepreload" href="resources/module1.js?image" as="image" data-as="image">
-<link rel="modulepreload" href="resources/module1.js?json" as="json" data-as="json">
 <link rel="modulepreload" href="resources/module1.js?manifest" as="manifest" data-as="manifest">
 <link rel="modulepreload" href="resources/module1.js?object" as="object" data-as="object">
 <link rel="modulepreload" href="resources/module1.js?paintworklet" as="paintworklet" data-as="paintworklet">
@@ -19,7 +18,6 @@
 <link rel="modulepreload" href="resources/module1.js?script" as="script" data-as="script">
 <link rel="modulepreload" href="resources/module1.js?serviceworker" as="serviceworker" data-as="serviceworker">
 <link rel="modulepreload" href="resources/module1.js?sharedworker" as="sharedworker" data-as="sharedworker">
-<link rel="modulepreload" href="resources/module1.js?style" as="style" data-as="style">
 <link rel="modulepreload" href="resources/module1.js?track" as="track" data-as="track">
 <link rel="modulepreload" href="resources/module1.js?video" as="video" data-as="video">
 <link rel="modulepreload" href="resources/module1.js?webidentity" as="webidentity" data-as="webidentity">
@@ -29,6 +27,8 @@
 <link rel="modulepreload" href="resources/module1.js?invalid-dest" as="invalid-dest" data-as="invalid-dest">
 <link rel="modulepreload" href="resources/module1.js?iMaGe" as="iMaGe" data-as="iMaGe">
 <link rel="modulepreload" href="resources/module1.js?sCrIpT" as="sCrIpT" data-as="sCrIpT">
+<link rel="modulepreload" href="resources/dummy.css" as="style" data-as="style">
+<link rel="modulepreload" href="resources/dummy.json" as="json" data-as="json">
 <body>
 <script>
   // compared to modulepreload.html, this tests behavior when elements are
@@ -43,7 +43,7 @@
     'worker',
   ];
 
-  const goodAsValues = ['', 'invalid-dest', 'sCrIpT', ...scriptLikes];
+  const goodAsValues = ['', 'invalid-dest', 'sCrIpT', "style", "json",  ...scriptLikes];
 
   for (const link of document.querySelectorAll('link')) {
     const asValue = link.dataset.as; // don't depend on "as" attribute reflection

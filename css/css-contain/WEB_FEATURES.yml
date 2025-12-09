@@ -59,3 +59,9 @@ features:
   - "!contain-style-remove-element-crash.html"
   - counter-scoping-*
   - quote-scoping-*
+- name: contain
+  files:
+  - contain-animation-001.html
+  - contain-content-*
+  - contain-flexbox-outline.html
+  - contain-strict-*

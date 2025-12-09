@@ -54,7 +54,7 @@ from .protocol import (BaseProtocolPart,
 
 from .executorplatformaccessibility import PlatformAccessibilityProtocolPart
 
-from typing import Any, List, Dict, Optional, Tuple
+from typing import Any, List, Dict, Optional
 from webdriver.client import Session
 from webdriver import error as webdriver_error
 from webdriver.bidi import error as webdriver_bidi_error

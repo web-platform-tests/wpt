@@ -1,6 +1,6 @@
 # mypy: allow-untyped-defs
 
-from ..platformaccessibility.ia2.constants import ( # type: ignore[attr-defined]
+from ..platformaccessibility.ia2.constants import (  # type: ignore[attr-defined]
     IAccessible2,
     Role,
     get_msaa_state_list,

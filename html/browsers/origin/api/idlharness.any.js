@@ -2,7 +2,9 @@
 // META: script=/resources/idlharness.js
 
 idl_test(
-  ['origin'], [], (idl_array) => {
+  [],
+  ["html", "wai-aria", "dom", "cssom", "touch-events", "uievents", "performance-timeline"],
+  (idl_array) => {
     idl_array.add_objects({
       Origin: ["new Origin()"],
     });

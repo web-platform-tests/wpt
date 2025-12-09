@@ -1,0 +1,4 @@
+features:
+- name: content
+  files:
+  - input-image-content.html

@@ -1,12 +1,15 @@
-# mypy: allow-untyped-defs
+from __future__ import annotations
+
+import time
+from typing import Optional, List, Dict, Any
 
 import gi
-
 gi.require_version("Atspi", "2.0")
 from gi.repository import Atspi
-import time
 
-def poll_for_tab(root, product, url):
+from mozlog.structuredlog import StructuredLogger
+
+def poll_for_tab(root: Atspi.Accessible, product: str, url: str) -> Atspi.Accessible:
     """Poll until the tab with the test url is loaded and available in the
        accessibility API. Assumes wptrunner has already started a browser
        process and navigated to the test page.
@@ -25,7 +28,7 @@ def poll_for_tab(root, product, url):
     return tab
 
 
-def find_tab(root, product, url):
+def find_tab(root: Atspi.Accessible, product: str, url: str) -> Optional[Atspi.Accessible]:
     """Find the tab with the test url.
 
     :param root: The node in the accessibility API representing the browser process.
@@ -55,7 +58,7 @@ def find_tab(root, product, url):
     return None
 
 
-def is_ready(tab, product, url):
+def is_ready(tab: Atspi.Accessible, product: str, url: str) -> bool:
     """Test whether tab is fully loaded.
 
     :param tab: Atspi.Accessible representing test document.
@@ -77,7 +80,7 @@ def is_ready(tab, product, url):
     return "URI" in document_attributes and document_attributes["URI"] == url
 
 
-def find_browser(name):
+def find_browser(name: str) -> Optional[Atspi.Accessible]:
     """Find the Atspi.Accessible representing the browser.
 
     :param name: The name of the browser.
@@ -94,7 +97,7 @@ def find_browser(name):
     return None
 
 
-def find_node(root, dom_id):
+def find_node(root: Atspi.Accessible, dom_id: str) -> Optional[TestNode]:
     """Find the Atspi.Accessible with a specified dom_id.
 
     :dom_id: The dom ID.
@@ -115,9 +118,8 @@ def find_node(root, dom_id):
 
     return None
 
-
 class AtspiExecutorImpl:
-    def setup(self, product_name, logger):
+    def setup(self, product_name: str, logger: StructuredLogger) -> None:
         """Setup for accessibility API testing.
 
         :product_name: The name of the browser, used to find the browser in the accessibility API.
@@ -125,9 +127,9 @@ class AtspiExecutorImpl:
         """
         self.logger = logger
         self.product_name = product_name
-        self.root = None
-        self.document = None
-        self.test_url = None
+        self.root: Optional[Atspi.Accessible] = None
+        self.document: Optional[Atspi.Accessible] = None
+        self.test_url: Optional[str] = None
 
         self.root = find_browser(self.product_name)
         if not self.root:
@@ -135,7 +137,7 @@ class AtspiExecutorImpl:
                 f"Couldn't find browser {self.product_name} in accessibility API ATSPI. Accessibility API queries will not succeeded."
             )
 
-    def __poll_for_tab_if_necessary(self, url):
+    def __poll_for_tab_if_necessary(self, url: str) -> None:
         """If accessible node representing the test document for this URL has
            not been found, find it and set self.document.
 
@@ -150,7 +152,7 @@ class AtspiExecutorImpl:
             self.test_url = url
             self.document = poll_for_tab(self.root, self.product_name, url)
 
-    def test_accessibility_api(self, dom_id, test, api, url):
+    def test_accessibility_api(self, dom_id: str, test: List[List[str]], api: str, url: str) -> List[str]:
         """Execute a test of the accessibility API.
 
         :param dom_id: The dom id of the node to test.
@@ -180,18 +182,18 @@ class AtspiExecutorImpl:
 class TestNode:
     """Wrapper around an Atspi Node for testing purposes"""
 
-    def __init__(self, document, dom_id, node):
+    def __init__(self, document: Atspi.Accessible, dom_id: str, node: Atspi.Accessible) -> None:
         self.document = document
         self.dom_id = dom_id
         self.node = node
 
-    def serialize(self):
+    def serialize(self) -> Dict[str, Any]:
         """Convert the node to a dictionary for printing/debugging.
 
         :returns: A dictionary representing the node.
         """
 
-        node_dictionary = {}
+        node_dictionary: Dict[str, Any] = {}
         node_dictionary["API"] = "atspi"
         node_dictionary["role"] = Atspi.Accessible.get_role_name(self.node)
         node_dictionary["name"] = Atspi.Accessible.get_name(self.node)
@@ -204,7 +206,7 @@ class TestNode:
 
         return node_dictionary
 
-    def run_test_statement(self, statement):
+    def run_test_statement(self, statement: TestStatement) -> str:
         """Run a single test statement.
 
         :statement: a TestStatement object
@@ -222,7 +224,7 @@ class TestNode:
 
         return "Error: not implemented ({statement.type})"
 
-    def run_property_test(self, statement):
+    def run_property_test(self, statement: TestStatement) -> str:
         """Run a single test statement with type "property".
 
         :statement: a TestStatement object
@@ -243,7 +245,7 @@ class TestNode:
 
         return f"Fail: not implemented ({statement.key})"
 
-    def run_relation_test(self, statement):
+    def run_relation_test(self, statement: TestStatement) -> str:
         """Run a single test statement with type "relation".
 
         :statement: a TestStatement object
@@ -255,13 +257,14 @@ class TestNode:
         relations_dict = self.get_relations_dictionary()
         if expected_relation not in relations_dict:
             return f"Fail: relation not in list: {list(relations_dict.keys())}"
-        id_str = ",".join(relations_dict[expected_relation].sort())
-        expected_id_str = ",".join(expected_ids.sort())
+
+        id_str = ",".join(relations_dict[expected_relation])
+        expected_id_str = ",".join(expected_ids)
         if id_str != expected_id_str:
             return f"Fail: {expected_relation}={relations_dict[expected_relation]}"
         return "Pass"
 
-    def run_reverse_relation_test(self, statement):
+    def run_reverse_relation_test(self, statement: TestStatement) -> str:
         """Run a single test statement with type "reverseRelation".
 
         :statement: a TestStatement object
@@ -275,6 +278,9 @@ class TestNode:
 
         for element in expected_elements:
             test_node = find_node(self.document, element)
+            if not test_node:
+                return "Fail: element '{element}' could not be found"
+
             relations_dict = test_node.get_relations_dictionary()
 
             if expected_relation not in relations_dict:
@@ -285,11 +291,11 @@ class TestNode:
 
         return "Pass"
 
-    def get_relations_dictionary(self):
+    def get_relations_dictionary(self) -> Dict[str, List[str]]:
         """
         :returns: A dictionary with relations as keys and the values, DOM ids.
         """
-        relations_dict = {}
+        relations_dict: Dict[str, List[str]] = {}
         relations = Atspi.Accessible.get_relation_set(self.node)
         for relation in relations:
             name = relation.get_relation_type().value_name.removeprefix("ATSPI_")
@@ -303,9 +309,10 @@ class TestNode:
                     relations_dict[name].append(attributes["id"])
                 else:
                     relations_dict[name].append("[unknown id]")
+
         return relations_dict
 
-    def get_state_list(self):
+    def get_state_list(self) -> List[str]:
         """
         :returns: A list of states for this Atspi.Accessible.
         """
@@ -319,15 +326,15 @@ class TestNode:
 class TestStatement:
     """Wrapper around an accessibility API test statement"""
 
-    def __init__(self, test_statement_arr):
+    def __init__(self, test_statement_arr: List[str]) -> None:
         self.test_statement_arr = test_statement_arr
 
-        self.type = test_statement_arr[0]
-        self.key = test_statement_arr[1]
-        self.assertion = test_statement_arr[2]
-        self.value = test_statement_arr[3]
+        self.type: str = test_statement_arr[0]
+        self.key: str = test_statement_arr[1]
+        self.assertion: str = test_statement_arr[2]
+        self.value: Any = test_statement_arr[3]
 
-    def value_compare_with(self, value):
+    def value_compare_with(self, value: str) -> str:
         if self.assertion == "is":
             if self.value != value:
                 return f"Fail: {self.key} is {value}"
@@ -339,7 +346,7 @@ class TestStatement:
 
         return "Pass"
 
-    def value_contained_or_not_contained_in(self, array):
+    def value_contained_or_not_contained_in(self, array: List[str]) -> str:
         if self.assertion == "contains":
             if self.value not in array:
                 return f"Fail: {array} does not contain {self.value}"

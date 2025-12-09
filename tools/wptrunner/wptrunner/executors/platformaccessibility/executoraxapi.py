@@ -1,4 +1,4 @@
-# mypy: allow-untyped-defs
+from typing import Optional, List, Dict, Any
 
 from ApplicationServices import (
     AXUIElementCopyAttributeNames,
@@ -12,7 +12,9 @@ from Cocoa import (
     NSWorkspace,
 )
 
-def find_browser(name):
+from mozlog.structuredlog import StructuredLogger
+
+def find_browser(name: str) -> Optional[Any]:
     """Find the AXUIElement representing the browser.
 
     :param name: The name of the browser.
@@ -39,7 +41,7 @@ def find_browser(name):
     return AXUIElementCreateApplication(pid)
 
 
-def find_active_tab(browser):
+def find_active_tab(browser: Any) -> Optional[Any]:
     """Find the active tab of the browser.
 
     :param browser: The name of the browser.
@@ -64,7 +66,7 @@ def find_active_tab(browser):
     return None
 
 
-def find_node(root, attribute, expected_value):
+def find_node(root: Any, attribute: str, expected_value: str) -> Optional[Any]:
     """Find the AXUIElement with a specified dom_id.
 
     :dom_id: The dom ID.
@@ -92,7 +94,7 @@ def find_node(root, attribute, expected_value):
     return None
 
 
-def serialize_node(node):
+def serialize_node(node: Any) -> Dict[str, Any]:
     """Convert the node to a dictionary for printing/debugging.
 
     :returns: A dictionary representing the node.
@@ -110,7 +112,7 @@ def serialize_node(node):
 
 
 class AXAPIExecutorImpl:
-    def setup(self, product_name, logger):
+    def setup(self, product_name: str, logger: StructuredLogger) -> None:
         """Setup for accessibility API testing.
 
         :product_name: The name of the browser, used to find the browser in the accessibility API.
@@ -118,14 +120,14 @@ class AXAPIExecutorImpl:
         """
         self.product_name = product_name
         self.logger = logger
-        self.root = find_browser(self.product_name)
+        self.root: Optional[Any] = find_browser(self.product_name)
 
         if not self.root:
             self.logger.warning(
                 f"Couldn't find browser {self.product_name} in accessibility API AX API. Accessibility API queries will not succeeded."
             )
 
-    def test_accessibility_api(self, dom_id, test, api, url):
+    def test_accessibility_api(self, dom_id: str, test: List[List[str]], api: str, url: str) -> List[str]:
         """Execute a test of the accessibility API.
 
         :param dom_id: The dom id of the node to test.

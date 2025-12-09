@@ -87,7 +87,7 @@ function makeOptionsFromRequests(requests, mediation, signal) {
  *
  * @template Req
  * @param {Protocol[]} protocols
- * @param {Record<Protocol, (data?: MobileDocumentRequest | object) => Req>} mapping
+ * @param {Record<string, (data?: MobileDocumentRequest | object) => Req>} mapping
  * @param {MobileDocumentRequest | object} [explicitData] - Explicit data for create operations
  * @returns {Req[]}
  * @throws {Error} If an unknown protocol string is encountered.
@@ -146,7 +146,7 @@ const allMappings = {
  * @returns {TOptions}
  */
 function makeCredentialOptionsFromConfig(config, mapping) {
-  const { protocol, requests = [], mediation = "required", signal } = config;
+  const { protocol, requests = [], data, mediation = "required", signal } = config;
 
   // Validate that we have either a protocol or requests
   if (!protocol && !requests?.length) {
@@ -160,7 +160,7 @@ function makeCredentialOptionsFromConfig(config, mapping) {
 
   if (protocol) {
     const protocolArray = Array.isArray(protocol) ? protocol : [protocol];
-    const protocolRequests = buildRequestsFromProtocols(protocolArray, mapping);
+    const protocolRequests = buildRequestsFromProtocols(protocolArray, mapping, data);
     allRequests.push(...protocolRequests);
   }
 
@@ -175,8 +175,8 @@ function makeCredentialOptionsFromConfig(config, mapping) {
  */
 export function makeGetOptions(config = {}) {
   const configWithDefaults = {
+    protocol: SUPPORTED_GET_PROTOCOL,
     ...config,
-    protocol: config.protocol ?? SUPPORTED_GET_PROTOCOL,
   };
 
   return /** @type {CredentialRequestOptions} */ (
@@ -192,8 +192,8 @@ export function makeGetOptions(config = {}) {
  */
 export function makeCreateOptions(config = {}) {
   const configWithDefaults = {
+    protocol: SUPPORTED_CREATE_PROTOCOL,
     ...config,
-    protocol: config.protocol ?? SUPPORTED_CREATE_PROTOCOL,
   };
 
   return /** @type {CredentialCreationOptions} */ (

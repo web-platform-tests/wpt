@@ -44,6 +44,10 @@ export interface MakeGetOptionsConfig {
    */
   requests?: DigitalCredentialGetRequest[];
   /**
+   * Optional data to override canonical data for protocol-based requests.
+   */
+  data?: MobileDocumentRequest | object;
+  /**
    * Credential mediation requirement
    */
   mediation?: CredentialMediationRequirement;
@@ -68,6 +72,10 @@ export interface MakeCreateOptionsConfig {
    * When provided, these are used in addition to any protocol-based requests.
    */
   requests?: DigitalCredentialCreateRequest[];
+  /**
+   * Optional data to override canonical data for protocol-based requests.
+   */
+  data?: object;
   /**
    * Credential mediation requirement
    */

@@ -1,0 +1,5 @@
+features:
+- name: composed-ranges
+  files:
+  - Selection-collapse-and-extend.html
+  - Selection-getComposedRanges*

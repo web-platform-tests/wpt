@@ -7,12 +7,8 @@ window.addEventListener('message', async function(evt) {
     var sw = w.navigator.serviceWorker;
     w.close();
     w = null;
-
-    // Ensure sw.register receives a valid URL. The popup might have
-    // about:blank as base so sw.register('doestnmatter.js') would be invalid.
-    const swUrl = new URL('doestnmatter.js', document.baseURI).href;
     try {
-      await sw.register(swUrl);
+      await sw.register('doesntmatter.js');
     } finally {
       parent.postMessage('OK', '*');
     }

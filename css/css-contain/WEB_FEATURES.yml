@@ -15,3 +15,17 @@ features:
   - contain-html-t-o-001.html
   - contain-html-w-m-001.html
   - contain-layout-*
+- name: contain-paint
+  files:
+  - contain-body-bg-002.html
+  - contain-body-dir-002.html
+  - contain-body-overflow-002.html
+  - contain-body-t-o-002.html
+  - contain-body-w-m-002.html
+  - contain-html-bg-002.html
+  - contain-html-dir-002.html
+  - contain-html-overflow-002.html
+  - contain-html-t-o-002.html
+  - contain-html-w-m-002.html
+  - contain-paint-*
+  - "!contain-paint-stacking-context-001b.html"

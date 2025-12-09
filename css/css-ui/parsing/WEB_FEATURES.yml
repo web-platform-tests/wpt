@@ -20,3 +20,6 @@ features:
   - outline-style-*
   - outline-color-*
   - outline-offset-*
+- name: cursor
+  files:
+  - cursor-*

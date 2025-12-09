@@ -38,6 +38,12 @@ features:
   files:
   - caret-color-*
   - caret-eol-*
+- name: cursor
+  files:
+  - canvas-cursor-*
+  - cgrsor-*
+  - cursor-*
+  - select-cursor-*
 - name: cross-fade
   files:
   - cursor-image-016-manual.html

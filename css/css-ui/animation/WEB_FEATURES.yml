@@ -10,3 +10,6 @@ features:
   - outline-width-*
   - outline-color-*
   - outline-offset-*
+- name: cursor
+  files:
+  - cursor-*

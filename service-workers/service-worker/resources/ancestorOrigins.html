@@ -32,7 +32,7 @@
   }
 
   const swAO = await gimmeAncestorOrigins();
-  const locationAO = Array.from(location.ancestorOrigins);
+  const locationAO = Array.from(location.ancestorOrigins ?? []);
 
   await registration.unregister();
 

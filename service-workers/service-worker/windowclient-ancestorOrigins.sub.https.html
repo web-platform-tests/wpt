@@ -26,8 +26,8 @@ for (const test of tests) {
       addEventListener('message', e => { resolve(e.data); }, {once: true});
     });
     assert_equals(result.id, id, 'id');
-    assert_equals(result.swAO, test.expect, 'windowClient.ancestorOrigins');
-    assert_equals(result.locationAO, test.expect, 'location.ancestorOrigins');
+    assert_array_equals(result.swAO, test.expect, 'windowClient.ancestorOrigins');
+    assert_array_equals(result.locationAO, test.expect, 'location.ancestorOrigins');
   }, `iframe referrerpolicy="${test.policy}", origin ${test.origin}`);
 }
 </script>

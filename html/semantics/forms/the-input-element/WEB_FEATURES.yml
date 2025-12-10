@@ -31,3 +31,6 @@ features:
   files:
   - button.html
   - input-type-button.html
+- name: input-reset
+  files:
+  - reset.html

@@ -8,8 +8,8 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <body>
-  <iframe id="same-origin"></iframe>
   <iframe id="cross-origin" allow="digital-credentials-get"></iframe>
+  <iframe id="same-origin"></iframe>
 </body>
 <script type="module">
   import { makeGetOptions, sendMessage, loadIframe } from "./support/helper.js";
@@ -31,16 +31,8 @@
   promise_test(async (t) => {
     const invalidData = [null, undefined, "", 123, true, false];
     for (const data of invalidData) {
-      const options = {
-        digital: {
-          requests: [
-            {
-              data,
-              protocol: "openid4vp-v1-unsigned",
-            },
-          ],
-        },
-      };
+      const options = makeGetOptions({ data });
+      await test_driver.bless("user activation");
       await promise_rejects_js(
         t,
         TypeError,
@@ -160,7 +152,7 @@
     const abortController = new AbortController();
     const { signal } = abortController;
     abortController.abort();
-    for (const options of [{ signal }, { signal, ...makeGetOptions([]) }]) {
+    for (const options of [{ signal }, makeGetOptions({protocol: [], signal})]) {
       await promise_rejects_dom(
         t,
         "AbortError",
@@ -175,7 +167,7 @@
     const abortController = new iframeWindow.AbortController();
     const { signal } = abortController;
     abortController.abort();
-    for (const options of [{ signal }, { signal, ...makeGetOptions([]) }]) {
+    for (const options of [{ signal }, makeGetOptions({protocol: [], signal})]) {
       await test_driver.bless("user activation");
       await promise_rejects_dom(
         t,
@@ -192,7 +184,7 @@
 
   promise_test(async (t) => {
     iframeCrossOrigin.focus();
-    for (const options of [undefined, {}, makeGetOptions([])]) {
+    for (const options of [undefined, {}, makeGetOptions({protocol: []})]) {
       const result = await sendMessage(iframeCrossOrigin, {
         abort: "before",
         action: "get",
@@ -206,8 +198,7 @@
   promise_test(async (t) => {
     const abortController = new AbortController();
     const { signal } = abortController;
-    const options = makeGetOptions("openid4vp-v1-unsigned");
-    options.signal = signal;
+    const options = makeGetOptions({signal});
     await test_driver.bless("user activation");
     const promise = promise_rejects_dom(
       t,
@@ -225,7 +216,7 @@
       abort: "after",
       action: "get",
       needsActivation: true,
-      options: makeGetOptions("openid4vp-v1-signed"),
+      options: makeGetOptions(),
     });
     assert_equals(result.constructor, "DOMException");
     assert_equals(result.name, "AbortError");
@@ -254,8 +245,7 @@ promise_test(async t => {
   ];
 
   for (const badValue of throwingValues) {
-    const options = makeGetOptions("openid4vp-v1-multisigned");
-    options.digital.requests[0].data = badValue;
+    const options = makeGetOptions({ data: badValue });
 
     await promise_rejects_js(
       t,

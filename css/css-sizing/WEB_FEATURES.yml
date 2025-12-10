@@ -1,4 +1,10 @@
 features:
+  - name: fit-content
+    files:
+      - 'div-fit-content-*'
+      - 'fit-content-*'
+      - 'margin-collapse-with-indefinite-block-size-004.html'
+      - 'percentage-min-width.html'
   - name: fit-content-function
     files:
       - 'border-box-and-max-content-003.html'

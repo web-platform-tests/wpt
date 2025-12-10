@@ -24,3 +24,6 @@ features:
 - name: input-hidden
   files:
   - hidden*
+- name: input-image
+  files:
+  - image*

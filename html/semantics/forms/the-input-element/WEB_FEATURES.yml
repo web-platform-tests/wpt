@@ -43,3 +43,6 @@ features:
   - email*
   - telephone.html
   - url.html
+- name: input-color
+  files:
+  - color*

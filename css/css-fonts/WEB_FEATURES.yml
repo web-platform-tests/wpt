@@ -37,6 +37,9 @@ features:
 - name: font-variant-caps
   files:
   - font-variant-caps-*
+- name: font-variant-east-asian
+  files:
+  - font-variant-east-asian-*
 - name: font-variant-emoji
   files:
   - font-variant-emoji-*

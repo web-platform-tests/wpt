@@ -1,0 +1,10 @@
+<!doctype html>
+<title>location.ancestorOrigins returns a new object every time</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  assert_implements(location.ancestorOrigins);
+  assert_not_equals(location.ancestorOrigins, location.ancestorOrigins);
+});
+</script>

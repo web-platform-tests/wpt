@@ -26,6 +26,11 @@ features:
 - name: font-synthesis-weight
   files:
   - font-synthesis-weight*
+- name: font-variant
+  files:
+  - font-variant-valid.html
+  - font-variant-invalid.html
+  - font-variant-serialization.html
 - name: font-variant-alternates
   files:
   - font-variant-alternates-*

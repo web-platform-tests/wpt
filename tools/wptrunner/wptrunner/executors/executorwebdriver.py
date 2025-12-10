@@ -1275,6 +1275,16 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         protocol.base.set_window(test_window)
         # Wait until about:blank has been loaded
         protocol.base.execute_script(self.window_loaded_script, asynchronous=True)
+
+        # Move focus to the test window. This should not be fallible because the
+        # document will always be the initial about:blank, and thus there is no
+        # content in the page to obscure the centre point of the root element.
+        #
+        # TODO(web-platform-tests/rfcs#231): This is only a de facto assumption.
+        # Finalize what the desired behavior should be.
+        selector = protocol.base.execute_script('return document.documentElement;')
+        protocol.click.element(selector)
+
         return test_window
 
 

@@ -35,3 +35,6 @@ features:
 - name: font-variant-position
   files:
   - font-variant-position-*
+- name: font-width
+  files:
+  - font-width-*

@@ -1,0 +1,4 @@
+features:
+- name: cookie-enabled
+  files:
+  - cookie-enabled-noncookie-frame.html

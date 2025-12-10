@@ -27,3 +27,7 @@ features:
 - name: input-image
   files:
   - image*
+- name: input-button
+  files:
+  - button.html
+  - input-type-button.html

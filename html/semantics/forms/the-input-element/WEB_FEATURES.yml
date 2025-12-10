@@ -34,3 +34,7 @@ features:
 - name: input-reset
   files:
   - reset.html
+- name: input-submit
+  files:
+  - input-submit-remove-jssubmit.html
+  - input-type-change-submit.html

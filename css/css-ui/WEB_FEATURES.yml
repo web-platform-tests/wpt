@@ -19,3 +19,6 @@ features:
   files:
   - caret-color-*
   - caret-eol-*
+- name: custom-ellipses
+  files:
+  - text-overflow-string-*

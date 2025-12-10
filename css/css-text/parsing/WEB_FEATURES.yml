@@ -38,3 +38,6 @@ features:
 - name: text-align-last
   files:
   - "text-align-last-*"
+- name: hanging-punctuation
+  files:
+  - hanging-punctuation-*

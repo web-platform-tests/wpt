@@ -1,0 +1,5 @@
+features:
+- name: composition-events
+  files:
+  - CompositionEvent.html
+  - compositionstart.*

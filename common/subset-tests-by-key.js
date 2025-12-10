@@ -5,6 +5,8 @@
   var collectCounts = false;
   var keys = {};
   var exclude = false;
+  var idlMemberPattern = null;
+  var excludeMember = false;
   if (location.search) {
     match = /(?:^\?|&)(include|exclude)=([^&]+)?/.exec(location.search);
     if (match) {
@@ -12,6 +14,11 @@
       if (match[1] === 'exclude') {
         exclude = true;
       }
+    }
+    let matchIDL = /(?:^\?|&)(includeMember|excludeMember)=([^&]+)?/.exec(location.search);
+    if (matchIDL && subTestKeyPattern && !exclude) {
+      idlMemberPattern = new RegExp(`^${matchIDL[2]}$`);
+      excludeMember = matchIDL[1] === 'excludeMember';
     }
     // Below is utility code to generate <meta> for copy/paste into tests.
     // Sample usage:
@@ -43,11 +50,23 @@
     }
   }
   /**
-   * Check if `key` is in the subset specified in the URL.
+   * Check if the test should be excluded according to the
+   * arguments specified in the URL.
+   * @param {string} key
+   * @param {string} idlMemberName
+   * @returns {boolean}
+   */
+  function shouldRunSubTest(key, idlMemberName) {
+    return checkByKey(key) && checkIDLMemberName(idlMemberName)
+  }
+
+  /**
+   * Checks if the test key should be excluded, according
+   * to the include= or exclude= query parameters in the URL.
    * @param {string} key
    * @returns {boolean}
    */
-  function shouldRunSubTest(key) {
+  function checkByKey(key) {
     if (key && subTestKeyPattern) {
       var found = subTestKeyPattern.test(key);
       if (exclude) {
@@ -57,6 +76,23 @@
     }
     return true;
   }
+  /**
+   * Checks if the idl member should be excluded, according to the
+   * includeMember= or excludeMember= URL parameters.
+   * @param {string} idlMemberName
+   * @returns {boolean}
+   */
+  function checkIDLMemberName(idlMemberName) {
+    if (!idlMemberPattern) {
+      return true;
+    }
+    if (!idlMemberName) {
+      return excludeMember
+    }
+    var found = idlMemberPattern.test(idlMemberName);
+    return found != excludeMember;
+  }
+
   /**
    * Only test a subset of tests with `?include=Foo` or `?exclude=Foo` in the URL.
    * Can be used together with `<meta name="variant" content="...">`
@@ -73,7 +109,7 @@
         keys[key] = 1;
       }
     }
-    if (shouldRunSubTest(key)) {
+    if (checkByKey(key)) {
       return testFunc(...args);
     }
     return null;

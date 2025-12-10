@@ -1,0 +1,5 @@
+features:
+- name: font-shorthand
+  files:
+  - font-0*
+  - font-1*

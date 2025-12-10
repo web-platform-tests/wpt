@@ -2,3 +2,7 @@ features:
 - name: text-emphasis
   files:
   - "*"
+  - "!text-underline-position-*"
+- name: text-underline-position
+  files:
+  - text-underline-position-*

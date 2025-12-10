@@ -784,7 +784,6 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
             obj["message"] = str(message)
         return f"window.postMessage({json.dumps(obj)}, '*');"
 
-
     def _switch_to_frame(self, index_or_elem):
         try:
             self.webdriver.switch_to_frame(index_or_elem)

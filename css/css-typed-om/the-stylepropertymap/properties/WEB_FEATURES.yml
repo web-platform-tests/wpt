@@ -2,3 +2,6 @@ features:
 - name: speak
   files:
   - speak.html
+- name: font-variant
+  files:
+  - font-variant.html

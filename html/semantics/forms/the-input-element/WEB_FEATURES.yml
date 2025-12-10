@@ -38,3 +38,8 @@ features:
   files:
   - input-submit-remove-jssubmit.html
   - input-type-change-submit.html
+- name: input-email-tel-url
+  files:
+  - email*
+  - telephone.html
+  - url.html

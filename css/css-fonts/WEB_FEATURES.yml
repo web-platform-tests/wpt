@@ -45,3 +45,8 @@ features:
 - name: font-family-ui
   files:
   - standard-font-family-*
+- name: font-kerning
+  files:
+  - font-kerning-*
+  - cjk-kerning.html
+  - hiragana-katakana-kerning.html

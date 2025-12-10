@@ -47,6 +47,9 @@ features:
   files:
   - font-variant-ligatures-*
   - language-specific-01.html
+- name: font-variant-numeric
+  files:
+  - font-variant-numeric-*
 - name: font-variant-position
   files:
   - font-variant-position-*

@@ -46,6 +46,9 @@ features:
 - name: font-variant-ligatures
   files:
   - font-variant-ligatures-*
+- name: font-variant-numeric
+  files:
+  - font-variant-numeric-*
 - name: font-variant-position
   files:
   - font-variant-position-*

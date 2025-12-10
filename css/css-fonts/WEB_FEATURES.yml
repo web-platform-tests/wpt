@@ -45,3 +45,6 @@ features:
 - name: font-family-ui
   files:
   - standard-font-family-*
+- name: font-stretch
+  files:
+  - font-stretch-*

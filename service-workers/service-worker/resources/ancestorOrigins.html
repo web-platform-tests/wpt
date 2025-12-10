@@ -28,14 +28,14 @@
     const msgEvt = await new Promise(resolve => {
       navigator.serviceWorker.addEventListener("message", resolve, { once: true });
     });
-    return msgEvt.data.ancestorOrigins;
+    return msgEvt.data;
   }
 
-  const swAO = await gimmeAncestorOrigins();
+  const { ancestorOrigins, sameObject } = await gimmeAncestorOrigins();
   const locationAO = Array.from(location.ancestorOrigins ?? []);
 
   await registration.unregister();
 
-  parent.postMessage({ id: window.name, swAO, locationAO }, '*');
+  parent.postMessage({ id: window.name, swAO: ancestorOrigins, sameObject, locationAO }, '*');
 })();
 </script>

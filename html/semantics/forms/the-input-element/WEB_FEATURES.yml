@@ -49,3 +49,6 @@ features:
 - name: input-range
   files:
   - range*
+- name: input-password
+  files:
+  - password*

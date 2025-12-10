@@ -46,3 +46,6 @@ features:
 - name: input-color
   files:
   - color*
+- name: input-range
+  files:
+  - range*

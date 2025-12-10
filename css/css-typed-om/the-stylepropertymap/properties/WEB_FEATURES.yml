@@ -5,3 +5,6 @@ features:
 - name: font-variant
   files:
   - font-variant.html
+- name: font-variant-caps
+  files:
+  - font-variant-caps.html

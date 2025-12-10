@@ -34,6 +34,9 @@ features:
   files:
   - alternates-order.html
   - font-variant-alternates-*
+- name: font-variant-caps
+  files:
+  - font-variant-caps-*
 - name: font-variant-emoji
   files:
   - font-variant-emoji-*

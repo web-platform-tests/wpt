@@ -43,6 +43,10 @@ features:
 - name: font-variant-emoji
   files:
   - font-variant-emoji-*
+- name: font-variant-ligatures
+  files:
+  - font-variant-ligatures-*
+  - language-specific-01.html
 - name: font-variant-position
   files:
   - font-variant-position-*

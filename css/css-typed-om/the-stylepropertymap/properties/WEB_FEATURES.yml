@@ -11,3 +11,6 @@ features:
 - name: font-variant-east-asian
   files:
   - font-variant-east-asian.html
+- name: font-variant-ligatures
+  files:
+  - font-variant-ligatures.html

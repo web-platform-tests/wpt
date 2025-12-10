@@ -5,3 +5,8 @@ features:
 - name: text-stroke-fill
   files:
   - marker-webkit-text-fill-color.html
+- name: counter-reset-reversed
+  files:
+  - counter-reset-reversed-*
+  - foo-counter-reversed-*
+  - li-value-reversed-006b.html

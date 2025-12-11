@@ -131,7 +131,7 @@ scheme host and port.""")
 
     test_selection_group = parser.add_argument_group("Test Selection")
     test_selection_group.add_argument("--test-types", nargs="*", default=wpttest.enabled_tests,
-                                      choices=wpttest.all_test_types,
+                                      choices=wpttest.enabled_tests,
                                       help="Test types to run")
     test_selection_group.add_argument("--subsuite-file",
                                       help="Path to JSON file containing subsuite configuration")

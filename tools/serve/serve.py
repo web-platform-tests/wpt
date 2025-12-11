@@ -19,12 +19,12 @@ from collections import defaultdict, OrderedDict
 from io import IOBase
 from itertools import chain, product
 from html5lib import html5parser
-from typing import ClassVar, List, Optional, Set, Tuple
+from typing import ClassVar, List, Optional, Set, Tuple, Union
 
 from localpaths import repo_root  # type: ignore
 
 from manifest.sourcefile import read_script_metadata, js_meta_re, parse_variants  # type: ignore
-from manifest.test262 import TestRecord # type: ignore
+from manifest.test262 import TestRecord  # type: ignore
 from wptserve import server as wptserve, handlers
 from wptserve import stash
 from wptserve import config
@@ -346,7 +346,7 @@ class Test262WindowTestHandler(HtmlWrapperHandler):
     headers = [('Cross-Origin-Opener-Policy', 'same-origin'),
                ('Cross-Origin-Embedder-Policy', 'require-corp')]
 
-    path_replace: list[tuple[str, str]] | list[tuple[str, str, str]] = [(".test262-test.html", ".js")]
+    path_replace: Union[List[Tuple[str, str]], List[Tuple[str, str, str]]] = [(".test262-test.html", ".js")]
 
     pre_wrapper = """<!doctype html>
 <meta charset=utf-8>

@@ -28,12 +28,7 @@ jobs:
           mkdir -p wpt/third_party/test262/harness/
           rsync -a --delete test262-spec/test/ wpt/third_party/test262/test/
           rsync -a --delete test262-spec/harness/ wpt/third_party/test262/harness/
-          cat <<EOF > wpt/third_party/test262/vendored.toml
-[test262]
-source = "https://github.com/tc39/test262"
-rev = "${LATEST_SHA}"
-EOF
-
+          printf "[test262]\nsource = \"https://github.com/tc39/test262\"\nrev = \"${LATEST_SHA}\"\n" > wpt/third_party/test262/vendored.toml
       - name: Commit changes
         id: commit
         continue-on-error: true

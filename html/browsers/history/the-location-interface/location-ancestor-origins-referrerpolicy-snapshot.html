@@ -1,0 +1,31 @@
+<!doctype html>
+<title>location.ancestorOrigins snapshot timing of referrerpolicy</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+promise_test(async () => {
+  assert_implements(location.ancestorOrigins);
+  const iframe = document.createElement('iframe');
+  iframe.src = '/common/blank.html?pipe=trickle(d1)';
+  iframe.referrerPolicy = 'no-referrer';
+  const loaded = new Promise(resolve => {
+    iframe.onload = () => {
+      resolve();
+    };
+  });
+  document.body.append(iframe);
+  // The referrerpolicy attribute was snapshotted when the initial about:blank doc was created
+  // https://html.spec.whatwg.org/#the-iframe-element:create-a-new-child-navigable
+  // https://html.spec.whatwg.org/#child-navigables:creating-a-new-browsing-context
+  assert_array_equals(Array.from(iframe.contentWindow.location.ancestorOrigins), ['null']);
+  iframe.referrerPolicy = '';
+  await loaded;
+  // The referrerpolicy attribute was snapshotted again when the response becomes available
+  // https://html.spec.whatwg.org/#beginning-navigation:attempt-to-populate-the-history-entry's-document
+  // https://html.spec.whatwg.org/#populating-a-session-history-entry:loading-a-document
+  // https://html.spec.whatwg.org/#populating-a-session-history-entry:navigate-html
+  // https://html.spec.whatwg.org/#read-html:initialise-the-document-object
+  assert_array_equals(Array.from(iframe.contentWindow.location.ancestorOrigins), [window.origin]);
+});
+</script>

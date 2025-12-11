@@ -7,3 +7,6 @@ features:
       - 'float-computed.html'
       - 'float-invalid.html'
       - 'float-valid.html'
+  - name: padding
+    files:
+      - 'padding-*'

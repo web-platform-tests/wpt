@@ -6,28 +6,27 @@ def parse_range(header_value, file_size):
         # HTTP Range header range end is inclusive
         return 0, file_size - 1
 
-    match = re.match(r"bytes=(\d*)-(\d*)", header_value)
+    match = re.match(r"bytes=(\d*)-(\d*)", header_value.decode())
     start = int(match.group(1)) if match.group(1).strip() != "" else 0
     last = int(match.group(2)) if match.group(2).strip() != "" else file_size - 1
     return start, last
 
 def main(request, response):
-    file_extension = request.GET.first(b"extension").decode()
-    with open("media/movie_300." + file_extension, "rb") as f:
+    extension = request.GET.first(b"extension").decode()
+    with open(f"media/movie_300.{extension}", "rb") as f:
         f.seek(0, os.SEEK_END)
         file_size = f.tell()
 
-        range_header = request.headers.get("range").decode()
+        range_header = request.headers.get("range")
         req_start, req_last = parse_range(range_header, file_size)
         f.seek(req_start, os.SEEK_SET)
 
         response.add_required_headers = False
         response.writer.write_status(206 if range_header else 200)
         response.writer.write_header("Accept-Ranges", "bytes")
-        response.writer.write_header("Content-Type", "video/mp4")
+        response.writer.write_header("Content-Type", f"video/{extension}")
         if range_header:
-            response.writer.write_header("Content-Range", "bytes %d-%d/%d" %
-                    (req_start, req_last, file_size))
+            response.writer.write_header("Content-Range", f"bytes {req_start}-{req_last}/{file_size}")
         response.writer.write_header("Content-Length", str(req_last - req_start + 1))
         response.writer.end_headers()
 

@@ -9,3 +9,6 @@ features:
   files:
   - image-rendering-computed.html
   - image-rendering-valid.html
+- name: gradients
+  files:
+  - gradient-position-*

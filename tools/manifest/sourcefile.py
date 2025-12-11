@@ -496,8 +496,13 @@ class SourceFile:
         elif self.name_is_test262:
             if self.test262_test_record is None:
                 return None
-            return [('script', "/resources/test262/%s" % filename)
-                    for filename in self.test262_test_record.get("includes", [])]
+            paths = []
+            for filename in self.test262_test_record.get("includes", []):
+                if filename in ("assert.js", "sta.js"):
+                    paths.append(('script', "/third_party/test262/harness/%s" % filename))
+                else:
+                    paths.append(('script', "/resources/test262/%s" % filename))
+            return paths
         else:
             return None
 

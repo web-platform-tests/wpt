@@ -146,7 +146,7 @@ const allMappings = {
  * @returns {TOptions}
  */
 function makeCredentialOptionsFromConfig(config, mapping) {
-  const { protocol, requests = [], data, mediation = "required", signal } = config;
+  const { protocol, requests = [], data, mediation, signal } = config;
 
   // Validate that we have either a protocol or requests
   if (!protocol && !requests?.length) {

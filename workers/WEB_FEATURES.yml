@@ -19,3 +19,6 @@ features:
 - name: user-agent-sniffing
   files:
   - WorkerNavigator_userAgent.htm
+- name: hardware-concurrency
+  files:
+  - WorkerNavigator-hardware-concurrency.any.js

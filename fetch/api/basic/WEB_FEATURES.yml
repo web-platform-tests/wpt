@@ -2,3 +2,6 @@ features:
 - name: fetch-request-streams
   files:
   - request-upload*
+- name: private-network-access
+  files:
+  - request-private-network-headers.tentative.any.js

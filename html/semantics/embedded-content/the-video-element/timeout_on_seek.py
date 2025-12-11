@@ -1,25 +1,23 @@
-from __future__ import print_function
 import os
 import re
-from urlparse import parse_qs
 
 def parse_range(header_value, file_size):
     if header_value is None:
         # HTTP Range header range end is inclusive
         return 0, file_size - 1
 
-    match = re.match("bytes=(\d*)-(\d*)", header_value)
+    match = re.match(r"bytes=(\d*)-(\d*)", header_value)
     start = int(match.group(1)) if match.group(1).strip() != "" else 0
     last = int(match.group(2)) if match.group(2).strip() != "" else file_size - 1
     return start, last
 
 def main(request, response):
-    file_extension = parse_qs(request.url_parts.query)["extension"][0]
+    file_extension = request.GET.first(b"extension").decode()
     with open("media/movie_300." + file_extension, "rb") as f:
         f.seek(0, os.SEEK_END)
         file_size = f.tell()
 
-        range_header = request.headers.get("range")
+        range_header = request.headers.get("range").decode()
         req_start, req_last = parse_range(range_header, file_size)
         f.seek(req_start, os.SEEK_SET)
 

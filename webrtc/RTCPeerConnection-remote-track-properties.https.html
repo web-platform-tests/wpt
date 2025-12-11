@@ -55,7 +55,7 @@ promise_test(async t => {
     remoteTrackIds.add(remoteTrack.id);
   }
 
-  assert_greater_than(remoteTrackIds.size, 1);
+  assert_greater_than(remoteTrackIds.size, 1, "Remote tracks should have their own id");
 }, 'Remote audio track ID is different on different PCs');
 
 promise_test(async t => {

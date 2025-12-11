@@ -181,6 +181,20 @@ test(t => {
     assert_equals(host2shadow.querySelector('new-foo').customElementRegistry, null);
     assert_equals(host2shadow.querySelector('x-foo').querySelector('new-foo').customElementRegistry, null);
 }, "Null registry element should gain effective global registry of scoped registry from its parent upon adoption.")
+
+test(t => {
+    const template = document.getElementById('template-2');
+    const clone = template.content.cloneNode(true);
+    const registry = new CustomElementRegistry;
+    registry.initialize(clone.querySelector('#template-host-2').shadowRoot);
+    clone.querySelector('#template-host-2').shadowRoot.appendChild(document.createElement('new-foo'));
+    clone.querySelector('#template-host-2').shadowRoot.querySelector('x-foo').appendChild(document.createElement('new-foo'));
+    const [doc, win] = makeIframe(t);
+    doc.body.append(clone);
+    const host2shadow = doc.querySelector('#template-host-2').shadowRoot;
+    assert_equals(host2shadow.querySelector('new-foo').customElementRegistry, win.customElements);
+    assert_equals(host2shadow.querySelector('x-foo').querySelector('new-foo').customElementRegistry, win.customElements);
+}, "Global registry element should gain effective global registry of scoped registry from its parent upon adoption.")
 </script>
 </body>
 </html>

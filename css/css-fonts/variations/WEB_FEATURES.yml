@@ -2,3 +2,6 @@ features:
 - name: font-optical-sizing
   files:
   - variable-opsz*
+- name: font-variation-settings
+  files:
+  - font-variation-settings-inherit.html

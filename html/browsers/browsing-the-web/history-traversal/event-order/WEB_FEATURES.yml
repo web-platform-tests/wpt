@@ -1,0 +1,10 @@
+features:
+- name: hashchange
+  files:
+  - after-load-hash*
+  - after-load-pushState.html
+  - after-load-replaceState.html
+  - before-load-hash*
+  - before-load-pushState.html
+  - before-load-replaceState.html
+  - same-document-traverse-*

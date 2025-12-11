@@ -24,3 +24,6 @@ features:
 - name: font-variant
   files:
   - font-variant-shorthand-serialization.html
+- name: css-escape
+  files:
+  - escape.html

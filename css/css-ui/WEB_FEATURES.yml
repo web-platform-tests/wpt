@@ -19,7 +19,3 @@ features:
   files:
   - caret-color-*
   - caret-eol-*
-- name: search-input-type
-  files:
-  - appearance-searchfield-001.html
-

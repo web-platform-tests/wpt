@@ -59,6 +59,36 @@ promise_test(function(t) {
     });
 }, 'link rel=modulepreload');
 
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.as = 'style';
+    link.href = 'resources/dummy.css?unique';
+    return attachAndWaitForLoad(link).then(() => {
+        verifyNumberOfDownloads('resources/dummy.css?unique', 1);
+
+        // Verify that importing doesn't fetch the module again.
+        return import("./resources/dummy.css?unique", { with: { type: "css" } });
+    }).then(() => {
+        verifyNumberOfDownloads('resources/dummy.css?unique', 1);
+    });
+}, 'link rel=modulepreload as=style');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.as = 'json';
+    link.href = 'resources/dummy.json?unique';
+    return attachAndWaitForLoad(link).then(() => {
+        verifyNumberOfDownloads('resources/dummy.json?unique', 1);
+
+        // Verify that importing doesn't fetch the module again.
+        return import("./resources/dummy.json?unique", { with: { type: "json" } });
+    }).then(() => {
+        verifyNumberOfDownloads('resources/dummy.json?unique', 1);
+    });
+}, 'link rel=modulepreload as=json');
+
 /**
  * Begin tests to ensure crossorigin value behaves the same on
  * link rel=modulepreload as it does script elements.
@@ -193,14 +223,46 @@ promise_test(function(t) {
     link.rel = 'modulepreload';
     link.href = 'resources/syntax-error.js';
     return attachAndWaitForLoad(link);
-}, 'link rel=modulepreload for a module with syntax error');
+}, 'link rel=modulepreload for a script module with syntax error');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.as = "style";
+    link.href = 'resources/syntax-error.css';
+    return attachAndWaitForLoad(link);
+}, 'link rel=modulepreload for a style module with syntax error');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.as = "json";
+    link.href = 'resources/syntax-error.json';
+    return attachAndWaitForLoad(link);
+}, 'link rel=modulepreload for a JSON module with syntax error');
 
 promise_test(function(t) {
     var link = document.createElement('link');
     link.rel = 'modulepreload';
     link.href = 'resources/not-exist.js';
     return attachAndWaitForError(link);
-}, 'link rel=modulepreload for a module with network error');
+}, 'link rel=modulepreload for a script module with network error');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.as = "style";
+    link.href = 'resources/not-exist.css';
+    return attachAndWaitForError(link);
+}, 'link rel=modulepreload for a style module with network error');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.as = "json";
+    link.href = 'resources/not-exist.json';
+    return attachAndWaitForError(link);
+}, 'link rel=modulepreload for a JSON module with network error');
 
 promise_test(function(t) {
     var link = document.createElement('link');
@@ -232,6 +294,22 @@ promise_test(function(t) {
     link.as = 'xslt'
     return attachAndWaitForError(link);
 }, 'link rel=modulepreload with non-script-like as= value (xslt)');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = 'resources/module1.js?as-style';
+    link.as = 'style'
+    return attachAndWaitForError(link);
+}, 'link rel=modulepreload with non-style as= value (style)');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = 'resources/module1.js?as-json';
+    link.as = 'json'
+    return attachAndWaitForError(link);
+}, 'link rel=modulepreload with non-JSON as= value (JSON)');
 
 promise_test(function(t) {
     var link = document.createElement('link');
@@ -284,7 +362,37 @@ promise_test(function(t) {
         attachAndWaitForLoad(link1),
         attachAndWaitForLoad(link2),
     ]);
-}, 'multiple link rel=modulepreload with same href');
+}, 'multiple script link rel=modulepreload with same href');
+
+promise_test(function(t) {
+    var link1 = document.createElement('link');
+    var link2 = document.createElement('link');
+    link1.rel = 'modulepreload';
+    link2.rel = 'modulepreload';
+    link1.as = "style";
+    link2.as = "style";
+    link1.href = 'resources/dummy.css?same-url';
+    link2.href = 'resources/dummy.css?same-url';
+    return Promise.all([
+        attachAndWaitForLoad(link1),
+        attachAndWaitForLoad(link2),
+    ]);
+}, 'multiple style link rel=modulepreload with same href');
+
+promise_test(function(t) {
+    var link1 = document.createElement('link');
+    var link2 = document.createElement('link');
+    link1.rel = 'modulepreload';
+    link2.rel = 'modulepreload';
+    link1.as = "json";
+    link2.as = "json";
+    link1.href = 'resources/dummy.json?same-url';
+    link2.href = 'resources/dummy.json?same-url';
+    return Promise.all([
+        attachAndWaitForLoad(link1),
+        attachAndWaitForLoad(link2),
+    ]);
+}, 'multiple JSON link rel=modulepreload with same href');
 
 promise_test(function(t) {
     var link1 = document.createElement('link');
@@ -308,7 +416,25 @@ promise_test(function(t) {
     link.href = 'resources/module1.mjs?matching-media';
     link.media = 'all';
     return attachAndWaitForLoad(link);
-}, 'link rel=modulepreload with matching media');
+}, 'link rel=modulepreload with script and matching media');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = 'resources/dummy.css?matching-media';
+    link.as = "style";
+    link.media = 'all';
+    return attachAndWaitForLoad(link);
+}, 'link rel=modulepreload with style and matching media');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = 'resources/dummy.json?matching-media';
+    link.as = "json";
+    link.media = 'all';
+    return attachAndWaitForLoad(link);
+}, 'link rel=modulepreload with JSON and matching media');
 
 promise_test(function(t) {
     var link = document.createElement('link');
@@ -316,7 +442,25 @@ promise_test(function(t) {
     link.href = 'resources/module1.mjs?non-matching-media';
     link.media = 'not all';
     return attachAndWaitForTimeout(link, t);
-}, 'link rel=modulepreload with non-matching media');
+}, 'link rel=modulepreload with script and non-matching media');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = 'resources/dummy.css?non-matching-media';
+    link.as = "style";
+    link.media = 'not all';
+    return attachAndWaitForTimeout(link, t);
+}, 'link rel=modulepreload with style and non-matching media');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = 'resources/dummy.json?non-matching-media';
+    link.as = "json";
+    link.media = 'not all';
+    return attachAndWaitForTimeout(link, t);
+}, 'link rel=modulepreload with JSON and non-matching media');
 
 promise_test(function(t) {
     var link = document.createElement('link');
@@ -324,14 +468,48 @@ promise_test(function(t) {
     link.href = 'resources/module1.mjs?empty-media';
     link.media = '';
     return attachAndWaitForLoad(link);
-}, 'link rel=modulepreload with empty media');
+}, 'link rel=modulepreload with script and empty media');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = 'resources/dummy.css?empty-media';
+    link.as = "style";
+    link.media = '';
+    return attachAndWaitForLoad(link);
+}, 'link rel=modulepreload with style and empty media');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = 'resources/dummy.json?empty-media';
+    link.as = "json";
+    link.media = '';
+    return attachAndWaitForLoad(link);
+}, 'link rel=modulepreload with JSON and empty media');
 
 promise_test(function(t) {
     var link = document.createElement('link');
     link.rel = 'modulepreload';
     link.href = '';
     return attachAndWaitForTimeout(link, t);
-}, 'link rel=modulepreload with empty href');
+}, 'link rel=modulepreload with script and empty href');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.as = "style";
+    link.href = '';
+    return attachAndWaitForTimeout(link, t);
+}, 'link rel=modulepreload with style and empty href');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.as = "json";
+    link.href = '';
+    return attachAndWaitForTimeout(link, t);
+}, 'link rel=modulepreload with JSON and empty href');
 
 promise_test(function(t) {
     var link = document.createElement('link');

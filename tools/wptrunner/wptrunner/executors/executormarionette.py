@@ -731,6 +731,12 @@ class MarionetteAccessibilityProtocolPart(AccessibilityProtocolPart):
     def get_computed_role(self, element):
         return element.computed_role
 
+    def get_element_accessible_properties(self, element):
+        return element.accessible_properties
+
+    def get_accessible_properties(self, id):
+        return self.marionette.get_accessible_properties(id)
+
 
 class MarionetteVirtualSensorProtocolPart(VirtualSensorProtocolPart):
     def setup(self):

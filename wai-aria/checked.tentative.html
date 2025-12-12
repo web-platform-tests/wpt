@@ -1,0 +1,36 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<div id="checkboxCheckedMissing" role="checkbox"></div>
+<div id="checkboxCheckedTrue" role="checkbox" aria-checked="true"></div>
+<div id="checkboxCheckedFalse" role="checkbox" aria-checked="false"></div>
+<div id="checkboxCheckedMixed" role="checkbox" aria-checked="mixed"></div>
+
+<script>
+
+promise_test(async t => {
+  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedMissing"));
+  assert_equals(acc.checked, "false");
+}, "checkbox with missing aria-checked");
+
+promise_test(async t => {
+  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedTrue"));
+  assert_equals(acc.checked, "true");
+}, "checkbox with aria-checked true");
+
+promise_test(async t => {
+  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedFalse"));
+  assert_equals(acc.checked, "false");
+}, "checkbox with aria-checked false");
+
+promise_test(async t => {
+  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedMixed"));
+  assert_equals(acc.checked, "mixed");
+}, "checkbox with aria-checked mixed");
+
+
+</script>

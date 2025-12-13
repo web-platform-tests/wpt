@@ -1,0 +1,4 @@
+features:
+- name: hashchange
+  files:
+  - location_hashchange_infinite_loop.html

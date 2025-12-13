@@ -1,0 +1,5 @@
+features:
+- name: hashchange
+  files:
+  - 004.html
+  - history_pushstate_url.html

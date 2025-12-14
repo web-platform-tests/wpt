@@ -5,10 +5,16 @@ features:
   - position-004.xht
   - position-006.xht
 - name: physical-properties
-  file:
+  files:
   - 'top-*'
+  - '!top-applies-to*'
+  - '!top-offset*'
   - 'right-*'
+  - '!right-applies-to*'
+  - '!right-offset*'
   - 'bottom-*'
+  - '!bottom-applies-to*'
+  - '!bottom-offset*'
   - 'left-*'
-  - '!*-applies-to*'
-  - '!*-offset-'
+  - '!left-applies-to*'
+  - '!left-offset*'

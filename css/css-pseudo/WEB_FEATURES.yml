@@ -35,3 +35,6 @@ features:
 - name: text-stroke-fill
   files:
   - highlight-styling-003.html
+- name: css-object-model
+  files:
+  - CSSPseudoElement-identity.html

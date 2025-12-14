@@ -1,0 +1,4 @@
+features:
+- name: document-colors
+  files:
+  - 'document-color-*'

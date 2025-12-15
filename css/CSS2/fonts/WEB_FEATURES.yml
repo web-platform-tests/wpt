@@ -2,3 +2,6 @@ features:
 - name: font-family
   files:
   - font-family-*
+- name: font-weight
+  files:
+    - font-weight-*

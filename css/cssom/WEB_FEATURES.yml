@@ -25,3 +25,6 @@ features:
   files:
   - CSSFontFaceRule.html
   - cssom-fontfacerule*
+- name: font-variant
+  files:
+  - font-variant-shorthand-serialization.html

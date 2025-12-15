@@ -18,3 +18,6 @@ features:
   - responsive-image-select-print.html
   - update-the-source-set.html
   - null-image-source.html
+- name: data-urls
+  files:
+  - data-url.html

@@ -67,3 +67,6 @@ features:
 - name: font-weight
   files:
   - font-weight-*
+- name: data-urls
+  files:
+  - fallback-remote-to-data-url.html

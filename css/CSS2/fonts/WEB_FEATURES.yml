@@ -3,3 +3,6 @@ features:
   files:
   - font-0*
   - font-1*
+- name: font-weight
+  files:
+  - font-weight-*

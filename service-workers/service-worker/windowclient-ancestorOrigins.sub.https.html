@@ -7,7 +7,7 @@
 <script>
 const origins = {
   A: window.origin,
-  B: "https://{{hosts[alt][]}}:{{ports[https][0]}}",
+  B: "https://{{domains[www]}}:{{ports[https][0]}}",
 };
 const tests = [
   {policy: "",            origin: 'A', expect: [origins.A]},

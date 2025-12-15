@@ -1,4 +1,7 @@
 features:
+- name: lang-attr
+  files:
+  - lang-attribute-affects-rendering*
 - name: font-palette
   files:
   - font-palette.html

@@ -1,0 +1,5 @@
+features:
+- name: lang
+  files:
+  - xml-lang-selectors-001.html
+  - xml-lang-selectors-002.html

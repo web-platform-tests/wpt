@@ -5,3 +5,18 @@ features:
 - name: font-stretch
   files:
   - font-stretch.html
+- name: font-variant
+  files:
+  - font-variant.html
+- name: font-variant-caps
+  files:
+  - font-variant-caps.html
+- name: font-variant-east-asian
+  files:
+  - font-variant-east-asian.html
+- name: font-variant-ligatures
+  files:
+  - font-variant-ligatures.html
+- name: font-variant-numeric
+  files:
+  - font-variant-numeric.html

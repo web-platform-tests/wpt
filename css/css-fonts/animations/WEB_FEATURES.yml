@@ -10,3 +10,6 @@ features:
 - name: font-stretch
   files:
   - font-stretch-interpolation.html
+- name: font-weight
+  files:
+  - font-weight-composition.html

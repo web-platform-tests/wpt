@@ -4,4 +4,4 @@ features:
   - font-family-*
 - name: font-weight
   files:
-    - font-weight-*
+  - font-weight-*

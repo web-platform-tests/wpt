@@ -191,7 +191,7 @@ async def test_content_disposition_header(
             "suggestedFilename": content_disposition_filename,
             "timestamp": any_int,
             "url": content_disposition_link,
-            'userContext': new_tab["userContext"],
+            "userContext": new_tab["userContext"],
         },
         download_event,
     )
@@ -256,7 +256,7 @@ async def test_redirect_to_content_disposition_header(
             "suggestedFilename": redirect_filename,
             "timestamp": any_int,
             "url": content_disposition_link,
-            'userContext': new_tab["userContext"],
+            "userContext": new_tab["userContext"],
         },
         download_event,
     )

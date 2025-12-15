@@ -143,7 +143,7 @@ async def test_content_disposition_header(
             "status": "complete",
             "timestamp": any_int,
             "url": content_disposition_link,
-            'userContext': new_tab["userContext"],
+            "userContext": new_tab["userContext"],
         },
         download_event,
     )

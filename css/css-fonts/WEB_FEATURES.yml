@@ -49,8 +49,8 @@ features:
   files:
   - font-face-*
   - downloadable-font-*
-  - first-available-font-*
   - idlharness.html
   - font-family-src-quoted.html
   - crash-font-face-invalid-descriptor.html
   - web-font-no-longer-accessible-when-stylesheet-removed.html
+  - test_datafont_same_origin.html

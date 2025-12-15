@@ -6,7 +6,7 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/wai-aria/scripts/aria-utils.js"></script>
 
-<div id="tablist" role="tablist" aria-label="tablist">
+<div id="tablist" role="tablist" aria-label="the tablist">
   <div id="tab1" role="tab" aria-label="tab1"></div>
   <div id="tab2" role="tab" aria-label="tab2"></div>
 </div>
@@ -15,7 +15,7 @@
 
 AriaUtils.verifyAccessibilitySubtree("#tablist", {
   role: "tablist",
-  label: "tablist",
+  label: "the tablist",
   children: [
     { role: "tab", label: "tab1", children: [] },
     { role: "tab", label: "tab2", children: [] },

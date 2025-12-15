@@ -222,7 +222,7 @@ const AriaUtils = {
   */
   verifyAccessibilitySubtree: function(subtreeRoot, expectedTree) {
     const desc = subtreeRoot;
-    if (!(subtreeRoot instanceof Element)) {
+    if (typeof subtreeRoot == "string") {
       subtreeRoot = document.querySelector(subtreeRoot);
       if (!subtreeRoot) {
         throw `selector passed to verifyAccessibilityTree("${subtreeRoot}") doesn't match an element`;

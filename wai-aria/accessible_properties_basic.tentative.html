@@ -8,11 +8,16 @@
 <!--
 
 These tests should remain solid and passing in any implementation that supports
-get_element_accessible_properties and get_accessible_properties.
+get_element_accessible_properties and get_accessible_properties. They are very
+basic tests intended to test the core functionality of these test_driver
+functions. Tests should generally only be added here if there is some significant
+change to the functionality of these test_driver functions; e.g. a new complex
+property type.
 
 It uses a standard promise_test (rather than aria-utils.js) to reduce other dependencies.
 
-If you're adding something you expect to fail in one or more implementations, you probably want a different file.
+If you're adding something you expect to fail in one or more implementations,
+you probably want a different file.
 
 -->
 

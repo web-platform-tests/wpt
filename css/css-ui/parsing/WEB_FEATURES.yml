@@ -8,3 +8,6 @@ features:
 - name: caret-color
   files:
   - caret-color-*
+- name: box-sizing
+  files:
+  - box-sizing-*

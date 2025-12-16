@@ -4,33 +4,13 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
+<script src="/wai-aria/scripts/aria-utils.js"></script>
 
-<div id="checkboxCheckedMissing" role="checkbox"></div>
-<div id="checkboxCheckedTrue" role="checkbox" aria-checked="true"></div>
-<div id="checkboxCheckedFalse" role="checkbox" aria-checked="false"></div>
-<div id="checkboxCheckedMixed" role="checkbox" aria-checked="mixed"></div>
+<div data-testname="checkbox with missing aria-checked" role="checkbox" data-expected='{ "checked": "false" }' class="ex-props"></div>
+<div data-testname="checkbox with aria-checked true" role="checkbox" aria-checked="true" data-expected='{ "checked": "true" }' class="ex-props"></div>
+<div data-testname="checkbox with aria-checked false" role="checkbox" aria-checked="false" data-expected='{ "checked": "false" }' class="ex-props"></div>
+<div data-testname="checkbox with aria-checked mixed" role="checkbox" aria-checked="mixed" data-expected='{ "checked": "mixed" }' class="ex-props"></div>
 
 <script>
-
-promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedMissing"));
-  assert_equals(acc.checked, "false");
-}, "checkbox with missing aria-checked");
-
-promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedTrue"));
-  assert_equals(acc.checked, "true");
-}, "checkbox with aria-checked true");
-
-promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedFalse"));
-  assert_equals(acc.checked, "false");
-}, "checkbox with aria-checked false");
-
-promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("checkboxCheckedMixed"));
-  assert_equals(acc.checked, "mixed");
-}, "checkbox with aria-checked mixed");
-
-
+AriaUtils.verifyPropertiesBySelector(".ex-props");
 </script>

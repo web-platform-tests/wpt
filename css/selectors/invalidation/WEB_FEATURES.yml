@@ -21,6 +21,9 @@ features:
 - name: nth-child-of
   files:
   - nth-child-of-*
+- name: nth-of-type
+  files:
+  - 'negated-*-of-type*'
 - name: user-pseudos
   files:
   - user-valid-user-invalid.html

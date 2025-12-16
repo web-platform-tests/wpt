@@ -5,3 +5,8 @@ features:
 - name: ruby-position
   files:
   - ruby-position*
+- name: display-ruby
+  files:
+  - "*"
+  - "!ruby-align-*"
+  - "!ruby-position*"

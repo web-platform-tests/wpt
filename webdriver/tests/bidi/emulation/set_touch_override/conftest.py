@@ -1,6 +1,7 @@
 import pytest_asyncio
 from webdriver.bidi.modules.script import ContextTarget
 
+
 @pytest_asyncio.fixture
 async def get_max_touch_points(bidi_session):
     async def get_max_touch_points(context):
@@ -15,14 +16,14 @@ async def get_max_touch_points(bidi_session):
 
 
 @pytest_asyncio.fixture
-async def initial_max_touch_points(bidi_session, top_context, get_max_touch_points):
+async def initial_max_touch_points(top_context, get_max_touch_points):
     """Return the initial value of maxTouchPoints."""
     return await get_max_touch_points(top_context)
 
 
 @pytest_asyncio.fixture(params=['default', 'new'],
                         ids=["Default user context", "Custom user context"])
-async def target_user_context(request, create_user_context):
+async def target_user_context(request):
     return request.param
 
 

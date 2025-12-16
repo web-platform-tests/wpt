@@ -93,7 +93,7 @@ async def test_params_touch_override_missing(bidi_session, top_context):
 
 @pytest.mark.parametrize("value", get_invalid_cases("number", nullable=True))
 async def test_params_touch_override_invalid_type(bidi_session, top_context,
-        value):
+                                                  value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_touch_override(
             max_touch_points=value,
@@ -102,7 +102,7 @@ async def test_params_touch_override_invalid_type(bidi_session, top_context,
 
 
 async def test_params_touch_override_invalid_value(bidi_session,
-        top_context):
+                                                   top_context):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_touch_override(
             max_touch_points=-1,

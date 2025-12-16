@@ -19,3 +19,8 @@ features:
 - name: user-agent-sniffing
   files:
   - WorkerNavigator_userAgent.htm
+- name: shared-workers
+  files:
+  - data-url-shared.html
+  - SharedWorker-*
+  - shared-worker-*

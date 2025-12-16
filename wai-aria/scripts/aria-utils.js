@@ -235,6 +235,18 @@ const AriaUtils = {
   },
 
 
+  /*
+  Helper function called recursively to assert that the subtree for a given
+  accessible node matches the specified tree structure.
+  This is initiated by verifyAccessibilitySubtree. It takes an accessible
+  properties object, the expected tree structure and a string describing the
+  element to be used as the prefix for assertion messages.
+  For example:
+  <div id="listbox"> ... </div>
+  ...
+  const listbox = await test_driver.get_element_accessible_properties(document.getElementById("listbox"));
+  await AriaUtils.assertAccessibilitySubtree(listbox, { ... }, "#listbox");
+  */
   _assertAccessibilitySubtree: async function(accProps, expectedTree, position) {
     for (const key in expectedTree) {
       if (key == "children") {

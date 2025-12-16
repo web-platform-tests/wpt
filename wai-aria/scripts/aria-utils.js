@@ -201,6 +201,38 @@ const AriaUtils = {
 
 
   /*
+  Tests accessibility properties of all elements matching selector against
+  the expected properties specified using JSON in their data-expected attribute.
+
+  For example:
+  <div data-testname="div[role=button][aria-pressed=mixed]"
+      role="button" aria-pressed="mixed"
+      data-expected='{ "role": "button", "label": "foo", "pressed": "mixed" }'
+      class="ex-props">
+    foo
+  </div>
+  ...
+  AriaUtils.verifyPropertiesBySelector(".ex-props");
+  */
+  verifyPropertiesBySelector: function(selector) {
+    const els = document.querySelectorAll(selector);
+    if (!els.length) {
+      throw `Selector passed in verifyPropertiesBySelector("${selector}") should match at least one element.`;
+    }
+    for (const el of els) {
+      const expected = JSON.parse(el.getAttribute("data-expected"));
+      const testName = el.getAttribute("data-testname");
+      promise_test(async t => {
+        const actual = await test_driver.get_element_accessible_properties(el);
+        for (const key in expected) {
+          assert_equals(actual[key], expected[key], `${key}: ${el.outerHTML}`);
+        }
+      }, testName);
+    }
+  },
+
+
+  /*
   Verifies that the subtree for a given accessible node matches the specified
   tree structure.
   This takes either a DOM Element or a CSS selector. It wraps the call in

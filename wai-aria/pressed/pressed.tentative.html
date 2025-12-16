@@ -4,32 +4,13 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
+<script src="/wai-aria/scripts/aria-utils.js"></script>
 
-<div id="buttonPressedMissing" role="button"></div>
-<div id="buttonPressedTrue" role="button" aria-pressed="true"></div>
-<div id="buttonPressedFalse" role="button" aria-pressed="false"></div>
-<div id="buttonPressedMixed" role="button" aria-pressed="mixed"></div>
+<div data-testname="button with missing aria-pressed" role="button" data-expected='{ "pressed": "undefined" }' class="ex-props"></div>
+<div data-testname="button with aria-pressed true" role="button" aria-pressed="true" data-expected='{ "pressed": "true" }' class="ex-props"></div>
+<div data-testname="button with aria-pressed false" role="button" aria-pressed="false" data-expected='{ "pressed": "false" }' class="ex-props"></div>
+<div data-testname="button with aria-pressed mixed" role="button" aria-pressed="mixed" data-expected='{ "pressed": "mixed" }' class="ex-props"></div>
 
 <script>
-
-promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("buttonPressedMissing"));
-  assert_equals(acc.pressed, "undefined");
-}, "button with missing aria-pressed");
-
-promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("buttonPressedTrue"));
-  assert_equals(acc.pressed, "true");
-}, "button with aria-pressed true");
-
-promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("buttonPressedFalse"));
-  assert_equals(acc.pressed, "false");
-}, "button with aria-pressed false");
-
-promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("buttonPressedMixed"));
-  assert_equals(acc.pressed, "mixed");
-}, "button with aria-pressed mixed");
-
+AriaUtils.verifyPropertiesBySelector(".ex-props");
 </script>

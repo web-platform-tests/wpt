@@ -219,6 +219,10 @@ const AriaUtils = {
       { role: "option", label: "option2", children: [] },
     ],
   });
+  Note that there can be differences in the structure of the accessibility tree
+  across browser engines for various valid reasons. This should only be used to
+  test a subtree where the structure of that subtree has been explicitly
+  standardized with consensus from multiple browser vendors.
   */
   verifyAccessibilitySubtree: function(subtreeRoot, expectedTree) {
     const desc = subtreeRoot;

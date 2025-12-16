@@ -17,3 +17,6 @@ features:
 - name: font-variant-numeric
   files:
   - font-variant-numeric.html
+- name: pointer-events
+  files:
+  - pointer-events.html

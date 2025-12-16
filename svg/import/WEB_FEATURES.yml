@@ -2,3 +2,7 @@ features:
 - name: svg-filters
   files:
   - "filters-*"
+- name: pointer-events
+  files:
+  - animate-interact-pevents-*
+  - interact-pevents-*

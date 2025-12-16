@@ -17,3 +17,10 @@ features:
 - name: font-variant-numeric
   files:
   - font-variant-numeric.html
+- name: opacity
+  files:
+  - opacity.html
+- name: opacity-svg
+  files:
+  - fill-opacity.html
+  - stroke-opacity.html

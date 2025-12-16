@@ -41,3 +41,8 @@ features:
 - name: contrast-color
   files:
   - contrast-color-001.html
+- name: opacity
+  files:
+  - t32-opacity-*.xht
+  - inline-opacity-float-child.html
+  - opacity-overlapping-letters.html

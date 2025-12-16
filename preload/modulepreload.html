@@ -224,7 +224,7 @@ for (const { type_name, file_extension } of types) {
         link.as = type_name;
         link.href = `resources/syntax-error.${file_extension}`;
         return attachAndWaitForLoad(link);
-    }, `link rel=modulepreload for a ${type_name} module with syntax error`);
+    }, `link rel=modulepreload for a ${type_name} module with syntax error will still load`);
 };
 
 for (const { type_name, file_extension } of types) {

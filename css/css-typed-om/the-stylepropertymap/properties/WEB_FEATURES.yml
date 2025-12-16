@@ -1,4 +1,10 @@
 features:
+- name: overflow-clip-margin
+  files:
+  - overflow-clip-margin.html
+- name: overflow-wrap
+  files:
+  - overflow-wrap.html
 - name: speak
   files:
   - speak.html

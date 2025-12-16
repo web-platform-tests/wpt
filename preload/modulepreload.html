@@ -6,6 +6,12 @@
 <script>
 host_info = get_host_info();
 
+const types = [
+    {"type_name": "script", "file_extension" : "js",   "import_attribute_type" : null},
+    {"type_name": "style",  "file_extension" : "css",  "import_attribute_type" : "css"},
+    {"type_name": "json",   "file_extension" : "json", "import_attribute_type" : "json"}
+];
+
 function verifyNumberOfDownloads(url, number, allowTransferSizeOfZero = false) {
     var numDownloads = 0;
     let absoluteURL = new URL(url, location.href).href;
@@ -57,37 +63,30 @@ promise_test(function(t) {
     }).then(() => {
         verifyNumberOfDownloads('resources/dummy.js?unique', 1);
     });
-}, 'link rel=modulepreload');
+}, "link rel=modulepreload with script shares a cache with <script> tags");
 
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.as = 'style';
-    link.href = 'resources/dummy.css?unique';
-    return attachAndWaitForLoad(link).then(() => {
-        verifyNumberOfDownloads('resources/dummy.css?unique', 1);
+for (const { type_name, file_extension, import_attribute_type } of types) {
+    promise_test(function(t) {
+        var link = document.createElement('link');
+        link.rel = 'modulepreload';
+        link.as = type_name;
+        link.href = `resources/dummy.${file_extension}?unique`;
+        return attachAndWaitForLoad(link).then(() => {
+            verifyNumberOfDownloads(`resources/dummy.${file_extension}?unique`, 1);
 
-        // Verify that importing doesn't fetch the module again.
-        return import("./resources/dummy.css?unique", { with: { type: "css" } });
-    }).then(() => {
-        verifyNumberOfDownloads('resources/dummy.css?unique', 1);
-    });
-}, 'link rel=modulepreload as=style');
-
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.as = 'json';
-    link.href = 'resources/dummy.json?unique';
-    return attachAndWaitForLoad(link).then(() => {
-        verifyNumberOfDownloads('resources/dummy.json?unique', 1);
-
-        // Verify that importing doesn't fetch the module again.
-        return import("./resources/dummy.json?unique", { with: { type: "json" } });
-    }).then(() => {
-        verifyNumberOfDownloads('resources/dummy.json?unique', 1);
-    });
-}, 'link rel=modulepreload as=json');
+            // Verify that importing doesn't fetch the module again. Note that there 
+            // is no valid Import Attribute for script imports, so the `with` statement
+            // must be absent.
+            if (import_attribute_type) {
+                return import(`./resources/dummy.${file_extension}?unique`, { with: { type: import_attribute_type } });
+            } else {
+                return import(`./resources/dummy.${file_extension}?unique`);
+            }
+        }).then(() => {
+            verifyNumberOfDownloads(`resources/dummy.${file_extension}?unique`, 1);
+        });
+    }, `link rel=modulepreload with ${type_name} doesn't re-fetch when imported`);
+};
 
 /**
  * Begin tests to ensure crossorigin value behaves the same on
@@ -218,51 +217,25 @@ promise_test(function(t) {
     });
 }, 'link rel=modulepreload with submodules');
 
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.href = 'resources/syntax-error.js';
-    return attachAndWaitForLoad(link);
-}, 'link rel=modulepreload for a script module with syntax error');
+for (const { type_name, file_extension } of types) {
+    promise_test(function(t) {
+        var link = document.createElement('link');
+        link.rel = 'modulepreload';
+        link.as = type_name;
+        link.href = `resources/syntax-error.${file_extension}`;
+        return attachAndWaitForLoad(link);
+    }, `link rel=modulepreload for a ${type_name} module with syntax error`);
+};
 
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.as = "style";
-    link.href = 'resources/syntax-error.css';
-    return attachAndWaitForLoad(link);
-}, 'link rel=modulepreload for a style module with syntax error');
-
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.as = "json";
-    link.href = 'resources/syntax-error.json';
-    return attachAndWaitForLoad(link);
-}, 'link rel=modulepreload for a JSON module with syntax error');
-
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.href = 'resources/not-exist.js';
-    return attachAndWaitForError(link);
-}, 'link rel=modulepreload for a script module with network error');
-
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.as = "style";
-    link.href = 'resources/not-exist.css';
-    return attachAndWaitForError(link);
-}, 'link rel=modulepreload for a style module with network error');
-
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.as = "json";
-    link.href = 'resources/not-exist.json';
-    return attachAndWaitForError(link);
-}, 'link rel=modulepreload for a JSON module with network error');
+for (const { type_name, file_extension } of types) {
+    promise_test(function(t) {
+        var link = document.createElement('link');
+        link.rel = 'modulepreload';
+        link.as = type_name;
+        link.href = `resources/not-exist.${file_extension}`;
+        return attachAndWaitForError(link);
+    }, `link rel=modulepreload for a ${type_name} module with network error`);
+};
 
 promise_test(function(t) {
     var link = document.createElement('link');
@@ -351,48 +324,22 @@ promise_test(function(t) {
     return attachAndWaitForLoad(link);
 }, 'link rel=modulepreload with invalid integrity');
 
-promise_test(function(t) {
-    var link1 = document.createElement('link');
-    var link2 = document.createElement('link');
-    link1.rel = 'modulepreload';
-    link2.rel = 'modulepreload';
-    link1.href = 'resources/module1.js?same-url';
-    link2.href = 'resources/module1.js?same-url';
-    return Promise.all([
-        attachAndWaitForLoad(link1),
-        attachAndWaitForLoad(link2),
-    ]);
-}, 'multiple script link rel=modulepreload with same href');
-
-promise_test(function(t) {
-    var link1 = document.createElement('link');
-    var link2 = document.createElement('link');
-    link1.rel = 'modulepreload';
-    link2.rel = 'modulepreload';
-    link1.as = "style";
-    link2.as = "style";
-    link1.href = 'resources/dummy.css?same-url';
-    link2.href = 'resources/dummy.css?same-url';
-    return Promise.all([
-        attachAndWaitForLoad(link1),
-        attachAndWaitForLoad(link2),
-    ]);
-}, 'multiple style link rel=modulepreload with same href');
-
-promise_test(function(t) {
-    var link1 = document.createElement('link');
-    var link2 = document.createElement('link');
-    link1.rel = 'modulepreload';
-    link2.rel = 'modulepreload';
-    link1.as = "json";
-    link2.as = "json";
-    link1.href = 'resources/dummy.json?same-url';
-    link2.href = 'resources/dummy.json?same-url';
-    return Promise.all([
-        attachAndWaitForLoad(link1),
-        attachAndWaitForLoad(link2),
-    ]);
-}, 'multiple JSON link rel=modulepreload with same href');
+for (const { type_name, file_extension } of types) {
+    promise_test(function(t) {
+        var link1 = document.createElement('link');
+        var link2 = document.createElement('link');
+        link1.rel = 'modulepreload';
+        link2.rel = 'modulepreload';
+        link1.as = type_name;
+        link2.as = type_name;
+        link1.href = `resources/dummy.${file_extension}?same-url`;
+        link2.href = `resources/dummy.${file_extension}?same-url`;
+        return Promise.all([
+            attachAndWaitForLoad(link1),
+            attachAndWaitForLoad(link2),
+        ]);
+    }, `multiple ${type_name} link rel=modulepreload with same href`);
+};
 
 promise_test(function(t) {
     var link1 = document.createElement('link');
@@ -410,106 +357,48 @@ promise_test(function(t) {
 
 }, 'multiple link rel=modulepreload with child module before parent');
 
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.href = 'resources/module1.mjs?matching-media';
-    link.media = 'all';
-    return attachAndWaitForLoad(link);
-}, 'link rel=modulepreload with script and matching media');
+for (const { type_name, file_extension } of types) {
+    promise_test(function(t) {
+        var link = document.createElement('link');
+        link.rel = 'modulepreload';
+        link.as = type_name;
+        link.href = `resources/dummy.${file_extension}?matching-media`;
+        link.media = 'all';
+        return attachAndWaitForLoad(link);
+    }, `link rel=modulepreload with ${type_name} and matching media`);
+};
 
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.href = 'resources/dummy.css?matching-media';
-    link.as = "style";
-    link.media = 'all';
-    return attachAndWaitForLoad(link);
-}, 'link rel=modulepreload with style and matching media');
+for (const { type_name, file_extension } of types) {
+    promise_test(function(t) {
+        var link = document.createElement('link');
+        link.rel = 'modulepreload';
+        link.as = type_name;
+        link.href = `resources/dummy.${file_extension}?non-matching-media`;
+        link.media = 'not all';
+        return attachAndWaitForTimeout(link, t);
+    }, `link rel=modulepreload with ${type_name} and non-matching media`);
+};
 
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.href = 'resources/dummy.json?matching-media';
-    link.as = "json";
-    link.media = 'all';
-    return attachAndWaitForLoad(link);
-}, 'link rel=modulepreload with JSON and matching media');
+for (const { type_name, file_extension } of types) {
+    promise_test(function(t) {
+        var link = document.createElement('link');
+        link.rel = 'modulepreload';
+        link.as = type_name;
+        link.href = `resources/dummy.${file_extension}?empty-media`;
+        link.media = '';
+        return attachAndWaitForLoad(link);
+    }, `link rel=modulepreload with ${type_name} and empty media`);
+};
 
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.href = 'resources/module1.mjs?non-matching-media';
-    link.media = 'not all';
-    return attachAndWaitForTimeout(link, t);
-}, 'link rel=modulepreload with script and non-matching media');
-
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.href = 'resources/dummy.css?non-matching-media';
-    link.as = "style";
-    link.media = 'not all';
-    return attachAndWaitForTimeout(link, t);
-}, 'link rel=modulepreload with style and non-matching media');
-
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.href = 'resources/dummy.json?non-matching-media';
-    link.as = "json";
-    link.media = 'not all';
-    return attachAndWaitForTimeout(link, t);
-}, 'link rel=modulepreload with JSON and non-matching media');
-
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.href = 'resources/module1.mjs?empty-media';
-    link.media = '';
-    return attachAndWaitForLoad(link);
-}, 'link rel=modulepreload with script and empty media');
-
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.href = 'resources/dummy.css?empty-media';
-    link.as = "style";
-    link.media = '';
-    return attachAndWaitForLoad(link);
-}, 'link rel=modulepreload with style and empty media');
-
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.href = 'resources/dummy.json?empty-media';
-    link.as = "json";
-    link.media = '';
-    return attachAndWaitForLoad(link);
-}, 'link rel=modulepreload with JSON and empty media');
-
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.href = '';
-    return attachAndWaitForTimeout(link, t);
-}, 'link rel=modulepreload with script and empty href');
-
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.as = "style";
-    link.href = '';
-    return attachAndWaitForTimeout(link, t);
-}, 'link rel=modulepreload with style and empty href');
-
-promise_test(function(t) {
-    var link = document.createElement('link');
-    link.rel = 'modulepreload';
-    link.as = "json";
-    link.href = '';
-    return attachAndWaitForTimeout(link, t);
-}, 'link rel=modulepreload with JSON and empty href');
+for (const { type_name } of types) {
+    promise_test(function(t) {
+        var link = document.createElement('link');
+        link.rel = 'modulepreload';
+        link.as = type_name;
+        link.href = '';
+        return attachAndWaitForTimeout(link, t);
+    }, `link rel=modulepreload with ${type_name} and empty href`);
+};
 
 promise_test(function(t) {
     var link = document.createElement('link');

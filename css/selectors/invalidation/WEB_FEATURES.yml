@@ -21,6 +21,14 @@ features:
 - name: nth-child-of
   files:
   - nth-child-of-*
+  - nth-child-when-*
+  - nth-child-whole-subtree.html
+  - nth-child-containing-ancestor.html
+  - negated-nth-child-when-*
+  - nth-last-child-of-*
+  - nth-last-child-when-*
+  - nth-last-child-containing-ancestor.html
+  - negated-nth-last-child-when-*
 - name: nth-of-type
   files:
   - 'negated-*-of-type*'

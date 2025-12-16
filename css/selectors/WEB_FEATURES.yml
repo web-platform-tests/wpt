@@ -32,6 +32,11 @@ features:
 - name: nth-child-of
   files:
   - nth-child-of-*
+  - nth-child-and-nth-last-child.html
+  - nth-child-specificity-*
+  - nth-last-child-of-*
+  - nth-last-child-specificity-*
+  - nth-last-child-invalid.html
 - name: nth-of-type
   files:
   - first-of-type.html

@@ -14,3 +14,9 @@ features:
 - name: box-sizing
   files:
   - box-sizing-*
+- name: outlines
+  files:
+  - outline-width-*
+  - outline-style-*
+  - outline-color-*
+  - outline-offset-*

@@ -13,9 +13,21 @@ features:
   files:
   - interactivity-*
   - inert-attribute-overriding.html
+- name: outlines
+  files:
+  - outline-width-*
+  - outline-style-*
+  - outline-color-*
+  - outline-offset-*
+  - outline-auto-width-*
 - name: outline
   files:
   - outline-*
+  - "!outline-width-*"
+  - "!outline-style-*"
+  - "!outline-color-*"
+  - "!outline-offset-*"
+  - "!outline-auto-width-*"
 - name: resize
   files:
   - resize-*

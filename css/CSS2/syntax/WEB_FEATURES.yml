@@ -56,3 +56,6 @@ features:
   - at-charset-space-*
   - at-charset-utf16-*
   - charset-attr-*
+- name: lang
+  files:
+  - case-sensitive-004.xht

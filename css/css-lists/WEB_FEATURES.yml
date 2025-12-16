@@ -5,3 +5,6 @@ features:
 - name: text-stroke-fill
   files:
   - marker-webkit-text-fill-color.html
+- name: list-style
+  files:
+  - "list-style-*"

@@ -2,3 +2,7 @@ features:
 - name: text-align
   files:
   - text-align-applies-to-004.xht
+- name: layout-direction-override
+  files:
+  - direction-applies-to-011.xht
+  - unicode-bidi-applies-to-011.xht

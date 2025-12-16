@@ -14,6 +14,10 @@ features:
 - name: not
   files:
   - not-*
+- name: nth-child
+  files:
+  - first-child-last-child.html
+  - nth-child-in-shadow-root.html
 - name: nth-child-of
   files:
   - nth-child-of-*

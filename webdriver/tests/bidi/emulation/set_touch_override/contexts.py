@@ -82,7 +82,8 @@ async def test_overrides_user_contexts(bidi_session, get_max_touch_points,
 
 
 async def test_overrides_global(bidi_session, get_max_touch_points,
-                                affected_user_context):
+                                affected_user_context,
+                                initial_max_touch_points):
     affected_context = await bidi_session.browsing_context.create(
         type_hint="tab", user_context=affected_user_context)
 
@@ -102,3 +103,8 @@ async def test_overrides_global(bidi_session, get_max_touch_points,
         contexts=[affected_context["context"]])
     assert await get_max_touch_points(
         affected_context) == MAX_TOUCHES_GLOBAL
+
+    await bidi_session.emulation.set_touch_override(
+        max_touch_points=None)
+    assert await get_max_touch_points(
+        affected_context) == initial_max_touch_points

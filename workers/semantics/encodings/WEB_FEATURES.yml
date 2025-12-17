@@ -3,3 +3,8 @@ features:
   files:
   - 002.html
   - 004.html
+- name: dedicated-workers
+  files:
+  - "*"
+  - "!002.html"
+  - "!004.html"

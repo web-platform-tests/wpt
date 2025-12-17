@@ -2,3 +2,7 @@ features:
 - name: shared-workers
   files:
   - redirect-sharedworker.html
+- name: dedicated-workers
+  files:
+  - "*"
+  - "!redirect-sharedworker.html"

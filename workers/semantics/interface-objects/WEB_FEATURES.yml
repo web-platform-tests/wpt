@@ -5,3 +5,7 @@ features:
   # configuration.
   - 003.any.js
   - 004.any.js
+- name: dedicated-workers
+  files:
+  - 001.worker.js
+  - 002.worker.js

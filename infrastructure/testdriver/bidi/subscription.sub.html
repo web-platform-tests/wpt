@@ -140,6 +140,8 @@
         // helper.
         const events = await messages_promise;
         assert_equals(events.length, 2);
+        // TODO: DEBUG. Remove.
+        assert_equals(`${events[0].args[0].value}, ${events[1].args[0].value}`, `${MAIN_WINDOW_MESSAGE}, ${POPUP_MESSAGE}`);
         assertLogEvent(events[0], MAIN_WINDOW_MESSAGE)
         assertLogEvent(events[1], POPUP_MESSAGE)
     }, "Assert testdriver can subscribe globally");

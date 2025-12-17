@@ -13,7 +13,18 @@ import pytest
 
 import localpaths  # type: ignore
 from . import serve
-from .serve import ConfigBuilder, WrapperHandler, inject_script
+from .serve import (
+    ConfigBuilder,
+    WrapperHandler,
+    inject_script,
+    # Use 'T262' aliases to avoid naming collisions with the pytest collector
+    Test262WindowHandler as T262WindowHandler,
+    Test262WindowTestHandler as T262WindowTestHandler,
+    Test262WindowModuleHandler as T262WindowModuleHandler,
+    Test262WindowModuleTestHandler as T262WindowModuleTestHandler,
+    Test262StrictWindowHandler as T262StrictWindowHandler,
+    Test262StrictWindowTestHandler as T262StrictWindowTestHandler,
+    Test262StrictHandler as T262StrictHandler)
 
 
 logger = logging.getLogger()
@@ -182,6 +193,12 @@ throw new TypeError();
 flags: [module]
 ---*/
 import {} from 'some-module';
+""",
+        os.path.join(tests_root, "test262", "teststrict.js"): """/*---\ndescription: A strict mode test
+flags: [onlyStrict]
+includes: [propertyHelper.js]
+---*/
+console.log('hello');
 """
     }
 
@@ -249,84 +266,82 @@ def _test_handler_get_metadata(handler_cls: Type[WrapperHandler],
     metadata = list(handler._get_metadata(mock_request))  # type: ignore[no-untyped-call]
     for item in expected_metadata:
         assert item in metadata
+    assert len(expected_metadata) == len(metadata), f"{expected_metadata} != {metadata}"
 
-def test_test262_window_test_handler_path_replace(test262_handlers: Tuple[str, str]) -> None:
-    from tools.serve.serve import Test262WindowTestHandler
-    tests_root, url_base = test262_handlers
-    _test_handler_path_replace(
-        Test262WindowTestHandler,
-        tests_root,
-        url_base,
-        [(".test262-test.html", ".js")]
-    )
 
-def test_test262_window_test_handler_get_metadata_includes(test262_handlers: Tuple[str, str]) -> None:
-    from tools.serve.serve import Test262WindowTestHandler
+@pytest.mark.parametrize("handler_cls, expected", [
+    (T262WindowHandler, [(".test262.html", ".js", ".test262-test.html")]),
+    (T262WindowTestHandler, [(".test262-test.html", ".js")]),
+    (T262WindowModuleHandler, [(".test262-module.html", ".js", ".test262-module-test.html")]),
+    (T262WindowModuleTestHandler, [(".test262-module-test.html", ".js")]),
+    (T262StrictWindowHandler, [(".test262.strict.html", ".js", ".test262-test.strict.html")]),
+    (T262StrictWindowTestHandler, [(".test262-test.strict.html", ".js", ".test262.strict.js")]),
+])
+def test_path_replace(test262_handlers, handler_cls, expected):
     tests_root, url_base = test262_handlers
-    _test_handler_get_metadata(
-        Test262WindowTestHandler,
-        tests_root,
-        url_base,
+    _test_handler_path_replace(handler_cls, tests_root, url_base, expected)
+
+
+@pytest.mark.parametrize("handler_cls, request_path, expected_metadata", [
+    (
+        T262WindowTestHandler,
         "/test262/basic.test262-test.html",
-        [
-            ('script', '/third_party/test262/harness/assert.js'),
-            ('script', '/third_party/test262/harness/sta.js')
-        ]
-    )
-
-
-def test_test262_window_test_handler_get_metadata_negative(test262_handlers: Tuple[str, str]) -> None:
-    from tools.serve.serve import Test262WindowTestHandler
-    tests_root, url_base = test262_handlers
-    _test_handler_get_metadata(
-        Test262WindowTestHandler,
-        tests_root,
-        url_base,
+        [('script', '/third_party/test262/harness/assert.js'), ('script', '/third_party/test262/harness/sta.js')]
+    ),
+    (
+        T262WindowTestHandler,
         "/test262/negative.test262-test.html",
         [('negative', 'TypeError')]
-    )
-
-
-def test_test262_window_test_handler_wrapper_content(test262_handlers: Tuple[str, str]) -> None:
-    from tools.serve.serve import Test262WindowTestHandler
+    ),
+    (
+        T262StrictWindowTestHandler,
+        "/test262/teststrict.test262-test.strict.html",
+        [('script', '/third_party/test262/harness/propertyHelper.js')]
+    ),
+])
+def test_get_metadata(test262_handlers, handler_cls, request_path, expected_metadata):
     tests_root, url_base = test262_handlers
-    _test_handler_wrapper_content(
-        Test262WindowTestHandler,
-        tests_root,
-        url_base,
+    _test_handler_get_metadata(handler_cls, tests_root, url_base, request_path, expected_metadata)
+
+
+@pytest.mark.parametrize("handler_cls, request_path, expected_substrings", [
+    # T262WindowHandler: Should contain the iframe pointing to the test
+    (
+        T262WindowHandler,
+        "/test262/basic.test262.html",
+        ['<iframe id="test262-iframe" src="/test262/basic.test262-test.html"></iframe>']
+    ),
+    # T262WindowTestHandler: Should contain script tags
+    (
+        T262WindowTestHandler,
         "/test262/basic.test262-test.html",
-        [
-            '<script src="/resources/test262/testharness-client.js"></script>',
-            '<script src="/third_party/test262/harness/assert.js"></script>',
-            '<script src="/third_party/test262/harness/sta.js"></script>',
-            '<script>test262Setup()</script>',
-            '<script src="/test262/basic.js"></script>',
-            '<script>test262Done()</script>',
-        ]
-    )
-
-
-def test_test262_window_module_test_handler_path_replace(test262_handlers: Tuple[str, str]) -> None:
-    from tools.serve.serve import Test262WindowModuleTestHandler
-    tests_root, url_base = test262_handlers
-    _test_handler_path_replace(
-        Test262WindowModuleTestHandler,
-        tests_root,
-        url_base,
-        [(".test262-module-test.html", ".js")]
-    )
-
-
-def test_test262_window_module_test_handler_wrapper_content(test262_handlers: Tuple[str, str]) -> None:
-    from tools.serve.serve import Test262WindowModuleTestHandler
-    tests_root, url_base = test262_handlers
-    _test_handler_wrapper_content(
-        Test262WindowModuleTestHandler,
-        tests_root,
-        url_base,
+        ['<script src="/test262/basic.js"></script>', '<script>test262Setup()</script>', '<script>test262Done()</script>']
+    ),
+    # T262WindowModuleTestHandler: Should contain module import
+    (
+        T262WindowModuleTestHandler,
         "/test262/module.test262-module-test.html",
-        [
-            '<script type="module">',
-            'import {} from "/test262/module.js";',
-        ]
-    )
+        ['<script type="module">', 'import {} from "/test262/module.js";', 'test262Setup();', 'test262Done();']
+    ),
+    # Verification of the 'negative' replacement in the HTML
+    (
+        T262WindowTestHandler,
+        "/test262/negative.test262-test.html",
+        ["<script>test262Negative('TypeError')</script>"]
+    ),
+    # Strict HTML Case: points to the .strict.js variant
+    (
+        T262StrictWindowTestHandler,
+        "/test262/teststrict.test262-test.strict.html",
+        ['src="/test262/teststrict.test262.strict.js"']
+    ),
+    # Strict JS Case: The handler that serves the actual script
+    (
+        T262StrictHandler,
+        "/test262/teststrict.test262.strict.js",
+        ['"use strict";', "console.log('hello');"]
+    ),
+])
+def test_wrapper_content(test262_handlers, handler_cls, request_path, expected_substrings):
+    tests_root, url_base = test262_handlers
+    _test_handler_wrapper_content(handler_cls, tests_root, url_base, request_path, expected_substrings)

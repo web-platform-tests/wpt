@@ -9,3 +9,9 @@ features:
   files:
   - image-rendering-computed.html
   - image-rendering-valid.html
+- name: object-fit
+  files:
+  - object-fit-*
+- name: object-position
+  files:
+  - object-position-*

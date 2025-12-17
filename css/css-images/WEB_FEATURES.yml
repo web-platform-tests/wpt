@@ -10,3 +10,11 @@ features:
   - object-fit-*-png*
   - "!object-fit-containcontainintrinsicsize-png-*"
   - "!object-fit-containsize-png-*"
+- name: object-fit
+  files:
+  - image-fit-*
+  - object-fit-*
+  - "!object-fit-*-png*"
+- name: object-position
+  files:
+  - object-position-*

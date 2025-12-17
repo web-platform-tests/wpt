@@ -38,3 +38,9 @@ features:
 - name: text-align-last
   files:
   - "text-align-last-*"
+- name: text-transform
+  files:
+  - text-transform-*
+- name: text-justify
+  files:
+  - text-justify-*

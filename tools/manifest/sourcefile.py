@@ -908,6 +908,9 @@ class SourceFile:
     def possible_types(self) -> Set[Text]:
         """Determines the set of possible types without reading the file"""
 
+        if self.items_cache:
+            return {self.items_cache[0]}
+
         if self.name_is_non_test:
             return {SupportFile.item_type}
 

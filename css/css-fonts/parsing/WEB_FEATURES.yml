@@ -55,3 +55,6 @@ features:
 - name: font-feature-settings
   files:
   - font-feature-settings-*
+- name: font-variation-settings
+  files:
+  - font-variation-settings-*

@@ -20,3 +20,6 @@ features:
 - name: font-variant-numeric
   files:
   - font-variant-numeric.html
+- name: font-variation-settings
+  files:
+  - font-variation-settings.html

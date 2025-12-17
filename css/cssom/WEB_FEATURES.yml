@@ -28,3 +28,11 @@ features:
 - name: font-variant
   files:
   - font-variant-shorthand-serialization.html
+- name: namespace
+  files:
+  - CSSNamespaceRule.html
+  - CSSStyleRule-set-selectorText-namespace.html
+  - at-namespace.html
+  - delete-namespace-rule-when-child-rule-exists.html
+  - insertRule-namespace-no-index.html
+  - serialize-namespaced-type-selectors.html

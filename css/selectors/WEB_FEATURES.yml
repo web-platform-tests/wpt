@@ -41,3 +41,6 @@ features:
 - name: open-pseudo
   files:
   - open-pseudo.html
+- name: namespace
+  files:
+  - selectors-namespace-001.xml

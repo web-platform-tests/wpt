@@ -13,3 +13,6 @@ features:
 - name: contrast-color
   files:
   - color-*-contrast-color-function.html
+- name: named-color
+  files:
+  - "*-named-color.html"

@@ -7,8 +7,7 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script>
     // Use a unique token to filter log messages from this test instance.
-    // `Math.random` is used as `crypto.randomUUID` requires a secure context.
-    const logMessageToken = Math.random().toString();
+    const logMessageToken = "{{uuid()}}";
     const MAIN_WINDOW_MESSAGE = `1. MAIN WINDOW MESSAGE, ${logMessageToken}`;
     const POPUP_MESSAGE = `2. POPUP MESSAGE, ${logMessageToken}`;
 

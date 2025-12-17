@@ -1,11 +1,12 @@
 # mypy: allow-untyped-defs
-# mypy: disable-error-code="no-untyped-call"
 
+import builtins
+import io
 import logging
 import os
 import pickle
 import platform
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 from typing import Any, Generator, Tuple
 
 import pytest
@@ -135,23 +136,20 @@ def test_inject_script_after_head():
         </body>
     </html>"""
     assert INJECT_SCRIPT_MARKER in html
-    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""),
-                         INJECT_SCRIPT_MARKER) == html
+    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER) == html
 
 
 def test_inject_script_no_html_head():
     html = b"""<!DOCTYPE html>
     <!-- inject here --><div></div>"""
     assert INJECT_SCRIPT_MARKER in html
-    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""),
-                         INJECT_SCRIPT_MARKER) == html
+    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER) == html
 
 
 def test_inject_script_no_doctype():
     html = b"""<!-- inject here --><div></div>"""
     assert INJECT_SCRIPT_MARKER in html
-    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""),
-                         INJECT_SCRIPT_MARKER) == html
+    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER) == html
 
 
 def test_inject_script_parse_error():
@@ -159,48 +157,60 @@ def test_inject_script_parse_error():
     assert INJECT_SCRIPT_MARKER in html
     # On a parse error, the script should not be injected and the original content should be
     # returned.
-    assert INJECT_SCRIPT_MARKER not in inject_script(html.replace(INJECT_SCRIPT_MARKER, b""),
-                                                 INJECT_SCRIPT_MARKER)
+    assert INJECT_SCRIPT_MARKER not in inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER)
 
 
 @pytest.fixture
 def test262_handlers(request: Any) -> Generator[Tuple[str, str], None, None]:
-    # Create dummy test files for TestRecord.parse to read
     tests_root = os.path.join(os.path.dirname(__file__), "tests", "testdata")
     url_base = "/"
 
-    os.makedirs(os.path.join(tests_root, "test262"), exist_ok=True)
-    with open(os.path.join(tests_root, "test262", "basic.js"), "w") as f:
-        f.write("""/*---\ndescription: A basic test
+    mock_file_contents = {
+        os.path.join(tests_root, "test262", "basic.js"): """/*---\ndescription: A basic test
 includes: [assert.js, sta.js]
 ---*/
 assert.sameValue(1, 1);
-""")
-    with open(os.path.join(tests_root, "test262", "negative.js"), "w") as f:
-        f.write("""/*---\ndescription: A negative test
+""",
+        os.path.join(tests_root, "test262", "negative.js"): """/*---\ndescription: A negative test
 negative:
   phase: runtime
   type: TypeError
 ---*/
 throw new TypeError();
-""")
-    with open(os.path.join(tests_root, "test262", "module.js"), "w") as f:
-        f.write("""/*---\ndescription: A module test
+""",
+        os.path.join(tests_root, "test262", "module.js"): """/*---
+description: A module test
 flags: [module]
 ---*/
 import {} from 'some-module';
-""")
+"""
+    }
 
-    def finalizer() -> None:
-        # Clean up dummy test files and directories
-        os.remove(os.path.join(tests_root, "test262", "basic.js"))
-        os.remove(os.path.join(tests_root, "test262", "negative.js"))
-        os.remove(os.path.join(tests_root, "test262", "module.js"))
-        os.rmdir(os.path.join(tests_root, "test262"))
-        os.rmdir(tests_root)
-    request.addfinalizer(finalizer)
+    # Store original functions to be called if our mock doesn't handle the file
+    original_open = builtins.open
+    original_exists = os.path.exists
+    original_isdir = os.path.isdir
 
-    yield tests_root, url_base
+    def custom_open(file, mode='r', *args, **kwargs):
+        if file in mock_file_contents:
+            # The 'encoding' argument is not used in binary mode.
+            if 'b' in mode:
+                return io.BytesIO(mock_file_contents[file].encode('ISO-8859-1'))
+            else:
+                return io.StringIO(mock_file_contents[file])
+        return original_open(file, mode, *args, **kwargs)
+
+    def custom_exists(path):
+        return path in mock_file_contents or original_exists(path)
+
+    def custom_isdir(path):
+        # This mocks the existence of the `test262` directory.
+        return path == os.path.join(tests_root, "test262") or original_isdir(path)
+
+    with patch('builtins.open', side_effect=custom_open), \
+         patch('os.path.exists', side_effect=custom_exists), \
+         patch('os.path.isdir', side_effect=custom_isdir):
+        yield tests_root, url_base
 
 
 def _create_mock_request(path: str) -> MagicMock:

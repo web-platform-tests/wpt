@@ -5,3 +5,6 @@ features:
 - name: text-combine-upright
   files:
   - "text-combine-upright-*"
+- name: layout-direction-override
+  files:
+  - "bidi-*"

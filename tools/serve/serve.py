@@ -332,7 +332,7 @@ class Test262WindowHandler(HtmlWrapperHandler):
     path_replace = [(".test262.html", ".js", ".test262-test.html")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
-<title>%(path)s</title>
+<title>Test</title>
 <script src="/resources/test262/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 %(meta)s
@@ -350,7 +350,7 @@ class Test262WindowTestHandler(HtmlWrapperHandler):
 
     pre_wrapper = """<!doctype html>
 <meta charset=utf-8>
-<title>%(path)s</title>
+<title>Test</title>
 <script src="/resources/test262/testharness-client.js"></script>
 <script src="/third_party/test262/harness/assert.js"></script>
 <script src="/third_party/test262/harness/sta.js"></script>

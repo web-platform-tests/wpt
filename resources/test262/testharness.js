@@ -22,11 +22,12 @@
     function report_result() {
         log('done');
         log(JSON.stringify(harness_status));
+        console.log('Test262 harness_status:', JSON.stringify(harness_status));
 
         if (callback || window.opener) {
             var tests = [{
                 name: document.title,
-                status: harness_status.status
+                status: harness_status.subtest_status
             }];
             var stat = {
                 status: harness_status.status,
@@ -38,6 +39,7 @@
                 tests: tests,
                 status: stat
             };
+            console.log('Test262 final message:', JSON.stringify(message));
             if (callback) {
                 log("callback");
                 callback(tests, stat);
@@ -97,7 +99,16 @@
                 harness_status.message = event.data;
             }
             if (typeof event.data === 'number') {
-                harness_status.status = event.data;
+                if (event.data === 1) { // Test262Error, so a subtest failure
+                    harness_status.status = 0; // Overall harness is OK
+                    harness_status.subtest_status = 1; // Subtest is FAIL
+                } else if (event.data === 2) { // Other error, so a harness error
+                    harness_status.status = 1; // Overall harness is ERROR
+                    harness_status.subtest_status = 1; // Subtest is FAIL
+                } else {
+                    harness_status.status = event.data;
+                    harness_status.subtest_status = event.data;
+                }
                 done();
             }
         }

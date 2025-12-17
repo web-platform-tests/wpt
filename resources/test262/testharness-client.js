@@ -8,6 +8,13 @@
 
 
 (function() {
+    // A placeholder until the real one is loaded from assert.js
+    function Test262Error(message) {
+        this.message = message;
+    }
+    Test262Error.prototype.name = "Test262Error";
+    self.Test262Error = Test262Error;
+
     // We stash these in case the test overrides them
     var Object_prototype_toString = Object.prototype.toString;
     var Error_prototype_toString = Error.prototype.toString;
@@ -25,6 +32,7 @@
     function done() {
         if (test_finished) { return; }
         test_finished = true;
+        console.log('Test262 client sending message:', message, 'status:', status);
         parentWindow.postMessage(message, '*');
         parentWindow.postMessage(status, '*');
     }
@@ -33,18 +41,22 @@
     function on_error(event) {
         // This hack ensures that errors thrown inside of a $262.evalScript get
         // rethrown in the correct place.
-        if (String_prototype_indexOf.call(event.error.message, "Failed to execute 'appendChild' on 'Node'") === 0) {
+        if (event.error && String_prototype_indexOf.call(event.error.message, "Failed to execute 'appendChild' on 'Node'") === 0) {
             window.__test262_evalScript_error_ = event.error;
             return;
         }
-        if (expectedError &&
+
+        if (expectedError && event.error &&
             (String_prototype_indexOf.call(event.error.toString(), expectedError) === 0 ||
              String_prototype_indexOf.call(Error_prototype_toString.call(event.error), expectedError) === 0 ||
              String_prototype_indexOf.call(event.message, expectedError) === 0)) {
-          status = 0;
+          status = 0; // OK
           message = "OK";
+        } else if (event.error instanceof self.Test262Error) {
+            status = 1; // FAIL
+            message = event.error.message;
         } else {
-          status = 1;
+          status = 2; // ERROR
           message = event.message;
         }
         done();

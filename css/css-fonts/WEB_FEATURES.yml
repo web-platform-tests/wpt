@@ -79,6 +79,11 @@ features:
   - font-default-03.html
   - font-default-04.html
   - variable-in-feature-crash.html
+- name: font-style
+  files:
+  - font-style-*
+  - italic-oblique-fallback.html
+  - test-synthetic-italic*
 - name: font-weight
   files:
   - font-weight-*

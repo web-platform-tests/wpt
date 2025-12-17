@@ -6,3 +6,9 @@ features:
   files:
   - host-context-*
   - host-in-host-context-selector.html
+- name: host
+  files:
+  - host-*
+  - "!host-context-*"
+  - "!host-in-host-context-selector.html"
+  - "!host-is-featureless.html"

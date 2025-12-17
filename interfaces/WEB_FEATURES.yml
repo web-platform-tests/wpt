@@ -2,3 +2,6 @@ features:
 - name: barcode
   files:
   - shape-detection-api.idl
+- name: long-animation-frames
+  files:
+  - long-animation-frames.idl

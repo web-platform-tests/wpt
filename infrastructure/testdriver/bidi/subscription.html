@@ -6,9 +6,8 @@
 <script src="/resources/testdriver.js?feature=bidi"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script>
-    // `logMessageToken` is required for test isolation, as the events are not
-    // scoped to the test. `crypto.randomUUID` is not available on non-secure
-    // pages in all browsers, so use `Math.random` as a fallback.
+    // Use a unique token to filter log messages from this test instance.
+    // `Math.random` is used as `crypto.randomUUID` requires a secure context.
     const logMessageToken = Math.random().toString();
     const MAIN_WINDOW_MESSAGE = `1. MAIN WINDOW MESSAGE, ${logMessageToken}`;
     const POPUP_MESSAGE = `2. POPUP MESSAGE, ${logMessageToken}`;

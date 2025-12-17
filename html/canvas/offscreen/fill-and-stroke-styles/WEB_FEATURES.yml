@@ -2,3 +2,6 @@ features:
 - name: canvas-createconicgradient
   files:
   - 2d.gradient.conic.*
+- name: dom-geometry
+  files:
+  - 2d.pattern.transform.identity.*

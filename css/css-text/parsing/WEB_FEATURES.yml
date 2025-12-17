@@ -2,6 +2,10 @@ features:
 - name: line-break
   files:
   - line-break-*
+- name: overflow-wrap
+  files:
+  - overflow-wrap*
+  - word-wrap*
 - name: text-spacing-trim
   files:
   - text-spacing-trim-*

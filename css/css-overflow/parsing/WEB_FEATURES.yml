@@ -8,3 +8,6 @@ features:
 - name: scrollbar-gutter
   files:
   - scrollbar-gutter-*
+- name: overflow-clip-margin
+  files:
+  - overflow-clip-margin*

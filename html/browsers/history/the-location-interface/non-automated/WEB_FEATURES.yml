@@ -1,0 +1,5 @@
+features:
+- name: location
+  files:
+  - manual_click_location_replace_during_load*
+  - reload_in_resize-1.html

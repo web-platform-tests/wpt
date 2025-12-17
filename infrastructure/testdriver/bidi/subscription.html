@@ -6,8 +6,12 @@
 <script src="/resources/testdriver.js?feature=bidi"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script>
-    const MAIN_WINDOW_MESSAGE = "1. MAIN WINDOW MESSAGE";
-    const POPUP_MESSAGE = "2. POPUP MESSAGE";
+    // `logMessageToken` is required for test isolation, as the events are not
+    // scoped to the test. `crypto.randomUUID` is not available on non-secure
+    // pages in all browsers, so use `Math.random` as a fallback.
+    const logMessageToken = Math.random().toString();
+    const MAIN_WINDOW_MESSAGE = `1. MAIN WINDOW MESSAGE, ${logMessageToken}`;
+    const POPUP_MESSAGE = `2. POPUP MESSAGE, ${logMessageToken}`;
 
     /** Assert the event is `console.log` with the given message. */
     function assertLogEvent(event, expected_message) {
@@ -24,6 +28,12 @@
         return new Promise(resolve => {
             const events = []
             test_driver.bidi.log.entry_added.on(event => {
+                // Filter out events that are not relevant to this test. Required, as
+                // global subscription exposes the events from all contexts.
+                if (event.args.length === 0 || event.args[0].value === undefined ||
+                    !event.args[0].value.includes(logMessageToken)) {
+                    return;
+                }
                 events.push(event);
                 if (events.length === count) {
                     // The order of the events from different browsing contexts
@@ -66,7 +76,7 @@
         t.add_cleanup(() => popup.close());
 
         const unsubscribe_handle = await test_driver.bidi.log.entry_added.subscribe(
-            {contexts: [window]});
+            { contexts: [window] });
         t.add_cleanup(async () => await unsubscribe_handle());
 
         // Add a listener for the log.entryAdded event.
@@ -90,7 +100,7 @@
         t.add_cleanup(() => popup.close());
 
         const unsubscribe_handle = await test_driver.bidi.log.entry_added.subscribe(
-            {contexts: [popup]});
+            { contexts: [popup] });
         t.add_cleanup(async () => await unsubscribe_handle());
 
         // Add a listener for the log.entryAdded event.
@@ -115,11 +125,12 @@
         t.add_cleanup(() => popup.close());
 
         const unsubscribe_handle = await test_driver.bidi.log.entry_added.subscribe(
-            {contexts: null});
+            { contexts: null });
         t.add_cleanup(async () => await unsubscribe_handle());
 
+
         // Add a listener for the log.entryAdded event.
-        const messages_promise = waitForLogMessages(2)
+        const messages_promise = waitForLogMessages(2);
 
         // The order of the calls does not matter, as the events will be
         // sorted by the `waitForLogMessages` helper.

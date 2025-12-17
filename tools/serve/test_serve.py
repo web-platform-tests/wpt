@@ -7,13 +7,13 @@ import os
 import pickle
 import platform
 from unittest.mock import MagicMock, patch
-from typing import Any, Generator, Tuple
+from typing import Generator, List, Tuple, Type
 
 import pytest
 
 import localpaths  # type: ignore
 from . import serve
-from .serve import ConfigBuilder, inject_script
+from .serve import ConfigBuilder, WrapperHandler, inject_script
 
 
 logger = logging.getLogger()
@@ -161,7 +161,7 @@ def test_inject_script_parse_error():
 
 
 @pytest.fixture
-def test262_handlers(request: Any) -> Generator[Tuple[str, str], None, None]:
+def test262_handlers() -> Generator[Tuple[str, str], None, None]:
     tests_root = os.path.join(os.path.dirname(__file__), "tests", "testdata")
     url_base = "/"
 
@@ -178,8 +178,7 @@ negative:
 ---*/
 throw new TypeError();
 """,
-        os.path.join(tests_root, "test262", "module.js"): """/*---
-description: A module test
+        os.path.join(tests_root, "test262", "module.js"): """/*---\ndescription: A module test
 flags: [module]
 ---*/
 import {} from 'some-module';
@@ -220,62 +219,114 @@ def _create_mock_request(path: str) -> MagicMock:
     return mock_request
 
 
-def test_test262_window_test_handler_path_replace(test262_handlers: Any) -> None:
-    from tools.serve.serve import Test262WindowTestHandler
-    tests_root, url_base = test262_handlers
-    handler = Test262WindowTestHandler(base_path=tests_root, url_base=url_base)
-    assert handler.path_replace == [(".test262-test.html", ".js")]
+def _test_handler_path_replace(handler_cls: Type[WrapperHandler],
+                               tests_root: str,
+                               url_base: str,
+                               expected: List[Tuple[str, str]]) -> None:
+    handler = handler_cls(base_path=tests_root, url_base=url_base)
+    assert handler.path_replace == expected
 
-
-def test_test262_window_test_handler_get_metadata_includes(test262_handlers: Any) -> None:
-    from tools.serve.serve import Test262WindowTestHandler
-    tests_root, url_base = test262_handlers
-    handler = Test262WindowTestHandler(base_path=tests_root, url_base=url_base)
-    mock_request = _create_mock_request("/test262/basic.test262-test.html")
-    metadata = list(handler._get_metadata(mock_request))
-    assert ('script', '/third_party/test262/harness/assert.js') in metadata
-    assert ('script', '/third_party/test262/harness/sta.js') in metadata
-
-
-def test_test262_window_test_handler_get_metadata_negative(test262_handlers: Any) -> None:
-    from tools.serve.serve import Test262WindowTestHandler
-    tests_root, url_base = test262_handlers
-    handler = Test262WindowTestHandler(base_path=tests_root, url_base=url_base)
-    mock_request = _create_mock_request("/test262/negative.test262-test.html")
-    metadata = list(handler._get_metadata(mock_request))
-    assert ('negative', 'TypeError') in metadata
-
-
-def test_test262_window_test_handler_wrapper_content(test262_handlers: Any) -> None:
-    from tools.serve.serve import Test262WindowTestHandler
-    tests_root, url_base = test262_handlers
-    handler = Test262WindowTestHandler(base_path=tests_root, url_base=url_base)
-    mock_request = _create_mock_request("/test262/basic.test262-test.html")
+def _test_handler_wrapper_content(handler_cls: Type[WrapperHandler],
+                                  tests_root: str,
+                                  url_base: str,
+                                  request_path: str,
+                                  expected_content: List[str]) -> None:
+    handler = handler_cls(base_path=tests_root, url_base=url_base)
+    mock_request = _create_mock_request(request_path)
     mock_response = MagicMock()
-    handler.handle_request(mock_request, mock_response)
+    handler.handle_request(mock_request, mock_response)  # type: ignore[no-untyped-call]
     content = mock_response.content
-    assert "<script src=\"/resources/test262/testharness-client.js\"></script>" in content
-    assert "<script src=\"/third_party/test262/harness/assert.js\"></script>" in content
-    assert "<script src=\"/third_party/test262/harness/sta.js\"></script>" in content
-    assert "<script>test262Setup()</script>" in content
-    assert "<script src=\"/test262/basic.js\"></script>" in content
-    assert "<script>test262Done()</script>" in content
+    for item in expected_content:
+        assert item in content
+
+def _test_handler_get_metadata(handler_cls: Type[WrapperHandler],
+                               tests_root: str,
+                               url_base: str,
+                               request_path: str,
+                               expected_metadata: List[Tuple[str, str]]) -> None:
+    handler = handler_cls(tests_root, url_base)
+    mock_request = _create_mock_request(request_path)
+    metadata = list(handler._get_metadata(mock_request))  # type: ignore[no-untyped-call]
+    for item in expected_metadata:
+        assert item in metadata
+
+def test_test262_window_test_handler_path_replace(test262_handlers: Tuple[str, str]) -> None:
+    from tools.serve.serve import Test262WindowTestHandler
+    tests_root, url_base = test262_handlers
+    _test_handler_path_replace(
+        Test262WindowTestHandler,
+        tests_root,
+        url_base,
+        [(".test262-test.html", ".js")]
+    )
+
+def test_test262_window_test_handler_get_metadata_includes(test262_handlers: Tuple[str, str]) -> None:
+    from tools.serve.serve import Test262WindowTestHandler
+    tests_root, url_base = test262_handlers
+    _test_handler_get_metadata(
+        Test262WindowTestHandler,
+        tests_root,
+        url_base,
+        "/test262/basic.test262-test.html",
+        [
+            ('script', '/third_party/test262/harness/assert.js'),
+            ('script', '/third_party/test262/harness/sta.js')
+        ]
+    )
 
 
-def test_test262_window_module_test_handler_path_replace(test262_handlers: Any) -> None:
+def test_test262_window_test_handler_get_metadata_negative(test262_handlers: Tuple[str, str]) -> None:
+    from tools.serve.serve import Test262WindowTestHandler
+    tests_root, url_base = test262_handlers
+    _test_handler_get_metadata(
+        Test262WindowTestHandler,
+        tests_root,
+        url_base,
+        "/test262/negative.test262-test.html",
+        [('negative', 'TypeError')]
+    )
+
+
+def test_test262_window_test_handler_wrapper_content(test262_handlers: Tuple[str, str]) -> None:
+    from tools.serve.serve import Test262WindowTestHandler
+    tests_root, url_base = test262_handlers
+    _test_handler_wrapper_content(
+        Test262WindowTestHandler,
+        tests_root,
+        url_base,
+        "/test262/basic.test262-test.html",
+        [
+            '<script src="/resources/test262/testharness-client.js"></script>',
+            '<script src="/third_party/test262/harness/assert.js"></script>',
+            '<script src="/third_party/test262/harness/sta.js"></script>',
+            '<script>test262Setup()</script>',
+            '<script src="/test262/basic.js"></script>',
+            '<script>test262Done()</script>',
+        ]
+    )
+
+
+def test_test262_window_module_test_handler_path_replace(test262_handlers: Tuple[str, str]) -> None:
     from tools.serve.serve import Test262WindowModuleTestHandler
     tests_root, url_base = test262_handlers
-    handler = Test262WindowModuleTestHandler(base_path=tests_root, url_base=url_base)
-    assert handler.path_replace == [(".test262-module-test.html", ".js")]
+    _test_handler_path_replace(
+        Test262WindowModuleTestHandler,
+        tests_root,
+        url_base,
+        [(".test262-module-test.html", ".js")]
+    )
 
 
-def test_test262_window_module_test_handler_wrapper_content(test262_handlers: Any) -> None:
+def test_test262_window_module_test_handler_wrapper_content(test262_handlers: Tuple[str, str]) -> None:
     from tools.serve.serve import Test262WindowModuleTestHandler
     tests_root, url_base = test262_handlers
-    handler = Test262WindowModuleTestHandler(base_path=tests_root, url_base=url_base)
-    mock_request = _create_mock_request("/test262/module.test262-module-test.html")
-    mock_response = MagicMock()
-    handler.handle_request(mock_request, mock_response)
-    content = mock_response.content
-    assert "<script type=\"module\">" in content
-    assert "import {} from \"/test262/module.js\";" in content
+    _test_handler_wrapper_content(
+        Test262WindowModuleTestHandler,
+        tests_root,
+        url_base,
+        "/test262/module.test262-module-test.html",
+        [
+            '<script type="module">',
+            'import {} from "/test262/module.js";',
+        ]
+    )

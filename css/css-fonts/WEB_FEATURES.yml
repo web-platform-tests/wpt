@@ -79,6 +79,9 @@ features:
   - font-default-03.html
   - font-default-04.html
   - variable-in-feature-crash.html
+- name: font-shorthand
+  files:
+  - font-shorthand-*
 - name: font-weight
   files:
   - font-weight-*

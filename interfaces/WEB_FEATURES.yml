@@ -1,7 +1,0 @@
-features:
-- name: barcode
-  files:
-  - shape-detection-api.idl
-- name: digital-goods
-  files:
-  - digital-goods.idl

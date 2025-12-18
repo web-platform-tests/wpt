@@ -1,0 +1,5 @@
+features:
+- name: shapes
+  files:
+  - basic-shape-circle-ellipse-serialization.html
+  - basic-shape-interpolation.html

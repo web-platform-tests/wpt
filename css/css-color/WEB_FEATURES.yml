@@ -41,3 +41,6 @@ features:
 - name: contrast-color
   files:
   - contrast-color-001.html
+- name: named-color
+  files:
+  - named-001.html

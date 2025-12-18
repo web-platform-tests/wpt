@@ -482,8 +482,8 @@ class SourceFile:
     @cached_property
     def test262_test_record(self) -> Optional[Dict[Text, Any]]:
         if self.name_is_test262:
-            with open(self.path, encoding='ISO-8859-1') as f:
-                return test262.TestRecord.parse(f.read(), self.path)
+            with self.open() as f:
+                return test262.TestRecord.parse(f.read().decode('ISO-8859-1'), self.path)
         else:
             return None
 

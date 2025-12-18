@@ -1025,23 +1025,27 @@ def test_name_is_test262(rel_path, is_test262):
     assert sf.name_is_test262 == is_test262
 
 def test_test262_test_record():
-    tests_root = os.path.join(os.path.dirname(__file__), "testdata")
-    rel_path = "test262/test.js"
-    url_base = "/"
-    sf = SourceFile(tests_root, rel_path, url_base)
+    contents = b"""/*---
+description: A simple test
+---*/"""
+    sf = create("test262/test.js", contents=contents)
     record = sf.test262_test_record
     assert record is not None
     assert record["description"] == "A simple test"
 
-@pytest.mark.parametrize("rel_path, expected_url", [
-    ("test262/test.js", "/test262/test.test262.html"),
-    ("test262/module.js", "/test262/module.test262-module.html"),
-    ("test262/strict.js", "/test262/strict.test262.strict.html"),
+@pytest.mark.parametrize("rel_path, contents, expected_url", [
+    ("test262/test.js",
+     b"/*---\ndescription: A simple test\n---*/",
+     "/test262/test.test262.html"),
+    ("test262/module.js",
+     b"/*---\ndescription: A module test\nflags: [module]\n---*/",
+     "/test262/module.test262-module.html"),
+    ("test262/strict.js",
+     b"/*---\ndescription: A strict mode test\nflags: [onlyStrict]\n---*/",
+     "/test262/strict.test262.strict.html"),
 ])
-def test_manifest_items_test262(rel_path, expected_url):
-    tests_root = os.path.join(os.path.dirname(__file__), "testdata")
-    url_base = "/"
-    sf = SourceFile(tests_root, rel_path, url_base)
+def test_manifest_items_test262(rel_path, contents, expected_url):
+    sf = create(rel_path, contents=contents)
     item_type, items = sf.manifest_items()
     assert item_type == "test262"
     assert len(items) == 1

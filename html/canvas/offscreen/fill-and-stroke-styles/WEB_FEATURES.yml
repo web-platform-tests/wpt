@@ -2,3 +2,13 @@ features:
 - name: canvas-createconicgradient
   files:
   - 2d.gradient.conic.*
+- name: hsl
+  files:
+  - 2d.fillStyle.parse.css-color-4-hsl-*
+  - 2d.fillStyle.parse.css-color-4-hsla-*
+  - 2d.fillStyle.parse.hsl-*
+  - 2d.fillStyle.parse.hsla-*
+  - 2d.fillStyle.parse.invalid.css-color-4-hsl-*
+  - 2d.fillStyle.parse.invalid.css-color-4-hsla-*
+  - 2d.fillStyle.parse.invalid.hsl-*
+  - 2d.fillStyle.parse.invalid.hsla-*

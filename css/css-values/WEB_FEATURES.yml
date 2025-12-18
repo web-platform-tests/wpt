@@ -83,3 +83,6 @@ features:
 - name: border-radius
   files:
   - getComputedStyle-border-radius-*
+- name: q-unit
+  files:
+  - q-unit-*

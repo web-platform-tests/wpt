@@ -2,3 +2,9 @@ features:
 - name: element-capture
   files:
   - 'BrowserCaptureMediaStreamTrack-restrictTo.https.html'
+- name: media-capture
+  files:
+  - "*"
+  - "!BrowserCaptureMediaStreamTrack-*"
+  - "!message-enumerateddevices*.js"
+  - "!permission-helper.js"

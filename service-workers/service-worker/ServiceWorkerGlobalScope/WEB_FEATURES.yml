@@ -1,0 +1,5 @@
+features:
+- name: is-secure-context
+  files:
+  - isSecureContext.https.html
+  - isSecureContext.serviceworker.js

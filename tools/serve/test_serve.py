@@ -173,28 +173,28 @@ def test_inject_script_parse_error():
 
 @pytest.fixture
 def test262_handlers() -> Generator[Tuple[str, str], None, None]:
-    tests_root = os.path.join(os.path.dirname(__file__), "tests", "testdata")
+    tests_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "tests", "testdata"))
     url_base = "/"
 
     mock_file_contents = {
-        os.path.join(tests_root, "test262", "basic.js"): """/*---\ndescription: A basic test
+        os.path.normpath(os.path.join(tests_root, "test262", "basic.js")): """/*---\ndescription: A basic test
 includes: [assert.js, sta.js]
 ---*/
 assert.sameValue(1, 1);
 """,
-        os.path.join(tests_root, "test262", "negative.js"): """/*---\ndescription: A negative test
+        os.path.normpath(os.path.join(tests_root, "test262", "negative.js")): """/*---\ndescription: A negative test
 negative:
   phase: runtime
   type: TypeError
 ---*/
 throw new TypeError();
 """,
-        os.path.join(tests_root, "test262", "module.js"): """/*---\ndescription: A module test
+        os.path.normpath(os.path.join(tests_root, "test262", "module.js")): """/*---\ndescription: A module test
 flags: [module]
 ---*/
 import {} from 'some-module';
 """,
-        os.path.join(tests_root, "test262", "teststrict.js"): """/*---\ndescription: A strict mode test
+        os.path.normpath(os.path.join(tests_root, "test262", "teststrict.js")): """/*---\ndescription: A strict mode test
 flags: [onlyStrict]
 includes: [propertyHelper.js]
 ---*/
@@ -208,20 +208,22 @@ console.log('hello');
     original_isdir = os.path.isdir
 
     def custom_open(file, mode='r', *args, **kwargs):
-        if file in mock_file_contents:
-            # The 'encoding' argument is not used in binary mode.
+        normalized_file = os.path.normpath(file)
+        if normalized_file in mock_file_contents:
             if 'b' in mode:
-                return io.BytesIO(mock_file_contents[file].encode('ISO-8859-1'))
+                return io.BytesIO(mock_file_contents[normalized_file].encode('ISO-8859-1'))
             else:
-                return io.StringIO(mock_file_contents[file])
+                return io.StringIO(mock_file_contents[normalized_file])
         return original_open(file, mode, *args, **kwargs)
 
     def custom_exists(path):
-        return path in mock_file_contents or original_exists(path)
+        normalized_path = os.path.normpath(path)
+        return normalized_path in mock_file_contents or original_exists(path)
 
     def custom_isdir(path):
-        # This mocks the existence of the `test262` directory.
-        return path == os.path.join(tests_root, "test262") or original_isdir(path)
+        normalized_path = os.path.normpath(path)
+        expected_dir = os.path.normpath(os.path.join(tests_root, "test262"))
+        return normalized_path == expected_dir or original_isdir(path)
 
     with patch('builtins.open', side_effect=custom_open), \
          patch('os.path.exists', side_effect=custom_exists), \

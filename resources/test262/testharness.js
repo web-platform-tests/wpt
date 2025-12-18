@@ -22,7 +22,6 @@
     function report_result() {
         log('done');
         log(JSON.stringify(harness_status));
-        console.log('Test262 harness_status:', JSON.stringify(harness_status));
 
         if (callback || window.opener) {
             var tests = [{
@@ -39,7 +38,6 @@
                 tests: tests,
                 status: stat
             };
-            console.log('Test262 final message:', JSON.stringify(message));
             if (callback) {
                 log("callback");
                 callback(tests, stat);

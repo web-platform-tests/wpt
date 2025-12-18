@@ -32,7 +32,6 @@
     function done() {
         if (test_finished) { return; }
         test_finished = true;
-        console.log('Test262 client sending message:', message, 'status:', status);
         parentWindow.postMessage(message, '*');
         parentWindow.postMessage(status, '*');
     }

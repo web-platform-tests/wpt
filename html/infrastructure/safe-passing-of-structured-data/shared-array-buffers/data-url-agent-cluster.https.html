@@ -1,0 +1,79 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/wasm/jsapi/wasm-module-builder.js"></script>
+<div id=log></div>
+<script>
+const dataURLWorker = `
+  onmessage = () => self.postMessage("message");
+  onmessageerror = () => self.postMessage("messsageeror");
+`;
+
+const dataFrameScript = `
+  onmessage = () => parent.postMessage("message", "*");
+  onmessageerror = () => parent.postMessage("messsageeror", "*");
+`;
+
+[
+  {
+    "input": new ArrayBuffer(),
+    "expected": "message"
+  },
+  {
+    "input": new SharedArrayBuffer(),
+    "expected": "messsageeror"
+  },
+  {
+    "input": new WebAssembly.Module(new WasmModuleBuilder().toBuffer()),
+    "expected": "messsageeror"
+  },
+  // postMessage() throws for this object (needs shared: true):
+  // https://github.com/WebAssembly/threads/issues/160
+  //{
+  //  "input": new WebAssembly.Memory({ initial: 0 }),
+  //  "expected": "message"
+  //},
+  {
+    "input": new WebAssembly.Memory({ initial: 0, maximum: 0, shared: true }),
+    "expected": "messsageeror",
+    "name": "Memory (shared: true)"
+  }
+].forEach(({ input: instance, expected, name }) => {
+  name = name ?? instance.constructor.name;
+  async_test(t => {
+    const worker = new Worker(`data:text/javascript,${dataURLWorker}`);
+    worker.onmessage = t.step_func_done(({ data }) => {
+      assert_equals(data, expected);
+    });
+    worker.postMessage(instance);
+  }, `data URL dedicated workers and messaging ${name}`);
+
+  // Use promise_test because of the global message event listener
+  promise_test(t => {
+    return new Promise(resolve => {
+      const frame = document.body.appendChild(document.createElement("iframe"));
+      t.add_cleanup(() => frame.remove());
+      frame.onload = t.step_func(() => {
+        self.addEventListener("message", t.step_func(({ data }) => {
+          assert_equals(data, expected);
+          resolve();
+        }), { once: true });
+        frame.contentWindow.postMessage(instance, "*");
+      });
+      frame.src = `data:text/html,<script>${dataFrameScript}<\/script>`;
+    });
+  }, `data URL frame and messaging ${name}`);
+});
+
+async_test(t => {
+  const worker = new Worker(`data:text/javascript,
+  const worker = new Worker("data:text/javascript,self.postMessage(new SharedArrayBuffer())");
+  worker.onmessageerror = () => self.postMessage("messageerror");
+  worker.onmessage = () => self.postMessage("message");
+`);
+  worker.onmessage = t.step_func_done(({ data }) => {
+    assert_equals(data, "messageerror");
+  });
+}, "Nested data URL dedicated workers");
+</script>

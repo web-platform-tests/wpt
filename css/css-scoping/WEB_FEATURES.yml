@@ -2,3 +2,12 @@ features:
 - name: has-slotted
   files:
   - has-slotted-*
+- name: host-context
+  files:
+  - host-context-*
+- name: host
+  files:
+  - host-*
+  - "!host-context-*"
+  - "!host-in-host-context-selector.html"
+  - "!host-is-featureless.html"

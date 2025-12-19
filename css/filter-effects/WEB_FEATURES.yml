@@ -7,27 +7,28 @@ features:
   - repaint-added-backdrop-filter.html
 - name: filter
   files:
+  - background-image-blur-repaint.html
   - blur-*
   - clip-under-filter-*
+  - css-reference-large-svg-*
   - css-filters-*
   - drop-shadow-*
-  - dynamic-filter-changes-*
+  - dynamic-filter-changes-001.html
   - empty-element-with-filter*
   - filter-*
+  - '!filter-chained-url-url-001.html'
+  - '!filter-effect-remove-unattached.html'
+  - '!filter-external-*'
+  - '!filter-region-*'
+  - '!filter-subregion-*'
+  - '!filter-svg-*'
+  - '!filter-turbulence-*'
   - filtered-*
   - filters-*
-  - fixed-pos-filter-clip-*
-  - hidpi-invert-filter-background.html
+  - fixed-pos-filter-*
+  - hidpi-invert-filter-*
+  - inheritance.html
   - remove-filter-repaint.html
-  - root-element-with-opacity-filter-*.html
-  - svg-empty-container-with-filter-content-added.html
-  - svg-empty-element-with-filter-*.html
-  - svg-filter-vs-*.html
-  - svg-image-root-filter.html
-  - svg-multiple-filter-functions.html
-  - svg-mutation-*.html
-  - svg-shorthand-*.html
-  - svg-visibility-hidden-element-with-filter-*.html
+  - root-element-with-opacity-filter-001.html
   - visibility-hidden-element-with-filter-*.html
   - will-change-blur-filter-under-clip.html
-  - '!filters-ref-*'

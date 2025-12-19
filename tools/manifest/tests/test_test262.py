@@ -21,7 +21,7 @@ description: A simple test
 features: [Test262]
 ---*/
 assert.sameValue(1, 1);
-""")
+""", includes=None, negative=None, is_module=False, is_only_strict=False)
     ),
     (
         "no_frontmatter.js",
@@ -50,7 +50,7 @@ description: Test with module flag
 flags: [raw, module]
 ---*/
 assert.sameValue(1, 1);
-""", is_module=True)
+""", includes=None, negative=None, is_module=True, is_only_strict=False)
     ),
     (
         "flags-onlyStrict.js",
@@ -65,7 +65,7 @@ description: Test with onlyStrict flag
 flags: [raw, onlyStrict]
 ---*/
 assert.sameValue(1, 1);
-""", is_only_strict=True)
+""", includes=None, negative=None, is_module=False, is_only_strict=True)
     ),
     (
         "negative.js",
@@ -84,7 +84,7 @@ negative:
   type: TypeError
 ---*/
 throw new TypeError();
-""", negative={"phase": "runtime", "type": "TypeError"})
+""", includes=None, negative={"phase": "runtime", "type": "TypeError"}, is_module=False, is_only_strict=False)
     ),
     (
         "includes.js",
@@ -99,7 +99,7 @@ description: Test with includes
 includes: [assert.js, sta.js]
 ---*/
 assert.sameValue(1, 1);
-""", includes=["assert.js", "sta.js"])
+""", includes=["assert.js", "sta.js"], negative=None, is_module=False, is_only_strict=False)
     ),
 ])
 def test_test262_parser(name, src, expected_record):

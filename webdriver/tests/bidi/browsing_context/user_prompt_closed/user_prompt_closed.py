@@ -77,6 +77,7 @@ async def test_prompt_type_alert(
         "context": new_tab["context"],
         "accepted": True,
         "type": "alert",
+        "userContext": new_tab["userContext"],
     }
 
 
@@ -115,6 +116,7 @@ async def test_prompt_type_confirm(
         "context": new_tab["context"],
         "accepted": accept,
         "type": "confirm",
+        "userContext": new_tab["userContext"],
     }
 
 
@@ -156,12 +158,14 @@ async def test_prompt_type_prompt(
             "accepted": accept,
             "type": "prompt",
             "userText": test_user_text,
+            "userContext": new_tab["userContext"],
         }
     else:
         assert event == {
             "context": new_tab["context"],
             "accepted": accept,
             "type": "prompt",
+            "userContext": new_tab["userContext"],
         }
 
 
@@ -196,6 +200,7 @@ async def test_prompt_with_defaults(
         "context": new_tab["context"],
         "accepted": True,
         "type": "prompt",
+        "userContext": new_tab["userContext"],
     }
 
 
@@ -271,6 +276,7 @@ async def test_subscribe_to_one_context(
         "context": new_context["context"],
         "accepted": True,
         "type": "alert",
+        "userContext": new_context["userContext"],
     }
 
     remove_listener()
@@ -320,4 +326,5 @@ async def test_iframe(
         "context": frame["context"],
         "accepted": True,
         "type": "alert",
+        "userContext": frame["userContext"],
     }

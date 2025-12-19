@@ -15,16 +15,15 @@ import localpaths  # type: ignore
 from . import serve
 from .serve import (
     ConfigBuilder,
+    Test262WindowHandler,
+    Test262WindowTestHandler,
+    Test262WindowModuleHandler,
+    Test262WindowModuleTestHandler,
+    Test262StrictWindowHandler,
+    Test262StrictWindowTestHandler,
+    Test262StrictHandler,
     WrapperHandler,
-    inject_script,
-    # Use 'T262' aliases to avoid naming collisions with the pytest collector
-    Test262WindowHandler as T262WindowHandler,
-    Test262WindowTestHandler as T262WindowTestHandler,
-    Test262WindowModuleHandler as T262WindowModuleHandler,
-    Test262WindowModuleTestHandler as T262WindowModuleTestHandler,
-    Test262StrictWindowHandler as T262StrictWindowHandler,
-    Test262StrictWindowTestHandler as T262StrictWindowTestHandler,
-    Test262StrictHandler as T262StrictHandler)
+    inject_script)
 
 
 logger = logging.getLogger()
@@ -270,14 +269,21 @@ def _test_handler_get_metadata(handler_cls: Type[WrapperHandler],
         assert item in metadata
     assert len(expected_metadata) == len(metadata), f"{expected_metadata} != {metadata}"
 
+Test262WindowHandler.__test__ = False
+Test262WindowTestHandler.__test__ = False
+Test262WindowModuleHandler.__test__ = False
+Test262WindowModuleTestHandler.__test__ = False
+Test262StrictWindowHandler.__test__ = False
+Test262StrictWindowTestHandler.__test__ = False
+Test262StrictHandler.__test__ = False
 
 @pytest.mark.parametrize("handler_cls, expected", [
-    (T262WindowHandler, [(".test262.html", ".js", ".test262-test.html")]),
-    (T262WindowTestHandler, [(".test262-test.html", ".js")]),
-    (T262WindowModuleHandler, [(".test262-module.html", ".js", ".test262-module-test.html")]),
-    (T262WindowModuleTestHandler, [(".test262-module-test.html", ".js")]),
-    (T262StrictWindowHandler, [(".test262.strict.html", ".js", ".test262-test.strict.html")]),
-    (T262StrictWindowTestHandler, [(".test262-test.strict.html", ".js", ".test262.strict.js")]),
+    (Test262WindowHandler, [(".test262.html", ".js", ".test262-test.html")]),
+    (Test262WindowTestHandler, [(".test262-test.html", ".js")]),
+    (Test262WindowModuleHandler, [(".test262-module.html", ".js", ".test262-module-test.html")]),
+    (Test262WindowModuleTestHandler, [(".test262-module-test.html", ".js")]),
+    (Test262StrictWindowHandler, [(".test262.strict.html", ".js", ".test262-test.strict.html")]),
+    (Test262StrictWindowTestHandler, [(".test262-test.strict.html", ".js", ".test262.strict.js")]),
 ])
 def test_path_replace(test262_handlers, handler_cls, expected):
     tests_root, url_base = test262_handlers
@@ -286,17 +292,17 @@ def test_path_replace(test262_handlers, handler_cls, expected):
 
 @pytest.mark.parametrize("handler_cls, request_path, expected_metadata", [
     (
-        T262WindowTestHandler,
+        Test262WindowTestHandler,
         "/test262/basic.test262-test.html",
         [('script', '/third_party/test262/harness/assert.js'), ('script', '/third_party/test262/harness/sta.js')]
     ),
     (
-        T262WindowTestHandler,
+        Test262WindowTestHandler,
         "/test262/negative.test262-test.html",
         [('negative', 'TypeError')]
     ),
     (
-        T262StrictWindowTestHandler,
+        Test262StrictWindowTestHandler,
         "/test262/teststrict.test262-test.strict.html",
         [('script', '/third_party/test262/harness/propertyHelper.js')]
     ),
@@ -307,39 +313,39 @@ def test_get_metadata(test262_handlers, handler_cls, request_path, expected_meta
 
 
 @pytest.mark.parametrize("handler_cls, request_path, expected_substrings", [
-    # T262WindowHandler: Should contain the iframe pointing to the test
+    # Test262WindowHandler: Should contain the iframe pointing to the test
     (
-        T262WindowHandler,
+        Test262WindowHandler,
         "/test262/basic.test262.html",
         ['<iframe id="test262-iframe" src="/test262/basic.test262-test.html"></iframe>']
     ),
-    # T262WindowTestHandler: Should contain script tags
+    # Test262WindowTestHandler: Should contain script tags
     (
-        T262WindowTestHandler,
+        Test262WindowTestHandler,
         "/test262/basic.test262-test.html",
         ['<script src="/test262/basic.js"></script>', '<script>test262Setup()</script>', '<script>test262Done()</script>']
     ),
-    # T262WindowModuleTestHandler: Should contain module import
+    # Test262WindowModuleTestHandler: Should contain module import
     (
-        T262WindowModuleTestHandler,
+        Test262WindowModuleTestHandler,
         "/test262/module.test262-module-test.html",
         ['<script type="module">', 'import {} from "/test262/module.js";', 'test262Setup();', 'test262Done();']
     ),
     # Verification of the 'negative' replacement in the HTML
     (
-        T262WindowTestHandler,
+        Test262WindowTestHandler,
         "/test262/negative.test262-test.html",
         ["<script>test262Negative('TypeError')</script>"]
     ),
     # Strict HTML Case: points to the .strict.js variant
     (
-        T262StrictWindowTestHandler,
+        Test262StrictWindowTestHandler,
         "/test262/teststrict.test262-test.strict.html",
         ['src="/test262/teststrict.test262.strict.js"']
     ),
     # Strict JS Case: The handler that serves the actual script
     (
-        T262StrictHandler,
+        Test262StrictHandler,
         "/test262/teststrict.test262.strict.js",
         ['"use strict";', "console.log('hello');"]
     ),

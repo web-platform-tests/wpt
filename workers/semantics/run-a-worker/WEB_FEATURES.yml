@@ -1,8 +1,8 @@
 features:
-- name: base
+- name: shared-workers
   files:
-  - use-base-url.html
+  - 002.html
 - name: dedicated-workers
   files:
   - "*"
-  - "!use-base-url.html"
+  - "!002.html"

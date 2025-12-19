@@ -2,7 +2,7 @@ from __future__ import print_function
 
 from dataclasses import dataclass
 from logging import Logger
-from typing import Optional, Text, Tuple
+from typing import Dict, List, Optional, Text, Tuple
 
 import re
 
@@ -19,8 +19,8 @@ _STRIP_CONTROL_CHARS = re.compile(r'[\x7f-\x9f]')
 @dataclass
 class TestRecord:
     test: str
-    includes: Optional[list[str]] = None
-    negative: Optional[dict[str, str]] = None
+    includes: Optional[List[Text]] = None
+    negative: Optional[Dict[Text, Text]] = None
     is_only_strict: bool = False
     is_module: bool = False
 

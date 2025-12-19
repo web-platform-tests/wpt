@@ -1,13 +1,12 @@
 features:
 - name: location
   files:
-  - allow_prototype_cycle_through_location.sub.html
   - assign-*
   - document_location.html
-  - location_*
   - location-*
+  - location_*
   - no-browsing-context.window.js
   - reload_*
   - replace-with-nested-iframe.html
   - same-hash.html
-  - scripted_click_location_assign_during_load*
+  - scripted_*

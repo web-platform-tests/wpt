@@ -3,3 +3,7 @@ features:
   files:
   - "*"
   - "!track-webvtt-*"
+  - "!track-data-url.html"
+- name: data-urls
+  files:
+  - track-data-url.html

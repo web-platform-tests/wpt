@@ -1,0 +1,4 @@
+features:
+- name: data-urls
+  files:
+  - data.window.js

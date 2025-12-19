@@ -4,4 +4,5 @@ features:
   - MutationObserver-*
 - name: events
   files:
-  - 'Document-createEvent.https.html'
+  - Document-createEvent.https.html
+  - Document-createEvent.js

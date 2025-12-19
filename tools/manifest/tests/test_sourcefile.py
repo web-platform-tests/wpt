@@ -1031,7 +1031,6 @@ description: A simple test
     sf = create("test262/test.js", contents=contents)
     record = sf.test262_test_record
     assert record is not None
-    assert record["description"] == "A simple test"
 
 @pytest.mark.parametrize("rel_path, contents, expected_url", [
     ("test262/test.js",

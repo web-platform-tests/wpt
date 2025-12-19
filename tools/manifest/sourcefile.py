@@ -28,6 +28,7 @@ from .item import (ConformanceCheckerTest,
                    TestharnessTest,
                    VisualTest,
                    WebDriverSpecTest)
+from .log import get_logger
 from .utils import cached_property
 
 from . import test262
@@ -480,10 +481,10 @@ class SourceFile:
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='pac']")
 
     @cached_property
-    def test262_test_record(self) -> Optional[Dict[Text, Any]]:
+    def test262_test_record(self) -> Optional[test262.TestRecord]:
         if self.name_is_test262:
             with self.open() as f:
-                return test262.TestRecord.parse(f.read().decode('ISO-8859-1'), self.path)
+                return test262.parse(get_logger(), f.read().decode('utf-8'), self.path)
         else:
             return None
 
@@ -496,8 +497,10 @@ class SourceFile:
         elif self.name_is_test262:
             if self.test262_test_record is None:
                 return None
-            paths = []
-            for filename in self.test262_test_record.get("includes", []):
+            paths: List[Tuple[Text, Text]] = []
+            if self.test262_test_record.includes is None:
+                return paths
+            for filename in self.test262_test_record.includes:
                 if filename in ("assert.js", "sta.js"):
                     paths.append(('script', "/third_party/test262/harness/%s" % filename))
                 else:
@@ -1139,9 +1142,9 @@ class SourceFile:
                     )]
             else:
                 suffix = ".test262"
-                if "module" in self.test262_test_record:
+                if self.test262_test_record.is_module:
                     suffix += "-module"
-                elif "onlyStrict" in self.test262_test_record:
+                elif self.test262_test_record.is_only_strict:
                     # Modules are always strict mode, so only append strict for
                     # non-module tests.
                     suffix += ".strict"

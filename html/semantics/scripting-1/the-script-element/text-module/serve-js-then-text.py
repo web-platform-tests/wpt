@@ -1,5 +1,5 @@
-# Respond with text to the first request with the given key,
-# and with valid JavaScript to the second. Used for testing scenarios where
+# Respond with valid JavaScript to the first request with the given key,
+# and with text to the second. Used for testing scenarios where
 # the same request URL results in different responses on subsequent requests.
 def main(request, response):
     try:
@@ -10,11 +10,11 @@ def main(request, response):
             run_count = 0
 
         if run_count == 0:
-            response.headers.set(b"Content-Type", b"text/plain")
-            response.content = 'hello'
-        else:
             response.headers.set(b"Content-Type", b"application/javascript")
             response.content = "export default 'world';"
+        else:
+            response.headers.set(b"Content-Type", b"text/plain")
+            response.content = 'hello'
 
         request.server.stash.put(stash_key, run_count + 1)
     except:

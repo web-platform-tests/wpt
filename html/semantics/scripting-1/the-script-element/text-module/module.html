@@ -11,7 +11,7 @@ const t = async_test();
 import v from "./file.txt" with { type: "text" };
 t.step(() => {
   assert_equals(typeof v, "string");
-  assert_equals(v, "hello\n");
+  assert_equals(v, "text file\n");
   t.done();
 });
 </script>

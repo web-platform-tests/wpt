@@ -9,14 +9,14 @@ promise_test(async test => {
     // This time the import should succeed because we're using the correct
     // import even though the previous attempt with the same  specifier failed.
     const result = await import("./file.txt", { with: { type: "text" } });
-    assert_equals(result.default, "hello\n");
+    assert_equals(result.default, "text file\n");
 }, "Importing a specifier that previously failed due to an incorrect type attribute can succeed if the correct attribute is later given");
 
 promise_test(async test => {
     // Append a URL fragment to the specifier so that this is independent
     // from the previous test.
     const result = await import("./file.txt#2", { with: { type: "text" } });
-    assert_equals(result.default, "hello\n");
+    assert_equals(result.default, "text file\n");
 
     await promise_rejects_js(test, TypeError,
       import("./file.txt#2"),

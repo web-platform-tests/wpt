@@ -17,7 +17,7 @@ window.mismatchesEvents = [];
 
 <script type="module">
 test(() => {
-  assert_array_equals(window.matchesLog, ["integrity-matches,text:hello\n"], "The module and its dependency must have executed");
+  assert_array_equals(window.matchesLog, ["integrity-matches,text:text file\n"], "The module and its dependency must have executed");
   assert_array_equals(window.matchesEvents, ["load"], "The load event must have fired");
 }, "The integrity attribute must be verified on the top-level of a module loading a text module and allow it to execute when it matches");
 

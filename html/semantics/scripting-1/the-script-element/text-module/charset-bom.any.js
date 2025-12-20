@@ -3,7 +3,7 @@
 
 promise_test(async () => {
     const jsonModule = await import('./bom-utf-8.txt', { with: { type: 'text' } });
-    assert_equals(jsonModule.default, 'hello');
+    assert_equals(jsonModule.default, 'text file\n');
 }, 'UTF-8 BOM should be stripped when decoding text module script');
 
 promise_test(async test => {

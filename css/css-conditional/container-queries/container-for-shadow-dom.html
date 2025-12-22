@@ -367,6 +367,28 @@
   <div id="pseudo-2"></div>
 </div>
 
+<div id="named-host-to-slotted">
+  <template shadowrootmode="open">
+    <style>
+      :host {
+        container: --host-container / inline-size;
+      }
+    </style>
+    <slot></slot>
+  </template>
+  <div id="host-slotted-named">
+    <template shadowrootmode="open">
+      <style>
+        @container --host-container (width >= 0) {
+          :host {
+            color: green;
+          }
+        }
+      </style>
+    </template>
+  </div>
+</div>
+
 <script>
   setup(() => {
     assert_implements_size_container_queries();
@@ -481,4 +503,9 @@
     const target = document.querySelector("#pseudo-2");
     assert_equals(getComputedStyle(target, "::before").color, green);
   }, "Search flat tree anchestors of the originating element of ::before");
+
+  test(() => {
+    const target = document.querySelector("#host-slotted-named");
+    assert_equals(getComputedStyle(target).color, green);
+  }, "Parent container name and style on :host, with query set on slotted child's :host");
 </script>

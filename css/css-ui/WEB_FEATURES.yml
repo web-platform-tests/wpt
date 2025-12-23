@@ -19,3 +19,7 @@ features:
   files:
   - caret-color-*
   - caret-eol-*
+- name: interactivity
+  files:
+  - interactivity-*
+  - inert-attribute-overriding.html

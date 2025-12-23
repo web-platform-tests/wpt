@@ -327,6 +327,10 @@ Consider installing certutil via your OS package manager or directly.""")
         if kwargs["browser_channel"] == "nightly" and kwargs["enable_webtransport_h3"] is None:
             kwargs["enable_webtransport_h3"] = True
 
+        if kwargs["enable_accessibility_api"]:
+            kwargs["extra_prefs"].append("accessibility.force_disabled=-1")
+
+
         # Turn off Firefox WebRTC ICE logging on WPT (turned on by mozrunner)
         safe_unsetenv('R_LOG_LEVEL')
         safe_unsetenv('R_LOG_DESTINATION')
@@ -520,7 +524,10 @@ class Chrome(BrowserSetup):
             # We are on Taskcluster, where our Docker container does not have
             # enough capabilities to run Chrome with sandboxing. (gh-20133)
             kwargs["binary_args"].append("--no-sandbox")
-
+        if kwargs["enable_accessibility_api"]:
+            # Necessary to force chrome to register in AT-SPI2.
+            os.environ["ACCESSIBILITY_ENABLED"] = "1"
+            kwargs["binary_args"].append("--force-renderer-accessibility")
 
 class HeadlessShell(BrowserSetup):
     name = "headless_shell"
@@ -942,6 +949,10 @@ def setup_wptrunner(venv, **kwargs):
     if not venv.skip_virtualenv_setup:
         requirements = [os.path.join(wpt_root, "tools", "wptrunner", "requirements.txt")]
         requirements.extend(setup_cls.requirements())
+
+        if kwargs["enable_accessibility_api"]:
+            requirements.append(os.path.join(wpt_root, "tools", "wptrunner", "requirements_platform_accessibility.txt"))
+
         venv.install_requirements(*requirements)
 
     affected_revish = kwargs.get("affected")

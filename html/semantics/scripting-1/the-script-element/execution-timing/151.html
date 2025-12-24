@@ -1,35 +1,29 @@
 <!DOCTYPE html>
 <html><head>
-  <title>scheduler: appending script element to script </title>
+  <title>scheduler: appending script element to non-parser-inserted script</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="testlib/testlib.js"></script>
 </head>
 <div id="log"></div>
-<p>This test is similar to <a href="151.html">151.html</a>, but here the parent script is flagged as non-parser-inserted in "prepare the script element" because it is empty.</p>
+<p>This test is similar to <a href="128.html">128.html</a>, but here the parent script is non-parser-inserted all along.</p>
 <script>
-  var t = async_test();
-</script>
-<script id="test"></script>
-<script>
+var t = async_test();
 t.step(function() {
   log("inline script #1");
-  var script = document.getElementById("test");
+  var script = document.createElement("script");
+  document.body.appendChild(script);
 
   var frag = document.createDocumentFragment();
-  var inner_script = document.createElement("script");
-
-  inner_script.textContent = "t.step(function() {log('inline script #3');});"
   frag.appendChild(document.createTextNode("t.step(function() {log('inline script #2');\n"));
-  frag.appendChild(inner_script);
+  frag.appendChild(document.createElement("script")).textContent = "t.step(function() {log('inline script #3');});"
   frag.appendChild(document.createTextNode("log('end inline script #2');})"));
 
   script.appendChild(frag);
   log("end inline script #1");
 });
 
-onload = t.step_func(function() {
+onload = t.step_func_done(function() {
   assert_array_equals(eventOrder, ["inline script #1", "inline script #3", "inline script #2", "end inline script #2", "end inline script #1"]);
-  t.done();
 });
 </script>

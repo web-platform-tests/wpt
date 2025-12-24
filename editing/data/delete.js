@@ -3506,4 +3506,29 @@ var browserTests = [
     "<p>abc</p>",
     [true],
     {}],
+
+// The following tests are ported by Mozilla from their old test and the
+// expectations are based on Chrome's behavior unless the behavior does not
+// make sense.
+[' <div><span contenteditable="false">A</span></div><div><br></div><div>[]&nbsp;; <span contenteditable="false">B</span> ; <span contenteditable="false">C</span></div> ',
+    [["delete",""]],
+    ' <div><span contenteditable="false">A</span></div><div>&nbsp;; <span contenteditable="false">B</span> ; <span contenteditable="false">C</span></div> ',
+    [true],
+    {}],
+[' <div><span contenteditable="false">A</span></div><div>[]&nbsp;; <span contenteditable="false">B</span> ; <span contenteditable="false">C</span></div> ',
+    [["delete",""]],
+    ' <div><span contenteditable="false">A</span>&nbsp;; <span contenteditable="false">B</span> ; <span contenteditable="false">C</span></div> ',
+    [true],
+    {}],
+[' <span contenteditable="false">A</span><div><br></div><div>[]&nbsp;; <span contenteditable="false">B</span> ; <span contenteditable="false">C</span></div> ',
+    [["delete",""]],
+    ' <span contenteditable="false">A</span><div>&nbsp;; <span contenteditable="false">B</span> ; <span contenteditable="false">C</span></div> ',
+    [true],
+    {}],
+[' <span contenteditable="false">A</span><div>[]&nbsp;; <span contenteditable="false">B</span> ; <span contenteditable="false">C</span></div> ',
+    [["delete",""]],
+    // The preceding line of the <div> is only the non-editable node. So, the editor should delete it.
+    '<div>&nbsp;; <span contenteditable="false">B</span> ; <span contenteditable="false">C</span></div> ',
+    [true],
+    {}],
 ]

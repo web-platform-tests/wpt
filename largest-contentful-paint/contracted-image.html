@@ -12,6 +12,11 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/largest-contentful-paint-helpers.js"></script>
 <script>
+  if ('paintTime' in PerformancePaintTiming.prototype) {
+    console.log('paintTime is available in PerformancePaintTiming.prototype');
+  } else {
+    console.log('paintTime is NOT available in PerformancePaintTiming.prototype');
+  }
   async_test(function (t) {
     assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
     const beforeLoad = performance.now();

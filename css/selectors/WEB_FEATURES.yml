@@ -41,3 +41,6 @@ features:
 - name: open-pseudo
   files:
   - open-pseudo.html
+- name: selection
+  files:
+  - selection-image-001.html

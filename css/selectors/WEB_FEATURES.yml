@@ -16,6 +16,10 @@ features:
 - name: read-write-pseudos
   files:
   - selector-read-write-*
+- name: placeholder-shown
+  files:
+  - placeholder-shown.html
+  - selector-placeholder-shown-*
 - name: modal
   files:
   - modal-pseudo-class.html

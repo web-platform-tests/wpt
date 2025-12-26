@@ -3506,6 +3506,16 @@ var browserTests = [
     "<p>abc</p>",
     [true],
     {}],
+["<p>abc<br> </p> <p>{}<br></p>",
+    [["delete",""]],
+    "<p>abc</p>",
+    [true],
+    {}],
+["<div style=white-space:pre><p>abc</p> <p>{}<br></p></div>",
+    [["delete",""]],
+    "<div style=\"white-space:pre\"><p>abc</p> </div>",
+    [true],
+    {}],
 
 // The following tests are ported by Mozilla from their old test and the
 // expectations are based on Chrome's behavior unless the behavior does not

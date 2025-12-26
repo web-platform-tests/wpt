@@ -5,6 +5,9 @@ features:
 - name: font-feature-settings
   files:
   - font-feature-settings.html
+- name: font-stretch
+  files:
+  - font-stretch.html
 - name: font-variant
   files:
   - font-variant.html

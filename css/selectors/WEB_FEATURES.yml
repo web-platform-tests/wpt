@@ -41,3 +41,8 @@ features:
 - name: open-pseudo
   files:
   - open-pseudo.html
+- name: form-validity-pseudos
+  files:
+  - valid-invalid-form-fieldset.html
+  - selector-required.html
+  - selector-required-type-change-*

@@ -26,3 +26,6 @@ features:
 - name: dominant-baseline
   files:
   - dominant-baseline.html
+- name: filter
+  files:
+  - filter.html

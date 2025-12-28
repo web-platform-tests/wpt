@@ -94,7 +94,7 @@
         var groupingRule = create(t);
         var first = groupingRule.cssRules[0].cssText;
 
-        assert_throws_dom('HierarchyRequestError', function() {
+        assert_throws_dom('SyntaxError', function() {
             groupingRule.insertRule('@import url("foo.css");', 0);
         });
 
@@ -106,7 +106,7 @@
         var groupingRule = create(t);
         var first = groupingRule.cssRules[0].cssText;
 
-        assert_throws_dom('HierarchyRequestError', function() {
+        assert_throws_dom('SyntaxError', function() {
             groupingRule.insertRule('@namespace url(http://www.w3.org/1999/xhtml);', 0);
         });
 

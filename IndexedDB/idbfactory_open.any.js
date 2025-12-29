@@ -194,15 +194,19 @@ function should_work(val, expected_version) {
     let name = format_value(val);
     let dbname = 'test-db-does-not-exist';
     async_test(function (t) {
+        console.log("Start")
         indexedDB.deleteDatabase(dbname);
         let rq = indexedDB.open(dbname, val);
         rq.onupgradeneeded = t.step_func(function () {
+            console.log("onupgradeneeded")
             let db = rq.result;
             assert_equals(db.version, expected_version, 'version');
             rq.transaction.abort();
+            console.log("onupgradeneeded done")
         });
         rq.onsuccess = t.unreached_func("open should fail");
         rq.onerror = t.step_func(function () {
+            console.log("Done")
             t.done()
         });
     }, "Calling open() with version argument " + name + " should not throw.");

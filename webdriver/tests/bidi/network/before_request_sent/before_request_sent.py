@@ -89,11 +89,13 @@ async def test_iframe_load(
         events[0],
         expected_request={"url": test_page_same_origin_frame},
         context=top_context["context"],
+        user_context=top_context["userContext"],
     )
     assert_before_request_sent_event(
         events[1],
         expected_request={"url": test_page},
         context=frame_context["context"],
+        user_context=frame_context["userContext"],
     )
 
 

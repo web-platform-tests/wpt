@@ -124,6 +124,7 @@ async def test_sandbox(
 
     assert event == {
         "context": new_tab["context"],
+        "userContext": new_tab["userContext"],
         "origin": test_origin,
         "realm": sandbox_realm,
         "sandbox": sandbox_name,
@@ -393,6 +394,7 @@ async def test_existing_realm(bidi_session, wait_for_event, wait_for_future_safe
         {
             "type": "window",
             "context": top_level_context["context"],
+            "userContext": top_level_context["userContext"],
             "realm": any_string,
             "origin": test_origin,
         },

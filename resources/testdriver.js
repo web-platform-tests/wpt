@@ -23,6 +23,14 @@
         }
     }
 
+    function assertTestIsTentative(){
+        const testPath = location.pathname;
+        const tentative = testPath.includes('.tentative') || testPath.includes('/tentative');
+        if (!tentative) {
+            throw new Error("Method in testdriver.js intended for tentative tests used in non-tentative test");
+        }
+    }
+
     function getInViewCenterPoint(rect) {
         var left = Math.max(0, rect.left);
         var right = Math.min(window.innerWidth, rect.right);
@@ -1267,6 +1275,34 @@
         },
 
         /**
+         * Get accessibility properties for an element.
+         *
+         * @param {Element} element
+         * @returns {Promise} fulfilled after the accessibility properties are
+         *                    returned, or rejected in the cases the WebDriver
+         *                    command errors
+         */
+        get_element_accessible_properties: async function(element) {
+            assertTestIsTentative();
+            let acc = await window.test_driver_internal.get_element_accessible_properties(element);
+            return acc;
+        },
+
+        /**
+         * Get properties for an accessible node.
+         *
+         * @param {String} id
+         * @returns {Promise} fulfilled after the accessibility properties are
+         *                    returned, or rejected in the cases the WebDriver
+         *                    command errors
+         */
+        get_accessible_properties: async function(accId) {
+            assertTestIsTentative();
+            let acc = await window.test_driver_internal.get_accessible_properties(accId);
+            return acc;
+        },
+
+        /**
          * Send keys to an element.
          *
          * If ``element`` isn't inside the
@@ -2452,6 +2488,14 @@
 
         async get_computed_name(element) {
             throw new Error("get_computed_name is a testdriver.js function which cannot be run in this context.");
+        },
+
+        async get_element_accessible_properties(element) {
+            throw new Error("get_element_accessible_properties is a testdriver.js function which cannot be run in this context.");
+        },
+
+        async get_accessible_properties(accId) {
+            throw new Error("get_accessible_properties is a testdriver.js function which cannot be run in this context.");
         },
 
         async send_keys(element, keys) {

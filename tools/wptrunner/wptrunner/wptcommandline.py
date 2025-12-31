@@ -161,6 +161,9 @@ scheme host and port.""")
                                       action="append",
                                       choices=["not-implementing", "backlog", "implementing"],
                                       help="Skip tests that have the given implementation status")
+    test_selection_group.add_argument("--enable-accessibility-api",
+                                      action="store_true",
+                                      help="Enable test infrastructure and browser configurations for accessibility API tests")
     # TODO(bashi): Remove this when WebTransport over HTTP/3 server is enabled by default.
     test_selection_group.add_argument("--enable-webtransport-h3",
                                       action="store_true",

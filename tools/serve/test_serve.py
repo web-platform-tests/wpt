@@ -1,15 +1,30 @@
 # mypy: allow-untyped-defs
 
+import builtins
+import io
 import logging
 import os
 import pickle
 import platform
+from unittest.mock import MagicMock, patch
+from typing import Generator, List, Tuple, Type
 
 import pytest
 
 import localpaths  # type: ignore
 from . import serve
-from .serve import ConfigBuilder, inject_script
+from .serve import (
+    ConfigBuilder,
+    WrapperHandler,
+    inject_script,
+    # Use 'T262' aliases to avoid naming collisions with the pytest collector
+    Test262WindowHandler as T262WindowHandler,
+    Test262WindowTestHandler as T262WindowTestHandler,
+    Test262WindowModuleHandler as T262WindowModuleHandler,
+    Test262WindowModuleTestHandler as T262WindowModuleTestHandler,
+    Test262StrictWindowHandler as T262StrictWindowHandler,
+    Test262StrictWindowTestHandler as T262StrictWindowTestHandler,
+    Test262StrictHandler as T262StrictHandler)
 
 
 logger = logging.getLogger()
@@ -154,3 +169,181 @@ def test_inject_script_parse_error():
     # On a parse error, the script should not be injected and the original content should be
     # returned.
     assert INJECT_SCRIPT_MARKER not in inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER)
+
+
+@pytest.fixture
+def test262_handlers() -> Generator[Tuple[str, str], None, None]:
+    tests_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "tests", "testdata"))
+    url_base = "/"
+
+    mock_file_contents = {
+        os.path.normpath(os.path.join(tests_root, "test262", "basic.js")): """/*---\ndescription: A basic test
+includes: [assert.js, sta.js]
+---*/
+assert.sameValue(1, 1);
+""",
+        os.path.normpath(os.path.join(tests_root, "test262", "negative.js")): """/*---\ndescription: A negative test
+negative:
+  phase: runtime
+  type: TypeError
+---*/
+throw new TypeError();
+""",
+        os.path.normpath(os.path.join(tests_root, "test262", "module.js")): """/*---\ndescription: A module test
+flags: [module]
+---*/
+import {} from 'some-module';
+""",
+        os.path.normpath(os.path.join(tests_root, "test262", "teststrict.js")): """/*---\ndescription: A strict mode test
+flags: [onlyStrict]
+includes: [propertyHelper.js]
+---*/
+console.log('hello');
+"""
+    }
+
+    # Store original functions to be called if our mock doesn't handle the file
+    original_open = builtins.open
+    original_exists = os.path.exists
+    original_isdir = os.path.isdir
+
+    def custom_open(file, mode='r', *args, **kwargs):
+        normalized_file = os.path.normpath(file)
+        if normalized_file in mock_file_contents:
+            if 'b' in mode:
+                return io.BytesIO(mock_file_contents[normalized_file].encode('ISO-8859-1'))
+            else:
+                return io.StringIO(mock_file_contents[normalized_file])
+        return original_open(file, mode, *args, **kwargs)
+
+    def custom_exists(path):
+        normalized_path = os.path.normpath(path)
+        return normalized_path in mock_file_contents or original_exists(path)
+
+    def custom_isdir(path):
+        normalized_path = os.path.normpath(path)
+        expected_dir = os.path.normpath(os.path.join(tests_root, "test262"))
+        return normalized_path == expected_dir or original_isdir(path)
+
+    with patch('builtins.open', side_effect=custom_open), \
+         patch('os.path.exists', side_effect=custom_exists), \
+         patch('os.path.isdir', side_effect=custom_isdir):
+        yield tests_root, url_base
+
+
+def _create_mock_request(path: str) -> MagicMock:
+    mock_request = MagicMock()
+    mock_request.url_parts.path = path
+    mock_request.url_parts.query = ""
+    return mock_request
+
+
+def _test_handler_path_replace(handler_cls: Type[WrapperHandler],
+                               tests_root: str,
+                               url_base: str,
+                               expected: List[Tuple[str, str]]) -> None:
+    handler = handler_cls(base_path=tests_root, url_base=url_base)
+    assert handler.path_replace == expected
+
+def _test_handler_wrapper_content(handler_cls: Type[WrapperHandler],
+                                  tests_root: str,
+                                  url_base: str,
+                                  request_path: str,
+                                  expected_content: List[str]) -> None:
+    handler = handler_cls(base_path=tests_root, url_base=url_base)
+    mock_request = _create_mock_request(request_path)
+    mock_response = MagicMock()
+    handler.handle_request(mock_request, mock_response)  # type: ignore[no-untyped-call]
+    content = mock_response.content
+    for item in expected_content:
+        assert item in content
+
+def _test_handler_get_metadata(handler_cls: Type[WrapperHandler],
+                               tests_root: str,
+                               url_base: str,
+                               request_path: str,
+                               expected_metadata: List[Tuple[str, str]]) -> None:
+    handler = handler_cls(tests_root, url_base)
+    mock_request = _create_mock_request(request_path)
+    metadata = list(handler._get_metadata(mock_request))  # type: ignore[no-untyped-call]
+    for item in expected_metadata:
+        assert item in metadata
+    assert len(expected_metadata) == len(metadata), f"{expected_metadata} != {metadata}"
+
+
+@pytest.mark.parametrize("handler_cls, expected", [
+    (T262WindowHandler, [(".test262.html", ".js", ".test262-test.html")]),
+    (T262WindowTestHandler, [(".test262-test.html", ".js")]),
+    (T262WindowModuleHandler, [(".test262-module.html", ".js", ".test262-module-test.html")]),
+    (T262WindowModuleTestHandler, [(".test262-module-test.html", ".js")]),
+    (T262StrictWindowHandler, [(".test262.strict.html", ".js", ".test262-test.strict.html")]),
+    (T262StrictWindowTestHandler, [(".test262-test.strict.html", ".js", ".test262.strict.js")]),
+])
+def test_path_replace(test262_handlers, handler_cls, expected):
+    tests_root, url_base = test262_handlers
+    _test_handler_path_replace(handler_cls, tests_root, url_base, expected)
+
+
+@pytest.mark.parametrize("handler_cls, request_path, expected_metadata", [
+    (
+        T262WindowTestHandler,
+        "/test262/basic.test262-test.html",
+        [('script', '/third_party/test262/harness/assert.js'), ('script', '/third_party/test262/harness/sta.js')]
+    ),
+    (
+        T262WindowTestHandler,
+        "/test262/negative.test262-test.html",
+        [('negative', 'TypeError')]
+    ),
+    (
+        T262StrictWindowTestHandler,
+        "/test262/teststrict.test262-test.strict.html",
+        [('script', '/third_party/test262/harness/propertyHelper.js')]
+    ),
+])
+def test_get_metadata(test262_handlers, handler_cls, request_path, expected_metadata):
+    tests_root, url_base = test262_handlers
+    _test_handler_get_metadata(handler_cls, tests_root, url_base, request_path, expected_metadata)
+
+
+@pytest.mark.parametrize("handler_cls, request_path, expected_substrings", [
+    # T262WindowHandler: Should contain the iframe pointing to the test
+    (
+        T262WindowHandler,
+        "/test262/basic.test262.html",
+        ['<iframe id="test262-iframe" src="/test262/basic.test262-test.html"></iframe>']
+    ),
+    # T262WindowTestHandler: Should contain script tags
+    (
+        T262WindowTestHandler,
+        "/test262/basic.test262-test.html",
+        ['<script src="/test262/basic.js"></script>', '<script>test262Setup()</script>', '<script>test262Done()</script>']
+    ),
+    # T262WindowModuleTestHandler: Should contain module import
+    (
+        T262WindowModuleTestHandler,
+        "/test262/module.test262-module-test.html",
+        ['<script type="module">', 'import {} from "/test262/module.js";', 'test262Setup();', 'test262Done();']
+    ),
+    # Verification of the 'negative' replacement in the HTML
+    (
+        T262WindowTestHandler,
+        "/test262/negative.test262-test.html",
+        ["<script>test262Negative('TypeError')</script>"]
+    ),
+    # Strict HTML Case: points to the .strict.js variant
+    (
+        T262StrictWindowTestHandler,
+        "/test262/teststrict.test262-test.strict.html",
+        ['src="/test262/teststrict.test262.strict.js"']
+    ),
+    # Strict JS Case: The handler that serves the actual script
+    (
+        T262StrictHandler,
+        "/test262/teststrict.test262.strict.js",
+        ['"use strict";', "console.log('hello');"]
+    ),
+])
+def test_wrapper_content(test262_handlers, handler_cls, request_path, expected_substrings):
+    tests_root, url_base = test262_handlers
+    _test_handler_wrapper_content(handler_cls, tests_root, url_base, request_path, expected_substrings)

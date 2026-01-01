@@ -13,6 +13,7 @@ features:
   - "!send-authentication-existing-session-manual.htm"
   - "!send-authentication-prompt-2-manual.htm"
   - "!send-authentication-prompt-manual.htm"
+  - "!status.h2.window.js"
 - name: base
   files:
   - open-url-base.htm
@@ -28,3 +29,6 @@ features:
   - send-authentication-existing-session-manual.htm
   - send-authentication-prompt-2-manual.htm
   - send-authentication-prompt-manual.htm
+- name: http2
+  files:
+  - status.h2.window.js

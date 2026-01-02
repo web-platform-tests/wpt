@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 test(() => {
   const results = [];
   const source = new Observable(subscriber => {

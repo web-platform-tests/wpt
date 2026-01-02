@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/web-animations-1/#computing-property-values">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  @property --registered {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
+  }
+
+  #container {
+    font-size: 10px;
+    --unregistered:10px;
+    --registered:10px;
+    --important:10px !important;
+  }
+  #container > div {
+    width: 0px;
+  }
+</style>
+<div id="container"></div>
+</body>
+<script>
+'use strict';
+
+function createElement(t) {
+  let element = document.createElement('div');
+  container.append(element);
+  t.add_cleanup(() => element.remove());
+  element.id = 'element';
+  return element;
+}
+
+// Test that an animation with the given keyframe results in the expected
+// computed values at various times in the range [0, 1].
+function test_interpolation(keyframes, expectations, description) {
+  test(t => {
+    const element = createElement(t);
+    const duration = 1000;
+    const animation = element.animate(keyframes, {
+      fill: 'forwards',
+      duration: duration
+    });
+
+    for (let expectation of expectations) {
+      animation.currentTime = expectation.at * duration;
+      for (let property of Object.keys(expectation).filter(x => x !== 'at')) {
+        let actual = getComputedStyle(element).getPropertyValue(property);
+        let expected = expectation[property];
+        assert_equals(actual, expected);
+      }
+    }
+  }, description);
+}
+
+test_interpolation([
+  { width: '100px' },
+  { width: '200px' },
+],[
+  { at: 0,    width: '100px' },
+  { at: 0.25, width: '125px' },
+  { at: 0.5,  width: '150px' },
+  { at: 0.75, width: '175px' },
+  { at: 1,    width: '200px' },
+], 'No dependencies');
+
+test_interpolation([
+  { width: '10em' },
+  { width: '20em' },
+],[
+  { at: 0,    width: '100px', ['font-size']: '10px' },
+  { at: 0.25, width: '125px', ['font-size']: '10px' },
+  { at: 0.5,  width: '150px', ['font-size']: '10px' },
+  { at: 0.75, width: '175px', ['font-size']: '10px' },
+  { at: 1,    width: '200px', ['font-size']: '10px' },
+], 'Dependency on font-size in base style');
+
+test_interpolation([
+  { width: '20em', fontSize: '20px' },
+  { width: '40em', fontSize: '40px' },
+],[
+  { at: 0,    width: '400px',  ['font-size']: '20px' },
+  { at: 0.25, width: '625px',  ['font-size']: '25px' },
+  { at: 0.5,  width: '900px',  ['font-size']: '30px' },
+  { at: 0.75, width: '1225px', ['font-size']: '35px' },
+  { at: 1,    width: '1600px', ['font-size']: '40px' },
+], 'Dependency on animated font-size');
+
+test_interpolation([
+  { width: 'calc(20 * var(--unregistered))' },
+  { width: 'calc(40 * var(--unregistered))' },
+],[
+  { at: 0,    width: '200px', ['--unregistered']: '10px'},
+  { at: 0.25, width: '250px', ['--unregistered']: '10px'},
+  { at: 0.5,  width: '300px', ['--unregistered']: '10px'},
+  { at: 0.75, width: '350px', ['--unregistered']: '10px'},
+  { at: 1,    width: '400px', ['--unregistered']: '10px'},
+], 'Dependency on (unregistered) custom property  in base style');
+
+test_interpolation([
+  { width: 'calc(20 * var(--unregistered))', ['--unregistered']: '20px' },
+  { width: 'calc(40 * var(--unregistered))', ['--unregistered']: '40px' },
+],[
+  { at: 0,    width: '400px',  ['--unregistered']: '20px' },
+  { at: 0.25, width: '500px',  ['--unregistered']: '20px' },
+  { at: 0.5,  width: '1200px', ['--unregistered']: '40px' },
+  { at: 0.75, width: '1400px', ['--unregistered']: '40px' },
+  { at: 1,    width: '1600px', ['--unregistered']: '40px' },
+], 'Dependency on animated (unregistered) custom property');
+
+test_interpolation([
+  { width: 'calc(20 * var(--important))', ['--important']: '20px' },
+  { width: 'calc(40 * var(--important))', ['--important']: '40px' },
+],[
+  { at: 0,    width: '200px', ['--important']: '10px ' },
+  { at: 0.25, width: '250px', ['--important']: '10px ' },
+  { at: 0.5,  width: '300px', ['--important']: '10px ' },
+  { at: 0.75, width: '350px', ['--important']: '10px ' },
+  { at: 1,    width: '400px', ['--important']: '10px ' },
+], 'Dependency resolution respects !important');
+
+test_interpolation([
+  { width: 'calc(20 * var(--registered))', ['--registered']: '20px' },
+  { width: 'calc(40 * var(--registered))', ['--registered']: '40px' },
+],[
+  { at: 0,    width: '400px',  ['--registered']: '20px' },
+  { at: 0.25, width: '625px',  ['--registered']: '25px' },
+  { at: 0.5,  width: '900px',  ['--registered']: '30px' },
+  { at: 0.75, width: '1225px', ['--registered']: '35px' },
+  { at: 1,    width: '1600px', ['--registered']: '40px' },
+], 'Dependency on animated registered custom property ');
+
+</script>

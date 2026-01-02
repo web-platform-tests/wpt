@@ -1,0 +1,16 @@
+<!doctype html>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body>
+<script>
+async function messageListener(event) {
+  if (event.data != "gain_user_activation") {
+    return;
+  }
+  await test_driver.bless("gain user activation", async function() {
+    console.log(navigator.userActivation.isActive ? "Has User Activation" : "Does not have user activation");
+    return;
+  });
+}
+window.addEventListener("message", messageListener);
+</script>

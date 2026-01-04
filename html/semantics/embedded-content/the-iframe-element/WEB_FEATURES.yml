@@ -9,3 +9,7 @@ features:
 - name: hashchange
   files:
   - srcdoc_change_hash.html
+- name: iframe-srcdoc
+  files:
+  - srcdoc*
+  - "!srcdoc_change_hash.html"

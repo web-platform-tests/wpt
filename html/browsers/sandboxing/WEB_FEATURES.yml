@@ -3,3 +3,6 @@ features:
   files:
   - sandbox-inherited-from-required-csp.html
   - window-open-blank-from-different-initiator.html
+- name: iframe-srcdoc
+  files:
+  - sandbox-window-open-srcdoc.html

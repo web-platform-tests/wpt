@@ -1,0 +1,4 @@
+features:
+- name: iframe-srcdoc
+  files:
+  - document_domain_setter_srcdoc.html

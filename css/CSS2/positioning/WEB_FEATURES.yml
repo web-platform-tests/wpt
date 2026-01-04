@@ -4,3 +4,11 @@ features:
   - 'position-fixed-*.xht'
   - position-004.xht
   - position-006.xht
+- name: relative-positioning
+  files:
+  - 'position-relative-*'
+  - 'relpos-calcs-*'
+  - top-offset-002.xht
+  - bottom-offset-002.xht
+  - left-offset-002.xht
+  - right-offset-002.xht

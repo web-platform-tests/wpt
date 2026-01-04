@@ -6,3 +6,13 @@ features:
 - name: iframe-srcdoc
   files:
   - sandbox-window-open-srcdoc.html
+- name: iframe-sandbox
+  files:
+  - popup-from-initial-empty-sandboxed-document.window.js
+  - sandbox-*
+  - "!sandbox-inherited-from-initiator-response.html"
+  - "!sandbox-inherited-from-required-csp.html"
+  - "!sandbox-navigation-timing-iframe.tentative.html"
+  - "!sandbox-navigation-timing.tentative.html"
+  - "!sandbox-new-execution-context-iframe.html"
+  - "!sandbox-window-open-srcdoc.html"

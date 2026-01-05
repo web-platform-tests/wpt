@@ -16,3 +16,7 @@ features:
   files:
   - scrollIntoView-*
   - scrollintoview.html
+- name: dom-geometry
+  files:
+  - DOMRectList.html
+  - cssom-*

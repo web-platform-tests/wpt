@@ -2,3 +2,7 @@ features:
 - name: canvas-roundrect
   files:
   - 2d.path.roundrect.*
+  - "!2d.path.roundrect.*.dompoint*"
+- name: dom-geometry
+  files:
+  - 2d.path.roundrect.*.dompoint*

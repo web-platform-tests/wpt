@@ -18,3 +18,13 @@ features:
   - iframe_sandbox_*
   - sandbox-*
   - sandbox_*
+- name: iframe
+  files:
+  - "*"
+  - "!iframe-loading-lazy*"
+  - "!iframe-loading-lazy-base-url*"
+  - "!iframe-with-base.html"
+  - "!srcdoc*"
+  - "!iframe_sandbox_*"
+  - "!sandbox-*"
+  - "!sandbox_*"

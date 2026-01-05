@@ -409,19 +409,19 @@ class MarionetteSelectorProtocolPart(SelectorProtocolPart):
         selectors.reverse()
 
         while selectors:
-          selector = selectors.pop()
-          intermediate = []
-          if not shadow_roots:
-              intermediate = self.marionette.find_elements("css selector", selector)
-          else:
-              for root in shadow_roots:
-                  intermediate.extend(root.find_elements("css selector", selector))
+            selector = selectors.pop()
+            intermediate = []
+            if not shadow_roots:
+                intermediate = self.marionette.find_elements("css selector", selector)
+            else:
+                for root in shadow_roots:
+                    intermediate.extend(root.find_elements("css selector", selector))
 
-          if (selectors):
-              shadow_roots = [element.shadow_root for element in intermediate]
-              shadow_roots = [root for root in shadow_roots if root is not None]
-          else:
-              return intermediate
+            if (selectors):
+                shadow_roots = [element.shadow_root for element in intermediate]
+                shadow_roots = [root for root in shadow_roots if root is not None]
+            else:
+                return intermediate
 
     def elements_by_selector(self, selector):
         return self.marionette.find_elements("css selector", selector)

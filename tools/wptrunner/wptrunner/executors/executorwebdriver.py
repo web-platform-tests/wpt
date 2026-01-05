@@ -533,7 +533,7 @@ class WebDriverSelectorProtocolPart(SelectorProtocolPart):
 
     def elements_by_selector_array(self, selectors):
         if len(selectors) == 1:
-            return elements_by_selector(self, selectors[0])
+            return self.elements_by_selector(selectors[0])
 
         raise NotImplementedError()
 

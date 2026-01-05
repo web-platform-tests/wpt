@@ -13,3 +13,6 @@ features:
 - name: cross-fade
   files:
   - cross-fade-*
+- name: image-rendering
+  files:
+  - image-rendering-*

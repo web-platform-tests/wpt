@@ -5,7 +5,6 @@ features:
 - name: gradient-interpolation
   files:
   - "gradient-interpolation-*"
-- name: smooth
+- name: image-rendering
   files:
-  - image-rendering-computed.html
-  - image-rendering-valid.html
+  - image-rendering-*

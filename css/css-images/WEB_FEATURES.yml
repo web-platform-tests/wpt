@@ -13,3 +13,6 @@ features:
 - name: cross-fade
   files:
   - cross-fade-*
+- name: image-function
+  files:
+  - css-image-fallbacks-and-annotations*

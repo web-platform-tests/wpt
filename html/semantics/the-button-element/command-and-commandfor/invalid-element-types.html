@@ -11,21 +11,24 @@
 <script src="resources/invoker-utils.js"></script>
 <script src="/html/resources/common.js"></script>
 
-<meta name=variant content=?command=--custom-event&half=first>
-<meta name=variant content=?command=--custom-event&half=second>
-<meta name=variant content=?command=show-popover&half=first>
-<meta name=variant content=?command=show-popover&half=second>
-<meta name=variant content=?command=show-modal&half=first>
-<meta name=variant content=?command=show-modal&half=second>
+<meta name=variant content=?command=--custom-event&half=first&target=divinvokee>
+<meta name=variant content=?command=--custom-event&half=second&target=divinvokee>
+<meta name=variant content=?command=show-popover&half=first&target=popoverinvokee>
+<meta name=variant content=?command=show-popover&half=second&target=popoverinvokee>
+<meta name=variant content=?command=show-modal&half=first&target=dialoginvokee>
+<meta name=variant content=?command=show-modal&half=second&target=dialoginvokee>
 
-<div id="invokee"></div>
+<div id="divinvokee"></div>
+<div id="popoverinvokee" popover></div>
+<dialog id="dialoginvokee"></dialog>
 
 <script>
   // The command parameter is provided by variants, to
   // effectively split this (slow) test into multiple runs.
   const urlParams = new URLSearchParams(window.location.search);
-  command = urlParams.get('command');
-  half = urlParams.get('half');
+  const command = urlParams.get('command');
+  const target = urlParams.get('target');
+  const half = urlParams.get('half');
   const firstHalf = half === 'first';
   assert_true(firstHalf || half === 'second');
 
@@ -34,12 +37,12 @@
   const midpoint = Math.floor(allTags.length / 2);
   const tags = firstHalf ? allTags.slice(0,midpoint) : allTags.slice(midpoint);
   let gotEvent = false;
-  invokee.addEventListener('command',() => (gotEvent = true));
+  document.getElementById(target).addEventListener('command',() => (gotEvent = true));
   for(const tag of tags) {
     promise_test(async () => {
       gotEvent = false;
       const element = document.createElement(tag);
-      element.setAttribute('commandfor','invokee');
+      element.setAttribute('commandfor',target);
       element.setAttribute('command',command);
       element.style.display = 'block'; // For normally invisible elements
       document.body.appendChild(element);

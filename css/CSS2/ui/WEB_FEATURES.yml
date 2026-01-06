@@ -2,3 +2,10 @@ features:
 - name: system-color
   files:
   - "system-colors-*"
+- name: inherit-value
+  files:
+  - cursor-019.xht
+  - outline-color-175.xht
+  - outline-style-010.xht
+  - outline-width-095.xht
+  - overflow-005.xht

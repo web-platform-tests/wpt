@@ -129,3 +129,8 @@ features:
   - content-counters-*
   - counter-*
   - counters-*
+- name: inherit-value
+  files:
+  - content-160.xht
+  - content-inherit-*
+  - quotes-034.xht

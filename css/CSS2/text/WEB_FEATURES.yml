@@ -5,3 +5,15 @@ features:
 - name: text-align
   files:
   - text-align-*
+  - "!text-align-005.xht"
+- name: inherit-value
+  files:
+  - letter-spacing-101.xht
+  - text-align-005.xht
+  - text-decoration-066.xht
+  - text-decoration-067.xht
+  - text-decoration-068.xht
+  - text-decoration-069.xht
+  - text-indent-112.xht
+  - text-transform-005.xht
+  - white-space-006.xht

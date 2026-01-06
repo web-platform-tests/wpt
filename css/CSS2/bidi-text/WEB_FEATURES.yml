@@ -1,0 +1,5 @@
+features:
+- name: inherit-value
+  files:
+  - direction-003.xht
+  - unicode-bidi-004.xht

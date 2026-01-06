@@ -1,3 +1,8 @@
 features:
 - name: z-index
-  files: '**'
+  files:
+  - "*"
+  - "!z-index-014.xht"
+- name: inherit-value
+  files:
+  - z-index-014.xht

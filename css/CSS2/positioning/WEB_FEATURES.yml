@@ -4,3 +4,11 @@ features:
   - 'position-fixed-*.xht'
   - position-004.xht
   - position-006.xht
+- name: inherit-value
+  files:
+  - bottom-113.xht
+  - left-113.xht
+  - position-005.xht
+  - position-relative-016.xht
+  - right-113.xht
+  - top-113.xht

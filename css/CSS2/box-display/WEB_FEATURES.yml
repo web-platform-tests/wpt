@@ -1,0 +1,4 @@
+features:
+- name: inherit-value
+  files:
+  - display-017.xht

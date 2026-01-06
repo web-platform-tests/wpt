@@ -2,3 +2,6 @@ features:
 - name: background-position
   files:
   - table-backgrounds-bs-row-002.xht
+- name: inherit-value
+  files:
+  - color-174.xht

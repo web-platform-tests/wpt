@@ -2,6 +2,26 @@ features:
 - name: font-size
   files:
   - font-size-*
+  - "!font-size-112.xht"
+  - "!font-size-applies-to-017.xht"
 - name: font-weight
   files:
   - font-weight-*
+  - "!font-weight-applies-to-017.xht"
+- name: inherit-value
+  files:
+  - font-039.xht
+  - font-040.xht
+  - font-041.xht
+  - font-042.xht
+  - font-043.xht
+  - font-applies-to-017.xht
+  - font-family-007.xht
+  - font-family-applies-to-017.xht
+  - font-size-112.xht
+  - font-size-applies-to-017.xht
+  - font-style-004.xht
+  - font-style-applies-to-017.xht
+  - font-variant-003.xht
+  - font-variant-applies-to-017.xht
+  - font-weight-applies-to-017.xht

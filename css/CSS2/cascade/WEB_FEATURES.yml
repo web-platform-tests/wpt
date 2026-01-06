@@ -1,0 +1,6 @@
+features:
+- name: import
+  files:
+  - at-import-*
+  - cascade-007.xht
+  - cascade-012.xht

@@ -31,3 +31,6 @@ features:
 - name: mutationobserver
   files:
   - MutationObserver-style.html
+- name: import
+  files:
+  - cssimportrule*

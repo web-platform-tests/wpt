@@ -21,3 +21,6 @@ features:
 - name: font-size
   files:
   - c526-font-sz-*
+- name: import
+  files:
+  - c11-import-000.xht

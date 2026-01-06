@@ -35,16 +35,21 @@
   ].forEach((action) => {
     test(function (t) {
       t.add_cleanup(resetState);
+      let command_event_fired = false;
+      invokee.addEventListener("command", () => (command_event_fired = true), { signal: t.get_signal() });
       invokerbutton.setAttribute("command", action);
       assert_false(invokee.open, "invokee.open");
       assert_false(invokee.matches(":modal"), "invokee :modal");
       invokerbutton.click();
       assert_false(invokee.open, "invokee.open");
       assert_false(invokee.matches(":modal"), "invokee :modal");
+      assert_false(command_event_fired, "command event fired");
     }, `invoking (as ${action}) on dialog does nothing`);
 
     test(function (t) {
       t.add_cleanup(resetState);
+      let command_event_fired = false;
+      invokee.addEventListener("command", () => (command_event_fired = true), { signal: t.get_signal() });
       containedinvoker.setAttribute("command", action);
       invokee.show();
       assert_true(invokee.open, "invokee.open");
@@ -52,10 +57,13 @@
       containedinvoker.click();
       assert_true(invokee.open, "invokee.open");
       assert_false(invokee.matches(":modal"), "invokee :modal");
+      assert_false(command_event_fired, "command event fired");
     }, `invoking (as ${action}) on open dialog does nothing`);
 
     test(function (t) {
       t.add_cleanup(resetState);
+      let command_event_fired = false;
+      invokee.addEventListener("command", () => (command_event_fired = true), { signal: t.get_signal() });
       containedinvoker.setAttribute("command", action);
       invokee.showModal();
       assert_true(invokee.open, "invokee.open");
@@ -63,6 +71,7 @@
       containedinvoker.click();
       assert_true(invokee.open, "invokee.open");
       assert_true(invokee.matches(":modal"), "invokee :modal");
+      assert_false(command_event_fired, "command event fired");
     }, `invoking (as ${action}) on open modal dialog does nothing`);
 
     test(function (t) {

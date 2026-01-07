@@ -3,9 +3,6 @@ features:
   files:
   - "*"
   - "!*touch-action*"
-  - "!inheritance.html"
 - name: touch-action
   files:
   - "*touch-action*"
-  - inheritance.html
-

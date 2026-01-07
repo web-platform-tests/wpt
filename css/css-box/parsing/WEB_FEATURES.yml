@@ -7,6 +7,10 @@ features:
   - 'float-computed.html'
   - 'float-invalid.html'
   - 'float-valid.html'
+- name: width-height
+  files:
+  - 'width-*'
+  - 'height-*'
 - name: visibility
   files:
   - 'visibility-*'

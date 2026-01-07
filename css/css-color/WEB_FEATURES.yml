@@ -41,6 +41,13 @@ features:
 - name: contrast-color
   files:
   - contrast-color-001.html
+- name: hsl
+  files:
+  - background-color-hsl-*
+  - hsl-*
+  - hsla-*
+  - t424-hsl-*
+  - t425-hsla-*
 - name: opacity
   files:
   - t32-opacity-*.xht

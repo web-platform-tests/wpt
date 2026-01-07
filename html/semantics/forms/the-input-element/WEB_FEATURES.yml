@@ -21,3 +21,6 @@ features:
 - name: change-event
   files:
   - change-to-empty-value.html
+- name: mouse-events
+  files:
+  - checkbox-click-events.html

@@ -2,3 +2,8 @@ features:
 - name: change-event
   files:
   - legacy-pre-activation-behavior.window.js
+- name: mouse-events
+  files:
+  - Event-dispatch-click.html
+  - Event-dispatch-click.tentative.html
+  - mouse-event-retarget.html

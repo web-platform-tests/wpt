@@ -8,8 +8,8 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <body>
-  <iframe id="same-origin"></iframe>
   <iframe id="cross-origin" allow="digital-credentials-create"></iframe>
+  <iframe id="same-origin"></iframe>
 </body>
 
 <script type="module">
@@ -136,7 +136,7 @@
     const abortController = new AbortController();
     const { signal } = abortController;
     abortController.abort();
-    for (const options of [{ signal }, { signal, ...makeCreateOptions({protocol: []}) }]) {
+    for (const options of [{ signal }, makeCreateOptions({protocol: [], signal})]) {
       await promise_rejects_dom(
         t,
         "AbortError",
@@ -151,7 +151,7 @@
     const abortController = new iframeWindow.AbortController();
     const { signal } = abortController;
     abortController.abort();
-    for (const options of [{ signal }, { signal, ...makeCreateOptions({protocol: []}) }]) {
+    for (const options of [{ signal }, makeCreateOptions({protocol: [], signal})]) {
       await test_driver.bless("user activation");
       await promise_rejects_dom(
         t,
@@ -182,8 +182,7 @@
   promise_test(async (t) => {
     const abortController = new AbortController();
     const { signal } = abortController;
-    const options = makeCreateOptions({protocol: "openid4vci"});
-    options.signal = signal;
+    const options = makeCreateOptions({ signal });
     await test_driver.bless("user activation");
     const promise = promise_rejects_dom(
       t,
@@ -201,7 +200,7 @@
       abort: "after",
       action: "create",
       needsActivation: true,
-      options: makeCreateOptions({protocol: "openid4vci"}),
+      options: makeCreateOptions(),
     });
     assert_equals(result.constructor, "DOMException");
     assert_equals(result.name, "AbortError");
@@ -237,8 +236,7 @@
     ];
 
     for (const badValue of throwingValues) {
-      const options = makeCreateOptions({protocol: "openid4vci"});
-      options.digital.requests[0].data = badValue;
+      const options = makeCreateOptions({ data: badValue });
 
       await promise_rejects_js(
         t,
@@ -248,4 +246,16 @@
       );
     }
   }, "Throws TypeError when request data is not JSON stringifiable.");
+
+  promise_test(async (t) => {
+    const options = {
+      password: document.createElement("form"),
+    };
+    await promise_rejects_js(
+      t,
+      TypeError,
+      navigator.credentials.create(options),
+      "Should throw for invalid form element"
+    );
+  }, "Throws when form element does not contain password.");
 </script>

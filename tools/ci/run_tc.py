@@ -256,33 +256,33 @@ def unpack(path):
         raise Exception
 
 
-def setup_environment(args):
+def setup_environment(**kwargs):
     if "TASK_ARTIFACTS" in os.environ:
         artifacts = json.loads(os.environ["TASK_ARTIFACTS"])
         download_artifacts(artifacts)
 
-    if args.hosts_file:
+    if kwargs["hosts_file"]:
         make_hosts_file()
 
-    if args.install_certificates:
+    if kwargs["install_certificates"]:
         install_certificates()
 
-    if "chrome" in args.browser:
-        assert args.channel is not None
-        install_chrome(args.channel)
+    if "chrome" in kwargs["browser"]:
+        assert kwargs["channel"] is not None
+        install_chrome(kwargs["channel"])
 
     # These browsers use dbus for various features.
-    if any(b in args.browser for b in ["chrome", "webkitgtk_minibrowser", "wpewebkit_minibrowser"]):
+    if any(b in kwargs["browser"] for b in ["chrome", "webkitgtk_minibrowser", "wpewebkit_minibrowser"]):
         start_dbus()
 
-    if args.xvfb:
+    if kwargs["xvfb"]:
         start_xvfb()
 
-    if args.oom_killer:
+    if kwargs["oom_killer"]:
         start_userspace_oom_killer()
 
 
-def setup_repository(args):
+def setup_repository(**kwargs):
     is_pr = os.environ.get("GITHUB_PULL_REQUEST", "false") != "false"
 
     # Initially task_head points at the same commit as the ref we want to test.
@@ -303,12 +303,12 @@ def setup_repository(args):
     # resources. In the latter case we assume it's OK to use the current merge
     # instead of the one at the time the decision task ran.
 
-    if args.ref:
+    if kwargs["ref"]:
         if is_pr:
-            assert args.ref.endswith("/merge")
-            expected_head = args.merge_rev
+            assert kwargs["ref"].endswith("/merge")
+            expected_head = kwargs["merge_rev"]
         else:
-            expected_head = args.head_rev
+            expected_head = kwargs["head_rev"]
 
         task_head = run(["git", "rev-parse", "task_head"], return_stdout=True).strip()
 
@@ -324,14 +324,14 @@ def setup_repository(args):
                     sys.exit(1)
             else:
                 # Convert the refs/pulls/<id>/merge to refs/pulls/<id>/head
-                head_ref = args.ref.rsplit("/", 1)[0] + "/head"
+                head_ref = kwargs["ref"].rsplit("/", 1)[0] + "/head"
                 try:
                     remote_head = run(["git", "ls-remote", "origin", head_ref],
                                       return_stdout=True).split("\t")[0]
                 except subprocess.CalledProcessError:
                     print("CRITICAL: Failed to read remote ref %s" % head_ref)
                     sys.exit(1)
-                if remote_head != args.head_rev:
+                if remote_head != kwargs["head_rev"]:
                     print("CRITICAL: task_head points at %s, expected %s. "
                           "This may be because the branch was updated" % (task_head, expected_head))
                     sys.exit(1)
@@ -362,7 +362,7 @@ def setup_repository(args):
         # TODO: move this somewhere earlier in the task
         run(["git", "fetch", "--quiet", "origin", "%s:%s" % (branch, branch)])
 
-    checkout_rev = args.checkout if args.checkout is not None else "task_head"
+    checkout_rev = kwargs["checkout"] if kwargs["checkout"] is not None else "task_head"
     checkout_revision(checkout_rev)
 
     refs = run(["git", "for-each-ref", "refs/heads"], return_stdout=True)
@@ -405,9 +405,7 @@ def include_job(job):
     return job in set(jobs_str.splitlines())
 
 
-def main():
-    args = get_parser().parse_args()
-
+def run_tc(*args, **kwargs):
     if "TASK_EVENT" in os.environ:
         event = json.loads(os.environ["TASK_EVENT"])
     else:
@@ -416,25 +414,30 @@ def main():
     if event:
         set_variables(event)
 
-    if args.setup_repository:
-        setup_repository(args)
+    if kwargs["setup_repository"]:
+        setup_repository(**kwargs)
 
     # Hack for backwards compatibility
-    if args.script in ["run-all", "lint", "update_built", "tools_unittest",
-                       "wpt_integration", "resources_unittest",
-                       "wptrunner_infrastructure", "stability", "affected_tests"]:
-        job = args.script
+    if kwargs["script"] in ["run-all", "lint", "update_built", "tools_unittest",
+                            "wpt_integration", "resources_unittest",
+                            "wptrunner_infrastructure", "stability", "affected_tests"]:
+        job = kwargs["script"]
         if not include_job(job):
             return
-        args.script = args.script_args[0]
-        args.script_args = args.script_args[1:]
+        kwargs["script"] = kwargs["script_args"][0]
+        kwargs["script_args"] = kwargs["script_args"][1:]
 
     # Run the job
-    setup_environment(args)
+    setup_environment(**kwargs)
     os.chdir(root)
-    cmd = [args.script] + args.script_args
+    cmd = [kwargs["script"]] + kwargs["script_args"]
     print(" ".join(cmd))
     sys.exit(subprocess.call(cmd))
+
+
+def main():
+    args = get_parser().parse_args()
+    run_tc(**vars(args))
 
 
 if __name__ == "__main__":

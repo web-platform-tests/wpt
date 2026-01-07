@@ -4,3 +4,7 @@ features:
   - box-sizing-computed.html
   - box-sizing-invalid.html
   - box-sizing-valid.html
+- name: width-height
+  files:
+  - 'width-*'
+  - 'height-*'

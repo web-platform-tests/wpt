@@ -80,8 +80,5 @@ features:
   - ttwf-css3background-border-*
 - name: box-shadow
   files:
-  - box-shadow-*
-  - css-box-shadow-*
-  - css3-box-shadow.html
+  - "*box-shadow*"
   - fieldset-inset-shadow.html
-  - inset-box-shadow-*

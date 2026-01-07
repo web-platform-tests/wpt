@@ -55,6 +55,9 @@ root = os.path.abspath(
                  os.pardir))
 
 
+started_processes = []
+
+
 def run(cmd, return_stdout=False, **kwargs):
     print(" ".join(cmd))
     if return_stdout:
@@ -68,7 +71,7 @@ def run(cmd, return_stdout=False, **kwargs):
 
 def start(cmd):
     print(" ".join(cmd))
-    subprocess.Popen(cmd)
+    started_processes.append(subprocess.Popen(cmd))
 
 
 def get_parser():
@@ -408,39 +411,41 @@ def include_job(job):
 
 
 def run_tc(*args, **kwargs):
+    try:
         is_ci = "TASKCLUSTER_ROOT_URL" in os.environ
 
-    if "TASK_EVENT" in os.environ:
-        event = json.loads(os.environ["TASK_EVENT"])
-    if "TASK_EVENT" in os.environ:
-        event = json.loads(os.environ["TASK_EVENT"])
-    elif is_ci:
-        event = fetch_event_data()
-    else:
-        event = None
+        if "TASK_EVENT" in os.environ:
+            event = json.loads(os.environ["TASK_EVENT"])
+        elif is_ci:
+            event = fetch_event_data()
+        else:
+            event = None
 
-    if event:
-        set_variables(event)
+        if event:
+            set_variables(event)
 
-    if kwargs["setup_repository"] or (kwargs["setup_repository"] is None and is_ci):
-        setup_repository(**kwargs)
+        if kwargs["setup_repository"] or (kwargs["setup_repository"] is None and is_ci):
+            setup_repository(**kwargs)
 
-    # Hack for backwards compatibility
-    if kwargs["script"] in ["run-all", "lint", "update_built", "tools_unittest",
-                            "wpt_integration", "resources_unittest",
-                            "wptrunner_infrastructure", "stability", "affected_tests"]:
-        job = kwargs["script"]
-        if not include_job(job):
-            return
-        kwargs["script"] = kwargs["script_args"][0]
-        kwargs["script_args"] = kwargs["script_args"][1:]
+        # Hack for backwards compatibility
+        if kwargs["script"] in ["run-all", "lint", "update_built", "tools_unittest",
+                                "wpt_integration", "resources_unittest",
+                                "wptrunner_infrastructure", "stability", "affected_tests"]:
+            job = kwargs["script"]
+            if not include_job(job):
+                return
+            kwargs["script"] = kwargs["script_args"][0]
+            kwargs["script_args"] = kwargs["script_args"][1:]
 
-    # Run the job
-    setup_environment(**kwargs)
-    os.chdir(root)
-    cmd = [kwargs["script"]] + kwargs["script_args"]
-    print(" ".join(cmd))
-    sys.exit(subprocess.call(cmd))
+        # Run the job
+        setup_environment(**kwargs)
+        os.chdir(root)
+        cmd = [kwargs["script"]] + kwargs["script_args"]
+        print(" ".join(cmd))
+        sys.exit(subprocess.call(cmd))
+    finally:
+        for process in started_processes:
+            process.kill()
 
 
 def main():

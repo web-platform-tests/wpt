@@ -7,3 +7,9 @@ features:
       - 'float-computed.html'
       - 'float-invalid.html'
       - 'float-valid.html'
+  - name: margin
+    files:
+      - margin-computed.html
+      - margin-invalid.html
+      - margin-shorthand.html
+      - margin-valid.html

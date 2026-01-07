@@ -99,6 +99,8 @@ def get_parser():
                    help="Install web-platform.test certificates to UA store")
     p.add_argument("--no-install-certificates", action="store_false", default=None,
                    help="Don't install web-platform.test certificates to UA store")
+    p.add_argument("--setup-repository", action="store_true", default=None, dest="setup_repository",
+                   help="Run any repository setup steps, instead use the existing worktree")
     p.add_argument("--no-setup-repository", action="store_false", dest="setup_repository",
                    help="Don't run any repository setup steps, instead use the existing worktree. "
                         "This is useful for local testing.")
@@ -406,15 +408,21 @@ def include_job(job):
 
 
 def run_tc(*args, **kwargs):
+        is_ci = "TASKCLUSTER_ROOT_URL" in os.environ
+
     if "TASK_EVENT" in os.environ:
         event = json.loads(os.environ["TASK_EVENT"])
-    else:
+    if "TASK_EVENT" in os.environ:
+        event = json.loads(os.environ["TASK_EVENT"])
+    elif is_ci:
         event = fetch_event_data()
+    else:
+        event = None
 
     if event:
         set_variables(event)
 
-    if kwargs["setup_repository"]:
+    if kwargs["setup_repository"] or (kwargs["setup_repository"] is None and is_ci):
         setup_repository(**kwargs)
 
     # Hack for backwards compatibility

@@ -31,3 +31,6 @@ features:
 - name: mutationobserver
   files:
   - MutationObserver-style.html
+- name: where
+  files:
+  - insert-invalid-where-rule-crash.html

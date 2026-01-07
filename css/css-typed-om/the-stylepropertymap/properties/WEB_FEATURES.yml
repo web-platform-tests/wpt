@@ -1,4 +1,7 @@
 features:
+- name: box-shadow
+  files:
+  - box-shadow.html
 - name: speak
   files:
   - speak.html

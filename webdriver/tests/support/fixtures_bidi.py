@@ -115,16 +115,45 @@ async def set_cookie(bidi_session):
 
 
 @pytest_asyncio.fixture
+async def top_context(bidi_session):
+    contexts = await bidi_session.browsing_context.get_tree()
+    return contexts[0]
+
+
+@pytest_asyncio.fixture
 async def new_tab(bidi_session):
     """Open and focus a new tab to run the test in a foreground tab."""
-    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
+    result = await bidi_session.browsing_context.create(type_hint="tab")
+    contexts_info = await bidi_session.browsing_context.get_tree(
+        root=result["context"], max_depth=0
+    )
 
-    yield new_tab
+    yield contexts_info[0]
 
     try:
-        await bidi_session.browsing_context.close(context=new_tab["context"])
+        await bidi_session.browsing_context.close(context=contexts_info[0]["context"])
     except NoSuchFrameException:
-        print(f"Tab with id {new_tab['context']} has already been closed")
+        print(
+            f"Tab with context id {contexts_info[0]['context']} has already been closed"
+        )
+
+
+@pytest_asyncio.fixture
+async def new_window(bidi_session):
+    """Open a new window and focus the first tab to run the test in a foreground tab."""
+    result = await bidi_session.browsing_context.create(type_hint="window")
+    contexts_info = await bidi_session.browsing_context.get_tree(
+        root=result["context"], max_depth=0
+    )
+
+    yield contexts_info[0]
+
+    try:
+        await bidi_session.browsing_context.close(context=contexts_info[0]["context"])
+    except NoSuchFrameException:
+        print(
+            f"Window with context id {contexts_info[0]['context']} has already been closed"
+        )
 
 
 @pytest.fixture
@@ -1179,3 +1208,21 @@ async def assert_header_present(get_fetch_headers):
             f"header '{header_name}' should have value '{header_value}'"
 
     return assert_header_present
+
+
+@pytest_asyncio.fixture
+async def match_media_query(bidi_session):
+    async def match_media_query(context, media_query_type, media_query_value):
+        result = await bidi_session.script.call_function(
+            arguments=[
+                {"type": "string", "value": media_query_type},
+                {"type": "number", "value": media_query_value},
+            ],
+            function_declaration="""(type, value) => matchMedia(`(${type}: ${value}px)`).matches""",
+            target=ContextTarget(context["context"]),
+            await_promise=False,
+        )
+
+        return result["value"]
+
+    return match_media_query

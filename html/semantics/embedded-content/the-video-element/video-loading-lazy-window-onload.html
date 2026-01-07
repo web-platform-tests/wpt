@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="http://www.squarespace.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<video
+  id="target"
+  src="/media/A4.mp4"
+  loading="lazy"
+></video>
+
+<script>
+  promise_test(async t => {
+    const video = document.getElementById("target");
+    let windowLoadFired = false;
+
+    const loadPromise = new Promise(resolve => {
+      window.addEventListener("load", () => {
+        windowLoadFired = true;
+        resolve();
+      }, { once: true });
+    });
+
+    const timeoutPromise = new Promise(resolve => {
+      t.step_timeout(() => resolve(), 2000);
+    });
+
+    await Promise.race([loadPromise, timeoutPromise]);
+
+    assert_true(
+      windowLoadFired,
+      "Window load event should fire without being delayed by lazy-loading video"
+    );
+    assert_less_than(
+      video.readyState,
+      video.HAVE_CURRENT_DATA,
+      "Video should not have finished loading before window.onload fired"
+    );
+  }, "Video with loading=lazy does not delay window onload event");
+</script>
+

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="http://www.squarespace.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  #target {
+    position: absolute;
+    top: 300vh;
+  }
+</style>
+
+<video id="target" src="/media/A4.mp4" loading="lazy" muted playsinline autoplay></video>
+
+<script>
+  const t = async_test(
+    "Video with loading=lazy and autoplay that is not visible in viewport does not load video data or autoplay"
+  );
+
+  const video = document.getElementById("target");
+
+  t.step_timeout(() => {
+    t.step(() => {
+      assert_equals(video.readyState, HTMLMediaElement.HAVE_NOTHING);
+      assert_true(video.paused, "Video should not autoplay when not visible in viewport");
+    });
+    t.done();
+  }, 2000);
+</script>
+</body>
+</html>

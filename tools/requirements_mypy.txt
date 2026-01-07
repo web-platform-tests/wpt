@@ -2,7 +2,7 @@ mypy==1.14.1
 
 types-atomicwrites==1.4.5.1
 types-html5lib==1.1.11.20241018
-types-setuptools==75.8.0.20250110
+types-setuptools==80.9.0.20251223
 types-ujson==5.10.0.20240515
 typing_extensions==4.12.2
 

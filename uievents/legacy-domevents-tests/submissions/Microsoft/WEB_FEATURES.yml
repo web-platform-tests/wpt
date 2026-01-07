@@ -1,4 +1,4 @@
 features:
-  - name: focus-events
-    files:
-      - focus*
+- name: focus-events
+  files:
+  - focus*

@@ -577,8 +577,8 @@ class MarionetteGenerateTestReportProtocolPart(GenerateTestReportProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
 
-    def generate_test_report(self, config):
-        raise NotImplementedError("generate_test_report not yet implemented")
+    def generate_test_report(self, message):
+        self.marionette.generate_test_report(message)
 
 class MarionetteVirtualAuthenticatorProtocolPart(VirtualAuthenticatorProtocolPart):
     def setup(self):
@@ -630,13 +630,13 @@ class MarionetteGlobalPrivacyControlProtocolPart(GlobalPrivacyControlProtocolPar
             "gpc": gpc,
         }
         try:
-            return self.marionette._send_message("WebDriver:SetGlobalPrivacyControl", body)["value"]
+            return self.marionette._send_message("GPC:SetGlobalPrivacyControl", body)["value"]
         except errors.UnsupportedOperationException as e:
             raise NotImplementedError("set_global_privacy_control not yet implemented") from e
 
     def get_global_privacy_control(self):
         try:
-            return self.marionette._send_message("WebDriver:GetGlobalPrivacyControl")["value"]
+            return self.marionette._send_message("GPC:GetGlobalPrivacyControl")["value"]
         except errors.UnsupportedOperationException as e:
             raise NotImplementedError("get_global_privacy_control not yet implemented") from e
 

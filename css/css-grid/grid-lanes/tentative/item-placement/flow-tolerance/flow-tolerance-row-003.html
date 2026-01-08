@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
 <html><head>
   <meta charset="utf-8">
-  <title>CSS Grid Test: Grid Lanes layout with item-tolerance: 51px (row direction)</title>
+  <title>CSS Grid Test: Grid Lanes layout with flow-tolerance: 51px (row direction)</title>
   <link rel="author" title="Apple Inc.">
-  <link rel="help" href="https://drafts.csswg.org/css-grid-3/#item-tolerance">
-  <link rel="match" href="item-tolerance-row-003-ref.html">
+  <link rel="help" href="https://drafts.csswg.org/css-grid-3/#placement-tolerance">
+  <link rel="match" href="flow-tolerance-row-003-ref.html">
   <style>
     html,body {
       color:black; background-color:white; font:16px/1 monospace; padding:0; margin:0;
@@ -16,7 +16,7 @@
       grid-auto-flow: column;
       gap: 10px;
       grid-template-rows: repeat(3, 100px);
-      item-tolerance: 51px; /* Tracks within 51px are considered equal */
+      flow-tolerance: 51px; /* Tracks within 51px are considered equal */
       color: #444;
       border: 1px solid;
       padding: 2px;

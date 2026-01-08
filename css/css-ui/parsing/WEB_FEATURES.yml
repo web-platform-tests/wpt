@@ -8,3 +8,9 @@ features:
 - name: caret-color
   files:
   - caret-color-*
+- name: outlines
+  files:
+  - outline-width-*
+  - outline-style-*
+  - outline-color-*
+  - outline-offset-*

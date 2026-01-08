@@ -11,3 +11,6 @@ features:
 - name: line-height
   files:
   - line-height-*
+- name: vertical-align
+  files:
+  - vertical-align-*

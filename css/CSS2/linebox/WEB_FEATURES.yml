@@ -4,3 +4,6 @@ features:
   - fractional-line-height.html
   - line-box-height-*
   - line-height-*
+- name: vertical-align
+  files:
+  - vertical-align-*

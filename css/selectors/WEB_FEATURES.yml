@@ -10,12 +10,18 @@ features:
 - name: focus-visible
   files:
   - focus-visible-*
+- name: focus-within
+  files:
+  - focus-within-*
 - name: has
   files:
   - has-*
 - name: read-write-pseudos
   files:
   - selector-read-write-*
+- name: scope-psuedo
+  files:
+  - scope-*
 - name: modal
   files:
   - modal-pseudo-class.html
@@ -41,3 +47,11 @@ features:
 - name: open-pseudo
   files:
   - open-pseudo.html
+- name: heading-selectors
+  files:
+  - heading.html
+- name: host
+  files:
+  - featureless-001.html
+  - featureless-002.html
+  - featureless-003.html

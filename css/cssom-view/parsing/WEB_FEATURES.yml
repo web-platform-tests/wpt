@@ -1,4 +1,4 @@
 features:
 - name: scroll-behavior
   files:
-    - "scroll-behavior*"
+    - scroll-behavior-*

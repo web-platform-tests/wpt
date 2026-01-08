@@ -8,3 +8,6 @@ features:
 - name: input-password
   files:
   - input-password-*
+- name: input-checkbox
+  files:
+  - input-checkbox-*

@@ -55,3 +55,7 @@ features:
 - name: search-input-type
   files:
   - search_input.html
+- name: input-checkbox
+  files:
+  - checkbox*
+  - input-type-checkbox*

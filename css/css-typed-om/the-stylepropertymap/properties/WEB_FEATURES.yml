@@ -32,3 +32,10 @@ features:
 - name: filter
   files:
   - filter.html
+- name: opacity
+  files:
+  - opacity.html
+- name: opacity-svg
+  files:
+  - fill-opacity.html
+  - stroke-opacity.html

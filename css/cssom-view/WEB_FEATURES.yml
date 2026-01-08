@@ -14,7 +14,7 @@ features:
   - window-screen*
 - name: scroll-behavior
   files:
-  - scroll-behavior*
+  - scroll-behavior-*
 - name: scroll-into-view
   files:
   - scrollIntoView-*

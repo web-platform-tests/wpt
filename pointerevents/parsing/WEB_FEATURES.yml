@@ -1,4 +1,4 @@
 features:
 - name: touch-action
   files:
-  - touch-action-*
+  - "*touch-action*"

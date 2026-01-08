@@ -1,5 +1,0 @@
-features:
-- name: content
-  files:
-  - content-aspect-ratio.html
-  - input-image-content-crash.html

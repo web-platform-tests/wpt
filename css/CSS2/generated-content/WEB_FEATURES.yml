@@ -93,7 +93,7 @@ features:
 - name: content
   files:
   - "*"
-  # The following patterns are intended to match every file that isn\'t matched
+  # The following patterns are intended to match every file that isn't matched
   # by `attr-contents` above.
   - "!content-037.xht"
   - "!content-038.xht"

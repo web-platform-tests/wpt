@@ -1,4 +1,5 @@
 // META: title=Encoding API: Legacy encodings
+// META: global=window,dedicatedworker,shadowrealm
 // META: script=resources/encodings.js
 
 encodings_table.forEach(function(section) {

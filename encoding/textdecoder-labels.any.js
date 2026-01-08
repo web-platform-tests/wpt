@@ -1,4 +1,5 @@
 // META: title=Encoding API: Encoding labels
+// META: global=window,dedicatedworker,shadowrealm
 // META: script=resources/encodings.js
 // META: timeout=long
 

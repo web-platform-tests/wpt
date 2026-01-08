@@ -28,3 +28,10 @@ features:
   files:
   - backdrop-animate-002.html
   - backdrop-animate.html
+- name: before-after
+  files:
+  - before-*
+  - pseudo-replaced-elements.html
+- name: text-stroke-fill
+  files:
+  - highlight-styling-003.html

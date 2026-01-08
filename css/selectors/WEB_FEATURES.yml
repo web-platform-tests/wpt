@@ -4,15 +4,24 @@ features:
   - dir-pseudo-*
   - dir-selector-*
   - dir-style-*
+- name: empty
+  files:
+  - selectors-empty-001.xml
 - name: focus-visible
   files:
   - focus-visible-*
+- name: focus-within
+  files:
+  - focus-within-*
 - name: has
   files:
   - has-*
 - name: read-write-pseudos
   files:
   - selector-read-write-*
+- name: scope-psuedo
+  files:
+  - scope-*
 - name: modal
   files:
   - modal-pseudo-class.html
@@ -26,3 +35,23 @@ features:
   files:
   - user-invalid.html
   - user-valid.html
+- name: caret-color
+  files:
+  - caret-color-visited-inheritance.html
+- name: user-action-pseudos
+  files:
+  - hover-001-manual.html
+  - hover-002.html
+  - remove-hovered-element.html
+  - focus-display-none-001.html
+- name: open-pseudo
+  files:
+  - open-pseudo.html
+- name: heading-selectors
+  files:
+  - heading.html
+- name: host
+  files:
+  - featureless-001.html
+  - featureless-002.html
+  - featureless-003.html

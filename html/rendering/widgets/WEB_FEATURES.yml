@@ -14,3 +14,6 @@ features:
 - name: input-radio
   files:
   - input-radio-*
+- name: input-number
+  files:
+  - input-number-*

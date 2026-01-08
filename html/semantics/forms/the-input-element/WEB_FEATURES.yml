@@ -62,3 +62,9 @@ features:
 - name: input-radio
   files:
   - radio*
+- name: input-number
+  files:
+  - number*
+  - maxlength-number.html
+  - input-type-number-*
+  - input-valueasnumber*

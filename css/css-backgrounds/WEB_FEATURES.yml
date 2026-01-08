@@ -6,7 +6,6 @@ features:
 - name: background-clip
   files:
   - background-clip*
-  - "!background-clip-006.html"
   - css3-background-clip*
 - name: border-image
   files:
@@ -52,7 +51,6 @@ features:
 - name: background-origin
   files:
   - background-origin-*
-  - "!background-origin-008.html"
   - css3-background-origin-*
 - name: background-position
   files:
@@ -67,16 +65,12 @@ features:
   - background-image-cover-zoomed-1.html
   - background-image-large-with-auto.html
   - background-size-*
-  - "!background-size-034.html"
   - css3-background-size*
 - name: border-radius
   files:
   - border-*-radius-*
   - border-radius-*
   - "!border-radius-clip*"
-  - "!border-radius-009.xht"
-  - "!border-radius-010.xht"
-  - "!border-radius-applies-to-017.htm"
   - css-border-radius-001.html
 - name: borders
   files:
@@ -84,11 +78,3 @@ features:
   - "!border-image*"
   - "!border-*radius-*"
   - ttwf-css3background-border-*
-- name: inherit-value
-  files:
-  - background-clip-006.html
-  - background-origin-008.html
-  - background-size-034.html
-  - border-radius-009.xht
-  - border-radius-010.xht
-  - border-radius-applies-to-017.htm

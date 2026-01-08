@@ -2,17 +2,5 @@ features:
 - name: counters
   files:
   - counter-*
-  - "!counter-increment-054.xht"
-  - "!counter-reset-054.xht"
   - increment-counter-001.xht
   - reset-counter-001.xht
-- name: inherit-value
-  files:
-  - counter-increment-054.xht
-  - counter-reset-054.xht
-  - list-style-016.xht
-  - list-style-017.xht
-  - list-style-018.xht
-  - list-style-image-001.xht
-  - list-style-position-022.xht
-  - list-style-type-016.xht

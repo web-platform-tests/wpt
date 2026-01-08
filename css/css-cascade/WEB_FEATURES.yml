@@ -12,6 +12,3 @@ features:
 - name: all
   files:
   - all-prop-*
-- name: inherit-value
-  files:
-  - inherit-initial.html

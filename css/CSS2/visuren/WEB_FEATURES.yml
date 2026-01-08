@@ -1,6 +1,0 @@
-features:
-- name: inherit-value
-  files:
-  - inherit-static-offset-*
-  - position-absolute-percentage-inherit-001.xht
-  - top-114.xht

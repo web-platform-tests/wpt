@@ -18,9 +18,6 @@ features:
 - name: empty
   files:
   - empty-pseudo-class-with-animation.html
-- name: inherit-value
-  files:
-  - animation-delay-007-manual.html
 - name: animations-css
   # Everything which does not belong to some other feature, above
   files:
@@ -34,4 +31,3 @@ features:
   - "!animation-timing-function-010-manual.html"
   - "!dialog-backdrop-animation.html"
   - "!empty-pseudo-class-with-animation.html"
-  - "!animation-delay-007-manual.html"

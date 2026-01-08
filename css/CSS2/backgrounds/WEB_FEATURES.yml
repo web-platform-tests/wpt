@@ -5,11 +5,6 @@ features:
   - background-1*
   - background-2*
   - background-3*
-  - "!background-326.xht"
-  - "!background-327.xht"
-  - "!background-328.xht"
-  - "!background-329.xht"
-  - "!background-330.xht"
   - background-alpha-*
   - background-animated-001.xht
   - background-applies-to-*
@@ -25,11 +20,9 @@ features:
 - name: background-attachment
   files:
   - background-attachment-*
-  - "!background-attachment-003.xht"
 - name: background-color
   files:
   - background-color-*
-  - "!background-color-175.xht"
   - background-root-003.xht
 - name: background-image
   files:
@@ -39,7 +32,6 @@ features:
   # not use the `background-image` property but which nonetheless test relevant
   # semantics via the `background` shorthand:
   - background-image-*
-  - "!background-image-003.xht"
 - name: background-position
   files:
   # The following pattern matches a `background-position-203.xht` which does
@@ -53,15 +45,3 @@ features:
 - name: background-repeat
   files:
   - background-repeat-*
-  - "!background-repeat-005.xht"
-- name: inherit-value
-  files:
-  - background-326.xht
-  - background-327.xht
-  - background-328.xht
-  - background-329.xht
-  - background-330.xht
-  - background-attachment-003.xht
-  - background-color-175.xht
-  - background-image-003.xht
-  - background-repeat-005.xht

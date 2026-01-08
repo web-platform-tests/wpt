@@ -1,4 +1,15 @@
 features:
+- name: scroll-markers
+  files:
+  - column-scroll-marker*
+  - html-scroll-marker*
+  - inline-with-scroll-marker*
+  - nested-scroll-markers*
+  - root-scroll-marker*
+  - scroll-marker*
+  - target-current-scroll-marker-update.html
+  - targeted-column-scroll-marker*
+  - targeted-scroll-marker*
 - name: scrollbar-buttons
   files:
   - root-scroll-button*
@@ -15,6 +26,12 @@ features:
   - "!overflow-auto-scrollbar-gutter-intrinsic-*"
   - "!overflow-scroll-*"
   - "!overflow-no-interpolation.html" # depends on transition-behavior
+  - "!overflow-ellipsis-dynamic-001.html"
+- name: column-pseudo
+  files:
+  - chrome-421199213-crash.html
+  - column-*
+  - targeted-column-scroll-marker-selection-*
 - name: text-overflow
   files:
   - text-overflow-*

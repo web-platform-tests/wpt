@@ -1,4 +1,7 @@
 features:
+- name: color-gamut
+  files:
+  - mq-gamut-*
 - name: prefers-color-scheme
   files:
   - prefers-color-scheme.html

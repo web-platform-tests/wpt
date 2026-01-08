@@ -1,4 +1,11 @@
 features:
+- name: white-space
+  files:
+  - text-align-white-space-*
+  - white-space-*
 - name: word-spacing
   files:
   - word-spacing-*
+- name: text-align
+  files:
+  - text-align-*

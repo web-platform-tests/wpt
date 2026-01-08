@@ -24,22 +24,14 @@
 
 <script>
   test(() => {
-    assert_equals(host.offsetLeft, 999999);
-  }, "#host is initially left: 999999px");
+    assert_equals(host.offsetLeft, 999999,  "#host initial position");
+    assert_equals(slotted.offsetLeft, 999999, "#slotted initial position");
 
-  test(() => {
-    assert_equals(slotted.offsetLeft, 999999);
-  }, "#slotted is initially left: 999999px");
+    host.shadowRoot.styleSheets[0].insertRule(`
+      @position-try --pf { left: 100px; }
+    `);
 
-  host.shadowRoot.styleSheets[0].insertRule(`
-    @position-try --pf { left: 100px; }
-  `);
-
-  test(() => {
-    assert_equals(host.offsetLeft, 100);
-  }, "#host with inserted @position-try applied");
-
-  test(() => {
-    assert_equals(slotted.offsetLeft, 100);
-  }, "#slotted with inserted @position-try applied");
+    assert_equals(host.offsetLeft, 100, "#host position with inserted @position-try applied");
+    assert_equals(slotted.offsetLeft, 100, "#slotted position with inserted @position-try applied");
+  });
 </script>

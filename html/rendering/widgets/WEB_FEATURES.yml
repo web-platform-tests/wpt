@@ -11,3 +11,6 @@ features:
 - name: input-checkbox
   files:
   - input-checkbox-*
+- name: input-radio
+  files:
+  - input-radio-*

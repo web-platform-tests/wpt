@@ -59,3 +59,6 @@ features:
   files:
   - checkbox*
   - input-type-checkbox*
+- name: input-radio
+  files:
+  - radio*

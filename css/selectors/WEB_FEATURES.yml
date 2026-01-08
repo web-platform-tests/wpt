@@ -47,6 +47,9 @@ features:
 - name: open-pseudo
   files:
   - open-pseudo.html
+- name: heading-selectors
+  files:
+  - heading.html
 - name: host
   files:
   - featureless-001.html

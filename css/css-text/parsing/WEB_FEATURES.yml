@@ -29,6 +29,9 @@ features:
 - name: tab-size
   files:
   - tab-size-*
+- name: text-autospace
+  files:
+  - text-autospace-*
 - name: text-align
   files:
   - "text-align-all-*"

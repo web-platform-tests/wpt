@@ -47,3 +47,6 @@ features:
 - name: open-pseudo
   files:
   - open-pseudo.html
+- name: heading-selectors
+  files:
+  - heading.html

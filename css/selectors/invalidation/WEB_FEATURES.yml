@@ -28,3 +28,7 @@ features:
   - part-dir.html
   - part-lang.html
   - part-pseudo.html
+- name: host
+  files:
+  - host-*
+  - "!host-context-*"

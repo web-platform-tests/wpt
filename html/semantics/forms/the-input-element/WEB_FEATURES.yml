@@ -52,3 +52,6 @@ features:
 - name: input-password
   files:
   - password*
+- name: search-input-type
+  files:
+  - search_input.html

@@ -21,3 +21,6 @@ features:
 - name: opacity
   files:
   - opacity-*.html
+- name: named-color
+  files:
+  - "*-named-color.html"

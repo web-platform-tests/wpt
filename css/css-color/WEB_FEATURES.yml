@@ -53,3 +53,6 @@ features:
   - t32-opacity-*.xht
   - inline-opacity-float-child.html
   - opacity-overlapping-letters.html
+- name: named-color
+  files:
+  - named-001.html

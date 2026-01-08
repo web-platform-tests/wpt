@@ -1,4 +1,0 @@
-features:
-- name: fieldset
-  files:
-  - fieldset-event-propagation.tentative.html

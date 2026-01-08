@@ -1,7 +1,0 @@
-features:
-- name: accesskey
-  files:
-  - access-key-label.html
-- name: aria-attribute-reflection
-  files:
-  - aria-attribute-reflection.html

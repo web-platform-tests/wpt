@@ -1,3 +1,0 @@
-features:
-- name: parse-html-unsafe
-  files: "**"

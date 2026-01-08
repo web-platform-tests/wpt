@@ -1,5 +1,0 @@
-features:
-- name: canvas-createconicgradient
-  files:
-  - conic-gradient.html
-  - conic-gradient-rotation.html

@@ -1,5 +1,0 @@
-features:
-- name: base
-  files:
-  - stylesheet-empty-href.html
-  - stylesheet-with-base.html

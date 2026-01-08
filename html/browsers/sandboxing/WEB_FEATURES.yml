@@ -1,5 +1,0 @@
-features:
-- name: csp
-  files:
-  - sandbox-inherited-from-required-csp.html
-  - window-open-blank-from-different-initiator.html

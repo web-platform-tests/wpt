@@ -18,3 +18,7 @@ features:
   - 'left-*'
   - '!left-applies-to*'
   - '!left-offset*'
+- name: width-height
+  files:
+  - '*width*'
+  - '*height*'

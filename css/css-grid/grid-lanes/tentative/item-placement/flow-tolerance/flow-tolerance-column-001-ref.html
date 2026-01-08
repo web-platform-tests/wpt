@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html><head>
   <meta charset="utf-8">
-  <title>CSS Grid Test: Grid Lanes layout with item-tolerance: normal (reference)</title>
+  <title>CSS Grid Test: Grid Lanes layout with flow-tolerance: normal (reference)</title>
   <style>
     html,body {
       color:black; background-color:white; font:16px/1 monospace; padding:0; margin:0;
@@ -9,7 +9,7 @@
 
     .outer-grid {
       display: inline-grid;
-      grid-template-columns: repeat(3, auto);
+      grid-template-columns: repeat(2, auto);
       column-gap: 10px;
       row-gap: 0;
       color: #444;
@@ -39,18 +39,13 @@
 <div class="outer-grid">
   <div class="column">
     <!-- Column 1 -->
-    <item style="height: 70px;">1</item>
-    <item style="height: 30px;">6</item>
+    <item style="height: 50px;">1</item>
+    <item style="height: 40px;">3</item>
   </div>
   <div class="column">
     <!-- Column 2 -->
-    <item style="height: 50px;">2</item>
-    <item style="height: 50px;">5</item>
-  </div>
-  <div class="column">
-    <!-- Column 3 -->
-    <item style="height: 30px;">3</item>
-    <item style="height: 70px;">4</item>
+    <item style="height: 40px;">2</item>
+    <item style="height: 50px;">4</item>
   </div>
 </div>
 

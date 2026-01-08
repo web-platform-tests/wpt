@@ -9,3 +9,6 @@ features:
   files:
   - 'border-box-and-max-content-003.html'
   - 'fit-content-length-percentage-*'
+- name: width-height
+  files:
+  - percentage-height-replaced-content-in-auto-cb.html

@@ -3,3 +3,6 @@ features:
   files:
   - CompositionEvent.html
   - compositionstart.*
+- name: focus-events
+  files:
+  - focus*

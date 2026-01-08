@@ -11,3 +11,6 @@ features:
   files:
   - 'width-*'
   - 'height-*'
+- name: padding
+  files:
+  - 'padding-*'

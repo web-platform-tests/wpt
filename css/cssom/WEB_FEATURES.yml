@@ -21,6 +21,10 @@ features:
   - HTMLLinkElement-disabled-006.html
   - HTMLLinkElement-disabled-007.html
   - HTMLLinkElement-disabled-alternate.html
+- name: font-face
+  files:
+  - CSSFontFaceRule.html
+  - cssom-fontfacerule*
 - name: font-variant
   files:
   - font-variant-shorthand-serialization.html
@@ -55,3 +59,6 @@ features:
   - CSSConditionRule-conditionText.html
   # CSSMediaRule:
   - serialize-media-rule.html
+- name: mutationobserver
+  files:
+  - MutationObserver-style.html

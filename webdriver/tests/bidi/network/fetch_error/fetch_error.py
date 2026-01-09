@@ -92,6 +92,7 @@ async def test_aborted_request(
         fetch_error_event,
         expected_request={"url": slow_url},
         context=new_tab["context"],
+        user_context=new_tab["userContext"],
     )
 
 
@@ -122,6 +123,7 @@ async def test_iframe_load(
         events[0],
         expected_request={"url": PAGE_INVALID_URL},
         context=frame_context["context"],
+        user_context=frame_context["userContext"],
     )
 
 

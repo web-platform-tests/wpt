@@ -123,6 +123,7 @@ def assert_base_parameters(
     is_blocked=None,
     navigation=None,
     redirect_count=None,
+    user_context=None,
     expected_request=None,
     expected_time_range=None,
 ):
@@ -140,6 +141,9 @@ def assert_base_parameters(
 
     if context is not None:
         assert event["context"] == context
+
+    if user_context is not None:
+        assert event["userContext"] == user_context
 
     if is_blocked is not None:
         assert event["isBlocked"] == is_blocked
@@ -173,6 +177,7 @@ def assert_before_request_sent_event(
     is_blocked=None,
     navigation=None,
     redirect_count=None,
+    user_context=None,
     expected_request=None,
     expected_time_range=None,
 ):
@@ -188,6 +193,7 @@ def assert_before_request_sent_event(
         is_blocked=is_blocked,
         navigation=navigation,
         redirect_count=redirect_count,
+        user_context=user_context,
         expected_request=expected_request,
         expected_time_range=expected_time_range,
     )
@@ -201,6 +207,7 @@ def assert_fetch_error_event(
     is_blocked=None,
     navigation=None,
     redirect_count=None,
+    user_context=None,
     expected_request=None,
     expected_time_range=None,
 ):
@@ -218,6 +225,7 @@ def assert_fetch_error_event(
         is_blocked=is_blocked,
         navigation=navigation,
         redirect_count=redirect_count,
+        user_context=user_context,
         expected_request=expected_request,
         expected_time_range=expected_time_range,
     )
@@ -268,6 +276,7 @@ def assert_response_event(
     is_blocked=None,
     navigation=None,
     redirect_count=None,
+    user_context=None,
     expected_request=None,
     expected_response=None,
     expected_time_range=None,
@@ -285,6 +294,7 @@ def assert_response_event(
         is_blocked=is_blocked,
         navigation=navigation,
         redirect_count=redirect_count,
+        user_context=user_context,
         expected_request=expected_request,
         expected_time_range=expected_time_range,
     )

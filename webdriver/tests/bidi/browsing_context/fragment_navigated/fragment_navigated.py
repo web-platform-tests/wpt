@@ -54,7 +54,14 @@ async def test_subscribe(bidi_session, subscribe_events, url, new_tab, wait_for_
     await bidi_session.browsing_context.navigate(context=new_tab["context"], url=target_url, wait="complete")
     event = await wait_for_future_safe(on_entry)
 
-    assert_navigation_info(event, {"context": new_tab["context"], "url": target_url})
+    assert_navigation_info(
+        event,
+        {
+            "context": new_tab["context"],
+            "url": target_url,
+            "userContext": new_tab["userContext"],
+        }
+    )
 
 
 async def test_timestamp(bidi_session, current_time, subscribe_events, url, new_tab, wait_for_event, wait_for_future_safe):
@@ -75,7 +82,11 @@ async def test_timestamp(bidi_session, current_time, subscribe_events, url, new_
 
     assert_navigation_info(
         event,
-        {"context": new_tab["context"], "timestamp": int_interval(time_start, time_end)}
+        {
+            "context": new_tab["context"],
+            "timestamp": int_interval(time_start, time_end),
+            "userContext": new_tab["userContext"],
+        }
     )
 
 
@@ -99,7 +110,8 @@ async def test_navigation_id(
             'context': new_tab["context"],
             'navigation': result["navigation"],
             'timestamp': any_int,
-            'url': target_url
+            'url': target_url,
+            'userContext': new_tab["userContext"],
         },
         await wait_for_future_safe(on_fragment_navigated),
     )
@@ -119,7 +131,8 @@ async def test_url_with_base_tag(bidi_session, subscribe_events, inline, new_tab
     recursive_compare(
         {
             'context': new_tab["context"],
-            'url': target_url
+            'url': target_url,
+            'userContext': new_tab["userContext"],
         },
         await wait_for_future_safe(on_fragment_navigated),
     )
@@ -163,7 +176,8 @@ async def test_iframe(
         {
             'context': child_info["context"],
             'timestamp': any_int,
-            'url': target_url
+            'url': target_url,
+            'userContext': child_info["userContext"],
         },
         await wait_for_future_safe(on_fragment_navigated),
     )
@@ -212,7 +226,8 @@ async def test_document_location(
         {
             'context': target_context,
             'timestamp': any_int,
-            'url': target_url
+            'url': target_url,
+            'userContext': new_tab["userContext"],
         },
         await wait_for_future_safe(on_fragment_navigated),
     )
@@ -248,7 +263,8 @@ async def test_browsing_context_navigate(
         {
             'context': target_context,
             'timestamp': any_int,
-            'url': target_url
+            'url': target_url,
+            'userContext': new_tab["userContext"],
         },
         await wait_for_future_safe(on_fragment_navigated),
     )

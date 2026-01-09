@@ -78,6 +78,7 @@ def assert_navigation_info(event, expected_navigation_info):
             "navigation": any_string_or_null,
             "timestamp": any_int,
             "url": any_string,
+            "userContext": any_string,
         },
         event,
     )
@@ -93,6 +94,9 @@ def assert_navigation_info(event, expected_navigation_info):
 
     if "url" in expected_navigation_info:
         assert event["url"] == expected_navigation_info["url"]
+
+    if "userContext" in expected_navigation_info:
+        assert event["userContext"] == expected_navigation_info["userContext"]
 
 
 async def get_document_focus(bidi_session, context: Mapping[str, Any]) -> str:

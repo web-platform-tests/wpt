@@ -1,7 +1,10 @@
 features:
-- name: font-family
+- name: font-size
   files:
-  - font-family-*
+  - font-size-*
 - name: font-weight
   files:
   - font-weight-*
+- name: font-family
+  files:
+  - font-family-*

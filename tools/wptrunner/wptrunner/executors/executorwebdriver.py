@@ -638,7 +638,7 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
             # If protocol implements `bidi_events`, forward all the events to test_driver.
             async def process_bidi_event(method, params):
                 try:
-                    self.logger.debug(f"Received bidi event: {method}, {params}")
+                    self.logger.info(f"Received bidi event: {method}, {params}")
                     if hasattr(self.parent, 'bidi_browsing_context') and method == "browsingContext.userPromptOpened" and \
                             params["context"] == test_window:
                         # User prompts of the test window are handled separately. In classic
@@ -659,6 +659,7 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
                                 raise e
                         raise Exception("Unexpected user prompt in test window: %s" % params)
                     else:
+                        self.logger.info(f"Sending bidi event: {method}, {params}")
                         self.send_message(-1, "event", method, json.dumps({
                             "params": params,
                             "method": method}))

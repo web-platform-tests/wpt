@@ -24,7 +24,9 @@
     /** Wait for a second and return all the recevied messages. */
     function waitForLogMessages(count) {
         return new Promise(resolve => {
-            const events = []
+            const events = [];
+            const seenEvents = new Set();
+
             test_driver.bidi.log.entry_added.on(event => {
                 // Filter out events that are not relevant to this test. Required, as
                 // global subscription exposes the events from all contexts.
@@ -32,6 +34,11 @@
                     !event.args[0].value.includes(logMessageToken)) {
                     return;
                 }
+                if(seenEvents.has(event.args[0].value)) {
+                    console.log(event.args[0].value)
+                    throw new Error("DUPLICATED EVENT!!!");
+                }
+                seenEvents.add(event.args[0].value);                
                 events.push(event);
             });
             setTimeout(() => {

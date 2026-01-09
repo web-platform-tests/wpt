@@ -62,6 +62,9 @@ features:
   - hover-002.html
   - remove-hovered-element.html
   - focus-display-none-001.html
+- name: root
+  files:
+  - root-siblings.html
 - name: open-pseudo
   files:
   - open-pseudo.html

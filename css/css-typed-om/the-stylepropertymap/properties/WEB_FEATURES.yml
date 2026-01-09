@@ -1,7 +1,16 @@
 features:
+- name: box-shadow
+  files:
+  - box-shadow.html
 - name: speak
   files:
   - speak.html
+- name: font-feature-settings
+  files:
+  - font-feature-settings.html
+- name: font-kerning
+  files:
+  - font-kerning.html
 - name: font-variant
   files:
   - font-variant.html
@@ -17,3 +26,16 @@ features:
 - name: font-variant-numeric
   files:
   - font-variant-numeric.html
+- name: dominant-baseline
+  files:
+  - dominant-baseline.html
+- name: filter
+  files:
+  - filter.html
+- name: opacity
+  files:
+  - opacity.html
+- name: opacity-svg
+  files:
+  - fill-opacity.html
+  - stroke-opacity.html

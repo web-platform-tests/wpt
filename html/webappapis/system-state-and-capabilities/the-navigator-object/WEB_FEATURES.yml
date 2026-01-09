@@ -19,3 +19,6 @@ features:
   files:
   - get-navigatorlanguage-manual.html
   - navigatorlanguage.html
+- name: cookie-enabled
+  files:
+  - navigatorcookies-cookieenabled-*

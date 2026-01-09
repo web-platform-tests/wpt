@@ -659,7 +659,7 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
                                 raise e
                         raise Exception("Unexpected user prompt in test window: %s" % params)
                     else:
-                        self.logger.info(f"Sending bidi event: {method}, {params}")
+                        self.logger.info(f"Sending bidi event: {method}, {params}, {traceback.print_stack()}")
                         self.send_message(-1, "event", method, json.dumps({
                             "params": params,
                             "method": method}))

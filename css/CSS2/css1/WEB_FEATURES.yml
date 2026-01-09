@@ -23,6 +23,9 @@ features:
 - name: word-spacing
   files:
   - c541-word-sp*
+- name: letter-spacing
+  files:
+  - c542-letter-sp-*
 - name: font-size
   files:
   - c526-font-sz-*

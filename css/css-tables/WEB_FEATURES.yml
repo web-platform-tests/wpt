@@ -1,4 +1,7 @@
 features:
+- name: box-shadow
+  files:
+  - box-shadow-*
 - name: box-sizing
   files:
   - table-cell-inline-size-box-sizing-quirks.html

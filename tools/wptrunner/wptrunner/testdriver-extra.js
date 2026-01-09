@@ -440,7 +440,8 @@
             callback(event.payload);
         };
         event_target.addEventListener("log.entryAdded", on_event);
-        return () => event_target.removeEventListener("log.entryAdded", on_event);
+        return () => event_target.removeEventListener("log.entryAdded",
+            on_event);
     };
 
     window.test_driver_internal.bidi.permissions.set_permission = function (params) {

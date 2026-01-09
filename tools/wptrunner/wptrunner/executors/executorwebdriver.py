@@ -621,7 +621,6 @@ class WebDriverActionSequenceProtocolPart(ActionSequenceProtocolPart):
 class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
-        self.__bidi_events_processing_setup = False
 
     def run(self, url, script_resume, test_window=None):
         # If protocol implements `bidi_events`, remove all the existing subscriptions.
@@ -639,7 +638,7 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
             # If protocol implements `bidi_events`, forward all the events to test_driver.
             async def process_bidi_event(method, params):
                 try:
-                    self.logger.info(f"Received bidi event: {method}, {params}")
+                    self.logger.debug(f"Received bidi event: {method}, {params}")
                     if hasattr(self.parent, 'bidi_browsing_context') and method == "browsingContext.userPromptOpened" and \
                             params["context"] == test_window:
                         # User prompts of the test window are handled separately. In classic
@@ -660,7 +659,6 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
                                 raise e
                         raise Exception("Unexpected user prompt in test window: %s" % params)
                     else:
-                        self.logger.info(f"Sending bidi event: {method}, {params}, {json.dumps(traceback.print_stack())}")
                         self.send_message(-1, "event", method, json.dumps({
                             "params": params,
                             "method": method}))
@@ -670,11 +668,7 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
                     self.logger.error("BiDi event processing failed: %s" % e)
                     unexpected_exceptions.append(e)
 
-            self.logger.info(f"!!@@## {self.__running} self.parent.bidi_events.add_event_listener(None, process_bidi_event)")
-            if not self.__bidi_events_processing_setup:
-                # If it is the first run, the bidi events processor is not yet setup.
-                self.__bidi_events_processing_setup = True
-                self.parent.bidi_events.add_event_listener(None, process_bidi_event)
+            self.parent.bidi_events.add_event_listener(None, process_bidi_event)
             self.parent.loop.run_until_complete(self.parent.bidi_events.subscribe(['browsingContext.userPromptOpened'], None))
 
         # If possible, support async actions.

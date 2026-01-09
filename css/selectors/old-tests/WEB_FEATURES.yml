@@ -9,3 +9,7 @@ features:
   - css3-modsel-27a.xml
   - css3-modsel-72.xml
   - css3-modsel-72b.xml
+- name: lang
+  files:
+  - "css3-modsel-22.xml"
+  - "css3-modsel-67.xml"

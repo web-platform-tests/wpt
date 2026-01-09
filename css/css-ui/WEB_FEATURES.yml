@@ -19,3 +19,12 @@ features:
   files:
   - caret-color-*
   - caret-eol-*
+- name: cross-fade
+  files:
+  - cursor-image-016-manual.html
+- name: unset-value
+  files:
+  - native-appearance-disabled-for-value-unset.html
+- name: text-overflow
+  files:
+  - text-overflow-*

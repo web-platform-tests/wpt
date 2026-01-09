@@ -102,7 +102,7 @@ TRAILING WHITESPACE: webvtt/parsing/file-parsing/support/*.vtt
 TRAILING WHITESPACE: webvtt/parsing/file-parsing/tests/support/*.vtt
 TRAILING WHITESPACE: xhr/resources/headers-some-are-empty.asis
 TRAILING WHITESPACE: content-security-policy/support/manifest.json
-TRAILING WHITESPACE: dom/xslt/resources/testu1LINE.xml
+TRAILING WHITESPACE: xml/xslt/resources/testu1LINE.xml
 
 # Intentional use of print statements
 PRINT STATEMENT: dom/nodes/Document-createElement-namespace-tests/generate.py
@@ -415,6 +415,7 @@ SET TIMEOUT: html/webappapis/dynamic-markup-insertion/opening-the-input-stream/c
 SET TIMEOUT: html/webappapis/timers/*
 SET TIMEOUT: portals/history/resources/portal-harness.js
 SET TIMEOUT: requestidlecallback/deadline-after-expired-timer.html
+SET TIMEOUT: resource-timing/tentative/initiator-url/set-timeout.html
 SET TIMEOUT: resources/*
 SET TIMEOUT: scheduler/tentative/current-task-signal-async-abort.any.js
 SET TIMEOUT: scheduler/tentative/current-task-signal-async-priority.any.js

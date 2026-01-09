@@ -35,9 +35,9 @@
                 events.push(event);
             });
             setTimeout(() => {
-                    events.sort((a, b) => a?.args[0]?.value?.localeCompare(
-                        b?.args[0]?.value));
-                    resolve(events);
+                events.sort((a, b) => a?.args[0]?.value?.localeCompare(
+                    b?.args[0]?.value));
+                resolve(events);
             }, 1000)
         });
     }
@@ -137,9 +137,52 @@
         // helper.
         const events = await messages_promise;
         // TODO: DEBUG. Remove.
-        assert_equals(events.map(e=>e.args[0].value).join(", "), `${MAIN_WINDOW_MESSAGE}, ${POPUP_MESSAGE}`);
+        assert_equals(events.map(e => e.args[0].value).join(", "), `${MAIN_WINDOW_MESSAGE}, ${POPUP_MESSAGE}`);
+        assert_equals(events.map(e => e.args[0].value).join(", "), `PASS!!!`);
+
         assert_equals(events.length, 2);
         assertLogEvent(events[0], MAIN_WINDOW_MESSAGE)
         assertLogEvent(events[1], POPUP_MESSAGE)
     }, "Assert testdriver can subscribe globally");
 </script>
+
+
+
+
+
+
+<!-- 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+1. MAIN WINDOW MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}, 
+2. POPUP MESSAGE, {{uuid()}}"
+
+   -->

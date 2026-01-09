@@ -12,7 +12,9 @@ for (const [name, fn] of instanceTestFactory) {
   promise_test(async () => {
     const { buffer, args, exports, verify } = fn();
     const response = new Response(buffer, { "headers": { "Content-Type": "application/wasm" } });
+      console.log("about to instantiate");
     const result = await WebAssembly.instantiateStreaming(response, ...args);
+      console.log("done");
     assert_WebAssemblyInstantiatedSource(result, exports);
     verify(result.instance);
   }, name);

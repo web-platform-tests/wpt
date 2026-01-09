@@ -41,3 +41,6 @@ features:
 - name: text-align-last
   files:
   - "text-align-last-*"
+- name: letter-spacing
+  files:
+  - letter-spacing-*

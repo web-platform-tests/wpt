@@ -32,3 +32,10 @@ features:
   files:
   - host-*
   - "!host-context-*"
+- name: is
+  files:
+  - is.html
+  - negated-is-*
+- name: where
+  files:
+  - where.html

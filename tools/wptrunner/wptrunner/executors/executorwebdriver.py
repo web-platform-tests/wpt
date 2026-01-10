@@ -621,6 +621,7 @@ class WebDriverActionSequenceProtocolPart(ActionSequenceProtocolPart):
 class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
+        self.__bidi_events_processing_setup = False
 
     def run(self, url, script_resume, test_window=None):
         # If protocol implements `bidi_events`, remove all the existing subscriptions.
@@ -659,6 +660,7 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
                                 raise e
                         raise Exception("Unexpected user prompt in test window: %s" % params)
                     else:
+                        self.logger.info(f"Sending bidi event: {method}, {params}, {traceback.print_stack()}")
                         self.send_message(-1, "event", method, json.dumps({
                             "params": params,
                             "method": method}))
@@ -668,7 +670,10 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
                     self.logger.error("BiDi event processing failed: %s" % e)
                     unexpected_exceptions.append(e)
 
-            self.parent.bidi_events.add_event_listener(None, process_bidi_event)
+            if not self.__bidi_events_processing_setup:
+                # If it is the first run, the bidi events processor is not yet setup.
+                self.__bidi_events_processing_setup = True
+                self.parent.bidi_events.add_event_listener(None, process_bidi_event)
             self.parent.loop.run_until_complete(self.parent.bidi_events.subscribe(['browsingContext.userPromptOpened'], None))
 
         # If possible, support async actions.

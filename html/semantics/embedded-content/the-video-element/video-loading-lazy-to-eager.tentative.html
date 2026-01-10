@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<title>Below-viewport videos with loading='lazy' load when set to loading='eager'</title>
+<link rel="author" title="Squarespace" href="http://www.squarespace.com/">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/media.html#attr-video-loading">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  .below-viewport {
+    position: absolute;
+    top: 300vh;
+  }
+</style>
+
+<video id="video_lazy_to_eager" class="below-viewport" src="/media/A4.mp4" loading="lazy"></video>
+<video id="video_remove_attr" class="below-viewport" src="/media/A4.mp4?remove-attr" loading="lazy"></video>
+
+<script>
+  const video1 = document.getElementById("video_lazy_to_eager");
+  const video2 = document.getElementById("video_remove_attr");
+
+  const url1 = new URL(video1.src, location.href).href;
+  const url2 = new URL(video2.src, location.href).href;
+
+  async_test(t => {
+    // Verify videos haven't loaded yet
+    t.step_timeout(() => {
+      t.step(() => {
+        assert_equals(
+          performance.getEntriesByName(url1).length,
+          0,
+          "Video should not have loaded while lazy and outside viewport"
+        );
+      });
+
+      // Change loading to eager - should trigger load
+      video1.loading = "eager";
+
+      t.step_timeout(() => {
+        t.step(() => {
+          assert_greater_than(
+            performance.getEntriesByName(url1).length,
+            0,
+            "Video should load after setting loading='eager'"
+          );
+        });
+        t.done();
+      }, 1000);
+    }, 500);
+  }, "Below-viewport video with loading='lazy' loads when changed to loading='eager'");
+
+  async_test(t => {
+    // Verify video hasn't loaded yet
+    t.step_timeout(() => {
+      t.step(() => {
+        assert_equals(
+          performance.getEntriesByName(url2).length,
+          0,
+          "Video should not have loaded while lazy and outside viewport"
+        );
+      });
+
+      // Remove loading attribute - should put it in default eager state
+      video2.removeAttribute("loading");
+
+      t.step_timeout(() => {
+        t.step(() => {
+          assert_greater_than(
+            performance.getEntriesByName(url2).length,
+            0,
+            "Video should load after removing loading attribute"
+          );
+        });
+        t.done();
+      }, 1000);
+    }, 500);
+  }, "Below-viewport video with loading='lazy' loads when loading attribute is removed");
+</script>

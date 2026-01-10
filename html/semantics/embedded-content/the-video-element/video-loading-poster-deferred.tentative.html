@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="http://www.squarespace.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  #target {
+    position: absolute;
+    top: 300vh;
+  }
+</style>
+
+<video id="target" src="/media/A4.mp4" poster="/media/1x1-green.png" loading="lazy"></video>
+
+<script>
+  const t = async_test(
+    "Video with loading=lazy that is not visible in viewport does not load poster image"
+  );
+
+  const video = document.getElementById("target");
+  const posterUrl = new URL(video.poster, location.href).href;
+
+  t.step_timeout(() => {
+    t.step(() => {
+      const entries = performance.getEntriesByName(posterUrl);
+      assert_equals(entries.length, 0, "No network requests should be made for poster image");
+    });
+    t.done();
+  }, 1000);
+</script>
+</body>
+</html>

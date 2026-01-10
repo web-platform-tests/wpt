@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="http://www.squarespace.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  #target {
+    position: absolute;
+    top: 300vh;
+  }
+</style>
+
+<video id="target" src="/media/A4.mp4" poster="/media/1x1-green.png" loading="lazy" width="100" height="100"></video>
+
+<script>
+  const video = document.getElementById("target");
+  const posterUrl = new URL(video.poster, location.href).href;
+
+  const t = async_test(
+    "Video with loading=lazy does not fetch poster while not visible, then fetches poster once scrolled into view"
+  );
+
+  // Step 1: Not visible => should not fetch poster.
+  t.step_timeout(() => {
+    t.step(() => {
+      assert_equals(performance.getEntriesByName(posterUrl).length, 0);
+    });
+
+    // Step 2: Scroll into view => should fetch poster.
+    video.scrollIntoView();
+
+    t.step_timeout(() => {
+      t.step(() => {
+        assert_greater_than(performance.getEntriesByName(posterUrl).length, 0);
+      });
+      t.done();
+    }, 1000);
+  }, 1000);
+</script>
+</body>
+</html>

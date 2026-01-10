@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="http://www.squarespace.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  #target {
+    position: absolute;
+    top: 300vh;
+  }
+</style>
+
+<video id="target" src="/media/A4.mp4" loading="lazy" preload="auto"></video>
+
+<script>
+  const t = async_test(
+    "Video with loading=lazy and preload=auto that is not visible in viewport does not load video data"
+  );
+
+  const video = document.getElementById("target");
+
+  t.step_timeout(() => {
+    t.step(() => {
+      assert_equals(video.readyState, HTMLMediaElement.HAVE_NOTHING);
+    });
+    t.done();
+  }, 1000);
+</script>
+</body>
+</html>

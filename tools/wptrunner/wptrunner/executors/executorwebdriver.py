@@ -1032,24 +1032,36 @@ class WebDriverProtocol(Protocol):
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)
-        self.capabilities = capabilities
+
+        if capabilities is None:
+            capabilities = {}
+
+        if "alwaysMatch" not in capabilities and "firstMatch" not in capabilities:
+            capabilities = {"alwaysMatch": capabilities}
+
         if hasattr(browser, "capabilities"):
-            if self.capabilities is None:
-                self.capabilities = browser.capabilities
+            if "alwaysMatch" in browser.capabilities or "firstMatch" in browser.capabilities:
+                merge_dicts(capabilities, browser.capabilities)
             else:
-                merge_dicts(self.capabilities, browser.capabilities)
+                merge_dicts(capabilities, {"alwaysMatch": browser.capabilities})
 
         pac = browser.pac
         if pac is not None:
-            if self.capabilities is None:
-                self.capabilities = {}
-            merge_dicts(self.capabilities, {"proxy":
+            merge_dicts(
+                capabilities,
                 {
-                    "proxyType": "pac",
-                    "proxyAutoconfigUrl": urljoin(executor.server_url("http"), pac)
-                }
-            })
+                    "alwaysMatch": {
+                        "proxy": {
+                            "proxyType": "pac",
+                            "proxyAutoconfigUrl": urljoin(
+                                executor.server_url("http"), pac
+                            ),
+                        }
+                    }
+                },
+            )
 
+        self.capabilities = capabilities
         self.url = browser.webdriver_url
         self.webdriver = None
 
@@ -1059,8 +1071,7 @@ class WebDriverProtocol(Protocol):
 
         host, port = self.url.split(":")[1].strip("/"), self.url.split(':')[-1].strip("/")
 
-        capabilities = {"alwaysMatch": self.capabilities}
-        self.webdriver = Session(host, port, capabilities=capabilities, enable_bidi=self.enable_bidi)
+        self.webdriver = Session(host, port, capabilities=self.capabilities, enable_bidi=self.enable_bidi)
         self.webdriver.start()
 
     def teardown(self):

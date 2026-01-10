@@ -13,3 +13,6 @@ features:
   files:
   - "css3-modsel-22.xml"
   - "css3-modsel-67.xml"
+- name: selection
+  files:
+  - css3-modsel-159.xml

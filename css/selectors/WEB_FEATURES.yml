@@ -87,3 +87,6 @@ features:
 - name: where
   files:
   - pseudo-where-crash.html
+- name: selection
+  files:
+  - selection-image-001.html

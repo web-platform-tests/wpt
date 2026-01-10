@@ -105,3 +105,6 @@ features:
 - name: font-weight
   files:
   - font-weight-*
+- name: font-shorthand
+  files:
+  - font-shorthand-*

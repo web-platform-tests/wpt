@@ -5,3 +5,6 @@ features:
 - name: font-weight
   files:
   - font-weight-*
+- name: font-family
+  files:
+  - font-family-*

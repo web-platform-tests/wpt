@@ -55,3 +55,6 @@ features:
 - name: search-input-type
   files:
   - search_input.html
+- name: mouse-events
+  files:
+  - checkbox-click-events.html

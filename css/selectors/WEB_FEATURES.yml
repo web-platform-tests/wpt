@@ -90,3 +90,8 @@ features:
 - name: selection
   files:
   - selection-image-001.html
+- name: form-validity-pseudos
+  files:
+  - valid-invalid-form-fieldset.html
+  - selector-required.html
+  - selector-required-type-change-*

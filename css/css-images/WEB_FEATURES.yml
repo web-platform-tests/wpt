@@ -13,3 +13,10 @@ features:
 - name: cross-fade
   files:
   - cross-fade-*
+- name: gradients
+  files:
+  - "*gradient*"
+  - "normalization-*"
+  - "!*conic*"
+  - "multiple-position-color-stop-*"
+  - color-stop-currentcolor.html

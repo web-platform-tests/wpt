@@ -29,3 +29,6 @@ features:
 - name: font-size
   files:
   - c526-font-sz-*
+- name: font-style
+  files:
+  - c523-font-style-000.xht

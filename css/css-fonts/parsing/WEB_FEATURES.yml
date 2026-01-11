@@ -70,3 +70,6 @@ features:
 - name: font-kerning
   files:
   - font-kerning-*
+- name: font-style
+  files:
+  - font-style-*

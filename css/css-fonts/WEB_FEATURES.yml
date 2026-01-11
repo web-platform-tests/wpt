@@ -108,3 +108,8 @@ features:
 - name: font-shorthand
   files:
   - font-shorthand-*
+- name: font-style
+  files:
+  - font-style-*
+  - italic-oblique-fallback.html
+  - test-synthetic-italic*

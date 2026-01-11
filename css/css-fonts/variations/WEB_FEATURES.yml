@@ -2,3 +2,6 @@ features:
 - name: font-optical-sizing
   files:
   - variable-opsz*
+- name: font-style
+  files:
+  - font-slant-*

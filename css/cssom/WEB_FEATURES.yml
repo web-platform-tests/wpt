@@ -28,3 +28,13 @@ features:
 - name: font-variant
   files:
   - font-variant-shorthand-serialization.html
+- name: mutationobserver
+  files:
+  - MutationObserver-style.html
+- name: page-setup
+  files:
+  - cssom-pagerule.html
+  - page-descriptors.html
+- name: import
+  files:
+  - cssimportrule*

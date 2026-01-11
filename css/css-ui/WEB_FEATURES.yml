@@ -6,6 +6,9 @@ features:
 - name: appearance
   files:
   - appearance-*
+- name: box-sizing
+  files:
+  - box-sizing-*
 - name: outline
   files:
   - outline-*
@@ -25,3 +28,6 @@ features:
 - name: unset-value
   files:
   - native-appearance-disabled-for-value-unset.html
+- name: text-overflow
+  files:
+  - text-overflow-*

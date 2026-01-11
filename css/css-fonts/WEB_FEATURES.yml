@@ -1,4 +1,7 @@
 features:
+- name: lang-attr
+  files:
+  - lang-attribute-affects-rendering*
 - name: font-palette
   files:
   - font-palette.html
@@ -65,6 +68,10 @@ features:
 - name: font-variant-position
   files:
   - font-variant-position-*
+- name: font-variation-settings
+  files:
+  - font-variation-settings-*
+  - variable-in-font-variation-settings.html
 - name: font-metric-overrides
   files:
   - ascent-descent-override.html
@@ -73,6 +80,9 @@ features:
 - name: font-language-override
   files:
   - font-language-override-*
+- name: font-family-system
+  files:
+  - system-ui*
 - name: font-family-ui
   files:
   - standard-font-family-*
@@ -99,3 +109,11 @@ features:
 - name: font-weight
   files:
   - font-weight-*
+- name: font-shorthand
+  files:
+  - font-shorthand-*
+- name: font-style
+  files:
+  - font-style-*
+  - italic-oblique-fallback.html
+  - test-synthetic-italic*

@@ -32,3 +32,6 @@ features:
 - name: font-style
   files:
   - c523-font-style-000.xht
+- name: import
+  files:
+  - c11-import-000.xht

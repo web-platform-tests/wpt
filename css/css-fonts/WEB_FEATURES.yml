@@ -117,3 +117,6 @@ features:
   - font-style-*
   - italic-oblique-fallback.html
   - test-synthetic-italic*
+- name: font-stretch
+  files:
+  - font-stretch-*

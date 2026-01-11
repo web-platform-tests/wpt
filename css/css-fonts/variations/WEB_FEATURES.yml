@@ -5,3 +5,6 @@ features:
 - name: font-style
   files:
   - font-slant-*
+- name: font-variation-settings
+  files:
+  - font-variation-settings-inherit.html

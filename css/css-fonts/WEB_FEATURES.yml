@@ -68,6 +68,10 @@ features:
 - name: font-variant-position
   files:
   - font-variant-position-*
+- name: font-variation-settings
+  files:
+  - font-variation-settings-*
+  - variable-in-font-variation-settings.html
 - name: font-metric-overrides
   files:
   - ascent-descent-override.html

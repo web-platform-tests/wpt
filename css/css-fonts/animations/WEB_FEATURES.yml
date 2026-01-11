@@ -17,3 +17,6 @@ features:
 - name: font-weight
   files:
   - font-weight-composition.html
+- name: font-variation-settings
+  files:
+  - font-variation-settings-*

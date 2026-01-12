@@ -1,3 +1,3 @@
 features:
-- name: data-urls
+- name: dom-geometry
   files: "**"

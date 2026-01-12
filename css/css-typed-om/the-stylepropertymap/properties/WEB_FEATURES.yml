@@ -48,3 +48,6 @@ features:
 - name: font-variation-settings
   files:
   - font-variation-settings.html
+- name: font-stretch
+  files:
+  - font-stretch.html

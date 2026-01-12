@@ -35,3 +35,7 @@ features:
 - name: import
   files:
   - c11-import-000.xht
+- name: margin
+  files:
+  - "*-imrgn-*"
+  - "*-mrgn-*"

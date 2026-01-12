@@ -1,3 +1,6 @@
 features:
 - name: shape-outside
-  files: "**"
+  files:
+  - shape-image-threshold-*
+  - shape-margin-*
+  - shape-outside-*

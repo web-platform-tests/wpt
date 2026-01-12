@@ -1,3 +1,4 @@
 features:
 - name: shape-outside
-  files: "**"
+  files:
+  - shape-outside-*

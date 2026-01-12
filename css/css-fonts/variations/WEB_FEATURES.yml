@@ -8,3 +8,6 @@ features:
 - name: font-variation-settings
   files:
   - font-variation-settings-inherit.html
+- name: font-stretch
+  files:
+  - font-stretch.html

@@ -2,6 +2,3 @@ features:
 - name: barcode
   files:
   - shape-detection-api.idl
-- name: dom-geometry
-  files:
-  - geometry.idl

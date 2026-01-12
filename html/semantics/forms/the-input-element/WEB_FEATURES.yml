@@ -107,3 +107,6 @@ features:
   - maxlength-number.html
   - input-type-number-*
   - input-valueasnumber*
+- name: mouse-events
+  files:
+  - checkbox-click-events.html

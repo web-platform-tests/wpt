@@ -3,6 +3,7 @@ features:
   files:
   - 'div-fit-content-*'
   - 'fit-content-*'
+  - '!fit-content-length-percentage-*'
   - 'margin-collapse-with-indefinite-block-size-004.html'
   - 'percentage-min-width.html'
 - name: fit-content-function

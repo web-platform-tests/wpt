@@ -15,9 +15,6 @@ features:
 - name: not
   files:
   - parse-not.html
-- name: where
-  files:
-  - parse-where.html
 - name: shadow-parts
   files:
   - parse-part.html

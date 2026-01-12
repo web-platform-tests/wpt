@@ -22,11 +22,15 @@ features:
 - name: user-agent-sniffing
   files:
   - WorkerNavigator_userAgent.htm
+- name: partitioned-cookies
+  files:
+  - shared-worker-partitioned-cookies.tentative.https.html
 - name: shared-workers
   files:
   - data-url-shared.html
   - SharedWorker-*
   - shared-worker-*
+  - '!shared-worker-partitioned-cookies.tentative.https.html'
 - name: dedicated-workers
   files:
   - '*'

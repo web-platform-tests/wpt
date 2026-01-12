@@ -69,3 +69,6 @@ features:
 - name: import
   files:
   - cssimportrule*
+- name: where
+  files:
+  - insert-invalid-where-rule-crash.html

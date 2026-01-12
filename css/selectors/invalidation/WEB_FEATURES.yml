@@ -38,9 +38,6 @@ features:
 - name: state
   files:
   - state-in-has.html
-- name: where
-  files:
-  - where.html
 - name: shadow-parts
   files:
   - part-dir.html

@@ -1,3 +1,8 @@
 features:
 - name: shapes
-  files: "**"
+  files:
+  - '*'
+  - '!path-function-*'
+- name: path-shape
+  files:
+  - 'path-function-*'

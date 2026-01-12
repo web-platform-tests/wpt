@@ -640,7 +640,7 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
         # Reset exceptions list.
         self._unexpected_exceptions = []
 
-        if hasattr(self.parent, 'bidi_events'):            
+        if hasattr(self.parent, 'bidi_events'):
             # Remove all the existing subscriptions. Use protocol loop to run the async cleanup.
             self.parent.loop.run_until_complete(self.parent.bidi_events.unsubscribe_all())
             # As long as test runner requires JS execution on the test page, if the alert blocks the

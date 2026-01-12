@@ -20,6 +20,9 @@ features:
   - "!*conic*"
   - "multiple-position-color-stop-*"
   - color-stop-currentcolor.html
+- name: image-function
+  files:
+  - css-image-fallbacks-and-annotations*
 - name: image-rendering
   files:
   - image-rendering-*

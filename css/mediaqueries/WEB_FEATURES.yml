@@ -60,7 +60,6 @@ features:
   - relative-units-*.html
   - mq-deprecated-*.html
   - mq-invalid-media-type-*.html
-  - at-custom-media-*.html
   - match-media-parsing.html
   - negation-*.html
   - mq-case-insensitive-*.html

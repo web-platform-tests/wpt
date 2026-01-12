@@ -1,10 +1,13 @@
 features:
+- name: gradients
+  files:
+  - gradient-position-*
+- name: gradient-interpolation
+  files:
+  - gradient-interpolation-*
 - name: image-orientation
   files:
   - image-orientation-*
-- name: gradient-interpolation
-  files:
-  - "gradient-interpolation-*"
 - name: image-rendering
   files:
   - image-rendering-*

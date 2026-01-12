@@ -23,3 +23,6 @@ features:
 - name: image-function
   files:
   - css-image-fallbacks-and-annotations*
+- name: image-rendering
+  files:
+  - image-rendering-*

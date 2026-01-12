@@ -3,3 +3,6 @@ features:
   files:
   - margin-*
   - "!margin-border-padding-*"
+- name: padding
+  files:
+  - padding-*

@@ -621,6 +621,8 @@ class WebDriverActionSequenceProtocolPart(ActionSequenceProtocolPart):
 class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
+        # Required for detecting relevant `browsingContext.userPromptOpened` events.
+        self._test_window = self.parent.base.current_window
         # Exceptions occurred outside the main loop. Uses to store exceptions happened in async code
         # to communicate the failure to the test runner. Reset after each test.
         self._unexpected_exceptions = []
@@ -631,7 +633,9 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
 
     def run(self, url, script_resume, test_window=None):
         if test_window is None:
-            test_window = self.parent.base.current_window
+            self._test_window = self.parent.base.current_window
+        else:
+            self._test_window = test_window
 
         # Reset exceptions list.
         self._unexpected_exceptions = []
@@ -752,7 +756,7 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
             self.logger.debug(f"Received bidi event: {method}, {params}")
             if hasattr(self.parent, 'bidi_browsing_context') and \
                     method == "browsingContext.userPromptOpened" and \
-                    params["context"] == test_window:
+                    params["context"] == self._test_window:
                 # Handle user prompts in the test window. In the classic implementation, an open
                 # user prompt always causes an exception when
                 # `protocol.testdriver.get_next_message()` is called. In WebDriver BiDi, this is not

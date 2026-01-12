@@ -744,17 +744,22 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
         return deserialized_message
 
     async def _process_bidi_event(self, method, params):
+        """
+        Forwards WebDriver BiDi session's events to testdriver.js. Also automatically handles user
+        prompts to prevent deadlocks. Any exceptions are added to `self._unexpected_exceptions`.
+        """
         try:
             self.logger.debug(f"Received bidi event: {method}, {params}")
             if hasattr(self.parent, 'bidi_browsing_context') and \
                     method == "browsingContext.userPromptOpened" and \
                     params["context"] == test_window:
-                # Handle user prompt of the test window. In classic implementation, this user prompt
-                # always causes an exception when `protocol.testdriver.get_next_message()` is
-                # called. In BiDi it's not the case, as the BiDi protocol allows sending commands
-                # even with the user prompt opened. However, the user prompt can block the
-                # testdriver JS execution and cause a dead loop. To overcome this issue, the user
-                # prompt of the test window is always dismissed and the test is failing.
+                # Handle user prompts in the test window. In the classic implementation, an open
+                # user prompt always causes an exception when
+                # `protocol.testdriver.get_next_message()` is called. In WebDriver BiDi, this is not
+                # the case, as the protocol allows sending commands even when a user prompt is open.
+                # However, the prompt can block `testdriver.js` execution, causing a deadlock. To
+                # prevent this, we automatically dismiss the prompt in the test window and fail the
+                # test.
                 try:
                     await self.parent.bidi_browsing_context.handle_user_prompt(params["context"])
                 except Exception as e:

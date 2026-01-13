@@ -51,7 +51,8 @@
        onerror='t1.done();'>
 
   <script>
-    theImage.src = '/content-security-policy/support/fail.png'
+    const theImage = document.getElementById('theImage');
+    theImage.src = '/content-security-policy/support/fail.png';
   </script>
 
   <script async defer src='../support/checkReport.sub.js?reportField=effectiveDirective&reportValue=img-src%20%27none%27'></script>

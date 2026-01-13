@@ -97,7 +97,8 @@ def test_promise_all_reject(session):
 def test_await_promise_reject(session):
     response = execute_async_script(session, """
         let resolve = arguments[0];
-        await Promise.reject(new Error('my error'));
+        window.await = () => {};
+        await(Promise.reject(new Error('my error')));
         resolve('foo');
         """)
     assert_error(response, "javascript error")

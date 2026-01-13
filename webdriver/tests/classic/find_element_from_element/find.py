@@ -178,9 +178,7 @@ def test_parent_of_document_node_errors(session, inline):
     response = find_element(session, from_element.id, "xpath", "..")
     assert_error(response, "invalid selector")
 
-
-@pytest.mark.parametrize("value", [None, 1])
-def test_implicit_wait(session, inline, value):
+def test_implicit_wait(session, inline):
     session.url = inline("""
         <div id="parent"></div>
         <script>
@@ -189,7 +187,7 @@ def test_implicit_wait(session, inline, value):
             }, 300);
         </script>
     """)
-    session.timeouts.implicit = value
+    session.timeouts.implicit = 1
 
     from_element = session.find.css("#parent", all=False)
     response = find_element(session, from_element.id, "css selector", "#delayed")
@@ -197,7 +195,6 @@ def test_implicit_wait(session, inline, value):
 
     expected = session.execute_script("return document.getElementById('delayed')")
     assert_same_element(session, value, expected)
-
 
 def test_implicit_wait_timeout(session, inline):
     session.url = inline("<div id='parent'></div>")

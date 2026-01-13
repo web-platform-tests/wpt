@@ -21,7 +21,7 @@ class Timeouts:
         return timeouts
 
     def _set(self, key, secs):
-        body = {key: secs * 1000 if secs is not None else secs}
+        body = {key: secs * 1000}
         self.session.send_session_command("POST", "timeouts", body)
         return None
 

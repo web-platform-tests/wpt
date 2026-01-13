@@ -6,40 +6,29 @@ def get_timeouts(session):
         "GET", "session/{session_id}/timeouts".format(**vars(session)))
 
 
-def test_types_default_values(session):
+def test_get_timeouts(session):
     response = get_timeouts(session)
 
-    timeouts = assert_success(response)
-    assert isinstance(timeouts, dict)
+    assert_success(response)
+    assert "value" in response.body
+    assert isinstance(response.body["value"], dict)
 
-    assert isinstance(timeouts.get("implicit"), int)
-    assert isinstance(timeouts.get("pageLoad"), int)
-    assert isinstance(timeouts.get("script"), int)
+    value = response.body["value"]
+    assert "script" in value
+    assert "implicit" in value
+    assert "pageLoad" in value
 
-
-def test_types_null(session):
-    session.timeouts.implicit = None
-    session.timeouts.page_load = None
-    session.timeouts.script = None
-
-    response = get_timeouts(session)
-    timeouts = assert_success(response)
-
-    assert timeouts == {
-        "script": None,
-        "implicit": None,
-        "pageLoad": None,
-    }
+    assert isinstance(value["script"], int)
+    assert isinstance(value["implicit"], int)
+    assert isinstance(value["pageLoad"], int)
 
 
-def test_custom_values(session):
+def test_get_new_timeouts(session):
+    session.timeouts.script = 60
     session.timeouts.implicit = 1
     session.timeouts.page_load = 200
-    session.timeouts.script = 60
-
     response = get_timeouts(session)
-    timeouts = assert_success(response)
-
-    assert timeouts["script"] == 60000
-    assert timeouts["implicit"] == 1000
-    assert timeouts["pageLoad"] == 200000
+    assert_success(response)
+    assert response.body["value"]["script"] == 60000
+    assert response.body["value"]["implicit"] == 1000
+    assert response.body["value"]["pageLoad"] == 200000

@@ -53,10 +53,16 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, **kwargs
     browser_bundle_version = run_info_data["browser_bundle_version"]
     if (browser_bundle_version is not None and
         Version(browser_bundle_version[2:]) >= Version("613.1.7.1")):
-        logger.debug("using acceptInsecureCerts=True")
         executor_kwargs["capabilities"]["acceptInsecureCerts"] = True
     else:
         logger.warning("not using acceptInsecureCerts, Safari will require certificates to be trusted")
+
+    if (browser_bundle_version is not None and
+        Version(browser_bundle_version[2:]) >= Version("622.1.17")):
+        executor_kwargs["capabilities"]["webkit:alwaysAllowAutoplay"] = True
+    else:
+        logger.warning("not using webkit:alwaysAllowAutoplay, " +
+                       "Safari will require all autoplay for all WPT domains to be allowed")
 
     return executor_kwargs
 

@@ -20,4 +20,4 @@ features:
   - all-prop-unset-visited.html
 - name: inherit-value
   files:
-  - initial-*
+  - inherit-initial.html

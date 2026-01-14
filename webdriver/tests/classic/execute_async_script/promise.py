@@ -116,3 +116,28 @@ def test_promise_reject_timeout(session):
         resolve(promise);
         """)
     assert_error(response, "script timeout")
+
+
+def test_returned_promise_fulfilled(session):
+    response = execute_async_script(session, """
+        let resolve = arguments[0];
+        setTimeout(() => resolve('callback'), 50);
+        return Promise.resolve('promise');
+        """)
+    assert_success(response, "promise")
+
+
+def test_returned_promise_rejected(session):
+    session.timeouts.script = .1
+    response = execute_async_script(session, """
+        return Promise.reject(new Error ('my error'));
+        """)
+    assert_error(response, "javascript error")
+
+
+def test_returned_poisoned_thenable(session):
+    session.timeouts.script = .1
+    response = execute_async_script(session, """
+        return { get then() { thow new Error('my error'); } };
+        """)
+    assert_error(response, "javascript error")

@@ -10,30 +10,22 @@
   }
 </style>
 
-<video id="in_viewport" src="/media/A4.mp4?in-viewport" loading="eager"></video>
-<video id="below_viewport" class="below-viewport" src="/media/A4.mp4?below-viewport" loading="eager"></video>
+<video id="below_viewport" class="below-viewport" src="/media/A4.mp4?pipe=trickle(d2)" loading="eager"></video>
 
 <script>
-  const inViewportVideo = document.getElementById("in_viewport");
   const belowViewportVideo = document.getElementById("below_viewport");
 
-  const inViewportUrl = new URL(inViewportVideo.src, location.href).href;
-  const belowViewportUrl = new URL(belowViewportVideo.src, location.href).href;
-
   async_test(t => {
-    window.addEventListener("load", t.step_func_done(() => {
-      // Both videos should have started loading before window.load fires
-      // because loading="eager" videos delay the load event
-      assert_greater_than(
-        performance.getEntriesByName(inViewportUrl).length,
-        0,
-        "In-viewport video with loading='eager' should load before window.load"
-      );
+    let loadeddataFired = false;
 
-      assert_greater_than(
-        performance.getEntriesByName(belowViewportUrl).length,
-        0,
-        "Below-viewport video with loading='eager' should load before window.load"
+    belowViewportVideo.addEventListener("loadeddata", t.step_func(() => {
+      loadeddataFired = true;
+    }));
+
+    window.addEventListener("load", t.step_func_done(() => {
+      assert_true(
+        loadeddataFired,
+        "Below-viewport video with loading='eager' should fire loadeddata before window.load"
       );
     }));
   }, "Videos with loading='eager' load immediately regardless of viewport position and delay window load event");

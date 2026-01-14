@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Full Address Autofill Test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/autofill-bidi-helpers.js"></script>
+<style>
+  div { margin: 10px 0; }
+  label { display: inline-block; width: 100px; }
+</style>
+</head>
+<body>
+<form id="test_form">
+  <h2>Delivery Address</h2>
+  <div>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="shipping-name" autocomplete="shipping name">
+  </div>
+  <div>
+    <label for="street">Street:</label>
+    <input type="text" id="street" name="shipping-street" autocomplete="shipping address-line1">
+  </div>
+  <div>
+    <label for="city">City:</label>
+    <input type="text" id="city" name="shipping-city" autocomplete="shipping address-level2">
+  </div>
+  <div>
+    <label for="postalcode">Postal Code:</label>
+    <input type="text" id="postalcode" name="shipping-postalcode" autocomplete="shipping postal-code">
+  </div>
+  <div>
+    <label for="state">Province/State:</label>
+    <input type="text" id="state" name="shipping-state" autocomplete="shipping address-level1">
+  </div>
+  <div>
+    <label for="country">Country:</label>
+    <input type="text" id="country" name="shipping-country" autocomplete="shipping country">
+  </div>
+</form>
+<script>
+  promise_test(async t => {
+    const nameField = document.getElementById('name');
+
+    await triggerAutofill(nameField, {
+      'name': 'Max Mustermann',
+      'address-line1': '1 Main St',
+      'address-level2': 'Springfield',
+      'postal-code': 'H0H 0H0',
+      'address-level1': 'Ontario',
+      'country': 'CA'
+    });
+
+    assertElementHasValue('name', 'Max Mustermann');
+    assertElementHasValue('street', '1 Main St');
+    assertElementHasValue('city', 'Springfield');
+    assertElementHasValue('postalcode', 'H0H 0H0');
+    assertElementHasValue('state', 'Ontario');
+    assertElementHasValue('country', 'CA');
+  }, 'Autofill fills all address fields when triggered on name field');
+</script>
+</body>
+</html>
+

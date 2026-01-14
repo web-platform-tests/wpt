@@ -26,10 +26,8 @@
   });
 
   t.step_timeout(() => {
-    t.step(() => {
-      assert_equals(video.readyState, HTMLMediaElement.HAVE_NOTHING);
-      assert_true(video.paused, "Video should not autoplay when not visible in viewport");
-    });
+    assert_equals(video.readyState, HTMLMediaElement.HAVE_NOTHING);
+    assert_true(video.paused, "Video should not autoplay when not visible in viewport");
     t.done();
   }, 2000);
 </script>

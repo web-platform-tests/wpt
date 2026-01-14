@@ -3,34 +3,22 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<video id="target" src="/media/A4.mp4" loading="lazy"></video>
+<video id="target" src="/media/A4.mp4?pipe=trickle(d2)" loading="lazy"></video>
 
 <script>
   const video = document.getElementById("target");
-  const url = new URL(video.src, location.href).href;
 
   let windowLoadFired = false;
 
   async_test(t => {
     window.addEventListener("load", t.step_func(() => {
       windowLoadFired = true;
-
-      // At window load time, the lazy video should not have blocked loading
-      // but may or may not have started loading yet (implementation-dependent timing)
-      assert_true(windowLoadFired, "Window load event should fire");
-
-      // Give the video time to load after window.load
-      t.step_timeout(() => {
-        t.step(() => {
-          // The video should eventually load since it's in the viewport
-          assert_greater_than(
-            performance.getEntriesByName(url).length,
-            0,
-            "In-viewport lazy video should load after layout is known"
-          );
-        });
-        t.done();
-      }, 1000);
     }));
-  }, "In-viewport video with loading='lazy' loads after layout and does not delay window load event");
+
+    video.addEventListener("loadstart", t.step_func(() => {
+      assert_true(windowLoadFired, "Window load event should fire before loadstart for lazy video in viewport");
+      t.done();
+    }));
+
+  }, "In-viewport video with loading='lazy' fires window load before loadstart");
 </script>

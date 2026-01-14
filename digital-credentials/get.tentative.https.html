@@ -143,6 +143,7 @@
       const result = await sendMessage(iframeCrossOrigin, {
         action: "get",
         options,
+        needsActivation: true,
       });
       assert_equals(result.constructor, "TypeError");
     }
@@ -246,6 +247,7 @@ promise_test(async t => {
   for (const badValue of throwingValues) {
     const options = makeGetOptions({ data: badValue });
 
+    await test_driver.bless("user activation");
     await promise_rejects_js(
       t,
       TypeError,
@@ -256,6 +258,7 @@ promise_test(async t => {
 }, "Throws TypeError when request data is not JSON stringifiable.");
 
 promise_test(async (t) => {
+    await test_driver.bless("user activation");
     await promise_rejects_js(
       t,
       TypeError,

@@ -18,26 +18,36 @@
   const t = async_test(
     "Video with loading=lazy and autoplay does not play while not visible, then plays once scrolled into view"
   );
+  let scrolledIntoView = false;
 
-  // Step 1: Not visible => should not play.
   t.step_timeout(() => {
+    // Verify video has not played before scrolling
     t.step(() => {
-      assert_true(video.paused);
+      assert_true(video.paused, "Video should be paused when not visible in viewport");
     });
 
-    // Step 2: Scroll into view => should play.
-    video.scrollIntoView();
+    // set timeout to 10000ms to fail if play event never fires
+    const playTimeout = t.step_timeout(() => {
+      assert_unreached("Play event never fired");
+    }, 10000);
 
-    t.step_timeout(() => {
+    // bind to play event to assert true that play has begun after scroll has been called
+    video.addEventListener("play", () => {
+      clearTimeout(playTimeout);
       t.step(() => {
-        assert_false(
-          video.paused,
-          "Video should autoplay when scrolled into view"
-        );
+        assert_true(scrolledIntoView, "Video should fire play event after scrolling into view");
       });
       t.done();
+    });
+
+    // scroll into view and set scrolledIntoView to true
+    setTimeout(() => {
+      scrolledIntoView = true;
+      video.scrollIntoView();
     }, 1000);
-  }, 1000);
+  }, 2000);
+
+
 </script>
 </body>
 </html>

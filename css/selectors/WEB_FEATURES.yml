@@ -95,3 +95,6 @@ features:
   - valid-invalid-form-fieldset.html
   - selector-required.html
   - selector-required-type-change-*
+- name: input-selectors
+  files:
+  - pseudo-enabled-disabled.html

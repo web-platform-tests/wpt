@@ -16,3 +16,8 @@ features:
 - name: selection
   files:
   - css3-modsel-159.xml
+- name: input-selectors
+  files:
+  - css3-modsel-25.xml
+  - css3-modsel-70.xml
+  - css3-modsel-144.xml

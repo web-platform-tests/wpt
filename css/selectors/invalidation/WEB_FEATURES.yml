@@ -54,3 +54,6 @@ features:
 - name: where
   files:
   - where.html
+- name: input-selectors
+  files:
+  - enabled-disabled.html

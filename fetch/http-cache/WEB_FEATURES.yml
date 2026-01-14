@@ -2,3 +2,7 @@ features:
 - name: http-authentication
   files:
   - basic-auth-cache-test.html
+- name: fetch
+  files:
+  - "*"
+  - "!basic-auth-cache-test.html"

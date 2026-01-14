@@ -1,3 +1,3 @@
 features:
-- name: http11
+- name: fetch
   files: "**"

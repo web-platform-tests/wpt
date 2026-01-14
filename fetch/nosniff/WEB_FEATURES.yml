@@ -2,3 +2,7 @@ features:
 - name: http11
   files:
   - parsing-nosniff.window.js
+- name: fetch
+  files:
+  - "*"
+  - "!parsing-nosniff.window.js"

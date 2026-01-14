@@ -26,14 +26,8 @@
       assert_true(video.paused, "Video should be paused when not visible in viewport");
     });
 
-    // set timeout to 10000ms to fail if play event never fires
-    const playTimeout = t.step_timeout(() => {
-      assert_unreached("Play event never fired");
-    }, 10000);
-
     // bind to play event to assert true that play has begun after scroll has been called
     video.addEventListener("play", () => {
-      clearTimeout(playTimeout);
       t.step(() => {
         assert_true(scrolledIntoView, "Video should fire play event after scrolling into view");
       });

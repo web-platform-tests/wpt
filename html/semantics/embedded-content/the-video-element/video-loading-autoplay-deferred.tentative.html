@@ -19,6 +19,12 @@
 
   const video = document.getElementById("target");
 
+  video.addEventListener("loadstart", () => {
+    t.step(() => {
+      assert_unreached("Video should not fire loadstart event when not visible in viewport");
+    });
+  });
+
   t.step_timeout(() => {
     t.step(() => {
       assert_equals(video.readyState, HTMLMediaElement.HAVE_NOTHING);

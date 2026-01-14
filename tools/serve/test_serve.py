@@ -269,13 +269,13 @@ def _test_handler_get_metadata(handler_cls: Type[WrapperHandler],
         assert item in metadata
     assert len(expected_metadata) == len(metadata), f"{expected_metadata} != {metadata}"
 
-Test262WindowHandler.__test__ = False
-Test262WindowTestHandler.__test__ = False
-Test262WindowModuleHandler.__test__ = False
-Test262WindowModuleTestHandler.__test__ = False
-Test262StrictWindowHandler.__test__ = False
-Test262StrictWindowTestHandler.__test__ = False
-Test262StrictHandler.__test__ = False
+Test262WindowHandler.__test__ = False # type: ignore[attr-defined]
+Test262WindowTestHandler.__test__ = False # type: ignore[attr-defined]
+Test262WindowModuleHandler.__test__ = False # type: ignore[attr-defined]
+Test262WindowModuleTestHandler.__test__ = False # type: ignore[attr-defined]
+Test262StrictWindowHandler.__test__ = False # type: ignore[attr-defined]
+Test262StrictWindowTestHandler.__test__ = False # type: ignore[attr-defined]
+Test262StrictHandler.__test__ = False # type: ignore[attr-defined]
 
 @pytest.mark.parametrize("handler_cls, expected", [
     (Test262WindowHandler, [(".test262.html", ".js", ".test262-test.html")]),

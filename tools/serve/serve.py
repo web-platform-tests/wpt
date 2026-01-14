@@ -19,7 +19,7 @@ from collections import defaultdict, OrderedDict
 from io import IOBase
 from itertools import chain, product
 from html5lib import html5parser
-from typing import ClassVar, List, Optional, Set, Tuple, Union
+from typing import ClassVar, List, Optional, Set, Tuple
 
 from localpaths import repo_root  # type: ignore
 
@@ -341,13 +341,15 @@ class Test262WindowHandler(HtmlWrapperHandler):
 <iframe id="test262-iframe" src="%(path)s"></iframe>"""
 
 
-class Test262WindowTestHandler(HtmlWrapperHandler):
+class Test262WindowTestBaseHandler(HtmlWrapperHandler):
     # For SHAB
     headers = [('Cross-Origin-Opener-Policy', 'same-origin'),
                ('Cross-Origin-Embedder-Policy', 'require-corp')]
 
-    path_replace: Union[List[Tuple[str, str]], List[Tuple[str, str, str]]] = [(".test262-test.html", ".js")]
-
+    # Define a common HTML structure (testharness setup, etc.) that can be
+    # extended by subclasses. This avoids duplicating boilerplate. For example,
+    # Test262WindowModuleTestHandler reuses this `pre_wrapper` but appends a
+    # module script.
     pre_wrapper = """<!doctype html>
 <meta charset=utf-8>
 <title>Test</title>
@@ -378,12 +380,16 @@ class Test262WindowTestHandler(HtmlWrapperHandler):
         return None
 
 
+class Test262WindowTestHandler(Test262WindowTestBaseHandler):
+    path_replace = [(".test262-test.html", ".js")]
+
+
 class Test262WindowModuleHandler(Test262WindowHandler):
     path_replace = [(".test262-module.html", ".js", ".test262-module-test.html")]
 
-class Test262WindowModuleTestHandler(Test262WindowTestHandler):
+class Test262WindowModuleTestHandler(Test262WindowTestBaseHandler):
     path_replace = [(".test262-module-test.html", ".js")]
-    wrapper = Test262WindowTestHandler.pre_wrapper + """<script type="module">
+    wrapper = Test262WindowTestBaseHandler.pre_wrapper + """<script type="module">
   test262Setup();
   import {} from "%(path)s";
   test262Done();
@@ -393,7 +399,7 @@ class Test262WindowModuleTestHandler(Test262WindowTestHandler):
 class Test262StrictWindowHandler(Test262WindowHandler):
     path_replace = [(".test262.strict.html", ".js", ".test262-test.strict.html")]
 
-class Test262StrictWindowTestHandler(Test262WindowTestHandler):
+class Test262StrictWindowTestHandler(Test262WindowTestBaseHandler):
     path_replace = [(".test262-test.strict.html", ".js", ".test262.strict.js")]
 
 
@@ -655,18 +661,17 @@ class Test262StrictHandler(WrapperHandler):
     def _meta_replacement(self, key, value):
         return None
 
-    def _get_metadata(self, request):
-        # Abuse the script metadata to inline the script content so as to
-        # prepend "use strict".
+    def _get_script(self, request):
+        """
+        Reads the entire content of the associated JavaScript file to be
+        prepended with "use strict".
+        """
         path = self._get_filesystem_path(request)
         try:
             with open(path, encoding='utf-8') as f:
-                yield ('script', f.read())
+                yield f.read()
         except OSError:
             raise HTTPException(404)
-
-    def _script_replacement(self, key, value):
-        return value
 
 
 class BaseWorkerHandler(WrapperHandler):

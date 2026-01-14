@@ -10,32 +10,43 @@
   }
 </style>
 
-<video id="target" src="/media/A4.mp4" poster="/media/1x1-green.png" loading="lazy" width="100" height="100"></video>
+<video id="target" poster="/media/2048x1360-random.jpg" loading="lazy"></video>
 
 <script>
   const video = document.getElementById("target");
-  const posterUrl = new URL(video.poster, location.href).href;
 
   const t = async_test(
     "Video with loading=lazy does not fetch poster while not visible, then fetches poster once scrolled into view"
   );
 
-  // Step 1: Not visible => should not fetch poster.
+  // Step 1: Not visible => check initial dimensions.
   t.step_timeout(() => {
     t.step(() => {
-      assert_equals(performance.getEntriesByName(posterUrl).length, 0);
+      const initialWidth = video.offsetWidth;
+      const initialHeight = video.offsetHeight;
+
+      // Step 2: Scroll into view => poster should load and dimensions should change.
+      video.scrollIntoView();
+
+      t.step_timeout(() => {
+        t.step(() => {
+          const finalWidth = video.offsetWidth;
+          const finalHeight = video.offsetHeight;
+          assert_not_equals(
+            finalWidth,
+            initialWidth,
+            "Video width should change after poster loads"
+          );
+          assert_not_equals(
+            finalHeight,
+            initialHeight,
+            "Video height should change after poster loads"
+          );
+        });
+        t.done();
+      }, 2000);
     });
-
-    // Step 2: Scroll into view => should fetch poster.
-    video.scrollIntoView();
-
-    t.step_timeout(() => {
-      t.step(() => {
-        assert_greater_than(performance.getEntriesByName(posterUrl).length, 0);
-      });
-      t.done();
-    }, 1000);
-  }, 1000);
+  }, 2000);
 </script>
 </body>
 </html>

@@ -21,3 +21,54 @@ features:
   - HTMLLinkElement-disabled-006.html
   - HTMLLinkElement-disabled-007.html
   - HTMLLinkElement-disabled-alternate.html
+- name: font-face
+  files:
+  - CSSFontFaceRule.html
+  - cssom-fontfacerule*
+- name: font-variant
+  files:
+  - font-variant-shorthand-serialization.html
+- name: css-escape
+  files:
+  - escape.html
+- name: css-object-model
+  files:
+  # CSSGroupingRule:
+  - CSSGroupingRule-*
+  # CSSPageDescriptors:
+  - page-descriptors.html
+  - cssom-pagerule.html
+  # CSSRuleList:
+  - CSSRuleList.html
+  # CSSStyleDeclaration:
+  - css-style-declaration-modifications.html
+  - cssom-cssstyledeclaration-set.html
+  - cssstyledeclaration-*
+  # CSSStyleRule:
+  - CSSStyleRule.html
+  # Document.styleSheets / StyleSheetList / StyleSheet
+  - StyleSheetList*
+  # HTMLElement.style:
+  - style-attr-update-across-documents.html
+  # HTMLLinkElement.sheet / HTMLStyleElement.sheet:
+  - style-sheet-interfaces-*
+  # MediaList:
+  - MediaList*
+  - medialist-*
+  # CSSConditionRule:
+  - CSSConditionRule-conditionText.html
+  # CSSMediaRule:
+  - serialize-media-rule.html
+- name: mutationobserver
+  files:
+  - MutationObserver-style.html
+- name: page-setup
+  files:
+  - cssom-pagerule.html
+  - page-descriptors.html
+- name: import
+  files:
+  - cssimportrule*
+- name: where
+  files:
+  - insert-invalid-where-rule-crash.html

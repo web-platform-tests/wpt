@@ -11,3 +11,12 @@ features:
 - name: background-repeat
   files:
   - background-table-*
+- name: borders
+  files:
+  - border-conflict-*
+  - border-style-*
+  - column-border-*
+- name: margin
+  files:
+  - table-margin-*
+  - tables-101.xht

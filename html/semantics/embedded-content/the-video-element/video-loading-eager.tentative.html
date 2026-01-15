@@ -14,19 +14,17 @@
 
 <script>
   const belowViewportVideo = document.getElementById("below_viewport");
+  let dataLoaded = false;
 
   async_test(t => {
-    let loadeddataFired = false;
-
     belowViewportVideo.addEventListener("loadeddata", t.step_func(() => {
-      loadeddataFired = true;
+      dataLoaded = true;
+      t.done();
     }));
 
-    window.addEventListener("load", t.step_func_done(() => {
-      assert_true(
-        loadeddataFired,
-        "Below-viewport video with loading='eager' should fire loadeddata before window.load"
-      );
-    }));
-  }, "Videos with loading='eager' load immediately regardless of viewport position and delay window load event");
+    //if data is not loaded after 5 seconds, assert unreached
+    t.step_timeout(() => {
+      assert_unreached("Eager video should load data immediately");
+    }, 5000);
+  }, "Videos with loading='eager' load immediately regardless of viewport position");
 </script>

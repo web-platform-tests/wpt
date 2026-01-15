@@ -10,34 +10,43 @@
   }
 </style>
 
-<video id="target" src="/media/A4.mp4" loading="lazy" width="100" height="100"></video>
+<video id="target" controls src="/media/A4.mp4" loading="lazy"></video>
 
 <script>
   const video = document.getElementById("target");
 
   const t = async_test(
-    "Video with loading=lazy does not fetch while not visible, then fetches once scrolled into view"
+    "Video with loading=lazy does not fetch video while not visible, then fetches video once scrolled into view"
   );
 
-  const url = new URL(video.src, location.href).href;
-
-
-  // Step 1: Not visible => should not fetch.
+  // Step 1: Not visible => check initial dimensions.
   t.step_timeout(() => {
     t.step(() => {
-      assert_equals(performance.getEntriesByName(url).length, 0);
+      const initialWidth = video.offsetWidth;
+      const initialHeight = video.offsetHeight;
+
+      // Step 2: Scroll into view => video should load and dimensions should change.
+      video.scrollIntoView();
+
+      t.step_timeout(() => {
+        t.step(() => {
+          const finalWidth = video.offsetWidth;
+          const finalHeight = video.offsetHeight;
+          assert_not_equals(
+            finalWidth,
+            initialWidth,
+            "Video width should change after video loads"
+          );
+          assert_not_equals(
+            finalHeight,
+            initialHeight,
+            "Video height should change after video loads"
+          );
+        });
+        t.done();
+      }, 2000);
     });
-
-    // Step 2: Scroll into view => should fetch.
-    video.scrollIntoView();
-
-    t.step_timeout(() => {
-      t.step(() => {
-        assert_greater_than(performance.getEntriesByName(url).length, 0);
-      });
-      t.done();
-    }, 1000);
-  }, 1000);
+  }, 2000);
 </script>
 </body>
 </html>

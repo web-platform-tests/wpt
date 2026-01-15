@@ -9,6 +9,9 @@ features:
   files:
   # Keep in sync with `script` mappings above
   - script-charset-03.html
+- name: data-urls
+  files:
+  - data-url.html
 - name: js-modules
   files:
   # Keep in sync with `script` mappings above

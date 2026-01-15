@@ -1,3 +1,4 @@
 features:
 - name: list-style
-  files: "**"
+  files:
+  - list-style-*

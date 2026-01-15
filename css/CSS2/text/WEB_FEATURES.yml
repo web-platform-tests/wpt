@@ -1,10 +1,17 @@
 features:
-- name: word-spacing
+- name: letter-spacing
   files:
-  - word-spacing-*
+  - letter-spacing-*
 - name: text-align
   files:
   - text-align-*
 - name: text-transform
   files:
   - text-transform-*
+- name: white-space
+  files:
+  - text-align-white-space-*
+  - white-space-*
+- name: word-spacing
+  files:
+  - word-spacing-*

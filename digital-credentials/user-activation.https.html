@@ -40,12 +40,13 @@
     );
   }, "navigator.credentials.get() consumes user activation.");
 
+
   promise_test(async (t) => {
     assert_false(
       navigator.userActivation.isActive,
       "User activation should not be active"
     );
-    const options = makeCreateOptions({protocol: []});
+    const options = makeCreateOptions();
     await promise_rejects_dom(
       t,
       "NotAllowedError",
@@ -55,12 +56,16 @@
 
   promise_test(async (t) => {
     await test_driver.bless();
+    const abort = new AbortController();
+    const options = makeCreateOptions({ signal: abort.signal });
     assert_true(
       navigator.userActivation.isActive,
       "User activation should be active after test_driver.bless()."
     );
-    const options = makeCreateOptions({protocol: []});
-    await promise_rejects_js(t, TypeError, navigator.credentials.create(options));
+
+    const createPromise = navigator.credentials.create(options);
+    abort.abort();
+    await promise_rejects_dom(t, "AbortError", createPromise);
     assert_false(
       navigator.userActivation.isActive,
       "User activation should be consumed after navigator.credentials.create()."

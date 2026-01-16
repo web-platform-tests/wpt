@@ -6,7 +6,6 @@ features:
   files:
   - css-scoping-shadow-*-slot-*.html
   - css-scoping-shadow-slotted-*.html
-  - host-slotted-*.html
   - slot-non-html-display-value.html
   - slotted-*.html
 - name: host-context

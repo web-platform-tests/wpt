@@ -36,6 +36,9 @@ features:
 - name: rch
   files:
   - rch-*
+- name: ex
+  files:
+  - ex-*
 - name: rex
   files:
   - rex-*
@@ -43,6 +46,7 @@ features:
   files:
   - round-function.html
   - round-mod-rem-*
+  - rem-length-degrees-crash.html
 - name: trig-functions
   files:
   - acos-asin-atan-atan2-*
@@ -77,3 +81,13 @@ features:
   - viewport-units-*
   # Tests for: vi, svi, lvi, dvi, vb, svb, lvb, dvb
   - "!viewport-units-writing-mode-*"
+- name: border-radius
+  files:
+  - getComputedStyle-border-radius-*
+- name: q-unit
+  files:
+  - q-unit-*
+- name: rem
+  files:
+  - rem-unit-*
+  - rem-root-*

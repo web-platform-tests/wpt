@@ -1,5 +1,6 @@
 // META: title=Language Model Clone
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=../resources/util.js
 // META: timeout=long
 
@@ -34,4 +35,7 @@ promise_test(async () => {
 
   const clone_result = await cloned_session.prompt(kTestPrompt);
   assert_equals(typeof clone_result, 'string');
+  assert_greater_than(
+      cloned_session.inputUsage, session.inputUsage,
+      'cloned session should have increased inputUsage after prompting.');
 });

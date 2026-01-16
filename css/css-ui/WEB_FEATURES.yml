@@ -22,6 +22,5 @@ features:
 - name: cursor
   files:
   - canvas-cursor-*
-  - cgrsor-*
   - cursor-*
   - select-cursor-*

@@ -6,6 +6,13 @@ features:
 - name: appearance
   files:
   - appearance-*
+- name: box-sizing
+  files:
+  - box-sizing-*
+- name: interactivity
+  files:
+  - interactivity-*
+  - inert-attribute-overriding.html
 - name: outline
   files:
   - outline-*
@@ -19,8 +26,17 @@ features:
   files:
   - caret-color-*
   - caret-eol-*
+- name: cross-fade
+  files:
+  - cursor-image-016-manual.html
 - name: cursor
   files:
   - canvas-cursor-*
   - cursor-*
   - select-cursor-*
+- name: unset-value
+  files:
+  - native-appearance-disabled-for-value-unset.html
+- name: text-overflow
+  files:
+  - text-overflow-*

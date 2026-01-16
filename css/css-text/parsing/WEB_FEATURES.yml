@@ -2,6 +2,9 @@ features:
 - name: line-break
   files:
   - line-break-*
+- name: hanging-punctuation
+  files:
+  - hanging-punctuation-*
 - name: text-spacing-trim
   files:
   - text-spacing-trim-*
@@ -29,6 +32,9 @@ features:
 - name: tab-size
   files:
   - tab-size-*
+- name: text-autospace
+  files:
+  - text-autospace-*
 - name: text-align
   files:
   - "text-align-all-*"
@@ -38,6 +44,6 @@ features:
 - name: text-align-last
   files:
   - "text-align-last-*"
-- name: hanging-punctuation
+- name: letter-spacing
   files:
-  - hanging-punctuation-*
+  - letter-spacing-*

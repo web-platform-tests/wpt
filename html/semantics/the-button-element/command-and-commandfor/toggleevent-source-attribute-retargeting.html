@@ -17,7 +17,7 @@ promise_test(async () => {
   const shadowButton = host.shadowRoot.getElementById('shadow-button');
   shadowButton.commandForElement = popover;
 
-  const eventNames = ['command'];
+  const eventNames = ['beforetoggle', 'toggle'];
   const eventNameToEvent = {};
   const eventNameToCaptureSource = {};
   const eventNameToBubbleSource = {};
@@ -48,7 +48,7 @@ promise_test(async () => {
     assert_equals(event.source, host,
       `${eventName}.source after dispatch.`);
   }
-}, 'CommandEvent.source should be retargeted during and after event dispatch.');
+}, 'ToggleEvent.source should be retargeted during and after event dispatch.');
 </script>
 
 <div id=host2>
@@ -75,17 +75,17 @@ promise_test(async () => {
   const targetToBubbleSource = new Map();
 
   for (const target of targets) {
-    target.addEventListener('command', event => {
+    target.addEventListener('toggle', event => {
       targetToEvent.set(target, event);
       targetToBubbleSource.set(target, event.source);
     });
-    target.addEventListener('command', event => {
+    target.addEventListener('toggle', event => {
       targetToCaptureSource.set(target, event.source);
     }, {capture: true});
   }
 
-  const commandEvent = new CommandEvent('command', {composed: true, source});
-  target.dispatchEvent(commandEvent);
+  const toggleEvent = new ToggleEvent('toggle', {composed: true, source});
+  target.dispatchEvent(toggleEvent);
 
   for (const target of targets) {
     const expectedSource = target == host2 ? host2 : source;
@@ -98,7 +98,7 @@ promise_test(async () => {
     assert_equals(targetToEvent.get(target).source, host2,
       `${target.id}: event.source after dispatch.`);
   }
-}, 'CommandEvent.source should be retargeted when manually dispatched with composed set to true.');
+}, 'Toggle.source should be retargeted when manually dispatched with composed set to true.');
 </script>
 
 <div id=popover3 popover=auto>popover 3</div>
@@ -109,7 +109,7 @@ promise_test(async () => {
   const button = document.getElementById('button3');
   const popover = document.getElementById('popover3');
 
-  const eventNames = ['command'];
+  const eventNames = ['beforetoggle', 'toggle'];
   const eventNameToEvent = {};
   for (const eventName of eventNames) {
     popover.addEventListener(eventName, event => {
@@ -127,5 +127,5 @@ promise_test(async () => {
     assert_equals(event.source, button,
       `${eventName}.source should be the invoker button after dispatch.`);
   }
-}, 'CommandEvent.source should not be set to null after dispatch without ShadowDOM.');
+}, 'ToggleEvent.source should not be set to null after dispatch without ShadowDOM.');
 </script>

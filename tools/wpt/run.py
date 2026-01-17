@@ -670,7 +670,7 @@ class Opera(BrowserSetup):
 
 class Edge(ChromeAndEdgeSetup):
     name = "MicrosoftEdge"
-    browser_cls: ClassVar[Type[browser.ChromeChromiumBase]] = browser.Edge
+    browser_cls = browser.Edge
     webdriver_name = "msedgedriver"
 
 

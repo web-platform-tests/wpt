@@ -68,4 +68,4 @@ async def test_reference_context_with_no_user_context_set(
         max_depth=0, root=new_context["context"]
     )
 
-    assert new_context_info[0]["userContext"] == user_context
+    assert new_context["userContext"] == user_context

@@ -10,6 +10,7 @@ def assert_base_entry(
     timestamp=any_int,
     realm=any_string,
     context=None,
+    userContext=None,
     stacktrace=None
 ):
     recursive_compare({
@@ -36,6 +37,9 @@ def assert_base_entry(
     if context is not None:
         assert "context" in source
         assert source["context"] == context
+    if userContext is not None:
+        assert "userContext" in source
+        assert source["userContext"] == userContext
 
 
 def assert_console_entry(

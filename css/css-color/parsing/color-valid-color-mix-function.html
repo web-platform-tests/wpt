@@ -455,6 +455,18 @@
     fuzzy_test_valid_color(`color-mix(in srgb, red,           blue 90%)`,          `color-mix(in srgb, red 10%, blue)`)                 // only p2 specified
     fuzzy_test_valid_color(`color-mix(in srgb, red,           blue calc(50%))`,    `color-mix(in srgb, red, blue calc(50%))`)           // only p2 specified, is `calc()`
     fuzzy_test_valid_color(`color-mix(in srgb, red,           blue)`,              `color-mix(in srgb, red, blue)`)                     // neither is specified
+
+    // Test multiple items with various percentages specified.
+    fuzzy_test_valid_color(`color-mix(in srgb, red, green, blue)`,                      `color-mix(in srgb, red, green, blue)`);                        // all p? omitted
+    fuzzy_test_valid_color(`color-mix(in srgb, red 10%, green 10%, blue 10%)`,          `color-mix(in srgb, red 10%, green 10%, blue 10%)`);            // all p? equal
+    fuzzy_test_valid_color(`color-mix(in srgb, 25% red, 25% green, 25% blue)`,          `color-mix(in srgb, red 25%, green 25%, blue 25%)`);            // all p? equal
+    fuzzy_test_valid_color(`color-mix(in srgb, red 25%, green, blue)`,                  `color-mix(in srgb, red 25%, green 37.5%, blue 37.5%)`);        // only p1 specified
+    fuzzy_test_valid_color(`color-mix(in srgb, red 10%, green 20%, blue)`,              `color-mix(in srgb, red 10%, green 20%, blue 70%)`);            // p2 & p2 specified
+    fuzzy_test_valid_color(`color-mix(in srgb, 10% red, green 20%, 70% blue)`,          `color-mix(in srgb, red 10%, green 20%, blue 70%)`);            // all p? specified
+    fuzzy_test_valid_color(`color-mix(red, green, blue)`,                               `color-mix(red, green, blue)`);                                 // color-space omitted, all p? omitted
+    fuzzy_test_valid_color(`color-mix(red 20%, green 20%, blue 20%)`,                   `color-mix(red 20%, green 20%, blue 20%)`);                     // color-space omitted, all p? specified
+    fuzzy_test_valid_color(`color-mix(in hsl, red calc(20%), green calc(30%), blue)`,   `color-mix(in hsl, red calc(20%), green calc(30%), blue 50%)`); // calc p1 & p2
+    fuzzy_test_valid_color(`color-mix(in hsl, currentcolor, red, blue)`,                `color-mix(in hsl, currentcolor, red, blue)`);                  // use currentcolor
 </script>
 </body>
 </html>

@@ -84,4 +84,33 @@
     iframe.remove();
     await p;
   }, "Promise rejects with DOMException when the document becomes non-fully active");
+
+  promise_test(async (t) => {
+    const iframe = await createIframe();
+    t.add_cleanup(() => iframe.remove());
+    const DOMExceptionCtor = iframe.contentWindow.DOMException;
+
+    for (let i = 0; i < 10; ++i) {
+      await test_driver.bless("User activation", null, iframe.contentWindow);
+      await iframe.focus();
+
+      const controller = new iframe.contentWindow.AbortController();
+      const p = iframe.contentWindow.navigator.credentials.get(
+        makeGetOptions({ signal: controller.signal })
+      );
+
+      controller.abort(new Error(`Aborted iteration ${i}`));
+
+      try {
+        await p;
+        assert_unreached("navigator.credentials.get() unexpectedly resolved");
+      } catch (e) {
+        assert_not_equals(
+          e.name,
+          "InvalidStateError",
+          `Iteration ${i}: should not fail with InvalidStateError`
+        );
+      }
+    }
+}, "Aborted Digital Credentials requests do not leave a subsequent request stuck in an invalid state.");
 </script>

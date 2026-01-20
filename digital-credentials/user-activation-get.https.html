@@ -12,26 +12,26 @@
   promise_test(async (t) => {
     assert_false(
       navigator.userActivation.isActive,
-      "User activation should not be active"
+      "User activation should not be active",
     );
     const options = makeGetOptions();
     await promise_rejects_dom(
       t,
       "NotAllowedError",
-      navigator.credentials.get(options)
+      navigator.credentials.get(options),
     );
   }, "navigator.credentials.get() calling the API without user activation should reject with NotAllowedError.");
 
   promise_test(async (t) => {
     assert_false(
       navigator.userActivation.isActive,
-      "User activation should not be active"
+      "User activation should not be active",
     );
-    const options = makeGetOptions({protocol: []});
+    const options = makeGetOptions({ protocol: [] });
     await promise_rejects_js(t, TypeError, navigator.credentials.get(options));
     assert_false(
       navigator.userActivation.isActive,
-      "User activation should not be active"
+      "User activation should not be active",
     );
   }, "navigator.credentials.get() with empty requests and no user activation needed should reject with TypeError.");
 
@@ -39,7 +39,7 @@
     await test_driver.bless();
     assert_true(
       navigator.userActivation.isActive,
-      "User activation should be active after test_driver.bless()."
+      "User activation should be active after test_driver.bless().",
     );
     const abort = new AbortController();
     const options = makeGetOptions({ signal: abort.signal });
@@ -48,7 +48,7 @@
     await promise_rejects_dom(t, "AbortError", promise);
     assert_true(
       navigator.userActivation.isActive,
-      "User activation should not be consumed on early abort with navigator.credentials.get()."
+      "User activation should not be consumed on early abort with navigator.credentials.get().",
     );
   }, "navigator.credentials.get() with early abort does not consume user activation.");
 
@@ -56,7 +56,7 @@
     await test_driver.bless();
     assert_true(
       navigator.userActivation.isActive,
-      "User activation should be active after test_driver.bless()."
+      "User activation should be active after test_driver.bless().",
     );
     const abort = new AbortController();
     const options = makeGetOptions({ signal: abort.signal });
@@ -66,7 +66,7 @@
     await promise_rejects_dom(t, "AbortError", promise);
     assert_false(
       navigator.userActivation.isActive,
-      "User activation should be consumed after navigator.credentials.get()."
+      "User activation should be consumed after navigator.credentials.get().",
     );
   }, "navigator.credentials.get() with late abort consumes user activation.");
 </script>

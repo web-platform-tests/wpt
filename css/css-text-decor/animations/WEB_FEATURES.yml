@@ -4,5 +4,4 @@ features:
   - text-underline-offset-*
 - name: text-decoration
   files:
-  - discrete-no-interpolation.html
   - "text-decoration-*"

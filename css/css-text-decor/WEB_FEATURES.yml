@@ -10,7 +10,6 @@ features:
   - "*text-decoration-*"
   - "!text-decoration-line-014.xht"
   - "!text-decoration-color-selection-*"
-  - inheritance.html
 - name: text-decoration-line-blink
   files:
   - text-decoration-line-014.xht

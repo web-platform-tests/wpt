@@ -25,23 +25,40 @@
   promise_test(async (t) => {
     const options = makeCreateOptions({protocol: []});
     await promise_rejects_js(t, TypeError, navigator.credentials.create(options));
-  }, "navigator.credentials.create() with empty requests should reject with TypeError (no user activation needed).");
+    assert_false(
+      navigator.userActivation.isActive,
+      "User activation should not be active"
+    );
+  }, "navigator.credentials.create() with empty requests and no user activation needed should reject with TypeError.");
+
+  promise_test(async (t) => {
+    const options = makeCreateOptions();
+    await promise_rejects_dom(
+      t,
+      "NotAllowedError",
+      navigator.credentials.create(options)
+    );
+    assert_false(
+      navigator.userActivation.isActive,
+      "User activation should not be active"
+    );
+  }, "navigator.credentials.create() calling the API without user activation should reject with NotAllowedError.");
 
   promise_test(async (t) => {
     await test_driver.bless();
-    const abort = new AbortController();
-    const options = makeCreateOptions({ signal: abort.signal });
     assert_true(
       navigator.userActivation.isActive,
       "User activation should be active after test_driver.bless()."
     );
+    const abort = new AbortController();
+    const options = makeCreateOptions({ signal: abort.signal });
 
     const createPromise = navigator.credentials.create(options);
     abort.abort();
     await promise_rejects_dom(t, "AbortError", createPromise);
-    assert_false(
+    assert_true(
       navigator.userActivation.isActive,
-      "User activation should be consumed after navigator.credentials.create()."
+      "User activation should not be consumed on early abort with navigator.credentials.create()."
     );
   }, "navigator.credentials.create() consumes user activation.");
 </script>

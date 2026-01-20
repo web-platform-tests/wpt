@@ -1,4 +1,4 @@
 features:
-- name: js-modules
+- name: top-level-await
   files:
   - "*"

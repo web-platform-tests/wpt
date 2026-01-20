@@ -12,6 +12,13 @@ features:
   files:
   - color-mix-*
   - nested-color-mix-with-currentcolor.html
+- name: currentcolor
+  files:
+  - currentcolor-*
+  - t44-currentcolor-*
+  - color-003.html
+  - currentcolor-visited-fallback.html
+  - t31-color-currentColor-b.xht
 - name: lab
   files:
   - lab-*
@@ -41,3 +48,18 @@ features:
 - name: contrast-color
   files:
   - contrast-color-001.html
+- name: hsl
+  files:
+  - background-color-hsl-*
+  - hsl-*
+  - hsla-*
+  - t424-hsl-*
+  - t425-hsla-*
+- name: opacity
+  files:
+  - t32-opacity-*.xht
+  - inline-opacity-float-child.html
+  - opacity-overlapping-letters.html
+- name: named-color
+  files:
+  - named-001.html

@@ -44,8 +44,8 @@
     const abort = new AbortController();
     const options = makeGetOptions({ signal: abort.signal });
     abort.abort();
-    const createPromise = navigator.credentials.get(options);
-    await promise_rejects_dom(t, "AbortError", createPromise);
+    const promise = navigator.credentials.get(options);
+    await promise_rejects_dom(t, "AbortError", promise);
     assert_true(
       navigator.userActivation.isActive,
       "User activation should not be consumed on early abort with navigator.credentials.get()."
@@ -61,9 +61,9 @@
     const abort = new AbortController();
     const options = makeGetOptions({ signal: abort.signal });
 
-    const createPromise = navigator.credentials.get(options);
+    const promise = navigator.credentials.get(options);
     abort.abort();
-    await promise_rejects_dom(t, "AbortError", createPromise);
+    await promise_rejects_dom(t, "AbortError", promise);
     assert_false(
       navigator.userActivation.isActive,
       "User activation should be consumed after navigator.credentials.get()."

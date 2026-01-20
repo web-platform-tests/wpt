@@ -1,4 +1,7 @@
 features:
+- name: history
+  files:
+  - pushState-inside-popstate.html
 - name: hashchange
   files:
   - after-load-hash*

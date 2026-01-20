@@ -1,22 +1,12 @@
 import pytest
 
+from . import SOME_CLIENT_HINTS
+
 import webdriver.bidi.error as error
 from tests.bidi import get_invalid_cases
 from webdriver.bidi.undefined import UNDEFINED
 
 pytestmark = pytest.mark.asyncio
-
-SOME_CLIENT_HINTS = {
-    "brands": [{"brand": "Brand", "version": "1.0"}],
-    "fullVersionList": [{"brand": "Brand", "version": "1.0.0.0"}],
-    "mobile": True,
-    "model": "Model",
-    "platform": "Platform",
-    "platformVersion": "1.0.0",
-    "architecture": "Arch",
-    "bitness": "64",
-    "wow64": False
-}
 
 
 @pytest.mark.parametrize("value", get_invalid_cases("list"))
@@ -123,7 +113,8 @@ async def test_params_client_hints_missing(bidi_session, top_context):
 
 
 @pytest.mark.parametrize("value", get_invalid_cases("dict", nullable=True))
-async def test_params_client_hints_invalid_type(bidi_session, top_context, value):
+async def test_params_client_hints_invalid_type(bidi_session, top_context,
+        value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_client_hints_override(
             client_hints=value,

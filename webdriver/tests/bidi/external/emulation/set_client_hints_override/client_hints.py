@@ -1,18 +1,8 @@
 import pytest
 
-pytestmark = pytest.mark.asyncio
+from . import SOME_CLIENT_HINTS
 
-SOME_CLIENT_HINTS = {
-    "brands": [{"brand": "Brand", "version": "1.0"}],
-    "fullVersionList": [{"brand": "Brand", "version": "1.0.0.0"}],
-    "mobile": True,
-    "model": "Model",
-    "platform": "Platform",
-    "platformVersion": "1.0.0",
-    "architecture": "Arch",
-    "bitness": "64",
-    "wow64": False
-}
+pytestmark = pytest.mark.asyncio
 
 
 async def test_set_override_and_reset(bidi_session, top_context,

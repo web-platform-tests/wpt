@@ -1,30 +1,8 @@
 import pytest
 
+from . import ANOTHER_CLIENT_HINTS, SOME_CLIENT_HINTS
+
 pytestmark = pytest.mark.asyncio
-
-SOME_CLIENT_HINTS = {
-    "brands": [{"brand": "Brand", "version": "1.0"}],
-    "fullVersionList": [{"brand": "Brand", "version": "1.0.0.0"}],
-    "mobile": True,
-    "model": "Model",
-    "platform": "Platform",
-    "platformVersion": "1.0.0",
-    "architecture": "Arch",
-    "bitness": "64",
-    "wow64": False
-}
-
-ANOTHER_CLIENT_HINTS = {
-    "brands": [{"brand": "Another Brand", "version": "2.0"}],
-    "fullVersionList": [{"brand": "Another Brand", "version": "2.0.0.0"}],
-    "mobile": False,
-    "model": "Another Model",
-    "platform": "Another Platform",
-    "platformVersion": "2.0.0",
-    "architecture": "Another Arch",
-    "bitness": "32",
-    "wow64": True
-}
 
 
 async def test_user_contexts(bidi_session, create_user_context, new_tab,
@@ -55,7 +33,9 @@ async def test_user_contexts(bidi_session, create_user_context, new_tab,
 
 
 async def test_set_to_default_user_context(bidi_session, new_tab,
-        create_user_context, assert_client_hints, default_client_hints, ):
+        create_user_context,
+        assert_client_hints,
+        default_client_hints):
     user_context = await create_user_context()
     context_in_user_context = await bidi_session.browsing_context.create(
         user_context=user_context, type_hint="tab"
@@ -86,7 +66,7 @@ async def test_set_to_default_user_context(bidi_session, new_tab,
 
 
 async def test_set_to_multiple_user_contexts(bidi_session, create_user_context,
-        assert_client_hints, default_client_hints):
+        assert_client_hints):
     # Create the first user context.
     user_context_1 = await create_user_context()
     # Create a browsing context within the first user context.
@@ -114,7 +94,9 @@ async def test_set_to_multiple_user_contexts(bidi_session, create_user_context,
 
 
 async def test_set_to_user_context_and_then_to_context(bidi_session,
-        create_user_context, new_tab, assert_client_hints, default_client_hints, ):
+        create_user_context,
+        assert_client_hints,
+        default_client_hints):
     user_context = await create_user_context()
     context_in_user_context = await bidi_session.browsing_context.create(
         user_context=user_context, type_hint="tab"

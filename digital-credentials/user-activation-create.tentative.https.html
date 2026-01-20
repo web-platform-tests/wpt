@@ -37,7 +37,7 @@
       navigator.userActivation.isActive,
       "User activation should not be active",
     );
-  }, "navigator.credentials.create() with empty requests and no user activation needed should reject with TypeError.");
+  }, "navigator.credentials.create() with empty protocol array and no user activation needed should reject with TypeError.");
 
   promise_test(async (t) => {
     await test_driver.bless();

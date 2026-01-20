@@ -129,8 +129,8 @@ def get_safari_info(wd_path):
 
 def get_webkit_info(safari_bundle_path):
     framework_paths = [
-        os.path.join(os.path.dirname(safari_bundle_path), "Contents", "Frameworks"),  # bundled Safari (e.g. STP)
-        os.path.join(os.path.dirname(safari_bundle_path), ".."),  # local Safari build
+        os.path.join(os.path.normpath(safari_bundle_path), "Contents", "Frameworks"),  # bundled Safari (e.g. STP)
+        os.path.join(os.path.normpath(safari_bundle_path), ".."),  # local Safari build
         "/System/Library/PrivateFrameworks",
         "/Library/Frameworks",
         "/System/Library/Frameworks",

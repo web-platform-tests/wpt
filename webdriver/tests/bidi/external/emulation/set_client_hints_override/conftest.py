@@ -36,7 +36,7 @@ async def get_navigator_client_hints(bidi_session):
         )
         if result["type"] == "null":
             return None
-        return json.loads(result["value"])  # Forced reload
+        return json.loads(result["value"])
 
     return get_navigator_client_hints
 

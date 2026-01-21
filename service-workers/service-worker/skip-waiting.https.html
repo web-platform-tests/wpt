@@ -1,58 +1,144 @@
 <!DOCTYPE html>
+<meta name="variant" content="?subtest=basic">
+<meta name="variant" content="?subtest=during-navigation-fetch-1">
+<meta name="variant" content="?subtest=during-navigation-fetch-2">
 <title>Service Worker: Skip waiting</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
 <script src="resources/test-helpers.sub.js"></script>
 <script>
 'use strict';
 
-promise_test(function(t) {
-    var scope = 'resources/blank.html?skip-waiting';
-    var url1 = 'resources/empty.js';
-    var url2 = 'resources/empty-worker.js';
-    var url3 = 'resources/skip-waiting-worker.js';
-    var sw_registration, activated_worker, waiting_worker;
-    return service_worker_unregister_and_register(t, url1, scope)
-      .then(function(registration) {
-          t.add_cleanup(function() {
-              return service_worker_unregister(t, scope);
-            });
+function run_test(url1, has_ongoing_navigation, description) {
+  promise_test(async function(t) {
+    const scope = 'resources/block-response.py?key=' + token();
 
-          sw_registration = registration;
-          return wait_for_state(t, registration.installing, 'activated');
-        })
-      .then(function() {
-          return with_iframe(scope);
-        })
-      .then(function(f) {
-          t.add_cleanup(function() {
-              f.remove();
-            });
-          return navigator.serviceWorker.register(url2, {scope: scope});
-        })
-      .then(function(registration) {
-          return wait_for_state(t, registration.installing, 'installed');
-        })
-      .then(function() {
-          activated_worker = sw_registration.active;
-          waiting_worker = sw_registration.waiting;
-          assert_equals(activated_worker.scriptURL, normalizeURL(url1),
-                        'Worker with url1 should be activated');
-          assert_equals(waiting_worker.scriptURL, normalizeURL(url2),
-                        'Worker with url2 should be waiting');
-          return navigator.serviceWorker.register(url3, {scope: scope});
-        })
-      .then(function(registration) {
-          return wait_for_state(t, registration.installing, 'activated');
-        })
-      .then(function() {
-          assert_equals(activated_worker.state, 'redundant',
-                        'Worker with url1 should be redundant');
-          assert_equals(waiting_worker.state, 'redundant',
-                        'Worker with url2 should be redundant');
-          assert_equals(sw_registration.active.scriptURL, normalizeURL(url3),
-                        'Worker with url3 should be activated');
-        });
-  }, 'Test skipWaiting with both active and waiting workers');
+    const url2 = 'resources/empty-worker.js';
+    const url3 = 'resources/skip-waiting-and-record-fetch-worker.js';
 
+    // Register `worker1` with `url1`, which should be activated.
+    const registration1 = await service_worker_unregister_and_register(
+        t, url1, scope);
+
+    t.add_cleanup(function() {
+        return service_worker_unregister(t, scope);
+      });
+
+    await wait_for_state(t, registration1.installing, 'activated');
+    const worker1 = registration1.active;
+    assert_equals(worker1.scriptURL, normalizeURL(url1),
+                  'Worker with url1 should be activated');
+
+    // Add `frame1` controlled by `worker1`.
+    const frame1Promise = with_iframe(scope);
+    // A POST request to `scope` unblocks the navigation fetch to `scope` and
+    // triggres the navigation commit.
+    await fetch(scope, {method: 'POST'});
+    const frame1 = await frame1Promise;
+    t.add_cleanup(function() {
+      frame1.remove();
+    });
+    assert_equals(
+        frame1.contentWindow.navigator.serviceWorker.controller.scriptURL,
+        normalizeURL(url1),
+        'Worker1 should be the controller of frame1 (before worker2)');
+
+    // Add `frame2` (if `has_ongoing_navigation`). The navigation fetch to
+    // `scope` is intercepted by `worker1`, falls back to the network (either
+    // due to no fetch handlers or the fetch handler makes it fall back), and is
+    // blocked by server side until the POST request below.
+    // Because the fetch event to `worker1` is already finished when the request
+    // is blocked by server, the navigation fetch request doesn't block
+    // activating `worker3` via `skipWaiting()`.
+    let frame2Promise;
+    if (has_ongoing_navigation) {
+      frame2Promise = with_iframe(scope);
+    }
+
+    // Register `worker2` with `url2`, which should be waiting.
+    const registration2 =
+        await navigator.serviceWorker.register(url2, {scope: scope});
+    await wait_for_state(t, registration2.installing, 'installed');
+    const worker2 = registration2.waiting;
+    assert_equals(
+        registration1.active.scriptURL, normalizeURL(url1),
+        'Worker with url1 should be still active without skipWaiting');
+    assert_equals(worker2.scriptURL, normalizeURL(url2),
+                  'Worker with url2 should be waiting');
+    assert_equals(
+        frame1.contentWindow.navigator.serviceWorker.controller.scriptURL,
+        normalizeURL(url1),
+        'Worker1 should be the controller of frame1 (before worker3)');
+
+    // Register `worker3` with `url3` calling `skipWaiting()`, which should be
+    // activated.
+    const registration3 =
+        await navigator.serviceWorker.register(url3, {scope: scope});
+    await wait_for_state(t, registration3.installing, 'activated');
+    const worker3 = registration3.active;
+    assert_equals(worker1.state, 'redundant',
+                  'Worker with url1 should be redundant');
+    assert_equals(worker2.state, 'redundant',
+                  'Worker with url2 should be redundant');
+    assert_equals(worker3.scriptURL, normalizeURL(url3),
+                  'Worker with url3 should be activated');
+    assert_equals(
+        frame1.contentWindow.navigator.serviceWorker.controller.scriptURL,
+        normalizeURL(url3),
+        'Worker3 should be the controller of frame1 (after worker3)');
+
+    if (has_ongoing_navigation) {
+      // A POST request to `scope` unblocks the navigation fetch to `scope` and
+      // triggres the navigation commit.
+      fetch(scope, {method: 'POST'});
+      const frame2 = await frame2Promise;
+      t.add_cleanup(function() {
+        frame2.remove();
+      });
+
+      // Check that `worker3` doesn't intercept the navigation fetch request of
+      // `frame2` (instead it should have been intercepted by `worker1`).
+      const messageChannel = new MessageChannel();
+      const message = await new Promise(resolve => {
+          const port = messageChannel.port1;
+          port.onmessage = resolve;
+          worker3.postMessage({port: messageChannel.port2},
+                              [messageChannel.port2]);
+      });
+      assert_equals(message.data.requests.length, 0);
+
+      // Although the navigation fetch request is intercepted by `worker1`,
+      // the controller should be `worker3` as it should reflect the
+      // `skipWaiting()` in the middle of the navigation fetch.
+      assert_equals(
+          frame2.contentWindow.navigator.serviceWorker.controller.scriptURL,
+          normalizeURL(url3),
+          'Worker3 should be the controller of frame2 (after worker3)');
+    }
+  }, description);
+}
+
+const subtest = new URL(location.href).searchParams.get('subtest');
+
+if (subtest === 'basic') {
+  run_test(
+      'resources/empty.js',
+     /*has_ongoing_navigation=*/false,
+      'Test skipWaiting with both active and waiting workers');
+}
+
+if (subtest === 'during-navigation-fetch-1') {
+  run_test(
+      'resources/empty.js',
+     /*has_ongoing_navigation=*/true,
+      'Test skipWaiting during navigation fetch with different fetch event existence');
+}
+
+if (subtest === 'during-navigation-fetch-2') {
+  run_test(
+      'resources/fetch-event-network-fallback-worker.js',
+     /*has_ongoing_navigation=*/true,
+      'Test skipWaiting during navigation fetch');
+}
 </script>

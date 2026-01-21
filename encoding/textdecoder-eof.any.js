@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 test(() => {
   // Truncated sequences
   assert_equals(new TextDecoder().decode(new Uint8Array([0xF0])), "\uFFFD");

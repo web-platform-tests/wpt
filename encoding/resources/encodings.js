@@ -1,5 +1,5 @@
 // Straight from https://encoding.spec.whatwg.org/encodings.json
-const encodings_table =
+globalThis.encodings_table =
 [
   {
     "encodings": [

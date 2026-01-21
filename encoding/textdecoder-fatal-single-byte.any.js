@@ -1,6 +1,6 @@
 // META: timeout=long
 // META: title=Encoding API: Fatal flag for single byte encodings
-// META: timeout=long
+// META: global=window,dedicatedworker,shadowrealm
 // META: variant=?1-1000
 // META: variant=?1001-2000
 // META: variant=?2001-3000

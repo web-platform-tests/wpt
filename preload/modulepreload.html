@@ -338,7 +338,7 @@ promise_test(t => {
     return attachAndWaitForLoad(moduleScript);
 }, 'link rel=modulepreload and non-module script');
 
-// The following tests apply to all supported module types.
+// The following tests apply to all supported preload destinations.
 const types = [
     {"destination": "script", "file_extension" : "js",   "import_attribute_type" : null},
     {"destination": "style",  "file_extension" : "css",  "import_attribute_type" : "css"},

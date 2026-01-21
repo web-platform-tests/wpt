@@ -7,3 +7,6 @@ features:
   - outline-width-*
   - outline-style-*
   - outline-color-*
+- name: cursor
+  files:
+  - "cursor-*"

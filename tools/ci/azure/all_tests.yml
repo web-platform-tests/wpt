@@ -1,0 +1,75 @@
+parameters:
+- name: name
+  default: ''
+- name: human_name
+  default: ''
+- name: wptrunner_name
+  default: ''
+- name: channel
+  default: ''
+- name: human_channel
+  default: ''
+- name: vmImage
+  default: ''
+- name: epoch
+  default: 'daily'
+
+variables:
+- name: used_human_name
+  ${{ if parameters.human_name }}:
+    value: ${{ parameters.human_name }}
+  ${{ else }}:
+    value: ${{ parameters.name }}
+- name: used_wptrunner_name
+  ${{ if parameters.wptrunner_name }}:
+    value: ${{ parameters.wptrunner_name }}
+  ${{ else }}:
+    value: ${{ parameters.name }}
+- name: used_human_channel
+  ${{ if parameters.human_channel }}:
+    value: ${{ parameters.human_channel }}
+  ${{ else }}:
+    value: ${{ parameters.channel }}
+
+job: results_${{ parameters.name }}_${{ parameters.channel }}
+  displayName: 'all tests: ${{ variables.used_human_name }} ${{ variables.used_human_channel }}'
+  condition: |
+    or(eq(variables['Build.SourceBranch'], 'refs/heads/epochs/${{ parameters.epoch }}'),
+       eq(variables['Build.SourceBranch'], 'refs/heads/triggers/${{ parameters.name }}_${{ parameters.channel }}'),
+       and(eq(variables['Build.Reason'], 'Manual'), variables['run_all_${{ parameters.name }}_${{ parameters.channel }}']))
+  strategy:
+    parallel: 8 # chosen to make runtime ~2h
+  timeoutInMinutes: 180
+  pool:
+    vmImage: ${{ parameters.vmImage }}
+  steps:
+  ${{ if eq(variables['Agent.OS'], 'Darwin') }}:
+    - bash: |
+        echo "##vso[task.setvariable variable=SYSTEM_VERSION_COMPAT]0"
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.10'
+  - template: tools/ci/azure/system_info.yml
+  - template: tools/ci/azure/checkout.yml
+  - template: tools/ci/azure/pip_install.yml
+    parameters:
+      packages: virtualenv
+  - template: tools/ci/azure/install_certs.yml
+  - template: tools/ci/azure/install_${{ parameters.name }}.yml
+    parameters:
+      channel: ${{ parameters.channel }}
+  - template: tools/ci/azure/update_hosts.yml
+  - template: tools/ci/azure/update_manifest.yml
+  - script: python3 ./wpt run --yes --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --install-fonts --this-chunk $(System.JobPositionInPhase) --total-chunks $(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-mach - --log-mach-level info --channel ${{ parameters.channel }} ${{ variables.used_wptrunner_name }}
+    displayName: 'Run tests (${{ variables.used_human_name }} ${{ variables.used_human_channel }})'
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish results'
+    inputs:
+      artifactName: '${{ parameters.name }}-${{ parameters.channel }}-results'
+  - template: tools/ci/azure/publish_logs.yml
+  - template: tools/ci/azure/sysdiagnose.yml
+
+template: tools/ci/azure/fyi_hook.yml
+  parameters:
+    dependsOn: results_${{ parameters.name }}_${{ parameters.channel }}
+    artifactName: ${{ parameters.name }}-${{ parameters.channel }}-results

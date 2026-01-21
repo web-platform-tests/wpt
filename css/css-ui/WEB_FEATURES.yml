@@ -29,9 +29,17 @@ features:
 - name: cross-fade
   files:
   - cursor-image-016-manual.html
+- name: custom-ellipses
+  files:
+  - text-overflow-string-*
 - name: unset-value
   files:
   - native-appearance-disabled-for-value-unset.html
 - name: text-overflow
   files:
   - text-overflow-*
+- name: cursor
+  files:
+  - canvas-cursor-*
+  - cursor-*
+  - select-cursor-*

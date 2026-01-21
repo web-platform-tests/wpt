@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<form>
+  <input type="image" name="a" value="value">
+  <input type="image" name="b" value="value">
+</form>
+
+<script>
+"use strict";
+if (
+    window.location.search.startsWith("?a.x") ||
+    window.location.search.startsWith("?b.x")
+) {
+  // The action pointed to ourself, so the form submitted something
+  window.parent.success(window.location.href);
+} else {
+  const input = document.querySelector("input[name=b]");
+  input.click();
+}
+</script>

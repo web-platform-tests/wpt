@@ -21,6 +21,9 @@ infrastructure which makes the project possible.
    ../tools/third_party/pywebsocket3/README
 ```
 
+### Project Management Guides
+* [Updating Python Version and Dependencies](admin/python-updates.html)
+
 ### Indices and tables
 
 ```eval_rst

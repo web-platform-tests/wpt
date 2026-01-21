@@ -1,0 +1,45 @@
+diff --git a/tools/third_party/pywebsocket3/request_handler.py b/tools/third_party/pywebsocket3/request_handler.py
+index 9d89b47c69..e02e2ccf28 100644
+--- a/tools/third_party/pywebsocket3/request_handler.py
++++ b/tools/third_party/pywebsocket3/request_handler.py
+@@ -219,6 +219,7 @@ class WebSocketRequestHandler(CGIHTTPServer.CGIHTTPRequestHandler):
+                 self._logger.info('Request basic authentication')
+                 return False
+ 
++        whole_path = self.path
+         host, port, resource = http_header_util.parse_uri(self.path)
+         if resource is None:
+             self._logger.info('Invalid URI: %r', self.path)
+@@ -247,7 +248,7 @@ class WebSocketRequestHandler(CGIHTTPServer.CGIHTTPRequestHandler):
+             # Fallback to default http handler for request paths for which
+             # we don't have request handlers.
+             if not self._options.dispatcher.get_handler_suite(self.path):
+-                self._logger.info('No handler for resource: %r', self.path)
++                self._logger.info('No handler for resource: %r', whole_path)
+                 self._logger.info('Fallback to CGIHTTPRequestHandler')
+                 return True
+         except dispatch.DispatchException as e:
+diff --git a/tools/third_party/pywebsocket3/websocket_server.py b/tools/third_party/pywebsocket3/websocket_server.py
+index e7485ecbef..dab2f079ff 100644
+--- a/tools/third_party/pywebsocket3/websocket_server.py
++++ b/tools/third_party/pywebsocket3/websocket_server.py
+@@ -157,12 +157,13 @@ class WebSocketServer(socketserver.ThreadingMixIn, BaseHTTPServer.HTTPServer):
+                         client_cert_ = ssl.CERT_REQUIRED
+                 else:
+                     client_cert_ = ssl.CERT_NONE
+-                socket_ = ssl.wrap_socket(
+-                    socket_,
+-                    keyfile=server_options.private_key,
+-                    certfile=server_options.certificate,
+-                    ca_certs=server_options.tls_client_ca,
+-                    cert_reqs=client_cert_)
++                ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
++                ssl_context.verify_mode = client_cert_
++                ssl_context.load_cert_chain(keyfile=server_options.private_key,
++                                            certfile=server_options.certificate)
++                if client_cert_ != ssl.CERT_NONE:
++                    ssl_context.load_verify_locations(cafile=server_options.tls_client_ca)
++                socket_ = ssl_context.wrap_socket(socket_, server_side=True)
+             self._sockets.append((socket_, addrinfo))
+ 
+     def server_bind(self):

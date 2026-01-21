@@ -16,3 +16,10 @@ features:
 - name: selection
   files:
   - css3-modsel-159.xml
+- name: namespace
+  files:
+  - "css3-modsel-57*"
+  - "css3-modsel-9[1-9]*"
+  - "css3-modsel-1[0-3][0-9]*"
+  - "css3-modsel-14[0-3]*"
+  - "css3-modsel-172b*"

@@ -1047,9 +1047,10 @@ def start_http_server(logger, host, port, paths, routes, bind_address, config, *
                                      rewrites=rewrites,
                                      bind_address=bind_address,
                                      config=config,
-                                     use_ssl=False,
-                                     key_file=None,
-                                     certificate=None,
+                                     use_ssl=True,
+                                     key_file=config.ssl_config["key_path"],
+                                     certificate=config.ssl_config["cert_path"],
+                                     encrypt_after_connect=True,
                                      latency=kwargs.get("latency"))
     except Exception as error:
         logger.critical(f"start_http_server: Caught exception from wptserve.WebTestHttpd: {error}")

@@ -16,9 +16,12 @@ const invalidContentTypes = [
   "application/javascript",
   "application/octet-stream",
   "text/wasm",
+  "application/\"wasm\"",
+  "\"application/wasm\"",
   "application/wasm;",
   "application/wasm;x",
   "application/wasm;charset=UTF-8",
+  "\fapplication/wasm\f",
 ];
 
 for (const contenttype of invalidContentTypes) {
@@ -37,6 +40,8 @@ const validContentTypes = [
   "application/wasm",
   "APPLICATION/wasm",
   "APPLICATION/WASM",
+  "APPLICATION/WASM ",
+  "\tAPPLICATION/WASM\t",
 ];
 
 for (const contenttype of validContentTypes) {

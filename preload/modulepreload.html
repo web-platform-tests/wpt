@@ -355,7 +355,7 @@ for (const { destination, file_extension, import_attribute_type } of types) {
             verifyNumberOfDownloads(`resources/dummy.${file_extension}?unique`, 1);
 
             // Verify that importing doesn't fetch the module again. Note that there
-            // is no valid Import Attribute for script imports, so the `with` statement
+            // is no valid import attribute for script imports, so the `with` statement
             // must be absent.
             if (import_attribute_type) {
                 return import(`./resources/dummy.${file_extension}?unique`, { with: { type: import_attribute_type } });

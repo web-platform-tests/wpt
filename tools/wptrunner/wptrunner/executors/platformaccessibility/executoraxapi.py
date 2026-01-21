@@ -14,6 +14,7 @@ from Cocoa import (
 
 from mozlog.structuredlog import StructuredLogger
 
+
 def find_browser(name: str) -> Optional[Any]:
     """Find the AXUIElement representing the browser.
 
@@ -127,7 +128,9 @@ class AXAPIExecutorImpl:
                 f"Couldn't find browser {self.product_name} in accessibility API AX API. Accessibility API queries will not succeeded."
             )
 
-    def test_accessibility_api(self, dom_id: str, test: List[List[str]], api: str, url: str) -> List[str]:
+    def test_accessibility_api(
+        self, dom_id: str, test: List[List[str]], api: str, url: str
+    ) -> List[str]:
         """Execute a test of the accessibility API.
 
         :param dom_id: The dom id of the node to test.

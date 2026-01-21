@@ -4,10 +4,12 @@ import time
 from typing import Optional, List, Dict, Any
 
 import gi
+
 gi.require_version("Atspi", "2.0")
 from gi.repository import Atspi
 
 from mozlog.structuredlog import StructuredLogger
+
 
 def poll_for_tab(root: Atspi.Accessible, product: str, url: str) -> Atspi.Accessible:
     """Poll until the tab with the test url is loaded and available in the
@@ -28,7 +30,9 @@ def poll_for_tab(root: Atspi.Accessible, product: str, url: str) -> Atspi.Access
     return tab
 
 
-def find_tab(root: Atspi.Accessible, product: str, url: str) -> Optional[Atspi.Accessible]:
+def find_tab(
+    root: Atspi.Accessible, product: str, url: str
+) -> Optional[Atspi.Accessible]:
     """Find the tab with the test url.
 
     :param root: The node in the accessibility API representing the browser process.
@@ -118,6 +122,7 @@ def find_node(root: Atspi.Accessible, dom_id: str) -> Optional[TestNode]:
 
     return None
 
+
 class AtspiExecutorImpl:
     def setup(self, product_name: str, logger: StructuredLogger) -> None:
         """Setup for accessibility API testing.
@@ -152,7 +157,9 @@ class AtspiExecutorImpl:
             self.test_url = url
             self.document = poll_for_tab(self.root, self.product_name, url)
 
-    def test_accessibility_api(self, dom_id: str, test: List[List[str]], api: str, url: str) -> List[str]:
+    def test_accessibility_api(
+        self, dom_id: str, test: List[List[str]], api: str, url: str
+    ) -> List[str]:
         """Execute a test of the accessibility API.
 
         :param dom_id: The dom id of the node to test.
@@ -182,7 +189,9 @@ class AtspiExecutorImpl:
 class TestNode:
     """Wrapper around an Atspi Node for testing purposes"""
 
-    def __init__(self, document: Atspi.Accessible, dom_id: str, node: Atspi.Accessible) -> None:
+    def __init__(
+        self, document: Atspi.Accessible, dom_id: str, node: Atspi.Accessible
+    ) -> None:
         self.document = document
         self.dom_id = dom_id
         self.node = node

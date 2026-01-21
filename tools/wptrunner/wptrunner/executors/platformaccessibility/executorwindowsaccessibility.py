@@ -140,7 +140,9 @@ class WindowsAccessibilityExecutorImpl:
         self.product_name = product_name
         self.logger = logger
 
-    def test_accessibility_api(self, dom_id: str, test: List[List[str]], api: str, url: str) -> List[str]:
+    def test_accessibility_api(
+        self, dom_id: str, test: List[List[str]], api: str, url: str
+    ) -> List[str]:
         """Execute a test of the accessibility API.
 
         :param dom_id: The dom id of the node to test.

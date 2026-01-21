@@ -11,8 +11,11 @@ from .protocol import ProtocolPart
 
 class PlatformAccessibilityExecutorImpl(Protocol):
     """Protocol defining the interface for platform accessibility executors."""
+
     def setup(self, product_name: str, logger: StructuredLogger) -> None: ...
-    def test_accessibility_api(self, dom_id: str, test: List[List[str]], api: str, url: str) -> List[str]: ...
+    def test_accessibility_api(
+        self, dom_id: str, test: List[List[str]], api: str, url: str
+    ) -> List[str]: ...
 
 
 def valid_api_for_platform(api: str) -> bool:
@@ -24,8 +27,10 @@ def valid_api_for_platform(api: str) -> bool:
         return True
     return False
 
+
 class PlatformAccessibilityProtocolPart(ProtocolPart):
     """Protocol part for platform accessibility introspection"""
+
     name = "platform_accessibility"
 
     def setup(self) -> None:
@@ -38,7 +43,9 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
             try:
                 from .platformaccessibility.executoratspi import AtspiExecutorImpl
             except ModuleNotFoundError:
-                self.logger.warning("Accessibility API testing was not enabled, accessibility API tests will fail.")
+                self.logger.warning(
+                    "Accessibility API testing was not enabled, accessibility API tests will fail."
+                )
                 return
 
             self.impl = AtspiExecutorImpl()
@@ -48,7 +55,9 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
             try:
                 from .platformaccessibility.executoraxapi import AXAPIExecutorImpl
             except ModuleNotFoundError:
-                self.logger.warning("Accessibility API testing was not enabled, accessibility API tests will fail.")
+                self.logger.warning(
+                    "Accessibility API testing was not enabled, accessibility API tests will fail."
+                )
                 return
 
             self.impl = AXAPIExecutorImpl()
@@ -56,15 +65,21 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
 
         if platform == "win32":
             try:
-                from .platformaccessibility.executorwindowsaccessibility import WindowsAccessibilityExecutorImpl
+                from .platformaccessibility.executorwindowsaccessibility import (
+                    WindowsAccessibilityExecutorImpl,
+                )
             except ModuleNotFoundError:
-                self.logger.warning("Accessibility API testing was not enabled, accessibility API tests will fail.")
+                self.logger.warning(
+                    "Accessibility API testing was not enabled, accessibility API tests will fail."
+                )
                 return
 
             self.impl = WindowsAccessibilityExecutorImpl()
             self.impl.setup(self.product_name, self.logger)
 
-    def test_accessibility_api(self, dom_id: str, test: List[List[str]], api: str, url: str) -> Union[str, List[str]]:
+    def test_accessibility_api(
+        self, dom_id: str, test: List[List[str]], api: str, url: str
+    ) -> Union[str, List[str]]:
         # Tests will pass if they are not applicable for a platform,
         # for example, Windows API tests passed to Linux. Ideally, this will
         # be fixed with a "not applicable".

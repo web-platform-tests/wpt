@@ -78,16 +78,13 @@
     notAnimatableExpectations: function(from, to, underlying) {
       return expectFlip(from, to, -Infinity);
     },
-    interpolate: function(property, from, to, at, target, behavior) {
+    interpolate: function(property, from, to, at, target) {
       // Force a style recalc on target to set the 'from' value.
       getComputedStyle(target).getPropertyValue(property);
       target.style.transitionDuration = '100s';
       target.style.transitionDelay = '-50s';
       target.style.transitionTimingFunction = createEasing(at);
       target.style.transitionProperty = property;
-      if (behavior) {
-        target.style.transitionBehavior = behavior;
-      }
       target.style.setProperty(property, isNeutralKeyframe(to) ? '' : to);
     },
   };
@@ -107,16 +104,13 @@
     notAnimatableExpectations: function(from, to, underlying) {
       return expectFlip(from, to, -Infinity);
     },
-    interpolate: function(property, from, to, at, target, behavior) {
+    interpolate: function(property, from, to, at, target) {
       // Force a style recalc on target to set the 'from' value.
       getComputedStyle(target).getPropertyValue(property);
       target.style.transitionDuration = '100s';
       target.style.transitionDelay = '-50s';
       target.style.transitionTimingFunction = createEasing(at);
       target.style.transitionProperty = 'all';
-      if (behavior) {
-        target.style.transitionBehavior = behavior;
-      }
       target.style.setProperty(property, isNeutralKeyframe(to) ? '' : to);
     },
   };
@@ -135,7 +129,7 @@
     notAnimatableExpectations: function(from, to, underlying) {
       return expectFlip(from, to, -Infinity);
     },
-    interpolate: function(property, from, to, at, target, behavior) {
+    interpolate: function(property, from, to, at, target) {
       // Force a style recalc on target to set the 'from' value.
       getComputedStyle(target).getPropertyValue(property);
       target.style.transitionDuration = '100s';
@@ -162,7 +156,7 @@
     notAnimatableExpectations: function(from, to, underlying) {
       return expectFlip(from, to, -Infinity);
     },
-    interpolate: function(property, from, to, at, target, behavior) {
+    interpolate: function(property, from, to, at, target) {
       // Force a style recalc on target to set the 'from' value.
       getComputedStyle(target).getPropertyValue(property);
       target.style.transitionDuration = '100s';
@@ -333,7 +327,6 @@
     var to = interpolationTest.options.to;
     let underlying = interpolationTest.options.underlying;
     var comparisonFunction = interpolationTest.options.comparisonFunction;
-    var behavior = interpolationTest.options.behavior;
 
     if ((interpolationTest.options.method && interpolationTest.options.method != interpolationMethod.name)
       || !interpolationMethod.supportsProperty(property)
@@ -347,13 +340,13 @@
     createElement(testContainer);
     var expectations = interpolationTest.expectations;
     var applyUnderlying = false;
-    if (expectations === expectNoInterpolation) {
+    if (interpolationTest.options[interpolationMethod.name]) {
+      expectations = interpolationTest.options[interpolationMethod.name];
+    } else if (expectations === expectNoInterpolation) {
       expectations = interpolationMethod.nonInterpolationExpectations(from, to);
     } else if (expectations === expectNotAnimatable) {
       expectations = interpolationMethod.notAnimatableExpectations(from, to, interpolationTest.options.underlying);
       applyUnderlying = true;
-    } else if (interpolationTest.options[interpolationMethod.name]) {
-      expectations = interpolationTest.options[interpolationMethod.name];
     }
 
     // Setup a standard equality function if an override is not provided.
@@ -377,7 +370,7 @@
       }
       interpolationMethod.setup(property, from, target);
       target.interpolate = function() {
-        interpolationMethod.interpolate(property, from, to, expectation.at, target, behavior);
+        interpolationMethod.interpolate(property, from, to, expectation.at, target);
       };
       target.measure = function() {
         for (var [expectedProp, expectedStr] of Object.entries(expectedProperties)) {

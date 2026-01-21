@@ -2,38 +2,11 @@
 <meta charset=utf-8>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<link rel="modulepreload" href="resources/module1.js?empty-string" as="" data-as="">
-<link rel="modulepreload" href="resources/module1.js?audio" as="audio" data-as="audio">
-<link rel="modulepreload" href="resources/module1.js?audioworklet" as="audioworklet" data-as="audioworklet">
-<link rel="modulepreload" href="resources/module1.js?document" as="document" data-as="document">
-<link rel="modulepreload" href="resources/module1.js?embed" as="embed" data-as="embed">
-<link rel="modulepreload" href="resources/module1.js?font" as="font" data-as="font">
-<link rel="modulepreload" href="resources/module1.js?frame" as="frame" data-as="frame">
-<link rel="modulepreload" href="resources/module1.js?iframe" as="iframe" data-as="iframe">
-<link rel="modulepreload" href="resources/module1.js?image" as="image" data-as="image">
-<link rel="modulepreload" href="resources/module1.js?manifest" as="manifest" data-as="manifest">
-<link rel="modulepreload" href="resources/module1.js?object" as="object" data-as="object">
-<link rel="modulepreload" href="resources/module1.js?paintworklet" as="paintworklet" data-as="paintworklet">
-<link rel="modulepreload" href="resources/module1.js?report" as="report" data-as="report">
-<link rel="modulepreload" href="resources/module1.js?script" as="script" data-as="script">
-<link rel="modulepreload" href="resources/module1.js?serviceworker" as="serviceworker" data-as="serviceworker">
-<link rel="modulepreload" href="resources/module1.js?sharedworker" as="sharedworker" data-as="sharedworker">
-<link rel="modulepreload" href="resources/module1.js?track" as="track" data-as="track">
-<link rel="modulepreload" href="resources/module1.js?video" as="video" data-as="video">
-<link rel="modulepreload" href="resources/module1.js?webidentity" as="webidentity" data-as="webidentity">
-<link rel="modulepreload" href="resources/module1.js?worker" as="worker" data-as="worker">
-<link rel="modulepreload" href="resources/module1.js?xslt" as="xslt" data-as="xslt">
-<link rel="modulepreload" href="resources/module1.js?fetch" as="fetch" data-as="fetch">
-<link rel="modulepreload" href="resources/module1.js?invalid-dest" as="invalid-dest" data-as="invalid-dest">
-<link rel="modulepreload" href="resources/module1.js?iMaGe" as="iMaGe" data-as="iMaGe">
-<link rel="modulepreload" href="resources/module1.js?sCrIpT" as="sCrIpT" data-as="sCrIpT">
-<link rel="modulepreload" href="resources/dummy.css" as="style" data-as="style">
-<link rel="modulepreload" href="resources/dummy.json" as="json" data-as="json">
-<body>
 <script>
-  // compared to modulepreload.html, this tests behavior when elements are
-  // initially on an HTML page instead of being added by JS
+  setup({ explicit_done: true });
 
+  // Compared to modulepreload.html, this tests behavior when elements are
+  // initially on an HTML page instead of being added by Javascript.
   const scriptLikes = [
     'audioworklet',
     'paintworklet',
@@ -44,26 +17,85 @@
   ];
 
   const goodAsValues = ['', 'invalid-dest', 'sCrIpT', 'style', 'json',  ...scriptLikes];
+  let testCount = 0;
+  let all_links = document.querySelectorAll('link');
 
-  for (const link of document.querySelectorAll('link')) {
-    const asValue = link.dataset.as; // don't depend on "as" attribute reflection
+  // `all_links` may change once the DOM finishes loading.
+  document.addEventListener('DOMContentLoaded', function() { 
+    all_links = document.querySelectorAll('link');
+  }, false);
+
+  function checkDone() {
+    if (testCount === (all_links.length)) {
+      done();
+    }
+  }
+
+  function handleLoad(target) {
+    const asValue = target.dataset.as; // Don't depend on "as" attribute reflection.
     const good = goodAsValues.includes(asValue);
+    const preload_url = new URL(target.href, location.href);
 
-    // Promise tests are queued sequentially, so create the promise here to
-    // ensure we don't miss the error event
-    const promise = new Promise((resolve, reject) => {
-      link.onload = good ? resolve : reject;
-      link.onerror = good ? reject : resolve;
-    });
+    test(function() {
+      assert_true(good);
+    }, `Modulepreload expected load with as="${asValue}"`);
 
-    // Filter by decodedBodySize, as transferSize will be 0 for cached resources.
-    promise_test(() => promise.then(() => {
+    test(function() {
       const downloads = performance
-        .getEntriesByName(new URL(link.href, location.href))
-        .filter(entry => entry.decodedBodySize > 0)
-        .length;
-      assert_equals(downloads, good ? 1 : 0);
+              .getEntriesByName(preload_url)
+              .length;
+            assert_equals(downloads, good ? 1 : 0);
+    }, `Modulepreload loaded with as="${asValue}"`);
 
-    }), `Modulepreload with as="${asValue}"`);
+    ++testCount;
+    checkDone();
+  }
+
+  function handleError(target) {
+    const asValue = target.dataset.as; // Don't depend on "as" attribute reflection.
+    const good = goodAsValues.includes(asValue);
+    const preload_url = new URL(target.href, location.href);
+
+    test(function() {
+      assert_false(good);
+    }, `Modulepreload expected error with as="${asValue}"`);
+
+    test(function() {
+      const downloads = performance
+              .getEntriesByName(preload_url)
+              .length;
+            assert_equals(downloads, good ? 1 : 0);
+    }, `Modulepreload expected no file loaded with error when as="${asValue}"`);
+
+    ++testCount;
+    checkDone();
   }
 </script>
+<link rel="modulepreload" href="resources/module1.js?empty-string" as="" data-as="" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?audio" as="audio" data-as="audio" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?audioworklet" as="audioworklet" data-as="audioworklet" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?document" as="document" data-as="document" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?embed" as="embed" data-as="embed" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?font" as="font" data-as="font" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?frame" as="frame" data-as="frame" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?iframe" as="iframe" data-as="iframe" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?image" as="image" data-as="image" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?manifest" as="manifest" data-as="manifest" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?object" as="object" data-as="object" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?paintworklet" as="paintworklet" data-as="paintworklet" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?report" as="report" data-as="report" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?script" as="script" data-as="script" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?serviceworker" as="serviceworker" data-as="serviceworker" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?sharedworker" as="sharedworker" data-as="sharedworker" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?track" as="track" data-as="track" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?video" as="video" data-as="video" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?webidentity" as="webidentity" data-as="webidentity" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?worker" as="worker" data-as="worker" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?xslt" as="xslt" data-as="xslt" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?fetch" as="fetch" data-as="fetch" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?invalid-dest" as="invalid-dest" data-as="invalid-dest" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?iMaGe" as="iMaGe" data-as="iMaGe" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?sCrIpT" as="sCrIpT" data-as="sCrIpT" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/dummy.css?style" as="style" data-as="style" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/dummy.json?json" as="json" data-as="json" onload="handleLoad(this)" onerror="handleError(this)">
+<body>

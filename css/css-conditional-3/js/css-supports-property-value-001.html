@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CSS.supports property value syntax</title>
+<link rel="author" title="Adobe" href="http://html.adobe.com">
+<link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
+<link rel="help" href="http://www.w3.org/TR/css3-conditional/#the-css-interface">
+<meta name="assert" content="CSS.supports accepts a property value pair.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='css-supports-utils.js'></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+
+var tests = [
+
+["margin", "0", true],
+["margin", "1px 1px 1px 1px", true],
+["margin", "0 !important", true],
+["margin", "1", false],
+["foo", "bar", false]
+
+]
+function buildTestCases(items) {
+    return items.map(function(item) {
+        return [item[0] + ':' + item[1], CSS.supports(item[0], item[1]), item[2]];
+    });
+}
+
+generate_tests(assert_equals, buildTestCases(tests));
+
+</script>
+</body>
+</html>

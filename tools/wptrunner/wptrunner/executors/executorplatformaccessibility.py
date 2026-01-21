@@ -1,12 +1,21 @@
-# mypy: allow-untyped-defs
-
-from .base import PlatformAccessibilityNotEnabled
-
-from .protocol import ProtocolPart
+from __future__ import annotations
 
 from sys import platform
+from typing import List, Optional, Protocol, Union
 
-def valid_api_for_platform(api):
+from mozlog.structuredlog import StructuredLogger
+
+from .base import PlatformAccessibilityNotEnabled
+from .protocol import ProtocolPart
+
+
+class PlatformAccessibilityExecutorImpl(Protocol):
+    """Protocol defining the interface for platform accessibility executors."""
+    def setup(self, product_name: str, logger: StructuredLogger) -> None: ...
+    def test_accessibility_api(self, dom_id: str, test: List[List[str]], api: str, url: str) -> List[str]: ...
+
+
+def valid_api_for_platform(api: str) -> bool:
     if platform == "linux" and api == "Atspi":
         return True
     if platform == "darwin" and api == "AXAPI":
@@ -19,12 +28,12 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
     """Protocol part for platform accessibility introspection"""
     name = "platform_accessibility"
 
-    def setup(self):
-        self.product_name = self.parent.product_name
-        self.impl = None
+    def setup(self) -> None:
+        self.product_name: str = self.parent.product_name
+        self.impl: Optional[PlatformAccessibilityExecutorImpl] = None
         self.__init_platform_executor()
 
-    def __init_platform_executor(self):
+    def __init_platform_executor(self) -> None:
         if platform == "linux":
             try:
                 from .platformaccessibility.executoratspi import AtspiExecutorImpl
@@ -55,7 +64,7 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
             self.impl = WindowsAccessibilityExecutorImpl()
             self.impl.setup(self.product_name, self.logger)
 
-    def test_accessibility_api(self, dom_id, test, api, url):
+    def test_accessibility_api(self, dom_id: str, test: List[List[str]], api: str, url: str) -> Union[str, List[str]]:
         # Tests will pass if they are not applicable for a platform,
         # for example, Windows API tests passed to Linux. Ideally, this will
         # be fixed with a "not applicable".

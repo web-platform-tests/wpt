@@ -45,17 +45,17 @@ function attachAndWaitForTimeout(element, t) {
 promise_test(t => {
     const link = document.createElement('link');
     link.rel = 'modulepreload';
-    link.href = 'resources/dummy.js?unique';
+    link.href = 'resources/dummy-module.js?unique';
     return attachAndWaitForLoad(link).then(() => {
-        verifyNumberOfDownloads('resources/dummy.js?unique', 1);
+        verifyNumberOfDownloads('resources/dummy-module.js?unique', 1);
 
         // Verify that <script> doesn't fetch the module again.
         const script = document.createElement('script');
         script.type = 'module';
-        script.src = 'resources/dummy.js?unique';
+        script.src = 'resources/dummy-module.js?unique';
         return attachAndWaitForLoad(script);
     }).then(() => {
-        verifyNumberOfDownloads('resources/dummy.js?unique', 1);
+        verifyNumberOfDownloads('resources/dummy-module.js?unique', 1, true);
     });
 }, "link rel=modulepreload with script shares a cache with <script> tags");
 
@@ -68,18 +68,18 @@ promise_test(t => {
     const link = document.createElement('link');
     link.rel = 'modulepreload';
     link.crossOrigin = 'anonymous';
-    link.href = 'resources/dummy.js?sameOriginAnonymous';
+    link.href = 'resources/dummy-module.js?sameOriginAnonymous';
     return attachAndWaitForLoad(link).then(() => {
-        verifyNumberOfDownloads('resources/dummy.js?sameOriginAnonymous', 1);
+        verifyNumberOfDownloads('resources/dummy-module.js?sameOriginAnonymous', 1);
 
         // Verify that <script> doesn't fetch the module again.
         const script = document.createElement('script');
         script.type = 'module';
         script.crossOrigin = 'anonymous';
-        script.src = 'resources/dummy.js?sameOriginAnonymous';
+        script.src = 'resources/dummy-module.js?sameOriginAnonymous';
         return attachAndWaitForLoad(script);
     }).then(() => {
-        verifyNumberOfDownloads('resources/dummy.js?sameOriginAnonymous', 1);
+        verifyNumberOfDownloads('resources/dummy-module.js?sameOriginAnonymous', 1, true);
     });
 }, 'same-origin link rel=modulepreload crossorigin=anonymous');
 
@@ -87,18 +87,18 @@ promise_test(t => {
     const link = document.createElement('link');
     link.rel = 'modulepreload';
     link.crossOrigin = 'use-credentials';
-    link.href = 'resources/dummy.js?sameOriginUseCredentials';
+    link.href = 'resources/dummy-module.js?sameOriginUseCredentials';
     return attachAndWaitForLoad(link).then(() => {
-        verifyNumberOfDownloads('resources/dummy.js?sameOriginUseCredentials', 1);
+        verifyNumberOfDownloads('resources/dummy-module.js?sameOriginUseCredentials', 1);
 
         // Verify that <script> doesn't fetch the module again.
         const script = document.createElement('script');
         script.type = 'module';
         script.crossOrigin = 'use-credentials';
-        script.src = 'resources/dummy.js?sameOriginUseCredentials';
+        script.src = 'resources/dummy-module.js?sameOriginUseCredentials';
         return attachAndWaitForLoad(script);
     }).then(() => {
-        verifyNumberOfDownloads('resources/dummy.js?sameOriginUseCredentials', 1);
+        verifyNumberOfDownloads('resources/dummy-module.js?sameOriginUseCredentials', 1, true);
     });
 }, 'same-origin link rel=modulepreload crossorigin=use-credentials');
 
@@ -330,7 +330,7 @@ promise_test(t => {
     const classicScript = document.createElement('script');
     link.rel = 'modulepreload';
     moduleScript.type = 'module';
-    link.href = 'resources/dummy.js?non-module script';
+    link.href = 'resources/dummy-module.js?non-module script';
     classicScript.src = link.href;
     moduleScript.src = link.href;
     document.body.append(link);
@@ -350,20 +350,20 @@ for (const { destination, file_extension, import_attribute_type } of types) {
         const link = document.createElement('link');
         link.rel = 'modulepreload';
         link.as = destination;
-        link.href = `resources/dummy.${file_extension}?unique`;
+        link.href = `resources/dummy.${file_extension}?unique_fetch`;
         return attachAndWaitForLoad(link).then(() => {
-            verifyNumberOfDownloads(`resources/dummy.${file_extension}?unique`, 1);
+            verifyNumberOfDownloads(`resources/dummy.${file_extension}?unique_fetch`, 1, true);
 
             // Verify that importing doesn't fetch the module again. Note that there
             // is no valid import attribute for script imports, so the `with` statement
             // must be absent.
             if (import_attribute_type) {
-                return import(`./resources/dummy.${file_extension}?unique`, { with: { type: import_attribute_type } });
+                return import(`./resources/dummy.${file_extension}?unique_fetch`, { with: { type: import_attribute_type } });
             } else {
-                return import(`./resources/dummy.${file_extension}?unique`);
+                return import(`./resources/dummy.${file_extension}?unique_fetch`);
             }
         }).then(() => {
-            verifyNumberOfDownloads(`resources/dummy.${file_extension}?unique`, 1);
+            verifyNumberOfDownloads(`resources/dummy.${file_extension}?unique_fetch`, 1, true);
         });
     }, `link rel=modulepreload with ${destination} doesn't re-fetch when imported`);
 

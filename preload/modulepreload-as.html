@@ -49,17 +49,18 @@
     const asValue = link.dataset.as; // don't depend on "as" attribute reflection
     const good = goodAsValues.includes(asValue);
 
-    // promise tests are queued sequentially, so create the promise here to
+    // Promise tests are queued sequentially, so create the promise here to
     // ensure we don't miss the error event
     const promise = new Promise((resolve, reject) => {
       link.onload = good ? resolve : reject;
       link.onerror = good ? reject : resolve;
     });
 
+    // Filter by decodedBodySize, as transferSize will be 0 for cached resources.
     promise_test(() => promise.then(() => {
       const downloads = performance
         .getEntriesByName(new URL(link.href, location.href))
-        .filter(entry => entry.transferSize > 0)
+        .filter(entry => entry.decodedBodySize > 0)
         .length;
       assert_equals(downloads, good ? 1 : 0);
 

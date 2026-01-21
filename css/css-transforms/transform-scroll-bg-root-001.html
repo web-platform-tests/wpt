@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset=UTF-8>
+<title>CSS Test (Transforms): Fixed backgrounds on transformed root element</title>
+<link rel="author" title="L. David Baron" href="https://dbaron.org/">
+<link rel="author" title="Google" href="http://www.google.com/">
+<link rel="help" href="http://www.w3.org/TR/css-transforms-1/#transform-rendering">
+<meta name="assert" content="background-attachment scroll backgrounds on the root element should be propagated to the canvas (as usual) and not affected by the root's transform">
+<meta name="flags" content="svg">
+<link rel="match" href="transform-fixed-bg-root-ref.html">
+
+<style>
+
+html {
+  background-image: url(support/transform-triangle-left.svg);
+  background-size: 50px 50px;
+  background-position: 25px 25px;
+  /* a transform that is noticeably different from the identity (and which should have no visible effects) */
+  transform: translate(11px, 3px) scale(0.732) rotate(17deg);
+}
+
+</style>

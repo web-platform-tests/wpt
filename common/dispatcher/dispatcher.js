@@ -78,6 +78,7 @@ const sendItem = async function (uuid, resolver, message) {
       try {
         let response = await fetch(dispatcher_url + `?uuid=${uuid}`, {
           method: 'POST',
+          keepalive: true,
           body: message
         })
         if (await response.text() == "done") {

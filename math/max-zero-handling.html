@@ -1,0 +1,11 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Math.max -0 vs +0</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(() => {
+    assert_equals(Math.max(-0, +0), +0, "Math.max(-0, +0) should return +0");
+    assert_equals(Math.max(+0, -0), +0, "Math.max(+0, -0) should return +0");
+  }, "Math.max should distinguish between -0 and +0 correctly");
+</script>

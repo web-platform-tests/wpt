@@ -15,6 +15,9 @@ features:
   files:
   - c534-bgre-*
   - c534-bgreps-*
+- name: list-style
+  files:
+  - c56*-list*
 - name: font-size
   files:
   - c526-font-sz-*

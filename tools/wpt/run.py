@@ -503,6 +503,8 @@ class ChromeAndEdgeSetup(BrowserSetup):
         if browser_channel in self.experimental_channels:
             # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
             kwargs["webdriver_args"].append("--disable-build-check")
+            # Allow Chrome to download components
+            kwargs["webdriver_args"].append("--whitelisted-ips")
             if kwargs["enable_experimental"] is None:
                 logger.info(
                     "Automatically turning on experimental features")

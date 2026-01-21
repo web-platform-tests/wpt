@@ -172,7 +172,7 @@ class GitTree:
     def rev(self):
         """Current HEAD revision"""
         if vcs.is_git_root(self.root):
-            return self.git("rev-parse", "HEAD").strip()
+            return self.git("rev-parse", "HEAD").strip().decode('utf-8')
         else:
             return None
 

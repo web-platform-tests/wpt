@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>Test that we can print webgl canvases</title>
+<meta name=fuzzy content="maxDifference=5;totalPixels=10">
+<link rel="match" href="offscreencanvas-webgl-ref.html">
+<canvas id='canvas'></canvas>
+<script>
+var documentCanvas = document.getElementById('canvas');
+documentCanvas.width = documentCanvas.height = 100;
+var offscreenContext = documentCanvas.transferControlToOffscreen().getContext(
+  "webgl", {preserveDrawingBuffer: true});
+offscreenContext.clearColor(0, 1, 0, 1);
+offscreenContext.clear(offscreenContext.COLOR_BUFFER_BIT);
+var pixel = new Uint8Array(4);
+
+// For testing that the offscreen canvas has drawn
+var testCanvas = document.createElement("canvas");
+var testContext = testCanvas.getContext("2d");
+
+// Make sure that the canvas has been drawn to before capturing
+function waitForCanvasToDraw() {
+  return new Promise(resolve => {
+    var testPixel = function() {
+      testContext.drawImage(documentCanvas, 0, 0);
+      // Get the pixel in the upper left corner
+      var pixel = testContext.getImageData(0, 0, 1, 1).data;
+      if (pixel[0] === 0 && pixel[1] === 0 && pixel[2] === 0) {
+        // pixel is still empty, wait
+        requestAnimationFrame(testPixel);
+        return;
+      } else {
+        resolve();
+      }
+    }
+    testPixel();
+  });
+}
+
+waitForCanvasToDraw().then(() => {
+  document.addEventListener("TestRendered", () => {
+    document.documentElement.classList.remove("reftest-wait");
+  });
+});
+
+</script>

@@ -884,11 +884,13 @@ if ('document' in self) {
 // context, but not in workers.
 function queueTask(f) {
   if ('document' in self) {
-    var d = document.createElement("details");
-    d.ontoggle = function() {
+    const script = document.createElement('script');
+    script.setAttribute('src', ' ');
+    script.addEventListener('error', () => {
+      script.remove();
       f();
-    };
-    d.setAttribute("open", "");
+    });
+    document.body.appendChild(script);
   } else {
     // We need to fix this to use something that can queue tasks in
     // "DOM manipulation task source" to ensure the order is correct

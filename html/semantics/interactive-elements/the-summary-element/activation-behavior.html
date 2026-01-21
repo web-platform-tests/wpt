@@ -117,7 +117,6 @@ async_test(t => {
   summary.click();
   summary.click();
   summary.click();
-  Promise.resolve().then(() => summary.click());
 
 }, "toggle events should be coalesced even when using the activation behavior of a summary");
 

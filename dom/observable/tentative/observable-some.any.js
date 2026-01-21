@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 promise_test(async () => {
   let inactiveAfterFirstGood = true;
 

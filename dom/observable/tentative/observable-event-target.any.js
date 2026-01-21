@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 test(() => {
   const target = new EventTarget();
   assert_implements(target.when, "The EventTarget interface has an `when` method");

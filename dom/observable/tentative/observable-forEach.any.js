@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 promise_test(async (t) => {
   const source = new Observable((subscriber) => {
     subscriber.next(1);

@@ -1,6 +1,10 @@
 <!doctype html>
+<script src="/resources/prevent-bfcache.js"></script>
 <script>
-onload = function() {opener.postMessage("loaded", "*")};
+onload = async function () {
+  await preventBFCache();
+  opener.postMessage("loaded", "*")
+};
 onunload = function() {
   opener.callback();
 }

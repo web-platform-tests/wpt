@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>Fragmented rowspan columns should not span through parts of a fragmentainer that have no table rows laid out into them. (i.e. the empty space after the last row that fits on a page)</title>
+<link rel="author" title="Psychpsyo" href="mailto:psychpsyo@gmail.com">
+<link rel="help" href="https://issues.chromium.org/issues/40252933">
+<link rel="match" href="../../reference/ref-filled-green-100px-square.xht">
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div style="columns:2; width:100px; gap:0; column-fill:auto; height:100px; background:green; position: relative;">
+  <div style="width:50px; height:40px; position:absolute; background:green;"></div>
+  <div style="width:75px; height:100px; position:absolute; background:green; left:25px; top:0px"></div>
+  <table cellpadding="0" cellspacing="0">
+    <tr>
+      <td style="width:25px; height:20px;"></td>
+      <td style="width:25px; height:20px;"></td>
+    </tr>
+    <tr>
+      <td rowspan="2" style="background:red;"></td>
+      <td style="height:20px;"></td>
+    </tr>
+    <tr>
+      <td style="height:100px; break-inside:avoid;"></td>
+    </tr>
+  </table>
+</div>

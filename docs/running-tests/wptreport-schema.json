@@ -1,0 +1,312 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WptReport",
+  "type": "object",
+  "required": [
+    "results",
+    "run_info",
+    "time_end",
+    "time_start"
+  ],
+  "properties": {
+    "lsan_leaks": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/LsanLeak"
+      }
+    },
+    "mozleak": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {
+        "$ref": "#/definitions/MozLeak"
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/TestResult"
+      }
+    },
+    "run_info": true,
+    "time_end": {
+      "type": "integer",
+      "format": "uint64",
+      "minimum": 0.0
+    },
+    "time_start": {
+      "type": "integer",
+      "format": "uint64",
+      "minimum": 0.0
+    }
+  },
+  "definitions": {
+    "AssertionCount": {
+      "type": "object",
+      "required": [
+        "count",
+        "max",
+        "min"
+      ],
+      "properties": {
+        "count": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "max": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "min": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        }
+      }
+    },
+    "LsanLeak": {
+      "type": "object",
+      "required": [
+        "frames",
+        "scope"
+      ],
+      "properties": {
+        "allowed_match": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "frames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "scope": {
+          "type": "string"
+        }
+      }
+    },
+    "MozLeak": {
+      "type": "object",
+      "required": [
+        "objects",
+        "total"
+      ],
+      "properties": {
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MozLeakObject"
+          }
+        },
+        "total": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MozLeakTotal"
+          }
+        }
+      }
+    },
+    "MozLeakObject": {
+      "type": "object",
+      "required": [
+        "allowed",
+        "bytes",
+        "name"
+      ],
+      "properties": {
+        "allowed": {
+          "type": "boolean"
+        },
+        "bytes": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "name": {
+          "type": "string"
+        },
+        "process": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "MozLeakTotal": {
+      "type": "object",
+      "required": [
+        "bytes",
+        "threshold"
+      ],
+      "properties": {
+        "bytes": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "process": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "threshold": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "SubtestResult": {
+      "type": "object",
+      "required": [
+        "name",
+        "status"
+      ],
+      "properties": {
+        "expected": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SubtestStatus"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "known_intermittent": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/SubtestStatus"
+          }
+        },
+        "message": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/SubtestStatus"
+        }
+      }
+    },
+    "SubtestStatus": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "ERROR",
+        "TIMEOUT",
+        "ASSERT",
+        "NOTRUN",
+        "SKIP",
+        "PRECONDITION_FAILED"
+      ]
+    },
+    "TestResult": {
+      "type": "object",
+      "required": [
+        "status",
+        "subtests",
+        "test"
+      ],
+      "properties": {
+        "asserts": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AssertionCount"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "duration": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TestStatus"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "known_intermittent": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/TestStatus"
+          }
+        },
+        "message": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reftest_screenshots": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/TestStatus"
+        },
+        "subtests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SubtestResult"
+          }
+        },
+        "test": {
+          "type": "string"
+        }
+      }
+    },
+    "TestStatus": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "OK",
+        "ERROR",
+        "TIMEOUT",
+        "CRASH",
+        "ASSERT",
+        "SKIP",
+        "PRECONDITION_FAILED"
+      ]
+    }
+  }
+}

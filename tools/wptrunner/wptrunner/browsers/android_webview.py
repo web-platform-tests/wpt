@@ -60,7 +60,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     capabilities["goog:chromeOptions"]["androidPackage"] = \
         kwargs.get("package_name", "org.chromium.webview_shell")
     capabilities["goog:chromeOptions"]["androidActivity"] = \
-        "org.chromium.webview_shell.WebPlatformTestsActivity"
+        kwargs.get("activity_name", "org.chromium.webview_shell.WebPlatformTestsActivity")
     capabilities["goog:chromeOptions"]["androidKeepAppDataDir"] = \
         kwargs.get("keep_app_data_directory")
 

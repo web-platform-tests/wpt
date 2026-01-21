@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>drawFocusIfNeeded when a default path is provided and the associated fallback element has focus</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <link rel="author" title="Mark Sadecki">
+    <link rel="help" href="http://www.w3.org/TR/2dcontext/#dom-context-2d-drawfocusifneeded">
+  </head>
+  <body>
+    <h1>Description</h1>
+    <p>This test verifies that a focus indicator is drawn when a default path is provided and the associated fallback element has focus.  This test passes if a focus indicator is present (square).</p>
+    <div>
+      <p>focus indicator.</p>
+      <canvas height='100' width='100' id='canvas'>
+	    <a href='http://www.w3.org' id='focus'>Focus</a>
+      </canvas>
+    </div>
+    <script>
+      test(function() {
+        // default path associated fallback has focus
+        var canvas = document.getElementById('canvas');
+        var focus = document.getElementById('focus');
+        var context = canvas.getContext('2d');
+        context.beginPath();
+        context.rect(10, 10, 80, 80);
+        context.fillStyle = "white";
+        context.fill();
+        focus.focus();
+        context.drawFocusIfNeeded(focus);
+        
+        /*// TODO make test automated
+          
+          assert_false(assertion, "Failure");
+        */
+                
+      }, 'drawFocusIfNeeded when a default path is provided and the associated fallback element has focus');
+    </script>
+    <div id="log"></div>
+  </body>
+</html>

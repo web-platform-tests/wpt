@@ -41,4 +41,5 @@ product_list = ["android_webview",
                 "wpewebkit_minibrowser",
                 "wktr",
                 "epiphany",
-                "ladybird"]
+                "ladybird",
+                "webkitwin_minibrowser"]

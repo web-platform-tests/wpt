@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<!--
+This test was procedurally generated. Please do not modify it directly.
+Sources:
+- fetch/metadata/tools/fetch-metadata.conf.yml
+- fetch/metadata/tools/templates/cors-preflight.sub.html
+-->
+<html lang="en">
+  <meta charset="utf-8">
+  <title>HTTP headers on CORS preflight request</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/fetch/metadata/resources/helper.sub.js"></script>
+  <body>
+  <script>
+  'use strict';
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsCrossSite'], { requireOPTIONS: true });
+
+    // `DELETE` is not a CORS-safelisted method, so it is expected to induce a
+    // CORS preflight request.
+    // https://fetch.spec.whatwg.org/#ref-for-cors-safelisted-method%E2%91%A0
+    return fetch(url, { method: 'DELETE' })
+      // This request is expected to fail
+      .catch(() => {})
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-site');
+          assert_equals(headers['sec-fetch-site'], 'cross-site');
+        });
+  }, 'sec-fetch-site - Cross-site');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsSameSite'], { requireOPTIONS: true });
+
+    // `DELETE` is not a CORS-safelisted method, so it is expected to induce a
+    // CORS preflight request.
+    // https://fetch.spec.whatwg.org/#ref-for-cors-safelisted-method%E2%91%A0
+    return fetch(url, { method: 'DELETE' })
+      // This request is expected to fail
+      .catch(() => {})
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-site');
+          assert_equals(headers['sec-fetch-site'], 'same-site');
+        });
+  }, 'sec-fetch-site - Same site');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsCrossSite'], { requireOPTIONS: true });
+
+    // `DELETE` is not a CORS-safelisted method, so it is expected to induce a
+    // CORS preflight request.
+    // https://fetch.spec.whatwg.org/#ref-for-cors-safelisted-method%E2%91%A0
+    return fetch(url, { method: 'DELETE' })
+      // This request is expected to fail
+      .catch(() => {})
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-mode');
+          assert_equals(headers['sec-fetch-mode'], 'cors');
+        });
+  }, 'sec-fetch-mode');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsCrossSite'], { requireOPTIONS: true });
+
+    // `DELETE` is not a CORS-safelisted method, so it is expected to induce a
+    // CORS preflight request.
+    // https://fetch.spec.whatwg.org/#ref-for-cors-safelisted-method%E2%91%A0
+    return fetch(url, { method: 'DELETE' })
+      // This request is expected to fail
+      .catch(() => {})
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-dest');
+          assert_equals(headers['sec-fetch-dest'], 'empty');
+        });
+  }, 'sec-fetch-dest');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsCrossSite'], { requireOPTIONS: true });
+
+    // `DELETE` is not a CORS-safelisted method, so it is expected to induce a
+    // CORS preflight request.
+    // https://fetch.spec.whatwg.org/#ref-for-cors-safelisted-method%E2%91%A0
+    return fetch(url, { method: 'DELETE' })
+      // This request is expected to fail
+      .catch(() => {})
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-user');
+        });
+  }, 'sec-fetch-user');
+  </script>
+  </body>
+</html>

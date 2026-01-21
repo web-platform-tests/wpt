@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8">
+<title>ruby-align: start, long annotation</title>
+<meta name="assert" content="ruby-align: start will make ruby content aligned with the start edge of its box. Short base text will be flush left and set solid.">
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="http://www.w3.org/TR/css-ruby-1/#rubypos">
+<link rel="help" href="https://drafts.csswg.org/css-ruby-1/#rubypos">
+<style type="text/css">/* this is not part of the test */
+.test { margin: 20px;  padding: 40px; font-size: 110px; }
+rt { color: blue; }
+</style>
+<style type="text/css">/* this is the test */
+ruby { ruby-align: start; }
+</style>
+</head>
+<body>
+<p class="instructions">Test passes if the base text is flush with the left edge of the annotation text, and set solid.</p>
+<div class="test" lang="ja"><ruby><rb>昔話</rb><rt>むかしばなし</rt></ruby></div>
+<div class="test" lang="zh"><ruby><rb>昔話</rb><rt>むかしばなし</rt></ruby></div>
+<!-- Notes:
+In this test the base text is shorter than the annotation.
+-->
+</body>
+</html>

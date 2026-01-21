@@ -1,0 +1,39 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>white-space on contenteditable=plaintext-only</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div contenteditable=true data-expect=normal></div>
+<div contenteditable=false data-expect=normal></div>
+<div contenteditable=plaintext-only data-expect=pre-wrap>
+ <div contenteditable=true data-expect=pre-wrap></div>
+ <div contenteditable=false data-expect=pre-wrap></div>
+</div>
+<div contenteditable=PLAINTEXT-ONLY data-expect=pre-wrap></div>
+
+<div contenteditable=plaintext-only style="white-space: normal" data-expect=normal></div>
+<div contenteditable=plaintext-only style="white-space: pre" data-expect=pre></div>
+<div contenteditable=plaintext-only style="white-space: nowrap" data-expect=nowrap></div>
+<div contenteditable=plaintext-only style="white-space: break-spaces" data-expect=break-spaces></div>
+<div contenteditable=plaintext-only style="white-space: pre-line" data-expect=pre-line></div>
+
+<svg contenteditable=plaintext-only data-expect=normal></svg>
+<script>
+const els = document.querySelectorAll('[data-expect]');
+function serializeStartTag(el) {
+  let rv = `<${el.localName}`;
+  for (const attr of el.attributes) {
+    if (attr.name !== 'data-expect') {
+      rv += ` ${attr.name}="${attr.value}"`;
+    }
+  }
+  rv += '>';
+  return rv;
+}
+for (const el of els) {
+  test(() => {
+    assert_equals(getComputedStyle(el).whiteSpace, el.dataset.expect);
+  }, serializeStartTag(el.parentNode) + serializeStartTag(el));
+}
+</script>

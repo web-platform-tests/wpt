@@ -1,7 +1,7 @@
 # Running Tests from the Web
 
 Tests that have been merged on GitHub are mirrored at
-[wpt.live](https://wpt.live) and [w3c-test.org](https://w3c-test.org).
+[wpt.live](https://wpt.live) and [web-platform-tests.org](https://web-platform-tests.org).
 [On properly-configured systems](from-local-system), local files may also be
 served from the URL [http://web-platform.test](http://web-platform.test).
 

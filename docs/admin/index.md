@@ -39,7 +39,7 @@ explicitly-managed secret.
 
 - (unknown registrar): https://web-platform-tests.org
   - jgraham@hoppipolla.co.uk
-- (unknown registrar): https://w3c-test.org
+- (unknown registrar): https://web-platform-tests.org
   - mike@w3.org
 - (unknown registrar): http://testthewebforward.org
   - web-human@w3.org

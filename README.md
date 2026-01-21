@@ -93,7 +93,8 @@ Publication
 ===========
 
 The master branch is automatically synced to [wpt.live](https://wpt.live/) and
-[w3c-test.org](https://w3c-test.org/).
+[web-platform-tests.org](https://web-platform-tests.org/).
+
 
 Contributing
 ============

@@ -239,9 +239,9 @@ def write_results(log, results, iterations, pr_number=None, use_details=False):
                                                   else "test"))
 
     for test_name, test in results.items():
-        baseurl = "http://w3c-test.org/submissions"
+        baseurl = "baseurl = https://web-platform-tests.org/submissions"
         if "https" in os.path.splitext(test_name)[0].split(".")[1:]:
-            baseurl = "https://w3c-test.org/submissions"
+            baseurl = "baseurl = https://web-platform-tests.org/submissions"
         title = test_name
         if use_details:
             log("<details>\n")

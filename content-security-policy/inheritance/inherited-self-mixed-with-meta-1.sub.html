@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+
+<script>
+  async_test(t => {
+    const iframe = document.createElement("iframe");
+    iframe.src = encodeURI(`data:text/html,
+      <script>
+          var meta = document.createElement('meta');
+          meta.httpEquiv = 'Content-Security-Policy';
+          meta.content = "img-src 'self'";
+          document.getElementsByTagName('head')[0].appendChild(meta);
+      </scr`+`ipt>
+
+      This image should not be blocked by CSP:
+      <img onload='window.parent.postMessage("LoadImageData", "*")'
+          onerror='window.parent.postMessage("ErrorImageData", "*")'
+          src='data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7'></img>
+      <img onload='window.parent.postMessage("LoadImageHTTP", "*")'
+          onerror='window.parent.postMessage("ErrorImageHTTP", "*")'
+          src='{{location[server]}}/images/red-16x16.png'></img>
+      <link rel='stylesheet'
+          onload='window.parent.postMessage("LoadStyleData", "*")'
+          onerror='window.parent.postMessage("ErrorStyleData", "*")'
+          href="data:text/css,"></link>
+      <link rel='stylesheet'
+          onload='window.parent.postMessage("LoadStyleHTTP", "*")'
+          onerror='window.parent.postMessage("ErrorStyleHTTP", "*")'
+          href="{{location[server]}}/content-security-policy/style-src/resources/style-src.css"></link>
+    `);
+
+    let logs = [];
+    window.addEventListener("message", t.step_func(e => {
+        logs.push(e.data);
+        if (logs.length >= 4) {
+          assert_equals(JSON.stringify(logs), "dummy", "dummy");
+          t.done();
+        }
+    }));
+    document.body.appendChild(iframe);
+  });
+</script>

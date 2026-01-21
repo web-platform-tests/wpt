@@ -88,7 +88,6 @@
   promise_test(async (t) => {
     const iframe = await createIframe();
     t.add_cleanup(() => iframe.remove());
-    const DOMExceptionCtor = iframe.contentWindow.DOMException;
 
     for (let i = 0; i < 10; ++i) {
       await test_driver.bless("User activation", null, iframe.contentWindow);

@@ -1,0 +1,57 @@
+// META: global=shadowrealm
+
+// The non-ShadowRealm version of this test is in Event-returnValue.html.
+
+test(function() {
+  var ev = new Event("foo");
+  assert_true(ev.returnValue, "returnValue");
+}, "When an event is created, returnValue should be initialized to true.");
+
+test(function() {
+  var ev = new Event("foo", {"cancelable": false});
+  assert_false(ev.cancelable, "cancelable (before)");
+  ev.preventDefault();
+  assert_false(ev.cancelable, "cancelable (after)");
+  assert_true(ev.returnValue, "returnValue");
+}, "preventDefault() should not change returnValue if cancelable is false.");
+
+test(function() {
+  var ev = new Event("foo", {"cancelable": false});
+  assert_false(ev.cancelable, "cancelable (before)");
+  ev.returnValue = false;
+  assert_false(ev.cancelable, "cancelable (after)");
+  assert_true(ev.returnValue, "returnValue");
+}, "returnValue=false should have no effect if cancelable is false.");
+
+test(function() {
+  var ev = new Event("foo", {"cancelable": true});
+  assert_true(ev.cancelable, "cancelable (before)");
+  ev.preventDefault();
+  assert_true(ev.cancelable, "cancelable (after)");
+  assert_false(ev.returnValue, "returnValue");
+}, "preventDefault() should change returnValue if cancelable is true.");
+
+test(function() {
+  var ev = new Event("foo", {"cancelable": true});
+  assert_true(ev.cancelable, "cancelable (before)");
+  ev.returnValue = false;
+  assert_true(ev.cancelable, "cancelable (after)");
+  assert_false(ev.returnValue, "returnValue");
+}, "returnValue should change returnValue if cancelable is true.");
+
+test(function() {
+  var ev = new Event("foo");
+  ev.returnValue = false;
+  ev.initEvent("foo", true, true);
+  assert_true(ev.bubbles, "bubbles");
+  assert_true(ev.cancelable, "cancelable");
+  assert_true(ev.returnValue, "returnValue");
+}, "initEvent should unset returnValue.");
+
+test(function() {
+  var ev = new Event("foo", {"cancelable": true});
+  ev.preventDefault();
+  ev.returnValue = true;// no-op
+  assert_true(ev.defaultPrevented);
+  assert_false(ev.returnValue);
+}, "returnValue=true should have no effect once the canceled flag was set.");

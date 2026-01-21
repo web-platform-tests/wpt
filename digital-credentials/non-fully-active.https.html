@@ -99,16 +99,17 @@
         makeGetOptions({ signal: controller.signal })
       );
 
-      controller.abort(new Error(`Aborted iteration ${i}`));
+      const abortReason = new Error(`Aborted iteration ${i}`);
+      controller.abort(abortReason);
 
       try {
         await p;
         assert_unreached("navigator.credentials.get() unexpectedly resolved");
       } catch (e) {
-        assert_not_equals(
-          e.name,
-          "InvalidStateError",
-          `Iteration ${i}: should not fail with InvalidStateError`
+        assert_equals(
+          e,
+          abortReason,
+          `Iteration ${i}: should reject with the exact abort reason`
         );
       }
     }

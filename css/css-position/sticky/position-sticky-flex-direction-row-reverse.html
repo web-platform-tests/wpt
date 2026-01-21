@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<title>position:sticky elements should work correctly with flex-direction</title>
+<link rel="match" href="position-sticky-flex-direction-row-reverse-ref.html" />
+<link rel="help" href="https://www.w3.org/TR/css-position-3/#sticky-pos" />
+<meta name="assert" content="This test checks that position:sticky elements interoperate correctly with flex-direction" />
+
+<style>
+.grid {
+  display: grid;
+  gap: 30px;
+  grid-template-columns: repeat(2, 200px);
+  padding: 30px;
+}
+
+.list {
+  max-height: 200px;
+  overflow: auto;
+  list-style: none;
+  padding: 0;
+  border: 1px solid black;
+  width: 202px;
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+  margin: 0;
+}
+
+.list-reverse {
+  flex-direction: row-reverse;
+}
+
+.list-item {
+  padding: 3px 5px;
+  background: #c3c3c3;
+  min-height: 100px;
+  min-width: 28px;
+}
+
+.sticky-item {
+  position: sticky;
+  left: 0;
+  right: 0;
+  background: lightgreen;
+}
+
+.sticky-item-error {
+  background: red;
+}
+</style>
+
+<p>You should see tow green list items. There should be no red list item.</p>
+
+<div class="grid">
+  <ul id="scroller1" class="list">
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item sticky-item-error"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item sticky-item"></li>
+  </ul>
+
+  <ul id="scroller2" class="list list-reverse">
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item sticky-item-error"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item sticky-item"></li>
+  </ul>
+
+</div>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>link as attribute - case sensitivity test</title>
+<link rel="help" href="https://html.spec.whatwg.org/#attr-link-as">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<link id="link1" rel="preload" href="resources/dummy.css" as="style">
+<link id="link2" rel="preload" href="resources/dummy.css" as="STYLE">
+<link id="link3" rel="preload" href="resources/dummy.css" as="Style">
+
+<script>
+test(function() {
+  var link1 = document.getElementById('link1');
+  assert_equals(link1.as, 'style', 'lowercase "style" should reflect as "style"');
+}, 'link.as reflection with lowercase value');
+
+test(function() {
+  var link2 = document.getElementById('link2');
+  assert_equals(link2.as, 'style', 'uppercase "STYLE" should reflect as "style" (case-insensitive)');
+}, 'link.as reflection with uppercase value');
+
+test(function() {
+  var link3 = document.getElementById('link3');
+  assert_equals(link3.as, 'style', 'mixed-case "Style" should reflect as "style" (case-insensitive)');
+}, 'link.as reflection with mixed-case value');
+
+test(function() {
+  var link = document.createElement('link');
+  link.as = 'SCRIPT';
+  assert_equals(link.as, 'script', 'Setting as="SCRIPT" should reflect as "script"');
+}, 'link.as setter is case-insensitive');
+</script>

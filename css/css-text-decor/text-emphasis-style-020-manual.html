@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>text-emphasis-style and space</title>
+<meta name="assert" content="text-emphasis-style:dot; no dot appears next to the space (Zs) characters">
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="https://drafts.csswg.org/css-text-decor-3/#text-emphasis-style-property">
+<!-- cosmetic styling -->
+<style>
+#htmlsrc { margin: 2em; }
+#htmlsrc p {
+	font-size: 28px;
+	border-radius: 5px;
+	line-height: 1.5;
+	}
+</style>
+<!-- the test -->
+<style>
+div span {
+text-emphasis-style:dot;
+}</style>
+</head>
+<body>
+<p class="instructions">Test passes if no dot appears next to the space (Zs) characters.</p>
+<div id="htmlsrc" style="">
+
+<div>
+<p lang="zh-hans"><span>引 发 网 络 的 全 部 潜 能　</span></p>
+<p lang="zh-hant"><span>引 發 網 絡 的 全 部 潛 能　</span></p>
+<p lang="ja"><span>可 能 性 を 最 大 限 に 導　き出すために</span></p>
+</div>  </div>
+</body>
+</html>

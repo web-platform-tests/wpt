@@ -87,12 +87,11 @@
 
   promise_test(async (t) => {
     const iframe = await createIframe();
+    iframe.focus();
     t.add_cleanup(() => iframe.remove());
 
     for (let i = 0; i < 10; ++i) {
       await test_driver.bless("User activation", null, iframe.contentWindow);
-      await iframe.focus();
-
       const controller = new iframe.contentWindow.AbortController();
       const p = iframe.contentWindow.navigator.credentials.get(
         makeGetOptions({ signal: controller.signal })

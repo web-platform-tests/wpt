@@ -41,3 +41,18 @@ jobs:
                   toJSON(github.event.repository.name),
                   toJSON(inputs.artifact-name)
             ) }}
+      - name: "Search for existing WPT comment"
+        uses: peter-evans/find-comment@v3
+        id: findcomment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Latest results on wpt.fyi
+
+      - name: "Post latest results on WPT comment"
+        if: steps.findcomment.outputs.comment-id == ''
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            [Latest results on wpt.fyi](https://wpt.fyi/results/?label=pr_head&max-count=1&pr=${{ github.event.pull_request.number }})

@@ -308,8 +308,6 @@
     const statePromise = new Promise(r => pc1.onsignalingstatechange = r);
     // SRD with invalid SDP causes rollback.
     const p = pc1.setRemoteDescription({type: 'offer', sdp: 'Invalid SDP'});
-    // Ensure that p is eventually awaited for
-    t.add_cleanup(async () => Promise.allSettled([p]));
     // Ensure that the test will fail rather than timing out if state
     // does not change.
     const timeoutPromise = new Promise(
@@ -319,6 +317,8 @@
     } catch (error) {
       assert_unreached('State should have changed');
     }
+    // Ensure that p is eventually awaited for
+    t.add_cleanup(async () => Promise.allSettled([p]));
     assert_equals(pc1.signalingState, 'stable');
     assert_equals(pc1.pendingLocalDescription, null);
     assert_equals(pc1.pendingRemoteDescription, null);

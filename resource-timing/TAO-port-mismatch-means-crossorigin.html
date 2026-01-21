@@ -18,8 +18,8 @@ const {ORIGINAL_HOST, PORT, PORT2} = get_host_info();
 // have a Timing-Allow-Origin header value with the second port so this page's
 // origin should not be a match.
 const port_mismatch_url = `${location.protocol}//${ORIGINAL_HOST}:${PORT2}` +
-                          `/resource-timing/resources/TAOResponse.py?` +
-                          `tao=origin_port_${PORT2}`;
+                          `/common/CustomCorsResponse.py?` +
+                          `headers=${encodeURIComponent('{"Access-Control-Allow-Origin":"*","Timing-Allow-Origin":"${PORT2}"}')}`;
 attribute_test(
   fetch, port_mismatch_url, invariants.assert_tao_failure_resource,
   "A port mismatch must fail the TAO check");
@@ -29,8 +29,8 @@ attribute_test(
 // the Timing-Allow-Origin header's value. Therefore, the subresource's timings
 // must be exposed.
 const port_match_url = `${location.protocol}//${ORIGINAL_HOST}:${PORT2}` +
-                       `/resource-timing/resources/TAOResponse.py?` +
-                       `tao=origin_port_${PORT}`;
+                       `/common/CustomCorsResponse.py?` +
+                       `headers=${encodeURIComponent('{"Access-Control-Allow-Origin":"*","Timing-Allow-Origin":"*"}')}`;
 attribute_test(
   fetch, port_match_url, invariants.assert_tao_pass_no_redirect_http,
   "An identical port must pass the TAO check");

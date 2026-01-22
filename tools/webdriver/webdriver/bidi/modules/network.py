@@ -129,7 +129,8 @@ class Network(BidiModule):
 
     @add_intercept.result
     def _add_intercept(self, result: Mapping[str, Any]) -> Any:
-        assert result["intercept"] is not None
+        assert isinstance(result["intercept"], str)
+
         return result["intercept"]
 
     @command
@@ -275,7 +276,8 @@ class Network(BidiModule):
 
     @add_data_collector.result
     def _add_data_collector(self, result: Mapping[str, Any]) -> Any:
-        assert result["collector"] is not None
+        assert isinstance(result["collector"], str)
+
         return result["collector"]
 
     @command
@@ -330,7 +332,9 @@ class Network(BidiModule):
 
     @get_data.result
     def _get_data(self, result: Mapping[str, Any]) -> Any:
-        assert result["bytes"] is not None
+        assert isinstance(result["bytes"]["type"], str)
+        assert isinstance(result["bytes"]["value"], str)
+
         return result["bytes"]
 
     @command

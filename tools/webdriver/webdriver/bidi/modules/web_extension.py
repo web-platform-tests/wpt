@@ -12,8 +12,9 @@ class WebExtension(BidiModule):
         return params
 
     @install.result
-    def _install(self, result: Mapping[str, Any]) -> Optional[str]:
-        return result.get("extension")
+    def _install(self, result: Mapping[str, Any]) -> Any:
+        assert isinstance(result["extension"], str)
+        return result["extension"]
 
     @command
     def uninstall(self, extension: str) -> Mapping[str, Any]:

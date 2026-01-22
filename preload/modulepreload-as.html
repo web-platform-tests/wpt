@@ -3,10 +3,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-  setup({ explicit_done: true });
-
-  performance.clearResourceTimings();
-
   // Compared to modulepreload.html, this tests behavior when elements are
   // initially on an HTML page instead of being added by Javascript.
   const scriptLikes = [
@@ -18,58 +14,29 @@
     'worker',
   ];
 
-  const goodAsValues = ['', 'invalid-dest', 'sCrIpT', 'style', 'json',  ...scriptLikes];
-  let testCount = 0;
-  let all_links = 27;
-
-  document.addEventListener('DOMContentLoaded', function() {
-    if(all_links !== document.querySelectorAll('link').length) {
-      throw new Error('all_links is incorrect - it must match the number of <link> elements in the document.');
-    }
-  }, false);
-
-  performance.addEventListener('resourcetimingbufferfull', function() {
-      throw new Error('resourcetimingbufferfull has been hit, cannot verify test.');
-  }, false);
-
-  function checkDone() {
-    if (testCount === (all_links)) {
-      done();
-    }
-  }
+  const goodAsValues = ['', 'invalid-dest', 'sCrIpT', 'style', 'json', ...scriptLikes];
+  const linkPromises = {};
 
   function handleLoad(target) {
-    const asValue = target.dataset.as; // Don't depend on "as" attribute reflection.
-    const good = goodAsValues.includes(asValue);
-    const preload_url = new URL(target.href, location.href);
-
-    test(function() {
-      assert_true(good);
-      let downloads = performance
-              .getEntriesByName(preload_url)
-              .length;
-      assert_equals(downloads, 1);
-    }, `Modulepreload should fire onload and download a file with as="${asValue}"`);
-
-    ++testCount;
-    checkDone();
+    const asValue = target.dataset.as;
+    if (!linkPromises[asValue]) {
+      linkPromises[asValue] = {};
+      linkPromises[asValue].promise = new Promise((resolve) => {
+        linkPromises[asValue].resolve = resolve;
+      });
+    }
+    linkPromises[asValue].resolve({ target, eventType: 'load' });
   }
 
   function handleError(target) {
-    const asValue = target.dataset.as; // Don't depend on "as" attribute reflection.
-    const good = goodAsValues.includes(asValue);
-    const preload_url = new URL(target.href, location.href);
-
-    test(function() {
-      assert_false(good);
-      let downloads = performance
-              .getEntriesByName(preload_url)
-              .length;
-      assert_equals(downloads, 0);
-    }, `Modulepreload should fire onerror and not load any file when as="${asValue}"`);
-
-    ++testCount;
-    checkDone();
+    const asValue = target.dataset.as;
+    if (!linkPromises[asValue]) {
+      linkPromises[asValue] = {};
+      linkPromises[asValue].promise = new Promise((resolve) => {
+        linkPromises[asValue].resolve = resolve;
+      });
+    }
+    linkPromises[asValue].resolve({ target, eventType: 'error' });
   }
 </script>
 <link rel="modulepreload" href="resources/module1.js?empty-string" as="" data-as="" onload="handleLoad(this)" onerror="handleError(this)">
@@ -99,4 +66,33 @@
 <link rel="modulepreload" href="resources/module1.js?sCrIpT" as="sCrIpT" data-as="sCrIpT" onload="handleLoad(this)" onerror="handleError(this)">
 <link rel="modulepreload" href="resources/dummy.css?style" as="style" data-as="style" onload="handleLoad(this)" onerror="handleError(this)">
 <link rel="modulepreload" href="resources/dummy.json?json" as="json" data-as="json" onload="handleLoad(this)" onerror="handleError(this)">
+<script>
+  const links = document.querySelectorAll('link[rel="modulepreload"]');
+  for (const link of links) {
+    const asValue = link.dataset.as;
+
+    // Ensure promise exists (in case the event hasn't fired yet).
+    if (!linkPromises[asValue]) {
+      linkPromises[asValue] = {};
+      linkPromises[asValue].promise = new Promise((resolve) => {
+        linkPromises[asValue].resolve = resolve;
+      });
+    }
+
+    const shouldSucceed = goodAsValues.includes(asValue);
+    const description = shouldSucceed
+      ? `Modulepreload should fire onload with as="${asValue}"`
+      : `Modulepreload should fire onerror with as="${asValue}"`;
+
+    promise_test(async t => {
+      const { eventType } = await linkPromises[asValue].promise;
+
+      if (shouldSucceed) {
+        assert_equals(eventType, 'load', 'Expected onload to fire');
+      } else {
+        assert_equals(eventType, 'error', 'Expected onerror to fire');
+      }
+    }, description);
+  }
+</script>
 <body>

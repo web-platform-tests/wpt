@@ -18,6 +18,7 @@ from comtypes import IServiceProvider
 from mozlog.structuredlog import StructuredLogger
 
 from ..platformaccessibility.ia2.constants import (  # type: ignore[attr-defined]
+    IAccessible2_2,
     IAccessible2,
     Role,
     get_msaa_state_list,
@@ -76,7 +77,7 @@ def get_browser_hwnd(product_name: str) -> HWND:
 
 def to_ia2(node: IAccessiblePtr) -> IAccessible2Ptr:
     service = node.QueryInterface(IServiceProvider)
-    return service.QueryService(IAccessible2._iid_, IAccessible2)
+    return service.QueryService(IAccessible._iid_, IAccessible2_2)
 
 
 def find_browser(product_name: str) -> IAccessible2Ptr:
@@ -94,6 +95,17 @@ def poll_for_tab(url: str, root: IAccessible2Ptr) -> IAccessible2Ptr:
 
 
 def find_tab(url: str, root: IAccessible2Ptr) -> Optional[IAccessible2Ptr]:
+    # TODO: Add and use relation constants (IA2_RELATION_EMBEDS).
+    targets, count = root.relationTargetsOfType("embeds", 1)
+    if count >= 1:
+        ia2 = to_ia2(targets[0])
+        if ia2.accValue(CHILDID_SELF) == url:
+            return ia2
+
+    return find_tab_by_searching_tree(url, root)
+
+
+def find_tab_by_searching_tree(url: str, root: IAccessible2Ptr) -> Optional[IAccessible2Ptr]:
     for i in range(1, root.accChildCount + 1):
         child = to_ia2(root.accChild(i))
         if child.accRole(CHILDID_SELF) == Role.ROLE_SYSTEM_DOCUMENT:
@@ -101,7 +113,7 @@ def find_tab(url: str, root: IAccessible2Ptr) -> Optional[IAccessible2Ptr]:
                 return child
             # No need to search within documents.
             return None
-        descendant = find_tab(url, child)
+        descendant = find_tab_by_searching_tree(url, child)
         if descendant:
             return descendant
     return None

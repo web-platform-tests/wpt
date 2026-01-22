@@ -23,7 +23,7 @@ jobs:
       IMAGE_NAME: ${{ github.repository }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       # Based on https://docs.github.com/en/actions/publishing-packages/publishing-docker-images.
       - name: Log in to the Container registry
         uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0

@@ -1,7 +1,6 @@
 from enum import Enum
 from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
 
-from ..error import UnknownErrorException
 from ._module import BidiModule, command
 from ..undefined import UNDEFINED, Undefined
 

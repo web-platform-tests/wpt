@@ -7,11 +7,11 @@
 <script>
 
 const blob = new Blob(['hello'], {type: 'text/plain'});
-const blob2 = new Blob(['this should work'], {type: 'not a/real type'});
+const blob2 = new Blob(['https://example.com'], {type: 'text/uri-list'});
 
 test(() => {
   new ClipboardItem({'text/plain': blob});
-  new ClipboardItem({'text/plain': blob, 'not a/real type': blob2});
+  new ClipboardItem({'text/plain': blob, 'text/uri-list': blob2});
 }, "ClipboardItem({string, Blob}) succeeds with different types");
 
 test(() => {
@@ -35,21 +35,26 @@ test(() => {
 }, "ClipboardItem() fails with no input");
 
 test(() => {
+  assert_throws_js(TypeError, () => {new ClipboardItem({'not a/real type': 'xxx'});});
+  assert_throws_js(TypeError, () => {new ClipboardItem({'text/plain:subtype': 'xxx'});});
+}, "ClipboardItem() fails with invalid MIME type");
+
+test(() => {
   const item = new ClipboardItem({'text/plain': blob});
   const types = item.types;
   assert_equals(types.length, 1);
   assert_equals(types[0], 'text/plain');
   const item2 =
-      new ClipboardItem({'text/plain': blob, 'not a/real type': blob2});
+      new ClipboardItem({'text/plain': blob, 'text/uri-list': blob2});
   const types2 = item2.types;
   assert_equals(types2.length, 2);
   assert_equals(types2[0], 'text/plain');
-  assert_equals(types2[1], 'not a/real type');
+  assert_equals(types2[1], 'text/uri-list');
 }, "types() returns correct values");
 
 promise_test(async () => {
   const item =
-      new ClipboardItem({'text/plain': blob, 'not a/real type': blob2});
+      new ClipboardItem({'text/plain': blob, 'text/uri-list': blob2});
 
   const blobOutput = await item.getType('text/plain');
   assert_true(blobOutput.type.includes('text/plain'));
@@ -58,27 +63,24 @@ promise_test(async () => {
   assert_equals('hello', text);
 }, "getType(DOMString valid type) succeeds with correct output");
 
-promise_test(async () => {
+promise_test(async (t) => {
   const item =
-      new ClipboardItem({'text/plain': blob, 'not a/real type': blob2});
+      new ClipboardItem({'text/plain': blob, 'text/uri-list': blob2});
 
-  const blobOutput = await item.getType('not a/real type');
-  assert_true(blobOutput.type.includes('not a/real type'));
-  const text = await (new Response(blobOutput)).text();
-
-  assert_equals('this should work', text);
-}, "getType(DOMString invalid type) succeeds with correct output");
+  await promise_rejects_js(t, TypeError, item.getType("not a/real type"));
+}, "getType(DOMString invalid type) rejects correctly");
 
 promise_test(async t => {
   const item =
-      new ClipboardItem({'text/plain': blob, 'not a/real type': blob2});
-  promise_rejects_dom(t, "NotFoundError", item.getType('type not in item'));
-  promise_rejects_dom(t, "NotFoundError", item.getType('text/plain:subtype'));
+      new ClipboardItem({'text/plain': blob, 'text/uri-list': blob2});
+
+  await promise_rejects_dom(t, "NotFoundError", item.getType('text/html'));
+  await promise_rejects_dom(t, "NotFoundError", item.getType('text/plain;charset=gbk'));
 }, "getType(DOMString type) rejects correctly when querying for missing type");
 
 promise_test(async () => {
   const item =
-      new ClipboardItem({'text/plain': 'abc', 'not a/real type': 'xxx'});
+      new ClipboardItem({'text/plain': 'abc', 'text/uri-list': 'https://example.com'});
   const blob = await item.getType('text/plain');
   assert_equals(blob.type, 'text/plain');
 
@@ -88,12 +90,12 @@ promise_test(async () => {
 
 promise_test(async () => {
   const item =
-      new ClipboardItem({'text/plain': 'abc', 'not a/real type': 'xxx'});
-  const blob = await item.getType('not a/real type');
-  assert_equals(blob.type, 'not a/real type');
+      new ClipboardItem({'text/plain': 'abc', 'text/uri-list': 'https://example.com'});
+  const blob = await item.getType('text/uri-list');
+  assert_equals(blob.type, 'text/uri-list');
 
   const text = await (new Response(blob)).text();
-  assert_equals(text, 'xxx');
+  assert_equals(text, 'https://example.com');
 }, "getType(DOMString invalid type) converts DOMString to Blob");
 
 [
@@ -113,7 +115,7 @@ promise_test(async () => {
   ['foo/bar',         false],
   ['weB text/html',   false],
   [' web text/html',  false],
-  ['not a/real type', false],
+  ['not-a/real-type', false],
   ['',                false],
   [' ',               false],
 ].forEach(([type, result]) => {

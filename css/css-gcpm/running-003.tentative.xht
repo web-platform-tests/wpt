@@ -1,0 +1,35 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Test: running() function combined with display:none</title>
+  <link rel="author" title="Mike Bremford" href="http://bfo.com"/>
+  <link rel="help" href="https://drafts.csswg.org/css-gcpm/#running-syntax"/>
+  <link rel="match" href="reference/running-001-ref.xht"/>
+  <meta name="flags" content="paged" />
+  <meta name="assert" content="The running() function moves content that is display:none"/>
+  <style>
+  /* Note: marked as "tentative" because, although running() is intended to act as a way
+   * of moving a node subtree in the same way that string-set is intended to copy strings,
+   * and string-set works on elements with "display: none", the specification language is
+   * "remove elements from the normal flow". Display none elements are not in the normal
+   * flow, but then neither are floats.
+   */
+  @page {
+      margin: 72px;
+      @top-center {
+          content: element(foo, last);
+      }
+  }
+  .set {
+      position: running(foo);
+      text-align: center;
+  }
+  </style>
+ </head>
+ <body>
+  <div class="set">This should say pass: FAIL</div>
+  <div style="display:none">
+   <div class="set">This should say pass: PASS</div>
+  </div>
+  <p>The above text should be centered in the middle of the page.</p>
+ </body>
+</html>

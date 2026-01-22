@@ -7,9 +7,9 @@
 <script src="resources/utils.js"></script>
 <body>
   <div>
-    Dragging the mouse from a child frame to the parent frame causes
+    Dragging the mouse from the parent frame to a child frame causes
     <code>mousedown</code>, <code>mousemove</code> and <code>mouseup</code>
-    events being dispatched to the child frame, regardless of whether the
+    events being dispatched to the parent frame, regardless of whether the
     <code>mousedown</code> event is canceled or not.
   </div>
   <iframe id="child_frame" width="300px" height="40px"
@@ -22,11 +22,11 @@
   let subframe_loaded = getMessageData("load", frames[0]);
 
   let topframe_mousedown;
-  let topframe_mousemove;
+  let topframe_mousemove_drag;
   let topframe_mouseup;
 
   let subframe_mousedown;
-  let subframe_mousemove_drag;
+  let subframe_mousemove;
   let subframe_mouseup;
 
   let mouse_is_dragging;
@@ -35,9 +35,18 @@
     await topframe_loaded;
     await subframe_loaded;
 
-    window.addEventListener("mousedown", e => topframe_mousedown = true);
-    window.addEventListener("mousemove", e => topframe_mousemove = true);
-    window.addEventListener("mouseup",   e => topframe_mouseup   = true);
+    window.addEventListener("mousedown", e => {
+      topframe_mousedown = true;
+      mouse_is_dragging = true;
+    });
+    window.addEventListener("mousemove", e => {
+      if (mouse_is_dragging)
+        topframe_mousemove_drag = true;
+    });
+    window.addEventListener("mouseup",   e => {
+      topframe_mouseup   = true;
+      mouse_is_dragging = false;
+    });
 
     window.addEventListener("message", e => {
       if (e.source != frames[0] || !e.data || !e.data.type)
@@ -45,55 +54,53 @@
 
       if (e.data.type === "mousedown") {
         subframe_mousedown = true;
-        mouse_is_dragging = true;
       } else if (e.data.type === "mousemove") {
-        if (mouse_is_dragging)
-          subframe_mousemove_drag = true;
+        subframe_mousemove = true;
       } else if (e.data.type === "mouseup") {
         subframe_mouseup = true;
-        mouse_is_dragging = false;
       }
     });
   });
 
   function add_promise_test(cancel_mousedown) {
-    let test_label = "Child frame receives events when mousedown is " +
+    let test_label = "Top frame receives events when mousedown is " +
         (cancel_mousedown ? "canceled" : "not canceled");
 
     promise_test(async t => {
       topframe_mousedown = false;
-      topframe_mousemove = false;
+      topframe_mousemove_drag = false;
       topframe_mouseup = false;
 
       subframe_mousedown = false;
-      subframe_mousemove_drag = false;
+      subframe_mousemove = false;
       subframe_mouseup = false;
 
       mouse_is_dragging = false;
 
-      sendMessage(frames[0], "cancel-mousedown", cancel_mousedown);
-      const mouseup_promise   = getMessageData("mouseup", frames[0]);
+      if (cancel_mousedown)
+        addTestScopedListener(window, "mousedown", e => e.preventDefault(), t);
+      const mouseup_promise = getEvent("mouseup", window);
 
       const child_frame = document.getElementById("child_frame");
       const actions_promise = new test_driver.Actions()
-        .pointerMove(5, 5, {origin: child_frame})
-        .pointerDown()
         .pointerMove(5, 5, {origin: document.body})
+        .pointerDown()
+        .pointerMove(5, 5, {origin: child_frame})
         .pointerUp()
         .send();
 
       await actions_promise;
       await mouseup_promise;
 
-      assert_false(topframe_mousedown, "Top frame received mousedown?");
-      assert_false(topframe_mousemove, "Top frame received mousemove?");
-      assert_false(topframe_mouseup,   "Top frame received mouseup?");
+      assert_true(topframe_mousedown,      "Top frame received mousedown?");
+      assert_true(topframe_mousemove_drag, "Top frame received mousemove?");
+      assert_true(topframe_mouseup,        "Top frame received mouseup?");
 
-      assert_true(subframe_mousedown,      "Child frame received mousedown?");
-      assert_true(subframe_mousemove_drag, "Child frame received mousemove?");
-      assert_true(subframe_mouseup,        "Child frame received mouseup?");
+      assert_false(subframe_mousedown, "Child frame received mousedown?");
+      assert_false(subframe_mousemove, "Child frame received mousemove?");
+      assert_false(subframe_mouseup,   "Child frame received mouseup?");
     }, test_label);
-  }
+  };
 
   add_promise_test(false);
   add_promise_test(true);

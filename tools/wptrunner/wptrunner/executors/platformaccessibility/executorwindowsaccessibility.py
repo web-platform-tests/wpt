@@ -19,7 +19,6 @@ from mozlog.structuredlog import StructuredLogger
 
 from ..platformaccessibility.ia2.constants import (  # type: ignore[attr-defined]
     IAccessible2_2,
-    IAccessible2,
     Role,
     get_msaa_state_list,
     get_state_list,

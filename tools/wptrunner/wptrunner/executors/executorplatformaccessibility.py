@@ -12,10 +12,13 @@ from .protocol import ProtocolPart
 class PlatformAccessibilityExecutorImpl(Protocol):
     """Protocol defining the interface for platform accessibility executors."""
 
-    def setup(self, product_name: str, logger: StructuredLogger) -> None: ...
+    def setup(self, product_name: str, logger: StructuredLogger) -> None:
+        ...
+
     def test_accessibility_api(
         self, dom_id: str, test: List[List[str]], api: str, url: str
-    ) -> List[str]: ...
+    ) -> List[str]:
+        ...
 
 
 def valid_api_for_platform(api: str) -> bool:

@@ -1,4 +1,4 @@
-from typing import Any, Mapping, MutableMapping, Optional
+from typing import Any, Mapping, MutableMapping
 
 from ._module import BidiModule, command
 

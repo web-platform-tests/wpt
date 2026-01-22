@@ -158,9 +158,9 @@ class Storage(BidiModule):
         self._assert_partition_key(result["partitionKey"])
         return result
 
-    def _assert_partition_key(self, partitionKey) -> Any:
-        assert isinstance(partitionKey, dict)
-        if "userContext" in partitionKey:
-            assert isinstance(partitionKey["userContext"], str)
-        if "sourceOrigin" in partitionKey:
-            assert isinstance(partitionKey["sourceOrigin"], str)
+    def _assert_partition_key(self, partition_key: Mapping[str, Any]) -> Any:
+        assert isinstance(partition_key, dict)
+        if "userContext" in partition_key:
+            assert isinstance(partition_key["userContext"], str)
+        if "sourceOrigin" in partition_key:
+            assert isinstance(partition_key["sourceOrigin"], str)

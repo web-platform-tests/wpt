@@ -5,6 +5,8 @@
 <script>
   setup({ explicit_done: true });
 
+  performance.clearResourceTimings();
+
   // Compared to modulepreload.html, this tests behavior when elements are
   // initially on an HTML page instead of being added by Javascript.
   const scriptLikes = [
@@ -18,15 +20,20 @@
 
   const goodAsValues = ['', 'invalid-dest', 'sCrIpT', 'style', 'json',  ...scriptLikes];
   let testCount = 0;
-  let all_links = document.querySelectorAll('link');
+  let all_links = 27;
 
-  // `all_links` may change once the DOM finishes loading.
   document.addEventListener('DOMContentLoaded', function() {
-    all_links = document.querySelectorAll('link');
+    if(all_links !== document.querySelectorAll('link').length) {
+      throw new Error('all_links is incorrect - it must match the number of <link> elements in the document.');
+    }
+  }, false);
+
+  performance.addEventListener('resourcetimingbufferfull', function() {
+      throw new Error('resourcetimingbufferfull has been hit, cannot verify test.');
   }, false);
 
   function checkDone() {
-    if (testCount === (all_links.length)) {
+    if (testCount === (all_links)) {
       done();
     }
   }
@@ -38,14 +45,11 @@
 
     test(function() {
       assert_true(good);
-    }, `Modulepreload expected load with as="${asValue}"`);
-
-    test(function() {
-      const downloads = performance
+      let downloads = performance
               .getEntriesByName(preload_url)
               .length;
-            assert_equals(downloads, good ? 1 : 0);
-    }, `Modulepreload loaded with as="${asValue}"`);
+      assert_equals(downloads, 1);
+    }, `Modulepreload should fire onload and download a file with as="${asValue}"`);
 
     ++testCount;
     checkDone();
@@ -58,14 +62,11 @@
 
     test(function() {
       assert_false(good);
-    }, `Modulepreload expected error with as="${asValue}"`);
-
-    test(function() {
-      const downloads = performance
+      let downloads = performance
               .getEntriesByName(preload_url)
               .length;
-            assert_equals(downloads, good ? 1 : 0);
-    }, `Modulepreload expected no file loaded with error when as="${asValue}"`);
+      assert_equals(downloads, 0);
+    }, `Modulepreload should fire onerror and not load any file when as="${asValue}"`);
 
     ++testCount;
     checkDone();

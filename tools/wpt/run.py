@@ -55,6 +55,9 @@ def create_parser():
     parser.add_argument("--install-webdriver", action="store_true",
                         help="Install WebDriver from the release channel specified by --channel "
                         "(or the nightly channel by default).")
+    parser.add_argument("--install-browser-url", action="store", default=None,
+                        help="URL to download the browser from"
+                        "(or the nightly channel by default).")
     parser.add_argument("--logcat-dir",
                         help="Directory to write Android logcat files to")
     parser._add_container_actions(wptcommandline.create_parser())
@@ -236,9 +239,9 @@ class BrowserSetup:
             elif resp == "n":
                 return False
 
-    def install(self, channel=None):
+    def install(self, channel=None, url=None):
         if self.prompt_install(self.name):
-            return self.browser.install(self.venv.path, channel)
+            return self.browser.install(self.venv.path, channel=channel, url=url)
 
     def requirements(self):
         if self.browser.requirements:
@@ -695,7 +698,7 @@ class Safari(BrowserSetup):
     name = "safari"
     browser_cls = browser.Safari
 
-    def install(self, channel=None):
+    def install(self, channel=None, url=None):
         raise NotImplementedError
 
     def setup_kwargs(self, kwargs):
@@ -712,7 +715,7 @@ class Sauce(BrowserSetup):
     name = "sauce"
     browser_cls = browser.Sauce
 
-    def install(self, channel=None):
+    def install(self, channel=None, url=None):
         raise NotImplementedError
 
     def setup_kwargs(self, kwargs):
@@ -727,9 +730,9 @@ class Servo(BrowserSetup):
     name = "servo"
     browser_cls = browser.Servo
 
-    def install(self, channel=None):
+    def install(self, channel=None, url=None):
         if self.prompt_install(self.name):
-            return self.browser.install(self.venv.path)
+            return self.browser.install(self.venv.path, url=url)
 
     def setup_kwargs(self, kwargs):
         if kwargs["binary"] is None:
@@ -759,9 +762,9 @@ class WebKitTestRunner(BrowserSetup):
     name = "wktr"
     browser_cls = browser.WebKitTestRunner
 
-    def install(self, channel=None):
+    def install(self, channel=None, url=None):
         if self.prompt_install(self.name):
-            return self.browser.install(self.venv.path, channel=channel)
+            return self.browser.install(self.venv.path, channel=channel, url=url)
 
     def setup_kwargs(self, kwargs):
         if kwargs["binary"] is None:
@@ -775,9 +778,9 @@ class WebKitTestRunner(BrowserSetup):
 class WebKitGlibBaseMiniBrowser(BrowserSetup):
     """ Base class for WebKitGTKMiniBrowser and WPEWebKitMiniBrowser """
 
-    def install(self, channel=None):
+    def install(self, channel=None, url=None):
         if self.prompt_install(self.name):
-            return self.browser.install(self.venv.path, channel, self.prompt)
+            return self.browser.install(self.venv.path, channel, url=url)
 
     def setup_kwargs(self, kwargs):
         if kwargs["binary"] is None:
@@ -816,7 +819,7 @@ class Epiphany(BrowserSetup):
     name = "epiphany"
     browser_cls = browser.Epiphany
 
-    def install(self, channel=None):
+    def install(self, channel=None, url=None):
         raise NotImplementedError
 
     def setup_kwargs(self, kwargs):
@@ -934,6 +937,9 @@ def setup_wptrunner(venv, **kwargs):
         kwargs["test_list"] += test_list
         kwargs["default_exclude"] = True
 
+    if kwargs["install_browser_url"] and not kwargs["install_browser"]:
+        kwargs["install_browser"] = True
+
     if kwargs["install_browser"] and not kwargs["channel"]:
         logger.info("--install-browser is given but --channel is not set, default to nightly channel")
         kwargs["channel"] = "nightly"
@@ -952,7 +958,8 @@ def setup_wptrunner(venv, **kwargs):
 
     if kwargs["install_browser"]:
         logger.info("Installing browser")
-        kwargs["binary"] = setup_cls.install(channel=kwargs["browser_channel"])
+        kwargs["binary"] = setup_cls.install(channel=kwargs["browser_channel"],
+                                             url=kwargs["install_browser_url"])
 
     setup_cls.setup(kwargs)
 

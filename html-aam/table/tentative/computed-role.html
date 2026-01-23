@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+  <head>
+    <title>HTML-AAM Role Verification Tests</title>
+    <link
+      rel="author"
+      href="mailto:wpt@keithcirkel.co.uk"
+      title="Keith Cirkel"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
+    <script src="/resources/testdriver-actions.js"></script>
+    <script src="./resources/table-computed-role.js"></script>
+  </head>
+  <body>
+
+    <p>
+      Tests the computedrole mappings for the table role defined in
+      <a href="https://w3c.github.io/html-aam/">HTML-AAM</a>. Most test names correspond to unique ID defined in the spec.<p>
+
+    <p>The following tables are all expected to have a role of table.</p>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 1. If element is in not being rendered, return table.
+    -->
+    <table data-testname="table-with-no-layout-box" style="width:0px;height:0px;overflow:hidden"></table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 2. If element has a summary attribute whose value is not the empty string, return table.
+    -->
+    <table data-testname="table-with-summary-attr" summary="This is a summary"></table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 3. If element has a rules attribute whose value is not the empty string, return table.
+    -->
+    <table data-testname="table-with-rules-attr" rules="rows"></table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 22.1. If table_child is a thead element, return table.
+    -->
+    <table data-testname="table-with-thead"><thead></thead></table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 22.2. If table_child is a tfoot element, return table.
+    -->
+    <table data-testname="table-with-tfoot"><tfoot></tfoot></table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 22.3. If table_child is a caption element, return table.
+    -->
+    <table data-testname="table-with-caption"><caption></caption></table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 22.4. If table_child is a col element, return table.
+    -->
+    <table data-testname="table-with-col"><col></col></table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 22.4. If table_child is a colgroup element, return table.
+    -->
+    <table data-testname="table-with-colgroup"><colgroup></colgroup></table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 22.4. If table_child is a colgroup element, return table.
+    -->
+    <table data-testname="table-with-two-th"><tr><th></th><th></th></tr></table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 22.6.1.1.6. If row_count is greather than or equal to 20, return table.
+    -->
+    <table data-testname="table-with-20-rows">
+      <tr><td>1</td></tr> <tr><td>2</td></tr> <tr><td>3</td></tr> <tr><td>4</td></tr> <tr><td>5</td></tr>
+      <tr><td>6</td></tr> <tr><td>7</td></tr> <tr><td>8</td></tr> <tr><td>9</td></tr> <tr><td>10</td></tr>
+      <tr><td>11</td></tr> <tr><td>12</td></tr> <tr><td>13</td></tr> <tr><td>14</td></tr> <tr><td>15</td></tr>
+      <tr><td>16</td></tr> <tr><td>17</td></tr> <tr><td>18</td></tr> <tr><td>19</td></tr> <tr><td>20</td></tr>
+    </table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 22.6.1.1.7.1 If row_child is a th element, return table.
+    -->
+    <table data-testname="table-with-single-th">
+      <tr><th></th></tr>
+    </table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 22.6.1.1.7.1 If row_child is a th element, return table.
+    -->
+    <table data-testname="table-with-single-th">
+      <tr><th></th></tr>
+    </table>
+
+
+    <p>The following tables are all expected to <strong>not</strong> have a role of table.</p>
+
+    <table data-testname="table-with-no-cells" data-layout></table>
+
+    <table data-testname="table-with-empty-tbody" data-layout><tbody></tbody></table>
+
+    <table data-testname="table-with-nested-col" data-layout data-nest="nested_1"></table>
+    <table id="nested_1" data-nested><col></col></table>
+
+    <table data-testname="table-with-nested-colgroup" data-layout data-nest="nested_2"></table>
+    <table id="nested_2" data-nested><colgroup></colgroup></table>
+
+    <table data-testname="table-with-nested-thead" data-layout-table data-nest="nested_3"></table>
+    <table id="nested_3" data-nested><thead></thead></table>
+
+    <table data-testname="table-with-one-row-one-cell" data-layout><tr><td></td></tr></table>
+
+    <table data-testname="table-with-19-rows" data-layout>
+      <tr><td>1</td></tr> <tr><td>2</td></tr> <tr><td>3</td></tr> <tr><td>4</td></tr> <tr><td>5</td></tr>
+      <tr><td>6</td></tr> <tr><td>7</td></tr> <tr><td>8</td></tr> <tr><td>9</td></tr> <tr><td>10</td></tr>
+      <tr><td>11</td></tr> <tr><td>12</td></tr> <tr><td>13</td></tr> <tr><td>14</td></tr> <tr><td>15</td></tr>
+      <tr><td>16</td></tr> <tr><td>17</td></tr> <tr><td>18</td></tr> <tr><td>19</td></tr>
+    </table>
+
+    <table summary="" data-testname="table-with-summary-as-empty-string" data-layout>
+      <!-- A table that has a summary attribute that is an empty string must not compute as a table -->
+    </table>
+
+    <table rules="" data-testname="table-with-rules-as-empty-string" data-layout>
+      <!-- A table that has a rules attribute that is an empty string must not as a table -->
+    </table>
+
+    <script>
+      runTests({
+        expectedTables: 12,
+        expectedLayoutTables: 9,
+      });
+    </script>
+  </body>
+</html>

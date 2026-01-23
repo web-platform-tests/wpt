@@ -8,16 +8,6 @@ features:
 - name: text-transform
   files:
   - text-transform-*
-- name: white-space
-  files:
-  - text-align-white-space-*
-  - white-space-*
-- name: word-spacing
-  files:
-  - word-spacing-*
-- name: text-align
-  files:
-  - text-align-*
 - name: text-decoration
   files:
   - bidi-text-decoration-underline-001.xht
@@ -94,3 +84,10 @@ features:
   - text-decoration-063.xht
   - text-decoration-064.xht
   - text-decoration-065.xht
+- name: white-space
+  files:
+  - text-align-white-space-*
+  - white-space-*
+- name: word-spacing
+  files:
+  - word-spacing-*

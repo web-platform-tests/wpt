@@ -21,7 +21,7 @@ class Timeouts:
         return timeouts
 
     def _set(self, key, secs):
-        body = {key: secs * 1000}
+        body = {key: secs * 1000 if secs is not None else secs}
         self.session.send_session_command("POST", "timeouts", body)
         return None
 
@@ -208,6 +208,12 @@ class ActionSequence:
                        Default: 0, which represents main device button.
         """
         self._pointer_action("pointerUp", button=button)
+        return self
+
+    def pointer_cancel(self):
+        """Queue a pointerCancel action.
+        """
+        self._pointer_action("pointerCancel")
         return self
 
     def pointer_down(

@@ -268,10 +268,18 @@ class FirefoxPrefs:
         # directory listings. So we have to hardcode in all the files we need. In particular
         # for each profile we are currently just downloading the user.js file and ignoring the
         # extensions/ directory, which is currently unused.
-        ref = self.get_git_ref(version, channel, rev)
-        self.logger.info(f"Getting profile data from git ref {ref}")
+        refs = self.get_git_refs(version, channel, rev)
+        for ref in refs:
+            try:
+                profiles_bytes = get_file_github("mozilla-firefox/firefox", ref, "testing/profiles/profiles.json")
+            except requests.exceptions.HTTPError:
+                self.logger.debug(f"Failed to download ref {ref}")
+            else:
+                self.logger.info(f"Getting profile data from git ref {ref}")
+                break
+        else:
+            raise ValueError(f"Failed to download prefs, tried git refs: {' '.join(refs)}")
         file_data = {}
-        profiles_bytes = get_file_github("mozilla-firefox/firefox", ref, "testing/profiles/profiles.json")
         profiles = json.loads(profiles_bytes)
         file_data["profiles.json"] = profiles_bytes
         for subdir in profiles["web-platform-tests"]:
@@ -359,19 +367,22 @@ class FirefoxPrefs:
             tags.append(tag)
         return tags
 
-    def get_git_ref(self, version: Optional[str], channel: str, rev: Optional[str]) -> str:
+    def get_git_refs(self, version: Optional[str], channel: str, rev: Optional[str]) -> List[str]:
         if rev is not None:
-            return rev
+            return [rev]
 
         ref_prefix = "FIREFOX_"
         ref_re = None
         tags = []
+        default = None
 
         if channel == "stable":
             if version:
-                return "FIREFOX_%s_RELEASE" % version.replace(".", "_")
+                return ["FIREFOX_%s_RELEASE" % version.replace(".", "_"), "release"]
+            default = "release"
             ref_re = re.compile(r"FIREFOX_(\d+)_(\d+)(?:_(\d+))?_RELEASE")
         elif channel == "beta":
+            default = "beta"
             if version:
                 ref_prefix = "FIREFOX_%s" % version.replace(".", "_")
                 if "b" not in version:
@@ -381,9 +392,10 @@ class FirefoxPrefs:
             else:
                 ref_re = re.compile(r"FIREFOX_(\d+)_(\d+)b(\d+)_(?:BUILD(\d+)|RELEASE)")
         else:
-            return "main"
+            return ["main"]
 
         assert ref_re is not None
+        assert default is not None
 
         for tag in self.get_git_tags(ref_prefix):
             m = ref_re.match(tag)
@@ -394,8 +406,8 @@ class FirefoxPrefs:
                 order[-1] = sys.maxsize
             tags.append((tuple(order), tag))
         if not tags:
-            raise ValueError(f"No tag found for version {version} channel {channel}")
-        return max(tags)[1]
+            self.logger.warning(f"No tag found for version {version} channel {channel}")
+        return [max(tags)[1], default]
 
 
 class FirefoxAndroidPrefs(FirefoxPrefs):

@@ -1,14 +1,13 @@
 features:
-- name: white-space
+- name: letter-spacing
   files:
-  - text-align-white-space-*
-  - white-space-*
-- name: word-spacing
-  files:
-  - word-spacing-*
+  - letter-spacing-*
 - name: text-align
   files:
   - text-align-*
+- name: text-transform
+  files:
+  - text-transform-*
 - name: text-decoration
   files:
   - bidi-text-decoration-underline-001.xht
@@ -85,6 +84,10 @@ features:
   - text-decoration-063.xht
   - text-decoration-064.xht
   - text-decoration-065.xht
-- name: letter-spacing
+- name: white-space
   files:
-  - letter-spacing-*
+  - text-align-white-space-*
+  - white-space-*
+- name: word-spacing
+  files:
+  - word-spacing-*

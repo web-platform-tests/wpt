@@ -16,3 +16,6 @@ features:
 - name: text-decoration-selection
   files:
   - "text-decoration-color-selection-*"
+- name: text-underline-position
+  files:
+  - text-underline-position-*

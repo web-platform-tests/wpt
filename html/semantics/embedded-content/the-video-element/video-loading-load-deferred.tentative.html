@@ -20,9 +20,7 @@
   const video = document.getElementById("target");
 
   t.step_timeout(() => {
-    t.step(() => {
-      assert_equals(video.readyState, HTMLMediaElement.HAVE_NOTHING);
-    });
+    assert_equals(video.readyState, HTMLMediaElement.HAVE_NOTHING);
     t.done();
   }, 1000);
 </script>

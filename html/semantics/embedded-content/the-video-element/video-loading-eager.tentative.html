@@ -14,11 +14,9 @@
 
 <script>
   const belowViewportVideo = document.getElementById("below_viewport");
-  let dataLoaded = false;
 
   async_test(t => {
     belowViewportVideo.addEventListener("loadeddata", t.step_func(() => {
-      dataLoaded = true;
       t.done();
     }));
 

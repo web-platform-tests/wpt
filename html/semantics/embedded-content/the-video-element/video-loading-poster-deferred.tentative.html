@@ -21,10 +21,8 @@
   const posterUrl = new URL(video.poster, location.href).href;
 
   t.step_timeout(() => {
-    t.step(() => {
       const entries = performance.getEntriesByName(posterUrl);
       assert_equals(entries.length, 0, "No network requests should be made for poster image");
-    });
     t.done();
   }, 1000);
 </script>

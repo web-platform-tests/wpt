@@ -42,3 +42,6 @@ features:
   files:
   - "*-imrgn-*"
   - "*-mrgn-*"
+- name: text-decoration
+  files:
+  - c543-txt-decor-000.xht

@@ -17,12 +17,14 @@ __wptrunner__ = {
     "product": "servo",
     "check_args": "check_args",
     "browser": {None: "ServoBrowser",
-                "wdspec": "ServoWdspecBrowser"},
+                "wdspec": "ServoWdspecBrowser",
+                "aamspec": "ServoWdspecBrowser"},
     "executor": {
         "crashtest": "ServoCrashtestExecutor",
         "testharness": "ServoTestharnessExecutor",
         "reftest": "ServoRefTestExecutor",
         "wdspec": "WdspecExecutor",
+        "aamspec": "WdspecExecutor",
     },
     "browser_kwargs": "browser_kwargs",
     "executor_kwargs": "executor_kwargs",
@@ -53,7 +55,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     rv = base_executor_kwargs(test_type, test_environment, run_info_data, **kwargs)
     rv["pause_after_test"] = kwargs["pause_after_test"]
     rv["headless"] = kwargs.get("headless", False)
-    if test_type == "wdspec":
+    if test_type == "wdspec" || test_type == "aamspec":
         rv["capabilities"] = {}
     return rv
 

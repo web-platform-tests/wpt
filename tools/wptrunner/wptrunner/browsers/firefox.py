@@ -41,12 +41,14 @@ from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # no
 __wptrunner__ = {"product": "firefox",
                  "check_args": "check_args",
                  "browser": {None: "FirefoxBrowser",
-                             "wdspec": "FirefoxWdSpecBrowser"},
+                             "wdspec": "FirefoxWdSpecBrowser",
+                             "aamspec": "FirefoxWdSpecBrowser"},
                  "executor": {"crashtest": "MarionetteCrashtestExecutor",
                               "testharness": "MarionetteTestharnessExecutor",
                               "reftest": "MarionetteRefTestExecutor",
                               "print-reftest": "MarionettePrintRefTestExecutor",
-                              "wdspec": "MarionetteWdspecExecutor"},
+                              "wdspec": "MarionetteWdspecExecutor",
+                              "aamspec": "MarionetteWdspecExecutor",},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
@@ -72,7 +74,7 @@ def get_timeout_multiplier(test_type, run_info_data, **kwargs):
             return 4 * multiplier
         else:
             return 2 * multiplier
-    elif test_type == "wdspec":
+    elif test_type == "wdspec" or test_type == "aamspec":
         if (run_info_data.get("asan") or
             run_info_data.get("ccov") or
             run_info_data.get("debug")):
@@ -127,7 +129,7 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
                       "gmp_path": kwargs["gmp_path"] if "gmp_path" in kwargs else None,
                       "debug_test": kwargs["debug_test"]}
 
-    if test_type == "wdspec":
+    if test_type == "wdspec" or test_type == "aamspec":
         browser_kwargs["webdriver_binary"] = kwargs["webdriver_binary"]
         browser_kwargs["webdriver_args"] = kwargs["webdriver_args"].copy()
 
@@ -173,7 +175,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
             else:
                 cache_screenshots = major_version < 14
         executor_kwargs["cache_screenshots"] = cache_screenshots
-    if test_type == "wdspec":
+    if test_type == "wdspec" or test_type == "aamspec":
         options = {"args": []}
         if kwargs["binary"]:
             executor_kwargs["webdriver_args"].extend(["--binary", kwargs["binary"]])
@@ -774,7 +776,7 @@ class ProfileCreator:
         if self.test_type == "print-reftest":
             profile.set_preferences({"print.always_print_silent": True})
 
-        if self.test_type == "wdspec":
+        if self.test_type == "wdspec" or self.test_type == "aamspec":
             profile.set_preferences({"remote.prefs.recommended": True})
             profile.set_preferences({
                 "geo.provider.network.url": "https://web-platform.test:8444/webdriver/tests/support/http_handlers/geolocation_override.py"
@@ -973,6 +975,7 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
 
         self.env = self.get_env(binary, debug_info, headless, gmp_path, chaos_mode_flags, e10s)
 
+        # Todo: need test type to use "aam" test in profile_creator_cls
         profile_creator = profile_creator_cls(logger,
                                               prefs_root,
                                               config,

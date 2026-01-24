@@ -40,7 +40,7 @@ class Image:
 
     def save(self, f, type):
         assert type == "BMP"
-        # 54 bytes of preambule + image color data.
+        # 54 bytes of preamble + image color data.
         filesize = 54 + 3 * self.width * self.height
         # 14 bytes of header.
         bmpfileheader = bytearray([ord('B'), ord('M')] + self._int_to_bytes(filesize) +

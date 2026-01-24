@@ -118,21 +118,24 @@ def test_promise_reject_timeout(session):
     assert_error(response, "script timeout")
 
 
-def test_returned_promise_fulfilled(session):
+def test_returned_promise_fulfilled_over_callback(session):
+    session.timeouts.script = 1
     response = execute_async_script(session, """
         let resolve = arguments[0];
-        setTimeout(() => resolve('callback'), 50);
-        return Promise.resolve('promise');
+        resolve('callback');
+        return new Promise((resolve) => {
+          setTimeout(() => resolve('promise'), 100);
+        });
         """)
     assert_success(response, "promise")
 
 
-def test_returned_promise_rejected(session):
-    session.timeouts.script = .1
+def test_returned_promise_rejected_over_callback(session):
+    session.timeouts.script = 1
     response = execute_async_script(session, """
-        return Promise.reject(new Error ('my error'));
+        return Promise.reject(new Error('my error'));
         """)
-    assert_error(response, "javascript error")
+    assert_error(response, "javascript error", "my error")
 
 
 def test_returned_poisoned_thenable(session):
@@ -140,4 +143,4 @@ def test_returned_poisoned_thenable(session):
     response = execute_async_script(session, """
         return { get then() { thow new Error('my error'); } };
         """)
-    assert_error(response, "javascript error")
+    assert_error(response, "javascript error", "my error")

@@ -15,17 +15,9 @@ features:
   files:
   - c534-bgre-*
   - c534-bgreps-*
-- name: width-height
+- name: list-style
   files:
-  - '*width*'
-  - '*height*'
-  - '*blockw*'
-- name: word-spacing
-  files:
-  - c541-word-sp*
-- name: letter-spacing
-  files:
-  - c542-letter-sp-*
+  - c56*-list*
 - name: font-size
   files:
   - c526-font-sz-*
@@ -35,7 +27,24 @@ features:
 - name: import
   files:
   - c11-import-000.xht
+- name: letter-spacing
+  files:
+  - c542-letter-sp-*
 - name: margin
   files:
   - "*-imrgn-*"
   - "*-mrgn-*"
+- name: text-decoration
+  files:
+  - c543-txt-decor-000.xht
+- name: text-transform
+  files:
+  - c545-txttrans-000.xht
+- name: width-height
+  files:
+  - '*width*'
+  - '*height*'
+  - '*blockw*'
+- name: word-spacing
+  files:
+  - c541-word-sp*

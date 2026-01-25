@@ -7,6 +7,17 @@ features:
   - elementFromPoint*
   - elementsFromPoint*
   - negativeMargins.html
+- name: getboxquads
+  files:
+  - cssom-getBoxQuads-*
+- name: matchmedia
+  files:
+  - matchMedia*
+  - MediaQueryList*
+- name: mouse-events
+  files:
+  - mouseEvent-offsetXY-svg.html
+  - mouseEvent.html
 - name: screen
   files:
   - Screen-pixelDepth-Screen-colorDepth001.html
@@ -31,10 +42,6 @@ features:
   files:
   - scrollIntoView-*
   - scrollintoview.html
-- name: mouse-events
-  files:
-  - mouseEvent-offsetXY-svg.html
-  - mouseEvent.html
 - name: scroll-behavior
   files:
   - scroll-behavior-*

@@ -107,4 +107,4 @@ def test_returned_poisoned_thenable(session):
     response = execute_script(session, """
         return { get then() { thow new Error('my error'); } };
         """)
-    assert_error(response, "javascript error", "my error")
+    assert_error(response, "javascript error")

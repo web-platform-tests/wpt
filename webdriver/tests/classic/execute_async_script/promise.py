@@ -122,10 +122,8 @@ def test_returned_promise_fulfilled_over_callback(session):
     session.timeouts.script = 1
     response = execute_async_script(session, """
         let resolve = arguments[0];
-        resolve('callback');
-        return new Promise((resolve) => {
-          setTimeout(() => resolve('promise'), 100);
-        });
+        setTimeout(() => resolve('callback'), 200);
+        return Promise.resolve('promise');
         """)
     assert_success(response, "promise")
 

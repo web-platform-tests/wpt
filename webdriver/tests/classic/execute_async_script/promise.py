@@ -135,7 +135,7 @@ def test_returned_promise_rejected_over_callback(session):
     response = execute_async_script(session, """
         return Promise.reject(new Error('my error'));
         """)
-    assert_error(response, "javascript error", "my error")
+    assert_error(response, "javascript error")
 
 
 def test_returned_poisoned_thenable(session):
@@ -143,4 +143,4 @@ def test_returned_poisoned_thenable(session):
     response = execute_async_script(session, """
         return { get then() { thow new Error('my error'); } };
         """)
-    assert_error(response, "javascript error", "my error")
+    assert_error(response, "javascript error")

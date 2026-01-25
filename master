@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to URL Tool</title>
+</head>
+<body>
+    <h1>Upload an Image to Get a URL</h1>
+    <input type="file" id="imageInput" accept="image/*">
+    <button id="uploadButton">Upload</button>
+    <p id="imageUrl"></p>
+
+    <script src="script.js"></script>
+</body>
+</html>

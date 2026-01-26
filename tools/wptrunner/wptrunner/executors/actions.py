@@ -594,6 +594,21 @@ class WebExtensionUninstallAction:
         extension_id = payload["extension_id"]
         return self.protocol.web_extensions.uninstall_web_extension(extension_id)
 
+class TestAccessibilityAPIAction:
+    name = "test_accessibility_api"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        dom_id = payload["dom_id"]
+        test = payload["test"]
+        api = payload["api"]
+        url = payload["url"]
+        return self.protocol.platform_accessibility.test_accessibility_api(dom_id, test, api, url)
+
+
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -640,4 +655,5 @@ actions = [ClickAction,
            GetGlobalPrivacyControlAction,
            SetGlobalPrivacyControlAction,
            WebExtensionInstallAction,
-           WebExtensionUninstallAction]
+           WebExtensionUninstallAction,
+           TestAccessibilityAPIAction]

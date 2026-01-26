@@ -21,7 +21,6 @@
 
   // Step 1: Not visible => check initial dimensions.
   t.step_timeout(() => {
-    t.step(() => {
       const initialWidth = video.offsetWidth;
       const initialHeight = video.offsetHeight;
 
@@ -45,8 +44,5 @@
         });
         t.done();
       }, 2000);
-    });
   }, 2000);
 </script>
-</body>
-</html>

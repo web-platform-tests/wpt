@@ -5,6 +5,7 @@
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
 <div id="main"></div>
 </body>
 
@@ -15,24 +16,7 @@ async_test(function (t) {
     assert_implements(window.PerformancePaintTiming, "Paint Timing isn't supported.");
     document.body.style.backgroundColor = "#AA0000";
 
-    function testPaintEntries() {
-      const bufferedEntries = performance.getEntriesByType('paint');
-      if (bufferedEntries.length < 1) {
-        t.step_timeout(function() {
-          testPaintEntries();
-        }, 20);
-        return;
-      }
-      t.step(function() {
-        assert_equals(bufferedEntries.length, 1, "FP should fire for background color, not FCP");
-        assert_equals(bufferedEntries[0].entryType, "paint");
-        assert_equals(bufferedEntries[0].name, "first-paint");
-        t.done();
-      });
-    }
-    t.step(function() {
-      testPaintEntries();
-    })
+    assertFirstPaint(t, 20);
 }, "First paint fires due to background color. No FCP");
 </script>
 <footer>

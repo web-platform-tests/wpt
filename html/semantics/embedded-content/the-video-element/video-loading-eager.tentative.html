@@ -10,17 +10,20 @@
   }
 </style>
 
-<video id="below_viewport" class="below-viewport" src="/media/A4.mp4?pipe=trickle(d2)" loading="eager"></video>
-
 <script>
-  const belowViewportVideo = document.getElementById("below_viewport");
-
   async_test(t => {
-    belowViewportVideo.addEventListener("loadeddata", t.step_func(() => {
-      t.done();
-    }));
+    const video = document.createElement("video");
+    video.id = "below_viewport";
+    video.className = "below-viewport";
+    video.src = "/media/A4.mp4?pipe=trickle(d2)";
+    video.loading = "eager";
 
-    //if data is not loaded after 5 seconds, assert unreached
+    video.addEventListener("loadeddata", () => {
+      t.done();
+    });
+
+    document.body.appendChild(video);
+
     t.step_timeout(() => {
       assert_unreached("Eager video should load data immediately");
     }, 5000);

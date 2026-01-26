@@ -3,22 +3,24 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<video id="target" src="/media/A4.mp4?pipe=trickle(d2)" loading="lazy"></video>
-
 <script>
-  const video = document.getElementById("target");
-
   let windowLoadFired = false;
 
   async_test(t => {
-    window.addEventListener("load", t.step_func(() => {
-      windowLoadFired = true;
-    }));
+    const video = document.createElement("video");
+    video.id = "target";
+    video.src = "/media/A4.mp4?pipe=trickle(d2)";
+    video.loading = "lazy";
 
-    video.addEventListener("loadstart", t.step_func(() => {
+    window.addEventListener("load", () => {
+      windowLoadFired = true;
+    });
+
+    video.addEventListener("loadstart", () => {
       assert_true(windowLoadFired, "Window load event should fire before loadstart for lazy video in viewport");
       t.done();
-    }));
+    });
 
+    document.body.appendChild(video);
   }, "In-viewport video with loading='lazy' fires window load before loadstart");
 </script>

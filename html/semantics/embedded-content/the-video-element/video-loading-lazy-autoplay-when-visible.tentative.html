@@ -10,31 +10,33 @@
   }
 </style>
 
-<video id="target" src="/media/A4.mp4" loading="lazy" muted playsinline autoplay width="100" height="100"></video>
-
 <script>
-  const video = document.getElementById("target");
-
   const t = async_test(
     "Video with loading=lazy and autoplay does not play while not visible, then plays once scrolled into view"
   );
+
+  const video = document.createElement("video");
+  video.id = "target";
+  video.src = "/media/A4.mp4";
+  video.loading = "lazy";
+  video.muted = true;
+  video.playsInline = true;
+  video.autoplay = true;
+  video.width = 100;
+  video.height = 100;
+
   let scrolledIntoView = false;
 
+  video.addEventListener("play", () => {
+    assert_true(scrolledIntoView, "Video should fire play event after scrolling into view");
+    t.done();
+  });
+
+  document.body.appendChild(video);
+
   t.step_timeout(() => {
-    // Verify video has not played before scrolling
-    t.step(() => {
-      assert_true(video.paused, "Video should be paused when not visible in viewport");
-    });
+    assert_true(video.paused, "Video should be paused when not visible in viewport");
 
-    // bind to play event to assert true that play has begun after scroll has been called
-    video.addEventListener("play", () => {
-      t.step(() => {
-        assert_true(scrolledIntoView, "Video should fire play event after scrolling into view");
-      });
-      t.done();
-    });
-
-    // scroll into view and set scrolledIntoView to true
     step_timeout(() => {
       scrolledIntoView = true;
       video.scrollIntoView();

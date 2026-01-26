@@ -10,20 +10,24 @@
   }
 </style>
 
-<video id="target" src="/media/A4.mp4" loading="lazy" muted playsinline autoplay></video>
-
 <script>
   const t = async_test(
     "Video with loading=lazy and autoplay that is not visible in viewport does not load video data or autoplay"
   );
 
-  const video = document.getElementById("target");
+  const video = document.createElement("video");
+  video.id = "target";
+  video.src = "/media/A4.mp4";
+  video.loading = "lazy";
+  video.muted = true;
+  video.playsInline = true;
+  video.autoplay = true;
 
   video.addEventListener("loadstart", () => {
-    t.step(() => {
-      assert_unreached("Video should not fire loadstart event when not visible in viewport");
-    });
+    assert_unreached("Video should not fire loadstart event when not visible in viewport");
   });
+
+  document.body.appendChild(video);
 
   t.step_timeout(() => {
     assert_equals(video.readyState, HTMLMediaElement.HAVE_NOTHING);

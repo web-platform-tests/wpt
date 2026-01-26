@@ -1,4 +1,6 @@
 # mypy: allow-untyped-defs
+from collections.abc import Mapping
+from typing import Any
 
 import json
 import os
@@ -37,6 +39,7 @@ from .protocol import (AccessibilityProtocolPart,
                        GlobalPrivacyControlProtocolPart,
                        PrefsProtocolPart,
                        PrintProtocolPart,
+                       ProfilerProtocolPart,
                        Protocol,
                        SelectorProtocolPart,
                        SendKeysProtocolPart,
@@ -398,6 +401,43 @@ class MarionetteAssertsProtocolPart(AssertsProtocolPart):
 
         return sum(counts)
 
+
+class MarionetteProfilerProtocolPart(ProfilerProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def record_profile(self):
+        script = """
+const callback = arguments[arguments.length - 1];
+
+let filename =
+  Services.profiler.IsActive() &&
+  Services.env.get("MOZ_PROFILER_SHUTDOWN");
+if (!filename) {
+  callback()
+}
+Services.profiler
+  .dumpProfileToFileAsync(filename)
+  .then(() => Services.profiler.StopProfiler())
+  .then(callback);
+"""
+        with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
+            self.marionette.execute_async_script(script)
+
+    def add_marker(self, name: str, options: Mapping[str, Any], text: str) -> None:
+        self.logger.debug(f"Adding profile marker {name}")
+        script = """
+const name = arguments[0];
+const options = arguments[1];
+const text = arguments[2];
+
+ChromeUtils.addProfilerMarker(name, options, text);"""
+        with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
+            self.marionette.execute_script(script, script_args=[name, options, text])
+
+    def get_timestamp(self):
+        with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
+            return self.marionette.execute_script("return ChromeUtils.now()")
 
 class MarionetteSelectorProtocolPart(SelectorProtocolPart):
     def setup(self):
@@ -847,9 +887,18 @@ class MarionetteProtocol(Protocol):
                   MarionetteDevicePostureProtocolPart,
                   MarionetteVirtualPressureSourceProtocolPart,
                   MarionetteDisplayFeaturesProtocolPart,
-                  MarionetteWebExtensionsProtocolPart]
+                  MarionetteWebExtensionsProtocolPart,
+                  MarionetteProfilerProtocolPart]
 
-    def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1, e10s=True, ccov=False):
+    def __init__(self,
+                 executor,
+                 browser,
+                 capabilities=None,
+                 timeout_multiplier=1,
+                 e10s=True,
+                 ccov=False,
+                 debug=False,
+                 firefox_profiler_mode=None):
         do_delayed_imports()
 
         super().__init__(executor, browser)
@@ -865,6 +914,9 @@ class MarionetteProtocol(Protocol):
         self.runner_handle = None
         self.e10s = e10s
         self.ccov = ccov
+        self.debug_build = debug
+        self.firefox_profiler_mode = firefox_profiler_mode
+        self.test_start_timestamp = None
 
     def connect(self):
         self.logger.debug("Connecting to Marionette on port %i" % self.marionette_port)
@@ -894,6 +946,8 @@ class MarionetteProtocol(Protocol):
     def teardown(self):
         if self.marionette and self.marionette.session_id:
             try:
+                if self.firefox_profiler_mode is not None:
+                    self.profiler.record_profile()
                 self.marionette._request_in_app_shutdown()
                 self.marionette.delete_session(send_request=False)
                 self.marionette.cleanup()
@@ -935,6 +989,36 @@ class MarionetteProtocol(Protocol):
                 self.prefs.set("network.proxy.autoconfig_url",
                                urljoin(self.executor.server_url("http"), pac))
 
+    def before_test(self, test):
+        index = test.url.rfind("/storage/")
+        if index != -1:
+            # Clear storage
+            self.storage.clear_origin(test.url)
+
+        if self.coverage.is_enabled:
+            self.coverage.reset()
+
+        if self.firefox_profiler_mode is not None:
+            self.test_start_timestamp = self.profiler.get_timestamp()
+
+    def after_test(self, test, result, subtest_results):
+        if result.status not in ("CRASH", "INTERNAL-ERROR"):
+            if self.firefox_profiler_mode is not None:
+                self.profiler.add_marker(f"TEST-{result.status}",
+                                         {"category": "Test",
+                                          "startTime": self.test_start_timestamp},
+                                         test.url)
+
+            if self.coverage.is_enabled:
+                self.coverage.dump()
+
+            if self.debug_build and test.test_type != "crashtest":
+                assertion_count = self.asserts.get()
+                if assertion_count is not None:
+                    result.extra["assertion_count"] = assertion_count
+        self.test_start_timestamp = None
+
+
 class ExecuteAsyncScriptRun(TimedRunner):
     def set_timeout(self):
         timeout = self.timeout
@@ -951,12 +1035,6 @@ class ExecuteAsyncScriptRun(TimedRunner):
             msg = "Lost marionette connection before starting test"
             self.logger.error(msg)
             return ("INTERNAL-ERROR", msg)
-
-    def before_run(self):
-        index = self.url.rfind("/storage/")
-        if index != -1:
-            # Clear storage
-            self.protocol.storage.clear_origin(self.url)
 
     def run_func(self):
         try:
@@ -992,7 +1070,8 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
 
     def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, debug_info=None, capabilities=None,
-                 debug=False, ccov=False, debug_test=False, **kwargs):
+                 debug=False, ccov=False, debug_test=False,
+                 firefox_profiler_mode=None, **kwargs):
         """Marionette-based executor for testharness.js tests"""
         TestharnessExecutor.__init__(self, logger, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
@@ -1002,12 +1081,13 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
                                            capabilities,
                                            timeout_multiplier,
                                            kwargs["e10s"],
-                                           ccov)
+                                           ccov,
+                                           debug=debug,
+                                           firefox_profiler_mode=firefox_profiler_mode)
         with open(os.path.join(here, "testharness_webdriver_resume.js")) as f:
             self.script_resume = f.read()
         self.close_after_done = close_after_done
         self.window_id = str(uuid.uuid4())
-        self.debug = debug
         self.debug_test = debug_test
 
         self.install_extensions = browser.extensions
@@ -1054,29 +1134,15 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
                                               self.test_url(test),
                                               timeout,
                                               self.extra_timeout).run()
-        # The format of data depends on whether the test ran to completion or not
-        # For asserts we only care about the fact that if it didn't complete, the
-        # status is in the first field.
-        status = None
-        if not success:
-            status = data[0]
-
-        extra = None
-        if self.debug and (success or status not in ("CRASH", "INTERNAL-ERROR")):
-            assertion_count = self.protocol.asserts.get()
-            if assertion_count is not None:
-                extra = {"assertion_count": assertion_count}
-
         if success:
-            return self.convert_result(test, data, extra=extra)
+            result, subtest_results = self.convert_result(test, data, extra=None)
+        else:
+            result, subtest_results = test.make_result(extra=None, *data), []
 
-        return (test.make_result(extra=extra, *data), [])
+        return result, subtest_results
 
     def do_testharness(self, protocol, url, timeout):
         protocol.testharness.close_old_windows(self.last_environment["protocol"])
-
-        if self.protocol.coverage.is_enabled:
-            self.protocol.coverage.reset()
 
         test_window = protocol.base.create_window()
         self.protocol.base.set_window(test_window)
@@ -1088,9 +1154,6 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
             self.protocol.debug.load_devtools()
 
         rv = protocol.testdriver.run(url, self.script_resume, test_window=test_window)
-
-        if self.protocol.coverage.is_enabled:
-            self.protocol.coverage.dump()
 
         return rv
 
@@ -1105,7 +1168,7 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                  reftest_screenshot="unexpected", ccov=False,
                  group_metadata=None, capabilities=None, debug=False,
                  browser_version=None, debug_test=False,
-                 cache_screenshots=True, **kwargs):
+                 cache_screenshots=True, firefox_profiler_mode=None, **kwargs):
         """Marionette-based executor for reftests"""
         RefTestExecutor.__init__(self,
                                  logger,
@@ -1116,7 +1179,8 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                                  debug_info=debug_info)
         self.protocol = MarionetteProtocol(self, browser, capabilities,
                                            timeout_multiplier, kwargs["e10s"],
-                                           ccov)
+                                           ccov, debug=debug,
+                                           firefox_profiler_mode=firefox_profiler_mode)
         implementation, implementation_kwargs = self.get_implementation(reftest_internal,
                                                                         reftest_screenshot,
                                                                         browser_version)
@@ -1126,7 +1190,6 @@ class MarionetteRefTestExecutor(RefTestExecutor):
         self.has_window = False
         self.original_pref_values = {}
         self.group_metadata = group_metadata
-        self.debug = debug
         self.debug_test = debug_test
         self.cache_screenshots = cache_screenshots
 
@@ -1183,7 +1246,7 @@ class MarionetteRefTestExecutor(RefTestExecutor):
     def on_environment_change(self, new_environment):
         self.protocol.on_environment_change(self.last_environment, new_environment)
 
-    def do_test(self, test):
+    def before_test(self, test):
         if not isinstance(self.implementation, InternalRefTestImplementation):
             if self.close_after_done and self.has_window:
                 self.protocol.marionette.close()
@@ -1206,26 +1269,19 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                     x=0, y=0, width=800 + offsets["width"], height=600 + offsets["height"])
                 self.has_window = True
 
-        if self.protocol.coverage.is_enabled:
-            self.protocol.coverage.reset()
+        super().before_test(test)
 
-        result = self.implementation.run_test(test)
+    def after_test(self, test, result, subtest_results):
+        super().after_test(test, result, subtest_results)
 
-        if self.protocol.coverage.is_enabled:
-            self.protocol.coverage.dump()
+        if result.status not in ("CRASH", "INTERNAL-ERROR"):
+            if self.debug_test and result.status in ["PASS", "FAIL", "ERROR"] and result.extra:
+                self.protocol.base.set_window(self.protocol.base.window_handles()[0])
+                self.protocol.debug.load_reftest_analyzer(test, result)
 
-        if self.debug:
-            assertion_count = self.protocol.asserts.get()
-            if "extra" not in result:
-                result["extra"] = {}
-            if assertion_count is not None:
-                result["extra"]["assertion_count"] = assertion_count
 
-        if self.debug_test and result["status"] in ["PASS", "FAIL", "ERROR"] and "extra" in result:
-            self.protocol.base.set_window(self.protocol.base.window_handles()[0])
-            self.protocol.debug.load_reftest_analyzer(test, result)
-
-        return self.convert_result(test, result)
+    def do_test(self, test):
+        return self.convert_result(test, self.implementation.run_test(test))
 
     def screenshot(self, test, viewport_size, dpi, page_ranges):
         # https://github.com/web-platform-tests/wpt/issues/7135
@@ -1334,7 +1390,7 @@ class MarionetteCrashtestExecutor(CrashtestExecutor):
 
     def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  debug_info=None, capabilities=None, debug=False,
-                 ccov=False, **kwargs):
+                 ccov=False, firefox_profiler_mode=None, **kwargs):
         """Marionette-based executor for testharness.js tests"""
         CrashtestExecutor.__init__(self, logger, browser, server_config,
                                    timeout_multiplier=timeout_multiplier,
@@ -1344,10 +1400,11 @@ class MarionetteCrashtestExecutor(CrashtestExecutor):
                                            capabilities,
                                            timeout_multiplier,
                                            kwargs["e10s"],
-                                           ccov)
+                                           ccov,
+                                           debug=debug,
+                                           firefox_profiler_mode=firefox_profiler_mode)
 
         self.original_pref_values = {}
-        self.debug = debug
 
         with open(os.path.join(here, "test-wait.js")) as f:
             self.wait_script = f.read() % {"classname": "test-wait"}
@@ -1371,29 +1428,15 @@ class MarionetteCrashtestExecutor(CrashtestExecutor):
                                               self.test_url(test),
                                               timeout,
                                               self.extra_timeout).run()
-        status = None
-        if not success:
-            status = data[0]
-
-        extra = None
-        if self.debug and (success or status not in ("CRASH", "INTERNAL-ERROR")):
-            assertion_count = self.protocol.asserts.get()
-            if assertion_count is not None:
-                extra = {"assertion_count": assertion_count}
-
         if success:
-            return self.convert_result(test, data)
+            result, subtest_result = self.convert_result(test, data)
+        else:
+            result, subtest_result = test.make_result(extra={}, *data), []
 
-        return (test.make_result(extra=extra, *data), [])
+        return result, subtest_result
 
     def do_crashtest(self, protocol, url, timeout):
-        if self.protocol.coverage.is_enabled:
-            self.protocol.coverage.reset()
-
         protocol.testdriver.run(url, self.wait_script)
-
-        if self.protocol.coverage.is_enabled:
-            self.protocol.coverage.dump()
 
         return {"status": "PASS",
                 "message": None}

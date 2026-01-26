@@ -1358,15 +1358,15 @@ class WebDriverRefTestExecutor(RefTestExecutor):
             self.protocol.webdriver.window.position = (2, 2)
         self.protocol.webdriver.window.size = (800 + width_offset, 600 + height_offset)
 
-        result = self.implementation.run_test(test)
+        result, subtest_results = self.convert_result(self.implementation.run_test(test))
 
         if (leak_part := getattr(self.protocol, "leak", None)) and (counters := leak_part.check()):
-            result.setdefault("extra", {})["leak_counters"] = counters
+            result.extra["leak_counters"] = counters
 
-        if self.debug_test and result["status"] in ["PASS", "FAIL", "ERROR"] and "extra" in result:
+        if self.debug_test and result.status in ["PASS", "FAIL", "ERROR"] and result.extra:
             self.protocol.debug.load_reftest_analyzer(test, result)
 
-        return self.convert_result(test, result)
+        return result, subtest_results
 
     def screenshot(self, test, viewport_size, dpi, page_ranges):
         # https://github.com/web-platform-tests/wpt/issues/7135

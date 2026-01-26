@@ -99,6 +99,12 @@ class Protocol:
         for cls in self.implements:
             getattr(self, cls.name).teardown()
 
+    def before_test(self, test):
+        pass
+
+    def after_test(self, test, result, sbutest_results):
+        pass
+
 
 class ProtocolPart:
     """Base class  for all ProtocolParts.
@@ -957,6 +963,21 @@ class LeakProtocolPart(ProtocolPart):
         return None
 
 
+class ProfilerProtocolPart(ProtocolPart):
+    """Protocol part for controlling a browser profiler."""
+    __metaclass__ = ABCMeta
+
+    name = "profiler"
+
+    @abstractmethod
+    def record_profile(self) -> None:
+        ...
+
+    @abstractmethod
+    def add_marker(self, name: str, options: Mapping[str, Any], text: str) -> None:
+        ...
+
+
 class CoverageProtocolPart(ProtocolPart):
     """Protocol part for collecting per-test coverage data."""
     __metaclass__ = ABCMeta
@@ -1147,7 +1168,7 @@ class DebugProtocolPart(ProtocolPart):
         debug_test_logger.add_handler(mozlog.handlers.StreamHandler(output, formatter=mozlog.formatters.TbplFormatter()))
         debug_test_logger.test_start(test.id)
         # Always use PASS as the expected value so we get output even for expected failures
-        debug_test_logger.test_end(test.id, result["status"], "PASS", extra=result.get("extra"))
+        debug_test_logger.test_end(test.id, result.status, "PASS", extra=result.extra)
 
         self.parent.base.load(urljoin(self.parent.executor.server_url("https"),
                               "/common/third_party/reftest-analyzer.xhtml#log=%s" %

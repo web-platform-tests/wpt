@@ -21,7 +21,6 @@
 
   // Step 1: Not visible => check initial dimensions.
   t.step_timeout(() => {
-    t.step(() => {
       const initialWidth = video.offsetWidth;
       const initialHeight = video.offsetHeight;
 
@@ -29,7 +28,6 @@
       video.scrollIntoView();
 
       t.step_timeout(() => {
-        t.step(() => {
           const finalWidth = video.offsetWidth;
           const finalHeight = video.offsetHeight;
           assert_not_equals(
@@ -42,11 +40,7 @@
             initialHeight,
             "Video height should change after poster loads"
           );
-        });
         t.done();
       }, 2000);
-    });
   }, 2000);
 </script>
-</body>
-</html>

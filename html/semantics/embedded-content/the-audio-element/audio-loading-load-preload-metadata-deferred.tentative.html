@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  #target {
+    position: absolute;
+    top: 1000vh;
+  }
+</style>
+
+<audio id="target" src="/media/sine440.mp3" loading="lazy" preload="metadata" controls></audio>
+
+<script>
+  const t = async_test(
+    "Audio with loading=lazy and preload=metadata that is not visible in viewport does not load audio data"
+  );
+
+  const audio = document.getElementById("target");
+
+  t.step_timeout(() => {
+      assert_equals(audio.readyState, HTMLMediaElement.HAVE_NOTHING);
+    t.done();
+  }, 1000);
+</script>
+</body>
+</html>

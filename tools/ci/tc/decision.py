@@ -1,4 +1,5 @@
 # mypy: allow-untyped-defs
+from typing import Optional
 
 import argparse
 import json
@@ -7,6 +8,7 @@ import os
 import re
 import subprocess
 from collections import OrderedDict
+from typing import Any, Mapping
 
 import taskcluster
 
@@ -79,13 +81,20 @@ def get_run_jobs(event):
     return all_jobs
 
 
-def get_extra_jobs(event):
+def get_commit_message(event: Mapping[str, Any]) -> Optional[str]:
     body = None
-    jobs = set()
     if "commits" in event and event["commits"]:
         body = event["commits"][0]["message"]
     elif "pull_request" in event:
         body = event["pull_request"]["body"]
+    if body is not None:
+        assert isinstance(body, str)
+    return body
+
+
+def get_extra_jobs(event):
+    jobs = set()
+    body = get_commit_message(event)
 
     if not body:
         return jobs
@@ -182,6 +191,7 @@ def build_full_command(event, task):
         "fetch_ref": fetch_ref,
         "task_cmd": task["command"],
         "install_str": "",
+        "commit_args": ""
     }
 
     options = task.get("options", {})
@@ -218,6 +228,18 @@ def build_full_command(event, task):
                              for item in install_packages)
         cmd_args["install_str"] = "\n".join("sudo %s;" % item for item in install_items)
 
+    commit_args_name = task.get("commit-args-name")
+    if commit_args_name:
+        body = get_commit_message(event)
+        if body:
+            regexp = re.compile(r"\s*" + commit_args_name + r":(.*)$")
+            commit_args = []
+            for line in body.splitlines():
+                m = regexp.match(line)
+                if m:
+                    commit_args.append(m.group(1).strip())
+            cmd_args["commit_args"] = " ".join(commit_args)
+
     return ["/bin/bash",
             "--login",
             "-xc",
@@ -227,7 +249,7 @@ def build_full_command(event, task):
   %(fetch_ref)s;
 %(install_str)s
 cd web-platform-tests;
-./tools/ci/run_tc.py %(options_str)s -- %(task_cmd)s;
+./tools/ci/run_tc.py %(options_str)s -- %(task_cmd)s %(commit_args)s;
 """ % cmd_args]
 
 

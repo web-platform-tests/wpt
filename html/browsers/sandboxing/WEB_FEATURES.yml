@@ -12,4 +12,3 @@ features:
   - "!sandbox-navigation-timing-iframe.tentative.html"
   - "!sandbox-navigation-timing.tentative.html"
   - "!sandbox-new-execution-context-iframe.html"
-  - "!sandbox-window-open-srcdoc.html"

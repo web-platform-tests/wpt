@@ -1,7 +1,13 @@
 features:
+- name: letter-spacing
+  files:
+  - letter-spacing-*
 - name: line-break
   files:
   - line-break-*
+- name: hanging-punctuation
+  files:
+  - hanging-punctuation-*
 - name: overflow-wrap
   files:
   - overflow-wrap*
@@ -33,6 +39,9 @@ features:
 - name: tab-size
   files:
   - tab-size-*
+- name: text-autospace
+  files:
+  - text-autospace-*
 - name: text-align
   files:
   - "text-align-all-*"
@@ -42,3 +51,9 @@ features:
 - name: text-align-last
   files:
   - "text-align-last-*"
+- name: text-transform
+  files:
+  - text-transform-*
+- name: text-justify
+  files:
+  - text-justify-*

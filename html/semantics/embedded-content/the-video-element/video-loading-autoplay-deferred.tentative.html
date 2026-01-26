@@ -4,7 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <style>
-  #target {
+  .below-viewport {
     position: absolute;
     top: 1000vh;
   }
@@ -17,9 +17,9 @@
   );
 
   const video = document.createElement("video");
-  video.id = "target";
   video.loading = "lazy";
   video.src = "/media/A4.mp4";
+  video.className = "below-viewport";
   video.muted = true;
   video.playsInline = true;
   video.autoplay = true;

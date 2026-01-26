@@ -4,20 +4,20 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <style>
-  #target {
+  .below-viewport {
     position: absolute;
     top: 1000vh;
   }
 </style>
 
-<audio id="target" src="/media/sine440.mp3" loading="lazy" controls></audio>
+<audio class="below-viewport" src="/media/sine440.mp3" loading="lazy" controls></audio>
 
 <script>
   const t = async_test(
     "Audio with loading=lazy that is not visible in viewport does not load audio data"
   );
 
-  const audio = document.getElementById("target");
+  const audio = document.querySelector("audio");
 
   t.step_timeout(() => {
     assert_equals(audio.readyState, HTMLMediaElement.HAVE_NOTHING);

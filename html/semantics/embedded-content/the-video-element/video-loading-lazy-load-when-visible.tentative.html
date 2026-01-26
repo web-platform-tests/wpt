@@ -4,16 +4,16 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <style>
-  #target {
+  .below-viewport {
     position: absolute;
     top: 1000vh;
   }
 </style>
 
-<video id="target" controls src="/media/A4.mp4" loading="lazy"></video>
+<video class="below-viewport" controls src="/media/A4.mp4" loading="lazy"></video>
 
 <script>
-  const video = document.getElementById("target");
+  const video = document.querySelector("video");
 
   const t = async_test(
     "Video with loading=lazy does not fetch video while not visible, then fetches video once scrolled into view"

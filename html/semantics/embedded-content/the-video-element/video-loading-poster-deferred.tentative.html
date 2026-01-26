@@ -4,7 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <style>
-  #target {
+  .below-viewport {
     position: absolute;
     top: 1000vh;
   }
@@ -16,10 +16,10 @@
   );
 
   const video = document.createElement("video");
-  video.id = "target";
   video.loading = "lazy";
   video.src = "/media/A4.mp4";
   video.poster = "/media/1x1-green.png?t=" + Date.now();
+  video.className = "below-viewport";
   const posterUrl = new URL(video.poster, location.href).href;
 
   document.body.appendChild(video);

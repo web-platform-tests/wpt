@@ -4,7 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <style>
-  #target {
+  .below-viewport {
     position: absolute;
     top: 1000vh;
   }
@@ -17,9 +17,9 @@
   );
 
   const audio = document.createElement("audio");
-  audio.id = "target";
   audio.loading = "lazy";
   audio.src = "/media/sine440.mp3";
+  audio.className = "below-viewport";
   audio.autoplay = true;
   audio.controls = true;
 

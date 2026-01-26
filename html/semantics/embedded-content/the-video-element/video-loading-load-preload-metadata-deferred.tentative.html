@@ -4,20 +4,20 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <style>
-  #target {
+  .below-viewport {
     position: absolute;
     top: 1000vh;
   }
 </style>
 
-<video id="target" src="/media/A4.mp4" loading="lazy" preload="metadata"></video>
+<video class="below-viewport" src="/media/A4.mp4" loading="lazy" preload="metadata"></video>
 
 <script>
   const t = async_test(
     "Video with loading=lazy and preload=metadata that is not visible in viewport does not load video data"
   );
 
-  const video = document.getElementById("target");
+  const video = document.querySelector("video");
 
   t.step_timeout(() => {
       assert_equals(video.readyState, HTMLMediaElement.HAVE_NOTHING);

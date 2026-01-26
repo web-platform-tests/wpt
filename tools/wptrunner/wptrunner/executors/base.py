@@ -313,6 +313,12 @@ class TestExecutor:
         as implemented by the `--rerun` command-line argument."""
         pass
 
+    def before_test(self, test):
+        self.protocol.before_test(test)
+
+    def after_test(self, test, result, subtest_results):
+        self.protocol.after_test(test, result, subtest_results)
+
     def run_test(self, test):
         """Run a particular test.
 
@@ -320,20 +326,22 @@ class TestExecutor:
         try:
             if test.environment != self.last_environment:
                 self.on_environment_change(test.environment)
-            result = self.do_test(test)
+            self.before_test(test)
+            result, subtest_results = self.do_test(test)
         except Exception as e:
             exception_string = traceback.format_exc()
             message = f"Exception in TestExecutor.run:\n{exception_string}"
             self.logger.warning(message)
             result = self.result_from_exception(test, e, exception_string)
 
+        self.after_test(test, result, subtest_results)
         # log result of parent test
-        if result[0].status == "ERROR":
-            self.logger.debug(result[0].message)
+        if result.status == "ERROR":
+            self.logger.debug(result.message)
 
         self.last_environment = test.environment
 
-        self.runner.send_message("test_ended", test, result)
+        self.runner.send_message("test_ended", test, (result, subtest_results))
 
     def server_url(self, protocol, subdomain=False):
         return server_url(self.server_config, protocol, subdomain)
@@ -708,7 +716,7 @@ class WdspecExecutor(TestExecutor):
         if success:
             return self.convert_result(test, data)
 
-        return (test.make_result(*data), [])
+        return test.make_result(*data), []
 
     def do_wdspec(self, path, timeout):
         session_config = {"host": self.browser.host,

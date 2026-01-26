@@ -133,7 +133,10 @@ def compile_ignore_rule(rule: Text) -> Pattern[Text]:
     return re.compile("^%s$" % "/".join(re_parts))
 
 
-def repo_files_changed(revish: Text, include_uncommitted: bool = False, include_new: bool = False) -> Set[Text]:
+def repo_files_changed(wpt_root: Text,
+                       revish: Text,
+                       include_uncommitted: bool = False,
+                       include_new: bool = False) -> Set[Text]:
     git = get_git_cmd(wpt_root)
     if git is None:
         raise Exception("git not found")
@@ -190,7 +193,8 @@ def exclude_ignored(files: Iterable[Text], ignore_rules: Optional[Sequence[Text]
     return changed, ignored
 
 
-def files_changed(revish: Text,
+def files_changed(repo_root: Text,
+                  revish: Text,
                   ignore_rules: Optional[Sequence[Text]] = None,
                   include_uncommitted: bool = False,
                   include_new: bool = False
@@ -201,7 +205,8 @@ def files_changed(revish: Text,
     variety of forms; see `git diff --help` for details. Files in the diff that
     are matched by `ignore_rules` are excluded.
     """
-    files = repo_files_changed(revish,
+    files = repo_files_changed(repo_root or wpt_root,
+                               revish,
                                include_uncommitted=include_uncommitted,
                                include_new=include_new)
     if not files:
@@ -370,7 +375,8 @@ def get_revish(**kwargs: Any) -> Text:
 
 def run_changed_files(**kwargs: Any) -> None:
     revish = get_revish(**kwargs)
-    changed, _ = files_changed(revish,
+    changed, _ = files_changed(wpt_root,
+                               revish,
                                kwargs["ignore_rule"],
                                include_uncommitted=kwargs["modified"],
                                include_new=kwargs["new"])
@@ -384,7 +390,8 @@ def run_changed_files(**kwargs: Any) -> None:
 
 def run_tests_affected(**kwargs: Any) -> None:
     revish = get_revish(**kwargs)
-    changed, _ = files_changed(revish,
+    changed, _ = files_changed(wpt_root,
+                               revish,
                                kwargs["ignore_rule"],
                                include_uncommitted=kwargs["modified"],
                                include_new=kwargs["new"])

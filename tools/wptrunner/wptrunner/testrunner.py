@@ -181,7 +181,7 @@ class TestRunner:
         rerun = self.executor.wait()
         self.send_message("wait_finished", rerun)
 
-    def send_message(self, command, *args):
+    def send_message(self, command: str, *args: Any) -> None:
         self.result_queue.put((command, args))
 
 

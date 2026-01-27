@@ -19,7 +19,7 @@ import mozinfo
 import mozleak
 import mozversion
 try:
-    from mozgeckoprofiler import symbolicate_profile_json, view_gecko_profile
+    from mozgeckoprofiler import symbolicate_profile_json, view_gecko_profile  # type: ignore
 except ImportError:
     symbolicate_profile_json = None
     view_gecko_profile = None
@@ -377,7 +377,7 @@ class FirefoxProfiler:
             if self.path is not None:
                 path = self.path
             elif "MOZ_PROFILER_SHUTDOWN" in env:
-                path = Path(os.getenv("MOZ_PROFILER_SHUTDOWN"))
+                path = Path(env["MOZ_PROFILER_SHUTDOWN"])
             elif self.mode == "view":
                 path = Path(tempfile.mkdtemp())
                 self.cleanup = True

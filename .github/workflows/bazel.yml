@@ -1,0 +1,31 @@
+name: Bazel files check
+
+permissions: read-all
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '*.bazel'
+      - '*.bzl'
+  pull_request:
+    paths:
+      - '*.bazel'
+      - '*.bzl'
+
+jobs:
+  check:
+    name: Validate formatting
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup buildifier
+      uses: jbajic/setup-buildifier@v1
+      with:
+        buildifier-version: '7.3.1'
+
+    - name: Run buildifier
+      run: |
+        buildifier -mode check -r .

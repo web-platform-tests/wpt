@@ -424,7 +424,17 @@ def get_parser():
 
 
 def run(venv, **kwargs):
-    queue = taskcluster.Queue({'rootUrl': os.environ['TASKCLUSTER_PROXY_URL']})
+    if "TASKCLUSTER_PROXY_URL" in os.environ:
+        queue = taskcluster.Queue({'rootUrl': os.environ['TASKCLUSTER_PROXY_URL']})
+    elif kwargs["dry_run"]:
+        if "event_path" not in kwargs:
+            logger.error("Missing --event-path for dry run")
+            return 1
+        queue = None
+    else:
+        logger.error("Missing --dry-run and TASKCLUSTER_PROXY_URL")
+        return 1
+
     event = get_event(queue, event_path=kwargs["event_path"])
 
     task_id_map = decide(event)

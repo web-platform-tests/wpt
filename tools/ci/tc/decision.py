@@ -84,11 +84,14 @@ def get_run_jobs(event):
 def get_commit_message(event: Mapping[str, Any]) -> Optional[str]:
     body = None
     if "commits" in event and event["commits"]:
+        logger.debug("Getting commit body from commits")
         body = event["commits"][0]["message"]
     elif "pull_request" in event:
+        logger.debug("Getting commit body from pull request")
         body = event["pull_request"]["body"]
     if body is not None:
         assert isinstance(body, str)
+    logger.info(f"Got commit body:\n{body}")
     return body
 
 
@@ -239,6 +242,7 @@ def build_full_command(event, task):
                 if m:
                     commit_args.append(m.group(1).strip())
             cmd_args["commit_args"] = " ".join(commit_args)
+            logger.debug(f"Got extra args {cmd_args['commit_args']} for {task['name']}")
 
     return ["/bin/bash",
             "--login",

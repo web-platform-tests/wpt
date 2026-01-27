@@ -3,13 +3,27 @@
 import collections
 import traceback
 from http.client import HTTPConnection
-
 from abc import ABCMeta, abstractmethod
-from typing import Any, Awaitable, Callable, ClassVar, Dict, List, Mapping, Optional, \
-    Tuple, Type, TYPE_CHECKING, Union
+from typing import (Any,
+                    Awaitable,
+                    Callable,
+                    ClassVar,
+                    Dict,
+                    List,
+                    Mapping,
+                    Optional,
+                    Tuple,
+                    Type,
+                    TYPE_CHECKING,
+                    Union)
+
+from mozlog.structuredlog import StructuredLogger
+
+from ..wpttest import Result, SubtestResult, Test
 
 if TYPE_CHECKING:
     from webdriver.bidi.undefined import Undefined
+    from ..testrunner import TestRunner
 
 
 def merge_dicts(target, source):
@@ -59,7 +73,7 @@ class Protocol:
         :returns: A boolean indicating whether the connection is still active."""
         return True
 
-    def setup(self, runner):
+    def setup(self, runner: "TestRunner") -> None:
         """Handle protocol setup, and send a message to the runner to indicate
         success or failure."""
         msg = None
@@ -84,25 +98,28 @@ class Protocol:
             raise
 
     @abstractmethod
-    def connect(self):
+    def connect(self) -> None:
         """Make a connection to the remote browser"""
         pass
 
     @abstractmethod
-    def after_connect(self):
+    def after_connect(self) -> None:
         """Run any post-connection steps. This happens after the ProtocolParts are
         initalized so can depend on a fully-populated object."""
         pass
 
-    def teardown(self):
+    def teardown(self) -> None:
         """Run cleanup steps after the tests are finished."""
         for cls in self.implements:
             getattr(self, cls.name).teardown()
 
-    def before_test(self, test):
+    def before_test(self, test: Test) -> None:
         pass
 
-    def after_test(self, test, result, sbutest_results):
+    def after_test(self,
+                   test: Test,
+                   result: Result,
+                   subtest_results: List[SubtestResult]) -> None:
         pass
 
 
@@ -119,20 +136,20 @@ class ProtocolPart:
         self.test_path = None
 
     @property
-    def logger(self):
+    def logger(self) -> StructuredLogger:
         """:returns: Current logger"""
         return self.parent.logger
 
-    def setup(self):
+    def setup(self) -> None:
         """Run any setup steps required for the ProtocolPart."""
         pass
 
-    def after_connect(self):
+    def after_connect(self) -> None:
         """Run any post-connection steps. This happens after the ProtocolParts are
         initalized so can depend on a fully-populated object."""
         pass
 
-    def teardown(self):
+    def teardown(self) -> None:
         """Run any teardown steps required for the ProtocolPart."""
         pass
 
@@ -163,7 +180,7 @@ class BaseProtocolPart(ProtocolPart):
         pass
 
     @abstractmethod
-    def wait(self):
+    def wait(self) -> bool:
         """Wait indefinitely for the browser to close.
 
         :returns: True to re-run the test, or False to continue with the next test"""
@@ -1185,7 +1202,7 @@ class ConnectionlessBaseProtocolPart(BaseProtocolPart):
     def set_timeout(self, timeout):
         pass
 
-    def wait(self):
+    def wait(self) -> bool:
         return False
 
     def set_window(self, handle):

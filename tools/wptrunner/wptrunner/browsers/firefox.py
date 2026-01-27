@@ -1,7 +1,7 @@
 # mypy: allow-untyped-defs
 import shutil
 from collections.abc import MutableMapping
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 import json
 import os
@@ -19,7 +19,7 @@ import mozinfo
 import mozleak
 import mozversion
 try:
-    from mozgeckoprofiler import symbolicate_profile_json, view_gecko_profile
+    from mozgeckoprofiler import symbolicate_profile_json, view_gecko_profile  # type: ignore
 except ImportError:
     symbolicate_profile_json = None
     view_gecko_profile = None
@@ -356,7 +356,7 @@ def setup_leak_report(leak_check, profile, env):
 
 class FirefoxProfiler:
     def __init__(self, logger: StructuredLogger,
-                 mode: Optional[Literal["view"] | Literal["save"]],
+                 mode: Optional[Union[Literal["view"], Literal["save"]]],
                  path: Optional[str],
                  symbols_path: Optional[str]):
         self.logger = logger
@@ -376,7 +376,7 @@ class FirefoxProfiler:
             if self.path is not None:
                 path = self.path
             elif "MOZ_PROFILER_SHUTDOWN" in env:
-                path = Path(os.getenv("MOZ_PROFILER_SHUTDOWN"))
+                path = Path(env["MOZ_PROFILER_SHUTDOWN"])
             elif self.mode == "view":
                 path = Path(tempfile.mkdtemp())
                 self.cleanup = True

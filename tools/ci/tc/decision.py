@@ -83,9 +83,9 @@ def get_run_jobs(event):
 
 def get_commit_message(event: Mapping[str, Any]) -> Optional[str]:
     body = None
-    if "commits" in event and event["commits"]:
+    if "head_commit" in event:
         logger.debug("Getting commit body from commits")
-        body = event["commits"][0]["message"]
+        body = event["head_commit"]["message"]
     elif "pull_request" in event:
         logger.debug("Getting commit body from pull request")
         body = event["pull_request"]["body"]

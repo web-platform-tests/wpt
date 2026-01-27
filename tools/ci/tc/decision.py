@@ -1,5 +1,5 @@
 # mypy: allow-untyped-defs
-from typing import Optional
+from typing import Optional, MutableMapping
 
 import argparse
 import json
@@ -8,11 +8,12 @@ import os
 import re
 import subprocess
 from collections import OrderedDict
-from typing import Any, Mapping
+from typing import Any, List, Mapping, Tuple, Set
 
 import taskcluster
 
 from . import taskgraph
+from tools.wpt import virtualenv
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -21,8 +22,12 @@ here = os.path.abspath(os.path.dirname(__file__))
 logging.basicConfig()
 logger = logging.getLogger()
 
+Event = Mapping[str, Any]
+Task = Mapping[str, Any]
+TcTask = Mapping[str, Any]
 
-def get_triggers(event):
+
+def get_triggers(event: Event) -> Tuple[bool, Optional[str]]:
     # Set some variables that we use to get the commits on the current branch
     ref_prefix = "refs/heads/"
     is_pr = "pull_request" in event
@@ -35,7 +40,7 @@ def get_triggers(event):
     return is_pr, branch
 
 
-def fetch_event_data(queue):
+def fetch_event_data(queue: taskcluster.Queue) -> Optional[str]:
     try:
         task_id = os.environ["TASK_ID"]
     except KeyError:
@@ -45,10 +50,11 @@ def fetch_event_data(queue):
 
     task_data = queue.task(task_id)
 
-    return task_data.get("extra", {}).get("github_event")
+    event: str = task_data.get("extra", {}).get("github_event")
+    return event
 
 
-def filter_triggers(event, all_tasks):
+def filter_triggers(event: Event, all_tasks: Mapping[str, Task]) -> MutableMapping[str, Task]:
     is_pr, branch = get_triggers(event)
     triggered = OrderedDict()
     for name, task in all_tasks.items():
@@ -64,7 +70,7 @@ def filter_triggers(event, all_tasks):
     return triggered
 
 
-def get_run_jobs(event):
+def get_run_jobs(event: Event) -> Set[str]:
     from tools.ci import jobs
     revish = "%s..%s" % (event["pull_request"]["base"]["sha"]
                          if "pull_request" in event
@@ -73,9 +79,9 @@ def get_run_jobs(event):
                          if "pull_request" in event
                          else event["after"])
     logger.info("Looking for changes in range %s" % revish)
-    paths = jobs.get_paths(revish=revish)
+    paths: Set[str] = jobs.get_paths(revish=revish)  # type: ignore
     logger.info("Found changes in paths:%s" % "\n".join(paths))
-    path_jobs = jobs.get_jobs(paths)
+    path_jobs: Set[str] = jobs.get_jobs(paths)  # type: ignore
     all_jobs = path_jobs | get_extra_jobs(event)
     logger.info("Including jobs:\n * %s" % "\n * ".join(all_jobs))
     return all_jobs
@@ -95,8 +101,8 @@ def get_commit_message(event: Mapping[str, Any]) -> Optional[str]:
     return body
 
 
-def get_extra_jobs(event):
-    jobs = set()
+def get_extra_jobs(event: Event) -> Set[str]:
+    jobs: Set[str] = set()
     body = get_commit_message(event)
 
     if not body:
@@ -114,7 +120,7 @@ def get_extra_jobs(event):
     return jobs
 
 
-def filter_excluded_users(tasks, event):
+def filter_excluded_users(tasks: MutableMapping[str, Task], event: Event) -> None:
     # Some users' pull requests are excluded from tasks,
     # such as pull requests from automated exports.
     try:
@@ -139,7 +145,7 @@ def filter_excluded_users(tasks, event):
         )
 
 
-def filter_schedule_if(event, tasks):
+def filter_schedule_if(event: Event, tasks: Mapping[str, Task]) -> MutableMapping[str, Task]:
     scheduled = OrderedDict()
     run_jobs = None
     for name, task in tasks.items():
@@ -155,11 +161,11 @@ def filter_schedule_if(event, tasks):
     return scheduled
 
 
-def get_fetch_rev(event):
+def get_fetch_rev(event: Event) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     is_pr, _ = get_triggers(event)
     if is_pr:
         # Try to get the actual rev so that all non-decision tasks are pinned to that
-        rv = ["refs/pull/%s/merge" % event["pull_request"]["number"]]
+        refs: List[Optional[str]] = ["refs/pull/%s/merge" % event["pull_request"]["number"]]
         # For every PR GitHub maintains a 'head' branch with commits from the
         # PR, and a 'merge' branch containing a merge commit between the base
         # branch and the PR.
@@ -177,8 +183,8 @@ def get_fetch_rev(event):
                     logger.error("Failed to get commit for %s" % ref)
                 else:
                     sha = output.decode("utf-8").split()[0]
-            rv.append(sha)
-        rv = tuple(rv)
+            refs.append(sha)
+        rv = tuple(refs)
     else:
         # For a branch push we have a ref and a head but no merge SHA
         rv = (event["ref"], event["after"], None)
@@ -186,7 +192,7 @@ def get_fetch_rev(event):
     return rv
 
 
-def build_full_command(event, task):
+def build_full_command(event: Event, task: Task) -> List[str]:
     fetch_ref, head_sha, merge_sha = get_fetch_rev(event)
     cmd_args = {
         "task_name": task["name"],
@@ -257,15 +263,19 @@ cd web-platform-tests;
 """ % cmd_args]
 
 
-def get_owner(event):
+def get_owner(event: Event) -> str:
     if "pusher" in event:
-        pusher = event.get("pusher", {}).get("email", "")
+        pusher: str = event.get("pusher", {}).get("email", "")
         if pusher and "@" in pusher:
             return pusher
     return "web-platform-tests@users.noreply.github.com"
 
 
-def create_tc_task(event, task, taskgroup_id, depends_on_ids, env_extra=None):
+def create_tc_task(event: Event,
+                   task: Task,
+                   taskgroup_id: str,
+                   depends_on_ids: List[str],
+                   env_extra: Optional[Mapping[str, str]]=None) -> tuple[str, TcTask]:
     command = build_full_command(event, task)
     task_id = taskcluster.slugId()
     task_data = {
@@ -308,7 +318,8 @@ def create_tc_task(event, task, taskgroup_id, depends_on_ids, env_extra=None):
     return task_id, task_data
 
 
-def get_artifact_data(artifact, task_id_map):
+def get_artifact_data(artifact: Mapping[str, Any],
+                      task_id_map: Mapping[str, Tuple[str, Mapping[str, Any]]]) -> Mapping[str, Any]:
     task_id, data = task_id_map[artifact["task"]]
     return {
         "task": task_id,
@@ -318,12 +329,13 @@ def get_artifact_data(artifact, task_id_map):
     }
 
 
-def build_task_graph(event, all_tasks, tasks):
-    task_id_map = OrderedDict()
+def build_task_graph(event: Event,
+                     all_tasks: Mapping[str, Task], tasks: Mapping[str, Task]) -> Mapping[str, Tuple[str, TcTask]]:
+    task_id_map: MutableMapping[str, Tuple[str, TcTask]] = OrderedDict()
     taskgroup_id = os.environ.get("TASK_ID", taskcluster.slugId())
     sink_task_depends_on = []
 
-    def add_task(task_name, task):
+    def add_task(task_name: str, task: Task) -> None:
         depends_on_ids = []
         if "depends-on" in task:
             for depends_name in task["depends-on"]:
@@ -358,7 +370,7 @@ def build_task_graph(event, all_tasks, tasks):
     # To work around this we declare a sink task that depends on all the other
     # tasks completing, and checks if they have succeeded. We can then
     # make the sink task the sole required task for pull requests.
-    sink_task = tasks.get("sink-task")
+    sink_task = {**tasks.get("sink-task", {})}
     if sink_task:
         logger.info("Scheduling sink-task")
         sink_task["command"] += " {}".format(" ".join(sink_task_depends_on))
@@ -370,16 +382,16 @@ def build_task_graph(event, all_tasks, tasks):
     return task_id_map
 
 
-def create_tasks(queue, task_id_map):
-    for (task_id, task_data) in task_id_map.values():
+def create_tasks(queue: taskcluster.Queue, task_id_map: Mapping[str, tuple[str, TcTask]]) -> None:
+    for task_id, task_data in task_id_map.values():
         queue.createTask(task_id, task_data)
 
 
-def get_event(queue, event_path):
+def get_event(queue: Optional[taskcluster.Queue], event_path: Optional[str]) -> Event:
     if event_path is not None:
         try:
             with open(event_path) as f:
-                event_str = f.read()
+                event_str: Optional[str] = f.read()
         except OSError:
             logger.error("Missing event file at path %s" % event_path)
             raise
@@ -387,17 +399,18 @@ def get_event(queue, event_path):
         event_str = os.environ["TASK_EVENT"]
     else:
         event_str = fetch_event_data(queue)
-    if not event_str:
+    if event_str is None:
         raise ValueError("Can't find GitHub event definition; for local testing pass --event-path")
     try:
-        return json.loads(event_str)
+        event: Event = json.loads(event_str)
+        return event
     except ValueError:
         logger.error("Event was not valid JSON")
         raise
 
 
-def decide(event):
-    all_tasks = taskgraph.load_tasks_from_path(os.path.join(here, "tasks", "test.yml"))
+def decide(event: Event) -> Mapping[str, Tuple[str, TcTask]]:
+    all_tasks = taskgraph.load_tasks_from_path(os.path.join(here, "tasks", "test.yml"))  # type: ignore
 
     triggered_tasks = filter_triggers(event, all_tasks)
     scheduled_tasks = filter_schedule_if(event, triggered_tasks)
@@ -411,7 +424,7 @@ def decide(event):
     return task_id_map
 
 
-def get_parser():
+def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--event-path",
                         help="Path to file containing serialized GitHub event")
@@ -423,11 +436,14 @@ def get_parser():
     return parser
 
 
-def run(venv, **kwargs):
+def run(venv: virtualenv.Virtualenv,
+        event_path: Optional[str] = None,
+        dry_run: Optional[bool] = None,
+        tasks_path: Optional[str] = None) -> Optional[int]:
     if "TASKCLUSTER_PROXY_URL" in os.environ:
         queue = taskcluster.Queue({'rootUrl': os.environ['TASKCLUSTER_PROXY_URL']})
-    elif kwargs["dry_run"]:
-        if "event_path" not in kwargs:
+    elif dry_run:
+        if event_path is None:
             logger.error("Missing --event-path for dry run")
             return 1
         queue = None
@@ -435,16 +451,17 @@ def run(venv, **kwargs):
         logger.error("Missing --dry-run and TASKCLUSTER_PROXY_URL")
         return 1
 
-    event = get_event(queue, event_path=kwargs["event_path"])
+    event = get_event(queue, event_path)
 
     task_id_map = decide(event)
 
     try:
-        if not kwargs["dry_run"]:
+        if not dry_run:
             create_tasks(queue, task_id_map)
         else:
             print(json.dumps(task_id_map, indent=2))
     finally:
-        if kwargs["tasks_path"]:
-            with open(kwargs["tasks_path"], "w") as f:
+        if tasks_path is not None:
+            with open(tasks_path, "w") as f:
                 json.dump(task_id_map, f, indent=2)
+    return None

@@ -22,21 +22,35 @@
   video.className = "below-viewport";
   const posterUrl = new URL(video.poster, location.href).href;
 
+  let posterEntries = [];
+  const observer = new PerformanceObserver((list) => {
+    for (const entry of list.getEntries()) {
+      if (entry.name === posterUrl) {
+        posterEntries.push(entry);
+      }
+    }
+  });
+  observer.observe({ entryTypes: ["resource"] });
+
   document.body.appendChild(video);
 
   // Step 1: Not visible => check that poster hasn't loaded.
   t.step_timeout(() => {
-    const entries = performance.getEntriesByName(posterUrl);
-    assert_equals(entries.length, 0, "Poster should not be fetched when not visible");
+    assert_equals(posterEntries.length, 0, "Poster should not be fetched when not visible");
 
     // Step 2: Scroll into view => poster should load.
+    const entriesBeforeScroll = posterEntries.length;
     video.scrollIntoView();
 
-    video.addEventListener("loadedmetadata", () => {
-      const entries = performance.getEntriesByName(posterUrl);
-      assert_greater_than(entries.length, 0, "Poster should be fetched after scrolling into view");
+    t.step_timeout(() => {
+      assert_greater_than(
+        posterEntries.length,
+        entriesBeforeScroll,
+        "Poster should be fetched after scrolling into view"
+      );
+      observer.disconnect();
       t.done();
-    });
+    }, 100);
   }, 2000);
 </script>
 </body>

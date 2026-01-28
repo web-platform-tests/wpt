@@ -104,7 +104,7 @@ TRAILING WHITESPACE: webvtt/parsing/file-parsing/support/*.vtt
 TRAILING WHITESPACE: webvtt/parsing/file-parsing/tests/support/*.vtt
 TRAILING WHITESPACE: xhr/resources/headers-some-are-empty.asis
 TRAILING WHITESPACE: content-security-policy/support/manifest.json
-TRAILING WHITESPACE: dom/xslt/resources/testu1LINE.xml
+TRAILING WHITESPACE: xml/xslt/resources/testu1LINE.xml
 TRAILING WHITESPACE: fetch/h1-parsing/resources/parsing_*.asis
 
 # Intentional use of print statements

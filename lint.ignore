@@ -126,6 +126,7 @@ CONSOLE: service-workers/service-worker/resources/navigation-redirect-other-orig
 CONSOLE: service-workers/service-worker/navigation-redirect.https.html
 CONSOLE: service-workers/service-worker/resources/clients-get-other-origin.html
 CONSOLE: webrtc/tools/*
+CONSOLE: webrtc/RTCDataChannel-worker.js
 CONSOLE: webaudio/resources/audit.js:41
 
 # Intentional use of console.*
@@ -293,6 +294,7 @@ SET TIMEOUT: service-workers/service-worker/resources/opaque-response-being-prel
 SET TIMEOUT: service-workers/service-worker/resources/opaque-response-preloaded-xhr.html
 SET TIMEOUT: service-workers/service-worker/resources/performance-timeline-worker.js
 SET TIMEOUT: service-workers/service-worker/resources/resource-timing-worker.js
+SET TIMEOUT: soft-navigation-heuristics/detection/tentative/change-style-attribute-display-4.html
 SET TIMEOUT: soft-navigation-heuristics/smoke/tentative/task-attribution.html
 SET TIMEOUT: shadow-dom/Document-prototype-currentScript.html
 SET TIMEOUT: shadow-dom/scroll-to-the-fragment-in-shadow-tree.html
@@ -313,6 +315,7 @@ SET TIMEOUT: webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/me
 SET TIMEOUT: webauthn/*timeout.https.html
 SET TIMEOUT: webdriver/*
 SET TIMEOUT: webmessaging/*
+SET TIMEOUT: webnn/resources/utils.js
 SET TIMEOUT: webrtc-encoded-transform/script-metadata-transform-worker.js
 SET TIMEOUT: webrtc-encoded-transform/script-transform-generateKeyFrame.js
 SET TIMEOUT: webrtc-encoded-transform/script-transform-sendKeyFrameRequest.js
@@ -418,6 +421,7 @@ SET TIMEOUT: html/webappapis/dynamic-markup-insertion/opening-the-input-stream/c
 SET TIMEOUT: html/webappapis/timers/*
 SET TIMEOUT: portals/history/resources/portal-harness.js
 SET TIMEOUT: requestidlecallback/deadline-after-expired-timer.html
+SET TIMEOUT: resource-timing/tentative/initiator-url/set-timeout.html
 SET TIMEOUT: resources/*
 SET TIMEOUT: scheduler/tentative/current-task-signal-async-abort.any.js
 SET TIMEOUT: scheduler/tentative/current-task-signal-async-priority.any.js
@@ -784,7 +788,7 @@ PARSE-FAILED: mathml/crashtests/mozilla/289180-1.xml
 # Invalid HTML syntax /> on non-void elements
 HTML INVALID SYNTAX: acid/*
 HTML INVALID SYNTAX: conformance-checkers/*
-HTML INVALID SYNTAX: css/css-scoping/shadow-cascade-order-001.html
+HTML INVALID SYNTAX: css/css-shadow/shadow-cascade-order-001.html
 HTML INVALID SYNTAX: dom/nodes/Document-createElement-namespace.html
 HTML INVALID SYNTAX: dom/nodes/Node-lookupNamespaceURI.html
 HTML INVALID SYNTAX: dom/nodes/Node-normalize.html

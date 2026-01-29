@@ -1,12 +1,17 @@
 features:
+- name: display-ruby
+  files:
+  - "*"
+  # Keep exclusions synced with mappings below 
+  - "!ruby-align-*"
+  - "!ruby-position*"
+  - "!ruby-overhang*"
 - name: ruby-align
   files:
   - ruby-align-*
 - name: ruby-position
   files:
   - ruby-position*
-- name: display-ruby
+- name: ruby-overhang
   files:
-  - "*"
-  - "!ruby-align-*"
-  - "!ruby-position*"
+  - ruby-overhang*

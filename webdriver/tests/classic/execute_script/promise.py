@@ -100,3 +100,11 @@ def test_promise_reject_timeout(session):
         );
         """)
     assert_error(response, "script timeout")
+
+
+def test_returned_poisoned_thenable(session):
+    session.timeouts.script = .1
+    response = execute_script(session, """
+        return { get then() { thow new Error('my error'); } };
+        """)
+    assert_error(response, "javascript error")

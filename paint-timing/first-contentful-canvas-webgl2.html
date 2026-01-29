@@ -7,6 +7,7 @@
 <body>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="resources/utils.js"></script>
   <canvas id="canvas" width="200" height="200"></canvas>
 
   <script>
@@ -20,26 +21,7 @@
       }
       context.clearColor(0.3, 0.3, 0.3, 1);
       context.clear(context.COLOR_BUFFER_BIT);
-      function testPaintEntries() {
-        const bufferedEntries = performance.getEntriesByType('paint');
-        if (bufferedEntries.length < 2) {
-          t.step_timeout(function () {
-            testPaintEntries();
-          }, 20);
-          return;
-        }
-        t.step(function () {
-          assert_equals(bufferedEntries.length, 2, "There should be two paint timing instances.");
-          assert_equals(bufferedEntries[0].entryType, "paint");
-          assert_equals(bufferedEntries[0].name, "first-paint");
-          assert_equals(bufferedEntries[1].entryType, "paint");
-          assert_equals(bufferedEntries[1].name, "first-contentful-paint");
-          t.done();
-        });
-      };
-      t.step(function () {
-        testPaintEntries();
-      });
+      assertPaintTimingEntries(t, 20);
     }, "First contentful paint fires due to webgl2 canvas render.");
   </script>
 </body>

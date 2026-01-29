@@ -5,6 +5,7 @@
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
 <div id="main"></div>
 
 <script>
@@ -17,25 +18,8 @@ async_test(function (t) {
     div.style.backgroundColor = "red";
     div.style.color = "blue";
     document.getElementById("main").appendChild(div);
+    assertFirstPaint(t, 20);
 
-    function testPaintEntries() {
-        const bufferedEntries = performance.getEntriesByType('paint');
-        if (bufferedEntries.length < 1) {
-          t.step_timeout(function() {
-            testPaintEntries();
-          }, 20);
-          return;
-        }
-        t.step(function() {
-            assert_equals(bufferedEntries.length, 1, "FP only.");
-            assert_equals(bufferedEntries[0].entryType, "paint");
-            assert_equals(bufferedEntries[0].name, "first-paint");
-            t.done();
-        });
-    }
-    t.step(function() {
-      testPaintEntries();
-    })
 }, "Performance first paint timing entry exists. No first contentful paint.");
 </script>
 </body>

@@ -2,6 +2,7 @@
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
 
 <script>
 var entriesExpectToReceive = [
@@ -29,10 +30,7 @@ async_test(function (t) {
         }
 
         if (entriesExpectToReceive.length == 0) {
-            const bufferedEntries = performance.getEntriesByType('paint');
-            assert_equals(bufferedEntries.length, 1);
-            assert_equals(bufferedEntries[0].entryType, 'paint');
-            assert_equals(bufferedEntries[0].name, 'first-paint');
+            assertFirstPaint(t, 0);
             t.done();
         }
     }));

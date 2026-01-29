@@ -1,6 +1,6 @@
 features:
 - name: display-table
-  files: 
+  files:
   - "*"
   # keep exclusions synced with mappings below
   - "!box-shadow-*"

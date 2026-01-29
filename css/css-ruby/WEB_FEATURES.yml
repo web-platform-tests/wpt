@@ -2,7 +2,7 @@ features:
 - name: display-ruby
   files:
   - "*"
-  # Keep exclusions synced with mappings below 
+  # Keep exclusions synced with mappings below
   - "!ruby-align-*"
   - "!ruby-position*"
   - "!ruby-overhang*"

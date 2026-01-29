@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>CSS UI Level 4: getComputedStyle().userSelect</title>
 <link rel="help" href="https://drafts.csswg.org/css-ui-4/#content-selection">
-<meta name="assert" content="user-select computed value is as specified.">
+<meta name="assert" content="user-select computed value is as specified for contain.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/computed-testcommon.js"></script>
@@ -12,10 +12,7 @@
 <body>
 <div id="target"></div>
 <script>
-test_computed_value("user-select", "auto");
-test_computed_value("user-select", "text");
-test_computed_value("user-select", "none");
-test_computed_value("user-select", "all");
+test_computed_value("user-select", "contain");
 </script>
 </body>
 </html>

@@ -779,7 +779,8 @@ class ProfileCreator:
             prefs.update(
                 {
                     "remote.prefs.recommended": True,
-                    "geo.provider.network.url": "https://web-platform.test:8444/webdriver/tests/support/http_handlers/geolocation_override.py",
+                    "geo.provider.network.url": 
+                        "https://web-platform.test:8444/webdriver/tests/support/http_handlers/geolocation_override.py",
                 }
             )
         else:

@@ -2074,7 +2074,6 @@ css/css-anchor-position/anchor-fallback-invalidation.html @web-platform-tests/in
 css/css-anchor-position/anchor-getComputedStyle-001.html @web-platform-tests/interop
 css/css-anchor-position/anchor-getComputedStyle-002.html @web-platform-tests/interop
 css/css-anchor-position/anchor-getComputedStyle-003.html @web-platform-tests/interop
-css/css-anchor-position/anchor-inherited.html @web-platform-tests/interop
 css/css-anchor-position/anchor-inside-outside.html @web-platform-tests/interop
 css/css-anchor-position/anchor-invalid-fallback.html @web-platform-tests/interop
 css/css-anchor-position/anchor-name-001.html @web-platform-tests/interop

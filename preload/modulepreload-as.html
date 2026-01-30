@@ -17,7 +17,7 @@
   const goodAsValues = ['', 'invalid-dest', 'sCrIpT', 'style', 'json', ...scriptLikes];
   const linkPromises = {};
 
-  function handleLoad(target) {
+  function handleEvent(target, type) {
     const asValue = target.dataset.as;
     if (!linkPromises[asValue]) {
       linkPromises[asValue] = {};
@@ -25,47 +25,36 @@
         linkPromises[asValue].resolve = resolve;
       });
     }
-    linkPromises[asValue].resolve({ target, eventType: 'load' });
-  }
-
-  function handleError(target) {
-    const asValue = target.dataset.as;
-    if (!linkPromises[asValue]) {
-      linkPromises[asValue] = {};
-      linkPromises[asValue].promise = new Promise((resolve) => {
-        linkPromises[asValue].resolve = resolve;
-      });
-    }
-    linkPromises[asValue].resolve({ target, eventType: 'error' });
+    linkPromises[asValue].resolve({ target, eventType: type });
   }
 </script>
-<link rel="modulepreload" href="resources/module1.js?empty-string" as="" data-as="" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?audio" as="audio" data-as="audio" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?audioworklet" as="audioworklet" data-as="audioworklet" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?document" as="document" data-as="document" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?embed" as="embed" data-as="embed" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?font" as="font" data-as="font" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?frame" as="frame" data-as="frame" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?iframe" as="iframe" data-as="iframe" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?image" as="image" data-as="image" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?manifest" as="manifest" data-as="manifest" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?object" as="object" data-as="object" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?paintworklet" as="paintworklet" data-as="paintworklet" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?report" as="report" data-as="report" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?script" as="script" data-as="script" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?serviceworker" as="serviceworker" data-as="serviceworker" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?sharedworker" as="sharedworker" data-as="sharedworker" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?track" as="track" data-as="track" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?video" as="video" data-as="video" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?webidentity" as="webidentity" data-as="webidentity" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?worker" as="worker" data-as="worker" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?xslt" as="xslt" data-as="xslt" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?fetch" as="fetch" data-as="fetch" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?invalid-dest" as="invalid-dest" data-as="invalid-dest" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?iMaGe" as="iMaGe" data-as="iMaGe" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/module1.js?sCrIpT" as="sCrIpT" data-as="sCrIpT" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/dummy.css?style" as="style" data-as="style" onload="handleLoad(this)" onerror="handleError(this)">
-<link rel="modulepreload" href="resources/dummy.json?json" as="json" data-as="json" onload="handleLoad(this)" onerror="handleError(this)">
+<link rel="modulepreload" href="resources/module1.js?empty-string" as="" data-as="" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?audio" as="audio" data-as="audio" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?audioworklet" as="audioworklet" data-as="audioworklet" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?document" as="document" data-as="document" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?embed" as="embed" data-as="embed" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?font" as="font" data-as="font" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?frame" as="frame" data-as="frame" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?iframe" as="iframe" data-as="iframe" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?image" as="image" data-as="image" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?manifest" as="manifest" data-as="manifest" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?object" as="object" data-as="object" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?paintworklet" as="paintworklet" data-as="paintworklet" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?report" as="report" data-as="report" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?script" as="script" data-as="script" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?serviceworker" as="serviceworker" data-as="serviceworker" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?sharedworker" as="sharedworker" data-as="sharedworker" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?track" as="track" data-as="track" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?video" as="video" data-as="video" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?webidentity" as="webidentity" data-as="webidentity" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?worker" as="worker" data-as="worker" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?xslt" as="xslt" data-as="xslt" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?fetch" as="fetch" data-as="fetch" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?invalid-dest" as="invalid-dest" data-as="invalid-dest" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?iMaGe" as="iMaGe" data-as="iMaGe" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/module1.js?sCrIpT" as="sCrIpT" data-as="sCrIpT" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/dummy.css?style" as="style" data-as="style" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
+<link rel="modulepreload" href="resources/dummy.json?json" as="json" data-as="json" onload="handleEvent(this, 'load')" onerror="handleEvent(this, 'error')">
 <script>
   const links = document.querySelectorAll('link[rel="modulepreload"]');
   for (const link of links) {

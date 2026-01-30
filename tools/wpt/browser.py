@@ -2326,7 +2326,7 @@ class Servo(Browser):
         if dest is None:
             dest = os.pwd
 
-        if url is not None:
+        if url is None:
             resp = self._get(channel)
         else:
             resp = get(url)
@@ -2343,7 +2343,7 @@ class Servo(Browser):
 
         _, _, _, decompress = self.platform_components()
 
-        if url is not None:
+        if url is None:
             resp = self._get(channel)
         else:
             resp = get(url)

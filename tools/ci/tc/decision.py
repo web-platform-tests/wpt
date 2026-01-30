@@ -275,7 +275,7 @@ def create_tc_task(event: Event,
                    task: Task,
                    taskgroup_id: str,
                    depends_on_ids: List[str],
-                   env_extra: Optional[Mapping[str, str]]=None) -> tuple[str, TcTask]:
+                   env_extra: Optional[Mapping[str, str]] = None) -> tuple[str, TcTask]:
     command = build_full_command(event, task)
     task_id = taskcluster.slugId()
     task_data = {

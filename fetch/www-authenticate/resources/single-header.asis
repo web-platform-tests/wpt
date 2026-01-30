@@ -1,0 +1,5 @@
+HTTP/1.1 401 MEH
+Content-Type: text/plain
+WWW-Authenticate: Newauth realm="apps", type=1, title="Login to \"apps\"", Basic realm="single header"
+
+FAILED IF THERE WAS NO DIALOG

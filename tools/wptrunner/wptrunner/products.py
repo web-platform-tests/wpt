@@ -9,10 +9,12 @@ from typing import (
     TypedDict,
 )
 
+from ._default_if_sentinel import DefaultIfSentinel
 from .browsers import product_list
 
 if TYPE_CHECKING:
     import sys
+    from collections.abc import Mapping, Sequence
     from types import ModuleType
 
     from mozlog.structuredlog import StructuredLogger
@@ -22,11 +24,6 @@ if TYPE_CHECKING:
     from .environment import TestEnvironment
     from .executors.base import TestExecutor
     from .testloader import Subsuite
-
-    if sys.version_info >= (3, 9):
-        from collections.abc import Mapping, Sequence
-    else:
-        from typing import Mapping, Sequence
 
     if sys.version_info >= (3, 10):
         from typing import TypeAlias
@@ -121,7 +118,7 @@ def default_run_info_extras(logger: StructuredLogger, **kwargs: Any) -> Mapping[
     return {}
 
 
-@dataclass
+@dataclass(frozen=True)
 class Product:
     name: str
     # Once we can rely on Python 3.10, we should add:
@@ -135,48 +132,21 @@ class Product:
     get_env_extras: EnvExtras
     get_timeout_multiplier: TimeoutMultiplier
     executor_classes: Mapping[str, type[TestExecutor]]
-    run_info_extras: RunInfoExtras
-    update_properties: tuple[Sequence[str], Mapping[str, Sequence[str]]]
-
-    def __init__(
-        self,
-        name: str,
-        *,
-        browser_classes: Mapping[str | None, type[browsers_base.Browser]],
-        check_args: CheckArgs,
-        get_browser_kwargs: BrowserKwargs,
-        get_executor_kwargs: ExecutorKwargs,
-        env_options: Mapping[str, Any],
-        get_env_extras: EnvExtras,
-        get_timeout_multiplier: TimeoutMultiplier,
-        executor_classes: Mapping[str, type[TestExecutor]],
-        run_info_extras: None | RunInfoExtras = None,
-        update_properties: None | tuple[Sequence[str], Mapping[str, Sequence[str]]] = None,
-    ) -> None:
-        self.name = name
-        self._browser_cls = browser_classes
-        self.check_args = check_args
-        self.get_browser_kwargs = get_browser_kwargs
-        self.get_executor_kwargs = get_executor_kwargs
-        self.env_options = env_options
-        self.get_env_extras = get_env_extras
-        self.get_timeout_multiplier = get_timeout_multiplier
-        self.executor_classes = executor_classes
-
-        if run_info_extras is not None:
-            self.run_info_extras = run_info_extras
-        else:
-            self.run_info_extras = default_run_info_extras
-
-        if update_properties is not None:
-            self.update_properties = update_properties
-        else:
-            self.update_properties = (["product"], {})
+    run_info_extras: DefaultIfSentinel[
+        RunInfoExtras,
+    ] = DefaultIfSentinel(default=default_run_info_extras)
+    update_properties: DefaultIfSentinel[
+        tuple[
+            Sequence[str],
+            Mapping[str, Sequence[str]],
+        ],
+    ] = DefaultIfSentinel(default_factory=lambda: (["product"], {}))
 
     def get_browser_cls(self, test_type: str) -> type[browsers_base.Browser]:
-        if test_type in self._browser_cls:
-            return self._browser_cls[test_type]
-        return self._browser_cls[None]
+        cls = self.browser_classes.get(test_type)
+        if cls is not None:
+            return cls
+        return self.browser_classes[None]
 
     @staticmethod
     def _from_dunder_wptrunner(module: ModuleType) -> Product:

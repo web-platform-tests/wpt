@@ -65,3 +65,48 @@ def test_server_start_config(product):
             else:
                 assert config["server_host"] == config["browser_host"]
             assert isinstance(config["bind_address"], bool)
+
+
+def test_default_if_none_descriptor_with_none() -> None:
+    """Test that _DefaultIfNone descriptor converts None to default"""
+    product = products.Product(
+        name="test",
+        browser_classes={None: mock.MagicMock()},
+        check_args=mock.MagicMock(),
+        get_browser_kwargs=mock.MagicMock(),
+        get_executor_kwargs=mock.MagicMock(),
+        env_options={},
+        get_env_extras=mock.MagicMock(),
+        get_timeout_multiplier=mock.MagicMock(),
+        executor_classes={},
+        run_info_extras=None,  # This would fail without the descriptor
+        update_properties=None,  # This would fail without the descriptor
+    )
+
+    assert product.run_info_extras is products.default_run_info_extras
+    assert product.update_properties == (["product"], {})
+
+
+def test_default_if_none_descriptor_with_provided_values() -> None:
+    """Test that _DefaultIfNone descriptor preserves provided values"""
+    def custom_run_info_extras(logger, **kwargs):
+        return {"custom": "value"}
+
+    custom_update_properties = (["custom"], {"prop": ["value"]})
+
+    product = products.Product(
+        name="test",
+        browser_classes={None: mock.MagicMock()},
+        check_args=mock.MagicMock(),
+        get_browser_kwargs=mock.MagicMock(),
+        get_executor_kwargs=mock.MagicMock(),
+        env_options={},
+        get_env_extras=mock.MagicMock(),
+        get_timeout_multiplier=mock.MagicMock(),
+        executor_classes={},
+        run_info_extras=custom_run_info_extras,
+        update_properties=custom_update_properties,
+    )
+
+    assert product.run_info_extras is custom_run_info_extras
+    assert product.update_properties is custom_update_properties

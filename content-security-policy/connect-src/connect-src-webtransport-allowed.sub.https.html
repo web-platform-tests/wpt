@@ -19,7 +19,7 @@ const serverCertificateHashes = [
 [
   {url: url1, options: {}},
   {url: url2, options: {}, expected: "connect-src"},
-  {url: url2, options: {serverCertificateHashes}, expected: "connect-src"},
+  {url: url1, options: {serverCertificateHashes}, expected: "connect-src"},
 ].forEach(({url, options, expected}) => promise_test(async t => {
   const haveViolation = new Promise(r => window.onsecuritypolicyviolation = r);
   try {

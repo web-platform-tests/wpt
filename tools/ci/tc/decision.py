@@ -1,5 +1,13 @@
 # mypy: allow-untyped-defs
-from typing import Optional, MutableMapping
+
+import argparse
+import json
+import logging
+import os
+import re
+import subprocess
+from collections import OrderedDict
+from typing import Any, List, Mapping, MutableMapping, Optional, Tuple, Set
 
 import argparse
 import json
@@ -275,7 +283,7 @@ def create_tc_task(event: Event,
                    task: Task,
                    taskgroup_id: str,
                    depends_on_ids: List[str],
-                   env_extra: Optional[Mapping[str, str]] = None) -> tuple[str, TcTask]:
+                   env_extra: Optional[Mapping[str, str]] = None) -> Tuple[str, TcTask]:
     command = build_full_command(event, task)
     task_id = taskcluster.slugId()
     task_data = {
@@ -382,7 +390,7 @@ def build_task_graph(event: Event,
     return task_id_map
 
 
-def create_tasks(queue: taskcluster.Queue, task_id_map: Mapping[str, tuple[str, TcTask]]) -> None:
+def create_tasks(queue: taskcluster.Queue, task_id_map: Mapping[str, Tuple[str, TcTask]]) -> None:
     for task_id, task_data in task_id_map.values():
         queue.createTask(task_id, task_data)
 

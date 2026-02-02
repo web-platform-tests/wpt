@@ -1,0 +1,50 @@
+name: Jekyll site CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the site in the jekyll/builder container
+      run: |
+        docker run \
+        -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
+        jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --future"
+            - name: Azure Login
+  uses: Azure/login@v2.3.0
+  with:
+    # Paste output of `az ad sp create-for-rbac` as value of secret variable: AZURE_CREDENTIALS
+    creds: # optional
+    # ClientId of the Azure Service principal created.
+    client-id: # optional
+    # TenantId of the Azure Service principal created.
+    tenant-id: # optional
+    # Azure subscriptionId
+    subscription-id: # optional
+    # Set this value to true to enable Azure PowerShell Login in addition to Azure CLI login
+    enable-AzPSSession: # optional
+    # Name of the environment. Supported values are azurecloud, azurestack, azureusgovernment, azurechinacloud, azuregermancloud. Default being azurecloud
+    environment: # optional, default is azurecloud
+    # Set this value to true to enable support for accessing tenants without subscriptions
+    allow-no-subscriptions: # optional
+    # Provide audience field for access-token. Default value is api://AzureADTokenExchange
+    audience: # optional, default is api://AzureADTokenExchange
+    # The type of authentication. Supported values are SERVICE_PRINCIPAL, IDENTITY. Default value is SERVICE_PRINCIPAL
+    auth-type: # optional, default is SERVICE_PRINCIPAL
+
+                  - name: Azure CLI Action
+  uses: Azure/cli@v2.1.0
+  with:
+    # Specify the script here
+    inlineScript: 
+    # Azure CLI version to be used to execute the script. If not provided, latest version is used
+    azcliversion: # optional, default is agentazcliversion
+          

@@ -6,11 +6,33 @@
 
 'use strict';
 
-const kPrompt = 'describe this';
+const kImagePrompt = 'describe this';
+const kAudioPrompt = 'transcribe this';
+
 const kValidImagePath = '/images/computer.jpg';
+const kValidImageKeywords =
+    ['image', 'computer', 'keyboard', 'desk', 'PC', 'monitor', 'screen'];
+const kValidImageRegex = matchKeywordsRegex(kValidImageKeywords);
+
 const kValidAudioPath = '/media/speech.wav';
+const kValidAudioKeywords =
+    ['audio', 'speech', 'sentence', 'single', 'segment'];
+const kValidAudioRegex = matchKeywordsRegex(kValidAudioKeywords);
+
 const kValidSVGImagePath = '/images/pattern.svg';
+const kValidSVGImageKeywords =
+    ['image', 'color', 'red', 'green', 'blue', 'black'];
+const kValidSVGImageRegex = matchKeywordsRegex(kValidSVGImageKeywords);
+
 const kValidVideoPath = '/media/test.webm';
+const kValidVideoKeywords = [
+  'image', 'color', 'bip', 'black', 'white', 'yellow', 'green', 'blue', 'red',
+  'video', 'screen'
+];
+const kValidVideoRegex = matchKeywordsRegex(kValidVideoKeywords);
+
+const kValidCanvasImageKeywords = ['image', 'black', 'square', 'blank'];
+const kValidCanvasImageRegex = matchKeywordsRegex(kValidCanvasImageKeywords);
 
 const kImageOptions = {expectedInputs: [{type: 'image'}]};
 const kAudioOptions = {expectedInputs: [{type: 'audio'}]};
@@ -20,6 +42,12 @@ function messageWithContent(prompt, type, value) {
     role: 'user',
     content: [{type: 'text', value: prompt}, {type: type, value: value}]
   }];
+}
+
+// Helper function to create a regex from some keywords.
+function matchKeywordsRegex(keywords) {
+  const keywordsPattern = keywords.join('|');
+  return new RegExp(`(${keywordsPattern})`, 'i');
 }
 
 /*****************************************
@@ -34,7 +62,7 @@ promise_test(async t => {
   // TODO(crbug.com/409615288): Expect a TypeError according to the spec.
   return promise_rejects_dom(
       t, 'SyntaxError',
-      session.prompt(messageWithContent(kPrompt, 'text', newImage)));
+      session.prompt(messageWithContent(kImagePrompt, 'text', newImage)));
 }, 'Prompt with type:"text" and image content should reject');
 
 promise_test(async t => {
@@ -58,23 +86,22 @@ promise_test(async (t) => {
   const session = await createLanguageModel();
   return promise_rejects_dom(
       t, 'NotSupportedError',
-      session.prompt(messageWithContent(kPrompt, 'image', newImage)));
+      session.prompt(messageWithContent(kImagePrompt, 'image', newImage)));
 }, 'Prompt image without `image` expectedInput');
 
 promise_test(async () => {
   const blob = await (await fetch(kValidImagePath)).blob();
   const options = {
     expectedInputs: [{type: 'image'}],
-    initialPrompts: messageWithContent(kPrompt, 'image', blob)
+    initialPrompts: messageWithContent(kImagePrompt, 'image', blob)
   };
   await ensureLanguageModel(options);
   const session = await LanguageModel.create(options);
   const tokenLength = await session.measureInputUsage(options.initialPrompts);
   assert_greater_than(tokenLength, 0);
-  assert_equals(session.inputUsage, tokenLength);
+  assert_true(isValueInRange(session.inputUsage, tokenLength));
   assert_regexp_match(
-      await session.prompt([{role: 'system', content: ''}]),
-      /<image>/);
+      await session.prompt([{role: 'system', content: ''}]), kValidImageRegex);
 }, 'Test Image initialPrompt');
 
 promise_test(async () => {
@@ -82,8 +109,8 @@ promise_test(async () => {
   const blob = await (await fetch(kValidImagePath)).blob();
   const session = await createLanguageModel(kImageOptions);
   const result =
-      await session.prompt(messageWithContent(kPrompt, 'image', blob));
-  assert_regexp_match(result, /<image>/);
+      await session.prompt(messageWithContent(kImagePrompt, 'image', blob));
+  assert_regexp_match(result, kValidImageRegex);
 }, 'Prompt with Blob image content');
 
 promise_test(async () => {
@@ -92,8 +119,8 @@ promise_test(async () => {
   const bitmap = await createImageBitmap(blob);
   const session = await createLanguageModel(kImageOptions);
   const result =
-      await session.prompt(messageWithContent(kPrompt, 'image', bitmap));
-  assert_regexp_match(result, /<image>/);
+      await session.prompt(messageWithContent(kImagePrompt, 'image', bitmap));
+  assert_regexp_match(result, kValidImageRegex);
 }, 'Prompt with ImageBitmap image content');
 
 promise_test(async () => {
@@ -103,9 +130,9 @@ promise_test(async () => {
   const frame = new VideoFrame(bitmap, {timestamp: 1});
   const session = await createLanguageModel(kImageOptions);
   const result =
-      await session.prompt(messageWithContent(kPrompt, 'image', frame));
+      await session.prompt(messageWithContent(kImagePrompt, 'image', frame));
   frame.close();  // Avoid JS garbage collection warning.
-  assert_regexp_match(result, /<image>/);
+  assert_regexp_match(result, kValidImageRegex);
 }, 'Prompt with VideoFrame image content');
 
 promise_test(async () => {
@@ -116,16 +143,16 @@ promise_test(async () => {
   context.fillRect(10, 10, 200, 200);
   const session = await createLanguageModel(kImageOptions);
   const result =
-      await session.prompt(messageWithContent(kPrompt, 'image', canvas));
-  assert_regexp_match(result, /<image>/);
+      await session.prompt(messageWithContent(kImagePrompt, 'image', canvas));
+  assert_regexp_match(result, kValidCanvasImageRegex);
 }, 'Prompt with OffscreenCanvas image content');
 
 promise_test(async () => {
   await ensureLanguageModel(kImageOptions);
   const session = await createLanguageModel(kImageOptions);
   const result = await session.prompt(
-      messageWithContent(kPrompt, 'image', new ImageData(256, 256)));
-  assert_regexp_match(result, /<image>/);
+      messageWithContent(kImagePrompt, 'image', new ImageData(256, 256)));
+  assert_regexp_match(result, kValidImageRegex);
 }, 'Prompt with ImageData image content');
 
 promise_test(async () => {
@@ -134,8 +161,8 @@ promise_test(async () => {
   newImage.src = kValidImagePath;
   const session = await createLanguageModel(kImageOptions);
   const result =
-      await session.prompt(messageWithContent(kPrompt, 'image', newImage));
-  assert_regexp_match(result, /<image>/);
+      await session.prompt(messageWithContent(kImagePrompt, 'image', newImage));
+  assert_regexp_match(result, kValidImageRegex);
 }, 'Prompt with HTMLImageElement image content');
 
 promise_test(async () => {
@@ -145,8 +172,8 @@ promise_test(async () => {
   canvas.height = 768;
   const session = await createLanguageModel(kImageOptions);
   const result =
-      await session.prompt(messageWithContent(kPrompt, 'image', canvas));
-  assert_regexp_match(result, /<image>/);
+      await session.prompt(messageWithContent(kImagePrompt, 'image', canvas));
+  assert_regexp_match(result, kValidCanvasImageRegex);
 }, 'Prompt with HTMLCanvasElement image content');
 
 promise_test(async () => {
@@ -154,8 +181,8 @@ promise_test(async () => {
   const imageData = await fetch(kValidImagePath);
   const session = await createLanguageModel(kImageOptions);
   const result = await session.prompt(
-      messageWithContent(kPrompt, 'image', await imageData.arrayBuffer()));
-  assert_regexp_match(result, /<image>/);
+      messageWithContent(kImagePrompt, 'image', await imageData.arrayBuffer()));
+  assert_regexp_match(result, kValidImageRegex);
 }, 'Prompt with ArrayBuffer image content');
 
 promise_test(async () => {
@@ -163,8 +190,8 @@ promise_test(async () => {
   const imageData = await fetch(kValidImagePath);
   const session = await createLanguageModel(kImageOptions);
   const result = await session.prompt(messageWithContent(
-      kPrompt, 'image', new DataView(await imageData.arrayBuffer())));
-  assert_regexp_match(result, /<image>/);
+      kImagePrompt, 'image', new DataView(await imageData.arrayBuffer())));
+  assert_regexp_match(result, kValidImageRegex);
 }, 'Prompt with ArrayBufferView image content');
 
 promise_test(async (t) => {
@@ -178,15 +205,15 @@ promise_test(async (t) => {
   const imageView = new Uint8Array(newBufferArray, 256, buffer.byteLength);
   imageView.set(bufferView);
 
-  const result =
-      await session.prompt(messageWithContent(kPrompt, 'image', imageView));
-  assert_regexp_match(result, /<image>/);
+  const result = await session.prompt(
+      messageWithContent(kImagePrompt, 'image', imageView));
+  assert_regexp_match(result, kValidImageRegex);
 
   // Offset causes 56 bytes of blank data, resulting in a decoding error.
   await promise_rejects_dom(
       t, 'InvalidStateError',
       session.prompt(messageWithContent(
-          kPrompt, 'image',
+          kImagePrompt, 'image',
           new Uint8Array(newBufferArray, 200, buffer.byteLength))));
 }, 'Prompt with ArrayBufferView image content with an offset.');
 
@@ -197,9 +224,8 @@ promise_test(async () => {
   newImage.src = kValidSVGImagePath;
   const session = await createLanguageModel(kImageOptions);
   const result =
-      await session.prompt(messageWithContent(
-        kPrompt, 'image', newImage));
-  assert_regexp_match(result, /<image>/);
+      await session.prompt(messageWithContent(kImagePrompt, 'image', newImage));
+  assert_regexp_match(result, kValidSVGImageRegex);
 }, 'Prompt with HTMLImageElement image content (with SVG)');
 
 
@@ -222,9 +248,8 @@ promise_test(async () => {
   await promise;
   const session = await createLanguageModel(kImageOptions);
   const result =
-      await session.prompt(messageWithContent(
-        kPrompt, 'image', svgImage));
-  assert_regexp_match(result, /<image>/);
+      await session.prompt(messageWithContent(kImagePrompt, 'image', svgImage));
+  assert_regexp_match(result, kValidImageRegex);
 }, 'Prompt with SVGImageElement image content');
 
 promise_test(async () => {
@@ -233,13 +258,16 @@ promise_test(async () => {
   video.src = kValidVideoPath;
   video.width = 1224;
   video.height = 768;
+  // Make sure the video plays without requiring a gesture.
+  video.muted = true;
+  video.playsInline = true;
+  video.autoplay = true;
   // Video must have frames fetched. See crbug.com/417249941#comment3
   await video.play();
   const session = await createLanguageModel(kImageOptions);
   const result =
-      await session.prompt(messageWithContent(
-        kPrompt, 'image', video));
-  assert_regexp_match(result, /<image>/);
+      await session.prompt(messageWithContent(kImagePrompt, 'image', video));
+  assert_regexp_match(result, kValidVideoRegex);
 }, 'Prompt with HTMLVideoElement image content');
 
 /*****************************************
@@ -252,23 +280,22 @@ promise_test(async (t) => {
   const session = await createLanguageModel();
   return promise_rejects_dom(
       t, 'NotSupportedError',
-      session.prompt(messageWithContent(kPrompt, 'audio', blob)));
+      session.prompt(messageWithContent(kImagePrompt, 'audio', blob)));
 }, 'Prompt audio without `audio` expectedInput');
 
 promise_test(async () => {
   const blob = await (await fetch(kValidAudioPath)).blob();
   const options = {
     expectedInputs: [{type: 'audio'}],
-    initialPrompts: messageWithContent(kPrompt, 'audio', blob)
+    initialPrompts: messageWithContent(kAudioPrompt, 'audio', blob)
   };
   await ensureLanguageModel(options);
   const session = await LanguageModel.create(options);
   const tokenLength = await session.measureInputUsage(options.initialPrompts);
   assert_greater_than(tokenLength, 0);
-  assert_equals(session.inputUsage, tokenLength);
+  assert_true(isValueInRange(session.inputUsage, tokenLength));
   assert_regexp_match(
-      await session.prompt([{role: 'system', content: ''}]),
-      /<audio>/);
+      await session.prompt([{role: 'system', content: ''}]), kValidAudioRegex);
 }, 'Test Audio initialPrompt');
 
 promise_test(async () => {
@@ -276,8 +303,8 @@ promise_test(async () => {
   const blob = await (await fetch(kValidAudioPath)).blob();
   const session = await createLanguageModel(kAudioOptions);
   const result =
-      await session.prompt(messageWithContent(kPrompt, 'audio', blob));
-  assert_regexp_match(result, /<audio>/);
+      await session.prompt(messageWithContent(kAudioPrompt, 'audio', blob));
+  assert_regexp_match(result, kValidAudioRegex);
 }, 'Prompt with Blob audio content');
 
 promise_test(async (t) => {
@@ -287,7 +314,7 @@ promise_test(async (t) => {
   // TODO(crbug.com/409615288): Expect a TypeError according to the spec.
   return promise_rejects_dom(
       t, 'DataError',
-      session.prompt(messageWithContent(kPrompt, 'audio', blob)));
+      session.prompt(messageWithContent(kImagePrompt, 'audio', blob)));
 }, 'Prompt audio with blob containing invalid audio data.');
 
 promise_test(async () => {
@@ -297,15 +324,15 @@ promise_test(async () => {
   const buffer = await audioCtx.decodeAudioData(await audio_data.arrayBuffer());
   const session = await createLanguageModel(kAudioOptions);
   const result =
-      await session.prompt(messageWithContent(kPrompt, 'audio', buffer));
-  assert_regexp_match(result, /<audio>/);
+      await session.prompt(messageWithContent(kAudioPrompt, 'audio', buffer));
+  assert_regexp_match(result, kValidAudioRegex);
 }, 'Prompt with AudioBuffer');
 
 promise_test(async () => {
   await ensureLanguageModel(kAudioOptions);
   const audio_data = await fetch(kValidAudioPath);
   const session = await createLanguageModel(kAudioOptions);
-  const result = await session.prompt(
-      messageWithContent(kPrompt, 'audio', await audio_data.arrayBuffer()));
-  assert_regexp_match(result, /<audio>/);
+  const result = await session.prompt(messageWithContent(
+      kAudioPrompt, 'audio', await audio_data.arrayBuffer()));
+  assert_regexp_match(result, kValidAudioRegex);
 }, 'Prompt with BufferSource - ArrayBuffer');

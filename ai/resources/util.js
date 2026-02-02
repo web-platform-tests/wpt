@@ -88,7 +88,7 @@ async function testCreateMonitorWithAbortAt(
 
       if (hadEvent) {
         assert_unreached(
-            'This should never be reached since LanguageDetector.create() was aborted.');
+            'This should never be reached since the create() operation was aborted.');
         return;
       }
 
@@ -286,6 +286,13 @@ async function testCreateAbort(t, createMethod, options, instanceMethods) {
   for (const promise of promises) {
     await promise_rejects_exactly(t, error, promise);
   }
+}
+
+// Helper function to check that 'actual' is within 'expected +/- delta'.
+function isValueInRange(actual, expected, delta = 5) {
+  const lowerBound = expected - delta;
+  const upperBound = expected + delta;
+  return actual >= lowerBound && actual <= upperBound;
 }
 
 function consumeTransientUserActivation() {

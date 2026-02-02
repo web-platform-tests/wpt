@@ -9,11 +9,13 @@
   <meta charset="utf-8">
 </head>
 <body>
-  <span style="font: 20px/1 'Ahem';">
-    <span id="baseline">X</span>
-    <span id="sub" style="baseline-shift: sub">X</span>
-    <span id="super" style="baseline-shift: super">X</span>
-  </span>
+  <svg>
+    <text y="80" style="font: 20px/1 'Ahem';">
+      <tspan id="baseline">X</tspan>
+      <tspan id="sub" baseline-shift="sub">X</tspan>
+      <tspan id="super" baseline-shift="super">X</tspan>
+    </text>
+  </svg>
   <script>
     const $baseline = document.getElementById('baseline');
     const $sub = document.getElementById('sub');
@@ -21,15 +23,15 @@
 
     test(() => {
       assert_greater_than(
-        $sub.getBoundingClientRect().top,
-        $baseline.getBoundingClientRect().top
+        $sub.getBBox().y,
+        $baseline.getBBox().y
       );
     }, "baseline-shift: sub is below baseline");
 
     test(() => {
       assert_less_than(
-        $super.getBoundingClientRect().top,
-        $baseline.getBoundingClientRect().top
+        $super.getBBox().y,
+        $baseline.getBBox().y
       );
     }, "baseline-shift: super is above baseline");
   </script>

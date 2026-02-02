@@ -3,20 +3,20 @@
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-overflow-5/#scroll-marker-group-property">
 <link rel="help" href="https://issues.chromium.org/issues/395798192">
-<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<link rel="match" href="../../reference/ref-filled-green-100px-square.xht">
 <style>
   body {
     overflow: hidden;
   }
   #sc {
-    position: fixed;
+    position: absolute;
     margin-top: 50px;
     width: 100px;
     overflow: hidden;
     scroll-marker-group: after;
   }
   #sc::scroll-marker-group {
-    position: absolute;
+    position: relative;
     left: 0px;
     width: 110px;
     background: red;
@@ -34,7 +34,7 @@
   }
 </style>
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-<div style="position:relative; width:100px; height:100px; background:red;">
+<div style="width:100px; height:100px; background:red;">
   <div id="sc">
     <div></div>
     <div></div>

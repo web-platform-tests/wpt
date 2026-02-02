@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
-<title>multicol ::column::scroll-marker, add more columns</title>
+<title>multicol ::column::scroll-marker, remove columns</title>
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-overflow-5/#scroll-marker-group-pseudo">
-<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<link rel="match" href="../../reference/ref-filled-green-100px-square.xht">
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 <style>
   #container {
@@ -11,7 +11,7 @@
     columns: 3;
     column-fill: auto;
     gap: 0;
-    height: 100px;
+    height: 25px;
     scroll-marker-group: before;
   }
   #container::scroll-marker-group {
@@ -22,7 +22,7 @@
     background: red;
   }
   #container::column::scroll-marker {
-    width: 25px;
+    width: 100px;
     height: 100px;
     flex: none;
     content: "";
@@ -36,7 +36,7 @@
   requestAnimationFrame(()=> {
     requestAnimationFrame(()=> {
       document.documentElement.classList.remove("reftest-wait");
-      container.style.height = "25px";
+      container.style.height = "100px";
     });
   });
 </script>

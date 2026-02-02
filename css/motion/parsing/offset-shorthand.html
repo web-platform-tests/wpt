@@ -11,9 +11,9 @@
 </head>
 <body>
 <script>
-test_shorthand_value('offset', 'left bottom ray(0rad closest-side) 10px auto 30deg / right bottom', {
+test_shorthand_value('offset', 'left bottom ray(0rad closest-corner) 10px auto 30deg / right bottom', {
   'offset-position': 'left bottom',
-  'offset-path': 'ray(0rad closest-side)',
+  'offset-path': 'ray(0rad closest-corner)',
   'offset-distance': '10px',
   'offset-rotate': 'auto 30deg',
   'offset-anchor': 'right bottom',
@@ -28,7 +28,7 @@ test_shorthand_value('offset', 'top right / top left', {
 });
 
 test_shorthand_value('offset', 'path("M 0 0 H 2") reverse 50%', {
-  'offset-position': 'auto',
+  'offset-position': 'normal',
   'offset-path': 'path("M 0 0 H 2")',
   'offset-distance': '50%',
   'offset-rotate': 'reverse',

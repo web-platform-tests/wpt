@@ -19,14 +19,7 @@ async function keyPress(target, key) {
     code = KEY_CODE_MAP[key];
 
   // First move pointer on target and click to ensure it receives the key.
-  let actions = new test_driver.Actions()
-    .pointerMove(0, 0, {origin: target})
-    .pointerDown()
-    .pointerUp()
-    .keyDown(code)
-    .keyUp(code);
-
-  return actions.send();
+  return test_driver.send_keys(target, code);
 }
 
 // Use rAF to wait for the value of the getter function passed to not change for
@@ -48,7 +41,7 @@ function waitForAnimationEnd(getValue) {
     // MAX_UNCHANGED_FRAMES with no change have been observed.
       if (time - start_time > TIMEOUT ||
           frames - last_changed_frame >= MAX_UNCHANGED_FRAMES) {
-        resolve();
+        resolve(time);
       } else {
         current_value = getValue();
         if (last_value != current_value) {
@@ -62,3 +55,45 @@ function waitForAnimationEnd(getValue) {
   });
 }
 
+
+function waitForEvent(eventTarget, type) {
+  return new Promise(resolve => {
+    eventTarget.addEventListener(type, resolve, { once: true });
+  });
+}
+
+function waitForScrollEvent(eventTarget) {
+  return waitForEvent(eventTarget, 'scroll');
+}
+
+function waitForWheelEvent(eventTarget) {
+  return waitForEvent(eventTarget, 'wheel');
+}
+
+function waitForScrollTo(eventTarget, getValue, targetValue) {
+  return new Promise((resolve, reject) => {
+    const scrollListener = (evt) => {
+      if (getValue() == targetValue) {
+        eventTarget.removeEventListener('scroll', scrollListener);
+        resolve(evt);
+      }
+    };
+    if (getValue() == targetValue)
+      resolve();
+    else
+      eventTarget.addEventListener('scroll', scrollListener);
+  });
+}
+
+function waitForNextFrame() {
+  return new Promise(resolve => {
+    const start = performance.now();
+    requestAnimationFrame(frameTime => {
+      if (frameTime < start) {
+        requestAnimationFrame(resolve);
+      } else {
+        resolve();
+      }
+    });
+  });
+}

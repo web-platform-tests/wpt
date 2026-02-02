@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import os
 import sys
 
@@ -18,8 +20,7 @@ if "CURRENT_TOX_ENV" in os.environ:
 
     tox_env_extra_browsers = {
         "chrome": {"chrome_android"},
-        "edge": {"edge_webdriver"},
-        "servo": {"servodriver"},
+        "servo": {"servo_legacy"},
     }
 
     _active_products = set(_products) & set(current_tox_env_split)
@@ -29,7 +30,7 @@ else:
     _active_products = set(_products)
 
 
-class all_products(object):
+class all_products:
     def __init__(self, arg, marks={}):
         self.arg = arg
         self.marks = marks
@@ -44,7 +45,7 @@ class all_products(object):
         return pytest.mark.parametrize(self.arg, params)(f)
 
 
-class active_products(object):
+class active_products:
     def __init__(self, arg, marks={}):
         self.arg = arg
         self.marks = marks

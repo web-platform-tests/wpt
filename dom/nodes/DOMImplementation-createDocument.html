@@ -36,7 +36,7 @@ test(function() {
      *   the doctype argument
      *   the expected exception, or null if none
      */
-    [null, null, false, new TypeError()],
+    [null, null, false, TypeError],
     [null, "", null, null],
     [undefined, null, undefined, null],
     [undefined, undefined, undefined, null],
@@ -92,7 +92,11 @@ test(function() {
     var namespace = t[0], qualifiedName = t[1], doctype = t[2], expected = t[3]
     test(function() {
       if (expected != null) {
-        assert_throws(expected, function() { document.implementation.createDocument(namespace, qualifiedName, doctype) })
+        if (typeof expected == "string") {
+          assert_throws_dom(expected, function() { document.implementation.createDocument(namespace, qualifiedName, doctype) });
+        } else {
+          assert_throws_js(expected, function() { document.implementation.createDocument(namespace, qualifiedName, doctype) });
+        }
       } else {
         var doc = document.implementation.createDocument(namespace, qualifiedName, doctype)
         assert_equals(doc.nodeType, Node.DOCUMENT_NODE)
@@ -108,15 +112,17 @@ test(function() {
           assert_not_equals(element, null)
           assert_equals(element.nodeType, Node.ELEMENT_NODE)
           assert_equals(element.ownerDocument, doc)
-          var qualified = String(qualifiedName), names = []
-          if (qualified.indexOf(":") >= 0) {
-            names = qualified.split(":", 2)
+          var qualified = String(qualifiedName)
+          var names = []
+          var firstColonIndex = qualified.indexOf(":")
+          if (firstColonIndex >= 0) {
+            names = qualifiedName.split(":", 2);
           } else {
             names = [null, qualified]
           }
-          assert_equals(element.prefix, names[0])
-          assert_equals(element.localName, names[1])
-          assert_equals(element.namespaceURI, namespace === undefined ? null : namespace)
+          assert_equals(element.prefix, names[0], 'element.prefix')
+          assert_equals(element.localName, names[1], 'element.localName')
+          assert_equals(element.namespaceURI, namespace === undefined || namespace === "" ? null : namespace, 'element.namespaceURI')
         }
         if (!doctype) {
           assert_equals(doc.doctype, null)
@@ -155,11 +161,11 @@ test(function() {
 })
 
 test(function() {
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     document.implementation.createDocument()
   }, "createDocument() should throw")
 
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     document.implementation.createDocument('')
   }, "createDocument('') should throw")
 }, "createDocument with missing arguments");

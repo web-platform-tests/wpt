@@ -1,12 +1,13 @@
+# mypy: allow-untyped-defs
+
 import functools
 import os
 import random
 import shutil
 import subprocess
 import tempfile
-from datetime import datetime, timedelta
-
-from six import iteritems, PY2
+from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 
 # Amount of time beyond the present to consider certificates "expired." This
 # allows certificates to be proactively re-generated in the "buffer" period
@@ -14,18 +15,7 @@ from six import iteritems, PY2
 CERT_EXPIRY_BUFFER = dict(hours=6)
 
 
-def _ensure_str(s, encoding):
-    """makes sure s is an instance of str, converting with encoding if needed"""
-    if isinstance(s, str):
-        return s
-
-    if PY2:
-        return s.encode(encoding)
-    else:
-        return s.decode(encoding)
-
-
-class OpenSSL(object):
+class OpenSSL:
     def __init__(self, logger, binary, base_path, conf_path, hosts, duration,
                  base_conf_path=None):
         """Context manager for interacting with OpenSSL.
@@ -76,14 +66,10 @@ class OpenSSL(object):
             self.cmd += ["-config", self.conf_path]
         self.cmd += list(args)
 
-        # Copy the environment, converting to plain strings. Win32 StartProcess
-        # is picky about all the keys/values being str (on both Py2/3).
-        env = {}
-        for k, v in iteritems(os.environ):
-            env[_ensure_str(k, "utf8")] = _ensure_str(v, "utf8")
-
+        # Copy the environment and add OPENSSL_CONF if available.
+        env = os.environ.copy()
         if self.base_conf_path is not None:
-            env["OPENSSL_CONF"] = _ensure_str(self.base_conf_path, "utf-8")
+            env["OPENSSL_CONF"] = self.base_conf_path
 
         self.proc = subprocess.Popen(self.cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                      env=env)
@@ -231,7 +217,7 @@ keyUsage = keyCertSign
 
     return rv
 
-class OpenSSLEnvironment(object):
+class OpenSSLEnvironment:
     ssl_enabled = True
 
     def __init__(self, logger, openssl_binary="openssl", base_path=None,
@@ -324,14 +310,11 @@ class OpenSSLEnvironment(object):
             end_date_str = openssl("x509",
                                    "-noout",
                                    "-enddate",
-                                   "-in", cert_path).split("=", 1)[1].strip()
-            # Not sure if this works in other locales
-            end_date = datetime.strptime(end_date_str, "%b %d %H:%M:%S %Y %Z")
+                                   "-in", cert_path).decode("utf8").split("=", 1)[1].strip()
+            # openssl outputs an RFC 822 date
+            end_date = parsedate_to_datetime(end_date_str)
             time_buffer = timedelta(**CERT_EXPIRY_BUFFER)
-            # Because `strptime` does not account for time zone offsets, it is
-            # always in terms of UTC, so the current time should be calculated
-            # accordingly.
-            if end_date < datetime.utcnow() + time_buffer:
+            if end_date < datetime.now(timezone.utc) + time_buffer:
                 return False
 
         #TODO: check the key actually signed the cert.
@@ -402,6 +385,8 @@ class OpenSSLEnvironment(object):
 
     def _generate_host_cert(self, hosts):
         host = hosts[0]
+        if not self.force_regenerate:
+            self._load_ca_cert()
         if self._ca_key_path is None:
             self._generate_ca(hosts)
         ca_key_path = self._ca_key_path

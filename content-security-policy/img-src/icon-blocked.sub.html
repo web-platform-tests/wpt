@@ -12,9 +12,10 @@
     var t_spv = async_test("Test that spv event is fired");
     window.addEventListener("securitypolicyviolation", t_spv.step_func_done(function(e) {
       assert_equals(e.violatedDirective, 'img-src');
+      assert_equals(e.target, document);
       assert_true(e.blockedURI.endsWith('/support/fail.png'));
     }));
-    
+
     function createLink(rel, src) {
         var link = document.createElement('link');
         link.rel = rel;

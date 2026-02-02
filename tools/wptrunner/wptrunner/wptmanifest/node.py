@@ -1,4 +1,6 @@
-class NodeVisitor(object):
+# mypy: allow-untyped-defs
+
+class NodeVisitor:
     def visit(self, node):
         # This is ugly as hell, but we don't have multimethods and
         # they aren't trivial to fake without access to the class
@@ -7,11 +9,12 @@ class NodeVisitor(object):
         return func(node)
 
 
-class Node(object):
-    def __init__(self, data=None):
+class Node:
+    def __init__(self, data=None, comments=None):
         self.data = data
         self.parent = None
         self.children = []
+        self.comments = comments or []
 
     def append(self, other):
         other.parent = self
@@ -21,7 +24,7 @@ class Node(object):
         self.parent.children.remove(self)
 
     def __repr__(self):
-        return "<%s %s>" % (self.__class__.__name__, self.data)
+        return f"<{self.__class__.__name__} {self.data}>"
 
     def __str__(self):
         rv = [repr(self)]
@@ -30,17 +33,17 @@ class Node(object):
         return "\n".join(rv)
 
     def __eq__(self, other):
-        if not (self.__class__ == other.__class__ and
-                self.data == other.data and
-                len(self.children) == len(other.children)):
+        if (self.__class__ != other.__class__ or
+            self.data != other.data or
+            len(self.children) != len(other.children)):
             return False
         for child, other_child in zip(self.children, other.children):
-            if not child == other_child:
+            if child != other_child:
                 return False
         return True
 
     def copy(self):
-        new = self.__class__(self.data)
+        new = self.__class__(self.data, self.comments)
         for item in self.children:
             new.append(item.copy())
         return new
@@ -57,7 +60,7 @@ class DataNode(Node):
             index = len(self.children)
             while index > 0 and isinstance(self.children[index - 1], DataNode):
                 index -= 1
-            for i in xrange(index):
+            for i in range(index):
                 if other.data == self.children[i].data:
                     raise ValueError("Duplicate key %s" % self.children[i].data)
             self.children.insert(index, other)
@@ -167,4 +170,8 @@ class StringNode(Node):
 
 
 class NumberNode(ValueNode):
+    pass
+
+
+class AtomExprNode(ValueNode):
     pass

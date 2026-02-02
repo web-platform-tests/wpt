@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 
 # No interactive frontend during docker build
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -10,24 +10,43 @@ RUN apt-get -qqy update \
     bridge-utils \
     bzip2 \
     ca-certificates \
+    curl \
     dbus-x11 \
     earlyoom \
+    fonts-noto \
     fluxbox \
     gdebi \
     git \
+    glib-networking-services \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-gl \
+    libosmesa6-dev \
+    libproxy1-plugin-webkit \
     libvirt-daemon-system \
     libvirt-clients \
+    libunwind8 \
+    libxcb-shape0-dev \
     locales \
-    openjdk-8-jre-headless \
+    openjdk-17-jre-headless \
     pulseaudio \
-    python \
-    python-pip \
+    python3 \
+    python3-dev \
+    python3-pip \
+    python3-venv \
+    software-properties-common \
     qemu-kvm \
     tzdata \
     sudo \
     unzip \
     wget \
     xvfb
+
+# Ensure all Python versions are available
+RUN apt-add-repository -y ppa:deadsnakes/ppa
+
+# Ensure a `python` binary exists
+RUN apt-get -qqy update \
+    && apt-get install -qqy python-is-python3
 
 # Installing just the deps of firefox and chrome is moderately tricky, so
 # just install the default versions of them, and some extra deps we happen
@@ -47,7 +66,6 @@ RUN apt-get -qqy install \
 RUN apt-get -y autoremove
 
 RUN pip install --upgrade pip
-RUN pip install virtualenv
 
 ENV TZ "UTC"
 RUN echo "${TZ}" > /etc/timezone \
@@ -59,10 +77,16 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
+# Setup on-demand pulseaudio with a "Dummy Output" audio sink.
+# This simply creates a file containing autospawn=yes at
+# /run/pulseaudio-enable-autospawn, linked from /etc/pulse/client.conf.d/
+RUN /etc/init.d/pulseaudio-enable-autospawn start
+
 RUN useradd test \
          --shell /bin/bash  \
          --create-home \
   && usermod -a -G sudo test \
+  && usermod -a -G kvm test \
   && usermod -a -G libvirt test \
   && usermod -a -G libvirt-qemu test \
   && echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers \

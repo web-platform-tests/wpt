@@ -1,11 +1,12 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
+// META: timeout=long
 
 'use strict';
 
 idl_test(
   ['uievents'],
-  ['dom'],
+  ['html', 'dom'],
   idl_array => {
     idl_array.add_objects({
       FocusEvent: ['new FocusEvent("event")'],
@@ -15,6 +16,7 @@ idl_test(
       CompositionEvent: ['new CompositionEvent("event")'],
       UIEvent: ['new UIEvent("event")'],
       InputEvent: ['new InputEvent("event")'],
+      TextEvent: ['(() => { const ev = document.createEvent("TextEvent"); ev.initTextEvent("event"); return ev; })()'],
     });
   }
 );

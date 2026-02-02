@@ -1,10 +1,12 @@
+# mypy: allow-untyped-defs
+
 import operator
 
 from ..node import NodeVisitor, DataNode, ConditionalNode, KeyValueNode, ListNode, ValueNode, BinaryExpressionNode, VariableNode
 from ..parser import parse
 
 
-class ConditionalValue(object):
+class ConditionalValue:
     def __init__(self, node, condition_func):
         self.node = node
         assert callable(condition_func)
@@ -31,7 +33,7 @@ class ConditionalValue(object):
         if isinstance(self.value_node, ValueNode):
             self.value_node.data = value
         else:
-            assert(isinstance(self.value_node, ListNode))
+            assert isinstance(self.value_node, ListNode)
             while self.value_node.children:
                 self.value_node.children[0].remove()
             assert len(self.value_node.children) == 0
@@ -40,11 +42,6 @@ class ConditionalValue(object):
 
     def __call__(self, run_info):
         return self.condition_func(run_info)
-
-    def set_value(self, value):
-        if type(value) not in (str, unicode):
-            value = unicode(value)
-        self.value = value
 
     def value_as(self, type_func):
         """Get value and convert to a given type.
@@ -117,7 +114,7 @@ class Compiler(NodeVisitor):
         return self.data_cls_getter(None, None)(node, **kwargs)
 
     def visit_DataNode(self, node):
-        if node != self.tree:
+        if node is not self.tree:
             output_parent = self.output_node
             self.output_node = self.data_cls_getter(self.output_node, node)(node)
         else:
@@ -181,6 +178,9 @@ class Compiler(NodeVisitor):
             return data
         return value
 
+    def visit_AtomExprNode(self, node):
+        return lambda x: node.data
+
     def visit_IndexNode(self, node):
         assert len(node.children) == 1
         return self.visit(node.children[0])
@@ -214,7 +214,7 @@ class Compiler(NodeVisitor):
                 "!=": operator.ne}[node.data]
 
 
-class ManifestItem(object):
+class ManifestItem:
     def __init__(self, node=None, **kwargs):
         self.node = node
         self.parent = None
@@ -236,8 +236,7 @@ class ManifestItem(object):
     def __iter__(self):
         yield self
         for child in self.children:
-            for node in child:
-                yield node
+            yield from child
 
     @property
     def is_empty(self):
@@ -301,9 +300,9 @@ class ManifestItem(object):
         if isinstance(value, list):
             value_node = ListNode()
             for item in value:
-                value_node.append(ValueNode(unicode(item)))
+                value_node.append(ValueNode(str(item)))
         else:
-            value_node = ValueNode(unicode(value))
+            value_node = ValueNode(str(value))
         if condition is not None:
             if not isinstance(condition, ConditionalNode):
                 conditional_node = ConditionalNode()
@@ -348,7 +347,7 @@ class ManifestItem(object):
     def append(self, child):
         self.children.append(child)
         child.parent = self
-        if child.node.parent != self.node:
+        if child.node.parent is not self.node:
             self.node.append(child.node)
         return child
 
@@ -369,18 +368,20 @@ class ManifestItem(object):
     def _flatten(self):
         rv = {}
         for node in [self, self.root]:
-            for name, value in node._data.iteritems():
+            for name, value in node._data.items():
                 if name not in rv:
                     rv[name] = value
         return rv
 
     def iteritems(self):
-        for item in self._flatten().iteritems():
-            yield item
+        yield from self._flatten().items()
 
     def iterkeys(self):
-        for item in self._flatten().iterkeys():
-            yield item
+        yield from self._flatten().keys()
+
+    def iter_properties(self):
+        for item in self._data:
+            yield item, self._data[item]
 
     def remove_value(self, key, value):
         if key not in self._data:

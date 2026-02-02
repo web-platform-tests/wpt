@@ -71,26 +71,26 @@ var HTMLNS = "http://www.w3.org/1999/xhtml",
       "mar\u212a",
       "\u0130nput",
       "\u0131nput",
+      "\u0300foo",
+      "f}oo",
+      "foo}",
+      "\ufffffoo",
+      "f\uffffoo",
+      "foo\uffff",
+      "f<oo",
+      "\u0300",
     ],
     invalid = [
       "",
       "1foo",
       "1:foo",
       "fo o",
-      "\u0300foo",
       "}foo",
-      "f}oo",
-      "foo}",
-      "\ufffffoo",
-      "f\uffffoo",
-      "foo\uffff",
       "<foo",
       "foo>",
       "<foo>",
-      "f<oo",
       "-foo",
       ".foo",
-      "\u0300",
     ]
 
 var xmlIframe = document.querySelector('[src="/common/dummy.xml"]');
@@ -145,9 +145,10 @@ invalid.forEach(function(arg) {
     async_test(function(testObj) {
       window.addEventListener("load", function() {
         testObj.step(function() {
-          var doc = getWin(desc).document;
-          assert_throws("InvalidCharacterError",
-                        function() { doc.createElement(arg) })
+          let win = getWin(desc);
+          let doc = win.document;
+          assert_throws_dom("InvalidCharacterError", win.DOMException,
+                            function() { doc.createElement(arg) })
         });
         testObj.done();
       });

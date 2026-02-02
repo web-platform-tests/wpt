@@ -2,8 +2,8 @@
 // META: script=/resources/idlharness.js
 
 idl_test(
-    ['trusted-types.tentative'],
-    ['dom', 'html'],
+    ['trusted-types'],
+    ['html', 'dom'],
     idl_array => {
       idl_array.add_objects({
         TrustedTypePolicyFactory: ['window.trustedTypes'],
@@ -12,6 +12,5 @@ idl_test(
         TrustedScript: ['window.trustedTypes.createPolicy("SomeName2", { createScript: s => s }).createScript("A string")'],
         TrustedScriptURL: ['window.trustedTypes.createPolicy("SomeName3", { createScriptURL: s => s }).createScriptURL("A string")'],
       });
-    },
-    'Trusted Types'
+    }
 );

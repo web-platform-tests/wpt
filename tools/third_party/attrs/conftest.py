@@ -1,28 +1,30 @@
-from __future__ import absolute_import, division, print_function
-
-import sys
+# SPDX-License-Identifier: MIT
 
 import pytest
 
+from hypothesis import HealthCheck, settings
 
-@pytest.fixture(scope="session")
-def C():
-    """
-    Return a simple but fully featured attrs class with an x and a y attribute.
-    """
-    import attr
+from attr._compat import PY310
 
-    @attr.s
-    class C(object):
-        x = attr.ib()
-        y = attr.ib()
 
-    return C
+@pytest.fixture(name="slots", params=(True, False))
+def _slots(request):
+    return request.param
+
+
+@pytest.fixture(name="frozen", params=(True, False))
+def _frozen(request):
+    return request.param
+
+
+def pytest_configure(config):
+    # HealthCheck.too_slow causes more trouble than good -- especially in CIs.
+    settings.register_profile(
+        "patience", settings(suppress_health_check=[HealthCheck.too_slow])
+    )
+    settings.load_profile("patience")
 
 
 collect_ignore = []
-if sys.version_info[:2] < (3, 6):
-    collect_ignore.extend([
-        "tests/test_annotations.py",
-        "tests/test_init_subclass.py",
-    ])
+if not PY310:
+    collect_ignore.extend(["tests/test_pattern_matching.py"])

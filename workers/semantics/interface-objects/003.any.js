@@ -1,12 +1,10 @@
-// META: global=!default,sharedworker
+// META: global=sharedworker
 
 var expected = [
   // https://html.spec.whatwg.org/
-  "ApplicationCache",
   "WorkerGlobalScope",
   "SharedWorkerGlobalScope",
   "Worker",
-  "SharedWorker",
   "MessagePort",
   "MessageEvent",
   "WorkerNavigator",
@@ -16,13 +14,13 @@ var expected = [
   "ImageBitmap",
   "CanvasGradient",
   "CanvasPattern",
-  "CanvasPath",
   "Path2D",
   "PromiseRejectionEvent",
   "EventSource",
+  "BroadcastChannel",
+  // https://websockets.spec.whatwg.org/
   "WebSocket",
   "CloseEvent",
-  "BroadcastChannel",
   // https://tc39.github.io/ecma262/
   "ArrayBuffer",
   "Int8Array",
@@ -32,6 +30,7 @@ var expected = [
   "Uint16Array",
   "Int32Array",
   "Uint32Array",
+  "Float16Array",
   "Float32Array",
   "Float64Array",
   "DataView",
@@ -55,7 +54,7 @@ var expected = [
   "ErrorEvent",
   "Event",
   "CustomEvent",
-  // http://heycam.github.io/webidl/
+  // https://webidl.spec.whatwg.org/
   "DOMException",
   // https://streams.spec.whatwg.org/
   "ReadableStream",

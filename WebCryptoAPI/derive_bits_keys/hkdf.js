@@ -45,13 +45,13 @@ function define_tests() {
                             });
                         }, testName);
 
-                        // 0 length (OperationError)
+                        // 0 length
                         subsetTest(promise_test, function(test) {
                             return subtle.deriveBits(algorithm, baseKeys[derivedKeySize], 0)
                             .then(function(derivation) {
                                 assert_equals(derivation.byteLength, 0, "Derived correctly empty key");
                             }, function(err) {
-                                assert_equals(err.name, "OperationError", "deriveBits with 0 length correctly threw OperationError: " + err.message);
+                                assert_unreached("deriveBits failed with error " + err.name + ": " + err.message);
                             });
                         }, testName + " with 0 length");
 
@@ -86,7 +86,7 @@ function define_tests() {
                             // - illegal name for hash algorithm (NotSupportedError)
                             var badHash = hashName.substring(0, 3) + hashName.substring(4);
                             subsetTest(promise_test, function(test) {
-                                var badAlgorithm = {name: "HKDF", salt: salts[saltSize], hash: badHash};
+                                var badAlgorithm = {name: "HKDF", salt: salts[saltSize], hash: badHash, info: algorithm.info};
                                 return subtle.deriveKey(badAlgorithm, baseKeys[derivedKeySize], derivedKeyType.algorithm, true, derivedKeyType.usages)
                                 .then(function(key) {
                                     assert_unreached("bad hash name should have thrown an NotSupportedError");
@@ -139,16 +139,6 @@ function define_tests() {
                             });
                         }, testName + " with missing info");
 
-                        // length null (OperationError)
-                        subsetTest(promise_test, function(test) {
-                            return subtle.deriveBits(algorithm, baseKeys[derivedKeySize], null)
-                            .then(function(derivation) {
-                                assert_unreached("null length should have thrown an TypeError");
-                            }, function(err) {
-                                assert_equals(err.name, "TypeError", "deriveBits with null length correctly threw OperationError: " + err.message);
-                            });
-                        }, testName + " with null length");
-
                         // length not multiple of 8 (OperationError)
                         subsetTest(promise_test, function(test) {
                             return subtle.deriveBits(algorithm, baseKeys[derivedKeySize], 44)
@@ -162,7 +152,7 @@ function define_tests() {
                         // - illegal name for hash algorithm (NotSupportedError)
                         var badHash = hashName.substring(0, 3) + hashName.substring(4);
                         subsetTest(promise_test, function(test) {
-                            var badAlgorithm = {name: "HKDF", salt: salts[saltSize], hash: badHash};
+                            var badAlgorithm = {name: "HKDF", salt: salts[saltSize], hash: badHash, info: algorithm.info};
                             return subtle.deriveBits(badAlgorithm, baseKeys[derivedKeySize], 256)
                             .then(function(derivation) {
                                 assert_unreached("bad hash name should have thrown an NotSupportedError");

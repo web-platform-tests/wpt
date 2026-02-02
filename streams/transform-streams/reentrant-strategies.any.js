@@ -1,4 +1,4 @@
-// META: global=worker,jsshell
+// META: global=window,worker,shadowrealm
 // META: script=../resources/recording-streams.js
 // META: script=../resources/rs-utils.js
 // META: script=../resources/test-utils.js
@@ -77,7 +77,7 @@ promise_test(t => {
   });
   const writer = ts.writable.getWriter();
   return writer.write('a')
-      .then(() => promise_rejects(t, error1, ts.readable.getReader().read(), 'read() should reject'));
+      .then(() => promise_rejects_exactly(t, error1, ts.readable.getReader().read(), 'read() should reject'));
 }, 'error() inside size() should work');
 
 promise_test(() => {
@@ -111,7 +111,7 @@ promise_test(t => {
   const writer = ts.writable.getWriter();
   return writer.write('a')
       .then(() => {
-        promise_rejects(t, error1, writer.closed, 'writer.closed should reject');
+        promise_rejects_exactly(t, error1, writer.closed, 'writer.closed should reject');
         return cancelPromise;
       });
 }, 'readable cancel() inside size() should work');
@@ -314,6 +314,10 @@ promise_test(t => {
   // call to TransformStreamDefaultSink.
   return delay(0).then(() => {
     controller.enqueue('a');
-    return Promise.all([promise_rejects(t, error1, reader.read(), 'read() should reject'), abortPromise]);
+    return reader.read();
+  }).then(({ value, done }) => {
+    assert_false(done, 'done should be false');
+    assert_equals(value, 'a', 'value should be correct');
+    return Promise.all([promise_rejects_exactly(t, error1, reader.read(), 'read() should reject'), abortPromise]);
   });
 }, 'writer.abort() inside size() should work');

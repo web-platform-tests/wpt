@@ -2,10 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="variant" content="">
-  <meta name="variant" content="?keep-promise">
   <title>idlharness: Immutable prototypes</title>
-  <script src="../../../../variants.js"></script>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/resources/WebIDLParser.js"></script>
@@ -13,13 +10,17 @@
 </head>
 <body>
 <script>
-"use strictt";
+"use strict";
 
 Object.defineProperty(window, "Foo", {
     enumerable: false,
     writable: true,
     configurable: true,
-    value: function Foo() {}
+    value: function Foo() {
+        if (!new.target) {
+            throw new TypeError('Foo() must be called with new');
+        }
+    }
   });
 Object.defineProperty(window.Foo, "prototype", {
     writable: false,
@@ -33,8 +34,8 @@ idlArray.add_idls(
     "[Global=Window, Exposed=Window]\n" +
     "interface Window : EventTarget {};\n" +
 
-    "[Global=Window, Exposed=Window, Constructor()]\n" +
-    "interface Foo {};"
+    "[Global=Window, Exposed=Window]\n" +
+    "interface Foo { constructor(); };"
   );
 idlArray.add_objects({
   Foo: ["new Foo()"],
@@ -89,7 +90,7 @@ idlArray.test();
             "name": "Foo interface: internal [[SetPrototypeOf]] method of global platform object - setting to a new value via Object.setPrototypeOf should throw a TypeError",
             "status_string": "FAIL",
             "properties": {},
-            "message": "assert_throws: function \"function() {\n            Object.setPrototypeOf(obj, newValue);\n        }\" did not throw"
+            "message": "assert_throws_js: function \"function() {\n            Object.setPrototypeOf(obj, newValue);\n        }\" did not throw"
         },
         {
             "name": "Foo interface: internal [[SetPrototypeOf]] method of global platform object - setting to a new value via Reflect.setPrototypeOf should return false",
@@ -101,7 +102,7 @@ idlArray.test();
             "name": "Foo interface: internal [[SetPrototypeOf]] method of global platform object - setting to a new value via __proto__ should throw a TypeError",
             "status_string": "FAIL",
             "properties": {},
-            "message": "assert_throws: function \"function() {\n            obj.__proto__ = newValue;\n        }\" did not throw"
+            "message": "assert_throws_js: function \"function() {\n            obj.__proto__ = newValue;\n        }\" did not throw"
         },
         {
             "name": "Foo interface: internal [[SetPrototypeOf]] method of global platform object - setting to its original value via Object.setPrototypeOf should not throw",
@@ -125,7 +126,7 @@ idlArray.test();
             "name": "Foo interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to a new value via Object.setPrototypeOf should throw a TypeError",
             "status_string": "FAIL",
             "properties": {},
-            "message": "assert_throws: function \"function() {\n            Object.setPrototypeOf(obj, newValue);\n        }\" did not throw"
+            "message": "assert_throws_js: function \"function() {\n            Object.setPrototypeOf(obj, newValue);\n        }\" did not throw"
         },
         {
             "name": "Foo interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to a new value via Reflect.setPrototypeOf should return false",
@@ -137,7 +138,7 @@ idlArray.test();
             "name": "Foo interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to a new value via __proto__ should throw a TypeError",
             "status_string": "FAIL",
             "properties": {},
-            "message": "assert_throws: function \"function() {\n            obj.__proto__ = newValue;\n        }\" did not throw"
+            "message": "assert_throws_js: function \"function() {\n            obj.__proto__ = newValue;\n        }\" did not throw"
         },
         {
             "name": "Foo interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to its original value via Object.setPrototypeOf should not throw",

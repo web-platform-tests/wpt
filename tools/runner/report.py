@@ -1,14 +1,13 @@
 # flake8: noqa
-
-from __future__ import print_function
+# mypy: ignore-errors
 
 import argparse
 import json
 import sys
+import types
+
 from cgi import escape
 from collections import defaultdict
-
-import types
 
 
 def html_escape(item, escape_quote=False):
@@ -21,7 +20,7 @@ def html_escape(item, escape_quote=False):
         return item
 
 
-class Raw(object):
+class Raw:
     """Simple wrapper around a string to stop it being escaped by html_escape"""
     def __init__(self, value):
         self.value = value
@@ -30,7 +29,7 @@ class Raw(object):
         return unicode(self.value)
 
 
-class Node(object):
+class Node:
     """Node structure used when building HTML"""
     def __init__(self, name, attrs, children):
         #Need list of void elements
@@ -44,7 +43,7 @@ class Node(object):
             attrs_unicode = " " + " ".join("%s=\"%s\"" % (html_escape(key),
                                                           html_escape(value,
                                                                       escape_quote=True))
-                                           for key, value in self.attrs.iteritems())
+                                           for key, value in self.attrs.items())
         else:
             attrs_unicode = ""
         return "<%s%s>%s</%s>\n" % (self.name,
@@ -57,7 +56,7 @@ class Node(object):
         return unicode(self).encode("utf8")
 
 
-class RootNode(object):
+class RootNode:
     """Special Node representing the document root"""
     def __init__(self, *children):
         self.children = ["<!DOCTYPE html>"] + list(children)
@@ -83,7 +82,7 @@ def flatten(iterable):
     return rv
 
 
-class HTML(object):
+class HTML:
     """Simple HTML templating system. An instance of this class can create
     element nodes by calling methods with the same name as the element,
     passing in children as positional arguments or as a list, and attributes
@@ -119,7 +118,7 @@ class HTML(object):
 h = HTML()
 
 
-class TestResult(object):
+class TestResult:
     """Simple holder for the results of a single test in a single UA"""
     def __init__(self, test):
         self.test = test
@@ -157,7 +156,7 @@ def test_id(id):
 
 def all_tests(data):
     tests = defaultdict(set)
-    for UA, results in data.iteritems():
+    for UA, results in iteritems(data):
         for result in results["results"]:
             id = test_id(result["test"])
             tests[id] |= {subtest["name"] for subtest in result["subtests"]}
@@ -185,7 +184,7 @@ def group_results(data):
 
     results_by_test = defaultdict(result)
 
-    for UA, results in data.iteritems():
+    for UA, results in iteritems(data):
         for test_data in results["results"]:
             id = test_id(test_data["test"])
             result = results_by_test[id]
@@ -230,10 +229,10 @@ def test_link(test_id, subtest=None):
 def summary(UAs, results_by_test):
     """Render the implementation report summary"""
     not_passing = []
-    for test, results in results_by_test.iteritems():
+    for test, results in iteritems(results_by_test):
         if not any(item[0] in ("PASS", "OK") for item in results["harness"].values()):
             not_passing.append((test, None))
-        for subtest_name, subtest_results in results["subtests"].iteritems():
+        for subtest_name, subtest_results in iteritems(results["subtests"]):
             if not any(item[0] == "PASS" for item in subtest_results.values()):
                 not_passing.append((test, subtest_name))
     if not_passing:
@@ -260,7 +259,7 @@ def result_rows(UAs, test, result):
         class_="test"
     )
 
-    for name, subtest_result in sorted(result["subtests"].iteritems()):
+    for name, subtest_result in sorted(iteritems(result["subtests"])):
         yield h.tr(
             h.td(name),
             [status_cell(status, message)
@@ -271,7 +270,7 @@ def result_rows(UAs, test, result):
 
 def result_bodies(UAs, results_by_test):
     return [h.tbody(result_rows(UAs, test, result))
-            for test, result in sorted(results_by_test.iteritems())]
+            for test, result in sorted(iteritems(results_by_test))]
 
 
 def generate_html(UAs, results_by_test):

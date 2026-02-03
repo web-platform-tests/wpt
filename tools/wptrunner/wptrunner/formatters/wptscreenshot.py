@@ -10,6 +10,7 @@ class WptscreenshotFormatter(BaseFormatter):  # type: ignore
     """Formatter that outputs screenshots in the format expected by wpt.fyi."""
 
     def __init__(self, api=None):
+        super().__init__()
         self.api = api or DEFAULT_API
         self.cache = set()
 

@@ -168,7 +168,7 @@ def test_eventSender():
             assert errors == [("PARSE-FAILED", "Unable to parse file", filename, 1)]
         else:
             assert errors == [('LAYOUTTESTS APIS',
-                               'eventSender/testRunner/internals used; these are LayoutTests-specific APIs (WebKit/Blink)',
+                               'eventSender used; this is a LayoutTests-specific API (WebKit/Blink)',
                                filename,
                                1)]
 
@@ -183,7 +183,7 @@ def test_testRunner():
             assert errors == [("PARSE-FAILED", "Unable to parse file", filename, 1)]
         else:
             assert errors == [('LAYOUTTESTS APIS',
-                               'eventSender/testRunner/internals used; these are LayoutTests-specific APIs (WebKit/Blink)',
+                               'testRunner used; this is a LayoutTests-specific API (WebKit/Blink)',
                                filename,
                                1)]
 
@@ -198,7 +198,7 @@ def test_internals():
             assert errors == [("PARSE-FAILED", "Unable to parse file", filename, 1)]
         else:
             assert errors == [('LAYOUTTESTS APIS',
-                               'eventSender/testRunner/internals used; these are LayoutTests-specific APIs (WebKit/Blink)',
+                               'internals used; this is a LayoutTests-specific API (WebKit/Blink)',
                                filename,
                                1)]
 
@@ -240,7 +240,7 @@ def test_html_invalid_syntax():
         check_errors(errors)
 
         if kind == "web-lax":
-            assert errors == [("HTML INVALID SYNTAX", "Test-file line has a non-void HTML tag with /> syntax", filename, 1)]
+            assert errors == [("HTML INVALID SYNTAX", "Test-file line has a non-void HTML div tag with /> syntax", filename, 1)]
 
 
 def test_testdriver_internal():
@@ -251,6 +251,33 @@ def test_testdriver_internal():
 
         if kind not in {"web-strict", "python"}:
             assert errors == [("TEST DRIVER INTERNAL", "Test-file uses test_driver_internal API", filename, 1)]
+
+
+@pytest.mark.parametrize(
+    "attribute",
+    [
+        "appCodeName",
+        "appName",
+        "appVersion",
+        "platform",
+        "product",
+        "productSub",
+        "userAgent",
+        "userAgentData",
+        "vendor",
+        "vendorSub",
+        "taintEnabled",
+        "oscpu",
+    ],
+)
+def test_navigatorid(attribute):
+    error_map = check_with_files(b"<script>navigator.%s</script>" % attribute.encode("ascii"))
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind != "python":
+            assert errors == [("NAVIGATORID", f"navigator.{attribute} used", filename, 1)]
 
 
 def test_meta_timeout():

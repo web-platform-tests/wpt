@@ -63,6 +63,9 @@ var y12 = centerY(box12);
 var x22 = centerX(box22);
 var y22 = centerY(box22);
 
+shouldThrow('shadowRoot.elementsFromPoint()');
+shouldThrow('shadowRoot.elementsFromPoint(0)');
+
 var root3 = blockHost.attachShadow({mode: 'closed'});
 root3.appendChild(document.createTextNode('text1'));
 var root4 = inlineBlockHost.attachShadow({mode: 'closed'});

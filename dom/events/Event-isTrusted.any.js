@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 test(function() {
   var desc1 = Object.getOwnPropertyDescriptor(new Event("x"), "isTrusted");
   assert_not_equals(desc1, undefined);

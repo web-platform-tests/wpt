@@ -10,7 +10,7 @@ from urllib.parse import urljoin
 from .wptmanifest.parser import atoms
 
 atom_reset = atoms["Reset"]
-enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest"}
+enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest", "test262"}
 
 
 class Result(ABC):
@@ -529,6 +529,10 @@ class TestharnessTest(Test):
         return self.url
 
 
+class Test262Test(TestharnessTest):
+    test_type = "test262"
+
+
 class ReftestTest(Test):
     """A reftest
 
@@ -764,7 +768,8 @@ manifest_test_cls = {"reftest": ReftestTest,
                      "print-reftest": PrintReftestTest,
                      "testharness": TestharnessTest,
                      "wdspec": WdspecTest,
-                     "crashtest": CrashTest}
+                     "crashtest": CrashTest,
+                     "test262": Test262Test}
 
 
 def from_manifest(manifest_file, manifest_test, inherit_metadata, test_metadata):

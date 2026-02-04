@@ -379,6 +379,12 @@ class MissingTestInWebFeaturesFile(Rule):
     """)
 
 
+class UnusedIgnorelistEntry(Rule):
+    name = "UNUSED-IGNORELIST"
+    description = "Unused ignorelist entry: %s: %s"
+    to_fix = "Remove this entry from lint.ignore if it's no longer needed"
+
+
 EXTENSIONS = {
     "html": [".html", ".htm"],
     "xhtml": [".xht", ".xhtml"],

@@ -40,6 +40,13 @@ text
 #document
 | <html>
 
+#data
+<html onload="3 + 3"><div>a
+#config
+{ "replaceWithChildrenElements": ["html"], "elements": ["head", "body", "div"] }
+#error
+TypeError
+
 </script>
 <script id="safe" type="html5lib-testcases">
 #data
@@ -80,6 +87,31 @@ text
 |     <div>
 |       "a"
 |       "b"
+
+#data
+<html onload="2 + 2"><div>a
+#config
+{ "replaceWithChildrenElements": ["html"], "removeElements": [] }
+#error
+TypeError
+
+#data
+<br id="document">
+#config
+{"elements": [{ "name":"br", "attributes":[] }, "html", "body"]}
+#document
+| <html>
+|   <body>
+|     <br>
+
+#data
+<br id="document">
+#config
+{"elements": [{ "name":"br", "attributes":[] }, "html", "body"], "attributes":[]}
+#document
+| <html>
+|   <body>
+|     <br>
 
 </script>
 <script id="unsafe" type="html5lib-testcases">
@@ -127,6 +159,14 @@ text
 |       "a"
 |       <!-- xx -->
 |       "b"
+
+#data
+<html onload="2 + 2"><div>a
+#config
+{ "replaceWithChildrenElements": ["html"], "removeElements": [] }
+#error
+TypeError
+
 </script>
 <script id="document" type="html5lib-testcases">
 #data
@@ -147,7 +187,12 @@ function test_safe(testcase, index) {
     config = { sanitizer: JSON.parse(testcase.config) };
   }
   test(_ => {
-    assert_testcase(Document.parseHTML(testcase.data, config), testcase);
+    if (testcase.error) {
+      assert_throws_js(globalThis[testcase.error],
+                       () => Document.parseHTML(testcase.data, config));
+    } else {
+      assert_testcase(Document.parseHTML(testcase.data, config), testcase);
+    }
   }, `parseHTML testcase ${index}, "${testcase.data}"`);
 }
 function test_unsafe(testcase, index) {
@@ -156,7 +201,12 @@ function test_unsafe(testcase, index) {
     config = { sanitizer: JSON.parse(testcase.config) };
   }
   test(_ => {
-    assert_testcase(Document.parseHTMLUnsafe(testcase.data, config), testcase);
+    if (testcase.error) {
+      assert_throws_js(globalThis[testcase.error],
+                       () => Document.parseHTMLUnsafe(testcase.data, config));
+    } else {
+      assert_testcase(Document.parseHTMLUnsafe(testcase.data, config), testcase);
+    }
   }, `parseHTMLUnsafe testcase ${index}, "${testcase.data}"`);
 }
 

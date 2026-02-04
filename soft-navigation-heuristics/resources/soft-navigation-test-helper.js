@@ -53,15 +53,14 @@ class SoftNavigationTestHelper {
    * Waits for a number of buffered performance entries of a given type,
    * optionally including soft navigation observations, with a timeout message.
    * @param {string} type The type of the entries to wait for.
-   * @param {boolean} includeSoftNavigationObservations Whether to include
-   *     soft navigation observations.
    * @param {number} minNumEntries The minimum number of entries to wait for.
+   *     Defaults to 1.
    * @param {number=} timeout The timeout in milliseconds. Defaults to 1000.
    * @return {!Promise} The promise, which either resolves with the entries or
    *     rejects with a timeout message.
    */
   async getBufferedPerformanceEntriesWithTimeout(
-      type, includeSoftNavigationObservations, minNumEntries, timeout = 1000) {
+      type, minNumEntries = 1, timeout = 1000) {
     let observer;
     return this
         .newPromiseWithTimeoutMessage(
@@ -76,14 +75,9 @@ class SoftNavigationTestHelper {
               observer.observe({
                 type: type,
                 buffered: true,
-                includeSoftNavigationObservations:
-                    includeSoftNavigationObservations,
               });
             },
-            `${minNumEntries} entries of type ${type}${
-                includeSoftNavigationObservations ?
-                    ' with soft navigation observations' :
-                    ''} never arrived`,
+            `${minNumEntries} entries of type ${type} never arrived`,
             timeout)
         .finally(() => {
           observer.disconnect();
@@ -94,13 +88,11 @@ class SoftNavigationTestHelper {
    * Waits for a number of performance entries of a given type,
    * optionally including soft navigation observations.
    * @param {string} type The type of the entries to wait for.
-   * @param {boolean} includeSoftNavigationObservations Whether to include
-   *     soft navigation observations.
    * @param {number} minNumEntries The minimum number of entries to wait for.
+   *     Defaults to 1.
    * @return {!Promise} The promise, which resolves with the entries.
    */
-  static getPerformanceEntries(
-      type, includeSoftNavigationObservations, minNumEntries) {
+  static getPerformanceEntries(type, minNumEntries = 1) {
     return new Promise((resolve) => {
       const entries = [];
       const observer = new PerformanceObserver((list) => {
@@ -112,8 +104,49 @@ class SoftNavigationTestHelper {
       })
       observer.observe({
         type: type,
-        includeSoftNavigationObservations: includeSoftNavigationObservations,
       });
     });
+  }
+
+  /**
+   * Clicks on the given click target and validates that a soft navigation
+   * occurred and the ICP entry is for the correct element.
+   *
+   * Note: this only supports a single ICP entry.
+   *
+   * @param {!HTMLElement} clickTarget The element to click on to navigate.
+   * @param {string} url The url to navigate to.
+   * @param {function(): (string|Promise<string>)} modifyDOM Function called in
+   *    in the click handler to modify the DOM. Can be sync or async. Returns
+   *    the ID of the mutated element which is expected to match the ICP entry.
+   */
+  async clickAndExpectSoftNavigation(clickTarget, url, modifyDOM) {
+    let targetId;
+    clickTarget.addEventListener('click', async () => {
+      history.pushState({}, '', url);
+      targetId = await modifyDOM();
+    }, {once: true});
+
+    // Set up the PerformanceObservers before clicking to avoid races.
+    const softNavPromise =
+        SoftNavigationTestHelper.getPerformanceEntries('soft-navigation');
+    const icpPromise =
+        SoftNavigationTestHelper.getPerformanceEntries('interaction-contentful-paint');
+
+    if (test_driver) {
+      test_driver.click(clickTarget);
+    }
+
+    const softNavs = await this.withTimeoutMessage(
+        softNavPromise, 'Soft navigation not detected.', /*timeout=*/ 3000);
+    assert_equals(softNavs.length, 1, 'Expected exactly one soft navigation.');
+    assert_true(
+      softNavs[0].name.endsWith(url),
+      `Unexpected Soft Navigation URL. Expected url to end with ${url} but got ${softNavs[0].name}`);
+
+    const icps = await this.withTimeoutMessage(
+        icpPromise, 'ICP not detected.', /*timeout=*/ 3000);
+    assert_equals(icps.length, 1, 'Expected exactly one ICP entry.');
+    assert_equals(icps[0].id, targetId, `Expected ICP candidate to be "${targetId}"`);
   }
 }

@@ -1,4 +1,5 @@
 import asyncio
+import random
 
 import pytest
 from webdriver.bidi.modules.script import ScriptEvaluateResultException
@@ -29,7 +30,8 @@ async def test_frame_context(
     wait_for_event,
     wait_for_future_safe,
     domain,
-    phase
+    phase,
+    iframe
 ):
     await setup_network_test(
         events=[
@@ -39,9 +41,8 @@ async def test_frame_context(
         ],
         contexts=[new_tab["context"]],
     )
-
-    frame_url = inline("<div>foo</div>")
-    test_url = inline(f"<iframe src='{frame_url}'></iframe>", domain=domain)
+    frame_html = "<div>foo</div>"
+    test_url = inline(iframe(frame_html), domain=domain)
     await bidi_session.browsing_context.navigate(
         url=test_url, context=new_tab["context"], wait="complete"
     )
@@ -52,7 +53,7 @@ async def test_frame_context(
     frame = contexts[0]["children"][0]
 
     # Add an intercept.
-    text_url = url(PAGE_EMPTY_TEXT)
+    text_url = f"{url(PAGE_EMPTY_TEXT)}?nocache={random.random()}"
     await add_intercept(
         phases=[phase],
         url_patterns=[{"type": "string", "pattern": text_url}],
@@ -64,7 +65,7 @@ async def test_frame_context(
     on_network_event = wait_for_event(event_name)
     asyncio.ensure_future(fetch(text_url, context=frame))
     event = await wait_for_future_safe(on_network_event)
-    assert_network_event(event, is_blocked=True)
+    assert_network_event(event, expected_event={"isBlocked": True})
 
 
 @pytest.mark.asyncio
@@ -97,23 +98,30 @@ async def test_other_context(
     )
 
     # Add an intercept.
-    text_url = url(PAGE_EMPTY_TEXT)
+    text_url = f"{url(PAGE_EMPTY_TEXT)}?nocache={random.random()}"
+
+    # Note: generate two distinct URLs matching the pattern to avoid cases
+    # where the blocked response of the first request is reused for the second
+    # request on Firefox (https://bugzilla.mozilla.org/show_bug.cgi?id=1966494).
+    text_url_other = f"{url(PAGE_EMPTY_TEXT)}?othercontext&nocache={random.random()}"
+
     await add_intercept(
         phases=[phase],
-        url_patterns=[{"type": "string", "pattern": text_url}],
+        # Use a pattern url_pattern to match both URLs using different search
+        # parameters.
+        url_patterns=[{"type": "pattern", "pathname": PAGE_EMPTY_TEXT}],
     )
-
 
     # Request to new_tab should be blocked.
     [event_name, assert_network_event] = PHASE_TO_EVENT_MAP[phase]
     on_network_event = wait_for_event(event_name)
     asyncio.ensure_future(fetch(text_url, context=new_tab))
     event = await wait_for_future_safe(on_network_event)
-    assert_network_event(event, is_blocked=True)
+    assert_network_event(event, expected_event={"isBlocked": True})
 
     # Request to other_context should not be blocked because we are not
     # subscribed to network events. Wait for fetch to resolve successfully.
-    await asyncio.ensure_future(fetch(text_url, context=other_context))
+    await asyncio.ensure_future(fetch(text_url_other, context=other_context))
 
 
 @pytest.mark.asyncio
@@ -144,7 +152,7 @@ async def test_other_context_with_event_subscription(
     )
 
     # Add an intercept to new_tab only.
-    text_url = url(PAGE_EMPTY_TEXT)
+    text_url = f"{url(PAGE_EMPTY_TEXT)}?nocache={random.random()}"
     await add_intercept(
         phases=["beforeRequestSent"],
         url_patterns=[{"type": "string", "pattern": text_url}],
@@ -155,17 +163,13 @@ async def test_other_context_with_event_subscription(
     on_network_event = wait_for_event(BEFORE_REQUEST_SENT_EVENT)
     asyncio.ensure_future(fetch(text_url, context=new_tab))
     event = await wait_for_future_safe(on_network_event)
-    assert_before_request_sent_event(
-        event, is_blocked=True
-    )
+    assert_before_request_sent_event(event, expected_event={"isBlocked": True})
 
     # Request to other_context should not be blocked.
     on_network_event = wait_for_event(BEFORE_REQUEST_SENT_EVENT)
     asyncio.ensure_future(fetch(text_url, context=other_context))
     event = await wait_for_future_safe(on_network_event)
-    assert_before_request_sent_event(
-        event, is_blocked=False
-    )
+    assert_before_request_sent_event(event, expected_event={"isBlocked": False})
 
 
 @pytest.mark.asyncio
@@ -193,7 +197,7 @@ async def test_two_contexts_same_intercept(
     )
 
     # Add an intercept to both contexts
-    text_url = url(PAGE_EMPTY_TEXT)
+    text_url = f"{url(PAGE_EMPTY_TEXT)}?nocache={random.random()}"
     intercept = await add_intercept(
         phases=["beforeRequestSent"],
         url_patterns=[{"type": "string", "pattern": text_url}],
@@ -205,7 +209,7 @@ async def test_two_contexts_same_intercept(
     asyncio.ensure_future(fetch(text_url, context=new_tab))
     event = await wait_for_future_safe(on_network_event)
     assert_before_request_sent_event(
-        event, is_blocked=True, intercepts=[intercept]
+        event, expected_event={"isBlocked": True, "intercepts": [intercept]}
     )
 
     # Request on the other_context should be blocked.
@@ -213,7 +217,7 @@ async def test_two_contexts_same_intercept(
     asyncio.ensure_future(fetch(text_url, context=other_context))
     event = await wait_for_future_safe(on_network_event)
     assert_before_request_sent_event(
-        event, is_blocked=True, intercepts=[intercept]
+        event, expected_event={"isBlocked": True, "intercepts": [intercept]}
     )
 
 
@@ -242,7 +246,7 @@ async def test_two_contexts_global_intercept(
     )
 
     # Add an intercept for new_tab and a global intercept.
-    text_url = url(PAGE_EMPTY_TEXT)
+    text_url = f"{url(PAGE_EMPTY_TEXT)}?nocache={random.random()}"
     context_intercept = await add_intercept(
         phases=["beforeRequestSent"],
         url_patterns=[{"type": "string", "pattern": text_url}],
@@ -258,7 +262,11 @@ async def test_two_contexts_global_intercept(
     asyncio.ensure_future(fetch(text_url, context=new_tab))
     event = await wait_for_future_safe(on_network_event)
     assert_before_request_sent_event(
-        event, is_blocked=True, intercepts=[context_intercept, global_intercept]
+        event,
+        expected_event={
+            "isBlocked": True,
+            "intercepts": [context_intercept, global_intercept],
+        },
     )
 
     # Request on the other_context should be blocked by the global intercept.
@@ -266,5 +274,5 @@ async def test_two_contexts_global_intercept(
     asyncio.ensure_future(fetch(text_url, context=other_context))
     event = await wait_for_future_safe(on_network_event)
     assert_before_request_sent_event(
-        event, is_blocked=True, intercepts=[global_intercept]
+        event, expected_event={"isBlocked": True, "intercepts": [global_intercept]}
     )

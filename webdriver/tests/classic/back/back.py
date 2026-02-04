@@ -33,6 +33,20 @@ def test_no_browsing_history(session):
     assert_success(response)
 
 
+def test_timeout_page_load_null(session, inline):
+    first_page = inline("<div id=foo>")
+    second_page = inline("<div id=bar>")
+
+    session.url = first_page
+    session.url = second_page
+
+    session.timeouts.page_load = None
+
+    back(session)
+
+    assert session.url == first_page
+
+
 @pytest.mark.parametrize("protocol,parameters", [
     ("http", ""),
     ("https", ""),
@@ -126,7 +140,7 @@ def test_removed_iframe(session, url, inline):
     session.url = url("/webdriver/tests/support/html/frames_no_bfcache.html")
 
     subframe = session.find.css("#sub-frame", all=False)
-    session.switch_frame(subframe)
+    session.switch_to_frame(subframe)
 
     response = back(session)
     assert_success(response)

@@ -1,6 +1,7 @@
-from typing import Any, Mapping, MutableMapping, Optional
+from typing import Any, List, Mapping
 
 from ._module import BidiModule, command
+from ..undefined import UNDEFINED, Maybe, Nullable
 
 
 class Browser(BidiModule):
@@ -14,7 +15,6 @@ class Browser(BidiModule):
 
     @get_client_windows.result
     def _get_client_windows(self, result: Mapping[str, Any]) -> Any:
-        assert result['clientWindows'] is not None
         assert isinstance(result["clientWindows"], list)
         for client_window_info in result["clientWindows"]:
             assert isinstance(client_window_info["active"], bool)
@@ -28,26 +28,18 @@ class Browser(BidiModule):
 
     @command
     def create_user_context(
-        self, accept_insecure_certs: Optional[bool] = None,
-        proxy: Optional[Mapping[str, Any]] = None,
-        unhandled_prompt_behavior: Optional[Mapping[str, str]] = None,
+            self, accept_insecure_certs: Maybe[bool] = UNDEFINED,
+            proxy: Maybe[Mapping[str, Any]] = UNDEFINED,
+            unhandled_prompt_behavior: Maybe[Mapping[str, str]] = UNDEFINED,
     ) -> Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {}
-
-        if accept_insecure_certs is not None:
-            params["acceptInsecureCerts"] = accept_insecure_certs
-
-        if proxy is not None:
-            params["proxy"] = proxy
-
-        if unhandled_prompt_behavior is not None:
-            params["unhandledPromptBehavior"] = unhandled_prompt_behavior
-
-        return params
+        return {
+            "acceptInsecureCerts": accept_insecure_certs,
+            "proxy": proxy,
+            "unhandledPromptBehavior": unhandled_prompt_behavior
+        }
 
     @create_user_context.result
     def _create_user_context(self, result: Mapping[str, Any]) -> Any:
-        assert result["userContext"] is not None
         assert isinstance(result["userContext"], str)
 
         return result["userContext"]
@@ -58,7 +50,6 @@ class Browser(BidiModule):
 
     @get_user_contexts.result
     def _get_user_contexts(self, result: Mapping[str, Any]) -> Any:
-        assert result["userContexts"] is not None
         assert isinstance(result["userContexts"], list)
         for user_context_info in result["userContexts"]:
             assert isinstance(user_context_info["userContext"], str)
@@ -67,11 +58,19 @@ class Browser(BidiModule):
 
     @command
     def remove_user_context(
-        self, user_context: str
+            self, user_context: str
     ) -> Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {}
+        return {
+            "userContext": user_context
+        }
 
-        if user_context is not None:
-            params["userContext"] = user_context
+    @command
+    def set_download_behavior(
+            self, download_behavior: Nullable[Mapping[str, Any]],
+            user_contexts: Maybe[List[str]] = UNDEFINED
 
-        return params
+    ) -> Mapping[str, Any]:
+        return {
+            "downloadBehavior": download_behavior,
+            "userContexts": user_contexts
+        }

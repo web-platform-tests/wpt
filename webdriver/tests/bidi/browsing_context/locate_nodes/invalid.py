@@ -97,7 +97,7 @@ async def test_params_locator_context_value_invalid_type(bidi_session, inline,
         )
 
 
-@pytest.mark.parametrize("value", ["non_exiting_context"])
+@pytest.mark.parametrize("value", ["", "non_existing_context"])
 async def test_params_locator_context_value_invalid_context(bidi_session,
         inline, top_context, value):
     await navigate_to_page(bidi_session, inline, top_context)
@@ -114,8 +114,7 @@ async def test_params_locator_context_value_invalid_context(bidi_session,
     ("css", "a*b"),
     ("xpath", ""),
     ("innerText", ""),
-    ("accessibility", {}),
-    ("context", {"context": ""})
+    ("accessibility", {})
 ])
 async def test_params_locator_value_invalid_value(bidi_session, inline, top_context, type, value):
     await navigate_to_page(bidi_session, inline, top_context)
@@ -261,8 +260,7 @@ async def test_params_start_nodes_dom_node_not_element(
 
 @pytest.mark.asyncio
 async def test_locate_by_context_invalid_context(bidi_session, inline, top_context, iframe):
-    iframe_url = inline(iframe("<div>foo</div>"))
-    page_url = inline(f"<iframe src='{iframe_url}'></iframe>")
+    page_url = inline(iframe(iframe("<div>foo</div>")))
 
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=page_url, wait="complete"

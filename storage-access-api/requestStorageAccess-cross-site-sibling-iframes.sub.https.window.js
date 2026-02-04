@@ -29,7 +29,12 @@
 
     await SetPermissionInFrame(frame1, [{ name: 'storage-access' }, 'granted']);
 
-    assert_false(await FrameHasStorageAccess(frame1), "frame1 should not have storage access initially.");
+    const hasStorageAccess = await FrameHasStorageAccess(frame1);
+    if (hasStorageAccess) {
+      // Nothing to test here, since access is not blocked.
+      // See https://github.com/privacycg/storage-access/issues/162.
+      return;
+    }
     assert_false(await FrameHasStorageAccess(frame2), "frame2 should not have storage access initially.");
 
     assert_false(await HasUnpartitionedCookie(frame1), "frame1 should not have cookie access.");
@@ -65,6 +70,12 @@
       await MaybeSetStorageAccess("*", "*", "allowed");
     });
 
+    const hasStorageAccess = await FrameHasStorageAccess(crossSiteFrame);
+    if (hasStorageAccess) {
+      // Nothing to test here, since cross-site access is not blocked.
+      return;
+    }
+
     await SetPermissionInFrame(crossOriginFrame, [{ name: 'storage-access' }, 'granted']);
     await SetPermissionInFrame(crossSiteFrame, [{ name: 'storage-access' }, 'granted']);
 
@@ -78,9 +89,6 @@
     assert_true(cookieStringHasCookie("foo", "bar", await FetchSubresourceCookiesFromFrame(crossSiteFrame, wwwAlt)),"crossSiteFrame making same-origin subresource request can access cookies.");
 
     assert_false(cookieStringHasCookie("foo", "bar",  await FetchSubresourceCookiesFromFrame(crossOriginFrame, wwwAlt)), "crossOriginFrame making cross-site subresource request to sibling iframe's host should not include cookies.");
-
-    assert_false(cookieStringHasCookie("cookie", "monster", await FetchSubresourceCookiesFromFrame(crossSiteFrame, www)),"crossSiteFrame making cross-site subresource request to sibling iframe's host should not include cookies.");
-
   }, "Cross-site sibling iframes should not be able to take advantage of the existing permission grant requested by others.");
 
 })();

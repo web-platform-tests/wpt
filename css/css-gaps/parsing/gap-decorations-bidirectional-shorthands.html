@@ -21,6 +21,21 @@
 
     column-rule-style: solid;
     row-rule-style: solid;
+
+    column-rule-break: intersection;
+    row-rule-break: intersection;
+
+    column-rule-visibility-items: around;
+    row-rule-visibility-items: around;
+
+    column-rule-edge-inset-start: 10px;
+    row-rule-edge-inset-start: 10px;
+    column-rule-edge-inset-end: 5px;
+    row-rule-edge-inset-end: 5px;
+    column-rule-interior-inset-start: 10px;
+    row-rule-interior-inset-start: 10px;
+    column-rule-interior-inset-end: 5px;
+    row-rule-interior-inset-end: 5px;
   }
 
   #target2 {
@@ -32,6 +47,21 @@
 
     column-rule-style: double;
     row-rule-style: dotted;
+
+    column-rule-break: intersection;
+    row-rule-break: normal;
+
+    column-rule-visibility-items: around;
+    row-rule-visibility-items: between;
+
+    column-rule-edge-inset-start: 5px;
+    row-rule-edge-inset-start: 10px;
+    column-rule-edge-inset-end: 15px;
+    row-rule-edge-inset-end: 20px;
+    column-rule-interior-inset-start: 25px;
+    row-rule-interior-inset-start: 30px;
+    column-rule-interior-inset-end: 35px;
+    row-rule-interior-inset-end: 40px;
   }
 </style>
 <script>
@@ -47,6 +77,15 @@
   test(function() {
     assert_equals(window.getComputedStyle(document.getElementById('target1')).getPropertyValue('rule'), '10px solid rgb(0, 255, 0)');
   }, "rule shorthand computed from longhand values");
+  test(function() {
+    assert_equals(window.getComputedStyle(document.getElementById('target1')).getPropertyValue('rule-break'), 'intersection');
+  }, "rule-break shorthand computed from longhand values");
+  test(function() {
+    assert_equals(window.getComputedStyle(document.getElementById('target1')).getPropertyValue('rule-visibility-items'), 'around');
+  }, "rule-visibility-items shorthand computed from longhand values");
+  test(function() {
+    assert_equals(window.getComputedStyle(document.getElementById('target1')).getPropertyValue('rule-inset'), '10px 5px / 10px 5px');
+  }, "rule-inset shorthand computed from longhand values");
 
 
 
@@ -62,6 +101,15 @@
     test(function() {
     assert_equals(window.getComputedStyle(document.getElementById('target2')).getPropertyValue('rule'), '');
   }, "rule shorthand cannot be computed from longhand values so expect an empty string");
+  test(function() {
+    assert_equals(window.getComputedStyle(document.getElementById('target2')).getPropertyValue('rule-break'), '');
+  }, "rule-break shorthand cannot be computed from longhand values so expect an empty string");
+  test(function() {
+    assert_equals(window.getComputedStyle(document.getElementById('target2')).getPropertyValue('rule-visibility-items'), '');
+  }, "rule-visibility-items shorthand cannot be computed from longhand values so expect an empty string");
+  test(function() {
+    assert_equals(window.getComputedStyle(document.getElementById('target2')).getPropertyValue('rule-inset'), '');
+  }, "rule-inset shorthand cannot be computed from longhand values so expect an empty string");
 </script>
 </body>
 </html>

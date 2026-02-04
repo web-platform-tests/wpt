@@ -225,7 +225,7 @@ class TimedRunner:
                             sys._current_frames()[executor.ident]))
                     self.result = False, ("EXTERNAL-TIMEOUT", message)
                 else:
-                    self.logger.info("Browser not responding, setting status to CRASH")
+                    self.logger.info("Browser not responding, setting status to CRASH (!!)")
                     self.result = False, ("CRASH", None)
         elif self.result[1] is None:
             # We didn't get any data back from the test, so check if the

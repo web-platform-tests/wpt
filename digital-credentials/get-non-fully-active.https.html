@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
-<title>Digital Credentials Test: non-fully active document</title>
+<title>Digital Credentials Test: navigator.credentials.get() non-fully active document</title>
 <link
   rel="help"
   href="https://github.com/w3c/webappsec-credential-management"
@@ -48,15 +48,6 @@
       "Expected InvalidStateError for get() on non-fully-active document"
     );
 
-    // Try to create credentials while not fully active...
-    await promise_rejects_dom(
-      t,
-      "InvalidStateError",
-      DOMExceptionCtor,
-      credentials.create({ signal }),
-      "Expected InvalidStateError for create() on non-fully-active document"
-    );
-
     // Try to prevent silent access while not fully active...
     await promise_rejects_dom(
       t,
@@ -65,7 +56,7 @@
       credentials.preventSilentAccess(),
       "Expected InvalidStateError for preventSilentAccess() on non-fully-active document"
     );
-  }, "non-fully active document behavior for CredentialsContainer");
+  }, "non-fully active document behavior for navigator.credentials.get()");
 
   promise_test(async (t) => {
     let iframe = await createIframe();
@@ -111,5 +102,5 @@
         );
       }
     }
-}, "Aborted Digital Credentials requests do not leave a subsequent request stuck in an invalid state");
+  }, "Aborted Digital Credentials get() requests do not leave a subsequent request stuck in an invalid state");
 </script>

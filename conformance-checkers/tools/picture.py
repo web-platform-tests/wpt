@@ -83,10 +83,9 @@ errors = {
     "source-srcset-x-with-sizes": "<picture><source srcset='x 1x, y 2x' sizes=50vw><img src=x alt></picture>",
     "source-srcset-h-with-sizes": "<picture><source srcset='x 100h, y 200h' sizes=50vw><img src=x alt></picture>",
     "source-srcset-w-and-x-with-sizes": "<picture><source srcset='x 100w, y 2x' sizes=50vw><img src=x alt></picture>",
-    "img-with-sizes-no-srcset": "<img sizes=50vw src=foo alt>",
     # width descriptor without sizes
     "img-srcset-w-no-sizes": "<img srcset='x 100w, y 200w' src=x alt>",
-    "source-srcset-w-no-sizes": "<picture><source srcset='x 100w, y 200w'><img src=x alt></picture>",
+    "source-srcset-w-no-sizes-img-w-no-sizes": "<picture><source srcset='x 100w, y 200w'><img src=x alt></picture>",
     "source-type-srcset-w": "<picture><source srcset='x 100w, y 200w' type=image/gif><img src=x alt></picture>",
     # invalid attributes on source
     "source-src": "<picture><source src=x><img src=x alt></picture>",
@@ -270,6 +269,7 @@ non_errors = {
     # sizes present
     "img-with-sizes": "<img srcset='x 100w, y 200w' sizes=50vw src=x alt>",
     "source-with-sizes": "<picture><source srcset='x 100w, y 200w' sizes=50vw><img src=x alt></picture>",
+    "source-without-sizes-img-with-sizes": "<picture><source srcset='x 100w, y 200w'><img src=x alt sizes=50vw></picture>",
     # embed allows any attributes
     "embed-srcset-empty": "<embed srcset>",
     "embed-srcset-junk": "<embed srcset='foo bar'>",

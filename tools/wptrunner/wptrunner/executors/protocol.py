@@ -110,6 +110,7 @@ class ProtocolPart:
 
     def __init__(self, parent):
         self.parent = parent
+        self.test_path = None
 
     @property
     def logger(self):
@@ -284,6 +285,24 @@ class SelectorProtocolPart(ProtocolPart):
 
     name = "select"
 
+    def element_by_selector_array(self, element_selectors):
+        elements = self.elements_by_selector_array(element_selectors)
+        if len(elements) == 0:
+            raise ValueError(f"Selector array '{element_selectors}' matches no elements")
+        elif len(elements) > 1:
+            raise ValueError(f"Selector array '{element_selectors}' matches multiple elements")
+        return elements[0]
+
+    @abstractmethod
+    def elements_by_selector_array(self, selectors):
+        """Select elements matching an array of selectors, such that the first
+        selector matches an element in the document root, and each successive
+        selector matches an element inside the shadow root of the previous.
+
+        :param List[str] selectors: The CSS selectors
+        :returns: A list of protocol-specific handles to elements"""
+        pass
+
     def element_by_selector(self, element_selector):
         elements = self.elements_by_selector(element_selector)
         if len(elements) == 0:
@@ -342,7 +361,7 @@ class WebExtensionsProtocolPart(ProtocolPart):
     name = "web_extensions"
 
     @abstractmethod
-    def install_web_extension(self, extension):
+    def install_web_extension(self, type, path, value):
         pass
 
     @abstractmethod
@@ -597,7 +616,13 @@ class BidiPermissionsProtocolPart(ProtocolPart):
     name = "bidi_permissions"
 
     @abstractmethod
-    async def set_permission(self, descriptor, state, origin):
+    async def set_permission(
+        self,
+        descriptor: Dict[str, Any],
+        state: str,
+        origin: str,
+        embedded_origin: Optional[str] = None,
+    ) -> Any:
         pass
 
 
@@ -735,6 +760,20 @@ class SetPermissionProtocolPart(ProtocolPart):
         :param state: The state to set the permission to."""
         pass
 
+
+class GlobalPrivacyControlProtocolPart(ProtocolPart):
+    """Protocol part for reading and writing the GPC signal"""
+    __metaclass__ = ABCMeta
+
+    name = "global_privacy_control"
+
+    @abstractmethod
+    def set_global_privacy_control(self, value):
+        pass
+
+    @abstractmethod
+    def get_global_privacy_control(self):
+        pass
 
 class ActionSequenceProtocolPart(ProtocolPart):
     """Protocol part for performing trusted clicks"""

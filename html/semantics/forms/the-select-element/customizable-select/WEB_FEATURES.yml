@@ -1,3 +1,8 @@
 features:
 - name: customizable-select
-  files: "**"
+  files:
+  - "*"
+  - "!select-pseudo-open.html"
+- name: open-pseudo
+  files:
+  - select-pseudo-open.html

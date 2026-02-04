@@ -1,4 +1,5 @@
 import asyncio
+import random
 import uuid
 
 import pytest
@@ -33,7 +34,7 @@ async def test_other_url(
     )
 
     # Add an intercept.
-    text_url = url(PAGE_EMPTY_TEXT)
+    text_url = f"{url(PAGE_EMPTY_TEXT)}?nocache={random.random()}"
     await add_intercept(
         phases=[phase],
         url_patterns=[{"type": "string", "pattern": text_url}],
@@ -75,7 +76,7 @@ async def test_two_intercepts(
     )
 
     # Add a string intercept to catch requests to PAGE_EMPTY_TEXT.
-    text_url = url(PAGE_EMPTY_TEXT)
+    text_url = f"{url(PAGE_EMPTY_TEXT)}?nocache={random.random()}"
     string_intercept = await add_intercept(
         phases=["beforeRequestSent"],
         url_patterns=[{"type": "string", "pattern": text_url}],
@@ -92,18 +93,22 @@ async def test_two_intercepts(
     event = await wait_for_future_safe(on_network_event)
 
     assert_before_request_sent_event(
-        event, is_blocked=True, intercepts=[string_intercept, global_intercept]
+        event,
+        expected_event={
+            "isBlocked": True,
+            "intercepts": [string_intercept, global_intercept],
+        },
     )
 
     # Perform a request to PAGE_OTHER_TEXT, which should only match one intercept
-    other_url = url(PAGE_OTHER_TEXT)
+    other_url = f"{url(PAGE_OTHER_TEXT)}?nocache={random.random()}"
 
     on_network_event = wait_for_event(BEFORE_REQUEST_SENT_EVENT)
     asyncio.ensure_future(fetch(other_url))
     event = await wait_for_future_safe(on_network_event)
 
     assert_before_request_sent_event(
-        event, is_blocked=True, intercepts=[global_intercept]
+        event, expected_event={"isBlocked": True, "intercepts": [global_intercept]}
     )
 
     # Remove the global intercept, requests to PAGE_OTHER_TEXT should no longer
@@ -118,7 +123,7 @@ async def test_two_intercepts(
     event = await wait_for_future_safe(on_network_event)
 
     assert_before_request_sent_event(
-        event, is_blocked=True, intercepts=[string_intercept]
+        event, expected_event={"isBlocked": True, "intercepts": [string_intercept]}
     )
 
     # Remove the string intercept, requests to PAGE_EMPTY_TEXT should no longer

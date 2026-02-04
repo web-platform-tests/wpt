@@ -1,26 +1,30 @@
 <!DOCTYPE html>
-<link rel="help" href="https://drafts.csswg.org/css-borders-4/#border-shape">
 <style>
     body {
         margin: 0;
     }
     svg {
-        width: 200px;
-        height: 200px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 230px;
+        height: 240px;
+        overflow: visible;
     }
     .shadow {
         fill: purple;
+        stroke: purple;
+        stroke-width: 20px;
         transform: translate(10px, 20px);
     }
-
-    .target {
+    .border {
         fill: green;
         stroke: black;
-        stroke-width: 2px;
+        stroke-width: 10px;
     }
 </style>
 
-<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <polygon points="70,10 130,60, 70,110, 10,60" class="shadow" />
-    <polygon points="70,10 130,60, 70,110, 10,60" class="target"  />
+<svg viewBox="0 0 230 240" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="220" height="220" class="shadow" />
+    <rect x="5" y="5" width="210" height="210" class="border" />
 </svg>

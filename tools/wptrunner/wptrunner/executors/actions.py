@@ -8,9 +8,9 @@ class ClickAction:
         self.protocol = protocol
 
     def __call__(self, payload):
-        selector = payload["selector"]
-        element = self.protocol.select.element_by_selector(selector)
-        self.logger.debug("Clicking element: %s" % selector)
+        selectors = payload["selectors"]
+        element = self.protocol.select.element_by_selector_array(selectors)
+        self.logger.debug("Clicking element: %s" % selectors)
         self.protocol.click.element(element)
 
 
@@ -46,8 +46,8 @@ class GetComputedLabelAction:
         self.protocol = protocol
 
     def __call__(self, payload):
-        selector = payload["selector"]
-        element = self.protocol.select.element_by_selector(selector)
+        selectors = payload["selectors"]
+        element = self.protocol.select.element_by_selector_array(selectors)
         self.logger.debug("Getting computed label for element: %s" % element)
         return self.protocol.accessibility.get_computed_label(element)
 
@@ -60,8 +60,8 @@ class GetComputedRoleAction:
         self.protocol = protocol
 
     def __call__(self, payload):
-        selector = payload["selector"]
-        element = self.protocol.select.element_by_selector(selector)
+        selectors = payload["selectors"]
+        element = self.protocol.select.element_by_selector_array(selectors)
         self.logger.debug("Getting computed role for element: %s" % element)
         return self.protocol.accessibility.get_computed_role(element)
 
@@ -87,10 +87,10 @@ class SendKeysAction:
         self.protocol = protocol
 
     def __call__(self, payload):
-        selector = payload["selector"]
+        selectors = payload["selectors"]
         keys = payload["keys"]
-        element = self.protocol.select.element_by_selector(selector)
-        self.logger.debug("Sending keys to element: %s" % selector)
+        element = self.protocol.select.element_by_selector_array(selectors)
+        self.logger.debug("Sending keys to element: %s" % selectors)
         self.protocol.send_keys.send_keys(element, keys)
 
 
@@ -145,11 +145,11 @@ class ActionSequenceAction:
                 for action in actionSequence["actions"]:
                     if (action["type"] == "pointerMove" and
                         isinstance(action["origin"], dict)):
-                        action["origin"] = self.get_element(action["origin"]["selector"])
+                        action["origin"] = self.get_element(action["origin"]["selectors"])
         self.protocol.action_sequence.send_actions({"actions": actions})
 
-    def get_element(self, element_selector):
-        return self.protocol.select.element_by_selector(element_selector)
+    def get_element(self, element_selectors):
+        return self.protocol.select.element_by_selector_array(element_selectors)
 
     def reset(self):
         self.protocol.action_sequence.release()
@@ -182,6 +182,30 @@ class SetPermissionAction:
         state = permission_params["state"]
         self.logger.debug("Setting permission %s to %s" % (name, state))
         self.protocol.set_permission.set_permission(descriptor, state)
+
+
+class SetGlobalPrivacyControlAction:
+    name = "set_global_privacy_control"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        gpc = payload["gpc"]
+        return self.protocol.global_privacy_control.set_global_privacy_control(gpc)
+
+class GetGlobalPrivacyControlAction:
+    name = "get_global_privacy_control"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        return self.protocol.global_privacy_control.get_global_privacy_control()
+
+
 
 class AddVirtualAuthenticatorAction:
     name = "add_virtual_authenticator"
@@ -544,6 +568,32 @@ class ClearDisplayFeaturesAction:
     def __call__(self, payload):
         return self.protocol.display_features.clear_display_features()
 
+class WebExtensionInstallAction:
+    name = "install_web_extension"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("installing web extension")
+        type = payload["type"]
+        path = payload.get("path")
+        value = payload.get("value")
+        return self.protocol.web_extensions.install_web_extension(type, path, value)
+
+class WebExtensionUninstallAction:
+    name = "uninstall_web_extension"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("uninstalling web extension")
+        extension_id = payload["extension_id"]
+        return self.protocol.web_extensions.uninstall_web_extension(extension_id)
+
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -586,4 +636,8 @@ actions = [ClickAction,
            RemoveVirtualPressureSourceAction,
            SetProtectedAudienceKAnonymityAction,
            SetDisplayFeaturesAction,
-           ClearDisplayFeaturesAction]
+           ClearDisplayFeaturesAction,
+           GetGlobalPrivacyControlAction,
+           SetGlobalPrivacyControlAction,
+           WebExtensionInstallAction,
+           WebExtensionUninstallAction]

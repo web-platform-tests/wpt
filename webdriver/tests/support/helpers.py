@@ -97,7 +97,7 @@ def _switch_to_top_level_browsing_context(session):
     `<frame>` or an `<iframe>`, switch it back to the top-level
     browsing context.
     """
-    session.switch_frame(None)
+    session.switch_to_frame(None)
 
 
 def _windows(session, exclude=None):
@@ -110,9 +110,6 @@ def _windows(session, exclude=None):
     return set(wins)
 
 
-def clear_all_cookies(session):
-    """Removes all cookies associated with the current active document"""
-    session.transport.send("DELETE", "session/%s/cookie" % session.session_id)
 
 
 def deep_update(source, overrides):

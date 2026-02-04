@@ -88,7 +88,7 @@ async function testCreateMonitorWithAbortAt(
 
       if (hadEvent) {
         assert_unreached(
-            'This should never be reached since LanguageDetector.create() was aborted.');
+            'This should never be reached since the create() operation was aborted.');
         return;
       }
 
@@ -225,6 +225,11 @@ function load_iframe(src, permission_policy) {
   return promise;
 }
 
+async function createLanguageModel(options = {}) {
+  await test_driver.bless();
+  return LanguageModel.create(options);
+}
+
 async function createSummarizer(options = {}) {
   await test_driver.bless();
   return await Summarizer.create(options);
@@ -244,6 +249,14 @@ async function createProofreader(options = {}) {
   await test_driver.bless();
   return await Proofreader.create(options);
 }
+
+async function ensureLanguageModel(options = {}) {
+  assert_true(!!LanguageModel);
+  const availability = await LanguageModel.availability(options);
+  assert_in_array(availability, kValidAvailabilities);
+  // Yield PRECONDITION_FAILED if the API is unavailable on this device.
+  assert_implements_optional(availability != 'unavailable', 'API unavailable');
+};
 
 async function testDestroy(t, createMethod, options, instanceMethods) {
   const instance = await createMethod(options);
@@ -273,4 +286,17 @@ async function testCreateAbort(t, createMethod, options, instanceMethods) {
   for (const promise of promises) {
     await promise_rejects_exactly(t, error, promise);
   }
+}
+
+// Helper function to check that 'actual' is within 'expected +/- delta'.
+function isValueInRange(actual, expected, delta = 5) {
+  const lowerBound = expected - delta;
+  const upperBound = expected + delta;
+  return actual >= lowerBound && actual <= upperBound;
+}
+
+function consumeTransientUserActivation() {
+  const win = window.open('about:blank', '_blank');
+  if (win)
+    win.close();
 }

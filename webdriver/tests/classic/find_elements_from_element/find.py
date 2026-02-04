@@ -1,5 +1,5 @@
 import pytest
-
+from webdriver.client import WebElement
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_same_element, assert_success
@@ -70,9 +70,9 @@ def test_no_such_element_with_startnode_from_other_window_handle(session, inline
 def test_no_such_element_with_startnode_from_other_frame(session, iframe, inline):
     session.url = inline(iframe("<div id='parent'><p/>"))
 
-    session.switch_frame(0)
+    session.switch_to_frame(0)
     from_element = session.find.css("#parent", all=False)
-    session.switch_frame("parent")
+    session.switch_to_parent_frame()
 
     response = find_elements(session, from_element.id, "css selector", "p")
     assert_error(response, "no such element")
@@ -197,3 +197,39 @@ def test_parent_of_document_node_errors(session, inline):
 
     response = find_elements(session, from_element.id, "xpath", "..")
     assert_error(response, "invalid selector")
+
+
+@pytest.mark.parametrize("value", [None, 1])
+def test_implicit_wait(session, inline, value):
+    session.url = inline(
+        """
+        <div id="parent"></div>
+        <script>
+            setTimeout(() => {
+                document.getElementById('parent').innerHTML = '<div id="delayed"></div>';
+            }, 300);
+        </script>
+    """
+    )
+    session.timeouts.implicit = value
+
+    from_element = session.find.css("#parent", all=False)
+    response = find_elements(session, from_element.id, "css selector", "#delayed")
+    value = assert_success(response)
+
+    expected = session.execute_script("return document.getElementById('delayed')")
+
+    element = WebElement.from_json(value[0], session)
+    assert_same_element(session, element, expected)
+
+
+def test_implicit_wait_timeout(session, inline):
+    session.url = inline("<div id='parent'></div>")
+    session.timeouts.implicit = 0.5
+
+    from_element = session.find.css("#parent", all=False)
+
+    response = find_elements(session, from_element.id, "css selector", "#nonexistent")
+    elements = assert_success(response)
+
+    assert len(elements) == 0

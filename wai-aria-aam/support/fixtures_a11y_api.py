@@ -2,6 +2,7 @@ import pytest
 from sys import platform
 
 from .atspi_wrapper import AtspiWrapper;
+from .axapi_wrapper import AxapiWrapper;
 
 
 def pid_from(capabilities):
@@ -31,8 +32,8 @@ def axapi(session):
     if platform != "darwin":
         return
 
-    # TODO: Make AxapiWrapper and return it
-
+    pid, product_name = pid_from(session.capabilities)
+    return AxapiWrapper(pid, product_name)
 
 @pytest.fixture
 def uia(session):

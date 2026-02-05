@@ -333,7 +333,8 @@ def run_test_iteration(test_status, test_loader, test_queue_builder,
                           recording=recording,
                           max_restarts=kwargs["max_restarts"],
                           max_restart_backoff=kwargs["max_restart_backoff"],
-                          update_status_on_crash=kwargs["update_status_on_crash"]
+                          update_status_on_crash=kwargs["update_status_on_crash"],
+                          product_name=product.name
                           ) as manager_group:
             try:
                 handle_interrupt_signals()

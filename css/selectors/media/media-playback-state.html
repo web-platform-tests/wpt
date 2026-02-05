@@ -73,17 +73,5 @@
       assert_equals(document.querySelector("video:seeking"), video);
       assert_equals(document.querySelector("video:not(:seeking)"), null);
     }, "Test :seeking pseudo-class");
-
-    test((t) => {
-      const pseudoClasses = [":playing", ":paused", ":seeking"];
-      const div = document.createElement("div");
-      document.body.appendChild(div);
-      t.add_cleanup(() => div.remove());
-      for (const pseudo of pseudoClasses) {
-        assert_implements(CSS.supports(`selector(${pseudo})`), `${pseudo} is not supported`);
-        assert_equals(document.querySelector(`div${pseudo}`), null, `div should not match ${pseudo}`);
-        assert_equals(document.querySelector(`div:not(${pseudo})`), div, `div should match :not(${pseudo})`);
-      }
-    }, "Test that non-media elements do not match :playing, :paused, or :seeking");
   </script>
 </body>

@@ -132,14 +132,15 @@ Object.keys(sourceData).forEach(function (size) {
 
       promise_test(function (test) {
         var buffer = new Uint8Array(sourceData[size]);
-        return crypto.subtle.digest(alg, buffer).then(function (result) {
-          // Alter the buffer after calling digest
-          buffer[0] = ~buffer[0];
+        var promise = crypto.subtle.digest(alg, buffer).then(function (result) {
           assert_true(
             equalBuffers(result, digestedData[alg][size]),
             'digest matches expected'
           );
         });
+        // Alter the buffer after calling digest
+        buffer[0] = ~buffer[0];
+        return promise;
       }, alg + ' with ' + size + ' source data and altered buffer after call');
     }
   });

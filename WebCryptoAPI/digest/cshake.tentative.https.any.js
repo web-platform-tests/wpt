@@ -195,16 +195,17 @@ Object.keys(digestedData).forEach(function (alg) {
 
         promise_test(function (test) {
           var buffer = new Uint8Array(sourceData[size]);
-          return crypto.subtle
+          var promise = crypto.subtle
             .digest({ name: alg, length: length }, buffer)
             .then(function (result) {
-              // Alter the buffer after calling digest
-              buffer[0] = ~buffer[0];
               assert_true(
                 equalBuffers(result, digestedData[alg][length][size]),
                 'digest matches expected'
               );
             });
+          // Alter the buffer after calling digest
+          buffer[0] = ~buffer[0];
+          return promise;
         }, alg + ' with ' + length + ' bit output and ' + size + ' source data and altered buffer after call');
       }
     });

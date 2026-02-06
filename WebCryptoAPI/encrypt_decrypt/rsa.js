@@ -78,7 +78,7 @@ function run_test() {
         all_promises.push(promise);
     });
 
-    // Test decryption with an altered buffer
+    // Test decryption with an altered buffer after call
     passingVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["encrypt"], ["decrypt"])
         .then(function(vectors) {
@@ -105,6 +105,75 @@ function run_test() {
             promise_test(function(test) {
                 assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
             }, "importVectorKeys step: " + vector.name + " decryption with altered ciphertext after call");
+        });
+
+        all_promises.push(promise);
+    });
+
+    // Test decryption with a transferred buffer during call
+    passingVectors.forEach(function(vector) {
+        var promise = importVectorKeys(vector, ["encrypt"], ["decrypt"])
+        .then(function(vectors) {
+            // Get a one byte longer plaintext to encrypt
+            if (!("ciphertext" in vector)) {
+                return;
+            }
+
+            promise_test(function(test) {
+                var ciphertext = copyBuffer(vector.ciphertext);
+                var operation = subtle.decrypt({
+                    ...vector.algorithm,
+                    get name() {
+                        ciphertext.buffer.transfer();
+                        return vector.algorithm.name;
+                    }
+                }, vector.privateKey, ciphertext)
+                .then(function(plaintext) {
+                    assert_unreached("Decryption should not have succeeded for " + vector.name);
+                }, function(err) {
+                    assert_equals(err.name, "OperationError", "Should throw OperationError instead of " + err.message);
+                });
+                return operation;
+            }, vector.name + " decryption with transferred ciphertext during call");
+
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested encryption
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " decryption with transferred ciphertext during call");
+        });
+
+        all_promises.push(promise);
+    });
+
+    // Test decryption with a transferred buffer after call
+    passingVectors.forEach(function(vector) {
+        var promise = importVectorKeys(vector, ["encrypt"], ["decrypt"])
+        .then(function(vectors) {
+            // Get a one byte longer plaintext to encrypt
+            if (!("ciphertext" in vector)) {
+                return;
+            }
+
+            promise_test(function(test) {
+                var ciphertext = copyBuffer(vector.ciphertext);
+                var operation = subtle.decrypt(vector.algorithm, vector.privateKey, ciphertext)
+                .then(function(plaintext) {
+                    assert_true(equalBuffers(plaintext, vector.plaintext, "Decryption works"));
+                }, function(err) {
+                    assert_unreached("Decryption should not throw error " + vector.name + ": " + err.message + "'");
+                });
+                ciphertext.buffer.transfer();
+                return operation;
+            }, vector.name + " decryption with transferred ciphertext after call");
+
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested encryption
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " decryption with transferred ciphertext after call");
         });
 
         all_promises.push(promise);
@@ -254,6 +323,92 @@ function run_test() {
             promise_test(function(test) {
                 assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
             }, "importVectorKeys step: " + vector.name + " with altered plaintext after call");
+        });
+
+        all_promises.push(promise);
+    });
+
+    // Check for encryption of an empty value if plaintext is transferred during call.
+    passingVectors.forEach(function(vector) {
+        var promise = importVectorKeys(vector, ["encrypt"], ["decrypt"])
+        .then(function(vectors) {
+            promise_test(function(test) {
+                var plaintext = copyBuffer(vector.plaintext);
+                var operation = subtle.encrypt({
+                    ...vector.algorithm,
+                    get name() {
+                        plaintext.buffer.transfer();
+                        return vector.algorithm.name;
+                    }
+                }, vector.publicKey, plaintext)
+                .then(function(ciphertext) {
+                    assert_equals(ciphertext.byteLength * 8, vector.privateKey.algorithm.modulusLength, "Ciphertext length matches modulus length");
+                    // Do we get an empty plaintext back via decrypt?
+                    return subtle.decrypt(vector.algorithm, vector.privateKey, ciphertext)
+                    .then(function(result) {
+                        assert_equals(result.byteLength, 0, "Decryption returns empty plaintext");
+                        return ciphertext;
+                    }, function(err) {
+                        assert_unreached("decrypt error for test " + vector.name + ": '" + err.message + "'");
+                    });
+                }, function(err) {
+                    assert_unreached("encrypt error for test " + vector.name + ": '" + err.message + "'");
+                });
+
+                return operation;
+            }, vector.name + " with transferred plaintext during call");
+
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested encryption
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " with transferred plaintext during call");
+        });
+
+        all_promises.push(promise);
+    });
+
+    // Check for successful encryption even if plaintext is transferred after call.
+    passingVectors.forEach(function(vector) {
+        var promise = importVectorKeys(vector, ["encrypt"], ["decrypt"])
+        .then(function(vectors) {
+            promise_test(function(test) {
+                var plaintext = copyBuffer(vector.plaintext);
+                var operation = subtle.encrypt(vector.algorithm, vector.publicKey, plaintext)
+                .then(function(ciphertext) {
+                    assert_equals(ciphertext.byteLength * 8, vector.privateKey.algorithm.modulusLength, "Ciphertext length matches modulus length");
+                    // Can we get the original plaintext back via decrypt?
+                    return subtle.decrypt(vector.algorithm, vector.privateKey, ciphertext)
+                    .then(function(result) {
+                        assert_true(equalBuffers(result, vector.plaintext), "Round trip returns original plaintext");
+                        return ciphertext;
+                    }, function(err) {
+                        assert_unreached("decrypt error for test " + vector.name + ": " + err.message + "'");
+                    });
+                })
+                .then(function(priorCiphertext) {
+                    // Will a second encrypt give us different ciphertext, as it should?
+                    return subtle.encrypt(vector.algorithm, vector.publicKey, vector.plaintext)
+                    .then(function(ciphertext) {
+                        assert_false(equalBuffers(priorCiphertext, ciphertext), "Two encrypts give different results")
+                    }, function(err) {
+                        assert_unreached("second time encrypt error for test " + vector.name + ": '" + err.message + "'");
+                    });
+                }, function(err) {
+                    assert_unreached("decrypt error for test " + vector.name + ": '" + err.message + "'");
+                });
+
+                plaintext.buffer.transfer();
+                return operation;
+            }, vector.name + " with transferred plaintext after call");
+
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested encryption
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " with transferred plaintext after call");
         });
 
         all_promises.push(promise);

@@ -21,7 +21,6 @@ promise_test(async (t) => {
     pipWindow.moveTo(x, y);
     pipWindow.moveBy(x, y);
   } catch (e) {
-    // Test is tentative because it's not specified whether to throw
     assert_unreached("moveTo and moveBy should not throw");
   }
 

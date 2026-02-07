@@ -14,6 +14,8 @@ function waitForEvent(target, event) {
 promise_test(async (t) => {
   await test_driver.bless('request PiP window from top window');
   const pipWindow = await documentPictureInPicture.requestWindow();
+  
+  assert_false(pipWindow.document.fullscreenEnabled, "Expect fullscreenEnabled=false for PiP");
 
   await test_driver.bless('request fullscreen for PiP');
   try {

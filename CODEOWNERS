@@ -4039,6 +4039,7 @@ navigation-api/navigation-methods/return-value/navigate-intercept.html @web-plat
 navigation-api/navigation-methods/return-value/navigate-interrupted-within-onnavigate.html @web-platform-tests/interop
 navigation-api/navigation-methods/return-value/navigate-interrupted.html @web-platform-tests/interop
 navigation-api/navigation-methods/return-value/navigate-invalid-url.html @web-platform-tests/interop
+navigation-api/navigation-methods/return-value/navigate-javascript-url.html @web-platform-tests/interop
 navigation-api/navigation-methods/return-value/navigate-opaque-origin.html @web-platform-tests/interop
 navigation-api/navigation-methods/return-value/navigate-pagehide.html @web-platform-tests/interop
 navigation-api/navigation-methods/return-value/navigate-preventDefault.html @web-platform-tests/interop

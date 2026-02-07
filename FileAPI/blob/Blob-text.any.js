@@ -1,4 +1,5 @@
 // META: title=Blob Text
+// META: global=window,worker
 // META: script=../support/Blob.js
 'use strict';
 

@@ -1,3 +1,5 @@
+// META: global=window,worker,shadowrealm
+
 // Step 1.
 test(function() {
     assert_throws_dom("TypeMismatchError", function() {

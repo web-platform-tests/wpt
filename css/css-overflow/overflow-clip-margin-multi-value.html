@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<title>'overflow-clip-margin' with multiple values should not extend visible area.</title>
+<link rel="author" title="Psychpsyo" href="psychpsyo@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-overflow-4/#overflow-clip-margin">
+<style>
+  #outer {
+    width:100px;
+    height:100px;
+    position: relative;
+    overflow: clip;
+    overflow-clip-margin: 50px 50px;
+  }
+  #innerRed {
+    background-color: red;
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    top: -50px;
+    left: -50px;
+  }
+  #innerGreen {
+    background-color: green;
+    position: absolute;
+    width: 100px;
+    height: 100px;
+  }
+</style>
+<div id="outer">
+  <div id="innerRed"></div>
+  <div id="innerGreen"></div>
+</div>

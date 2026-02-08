@@ -70,8 +70,11 @@ function checkTriangularPulse(rendered, reference, should) {
   // rendered pulse.
   let allowedDeviationDecibels = -124.41;
   let maxDeviationDecibels = 0;
-  if (valueAtMaxDelta !== 0)
+  if (valueAtMaxDelta !== 0) {
     maxDeviationDecibels = linearToDecibel(maxDelta / valueAtMaxDelta);
+  } else {
+    maxDeviationDecibels = (maxDelta === 0) ? -Infinity : Infinity;
+  }
 
   should(
       maxDeviationDecibels,
@@ -106,8 +109,11 @@ function checkTail1(data, reference, breakpoint, should) {
   let threshold1 = -129.7;
 
   let tail1MaxDecibels = 0;
-  if (refMax !== 0)
+  if (refMax !== 0) {
     tail1MaxDecibels = linearToDecibel(tail1Max / refMax);
+  } else {
+    tail1MaxDecibels = (tail1Max === 0) ? -Infinity : Infinity;
+  }
   should(tail1MaxDecibels, 'Deviation in first part of tail of convolutions')
       .beLessThanOrEqualTo(threshold1);
 

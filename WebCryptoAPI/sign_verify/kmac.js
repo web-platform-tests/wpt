@@ -23,7 +23,7 @@ function run_test() {
                 .then(function(is_verified) {
                     assert_true(is_verified, "Signature verified");
                 }, function(err) {
-                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
                 });
 
                 return operation;
@@ -61,7 +61,7 @@ function run_test() {
                 .then(function(is_verified) {
                     assert_true(is_verified, "Signature is not verified");
                 }, function(err) {
-                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
                 });
 
                 return operation;
@@ -89,7 +89,7 @@ function run_test() {
                 .then(function(is_verified) {
                     assert_true(is_verified, "Signature is not verified");
                 }, function(err) {
-                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
                 });
 
                 signature[0] = 255 - signature[0];
@@ -124,7 +124,7 @@ function run_test() {
                 .then(function(is_verified) {
                     assert_false(is_verified, "Signature is NOT verified");
                 }, function(err) {
-                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
                 });
 
                 return operation;
@@ -152,7 +152,7 @@ function run_test() {
                 .then(function(is_verified) {
                     assert_true(is_verified, "Signature is not verified");
                 }, function(err) {
-                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
                 });
 
                 signature.buffer.transfer();
@@ -188,7 +188,7 @@ function run_test() {
                 .then(function(is_verified) {
                     assert_true(is_verified, "Signature verified");
                 }, function(err) {
-                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
                 });
 
                 return operation;
@@ -216,7 +216,7 @@ function run_test() {
                 .then(function(is_verified) {
                     assert_true(is_verified, "Signature verified");
                 }, function(err) {
-                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
                 });
 
                 plaintext[0] = 255 - plaintext[0];
@@ -251,7 +251,7 @@ function run_test() {
                 .then(function(is_verified) {
                     assert_false(is_verified, "Signature is NOT verified");
                 }, function(err) {
-                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
                 });
 
                 return operation;
@@ -279,7 +279,7 @@ function run_test() {
                 .then(function(is_verified) {
                     assert_true(is_verified, "Signature verified");
                 }, function(err) {
-                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
                 });
 
                 plaintext.buffer.transfer();
@@ -307,7 +307,7 @@ function run_test() {
                 }
                 return subtle.verify(algorithmParams, vector.key, vector.signature, vector.plaintext)
                 .then(function(plaintext) {
-                    assert_unreached("Should have thrown error for no verify usage in " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Should have thrown error for no verify usage in " + vector.name + ": '" + err.message + "'");
                 }, function(err) {
                     assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError instead of '" + err.message + "'");
                 });
@@ -339,7 +339,7 @@ function run_test() {
                         assert_true(is_verified, "Round trip verifies");
                         return signature;
                     }, function(err) {
-                        assert_unreached("verify error for test " + vector.name + ": " + err.message + "'");
+                        assert_unreached("verify error for test " + vector.name + ": '" + err.message + "'");
                     });
                 });
             }, vector.name + " round trip");
@@ -446,7 +446,7 @@ function run_test() {
                 .then(function(is_verified) {
                     assert_false(is_verified, "Signature is NOT verified");
                 }, function(err) {
-                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
                 });
 
                 return operation;
@@ -478,7 +478,7 @@ function run_test() {
                 .then(function(is_verified) {
                     assert_false(is_verified, "Signature is NOT verified");
                 }, function(err) {
-                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
                 });
 
                 return operation;
@@ -509,7 +509,7 @@ function run_test() {
                 .then(function(is_verified) {
                     assert_false(is_verified, "Signature is NOT verified");
                 }, function(err) {
-                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
                 });
 
                 return operation;
@@ -540,7 +540,7 @@ function run_test() {
                 .then(function(is_verified) {
                     assert_false(is_verified, "Signature is NOT verified with wrong length");
                 }, function(err) {
-                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
                 });
 
                 return operation;

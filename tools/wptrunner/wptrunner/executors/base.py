@@ -771,6 +771,9 @@ class WdspecRun:
             self.result_flag.set()
 
 
+class PlatformAccessibilityNotEnabled(Exception):
+    pass
+
 class CallbackHandler:
     """Handle callbacks from testdriver-using tests.
 
@@ -830,6 +833,12 @@ class CallbackHandler:
         except self.unimplemented_exc:
             self.logger.warning("Action %s not implemented" % action)
             self._send_message(cmd_id, "complete", "error", f"Action {action} not implemented")
+        except PlatformAccessibilityNotEnabled:
+            self.logger.warning(
+                f"Action {action} failed: platform accessibility testing is not enabled. Try --enable-platform-accessibility",
+                exc_info=True
+            )
+            self._send_message(cmd_id, "complete", "error", f"Action {action} failed, platform accessibliity testing not enabled.")
         except self.expected_exc as e:
             self.logger.debug(f"Action {action} failed with an expected exception", exc_info=True)
             self._send_message(cmd_id, "complete", "error", f"Action {action} failed: {e!s}")

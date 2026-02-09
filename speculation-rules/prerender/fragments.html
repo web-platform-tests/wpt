@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<title>Test prerendering with fragments on speculation-rules</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="../resources/utils.js"></script>
+<script src="resources/utils.js"></script>
+<body>
+<script>
+setup(() => assertSpeculationRulesIsSupported());
+
+promise_test(async t => {
+  const uid = token();
+
+  const bc = new PrerenderChannel('test-channel', uid);
+  t.add_cleanup(_ => bc.close());
+
+  const gotMessage = new Promise((resolve, reject) => {
+    let messages = [];
+    bc.addEventListener('message', e => {
+      switch (e.data.flag) {
+        case 'FAIL':
+          messages.push(e.data.message);
+          reject(messages);
+          break;
+        case 'FIN':
+          messages.push(e.data.message);
+          resolve(messages);
+          break;
+        default:
+          messages.push(e.data.message);
+      }
+    });
+  });
+
+  // This test attempts to prerender several URLs that differ only in fragments
+  // like as follows:
+  //   - http://(snip)/fragments.html?q#fragment0
+  //   - http://(snip)/fragments.html?q#fragment1
+  //   - http://(snip)/fragments.html?q#fragment2
+  // After finishing prerendering, it tries to activate one URL that contains
+  // `fragmentActivate`
+  const fragments = ['#fragment0', '#fragment1', '#fragment2'];
+  const fragmentActivate = fragments[1];
+
+  const url = `resources/fragments.html?uid=${uid}`;
+  window.open(url, '_blank', 'noopener');
+
+  const messages = await gotMessage.catch(e => {
+    assert_unreached(
+      `test halted. Received messages: "${e.join(', ')}"`);
+  });
+
+  // URLs that differ only in fragments should be prerendered individually.
+  fragments.forEach(f => {
+    const wasPrerendered = messages.includes(`prerendering ${f}`);
+    assert_true(wasPrerendered, `${f} should be prerendered`);
+  });
+
+  // The URL of the activated page should have the same fragment as the
+  // original one specified in prerendering has.
+  fragments.forEach(f => {
+    const wasActivavted = messages.includes(`activated ${f}`);
+    if (f === fragmentActivate) {
+      assert_true(wasActivavted, `${f} should be activated`);
+    } else {
+      assert_false(wasActivavted, `${f} should not be activated`);
+    }
+  });
+});
+</script>
+</body>
+</head>
+</html>

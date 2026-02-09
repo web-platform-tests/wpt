@@ -25,7 +25,7 @@ function run_test() {
                 .then(function(plaintext) {
                     assert_true(equalBuffers(plaintext, vector.plaintext, "Decryption works"));
                 }, function(err) {
-                    assert_unreached("Decryption should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Decryption should not throw error " + vector.name + ": '" + err.message + "'");
                 });
             }, vector.name + " decryption");
 
@@ -62,7 +62,7 @@ function run_test() {
                 .then(function(plaintext) {
                     assert_true(equalBuffers(plaintext, vector.plaintext, "Decryption works"));
                 }, function(err) {
-                    assert_unreached("Decryption should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Decryption should not throw error " + vector.name + ": '" + err.message + "'");
                 });
                 return operation;
             }, vector.name + " decryption with altered ciphertext during call");
@@ -93,7 +93,7 @@ function run_test() {
                 .then(function(plaintext) {
                     assert_true(equalBuffers(plaintext, vector.plaintext, "Decryption works"));
                 }, function(err) {
-                    assert_unreached("Decryption should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Decryption should not throw error " + vector.name + ": '" + err.message + "'");
                 });
                 ciphertext[0] = 255 - ciphertext[0];
                 return operation;
@@ -162,7 +162,7 @@ function run_test() {
                 .then(function(plaintext) {
                     assert_true(equalBuffers(plaintext, vector.plaintext, "Decryption works"));
                 }, function(err) {
-                    assert_unreached("Decryption should not throw error " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Decryption should not throw error " + vector.name + ": '" + err.message + "'");
                 });
                 ciphertext.buffer.transfer();
                 return operation;
@@ -186,7 +186,7 @@ function run_test() {
             promise_test(function(test) {
                 return subtle.decrypt(vector.algorithm, vector.publicKey, vector.ciphertext)
                 .then(function(plaintext) {
-                    assert_unreached("Should have thrown error for using publicKey to decrypt in " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Should have thrown error for using publicKey to decrypt in " + vector.name + ": '" + err.message + "'");
                 }, function(err) {
                     assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError instead of " + err.message);
                 });
@@ -214,7 +214,7 @@ function run_test() {
             promise_test(function(test) {
                 return subtle.decrypt(vector.algorithm, vector.publicKey, vector.ciphertext)
                 .then(function(plaintext) {
-                    assert_unreached("Should have thrown error for no decrypt usage in " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Should have thrown error for no decrypt usage in " + vector.name + ": '" + err.message + "'");
                 }, function(err) {
                     assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError instead of " + err.message);
                 });
@@ -254,7 +254,7 @@ function run_test() {
                         assert_true(equalBuffers(result, vector.plaintext), "Round trip returns original plaintext");
                         return ciphertext;
                     }, function(err) {
-                        assert_unreached("decrypt error for test " + vector.name + ": " + err.message + "'");
+                        assert_unreached("decrypt error for test " + vector.name + ": '" + err.message + "'");
                     });
                 })
                 .then(function(priorCiphertext) {
@@ -298,7 +298,7 @@ function run_test() {
                         assert_true(equalBuffers(result, vector.plaintext), "Round trip returns original plaintext");
                         return ciphertext;
                     }, function(err) {
-                        assert_unreached("decrypt error for test " + vector.name + ": " + err.message + "'");
+                        assert_unreached("decrypt error for test " + vector.name + ": '" + err.message + "'");
                     });
                 })
                 .then(function(priorCiphertext) {
@@ -384,7 +384,7 @@ function run_test() {
                         assert_true(equalBuffers(result, vector.plaintext), "Round trip returns original plaintext");
                         return ciphertext;
                     }, function(err) {
-                        assert_unreached("decrypt error for test " + vector.name + ": " + err.message + "'");
+                        assert_unreached("decrypt error for test " + vector.name + ": '" + err.message + "'");
                     });
                 })
                 .then(function(priorCiphertext) {
@@ -429,7 +429,7 @@ function run_test() {
                         assert_true(equalBuffers(result, vector.plaintext), "Round trip returns original plaintext");
                         return ciphertext;
                     }, function(err) {
-                        assert_unreached("decrypt error for test " + vector.name + ": " + err.message + "'");
+                        assert_unreached("decrypt error for test " + vector.name + ": '" + err.message + "'");
                     });
                 })
                 .then(function(priorCiphertext) {
@@ -467,7 +467,7 @@ function run_test() {
             promise_test(function(test) {
                 return subtle.encrypt(vector.algorithm, vector.publicKey, plaintext)
                 .then(function(ciphertext) {
-                    assert_unreached("Should have thrown error for too long plaintext in " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Should have thrown error for too long plaintext in " + vector.name + ": '" + err.message + "'");
                 }, function(err) {
                     assert_equals(err.name, "OperationError", "Should throw OperationError instead of " + err.message);
                 });
@@ -492,7 +492,7 @@ function run_test() {
             promise_test(function(test) {
                 return subtle.encrypt(vector.algorithm, vector.privateKey, vector.plaintext)
                 .then(function(ciphertext) {
-                    assert_unreached("Should have thrown error for using privateKey to encrypt in " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Should have thrown error for using privateKey to encrypt in " + vector.name + ": '" + err.message + "'");
                 }, function(err) {
                     assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError instead of " + err.message);
                 });
@@ -520,7 +520,7 @@ function run_test() {
             promise_test(function(test) {
                 return subtle.encrypt(vector.algorithm, vector.publicKey, vector.plaintext)
                 .then(function(ciphertext) {
-                    assert_unreached("Should have thrown error for no encrypt usage in " + vector.name + ": " + err.message + "'");
+                    assert_unreached("Should have thrown error for no encrypt usage in " + vector.name + ": '" + err.message + "'");
                 }, function(err) {
                     assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError instead of " + err.message);
                 });

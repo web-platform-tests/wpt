@@ -18,7 +18,7 @@ function run_test(algorithmName) {
               isVerified = await subtle.verify(algorithm, key, vector.signature, vector.data)
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
-              assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+              assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
           };
           assert_true(isVerified, "Signature verified");
       }, vector.name + " verification");
@@ -39,7 +39,7 @@ function run_test(algorithmName) {
               }, key, signature, vector.data);
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
-              assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+              assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
           };
           assert_true(isVerified, "Signature verified");
       }, vector.name + " verification with altered signature during call");
@@ -57,7 +57,7 @@ function run_test(algorithmName) {
               ]);
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
-              assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+              assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
           };
           assert_true(isVerified, "Signature verified");
       }, vector.name + " verification with altered signature after call");
@@ -77,7 +77,7 @@ function run_test(algorithmName) {
               }, key, signature, vector.data);
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
-              assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+              assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
           };
           assert_false(isVerified, "Signature is NOT verified");
       }, vector.name + " verification with transferred signature during call");
@@ -94,7 +94,7 @@ function run_test(algorithmName) {
               isVerified = await operation;
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
-              assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+              assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
           };
           assert_true(isVerified, "Signature verified");
       }, vector.name + " verification with transferred signature after call");
@@ -115,7 +115,7 @@ function run_test(algorithmName) {
               }, key, vector.signature, data);
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
-              assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+              assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
           };
           assert_true(isVerified, "Signature verified");
       }, vector.name + " with altered data during call");
@@ -133,7 +133,7 @@ function run_test(algorithmName) {
               ]);
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
-              assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+              assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
           };
           assert_true(isVerified, "Signature verified");
       }, vector.name + " with altered data after call");
@@ -153,7 +153,7 @@ function run_test(algorithmName) {
               }, key, vector.signature, data);
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
-              assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+              assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
           };
           assert_false(isVerified, "Signature is NOT verified");
       }, vector.name + " with transferred data during call");
@@ -170,7 +170,7 @@ function run_test(algorithmName) {
               isVerified = await operation;
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
-              assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+              assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
           };
           assert_true(isVerified, "Signature verified");
       }, vector.name + " with transferred data after call");
@@ -239,7 +239,7 @@ function run_test(algorithmName) {
           } catch (err) {
               assert_false(publicKey === undefined || privateKey === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
               assert_false(signature === undefined, "sign error for test " + vector.name + ": '" + err.message + "'");
-              assert_unreached("verify error for test " + vector.name + ": " + err.message + "'");
+              assert_unreached("verify error for test " + vector.name + ": '" + err.message + "'");
           };
           assert_true(isVerified, "Round trip verification works");
       }, vector.name + " round trip");
@@ -288,7 +288,7 @@ function run_test(algorithmName) {
               isVerified = await subtle.verify(algorithm, key, signature, vector.data)
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
-              assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+              assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
           };
           assert_false(isVerified, "Signature verified");
       }, vector.name + " verification failure due to altered signature");
@@ -303,7 +303,7 @@ function run_test(algorithmName) {
               isVerified = await subtle.verify(algorithm, key, signature, vector.data)
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
-              assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+              assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
           };
           assert_false(isVerified, "Signature verified");
       }, vector.name + " verification failure due to shortened signature");
@@ -319,7 +319,7 @@ function run_test(algorithmName) {
               isVerified = await subtle.verify(algorithm, key, vector.signature, data)
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
-              assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+              assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
           };
           assert_false(isVerified, "Signature verified");
       }, vector.name + " verification failure due to altered data");

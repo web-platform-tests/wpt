@@ -352,6 +352,20 @@ class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
         return self.webdriver.bidi_session.add_event_listener(name=name, fn=fn)
 
 
+class WebDriverBidiUserAgentClientHintsProtocolPart(BidiUserAgentClientHintsProtocolPart):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+    @property
+    def webdriver(self):
+        return self.parent.webdriver
+
+    async def set_client_hints_override(self, client_hints, contexts, user_contexts):
+        return await self.webdriver.bidi_session.user_agent_client_hints.set_client_hints_override(
+            client_hints=client_hints, contexts=contexts, user_contexts=user_contexts)
+
+
+
 class WebDriverBidiScriptProtocolPart(BidiScriptProtocolPart):
     def __init__(self, parent):
         super().__init__(parent)
@@ -1131,6 +1145,8 @@ class WebDriverBidiProtocol(WebDriverProtocol):
                   WebDriverBidiPermissionsProtocolPart,
                   WebDriverBidiScriptProtocolPart,
                   WebDriverBidiWebExtensionsProtocolPart,
+                  WebDriverBidiUserAgentClientHintsProtocolPart,
+
                   *(part for part in WebDriverProtocol.implements)
                   ]
 

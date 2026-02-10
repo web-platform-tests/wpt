@@ -149,7 +149,11 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     # require local CDP access.
     chrome_options["args"].append("--remote-debugging-pipe")
     # For Device Bound Session Credentials tests.
-    chrome_options["args"].append("--enable-features=EnableBoundSessionCredentialsSoftwareKeysForManualTesting,DeviceBoundSessions:RefreshQuota/false/RequireOriginTrialTokens/false,DeviceBoundSessionsFederatedRegistration")
+    chrome_options["args"].append("--enable-features=" + ",".join([
+        "EnableBoundSessionCredentialsSoftwareKeysForManualTesting",
+        "DeviceBoundSessions:RefreshQuota/false/RequireOriginTrialTokens/false",
+        "DeviceBoundSessionsFederatedRegistration",
+    ]))
 
     # Classify `http-local`, `http-public` and https variants in the
     # appropriate IP address spaces.

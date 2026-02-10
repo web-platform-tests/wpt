@@ -2357,6 +2357,33 @@ WebDriver BiDi command.</p>
 </div>
 </dd></dl>
 
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.emulation.set_touch_override">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">emulation</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_touch_override</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.emulation.set_touch_override" title="Link to this definition">¶</a></dt>
+<dd><p>Overrides the touch configuration for the specified browsing
+contexts.
+Matches the <a class="reference external" href="https://w3c.github.io/webdriver-bidi/#command-emulation-setTouchOverride">emulation.setTouchOverride</a>
+WebDriver BiDi command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>object</em>) – Parameters for the command.</p></li>
+<li><p><strong>params.maxTouchPoints</strong> (<em>null|number</em>) – The maximum number of simultaneous touch points to support. If null or omitted, the override will be removed.</p></li>
+<li><p><strong>params.contexts</strong> (<em>null|Array.&lt;(Context)&gt;</em>) – The optional contexts parameter specifies which browsing contexts to set the touch override on. It should be either an array of Context objects (window or browsing context id), or null. If null or omitted, the override will be set on the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise.&lt;void&gt;</strong> – Resolves when the touch override is successfully set.</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">emulation</span><span class="p">.</span><span class="nx">set_touch_override</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">maxTouchPoints</span><span class="o">:</span><span class="w"> </span><span class="mf">5</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 </section>
 </section>

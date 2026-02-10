@@ -1146,7 +1146,6 @@ class WebDriverBidiProtocol(WebDriverProtocol):
                   WebDriverBidiScriptProtocolPart,
                   WebDriverBidiWebExtensionsProtocolPart,
                   WebDriverBidiUserAgentClientHintsProtocolPart,
-
                   *(part for part in WebDriverProtocol.implements)
                   ]
 

@@ -670,7 +670,6 @@ class BidiUserAgentClientHintsProtocolPart(ProtocolPart):
         pass
 
 
-
 class BidiScriptProtocolPart(ProtocolPart):
     """Protocol part for executing BiDi scripts"""
     __metaclass__ = ABCMeta

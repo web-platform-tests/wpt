@@ -207,7 +207,7 @@ const AriaUtils = {
   For example:
   <div data-testname="div[role=button][aria-pressed=mixed]"
       role="button" aria-pressed="mixed"
-      data-expected='{ "role": "button", "label": "foo", "pressed": "mixed" }'
+      data-expectedproperties='{ "role": "button", "label": "foo", "pressed": "mixed" }'
       class="ex-props">
     foo
   </div>
@@ -220,10 +220,10 @@ const AriaUtils = {
       throw `Selector passed in verifyPropertiesBySelector("${selector}") should match at least one element.`;
     }
     for (const el of els) {
-      const expected = JSON.parse(el.getAttribute("data-expected"));
+      const expected = JSON.parse(el.getAttribute("data-expectedproperties"));
       const testName = el.getAttribute("data-testname");
       promise_test(async t => {
-        const actual = await test_driver.get_element_accessible_properties(el);
+        const actual = await test_driver.get_accessibility_properties_for_element(el);
         for (const key in expected) {
           assert_equals(actual[key], expected[key], `${key}: ${el.outerHTML}`);
         }
@@ -265,7 +265,7 @@ const AriaUtils = {
       }
     }
     promise_test(async t => {
-      const acc = await test_driver.get_element_accessible_properties(subtreeRoot);
+      const acc = await test_driver.get_accessibility_properties_for_element(subtreeRoot);
       await AriaUtils._assertAccessibilitySubtree(acc, expectedTree, desc);
     }, `accessibility tree for ${desc}`);
   },
@@ -280,7 +280,7 @@ const AriaUtils = {
   For example:
   <div id="listbox"> ... </div>
   ...
-  const listbox = await test_driver.get_element_accessible_properties(document.getElementById("listbox"));
+  const listbox = await test_driver.get_accessibility_properties_for_element(document.getElementById("listbox"));
   await AriaUtils.assertAccessibilitySubtree(listbox, { ... }, "#listbox");
   */
   _assertAccessibilitySubtree: async function(accProps, expectedTree, position) {
@@ -293,7 +293,7 @@ const AriaUtils = {
         );
         for (let c = 0; c < accProps.children.length; ++c) {
           const childId = accProps.children[c];
-          const childAcc = await test_driver.get_accessible_properties(childId);
+          const childAcc = await test_driver.get_accessibility_properties_for_accessibility_node(childId);
           await AriaUtils._assertAccessibilitySubtree(
             childAcc,
             expectedTree.children[c],

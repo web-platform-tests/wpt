@@ -26,8 +26,8 @@ class DeleteAllCookiesAction:
         self.protocol.cookies.delete_all_cookies()
 
 
-class GetAccessiblePropertiesAction:
-    name = "get_accessible_properties"
+class GetAccessibilityPropertiesForAccessibilityNodeAction:
+    name = "get_accessibility_properties_for_accessibility_node"
 
     def __init__(self, logger, protocol):
         self.logger = logger
@@ -35,8 +35,22 @@ class GetAccessiblePropertiesAction:
 
     def __call__(self, payload):
         id = payload["accId"]
-        self.logger.debug("Getting accessible properties: %s" % id)
-        return self.protocol.accessibility.get_accessible_properties(id)
+        self.logger.debug("Getting accessibility properties: %s" % id)
+        return self.protocol.accessibility.get_accessibility_properties_for_accessibility_node(id)
+
+
+class GetAccessibilityPropertiesForElementAction:
+    name = "get_accessibility_properties_for_element"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        selector = payload["selector"]
+        element = self.protocol.select.element_by_selector(selector)
+        self.logger.debug("Getting accessibility properties for element: %s" % element)
+        return self.protocol.accessibility.get_accessibility_properties_for_element(element)
 
 
 class GetAllCookiesAction:
@@ -77,20 +91,6 @@ class GetComputedRoleAction:
         element = self.protocol.select.element_by_selector_array(selectors)
         self.logger.debug("Getting computed role for element: %s" % element)
         return self.protocol.accessibility.get_computed_role(element)
-
-
-class GetElementAccessiblePropertiesAction:
-    name = "get_element_accessible_properties"
-
-    def __init__(self, logger, protocol):
-        self.logger = logger
-        self.protocol = protocol
-
-    def __call__(self, payload):
-        selector = payload["selector"]
-        element = self.protocol.select.element_by_selector(selector)
-        self.logger.debug("Getting accessible properties for element: %s" % element)
-        return self.protocol.accessibility.get_element_accessible_properties(element)
 
 
 class GetNamedCookieAction:
@@ -627,8 +627,8 @@ actions = [ClickAction,
            GetNamedCookieAction,
            GetComputedLabelAction,
            GetComputedRoleAction,
-           GetElementAccessiblePropertiesAction,
-           GetAccessiblePropertiesAction,
+           GetAccessibilityPropertiesForAccessibilityNodeAction,
+           GetAccessibilityPropertiesForElementAction,
            SendKeysAction,
            MinimizeWindowAction,
            SetWindowRectAction,

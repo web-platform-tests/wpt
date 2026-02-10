@@ -1275,30 +1275,30 @@
         },
 
         /**
-         * Get accessibility properties for an element.
+         * Get accessibility properties for a DOM element.
          *
          * @param {Element} element
          * @returns {Promise} fulfilled after the accessibility properties are
          *                    returned, or rejected in the cases the WebDriver
          *                    command errors
          */
-        get_element_accessible_properties: async function(element) {
+        get_accessibility_properties_for_element: async function(element) {
             assertTestIsTentative();
-            let acc = await window.test_driver_internal.get_element_accessible_properties(element);
+            let acc = await window.test_driver_internal.get_accessibility_properties_for_element(element);
             return acc;
         },
 
         /**
-         * Get properties for an accessible node.
+         * Get properties for an accessibility node.
          *
          * @param {String} id
          * @returns {Promise} fulfilled after the accessibility properties are
          *                    returned, or rejected in the cases the WebDriver
          *                    command errors
          */
-        get_accessible_properties: async function(accId) {
+        get_accessibility_properties_for_accessibility_node: async function(accId) {
             assertTestIsTentative();
-            let acc = await window.test_driver_internal.get_accessible_properties(accId);
+            let acc = await window.test_driver_internal.get_accessibility_properties_for_accessibility_node(accId);
             return acc;
         },
 
@@ -2490,12 +2490,12 @@
             throw new Error("get_computed_name is a testdriver.js function which cannot be run in this context.");
         },
 
-        async get_element_accessible_properties(element) {
-            throw new Error("get_element_accessible_properties is a testdriver.js function which cannot be run in this context.");
+        async get_accessibility_properties_for_element(element) {
+            throw new Error("get_accessibility_properties_for_element is a testdriver.js function which cannot be run in this context.");
         },
 
-        async get_accessible_properties(accId) {
-            throw new Error("get_accessible_properties is a testdriver.js function which cannot be run in this context.");
+        async get_accessibility_properties_for_accessibility_node(accId) {
+            throw new Error("get_accessibility_properties_for_accessibility_node is a testdriver.js function which cannot be run in this context.");
         },
 
         async send_keys(element, keys) {

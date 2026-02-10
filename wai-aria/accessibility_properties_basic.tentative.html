@@ -8,7 +8,7 @@
 <!--
 
 These tests should remain solid and passing in any implementation that supports
-get_element_accessible_properties and get_accessible_properties. They are very
+get_accessibility_properties_for_element and get_accessibility_properties_for_accessibility_node. They are very
 basic tests intended to test the core functionality of these test_driver
 functions. Tests should generally only be added here if there is some significant
 change to the functionality of these test_driver functions; e.g. a new complex
@@ -32,24 +32,24 @@ you probably want a different file.
 <script>
 
 promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("ariaCheckbox"));
+  const acc = await test_driver.get_accessibility_properties_for_element(document.getElementById("ariaCheckbox"));
   assert_equals(acc.checked, "true");
 }, "ARIA checkbox with aria-checked true");
 
 promise_test(async t => {
-  const acc = await test_driver.get_element_accessible_properties(document.getElementById("htmlCheckbox"));
+  const acc = await test_driver.get_accessibility_properties_for_element(document.getElementById("htmlCheckbox"));
   assert_equals(acc.pressed, "true");
 }, "HTML checkbox with checked true");
 
 promise_test(async t => {
-  const tablist = await test_driver.get_element_accessible_properties(document.getElementById("tablist"));
+  const tablist = await test_driver.get_accessibility_properties_for_element(document.getElementById("tablist"));
   assert_equals(tablist.children.length, 2);
-  const tab1 = await test_driver.get_accessible_properties(tablist.children[0]);
+  const tab1 = await test_driver.get_accessibility_properties_for_accessibility_node(tablist.children[0]);
   assert_equals(tab1.id, tablist.children[0]);
   assert_equals(tab1.parent, tablist.id);
   assert_equals(tab1.role, "tab");
   assert_equals(tab1.label, "tab1");
-  const tab2 = await test_driver.get_accessible_properties(tablist.children[1]);
+  const tab2 = await test_driver.get_accessibility_properties_for_accessibility_node(tablist.children[1]);
   assert_equals(tab2.id, tablist.children[1]);
   assert_equals(tab2.parent, tablist.id);
   assert_equals(tab2.role, "tab");

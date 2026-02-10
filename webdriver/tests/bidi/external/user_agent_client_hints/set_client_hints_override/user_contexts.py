@@ -14,7 +14,7 @@ async def test_user_contexts(bidi_session, create_user_context, new_tab,
     await assert_client_hints(new_tab, default_client_hints)
 
     # Set client hints override
-    await bidi_session.emulation.set_client_hints_override(
+    await bidi_session.user_agent_client_hints.set_client_hints_override(
         user_contexts=[user_context],
         client_hints=SOME_CLIENT_HINTS)
 
@@ -41,7 +41,7 @@ async def test_set_to_default_user_context(bidi_session, new_tab,
         user_context=user_context, type_hint="tab"
     )
 
-    await bidi_session.emulation.set_client_hints_override(
+    await bidi_session.user_agent_client_hints.set_client_hints_override(
         user_contexts=["default"],
         client_hints=SOME_CLIENT_HINTS,
     )
@@ -59,7 +59,7 @@ async def test_set_to_default_user_context(bidi_session, new_tab,
     await assert_client_hints(context_in_default_context, SOME_CLIENT_HINTS)
 
     # Reset client hints override.
-    await bidi_session.emulation.set_client_hints_override(
+    await bidi_session.user_agent_client_hints.set_client_hints_override(
         user_contexts=["default"],
         client_hints=None
     )
@@ -80,7 +80,7 @@ async def test_set_to_multiple_user_contexts(bidi_session, create_user_context,
         user_context=user_context_2, type_hint="tab"
     )
     # Set client hints override for both user contexts.
-    await bidi_session.emulation.set_client_hints_override(
+    await bidi_session.user_agent_client_hints.set_client_hints_override(
         user_contexts=[user_context_1, user_context_2],
         client_hints=SOME_CLIENT_HINTS
     )
@@ -103,13 +103,13 @@ async def test_set_to_user_context_and_then_to_context(bidi_session,
     )
 
     # Add user context override.
-    await bidi_session.emulation.set_client_hints_override(
+    await bidi_session.user_agent_client_hints.set_client_hints_override(
         user_contexts=[user_context],
         client_hints=SOME_CLIENT_HINTS
     )
 
     # Add context override.
-    await bidi_session.emulation.set_client_hints_override(
+    await bidi_session.user_agent_client_hints.set_client_hints_override(
         contexts=[context_in_user_context["context"]],
         client_hints=ANOTHER_CLIENT_HINTS
     )
@@ -123,7 +123,7 @@ async def test_set_to_user_context_and_then_to_context(bidi_session,
     await assert_client_hints(context_in_user_context, ANOTHER_CLIENT_HINTS)
 
     # Remove context override.
-    await bidi_session.emulation.set_client_hints_override(
+    await bidi_session.user_agent_client_hints.set_client_hints_override(
         contexts=[context_in_user_context["context"]],
         client_hints=None
     )
@@ -138,7 +138,7 @@ async def test_set_to_user_context_and_then_to_context(bidi_session,
     await assert_client_hints(context_in_user_context, SOME_CLIENT_HINTS)
 
     # Remove user context override.
-    await bidi_session.emulation.set_client_hints_override(
+    await bidi_session.user_agent_client_hints.set_client_hints_override(
         user_contexts=[user_context],
         client_hints=None,
     )

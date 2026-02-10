@@ -43,7 +43,6 @@
         <clipPath tabindex="0"></clipPath>
         <defs tabindex="0"></defs>
         <desc tabindex="0"></desc>
-        <hatch tabindex="0"></hatch>
         <linearGradient tabindex="0"></linearGradient>
         <marker tabindex="0"></marker>
         <mask tabindex="0"></mask>
@@ -97,7 +96,6 @@
         ['clipPath[tabindex]', false],
         ['defs[tabindex]', false],
         ['desc[tabindex]', false],
-        ['hatch[tabindex]', false],
         ['linearGradient[tabindex]', false],
         ['marker[tabindex]', false],
         ['mask[tabindex]', false],

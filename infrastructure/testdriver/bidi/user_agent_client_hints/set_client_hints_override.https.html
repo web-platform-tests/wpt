@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>TestDriver bidi.userAgentClientHints.set_client_hints_override</title>
+<title>TestDriver bidi.user_agent_client_hints.set_client_hints_override</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js?feature=bidi"></script>
@@ -23,7 +23,7 @@
     };
 
     promise_test(async t => {
-        await test_driver.bidi.userAgentClientHints.set_client_hints_override({
+        await test_driver.bidi.user_agent_client_hints.set_client_hints_override({
             clientHints: MOCK_CLIENT_HINTS
         });
         
@@ -44,9 +44,9 @@
         assert_equals(navigator.userAgentData.platform, MOCK_CLIENT_HINTS.platform);
         assert_equals(navigator.userAgentData.mobile, MOCK_CLIENT_HINTS.mobile);
 
-        await test_driver.bidi.userAgentClientHints.set_client_hints_override({
+        await test_driver.bidi.user_agent_client_hints.set_client_hints_override({
             clientHints: null
         });
 
-    }, "test_driver.bidi.userAgentClientHints.set_client_hints_override");
+    }, "test_driver.bidi.user_agent_client_hints.set_client_hints_override");
 </script>

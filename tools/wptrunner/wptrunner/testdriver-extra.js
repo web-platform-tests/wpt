@@ -425,9 +425,9 @@
             });
         }
 
-    window.test_driver_internal.bidi.userAgentClientHints = { 
+    window.test_driver_internal.bidi.user_agent_client_hints = { 
         set_client_hints_override: function(params) { 
-            return create_action("bidi.userAgentClientHints.set_client_hints_override", { 
+            return create_action("bidi.user_agent_client_hints.set_client_hints_override", { 
                 contexts: [window], 
                 ...(params ?? {}) 
             }); 

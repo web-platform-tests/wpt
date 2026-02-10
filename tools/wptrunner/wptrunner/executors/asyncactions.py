@@ -289,7 +289,7 @@ class BidiSessionSubscribeAction:
 
 
 class BidiUserAgentClientHintsSetClientHintsOverrideAction:
-    name = "bidi.userAgentClientHints.set_client_hints_override"
+    name = "bidi.user_agent_client_hints.set_client_hints_override"
 
     def __init__(self, logger, protocol):
         do_delayed_imports()
@@ -302,12 +302,8 @@ class BidiUserAgentClientHintsSetClientHintsOverrideAction:
         contexts = payload.get("contexts", None)
         if contexts is not None:
              contexts = [get_browsing_context_id(context) for context in contexts]
-
-        user_contexts = payload.get("userContexts", None)
-
         return await self.protocol.bidi_user_agent_client_hints.set_client_hints_override(
-            client_hints, contexts, user_contexts)
-
+            client_hints, contexts)
 
 
 class BidiSessionUnsubscribeAction:
@@ -362,8 +358,8 @@ async_actions = [
     BidiEmulationSetLocaleOverrideAction,
     BidiEmulationSetScreenOrientationOverrideAction,
     BidiEmulationSetTouchOverrideAction,
+    BidiUserAgentClientHintsSetClientHintsOverrideAction,
     BidiPermissionsSetPermissionAction,
     BidiSessionSubscribeAction,
     BidiSessionUnsubscribeAction,
-    BidiPermissionsSetPermissionAction,
-    BidiSessionSubscribeAction]
+    BidiPermissionsSetPermissionAction]

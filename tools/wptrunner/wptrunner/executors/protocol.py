@@ -658,6 +658,7 @@ class BidiEmulationProtocolPart(ProtocolPart):
 
 class BidiUserAgentClientHintsProtocolPart(ProtocolPart):
     """Protocol part for User Agent Client Hints"""
+    __metaclass__ = ABCMeta
     name = "bidi_user_agent_client_hints"
 
     @abstractmethod

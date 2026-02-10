@@ -986,7 +986,7 @@
                 },
             },
             /**
-             * `user_agent_client_hints <https://w3c.github.io/webdriver-bidi/#module-userAgentClientHints>`_ module.
+             * `user_agent_client_hints <https://wicg.github.io/ua-client-hints/#automation>`_ module.
              */
             user_agent_client_hints: {
                 /**

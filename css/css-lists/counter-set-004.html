@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Effect on Invisible Boxes (visibility: hidden)</title>
+<link rel="help" href="https://drafts.csswg.org/css-lists/#counter-set">
+<link rel="match" href="counter-set-004-ref.html">
+<meta name="assert" content="visibility: hidden still generates a box, so counter-set remains active on such elements.">
+<style>
+  .checker::before {
+    content: counter(c);
+  }
+</style>
+<body>
+  <div id="container" style="counter-reset: c 0;">
+    <div style="visibility: hidden; counter-set: c 10;"></div>
+    <div class="checker"></div>
+  </div>
+</body>

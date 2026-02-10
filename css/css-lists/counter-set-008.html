@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pseudo-element with No Content</title>
+<link rel="help" href="https://drafts.csswg.org/css-content/">
+<link rel="help" href="https://drafts.csswg.org/css-lists/">
+<link rel="match" href="counter-set-008-ref.html">
+<meta name="assert" content="The displayed value remains '0' (the pseudo-element does not trigger the set operation).">
+<style>
+  div {
+    /* Pre-conditions: Container with an initialized counter 'c' at 0. */
+    counter-reset: c 0;
+  }
+
+  div::before {
+    /* Step 1: Target `div::before` with `content: none` and `counter-set: c 10`. */
+    content: none;
+    counter-set: c 10;
+  }
+
+  div::after {
+    /* Step 2: Display `counter(c)` in the main `div`. */
+    content: counter(c);
+  }
+</style>
+</head>
+<body>
+<div></div>
+</body>
+</html>

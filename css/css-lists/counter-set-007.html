@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Override HTML 'value' Attribute</title>
+    <link rel="help" href="https://drafts.csswg.org/css-lists/#counter-set-properties">
+    <link rel="match" href="counter-set-007-ref.html">
+    <meta name="assert" content="The list item marker displays '10', ignoring the HTML attribute value of '5'.">
+    <style>
+        li {
+            counter-set: list-item 10;
+        }
+    </style>
+</head>
+<body>
+    <ol>
+        <li value="5"></li>
+    </ol>
+</body>
+</html>

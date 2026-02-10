@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Implicit Instantiation (Self-Nesting)</title>
+<link rel="help" href="https://drafts.csswg.org/css-lists/#counter-set">
+<link rel="match" href="counter-set-005-ref.html">
+<meta name="assert" content="If the counter does not exist, counter-set instantiates a new counter of that name... and then sets the value.">
+
+<style>
+  /* Pre-conditions: No existing counter scopes (no `counter-reset` used anywhere). */
+  
+  /* Step 1: Create a div with `counter-set: new-counter 5`. */
+  .test-wrapper {
+    counter-set: new-counter 5;
+  }
+
+  /* Step 2: Inside this div, create a span displaying `counter(new-counter)`. */
+  .test-wrapper span::before {
+    content: counter(new-counter);
+  }
+</style>
+
+<body>
+  <div class="test-wrapper">
+    <span></span>
+  </div>
+</body>

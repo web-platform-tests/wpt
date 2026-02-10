@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>Effect on Elements with No Box (display: none)</title>
+<link rel="help" href="https://drafts.csswg.org/css-lists/#counter-properties">
+<link rel="match" href="counter-set-003-ref.html">
+<meta name="assert" content="If an element does not generate a box (display: none), the counter-set property must have no effect.">
+
+<style>
+  body {
+    /* Step 1: Initialize counter 'c' to 0 */
+    counter-reset: c 0;
+  }
+  .hidden {
+    /* Step 2: Attempt to set counter to 10 on a hidden element */
+    display: none;
+    counter-set: c 10;
+  }
+  .result::before {
+    /* Step 3: Display the counter. Should remain 0. */
+    content: counter(c);
+  }
+</style>
+
+<div class="hidden"></div>
+
+<div class="result"></div>

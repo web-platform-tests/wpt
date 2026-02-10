@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Interaction: Reset and Set on Same Element</title>
+    <link rel="help" href="https://drafts.csswg.org/css-lists/#counter-properties">
+    <link rel="match" href="counter-set-006-ref.html">
+    <meta name="assert" content="The span displays '10' (Resolution order: Reset -> Set).">
+    <style>
+        .test-container {
+            counter-reset: c 0;
+            counter-set: c 10;
+        }
+        .test-container span::before {
+            content: counter(c);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <span></span>
+    </div>
+</body>
+</html>

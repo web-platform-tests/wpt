@@ -443,6 +443,16 @@
                 });
         }
 
+    window.test_driver_internal.bidi.emulation.set_touch_override =
+        function (params) {
+            return create_action(
+                "bidi.emulation.set_touch_override", {
+                    // Default to the current window.
+                    contexts: [window],
+                    ...(params ?? {})
+                });
+        }
+
     window.test_driver_internal.bidi.log.entry_added.subscribe =
         function (params) {
             return subscribe({

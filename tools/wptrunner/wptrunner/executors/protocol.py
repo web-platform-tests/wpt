@@ -649,6 +649,12 @@ class BidiEmulationProtocolPart(ProtocolPart):
             contexts: List[str]) -> None:
         pass
 
+    @abstractmethod
+    async def set_touch_override(self,
+            max_touch_points: Optional[int],
+            contexts: List[str]) -> None:
+        pass
+
 
 class BidiScriptProtocolPart(ProtocolPart):
     """Protocol part for executing BiDi scripts"""

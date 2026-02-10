@@ -38,7 +38,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const acc = await test_driver.get_accessibility_properties_for_element(document.getElementById("htmlCheckbox"));
-  assert_equals(acc.pressed, "true");
+  assert_equals(acc.checked, "true");
 }, "HTML checkbox with checked true");
 
 promise_test(async t => {

@@ -26,7 +26,7 @@
         await test_driver.bidi.user_agent_client_hints.set_client_hints_override({
             clientHints: MOCK_CLIENT_HINTS
         });
-        
+
         let clientHints = await navigator.userAgentData.getHighEntropyValues([
             "architecture",
             "bitness",
@@ -35,7 +35,7 @@
             "uaFullVersion",
             "wow64"
         ]);
-        
+
         assert_equals(clientHints.architecture, MOCK_CLIENT_HINTS.architecture);
         assert_equals(clientHints.bitness, MOCK_CLIENT_HINTS.bitness);
         assert_equals(clientHints.model, MOCK_CLIENT_HINTS.model);

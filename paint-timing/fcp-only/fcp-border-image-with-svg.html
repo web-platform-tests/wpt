@@ -9,7 +9,7 @@
     height: 100px;
     border: 30px solid transparent;
     border-image-source: url(../resources/circle.svg);
-    border-image-width: 0px;
+    border-image-width: 30px;
   }
 </style>
 <div id='bordered'></div>
@@ -23,6 +23,6 @@ promise_test(async t => {
   }).then(() => {
     return assertFirstContentfulPaint(t);
   });
-}, 'Border image triggers First Contentful Paint.');
+}, 'Border image with SVG triggers First Contentful Paint.');
 </script>
 </body>

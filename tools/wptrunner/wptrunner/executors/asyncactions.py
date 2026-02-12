@@ -301,7 +301,7 @@ class BidiUserAgentClientHintsSetClientHintsOverrideAction:
 
         contexts = payload.get("contexts", None)
         if contexts is not None:
-             contexts = [get_browsing_context_id(context) for context in contexts]
+            contexts = [get_browsing_context_id(context) for context in contexts]
         return await self.protocol.bidi_user_agent_client_hints.set_client_hints_override(
             client_hints, contexts)
 

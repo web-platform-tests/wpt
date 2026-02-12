@@ -425,6 +425,15 @@
             });
         }
 
+    window.test_driver_internal.bidi.user_agent_client_hints = { 
+        set_client_hints_override: function(params) { 
+            return create_action("bidi.user_agent_client_hints.set_client_hints_override", { 
+                contexts: [window], 
+                ...(params ?? {}) 
+            }); 
+        } 
+    };
+
     window.test_driver_internal.bidi.emulation.set_locale_override = function (params) {
         return create_action("bidi.emulation.set_locale_override", {
             // Default to the current window.

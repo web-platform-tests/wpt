@@ -656,6 +656,20 @@ class BidiEmulationProtocolPart(ProtocolPart):
         pass
 
 
+class BidiUserAgentClientHintsProtocolPart(ProtocolPart):
+    """Protocol part for User Agent Client Hints"""
+    __metaclass__ = ABCMeta
+    name = "bidi_user_agent_client_hints"
+
+    @abstractmethod
+    async def set_client_hints_override(
+            self,
+            client_hints: Optional[Mapping[str, Any]],
+            contexts: Optional[List[str]],
+            user_contexts: Optional[List[str]]) -> None:
+        pass
+
+
 class BidiScriptProtocolPart(ProtocolPart):
     """Protocol part for executing BiDi scripts"""
     __metaclass__ = ABCMeta

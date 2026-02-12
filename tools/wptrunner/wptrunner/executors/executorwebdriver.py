@@ -40,6 +40,7 @@ from .protocol import (BaseProtocolPart,
                        BidiBluetoothProtocolPart,
                        BidiBrowsingContextProtocolPart,
                        BidiEmulationProtocolPart,
+                       BidiUserAgentClientHintsProtocolPart,
                        BidiEventsProtocolPart,
                        BidiPermissionsProtocolPart,
                        BidiScriptProtocolPart,
@@ -350,6 +351,19 @@ class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
     def add_event_listener(self, name, fn):
         self.logger.info("adding event listener %s" % name)
         return self.webdriver.bidi_session.add_event_listener(name=name, fn=fn)
+
+
+class WebDriverBidiUserAgentClientHintsProtocolPart(BidiUserAgentClientHintsProtocolPart):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.webdriver = None
+
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    async def set_client_hints_override(self, client_hints, contexts):
+        return await self.webdriver.bidi_session.user_agent_client_hints.set_client_hints_override(
+            client_hints=client_hints, contexts=contexts)
 
 
 class WebDriverBidiScriptProtocolPart(BidiScriptProtocolPart):
@@ -1131,6 +1145,7 @@ class WebDriverBidiProtocol(WebDriverProtocol):
                   WebDriverBidiPermissionsProtocolPart,
                   WebDriverBidiScriptProtocolPart,
                   WebDriverBidiWebExtensionsProtocolPart,
+                  WebDriverBidiUserAgentClientHintsProtocolPart,
                   *(part for part in WebDriverProtocol.implements)
                   ]
 

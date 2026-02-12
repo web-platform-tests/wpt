@@ -1,4 +1,4 @@
-mypy==1.14.1
+mypy==1.19.0
 
 types-atomicwrites==1.4.5.1
 types-html5lib==1.1.11.20241018

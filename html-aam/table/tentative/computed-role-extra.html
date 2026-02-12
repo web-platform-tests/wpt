@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+  <head>
+    <title>HTML-AAM Role Verification Tests</title>
+    <link
+      rel="author"
+      href="mailto:wpt@keithcirkel.co.uk"
+      title="Keith Cirkel"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
+    <script src="/resources/testdriver-actions.js"></script>
+    <script src="./resources/table-computed-role.js"></script>
+  </head>
+  <body>
+    <p>
+      Tests the computedrole mappings for the table role defined in
+      <a href="https://w3c.github.io/html-aam/">HTML-AAM</a>.
+    </p>
+
+    <p>
+      These tests are to enforce that browsers who have traditionally held these
+      heuristics avoid doing so, as they are not spec compliant.
+    </p>
+
+    <p>The following tables are all expected to have a role of layouttable.</p>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 3. If element has a datatable attribute whose value is "0", return table
+    -->
+    <table data-testname="table-with-datatable-attr" datatable="0" data-layout></table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 6. If element has a aria-rowcount attribute whose value a positive integer greater than 0, return table.
+    -->
+    <table data-testname="table-with-aria-rowcount-attr" aria-rowcount="6" data-layout></table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 7. If element has a aria-colcount attribute whose value a positive integer greater than 0, return table.
+    -->
+    <table data-testname="table-with-aria-colcount-attr" aria-colcount="7" data-layout></table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 22.6.1.1.1.2. If prev_row_background is not null, and prev_row_background is not equal to row_background, return table.
+    -->
+    <table data-testname="table-with-only-two-alternating-backgrounds" data-layout>
+      <tr background="color:grey"></tr>
+      <tr background="color:rebeccapurple"></tr>
+    </table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 22.6.1.1.3. If body_child has a role attribute whose value does not include "row", return html-layout-table
+    -->
+    <table data-testname="table-with-tr-with-non-row-role" data-table>
+      <tr role="presentation"></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+    </table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 22.6.1.1.4. If row_count is greater than or equal to 20, and column_count is greater than or equal to 2, return table.
+    -->
+    <table data-testname="table-with-20-rows-and-1-column">
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+      <tr><td></td></tr>
+    </table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 22.6.1.1.5. If column_count is greather than or equal to 20, and row_count is greater than or equal to 2, return table.
+    -->
+    <table data-testname="table-with-20-columns-and-1-row" data-layout>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+
+    <!--
+      https://deploy-preview-2576--wai-aria.netlify.app/html-aam/#el-table
+      Step 22.6.1.1.7.2.1. If cell_count is 0 and row_child is in not being rendered, return table.
+    -->
+    <table data-testname="table-first-cell-invisible" data-layout>
+      <tr>
+        <td style="display:none"></td>
+      </tr>
+    </table>
+
+    <script>
+      runTests({
+        expectedTables: 2,
+        expectedLayoutTables: 5,
+      });
+    </script>
+  </body>
+</html>

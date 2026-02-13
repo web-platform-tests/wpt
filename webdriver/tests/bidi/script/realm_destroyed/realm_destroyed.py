@@ -313,7 +313,7 @@ async def test_shared_worker(
         REALM_DESTROYED_EVENT, on_realm_destroyed_event
     )
 
-    worker_url = inline("while(true){}", doctype="js")
+    worker_url = inline("console.log('shared worker')", doctype="js")
     url = inline(
         f"""<script>
         const worker = new SharedWorker('{worker_url}');

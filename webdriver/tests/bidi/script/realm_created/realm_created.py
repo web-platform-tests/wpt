@@ -255,7 +255,7 @@ async def test_dedicated_worker(
     remove_listener = bidi_session.add_event_listener(
         REALM_CREATED_EVENT, on_event)
 
-    worker_url = inline("while(true){}", doctype="js")
+    worker_url = inline("console.log('dedicated worker')", doctype="js")
     url = inline(
         f"<script>const worker = new Worker('{worker_url}');</script>")
     await bidi_session.browsing_context.navigate(
@@ -302,7 +302,7 @@ async def test_shared_worker(
     remove_listener = bidi_session.add_event_listener(
         REALM_CREATED_EVENT, on_event)
 
-    worker_url = inline("while(true){}", doctype="js")
+    worker_url = inline("console.log('shared worker')", doctype="js")
     url = inline(
         f"""<script>
         const worker = new SharedWorker('{worker_url}');
@@ -351,7 +351,7 @@ async def test_service_worker(
     remove_listener = bidi_session.add_event_listener(
         REALM_CREATED_EVENT, on_event)
 
-    worker_url = inline("while(true){}", doctype="js")
+    worker_url = inline("console.log('service worker')", doctype="js")
     url = inline(
         f"""<script>
         navigator.serviceWorker.register('{worker_url}');

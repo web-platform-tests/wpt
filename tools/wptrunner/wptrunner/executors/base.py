@@ -39,7 +39,7 @@ def executor_kwargs(test_type, test_environment, run_info_data, subsuite, **kwar
         executor_kwargs["screenshot_cache"] = screenshot_cache
         executor_kwargs["reftest_screenshot"] = kwargs["reftest_screenshot"]
 
-    if test_type == "wdspec":
+    if test_type in ("wdspec", "aamtest"):
         executor_kwargs["binary"] = kwargs["binary"]
         executor_kwargs["binary_args"] = kwargs["binary_args"].copy()
         executor_kwargs["webdriver_binary"] = kwargs["webdriver_binary"]

@@ -1,11 +1,9 @@
 Interface tests
 ==============================
 
-These test that the basic UI Events interfaces exist, specifically:
+These test that the basic Mouse and Wheel Events interfaces exist, specifically:
 
 1. Does the interface exist
 2. Are all the members defined on the interface accounted for:
- * UIEvent
- * FocusEvent
- * KeyboardEvent
- * CompositionEvent
+ * MouseEvent
+ * WheelEvent

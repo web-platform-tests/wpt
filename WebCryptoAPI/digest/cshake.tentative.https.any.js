@@ -162,7 +162,7 @@ Object.keys(digestedData).forEach(function (alg) {
     Object.keys(sourceData).forEach(function (size) {
       promise_test(function (test) {
         return crypto.subtle
-          .digest({ name: alg, length: length }, sourceData[size])
+          .digest({ name: alg, outputLength: length }, sourceData[size])
           .then(function (result) {
             assert_true(
               equalBuffers(result, digestedData[alg][length][size]),
@@ -196,7 +196,7 @@ Object.keys(digestedData).forEach(function (alg) {
         promise_test(function (test) {
           var buffer = new Uint8Array(sourceData[size]);
           return crypto.subtle
-            .digest({ name: alg, length: length }, buffer)
+            .digest({ name: alg, outputLength: length }, buffer)
             .then(function (result) {
               // Alter the buffer after calling digest
               buffer[0] = ~buffer[0];
@@ -229,7 +229,7 @@ Object.keys(digestedData).forEach(function (alg) {
         promise_test(function (test) {
           var buffer = new Uint8Array(sourceData[size]);
           var promise = crypto.subtle
-            .digest({ name: alg, length: length }, buffer)
+            .digest({ name: alg, outputLength: length }, buffer)
             .then(function (result) {
               assert_true(
                 equalBuffers(result, digestedData[alg][length][size]),

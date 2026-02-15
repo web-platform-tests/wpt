@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>JPEG XL interop: modular lossless</title>
+<link rel="help" href="https://github.com/web-platform-tests/interop-jpegxl">
+<meta name="assert" content="Decodes known modular lossless fixture.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/interop-helpers.js"></script>
+<script>
+
+promise_test(async () => {
+  const img = await loadImage('../resources/green_queen_modular_e3.jxl');
+  assert_equals(img.naturalWidth, 438);
+  assert_equals(img.naturalHeight, 589);
+}, 'Modular lossless fixture decodes.');
+
+</script>

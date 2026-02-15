@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>JPEG XL interop: layered codestream basic decode</title>
+<link rel="help" href="https://github.com/web-platform-tests/interop-jpegxl">
+<meta name="assert" content="Decodes layered codestream fixture.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/interop-helpers.js"></script>
+<script>
+
+promise_test(async () => {
+  const img = await loadImage('../resources/spline_on_first_frame.jxl');
+  assert_equals(img.naturalWidth, 32);
+  assert_equals(img.naturalHeight, 32);
+}, 'Layered codestream fixture decodes to expected dimensions.');
+
+</script>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>JPEG XL interop: alpha with modular fixture</title>
+<link rel="help" href="https://github.com/web-platform-tests/interop-jpegxl">
+<meta name="assert" content="Decodes RGBA fixture and verifies transparency channel.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/interop-helpers.js"></script>
+<script>
+
+promise_test(async () => {
+  const img = await loadImage('../resources/3x3a_srgb_lossless.jxl');
+  const px = samplePixel(img, 0, 0);
+  assert_less_than(px[3], 255, 'alpha should be non-opaque');
+}, 'Alpha is decoded for modular-like fixture.');
+
+</script>

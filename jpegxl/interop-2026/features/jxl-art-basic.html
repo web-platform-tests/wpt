@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>JPEG XL interop: minimal art-like codestream decode</title>
+<link rel="help" href="https://github.com/web-platform-tests/interop-jpegxl">
+<meta name="assert" content="Decodes compact palette-heavy JPEG XL fixture.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/interop-helpers.js"></script>
+<script>
+
+promise_test(async () => {
+  const img = await loadImage('../resources/issue648_palette0.jxl');
+  assert_equals(img.naturalWidth, 1623);
+  assert_equals(img.naturalHeight, 1080);
+}, 'Compact palette-oriented JPEG XL fixture decodes.');
+
+</script>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>JPEG XL interop: codestream orientation applied</title>
+<link rel="help" href="https://github.com/web-platform-tests/interop-jpegxl">
+<meta name="assert" content="Applies codestream orientation (90deg CW) to reported dimensions.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/interop-helpers.js"></script>
+<script>
+
+promise_test(async () => {
+  const img = await loadImage('../resources/orientation6_rotate_90_cw.jxl');
+  assert_equals(img.naturalWidth, 256);
+  assert_equals(img.naturalHeight, 100);
+}, 'Codestream orientation rotates decoded dimensions.');
+
+</script>

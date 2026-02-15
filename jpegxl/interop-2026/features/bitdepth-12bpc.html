@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>JPEG XL interop: 12-bit decode</title>
+<link rel="help" href="https://github.com/web-platform-tests/interop-jpegxl">
+<meta name="assert" content="Decodes known 12-bit JPEG XL fixture with alpha.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/interop-helpers.js"></script>
+<script>
+
+promise_test(async () => {
+  const img = await loadImage('../resources/conformance_alpha_nonpremultiplied.jxl');
+  assert_equals(img.naturalWidth, 1024);
+  assert_equals(img.naturalHeight, 1024);
+  const px = samplePixel(img, 100, 100);
+  assert_less_than(px[3], 255, 'fixture should include transparency');
+}, '12-bit JPEG XL fixture with alpha decodes.');
+
+</script>

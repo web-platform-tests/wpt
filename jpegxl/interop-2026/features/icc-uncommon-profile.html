@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>JPEG XL interop: ICC profile handling</title>
+<link rel="help" href="https://github.com/web-platform-tests/interop-jpegxl">
+<meta name="assert" content="Decodes fixture carrying uncommon grayscale ICC profile.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/interop-helpers.js"></script>
+<script>
+
+promise_test(async () => {
+  const img = await loadImage('../resources/with_icc.jxl');
+  assert_equals(img.naturalWidth, 169);
+  assert_equals(img.naturalHeight, 118);
+}, 'JPEG XL with ICC profile decodes to expected dimensions.');
+
+</script>

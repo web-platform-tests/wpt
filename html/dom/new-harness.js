@@ -10,4 +10,9 @@ ReflectionHarness.assertEquals = assert_equals;
 
 ReflectionHarness.assertInArray = assert_in_array;
 
+ReflectionHarness.assertArrayEquals = assert_array_equals;
+
 ReflectionHarness.assertThrows = assert_throws_dom;
+
+ReflectionHarness.stringRep = format_value
+

@@ -118,7 +118,7 @@ Object.keys(sourceData).forEach(function (size) {
           .digest({
             get name() {
               // Alter the buffer back while calling digest
-              buffer[0] = ~buffer[0];
+              buffer[0] = sourceData[size][0];
               return alg;
             }
           }, buffer)

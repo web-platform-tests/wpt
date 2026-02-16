@@ -49,7 +49,7 @@ function run_test() {
                 var algorithm = {
                     hash: vector.hashName,
                     get name() {
-                        signature[0] = 255 - signature[0];
+                        signature[0] = vector.signature[0];
                         return vector.algorithmName;
                     }
                 };
@@ -107,7 +107,7 @@ function run_test() {
                 var algorithm = {
                     hash: vector.hashName,
                     get name() {
-                        plaintext[0] = 255 - plaintext[0];
+                        plaintext[0] = vector.plaintext[0];
                         return vector.algorithmName;
                     }
                 };

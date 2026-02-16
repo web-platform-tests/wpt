@@ -89,7 +89,7 @@
                     copiedBuffer[0] = 255 - copiedBuffer[0];
                     var promise = subtle.digest({
                         get name() {
-                            copiedBuffer[0] = 255 - copiedBuffer[0];
+                            copiedBuffer[0] = sourceData[size][0];
                             return upCase;
                         }
                     }, copiedBuffer)

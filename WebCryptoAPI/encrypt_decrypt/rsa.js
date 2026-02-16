@@ -55,7 +55,7 @@ function run_test() {
                 var operation = subtle.decrypt({
                     ...vector.algorithm,
                     get name() {
-                        ciphertext[0] = 255 - ciphertext[0];
+                        ciphertext[0] = vector.ciphertext[0];
                         return vector.algorithm.name;
                     }
                 }, vector.privateKey, ciphertext)
@@ -173,7 +173,7 @@ function run_test() {
                 var operation = subtle.encrypt({
                     ...vector.algorithm,
                     get name() {
-                        plaintext[0] = 255 - plaintext[0];
+                        plaintext[0] = vector.plaintext[0];
                         return vector.algorithm.name;
                     }
                 }, vector.publicKey, plaintext)

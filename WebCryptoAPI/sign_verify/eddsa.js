@@ -33,7 +33,7 @@ function run_test(algorithmName) {
               signature[0] = 255 - signature[0];
               isVerified = await subtle.verify({
                   get name() {
-                      signature[0] = 255 - signature[0];
+                      signature[0] = vector.signature[0];
                       return vector.algorithmName;
                   }
               }, key, signature, vector.data);
@@ -72,7 +72,7 @@ function run_test(algorithmName) {
               data[0] = 255 - data[0];
               isVerified = await subtle.verify({
                   get name() {
-                      data[0] = 255 - data[0];
+                      data[0] = vector.data[0];
                       return vector.algorithmName;
                   }
               }, key, vector.signature, data);

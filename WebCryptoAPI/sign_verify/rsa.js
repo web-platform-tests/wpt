@@ -47,7 +47,7 @@ function run_test() {
                 var operation = subtle.verify({
                     ...vector.algorithm,
                     get name() {
-                        signature[0] = 255 - signature[0];
+                        signature[0] = vector.signature[0];
                         return vector.algorithm.name;
                     }
                 }, vector.publicKey, signature, vector.plaintext)
@@ -103,7 +103,7 @@ function run_test() {
                 var operation = subtle.verify({
                     ...vector.algorithm,
                     get name() {
-                        plaintext[0] = 255 - plaintext[0];
+                        plaintext[0] = vector.plaintext[0];
                         return vector.algorithm.name;
                     }
                 }, vector.publicKey, vector.signature, plaintext)

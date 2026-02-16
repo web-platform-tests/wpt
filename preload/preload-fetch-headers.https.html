@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Preload reuse for as=fetch when fetch() specifies headers</title>
+<link
+  rel="help"
+  href="https://html.spec.whatwg.org/multipage/semantics.html#link-type-preload"
+/>
+<link rel="help" href="https://fetch.spec.whatwg.org/" />
+<meta
+  name="assert"
+  content="A resource preloaded with as=fetch is reused even when the subsequent fetch() specifies request headers like Accept."
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/preload/resources/preload_helper.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script>
+  "use strict";
+
+  const { HTTPS_REMOTE_ORIGIN } = get_host_info();
+
+  function createEchoURL(body, type) {
+    return `/preload/resources/echo-with-cors.py?type=${encodeURIComponent(
+      type
+    )}&content=${encodeURIComponent(body)}&uid=${token()}`;
+  }
+
+  promise_test(async (t) => {
+    // Use cross-origin CORS with anonymous credentials so that preload uses
+    // the fetch algorithm path relevant to the reported issue.
+    const href =
+      new URL(
+        createEchoURL('{"ok":true}', "application/json"),
+        HTTPS_REMOTE_ORIGIN
+      ).href + `&${token()}`;
+
+    // Preload the resource as fetch with CORS (anonymous).
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "fetch";
+    link.crossOrigin = "anonymous";
+    link.href = href;
+    document.head.appendChild(link);
+    t.add_cleanup(() => link.remove());
+    await new Promise((resolve) => link.addEventListener("load", resolve));
+
+    // Now fetch the same resource but specify a simple header (Accept).
+    // This must still consume the preloaded response rather than fetching again.
+    const response = await fetch(href, {
+      mode: "cors",
+      credentials: "omit",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+    const text = await response.text();
+    assert_equals(text, '{"ok":true}');
+
+    // Expect no double-download: even if UA creates multiple RT entries
+    // for preload and fetch, at most one should have transferSize > 0.
+    if (numberOfResourceTimingEntries(href) < 1) {
+      await new Promise((resolve) => t.step_timeout(resolve, 300));
+    }
+    verifyLoadedAndNoDoubleDownload(href);
+  }, "Cross-origin as=fetch preload is reused even when fetch() specifies Accept header");
+</script>

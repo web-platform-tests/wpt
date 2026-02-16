@@ -1,7 +1,10 @@
 # META: timeout=long
 
 import pytest
-from webdriver.bidi.modules.script import RealmTarget
+from webdriver.bidi.modules.script import (
+    ContextTarget,
+    RealmTarget,
+)
 from webdriver.error import TimeoutException
 
 from tests.bidi import wait_for_bidi_events
@@ -335,7 +338,8 @@ async def test_service_worker(
     worker_url = inline("console.log('service worker')", doctype="js")
     url = inline(
         f"""<script>
-        navigator.serviceWorker.register('{worker_url}');
+        window.onRegistration =
+          navigator.serviceWorker.register('{worker_url}');
         navigator.serviceWorker.startMessages();
     </script>"""
     )
@@ -355,6 +359,13 @@ async def test_service_worker(
             "origin": worker_url,
         },
         events[0],
+    )
+
+    # Unregister the service worker registration.
+    await bidi_session.script.evaluate(
+        expression="""window.onRegistration.then(r => r.unregister())""",
+        await_promise=True,
+        target=ContextTarget(top_context["context"]),
     )
 
 

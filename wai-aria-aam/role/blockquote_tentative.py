@@ -10,6 +10,7 @@ def test_atspi(atspi, session, inline):
     node = atspi.find_node("test", session.url)
     assert atspi.Accessible.get_role_name(node) == "block quote"
 
+
 def test_axapi(axapi, session, inline):
     if not axapi:
         return
@@ -17,10 +18,11 @@ def test_axapi(axapi, session, inline):
     session.url = inline(TEST_HTML)
 
     node = axapi.find_node("test", session.url)
-    role = axapi.AXUIElementCopyAttributeValue(node, "AXRole", None)
+    role = axapi.AXUIElementCopyAttributeValue(node, "AXRole", None)[1]
     assert role == "AXGroup"
-    role = axapi.AXUIElementCopyAttributeValue(node, "AXSubrole", None)
-    assert role == ""
+    role = axapi.AXUIElementCopyAttributeValue(node, "AXSubrole", None)[1]
+    assert role == None
+
 
 def test_ia2(ia2, session, inline):
     if not ia2:
@@ -31,6 +33,7 @@ def test_ia2(ia2, session, inline):
     node = ia2.find_node("test", session.url)
     assert ia2.get_role(node) == "IA2_ROLE_BLOCK_QUOTE"
     assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_GROUPING"
+
 
 def test_uia(uia, session, inline):
     if not uia:

@@ -100,3 +100,11 @@ def test_no_shadow_root(session, inline):
     element = session.find.css("div", all=False)
     response = get_shadow_root(session, element.id)
     assert_error(response, "no such shadow root")
+
+
+def test_no_shadow_root_select(session, inline):
+    # Check that user agent shadow roots are not returned by get_shadow_root
+    session.url = inline("<select></select>")
+    element = session.find.css("select", all=False)
+    response = get_shadow_root(session, element.id)
+    assert_error(response, "no such shadow root")

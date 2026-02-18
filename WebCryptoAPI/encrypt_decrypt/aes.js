@@ -267,9 +267,11 @@ function run_test() {
         all_promises.push(promise);
     });
 
-    Promise.all(all_promises)
-    .then(function() {done();})
-    .catch(function() {done();})
+    promise_test(function() {
+        return Promise.all(all_promises)
+            .then(function() {done();})
+            .catch(function() {done();})
+    }, "setup");
 
     // A test vector has all needed fields for encryption, EXCEPT that the
     // key field may be null. This function replaces that null with the Correct
@@ -282,7 +284,7 @@ function run_test() {
                 resolve(vector);
             });
         } else {
-            return subtle.importKey("raw", vector.keyBuffer, {name: vector.algorithm.name}, false, usages)
+            return subtle.importKey(vector.algorithm.name.toUpperCase() === "AES-OCB" ? "raw-secret" : "raw", vector.keyBuffer, {name: vector.algorithm.name}, false, usages)
             .then(function(key) {
                 vector.key = key;
                 return vector;

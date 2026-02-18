@@ -7,6 +7,11 @@
 <script>
 'use strict';
 
+/*
+ * Chromium note: this requires build bots with H264 support. See
+ *   https://bugs.chromium.org/p/chromium/issues/detail?id=840659
+ * for details on how to enable support.
+ */
 // Tests for conformance to RFC 7742,
 // "WebRTC Video Processing and Codec Requirements"
 // The document was formerly known as draft-ietf-rtcweb-video-codecs.
@@ -50,7 +55,7 @@ async function negotiateParameters() {
   const pc2 = new RTCPeerConnection();
   let [track, streams] = await getTrackFromUserMedia('video');
   const sender = pc1.addTrack(track);
-  await doSignalingHandshake(pc1, pc2);
+  await exchangeOfferAnswer(pc1, pc2);
   return sender.getParameters();
 }
 
@@ -58,10 +63,11 @@ function parseFmtp(fmtp) {
   const params = fmtp.split(';');
   return params.map(param => param.split('='));
 }
+
 promise_test(async t => {
   const params = await negotiateParameters();
-  assert_true(!!params.codecs.find(codec => codec.mimeType === 'video/H264'));
-  assert_true(!!params.codecs.find(codec => codec.mimeType === 'video/VP8'));
+  assert_true(!!params.codecs.find(codec => codec.mimeType.toLowerCase() === 'video/h264'));
+  assert_true(!!params.codecs.find(codec => codec.mimeType.toLowerCase() === 'video/vp8'));
 }, 'H.264 and VP8 should be negotiated after handshake');
 
 // TODO: Section 6: Recipients MUST be able to decode 320x240@20 fps

@@ -1,8 +1,12 @@
+# mypy: allow-untyped-defs
+
+import logging
 import os
 import shutil
+import site
 import sys
-import logging
-from distutils.spawn import find_executable
+import sysconfig
+from shutil import which
 
 # The `pkg_resources` module is provided by `setuptools`, which is itself a
 # dependency of `virtualenv`. Tolerate its absence so that this module may be
@@ -20,63 +24,97 @@ from tools.wpt.utils import call
 
 logger = logging.getLogger(__name__)
 
-class Virtualenv(object):
+class Virtualenv:
     def __init__(self, path, skip_virtualenv_setup):
         self.path = path
         self.skip_virtualenv_setup = skip_virtualenv_setup
         if not skip_virtualenv_setup:
-            self.virtualenv = find_executable("virtualenv")
-            if not self.virtualenv:
-                raise ValueError("virtualenv must be installed and on the PATH")
+            self.virtualenv = [sys.executable, "-m", "venv"]
             self._working_set = None
 
     @property
     def exists(self):
-        return os.path.isdir(self.path)
+        # We need to check also for lib_path because different python versions
+        # create different library paths.
+        return os.path.isdir(self.path) and os.path.isdir(self.lib_path)
 
     @property
     def broken_link(self):
-        python_link = os.path.join(self.path, ".Python")
-        return os.path.lexists(python_link) and not os.path.exists(python_link)
+        # We shouldn't ever be using virtualenv, but for historic reasons check this
+        virtualenv_python_link = os.path.join(self.path, ".Python")
+        if os.path.lexists(virtualenv_python_link) and not os.path.exists(virtualenv_python_link):
+            return True
+
+        # This isn't a broken link, but we can't run the below in this state
+        if not os.path.exists(self.bin_path):
+            return True
+
+        with os.scandir(self.bin_path) as it:
+            for entry in it:
+                # There is no entry.exists(), it's not quite Path-like enough.
+                if entry.is_symlink() and not os.path.exists(entry.path):
+                    return True
+
+        return False
 
     def create(self):
         if os.path.exists(self.path):
-            shutil.rmtree(self.path)
+            logger.warning(f"Removing existing venv at {self.path!r}")
+            shutil.rmtree(self.path, ignore_errors=True)
             self._working_set = None
-        call(self.virtualenv, self.path, "-p", sys.executable)
+        logger.info(f"Creating new venv at {self.path!r}")
+        call(*self.virtualenv, self.path)
+
+    def get_paths(self):
+        """Wrapper around sysconfig.get_paths(), returning the appropriate paths for the env."""
+        if "venv" in sysconfig.get_scheme_names():
+            # This should always be used on Python 3.11 and above.
+            scheme = "venv"
+        elif os.name == "nt":
+            # This matches nt_venv, unless sysconfig has been modified.
+            scheme = "nt"
+        elif os.name == "posix":
+            # This matches posix_venv, unless sysconfig has been modified.
+            scheme = "posix_prefix"
+        elif sys.version_info >= (3, 10):
+            # Using the default scheme is somewhat fragile, as various Python
+            # distributors (e.g., what Debian and Fedora package, and what Xcode
+            # includes) change the default scheme away from the upstream
+            # defaults, but it's about as good as we can do.
+            scheme = sysconfig.get_default_scheme()
+        else:
+            # This is explicitly documented as having previously existed in the 3.10
+            # docs, and has existed since CPython 2.7 and 3.1 (but not 3.0).
+            scheme = sysconfig._get_default_scheme()
+
+        vars = {
+            "base": self.path,
+            "platbase": self.path,
+            "installed_base": self.path,
+            "installed_platbase": self.path,
+        }
+
+        return sysconfig.get_paths(scheme, vars)
 
     @property
     def bin_path(self):
-        if sys.platform in ("win32", "cygwin"):
-            return os.path.join(self.path, "Scripts")
-        return os.path.join(self.path, "bin")
+        return self.get_paths()["scripts"]
 
     @property
     def pip_path(self):
-        path = find_executable("pip", self.bin_path)
+        path = which("pip3", path=self.bin_path)
         if path is None:
-            raise ValueError("pip not found")
+            path = which("pip", path=self.bin_path)
+        if path is None:
+            raise ValueError("pip3 or pip not found")
         return path
 
     @property
     def lib_path(self):
-        base = self.path
-
-        # this block is literally taken from virtualenv 16.4.3
-        IS_PYPY = hasattr(sys, "pypy_version_info")
-        IS_JYTHON = sys.platform.startswith("java")
-        if IS_JYTHON:
-            site_packages = os.path.join(base, "Lib", "site-packages")
-        elif IS_PYPY:
-            site_packages = os.path.join(base, "site-packages")
-        else:
-            IS_WIN = sys.platform == "win32"
-            if IS_WIN:
-                site_packages = os.path.join(base, "Lib", "site-packages")
-            else:
-                site_packages = os.path.join(base, "lib", "python{}".format(sys.version[:3]), "site-packages")
-
-        return site_packages
+        # We always return platlib here, even if it differs to purelib, because we can
+        # always install pure-Python code into the platlib safely too. It's also very
+        # unlikely to differ for a venv.
+        return self.get_paths()["platlib"]
 
     @property
     def working_set(self):
@@ -89,9 +127,29 @@ class Virtualenv(object):
         return self._working_set
 
     def activate(self):
-        path = os.path.join(self.bin_path, "activate_this.py")
-        with open(path) as f:
-            exec(f.read(), {"__file__": path})
+
+        paths = self.get_paths()
+
+        # Setup the path and site packages as if we'd launched with the virtualenv active
+        bin_dir = paths["scripts"]
+        os.environ["PATH"] = os.pathsep.join([bin_dir] + os.environ.get("PATH", "").split(os.pathsep))
+
+        # While not required (`./venv/bin/python3` won't set it, but
+        # `source ./venv/bin/activate && python3` will), we have historically set this.
+        os.environ["VIRTUAL_ENV"] = self.path
+
+        prev_length = len(sys.path)
+
+        # Add the venv library paths as sitedirs.
+        for key in ["purelib", "platlib"]:
+            site.addsitedir(paths[key])
+
+        # Rearrange the path
+        sys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]
+
+        # Change prefixes, similar to what initconfig/site does for venvs.
+        sys.exec_prefix = self.path
+        sys.prefix = self.path
 
     def start(self):
         if not self.exists or self.broken_link:
@@ -110,17 +168,22 @@ class Virtualenv(object):
         # occurs while packages are in the process of being published.
         call(self.pip_path, "install", "--prefer-binary", *requirements)
 
-    def install_requirements(self, requirements_path):
-        with open(requirements_path) as f:
-            try:
-                self.working_set.require(f.read())
-            except Exception:
-                pass
-            else:
-                return
+    def install_requirements(self, *requirements_paths):
+        install = []
+        # Check which requirements are already satisfied, to skip calling pip
+        # at all in the case that we've already installed everything, and to
+        # minimise the installs in other cases.
+        for requirements_path in requirements_paths:
+            with open(requirements_path) as f:
+                try:
+                    self.working_set.require(f.read())
+                except Exception:
+                    install.append(requirements_path)
 
-        # `--prefer-binary` guards against race conditions when installation
-        # occurs while packages are in the process of being published.
-        call(
-            self.pip_path, "install", "--prefer-binary", "-r", requirements_path
-        )
+        if install:
+            # `--prefer-binary` guards against race conditions when installation
+            # occurs while packages are in the process of being published.
+            cmd = [self.pip_path, "install", "--prefer-binary"]
+            for path in install:
+                cmd.extend(["-r", path])
+            call(*cmd)

@@ -1,6 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: WebUSB API (https://wicg.github.io/webusb/)
 
 dictionary USBDeviceFilter {
@@ -14,9 +14,10 @@ dictionary USBDeviceFilter {
 
 dictionary USBDeviceRequestOptions {
   required sequence<USBDeviceFilter> filters;
+  sequence<USBDeviceFilter> exclusionFilters = [];
 };
 
-[Exposed=(DedicatedWorker,SharedWorker,Window), SecureContext]
+[Exposed=(Worker,Window), SecureContext]
 interface USB : EventTarget {
   attribute EventHandler onconnect;
   attribute EventHandler ondisconnect;
@@ -29,7 +30,7 @@ partial interface Navigator {
   [SameObject] readonly attribute USB usb;
 };
 
-[Exposed=(DedicatedWorker,SharedWorker), SecureContext]
+[Exposed=Worker, SecureContext]
 partial interface WorkerNavigator {
   [SameObject] readonly attribute USB usb;
 };
@@ -39,7 +40,7 @@ dictionary USBConnectionEventInit : EventInit {
 };
 
 [
-  Exposed=(DedicatedWorker,SharedWorker,Window),
+  Exposed=(Worker,Window),
   SecureContext
 ]
 interface USBConnectionEvent : Event {
@@ -47,7 +48,72 @@ interface USBConnectionEvent : Event {
   [SameObject] readonly attribute USBDevice device;
 };
 
-[Exposed=(DedicatedWorker,SharedWorker,Window), SecureContext]
+enum USBTransferStatus {
+  "ok",
+  "stall",
+  "babble"
+};
+
+[
+  Exposed=(Worker,Window),
+  SecureContext
+]
+interface USBInTransferResult {
+  constructor(USBTransferStatus status, optional DataView? data);
+  readonly attribute DataView? data;
+  readonly attribute USBTransferStatus status;
+};
+
+[
+  Exposed=(Worker,Window),
+  SecureContext
+]
+interface USBOutTransferResult {
+  constructor(USBTransferStatus status, optional unsigned long bytesWritten = 0);
+  readonly attribute unsigned long bytesWritten;
+  readonly attribute USBTransferStatus status;
+};
+
+[
+  Exposed=(Worker,Window),
+  SecureContext
+]
+interface USBIsochronousInTransferPacket {
+  constructor(USBTransferStatus status, optional DataView? data);
+  readonly attribute DataView? data;
+  readonly attribute USBTransferStatus status;
+};
+
+[
+  Exposed=(Worker,Window),
+  SecureContext
+]
+interface USBIsochronousInTransferResult {
+  constructor(sequence<USBIsochronousInTransferPacket> packets, optional DataView? data);
+  readonly attribute DataView? data;
+  readonly attribute FrozenArray<USBIsochronousInTransferPacket> packets;
+};
+
+[
+  Exposed=(Worker,Window),
+  SecureContext
+]
+interface USBIsochronousOutTransferPacket {
+  constructor(USBTransferStatus status, optional unsigned long bytesWritten = 0);
+  readonly attribute unsigned long bytesWritten;
+  readonly attribute USBTransferStatus status;
+};
+
+[
+  Exposed=(Worker,Window),
+  SecureContext
+]
+interface USBIsochronousOutTransferResult {
+  constructor(sequence<USBIsochronousOutTransferPacket> packets);
+  readonly attribute FrozenArray<USBIsochronousOutTransferPacket> packets;
+};
+
+[Exposed=(Worker,Window), SecureContext]
 interface USBDevice {
   readonly attribute octet usbVersionMajor;
   readonly attribute octet usbVersionMinor;
@@ -66,20 +132,21 @@ interface USBDevice {
   readonly attribute USBConfiguration? configuration;
   readonly attribute FrozenArray<USBConfiguration> configurations;
   readonly attribute boolean opened;
-  Promise<void> open();
-  Promise<void> close();
-  Promise<void> selectConfiguration(octet configurationValue);
-  Promise<void> claimInterface(octet interfaceNumber);
-  Promise<void> releaseInterface(octet interfaceNumber);
-  Promise<void> selectAlternateInterface(octet interfaceNumber, octet alternateSetting);
+  Promise<undefined> open();
+  Promise<undefined> close();
+  Promise<undefined> forget();
+  Promise<undefined> selectConfiguration(octet configurationValue);
+  Promise<undefined> claimInterface(octet interfaceNumber);
+  Promise<undefined> releaseInterface(octet interfaceNumber);
+  Promise<undefined> selectAlternateInterface(octet interfaceNumber, octet alternateSetting);
   Promise<USBInTransferResult> controlTransferIn(USBControlTransferParameters setup, unsigned short length);
   Promise<USBOutTransferResult> controlTransferOut(USBControlTransferParameters setup, optional BufferSource data);
-  Promise<void> clearHalt(USBDirection direction, octet endpointNumber);
+  Promise<undefined> clearHalt(USBDirection direction, octet endpointNumber);
   Promise<USBInTransferResult> transferIn(octet endpointNumber, unsigned long length);
   Promise<USBOutTransferResult> transferOut(octet endpointNumber, BufferSource data);
   Promise<USBIsochronousInTransferResult> isochronousTransferIn(octet endpointNumber, sequence<unsigned long> packetLengths);
   Promise<USBIsochronousOutTransferResult> isochronousTransferOut(octet endpointNumber, BufferSource data, sequence<unsigned long> packetLengths);
-  Promise<void> reset();
+  Promise<undefined> reset();
 };
 
 enum USBRequestType {
@@ -95,12 +162,6 @@ enum USBRecipient {
   "other"
 };
 
-enum USBTransferStatus {
-  "ok",
-  "stall",
-  "babble"
-};
-
 dictionary USBControlTransferParameters {
   required USBRequestType requestType;
   required USBRecipient recipient;
@@ -110,66 +171,7 @@ dictionary USBControlTransferParameters {
 };
 
 [
-  Exposed=(DedicatedWorker,SharedWorker,Window),
-  SecureContext
-]
-interface USBInTransferResult {
-  constructor(USBTransferStatus status, optional DataView? data);
-  readonly attribute DataView? data;
-  readonly attribute USBTransferStatus status;
-};
-
-[
-  Exposed=(DedicatedWorker,SharedWorker,Window),
-  SecureContext
-]
-interface USBOutTransferResult {
-  constructor(USBTransferStatus status, optional unsigned long bytesWritten = 0);
-  readonly attribute unsigned long bytesWritten;
-  readonly attribute USBTransferStatus status;
-};
-
-[
-  Exposed=(DedicatedWorker,SharedWorker,Window),
-  SecureContext
-]
-interface USBIsochronousInTransferPacket {
-  constructor(USBTransferStatus status, optional DataView? data);
-  readonly attribute DataView? data;
-  readonly attribute USBTransferStatus status;
-};
-
-[
-  Exposed=(DedicatedWorker,SharedWorker,Window),
-  SecureContext
-]
-interface USBIsochronousInTransferResult {
-  constructor(sequence<USBIsochronousInTransferPacket> packets, optional DataView? data);
-  readonly attribute DataView? data;
-  readonly attribute FrozenArray<USBIsochronousInTransferPacket> packets;
-};
-
-[
-  Exposed=(DedicatedWorker,SharedWorker,Window),
-  SecureContext
-]
-interface USBIsochronousOutTransferPacket {
-  constructor(USBTransferStatus status, optional unsigned long bytesWritten = 0);
-  readonly attribute unsigned long bytesWritten;
-  readonly attribute USBTransferStatus status;
-};
-
-[
-  Exposed=(DedicatedWorker,SharedWorker,Window),
-  SecureContext
-]
-interface USBIsochronousOutTransferResult {
-  constructor(sequence<USBIsochronousOutTransferPacket> packets);
-  readonly attribute FrozenArray<USBIsochronousOutTransferPacket> packets;
-};
-
-[
-  Exposed=(DedicatedWorker,SharedWorker,Window),
+  Exposed=(Worker,Window),
   SecureContext
 ]
 interface USBConfiguration {
@@ -180,7 +182,7 @@ interface USBConfiguration {
 };
 
 [
-  Exposed=(DedicatedWorker,SharedWorker,Window),
+  Exposed=(Worker,Window),
   SecureContext
 ]
 interface USBInterface {
@@ -192,7 +194,7 @@ interface USBInterface {
 };
 
 [
-  Exposed=(DedicatedWorker,SharedWorker,Window),
+  Exposed=(Worker,Window),
   SecureContext
 ]
 interface USBAlternateInterface {
@@ -217,7 +219,7 @@ enum USBEndpointType {
 };
 
 [
-  Exposed=(DedicatedWorker,SharedWorker,Window),
+  Exposed=(Worker,Window),
   SecureContext
 ]
 interface USBEndpoint {
@@ -228,8 +230,16 @@ interface USBEndpoint {
   readonly attribute unsigned long packetSize;
 };
 
+// USBBlocklistEntry is never exposed.
+dictionary USBBlocklistEntry {
+  required unsigned short idVendor;
+  required unsigned short idProduct;
+  required unsigned short bcdDevice;
+};
+
 dictionary USBPermissionDescriptor : PermissionDescriptor {
   sequence<USBDeviceFilter> filters;
+  sequence<USBDeviceFilter> exclusionFilters;
 };
 
 dictionary AllowedUSBDevice {
@@ -242,7 +252,7 @@ dictionary USBPermissionStorage {
   sequence<AllowedUSBDevice> allowedDevices = [];
 };
 
-[Exposed=(DedicatedWorker,SharedWorker,Window)]
+[Exposed=(Worker,Window)]
 interface USBPermissionResult : PermissionStatus {
   attribute FrozenArray<USBDevice> devices;
 };

@@ -15,7 +15,7 @@
     // Note that current browsers pass this test but may throw TypeError for
     // different reason, i.e. they don't accept empty argument.
     // Further tests below are used to differentiate the errors.
-    assert_throws(new TypeError(), () => new RTCIceCandidate());
+    assert_throws_js(TypeError, () => new RTCIceCandidate());
   }, 'new RTCIceCandidate()');
 
   test(t => {
@@ -24,13 +24,13 @@
     // Note that current browsers pass this test but may throw TypeError for
     // different reason, i.e. they don't allow undefined candidate string.
     // Further tests below are used to differentiate the errors.
-    assert_throws(new TypeError(), () => new RTCIceCandidate({}));
+    assert_throws_js(TypeError, () => new RTCIceCandidate({}));
   }, 'new RTCIceCandidate({})');
 
   test(t => {
     // Checks that manually filling the default values for RTCIceCandidateInit
     // still throws because both sdpMid and sdpMLineIndex are null
-    assert_throws(new TypeError(),
+    assert_throws_js(TypeError,
       () => new RTCIceCandidate({
         candidate: '',
         sdpMid: null,
@@ -41,7 +41,7 @@
 
   test(t => {
     // Checks that explicitly setting both sdpMid and sdpMLineIndex null should throw
-    assert_throws(new TypeError(),
+    assert_throws_js(TypeError,
       () => new RTCIceCandidate({
         sdpMid: null,
         sdpMLineIndex: null
@@ -50,15 +50,15 @@
 
   test(t => {
     // Throws because both sdpMid and sdpMLineIndex are null by default
-    assert_throws(new TypeError(),
+    assert_throws_js(TypeError,
       () => new RTCIceCandidate({
         candidate: ''
       }));
   }, `new RTCIceCandidate({ candidate: '' })`);
 
   test(t => {
-    // Throws because the candidate field is not nullable
-    assert_throws(new TypeError(),
+    // Throws because both sdpMid and sdpMLineIndex are null by default
+    assert_throws_js(TypeError,
       () => new RTCIceCandidate({
         candidate: null
       }));
@@ -66,7 +66,7 @@
 
   test(t => {
     // Throws because both sdpMid and sdpMLineIndex are null by default
-    assert_throws(new TypeError(),
+    assert_throws_js(TypeError,
       () => new RTCIceCandidate({
         candidate: candidateString
       }));
@@ -116,15 +116,15 @@
 
   test(t => {
     const candidate = new RTCIceCandidate({
-      candidate: '',
+      candidate: null,
       sdpMLineIndex: 0
     });
 
-    assert_equals(candidate.candidate, '', 'candidate');
+    assert_equals(candidate.candidate, 'null', 'candidate');
     assert_equals(candidate.sdpMid, null, 'sdpMid', 'sdpMid');
     assert_equals(candidate.sdpMLineIndex, 0, 'sdpMLineIndex');
     assert_equals(candidate.usernameFragment, null, 'usernameFragment');
-  }, `new RTCIceCandidate({ candidate: '', sdpMLineIndex: 0 }`);
+  }, `new RTCIceCandidate({ candidate: null, sdpMLineIndex: 0 }`);
 
   test(t => {
     const candidate = new RTCIceCandidate({
@@ -138,7 +138,7 @@
     assert_equals(candidate.usernameFragment, null, 'usernameFragment');
   }, 'new RTCIceCandidate({ ... }) with valid candidate string and sdpMid');
 
-  test(t =>{
+  test(t => {
     // candidate string is not validated in RTCIceCandidate
     const candidate = new RTCIceCandidate({
       candidate: arbitraryString,
@@ -151,12 +151,15 @@
     assert_equals(candidate.usernameFragment, null, 'usernameFragment');
   }, 'new RTCIceCandidate({ ... }) with invalid candidate string and sdpMid');
 
+["most", "all"].forEach(howMany => {
   test(t => {
     const candidate = new RTCIceCandidate({
       candidate: candidateString,
       sdpMid: 'video',
       sdpMLineIndex: 1,
-      usernameFragment: 'test'
+      usernameFragment: 'test',
+      relayProtocol: 'udp',
+      url: 'stun:stun.example.org'
     });
 
     assert_equals(candidate.candidate, candidateString, 'candidate');
@@ -172,17 +175,24 @@
     assert_equals(candidate.protocol, 'udp', 'protocol');
     assert_equals(candidate.port, 58041, 'port');
     assert_equals(candidate.type, 'host', 'type');
-    assert_equals(candidate.tcpType, '', 'tcpType');
+    assert_equals(candidate.tcpType, null, 'tcpType');
     assert_equals(candidate.relatedAddress, null, 'relatedAddress');
     assert_equals(candidate.relatedPort, null, 'relatedPort');
-  }, 'new RTCIceCandidate({ ... }) with nondefault values for all fields');
+    // The remaining fields are newer, so test them seperately
+    if (howMany != "most") {
+      assert_equals(candidate.relayProtocol, 'udp', 'relayProtocol');
+      assert_equals(candidate.url, 'stun:stun.example.org', 'url');
+    }
+  }, `new RTCIceCandidate({ ... }) with nondefault values for ${howMany} fields`);
 
   test(t => {
     const candidate = new RTCIceCandidate({
       candidate: candidateString2,
       sdpMid: 'video',
       sdpMLineIndex: 1,
-      usernameFragment: 'user1'
+      usernameFragment: 'user1',
+      relayProtocol: 'tcp',
+      url: 'turn:turn.example.net'
     });
 
     assert_equals(candidate.candidate, candidateString2, 'candidate');
@@ -201,7 +211,28 @@
     assert_equals(candidate.tcpType, 'active', 'tcpType');
     assert_equals(candidate.relatedAddress, 'www.example.com', 'relatedAddress');
     assert_equals(candidate.relatedPort, 22222, 'relatedPort');
-  }, 'new RTCIceCandidate({ ... }) with nondefault values for all fields, tcp candidate');
+    // The remaining fields are newer, so test them seperately
+    if (howMany != "most") {
+      assert_equals(candidate.url, 'turn:turn.example.net', 'url');
+      assert_equals(candidate.relayProtocol, 'tcp', 'relayProtocol');
+    }
+  }, `new RTCIceCandidate({ ... }) with nondefault values for ${howMany} fields, tcp candidate`);
+});
+
+  test(t => {
+    let candidate = new RTCIceCandidate(new RTCIceCandidate({
+      sdpMid: 'video',
+      relayProtocol: 'tls',
+      url: 'turn:turn.example.net'
+    }));
+
+    assert_equals(candidate.relayProtocol, 'tls', 'relayProtocol cloned');
+    assert_equals(candidate.url, 'turn:turn.example.net', 'url cloned');
+
+    candidate = new RTCIceCandidate(JSON.parse(JSON.stringify(candidate)));
+    assert_equals(candidate.relayProtocol, null, 'relayProtocol not signaled');
+    assert_equals(candidate.url, null, 'url not signaled');
+  }, `new RTCIceCandidate({ relayProtocol, url }) cloned vs signaled`);
 
   test(t => {
     // sdpMid is not validated in RTCIceCandidate

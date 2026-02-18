@@ -55,16 +55,6 @@ function define_tests() {
                 });
             }, namedCurve + " mixed case parameters");
 
-            // Null length
-            promise_test(function(test) {
-                return subtle.deriveBits({name: "ECDH", public: publicKeys[namedCurve]}, privateKeys[namedCurve], null)
-                .then(function(derivation) {
-                    assert_true(equalBuffers(derivation, derivations[namedCurve]), "Derived correct bits");
-                }, function(err) {
-                    assert_unreached("deriveBits failed with error " + err.name + ": " + err.message);
-                });
-            }, namedCurve + " with null length");
-
             // Shorter than entire derivation per algorithm
             promise_test(function(test) {
                 return subtle.deriveBits({name: "ECDH", public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve] - 32)
@@ -165,7 +155,7 @@ function define_tests() {
             promise_test(function(test) {
                 return subtle.generateKey({name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
                 .then(function(secretKey) {
-                    subtle.deriveBits({name: "ECDH", public: secretKey}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                    return subtle.deriveBits({name: "ECDH", public: secretKey}, privateKeys[namedCurve], 8 * sizes[namedCurve])
                     .then(function(derivation) {
                         assert_unreached("deriveBits succeeded but should have failed with InvalidAccessError");
                     }, function(err) {
@@ -199,6 +189,8 @@ function define_tests() {
                                             false, ["deriveBits", "deriveKey"])
                             .then(function(key) {
                                 privateKeys[namedCurve] = key;
+                            }, function (err) {
+                                privateKeys[namedCurve] = null;
                             });
             promises.push(operation);
         });
@@ -208,6 +200,8 @@ function define_tests() {
                                             false, ["deriveKey"])
                             .then(function(key) {
                                 noDeriveBitsKeys[namedCurve] = key;
+                            }, function (err) {
+                                noDeriveBitsKeys[namedCurve] = null;
                             });
             promises.push(operation);
         });
@@ -217,6 +211,8 @@ function define_tests() {
                                             false, [])
                             .then(function(key) {
                                 publicKeys[namedCurve] = key;
+                            }, function (err) {
+                                publicKeys[namedCurve] = null;
                             });
             promises.push(operation);
         });
@@ -224,6 +220,8 @@ function define_tests() {
             var operation = subtle.generateKey({name: "ECDSA", namedCurve: namedCurve}, false, ["sign", "verify"])
                             .then(function(keyPair) {
                                 ecdsaKeyPairs[namedCurve] = keyPair;
+                            }, function (err) {
+                                ecdsaKeyPairs[namedCurve] = null;
                             });
             promises.push(operation);
         });

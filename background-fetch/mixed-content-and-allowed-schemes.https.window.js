@@ -30,22 +30,29 @@ backgroundFetchTest((t, bgFetch) => {
   return bgFetch.fetch(uniqueId(), 'http://localhost');
 }, 'localhost http: fetch should register ok');
 
+function testBgFetch(bgFetch, url)
+{
+  return bgFetch.fetch(uniqueId(), url).then(fetch => {
+    return fetch.match(url);
+  }).then(match => match.responseReady);
+}
+
 backgroundFetchTest((t, bgFetch) => {
-  return promise_rejects(t, new TypeError(),
-                         bgFetch.fetch(uniqueId(), 'wss:127.0.0.1'));
+  return promise_rejects_js(t, TypeError,
+                         testBgFetch(bgFetch, 'wss:127.0.0.1'));
 }, 'wss: fetch should reject');
 
 backgroundFetchTest((t, bgFetch) => {
-  return promise_rejects(t, new TypeError(),
-                         bgFetch.fetch(uniqueId(), 'file:///'));
+  return promise_rejects_js(t, TypeError,
+                         testBgFetch(bgFetch, 'file:///'));
 }, 'file: fetch should reject');
 
 backgroundFetchTest((t, bgFetch) => {
-  return promise_rejects(t, new TypeError(),
-                         bgFetch.fetch(uniqueId(), 'data:text/plain,foo'));
+  return promise_rejects_js(t, TypeError,
+                         testBgFetch(bgFetch, 'data:text/plain,foo'));
 }, 'data: fetch should reject');
 
 backgroundFetchTest((t, bgFetch) => {
-  return promise_rejects(t, new TypeError(),
-                         bgFetch.fetch(uniqueId(), 'foobar:bazqux'));
+  return promise_rejects_js(t, TypeError,
+                         testBgFetch(bgFetch, 'foobar:bazqux'));
 }, 'unknown scheme fetch should reject');

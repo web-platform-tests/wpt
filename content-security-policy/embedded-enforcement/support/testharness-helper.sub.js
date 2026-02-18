@@ -17,7 +17,7 @@ const IframeLoad = {
 
 function getOrigin() {
   var url = new URL("http://{{host}}:{{ports[http][0]}}/");
-  return url.toString();
+  return url.origin;
 }
 
 function getCrossOrigin() {
@@ -102,59 +102,73 @@ function assert_required_csp(t, url, csp, expected) {
   document.body.appendChild(i);
 }
 
-function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI) {
-  var i = document.createElement('iframe');
+function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI,
+                                checkImageLoaded) {
+  const i = document.createElement('iframe');
   url.searchParams.append("id", urlId);
   i.src = url.toString();
   if (csp != null)
     i.csp = csp;
 
-  var loaded = {};
-  window.addEventListener("message", function (e) {
-    if (e.source != i.contentWindow)
-        return;
-    if (e.data["loaded"])
-        loaded[e.data["id"]] = true;
-  });
-
   if (shouldBlock) {
     // Assert iframe does not load and is inaccessible.
-    window.onmessage = t.step_func(function(e) {
-      if (e.source != i.contentWindow)
-          return;
+    window.addEventListener("message", t.step_func(function(e) {
+      if (e.source != i.contentWindow) return;
       assert_unreached('No message should be sent from the frame.');
+    }));
+    i.onload = t.step_wait_func_done(function() {
+      if (!i.contentWindow) return false;
+      try {
+        let x = i.contentWindow.location.href;
+        return false;
+      } catch (e) {
+        return true;
+      }
+    }, t.step_func(() => {
+      assert_throws_dom("SecurityError", () => {
+        let x = i.contentWindow.location.href;
+      });
+    }), "The error frame should be cross-origin.", 5000, 500);
+  } else {
+    let successPromises = [];
+
+    let loadPromise = new Promise(resolve => {
+      i.onload = resolve;
     });
-    i.onload = t.step_func(function () {
-      // Delay the check until after the postMessage has a chance to execute.
-      setTimeout(t.step_func_done(function () {
-        assert_equals(loaded[urlId], undefined);
-      }), 500);
-      assert_throws("SecurityError", () => {
-        var x = i.contentWindow.location.href;
+    successPromises.push(loadPromise);
+
+    let loadMsgPromise = new Promise(resolve => {
+      window.addEventListener("message", function (e) {
+        if (e.source != i.contentWindow) return;
+        if (e.data["loaded"] && e.data["id"] === urlId) resolve();
       });
     });
-  } else if (blockedURI) {
-    // Assert iframe loads with an expected violation.
-    window.addEventListener('message', t.step_func(e => {
-      if (e.source != i.contentWindow)
-        return;
-      assert_equals(e.data["blockedURI"], blockedURI);
-      t.done();
-    }));
-  } else {
-    // Assert iframe loads.  Wait for both the load event and the postMessage.
-    window.addEventListener('message', t.step_func(e => {
-      if (e.source != i.contentWindow)
-        return;
-      assert_true(loaded[urlId]);
-      if (i.onloadReceived)
-        t.done();
-    }));
-    i.onload = t.step_func(function () {
-      if (loaded[urlId])
-        t.done();
-      i.onloadReceived = true;
-    });
+    successPromises.push(loadMsgPromise);
+
+    if (blockedURI) {
+      let securityViolationPromise = new Promise(resolve => {
+        window.addEventListener('message', t.step_func(e => {
+          if (e.source != i.contentWindow) return;
+          if (!e.data.securitypolicyviolation) return;
+          assert_equals(e.data["blockedURI"], blockedURI);
+          resolve();
+        }));
+      });
+      successPromises.push(securityViolationPromise);
+    }
+
+    if (checkImageLoaded) {
+      let imageLoadedPromise = new Promise(resolve => {
+        window.addEventListener('message', e => {
+          if (e.source != i.contentWindow) return;
+          if (e.data === "img loaded") resolve();
+        });
+      });
+      successPromises.push(imageLoadedPromise);
+    }
+
+    // Wait for all promises to resolve.
+    Promise.all(successPromises).then(t.step_func_done());
   }
   document.body.appendChild(i);
 }

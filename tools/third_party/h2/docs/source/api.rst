@@ -1,15 +1,15 @@
-Hyper-h2 API
-============
+h2 API
+======
 
-This document details the API of Hyper-h2.
+This document details the API of h2.
 
 Semantic Versioning
 -------------------
 
-Hyper-h2 follows semantic versioning for its public API. Please note that the
+h2 follows semantic versioning for its public API. Please note that the
 guarantees of semantic versioning apply only to the API that is *documented
 here*. Simply because a method or data field is not prefaced by an underscore
-does not make it part of Hyper-h2's public API. Anything not documented here is
+does not make it part of h2's public API. Anything not documented here is
 subject to change at any time.
 
 Connection
@@ -53,7 +53,10 @@ Events
 .. autoclass:: h2.events.RemoteSettingsChanged
    :members:
 
-.. autoclass:: h2.events.PingAcknowledged
+.. autoclass:: h2.events.PingReceived
+   :members:
+
+.. autoclass:: h2.events.PingAckReceived
    :members:
 
 .. autoclass:: h2.events.StreamEnded

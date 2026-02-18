@@ -1,5 +1,5 @@
 /* global btoa fetch token promise_test step_timeout */
-/* global assert_equals assert_true assert_own_property assert_throws assert_less_than */
+/* global assert_equals assert_true assert_own_property assert_throws_js assert_less_than */
 
 const templates = {
   'fresh': {
@@ -43,23 +43,31 @@ function makeTest (test) {
     var uuid = token()
     var requests = expandTemplates(test)
     var fetchFunctions = makeFetchFunctions(requests, uuid)
-    return runTest(fetchFunctions, requests, uuid)
+    return runTest(fetchFunctions, test, requests, uuid)
   }
 }
 
 function makeFetchFunctions(requests, uuid) {
     var fetchFunctions = []
     for (let i = 0; i < requests.length; ++i) {
+      var config = requests[i];
+      if (config.skip) {
+        // Skip request are ones that we expect the browser to make in
+        // response to a redirect. We don't fetch them again, but
+        // the server needs them in the config to be able to respond to
+        // them.
+        continue;
+      }
       fetchFunctions.push({
         code: function (idx) {
           var config = requests[idx]
-          var url = makeTestUrl(uuid, config)
+          var url = makeTestUrl(uuid, config);
           var init = fetchInit(requests, config)
           return fetch(url, init)
             .then(makeCheckResponse(idx, config))
             .then(makeCheckResponseBody(config, uuid), function (reason) {
               if ('expected_type' in config && config.expected_type === 'error') {
-                assert_throws(new TypeError(), function () { throw reason })
+                assert_throws_js(TypeError, function () { throw reason })
               } else {
                 throw reason
               }
@@ -71,7 +79,7 @@ function makeFetchFunctions(requests, uuid) {
     return fetchFunctions
 }
 
-function runTest(fetchFunctions, requests, uuid) {
+function runTest(fetchFunctions, test, requests, uuid) {
     var idx = 0
     function runNextStep () {
       if (fetchFunctions.length) {
@@ -93,7 +101,7 @@ function runTest(fetchFunctions, requests, uuid) {
       .then(function () {
         return getServerState(uuid)
       }).then(function (testState) {
-        checkRequests(requests, testState)
+        checkRequests(test, requests, testState)
         return Promise.resolve()
       })
 }
@@ -122,11 +130,13 @@ function fetchInit (requests, config) {
     'headers': []
   }
   if ('request_method' in config) init.method = config['request_method']
-  if ('request_headers' in config) init.headers = config['request_headers']
+  // Note: init.headers must be a copy of config['request_headers'] array,
+  // because new elements are added later.
+  if ('request_headers' in config) init.headers = [...config['request_headers']];
   if ('name' in config) init.headers.push(['Test-Name', config.name])
   if ('request_body' in config) init.body = config['request_body']
   if ('mode' in config) init.mode = config['mode']
-  if ('credentials' in config) init.mode = config['credentials']
+  if ('credentials' in config) init.credentials = config['credentials']
   if ('cache' in config) init.cache = config['cache']
   init.headers.push(['Test-Requests', btoa(JSON.stringify(requests))])
   return init
@@ -151,7 +161,7 @@ function makeCheckResponse (idx, config) {
     if ('expected_status' in config) {
       assert_equals(response.status, config.expected_status,
         `Response ${reqNum} status is ${response.status}, not ${config.expected_status}`)
-    } else if ('response_status' in config) {
+    } else if ('response_status' in config && config.response_status[0] != 301) {
       assert_equals(response.status, config.response_status[0],
         `Response ${reqNum} status is ${response.status}, not ${config.response_status[0]}`)
     } else {
@@ -195,7 +205,7 @@ function makeCheckResponseBody (config, uuid) {
   }
 }
 
-function checkRequests (requests, testState) {
+function checkRequests (test, requests, testState) {
   var testIdx = 0
   for (let i = 0; i < requests.length; ++i) {
     var expectedValidatingHeaders = []
@@ -223,6 +233,9 @@ function checkRequests (requests, testState) {
       })
     }
   }
+  if (test?.check_count && testState) {
+    assert_equals(requests.length, testState.length);
+  }
 }
 
 function pause () {
@@ -241,6 +254,9 @@ function makeTestUrl (uuid, config) {
   }
   if ('query_arg' in config) {
     arg = `&target=${config.query_arg}`
+  }
+  if ('url_params' in config) {
+    arg = `${arg}&${config.url_params}`
   }
   return `${base_url}resources/http-cache.py?dispatch=test&uuid=${uuid}${arg}`
 }

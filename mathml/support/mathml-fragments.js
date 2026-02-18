@@ -132,6 +132,14 @@ var FragmentHelper = {
                  tag == "mtd");
     },
 
+    isTokenElement: function(tag) {
+        return (tag == "mi" ||
+                tag == "mtext" ||
+                tag == "mo" ||
+                tag == "mn" ||
+                tag == "ms")
+    },
+
     isEmpty: function(tag) {
         return tag === "mspace" || tag == "mprescripts" || tag == "none";
     },
@@ -148,7 +156,7 @@ var FragmentHelper = {
             return element.appendChild(el);
         }
         if (element.classList.contains("mathml-container") || allowInvalid) {
-            var el = this.createElement("mi");
+            var el = this.createElement("mtext");
             el.textContent = "a";
             return element.appendChild(el);
         }

@@ -1,7 +1,7 @@
 pytest-2.6.0: shorter tracebacks, new warning system, test runner compat
 ===========================================================================
 
-pytest is a mature Python testing tool with more than a 1000 tests
+pytest is a mature Python testing tool with more than 1000 tests
 against itself, passing on many different interpreters and platforms.
 
 The 2.6.0 release should be drop-in backward compatible to 2.5.2 and
@@ -73,7 +73,7 @@ holger krekel
 - cleanup setup.py a bit and specify supported versions. Thanks Jurko
   Gospodnetic for the PR.
 
-- change XPASS colour to yellow rather then red when tests are run
+- change XPASS colour to yellow rather than red when tests are run
   with -v.
 
 - fix issue473: work around mock putting an unbound method into a class

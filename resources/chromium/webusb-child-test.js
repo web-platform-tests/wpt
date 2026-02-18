@@ -14,7 +14,7 @@
         if (messageEvent.data.type === 'Attach') {
           messageEvent.data.interfaces.forEach(interfaceName => {
             let interfaceInterceptor =
-                new MojoInterfaceInterceptor(interfaceName, "context", true);
+                new MojoInterfaceInterceptor(interfaceName);
             interfaceInterceptor.oninterfacerequest =
               e => messageChannel.port1.postMessage({
                 type: interfaceName,
@@ -25,7 +25,14 @@
 
           // Wait for a call to GetDevices() to ensure that the interface
           // handles are forwarded to the parent context.
-          await navigator.usb.getDevices();
+          try {
+            await navigator.usb.getDevices();
+          } catch (e) {
+            // This can happen in case of, for example, testing usb disallowed
+            // iframe.
+            console.error(`getDevices() throws error: ${e.name}: ${e.message}`);
+          }
+
           messageChannel.port1.postMessage({ type: 'Complete' });
         }
       };

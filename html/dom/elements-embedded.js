@@ -30,7 +30,6 @@ var embeddedElements = {
     sandbox: "settable tokenlist",
     allowFullscreen: "boolean",
     allowUserMedia: "boolean",
-    allowPaymentRequest: "boolean",
     width: "string",
     height: "string",
     referrerPolicy: {type: "enum", keywords: ["", "no-referrer", "no-referrer-when-downgrade", "same-origin", "origin", "strict-origin", "origin-when-cross-origin", "strict-origin-when-cross-origin", "unsafe-url"]},
@@ -89,12 +88,15 @@ var embeddedElements = {
     // HTMLMediaElement
     src: "url",
     crossOrigin: {type: "enum", keywords: ["anonymous", "use-credentials"], nonCanon:{"": "anonymous"}, isNullable: true, defaultVal: null, invalidVal: "anonymous"},
-    // As with "keytype", we have no missing value default defined here.
-    preload: {type: "enum", keywords: ["none", "metadata", "auto"], nonCanon: {"": "auto"}, defaultVal: null},
+    // Missing/Invalid value is implementation defined but must be one of the keywords
+    preload: {type: "enum", keywords: ["none", "metadata", "auto"], nonCanon: {"": "auto"}, defaultVal: ["none", "metadata", "auto"]},
     autoplay: "boolean",
     loop: "boolean",
     controls: "boolean",
-    defaultMuted: {type: "boolean", domAttrName: "muted"},
+    controlsList: {type: "tokenlist", domAttrName: "controlsList"},
+    defaultMuted: {type: "boolean", domAttrName: "muted"},/*
+    // Note: once media loading attr is not tentative, uncomment and delete html reflection tests it replaces.
+    loading: {type: "enum", keywords: ["lazy", "eager"], defaultVal: "eager", invalidVal: "eager"},*/
 
     width: "unsigned long",
     height: "unsigned long",
@@ -105,12 +107,14 @@ var embeddedElements = {
     // HTMLMediaElement
     src: "url",
     crossOrigin: {type: "enum", keywords: ["anonymous", "use-credentials"], nonCanon:{"": "anonymous"}, isNullable: true, defaultVal: null, invalidVal: "anonymous"},
-    // As with "keytype", we have no missing value default defined here.
-    preload: {type: "enum", keywords: ["none", "metadata", "auto"], nonCanon: {"": "auto"}, defaultVal: null},
+    // Missing/Invalid value is implementation defined but must be one of the keywords
+    preload: {type: "enum", keywords: ["none", "metadata", "auto"], nonCanon: {"": "auto"}, defaultVal: ["none", "metadata", "auto"]},
     autoplay: "boolean",
     loop: "boolean",
     controls: "boolean",
-    defaultMuted: {type: "boolean", domAttrName: "muted"}
+    defaultMuted: {type: "boolean", domAttrName: "muted"},/*
+    // Note: once media loading attr is not tentative, uncomment and delete html reflection tests it replaces.
+    loading: {type: "enum", keywords: ["lazy", "eager"], defaultVal: "eager", invalidVal: "eager"},*/
   },
   source: {
     src: "url",

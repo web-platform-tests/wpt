@@ -71,8 +71,8 @@
 
       const { billingAddress } = methodDetails;
       assert_true(
-        billingAddress instanceof PaymentAddress,
-        "Expected instance of PaymentAddress"
+        billingAddress instanceof ContactAddress,
+        "Expected instance of ContactAddress"
       );
       await request.abort();
     });
@@ -99,7 +99,7 @@
     <button onclick="requestBillingAddress()">
       When billing address is
       requested,`PaymentMethodChangeEvent.methodDetails.billingAddress` is a
-      `PaymentAddress`.
+      `ContactAddress`.
     </button>
   </li>
   <li><button onclick="done()">Done!</button></li>

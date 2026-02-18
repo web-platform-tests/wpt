@@ -9,6 +9,10 @@ test(function() {
 }, "webkitMediaStream interface should not exist");
 
 test(function() {
+  assert_false("getUserMedia" in navigator);
+}, "navigator.getUserMedia should not exist");
+
+test(function() {
   assert_false("webkitGetUserMedia" in navigator);
 }, "navigator.webkitGetUserMedia should not exist");
 
@@ -18,7 +22,7 @@ test(function() {
 
 test(() => {
   const mediaStream = new MediaStream();
-  assert_throws(new TypeError(), () => URL.createObjectURL(mediaStream));
+  assert_throws_js(TypeError, () => URL.createObjectURL(mediaStream));
 }, "Passing MediaStream to URL.createObjectURL() should throw");
 
 test(() => {

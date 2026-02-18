@@ -1,63 +1,80 @@
-from __future__ import absolute_import, division, print_function
+from typing import Generator
+from typing import Optional
+from typing import Union
 
+from _pytest._io.saferepr import saferepr
+from _pytest.config import Config
+from _pytest.config import ExitCode
+from _pytest.config.argparsing import Parser
+from _pytest.fixtures import FixtureDef
+from _pytest.fixtures import SubRequest
+from _pytest.scope import Scope
 import pytest
-import sys
 
 
-def pytest_addoption(parser):
+def pytest_addoption(parser: Parser) -> None:
     group = parser.getgroup("debugconfig")
     group.addoption(
         "--setuponly",
         "--setup-only",
         action="store_true",
-        help="only setup fixtures, do not execute tests.",
+        help="Only setup fixtures, do not execute tests",
     )
     group.addoption(
         "--setupshow",
         "--setup-show",
         action="store_true",
-        help="show setup of fixtures while executing tests.",
+        help="Show setup of fixtures while executing tests",
     )
 
 
-@pytest.hookimpl(hookwrapper=True)
-def pytest_fixture_setup(fixturedef, request):
-    yield
-    config = request.config
-    if config.option.setupshow:
-        if hasattr(request, "param"):
-            # Save the fixture parameter so ._show_fixture_action() can
-            # display it now and during the teardown (in .finish()).
-            if fixturedef.ids:
-                if callable(fixturedef.ids):
-                    fixturedef.cached_param = fixturedef.ids(request.param)
+@pytest.hookimpl(wrapper=True)
+def pytest_fixture_setup(
+    fixturedef: FixtureDef[object], request: SubRequest
+) -> Generator[None, object, object]:
+    try:
+        return (yield)
+    finally:
+        if request.config.option.setupshow:
+            if hasattr(request, "param"):
+                # Save the fixture parameter so ._show_fixture_action() can
+                # display it now and during the teardown (in .finish()).
+                if fixturedef.ids:
+                    if callable(fixturedef.ids):
+                        param = fixturedef.ids(request.param)
+                    else:
+                        param = fixturedef.ids[request.param_index]
                 else:
-                    fixturedef.cached_param = fixturedef.ids[request.param_index]
-            else:
-                fixturedef.cached_param = request.param
-        _show_fixture_action(fixturedef, "SETUP")
+                    param = request.param
+                fixturedef.cached_param = param  # type: ignore[attr-defined]
+            _show_fixture_action(fixturedef, request.config, "SETUP")
 
 
-def pytest_fixture_post_finalizer(fixturedef):
-    if hasattr(fixturedef, "cached_result"):
-        config = fixturedef._fixturemanager.config
+def pytest_fixture_post_finalizer(
+    fixturedef: FixtureDef[object], request: SubRequest
+) -> None:
+    if fixturedef.cached_result is not None:
+        config = request.config
         if config.option.setupshow:
-            _show_fixture_action(fixturedef, "TEARDOWN")
+            _show_fixture_action(fixturedef, request.config, "TEARDOWN")
             if hasattr(fixturedef, "cached_param"):
                 del fixturedef.cached_param
 
 
-def _show_fixture_action(fixturedef, msg):
-    config = fixturedef._fixturemanager.config
+def _show_fixture_action(
+    fixturedef: FixtureDef[object], config: Config, msg: str
+) -> None:
     capman = config.pluginmanager.getplugin("capturemanager")
     if capman:
-        out, err = capman.suspend_global_capture()
+        capman.suspend_global_capture()
 
     tw = config.get_terminal_writer()
     tw.line()
-    tw.write(" " * 2 * fixturedef.scopenum)
+    # Use smaller indentation the higher the scope: Session = 0, Package = 1, etc.
+    scope_indent = list(reversed(Scope)).index(fixturedef._scope)
+    tw.write(" " * 2 * scope_indent)
     tw.write(
-        "{step} {scope} {fixture}".format(
+        "{step} {scope} {fixture}".format(  # noqa: UP032 (Readability)
             step=msg.ljust(8),  # align the output to TEARDOWN
             scope=fixturedef.scope[0].upper(),
             fixture=fixturedef.argname,
@@ -70,15 +87,16 @@ def _show_fixture_action(fixturedef, msg):
             tw.write(" (fixtures used: {})".format(", ".join(deps)))
 
     if hasattr(fixturedef, "cached_param"):
-        tw.write("[{}]".format(fixturedef.cached_param))
+        tw.write(f"[{saferepr(fixturedef.cached_param, maxsize=42)}]")
+
+    tw.flush()
 
     if capman:
         capman.resume_global_capture()
-        sys.stdout.write(out)
-        sys.stderr.write(err)
 
 
 @pytest.hookimpl(tryfirst=True)
-def pytest_cmdline_main(config):
+def pytest_cmdline_main(config: Config) -> Optional[Union[int, ExitCode]]:
     if config.option.setuponly:
         config.option.setupshow = True
+    return None

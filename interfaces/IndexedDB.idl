@@ -1,6 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Indexed Database API 3.0 (https://w3c.github.io/IndexedDB/)
 
 [Exposed=(Window,Worker)]
@@ -67,19 +67,26 @@ interface IDBDatabase : EventTarget {
   readonly attribute DOMStringList objectStoreNames;
 
   [NewObject] IDBTransaction transaction((DOMString or sequence<DOMString>) storeNames,
-                                         optional IDBTransactionMode mode = "readonly");
-  void close();
+                                         optional IDBTransactionMode mode = "readonly",
+                                         optional IDBTransactionOptions options = {});
+  undefined close();
 
   [NewObject] IDBObjectStore createObjectStore(
     DOMString name,
     optional IDBObjectStoreParameters options = {});
-  void deleteObjectStore(DOMString name);
+  undefined deleteObjectStore(DOMString name);
 
   // Event handlers:
   attribute EventHandler onabort;
   attribute EventHandler onclose;
   attribute EventHandler onerror;
   attribute EventHandler onversionchange;
+};
+
+enum IDBTransactionDurability { "default", "strict", "relaxed" };
+
+dictionary IDBTransactionOptions {
+  IDBTransactionDurability durability = "default";
 };
 
 dictionary IDBObjectStoreParameters {
@@ -101,10 +108,11 @@ interface IDBObjectStore {
   [NewObject] IDBRequest clear();
   [NewObject] IDBRequest get(any query);
   [NewObject] IDBRequest getKey(any query);
-  [NewObject] IDBRequest getAll(optional any query,
+  [NewObject] IDBRequest getAll(optional any queryOrOptions,
                                 optional [EnforceRange] unsigned long count);
-  [NewObject] IDBRequest getAllKeys(optional any query,
+  [NewObject] IDBRequest getAllKeys(optional any queryOrOptions,
                                     optional [EnforceRange] unsigned long count);
+  [NewObject] IDBRequest getAllRecords(optional IDBGetAllOptions options = {});
   [NewObject] IDBRequest count(optional any query);
 
   [NewObject] IDBRequest openCursor(optional any query,
@@ -117,12 +125,18 @@ interface IDBObjectStore {
   [NewObject] IDBIndex createIndex(DOMString name,
                                    (DOMString or sequence<DOMString>) keyPath,
                                    optional IDBIndexParameters options = {});
-  void deleteIndex(DOMString name);
+  undefined deleteIndex(DOMString name);
 };
 
 dictionary IDBIndexParameters {
   boolean unique = false;
   boolean multiEntry = false;
+};
+
+dictionary IDBGetAllOptions {
+  any query = null;
+  [EnforceRange] unsigned long count;
+  IDBCursorDirection direction = "next";
 };
 
 [Exposed=(Window,Worker)]
@@ -135,10 +149,11 @@ interface IDBIndex {
 
   [NewObject] IDBRequest get(any query);
   [NewObject] IDBRequest getKey(any query);
-  [NewObject] IDBRequest getAll(optional any query,
+  [NewObject] IDBRequest getAll(optional any queryOrOptions,
                                 optional [EnforceRange] unsigned long count);
-  [NewObject] IDBRequest getAllKeys(optional any query,
+  [NewObject] IDBRequest getAllKeys(optional any queryOrOptions,
                                     optional [EnforceRange] unsigned long count);
+  [NewObject] IDBRequest getAllRecords(optional IDBGetAllOptions options = {});
   [NewObject] IDBRequest count(optional any query);
 
   [NewObject] IDBRequest openCursor(optional any query,
@@ -167,6 +182,13 @@ interface IDBKeyRange {
 };
 
 [Exposed=(Window,Worker)]
+interface IDBRecord {
+  readonly attribute any key;
+  readonly attribute any primaryKey;
+  readonly attribute any value;
+};
+
+[Exposed=(Window,Worker)]
 interface IDBCursor {
   readonly attribute (IDBObjectStore or IDBIndex) source;
   readonly attribute IDBCursorDirection direction;
@@ -174,9 +196,9 @@ interface IDBCursor {
   readonly attribute any primaryKey;
   [SameObject] readonly attribute IDBRequest request;
 
-  void advance([EnforceRange] unsigned long count);
-  void continue(optional any key);
-  void continuePrimaryKey(any key, any primaryKey);
+  undefined advance([EnforceRange] unsigned long count);
+  undefined continue(optional any key);
+  undefined continuePrimaryKey(any key, any primaryKey);
 
   [NewObject] IDBRequest update(any value);
   [NewObject] IDBRequest delete();
@@ -198,12 +220,13 @@ interface IDBCursorWithValue : IDBCursor {
 interface IDBTransaction : EventTarget {
   readonly attribute DOMStringList objectStoreNames;
   readonly attribute IDBTransactionMode mode;
+  readonly attribute IDBTransactionDurability durability;
   [SameObject] readonly attribute IDBDatabase db;
-  readonly attribute DOMException error;
+  readonly attribute DOMException? error;
 
   IDBObjectStore objectStore(DOMString name);
-  void commit();
-  void abort();
+  undefined commit();
+  undefined abort();
 
   // Event handlers:
   attribute EventHandler onabort;

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <title>Testing scrollOptions' behavior for Element.scroll* and scroll-behavior on the root of the main frame</title>
 <meta name="timeout" content="long"/>
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 <link rel="author" title="Frédéric Wang" href="mailto:fwang@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/cssom-view/#propdef-scroll-behavior">
 <link rel="help" href="https://drafts.csswg.org/cssom-view/#scrolling-box">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/dom/events/scrolling/scroll_support.js"></script>
 <script src="support/scroll-behavior.js"></script>
 <style>
   body {
@@ -37,6 +39,10 @@
     elementToReveal.style.top = elementToRevealTop + "px";
 
     add_completion_callback(() => { resetScroll(scrollingElement); });
+
+    promise_test(async () => {
+      await waitForCompositorReady();
+    }, "Make sure the page is ready for animation.");
 
     ["scroll", "scrollTo", "scrollBy", "scrollIntoView"].forEach((scrollFunction) => {
       promise_test(() => {

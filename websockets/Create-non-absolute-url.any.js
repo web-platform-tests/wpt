@@ -1,8 +1,14 @@
-// META: script=websocket.sub.js
-
-test(function() {
-  var wsocket;
-  assert_throws("SYNTAX_ERR", function() {
-    wsocket = CreateWebSocketNonAbsolute()
-  });
-}, "Create WebSocket - Pass a non absolute URL - SYNTAX_ERR is thrown")
+[
+  "test",
+  "?",
+  null,
+  123,
+].forEach(input => {
+  test(() => {
+    const url = new URL(input, location);
+    url.protocol = "ws";
+    const ws = new WebSocket(input);
+    assert_equals(ws.url, url.href);
+    ws.close();
+  }, `Create WebSocket - Pass a non absolute URL: ${input}`);
+});

@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import os
 import re
 import subprocess
@@ -16,13 +18,13 @@ def get_unique_name(existing, initial):
     :param initial: Name, or name prefix, to use"""
     if initial not in existing:
         return initial
-    for i in xrange(len(existing) + 1):
-        test = "%s_%s" % (initial, i + 1)
+    for i in range(len(existing) + 1):
+        test = f"{initial}_{i + 1}"
         if test not in existing:
             return test
     assert False
 
-class NoVCSTree(object):
+class NoVCSTree:
     name = "non-vcs"
 
     def __init__(self, root=None):
@@ -54,7 +56,7 @@ class NoVCSTree(object):
         pass
 
 
-class HgTree(object):
+class HgTree:
     name = "mercurial"
 
     def __init__(self, root=None):
@@ -85,7 +87,7 @@ class HgTree(object):
 
     @property
     def is_clean(self):
-        return self.hg("status").strip() == ""
+        return self.hg("status").strip() == b""
 
     def add_new(self, prefix=None):
         if prefix is not None:
@@ -103,7 +105,7 @@ class HgTree(object):
         except subprocess.CalledProcessError:
             pass
 
-        patch_names = [item.strip() for item in self.hg("qseries").split("\n") if item.strip()]
+        patch_names = [item.strip() for item in self.hg("qseries").split(b"\n") if item.strip()]
 
         suffix = 0
         test_name = patch_name
@@ -135,12 +137,12 @@ class HgTree(object):
             return False
 
 
-class GitTree(object):
+class GitTree:
     name = "git"
 
     def __init__(self, root=None, log_error=True):
         if root is None:
-            root = git("rev-parse", "--show-toplevel", log_error=log_error).strip()
+            root = git("rev-parse", "--show-toplevel", log_error=log_error).strip().decode('utf-8')
         self.root = root
         self.git = vcs.bind_to_repo(git, self.root, log_error=log_error)
         self.message = None
@@ -176,7 +178,7 @@ class GitTree(object):
 
     @property
     def is_clean(self):
-        return self.git("status").strip() == ""
+        return self.git("status").strip() == b""
 
     def add_new(self, prefix=None):
         """Add files to the staging area.
@@ -201,7 +203,7 @@ class GitTree(object):
             f.seek(0)
             ignored_files = sync_tree.git("check-ignore", "--no-index", "--stdin", "-z", stdin=f)
         args = []
-        for entry in ignored_files.split('\0'):
+        for entry in ignored_files.decode('utf-8').split('\0'):
             args.append(os.path.join(prefix, entry))
         if args:
             self.git("add", "--force", *args)
@@ -217,7 +219,7 @@ class GitTree(object):
             args.append(ref_filter)
         data = self.git("show-ref", *args)
         rv = []
-        for line in data.split("\n"):
+        for line in data.split(b"\n"):
             if not line.strip():
                 continue
             sha1, ref = line.split()
@@ -235,7 +237,7 @@ class GitTree(object):
             args.append(ref_filter)
         data = self.git("ls-remote", remote, *args)
         rv = []
-        for line in data.split("\n"):
+        for line in data.split(b"\n"):
             if not line.strip():
                 continue
             sha1, ref = line.split()
@@ -248,8 +250,8 @@ class GitTree(object):
         :param remote: the remote URL
         :param branch: the branch name"""
         for sha1, ref in self.list_remote(remote, branch):
-            if ref == "refs/heads/%s" % branch:
-                return self.commit_cls(self, sha1)
+            if ref.decode('utf-8') == "refs/heads/%s" % branch:
+                return self.commit_cls(self, sha1.decode('utf-8'))
         assert False
 
     def create_patch(self, patch_name, message):
@@ -297,8 +299,8 @@ class GitTree(object):
 
         args = []
         if branch:
-            branches = [ref[len("refs/heads/"):] for sha1, ref in self.list_refs()
-                        if ref.startswith("refs/heads/")]
+            branches = [ref[len("refs/heads/"):].decode('utf-8') for sha1, ref in self.list_refs()
+                        if ref.startswith(b"refs/heads/")]
             branch = get_unique_name(branches, branch)
 
             args += ["-b", branch]
@@ -318,7 +320,7 @@ class GitTree(object):
         if not vcs.is_git_root(self.root):
             self.init()
         self.git("clean", "-xdf")
-        self.git("fetch", remote, "%s:%s" % (remote_branch, local_branch))
+        self.git("fetch", remote, f"{remote_branch}:{local_branch}")
         self.checkout(local_branch)
         self.git("submodule", "update", "--init", "--recursive")
 
@@ -334,8 +336,8 @@ class GitTree(object):
         rv = []
 
         for repo_path in repo_paths:
-            paths = vcs.git("ls-tree", "-r", "--name-only", "HEAD", repo=repo_path).split("\n")
-            rv.extend(os.path.relpath(os.path.join(repo_path, item), self.root) for item in paths
+            paths = vcs.git("ls-tree", "-r", "--name-only", "HEAD", repo=repo_path).split(b"\n")
+            rv.extend(os.path.relpath(os.path.join(repo_path, item.decode('utf-8')), self.root) for item in paths
                       if item.strip())
         return rv
 
@@ -343,11 +345,11 @@ class GitTree(object):
         """List submodule directories"""
         output = self.git("submodule", "status", "--recursive")
         rv = []
-        for line in output.split("\n"):
+        for line in output.split(b"\n"):
             line = line.strip()
             if not line:
                 continue
-            parts = line.split(" ")
+            parts = line.split(b" ")
             rv.append(parts[1])
         return rv
 
@@ -359,7 +361,7 @@ class GitTree(object):
             return False
 
 
-class CommitMessage(object):
+class CommitMessage:
     def __init__(self, text):
         self.text = text
         self._parse_message()
@@ -373,7 +375,7 @@ class CommitMessage(object):
         self.body = "\n".join(lines[1:])
 
 
-class Commit(object):
+class Commit:
     msg_cls = CommitMessage
 
     _sha1_re = re.compile("^[0-9a-f]{40}$")
@@ -401,5 +403,5 @@ class Commit(object):
         self.git = self.tree.git
 
     def _get_meta(self):
-        author, email, message = self.git("show", "-s", "--format=format:%an\n%ae\n%B", self.sha1).split("\n", 2)
+        author, email, message = self.git("show", "-s", "--format=format:%an\n%ae\n%B", self.sha1).decode('utf-8').split("\n", 2)
         return author, email, self.msg_cls(message)

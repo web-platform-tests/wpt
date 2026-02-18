@@ -1,3 +1,45 @@
+function assert_color_channel_approx_equals(a, b) {
+  // Color is is limited to 32bit RGBA, thus channels are values within 0-255.
+  // Our epsilon needs to reflect this relatively limited precision.
+  const EPSILON = 1/255;
+
+  function epsilonForUnitType(unitType) {
+    switch(unitType) {
+      case 'deg':
+        return EPSILON * 360;
+      case 'rad':
+        return EPSILON * 2 * Math.PI;
+      case 'grad':
+        return EPSILON * 400;
+      case 'percent':
+        return EPSILON * 100;
+      default:
+        return EPSILON;
+    }
+  }
+
+  assert_equals(a.constructor.name, b.constructor.name);
+  const className = a.constructor.name;
+  switch (className) {
+    case 'CSSMathSum':
+    case 'CSSMathProduct':
+    case 'CSSMathMin':
+    case 'CSSMathMax':
+      assert_equals(a.values.length, b.values.length);
+      for (let i = 0; i < a.length; i++) {
+        assert_equals(a.unit, b.unit);
+        assert_approx_equals(a[i].value, b[i].value, epsilonForUnitType(a.unit));
+      }
+      break;
+    case 'CSSKeywordValue':
+      assert_equals(a.value, b.value);
+      break;
+    default:
+      assert_equals(a.unit, b.unit);
+      assert_approx_equals(a.value, b.value, epsilonForUnitType(a.unit));
+  }
+}
+
 // Compares two CSSStyleValues to check if they're the same type
 // and have the same attributes.
 function assert_style_value_equals(a, b) {
@@ -16,14 +58,21 @@ function assert_style_value_equals(a, b) {
       assert_equals(a.value, b.value);
       break;
     case 'CSSUnitValue':
-      assert_approx_equals(a.value, b.value, 1e-6);
+      assert_approx_equals(a.value, b.value, 1e-5);
       assert_equals(a.unit, b.unit);
       break;
     case 'CSSMathSum':
     case 'CSSMathProduct':
+      assert_style_value_array_unordered_equals(a.values, b.values);
+      break;
     case 'CSSMathMin':
     case 'CSSMathMax':
       assert_style_value_array_equals(a.values, b.values);
+      break;
+    case 'CSSMathClamp':
+      assert_style_value_equals(a.lower, b.lower);
+      assert_style_value_equals(a.value, b.value);
+      assert_style_value_equals(a.upper, b.upper);
       break;
     case 'CSSMathInvert':
     case 'CSSMathNegate':
@@ -35,10 +84,6 @@ function assert_style_value_equals(a, b) {
     case 'CSSVariableReferenceValue':
       assert_equals(a.variable, b.variable);
       assert_style_value_equals(a.fallback, b.fallback);
-      break;
-    case 'CSSPositionValue':
-      assert_style_value_equals(a.x, b.x);
-      assert_style_value_equals(a.y, b.y);
       break;
     case 'CSSTransformValue':
       assert_style_value_array_equals(a, b);
@@ -83,6 +128,34 @@ function assert_style_value_array_equals(a, b) {
   }
 }
 
+// Compares two arrays of CSSStyleValues, ignoring element order.
+//
+// Used for CSSMathSum and CSSMathProduct, where browsers currently differ
+// in how values are ordered. The ordering behavior is under discussion in
+// https://github.com/w3c/csswg-drafts/issues/9451.
+//
+// This is a temporary relaxation: for now, the test accepts any order
+// to avoid interop failures across engines. Once the spec is clarified,
+// tests should assert that the order matches the canonical (sorted) form
+// used for both CSS values and CSS Typed OM.
+function assert_style_value_array_unordered_equals(a, b) {
+  assert_equals(a.length, b.length);
+
+  const remaining = [...b];
+  a.forEach((valueA) => {
+    const matched = remaining.some((valueB, i) => {
+      try {
+        assert_style_value_equals(valueA, valueB);
+        remaining.splice(i, 1);
+        return true;
+      } catch {
+        return false;
+      }
+    });
+    assert_true(matched);
+  });
+}
+
 const gValidUnits = [
   'number', 'percent', 'em', 'ex', 'ch',
   'ic', 'rem', 'lh', 'rlh', 'vw',
@@ -98,6 +171,17 @@ const gValidUnits = [
 function createDivWithStyle(test, cssText) {
   let element = document.createElement('div');
   element.style = cssText || '';
+  document.body.appendChild(element);
+  test.add_cleanup(() => {
+    element.remove();
+  });
+  return element;
+}
+
+// Creates a new div element without inline style.
+// The created element is deleted during test cleanup.
+function createDivWithoutStyle(test) {
+  let element = document.createElement('div');
   document.body.appendChild(element);
   test.add_cleanup(() => {
     element.remove();

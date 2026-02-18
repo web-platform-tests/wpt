@@ -1,14 +1,12 @@
+# mypy: allow-untyped-defs
+
 try:
     from importlib import reload
 except ImportError:
     pass
 import json
 import os
-try:
-    # import Queue under its Python 3 name
-    import Queue as queue  # noqa: N813
-except ImportError:
-    import queue
+import queue
 import tempfile
 import threading
 
@@ -22,20 +20,23 @@ class ServerProcSpy(serve.ServerProc):
     instances = None
 
     def start(self, *args, **kwargs):
-        result = super(ServerProcSpy, self).start(*args, **kwargs)
+        result = super().start(*args, **kwargs)
 
         if ServerProcSpy.instances is not None:
             ServerProcSpy.instances.put(self)
 
         return result
 
-serve.ServerProc = ServerProcSpy
+
+serve.ServerProc = ServerProcSpy  # type: ignore
+
 
 @pytest.fixture()
 def server_subprocesses():
     ServerProcSpy.instances = queue.Queue()
     yield ServerProcSpy.instances
     ServerProcSpy.instances = None
+
 
 @pytest.fixture()
 def tempfile_name():
@@ -55,8 +56,13 @@ def test_subprocess_exit(server_subprocesses, tempfile_name):
         # constructor that is also used to create the long-running processes
         # which are relevant to this functionality. Disable the check so that
         # the constructor is only used to create relevant processes.
-        with open(tempfile_name, 'w') as handle:
-            json.dump({"check_subdomains": False, "bind_address": False}, handle)
+        config = {
+            "browser_host": "localhost",
+            "alternate_hosts": {"alt": "127.0.0.1"},
+            "check_subdomains": False,
+        }
+        with open(tempfile_name, "w") as handle:
+            json.dump(config, handle)
 
         # The `logger` module from the wptserver package uses a singleton
         # pattern which resists testing. In order to avoid conflicting with
@@ -72,7 +78,8 @@ def test_subprocess_exit(server_subprocesses, tempfile_name):
 
     server_subprocesses.get(True, timeout)
     subprocess = server_subprocesses.get(True, timeout)
-    subprocess.kill()
+    subprocess.request_shutdown()
+    subprocess.wait()
 
     thread.join(timeout)
 

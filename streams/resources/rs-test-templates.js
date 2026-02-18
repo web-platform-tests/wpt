@@ -23,10 +23,13 @@ self.templatedRSEmpty = (label, factory) => {
   test(() => {
     const rs = factory();
 
-    assert_throws(new RangeError(), () => rs.getReader({ mode: '' }), 'empty string mode should throw');
-    assert_throws(new RangeError(), () => rs.getReader({ mode: null }), 'null mode should throw');
-    assert_throws(new RangeError(), () => rs.getReader({ mode: 'asdf' }), 'asdf mode should throw');
-    assert_throws(new TypeError(), () => rs.getReader(null), 'null should throw');
+    assert_throws_js(TypeError, () => rs.getReader({ mode: '' }), 'empty string mode should throw');
+    assert_throws_js(TypeError, () => rs.getReader({ mode: null }), 'null mode should throw');
+    assert_throws_js(TypeError, () => rs.getReader({ mode: 'asdf' }), 'asdf mode should throw');
+    assert_throws_js(TypeError, () => rs.getReader(5), '5 should throw');
+
+    // Should not throw
+    rs.getReader(null);
 
   }, label + ': calling getReader with invalid arguments should throw appropriate errors');
 };
@@ -83,8 +86,8 @@ self.templatedRSClosed = (label, factory) => {
 
     rs.getReader();
 
-    assert_throws(new TypeError(), () => rs.getReader(), 'getting a second reader should throw');
-    assert_throws(new TypeError(), () => rs.getReader(), 'getting a third reader should throw');
+    assert_throws_js(TypeError, () => rs.getReader(), 'getting a second reader should throw');
+    assert_throws_js(TypeError, () => rs.getReader(), 'getting a third reader should throw');
 
   }, label + ': should not be able to acquire a second reader if we don\'t release the first one');
 };
@@ -98,8 +101,8 @@ self.templatedRSErrored = (label, factory, error) => {
     const reader = rs.getReader();
 
     return Promise.all([
-      promise_rejects(t, error, reader.closed),
-      promise_rejects(t, error, reader.read())
+      promise_rejects_exactly(t, error, reader.closed),
+      promise_rejects_exactly(t, error, reader.read())
     ]);
 
   }, label + ': getReader() should return a reader that acts errored');
@@ -110,9 +113,9 @@ self.templatedRSErrored = (label, factory, error) => {
     const reader = rs.getReader();
 
     return Promise.all([
-      promise_rejects(t, error, reader.read()),
-      promise_rejects(t, error, reader.read()),
-      promise_rejects(t, error, reader.closed)
+      promise_rejects_exactly(t, error, reader.read()),
+      promise_rejects_exactly(t, error, reader.read()),
+      promise_rejects_exactly(t, error, reader.closed)
     ]);
 
   }, label + ': read() twice should give the error each time');
@@ -133,7 +136,7 @@ self.templatedRSErroredSyncOnly = (label, factory, error) => {
     rs.getReader().releaseLock();
     const reader = rs.getReader(); // Calling getReader() twice does not throw (the stream is not locked).
 
-    return promise_rejects(t, error, reader.closed);
+    return promise_rejects_exactly(t, error, reader.closed);
 
   }, label + ': should be able to obtain a second reader, with the correct closed promise');
 
@@ -142,8 +145,8 @@ self.templatedRSErroredSyncOnly = (label, factory, error) => {
     const rs = factory();
     rs.getReader();
 
-    assert_throws(new TypeError(), () => rs.getReader(), 'getting a second reader should throw a TypeError');
-    assert_throws(new TypeError(), () => rs.getReader(), 'getting a third reader should throw a TypeError');
+    assert_throws_js(TypeError, () => rs.getReader(), 'getting a second reader should throw a TypeError');
+    assert_throws_js(TypeError, () => rs.getReader(), 'getting a third reader should throw a TypeError');
 
   }, label + ': should not be able to obtain additional readers if we don\'t release the first lock');
 
@@ -156,8 +159,8 @@ self.templatedRSErroredSyncOnly = (label, factory, error) => {
     assert_not_equals(cancelPromise1, cancelPromise2, 'cancel() calls should return distinct promises');
 
     return Promise.all([
-      promise_rejects(t, error, cancelPromise1),
-      promise_rejects(t, error, cancelPromise2)
+      promise_rejects_exactly(t, error, cancelPromise1),
+      promise_rejects_exactly(t, error, cancelPromise2)
     ]);
 
   }, label + ': cancel() should return a distinct rejected promise each time');
@@ -172,8 +175,8 @@ self.templatedRSErroredSyncOnly = (label, factory, error) => {
     assert_not_equals(cancelPromise1, cancelPromise2, 'cancel() calls should return distinct promises');
 
     return Promise.all([
-      promise_rejects(t, error, cancelPromise1),
-      promise_rejects(t, error, cancelPromise2)
+      promise_rejects_exactly(t, error, cancelPromise1),
+      promise_rejects_exactly(t, error, cancelPromise2)
     ]);
 
   }, label + ': reader cancel() should return a distinct rejected promise each time');
@@ -197,7 +200,7 @@ self.templatedRSEmptyReader = (label, factory) => {
 
   test(() => {
 
-    const stream = factory().stream;
+    const { stream } = factory();
 
     assert_true(stream.locked, 'locked getter should return true');
 
@@ -205,9 +208,9 @@ self.templatedRSEmptyReader = (label, factory) => {
 
   promise_test(t => {
 
-    const reader = factory().reader;
+    const { read } = factory();
 
-    reader.read().then(
+    read().then(
       t.unreached_func('read() should not fulfill'),
       t.unreached_func('read() should not reject')
     );
@@ -218,14 +221,14 @@ self.templatedRSEmptyReader = (label, factory) => {
 
   promise_test(t => {
 
-    const reader = factory().reader;
+    const { read } = factory();
 
-    reader.read().then(
+    read().then(
       t.unreached_func('read() should not fulfill'),
       t.unreached_func('read() should not reject')
     );
 
-    reader.read().then(
+    read().then(
       t.unreached_func('read() should not fulfill'),
       t.unreached_func('read() should not reject')
     );
@@ -236,62 +239,53 @@ self.templatedRSEmptyReader = (label, factory) => {
 
   test(() => {
 
-    const reader = factory().reader;
-    assert_not_equals(reader.read(), reader.read(), 'the promises returned should be distinct');
+    const { read } = factory();
+    assert_not_equals(read(), read(), 'the promises returned should be distinct');
 
   }, label + ': read() should return distinct promises each time');
 
   test(() => {
 
-    const stream = factory().stream;
-    assert_throws(new TypeError(), () => stream.getReader(), 'stream.getReader() should throw a TypeError');
+    const { stream } = factory();
+    assert_throws_js(TypeError, () => stream.getReader(), 'stream.getReader() should throw a TypeError');
 
   }, label + ': getReader() again on the stream should fail');
 
-  promise_test(t => {
+  promise_test(async t => {
 
-    const streamAndReader = factory();
-    const stream = streamAndReader.stream;
-    const reader = streamAndReader.reader;
+    const { stream, reader, read } = factory();
 
-    reader.read().then(
-      t.unreached_func('first read() should not fulfill'),
-      t.unreached_func('first read() should not reject')
-    );
+    const read1 = read();
+    const read2 = read();
+    const closed = reader.closed;
 
-    reader.read().then(
-      t.unreached_func('second read() should not fulfill'),
-      t.unreached_func('second read() should not reject')
-    );
+    reader.releaseLock();
 
-    reader.closed.then(
-      t.unreached_func('closed should not fulfill'),
-      t.unreached_func('closed should not reject')
-    );
+    assert_false(stream.locked, 'the stream should be unlocked');
 
-    assert_throws(new TypeError(), () => reader.releaseLock(), 'releaseLock should throw a TypeError');
+    await Promise.all([
+      promise_rejects_js(t, TypeError, read1, 'first read should reject'),
+      promise_rejects_js(t, TypeError, read2, 'second read should reject'),
+      promise_rejects_js(t, TypeError, closed, 'closed should reject')
+    ]);
 
-    assert_true(stream.locked, 'the stream should still be locked');
-
-    return delay(500);
-
-  }, label + ': releasing the lock with pending read requests should throw but the read requests should stay pending');
+  }, label + ': releasing the lock should reject all pending read requests');
 
   promise_test(t => {
 
-    const reader = factory().reader;
+    const { reader, read } = factory();
     reader.releaseLock();
 
     return Promise.all([
-      promise_rejects(t, new TypeError(), reader.read()),
-      promise_rejects(t, new TypeError(), reader.read())
+      promise_rejects_js(t, TypeError, read()),
+      promise_rejects_js(t, TypeError, read())
     ]);
 
   }, label + ': releasing the lock should cause further read() calls to reject with a TypeError');
 
   promise_test(t => {
 
-    const reader = factory().reader;
+    const { reader } = factory();
 
     const closedBefore = reader.closed;
     reader.releaseLock();
@@ -299,15 +293,13 @@ self.templatedRSEmptyReader = (label, factory) => {
 
     assert_equals(closedBefore, closedAfter, 'the closed promise should not change identity');
 
-    return promise_rejects(t, new TypeError(), closedBefore);
+    return promise_rejects_js(t, TypeError, closedBefore);
 
   }, label + ': releasing the lock should cause closed calls to reject with a TypeError');
 
   test(() => {
 
-    const streamAndReader = factory();
-    const stream = streamAndReader.stream;
-    const reader = streamAndReader.reader;
+    const { stream, reader } = factory();
 
     reader.releaseLock();
     assert_false(stream.locked, 'locked getter should return false');
@@ -316,10 +308,10 @@ self.templatedRSEmptyReader = (label, factory) => {
 
   promise_test(() => {
 
-    const reader = factory().reader;
+    const { reader, read } = factory();
     reader.cancel();
 
-    return reader.read().then(r => {
+    return read().then(r => {
       assert_object_equals(r, { value: undefined, done: true }, 'read()ing from the reader should give a done result');
     });
 
@@ -327,8 +319,8 @@ self.templatedRSEmptyReader = (label, factory) => {
 
   promise_test(t => {
 
-    const stream = factory().stream;
-    return promise_rejects(t, new TypeError(), stream.cancel());
+    const { stream } = factory();
+    return promise_rejects_js(t, TypeError, stream.cancel());
 
   }, label + ': canceling via the stream should fail');
 };
@@ -391,7 +383,7 @@ self.templatedRSClosedReader = (label, factory) => {
 
     return Promise.all([
       closedBefore.then(v => assert_equals(v, undefined, 'reader.closed acquired before release should fulfill')),
-      promise_rejects(t, new TypeError(), closedAfter)
+      promise_rejects_js(t, TypeError, closedAfter)
     ]);
 
   }, label + ': releasing the lock should cause closed to reject and change identity');
@@ -421,7 +413,7 @@ self.templatedRSErroredReader = (label, factory, error) => {
   promise_test(t => {
 
     const reader = factory().reader;
-    return promise_rejects(t, error, reader.closed);
+    return promise_rejects_exactly(t, error, reader.closed);
 
   }, label + ': closed should reject with the error');
 
@@ -430,13 +422,13 @@ self.templatedRSErroredReader = (label, factory, error) => {
     const reader = factory().reader;
     const closedBefore = reader.closed;
 
-    return promise_rejects(t, error, closedBefore).then(() => {
+    return promise_rejects_exactly(t, error, closedBefore).then(() => {
       reader.releaseLock();
 
       const closedAfter = reader.closed;
       assert_not_equals(closedBefore, closedAfter, 'the closed promise should change identity');
 
-      return promise_rejects(t, new TypeError(), closedAfter);
+      return promise_rejects_js(t, TypeError, closedAfter);
     });
 
   }, label + ': releasing the lock should cause closed to reject and change identity');
@@ -444,7 +436,7 @@ self.templatedRSErroredReader = (label, factory, error) => {
   promise_test(t => {
 
     const reader = factory().reader;
-    return promise_rejects(t, error, reader.read());
+    return promise_rejects_exactly(t, error, reader.read());
 
   }, label + ': read() should reject with the error');
 };
@@ -599,9 +591,9 @@ self.templatedRSTwoChunksClosedReader = function (label, factory, chunks) {
     reader.releaseLock();
 
     return Promise.all([
-      promise_rejects(t, new TypeError(), reader.read()),
-      promise_rejects(t, new TypeError(), reader.read()),
-      promise_rejects(t, new TypeError(), reader.read())
+      promise_rejects_js(t, TypeError, reader.read()),
+      promise_rejects_js(t, TypeError, reader.read()),
+      promise_rejects_js(t, TypeError, reader.read())
     ]);
 
   }, label + ': releasing the lock should cause further read() calls to reject with a TypeError');
@@ -632,4 +624,153 @@ self.templatedRSTwoChunksClosedReader = function (label, factory, chunks) {
     return promise;
 
   }, label + ': reader\'s closed property always returns the same promise');
+};
+
+self.templatedRSTeeCancel = (label, factory) => {
+  test(() => {}, `Running templatedRSTeeCancel with ${label}`);
+
+  promise_test(async () => {
+
+    const reason1 = new Error('We\'re wanted men.');
+    const reason2 = new Error('I have the death sentence on twelve systems.');
+
+    let resolve;
+    const promise = new Promise(r => resolve = r);
+    const rs = factory({
+      cancel(reason) {
+        assert_array_equals(reason, [reason1, reason2],
+          'the cancel reason should be an array containing those from the branches');
+        resolve();
+      }
+    });
+
+    const [branch1, branch2] = rs.tee();
+    await Promise.all([
+      branch1.cancel(reason1),
+      branch2.cancel(reason2),
+      promise
+    ]);
+
+  }, `${label}: canceling both branches should aggregate the cancel reasons into an array`);
+
+  promise_test(async () => {
+
+    const reason1 = new Error('This little one\'s not worth the effort.');
+    const reason2 = new Error('Come, let me get you something.');
+
+    let resolve;
+    const promise = new Promise(r => resolve = r);
+    const rs = factory({
+      cancel(reason) {
+        assert_array_equals(reason, [reason1, reason2],
+          'the cancel reason should be an array containing those from the branches');
+        resolve();
+      }
+    });
+
+    const [branch1, branch2] = rs.tee();
+    await Promise.all([
+      branch2.cancel(reason2),
+      branch1.cancel(reason1),
+      promise
+    ]);
+
+  }, `${label}: canceling both branches in reverse order should aggregate the cancel reasons into an array`);
+
+  promise_test(async t => {
+
+    const theError = { name: 'I\'ll be careful.' };
+    const rs = factory({
+      cancel() {
+        throw theError;
+      }
+    });
+
+    const [branch1, branch2] = rs.tee();
+    await Promise.all([
+      promise_rejects_exactly(t, theError, branch1.cancel()),
+      promise_rejects_exactly(t, theError, branch2.cancel())
+    ]);
+
+  }, `${label}: failing to cancel the original stream should cause cancel() to reject on branches`);
+
+  promise_test(async t => {
+
+    const theError = { name: 'You just watch yourself!' };
+    let controller;
+    const stream = factory({
+      start(c) {
+        controller = c;
+      }
+    });
+
+    const [branch1, branch2] = stream.tee();
+    controller.error(theError);
+
+    await Promise.all([
+      promise_rejects_exactly(t, theError, branch1.cancel()),
+      promise_rejects_exactly(t, theError, branch2.cancel())
+    ]);
+
+  }, `${label}: erroring a teed stream should properly handle canceled branches`);
+
+};
+
+self.templatedRSThrowAfterCloseOrError = (label, factory) => {
+  test(() => {}, 'Running templatedRSThrowAfterCloseOrError with ' + label);
+
+  const theError = new Error('a unique string');
+
+  promise_test(async t => {
+    let controller;
+    const stream = factory({
+      start: t.step_func((c) => {
+        controller = c;
+      })
+    });
+
+    controller.close();
+
+    assert_throws_js(TypeError, () => controller.enqueue(new Uint8Array([1])));
+  }, `${label}: enqueue() throws after close()`);
+
+  promise_test(async t => {
+    let controller;
+    const stream = factory({
+      start: t.step_func((c) => {
+        controller = c;
+      })
+    });
+
+    controller.enqueue(new Uint8Array([1]));
+    controller.close();
+
+    assert_throws_js(TypeError, () => controller.enqueue(new Uint8Array([2])));
+  }, `${label}: enqueue() throws after enqueue() and close()`);
+
+  promise_test(async t => {
+    let controller;
+    const stream = factory({
+      start: t.step_func((c) => {
+        controller = c;
+      })
+    });
+
+    controller.error(theError);
+
+    assert_throws_js(TypeError, () => controller.enqueue(new Uint8Array([1])));
+  }, `${label}: enqueue() throws after error()`);
+
+  promise_test(async t => {
+    let controller;
+    const stream = factory({
+      start: t.step_func((c) => {
+        controller = c;
+      })
+    });
+
+    controller.error(theError);
+
+    assert_throws_js(TypeError, () => controller.close());
+  }, `${label}: close() throws after error()`);
 };

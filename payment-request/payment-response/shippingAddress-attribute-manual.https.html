@@ -36,14 +36,14 @@ async function runManualTest(button, options = {}, expected = {}, id) {
     assert_idl_attribute(response, "shippingAddress");
     const { shippingAddress: addr } = request;
     assert_true(
-      addr instanceof PaymentAddress,
-      "Expect instance of PaymentAddress"
+      addr instanceof ContactAddress,
+      "Expect instance of ContactAddress"
     );
     try {
       addr.toJSON();
     } catch (err) {
       assert_unreached(
-        `Unexpected exception calling PaymentAddress.toJSON(): ${err}`
+        `Unexpected exception calling ContactAddress.toJSON(): ${err}`
       );
     }
     if (expected.shippingAddress === null) {

@@ -7,11 +7,10 @@
 <meta name="variant" content="?3001-4000">
 <meta name="variant" content="?4001-5000">
 <meta name="variant" content="?5001-6000">
-<meta name="variant" content="?6001-last">
+<meta name="variant" content="?6001-7000">
+<meta name="variant" content="?7001-last">
 <link rel=stylesheet href=../include/reset.css>
 <title>forwarddelete - HTML editing conformance tests</title>
-
-<p id=timing></p>
 
 <div id=log></div>
 
@@ -28,8 +27,6 @@
 "use strict";
 
 (function() {
-    var startTime = Date.now();
-
     // Make document.body.innerHTML more tidy by removing unnecessary things.
     [].forEach.call(document.querySelectorAll("script"), function(node) {
         node.parentNode.removeChild(node);
@@ -50,11 +47,5 @@
 
     document.getElementById("test-container").parentNode
         .removeChild(document.getElementById("test-container"));
-
-    var elapsed = Math.round(Date.now() - startTime)/1000;
-    document.getElementById("timing").textContent =
-        "Time elapsed: " + Math.floor(elapsed/60) + ":"
-        + ((elapsed % 60) < 10 ? "0" : "")
-        + (elapsed % 60).toFixed(3) + " min.";
 })();
 </script>

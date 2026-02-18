@@ -3,7 +3,6 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="variant" content="">
   <title>idlharness: Partial dictionary</title>
   <script src="/resources/test/variants.js"></script>
   <script src="/resources/testharness.js"></script>
@@ -41,7 +40,7 @@
       idlArray.add_idls(`
         partial dictionary C {};
         namespace C {};`);
-      idlArray.collapse_partials();
+      idlArray.merge_partials();
     })();
   </script>
   <script type="text/json" id="expected">

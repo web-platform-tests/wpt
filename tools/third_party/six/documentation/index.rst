@@ -13,7 +13,7 @@ Python 3.  It is intended to support codebases that work on both Python 2 and 3
 without modification.  six consists of only one Python file, so it is painless
 to copy into a project.
 
-Six can be downloaded on `PyPi <https://pypi.python.org/pypi/six/>`_.  Its bug
+Six can be downloaded on `PyPI <https://pypi.org/project/six/>`_.  Its bug
 tracker and code hosting is on `GitHub <https://github.com/benjaminp/six>`_.
 
 The name, "six", comes from the fact that 2*3 equals 6.  Why not addition?
@@ -50,8 +50,9 @@ Six provides constants that may differ between Python versions.  Ones ending
 
 .. data:: class_types
 
-   Possible class types.  In Python 2, this encompasses old-style and new-style
-   classes.  In Python 3, this is just new-styles.
+   Possible class types.  In Python 2, this encompasses old-style
+   :data:`py2:types.ClassType` and new-style ``type`` classes.  In Python 3,
+   this is just ``type``.
 
 
 .. data:: integer_types
@@ -75,7 +76,9 @@ Six provides constants that may differ between Python versions.  Ones ending
 .. data:: binary_type
 
    Type for representing binary data.  This is :func:`py2:str` in Python 2 and
-   :func:`py3:bytes` in Python 3.
+   :func:`py3:bytes` in Python 3.  Python 2.6 and 2.7 include ``bytes`` as a
+   builtin alias of ``str``, so six’s version is only necessary for Python 2.5
+   compatibility.
 
 
 .. data:: MAXSIZE
@@ -254,9 +257,10 @@ functions and methods is the stdlib :mod:`py3:inspect` module.
 
 .. decorator:: wraps(wrapped, assigned=functools.WRAPPER_ASSIGNMENTS, updated=functools.WRAPPER_UPDATES)
 
-   This is exactly the :func:`py3:functools.wraps` decorator, but it sets the
-   ``__wrapped__`` attribute on what it decorates as :func:`py3:functools.wraps`
-   does on Python versions after 3.2.
+   This is Python 3.2's :func:`py3:functools.wraps` decorator.  It sets the
+   ``__wrapped__`` attribute on what it decorates.  It doesn't raise an error if
+   any of the attributes mentioned in ``assigned`` and ``updated`` are missing
+   on ``wrapped`` object.
 
 
 Syntax compatibility
@@ -371,7 +375,7 @@ string data in all Python versions.
 .. function:: b(data)
 
    A "fake" bytes literal.  *data* should always be a normal string literal.  In
-   Python 2, :func:`b` returns a 8-bit string.  In Python 3, *data* is encoded
+   Python 2, :func:`b` returns an 8-bit string.  In Python 3, *data* is encoded
    with the latin-1 encoding to bytes.
 
 
@@ -433,6 +437,24 @@ string data in all Python versions.
    a bytes object iterator in Python 3.
 
 
+.. function:: ensure_binary(s, encoding='utf-8', errors='strict')
+
+   Coerce *s* to :data:`binary_type`. *encoding*, *errors* are the same as
+   :meth:`py3:str.encode`
+
+
+.. function:: ensure_str(s, encoding='utf-8', errors='strict')
+
+   Coerce *s* to ``str``. *encoding*, *errors* are the same as
+   :meth:`py3:str.encode`
+
+
+.. function:: ensure_text(s, encoding='utf-8', errors='strict')
+
+   Coerce *s* to :data:`text_type`. *encoding*, *errors* are the same as
+   :meth:`py3:bytes.decode`
+
+
 .. data:: StringIO
 
    This is a fake file object for textual data.  It's an alias for
@@ -488,6 +510,11 @@ Note these functions are only available on Python 2.7 or later.
    Alias for :meth:`~py3:unittest.TestCase.assertRegex` on Python 3 and
    :meth:`~py2:unittest.TestCase.assertRegexpMatches` on Python 2.
 
+.. function:: assertNotRegex()
+
+   Alias for :meth:`~py3:unittest.TestCase.assertNotRegex` on Python 3 and
+   :meth:`~py2:unittest.TestCase.assertNotRegexpMatches` on Python 2.
+
 
 Renamed modules and attributes compatibility
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -503,7 +530,7 @@ Python 2 or 3, write::
    from six.moves import html_parser
 
 Similarly, to get the function to reload modules, which was moved from the
-builtin module to the ``imp`` module, use::
+builtin module to the ``importlib`` module, use::
 
    from six.moves import reload_module
 
@@ -563,9 +590,14 @@ Supported renames:
 +------------------------------+-------------------------------------+---------------------------------------+
 | ``cStringIO``                | :func:`py2:cStringIO.StringIO`      | :class:`py3:io.StringIO`              |
 +------------------------------+-------------------------------------+---------------------------------------+
-| ``dbm_gnu``                  | :func:`py2:gdbm`                    | :class:`py3:dbm.gnu`                  |
+| ``collections_abc``          | :mod:`py2:collections`              | :mod:`py3:collections.abc` (3.3+)     |
 +------------------------------+-------------------------------------+---------------------------------------+
-| ``_dummy_thread``            | :mod:`py2:dummy_thread`             | :mod:`py3:_dummy_thread`              |
+| ``dbm_gnu``                  | :mod:`py2:gdbm`                     | :mod:`py3:dbm.gnu`                    |
++------------------------------+-------------------------------------+---------------------------------------+
+| ``dbm_ndbm``                 | :mod:`py2:dbm`                      | :mod:`py3:dbm.ndbm`                   |
++------------------------------+-------------------------------------+---------------------------------------+
+| ``_dummy_thread``            | :mod:`py2:dummy_thread`             | :mod:`py3:_dummy_thread` (< 3.9)      |
+|                              |                                     | :mod:`py3:_thread` (3.9+)             |
 +------------------------------+-------------------------------------+---------------------------------------+
 | ``email_mime_base``          | :mod:`py2:email.MIMEBase`           | :mod:`py3:email.mime.base`            |
 +------------------------------+-------------------------------------+---------------------------------------+

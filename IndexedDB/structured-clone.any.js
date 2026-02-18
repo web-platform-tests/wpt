@@ -1,6 +1,14 @@
-// META: script=support-promises.js
 // META: title=Indexed DB and Structured Serializing/Deserializing
 // META: timeout=long
+// META: script=resources/support-promises.js
+// META: script=/common/subset-tests.js
+// META: variant=?1-20
+// META: variant=?21-40
+// META: variant=?41-60
+// META: variant=?61-80
+// META: variant=?81-100
+// META: variant=?101-last
+'use strict';
 
 // Tests Indexed DB coverage of HTML's Safe "passing of structured data"
 // https://html.spec.whatwg.org/multipage/structured-data.html
@@ -8,7 +16,7 @@
 function describe(value) {
   let type, str;
   if (typeof value === 'object' && value) {
-    type = value.__proto__.constructor.name;
+    type = Object.getPrototypeOf(value).constructor.name;
     // Handle Number(-0), etc.
     str = Object.is(value.valueOf(), -0) ? '-0' : String(value);
   } else {
@@ -20,7 +28,7 @@ function describe(value) {
 }
 
 function cloneTest(value, verifyFunc) {
-  promise_test(async t => {
+  subsetTest(promise_test, async t => {
     const db = await createDatabase(t, db => {
       const store = db.createObjectStore('store');
       // This index is not used, but evaluating key path on each put()
@@ -37,8 +45,11 @@ function cloneTest(value, verifyFunc) {
     const store = tx.objectStore('store');
     await promiseForRequest(t, store.put(value, 'key'));
     const result = await promiseForRequest(t, store.get('key'));
-    await verifyFunc(value, result);
+    // Because the async verifyFunc may await async values that are independent
+    // of the transaction lifetime (ex: blob.text()), we must only await it
+    // after adding listeners to the transaction.
     await promiseForTransaction(t, tx);
+    await verifyFunc(value, result);
   }, describe(value));
 }
 
@@ -47,13 +58,13 @@ function cloneObjectTest(value, verifyFunc) {
   cloneTest(value, async (orig, clone) => {
     assert_not_equals(orig, clone);
     assert_equals(typeof clone, 'object');
-    assert_equals(orig.__proto__, clone.__proto__);
+    assert_equals(Object.getPrototypeOf(orig), Object.getPrototypeOf(clone));
     await verifyFunc(orig, clone);
   });
 }
 
 function cloneFailureTest(value) {
-  promise_test(async t => {
+  subsetTest(promise_test, async t => {
     const db = await createDatabase(t, db => {
       db.createObjectStore('store');
     });
@@ -65,7 +76,7 @@ function cloneFailureTest(value) {
     });
     const tx = db.transaction('store', 'readwrite');
     const store = tx.objectStore('store');
-    assert_throws('DataCloneError', () => store.put(value, 'key'));
+    assert_throws_dom('DataCloneError', () => store.put(value, 'key'));
   }, 'Not serializable: ' + describe(value));
 }
 
@@ -113,7 +124,7 @@ const strings = [
   }));
 
 // "Primitive" Objects (Boolean, Number, BigInt, String)
-[].concat(booleans, numbers, strings)
+[].concat(booleans, numbers, bigints, strings)
   .forEach(value => cloneObjectTest(Object(value), (orig, clone) => {
     assert_equals(orig.valueOf(), clone.valueOf());
   }));
@@ -134,7 +145,7 @@ const strings = [
 ].forEach(value => cloneTest(value, (orig, clone) => {
     assert_not_equals(orig, clone);
     assert_equals(typeof clone, 'object');
-    assert_equals(orig.__proto__, clone.__proto__);
+    assert_equals(Object.getPrototypeOf(orig), Object.getPrototypeOf(clone));
     assert_equals(orig.valueOf(), clone.valueOf());
   }));
 
@@ -162,7 +173,7 @@ cloneObjectTest(new Uint8Array([0, 1, 254, 255]).buffer, (orig, clone) => {
 // TODO SharedArrayBuffer
 
 // Array Buffer Views
-[
+let byteArrays = [
   new Uint8Array([]),
   new Uint8Array([0, 1, 254, 255]),
   new Uint16Array([0x0000, 0x0001, 0xFFFE, 0xFFFF]),
@@ -174,7 +185,14 @@ cloneObjectTest(new Uint8Array([0, 1, 254, 255]).buffer, (orig, clone) => {
   new Float32Array([-Infinity, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, Infinity, NaN]),
   new Float64Array([-Infinity, -Number.MAX_VALUE, -Number.MIN_VALUE, 0,
                     Number.MIN_VALUE, Number.MAX_VALUE, Infinity, NaN])
-].forEach(value => cloneObjectTest(value, (orig, clone) => {
+]
+
+if (typeof Float16Array !== 'undefined') {
+  byteArrays.push(
+      new Float16Array([-Infinity, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, Infinity, NaN]));
+}
+
+byteArrays.forEach(value => cloneObjectTest(value, (orig, clone) => {
   assert_array_equals(orig, clone);
 }));
 
@@ -243,7 +261,6 @@ cloneObjectTest({foo: true, bar: false}, (orig, clone) => {
 // TODO: Test these additional interfaces:
 // * DOMQuad
 // * DOMException
-// * DetectedText, DetectedFace, DetectedBarcode
 // * RTCCertificate
 
 // Geometry types
@@ -255,7 +272,7 @@ cloneObjectTest({foo: true, bar: false}, (orig, clone) => {
   new DOMRect,
   new DOMRectReadOnly(),
 ].forEach(value => cloneObjectTest(value, (orig, clone) => {
-  Object.keys(orig.__proto__).forEach(key => {
+  Object.keys(Object.getPrototypeOf(orig)).forEach(key => {
     assert_equals(orig[key], clone[key], `Property ${key}`);
   });
 }));

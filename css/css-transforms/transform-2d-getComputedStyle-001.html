@@ -74,7 +74,17 @@
       return transform;
     }
     function clear(id) {
-    	document.getElementById(id).style.display = 'none';
+        const element = document.getElementById(id);
+        const value = window.getComputedStyle(element).transform;
+        element.style.display = 'none';
+        // https://drafts.csswg.org/css-transforms-2/#serialization-of-the-computed-value
+        // For now both 'none' and 'matrix()' are accepted as resolved value of
+        // transform for an element with 'display: none' until we get a consensus
+        // in https://github.com/w3c/csswg-drafts/issues/9121.
+        assert_in_array(
+            window.getComputedStyle(element).transform, ['none', value],
+            "The resolved value of 'transform' for an element with 'display: none' " +
+            "should be 'none' or should not depend on display value.");
     }
 
     test(function() {

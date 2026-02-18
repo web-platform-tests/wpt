@@ -1,11 +1,16 @@
-from __future__ import absolute_import, division, print_function
-from _pytest.main import EXIT_NOTESTSCOLLECTED
-import pytest
+# mypy: allow-untyped-defs
 import gc
+import sys
+from typing import List
+
+from _pytest.config import ExitCode
+from _pytest.monkeypatch import MonkeyPatch
+from _pytest.pytester import Pytester
+import pytest
 
 
-def test_simple_unittest(testdir):
-    testpath = testdir.makepyfile(
+def test_simple_unittest(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
         """
         import unittest
         class MyTestCase(unittest.TestCase):
@@ -15,13 +20,13 @@ def test_simple_unittest(testdir):
                 self.assertEqual('foo', 'bar')
     """
     )
-    reprec = testdir.inline_run(testpath)
+    reprec = pytester.inline_run(testpath)
     assert reprec.matchreport("testpassing").passed
     assert reprec.matchreport("test_failing").failed
 
 
-def test_runTest_method(testdir):
-    testdir.makepyfile(
+def test_runTest_method(pytester: Pytester) -> None:
+    pytester.makepyfile(
         """
         import unittest
         class MyTestCaseWithRunTest(unittest.TestCase):
@@ -34,7 +39,7 @@ def test_runTest_method(testdir):
                 pass
         """
     )
-    result = testdir.runpytest("-v")
+    result = pytester.runpytest("-v")
     result.stdout.fnmatch_lines(
         """
         *MyTestCaseWithRunTest::runTest*
@@ -44,8 +49,8 @@ def test_runTest_method(testdir):
     )
 
 
-def test_isclasscheck_issue53(testdir):
-    testpath = testdir.makepyfile(
+def test_isclasscheck_issue53(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
         """
         import unittest
         class _E(object):
@@ -54,12 +59,12 @@ def test_isclasscheck_issue53(testdir):
         E = _E()
     """
     )
-    result = testdir.runpytest(testpath)
-    assert result.ret == EXIT_NOTESTSCOLLECTED
+    result = pytester.runpytest(testpath)
+    assert result.ret == ExitCode.NO_TESTS_COLLECTED
 
 
-def test_setup(testdir):
-    testpath = testdir.makepyfile(
+def test_setup(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
         """
         import unittest
         class MyTestCase(unittest.TestCase):
@@ -75,14 +80,14 @@ def test_setup(testdir):
 
     """
     )
-    reprec = testdir.inline_run("-s", testpath)
+    reprec = pytester.inline_run("-s", testpath)
     assert reprec.matchreport("test_both", when="call").passed
     rep = reprec.matchreport("test_both", when="teardown")
     assert rep.failed and "42" in str(rep.longrepr)
 
 
-def test_setUpModule(testdir):
-    testpath = testdir.makepyfile(
+def test_setUpModule(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
         """
         values = []
 
@@ -99,12 +104,12 @@ def test_setUpModule(testdir):
             assert values == [1]
         """
     )
-    result = testdir.runpytest(testpath)
+    result = pytester.runpytest(testpath)
     result.stdout.fnmatch_lines(["*2 passed*"])
 
 
-def test_setUpModule_failing_no_teardown(testdir):
-    testpath = testdir.makepyfile(
+def test_setUpModule_failing_no_teardown(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
         """
         values = []
 
@@ -118,14 +123,14 @@ def test_setUpModule_failing_no_teardown(testdir):
             pass
     """
     )
-    reprec = testdir.inline_run(testpath)
+    reprec = pytester.inline_run(testpath)
     reprec.assertoutcome(passed=0, failed=1)
     call = reprec.getcalls("pytest_runtest_setup")[0]
     assert not call.item.module.values
 
 
-def test_new_instances(testdir):
-    testpath = testdir.makepyfile(
+def test_new_instances(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
         """
         import unittest
         class MyTestCase(unittest.TestCase):
@@ -135,12 +140,35 @@ def test_new_instances(testdir):
                 assert not hasattr(self, 'x')
     """
     )
-    reprec = testdir.inline_run(testpath)
+    reprec = pytester.inline_run(testpath)
     reprec.assertoutcome(passed=2)
 
 
-def test_teardown(testdir):
-    testpath = testdir.makepyfile(
+def test_function_item_obj_is_instance(pytester: Pytester) -> None:
+    """item.obj should be a bound method on unittest.TestCase function items (#5390)."""
+    pytester.makeconftest(
+        """
+        def pytest_runtest_makereport(item, call):
+            if call.when == 'call':
+                class_ = item.parent.obj
+                assert isinstance(item.obj.__self__, class_)
+    """
+    )
+    pytester.makepyfile(
+        """
+        import unittest
+
+        class Test(unittest.TestCase):
+            def test_foo(self):
+                pass
+    """
+    )
+    result = pytester.runpytest_inprocess()
+    result.stdout.fnmatch_lines(["* 1 passed in*"])
+
+
+def test_teardown(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
         """
         import unittest
         class MyTestCase(unittest.TestCase):
@@ -154,14 +182,14 @@ def test_teardown(testdir):
                 self.assertEqual(MyTestCase.values, [None])
     """
     )
-    reprec = testdir.inline_run(testpath)
+    reprec = pytester.inline_run(testpath)
     passed, skipped, failed = reprec.countoutcomes()
     assert failed == 0, failed
     assert passed == 2
     assert passed + skipped + failed == 2
 
 
-def test_teardown_issue1649(testdir):
+def test_teardown_issue1649(pytester: Pytester) -> None:
     """
     Are TestCase objects cleaned up? Often unittest TestCase objects set
     attributes that are large and expensive during setUp.
@@ -169,7 +197,7 @@ def test_teardown_issue1649(testdir):
     The TestCase will not be cleaned up if the test fails, because it
     would then exist in the stackframe.
     """
-    testpath = testdir.makepyfile(
+    testpath = pytester.makepyfile(
         """
         import unittest
         class TestCaseObjectsShouldBeCleanedUp(unittest.TestCase):
@@ -180,14 +208,18 @@ def test_teardown_issue1649(testdir):
 
     """
     )
-    testdir.inline_run("-s", testpath)
+
+    pytester.inline_run("-s", testpath)
     gc.collect()
+
+    # Either already destroyed, or didn't run setUp.
     for obj in gc.get_objects():
-        assert type(obj).__name__ != "TestCaseObjectsShouldBeCleanedUp"
+        if type(obj).__name__ == "TestCaseObjectsShouldBeCleanedUp":
+            assert not hasattr(obj, "an_expensive_obj")
 
 
-def test_unittest_skip_issue148(testdir):
-    testpath = testdir.makepyfile(
+def test_unittest_skip_issue148(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
         """
         import unittest
 
@@ -203,14 +235,14 @@ def test_unittest_skip_issue148(testdir):
                 xxx
     """
     )
-    reprec = testdir.inline_run(testpath)
+    reprec = pytester.inline_run(testpath)
     reprec.assertoutcome(skipped=1)
 
 
-def test_method_and_teardown_failing_reporting(testdir):
-    testdir.makepyfile(
+def test_method_and_teardown_failing_reporting(pytester: Pytester) -> None:
+    pytester.makepyfile(
         """
-        import unittest, pytest
+        import unittest
         class TC(unittest.TestCase):
             def tearDown(self):
                 assert 0, "down1"
@@ -218,7 +250,7 @@ def test_method_and_teardown_failing_reporting(testdir):
                 assert False, "down2"
     """
     )
-    result = testdir.runpytest("-s")
+    result = pytester.runpytest("-s")
     assert result.ret == 1
     result.stdout.fnmatch_lines(
         [
@@ -231,8 +263,8 @@ def test_method_and_teardown_failing_reporting(testdir):
     )
 
 
-def test_setup_failure_is_shown(testdir):
-    testdir.makepyfile(
+def test_setup_failure_is_shown(pytester: Pytester) -> None:
+    pytester.makepyfile(
         """
         import unittest
         import pytest
@@ -240,18 +272,18 @@ def test_setup_failure_is_shown(testdir):
             def setUp(self):
                 assert 0, "down1"
             def test_method(self):
-                print ("never42")
+                print("never42")
                 xyz
     """
     )
-    result = testdir.runpytest("-s")
+    result = pytester.runpytest("-s")
     assert result.ret == 1
     result.stdout.fnmatch_lines(["*setUp*", "*assert 0*down1*", "*1 failed*"])
-    assert "never42" not in result.stdout.str()
+    result.stdout.no_fnmatch_line("*never42*")
 
 
-def test_setup_setUpClass(testdir):
-    testpath = testdir.makepyfile(
+def test_setup_setUpClass(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
         """
         import unittest
         import pytest
@@ -267,16 +299,40 @@ def test_setup_setUpClass(testdir):
             @classmethod
             def tearDownClass(cls):
                 cls.x -= 1
-        def test_teareddown():
+        def test_torn_down():
             assert MyTestCase.x == 0
     """
     )
-    reprec = testdir.inline_run(testpath)
+    reprec = pytester.inline_run(testpath)
     reprec.assertoutcome(passed=3)
 
 
-def test_setup_class(testdir):
-    testpath = testdir.makepyfile(
+def test_fixtures_setup_setUpClass_issue8394(pytester: Pytester) -> None:
+    pytester.makepyfile(
+        """
+        import unittest
+        class MyTestCase(unittest.TestCase):
+            @classmethod
+            def setUpClass(cls):
+                pass
+            def test_func1(self):
+                pass
+            @classmethod
+            def tearDownClass(cls):
+                pass
+    """
+    )
+    result = pytester.runpytest("--fixtures")
+    assert result.ret == 0
+    result.stdout.no_fnmatch_line("*no docstring available*")
+
+    result = pytester.runpytest("--fixtures", "-v")
+    assert result.ret == 0
+    result.stdout.fnmatch_lines(["*no docstring available*"])
+
+
+def test_setup_class(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
         """
         import unittest
         import pytest
@@ -290,66 +346,72 @@ def test_setup_class(testdir):
                 assert self.x == 1
             def teardown_class(cls):
                 cls.x -= 1
-        def test_teareddown():
+        def test_torn_down():
             assert MyTestCase.x == 0
     """
     )
-    reprec = testdir.inline_run(testpath)
+    reprec = pytester.inline_run(testpath)
     reprec.assertoutcome(passed=3)
 
 
 @pytest.mark.parametrize("type", ["Error", "Failure"])
-def test_testcase_adderrorandfailure_defers(testdir, type):
-    testdir.makepyfile(
-        """
+def test_testcase_adderrorandfailure_defers(pytester: Pytester, type: str) -> None:
+    pytester.makepyfile(
+        f"""
         from unittest import TestCase
         import pytest
         class MyTestCase(TestCase):
             def run(self, result):
                 excinfo = pytest.raises(ZeroDivisionError, lambda: 0/0)
                 try:
-                    result.add%s(self, excinfo._excinfo)
+                    result.add{type}(self, excinfo._excinfo)
                 except KeyboardInterrupt:
                     raise
                 except:
-                    pytest.fail("add%s should not raise")
+                    pytest.fail("add{type} should not raise")
             def test_hello(self):
                 pass
     """
-        % (type, type)
     )
-    result = testdir.runpytest()
-    assert "should not raise" not in result.stdout.str()
+    result = pytester.runpytest()
+    result.stdout.no_fnmatch_line("*should not raise*")
 
 
 @pytest.mark.parametrize("type", ["Error", "Failure"])
-def test_testcase_custom_exception_info(testdir, type):
-    testdir.makepyfile(
+def test_testcase_custom_exception_info(pytester: Pytester, type: str) -> None:
+    pytester.makepyfile(
         """
+        from typing import Generic, TypeVar
         from unittest import TestCase
-        import py, pytest
-        import _pytest._code
+        import pytest, _pytest._code
+
         class MyTestCase(TestCase):
             def run(self, result):
                 excinfo = pytest.raises(ZeroDivisionError, lambda: 0/0)
-                # we fake an incompatible exception info
-                from _pytest.monkeypatch import MonkeyPatch
-                mp = MonkeyPatch()
-                def t(*args):
-                    mp.undo()
-                    raise TypeError()
-                mp.setattr(_pytest._code, 'ExceptionInfo', t)
+                # We fake an incompatible exception info.
+                class FakeExceptionInfo(Generic[TypeVar("E")]):
+                    def __init__(self, *args, **kwargs):
+                        mp.undo()
+                        raise TypeError()
+                    @classmethod
+                    def from_current(cls):
+                        return cls()
+                    @classmethod
+                    def from_exc_info(cls, *args, **kwargs):
+                        return cls()
+                mp = pytest.MonkeyPatch()
+                mp.setattr(_pytest._code, 'ExceptionInfo', FakeExceptionInfo)
                 try:
                     excinfo = excinfo._excinfo
-                    result.add%(type)s(self, excinfo)
+                    result.add{type}(self, excinfo)
                 finally:
                     mp.undo()
+
             def test_hello(self):
                 pass
-    """
-        % locals()
+    """.format(**locals())
     )
-    result = testdir.runpytest()
+    result = pytester.runpytest()
     result.stdout.fnmatch_lines(
         [
             "NOTE: Incompatible Exception Representation*",
@@ -359,8 +421,10 @@ def test_testcase_custom_exception_info(testdir, type):
     )
 
 
-def test_testcase_totally_incompatible_exception_info(testdir):
-    item, = testdir.getitems(
+def test_testcase_totally_incompatible_exception_info(pytester: Pytester) -> None:
+    import _pytest.unittest
+
+    (item,) = pytester.getitems(
         """
         from unittest import TestCase
         class MyTestCase(TestCase):
@@ -368,13 +432,15 @@ def test_testcase_totally_incompatible_exception_info(testdir):
                 pass
     """
     )
-    item.addError(None, 42)
-    excinfo = item._excinfo.pop(0)
-    assert "ERROR: Unknown Incompatible" in str(excinfo.getrepr())
+    assert isinstance(item, _pytest.unittest.TestCaseFunction)
+    item.addError(None, 42)  # type: ignore[arg-type]
+    excinfo = item._excinfo
+    assert excinfo is not None
+    assert "ERROR: Unknown Incompatible" in str(excinfo.pop(0).getrepr())
 
 
-def test_module_level_pytestmark(testdir):
-    testpath = testdir.makepyfile(
+def test_module_level_pytestmark(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
         """
         import unittest
         import pytest
@@ -384,20 +450,19 @@ def test_module_level_pytestmark(testdir):
                 assert 0
     """
     )
-    reprec = testdir.inline_run(testpath, "-s")
+    reprec = pytester.inline_run(testpath, "-s")
     reprec.assertoutcome(skipped=1)
 
 
-class TestTrialUnittest(object):
-
+class TestTrialUnittest:
     def setup_class(cls):
         cls.ut = pytest.importorskip("twisted.trial.unittest")
         # on windows trial uses a socket for a reactor and apparently doesn't close it properly
         # https://twistedmatrix.com/trac/ticket/9227
         cls.ignore_unclosed_socket_warning = ("-W", "always")
 
-    def test_trial_testcase_runtest_not_collected(self, testdir):
-        testdir.makepyfile(
+    def test_trial_testcase_runtest_not_collected(self, pytester: Pytester) -> None:
+        pytester.makepyfile(
             """
             from twisted.trial.unittest import TestCase
 
@@ -406,9 +471,9 @@ class TestTrialUnittest(object):
                     pass
         """
         )
-        reprec = testdir.inline_run(*self.ignore_unclosed_socket_warning)
+        reprec = pytester.inline_run(*self.ignore_unclosed_socket_warning)
         reprec.assertoutcome(passed=1)
-        testdir.makepyfile(
+        pytester.makepyfile(
             """
             from twisted.trial.unittest import TestCase
 
@@ -417,11 +482,11 @@ class TestTrialUnittest(object):
                     pass
         """
         )
-        reprec = testdir.inline_run(*self.ignore_unclosed_socket_warning)
+        reprec = pytester.inline_run(*self.ignore_unclosed_socket_warning)
         reprec.assertoutcome(passed=1)
 
-    def test_trial_exceptions_with_skips(self, testdir):
-        testdir.makepyfile(
+    def test_trial_exceptions_with_skips(self, pytester: Pytester) -> None:
+        pytester.makepyfile(
             """
             from twisted.trial import unittest
             import pytest
@@ -455,10 +520,7 @@ class TestTrialUnittest(object):
                     pass
         """
         )
-        from _pytest.compat import _is_unittest_unexpected_success_a_failure
-
-        should_fail = _is_unittest_unexpected_success_a_failure()
-        result = testdir.runpytest("-rxs", *self.ignore_unclosed_socket_warning)
+        result = pytester.runpytest("-rxs", *self.ignore_unclosed_socket_warning)
         result.stdout.fnmatch_lines_random(
             [
                 "*XFAIL*test_trial_todo*",
@@ -468,15 +530,13 @@ class TestTrialUnittest(object):
                 "*i2wanto*",
                 "*sys.version_info*",
                 "*skip_in_method*",
-                "*1 failed*4 skipped*3 xfailed*"
-                if should_fail
-                else "*4 skipped*3 xfail*1 xpass*",
+                "*1 failed*4 skipped*3 xfailed*",
             ]
         )
-        assert result.ret == (1 if should_fail else 0)
+        assert result.ret == 1
 
-    def test_trial_error(self, testdir):
-        testdir.makepyfile(
+    def test_trial_error(self, pytester: Pytester) -> None:
+        pytester.makepyfile(
             """
             from twisted.trial.unittest import TestCase
             from twisted.internet.defer import Deferred
@@ -513,24 +573,34 @@ class TestTrialUnittest(object):
                 # will crash both at test time and at teardown
         """
         )
-        result = testdir.runpytest()
+        result = pytester.runpytest(
+            "-vv", "-oconsole_output_style=classic", "-W", "ignore::DeprecationWarning"
+        )
         result.stdout.fnmatch_lines(
             [
+                "test_trial_error.py::TC::test_four FAILED",
+                "test_trial_error.py::TC::test_four ERROR",
+                "test_trial_error.py::TC::test_one FAILED",
+                "test_trial_error.py::TC::test_three FAILED",
+                "test_trial_error.py::TC::test_two FAILED",
                 "*ERRORS*",
+                "*_ ERROR at teardown of TC.test_four _*",
                 "*DelayedCalls*",
-                "*test_four*",
+                "*= FAILURES =*",
+                "*_ TC.test_four _*",
                 "*NameError*crash*",
-                "*test_one*",
+                "*_ TC.test_one _*",
                 "*NameError*crash*",
-                "*test_three*",
+                "*_ TC.test_three _*",
                 "*DelayedCalls*",
-                "*test_two*",
-                "*crash*",
+                "*_ TC.test_two _*",
+                "*NameError*crash*",
+                "*= 4 failed, 1 error in *",
             ]
         )
 
-    def test_trial_pdb(self, testdir):
-        p = testdir.makepyfile(
+    def test_trial_pdb(self, pytester: Pytester) -> None:
+        p = pytester.makepyfile(
             """
             from twisted.trial import unittest
             import pytest
@@ -539,12 +609,12 @@ class TestTrialUnittest(object):
                     assert 0, "hellopdb"
         """
         )
-        child = testdir.spawn_pytest(p)
+        child = pytester.spawn_pytest(str(p))
         child.expect("hellopdb")
         child.sendeof()
 
-    def test_trial_testcase_skip_property(self, testdir):
-        testpath = testdir.makepyfile(
+    def test_trial_testcase_skip_property(self, pytester: Pytester) -> None:
+        testpath = pytester.makepyfile(
             """
             from twisted.trial import unittest
             class MyTestCase(unittest.TestCase):
@@ -553,11 +623,11 @@ class TestTrialUnittest(object):
                     pass
             """
         )
-        reprec = testdir.inline_run(testpath, "-s")
+        reprec = pytester.inline_run(testpath, "-s")
         reprec.assertoutcome(skipped=1)
 
-    def test_trial_testfunction_skip_property(self, testdir):
-        testpath = testdir.makepyfile(
+    def test_trial_testfunction_skip_property(self, pytester: Pytester) -> None:
+        testpath = pytester.makepyfile(
             """
             from twisted.trial import unittest
             class MyTestCase(unittest.TestCase):
@@ -566,11 +636,11 @@ class TestTrialUnittest(object):
                 test_func.skip = 'dont run'
             """
         )
-        reprec = testdir.inline_run(testpath, "-s")
+        reprec = pytester.inline_run(testpath, "-s")
         reprec.assertoutcome(skipped=1)
 
-    def test_trial_testcase_todo_property(self, testdir):
-        testpath = testdir.makepyfile(
+    def test_trial_testcase_todo_property(self, pytester: Pytester) -> None:
+        testpath = pytester.makepyfile(
             """
             from twisted.trial import unittest
             class MyTestCase(unittest.TestCase):
@@ -579,11 +649,11 @@ class TestTrialUnittest(object):
                     assert 0
             """
         )
-        reprec = testdir.inline_run(testpath, "-s")
+        reprec = pytester.inline_run(testpath, "-s")
         reprec.assertoutcome(skipped=1)
 
-    def test_trial_testfunction_todo_property(self, testdir):
-        testpath = testdir.makepyfile(
+    def test_trial_testfunction_todo_property(self, pytester: Pytester) -> None:
+        testpath = pytester.makepyfile(
             """
             from twisted.trial import unittest
             class MyTestCase(unittest.TestCase):
@@ -592,29 +662,29 @@ class TestTrialUnittest(object):
                 test_func.todo = 'dont run'
             """
         )
-        reprec = testdir.inline_run(
+        reprec = pytester.inline_run(
             testpath, "-s", *self.ignore_unclosed_socket_warning
         )
         reprec.assertoutcome(skipped=1)
 
 
-def test_djangolike_testcase(testdir):
+def test_djangolike_testcase(pytester: Pytester) -> None:
     # contributed from Morten Breekevold
-    testdir.makepyfile(
+    pytester.makepyfile(
         """
         from unittest import TestCase, main
 
         class DjangoLikeTestCase(TestCase):
 
             def setUp(self):
-                print ("setUp()")
+                print("setUp()")
 
             def test_presetup_has_been_run(self):
-                print ("test_thing()")
+                print("test_thing()")
                 self.assertTrue(hasattr(self, 'was_presetup'))
 
             def tearDown(self):
-                print ("tearDown()")
+                print("tearDown()")
 
             def __call__(self, result=None):
                 try:
@@ -636,14 +706,14 @@ def test_djangolike_testcase(testdir):
                     return
 
             def _pre_setup(self):
-                print ("_pre_setup()")
+                print("_pre_setup()")
                 self.was_presetup = True
 
             def _post_teardown(self):
-                print ("_post_teardown()")
+                print("_post_teardown()")
     """
     )
-    result = testdir.runpytest("-s")
+    result = pytester.runpytest("-s")
     assert result.ret == 0
     result.stdout.fnmatch_lines(
         [
@@ -656,8 +726,8 @@ def test_djangolike_testcase(testdir):
     )
 
 
-def test_unittest_not_shown_in_traceback(testdir):
-    testdir.makepyfile(
+def test_unittest_not_shown_in_traceback(pytester: Pytester) -> None:
+    pytester.makepyfile(
         """
         import unittest
         class t(unittest.TestCase):
@@ -666,12 +736,12 @@ def test_unittest_not_shown_in_traceback(testdir):
                 self.assertEqual(x, 4)
     """
     )
-    res = testdir.runpytest()
-    assert "failUnlessEqual" not in res.stdout.str()
+    res = pytester.runpytest()
+    res.stdout.no_fnmatch_line("*failUnlessEqual*")
 
 
-def test_unorderable_types(testdir):
-    testdir.makepyfile(
+def test_unorderable_types(pytester: Pytester) -> None:
+    pytester.makepyfile(
         """
         import unittest
         class TestJoinEmpty(unittest.TestCase):
@@ -685,13 +755,13 @@ def test_unorderable_types(testdir):
         TestFoo = make_test()
     """
     )
-    result = testdir.runpytest()
-    assert "TypeError" not in result.stdout.str()
-    assert result.ret == EXIT_NOTESTSCOLLECTED
+    result = pytester.runpytest()
+    result.stdout.no_fnmatch_line("*TypeError*")
+    assert result.ret == ExitCode.NO_TESTS_COLLECTED
 
 
-def test_unittest_typerror_traceback(testdir):
-    testdir.makepyfile(
+def test_unittest_typerror_traceback(pytester: Pytester) -> None:
+    pytester.makepyfile(
         """
         import unittest
         class TestJoinEmpty(unittest.TestCase):
@@ -699,14 +769,16 @@ def test_unittest_typerror_traceback(testdir):
                 pass
     """
     )
-    result = testdir.runpytest()
+    result = pytester.runpytest()
     assert "TypeError" in result.stdout.str()
     assert result.ret == 1
 
 
 @pytest.mark.parametrize("runner", ["pytest", "unittest"])
-def test_unittest_expected_failure_for_failing_test_is_xfail(testdir, runner):
-    script = testdir.makepyfile(
+def test_unittest_expected_failure_for_failing_test_is_xfail(
+    pytester: Pytester, runner
+) -> None:
+    script = pytester.makepyfile(
         """
         import unittest
         class MyTestCase(unittest.TestCase):
@@ -718,19 +790,22 @@ def test_unittest_expected_failure_for_failing_test_is_xfail(testdir, runner):
     """
     )
     if runner == "pytest":
-        result = testdir.runpytest("-rxX")
+        result = pytester.runpytest("-rxX")
         result.stdout.fnmatch_lines(
             ["*XFAIL*MyTestCase*test_failing_test_is_xfail*", "*1 xfailed*"]
         )
     else:
-        result = testdir.runpython(script)
+        result = pytester.runpython(script)
         result.stderr.fnmatch_lines(["*1 test in*", "*OK*(expected failures=1)*"])
     assert result.ret == 0
 
 
 @pytest.mark.parametrize("runner", ["pytest", "unittest"])
-def test_unittest_expected_failure_for_passing_test_is_fail(testdir, runner):
-    script = testdir.makepyfile(
+def test_unittest_expected_failure_for_passing_test_is_fail(
+    pytester: Pytester,
+    runner: str,
+) -> None:
+    script = pytester.makepyfile(
         """
         import unittest
         class MyTestCase(unittest.TestCase):
@@ -741,38 +816,35 @@ def test_unittest_expected_failure_for_passing_test_is_fail(testdir, runner):
             unittest.main()
     """
     )
-    from _pytest.compat import _is_unittest_unexpected_success_a_failure
 
-    should_fail = _is_unittest_unexpected_success_a_failure()
     if runner == "pytest":
-        result = testdir.runpytest("-rxX")
+        result = pytester.runpytest("-rxX")
         result.stdout.fnmatch_lines(
             [
                 "*MyTestCase*test_passing_test_is_fail*",
-                "*1 failed*" if should_fail else "*1 xpassed*",
+                "Unexpected success",
+                "*1 failed*",
             ]
         )
     else:
-        result = testdir.runpython(script)
+        result = pytester.runpython(script)
         result.stderr.fnmatch_lines(["*1 test in*", "*(unexpected successes=1)*"])
 
-    assert result.ret == (1 if should_fail else 0)
+    assert result.ret == 1
 
 
-@pytest.mark.parametrize(
-    "fix_type, stmt", [("fixture", "return"), ("yield_fixture", "yield")]
-)
-def test_unittest_setup_interaction(testdir, fix_type, stmt):
-    testdir.makepyfile(
-        """
+@pytest.mark.parametrize("stmt", ["return", "yield"])
+def test_unittest_setup_interaction(pytester: Pytester, stmt: str) -> None:
+    pytester.makepyfile(
+        f"""
         import unittest
         import pytest
         class MyTestCase(unittest.TestCase):
-            @pytest.{fix_type}(scope="class", autouse=True)
+            @pytest.fixture(scope="class", autouse=True)
             def perclass(self, request):
                 request.cls.hello = "world"
                 {stmt}
-            @pytest.{fix_type}(scope="function", autouse=True)
+            @pytest.fixture(scope="function", autouse=True)
             def perfunction(self, request):
                 request.instance.funcname = request.function.__name__
                 {stmt}
@@ -786,16 +858,14 @@ def test_unittest_setup_interaction(testdir, fix_type, stmt):
 
             def test_classattr(self):
                 assert self.__class__.hello == "world"
-    """.format(
-            fix_type=fix_type, stmt=stmt
-        )
+    """
     )
-    result = testdir.runpytest()
-    result.stdout.fnmatch_lines("*3 passed*")
+    result = pytester.runpytest()
+    result.stdout.fnmatch_lines(["*3 passed*"])
 
 
-def test_non_unittest_no_setupclass_support(testdir):
-    testpath = testdir.makepyfile(
+def test_non_unittest_no_setupclass_support(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
         """
         class TestFoo(object):
             x = 0
@@ -811,17 +881,17 @@ def test_non_unittest_no_setupclass_support(testdir):
             def tearDownClass(cls):
                 cls.x = 1
 
-        def test_not_teareddown():
+        def test_not_torn_down():
             assert TestFoo.x == 0
 
     """
     )
-    reprec = testdir.inline_run(testpath)
+    reprec = pytester.inline_run(testpath)
     reprec.assertoutcome(passed=2)
 
 
-def test_no_teardown_if_setupclass_failed(testdir):
-    testpath = testdir.makepyfile(
+def test_no_teardown_if_setupclass_failed(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
         """
         import unittest
 
@@ -844,21 +914,52 @@ def test_no_teardown_if_setupclass_failed(testdir):
             assert MyTestCase.x == 1
     """
     )
-    reprec = testdir.inline_run(testpath)
+    reprec = pytester.inline_run(testpath)
     reprec.assertoutcome(passed=1, failed=1)
 
 
-def test_issue333_result_clearing(testdir):
-    testdir.makeconftest(
+def test_cleanup_functions(pytester: Pytester) -> None:
+    """Ensure functions added with addCleanup are always called after each test ends (#6947)"""
+    pytester.makepyfile(
+        """
+        import unittest
+
+        cleanups = []
+
+        class Test(unittest.TestCase):
+
+            def test_func_1(self):
+                self.addCleanup(cleanups.append, "test_func_1")
+
+            def test_func_2(self):
+                self.addCleanup(cleanups.append, "test_func_2")
+                assert 0
+
+            def test_func_3_check_cleanups(self):
+                assert cleanups == ["test_func_1", "test_func_2"]
+    """
+    )
+    result = pytester.runpytest("-v")
+    result.stdout.fnmatch_lines(
+        [
+            "*::test_func_1 PASSED *",
+            "*::test_func_2 FAILED *",
+            "*::test_func_3_check_cleanups PASSED *",
+        ]
+    )
+
+
+def test_issue333_result_clearing(pytester: Pytester) -> None:
+    pytester.makeconftest(
         """
         import pytest
-        @pytest.hookimpl(hookwrapper=True)
+        @pytest.hookimpl(wrapper=True)
         def pytest_runtest_call(item):
             yield
             assert 0
     """
     )
-    testdir.makepyfile(
+    pytester.makepyfile(
         """
         import unittest
         class TestIt(unittest.TestCase):
@@ -867,12 +968,12 @@ def test_issue333_result_clearing(testdir):
     """
     )
 
-    reprec = testdir.inline_run()
+    reprec = pytester.inline_run()
     reprec.assertoutcome(failed=1)
 
 
-def test_unittest_raise_skip_issue748(testdir):
-    testdir.makepyfile(
+def test_unittest_raise_skip_issue748(pytester: Pytester) -> None:
+    pytester.makepyfile(
         test_foo="""
         import unittest
 
@@ -881,7 +982,7 @@ def test_unittest_raise_skip_issue748(testdir):
                 raise unittest.SkipTest('skipping due to reasons')
     """
     )
-    result = testdir.runpytest("-v", "-rs")
+    result = pytester.runpytest("-v", "-rs")
     result.stdout.fnmatch_lines(
         """
         *SKIP*[1]*test_foo.py*skipping due to reasons*
@@ -890,8 +991,8 @@ def test_unittest_raise_skip_issue748(testdir):
     )
 
 
-def test_unittest_skip_issue1169(testdir):
-    testdir.makepyfile(
+def test_unittest_skip_issue1169(pytester: Pytester) -> None:
+    pytester.makepyfile(
         test_foo="""
         import unittest
 
@@ -901,7 +1002,7 @@ def test_unittest_skip_issue1169(testdir):
                  self.fail()
         """
     )
-    result = testdir.runpytest("-v", "-rs")
+    result = pytester.runpytest("-v", "-rs")
     result.stdout.fnmatch_lines(
         """
         *SKIP*[1]*skipping due to reasons*
@@ -910,8 +1011,8 @@ def test_unittest_skip_issue1169(testdir):
     )
 
 
-def test_class_method_containing_test_issue1558(testdir):
-    testdir.makepyfile(
+def test_class_method_containing_test_issue1558(pytester: Pytester) -> None:
+    pytester.makepyfile(
         test_foo="""
         import unittest
 
@@ -923,18 +1024,16 @@ def test_class_method_containing_test_issue1558(testdir):
             test_should_not_run.__test__ = False
     """
     )
-    reprec = testdir.inline_run()
+    reprec = pytester.inline_run()
     reprec.assertoutcome(passed=1)
 
 
-@pytest.mark.issue(3498)
-@pytest.mark.parametrize(
-    "base", ["six.moves.builtins.object", "unittest.TestCase", "unittest2.TestCase"]
-)
-def test_usefixtures_marker_on_unittest(base, testdir):
+@pytest.mark.parametrize("base", ["builtins.object", "unittest.TestCase"])
+def test_usefixtures_marker_on_unittest(base, pytester: Pytester) -> None:
+    """#3498"""
     module = base.rsplit(".", 1)[0]
     pytest.importorskip(module)
-    testdir.makepyfile(
+    pytester.makepyfile(
         conftest="""
         import pytest
 
@@ -963,8 +1062,8 @@ def test_usefixtures_marker_on_unittest(base, testdir):
         """
     )
 
-    testdir.makepyfile(
-        """
+    pytester.makepyfile(
+        f"""
         import pytest
         import {module}
 
@@ -983,10 +1082,561 @@ def test_usefixtures_marker_on_unittest(base, testdir):
                 assert self.fixture2
 
 
-    """.format(
-            module=module, base=base
-        )
+    """
     )
 
-    result = testdir.runpytest("-s")
+    result = pytester.runpytest("-s")
     result.assert_outcomes(passed=2)
+
+
+def test_testcase_handles_init_exceptions(pytester: Pytester) -> None:
+    """
+    Regression test to make sure exceptions in the __init__ method are bubbled up correctly.
+    See https://github.com/pytest-dev/pytest/issues/3788
+    """
+    pytester.makepyfile(
+        """
+        from unittest import TestCase
+        import pytest
+        class MyTestCase(TestCase):
+            def __init__(self, *args, **kwargs):
+                raise Exception("should raise this exception")
+            def test_hello(self):
+                pass
+    """
+    )
+    result = pytester.runpytest()
+    assert "should raise this exception" in result.stdout.str()
+    result.stdout.no_fnmatch_line("*ERROR at teardown of MyTestCase.test_hello*")
+
+
+def test_error_message_with_parametrized_fixtures(pytester: Pytester) -> None:
+    pytester.copy_example("unittest/test_parametrized_fixture_error_message.py")
+    result = pytester.runpytest()
+    result.stdout.fnmatch_lines(
+        [
+            "*test_two does not support fixtures*",
+            "*TestSomethingElse::test_two",
+            "*Function type: TestCaseFunction",
+        ]
+    )
+
+
+@pytest.mark.parametrize(
+    "test_name, expected_outcome",
+    [
+        ("test_setup_skip.py", "1 skipped"),
+        ("test_setup_skip_class.py", "1 skipped"),
+        ("test_setup_skip_module.py", "1 error"),
+    ],
+)
+def test_setup_inheritance_skipping(
+    pytester: Pytester, test_name, expected_outcome
+) -> None:
+    """Issue #4700"""
+    pytester.copy_example(f"unittest/{test_name}")
+    result = pytester.runpytest()
+    result.stdout.fnmatch_lines([f"* {expected_outcome} in *"])
+
+
+def test_BdbQuit(pytester: Pytester) -> None:
+    pytester.makepyfile(
+        test_foo="""
+        import unittest
+
+        class MyTestCase(unittest.TestCase):
+            def test_bdbquit(self):
+                import bdb
+                raise bdb.BdbQuit()
+
+            def test_should_not_run(self):
+                pass
+    """
+    )
+    reprec = pytester.inline_run()
+    reprec.assertoutcome(failed=1, passed=1)
+
+
+def test_exit_outcome(pytester: Pytester) -> None:
+    pytester.makepyfile(
+        test_foo="""
+        import pytest
+        import unittest
+
+        class MyTestCase(unittest.TestCase):
+            def test_exit_outcome(self):
+                pytest.exit("pytest_exit called")
+
+            def test_should_not_run(self):
+                pass
+    """
+    )
+    result = pytester.runpytest()
+    result.stdout.fnmatch_lines(["*Exit: pytest_exit called*", "*= no tests ran in *"])
+
+
+def test_trace(pytester: Pytester, monkeypatch: MonkeyPatch) -> None:
+    calls = []
+
+    def check_call(*args, **kwargs):
+        calls.append((args, kwargs))
+        assert args == ("runcall",)
+
+        class _pdb:
+            def runcall(*args, **kwargs):
+                calls.append((args, kwargs))
+
+        return _pdb
+
+    monkeypatch.setattr("_pytest.debugging.pytestPDB._init_pdb", check_call)
+
+    p1 = pytester.makepyfile(
+        """
+        import unittest
+
+        class MyTestCase(unittest.TestCase):
+            def test(self):
+                self.assertEqual('foo', 'foo')
+    """
+    )
+    result = pytester.runpytest("--trace", str(p1))
+    assert len(calls) == 2
+    assert result.ret == 0
+
+
+def test_pdb_teardown_called(pytester: Pytester, monkeypatch: MonkeyPatch) -> None:
+    """Ensure tearDown() is always called when --pdb is given in the command-line.
+
+    We delay the normal tearDown() calls when --pdb is given, so this ensures we are calling
+    tearDown() eventually to avoid memory leaks when using --pdb.
+    """
+    teardowns: List[str] = []
+    monkeypatch.setattr(
+        pytest, "test_pdb_teardown_called_teardowns", teardowns, raising=False
+    )
+
+    pytester.makepyfile(
+        """
+        import unittest
+        import pytest
+
+        class MyTestCase(unittest.TestCase):
+
+            def tearDown(self):
+                pytest.test_pdb_teardown_called_teardowns.append(self.id())
+
+            def test_1(self):
+                pass
+            def test_2(self):
+                pass
+    """
+    )
+    result = pytester.runpytest_inprocess("--pdb")
+    result.stdout.fnmatch_lines("* 2 passed in *")
+    assert teardowns == [
+        "test_pdb_teardown_called.MyTestCase.test_1",
+        "test_pdb_teardown_called.MyTestCase.test_2",
+    ]
+
+
+@pytest.mark.parametrize("mark", ["@unittest.skip", "@pytest.mark.skip"])
+def test_pdb_teardown_skipped_for_functions(
+    pytester: Pytester, monkeypatch: MonkeyPatch, mark: str
+) -> None:
+    """
+    With --pdb, setUp and tearDown should not be called for tests skipped
+    via a decorator (#7215).
+    """
+    tracked: List[str] = []
+    monkeypatch.setattr(pytest, "track_pdb_teardown_skipped", tracked, raising=False)
+
+    pytester.makepyfile(
+        f"""
+        import unittest
+        import pytest
+
+        class MyTestCase(unittest.TestCase):
+
+            def setUp(self):
+                pytest.track_pdb_teardown_skipped.append("setUp:" + self.id())
+
+            def tearDown(self):
+                pytest.track_pdb_teardown_skipped.append("tearDown:" + self.id())
+
+            {mark}("skipped for reasons")
+            def test_1(self):
+                pass
+
+    """
+    )
+    result = pytester.runpytest_inprocess("--pdb")
+    result.stdout.fnmatch_lines("* 1 skipped in *")
+    assert tracked == []
+
+
+@pytest.mark.parametrize("mark", ["@unittest.skip", "@pytest.mark.skip"])
+def test_pdb_teardown_skipped_for_classes(
+    pytester: Pytester, monkeypatch: MonkeyPatch, mark: str
+) -> None:
+    """
+    With --pdb, setUp and tearDown should not be called for tests skipped
+    via a decorator on the class (#10060).
+    """
+    tracked: List[str] = []
+    monkeypatch.setattr(pytest, "track_pdb_teardown_skipped", tracked, raising=False)
+
+    pytester.makepyfile(
+        f"""
+        import unittest
+        import pytest
+
+        {mark}("skipped for reasons")
+        class MyTestCase(unittest.TestCase):
+
+            def setUp(self):
+                pytest.track_pdb_teardown_skipped.append("setUp:" + self.id())
+
+            def tearDown(self):
+                pytest.track_pdb_teardown_skipped.append("tearDown:" + self.id())
+
+            def test_1(self):
+                pass
+
+    """
+    )
+    result = pytester.runpytest_inprocess("--pdb")
+    result.stdout.fnmatch_lines("* 1 skipped in *")
+    assert tracked == []
+
+
+def test_async_support(pytester: Pytester) -> None:
+    pytest.importorskip("unittest.async_case")
+
+    pytester.copy_example("unittest/test_unittest_asyncio.py")
+    reprec = pytester.inline_run()
+    reprec.assertoutcome(failed=1, passed=2)
+
+
+def test_asynctest_support(pytester: Pytester) -> None:
+    """Check asynctest support (#7110)"""
+    pytest.importorskip("asynctest")
+
+    pytester.copy_example("unittest/test_unittest_asynctest.py")
+    reprec = pytester.inline_run()
+    reprec.assertoutcome(failed=1, passed=2)
+
+
+def test_plain_unittest_does_not_support_async(pytester: Pytester) -> None:
+    """Async functions in plain unittest.TestCase subclasses are not supported without plugins.
+
+    This test exists here to avoid introducing this support by accident, leading users
+    to expect that it works, rather than doing so intentionally as a feature.
+
+    See https://github.com/pytest-dev/pytest-asyncio/issues/180 for more context.
+    """
+    pytester.copy_example("unittest/test_unittest_plain_async.py")
+    result = pytester.runpytest_subprocess()
+    if hasattr(sys, "pypy_version_info"):
+        # in PyPy we can't reliable get the warning about the coroutine not being awaited,
+        # because it depends on the coroutine being garbage collected; given that
+        # we are running in a subprocess, that's difficult to enforce
+        expected_lines = ["*1 passed*"]
+    else:
+        expected_lines = [
+            "*RuntimeWarning: coroutine * was never awaited",
+            "*1 passed*",
+        ]
+    result.stdout.fnmatch_lines(expected_lines)
+
+
+def test_do_class_cleanups_on_success(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
+        """
+        import unittest
+        class MyTestCase(unittest.TestCase):
+            values = []
+            @classmethod
+            def setUpClass(cls):
+                def cleanup():
+                    cls.values.append(1)
+                cls.addClassCleanup(cleanup)
+            def test_one(self):
+                pass
+            def test_two(self):
+                pass
+        def test_cleanup_called_exactly_once():
+            assert MyTestCase.values == [1]
+    """
+    )
+    reprec = pytester.inline_run(testpath)
+    passed, skipped, failed = reprec.countoutcomes()
+    assert failed == 0
+    assert passed == 3
+
+
+def test_do_class_cleanups_on_setupclass_failure(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
+        """
+        import unittest
+        class MyTestCase(unittest.TestCase):
+            values = []
+            @classmethod
+            def setUpClass(cls):
+                def cleanup():
+                    cls.values.append(1)
+                cls.addClassCleanup(cleanup)
+                assert False
+            def test_one(self):
+                pass
+        def test_cleanup_called_exactly_once():
+            assert MyTestCase.values == [1]
+    """
+    )
+    reprec = pytester.inline_run(testpath)
+    passed, skipped, failed = reprec.countoutcomes()
+    assert failed == 1
+    assert passed == 1
+
+
+def test_do_class_cleanups_on_teardownclass_failure(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
+        """
+        import unittest
+        class MyTestCase(unittest.TestCase):
+            values = []
+            @classmethod
+            def setUpClass(cls):
+                def cleanup():
+                    cls.values.append(1)
+                cls.addClassCleanup(cleanup)
+            @classmethod
+            def tearDownClass(cls):
+                assert False
+            def test_one(self):
+                pass
+            def test_two(self):
+                pass
+        def test_cleanup_called_exactly_once():
+            assert MyTestCase.values == [1]
+    """
+    )
+    reprec = pytester.inline_run(testpath)
+    passed, skipped, failed = reprec.countoutcomes()
+    assert passed == 3
+
+
+def test_do_cleanups_on_success(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
+        """
+        import unittest
+        class MyTestCase(unittest.TestCase):
+            values = []
+            def setUp(self):
+                def cleanup():
+                    self.values.append(1)
+                self.addCleanup(cleanup)
+            def test_one(self):
+                pass
+            def test_two(self):
+                pass
+        def test_cleanup_called_the_right_number_of_times():
+            assert MyTestCase.values == [1, 1]
+    """
+    )
+    reprec = pytester.inline_run(testpath)
+    passed, skipped, failed = reprec.countoutcomes()
+    assert failed == 0
+    assert passed == 3
+
+
+def test_do_cleanups_on_setup_failure(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
+        """
+        import unittest
+        class MyTestCase(unittest.TestCase):
+            values = []
+            def setUp(self):
+                def cleanup():
+                    self.values.append(1)
+                self.addCleanup(cleanup)
+                assert False
+            def test_one(self):
+                pass
+            def test_two(self):
+                pass
+        def test_cleanup_called_the_right_number_of_times():
+            assert MyTestCase.values == [1, 1]
+    """
+    )
+    reprec = pytester.inline_run(testpath)
+    passed, skipped, failed = reprec.countoutcomes()
+    assert failed == 2
+    assert passed == 1
+
+
+def test_do_cleanups_on_teardown_failure(pytester: Pytester) -> None:
+    testpath = pytester.makepyfile(
+        """
+        import unittest
+        class MyTestCase(unittest.TestCase):
+            values = []
+            def setUp(self):
+                def cleanup():
+                    self.values.append(1)
+                self.addCleanup(cleanup)
+            def tearDown(self):
+                assert False
+            def test_one(self):
+                pass
+            def test_two(self):
+                pass
+        def test_cleanup_called_the_right_number_of_times():
+            assert MyTestCase.values == [1, 1]
+    """
+    )
+    reprec = pytester.inline_run(testpath)
+    passed, skipped, failed = reprec.countoutcomes()
+    assert failed == 2
+    assert passed == 1
+
+
+class TestClassCleanupErrors:
+    """
+    Make sure to show exceptions raised during class cleanup function (those registered
+    via addClassCleanup()).
+
+    See #11728.
+    """
+
+    def test_class_cleanups_failure_in_setup(self, pytester: Pytester) -> None:
+        testpath = pytester.makepyfile(
+            """
+            import unittest
+            class MyTestCase(unittest.TestCase):
+                @classmethod
+                def setUpClass(cls):
+                    def cleanup(n):
+                        raise Exception(f"fail {n}")
+                    cls.addClassCleanup(cleanup, 2)
+                    cls.addClassCleanup(cleanup, 1)
+                    raise Exception("fail 0")
+                def test(self):
+                    pass
+        """
+        )
+        result = pytester.runpytest("-s", testpath)
+        result.assert_outcomes(passed=0, errors=1)
+        result.stdout.fnmatch_lines(
+            [
+                "*Unittest class cleanup errors *2 sub-exceptions*",
+                "*Exception: fail 1",
+                "*Exception: fail 2",
+            ]
+        )
+        result.stdout.fnmatch_lines(
+            [
+                "* ERROR at setup of MyTestCase.test *",
+                "E * Exception: fail 0",
+            ]
+        )
+
+    def test_class_cleanups_failure_in_teardown(self, pytester: Pytester) -> None:
+        testpath = pytester.makepyfile(
+            """
+            import unittest
+            class MyTestCase(unittest.TestCase):
+                @classmethod
+                def setUpClass(cls):
+                    def cleanup(n):
+                        raise Exception(f"fail {n}")
+                    cls.addClassCleanup(cleanup, 2)
+                    cls.addClassCleanup(cleanup, 1)
+                def test(self):
+                    pass
+        """
+        )
+        result = pytester.runpytest("-s", testpath)
+        result.assert_outcomes(passed=1, errors=1)
+        result.stdout.fnmatch_lines(
+            [
+                "*Unittest class cleanup errors *2 sub-exceptions*",
+                "*Exception: fail 1",
+                "*Exception: fail 2",
+            ]
+        )
+
+    def test_class_cleanup_1_failure_in_teardown(self, pytester: Pytester) -> None:
+        testpath = pytester.makepyfile(
+            """
+            import unittest
+            class MyTestCase(unittest.TestCase):
+                @classmethod
+                def setUpClass(cls):
+                    def cleanup(n):
+                        raise Exception(f"fail {n}")
+                    cls.addClassCleanup(cleanup, 1)
+                def test(self):
+                    pass
+        """
+        )
+        result = pytester.runpytest("-s", testpath)
+        result.assert_outcomes(passed=1, errors=1)
+        result.stdout.fnmatch_lines(
+            [
+                "*ERROR at teardown of MyTestCase.test*",
+                "*Exception: fail 1",
+            ]
+        )
+
+
+def test_traceback_pruning(pytester: Pytester) -> None:
+    """Regression test for #9610 - doesn't crash during traceback pruning."""
+    pytester.makepyfile(
+        """
+        import unittest
+
+        class MyTestCase(unittest.TestCase):
+            def __init__(self, test_method):
+                unittest.TestCase.__init__(self, test_method)
+
+        class TestIt(MyTestCase):
+            @classmethod
+            def tearDownClass(cls) -> None:
+                assert False
+
+            def test_it(self):
+                pass
+        """
+    )
+    reprec = pytester.inline_run()
+    passed, skipped, failed = reprec.countoutcomes()
+    assert passed == 1
+    assert failed == 1
+    assert reprec.ret == 1
+
+
+def test_raising_unittest_skiptest_during_collection(
+    pytester: Pytester,
+) -> None:
+    pytester.makepyfile(
+        """
+        import unittest
+
+        class TestIt(unittest.TestCase):
+            def test_it(self): pass
+            def test_it2(self): pass
+
+        raise unittest.SkipTest()
+
+        class TestIt2(unittest.TestCase):
+            def test_it(self): pass
+            def test_it2(self): pass
+        """
+    )
+    reprec = pytester.inline_run()
+    passed, skipped, failed = reprec.countoutcomes()
+    assert passed == 0
+    # Unittest reports one fake test for a skipped module.
+    assert skipped == 1
+    assert failed == 0
+    assert reprec.ret == ExitCode.NO_TESTS_COLLECTED

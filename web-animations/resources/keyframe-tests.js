@@ -536,6 +536,11 @@ const gKeyframesTests = [
     output: [keyframe(offset(0.5), { left: '10px' })],
   },
   {
+    desc:   'a single keyframe sequence with a single calc() offset',
+    input:  [{ offset: 'calc(0.5)', left: '10px' }],
+    output: [keyframe(offset(0.5), { left: '10px' })],
+  },
+  {
     desc:   'a one property keyframe sequence with some omitted offsets',
     input:  [{ offset: 0.00, left: '10px' },
              { offset: 0.25, left: '20px' },
@@ -795,4 +800,33 @@ const gInvalidKeyframeEffectOptionTests = [
   { desc: 'an \'inherit\' easing', input: { easing: 'inherit' } },
   { desc: 'a variable easing', input: { easing: 'var(--x)' } },
   { desc: 'a multi-value easing', input: { easing: 'ease-in-out, ease-out' } },
+];
+
+// There is currently only ScrollTimeline that can be constructed and used here
+// beyond document timeline. Given that ScrollTimeline is not stable as of yet
+// it's tested in scroll-animations/animation-with-animatable-interface.html.
+const gAnimationTimelineTests = [
+  {
+    expectedTimeline: document.timeline,
+    expectedTimelineDescription: 'document.timeline',
+    description: 'with no timeline parameter'
+  },
+  {
+    timeline: undefined,
+    expectedTimeline: document.timeline,
+    expectedTimelineDescription: 'document.timeline',
+    description: 'with undefined timeline'
+  },
+  {
+    timeline: null,
+    expectedTimeline: null,
+    expectedTimelineDescription: 'null',
+    description: 'with null timeline'
+  },
+  {
+    timeline: document.timeline,
+    expectedTimeline: document.timeline,
+    expectedTimelineDescription: 'document.timeline',
+    description: 'with DocumentTimeline'
+  },
 ];

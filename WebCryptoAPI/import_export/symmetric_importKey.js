@@ -1,7 +1,8 @@
 // Test importKey and exportKey for non-PKC algorithms. Only "happy paths" are
 // currently tested - those where the operation should succeed.
 
-function run_test() {
+
+function runTests(algorithmName) {
     var subtle = crypto.subtle;
 
     // keying material for algorithms that can use any bit string.
@@ -19,41 +20,54 @@ function run_test() {
         {name: "AES-CBC",               legalUsages: ["encrypt", "decrypt"],      extractable: [true, false], formats: ["raw", "jwk"]},
         {name: "AES-GCM",               legalUsages: ["encrypt", "decrypt"],      extractable: [true, false], formats: ["raw", "jwk"]},
         {name: "AES-KW",                legalUsages: ["wrapKey", "unwrapKey"],    extractable: [true, false], formats: ["raw", "jwk"]},
-        {name: "HMAC", hash: "SHA-1",   legalUsages: ["sign", "verify"],          extractable: [false],       formats: ["raw", "jwk"]},
-        {name: "HMAC", hash: "SHA-256", legalUsages: ["sign", "verify"],          extractable: [false],       formats: ["raw", "jwk"]},
-        {name: "HMAC", hash: "SHA-384", legalUsages: ["sign", "verify"],          extractable: [false],       formats: ["raw", "jwk"]},
-        {name: "HMAC", hash: "SHA-512", legalUsages: ["sign", "verify"],          extractable: [false],       formats: ["raw", "jwk"]},
+        {name: "HMAC", hash: "SHA-1",   legalUsages: ["sign", "verify"],          extractable: [true, false], formats: ["raw", "jwk"]},
+        {name: "HMAC", hash: "SHA-256", legalUsages: ["sign", "verify"],          extractable: [true, false], formats: ["raw", "jwk"]},
+        {name: "HMAC", hash: "SHA-384", legalUsages: ["sign", "verify"],          extractable: [true, false], formats: ["raw", "jwk"]},
+        {name: "HMAC", hash: "SHA-512", legalUsages: ["sign", "verify"],          extractable: [true, false], formats: ["raw", "jwk"]},
         {name: "HKDF",                  legalUsages: ["deriveBits", "deriveKey"], extractable: [false],       formats: ["raw"]},
-        {name: "PBKDF2",                legalUsages: ["deriveBits", "deriveKey"], extractable: [false],       formats: ["raw"]}
+        {name: "PBKDF2",                legalUsages: ["deriveBits", "deriveKey"], extractable: [false],       formats: ["raw"]},
+        {name: "Argon2i",               legalUsages: ["deriveBits", "deriveKey"], extractable: [false],       formats: ["raw-secret"]},
+        {name: "Argon2d",               legalUsages: ["deriveBits", "deriveKey"], extractable: [false],       formats: ["raw-secret"]},
+        {name: "Argon2id",              legalUsages: ["deriveBits", "deriveKey"], extractable: [false],       formats: ["raw-secret"]},
+        {name: "AES-OCB",               legalUsages: ["encrypt", "decrypt"],      extractable: [true, false], formats: ["raw-secret", "jwk"]},
+        {name: "ChaCha20-Poly1305",     legalUsages: ["encrypt", "decrypt"],      extractable: [true, false], formats: ["raw-secret", "jwk"]},
+        {name: "KMAC128",               legalUsages: ["sign", "verify"],          extractable: [true, false], formats: ["raw-secret", "jwk"]},
+        {name: "KMAC256",               legalUsages: ["sign", "verify"],          extractable: [true, false], formats: ["raw-secret", "jwk"]},
     ];
 
 
 
     // TESTS ARE HERE:
     // Test every test vector, along with all available key data
-    testVectors.forEach(function(vector) {
+    testVectors.filter(({ name }) => name === algorithmName).forEach(function(vector) {
         var algorithm = {name: vector.name};
         if ("hash" in vector) {
             algorithm.hash = vector.hash;
         }
 
         rawKeyData.forEach(function(keyData) {
-            // Generate all combinations of valid usages for testing
-            allValidUsages(vector.legalUsages, []).forEach(function(usages) {
-                // Try each legal value of the extractable parameter
-                vector.extractable.forEach(function(extractable) {
-                    vector.formats.forEach(function(format) {
-                        var data = keyData;
-                        if (format === "jwk") {
-                            data = jwkData(keyData, algorithm);
-                        }
+            if (vector.name === 'ChaCha20-Poly1305' && keyData.byteLength !== 32) return;
+            // Try each legal value of the extractable parameter
+            vector.extractable.forEach(function(extractable) {
+                vector.formats.forEach(function(format) {
+                    var data = keyData;
+                    if (format === "jwk") {
+                        data = jwkData(keyData, algorithm);
+                    }
+                    // Generate all combinations of valid usages for testing
+                    allValidUsages(vector.legalUsages).forEach(function(usages) {
                         testFormat(format, algorithm, data, keyData.length * 8, usages, extractable);
                     });
+                    testEmptyUsages(format, algorithm, data, keyData.length * 8, extractable);
                 });
             });
 
         });
     });
+
+    function hasLength(algorithm) {
+        return algorithm.name === 'HMAC' || algorithm.name.startsWith('AES') || algorithm.name.startsWith('KMAC');
+    }
 
     // Test importKey with a given key format and other parameters. If
     // extrable is true, export the key and verify that it matches the input.
@@ -62,6 +76,7 @@ function run_test() {
             return subtle.importKey(format, keyData, algorithm, extractable, usages).
             then(function(key) {
                 assert_equals(key.constructor, CryptoKey, "Imported a CryptoKey object");
+                assert_goodCryptoKey(key, hasLength(key.algorithm) ? { length: keySize, ...algorithm } : algorithm, extractable, usages, 'secret');
                 if (!extractable) {
                     return;
                 }
@@ -80,6 +95,20 @@ function run_test() {
                 assert_unreached("Threw an unexpected error: " + err.toString());
             });
         }, "Good parameters: " + keySize.toString() + " bits " + parameterString(format, keyData, algorithm, extractable, usages));
+    }
+
+    // Test importKey with a given key format and other parameters but with empty usages.
+    // Should fail with SyntaxError
+    function testEmptyUsages(format, algorithm, keyData, keySize, extractable) {
+        const usages = [];
+        promise_test(function(test) {
+            return subtle.importKey(format, keyData, algorithm, extractable, usages).
+            then(function(key) {
+                assert_unreached("importKey succeeded but should have failed with SyntaxError");
+            }, function(err) {
+                assert_equals(err.name, "SyntaxError", "Should throw correct error, not " + err.name + ": " + err.message);
+            });
+        }, "Empty Usages: " + keySize.toString() + " bits " + parameterString(format, keyData, algorithm, extractable, usages));
     }
 
 
@@ -135,6 +164,8 @@ function run_test() {
             result.alg = "A" + (8 * keyData.byteLength).toString() + algorithm.name.substring(4);
         } else if (algorithm.name === "HMAC") {
             result.alg = "HS" + algorithm.hash.substring(4);
+        } else if (algorithm.name.startsWith("KMAC")) {
+            result.alg = "K" + algorithm.name.substring(4);
         }
         return result;
     }
@@ -148,46 +179,6 @@ function run_test() {
         var base64String = btoa(binaryString);
 
         return base64String.replace(/=/g, "");
-    }
-
-    // Want to test every valid combination of usages. Start by creating a list
-    // of all non-empty subsets to possible usages.
-    function allNonemptySubsetsOf(arr) {
-        var results = [];
-        var firstElement;
-        var remainingElements;
-
-        for(var i=0; i<arr.length; i++) {
-            firstElement = arr[i];
-            remainingElements = arr.slice(i+1);
-            results.push([firstElement]);
-
-            if (remainingElements.length > 0) {
-                allNonemptySubsetsOf(remainingElements).forEach(function(combination) {
-                    combination.push(firstElement);
-                    results.push(combination);
-                });
-            }
-        }
-
-        return results;
-    }
-
-    // Return a list of all valid usage combinations, given the possible ones
-    // and the ones that are required for a particular operation.
-    function allValidUsages(possibleUsages, requiredUsages) {
-        var allUsages = [];
-
-        allNonemptySubsetsOf(possibleUsages).forEach(function(usage) {
-            for (var i=0; i<requiredUsages.length; i++) {
-                if (!usage.includes(requiredUsages[i])) {
-                    return;
-                }
-            }
-            allUsages.push(usage);
-        });
-
-        return allUsages;
     }
 
     // Convert method parameters to a string to uniquely name each test
@@ -237,6 +228,4 @@ function run_test() {
 
         return "{" + keyValuePairs.join(", ") + "}";
     }
-
-    return; // from run_test
 }

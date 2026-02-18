@@ -1,6 +1,7 @@
-// META: global=sharedworker
+// META: global=window,dedicatedworker,sharedworker
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
+// META: timeout=long
 
 idl_test(
   ['xhr'],
@@ -14,7 +15,14 @@ idl_test(
     });
     if (self.Window) {
       self.form = document.createElement('form');
-      idl_array.add_objects({ FormData: ['new FormData(form)'] });
+      self.submitter = document.createElement('button');
+      self.form.appendChild(self.submitter);
+      idl_array.add_objects({
+        FormData: [
+          'new FormData(form)',
+          'new FormData(form, submitter)'
+        ],
+      });
     }
   }
 );

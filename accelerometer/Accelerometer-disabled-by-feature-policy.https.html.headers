@@ -1,1 +1,1 @@
-Feature-Policy: accelerometer 'none'
+Permissions-Policy: accelerometer=()

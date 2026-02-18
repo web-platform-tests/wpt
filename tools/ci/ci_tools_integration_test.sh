@@ -13,6 +13,11 @@ main() {
     cd tools/wpt
     tox
     cd $WPT_ROOT
+
+    # WMAS test runner integration tests
+    cd tools/wave
+    tox
+    cd $WPT_ROOT
 }
 
 main

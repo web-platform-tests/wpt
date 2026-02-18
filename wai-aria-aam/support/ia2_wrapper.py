@@ -15,7 +15,7 @@ IAccessible2Ptr = Any
 import comtypes.client
 from comtypes import IServiceProvider
 
-from ..platformaccessibility.ia2.constants import (  # type: ignore[attr-defined]
+from .ia2.constants import (  # type: ignore[attr-defined]
     IAccessible2_2,
     Role,
     msaa_state_list_to_string,
@@ -146,7 +146,7 @@ class Ia2Wrapper:
         """
 
         tab = poll_for_tab(url, self.root)
-        node = find_ia2_node(tab, dom_id)
+        node = find_ia2_node(tab, dom_id, self.timeout)
         if not node:
             raise Exception(f"Couldn't find node with ID {dom_id}.")
 

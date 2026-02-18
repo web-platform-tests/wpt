@@ -1,0 +1,73 @@
+var firstName = "YeTar";
+var lastName = "Oo";
+var myNumber = +959426753242;
+
+var fullName = firstName + " " + lastName;
+var meaningOfLife = myNumber * 2;
+
+console.log("The name is " + fullName);
+console.log("The meaning of life is " + meaningOfLife);
+{
+  message: 'Starting Java server with: /usr/lib/jvm/java-17-openjdk-amd64/bin/java --add-modules=ALL-SYSTEM --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED -Declipse.application=org.eclipse.jdt.ls.core.id1 -Dosgi.bundles.defaultStartLevel=4 -Declipse.product=org.eclipse.jdt.ls.core.product -Djava.import.generatesMetadataFilesAtProjectRoot=false -Dfile.encoding=utf8 -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx1G -Xms100m -jar /google/devshell/editor/theia/plugins/redhat.java-1.2.0/extension/server/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar -configuration /home/uyetar949/.theia/globalStorage/redhat.java/1.2.0/config_ss_linux -data /home/uyetar949/.theia/workspace-storage/4f800b312eacd9ea972d3a53912c417e/redhat.java/ss_ws',
+  level: 'info',
+  timestamp: '2023-12-17 09:15:48.337'
+}
+{
+  message: 'WARNING: Using incubator modules: jdk.incubator.foreign, jdk.incubator.vector\n',
+  level: 'info',
+  timestamp: '2023-12-17 09:15:48.456'
+}
+{
+  message: '[Error - 9:16:56 AM] Connection to server got closed. Server will not be restarted.',
+  level: 'info',
+  timestamp: '2023-12-17 09:16:56.869'
+}
+{
+  message: 'Starting Java server with: /usr/lib/jvm/java-17-openjdk-amd64/bin/java --add-modules=ALL-SYSTEM --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED -Declipse.application=org.eclipse.jdt.ls.core.id1 -Dosgi.bundles.defaultStartLevel=4 -Declipse.product=org.eclipse.jdt.ls.core.product -Djava.import.generatesMetadataFilesAtProjectRoot=false -Dfile.encoding=utf8 -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx1G -Xms100m -jar /google/devshell/editor/theia/plugins/redhat.java-1.2.0/extension/server/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar -configuration /home/uyetar949/.theia/globalStorage/redhat.java/1.2.0/config_ss_linux -data /home/uyetar949/.theia/workspace-storage/4f800b312eacd9ea972d3a53912c417e/redhat.java/ss_ws',
+  level: 'info',
+  timestamp: '2023-12-17 09:17:22.002'
+}
+{
+  message: 'WARNING: Using incubator modules: jdk.incubator.foreign, jdk.incubator.vector\n',
+  level: 'info',
+  timestamp: '2023-12-17 09:17:22.135'
+}
+{
+  "project_info": {
+    "project_number": "10498618186",
+    "project_id": "uyetar949-wixsite-com-yetaroo",
+    "storage_bucket": "uyetar949-wixsite-com-yetaroo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:10498618186:android:4eca88d14f58dc55e207b3",
+        "android_client_info": {
+          "package_name": "com.logozip.coinbasewallet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "10498618186-tet65f7jtsraa1mv709t6hanngudm5q4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5m1gwwhE9EfC_TF9DJivdekse47LD_hY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "10498618186-tet65f7jtsraa1mv709t6hanngudm5q4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

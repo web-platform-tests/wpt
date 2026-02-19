@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<!-- This test verifies that keyboard navigation in the select picker
+  respects vertical writing modes. In vertical-lr, Right moves to next
+  and Left moves to previous. In vertical-rl, Left moves to next and
+  Right moves to previous. Down/Up should also work as secondary keys. -->
+
+<style>
+select, select::picker(select) {
+  appearance: base-select;
+}
+.vertical-lr, .vertical-lr::picker(select) {
+  writing-mode: vertical-lr;
+}
+.vertical-rl, .vertical-rl::picker(select) {
+  writing-mode: vertical-rl;
+}
+</style>
+
+<select id=vertical-lr class=vertical-lr>
+  <option class=one>one</option>
+  <option class=two>two</option>
+  <option class=three>three</option>
+</select>
+
+<select id=vertical-rl class=vertical-rl>
+  <option class=one>one</option>
+  <option class=two>two</option>
+  <option class=three>three</option>
+</select>
+
+<script>
+const ArrowLeft = '\uE012';
+const ArrowUp = '\uE013';
+const ArrowRight = '\uE014';
+const ArrowDown = '\uE015';
+const Space = ' ';
+const Escape = '\uE00C';
+
+async function openPicker(select) {
+  select.focus();
+  await test_driver.send_keys(document.activeElement, Space);
+  await new Promise(requestAnimationFrame);
+}
+
+async function closePicker(select) {
+  await test_driver.send_keys(document.activeElement, Escape);
+  await new Promise(requestAnimationFrame);
+}
+
+// Tests for vertical-lr writing mode
+const selectLR = document.getElementById('vertical-lr');
+
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    if (selectLR.matches(':open')) await closePicker(selectLR);
+    selectLR.value = 'one';
+  });
+
+  const optionOne = selectLR.querySelector('.one');
+  const optionTwo = selectLR.querySelector('.two');
+  const optionThree = selectLR.querySelector('.three');
+
+  await openPicker(selectLR);
+  assert_true(selectLR.matches(':open'), 'The select should be open.');
+  assert_equals(document.activeElement, optionOne, 'First option should be focused initially.');
+
+  // In vertical-lr, Right is the primary "next" key
+  await test_driver.send_keys(document.activeElement, ArrowRight);
+  await new Promise(requestAnimationFrame);
+  assert_equals(document.activeElement, optionTwo,
+    'ArrowRight should move to the next option in vertical-lr mode.');
+
+  await test_driver.send_keys(document.activeElement, ArrowRight);
+  await new Promise(requestAnimationFrame);
+  assert_equals(document.activeElement, optionThree,
+    'ArrowRight should move to the third option.');
+
+  // In vertical-lr, Left is the primary "previous" key
+  await test_driver.send_keys(document.activeElement, ArrowLeft);
+  await new Promise(requestAnimationFrame);
+  assert_equals(document.activeElement, optionTwo,
+    'ArrowLeft should move to the previous option in vertical-lr mode.');
+}, 'vertical-lr: Right/Left keys navigate as primary axis');
+
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    if (selectLR.matches(':open')) await closePicker(selectLR);
+    selectLR.value = 'one';
+  });
+
+  const optionOne = selectLR.querySelector('.one');
+  const optionTwo = selectLR.querySelector('.two');
+
+  await openPicker(selectLR);
+  assert_true(selectLR.matches(':open'), 'The select should be open.');
+  assert_equals(document.activeElement, optionOne, 'First option should be focused initially.');
+
+  // Down/Up should work as secondary navigation keys
+  await test_driver.send_keys(document.activeElement, ArrowDown);
+  await new Promise(requestAnimationFrame);
+  assert_equals(document.activeElement, optionTwo,
+    'ArrowDown should also move to the next option as secondary key.');
+
+  await test_driver.send_keys(document.activeElement, ArrowUp);
+  await new Promise(requestAnimationFrame);
+  assert_equals(document.activeElement, optionOne,
+    'ArrowUp should also move to the previous option as secondary key.');
+}, 'vertical-lr: Down/Up keys navigate as secondary axis');
+
+// Tests for vertical-rl writing mode
+const selectRL = document.getElementById('vertical-rl');
+
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    if (selectRL.matches(':open')) await closePicker(selectRL);
+    selectRL.value = 'one';
+  });
+
+  const optionOne = selectRL.querySelector('.one');
+  const optionTwo = selectRL.querySelector('.two');
+  const optionThree = selectRL.querySelector('.three');
+
+  await openPicker(selectRL);
+  assert_true(selectRL.matches(':open'), 'The select should be open.');
+  assert_equals(document.activeElement, optionOne, 'First option should be focused initially.');
+
+  // In vertical-rl (block-flipped), Left is the primary "next" key
+  await test_driver.send_keys(document.activeElement, ArrowLeft);
+  await new Promise(requestAnimationFrame);
+  assert_equals(document.activeElement, optionTwo,
+    'ArrowLeft should move to the next option in vertical-rl mode.');
+
+  await test_driver.send_keys(document.activeElement, ArrowLeft);
+  await new Promise(requestAnimationFrame);
+  assert_equals(document.activeElement, optionThree,
+    'ArrowLeft should move to the third option.');
+
+  // In vertical-rl, Right is the primary "previous" key
+  await test_driver.send_keys(document.activeElement, ArrowRight);
+  await new Promise(requestAnimationFrame);
+  assert_equals(document.activeElement, optionTwo,
+    'ArrowRight should move to the previous option in vertical-rl mode.');
+}, 'vertical-rl: Left/Right keys navigate as primary axis (block-flipped)');
+
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    if (selectRL.matches(':open')) await closePicker(selectRL);
+    selectRL.value = 'one';
+  });
+
+  const optionOne = selectRL.querySelector('.one');
+  const optionTwo = selectRL.querySelector('.two');
+
+  await openPicker(selectRL);
+  assert_true(selectRL.matches(':open'), 'The select should be open.');
+  assert_equals(document.activeElement, optionOne, 'First option should be focused initially.');
+
+  // Down/Up should work as secondary navigation keys
+  await test_driver.send_keys(document.activeElement, ArrowDown);
+  await new Promise(requestAnimationFrame);
+  assert_equals(document.activeElement, optionTwo,
+    'ArrowDown should also move to the next option as secondary key.');
+
+  await test_driver.send_keys(document.activeElement, ArrowUp);
+  await new Promise(requestAnimationFrame);
+  assert_equals(document.activeElement, optionOne,
+    'ArrowUp should also move to the previous option as secondary key.');
+}, 'vertical-rl: Down/Up keys navigate as secondary axis');
+</script>

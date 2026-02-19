@@ -1,19 +1,22 @@
 import pytest
 from sys import platform
 
+
 def pid_from(capabilities):
-    if capabilities['browserName'] == "chrome":
+    if capabilities["browserName"] == "chrome":
         return capabilities["goog:processID"], "chrome"
-    if capabilities['browserName'] == "firefox":
+    if capabilities["browserName"] == "firefox":
         return capabilities["moz:processID"], "firefox"
-    if capabilities['browserName'] == "servo":
+    if capabilities["browserName"] == "servo":
         return 0, "servo"
+
 
 @pytest.fixture
 def default_timeout(full_configuration):
-    if not full_configuration['timeout'] or full_configuration['timeout'] == 0:
+    if not full_configuration["timeout"] or full_configuration["timeout"] == 0:
         return 60
-    return full_configuration['timeout'] * .5
+    return full_configuration["timeout"] * 0.5
+
 
 @pytest.fixture
 def atspi(session, default_timeout):
@@ -25,6 +28,7 @@ def atspi(session, default_timeout):
     pid, product_name = pid_from(session.capabilities)
     return AtspiWrapper(pid, product_name, default_timeout)
 
+
 @pytest.fixture
 def axapi(session, default_timeout):
     if platform != "darwin":
@@ -34,6 +38,7 @@ def axapi(session, default_timeout):
 
     pid, product_name = pid_from(session.capabilities)
     return AxapiWrapper(pid, product_name, default_timeout)
+
 
 @pytest.fixture
 def uia(session):

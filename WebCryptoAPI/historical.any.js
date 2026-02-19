@@ -1,6 +1,8 @@
-// META: global=window,dedicatedworker,sharedworker
+// META: global=window,dedicatedworker,sharedworker,shadowrealm
 //
-// Do not run this in a service worker as that's always in a secure context
+// Do not run this in a service worker as that's always in a secure context.
+// ShadowRealm scopes created from secure contexts are OK, because SubtleCrypto
+// is not [Exposed=*].
 
 test(() => {
   assert_equals(self.crypto.subtle, undefined);

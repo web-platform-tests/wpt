@@ -1,6 +1,7 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 // META: timeout=long
+// META: global=window,dedicatedworker,shadowrealm-in-window
 
 // https://w3c.github.io/webcrypto/Overview.html
 

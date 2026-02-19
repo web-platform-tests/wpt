@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import time
 from typing import Any, List, Optional
 
 import ctypes
@@ -15,6 +14,7 @@ IAccessible2Ptr = Any
 import comtypes.client
 from comtypes import IServiceProvider
 
+from .api_wrapper import ApiWrapper
 from .ia2.constants import (  # type: ignore[attr-defined]
     IAccessible2_2,
     Role,
@@ -29,6 +29,7 @@ user32 = ctypes.windll.user32  # type: ignore
 oleacc = ctypes.oledll.oleacc  # type: ignore
 oleacc_mod = comtypes.client.GetModule("oleacc.dll")
 IAccessible = oleacc_mod.IAccessible  # noqa: N816
+
 
 def accessible_object_from_window(hwnd: HWND) -> IAccessiblePtr:
     p = POINTER(IAccessible)()
@@ -69,88 +70,30 @@ def to_ia2(node: IAccessiblePtr) -> IAccessible2Ptr:
     return service.QueryService(IAccessible._iid_, IAccessible2_2)
 
 
-def find_browser(product_name: str) -> IAccessible2Ptr:
-    hwnd = get_browser_hwnd(product_name)
-    root = accessible_object_from_window(hwnd)
-    return to_ia2(root)
+class Ia2Wrapper(ApiWrapper):
 
-
-def poll_for_tab(url: str, root: IAccessible2Ptr, timeout: float) -> IAccessible2Ptr:
-    tab = find_tab(url, root)
-    stop = time.time() + timeout
-    while not tab:
-        if time.time() > stop:
-            raise TimeoutError(f"Timeout looking for url: {url}")
-        time.sleep(0.01)
-        tab = find_tab(url, root)
-    return tab
-
-
-def find_tab(url: str, root: IAccessible2Ptr) -> Optional[IAccessible2Ptr]:
-    targets, count = root.relationTargetsOfType("embeds", 1)
-    if count >= 1:
-        ia2 = to_ia2(targets[0])
-        if ia2.accValue(CHILDID_SELF) == url:
-            return ia2
-
-    return find_tab_by_searching_tree(url, root)
-
-
-def find_tab_by_searching_tree(url: str, root: IAccessible2Ptr) -> Optional[IAccessible2Ptr]:
-    for i in range(1, root.accChildCount + 1):
-        child = to_ia2(root.accChild(i))
-        if child.accRole(CHILDID_SELF) == Role.ROLE_SYSTEM_DOCUMENT:
-            if child.accValue(CHILDID_SELF) == url:
-                return child
-            # No need to search within documents.
-            return None
-        descendant = find_tab_by_searching_tree(url, child)
-        if descendant:
-            return descendant
-    return None
-
-
-def find_ia2_node(root: IAccessible2Ptr, dom_id: str) -> Optional[IAccessible2Ptr]:
-    id_attribute = f"id:{dom_id};"
-    for i in range(1, root.accChildCount + 1):
-        child = to_ia2(root.accChild(i))
-        if child.attributes and id_attribute in child.attributes:
-            return child
-        descendant = find_ia2_node(child, dom_id)
-        if descendant:
-            return descendant
-    return None
-
-
-class Ia2Wrapper:
-    def __init__(self, pid: int, product_name: str, timeout: float) -> None:
-        """Setup for accessibility API testing.
-
-        :pid: The PID of the process which exposes the accessibility API.
-        :product_name: The name of the browser, used to find the browser in the accessibility API.
-        :timeout: The timeout the test harness has set for this test, local timeouts can be set based on it.
-        """
-        self.product_name: str = product_name
-        self.pid: int = pid
-        self.test_url: Optional[str] = None
-        self.timeout: float = timeout
-
-        self.root: Optional[IAccessible2Ptr] = find_browser(self.product_name)
-        if not self.root:
-            raise Exception(f"Couldn't find browser {self.product_name}.")
+    @property
+    def ApiName(self):
+        return "IA2"
 
     def find_node(self, dom_id: str, url: str) -> IAccessible2Ptr:
         """
         :param dom_id: The dom id of the node to test.
         :param url: The url of the test.
         """
+        if self.test_url != url or not self.document:
+            self.test_url = url
+            self.document = self._poll_for(
+                self._find_tab,
+                f"Timeout looking for url: {self.test_url}",
+            )
 
-        tab = poll_for_tab(url, self.root)
-        node = find_ia2_node(tab, dom_id, self.timeout)
-        if not node:
-            raise Exception(f"Couldn't find node with ID {dom_id}.")
+        test_node = self._poll_for(
+            lambda: self._find_node_by_id(self.document, dom_id),
+            f"Timeout looking for node with id {dom_id} in accessibility API IA2.",
+        )
 
-        return node
+        return test_node
 
     def get_role(self, node: IAccessible2Ptr) -> str:
         return Role(node.role()).name
@@ -163,3 +106,64 @@ class Ia2Wrapper:
 
     def get_msaa_state_list(self, node: IAccessible2Ptr) -> str:
         return msaa_state_list_to_string(node.accState(CHILDID_SELF))
+
+    def _find_browser(self) -> IAccessible2Ptr:
+        """Find the IAccessible2 node representing the browser.
+
+        :return: IAccessible2Ptr.
+        """
+        hwnd = get_browser_hwnd(self.product_name)
+        root = accessible_object_from_window(hwnd)
+        return to_ia2(root)
+
+    def _find_tab(self) -> Optional[IAccessible2Ptr]:
+        """Find the tab with the test url. Only returns the tab when the tab is ready.
+
+        :return: IAccessible2Ptr representing test document or None.
+        """
+        targets, count = self.root.relationTargetsOfType("embeds", 1)
+        if count >= 1:
+            ia2 = to_ia2(targets[0])
+            if ia2.accValue(CHILDID_SELF) == self.test_url:
+                return ia2
+
+        return self._find_tab_by_searching_tree(self.root)
+
+    def _find_tab_by_searching_tree(
+        self, root: IAccessible2Ptr
+    ) -> Optional[IAccessible2Ptr]:
+        """Find the tab by searching the accessibility tree.
+
+        :param root: The root node to search from.
+        :return: IAccessible2Ptr representing test document or None.
+        """
+        for i in range(1, root.accChildCount + 1):
+            child = to_ia2(root.accChild(i))
+            if child.accRole(CHILDID_SELF) == Role.ROLE_SYSTEM_DOCUMENT:
+                if child.accValue(CHILDID_SELF) == self.test_url:
+                    return child
+                # No need to search within documents.
+                return None
+            descendant = self._find_tab_by_searching_tree(child)
+            if descendant:
+                return descendant
+        return None
+
+    def _find_node_by_id(
+        self, root: IAccessible2Ptr, dom_id: str
+    ) -> Optional[IAccessible2Ptr]:
+        """Find the IAccessible2 node with a specified dom_id.
+
+        :param root: The root node to search from.
+        :param dom_id: The dom ID.
+        :return: IAccessible2Ptr or None if not found.
+        """
+        id_attribute = f"id:{dom_id};"
+        for i in range(1, root.accChildCount + 1):
+            child = to_ia2(root.accChild(i))
+            if child.attributes and id_attribute in child.attributes:
+                return child
+            descendant = self._find_node_by_id(child, dom_id)
+            if descendant:
+                return descendant
+        return None

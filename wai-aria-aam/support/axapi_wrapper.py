@@ -1,6 +1,6 @@
-from typing import Optional, Any
+from __future__ import annotations
 
-import warnings
+from typing import Any, Optional
 
 from ApplicationServices import (
     AXUIElementCopyAttributeNames,
@@ -14,115 +14,108 @@ from Cocoa import (
     NSWorkspace,
 )
 
-def find_browser(name: str) -> Optional[Any]:
-    """Find the AXUIElement representing the browser.
-
-    :param name: The name of the browser.
-    :return: AXUIElement or None.
-    """
-
-    ws = NSWorkspace.sharedWorkspace()
-    regular_predicate = NSPredicate.predicateWithFormat_(
-        f"activationPolicy == {NSApplicationActivationPolicyRegular}"
-    )
-    running_apps = ws.runningApplications().filteredArrayUsingPredicate_(
-        regular_predicate
-    )
-    name_predicate = NSPredicate.predicateWithFormat_(
-        f"localizedName contains[c] '{name}'"
-    )
-    filtered_apps = running_apps.filteredArrayUsingPredicate_(name_predicate)
-    if filtered_apps.count() == 0:
-        return None
-    app = filtered_apps[0]
-    pid = app.processIdentifier()
-    if pid == -1:
-        return None
-    return AXUIElementCreateApplication(pid)
+from .api_wrapper import ApiWrapper
 
 
-def find_active_tab(browser: Any) -> Optional[Any]:
-    """Find the active tab of the browser.
+class AxapiWrapper(ApiWrapper):
 
-    :param browser: The name of the browser.
-    :return: AXUIElement representing test document or None.
-    """
-
-    stack = [browser]
-    while stack:
-        node = stack.pop()
-
-        err, role = AXUIElementCopyAttributeValue(node, "AXRole", None)
-        if err:
-            continue
-        if role == "AXWebArea":
-            return node
-
-        err, children = AXUIElementCopyAttributeValue(node, "AXChildren", None)
-        if err:
-            continue
-        stack.extend(children)
-
-    return None
-
-
-def find_node(root: Any, attribute: str, expected_value: str) -> Optional[Any]:
-    """Find the AXUIElement with a specified dom_id.
-
-    :root: The root of a subtree to search.
-    :attribute: Any AXAPI attribute.
-    :param expected_value: The expected value of the attribute.
-    :return: AXUIElement or None if not found.
-    """
-
-    stack = [root]
-    while stack:
-        node = stack.pop()
-
-        err, attributes = AXUIElementCopyAttributeNames(node, None)
-        if err:
-            continue
-        if attribute in attributes:
-            err, value = AXUIElementCopyAttributeValue(node, attribute, None)
-            if err:
-                continue
-            if value == expected_value:
-                return node
-
-        err, children = AXUIElementCopyAttributeValue(node, "AXChildren", None)
-        if err:
-            continue
-        stack.extend(children)
-    return None
-
-
-class AxapiWrapper:
-    def __init__(self, pid: int, product_name: str, timeout: float) -> None:
-
-        """Setup for accessibility API testing.
-
-        :pid: The PID of the process which exposes the accessibility API.
-        :product_name: The name of the browser, used to find the browser in the accessibility API.
-        :timeout: The timeout the test harness has set for this test, local timeouts can be set based on it.
-        """
-        self.product_name = product_name
-        self.root: Optional[Any] = find_browser(self.product_name)
-        self.timeout: float = timeout
-
-        if not self.root:
-            warnings.warn(
-                f"Couldn't find browser {self.product_name} in accessibility API AX API. Accessibility API queries will not succeed."
-            )
+    @property
+    def ApiName(self):
+        return "AXAPI"
 
     @property
     def AXUIElementCopyAttributeValue(self):
         return AXUIElementCopyAttributeValue
 
-    def find_node(self, dom_id: str, url: str) -> Optional[Any]:
-        tab = find_active_tab(self.root)
-        node = find_node(tab, "AXDOMIdentifier", dom_id)
-        if not node:
-            raise Exception(
-                f"Couldn't find node with ID {dom_id} in accessibility API AXAPI."
+    def find_node(self, dom_id: str, url: str) -> Any:
+        """
+        :param dom_id: The dom id of the node to test.
+        :param url: The url of the test.
+        """
+        if self.test_url != url or not self.document:
+            self.test_url = url
+            self.document = self._poll_for(
+                self._find_tab,
+                f"Timeout looking for url: {self.test_url}",
             )
-        return node
+
+        test_node = self._poll_for(
+            lambda: self._find_node_by_id(self.document, dom_id),
+            f"Timeout looking for node with id {dom_id} in accessibility API AXAPI.",
+        )
+
+        return test_node
+
+    def _find_browser(self) -> Optional[Any]:
+        """Find the AXUIElement representing the browser.
+
+        :return: AXUIElement or None.
+        """
+        ws = NSWorkspace.sharedWorkspace()
+        regular_predicate = NSPredicate.predicateWithFormat_(
+            f"activationPolicy == {NSApplicationActivationPolicyRegular}"
+        )
+        running_apps = ws.runningApplications().filteredArrayUsingPredicate_(
+            regular_predicate
+        )
+        name_predicate = NSPredicate.predicateWithFormat_(
+            f"localizedName contains[c] '{self.product_name}'"
+        )
+        filtered_apps = running_apps.filteredArrayUsingPredicate_(name_predicate)
+        if filtered_apps.count() == 0:
+            return None
+        app = filtered_apps[0]
+        pid = app.processIdentifier()
+        if pid == -1:
+            return None
+        return AXUIElementCreateApplication(pid)
+
+    def _find_tab(self) -> Optional[Any]:
+        """Find the active tab of the browser.
+
+        :return: AXUIElement representing test document or None.
+        """
+        stack = [self.root]
+        while stack:
+            node = stack.pop()
+
+            err, role = AXUIElementCopyAttributeValue(node, "AXRole", None)
+            if err:
+                continue
+            if role == "AXWebArea":
+                return node
+
+            err, children = AXUIElementCopyAttributeValue(node, "AXChildren", None)
+            if err:
+                continue
+            stack.extend(children)
+
+        return None
+
+    def _find_node_by_id(self, root: Any, dom_id: str) -> Optional[Any]:
+        """Find the AXUIElement with a specified dom_id.
+
+        :param root: The root node to search from.
+        :param dom_id: The dom ID.
+        :return: AXUIElement or None if not found.
+        """
+        stack = [root]
+        while stack:
+            node = stack.pop()
+
+            err, attributes = AXUIElementCopyAttributeNames(node, None)
+            if err:
+                continue
+            if "AXDOMIdentifier" in attributes:
+                err, value = AXUIElementCopyAttributeValue(
+                    node, "AXDOMIdentifier", None
+                )
+                if not err and value == dom_id:
+                    return node
+
+            err, children = AXUIElementCopyAttributeValue(node, "AXChildren", None)
+            if err:
+                continue
+            stack.extend(children)
+
+        return None

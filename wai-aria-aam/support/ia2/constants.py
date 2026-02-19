@@ -14,6 +14,7 @@ ia2_mod = comtypes.client.GetModule(ia2_tlb)
 # when this file is imported.
 globals().update((k, getattr(ia2_mod, k)) for k in ia2_mod.__all__)
 
+
 class Role(enum.IntEnum):
     # MSAA roles - constants not provided via oleacc
     ROLE_SYSTEM_TITLEBAR = 1
@@ -199,6 +200,7 @@ def msaa_state_list_to_string(states):
         if states & state:
             state_strings.append(state.name.replace("STATE_SYSTEM_", ""))
     return state_strings
+
 
 def state_list_to_string(states):
     state_strings = []

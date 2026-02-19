@@ -1,39 +1,19 @@
 from __future__ import annotations
-
-import time
-from typing import Any, Callable, Optional, List, Dict
-import warnings
+from typing import Optional, List, Dict
 
 import gi
 
 gi.require_version("Atspi", "2.0")
 from gi.repository import Atspi
 
+from .api_wrapper import ApiWrapper
 
-class AtspiWrapper:
-    def __init__(self, pid: int, product_name: str, timeout: float) -> None:
-        """Setup for accessibility API testing.
 
-        :pid: The PID of the process which exposes the accessibility API.
-        :product_name: The name of the browser, used to find the browser in the accessibility API.
-        :timeout: The timeout the test harness has set for this test, local timeouts can be set based on it.
-        """
-        self.product_name: str = product_name
-        self.pid: int = pid
-        self.root: Optional[Atspi.Accessible] = None
-        self.document: Optional[Atspi.Accessible] = None
-        self.test_url: Optional[str] = None
-        self.timeout: float = timeout
+class AtspiWrapper(ApiWrapper):
 
-        if self.pid and self.pid != 0:
-            self.root = self._find_browser_by_pid(self.pid)
-        else:
-            self.root = self._find_browser_by_name(self.product_name)
-
-        if not self.root:
-            raise Exception(
-                f"Couldn't find browser {self.product_name} in accessibility API ATSPI."
-            )
+    @property
+    def ApiName(self):
+        return "ATSPI"
 
     @property
     def Accessible(self):
@@ -92,7 +72,13 @@ class AtspiWrapper:
             state_string_list.append(state.value_name.removeprefix("ATSPI_"))
         return state_string_list
 
-    def _find_browser_by_pid(self, pid: int) -> Optional[Atspi.Accessible]:
+    def _find_browser(self):
+        if self.pid and self.pid != 0:
+            return self._find_browser_by_pid()
+        else:
+            return self._find_browser_by_name()
+
+    def _find_browser_by_pid(self) -> Optional[Atspi.Accessible]:
         """Find the Atspi.Accessible representing the browser.
 
         :param pid: The PID of the browser.
@@ -102,11 +88,11 @@ class AtspiWrapper:
         child_count = Atspi.Accessible.get_child_count(desktop)
         for i in range(child_count):
             app = Atspi.Accessible.get_child_at_index(desktop, i)
-            if pid == Atspi.Accessible.get_process_id(app):
+            if self.pid == Atspi.Accessible.get_process_id(app):
                 return app
         return None
 
-    def _find_browser_by_name(self, name: str) -> Optional[Atspi.Accessible]:
+    def _find_browser_by_name(self) -> Optional[Atspi.Accessible]:
         """Find the Atspi.Accessible representing the browser.
 
         :param name: The name of the browser.
@@ -117,25 +103,9 @@ class AtspiWrapper:
         for i in range(child_count):
             app = Atspi.Accessible.get_child_at_index(desktop, i)
             full_app_name = Atspi.Accessible.get_name(app)
-            if name in full_app_name.lower():
+            if self.product_name in full_app_name.lower():
                 return app
         return None
-
-    def _poll_for(self, find: Callable[[], Any], error: str) -> Atspi.Accessible:
-        """Poll until the `find` function returns something.
-
-        :param url: The url of the test.
-        :return: Atspi.Accessible representing test document.
-        """
-        found = find()
-        stop = time.time() + self.timeout
-        while not found:
-            if time.time() > stop:
-                raise TimeoutError(error)
-            time.sleep(0.01)
-            found = find()
-
-        return found
 
     def _find_fully_loaded_tab(self) -> Optional[Atspi.Accessible]:
         """Find the tab with the test url. Only returns the tab when the tab is ready.

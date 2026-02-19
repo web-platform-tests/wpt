@@ -10,11 +10,8 @@ async function doResolve() {
   if (params.get("selected")) {
     token = "account=" + params.get("selected");
   }
-  if (params.get("redirect")) {
-    IdentityProvider.resolve("redirect_post.py", {redirect: true, method: "POST", body: "redirect_post"});
-  } else {
-    IdentityProvider.resolve(token, options);
-  }
+  IdentityProvider.resolve(token, options);
 }
 window.onload = doResolve;
 </script>
+

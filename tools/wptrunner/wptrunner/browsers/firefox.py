@@ -1,4 +1,7 @@
 # mypy: allow-untyped-defs
+import shutil
+from collections.abc import MutableMapping
+from typing import Literal, Optional, Union
 
 import json
 import os
@@ -10,10 +13,17 @@ import tempfile
 import time
 from abc import ABCMeta, abstractmethod
 from http.client import HTTPConnection
+from pathlib import Path
 
 import mozinfo
 import mozleak
 import mozversion
+try:
+    from mozgeckoprofiler import symbolicate_profile_json, view_gecko_profile  # type: ignore
+except ImportError:
+    symbolicate_profile_json = None
+    view_gecko_profile = None
+from mozlog.structuredlog import StructuredLogger
 from mozprocess import ProcessHandler
 from mozprofile import FirefoxProfile, Preferences
 from mozrunner import FirefoxRunner
@@ -124,7 +134,9 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
                       "headless": kwargs["headless"],
                       "allow_list_paths": kwargs["allow_list_paths"],
                       "gmp_path": kwargs["gmp_path"] if "gmp_path" in kwargs else None,
-                      "debug_test": kwargs["debug_test"]}
+                      "debug_test": kwargs["debug_test"],
+                      "firefox_profiler_mode": kwargs["firefox_profiler_mode"],
+                      "firefox_profiler_path": kwargs["firefox_profiler_path"]}
 
     if test_type == "wdspec":
         browser_kwargs["webdriver_binary"] = kwargs["webdriver_binary"]
@@ -194,6 +206,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     executor_kwargs["browser_version"] = run_info_data.get("browser_version")
     executor_kwargs["debug_test"] = kwargs["debug_test"]
     executor_kwargs["disable_fission"] = kwargs["disable_fission"]
+    executor_kwargs["firefox_profiler_mode"] = kwargs["firefox_profiler_mode"]
     return executor_kwargs
 
 
@@ -322,6 +335,7 @@ def get_environ(logger, binary, debug_info, headless, gmp_path, chaos_mode_flags
         env["MOZ_HEADLESS"] = "1"
     if not e10s:
         env["MOZ_FORCE_DISABLE_E10S"] = "1"
+
     return env
 
 
@@ -340,12 +354,81 @@ def setup_leak_report(leak_check, profile, env):
     return leak_report_file
 
 
+class FirefoxProfiler:
+    def __init__(self, logger: StructuredLogger,
+                 mode: Optional[Union[Literal["view"], Literal["save"]]],
+                 path: Optional[str],
+                 symbols_path: Optional[str]):
+        self.logger = logger
+        self.mode = mode
+        self.path = Path(path) if path is not None and mode is not None else None
+        self.symbols_path = symbols_path
+        self.cleanup = False
+
+    def setup(self, env: MutableMapping[str, str]) -> None:
+        # If profiling options are enabled, turn on the gecko profiler by using the
+        # profiler environmental variables.
+        if self.mode is not None:
+            if self.mode != "save" and view_gecko_profile is None:
+                self.logger.error("--firefox-profiler=view specified but missing mozgeckoprofiler module, "
+                                  "unable to view profile data.")
+                return
+            if self.path is not None:
+                path = self.path
+            elif "MOZ_PROFILER_SHUTDOWN" in env:
+                path = Path(env["MOZ_PROFILER_SHUTDOWN"])
+            elif self.mode == "view":
+                path = Path(tempfile.mkdtemp())
+                self.cleanup = True
+            else:
+                self.logger.error("--firefox-profiler=save specified, but missing "
+                                  "--firefox-profiler-path or MOZ_UPLOAD_DIR, not "
+                                  "configuring the profiler.")
+                return
+
+            if path.suffix == "":
+                if not path.exists():
+                    path.mkdir(parents=True, exist_ok=True)
+                path = path / "profile_wpt.json"
+            elif not path.parent.exists():
+                path.parent.mkdir(parents=True, exist_ok=True)
+
+            self.path = path
+            env["MOZ_PROFILER_SHUTDOWN"] = str(path)
+            env["MOZ_PROFILER_STARTUP"] = "1"
+
+    def after_process_stop(self) -> None:
+        if self.path is not None:
+            self.logger.info("Shutdown performance profiling was enabled")
+
+            if not os.path.exists(self.path):
+                self.logger.error(f"Profile not created at path {self.path}")
+                self.path = None
+                return
+
+            self.logger.info(f"Profile saved locally to: {self.path}")
+
+            if symbolicate_profile_json is None:
+                self.logger.warning("--firefox-profiler=save specified but missing mozgeckoprofiler module, "
+                                    "unable to symbolificate profile data.")
+            else:
+                symbolicate_profile_json(self.path, self.symbols_path)
+                if self.mode == "view" and view_gecko_profile is not None:
+                    view_gecko_profile(self.path)
+
+            # Clean up the temporary file if it exists.
+            if self.cleanup:
+                shutil.rmtree(os.path.dirname(self.path))
+            self.path = None
+
+
 class FirefoxInstanceManager:
     __metaclass__ = ABCMeta
 
     def __init__(self, logger, binary, binary_args, profile_creator, debug_info,
                  chaos_mode_flags, headless,
-                 leak_check, stackfix_dir, symbols_path, gmp_path, asan, e10s):
+                 leak_check, stackfix_dir, symbols_path, gmp_path, asan, e10s,
+                 firefox_profiler_mode, firefox_profiler_path):
         """Object that manages starting and stopping instances of Firefox."""
         self.logger = logger
         self.binary = binary
@@ -360,6 +443,8 @@ class FirefoxInstanceManager:
         self.gmp_path = gmp_path
         self.asan = asan
         self.e10s = e10s
+        self.firefox_profiler_mode = firefox_profiler_mode
+        self.firefox_profiler_path = firefox_profiler_path
 
         self.previous = None
         self.current = None
@@ -407,13 +492,19 @@ class FirefoxInstanceManager:
                                           args,
                                           self.debug_info)
 
+        firefox_profiler = FirefoxProfiler(self.logger,
+                                           self.firefox_profiler_mode,
+                                           self.firefox_profiler_path,
+                                           self.symbols_path)
+        firefox_profiler.setup(env)
         leak_report_file = setup_leak_report(self.leak_check, profile, env)
         output_handler = FirefoxOutputHandler(self.logger,
                                               cmd,
                                               stackfix_dir=self.stackfix_dir,
                                               symbols_path=self.symbols_path,
                                               asan=self.asan,
-                                              leak_report_file=leak_report_file)
+                                              leak_report_file=leak_report_file,
+                                              firefox_profiler=firefox_profiler)
         runner = FirefoxRunner(profile=profile,
                                binary=cmd[0],
                                cmdargs=cmd[1:],
@@ -551,7 +642,7 @@ class BrowserInstance:
 
 class FirefoxOutputHandler(OutputHandler):
     def __init__(self, logger, command, symbols_path=None, stackfix_dir=None, asan=False,
-                 leak_report_file=None):
+                 leak_report_file=None, firefox_profiler=None):
         """Filter for handling Firefox process output.
 
         This receives Firefox process output in the __call__ function, does
@@ -575,6 +666,7 @@ class FirefoxOutputHandler(OutputHandler):
             self.stack_fixer = None
         self.asan = asan
         self.leak_report_file = leak_report_file
+        self.firefox_profiler = firefox_profiler
 
         # These are filled in after configure_handlers() is called
         self.lsan_handler = None
@@ -632,6 +724,9 @@ class FirefoxOutputHandler(OutputHandler):
             # Fallback for older versions of mozleak, or if we didn't shutdown cleanly
             if os.path.exists(self.leak_report_file):
                 os.unlink(self.leak_report_file)
+
+        if self.firefox_profiler:
+            self.firefox_profiler.after_process_stop()
 
     def __call__(self, line):
         """Write a line of output from the firefox process to the log"""
@@ -854,7 +949,8 @@ class FirefoxBrowser(Browser):
                  asan=False, chaos_mode_flags=None, config=None,
                  browser_channel="nightly", headless=None, preload_browser=False,
                  specialpowers_path=None, debug_test=False, allow_list_paths=None,
-                 gmp_path=None, **kwargs):
+                 gmp_path=None, firefox_profiler_mode=None, firefox_profiler_path=None,
+                 **kwargs):
         super().__init__(logger, **kwargs)
 
         if timeout_multiplier:
@@ -902,7 +998,9 @@ class FirefoxBrowser(Browser):
                                                      symbols_path,
                                                      gmp_path,
                                                      asan,
-                                                     e10s)
+                                                     e10s,
+                                                     firefox_profiler_mode,
+                                                     firefox_profiler_path)
 
     def settings(self, test):
         self._settings = {"check_leaks": self.leak_check and not test.leaks,

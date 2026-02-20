@@ -4,7 +4,7 @@ import subprocess
 import sys
 from abc import ABC
 from collections import defaultdict
-from typing import Any, ClassVar, Dict, Optional, Set, Type
+from typing import Any, ClassVar, Dict, Iterator, List, Mapping, Optional, Set, Type
 from urllib.parse import urljoin
 
 from .wptmanifest.parser import atoms
@@ -18,14 +18,16 @@ class Result(ABC):
     statuses: Set[str]
 
     def __init__(self,
-                 status,
-                 message,
-                 expected=None,
-                 extra=None,
-                 stack=None,
-                 known_intermittent=None):
+                 status: str,
+                 message: Optional[str],
+                 expected: Optional[str] = None,
+                 extra: Optional[Mapping[str, Any]] = None,
+                 stack: Optional[str] = None,
+                 known_intermittent: Optional[List[str]] = None):
         if status not in self.statuses:
             raise ValueError("Unrecognised status %s" % status)
+        if expected is not None and expected not in self.statuses:
+            raise ValueError("Unrecognised expected %s" % expected)
         self.status = status
         self.message = message
         self.expected = expected if expected is not None else self.default_expected
@@ -38,10 +40,21 @@ class Result(ABC):
 
 
 class SubtestResult(ABC):
-    def __init__(self, name, status, message, stack=None, expected=None, known_intermittent=None):
+    default_expected: ClassVar[str]
+    statuses: Set[str]
+
+    def __init__(self,
+                 name: str,
+                 status: str,
+                 message: Optional[str],
+                 stack: Optional[str] = None,
+                 expected: Optional[str] = None,
+                 known_intermittent: Optional[List[str]] = None):
         self.name = name
         if status not in self.statuses:
             raise ValueError("Unrecognised status %s" % status)
+        if expected is not None and expected not in self.statuses:
+            raise ValueError("Unrecognised expected %s" % expected)
         self.status = status
         self.message = message
         self.stack = stack
@@ -250,19 +263,26 @@ class Test(ABC):
         return not self.__eq__(other)
 
     def make_result(self,
-                    status,
-                    message,
-                    expected=None,
-                    extra=None,
-                    stack=None,
-                    known_intermittent=None):
+                    status: str,
+                    message: Optional[str],
+                    expected: Optional[str] = None,
+                    extra: Optional[Mapping[str, Any]] = None,
+                    stack: Optional[str] = None,
+                    known_intermittent: Optional[List[str]] = None) -> Result:
         if expected is None:
             expected = self.expected()
             known_intermittent = self.known_intermittent()
         return self.result_cls(status, message, expected, extra, stack, known_intermittent)
 
-    def make_subtest_result(self, name, status, message, stack=None, expected=None,
-                            known_intermittent=None):
+    def make_subtest_result(self,
+                            name: str,
+                            status: str,
+                            message: Optional[str],
+                            stack: Optional[str] = None,
+                            expected: Optional[str] = None,
+                            extra: Optional[Mapping[str, Any]] = None,
+                            known_intermittent: Optional[List[str]] = None) -> SubtestResult:
+        assert self.subtest_result_cls is not None
         if expected is None:
             expected = self.expected(name)
             known_intermittent = self.known_intermittent(name)
@@ -298,19 +318,21 @@ class Test(ABC):
     def abs_path(self):
         return os.path.join(self.tests_root, self.path)
 
-    def _get_metadata(self, subtest=None):
+    def _get_metadata(self, subtest: Optional[str] = None) -> Optional[Any]:
         if self._test_metadata is not None and subtest is not None:
             return self._test_metadata.get_subtest(subtest)
         else:
             return self._test_metadata
 
-    def itermeta(self, subtest=None):
+    def itermeta(self, subtest: Optional[str] = None) -> Iterator[Any]:
         if self._test_metadata is not None:
             if subtest is not None:
                 subtest_meta = self._get_metadata(subtest)
                 if subtest_meta is not None:
                     yield subtest_meta
-            yield self._get_metadata()
+            metadata = self._get_metadata()
+            if metadata is not None:
+                yield metadata
         yield from reversed(self._inherit_metadata)
 
     def disabled(self, subtest=None):
@@ -435,10 +457,11 @@ class Test(ABC):
         except KeyError:
             return None
 
-    def expected(self, subtest=None):
+    def expected(self, subtest: Optional[str] = None) -> str:
         if subtest is None:
             default = self.result_cls.default_expected
         else:
+            assert self.subtest_result_cls is not None
             default = self.subtest_result_cls.default_expected
 
         metadata = self._get_metadata(subtest)
@@ -449,24 +472,23 @@ class Test(ABC):
             expected = metadata.get("expected")
             if isinstance(expected, str):
                 return expected
-            elif isinstance(expected, list):
-                return expected[0]
-            elif expected is None:
-                return default
+            if isinstance(expected, list):
+                if isinstance(expected[0], str):
+                    return expected[0]
+            return default
         except KeyError:
             return default
 
-    def implementation_status(self):
-        implementation_status = None
+    def implementation_status(self) -> str:
         for meta in self.itermeta():
             implementation_status = meta.implementation_status
-            if implementation_status:
+            if isinstance(implementation_status, str) and implementation_status:
                 return implementation_status
 
         # assuming no specific case, we are implementing it
         return "implementing"
 
-    def known_intermittent(self, subtest=None):
+    def known_intermittent(self, subtest: Optional[str] = None) -> List[str]:
         metadata = self._get_metadata(subtest)
         if metadata is None:
             return []

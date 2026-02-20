@@ -344,6 +344,14 @@ scheme host and port.""")
                              help="Enable chaos mode with the specified feature flag "
                              "(see http://searchfox.org/mozilla-central/source/mfbt/ChaosMode.h for "
                              "details). If no value is supplied, all features are activated")
+    gecko_group.add_argument("--firefox-profiler", action="store", choices=["save", "view"],
+                             default=None, dest="firefox_profiler_mode",
+                             help="Run the Firefox Profiler and get a performance profile of the "
+                             "tests. This is useful to find performance issues, and also "
+                             "to see what exactly the test is doing. To get profiler options run"
+                             "firefox with the environment variable `MOZ_PROFILER_HELP=1`")
+    gecko_group.add_argument("--firefox-profiler-path", action="store_true", default=os.environ.get("MOZ_UPLOAD_DIR"),
+                             help="Path to save Firefox profile to")
 
     gecko_view_group = parser.add_argument_group("GeckoView-specific")
     gecko_view_group.add_argument("--setenv", dest="env", action="append", default=[],

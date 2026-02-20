@@ -147,17 +147,20 @@ class TestRunner:
                     "reset": self.reset,
                     "stop": self.stop,
                     "wait": self.wait}
-        while True:
-            command, args = self.command_queue.get()
-            try:
-                rv = commands[command](*args)
-            except Exception:
-                self.send_message("error",
-                                  "Error running command %s with arguments %r:\n%s" %
-                                  (command, args, traceback.format_exc()))
-            else:
-                if rv is Stop:
-                    break
+        try:
+            while True:
+                command, args = self.command_queue.get()
+                try:
+                    rv = commands[command](*args)
+                except Exception:
+                    self.send_message("error",
+                                      "Error running command %s with arguments %r:\n%s" %
+                                      (command, args, traceback.format_exc()))
+                else:
+                    if rv is Stop:
+                        break
+        finally:
+            self.teardown()
 
     def stop(self):
         return Stop
@@ -178,7 +181,7 @@ class TestRunner:
         rerun = self.executor.wait()
         self.send_message("wait_finished", rerun)
 
-    def send_message(self, command, *args):
+    def send_message(self, command: str, *args: Any) -> None:
         self.result_queue.put((command, args))
 
 
@@ -953,10 +956,8 @@ class TestRunnerManager(threading.Thread):
             # former can gracefully tear down the protocol (e.g., closing an
             # active WebDriver session).
             self._ensure_runner_stopped()
-            # TODO(web-platform-tests/wpt#48030): Consider removing the
-            # `stop(force=...)` argument.
             if self.browser:
-                self.browser.stop(force=True)
+                self.browser.stop()
         except (OSError, PermissionError):
             self.logger.error("Failed to stop either the runner or the browser process",
                               exc_info=True)

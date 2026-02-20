@@ -11,14 +11,31 @@ import sys
 import threading
 import traceback
 from abc import ABCMeta, abstractmethod
-from typing import Any, Callable, ClassVar, Optional, Union, Tuple, Type
+from typing import (Any,
+                    Callable,
+                    ClassVar,
+                    List,
+                    Mapping,
+                    Optional,
+                    Union,
+                    Set,
+                    Tuple,
+                    Type,
+                    TYPE_CHECKING)
 from urllib.parse import urljoin, urlsplit, urlunsplit
+
+from mozdebug import DebuggerInfo
+from mozlog.structuredlog import StructuredLogger
 
 from . import pytestrunner
 from .actions import actions
 from .asyncactions import async_actions
 from .protocol import Protocol, WdspecProtocol
+from ..wpttest import Result, SubtestResult, Test
 
+if TYPE_CHECKING:
+    from ..browsers.base import ExecutorBrowser
+    from ..testrunner import TestRunner
 
 here = os.path.dirname(__file__)
 
@@ -54,7 +71,7 @@ def executor_kwargs(test_type, test_environment, run_info_data, subsuite, **kwar
     return executor_kwargs
 
 
-def strip_server(url):
+def strip_server(url: str) -> str:
     """Remove the scheme and netloc from a url, leaving only the path and any query
     or fragment.
 
@@ -68,7 +85,7 @@ def strip_server(url):
     return urlunsplit(url_parts)
 
 
-def server_url(server_config, protocol, subdomain=False):
+def server_url(server_config: Mapping[str, Any], protocol: str, subdomain:bool = False) -> str:
     scheme = "https" if protocol == "h2" else protocol
     host = server_config["browser_host"]
     if subdomain:
@@ -96,20 +113,23 @@ class TestharnessResultConverter:
         assert result_url == test.url, (f"Got results from {result_url}, expected {test.url}")
         harness_result = test.make_result(self.harness_codes[status], message, extra=extra, stack=stack)
         return (harness_result,
-                [test.make_subtest_result(st_name, self.test_codes[st_status], st_message, st_stack)
+                [test.make_subtest_result(name=st_name,
+                                          status=self.test_codes[st_status],
+                                          message=st_message,
+                                          stack=st_stack)
                  for st_name, st_status, st_message, st_stack in subtest_results])
 
 
 testharness_result_converter = TestharnessResultConverter()
 
 
-def hash_screenshots(screenshots):
+def hash_screenshots(screenshots: List[str]) -> List[str]:
     """Computes the sha1 checksum of a list of base64-encoded screenshots."""
     return [hashlib.sha1(base64.b64decode(screenshot)).hexdigest()
             for screenshot in screenshots]
 
 
-def _ensure_hash_in_reftest_screenshots(extra):
+def _ensure_hash_in_reftest_screenshots(extra: Mapping[str, Any]) -> None:
     """Make sure reftest_screenshots have hashes.
 
     Marionette internal reftest runner does not produce hashes.
@@ -125,7 +145,7 @@ def _ensure_hash_in_reftest_screenshots(extra):
             item["hash"] = hash_screenshots([item["screenshot"]])[0]
 
 
-def get_pages(ranges_value, total_pages):
+def get_pages(ranges_value: List[List[Optional[int]]], total_pages: int) -> Set[int]:
     """Get a set of page numbers to include in a print reftest.
 
     :param ranges_value: Parsed page ranges as a list e.g. [[1,2], [4], [6,None]]
@@ -147,6 +167,8 @@ def get_pages(ranges_value, total_pages):
         if range_limits[1] is None:
             range_limits[1] = total_pages
 
+        assert isinstance(range_limits[0], int)
+        assert isinstance(range_limits[1], int)
         if range_limits[0] > total_pages:
             continue
         rv |= set(range(range_limits[0], range_limits[1] + 1))
@@ -172,7 +194,7 @@ def pytest_result_converter(self, test, data):
     harness_result = test.make_result(*harness_data)
     subtest_results = [test.make_subtest_result(*item) for item in subtest_data]
 
-    return (harness_result, subtest_results)
+    return harness_result, subtest_results
 
 
 def crashtest_result_converter(self, test, result):
@@ -263,6 +285,7 @@ class TestExecutor:
     __metaclass__ = ABCMeta
 
     test_type: ClassVar[str]
+    protocol_cls: ClassVar[Type[Protocol]]
     # convert_result is a class variable set to a callable converter
     # (e.g. reftest_result_converter) converting from an instance of
     # URLManifestItem (e.g. RefTest) + type-dependent results object +
@@ -277,10 +300,16 @@ class TestExecutor:
     extra_timeout = 5  # seconds
 
 
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
-                 debug_info=None, subsuite=None, **kwargs):
+    def __init__(self,
+                 logger: StructuredLogger,
+                 browser: "ExecutorBrowser",
+                 server_config: Mapping[str, Any],
+                 timeout_multiplier: int = 1,
+                 debug_info: Optional[DebuggerInfo] = None,
+                 subsuite: Optional[str] = None,
+                 **kwargs: Any):
         self.logger = logger
-        self.runner = None
+        self.runner: Optional["TestRunner"] = None
         self.browser = browser
         self.server_config = server_config
         self.timeout_multiplier = timeout_multiplier
@@ -288,9 +317,9 @@ class TestExecutor:
         self.subsuite = subsuite
         self.last_environment = {"protocol": "http",
                                  "prefs": {}}
-        self.protocol = None  # This must be set in subclasses
+        self.protocol: Optional[Protocol] = None  # This must be set in subclasses
 
-    def setup(self, runner, protocol=None):
+    def setup(self, runner: "TestRunner", protocol: Optional[Protocol] = None) -> None:
         """Run steps needed before tests can be started e.g. connecting to
         browser instance
 
@@ -303,57 +332,71 @@ class TestExecutor:
         elif self.protocol is not None:
             self.protocol.setup(runner)
 
-    def teardown(self):
+    def teardown(self) -> None:
         """Run cleanup steps after tests have finished"""
         if self.protocol is not None:
             self.protocol.teardown()
 
-    def reset(self):
+    def reset(self) -> None:
         """Re-initialize internal state to facilitate repeated test execution
         as implemented by the `--rerun` command-line argument."""
         pass
 
-    def run_test(self, test):
+    def before_test(self, test: Test) -> None:
+        assert self.protocol is not None
+        self.protocol.before_test(test)
+
+    def after_test(self, test: Test, result: Result, subtest_results: List[SubtestResult]) -> None:
+        assert self.protocol is not None
+        self.protocol.after_test(test, result, subtest_results)
+
+    def run_test(self, test: Test) -> None:
         """Run a particular test.
 
         :param test: The test to run"""
         try:
             if test.environment != self.last_environment:
                 self.on_environment_change(test.environment)
-            result = self.do_test(test)
+            self.before_test(test)
+            result, subtest_results = self.do_test(test)
         except Exception as e:
             exception_string = traceback.format_exc()
             message = f"Exception in TestExecutor.run:\n{exception_string}"
             self.logger.warning(message)
-            result = self.result_from_exception(test, e, exception_string)
+            result, subtest_results = self.result_from_exception(test, e, exception_string)
 
+        self.after_test(test, result, subtest_results)
         # log result of parent test
-        if result[0].status == "ERROR":
-            self.logger.debug(result[0].message)
+        if result.status == "ERROR":
+            self.logger.debug(result.message)
 
         self.last_environment = test.environment
 
-        self.runner.send_message("test_ended", test, result)
+        assert self.runner is not None
+        self.runner.send_message("test_ended", test, (result, subtest_results))
 
-    def server_url(self, protocol, subdomain=False):
+    def server_url(self, protocol: str, subdomain:bool = False) -> str:
         return server_url(self.server_config, protocol, subdomain)
 
-    def test_url(self, test):
+    def test_url(self, test: Test) -> str:
         return urljoin(self.server_url(test.environment["protocol"],
                                        test.subdomain), test.url)
 
     @abstractmethod
-    def do_test(self, test):
+    def do_test(self, test: Test) -> Tuple[Result, List[SubtestResult]]:
         """Test-type and protocol specific implementation of running a
         specific test.
 
         :param test: The test to run."""
         pass
 
-    def on_environment_change(self, new_environment):
+    def on_environment_change(self, new_environment: Mapping[str, Any]) -> None:
         pass
 
-    def result_from_exception(self, test, e, exception_string):
+    def result_from_exception(self,
+                              test: Test,
+                              e: Exception,
+                              exception_string: str) -> Tuple[Result, List[SubtestResult]]:
         if hasattr(e, "status") and e.status in test.result_cls.statuses:
             status = e.status
         else:
@@ -364,8 +407,12 @@ class TestExecutor:
         message += exception_string
         return test.make_result(status, message), []
 
-    def wait(self):
-        return self.protocol.base.wait()
+    def wait(self) -> bool:
+        assert self.protocol is not None
+        assert hasattr(self.protocol, "base")
+        re_run = self.protocol.base.wait()
+        assert isinstance(re_run, bool)
+        return re_run
 
 
 class TestharnessExecutor(TestExecutor):
@@ -708,7 +755,7 @@ class WdspecExecutor(TestExecutor):
         if success:
             return self.convert_result(test, data)
 
-        return (test.make_result(*data), [])
+        return test.make_result(*data), []
 
     def do_wdspec(self, path, timeout):
         session_config = {"host": self.browser.host,
@@ -845,7 +892,11 @@ class CallbackHandler:
 
         return False, None
 
-    def _send_message(self, cmd_id, message_type, status, message=None):
+    def _send_message(self,
+                      cmd_id: str,
+                      message_type: str,
+                      status: str,
+                      message: Optional[str] = None) -> None:
         self.protocol.testdriver.send_message(cmd_id, message_type, status, message=message)
 
 

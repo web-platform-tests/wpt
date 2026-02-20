@@ -109,19 +109,40 @@ Object.keys(sourceData).forEach(function (size) {
         });
     }, alg + ' with ' + size + ' source data');
 
-    promise_test(function (test) {
-      var buffer = new Uint8Array(sourceData[size]);
-      return crypto.subtle.digest(alg, buffer).then(function (result) {
+    if (sourceData[size].length > 0) {
+      promise_test(function (test) {
+        var buffer = new Uint8Array(sourceData[size]);
+        // Alter the buffer before calling digest
+        buffer[0] = ~buffer[0];
+        return crypto.subtle
+          .digest({
+            get name() {
+              // Alter the buffer back while calling digest
+              buffer[0] = ~buffer[0];
+              return alg;
+            }
+          }, buffer)
+          .then(function (result) {
+            assert_true(
+              equalBuffers(result, digestedData[alg][size]),
+              'digest matches expected'
+            );
+          });
+      }, alg + ' with ' + size + ' source data and altered buffer during call');
+
+      promise_test(function (test) {
+        var buffer = new Uint8Array(sourceData[size]);
+        var promise = crypto.subtle.digest(alg, buffer).then(function (result) {
+          assert_true(
+            equalBuffers(result, digestedData[alg][size]),
+            'digest matches expected'
+          );
+        });
         // Alter the buffer after calling digest
-        if (buffer.length > 0) {
-          buffer[0] = ~buffer[0];
-        }
-        assert_true(
-          equalBuffers(result, digestedData[alg][size]),
-          'digest matches expected'
-        );
-      });
-    }, alg + ' with ' + size + ' source data and altered buffer after call');
+        buffer[0] = ~buffer[0];
+        return promise;
+      }, alg + ' with ' + size + ' source data and altered buffer after call');
+    }
   });
 });
 

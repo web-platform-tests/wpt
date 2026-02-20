@@ -121,7 +121,7 @@ jobs:
             safari
       - name: Publish results
         if: "!cancelled()"
-        uses: actions/upload-artifact@v4.1.0
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.artifact-name }}-${{ env.CURRENT_CHUNK }}
           path: |
@@ -130,7 +130,7 @@ jobs:
           if-no-files-found: error
       - name: Publish safaridriver logs
         if: inputs.safaridriver-diagnose && !cancelled()
-        uses: actions/upload-artifact@v4.1.0
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.artifact-name }}-safaridriver-logs-${{ env.CURRENT_CHUNK }}
           path: ~/Library/Logs/com.apple.WebDriver/
@@ -161,7 +161,7 @@ jobs:
     if: inputs.merged-artifact-name
     steps:
       - name: Merge Artifacts
-        uses: actions/upload-artifact/merge@v4
+        uses: actions/upload-artifact/merge@v6
         with:
           name: ${{ inputs.merged-artifact-name }}
           pattern: ${{ inputs.artifact-name }}-*

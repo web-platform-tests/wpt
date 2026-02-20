@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Basic Autofill Form Test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/autofill-bidi-helpers.js"></script>
+</head>
+<body>
+<form id="test_form">
+  <input type="text" autocomplete="name" id="name_field">
+</form>
+<script>
+  promise_test(async t => {
+    const nameField = document.getElementById('name_field');
+
+    await triggerAutofill(nameField, {'name': 'Test User'});
+
+    assertElementHasValue('name_field', 'Test User');
+  }, 'Basic autofill on a name field');
+</script>
+</body>
+</html>
+

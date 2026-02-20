@@ -147,8 +147,14 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
         browser_kwargs["test_type"] = test_type
         browser_kwargs["timeout_multiplier"] = get_timeout_multiplier(test_type, run_info_data, **kwargs)
 
-    if test_type == "aamtest" and ('accessibility.force_disabled', '-1') not in browser_kwargs["extra_prefs"]:
-        browser_kwargs["extra_prefs"].append(('accessibility.force_disabled', '-1'))
+    if test_type == "aamtest":
+        # Enable accessibility in the browser.
+        if ('accessibility.force_disabled', '-1') not in browser_kwargs["extra_prefs"]:
+            browser_kwargs["extra_prefs"].append(('accessibility.force_disabled', '-1'))
+        # Cache all attributes immediately for testing.
+        if ('accessibility.enable_all_cache_domains', 'true') not in browser_kwargs["extra_prefs"]:
+            browser_kwargs["extra_prefs"].append(('accessibility.enable_all_cache_domains', 'true'))
+
 
     browser_kwargs["extra_prefs"].extend(subsuite.config.get("prefs", []))
     return browser_kwargs

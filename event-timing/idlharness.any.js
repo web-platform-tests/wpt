@@ -1,4 +1,7 @@
+// META: variant=?exclude=targetSelector
+// META: variant=?include=targetSelector
 // META: global=window,worker
+// META: script=/common/subset-tests-by-key.js
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="help"
+      href="https://html.spec.whatwg.org/multipage/embedded-content-other.html#the-model-element"
+    />
+    <title>Test for the functionality of the inert attribute</title>
+  </head>
+  <body>
+    <model id="popover-model" popover width="200" height="200">
+      <source src="../../resources/chromeball.usdz" type="model/vnd.usdz+zip" />
+      <source src="../../resources/chromeball.glb" type="model/gltf-binary" />
+    </model>
+    <button id="popover-button" popovertarget="popover-model">
+      Open Popover Model
+    </button>
+  </body>
+  <!-- Include the test harness -->
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script>
+    promise_test(async () => {
+      const popoverModel = document.getElementById("popover-model");
+      const initialModelStyle = window.getComputedStyle(popoverModel);
+      const popoverButton = document.getElementById("popover-button");
+      const initialDisplay = initialModelStyle.getPropertyValue("display");
+      assert_equals(
+        initialDisplay,
+        "none",
+        "Model element with popover attribute is initially not displayed."
+      );
+      await test_driver.click(popoverButton);
+      const subsequentModelStyle = window.getComputedStyle(popoverModel);
+      const subsequentModelDisplay =
+        subsequentModelStyle.getPropertyValue("display");
+      assert_equals(
+        subsequentModelDisplay,
+        "block",
+        "Model element with popover attribute is displayed after an invoking popover action."
+      );
+    }, "model obeys popover attribute behavior");
+  </script>
+</html>

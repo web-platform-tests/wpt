@@ -96,7 +96,7 @@ class TestEnvironment:
     websockets servers"""
     def __init__(self, test_paths, testharness_timeout_multipler,
                  pause_after_test, debug_test, debug_info, options, ssl_config, env_extras,
-                 enable_webtransport=False, enable_dns=False, mojojs_path=None, inject_script=None,
+                 enable_webtransport=None, enable_dns=None, mojojs_path=None, inject_script=None,
                  suppress_handler_traceback=None, ws_extra=None):
 
         self.test_paths = test_paths
@@ -120,8 +120,16 @@ class TestEnvironment:
         self.env_extras = env_extras
         self.env_extras_cms = None
         self.ssl_config = ssl_config
-        self.enable_webtransport = enable_webtransport
-        self.enable_dns = enable_dns
+        self.enable_webtransport = (
+            enable_webtransport
+            if enable_webtransport is not None
+            else self.options.get("enable_webtransport_h3", False)
+        )
+        self.enable_dns = (
+            enable_dns
+            if enable_dns is not None
+            else self.options.get("enable_dns", False)
+        )
         self.mojojs_path = mojojs_path
         self.inject_script = inject_script
         self.suppress_handler_traceback = suppress_handler_traceback

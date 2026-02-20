@@ -3122,5 +3122,9 @@
   {
     "pattern": ["((?R)):"],
     "expected_obj": "error"
+  },
+  {
+    "pattern": ["(\\H):"],
+    "expected_obj": "error"
   }
 ]

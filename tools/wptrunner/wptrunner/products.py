@@ -11,11 +11,13 @@ from typing import (
     overload,
 )
 
+from ._default_if_sentinel import DefaultIfSentinel
 from .browsers import product_list
 from .deprecated import deprecated
 
 if TYPE_CHECKING:
     import sys
+    from collections.abc import Mapping, Sequence
     from types import ModuleType
 
     from mozlog.structuredlog import StructuredLogger
@@ -26,15 +28,15 @@ if TYPE_CHECKING:
     from .executors.base import TestExecutor
     from .testloader import Subsuite
 
-    if sys.version_info >= (3, 9):
-        from collections.abc import Mapping, Sequence
-    else:
-        from typing import Mapping, Sequence
-
     if sys.version_info >= (3, 10):
         from typing import TypeAlias
     else:
         from typing_extensions import TypeAlias
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
 
 JSON: TypeAlias = "Mapping[str, 'JSON'] | Sequence['JSON'] | str | int | float | bool | None"
@@ -124,12 +126,12 @@ def default_run_info_extras(logger: StructuredLogger, **kwargs: Any) -> Mapping[
     return {}
 
 
-_legacy_product_msg = "Use Product.from_product_name(name) instead of Product(config, name)"
-
-
-@dataclass
-class Product:
+@dataclass(frozen=True)
+class _ProductBase:
     name: str
+    # Once we can rely on Python 3.10, we should add:
+    # _: KW_ONLY
+    # This matches the non-deprecated __init__ below.
     browser_classes: Mapping[str | None, type[browsers_base.Browser]]
     check_args: CheckArgs
     get_browser_kwargs: BrowserKwargs
@@ -138,8 +140,68 @@ class Product:
     get_env_extras: EnvExtras
     get_timeout_multiplier: TimeoutMultiplier
     executor_classes: Mapping[str, type[TestExecutor]]
-    run_info_extras: RunInfoExtras
-    update_properties: tuple[Sequence[str], Mapping[str, Sequence[str]]]
+    run_info_extras: DefaultIfSentinel[
+        RunInfoExtras,
+    ] = DefaultIfSentinel(default=default_run_info_extras)
+    update_properties: DefaultIfSentinel[
+        tuple[
+            Sequence[str],
+            Mapping[str, Sequence[str]],
+        ],
+    ] = DefaultIfSentinel(default_factory=lambda: (["product"], {}))
+
+    def get_browser_cls(self, test_type: str) -> type[browsers_base.Browser]:
+        cls = self.browser_classes.get(test_type)
+        if cls is not None:
+            return cls
+        return self.browser_classes[None]
+
+
+_legacy_product_msg = "Use Product.from_product_name(name) instead of Product(config, name)"
+
+
+class Product(_ProductBase):
+    @overload
+    @deprecated(_legacy_product_msg, category=None)
+    def __new__(
+        cls,
+        config: object,
+        legacy_name: str,
+        /,
+    ) -> Product:
+        ...
+
+    @overload
+    def __new__(
+        cls,
+        name: str,
+        *,
+        browser_classes: Mapping[str | None, type[browsers_base.Browser]],
+        check_args: CheckArgs,
+        get_browser_kwargs: BrowserKwargs,
+        get_executor_kwargs: ExecutorKwargs,
+        env_options: Mapping[str, Any],
+        get_env_extras: EnvExtras,
+        get_timeout_multiplier: TimeoutMultiplier,
+        executor_classes: Mapping[str, type[TestExecutor]],
+        run_info_extras: None | RunInfoExtras = None,
+        update_properties: None | tuple[Sequence[str], Mapping[str, Sequence[str]]] = None,
+    ) -> Self:
+        ...
+
+    def __new__(cls, *args: Any, **kwargs: Any) -> Self | Product:
+        if len(args) == 2:
+            if not isinstance(args[1], str):
+                raise TypeError(f"(Deprecated) Product(config, legacy_name) second arg must be a str, not {type(args[1])}")
+            if kwargs:
+                raise TypeError(f"(Deprecated) Product(config, legacy_name) got an unexpected keyword argument {next(iter(kwargs))!r}")
+            warnings.warn(
+                _legacy_product_msg,
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return cls.from_product_name(args[1])
+        return super().__new__(cls)
 
     @overload
     @deprecated(_legacy_product_msg, category=None)
@@ -148,8 +210,6 @@ class Product:
         config: object,
         legacy_name: str,
         /,
-        *,
-        _do_not_use_allow_legacy_name_call: bool = False,
     ) -> None:
         ...
 
@@ -171,99 +231,66 @@ class Product:
     ) -> None:
         ...
 
-    def __init__(
-        self,
-        name: object,
-        _legacy_name: None | str = None,
-        *,
-        browser_classes: None | Mapping[str | None, type[browsers_base.Browser]] = None,
-        check_args: None | CheckArgs = None,
-        get_browser_kwargs: None | BrowserKwargs = None,
-        get_executor_kwargs: None | ExecutorKwargs = None,
-        env_options: None | Mapping[str, Any] = None,
-        get_env_extras: None | EnvExtras = None,
-        get_timeout_multiplier: None | TimeoutMultiplier = None,
-        executor_classes: None | Mapping[str, type[TestExecutor]] = None,
-        run_info_extras: None | RunInfoExtras = None,
-        update_properties: None | tuple[Sequence[str], Mapping[str, Sequence[str]]] = None,
-        _do_not_use_allow_legacy_name_call: bool = False,
-    ) -> None:
-        if _legacy_name is None:
-            assert isinstance(name, str)
-        else:
-            if not _do_not_use_allow_legacy_name_call:
-                warnings.warn(_legacy_product_msg, category=DeprecationWarning, stacklevel=2)
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        if len(args) == 2:
+            if not hasattr(self, "name"):
+                raise Exception("(Deprecated) Product(config, legacy_name) should be initialized in __new__.")
+            return
+        super().__init__(*args, **kwargs)
 
-            module = _product_module(_legacy_name)
-            data: WptrunnerModuleDict = module.__wptrunner__
+    @staticmethod
+    def _from_dunder_wptrunner(module: ModuleType) -> Product:
+        data: WptrunnerModuleDict = module.__wptrunner__
 
-            name = data["product"]
-            if name != _legacy_name:
-                msg = f"Product {_legacy_name!r} calls itself {name!r}, which differs"
-                raise ValueError(msg)
-            browser_classes = (
-                {None: getattr(module, data["browser"])}
-                if isinstance(data["browser"], str)
-                else {
-                    key: getattr(module, value)
-                    for key, value in data["browser"].items()
-                }
-            )
-            check_args = getattr(module, data["check_args"])
-            get_browser_kwargs = getattr(module, data["browser_kwargs"])
-            get_executor_kwargs = getattr(module, data["executor_kwargs"])
-            env_options = getattr(module, data["env_options"])()
-            get_env_extras = getattr(module, data["env_extras"])
-            get_timeout_multiplier = getattr(module, data["timeout_multiplier"])
-            executor_classes = {
-                test_type: getattr(module, cls_name)
-                for test_type, cls_name in data["executor"].items()
+        name = data["product"]
+        browser_classes: Mapping[str | None, type[browsers_base.Browser]] = (
+            {None: getattr(module, data["browser"])}
+            if isinstance(data["browser"], str)
+            else {
+                key: getattr(module, value)
+                for key, value in data["browser"].items()
             }
-            run_info_extras = (
-                getattr(module, data["run_info_extras"])
-                if "run_info_extras" in data
-                else None
-            )
-            update_properties = (
-                getattr(module, data["update_properties"])()
-                if "update_properties" in data
-                else None
-            )
+        )
+        check_args = getattr(module, data["check_args"])
+        get_browser_kwargs = getattr(module, data["browser_kwargs"])
+        get_executor_kwargs = getattr(module, data["executor_kwargs"])
+        env_options = getattr(module, data["env_options"])()
+        get_env_extras = getattr(module, data["env_extras"])
+        get_timeout_multiplier = getattr(module, data["timeout_multiplier"])
+        executor_classes = {
+            test_type: getattr(module, cls_name)
+            for test_type, cls_name in data["executor"].items()
+        }
+        run_info_extras = (
+            getattr(module, data["run_info_extras"])
+            if "run_info_extras" in data
+            else None
+        )
+        update_properties = (
+            getattr(module, data["update_properties"])()
+            if "update_properties" in data
+            else None
+        )
 
-        assert browser_classes is not None
-        assert check_args is not None
-        assert get_browser_kwargs is not None
-        assert get_executor_kwargs is not None
-        assert env_options is not None
-        assert get_env_extras is not None
-        assert get_timeout_multiplier is not None
-        assert executor_classes is not None
+        return Product(
+            name=name,
+            browser_classes=browser_classes,
+            check_args=check_args,
+            get_browser_kwargs=get_browser_kwargs,
+            get_executor_kwargs=get_executor_kwargs,
+            env_options=env_options,
+            get_env_extras=get_env_extras,
+            get_timeout_multiplier=get_timeout_multiplier,
+            executor_classes=executor_classes,
+            run_info_extras=run_info_extras,
+            update_properties=update_properties,
+        )
 
-        self.name = name
-        self._browser_cls = browser_classes
-        self.check_args = check_args
-        self.get_browser_kwargs = get_browser_kwargs
-        self.get_executor_kwargs = get_executor_kwargs
-        self.env_options = env_options
-        self.get_env_extras = get_env_extras
-        self.get_timeout_multiplier = get_timeout_multiplier
-        self.executor_classes = executor_classes
-
-        if run_info_extras is not None:
-            self.run_info_extras = run_info_extras
-        else:
-            self.run_info_extras = default_run_info_extras
-
-        if update_properties is not None:
-            self.update_properties = update_properties
-        else:
-            self.update_properties = (["product"], {})
-
-    @classmethod
-    def from_product_name(cls, name: str) -> Product:
-        return cls(None, name, _do_not_use_allow_legacy_name_call=True)
-
-    def get_browser_cls(self, test_type: str) -> type[browsers_base.Browser]:
-        if test_type in self._browser_cls:
-            return self._browser_cls[test_type]
-        return self._browser_cls[None]
+    @staticmethod
+    def from_product_name(name: str) -> Product:
+        module = _product_module(name)
+        product = Product._from_dunder_wptrunner(module)
+        if name != product.name:
+            msg = f"Product {name!r} calls itself {product.name!r}, which differs"
+            raise ValueError(msg)
+        return product

@@ -100,8 +100,8 @@
         test(function(){
             var style = newElm().style;
             style.cssText = "margin: 10px; margin-inline: 10px; margin-block: 10px; margin-inline-end: 10px; margin-bottom: 10px;";
-            assert_equals(style.cssText, "margin-top: 10px; margin-right: 10px; margin-left: 10px; margin-inline-start: 10px; margin-block: 10px; margin-inline-end: 10px; margin-bottom: 10px;");
-        }, 'Shorthands aren\'t serialized if there are other properties with different logical groups in between');
+            assert_equals(style.cssText, "margin-top: 10px; margin-right: 10px; margin-left: 10px; margin-inline: 10px; margin-block: 10px; margin-bottom: 10px;");
+        }, 'Shorthands aren\'t serialized if there are other properties with same logical property group but different mapping logic in between');
 
         test(function(){
             var style = newElm().style;

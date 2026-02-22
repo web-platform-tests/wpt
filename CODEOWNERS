@@ -770,7 +770,6 @@ css/css-values/attr-invalidation.html @web-platform-tests/interop
 css/css-values/attr-length-specified.html @web-platform-tests/interop
 css/css-values/attr-null-namespace.xhtml @web-platform-tests/interop
 css/css-values/attr-pseudo-elem-invalidation.html @web-platform-tests/interop
-css/css-values/attr-revert-rule.tentative.html @web-platform-tests/interop
 css/css-values/attr-security.html @web-platform-tests/interop
 css/css-values/attr-universal-selector.html @web-platform-tests/interop
 css/css-view-transitions/document-active-view-transition.html @web-platform-tests/interop

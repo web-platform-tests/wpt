@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+import os
 import re
 import time
 
@@ -33,6 +34,7 @@ __wptrunner__ = {"product": "chrome",
                               "reftest": "ChromeDriverRefTestExecutor",
                               "print-reftest": "ChromeDriverPrintRefTestExecutor",
                               "wdspec": "WdspecExecutor",
+                              "aamtest": "WdspecExecutor",
                               "crashtest": "ChromeDriverCrashTestExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
@@ -224,6 +226,13 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     if test_type == "wdspec":
         executor_kwargs["binary_args"] = chrome_options["args"]
 
+    if test_type == "aamtest":
+        # Necessary to force chrome to register in AT-SPI2.
+        os.environ["ACCESSIBILITY_ENABLED"] = "1"
+        if "--force-renderer-accessibility" not in chrome_options["args"]:
+            chrome_options["args"].append("--force-renderer-accessibility")
+            executor_kwargs["binary_args"] = chrome_options["args"]
+
     executor_kwargs["capabilities"] = capabilities
 
     return executor_kwargs
@@ -258,9 +267,10 @@ class ChromeBrowser(WebDriverBrowser):
         self._require_webdriver_bidi: Optional[bool] = None
 
     def restart_on_test_type_change(self, new_test_type: str, old_test_type: str) -> bool:
-        # Restart the test runner when switch from/to wdspec tests. Wdspec test
-        # is using a different protocol class so a restart is always needed.
-        if "wdspec" in [old_test_type, new_test_type]:
+        # Restart the test runner when switch from/to wdspec or aamtest tests.
+        # These tests use a different protocol class so a restart is always needed.
+        wdspec_types = {"wdspec", "aamtest"}
+        if old_test_type in wdspec_types or new_test_type in wdspec_types:
             return True
         return False
 

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>JPEG XL interop: CMYK conversion</title>
+<link rel="help" href="https://github.com/web-platform-tests/interop-jpegxl">
+<meta name="assert" content="Decodes CMYK+alpha JPEG XL fixture for browser display.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/interop-helpers.js"></script>
+<script>
+
+promise_test(async () => {
+  const img = await loadImage('../resources/conformance_cmyk_layers.jxl');
+  assert_equals(img.naturalWidth, 512);
+  assert_equals(img.naturalHeight, 512);
+  const px = samplePixel(img, 256, 256);
+  assert_greater_than(px[3], 0, 'center pixel should be visible');
+}, 'CMYK JPEG XL fixture decodes and renders non-empty image content.');
+
+</script>

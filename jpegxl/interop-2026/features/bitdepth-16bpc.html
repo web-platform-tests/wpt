@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>JPEG XL interop: 16-bit decode</title>
+<link rel="help" href="https://github.com/web-platform-tests/interop-jpegxl">
+<meta name="assert" content="Decodes known 16-bit JPEG XL fixture.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/interop-helpers.js"></script>
+<script>
+
+promise_test(async () => {
+  const img = await loadImage('../resources/has_permutation.jxl');
+  assert_equals(img.naturalWidth, 2143);
+  assert_equals(img.naturalHeight, 1050);
+}, '16-bit JPEG XL fixture decodes to expected dimensions.');
+
+</script>

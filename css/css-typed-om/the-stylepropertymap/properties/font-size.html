@@ -43,6 +43,10 @@ runPropertyTests('font-size', [
     computed: (_, result) => assert_is_unit('px', result)
   },
   {
+    syntax: 'xxx-large',
+    computed: (_, result) => assert_is_unit('px', result)
+  },
+  {
     syntax: 'larger',
     computed: (_, result) => assert_is_unit('px', result)
   },

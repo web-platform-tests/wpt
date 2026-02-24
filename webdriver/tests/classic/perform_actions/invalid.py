@@ -858,9 +858,7 @@ def test_wheel_action_scroll_origin_element_invalid_value(session):
 
 
 @pytest.mark.parametrize("missing", ["x", "y", "deltaX", "deltaY"])
-def test_wheel_action_scroll_missing_property(
-    session, test_actions_scroll_page, wheel_chain, missing
-):
+def test_wheel_action_scroll_missing_property(session, wheel_chain, missing):
     actions = wheel_chain.scroll(0, 0, 5, 10, origin="viewport")
     del actions._actions[-1][missing]
 

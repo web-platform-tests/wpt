@@ -1,15 +1,15 @@
 # mypy: allow-untyped-defs, allow-untyped-calls
 
+import sys
 import warnings
-from os.path import join, dirname
+from os.path import dirname, join
 from unittest import mock
+from unittest.mock import Mock
 
 import pytest
 
-from .base import all_products, active_products
-from .. import environment
-from .. import products
-from .. import wptcommandline
+from .. import environment, products, wptcommandline
+from .base import active_products, all_products
 
 wpt_root = join(dirname(__file__), "..", "..", "..", "..")
 
@@ -38,6 +38,12 @@ def test_load_all_products(product):
             products.Product.from_product_name(product)
         except ImportError:
             pass
+
+
+def test_product_from_name_unknown():
+    """Test that Product.from_product_name raises ValueError for unknown products."""
+    with pytest.raises(ValueError, match="Unknown product"):
+        products.Product.from_product_name("nonexistent_product")
 
 
 @active_products("product", marks={
@@ -110,3 +116,85 @@ def test_default_if_none_descriptor_with_provided_values() -> None:
 
     assert product.run_info_extras is custom_run_info_extras
     assert product.update_properties is custom_update_properties
+
+@pytest.mark.parametrize("product", products.BUILTIN_PRODUCTS)
+def test_get_product_names_includes_builtins(product):
+    """Test that built-in products are included."""
+    names = products.get_all_products()
+    assert product in names
+
+
+def test_entry_point_is_callable():
+    """Test that loading a non-callable entry point raises TypeError."""
+    mock_ep = Mock()
+    mock_ep.name = "badproduct"
+    mock_ep.load.return_value = "not callable"
+
+    if sys.version_info >= (3, 10):
+        return_value = [mock_ep]
+    else:
+        return_value = {"wptrunner.products": [mock_ep]}
+
+    with mock.patch("wptrunner.products.entry_points", autospec=True, return_value=return_value):
+        with pytest.raises(TypeError):
+            products.Product.from_product_name("badproduct")
+
+
+def test_entry_point_returns_product():
+    """Test that entry point callable must return Product instance."""
+    mock_ep = Mock()
+    mock_ep.name = "badproduct"
+    mock_ep.load.return_value = lambda: "not a Product instance"
+
+    if sys.version_info >= (3, 10):
+        return_value = [mock_ep]
+    else:
+        return_value = {"wptrunner.products": [mock_ep]}
+
+    with mock.patch("wptrunner.products.entry_points", autospec=True, return_value=return_value):
+        with pytest.raises(TypeError, match="instead of Product"):
+            products.Product.from_product_name("badproduct")
+
+
+def test_entry_point_product_name_validation():
+    """Test that entry point name must match Product.name."""
+    def get_product_wrong_name():
+        mock_product = Mock(spec=products.Product)
+        mock_product.name = "actual_name"
+        return mock_product
+
+    mock_ep = Mock()
+    mock_ep.name = "wrong_name"
+    mock_ep.load.return_value = get_product_wrong_name
+
+    if sys.version_info >= (3, 10):
+        return_value = [mock_ep]
+    else:
+        return_value = {"wptrunner.products": [mock_ep]}
+
+    with mock.patch("wptrunner.products.entry_points", autospec=True, return_value=return_value):
+        with pytest.raises(ValueError, match="name="):
+            products.Product.from_product_name("wrong_name")
+
+
+@active_products("product")
+def test_entry_point_shadows_builtin(product):
+    """Test that external entry points can shadow built-in products."""
+    if product not in products.BUILTIN_PRODUCTS:
+        pytest.skip("Only applies to built-ins")
+
+    ep = next(ep for ep in products._BUILTIN_ENTRY_POINTS if ep.name == product)
+
+    mock_ep = Mock(wraps=ep)
+    mock_ep.name = ep.name
+    mock_ep.load.return_value = lambda: None
+
+    if sys.version_info >= (3, 10):
+        return_value = [mock_ep]
+    else:
+        return_value = {"wptrunner.products": [mock_ep]}
+
+    with mock.patch("wptrunner.products.entry_points", autospec=True, return_value=return_value):
+        with pytest.raises(TypeError, match="instead of Product"):
+            product = products.Product.from_product_name(product)
+        mock_ep.load.assert_called_once()

@@ -1,0 +1,101 @@
+<!doctype html>
+<title>Range.extractContents() collapses range before mutations</title>
+<link rel="author" title="Steven Obiajulu" href="https://github.com/stevenobiajulu">
+<link rel="help" href="https://dom.spec.whatwg.org/#concept-range-extract">
+<meta name="assert" content="The extract algorithm sets range start and end before performing mutations, so the range remains valid even if script runs during removal.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+"use strict";
+
+// Case 1: originalStartNode is an inclusive ancestor of originalEndNode.
+// The range should collapse to (originalStartNode, originalStartOffset).
+test(function() {
+  const div = document.createElement("div");
+  for (let i = 0; i < 5; i++) {
+    div.appendChild(document.createElement("span"));
+  }
+  // Range: (div, 2) to (div, 5) — covers children at indices 2, 3, 4.
+  const range = document.createRange();
+  range.setStart(div, 2);
+  range.setEnd(div, 5);
+
+  const fragment = range.extractContents();
+
+  assert_equals(range.startContainer, div, "startContainer should be div");
+  assert_equals(range.startOffset, 2, "startOffset should be 2");
+  assert_equals(range.endContainer, div, "endContainer should be div");
+  assert_equals(range.endOffset, 2, "endOffset should be 2");
+  assert_true(range.collapsed, "range should be collapsed");
+  assert_equals(div.childNodes.length, 2, "div should have 2 remaining children");
+  assert_equals(fragment.childNodes.length, 3, "fragment should contain 3 extracted children");
+}, "extractContents collapses range correctly when start is ancestor of end (element children)");
+
+// Case 2: originalStartNode is NOT an inclusive ancestor of originalEndNode.
+// The range should collapse to (referenceNode.parent, referenceNode.index + 1).
+test(function() {
+  const div = document.createElement("div");
+  const referenceSpan = document.createElement("span");
+  const n1 = document.createElement("span");
+  const n2 = document.createElement("span");
+  const n3 = document.createElement("span");
+  const endSpan = document.createElement("span");
+  div.append(referenceSpan, n1, n2, n3, endSpan);
+  referenceSpan.appendChild(document.createTextNode("start"));
+  endSpan.appendChild(document.createTextNode("end"));
+
+  const range = document.createRange();
+  range.setStart(referenceSpan.firstChild, 2);
+  range.setEnd(endSpan.firstChild, 1);
+
+  const fragment = range.extractContents();
+
+  assert_true(range.collapsed, "range should be collapsed");
+  assert_equals(range.startContainer, div, "startContainer should be div");
+  assert_equals(range.startOffset, 1, "startOffset should be 1");
+  assert_true(fragment.childNodes.length > 0, "fragment should have extracted content");
+}, "extractContents collapses range correctly when start is not ancestor of end");
+
+// Case 3: CharacterData start and end nodes (partial text extraction).
+test(function() {
+  const div = document.createElement("div");
+  const startText = document.createTextNode("Hello");
+  const middleSpan = document.createElement("span");
+  const endText = document.createTextNode("World");
+  div.append(startText, middleSpan, endText);
+
+  const range = document.createRange();
+  range.setStart(startText, 2);  // "He|llo"
+  range.setEnd(endText, 3);      // "Wor|ld"
+
+  const fragment = range.extractContents();
+
+  assert_true(range.collapsed, "range should be collapsed");
+  assert_equals(range.startContainer, div, "startContainer should be div");
+  assert_equals(range.startOffset, 1, "startOffset should be 1");
+  assert_equals(startText.data, "He", "start text should be truncated");
+  assert_equals(endText.data, "ld", "end text should be truncated");
+  assert_equals(div.childNodes.length, 2, "middle span should be extracted");
+  assert_true(fragment.childNodes.length > 0, "fragment should contain extracted content");
+}, "extractContents collapses range correctly with CharacterData boundary nodes");
+
+// Case 4: Same CharacterData node (early return path — no mutation ordering issue).
+test(function() {
+  const div = document.createElement("div");
+  const text = document.createTextNode("Hello World");
+  div.appendChild(text);
+
+  const range = document.createRange();
+  range.setStart(text, 2);
+  range.setEnd(text, 7);
+
+  const fragment = range.extractContents();
+
+  assert_true(range.collapsed, "range should be collapsed");
+  assert_equals(range.startContainer, text, "startContainer should be the text node");
+  assert_equals(range.startOffset, 2, "startOffset should be 2");
+  assert_equals(text.data, "Heorld", "text data should have middle removed");
+  assert_equals(fragment.firstChild.data, "llo W", "fragment should contain extracted text");
+}, "extractContents handles same CharacterData node correctly");
+</script>

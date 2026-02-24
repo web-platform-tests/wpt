@@ -245,6 +245,9 @@ class BrowserSetup:
     def setup(self, kwargs):
         self.setup_kwargs(kwargs)
 
+    def setup_kwargs(self, kwargs):
+        pass
+
     def teardown(self):
         pass
 
@@ -729,38 +732,16 @@ class ServoLegacy(Servo):
     name = "servo_legacy"
     browser_cls = browser.ServoLegacy
 
-    def install(self, channel=None):
-        if self.prompt_install(self.name):
-            return self.browser.install(self.venv.path)
-
-    def setup_kwargs(self, kwargs):
-        if kwargs["binary"] is None:
-            binary = self.browser.find_binary(self.venv.path, None)
-
-            if binary is None:
-                raise WptrunError("Unable to find servoshell binary in PATH")
-            kwargs["binary"] = binary
-
 
 class WebKit(BrowserSetup):
     name = "webkit"
     browser_cls = browser.WebKit
 
-    def install(self, channel=None):
-        raise NotImplementedError
-
-    def setup_kwargs(self, kwargs):
-        pass
 
 class Ladybird(BrowserSetup):
     name = "ladybird"
     browser_cls = browser.Ladybird
 
-    def install(self, channel=None):
-        raise NotImplementedError
-
-    def setup_kwargs(self, kwargs):
-        pass
 
 class WebKitTestRunner(BrowserSetup):
     name = "wktr"

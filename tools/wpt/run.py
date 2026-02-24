@@ -9,8 +9,7 @@ from shutil import copyfile, which
 from typing import ClassVar, Tuple, Type
 
 import mozlog
-
-from wptrunner import wptcommandline, wptrunner
+from wptrunner import products, wptcommandline, wptrunner
 
 from ..serve import serve
 from . import browser, install, testfiles
@@ -109,9 +108,13 @@ otherwise install OpenSSL and ensure that it's on your $PATH.""")
 
 
 def check_environ(product):
-    if product not in ("android_webview", "chrome", "chrome_android", "chrome_ios",
-                       "edge", "firefox", "firefox_android", "headless_shell",
-                       "ladybird", "servo", "wktr"):
+    builtin_skip = {
+        "android_webview", "chrome", "chrome_android", "chrome_ios",
+        "edge", "firefox", "firefox_android", "headless_shell",
+        "ladybird", "servo", "wktr"
+    }
+
+    if product not in builtin_skip:
         config_builder = serve.build_config(os.path.join(wpt_root, "config.json"))
         # Override the ports to avoid looking for free ports
         config_builder.ssl = {"type": "none"}
@@ -215,8 +218,8 @@ class AndroidLogcat:
 
 
 class BrowserSetup:
-    name: ClassVar[str]
-    browser_cls: ClassVar[Type[browser.Browser]]
+    name: str
+    browser_cls: Type[browser.Browser]
 
     def __init__(self, venv, prompt=True):
         self.browser = self.browser_cls(logger)
@@ -250,6 +253,14 @@ class BrowserSetup:
 
     def teardown(self):
         pass
+
+
+class GenericBrowserSetup(BrowserSetup):
+    browser_cls = browser.Browser
+
+    def __init__(self, venv, prompt, product_name):
+        self.name = product_name
+        super().__init__(venv, prompt)
 
 
 def safe_unsetenv(env_var):
@@ -527,7 +538,7 @@ class ChromeAndEdgeSetup(BrowserSetup):
 
 class Chrome(ChromeAndEdgeSetup):
     name = "chrome"
-    browser_cls: ClassVar[Type[browser.ChromeChromiumBase]] = browser.Chrome
+    browser_cls: Type[browser.ChromeChromiumBase] = browser.Chrome
     webdriver_name = "chromedriver"
 
     def setup_kwargs(self, kwargs):
@@ -572,7 +583,7 @@ class HeadlessShell(BrowserSetup):
 
 class Chromium(Chrome):
     name = "chromium"
-    browser_cls: ClassVar[Type[browser.ChromeChromiumBase]] = browser.Chromium
+    browser_cls: Type[browser.ChromeChromiumBase] = browser.Chromium
     experimental_channels = ("nightly",)
 
 
@@ -824,7 +835,7 @@ class Epiphany(BrowserSetup):
             kwargs["webdriver_binary"] = webdriver_binary
 
 
-product_setup = {
+BUILTIN_PRODUCT_SETUP = {
     "android_webview": AndroidWebview,
     "firefox": Firefox,
     "firefox_android": FirefoxAndroid,
@@ -847,6 +858,33 @@ product_setup = {
     "ladybird": Ladybird,
 }
 
+
+def get_product_setup(product_name, venv, prompt):
+    """Get BrowserSetup instance for product (built-in or external).
+
+    Args:
+        product_name: Name of the product (e.g., "chrome", "firefox")
+        venv: Virtual environment object
+        prompt: Whether to prompt user for confirmations
+
+    Returns:
+        BrowserSetup instance for the product
+
+    Raises:
+        WptrunError: If product is unknown
+    """
+    if product_name in BUILTIN_PRODUCT_SETUP:
+        return BUILTIN_PRODUCT_SETUP[product_name](venv, prompt)
+
+    try:
+        products.Product.from_product_name(product_name)
+    except Exception as e:
+        raise WptrunError(f"Unsupported product {product_name}") from e
+    else:
+        return GenericBrowserSetup(venv, prompt, product_name)
+
+
+product_setup = BUILTIN_PRODUCT_SETUP
 
 
 def setup_logging(kwargs, default_config=None, formatter_defaults=None):
@@ -872,13 +910,10 @@ def setup_wptrunner(venv, **kwargs):
     check_environ(kwargs["product"])
     args_general(kwargs)
 
-    if kwargs["product"] not in product_setup:
-        if kwargs["product"] == "edgechromium":
-            raise WptrunError("edgechromium has been renamed to edge.")
+    if kwargs["product"] == "edgechromium":
+        raise WptrunError("edgechromium has been renamed to edge.")
 
-        raise WptrunError("Unsupported product %s" % kwargs["product"])
-
-    setup_cls = product_setup[kwargs["product"]](venv, kwargs["prompt"])
+    setup_cls = get_product_setup(kwargs["product"], venv, kwargs["prompt"])
     if not venv.skip_virtualenv_setup:
         requirements = [os.path.join(wpt_root, "tools", "wptrunner", "requirements.txt")]
         requirements.extend(setup_cls.requirements())

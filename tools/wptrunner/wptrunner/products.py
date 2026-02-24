@@ -120,6 +120,62 @@ def default_run_info_extras(logger: StructuredLogger, **kwargs: Any) -> Mapping[
 
 @dataclass(frozen=True)
 class Product:
+    """Defines a browser product for wptrunner testing.
+
+    Product instances specify how to launch a browser, execute tests, and
+    collect results. They are used by both the wptrunner test harness and the
+    ./wpt run CLI command.
+
+    External packages can register custom products via entry points
+    in the 'wptrunner.products' group. See the wptrunner plugin documentation
+    for details on creating custom products.
+
+    Attributes:
+        name: Product identifier (e.g., "chrome", "firefox", "safari"). Must
+            match the entry point name when registered as a plugin.
+        browser_classes: Mapping from test type to Browser class. Use None
+            as the key for the default browser class used by most test types.
+            Can specify per-test-type browsers (e.g., {None: DefaultBrowser,
+            "wdspec": WdSpecBrowser}) for products that need different browser
+            behavior for different test types.
+        check_args: Function to validate command-line arguments specific to
+            this product. Called before test execution to ensure required
+            arguments are present and valid.
+        get_browser_kwargs: Function that returns kwargs for Browser
+            instantiation. Takes logger, test_type, run_info_data, config,
+            subsuite, and additional kwargs. Returns a dictionary of arguments
+            passed to the Browser class constructor.
+        get_executor_kwargs: Function that returns kwargs for Executor
+            instantiation. Takes logger, test_type, test_environment,
+            run_info_data, subsuite, and additional kwargs. Returns a
+            dictionary of arguments passed to the TestExecutor class
+            constructor.
+        env_options: Environment configuration dictionary. Must include 'host'
+            (hostname for test server) and 'bind_address' (whether to bind
+            to specific address). May include 'supports_debugger' and other
+            environment-specific options.
+        get_env_extras: Function that returns additional environment setup.
+            Takes kwargs and returns a sequence of objects used during test
+            environment initialization.
+        get_timeout_multiplier: Function that returns a timeout multiplier for
+            tests. Takes test_type, run_info_data, and kwargs. Returns a float
+            multiplier applied to test timeouts (e.g., 2.0 for slower browsers,
+            0.5 for faster ones).
+        executor_classes: Mapping from test type to Executor class. Must
+            include entries for each test type the product supports (e.g.,
+            {"testharness": WebDriverTestharnessExecutor, "reftest":
+            WebDriverRefTestExecutor}).
+        run_info_extras: Optional function that returns extra information to
+            include in run_info.json. Takes logger and kwargs, returns a
+            dictionary of additional metadata (e.g., browser version, build
+            number). Defaults to returning an empty dictionary if not provided.
+        update_properties: Optional tuple of (unconditional_properties,
+            conditional_properties) specifying which properties should trigger
+            manifest updates. Unconditional properties are always updated,
+            conditional properties depend on test conditions. Defaults to
+            (["product"], {}) if not provided.
+
+    """
     name: str
     # Once we can rely on Python 3.10, we should add:
     # _: KW_ONLY
@@ -150,6 +206,18 @@ class Product:
 
     @staticmethod
     def _from_dunder_wptrunner(module: ModuleType) -> Product:
+        """Create a Product instance from a module's __wptrunner__ dict.
+
+        Args:
+            module: Module containing __wptrunner__ dict with product configuration
+
+        Returns:
+            Product instance with all fields populated from the __wptrunner__ dict
+
+        Raises:
+            ValueError: If __wptrunner__ is missing or invalid
+
+        """
         data: WptrunnerModuleDict = module.__wptrunner__
 
         name = data["product"]
@@ -198,6 +266,18 @@ class Product:
 
     @staticmethod
     def from_product_name(name: str) -> Product:
+        """Load a Product by name.
+
+        Args:
+            name: Product name (e.g., "chrome", "firefox", "mybrowser")
+
+        Returns:
+            Product instance
+
+        Raises:
+            ValueError: If product name is unknown or entry point invalid
+
+        """
         module = _product_module(name)
         product = Product._from_dunder_wptrunner(module)
         if name != product.name:

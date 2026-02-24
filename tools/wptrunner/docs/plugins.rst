@@ -108,6 +108,32 @@ Add custom metadata to test run information::
 
     # Include in Product(..., run_info_extras=run_info_extras)
 
+Custom Command-Line Arguments
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Products can register their own command-line arguments that appear when users
+run ``./wpt run --help``. Use the ``add_arguments`` attribute to add a function
+that receives an ``argparse.ArgumentParser`` and adds product-specific options::
+
+    def add_arguments(parser):
+        group = parser.add_argument_group("MyBrowser-specific")
+        group.add_argument(
+            "--mybrowser-profile",
+            help="Path to browser profile directory"
+        )
+        group.add_argument(
+            "--mybrowser-debug",
+            action="store_true",
+            help="Enable debug mode"
+        )
+
+    # Include in Product(..., add_arguments=add_arguments)
+
+These arguments will be available in your ``check_args``, ``browser_kwargs``,
+and other functions via ``**kwargs``. The ``add_arguments`` function is called
+for all available products during argument parser setup, so arguments are
+always visible regardless of which product is selected.
+
 API Reference
 -------------
 

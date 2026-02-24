@@ -91,12 +91,18 @@ def test_default_if_none_descriptor_with_none() -> None:
 
     assert product.run_info_extras is products.default_run_info_extras
     assert product.update_properties == (["product"], {})
+    assert product.add_arguments is products.default_add_arguments
 
 
 def test_default_if_none_descriptor_with_provided_values() -> None:
     """Test that _DefaultIfNone descriptor preserves provided values"""
     def custom_run_info_extras(logger, **kwargs):
         return {"custom": "value"}
+
+    def custom_add_arguments(parser):
+        group = parser.add_argument_group("Test-specific")
+        group.add_argument("--test-option", help="A test option")
+        group.add_argument("--another-option", type=int, default=42)
 
     custom_update_properties = (["custom"], {"prop": ["value"]})
 
@@ -112,10 +118,29 @@ def test_default_if_none_descriptor_with_provided_values() -> None:
         executor_classes={},
         run_info_extras=custom_run_info_extras,
         update_properties=custom_update_properties,
+        add_arguments=custom_add_arguments,
     )
 
     assert product.run_info_extras is custom_run_info_extras
     assert product.update_properties is custom_update_properties
+    assert product.add_arguments is custom_add_arguments
+
+
+def test_create_parser_calls_add_arguments() -> None:
+    """Test that create_parser calls add_arguments for available products."""
+    def custom_add_arguments(parser):
+        parser.add_argument("--custom-product-option")
+
+    mock_product = mock.MagicMock(spec=products.Product)
+    mock_product.add_arguments = custom_add_arguments
+
+    with mock.patch("wptrunner.products.get_all_products", return_value={"mockbrowser": mock.MagicMock()}):
+        with mock.patch("wptrunner.products.Product.from_product_name", return_value=mock_product):
+            parser = wptcommandline.create_parser(product_choices=["mockbrowser"])
+
+    args = parser.parse_args(["--product", "mockbrowser", "--custom-product-option", "value"])
+    assert args.custom_product_option == "value"
+
 
 @pytest.mark.parametrize("product", products.BUILTIN_PRODUCTS)
 def test_get_product_names_includes_builtins(product):

@@ -8,11 +8,14 @@ import sys
 from shutil import copyfile, which
 from typing import ClassVar, Tuple, Type
 
-wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
-sys.path.insert(0, os.path.abspath(os.path.join(wpt_root, "tools")))
+import mozlog
 
-from . import browser, install, testfiles
+from wptrunner import wptcommandline, wptrunner
+
 from ..serve import serve
+from . import browser, install, testfiles
+
+wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
 logger = None
 
@@ -35,7 +38,6 @@ class WptrunnerHelpAction(argparse.Action):
             help=help)
 
     def __call__(self, parser, namespace, values, option_string=None):
-        from wptrunner import wptcommandline
         wptparser = wptcommandline.create_parser()
         wptparser.usage = parser.usage
         wptparser.print_help()
@@ -43,8 +45,6 @@ class WptrunnerHelpAction(argparse.Action):
 
 
 def create_parser():
-    from wptrunner import wptcommandline
-
     parser = argparse.ArgumentParser(add_help=False, parents=[install.channel_args])
     parser.add_argument("product", help="Browser to run tests in")
     parser.add_argument("--affected", help="Run affected tests since revish")
@@ -344,8 +344,9 @@ class FirefoxAndroid(BrowserSetup):
     browser_cls = browser.FirefoxAndroid
 
     def setup_kwargs(self, kwargs):
-        from . import android
         import mozdevice
+
+        from . import android
 
         # We don't support multiple channels for android yet
         if kwargs["browser_channel"] is None:
@@ -847,10 +848,8 @@ product_setup = {
 }
 
 
-def setup_logging(kwargs, default_config=None, formatter_defaults=None):
-    import mozlog
-    from wptrunner import wptrunner
 
+def setup_logging(kwargs, default_config=None, formatter_defaults=None):
     global logger
 
     # Use the grouped formatter by default where mozlog 3.9+ is installed
@@ -866,8 +865,6 @@ def setup_logging(kwargs, default_config=None, formatter_defaults=None):
 
 
 def setup_wptrunner(venv, **kwargs):
-    from wptrunner import wptcommandline
-
     kwargs = kwargs.copy()
 
     kwargs["product"] = kwargs["product"].replace("-", "_")
@@ -961,5 +958,4 @@ def run(venv, **kwargs):
 
 
 def run_single(venv, **kwargs):
-    from wptrunner import wptrunner
     return wptrunner.start(**kwargs)

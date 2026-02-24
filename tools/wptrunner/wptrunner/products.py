@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import functools
 import importlib
 import itertools
@@ -170,9 +171,15 @@ class TimeoutMultiplier(Protocol):
         ...
 
 
+class AddArguments(Protocol):
+    def __call__(self, parser: argparse.ArgumentParser) -> None:
+        ...
+
+
 class _WptrunnerModuleDictOptional(TypedDict, total=False):
     run_info_extras: str
     update_properties: str
+    add_arguments: str
 
 
 class WptrunnerModuleDict(_WptrunnerModuleDictOptional):
@@ -189,6 +196,10 @@ class WptrunnerModuleDict(_WptrunnerModuleDictOptional):
 
 def default_run_info_extras(logger: StructuredLogger, **kwargs: Any) -> Mapping[str, JSON]:
     return {}
+
+
+def default_add_arguments(parser: argparse.ArgumentParser) -> None:
+    pass
 
 
 @dataclass(frozen=True)
@@ -247,6 +258,10 @@ class Product:
             manifest updates. Unconditional properties are always updated,
             conditional properties depend on test conditions. Defaults to
             (["product"], {}) if not provided.
+        add_arguments: Optional function to add product-specific command-line
+            arguments to the argument parser. Takes an ArgumentParser and adds
+            any product-specific arguments. Called during argument parser setup
+            for all available products. Defaults to a no-op if not provided.
 
     """
     name: str
@@ -269,6 +284,9 @@ class Product:
             Mapping[str, Sequence[str]],
         ],
     ] = DefaultIfSentinel(default_factory=lambda: (["product"], {}))
+    add_arguments: DefaultIfSentinel[
+        AddArguments,
+    ] = DefaultIfSentinel(default=default_add_arguments)
 
     def get_browser_cls(self, test_type: str) -> type[browsers_base.Browser]:
         cls = self.browser_classes.get(test_type)
@@ -321,6 +339,11 @@ class Product:
             if "update_properties" in data
             else None
         )
+        add_arguments = (
+            getattr(module, data["add_arguments"])
+            if "add_arguments" in data
+            else None
+        )
 
         return Product(
             name=name,
@@ -334,6 +357,7 @@ class Product:
             executor_classes=executor_classes,
             run_info_extras=run_info_extras,
             update_properties=update_properties,
+            add_arguments=add_arguments,
         )
 
     @staticmethod

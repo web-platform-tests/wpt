@@ -445,6 +445,16 @@ scheme host and port.""")
     commandline.log_formatters["wptscreenshot"] = (wptscreenshot.WptscreenshotFormatter, "wpt.fyi screenshots")
 
     commandline.add_logging_group(parser)
+
+    for product_name in products.get_all_products():
+        try:
+            product = products.Product.from_product_name(product_name)
+        except Exception as e:
+            print(f"Warning: could not load product {product_name!r} for argument registration: {e}",
+                  file=sys.stderr)
+        else:
+            product.add_arguments(parser)
+
     return parser
 
 

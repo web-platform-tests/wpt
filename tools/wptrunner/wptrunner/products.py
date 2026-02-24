@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import functools
 import importlib
+import itertools
+import sys
 from dataclasses import dataclass
+from importlib.metadata import EntryPoint, entry_points
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -10,10 +14,8 @@ from typing import (
 )
 
 from ._default_if_sentinel import DefaultIfSentinel
-from .browsers import product_list
 
 if TYPE_CHECKING:
-    import sys
     from collections.abc import Mapping, Sequence
     from types import ModuleType
 
@@ -32,6 +34,88 @@ if TYPE_CHECKING:
 
 
 JSON: TypeAlias = "Mapping[str, 'JSON'] | Sequence['JSON'] | str | int | float | bool | None"
+
+
+# Hardcoded tuple of built-in products
+BUILTIN_PRODUCTS = frozenset(
+    (
+        "android_webview",
+        "chrome",
+        "chrome_android",
+        "chrome_ios",
+        "chromium",
+        "edge",
+        "epiphany",
+        "firefox",
+        "firefox_android",
+        "headless_shell",
+        "ladybird",
+        "opera",
+        "safari",
+        "sauce",
+        "servo",
+        "servo_legacy",
+        "webkit",
+        "webkitgtk_minibrowser",
+        "wktr",
+        "wpewebkit_minibrowser",
+    )
+)
+
+
+class _BuiltinLoaders:
+    """Namespace for builtin product loader functions.
+
+    Used by EntryPoint objects to provide a module:attribute reference
+    for builtin products.
+    """
+
+
+def _builtin_loader(name: str) -> Product:
+    if name not in BUILTIN_PRODUCTS:
+        raise ValueError(f"Unknown product: {name!r}")
+
+    module = importlib.import_module(f"wptrunner.browsers.{name}")
+    if not hasattr(module, "__wptrunner__"):
+        raise ValueError("Product module does not define __wptrunner__ variable")
+
+    return Product._from_dunder_wptrunner(module)
+
+
+for __product_name in BUILTIN_PRODUCTS:
+    setattr(
+        _BuiltinLoaders,
+        __product_name,
+        functools.partial(_builtin_loader, __product_name),
+    )
+
+
+_BUILTIN_ENTRY_POINTS: Sequence[EntryPoint] = [
+    EntryPoint(
+        name=product_name,
+        value=f"wptrunner.products:_BuiltinLoaders.{product_name}",
+        group="wptrunner.products",
+    )
+    for product_name in BUILTIN_PRODUCTS
+]
+
+
+def get_all_products() -> Mapping[str, EntryPoint]:
+    """Get a mapping of available products to their entry points.
+    """
+    if sys.version_info >= (3, 10):
+        eps = entry_points(group="wptrunner.products")
+    else:
+        eps = entry_points().get("wptrunner.products", [])
+
+    # We iterate over entry points in reverse order so the earlier ones
+    # (typically from earlier in sys.path) win over later ones. External
+    # entry points come after builtins, so they override builtins with the
+    # same name.
+    return {
+        ep.name: ep
+        for ep in itertools.chain(_BUILTIN_ENTRY_POINTS, reversed(eps))
+    }
 
 
 class CheckArgs(Protocol):
@@ -103,17 +187,6 @@ class WptrunnerModuleDict(_WptrunnerModuleDictOptional):
     executor: Mapping[str, str]
 
 
-def _product_module(product: str) -> ModuleType:
-    if product not in product_list:
-        raise ValueError(f"Unknown product {product!r}")
-
-    module = importlib.import_module("wptrunner.browsers." + product)
-    if not hasattr(module, "__wptrunner__"):
-        raise ValueError("Product module does not define __wptrunner__ variable")
-
-    return module
-
-
 def default_run_info_extras(logger: StructuredLogger, **kwargs: Any) -> Mapping[str, JSON]:
     return {}
 
@@ -179,7 +252,6 @@ class Product:
     name: str
     # Once we can rely on Python 3.10, we should add:
     # _: KW_ONLY
-    # This matches __init__ below.
     browser_classes: Mapping[str | None, type[browsers_base.Browser]]
     check_args: CheckArgs
     get_browser_kwargs: BrowserKwargs
@@ -268,6 +340,11 @@ class Product:
     def from_product_name(name: str) -> Product:
         """Load a Product by name.
 
+        Works for both builtin and external products via entry points.
+        Builtin products use synthetic EntryPoint objects that load from
+        wptrunner.browsers modules. External products use real entry points
+        from installed packages.
+
         Args:
             name: Product name (e.g., "chrome", "firefox", "mybrowser")
 
@@ -278,9 +355,22 @@ class Product:
             ValueError: If product name is unknown or entry point invalid
 
         """
-        module = _product_module(name)
-        product = Product._from_dunder_wptrunner(module)
-        if name != product.name:
-            msg = f"Product {name!r} calls itself {product.name!r}, which differs"
-            raise ValueError(msg)
+        all_products = get_all_products()
+
+        if name not in all_products:
+            raise ValueError(f"Unknown product {name!r}")
+
+        product = all_products[name].load()()
+
+        if not isinstance(product, Product):
+            raise TypeError(
+                f"Entry point {name!r} returned {type(product).__name__} "
+                f"instead of Product"
+            )
+
+        if product.name != name:
+            raise ValueError(
+                f"Entry point {name!r} returned Product with name={product.name!r}"
+            )
+
         return product

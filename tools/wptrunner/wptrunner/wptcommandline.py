@@ -41,7 +41,7 @@ def create_parser(product_choices=None):
     from mozlog import commandline
 
     if product_choices is None:
-        product_choices = products.product_list
+        product_choices = list(products.get_all_products())
 
     parser = argparse.ArgumentParser(description="""Runner for web-platform-tests tests.""",
                                      usage="""%(prog)s [OPTION]... [TEST]...
@@ -741,7 +741,7 @@ def create_parser_metadata_update(product_choices=None):
     from . import products
 
     if product_choices is None:
-        product_choices = products.product_list
+        product_choices = list(products.get_all_products())
 
     parser = argparse.ArgumentParser("web-platform-tests-update",
                                      description="Update script for web-platform-tests tests.")

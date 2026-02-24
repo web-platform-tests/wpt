@@ -481,6 +481,29 @@ def test_pointer_action_up_down_button_invalid_value(session, pointer_action, va
     assert_error(response, "invalid argument")
 
 
+@pytest.mark.parametrize("missing", ["x", "y"])
+def test_pointer_action_move_missing_property(session, missing):
+    action_dict = {
+        "type": "pointerMove",
+        "duration": 0,
+        "x": 0,
+        "y": 0,
+    }
+
+    del action_dict[missing]
+
+    actions = [
+        {
+            "type": "pointer",
+            "id": "foo",
+            "actions": [action_dict],
+        }
+    ]
+
+    response = perform_actions(session, actions)
+    assert_error(response, "invalid argument")
+
+
 @pytest.mark.parametrize("pointer_action", ["pointerDown", "pointerMove", "pointerUp"])
 @pytest.mark.parametrize("dimension", ["width", "height"])
 @pytest.mark.parametrize("value", [None, "foo", True, 0.1, [], {}])

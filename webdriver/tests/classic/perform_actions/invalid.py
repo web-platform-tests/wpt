@@ -361,6 +361,14 @@ def test_pointer_action_subtype_invalid_value(session, value):
     assert_error(response, "invalid argument")
 
 
+@pytest.mark.parametrize("missing", ["x", "y"])
+def test_pointer_action_move_missing_coordinates(session, mouse_chain, missing):
+    actions = mouse_chain.pointer_move(x=0, y=0)
+    del actions._actions[-1][missing]
+    with pytest.raises(InvalidArgumentException):
+        actions.perform()
+
+
 @pytest.mark.parametrize("coordinate", ["x", "y"])
 @pytest.mark.parametrize("value", [None, "foo", True, [], {}])
 def test_pointer_action_move_coordinate_invalid_type(session, coordinate, value):
@@ -478,29 +486,6 @@ def test_pointer_action_up_down_button_invalid_value(session, pointer_action, va
     response = perform_actions(
         session, [{"type": "pointer", "id": "foo", "actions": [action]}]
     )
-    assert_error(response, "invalid argument")
-
-
-@pytest.mark.parametrize("missing", ["x", "y"])
-def test_pointer_action_move_missing_property(session, missing):
-    action_dict = {
-        "type": "pointerMove",
-        "duration": 0,
-        "x": 0,
-        "y": 0,
-    }
-
-    del action_dict[missing]
-
-    actions = [
-        {
-            "type": "pointer",
-            "id": "foo",
-            "actions": [action_dict],
-        }
-    ]
-
-    response = perform_actions(session, actions)
     assert_error(response, "invalid argument")
 
 

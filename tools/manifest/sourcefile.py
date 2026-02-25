@@ -678,6 +678,7 @@ class SourceFile:
     @cached_property
     def safe_printable_inset(self) -> Optional[float]:
         """The safe printable inset to simulate (in centimeters)"""
+        assert self.root is not None
         for entry in self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='safe-printable-inset']"):
             key_data, value = self.parse_ref_keyed_meta(entry)
             return float(value)

@@ -295,7 +295,7 @@ class PrintRefTest(RefTest):
 
     @property
     def safe_printable_inset(self) -> float:
-        return self._extras.get("safe_printable_inset")
+        return cast(float, self._extras.get("safe_printable_inset"))
 
     def to_json(self):  # type: ignore
         rv = super().to_json()

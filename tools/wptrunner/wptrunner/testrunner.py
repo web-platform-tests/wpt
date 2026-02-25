@@ -608,6 +608,7 @@ class TestRunnerManager(threading.Thread):
             return StopState(True)
         test_group, test = next_test
         self.recording.set(["testrunner", "init"])
+        self.logger.group_start(name=test_group.name)
         return InitializingState(test_group, test, 0)
 
     def init(self):
@@ -913,8 +914,14 @@ class TestRunnerManager(threading.Thread):
         if not force_rerun and self.run_count >= self.rerun:
             next_test = self.get_next_test()
             if next_test is None:
+                self.logger.group_end(name=self.state.test_group.name)
                 return StopState(force_stop)
             test_group, test = next_test
+
+            if test_group is not self.state.test_group:
+                self.logger.group_end(name=self.state.test_group.name)
+                self.logger.group_start(name=test_group.name)
+
             if test_group.subsuite != self.state.test_group.subsuite:
                 self.logger.info(f"Restarting browser for new subsuite:{test_group.subsuite!r}")
                 restart = True

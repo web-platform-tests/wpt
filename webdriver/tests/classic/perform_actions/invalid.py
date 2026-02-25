@@ -362,9 +362,10 @@ def test_pointer_action_subtype_invalid_value(session, value):
 
 
 @pytest.mark.parametrize("missing", ["x", "y"])
-def test_pointer_action_move_missing_coordinates(session, mouse_chain, missing):
+def test_pointer_action_move_missing_property(session, mouse_chain, missing):
     actions = mouse_chain.pointer_move(x=0, y=0)
     del actions._actions[-1][missing]
+
     with pytest.raises(InvalidArgumentException):
         actions.perform()
 

@@ -45,13 +45,13 @@ promise_test(async t => {
   const tablist = await test_driver.get_accessibility_properties_for_element(document.getElementById("tablist"));
   assert_equals(tablist.children.length, 2);
   const tab1 = await test_driver.get_accessibility_properties_for_accessibility_node(tablist.children[0]);
-  assert_equals(tab1.id, tablist.children[0]);
-  assert_equals(tab1.parent, tablist.id);
+  assert_equals(tab1.accessibilityId, tablist.children[0]);
+  assert_equals(tab1.parent, tablist.accessibilityId);
   assert_equals(tab1.role, "tab");
   assert_equals(tab1.label, "tab1");
   const tab2 = await test_driver.get_accessibility_properties_for_accessibility_node(tablist.children[1]);
-  assert_equals(tab2.id, tablist.children[1]);
-  assert_equals(tab2.parent, tablist.id);
+  assert_equals(tab2.accessibilityId, tablist.children[1]);
+  assert_equals(tab2.parent, tablist.accessibilityId);
   assert_equals(tab2.role, "tab");
   assert_equals(tab2.label, "tab2");
 }, "tablist subtree");

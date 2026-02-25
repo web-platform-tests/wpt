@@ -1134,7 +1134,7 @@ class PrintProtocolPart(ProtocolPart):
     name = "pdf_print"
 
     @abstractmethod
-    def render_as_pdf(self, width, height):
+    def render_as_pdf(self, width, height, safe_printable_inset):
         """Output document as PDF"""
         pass
 

@@ -676,6 +676,14 @@ class SourceFile:
         return rv
 
     @cached_property
+    def safe_printable_inset(self) -> Optional[float]:
+        """The safe printable inset to simulate (in centimeters)"""
+        for entry in self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='safe-printable-inset']"):
+            key_data, value = self.parse_ref_keyed_meta(entry)
+            return float(value)
+        return None
+
+    @cached_property
     def testharness_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes representing a
         testharness.js script"""
@@ -1023,6 +1031,7 @@ class SourceFile:
                     viewport_size=self.viewport_size,
                     fuzzy=self.fuzzy,
                     page_ranges=self.page_ranges,
+                    safe_printable_inset=self.safe_printable_inset,
                     testdriver=self.has_testdriver,
                 )]
 

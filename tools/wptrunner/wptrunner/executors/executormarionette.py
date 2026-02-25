@@ -683,7 +683,7 @@ class MarionettePrintProtocolPart(PrintProtocolPart):
             raise
         self.runner_handle = self.marionette.current_window_handle
 
-    def render_as_pdf(self, width, height):
+    def render_as_pdf(self, width, height, safe_printable_inset):
         margin = 0.5 * 2.54
         body = {
             "page": {
@@ -701,7 +701,7 @@ class MarionettePrintProtocolPart(PrintProtocolPart):
         }
         return self.marionette._send_message("WebDriver:Print", body, key="value")
 
-    def pdf_to_png(self, pdf_base64, page_ranges):
+    def pdf_to_png(self, pdf_base64, page_ranges, safe_printable_inset):
         handle = self.marionette.current_window_handle
         _switch_to_window(self.marionette, self.runner_handle)
         try:
@@ -1227,7 +1227,7 @@ class MarionetteRefTestExecutor(RefTestExecutor):
 
         return self.convert_result(test, result)
 
-    def screenshot(self, test, viewport_size, dpi, page_ranges):
+    def screenshot(self, test, viewport_size, dpi, page_ranges, safe_printable_inset):
         # https://github.com/web-platform-tests/wpt/issues/7135
         assert viewport_size is None
         assert dpi is None
@@ -1431,7 +1431,7 @@ class MarionettePrintRefTestExecutor(MarionetteRefTestExecutor):
         if not isinstance(self.implementation, InternalRefTestImplementation):
             self.protocol.pdf_print.load_runner()
 
-    def screenshot(self, test, viewport_size, dpi, page_ranges):
+    def screenshot(self, test, viewport_size, dpi, page_ranges, safe_printable_inset):
         # https://github.com/web-platform-tests/wpt/issues/7140
         assert dpi is None
 
@@ -1453,7 +1453,7 @@ class MarionettePrintRefTestExecutor(MarionetteRefTestExecutor):
 
         protocol.base.execute_script(self.wait_script, asynchronous=True)
 
-        pdf = protocol.pdf_print.render_as_pdf(*self.viewport_size)
+        pdf = protocol.pdf_print.render_as_pdf(*self.viewport_size, self.safe_printable_inset)
         screenshots = protocol.pdf_print.pdf_to_png(pdf, self.page_ranges)
         for i, screenshot in enumerate(screenshots):
             # strip off the data:img/png, part of the url

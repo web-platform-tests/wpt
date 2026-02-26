@@ -1,10 +1,6 @@
-
 TEST_HTML = "<div role=blockquote id=test></div>"
 
 def test_atspi(atspi, session, inline):
-    if not atspi:
-        return
-
     session.url = inline(TEST_HTML)
 
     node = atspi.find_node("test", session.url)
@@ -12,9 +8,6 @@ def test_atspi(atspi, session, inline):
 
 
 def test_axapi(axapi, session, inline):
-    if not axapi:
-        return
-
     session.url = inline(TEST_HTML)
 
     node = axapi.find_node("test", session.url)
@@ -25,9 +18,6 @@ def test_axapi(axapi, session, inline):
 
 
 def test_ia2(ia2, session, inline):
-    if not ia2:
-        return
-
     session.url = inline(TEST_HTML)
 
     node = ia2.find_node("test", session.url)
@@ -36,9 +26,6 @@ def test_ia2(ia2, session, inline):
 
 
 def test_uia(uia, session, inline):
-    if not uia:
-        return
-
     session.url = inline(TEST_HTML)
 
     # This is an example, because the `uia` fixture is not implemented.

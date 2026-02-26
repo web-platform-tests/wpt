@@ -74,7 +74,7 @@ class WdspecResult(Result):
 
 class WdspecSubtestResult(SubtestResult):
     default_expected = "PASS"
-    statuses = {"PASS", "FAIL", "ERROR"}
+    statuses = {"PASS", "FAIL", "ERROR", "PRECONDITION_FAILED"}
 
 
 class AamSpecResult(Result):
@@ -84,7 +84,7 @@ class AamSpecResult(Result):
 
 class AamSpecSubtestResult(SubtestResult):
     default_expected = "PASS"
-    statuses = {"PASS", "FAIL", "ERROR"}
+    statuses = {"PASS", "FAIL", "ERROR", "PRECONDITION_FAILED"}
 
 
 class CrashtestResult(Result):

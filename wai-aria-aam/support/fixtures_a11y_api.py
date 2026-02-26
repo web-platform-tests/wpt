@@ -21,7 +21,7 @@ def default_timeout(full_configuration):
 @pytest.fixture
 def atspi(session, default_timeout):
     if platform != "linux":
-        return
+        pytest.skip("PRECONDITION_FAILED")
 
     from .atspi_wrapper import AtspiWrapper
 
@@ -32,7 +32,7 @@ def atspi(session, default_timeout):
 @pytest.fixture
 def axapi(session, default_timeout):
     if platform != "darwin":
-        return
+        pytest.skip("PRECONDITION_FAILED")
 
     from .axapi_wrapper import AxapiWrapper
 
@@ -43,7 +43,7 @@ def axapi(session, default_timeout):
 @pytest.fixture
 def uia(session):
     if platform != "win32":
-        return
+        pytest.skip("PRECONDITION_FAILED")
 
     # TODO: Make UiaWrapper and return it
 
@@ -51,7 +51,7 @@ def uia(session):
 @pytest.fixture
 def ia2(session, default_timeout):
     if platform != "win32":
-        return
+        pytest.skip("PRECONDITION_FAILED")
 
     from .ia2_wrapper import Ia2Wrapper
 

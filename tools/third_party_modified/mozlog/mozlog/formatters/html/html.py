@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -6,7 +7,7 @@ import base64
 import json
 import os
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import datetime
 
 from .. import base
 
@@ -83,12 +84,10 @@ class HTMLFormatter(base.BaseFormatter):
                 if version_info.get("application_repository"):
                     self.env["Gecko revision"] = html.a(
                         version_info.get("application_changeset"),
-                        href="/rev/".join(
-                            [
-                                version_info.get("application_repository"),
-                                version_info.get("application_changeset"),
-                            ]
-                        ),
+                        href="/rev/".join([
+                            version_info.get("application_repository"),
+                            version_info.get("application_changeset"),
+                        ]),
                         target="_blank",
                     )
 
@@ -217,14 +216,13 @@ class HTMLFormatter(base.BaseFormatter):
                 separator = line.startswith(" " * 10)
                 if separator:
                     log.append(line[:80])
+                elif (
+                    line.lower().find("error") != -1
+                    or line.lower().find("exception") != -1
+                ):
+                    log.append(html.span(raw(escape(line)), class_="error"))
                 else:
-                    if (
-                        line.lower().find("error") != -1 or
-                        line.lower().find("exception") != -1
-                    ):
-                        log.append(html.span(raw(escape(line)), class_="error"))
-                    else:
-                        log.append(raw(escape(line)))
+                    log.append(raw(escape(line)))
                 log.append(html.br())
             additional_html.append(log)
 
@@ -242,7 +240,7 @@ class HTMLFormatter(base.BaseFormatter):
         )
 
     def generate_html(self):
-        generated = datetime.now(timezone.utc)
+        generated = datetime.utcnow()
         with open(os.path.join(base_path, "main.js")) as main_f:
             doc = html.html(
                 self.head,
@@ -269,7 +267,8 @@ class HTMLFormatter(base.BaseFormatter):
                         "%i tests ran in %.1f seconds."
                         % (
                             sum(self.test_count.values()),
-                            (self.suite_times["end"] - self.suite_times["start"]) / 1000.0,
+                            (self.suite_times["end"] - self.suite_times["start"])
+                            / 1000.0,
                         ),
                         html.br(),
                         html.span("%i passed" % self.test_count["PASS"], class_="pass"),
@@ -310,20 +309,16 @@ class HTMLFormatter(base.BaseFormatter):
                     html.table(
                         [
                             html.thead(
-                                html.tr(
-                                    [
-                                        html.th(
-                                            "Result", class_="sortable", col="result"
-                                        ),
-                                        html.th("Test", class_="sortable", col="name"),
-                                        html.th(
-                                            "Duration",
-                                            class_="sortable numeric",
-                                            col="duration",
-                                        ),
-                                        html.th("Links"),
-                                    ]
-                                ),
+                                html.tr([
+                                    html.th("Result", class_="sortable", col="result"),
+                                    html.th("Test", class_="sortable", col="name"),
+                                    html.th(
+                                        "Duration",
+                                        class_="sortable numeric",
+                                        col="duration",
+                                    ),
+                                    html.th("Links"),
+                                ]),
                                 id="results-table-head",
                             ),
                             html.tbody(self.result_rows, id="results-table-body"),
@@ -333,4 +328,4 @@ class HTMLFormatter(base.BaseFormatter):
                 ),
             )
 
-        return u"<!DOCTYPE html>\n" + doc.unicode(indent=2)
+        return "<!DOCTYPE html>\n" + doc.unicode(indent=2)

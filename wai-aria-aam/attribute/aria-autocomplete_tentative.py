@@ -8,9 +8,6 @@ TEST_HTML = {
 
 @pytest.mark.parametrize("test_name", TEST_HTML.keys())
 def test_atspi(atspi, session, inline, test_name):
-    if not atspi:
-        return
-
     session.url = inline(TEST_HTML[test_name])
 
     node = atspi.find_node("test", session.url)
@@ -22,9 +19,6 @@ def test_atspi(atspi, session, inline, test_name):
 
 @pytest.mark.parametrize("test_name", TEST_HTML.keys())
 def test_ia2(ia2, session, inline, test_name):
-    if not ia2:
-        return
-
     session.url = inline(TEST_HTML[test_name])
 
     # Todo: Add test for IA2.

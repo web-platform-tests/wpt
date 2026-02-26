@@ -9,7 +9,9 @@ import threading
 import time
 import unittest
 
+import mozfile
 import mozlog.unstructured as mozlog
+import mozunit
 
 
 class ListHandler(mozlog.Handler):
@@ -34,12 +36,16 @@ class TestLogging(unittest.TestCase):
         self.assertEqual(len(default_logger.handlers), 1)
         self.assertTrue(isinstance(default_logger.handlers[0], mozlog.StreamHandler))
 
-        list_logger = mozlog.getLogger("list.logger", handler=ListHandler())
+        f = mozfile.NamedTemporaryFile()
+        list_logger = mozlog.getLogger(
+            "file.logger", handler=mozlog.FileHandler(f.name)
+        )
         self.assertEqual(len(list_logger.handlers), 1)
-        self.assertTrue(isinstance(list_logger.handlers[0], ListHandler))
+        self.assertTrue(isinstance(list_logger.handlers[0], mozlog.FileHandler))
+        f.close()
 
         self.assertRaises(
-            ValueError, mozlog.getLogger, "list.logger", handler=mozlog.StreamHandler()
+            ValueError, mozlog.getLogger, "file.logger", handler=ListHandler()
         )
 
     def test_timestamps(self):
@@ -73,7 +79,7 @@ class TestStructuredLogging(unittest.TestCase):
         The actual message should contain no fields other than the timestamp
         field and those present in expected."""
 
-        self.assertTrue(isinstance(actual["_time"], int))
+        self.assertTrue(isinstance(actual["_time"], (int,)))
 
         for k, v in expected.items():
             self.assertEqual(v, actual[k])
@@ -189,46 +195,40 @@ class TestStructuredLogging(unittest.TestCase):
 
     def test_log_listener(self):
         connection = "127.0.0.1", 0
-        log_server = mozlog.LogMessageServer(
+        self.log_server = mozlog.LogMessageServer(
             connection, self.logger, message_callback=self.message_callback, timeout=0.5
         )
 
-        message_string_one = json.dumps(
-            {
-                "_message": "socket message one",
-                "action": "test_message",
-                "_level": "DEBUG",
-            }
-        )
-        message_string_two = json.dumps(
-            {
-                "_message": "socket message two",
-                "action": "test_message",
-                "_level": "DEBUG",
-            }
-        )
+        message_string_one = json.dumps({
+            "_message": "socket message one",
+            "action": "test_message",
+            "_level": "DEBUG",
+        })
+        message_string_two = json.dumps({
+            "_message": "socket message two",
+            "action": "test_message",
+            "_level": "DEBUG",
+        })
 
-        message_string_three = json.dumps(
-            {
-                "_message": "socket message three",
-                "action": "test_message",
-                "_level": "DEBUG",
-            }
-        )
+        message_string_three = json.dumps({
+            "_message": "socket message three",
+            "action": "test_message",
+            "_level": "DEBUG",
+        })
 
         message_string = (
-            message_string_one +
-            "\n" +
-            message_string_two +
-            "\n" +
-            message_string_three +
-            "\n"
+            message_string_one
+            + "\n"
+            + message_string_two
+            + "\n"
+            + message_string_three
+            + "\n"
         )
 
-        server_thread = threading.Thread(target=log_server.handle_request)
+        server_thread = threading.Thread(target=self.log_server.handle_request)
         server_thread.start()
 
-        host, port = log_server.server_address
+        host, port = self.log_server.server_address
 
         sock = socket.socket()
         sock.connect((host, port))
@@ -245,8 +245,6 @@ class TestStructuredLogging(unittest.TestCase):
         time.sleep(0.01)
         sock.sendall(message_string[128:].encode())
 
-        sock.close()
-        log_server.server_close()
         server_thread.join()
 
 
@@ -295,5 +293,4 @@ class TestLoggingMixin(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    import mozunit
     mozunit.main()

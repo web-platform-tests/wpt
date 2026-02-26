@@ -17,13 +17,13 @@ class UnstructuredHandler(logging.Handler):
             log_func = getattr(self.structured, record.levelname.lower())
         else:
             log_func = self.logger.debug
-        log_func(record.getMessage())
+        log_func(record.msg)
 
     def handle(self, record):
         self.emit(record)
 
 
-class LoggingWrapper(object):
+class LoggingWrapper:
     def __init__(self, wrapped):
         self.wrapped = wrapped
         self.wrapped.addHandler(

@@ -10,7 +10,7 @@ import mozfile
 from mozlog import commandline, formatters, handlers, reader, stdadapter, structuredlog
 
 
-class TestHandler:
+class Handler:
     def __init__(self):
         self.items = []
 
@@ -29,7 +29,7 @@ class TestHandler:
 class BaseStructuredTest(unittest.TestCase):
     def setUp(self):
         self.logger = structuredlog.StructuredLogger("test")
-        self.handler = TestHandler()
+        self.handler = Handler()
         self.logger.add_handler(self.handler)
 
     def pop_last_item(self):
@@ -608,7 +608,7 @@ class TestStructuredLog(BaseStructuredTest):
             logging.root.setLevel(old_level)
 
     def test_add_remove_handlers(self):
-        handler = TestHandler()
+        handler = Handler()
         self.logger.add_handler(handler)
         self.logger.info("test1")
 
@@ -994,7 +994,7 @@ class TestBuffer(BaseStructuredTest):
 
     def setUp(self):
         self.logger = structuredlog.StructuredLogger("testBuffer")
-        self.handler = handlers.BufferHandler(TestHandler(), message_limit=4)
+        self.handler = handlers.BufferHandler(Handler(), message_limit=4)
         self.logger.add_handler(self.handler)
 
     def tearDown(self):

@@ -1,8 +1,9 @@
 <!DOCTYPE html>
+<meta charset="utf-8" />
 <body>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
-  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver.js?feature=bidi"></script>
   <script src="/resources/testdriver-vendor.js"></script>
   <script src="/permissions-policy/resources/permissions-policy.js"></script>
   <script>
@@ -16,6 +17,15 @@
     // Grant permission to outer frame
     promise_setup(async () => {
       await test_driver.set_permission({ name: "geolocation" }, "granted");
+
+      // Set a default position
+      await test_driver.bidi.emulation.set_geolocation_override({
+        coordinates: {
+          latitude: 0,
+          longitude: 0,
+          accuracy: 0
+        }
+      });
     });
 
     promise_test(async (test) => {

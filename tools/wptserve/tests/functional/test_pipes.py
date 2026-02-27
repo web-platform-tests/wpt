@@ -2,8 +2,7 @@ import os
 import unittest
 import time
 import json
-
-from six.moves import urllib
+import urllib
 
 import pytest
 
@@ -38,20 +37,35 @@ class TestHeader(TestUsingServer):
         resp = self.request("/document.txt", query="pipe=header(X-Test,1)|header(X-Test,2,True)")
         self.assert_multiple_headers(resp, "X-Test", ["1", "2"])
 
+    def test_semicolon(self):
+        resp = self.request("/document.txt", query="pipe=header(Refresh,3;url=http://example.com)")
+        self.assertEqual(resp.info()["Refresh"], "3;url=http://example.com")
+
+    def test_escape_comma(self):
+        resp = self.request("/document.txt", query=r"pipe=header(Expires,Thu\,%2014%20Aug%201986%2018:00:00%20GMT)")
+        self.assertEqual(resp.info()["Expires"], "Thu, 14 Aug 1986 18:00:00 GMT")
+
+    def test_escape_parenthesis(self):
+        resp = self.request("/document.txt", query=r"pipe=header(User-Agent,Mozilla/5.0%20(X11;%20Linux%20x86_64;%20rv:12.0\)")
+        self.assertEqual(resp.info()["User-Agent"], "Mozilla/5.0 (X11; Linux x86_64; rv:12.0)")
+
 class TestSlice(TestUsingServer):
     def test_both_bounds(self):
         resp = self.request("/document.txt", query="pipe=slice(1,10)")
-        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
+        with open(os.path.join(doc_root, "document.txt"), 'rb') as f:
+            expected = f.read()
         self.assertEqual(resp.read(), expected[1:10])
 
     def test_no_upper(self):
         resp = self.request("/document.txt", query="pipe=slice(1)")
-        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
+        with open(os.path.join(doc_root, "document.txt"), 'rb') as f:
+            expected = f.read()
         self.assertEqual(resp.read(), expected[1:])
 
     def test_no_lower(self):
         resp = self.request("/document.txt", query="pipe=slice(null,10)")
-        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
+        with open(os.path.join(doc_root, "document.txt"), 'rb') as f:
+            expected = f.read()
         self.assertEqual(resp.read(), expected[:10])
 
 class TestSub(TestUsingServer):
@@ -72,8 +86,9 @@ sha512: r8eLGRTc7ZznZkFjeVLyo6/FyQdra9qmlYCwKKxm3kfQAswRS9+3HsYk3thLUhcFmmWhK4dX
         self.assertEqual(resp.read().rstrip(), expected.strip())
 
     def test_sub_file_hash_unrecognized(self):
-        with self.assertRaises(urllib.error.HTTPError):
+        with self.assertRaises(urllib.error.HTTPError) as cm:
             self.request("/sub_file_hash_unrecognized.sub.txt")
+        cm.exception.close()
 
     def test_sub_headers(self):
         resp = self.request("/sub_headers.txt", query="pipe=sub", headers={"X-Test": "PASS"})
@@ -94,8 +109,8 @@ server: http://localhost:{0}""".format(self.server.port).encode("ascii")
         self.assertEqual(resp.read().rstrip(), expected.strip())
 
     def test_sub_params(self):
-        resp = self.request("/sub_params.txt", query="test=PASS&pipe=sub")
-        expected = b"PASS"
+        resp = self.request("/sub_params.txt", query="plus+pct-20%20pct-3D%3D=PLUS+PCT-20%20PCT-3D%3D&pipe=sub")
+        expected = b"PLUS PCT-20 PCT-3D="
         self.assertEqual(resp.read().rstrip(), expected)
 
     def test_sub_url_base(self):
@@ -108,7 +123,7 @@ server: http://localhost:{0}""".format(self.server.port).encode("ascii")
 
     def test_sub_uuid(self):
         resp = self.request("/sub_uuid.sub.txt")
-        self.assertRegexpMatches(resp.read().rstrip(), b"Before [a-f0-9-]+ After")
+        self.assertRegex(resp.read().rstrip(), b"Before [a-f0-9-]+ After")
 
     def test_sub_var(self):
         resp = self.request("/sub_var.sub.txt")
@@ -132,13 +147,16 @@ server: http://localhost:{0}""".format(self.server.port).encode("ascii")
 
 class TestTrickle(TestUsingServer):
     def test_trickle(self):
-        #Actually testing that the response trickles in is not that easy
-        t0 = time.time()
-        resp = self.request("/document.txt", query="pipe=trickle(1:d2:5:d1:r2)")
-        t1 = time.time()
-        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
-        self.assertEqual(resp.read(), expected)
-        self.assertGreater(6, t1-t0)
+        # Actually testing that the response trickles in is not that easy
+        clock_info = time.get_clock_info("monotonic")
+        t0 = time.monotonic()
+        with self.request("/document.txt", query="pipe=trickle(1:d2:5:d1:r2)") as resp:
+            actual = resp.read()
+        t1 = time.monotonic()
+        with open(os.path.join(doc_root, "document.txt"), "rb") as f:
+            expected = f.read()
+        self.assertEqual(actual, expected)
+        self.assertGreater(t1 - t0, 6 - clock_info.resolution)
 
     def test_headers(self):
         resp = self.request("/document.txt", query="pipe=trickle(d0.01)")
@@ -212,6 +230,17 @@ class TestPipesWithVariousHandlers(TestUsingServer):
         t1 = time.time()
         self.assertTrue(b'Content' in resp.read())
         self.assertGreater(6, t1-t0)
+
+    def test_gzip_handler(self):
+        resp = self.request("/document.txt", query="pipe=gzip")
+        self.assertEqual(resp.getcode(), 200)
+
+    def test_sub_default_py(self):
+        route = ("GET", "/defaultsubpy", wptserve.handlers.python_script_handler)
+        self.server.router.register(*route)
+        resp = self.request("/defaultsubpy")
+        self.assertEqual(b"localhost", resp.read())
+
 
 if __name__ == '__main__':
     unittest.main()

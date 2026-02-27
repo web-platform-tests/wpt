@@ -1,5 +1,4 @@
-// META: global=worker,jsshell
-// META: script=../resources/test-utils.js
+// META: global=window,worker,shadowrealm
 // META: script=../resources/recording-streams.js
 'use strict';
 
@@ -39,7 +38,8 @@ promise_test(t => {
   const fakeRS = Object.create(ReadableStream.prototype);
   const ws = new WritableStream();
 
-  return methodRejects(t, ReadableStream.prototype, 'pipeTo', fakeRS, [ws]);
+  return promise_rejects_js(t, TypeError, ReadableStream.prototype.pipeTo.apply(fakeRS, [ws]),
+    'pipeTo should reject with a TypeError');
 
 }, 'pipeTo must check the brand of its ReadableStream this value');
 
@@ -48,7 +48,8 @@ promise_test(t => {
   const rs = new ReadableStream();
   const fakeWS = Object.create(WritableStream.prototype);
 
-  return methodRejects(t, ReadableStream.prototype, 'pipeTo', rs, [fakeWS]);
+  return promise_rejects_js(t, TypeError, ReadableStream.prototype.pipeTo.apply(rs, [fakeWS]),
+    'pipeTo should reject with a TypeError');
 
 }, 'pipeTo must check the brand of its WritableStream argument');
 
@@ -62,7 +63,7 @@ promise_test(t => {
   assert_true(rs.locked, 'sanity check: the ReadableStream starts locked');
   assert_false(ws.locked, 'sanity check: the WritableStream does not start locked');
 
-  return promise_rejects(t, new TypeError(), rs.pipeTo(ws)).then(() => {
+  return promise_rejects_js(t, TypeError, rs.pipeTo(ws)).then(() => {
     assert_false(ws.locked, 'the WritableStream must still be unlocked');
   });
 
@@ -78,7 +79,7 @@ promise_test(t => {
   assert_false(rs.locked, 'sanity check: the ReadableStream does not start locked');
   assert_true(ws.locked, 'sanity check: the WritableStream starts locked');
 
-  return promise_rejects(t, new TypeError(), rs.pipeTo(ws)).then(() => {
+  return promise_rejects_js(t, TypeError, rs.pipeTo(ws)).then(() => {
     assert_false(rs.locked, 'the ReadableStream must still be unlocked');
   });
 
@@ -188,3 +189,24 @@ for (const preventCancel of [true, false]) {
 
   }, `an undefined rejection from write should cause pipeTo() to reject when preventCancel is ${preventCancel}`);
 }
+
+promise_test(t => {
+  const rs = new ReadableStream();
+  const ws = new WritableStream();
+  return promise_rejects_js(t, TypeError, rs.pipeTo(ws, {
+    get preventAbort() {
+      ws.getWriter();
+    }
+  }), 'pipeTo should reject');
+}, 'pipeTo() should reject if an option getter grabs a writer');
+
+promise_test(t => {
+  const rs = new ReadableStream({
+    start(controller) {
+      controller.close();
+    }
+  });
+  const ws = new WritableStream();
+
+  return rs.pipeTo(ws, null);
+}, 'pipeTo() promise should resolve if null is passed');

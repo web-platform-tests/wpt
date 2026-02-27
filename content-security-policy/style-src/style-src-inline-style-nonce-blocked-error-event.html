@@ -12,12 +12,6 @@
         assert_equals("style-src-elem", e.violatedDirective);
       }));
     </script>
-    <style id="style1" nonce="not-nonceynonce"
-           onerror="styleError();">
-        #content {
-            margin-left: 2px;
-        }
-    </style>
 </head>
 <body>
     <div id='log'></div>
@@ -27,7 +21,7 @@
     <script>
         function verifyStep1() {
             var marginLeft = getComputedStyle(document.querySelector("#content")).getPropertyValue('margin-left');
-            assert_false(marginLeft == '2px', "Content still does not have a 2px margin-left after initial style.");
+            assert_not_equals(marginLeft, '2px', "Content still does not have a 2px margin-left after initial style.");
         }
 
         function setupStep2() {
@@ -39,7 +33,7 @@
         }
         function verifyStep2() {
             var marginLeft = getComputedStyle(document.querySelector("#content")).getPropertyValue('margin-left');
-            assert_false(marginLeft == '2px', "Content still does not have a 2px margin-left after inserted style.");
+            assert_not_equals(marginLeft, '2px', "Content still does not have a 2px margin-left after inserted style.");
         }
 
         function setupStep3() {
@@ -48,7 +42,7 @@
         }
         function verifyStep3() {
             var marginLeft = getComputedStyle(document.querySelector("#content")).getPropertyValue('margin-left');
-            assert_false(marginLeft == '2px', "Content still does not have a 2px margin-left after changing style.");
+            assert_not_equals(marginLeft, '2px', "Content still does not have a 2px margin-left after changing style.");
             test.done();
         }
 
@@ -67,5 +61,11 @@
         }
     </script>
 
+    <style id="style1" nonce="not-nonceynonce"
+           onerror="styleError();">
+        #content {
+            margin-left: 2px;
+        }
+    </style>
 </body>
 </html>

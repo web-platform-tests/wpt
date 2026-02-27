@@ -45,6 +45,10 @@
       .c>.e {
         color: black;
       }
+      /* Non-Subject Compound */
+      .a:is(.b *) .c{
+        color: blue;
+      }
     </style>
   </head>
   <body>
@@ -73,13 +77,22 @@
         </div>
       </div>
       <div class="h" id="h1">
-        Black
+        Blue
       </div>
     </div>
     <div class="c" id="c2">
       <div id="a2"></div>
       <div class="e" id="e2">
         Red
+      </div>
+    </div>
+    <div id=b4>
+      <div>
+        <div class=a>
+          <div class=c id="c3">
+            Blue
+          </div>
+        </div>
       </div>
     </div>
     <script>
@@ -132,8 +145,17 @@
       test(() => {
         a1.className = "a";
         assert_equals(getComputedStyle(b2).color, blue);
-        assert_equals(getComputedStyle(h1).color, black);
+        assert_equals(getComputedStyle(h1).color, blue);
       }, "Test specificity of :is().");
+
+      test(() => {
+        b4.className = "b";
+        assert_equals(getComputedStyle(c3).color, blue);
+        b4.className = "";
+        assert_equals(getComputedStyle(c3).color, red);
+        b4.className = "b";
+        assert_equals(getComputedStyle(c3).color, blue);
+      }, "Invalidate :is() in non-subject compound");
     </script>
   </body>
 </html>

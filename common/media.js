@@ -1,24 +1,30 @@
-//
-// Returns the URI of a supported video source based on the user agent
-//
+/**
+ * Returns the URL of a supported video source based on the user agent
+ * @param {string} base - media URL without file extension
+ * @returns {string}
+ */
 function getVideoURI(base)
 {
     var extension = '.mp4';
 
     var videotag = document.createElement("video");
 
-    if ( videotag.canPlayType  &&
-         videotag.canPlayType('video/ogg; codecs="theora, vorbis"') )
+    if ( videotag.canPlayType )
     {
-        extension = '.ogv';
+      if (videotag.canPlayType('video/webm; codecs="vp9, opus"') )
+      {
+          extension = '.webm';
+      }
     }
 
     return base + extension;
 }
 
-//
-// Returns the URI of a supported audio source based on the user agent
-//
+/**
+ * Returns the URL of a supported audio source based on the user agent
+ * @param {string} base - media URL without file extension
+ * @returns {string}
+ */
 function getAudioURI(base)
 {
     var extension = '.mp3';
@@ -34,13 +40,18 @@ function getAudioURI(base)
     return base + extension;
 }
 
+/**
+ * Returns the MIME type for a media URL based on the file extension.
+ * @param {string} url
+ * @returns {string}
+ */
 function getMediaContentType(url) {
     var extension = new URL(url, location).pathname.split(".").pop();
     var map = {
-        "mp4": "video/mp4",
-        "ogv": "video/ogg",
-        "mp3": "audio/mp3",
-        "oga": "audio/ogg",
+        "mp4" : "video/mp4",
+        "webm": "video/webm",
+        "mp3" : "audio/mp3",
+        "oga" : "application/ogg",
     };
     return map[extension];
 }

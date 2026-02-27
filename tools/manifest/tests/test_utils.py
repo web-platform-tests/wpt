@@ -1,7 +1,8 @@
+# mypy: allow-untyped-defs
+
 import os
 import subprocess
-
-import mock
+from unittest import mock
 
 from .. import utils
 

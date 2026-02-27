@@ -1,7 +1,9 @@
+# mypy: allow-untyped-defs
+
 from math import log
 from collections import defaultdict
 
-class Node(object):
+class Node:
     def __init__(self, prop, value):
         self.prop = prop
         self.value = value
@@ -20,8 +22,7 @@ class Node(object):
     def __iter__(self):
         yield self
         for node in self.children:
-            for item in node:
-                yield item
+            yield from node
 
     def __len__(self):
         return 1 + sum(len(item) for item in self.children)
@@ -33,7 +34,7 @@ def entropy(results):
 
     result_counts = defaultdict(int)
     total = float(len(results))
-    for values in results.itervalues():
+    for values in results.values():
         # Not sure this is right, possibly want to treat multiple values as
         # distinct from multiple of the same value?
         for value in values:
@@ -41,7 +42,7 @@ def entropy(results):
 
     entropy_sum = 0
 
-    for count in result_counts.itervalues():
+    for count in result_counts.values():
         prop = float(count) / total
         entropy_sum -= prop * log(prop, 2)
 
@@ -52,7 +53,7 @@ def split_results(prop, results):
     """Split a dictionary of results into a dictionary of dictionaries where
     each sub-dictionary has a specific value of the given property"""
     by_prop = defaultdict(dict)
-    for run_info, value in results.iteritems():
+    for run_info, value in results.items():
         by_prop[run_info[prop]][run_info] = value
 
     return by_prop
@@ -77,13 +78,13 @@ def build_tree(properties, dependent_props, results, tree=None):
     prop_index = {prop: i for i, prop in enumerate(properties)}
 
     all_results = defaultdict(int)
-    for result_values in results.itervalues():
-        for result_value, count in result_values.iteritems():
+    for result_values in results.values():
+        for result_value, count in result_values.items():
             all_results[result_value] += count
 
     # If there is only one result we are done
     if not properties or len(all_results) == 1:
-        for value, count in all_results.iteritems():
+        for value, count in all_results.items():
             tree.result_values[value] += count
         tree.run_info |= set(results.keys())
         return tree
@@ -99,7 +100,7 @@ def build_tree(properties, dependent_props, results, tree=None):
             continue
         new_entropy = 0.
         results_sets_entropy = []
-        for prop_value, result_set in result_sets.iteritems():
+        for prop_value, result_set in result_sets.items():
             results_sets_entropy.append((entropy(result_set), prop_value, result_set))
             new_entropy += (float(len(result_set)) / len(results)) * results_sets_entropy[-1][0]
 
@@ -109,7 +110,7 @@ def build_tree(properties, dependent_props, results, tree=None):
 
     # In the case that no properties partition the space
     if not results_partitions:
-        for value, count in all_results.iteritems():
+        for value, count in all_results.items():
             tree.result_values[value] += count
         tree.run_info |= set(results.keys())
         return tree

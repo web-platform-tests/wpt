@@ -10,20 +10,27 @@ class PortProcessor extends AudioWorkletProcessor {
     this.port.onmessage = this.handleMessage.bind(this);
     this.port.postMessage({
       state: 'created',
-      timeStamp: currentTime
+      timeStamp: currentTime,
+      currentFrame: currentFrame
     });
+    this.processCallCount = 0;
   }
 
   handleMessage(event) {
     this.port.postMessage({
       message: event.data,
-      timeStamp: currentTime
+      timeStamp: currentTime,
+      currentFrame: currentFrame,
+      processCallCount: this.processCallCount
     });
   }
 
   process() {
+    ++this.processCallCount;
     return true;
   }
 }
 
 registerProcessor('port-processor', PortProcessor);
+
+port.onmessage = (event) => port.postMessage(event.data);

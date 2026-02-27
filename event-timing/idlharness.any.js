@@ -12,7 +12,6 @@ idl_test(
   idl_array => {
     idl_array.add_objects({
       Performance: ['performance'],
-      // PerformanceEventTiming: [ TODO ]
     });
   }
 );

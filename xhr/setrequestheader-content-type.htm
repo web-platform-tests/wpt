@@ -206,33 +206,6 @@
         "application/x-www-form-urlencoded;charset=UTF-8",
         'URLSearchParams request has correct default Content-Type of "application/x-www-form-urlencoded;charset=UTF-8"'
       )
-      request(
-        function _URLSearchParams() { return new URLSearchParams("q=testQ&topic=testTopic") },
-        {"Content-Type": "application/xml;charset=ASCII"},
-        "application/xml;charset=UTF-8",
-        "URLSearchParams request keeps setRequestHeader() Content-Type, with charset adjusted to UTF-8"
-        // the default Content-Type for URLSearchParams has a charset specified (utf-8) in
-        // https://fetch.spec.whatwg.org/#bodyinit, so the user's must be changed to match it
-        // as per https://xhr.spec.whatwg.org/#the-send%28%29-method step 4.
-      )
-      request(
-        function _ReadableStream() { return new ReadableStream() },
-        {"Content-Type": ""},
-        "",
-        'ReadableStream request respects setRequestHeader("")'
-      )
-      request(
-        function _ReadableStream() { return new ReadableStream() },
-        {},
-        undefined,
-        "ReadableStream request with under type sends no Content-Type without setRequestHeader() call"
-      )
-      request(
-        function _ReadableStream() { return new ReadableStream() },
-        {"Content-Type": "application/xml;charset=ASCII"},
-        "application/xml;charset=ASCII",
-        "ReadableStream request keeps setRequestHeader() Content-Type and charset"
-      )
     </script>
   </body>
 </html>

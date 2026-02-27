@@ -1,4 +1,5 @@
-spec: https://html.spec.whatwg.org/multipage/web-sockets.html
+spec: https://websockets.spec.whatwg.org/
 suggested_reviewers:
-  - zqzhang
   - jdm
+  - ricea
+  - yutakahirano

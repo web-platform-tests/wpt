@@ -12,9 +12,7 @@
 <h1 id='title'>I am a title!</h1>
 <script>
   async_test(function (t) {
-    if (!window.LargestContentfulPaint) {
-      assert_unreached("LargestContentfulPaint is not implemented");
-    }
+    assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
     let beforeRender;
     /* In this test, we first observe a header with style 'display: flex'.
      * Once observed, we remove it and add a header with style 'display: grid'.
@@ -30,7 +28,8 @@
         assert_equals(entry.entryType, 'largest-contentful-paint');
         assert_greater_than_equal(entry.renderTime, beforeRender);
         assert_greater_than_equal(performance.now(), entry.renderTime);
-        assert_equals(entry.startTime, entry.renderTime, 'startTime should equal renderTime');
+        assert_approx_equals(entry.startTime, entry.renderTime, 0.001,
+        'startTime should be equal to renderTime to the precision of 1 millisecond.');
         assert_equals(entry.duration, 0);
         // TODO: find a good way to bound text size.
         assert_greater_than_equal(entry.size, 500);

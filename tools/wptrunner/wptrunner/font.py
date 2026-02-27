@@ -1,5 +1,6 @@
+# mypy: allow-untyped-defs
+
 import ctypes
-import logging
 import os
 import platform
 import plistlib
@@ -7,12 +8,13 @@ import plistlib
 from shutil import copy2, rmtree
 from subprocess import call, check_output
 
-HERE = os.path.split(__file__)[0]
+HERE = os.path.dirname(__file__)
 SYSTEM = platform.system().lower()
 
 
-class FontInstaller(object):
-    def __init__(self, font_dir=None, **fonts):
+class FontInstaller:
+    def __init__(self, logger, font_dir=None, **fonts):
+        self.logger = logger
         self.font_dir = font_dir
         self.installed_fonts = False
         self.created_dir = False
@@ -26,14 +28,13 @@ class FontInstaller(object):
             font_name = font_path.split('/')[-1]
             install = getattr(self, 'install_%s_font' % SYSTEM, None)
             if not install:
-                logging.warning('Font installation not supported on %s',
-                                SYSTEM)
+                self.logger.warning('Font installation not supported on %s' % SYSTEM)
                 return False
             if install(font_name, font_path):
                 self.installed_fonts = True
-                logging.info('Installed font: %s', font_name)
+                self.logger.info('Installed font: %s' % font_name)
             else:
-                logging.warning('Unable to install font: %s', font_name)
+                self.logger.warning('Unable to install font: %s' % font_name)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if not self.installed_fonts:
@@ -43,12 +44,12 @@ class FontInstaller(object):
             font_name = font_path.split('/')[-1]
             remove = getattr(self, 'remove_%s_font' % SYSTEM, None)
             if not remove:
-                logging.warning('Font removal not supported on %s', SYSTEM)
+                self.logger.warning('Font removal not supported on %s' % SYSTEM)
                 return False
             if remove(font_name, font_path):
-                logging.info('Removed font: %s', font_name)
+                self.logger.info('Removed font: %s' % font_name)
             else:
-                logging.warning('Unable to remove font: %s', font_name)
+                self.logger.warning('Unable to remove font: %s' % font_name)
 
     def install_linux_font(self, font_name, font_path):
         if not self.font_dir:
@@ -62,7 +63,7 @@ class FontInstaller(object):
             fc_cache_returncode = call('fc-cache')
             return not fc_cache_returncode
         except OSError:  # If fontconfig doesn't exist, return False
-            logging.error('fontconfig not available on this Linux system.')
+            self.logger.error('fontconfig not available on this Linux system.')
             return False
 
     def install_darwin_font(self, font_name, font_path):
@@ -78,8 +79,15 @@ class FontInstaller(object):
 
         # Per https://github.com/web-platform-tests/results-collection/issues/218
         # installing Ahem on macOS is flaky, so check if it actually installed
-        fonts = check_output(['/usr/sbin/system_profiler', '-xml', 'SPFontsDataType'])
-        fonts = plistlib.readPlistFromString(fonts)
+        with open(os.devnull, 'w') as f:
+            fonts = check_output(['/usr/sbin/system_profiler', '-xml', 'SPFontsDataType'], stderr=f)
+
+        try:
+            # if py3
+            load_plist = plistlib.loads
+        except AttributeError:
+            load_plist = plistlib.readPlistFromString
+        fonts = load_plist(fonts)
         assert len(fonts) == 1
         for font in fonts[0]['_items']:
             if font['path'] == installed_font_path:
@@ -105,12 +113,12 @@ class FontInstaller(object):
         if self.created_dir:
             rmtree(self.font_dir)
         else:
-            os.remove('%s/%s' % (self.font_dir, font_name))
+            os.remove(f'{self.font_dir}/{font_name}')
         try:
             fc_cache_returncode = call('fc-cache')
             return not fc_cache_returncode
         except OSError:  # If fontconfig doesn't exist, return False
-            logging.error('fontconfig not available on this Linux system.')
+            self.logger.error('fontconfig not available on this Linux system.')
             return False
 
     def remove_darwin_font(self, font_name, _):

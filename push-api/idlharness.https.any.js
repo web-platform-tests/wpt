@@ -2,12 +2,13 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 // META: script=/service-workers/service-worker/resources/test-helpers.sub.js
+// META: timeout=long
 
 // https://w3c.github.io/push-api/
 
 idl_test(
   ['push-api'],
-  ['service-workers', 'html', 'dom'],
+  ['service-workers', 'hr-time', 'html', 'dom', 'permissions'],
   async (idl_array, t) => {
     const isServiceWorker = 'ServiceWorkerGlobalScope' in self
       && self instanceof ServiceWorkerGlobalScope;

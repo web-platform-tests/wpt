@@ -37,6 +37,37 @@ function run_test() {
         all_promises.push(promise);
     });
 
+    // Test verification with an altered buffer during call
+    testVectors.forEach(function(vector) {
+        var promise = importVectorKeys(vector, ["verify", "sign"])
+        .then(function(vector) {
+            promise_test(function(test) {
+                var signature = copyBuffer(vector.signature);
+                signature[0] = 255 - signature[0];
+                var operation = subtle.verify({
+                    hash: vector.hash,
+                    get name() {
+                        signature[0] = vector.signature[0];
+                        return "HMAC";
+                    }
+                }, vector.key, signature, vector.plaintext)
+                .then(function(is_verified) {
+                    assert_true(is_verified, "Signature is not verified");
+                }, function(err) {
+                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                });
+
+                return operation;
+            }, vector.name + " verification with altered signature during call");
+        }, function(err) {
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " verification with altered signature during call");
+        });
+
+        all_promises.push(promise);
+    });
+
     // Test verification with an altered buffer after call
     testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify", "sign"])
@@ -62,6 +93,37 @@ function run_test() {
         all_promises.push(promise);
     });
 
+    // Check for successful verification even if plaintext is altered during call.
+    testVectors.forEach(function(vector) {
+        var promise = importVectorKeys(vector, ["verify", "sign"])
+        .then(function(vector) {
+            promise_test(function(test) {
+                var plaintext = copyBuffer(vector.plaintext);
+                plaintext[0] = 255 - plaintext[0];
+                var operation = subtle.verify({
+                    hash: vector.hash,
+                    get name() {
+                        plaintext[0] = vector.plaintext[0];
+                        return "HMAC";
+                    }
+                }, vector.key, vector.signature, plaintext)
+                .then(function(is_verified) {
+                    assert_true(is_verified, "Signature verified");
+                }, function(err) {
+                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                });
+
+                return operation;
+            }, vector.name + " with altered plaintext during call");
+        }, function(err) {
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " with altered plaintext during call");
+        });
+
+        all_promises.push(promise);
+    });
+
     // Check for successful verification even if plaintext is altered after call.
     testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify", "sign"])
@@ -81,7 +143,7 @@ function run_test() {
         }, function(err) {
             promise_test(function(test) {
                 assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
-            }, "importVectorKeys step: " + vector.name + " with altered plaintext");
+            }, "importVectorKeys step: " + vector.name + " with altered plaintext after call");
         });
 
         all_promises.push(promise);
@@ -117,6 +179,7 @@ function run_test() {
             promise_test(function(test) {
                 return subtle.sign({name: "HMAC", hash: vector.hash}, vector.key, vector.plaintext)
                 .then(function(signature) {
+                    assert_true(equalBuffers(signature, vector.signature), "Signing did not give the expected output");
                     // Can we get the verify the new signature?
                     return subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, signature, vector.plaintext)
                     .then(function(is_verified) {
@@ -292,10 +355,11 @@ function run_test() {
 
 
 
-    Promise.all(all_promises)
-    .then(function() {done();})
-    .catch(function() {done();})
-    return;
+    promise_test(function() {
+        return Promise.all(all_promises)
+            .then(function() {done();})
+            .catch(function() {done();})
+    }, "setup");
 
     // A test vector has all needed fields for signing and verifying, EXCEPT that the
     // key field may be null. This function replaces that null with the Correct

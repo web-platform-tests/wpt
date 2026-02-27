@@ -2,14 +2,18 @@
 <title>MediaStreamTrack and InputDeviceInfo GetCapabilities</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+<script src=permission-helper.js></script>
 <script>
 
 const audioProperties = [
   {name: "sampleRate", type: "number"},
   {name: "sampleSize", type: "number"},
-  {name: "echoCancellation", type: "boolean"},
+  {name: "echoCancellation", type: "boolean or string", validValues: [true, false, "all", "remote-only"]},
   {name: "autoGainControl", type: "boolean"},
   {name: "noiseSuppression", type: "boolean"},
+  {name: "voiceIsolation", type: "boolean"},
   {name: "latency", type: "number"},
   {name: "channelCount", type: "number"},
   {name: "deviceId", type: "string"},
@@ -58,6 +62,13 @@ function verifyEnumAllCapability(capability, enumMembers, testNamePrefix) {
   });
 }
 
+function verifyBooleanOrStringCapability(capability, validMembers) {
+  capability.forEach(c => {
+    assert_true(typeof c == "boolean" || typeof c == "string");
+    assert_in_array(c, validMembers);
+  });
+}
+
 function testCapabilities(capabilities, property, testNamePrefix) {
   let testName = testNamePrefix + " " + property.name;
   test(() => {
@@ -75,6 +86,12 @@ function testCapabilities(capabilities, property, testNamePrefix) {
   if (property.type == "boolean") {
     test(() => {
       verifyBooleanCapability(capability);
+    }, testName);
+  }
+
+  if (property.type == "boolean or string") {
+    test(() => {
+      verifyBooleanOrStringCapability(capability, property.validValues);
     }, testName);
   }
 
@@ -96,8 +113,9 @@ function testCapabilities(capabilities, property, testNamePrefix) {
 }
 
 {
-  audioProperties.forEach(property => {
+  audioProperties.forEach((property, i) => {
     promise_test(async t => {
+      if (i === 0) await setMediaPermission("granted", ["microphone"]);
       const stream = await navigator.mediaDevices.getUserMedia({audio: true});
       t.add_cleanup(() => stream.getAudioTracks()[0].stop());
       const audioCapabilities = stream.getAudioTracks()[0].getCapabilities();

@@ -31,6 +31,7 @@ class TestInvalidFrameSequences(object):
         ('server', 'fake-serv/0.1.0')
     ]
     server_config = h2.config.H2Configuration(client_side=False)
+    client_config = h2.config.H2Configuration(client_side=True)
 
     def test_cannot_send_on_closed_stream(self):
         """
@@ -149,14 +150,16 @@ class TestInvalidFrameSequences(object):
         c.receive_data(f.serialize())
         c.clear_outbound_data_buffer()
 
-        bad_frame = frame_factory.build_data_frame(data=b'hello')
+        bad_frame = frame_factory.build_data_frame(
+            data=b'some data'
+        )
         c.receive_data(bad_frame.serialize())
 
-        expected_frame = frame_factory.build_rst_stream_frame(
+        expected = frame_factory.build_rst_stream_frame(
             stream_id=1,
-            error_code=0x5,
-        )
-        assert c.data_to_send() == expected_frame.serialize()
+            error_code=h2.errors.ErrorCodes.STREAM_CLOSED,
+        ).serialize()
+        assert c.data_to_send() == expected
 
     def test_unexpected_continuation_on_closed_stream(self, frame_factory):
         """
@@ -275,7 +278,24 @@ class TestInvalidFrameSequences(object):
         with pytest.raises(h2.exceptions.ProtocolError) as e:
             c.receive_data(frame_data)
 
-        assert "Stream ID must be non-zero" in str(e.value)
+        assert "Received frame with invalid header" in str(e.value)
+
+    def test_data_before_headers(self, frame_factory):
+        """
+        When data frames are received before headers
+        they cause ProtocolErrors to be raised.
+        """
+        c = h2.connection.H2Connection(config=self.client_config)
+        c.initiate_connection()
+        # transition stream into OPEN
+        c.send_headers(1, self.example_request_headers)
+
+        f = frame_factory.build_data_frame(b"hello")
+
+        with pytest.raises(h2.exceptions.ProtocolError) as e:
+            c.receive_data(f.serialize())
+
+        assert "cannot receive data before headers" in str(e.value)
 
     def test_get_stream_reset_event_on_auto_reset(self, frame_factory):
         """
@@ -293,15 +313,15 @@ class TestInvalidFrameSequences(object):
         c.clear_outbound_data_buffer()
 
         bad_frame = frame_factory.build_data_frame(
-            data=b'hello'
+            data=b'some data'
         )
         events = c.receive_data(bad_frame.serialize())
 
-        expected_frame = frame_factory.build_rst_stream_frame(
+        expected = frame_factory.build_rst_stream_frame(
             stream_id=1,
-            error_code=0x5,
-        )
-        assert c.data_to_send() == expected_frame.serialize()
+            error_code=h2.errors.ErrorCodes.STREAM_CLOSED,
+        ).serialize()
+        assert c.data_to_send() == expected
 
         assert len(events) == 1
         event = events[0]
@@ -327,16 +347,16 @@ class TestInvalidFrameSequences(object):
         c.clear_outbound_data_buffer()
 
         bad_frame = frame_factory.build_data_frame(
-            data=b'hello'
+            data=b'some data'
         )
         # Receive 5 frames.
         events = c.receive_data(bad_frame.serialize() * 5)
 
-        expected_frame = frame_factory.build_rst_stream_frame(
+        expected = frame_factory.build_rst_stream_frame(
             stream_id=1,
-            error_code=0x5,
-        )
-        assert c.data_to_send() == expected_frame.serialize() * 5
+            error_code=h2.errors.ErrorCodes.STREAM_CLOSED,
+        ).serialize()
+        assert c.data_to_send() == expected * 5
 
         assert len(events) == 1
         event = events[0]

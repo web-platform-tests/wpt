@@ -1,14 +1,15 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 from utils import mathfont
 import fontforge
 
-breveCodePoint = 0x2D8 # accent operator
-degreeCodePoint = 0xB0 # nonaccent operator
+breveCodePoint = 0x2D8  # accent operator
+degreeCodePoint = 0xB0  # nonaccent operator
 accentBaseHeight = 4 * mathfont.em
 
 v = 3 * mathfont.em
-f = mathfont.create("underover-accentbaseheight%d-overbarextraascender%d" % (accentBaseHeight, v))
+f = mathfont.create("underover-accentbaseheight%d-overbarextraascender%d" % (accentBaseHeight, v),
+                    "Copyright (c) 2016 MathML Association")
 mathfont.createSquareGlyph(f, breveCodePoint)
 mathfont.createSquareGlyph(f, degreeCodePoint)
 f.math.AccentBaseHeight = accentBaseHeight
@@ -27,7 +28,8 @@ f.math.UpperLimitGapMin = 0
 mathfont.save(f)
 
 v = 11 * mathfont.em
-f = mathfont.create("underover-accentbaseheight%d-overbarverticalgap%d" % (accentBaseHeight, v))
+f = mathfont.create("underover-accentbaseheight%d-overbarverticalgap%d" % (accentBaseHeight, v),
+                    "Copyright (c) 2016 MathML Association")
 mathfont.createSquareGlyph(f, breveCodePoint)
 mathfont.createSquareGlyph(f, degreeCodePoint)
 f.math.AccentBaseHeight = accentBaseHeight
@@ -46,7 +48,8 @@ f.math.UpperLimitGapMin = 0
 mathfont.save(f)
 
 v = 5 * mathfont.em
-f = mathfont.create("underover-accentbaseheight%d-underbarextradescender%d" % (accentBaseHeight, v))
+f = mathfont.create("underover-accentbaseheight%d-underbarextradescender%d" % (accentBaseHeight, v),
+                    "Copyright (c) 2016 MathML Association")
 mathfont.createSquareGlyph(f, breveCodePoint)
 mathfont.createSquareGlyph(f, degreeCodePoint)
 f.math.AccentBaseHeight = accentBaseHeight
@@ -65,7 +68,8 @@ f.math.UpperLimitGapMin = 0
 mathfont.save(f)
 
 v = 7 * mathfont.em
-f = mathfont.create("underover-accentbaseheight%d-underbarverticalgap%d" % (accentBaseHeight, v))
+f = mathfont.create("underover-accentbaseheight%d-underbarverticalgap%d" % (accentBaseHeight, v),
+                    "Copyright (c) 2016 MathML Association")
 mathfont.createSquareGlyph(f, breveCodePoint)
 mathfont.createSquareGlyph(f, degreeCodePoint)
 f.math.AccentBaseHeight = accentBaseHeight

@@ -1,7 +1,9 @@
-from __future__ import print_function
-
+import base64
+import collections
 import math
 import sys
+import os
+from urllib.parse import urlparse
 
 import webdriver
 
@@ -10,9 +12,12 @@ from tests.support.sync import Poll
 
 
 def ignore_exceptions(f):
-    def inner(*args, **kwargs):
+    def inner(session, *args, **kwargs):
+        # Do not try to clean up already ended session.
+        if session.session_id is None:
+            return
         try:
-            return f(*args, **kwargs)
+            return f(session, *args, **kwargs)
         except webdriver.error.WebDriverException as e:
             print("Ignored exception %s" % e, file=sys.stderr)
     inner.__name__ = f.__name__
@@ -41,7 +46,10 @@ def cleanup_session(session):
         try:
             session.window_handle
         except webdriver.NoSuchWindowException:
-            session.window_handle = session.handles[0]
+            handles = session.handles
+            if handles:
+                # Update only when there is at least one valid window left.
+                session.window_handle = handles[0]
 
     @ignore_exceptions
     def _restore_timeouts(session):
@@ -55,9 +63,10 @@ def cleanup_session(session):
         """Reset window to an acceptable size.
 
         This also includes bringing it out of maximized, minimized,
-        or fullscreened state.
+        or fullscreen state.
         """
-        session.window.size = defaults.WINDOW_SIZE
+        if session.capabilities.get("setWindowRect"):
+            session.window.size = defaults.WINDOW_SIZE
 
     @ignore_exceptions
     def _restore_windows(session):
@@ -70,7 +79,7 @@ def cleanup_session(session):
         for window in _windows(session, exclude=[current_window]):
             session.window_handle = window
             if len(session.handles) > 1:
-                session.close()
+                session.window.close()
 
         session.window_handle = current_window
 
@@ -88,7 +97,7 @@ def _switch_to_top_level_browsing_context(session):
     `<frame>` or an `<iframe>`, switch it back to the top-level
     browsing context.
     """
-    session.switch_frame(None)
+    session.switch_to_frame(None)
 
 
 def _windows(session, exclude=None):
@@ -101,15 +110,30 @@ def _windows(session, exclude=None):
     return set(wins)
 
 
-def clear_all_cookies(session):
-    """Removes all cookies associated with the current active document"""
-    session.transport.send("DELETE", "session/%s/cookie" % session.session_id)
+
+
+def deep_update(source, overrides):
+    """
+    Update a nested dictionary or similar mapping.
+    Modify ``source`` in place.
+    """
+    for key, value in overrides.items():
+        if isinstance(value, collections.abc.Mapping) and value:
+            source[key] = deep_update(source.get(key, {}), value)
+        elif isinstance(value, list) and isinstance(source.get(key), list) and value:
+            # Concatenate lists, ensuring all elements are kept without duplicates
+            source[key] = list(dict.fromkeys(source[key] + value))
+        else:
+            source[key] = value
+
+    return source
 
 
 def document_dimensions(session):
     return tuple(session.execute_script("""
-        let rect = document.documentElement.getBoundingClientRect();
-        return [rect.width, rect.height];
+        const {devicePixelRatio} = window;
+        const {width, height} = document.documentElement.getBoundingClientRect();
+        return [width * devicePixelRatio, height * devicePixelRatio];
         """))
 
 
@@ -136,10 +160,7 @@ def center_point(element):
 
 
 def document_hidden(session):
-    """Polls for the document to become hidden."""
-    def hidden(session):
-        return session.execute_script("return document.hidden")
-    return Poll(session, timeout=3, raises=None).until(hidden)
+    return session.execute_script("return document.hidden")
 
 
 def document_location(session):
@@ -192,32 +213,101 @@ def is_fullscreen(session):
         """)
 
 
-def document_dimensions(session):
-    return tuple(session.execute_script("""
-        let {devicePixelRatio} = window;
-        let {width, height} = document.documentElement.getBoundingClientRect();
-        return [width * devicePixelRatio, height * devicePixelRatio];
-        """))
+def _get_maximized_state(session):
+    dimensions = session.execute_script("""
+        return {
+            availWidth: screen.availWidth,
+            availHeight: screen.availHeight,
+            windowWidth: window.outerWidth,
+            windowHeight: window.outerHeight,
+        }
+        """)
+
+    # The maximized window can still have a border attached which would
+    # cause its dimensions to exceed the whole available screen.
+    return (dimensions["windowWidth"] >= dimensions["availWidth"] and
+        dimensions["windowHeight"] >= dimensions["availHeight"] and
+        # Only return true if the window is not in fullscreen mode
+        not is_fullscreen(session)
+    )
 
 
-def screen_size(session):
-    """Returns the available width/height size of the screen."""
-    return tuple(session.execute_script("""
-        return [
-            screen.availWidth,
-            screen.availHeight,
-        ];
-        """))
+def is_maximized(session, original_rect):
+    if _get_maximized_state(session):
+        return True
+
+    # Wayland doesn't guarantee that the window will get maximized
+    # to the screen, so check if the dimensions got larger.
+    elif is_wayland():
+        dimensions = session.execute_script("""
+            return {
+                windowWidth: window.outerWidth,
+                windowHeight: window.outerHeight,
+            }
+            """)
+        return (
+            dimensions["windowWidth"] > original_rect["width"] and
+            dimensions["windowHeight"] > original_rect["height"] and
+            # Only return true if the window is not in fullscreen mode
+            not is_fullscreen(session)
+        )
+    else:
+        return False
 
 
-def available_screen_size(session):
+def is_not_maximized(session):
+    return not _get_maximized_state(session)
+
+
+def is_wayland():
+    # We don't use mozinfo.display here to make sure it also
+    # works upstream in wpt Github repo.
+    return os.environ.get("WAYLAND_DISPLAY", "") != ""
+
+
+def filter_dict(source, d):
+    """Filter `source` dict to only contain same keys as `d` dict.
+
+    :param source: dictionary to filter.
+    :param d: dictionary whose keys determine the filtering.
     """
-    Returns the effective available screen width/height size,
-    excluding any fixed window manager elements.
-    """
-    return tuple(session.execute_script("""
-        return [
-            screen.availWidth - screen.availLeft,
-            screen.availHeight - screen.availTop,
-        ];
-        """))
+    return {k: source[k] for k in d.keys()}
+
+
+def filter_supported_key_events(all_events, expected):
+    events = [filter_dict(e, expected[0]) for e in all_events]
+    if len(events) > 0 and events[0]["code"] is None:
+        # Remove 'code' entry if browser doesn't support it
+        expected = [filter_dict(e, {"key": "", "type": ""}) for e in expected]
+        events = [filter_dict(e, expected[0]) for e in events]
+
+    return (events, expected)
+
+
+def get_origin_from_url(url):
+    parsed_uri = urlparse(url)
+    return '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
+
+
+def wait_for_new_handle(session, handles_before):
+    def find_new_handle(session):
+        new_handles = list(set(session.handles) - set(handles_before))
+        assert len(new_handles) == 1, "No new window was opened"
+        return new_handles[0]
+
+    wait = Poll(session, timeout=5)
+    return wait.until(find_new_handle)
+
+
+def get_extension_path(filename):
+    return os.path.join(
+        os.path.abspath(os.path.dirname(__file__)), "webextensions", filename
+    )
+
+
+def get_base64_for_extension_file(filename):
+    with open(
+        get_extension_path(filename),
+        "rb",
+    ) as file:
+        return base64.b64encode(file.read()).decode("utf-8")

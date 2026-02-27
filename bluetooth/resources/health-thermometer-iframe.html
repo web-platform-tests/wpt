@@ -1,21 +1,36 @@
 <!DOCTYPE html>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body>
+<button>Click me!</button>
 <script>
 let device, gatt;
 
+test_driver.set_test_context(parent);
+
 function requestDeviceWithOptionsAndConnect(options) {
-  return navigator.bluetooth.requestDevice(options).then(
-      device => device.gatt.connect());
+  return test_driver.click(document.getElementsByTagName("button")[0])
+      .then(() => navigator.bluetooth.requestDevice(options))
+      .then(device => device.gatt.connect());
 }
 
 window.addEventListener('message', (messageEvent) => {
   switch (messageEvent.data.type) {
     case 'GetAvailability':
-      navigator.bluetooth.getAvailability().then(
-          availability => parent.postMessage(availability, '*'));
+      navigator.bluetooth.getAvailability()
+          .then(availability => parent.postMessage(availability, '*'))
+          .catch(err => parent.postMessage(`FAIL: ${err}`, '*'));
+      break;
+    case 'GetDevices':
+      navigator.bluetooth.getDevices()
+          .then(devices => parent.postMessage('Success', '*'))
+          .catch(err => parent.postMessage(`FAIL: ${err}`, '*'));
       break;
     case 'RequestDevice':
-      navigator.bluetooth
-          .requestDevice({filters: [{services: ['generic_access']}]})
+      test_driver.click(document.getElementsByTagName('button')[0])
+          .then(
+              () => navigator.bluetooth.requestDevice(
+                  {filters: [{services: ['generic_access']}]}))
           .then(device => {
             if (device.constructor.name === 'BluetoothDevice') {
               parent.postMessage('Success', '*');
@@ -24,7 +39,22 @@ window.addEventListener('message', (messageEvent) => {
                   `FAIL: requestDevice in iframe returned ${device.name}`, '*');
             }
           })
-          .catch(err => parent.postMessage(`${err.name}: ${err.message}`, '*'));
+          .catch(err => parent.postMessage(`FAIL: ${err.name}: ${err.message}`, '*'));
+      break;
+    case 'RequestLEScan':
+      test_driver.click(document.getElementsByTagName('button')[0])
+          .then(
+              () => navigator.bluetooth.requestLEScan(
+                {filters: [{name: 'Health Thermometer'}]}))
+          .then(leScan => {
+              if (leScan.active) {
+                parent.postMessage('Success', '*');
+                leScan.stop();
+              } else {
+                parent.postMessage(`FAIL: the LE scan hasn't been initiated.`, '*');
+              }
+          })
+          .catch(err => parent.postMessage(`FAIL: ${err.name}: ${err.message}`, '*'));
       break;
     case 'RequestAndConnect':
       requestDeviceWithOptionsAndConnect(messageEvent.data.options)

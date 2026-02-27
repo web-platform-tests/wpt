@@ -1,4 +1,4 @@
-// META: global=jsshell
+// META: global=window,dedicatedworker,jsshell,shadowrealm
 // META: script=/wasm/jsapi/wasm-module-builder.js
 
 let emptyModuleBinary;
@@ -35,7 +35,7 @@ function assert_exports(exports, expected) {
 }
 
 test(() => {
-  assert_throws(new TypeError(), () => WebAssembly.Module.exports());
+  assert_throws_js(TypeError, () => WebAssembly.Module.exports());
 }, "Missing arguments");
 
 test(() => {
@@ -51,8 +51,8 @@ test(() => {
     WebAssembly.Module.prototype,
   ];
   for (const argument of invalidArguments) {
-    assert_throws(new TypeError(), () => WebAssembly.Module.exports(argument),
-                  `exports(${format_value(argument)})`);
+    assert_throws_js(TypeError, () => WebAssembly.Module.exports(argument),
+                     `exports(${format_value(argument)})`);
   }
 }, "Non-Module arguments");
 
@@ -74,6 +74,12 @@ test(() => {
     assert_array_equals(fn.call(thisValue, module), []);
   }
 }, "Branding");
+
+test(() => {
+  const module = new WebAssembly.Module(emptyModuleBinary);
+  const exports = WebAssembly.Module.exports(module);
+  assert_true(Array.isArray(exports));
+}, "Return type");
 
 test(() => {
   const module = new WebAssembly.Module(emptyModuleBinary);
@@ -103,10 +109,10 @@ test(() => {
 
   builder.addGlobal(kWasmI32, true)
     .exportAs("global")
-    .init = 7;
+    .init = wasmI32Const(7);
   builder.addGlobal(kWasmF64, true)
     .exportAs("global2")
-    .init = 1.2;
+    .init = wasmF64Const(1.2);
 
   builder.addMemory(0, 256, true);
 
@@ -123,6 +129,54 @@ test(() => {
   ];
   assert_exports(exports, expected);
 }, "exports");
+
+test(() => {
+  const builder = new WasmModuleBuilder();
+
+  builder
+    .addFunction("", kSig_v_v)
+    .addBody([])
+    .exportFunc();
+
+  const buffer = builder.toBuffer()
+  const module = new WebAssembly.Module(buffer);
+  const exports = WebAssembly.Module.exports(module);
+  const expected = [
+    { "kind": "function", "name": "" },
+  ];
+  assert_exports(exports, expected);
+}, "exports with empty name: function");
+
+test(() => {
+  const builder = new WasmModuleBuilder();
+
+  builder.setTableBounds(1);
+  builder.addExportOfKind("", kExternalTable, 0);
+
+  const buffer = builder.toBuffer()
+  const module = new WebAssembly.Module(buffer);
+  const exports = WebAssembly.Module.exports(module);
+  const expected = [
+    { "kind": "table", "name": "" },
+  ];
+  assert_exports(exports, expected);
+}, "exports with empty name: table");
+
+test(() => {
+  const builder = new WasmModuleBuilder();
+
+  builder.addGlobal(kWasmI32, true)
+    .exportAs("")
+    .init = wasmI32Const(7);
+
+  const buffer = builder.toBuffer()
+  const module = new WebAssembly.Module(buffer);
+  const exports = WebAssembly.Module.exports(module);
+  const expected = [
+    { "kind": "global", "name": "" },
+  ];
+  assert_exports(exports, expected);
+}, "exports with empty name: global");
 
 test(() => {
   const module = new WebAssembly.Module(emptyModuleBinary);

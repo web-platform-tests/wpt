@@ -1,4 +1,9 @@
+# mypy: allow-untyped-defs
+
 import logging
+from threading import Thread
+from types import TracebackType
+from typing import Optional, Type
 
 from mozlog import commandline, stdadapter, set_default_logger
 from mozlog.structuredlog import StructuredLogger, log_levels
@@ -14,7 +19,7 @@ def setup(args, defaults, formatter_defaults=None):
                                            formatter_defaults=formatter_defaults)
     setup_stdlib_logger()
 
-    for name in args.keys():
+    for name in list(args.keys()):
         if name.startswith("log_"):
             args.pop(name)
 
@@ -26,7 +31,7 @@ def setup_stdlib_logger():
     logging.root = stdadapter.std_logging_adapter(logging.root)
 
 
-class LogLevelRewriter(object):
+class LogLevelRewriter:
     """Filter that replaces log messages at specified levels with messages
     at a different level.
 
@@ -49,7 +54,7 @@ class LogLevelRewriter(object):
         return self.inner(data)
 
 
-class LoggedAboveLevelHandler(object):
+class LoggedAboveLevelHandler:
     """Filter that records whether any log message above a certain level has been
     seen.
 
@@ -65,3 +70,61 @@ class LoggedAboveLevelHandler(object):
             not self.has_log and
             log_levels[data["level"]] <= self.min_level):
             self.has_log = True
+
+
+class QueueHandler(logging.Handler):
+    def __init__(self, queue, level=logging.NOTSET):
+        self.queue = queue
+        logging.Handler.__init__(self, level=level)
+
+    def createLock(self):
+        # The queue provides its own locking
+        self.lock = NullRLock()
+
+    def emit(self, record):
+        msg = self.format(record)
+        data = {"action": "log",
+                "level": record.levelname,
+                "thread": record.threadName,
+                "pid": record.process,
+                "source": self.name,
+                "message": msg}
+        self.queue.put(data)
+
+
+
+class NullRLock:
+    """Implementation of the threading.RLock API that doesn't actually acquire a lock,
+    for use in cases where there is another mechanism to provide the required
+    invariants."""
+
+    def acquire(self, blocking: bool = True, timeout: float = -1) -> bool:
+        return True
+
+    def release(self) -> None:
+        return None
+
+    def __enter__(self) -> bool:
+        return True
+
+    def __exit__(self, t: Optional[Type[BaseException]], v: Optional[BaseException], tb: Optional[TracebackType]) -> None:
+        return None
+
+
+class LogQueueThread(Thread):
+    """Thread for handling log messages from a queue"""
+    def __init__(self, queue, logger):
+        self.queue = queue
+        self.logger = logger
+        super().__init__(name="Thread-Log")
+
+    def run(self):
+        while True:
+            try:
+                data = self.queue.get()
+            except (EOFError, OSError):
+                break
+            if data is None:
+                # A None message is used to shut down the logging thread
+                break
+            self.logger.log_raw(data)

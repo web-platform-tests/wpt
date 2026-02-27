@@ -1,4 +1,4 @@
-// META: global=worker,jsshell
+// META: global=window,worker,shadowrealm
 // META: script=../resources/test-utils.js
 'use strict';
 
@@ -9,7 +9,8 @@ promise_test(t => {
   const ts = new TransformStream({
     transform() {
       throw thrownError;
-    }
+    },
+    cancel: t.unreached_func('cancel should not be called')
   });
 
   const reader = ts.readable.getReader();
@@ -17,14 +18,14 @@ promise_test(t => {
   const writer = ts.writable.getWriter();
 
   return Promise.all([
-    promise_rejects(t, thrownError, writer.write('a'),
-                    'writable\'s write should reject with the thrown error'),
-    promise_rejects(t, thrownError, reader.read(),
-                    'readable\'s read should reject with the thrown error'),
-    promise_rejects(t, thrownError, reader.closed,
-                    'readable\'s closed should be rejected with the thrown error'),
-    promise_rejects(t, thrownError, writer.closed,
-                    'writable\'s closed should be rejected with the thrown error')
+    promise_rejects_exactly(t, thrownError, writer.write('a'),
+                            'writable\'s write should reject with the thrown error'),
+    promise_rejects_exactly(t, thrownError, reader.read(),
+                            'readable\'s read should reject with the thrown error'),
+    promise_rejects_exactly(t, thrownError, reader.closed,
+                            'readable\'s closed should be rejected with the thrown error'),
+    promise_rejects_exactly(t, thrownError, writer.closed,
+                            'writable\'s closed should be rejected with the thrown error')
   ]);
 }, 'TransformStream errors thrown in transform put the writable and readable in an errored state');
 
@@ -34,7 +35,8 @@ promise_test(t => {
     },
     flush() {
       throw thrownError;
-    }
+    },
+    cancel: t.unreached_func('cancel should not be called')
   });
 
   const reader = ts.readable.getReader();
@@ -43,24 +45,25 @@ promise_test(t => {
 
   return Promise.all([
     writer.write('a'),
-    promise_rejects(t, thrownError, writer.close(),
-                    'writable\'s close should reject with the thrown error'),
-    promise_rejects(t, thrownError, reader.read(),
-                    'readable\'s read should reject with the thrown error'),
-    promise_rejects(t, thrownError, reader.closed,
-                    'readable\'s closed should be rejected with the thrown error'),
-    promise_rejects(t, thrownError, writer.closed,
-                    'writable\'s closed should be rejected with the thrown error')
+    promise_rejects_exactly(t, thrownError, writer.close(),
+                            'writable\'s close should reject with the thrown error'),
+    promise_rejects_exactly(t, thrownError, reader.read(),
+                            'readable\'s read should reject with the thrown error'),
+    promise_rejects_exactly(t, thrownError, reader.closed,
+                            'readable\'s closed should be rejected with the thrown error'),
+    promise_rejects_exactly(t, thrownError, writer.closed,
+                            'writable\'s closed should be rejected with the thrown error')
   ]);
 }, 'TransformStream errors thrown in flush put the writable and readable in an errored state');
 
-test(() => {
+test(t => {
   new TransformStream({
     start(c) {
       c.enqueue('a');
       c.error(new Error('generic error'));
-      assert_throws(new TypeError(), () => c.enqueue('b'), 'enqueue() should throw');
-    }
+      assert_throws_js(TypeError, () => c.enqueue('b'), 'enqueue() should throw');
+    },
+    cancel: t.unreached_func('cancel should not be called')
   });
 }, 'errored TransformStream should not enqueue new chunks');
 
@@ -72,15 +75,16 @@ promise_test(t => {
       });
     },
     transform: t.unreached_func('transform should not be called'),
-    flush: t.unreached_func('flush should not be called')
+    flush: t.unreached_func('flush should not be called'),
+    cancel: t.unreached_func('cancel should not be called')
   });
 
   const writer = ts.writable.getWriter();
   const reader = ts.readable.getReader();
   return Promise.all([
-    promise_rejects(t, thrownError, writer.write('a'), 'writer should reject with thrownError'),
-    promise_rejects(t, thrownError, writer.close(), 'close() should reject with thrownError'),
-    promise_rejects(t, thrownError, reader.read(), 'reader should reject with thrownError')
+    promise_rejects_exactly(t, thrownError, writer.write('a'), 'writer should reject with thrownError'),
+    promise_rejects_exactly(t, thrownError, writer.close(), 'close() should reject with thrownError'),
+    promise_rejects_exactly(t, thrownError, reader.read(), 'reader should reject with thrownError')
   ]);
 }, 'TransformStream transformer.start() rejected promise should error the stream');
 
@@ -96,20 +100,21 @@ promise_test(t => {
         });
     },
     transform: t.unreached_func('transform should never be called if start() fails'),
-    flush: t.unreached_func('flush should never be called if start() fails')
+    flush: t.unreached_func('flush should never be called if start() fails'),
+    cancel: t.unreached_func('cancel should never be called if start() fails')
   });
 
   const writer = ts.writable.getWriter();
   const reader = ts.readable.getReader();
   return Promise.all([
-    promise_rejects(t, controllerError, writer.write('a'), 'writer should reject with controllerError'),
-    promise_rejects(t, controllerError, writer.close(), 'close should reject with same error'),
-    promise_rejects(t, controllerError, reader.read(), 'reader should reject with same error')
+    promise_rejects_exactly(t, controllerError, writer.write('a'), 'writer should reject with controllerError'),
+    promise_rejects_exactly(t, controllerError, writer.close(), 'close should reject with same error'),
+    promise_rejects_exactly(t, controllerError, reader.read(), 'reader should reject with same error')
   ]);
 }, 'when controller.error is followed by a rejection, the error reason should come from controller.error');
 
 test(() => {
-  assert_throws(new URIError(), () => new TransformStream({
+  assert_throws_js(URIError, () => new TransformStream({
     start() { throw new URIError('start thrown error'); },
     transform() {}
   }), 'constructor should throw');
@@ -120,7 +125,7 @@ test(() => {
     size() { throw new URIError('size thrown error'); }
   };
 
-  assert_throws(new URIError(), () => new TransformStream({
+  assert_throws_js(URIError, () => new TransformStream({
     start(c) {
       c.enqueue('a');
     },
@@ -139,7 +144,7 @@ test(() => {
     }
   };
 
-  assert_throws(new URIError(), () => new TransformStream({
+  assert_throws_js(URIError, () => new TransformStream({
     start(c) {
       controller = c;
       c.enqueue('a');
@@ -154,7 +159,7 @@ promise_test(t => {
   const closedPromise = writer.closed;
   return Promise.all([
     ts.readable.cancel(thrownError),
-    promise_rejects(t, thrownError, closedPromise, 'closed should throw a TypeError')
+    promise_rejects_exactly(t, thrownError, closedPromise, 'closed should throw a TypeError')
   ]);
 }, 'cancelling the readable side should error the writable');
 
@@ -171,9 +176,9 @@ promise_test(t => {
   const closePromise = writer.close();
   controller.error(thrownError);
   return Promise.all([
-    promise_rejects(t, thrownError, reader.closed, 'reader.closed should reject'),
-    promise_rejects(t, thrownError, writePromise, 'writePromise should reject'),
-    promise_rejects(t, thrownError, closePromise, 'closePromise should reject')]);
+    promise_rejects_exactly(t, thrownError, reader.closed, 'reader.closed should reject'),
+    promise_rejects_exactly(t, thrownError, writePromise, 'writePromise should reject'),
+    promise_rejects_exactly(t, thrownError, closePromise, 'closePromise should reject')]);
 }, 'it should be possible to error the readable between close requested and complete');
 
 promise_test(t => {
@@ -187,8 +192,8 @@ promise_test(t => {
   const writePromise = ts.writable.getWriter().write('a');
   const closedPromise = ts.readable.getReader().closed;
   return Promise.all([
-    promise_rejects(t, thrownError, writePromise, 'write() should reject'),
-    promise_rejects(t, thrownError, closedPromise, 'reader.closed should reject')
+    promise_rejects_exactly(t, thrownError, writePromise, 'write() should reject'),
+    promise_rejects_exactly(t, thrownError, closedPromise, 'reader.closed should reject')
   ]);
 }, 'an exception from transform() should error the stream if terminate has been requested but not completed');
 
@@ -202,9 +207,10 @@ promise_test(t => {
   return Promise.all([
     abortPromise,
     cancelPromise,
-    promise_rejects(t, thrownError, writer.closed, 'writer.closed should reject with thrownError')]);
-}, 'abort should set the close reason for the writable when it happens before cancel during start, but cancel should ' +
-             'still succeed');
+    promise_rejects_exactly(t, thrownError, writer.closed, 'writer.closed should reject'),
+  ]);
+}, 'abort should set the close reason for the writable when it happens before cancel during start, and cancel should ' +
+             'reject');
 
 promise_test(t => {
   let resolveTransform;
@@ -226,7 +232,7 @@ promise_test(t => {
       writePromise,
       abortPromise,
       cancelPromise,
-      promise_rejects(t, thrownError, writer.closed, 'writer.closed should reject with thrownError')]);
+      promise_rejects_exactly(t, thrownError, writer.closed, 'writer.closed should reject with thrownError')]);
   });
 }, 'abort should set the close reason for the writable when it happens before cancel during underlying sink write, ' +
              'but cancel should still succeed');
@@ -241,7 +247,7 @@ promise_test(t => {
       controller.error(ignoredError);
     }
   });
-  return promise_rejects(t, thrownError, ts.writable.abort(), 'abort() should reject with thrownError');
+  return promise_rejects_exactly(t, thrownError, ts.writable.abort(), 'abort() should reject with thrownError');
 }, 'controller.error() should do nothing the second time it is called');
 
 promise_test(t => {
@@ -251,13 +257,26 @@ promise_test(t => {
       controller = c;
     }
   });
-  const cancelPromise = ts.readable.cancel(thrownError);
-  controller.error(ignoredError);
+  const cancelPromise = ts.readable.cancel(ignoredError);
+  controller.error(thrownError);
   return Promise.all([
     cancelPromise,
-    promise_rejects(t, thrownError, ts.writable.getWriter().closed, 'closed should reject with thrownError')
+    promise_rejects_exactly(t, thrownError, ts.writable.getWriter().closed, 'closed should reject with thrownError')
   ]);
-}, 'controller.error() should do nothing after readable.cancel()');
+}, 'controller.error() should close writable immediately after readable.cancel()');
+
+promise_test(t => {
+  let controller;
+  const ts = new TransformStream({
+    start(c) {
+      controller = c;
+    }
+  });
+  return ts.readable.cancel(thrownError).then(() => {
+    controller.error(ignoredError);
+    return promise_rejects_exactly(t, thrownError, ts.writable.getWriter().closed, 'closed should reject with thrownError');
+  });
+}, 'controller.error() should do nothing after readable.cancel() resolves');
 
 promise_test(t => {
   let controller;
@@ -268,7 +287,7 @@ promise_test(t => {
   });
   return ts.writable.abort(thrownError).then(() => {
     controller.error(ignoredError);
-    return promise_rejects(t, thrownError, ts.writable.getWriter().closed, 'closed should reject with thrownError');
+    return promise_rejects_exactly(t, thrownError, ts.writable.getWriter().closed, 'closed should reject with thrownError');
   });
 }, 'controller.error() should do nothing after writable.abort() has completed');
 
@@ -283,9 +302,9 @@ promise_test(t => {
     }
   }, undefined, { highWaterMark: Infinity });
   const writer = ts.writable.getWriter();
-  return promise_rejects(t, thrownError, writer.write(), 'write() should reject').then(() => {
+  return promise_rejects_exactly(t, thrownError, writer.write(), 'write() should reject').then(() => {
     controller.error();
-    return promise_rejects(t, thrownError, writer.closed, 'closed should reject with thrownError');
+    return promise_rejects_exactly(t, thrownError, writer.closed, 'closed should reject with thrownError');
   });
 }, 'controller.error() should do nothing after a transformer method has thrown an exception');
 
@@ -309,7 +328,7 @@ promise_test(t => {
     assert_equals(calls, 0, 'transform() should not have been called');
     controller.error(thrownError);
     // Now backpressure has been relieved and the write can proceed.
-    return promise_rejects(t, thrownError, writePromise, 'write() should reject').then(() => {
+    return promise_rejects_exactly(t, thrownError, writePromise, 'write() should reject').then(() => {
       assert_equals(calls, 0, 'transform() should not be called');
     });
   });
@@ -326,8 +345,8 @@ promise_test(t => {
     // Perform a read to relieve backpressure and permit the write() to complete.
     const readPromise = ts.readable.getReader().read();
     return Promise.all([
-      promise_rejects(t, thrownError, readPromise, 'read() should reject'),
-      promise_rejects(t, thrownError, writePromise, 'write() should reject'),
+      promise_rejects_exactly(t, thrownError, readPromise, 'read() should reject'),
+      promise_rejects_exactly(t, thrownError, writePromise, 'write() should reject'),
       abortPromise
     ]);
   });
@@ -337,5 +356,5 @@ promise_test(t => {
   const ts = new TransformStream();
   ts.writable.abort(thrownError);
   const reader = ts.readable.getReader();
-  return promise_rejects(t, thrownError, reader.read(), 'read() should reject with thrownError');
+  return promise_rejects_exactly(t, thrownError, reader.read(), 'read() should reject with thrownError');
 }, 'the readable should be errored with the reason passed to the writable abort() method');

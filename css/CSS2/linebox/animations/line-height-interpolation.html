@@ -3,6 +3,7 @@
 <title>line-height interpolation</title>
 <link rel="help" href="https://www.w3.org/TR/CSS2/visudet.html#propdef-line-height">
 <meta name="assert" content="line-height supports animation by computation">
+<meta name="timeout" content="long">
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -182,4 +183,21 @@ test_no_interpolation({
   from: '14q',
   to: 'normal',
 });
+
+test_no_interpolation({
+  property: 'line-height',
+  from: '1',
+  to: '200%',
+});
+
+test_interpolation({
+  property: 'line-height',
+  from: '100%',
+  to: '200%',
+}, [
+  {at: 0, expect: '100%'},
+  {at: 0.3, expect: '130%'},
+  {at: 0.6, expect: '160%'},
+  {at: 1, expect: '200%'},
+]);
 </script>

@@ -5,6 +5,14 @@
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
 <script>
 test(function() {
+    assert_throws_js(
+        TypeError,
+        () => MessageEvent(""),
+        "Calling MessageEvent constructor without 'new' must throw"
+    );
+}, "MessageEvent constructor called as normal function");
+
+test(function() {
   var ev = new MessageEvent("test")
   assert_equals(ev.type, "test", "type attribute")
   assert_equals(ev.target, null, "target attribute")
@@ -35,7 +43,7 @@ test(function() {
 }, "MessageEventInit dictionary")
 
 test(function() {
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     new MessageEvent("test", { ports: null })
   })
 }, "Passing null for ports member")
@@ -44,7 +52,7 @@ test(function() {
   var ev = new MessageEvent("test", { ports: [] })
   assert_true(Array.isArray(ev.ports), "Array.isArray() should return true")
   assert_true(Object.isFrozen(ev.ports), "Object.isFrozen() should return true")
-  assert_true(ev.ports === ev.ports, "ev.ports should return the same object")
+  assert_equals(ev.ports, ev.ports, "ev.ports should return the same object")
 
   const oldPorts = ev.ports;
   ev.initMessageEvent("test", false, false, null, "", "", null, ev.ports);
@@ -67,7 +75,7 @@ test(function() {
 
 test(function() {
   var ev = document.createEvent("messageevent")
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     ev.initMessageEvent("test", true, false, "testData", "testOrigin", "testId", window, null)
   })
 }, "Passing null for ports parameter to initMessageEvent")

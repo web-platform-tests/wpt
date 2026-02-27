@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Video track src attribute must match src list - positive test</title>
-    <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline'; media-src 'self' {{domains[www]}}:{{ports[http][0]}};"> 
+    <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline'; media-src 'self' {{domains[www]}}:{{ports[http][0]}};">
     <script src='/resources/testharness.js'></script>
     <script src='/resources/testharnessreport.js'></script>
 </head>
@@ -37,8 +37,8 @@
     <video id="videoObject" width="320" height="240" controls
            onloadeddata="media_loaded(source_test)" crossorigin>
         <source id="audioSourceObject"
-                type="audio/ogg"
-                src="/media/A4.ogv">
+                type="video/webm"
+                src="/media/A4.webm">
         <track id="trackObject"
                kind="subtitles"
                srclang="en"

@@ -1,130 +1,353 @@
 # testdriver.js Automation
 
+```eval_rst
+
+.. contents:: Table of Contents
+   :depth: 3
+   :local:
+   :backlinks: none
+```
+
 testdriver.js provides a means to automate tests that cannot be
 written purely using web platform APIs. Outside of automation
 contexts, it allows human operators to provide expected input
 manually (for operations which may be described in simple terms).
 
-It is currently supported only for [testharness.js](testharness)
-tests.
+testdriver.js supports the following test types:
+* [testharness.js](testharness) tests
+* [reftests](reftests) and [print-reftests](print-reftests) that use the
+  `class=reftest-wait` attribute on the root element to control completion
+* [crashtests](crashtest) that use the `class=test-wait` attribute to control
+  completion
 
-## API
+## Markup ##
+
+The `testdriver.js` and `testdriver-vendor.js` must both be included
+in any document that uses testdriver (and in the top-level test
+document when using testdriver from a different context):
+
+```html
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+```
+
+## WebDriver BiDi ##
+
+The api in `test_driver.bidi` provides access to the
+[WebDriver BiDi](https://w3c.github.io/webdriver-bidi) protocol.
+
+### Markup ###
+
+To use WebDriver BiDi, enable the `bidi` feature in `testdriver.js` by adding the
+`feature=bidi` query string parameter. Details are in [RFC 214: Add testdriver features](https://github.com/web-platform-tests/rfcs/blob/master/rfcs/testdriver-features.md).
+```html
+<script src="/resources/testdriver.js?feature=bidi"></script>
+```
+
+```javascript
+// META: script=/resources/testdriver.js?feature=bidi
+```
+
+[Example](https://github.com/web-platform-tests/wpt/blob/aae46926b1fdccd460e1c6eaaf01ca20b941fbce/infrastructure/webdriver/bidi/subscription.html#L6).
+
+### Context ###
+
+A WebDriver BiDi "browsing context" is equivalent to an
+[HTML navigable](https://html.spec.whatwg.org/multipage/document-sequences.html#navigable).
+In WebDriver BiDi, you can interact with any browsing context, regardless of whether
+it's currently active. You can target a specific browsing context using either its
+unique string ID or its `WindowProxy` object.
+
+```eval_rst
+:Context: (*String|WindowProxy*)  A browsing context. Can be specified by its ID
+          (a string) or using a `WindowProxy` object.
+```
+
+### Events ###
+
+To receive WebDriver BiDi [events](https://w3c.github.io/webdriver-bidi/#events), you
+need to subscribe to them. Events are only emitted for browsing contexts with an
+active subscription. You can also create a global subscription to receive events from
+all the contexts.
+
+If there are
+[buffered events](https://w3c.github.io/webdriver-bidi/#log-event-buffer), they will
+be emitted before the `subcsribe` command's promise is resolved.
+
+## API ##
 
 testdriver.js exposes its API through the `test_driver` variable in
 the global scope.
 
-NB: presently, testdriver.js only works in the top-level test browsing
-context (and not therefore in any frame or window opened from it).
+### User Interaction ###
 
-### Actions
-Usage:
-```
-let actions = new test_driver.Actions()
-   .action1()
-   .action2();
-actions.send()
+```eval_rst
+.. js:autofunction:: test_driver.click
+.. js:autofunction:: test_driver.send_keys
+.. js:autofunction:: test_driver.action_sequence
+.. js:autofunction:: test_driver.bless
 ```
 
-Test authors are encouraged to use the builder API to generate the sequence of actions. The builder
-API can be accessed via the `new test_driver.Actions()` object, and actions are defined in [testdriver-actions.js](https://github.com/web-platform-tests/wpt/blob/master/resources/testdriver-actions.js)
+### Window State ###
+```eval_rst
+.. js:autofunction:: test_driver.minimize_window
+.. js:autofunction:: test_driver.set_window_rect
+```
 
-The `actions.send()` function causes the sequence of actions to be sent to the browser. It is based on the [WebDriver API](https://w3c.github.io/webdriver/#actions).
-The action can be a keyboard action, a pointer action or a pause. It returns a `Promise` that
-resolves after the actions have been sent or rejects if an error was thrown.
+### Cookies ###
+```eval_rst
+.. js:autofunction:: test_driver.delete_all_cookies
+.. js:autofunction:: test_driver.get_all_cookies
+.. js:autofunction:: test_driver.get_named_cookie
+```
 
+### Permissions ###
+```eval_rst
+.. js:autofunction:: test_driver.set_permission
+.. js:autofunction:: test_driver.bidi.permissions.set_permission
+```
+
+### Authentication ###
+
+```eval_rst
+.. js:autofunction:: test_driver.add_virtual_authenticator
+.. js:autofunction:: test_driver.remove_virtual_authenticator
+.. js:autofunction:: test_driver.add_credential
+.. js:autofunction:: test_driver.get_credentials
+.. js:autofunction:: test_driver.remove_credential
+.. js:autofunction:: test_driver.remove_all_credentials
+.. js:autofunction:: test_driver.set_user_verified
+```
+
+### Page Lifecycle ###
+```eval_rst
+.. js:autofunction:: test_driver.freeze
+```
+
+### Reporting Observer ###
+```eval_rst
+.. js:autofunction:: test_driver.generate_test_report
+```
+
+### Storage ###
+```eval_rst
+.. js:autofunction:: test_driver.set_storage_access
+
+```
+
+### Accessibility ###
+```eval_rst
+.. js:autofunction:: test_driver.get_computed_label
+.. js:autofunction:: test_driver.get_computed_role
+
+```
+
+### Secure Payment Confirmation ###
+```eval_rst
+.. js:autofunction:: test_driver.set_spc_transaction_mode
+```
+
+### Federated Credential Management ###
+```eval_rst
+.. js:autofunction:: test_driver.cancel_fedcm_dialog
+.. js:autofunction:: test_driver.click_fedcm_dialog_button
+.. js:autofunction:: test_driver.select_fedcm_account
+.. js:autofunction:: test_driver.get_fedcm_account_list
+.. js:autofunction:: test_driver.get_fedcm_dialog_title
+.. js:autofunction:: test_driver.get_fedcm_dialog_type
+.. js:autofunction:: test_driver.set_fedcm_delay_enabled
+.. js:autofunction:: test_driver.reset_fedcm_cooldown
+```
+
+### Sensors ###
+```eval_rst
+.. js:autofunction:: test_driver.create_virtual_sensor
+.. js:autofunction:: test_driver.update_virtual_sensor
+.. js:autofunction:: test_driver.remove_virtual_sensor
+.. js:autofunction:: test_driver.get_virtual_sensor_information
+```
+
+### Device Posture ###
+```eval_rst
+.. js:autofunction:: test_driver.set_device_posture
+.. js:autofunction:: test_driver.clear_device_posture
+```
+
+### Bounce Tracking Mitigations ###
+
+```eval_rst
+.. js:autofunction:: test_driver.run_bounce_tracking_mitigations
+```
+
+### Compute Pressure ###
+```eval_rst
+.. js:autofunction:: test_driver.create_virtual_pressure_source
+.. js:autofunction:: test_driver.update_virtual_pressure_source
+.. js:autofunction:: test_driver.remove_virtual_pressure_source
+```
+
+### Viewport Segments ###
+```eval_rst
+.. js:autofunction:: test_driver.set_display_features
+.. js:autofunction:: test_driver.clear_display_features
+```
+
+### Global Privacy Control ###
+
+```eval_rst
+.. js:autofunction:: test_driver.set_global_privacy_control
+.. js:autofunction:: test_driver.set_global_privacy_control
+```
+
+
+### Using test_driver in other browsing contexts ###
+
+Testdriver can be used in browsing contexts (i.e. windows or frames)
+from which it's possible to get a reference to the top-level test
+context. There are two basic approaches depending on whether the
+context in which testdriver is used is same-origin with the test
+context, or different origin.
+
+For same-origin contexts, the context can be passed directly into the
+testdriver API calls. For functions that take an element argument this
+is done implicitly using the owner document of the element. For
+functions that don't take an element, this is done via an explicit
+context argument, which takes a WindowProxy object.
 
 Example:
+```
+let win = window.open("example.html")
+win.onload = () => {
+  await test_driver.set_permission({ name: "background-fetch" }, "denied", win);
+}
+```
+
+```eval_rst
+.. js:autofunction:: test_driver.set_test_context
+.. js:autofunction:: test_driver.message_test
+```
+
+For cross-origin cases, passing in the `context` doesn't work because
+of limitations in the WebDriver protocol used to implement testdriver
+in a cross-browser fashion. Instead one may include the testdriver
+scripts directly in the relevant document, and use the
+[`test_driver.set_test_context`](#test_driver.set_test_context) API to
+specify the browsing context containing testharness.js. Commands are
+then sent via `postMessage` to the test context. For convenience there
+is also a [`test_driver.message_test`](#test_driver.message_test)
+function that can be used to send arbitrary messages to the test
+window. For example, in an auxillary browsing context:
 
 ```js
-let text_box = document.getElementById("text");
+test_driver.set_test_context(window.opener)
+await test_driver.click(document.getElementsByTagName("button")[0])
+test_driver.message_test("click complete")
+```
 
+The requirement to have a handle to the test window does mean it's
+currently not possible to write tests where such handles can't be
+obtained e.g. in the case of `rel=noopener`.
+
+### Actions ###
+
+#### Markup ####
+
+To use the [Actions](#Actions) API `testdriver-actions.js` must be
+included in the document, in addition to `testdriver.js`:
+
+```html
+<script src="/resources/testdriver-actions.js"></script>
+```
+
+#### API ####
+
+```eval_rst
+.. js:autoclass:: Actions
+   :members:
+```
+
+
+#### Using in other browsing contexts ####
+
+For the actions API, the context can be set using the `setContext`
+method on the builder:
+
+```js
 let actions = new test_driver.Actions()
-    .pointerMove(0, 0, {origin: text_box})
-    .pointerDown()
-    .pointerUp()
-    .addTick()
+    .setContext(frames[0])
     .keyDown("p")
     .keyUp("p");
-
-actions.send();
+await actions.send();
 ```
 
-Calling into `send()` is going to dispatch the action sequence (via `test_driver.action_sequence`) and also returns a `Promise` which should be handled however is appropriate in the test. The other functions in the `Actions()` object are going to modify the state of the object by adding a new action in the sequence and return the same object. So the functions can be easily chained as shown in the example above. Here is a list of helper functions in the `Actions` class:
+Note that if an action uses an element reference, the context will be
+derived from that element, and must match any explicitly set
+context. Using elements in multiple contexts in a single action chain
+is not supported.
 
-```
-pointerDown: Create a pointerDown event for the current default pointer source
-pointerUp: Create a pointerUp event for the current default pointer source
-pointerMove: Create a move event for the current default pointer source
-keyDown: Create a keyDown event for the current default key source
-keyUp: Create a keyUp event for the current default key source
-pause: Add a pause to the current tick
-addTick: Insert a new actions tick
-setPointer: Set the current default pointer source (By detault the pointerType is mouse)
-addPointer: Add a new pointer input source with the given name
-setKeyboard: Set the current default key source
-addKeyboard: Add a new key input source with the given name
-```
+### Log
 
-### bless
+This module corresponds to the WebDriver BiDi
+[Log](https://w3c.github.io/webdriver-bidi/#module-log) module and provides access to
+browser logs.
 
-Usage: `test_driver.bless(intent, action)`
- * `intent`: a string describing the motivation for this invocation
- * `action`: an optional function
+#### Entry added
 
-This function simulates [activation][activation], allowing tests to
-perform privileged operations that require user interaction. For
-example, sandboxed iframes with the
-`allow-top-navigation-by-user-activation` may only navigate their
-parent's browsing context under these circumstances. The `intent`
-string is presented to human operators when the test is not run in
-automation.
+This provides methods to subscribe to and listen for the
+[`log.entryAdded`](https://w3c.github.io/webdriver-bidi/#event-log-entryAdded) event.
 
-This method returns a promise which is resolved with the result of
-invoking the `action` function. If no such function is provided, the
-promise is resolved with the value `undefined`.
+**Example:**
 
-Example:
-
-```js
-var mediaElement = document.createElement('video');
-
-test_driver.bless('initiate media playback', function () {
-  mediaElement.play();
-});
+```javascript
+await test_driver.bidi.log.entry_added.subscribe();
+const log_entry_promise = test_driver.bidi.log.entry_added.once();
+console.log("some message");
+const event = await log_entry_promise;
 ```
 
-### click
+```eval_rst
+.. js:autofunction:: test_driver.bidi.log.entry_added.subscribe
+.. js:autofunction:: test_driver.bidi.log.entry_added.on
+.. js:autofunction:: test_driver.bidi.log.entry_added.once
+```
 
-Usage: `test_driver.click(element)`
- * `element`: a DOM Element object
+### Bluetooth ###
 
-This function causes a click to occur on the target element (an
-`Element` object), potentially scrolling the document to make it
-possible to click it. It returns a `Promise` that resolves after the
-click has occured or rejects if the element cannot be clicked (for
-example, it is obscured by an element on top of it).
+The module provides access to [Web Bluetooth](https://webbluetoothcg.github.io/web-bluetooth).
 
-Note that if the element to be clicked does not have a unique ID, the
-document must not have any DOM mutations made between the function
-being called and the promise settling.
+```eval_rst
+.. js:autofunction:: test_driver.bidi.bluetooth.handle_request_device_prompt
+.. js:autofunction:: test_driver.bidi.bluetooth.simulate_adapter
+.. js:autofunction:: test_driver.bidi.bluetooth.disable_simulation
+.. js:autofunction:: test_driver.bidi.bluetooth.simulate_preconnected_peripheral
+.. js:autofunction:: test_driver.bidi.bluetooth.simulate_gatt_connection_response
+.. js:autofunction:: test_driver.bidi.bluetooth.simulate_gatt_disconnection
+.. js:autofunction:: test_driver.bidi.bluetooth.simulate_service
+.. js:autofunction:: test_driver.bidi.bluetooth.simulate_characteristic
+.. js:autofunction:: test_driver.bidi.bluetooth.simulate_characteristic_response
+.. js:autofunction:: test_driver.bidi.bluetooth.simulate_descriptor
+.. js:autofunction:: test_driver.bidi.bluetooth.simulate_descriptor_response
+.. js:autofunction:: test_driver.bidi.bluetooth.request_device_prompt_updated.subscribe
+.. js:autofunction:: test_driver.bidi.bluetooth.request_device_prompt_updated.on
+.. js:autofunction:: test_driver.bidi.bluetooth.request_device_prompt_updated.once
+.. js:autofunction:: test_driver.bidi.bluetooth.gatt_connection_attempted.subscribe
+.. js:autofunction:: test_driver.bidi.bluetooth.gatt_connection_attempted.on
+.. js:autofunction:: test_driver.bidi.bluetooth.gatt_connection_attempted.once
+.. js:autofunction:: test_driver.bidi.bluetooth.characteristic_event_generated.subscribe
+.. js:autofunction:: test_driver.bidi.bluetooth.characteristic_event_generated.on
+.. js:autofunction:: test_driver.bidi.bluetooth.characteristic_event_generated.once
+.. js:autofunction:: test_driver.bidi.bluetooth.descriptor_event_generated.subscribe
+.. js:autofunction:: test_driver.bidi.bluetooth.descriptor_event_generated.on
+.. js:autofunction:: test_driver.bidi.bluetooth.descriptor_event_generated.once
+```
 
-### send_keys
+### Emulation ###
 
-Usage: `test_driver.send_keys(element, keys)`
- * `element`: a DOM Element object
- * `keys`: string to send to the element
+Emulation of browser APIs via [WebDriver BiDi Emulation](https://www.w3.org/TR/webdriver-bidi/#module-emulation).
 
-This function causes the string `keys` to be send to the target
-element (an `Element` object), potentially scrolling the document to
-make it possible to send keys. It returns a `Promise` that resolves
-after the keys have been send or rejects if the keys cannot be sent
-to the element.
-
-Note that if the element that's keys need to be send to does not have
-a unique ID, the document must not have any DOM mutations made
-between the function being called and the promise settling.
-
-To send special keys, one must send the respective key's codepoint. Since this uses the WebDriver protocol, you can find a [list for code points to special keys in the spec](https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions).
-For example, to send the tab key you would send "\uE004".
-
-[activation]: https://html.spec.whatwg.org/multipage/interaction.html#activation
+```eval_rst
+.. js:autofunction:: test_driver.bidi.emulation.set_geolocation_override
+.. js:autofunction:: test_driver.bidi.emulation.set_locale_override
+.. js:autofunction:: test_driver.bidi.emulation.set_screen_orientation_override
+.. js:autofunction:: test_driver.bidi.emulation.set_touch_override
+```

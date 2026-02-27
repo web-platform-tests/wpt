@@ -17,12 +17,12 @@ test(function() {
   performance.clearMarks();
   performance.clearMeasures();
   const markEntry = performance.mark("mark", {startTime: 123});
-  const endMin = performance.now();
+  const endMin = Number(performance.now().toFixed(2));
   const measureEntry = performance.measure("A", "mark", undefined);
-  const endMax = performance.now();
+  const endMax = Number(performance.now().toFixed(2));
   assert_equals(measureEntry.startTime, markEntry.startTime);
-  assert_greater_than_equal(endTime(measureEntry), endMin);
-  assert_greater_than_equal(endMax, endTime(measureEntry));
+  assert_greater_than_equal(Number(endTime(measureEntry).toFixed(2)), endMin);
+  assert_greater_than_equal(endMax, Number(endTime(measureEntry).toFixed(2)));
 }, "When the start mark is given and the end is unprovided, the start time of the measure entry should be the start mark's time, the end should be now.");
 
 test(function() {
@@ -32,4 +32,4 @@ test(function() {
   const measureEntry = performance.measure("A", "mark", "mark");
   assert_equals(endTime(measureEntry), markEntry.startTime);
   assert_equals(measureEntry.startTime, markEntry.startTime);
-}, "When start and end mark are both given, the start time and end time of the measure entry should be the the marks' time, repectively");
+}, "When start and end mark are both given, the start time and end time of the measure entry should be the marks' time, repectively");

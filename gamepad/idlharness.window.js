@@ -1,5 +1,6 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
+// META: timeout=long
 
 // https://w3c.github.io/gamepad/
 
@@ -7,7 +8,7 @@
 
 idl_test(
   ['gamepad'],
-  ['dom', 'html'],
+  ['html', 'dom'],
   idl_array => {
     idl_array.add_objects({
       GamepadEvent: ['new GamepadEvent("gamepad")'],

@@ -9,16 +9,16 @@
 <script src="resources/picture-in-picture-helpers.js"></script>
 <body></body>
 <script>
-promise_test(async t => {
+promise_test(async () => {
   let pictureInPictureWindow;
   const video = await loadVideo();
 
-  video.addEventListener('enterpictureinpicture', t.step_func(event => {
+  video.addEventListener('enterpictureinpicture', event => {
     pictureInPictureWindow = event.pictureInPictureWindow;
-  }));
+  });
 
   const leavePipPromise = new Promise(resolve => {
-    video.addEventListener('leavepictureinpicture', t.step_func(event => {
+    video.addEventListener('leavepictureinpicture', event => {
       assert_equals(pictureInPictureWindow, event.pictureInPictureWindow);
 
       assert_equals(event.target, video);
@@ -27,7 +27,7 @@ promise_test(async t => {
       assert_equals(event.composed, false);
       assert_equals(document.pictureInPictureElement, null);
       resolve();
-    }));
+    });
   });
 
   await requestPictureInPictureWithTrustedClick(video);

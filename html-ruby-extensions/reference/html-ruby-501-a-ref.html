@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" >
+<meta charset="utf-8">
+<title>test reference</title>
+<link rel='author' title='Florian Rivoal' href='https://florian.rivoal.net'>
+<body>
+<p>The example below consists of 2 base characters (“今日”), jointly annotated with two levels of annotations: “きょう” and “today”.
+This test passes if:
+<ul>
+    <li>the base characters are conveyed as a base, and
+    <li>each annotation is convenyed as an annotation, and
+    <li>each annotation is jointly associated with the whole base, not just part of it.
+</ul>
+
+<p>Note: This is not a layout or rendering test.
+The precise appearance is not specified,
+and implementations may therefore validly vary.
+
+<hr> <!-- incorrect rendering: annotation displayed identical to base text, interleaved-->
+<span>今</span><span>きょう</span><span>日</span><span>today</span>

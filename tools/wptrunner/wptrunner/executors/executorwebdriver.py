@@ -510,16 +510,16 @@ class WebDriverPrintProtocolPart(PrintProtocolPart):
         self.runner_handle = None
 
     def load_runner(self):
-        url = urljoin(self.parent.executor.server_url("http"), "/print_pdf_runner.html")
-        self.logger.debug("Loading %s" % url)
+        self.url = urljoin(self.parent.executor.server_url("http"), "/print_pdf_runner.html")
+        self.logger.debug("Loading %s" % self.url)
         try:
-            self.webdriver.url = url
+            self.webdriver.url = self.url
         except Exception as e:
             self.logger.critical(
                 "Loading initial page %s failed. Ensure that the "
                 "there are no other programs bound to this port and "
                 "that your firewall rules or network setup does not "
-                "prevent access.\n%s" % (url, traceback.format_exc(e)))
+                "prevent access.\n%s" % (self.url, traceback.format_exc(e)))
             raise
         self.runner_handle = self.webdriver.window_handle
 
@@ -539,6 +539,10 @@ class WebDriverPrintProtocolPart(PrintProtocolPart):
         handle = self.webdriver.window_handle
         self.webdriver.window_handle = self.runner_handle
         try:
+            current_url = self.webdriver.url
+            assert (
+                current_url == self.url
+            ), f"Runner window has unexpected URL: {current_url}"
             rv = self.webdriver.execute_async_script("""
 let callback = arguments[arguments.length - 1];
 render('%s').then(result => callback(result))""" % pdf_base64)

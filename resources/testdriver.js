@@ -1291,7 +1291,7 @@
         /**
          * Get properties for an accessibility node.
          *
-         * @param {String} id
+         * @param {String} accId
          * @returns {Promise} fulfilled after the accessibility properties are
          *                    returned, or rejected in the cases the WebDriver
          *                    command errors

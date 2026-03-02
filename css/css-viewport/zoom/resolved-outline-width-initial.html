@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<title>CSS-viewport test: zoom does not change outline-width initial resolved value</title>
+<link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
+<meta name="assert"
+  content="This test checks that zoom does not change the resolved value of outline-width when it is at its initial value.">
+<link rel="help" href="https://drafts.csswg.org/css-viewport/#zoom-property">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  div {
+    outline-color: red;
+
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin: 10px;
+  }
+
+  .medium {
+    outline-style: solid;
+    outline-width: medium;
+    outline-color: blue;
+  }
+
+  hr~div {
+    zoom: 10;
+  }
+
+  #initial1 {
+    outline-style: solid;
+  }
+
+  #initial2 {
+    outline-style: solid;
+    outline-width: initial;
+  }
+
+  #initial3 {
+    outline: solid red;
+  }
+</style>
+
+<div id="ref" class="medium"></div>
+<hr>
+<div id="ref_zoom" class="medium"></div>
+<div id="initial1"></div>
+<div id="initial2"></div>
+<div id="initial3"></div>
+
+<script>
+  const refWidth = parseFloat(getComputedStyle(ref).outlineWidth);
+  const refWidthZoom = parseFloat(getComputedStyle(ref_zoom).outlineWidth);
+  const width1 = parseFloat(getComputedStyle(initial1).outlineWidth);
+  const width2 = parseFloat(getComputedStyle(initial2).outlineWidth);
+  const width3 = parseFloat(getComputedStyle(initial3).outlineWidth);
+
+  test(() => {
+    assert_approx_equals(width1, refWidth, 1);
+    assert_equals(width1, refWidthZoom);
+  }, 'implicit initial');
+  test(() => {
+    assert_approx_equals(width2, refWidth, 1);
+    assert_equals(width2, refWidthZoom);
+  }, 'initial keyword: "outline-width: initial"');
+  test(() => {
+    assert_approx_equals(width3, refWidth, 1);
+    assert_equals(width3, refWidthZoom);
+  }, 'shorthand implicit initial: "outline: solid red"');
+</script>

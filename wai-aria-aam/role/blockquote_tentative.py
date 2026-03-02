@@ -14,7 +14,7 @@ def test_axapi(axapi, session, inline):
     role = axapi.AXUIElementCopyAttributeValue(node, "AXRole", None)[1]
     assert role == "AXGroup"
     role = axapi.AXUIElementCopyAttributeValue(node, "AXSubrole", None)[1]
-    assert role == None
+    assert role == "AXUnknown"
 
 
 def test_ia2(ia2, session, inline):

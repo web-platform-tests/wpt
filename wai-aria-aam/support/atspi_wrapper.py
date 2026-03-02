@@ -15,9 +15,8 @@ class AtspiWrapper(ApiWrapper):
     def ApiName(self):
         return "ATSPI"
 
-    @property
-    def Accessible(self):
-        return Atspi.Accessible
+    def __getattr__(self, name):
+        return getattr(Atspi, name)
 
     def find_node(self, dom_id: str, url: str) -> Atspi.Accessible:
         """

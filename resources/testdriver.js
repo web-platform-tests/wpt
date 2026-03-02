@@ -25,7 +25,7 @@
 
     function assertTestIsTentative(){
         const testPath = location.pathname;
-        const tentative = testPath.includes('.tentative') || testPath.includes('/tentative');
+        const tentative = testPath.includes('.tentative.') || testPath.includes('/tentative/');
         if (!tentative) {
             throw new Error("Method in testdriver.js intended for tentative tests used in non-tentative test");
         }

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<title>CSS-viewport test: zoom does not change outline-width keywords resolved values</title>
+<link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
+<meta name="assert"
+  content="This test checks that zoom does not change the resolved value of outline-width when it is at one of its keywords value.">
+<link rel="help" href="https://drafts.csswg.org/css-viewport/#zoom-property">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  div {
+    outline-style: solid;
+    outline-color: blue;
+
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin: 10px;
+  }
+
+  hr~div {
+    zoom: 15;
+    outline-color: red;
+  }
+
+  .thin {
+    outline-width: thin;
+  }
+
+  .medium {
+    outline-width: medium;
+  }
+
+  .thick {
+    outline-width: thick;
+  }
+</style>
+
+<div class="thin"></div>
+<div class="medium"></div>
+<div class="thick"></div>
+<hr>
+<div class="thin"></div>
+<div class="medium"></div>
+<div class="thick"></div>
+
+<script>
+  const keywords = ['thin', 'medium', 'thick'];
+  for (const keyword of keywords) {
+    test(() => {
+      const refEl = document.querySelector(`.${keyword}`);
+      const el = document.querySelector(`hr~.${keyword}`);
+      const refWidth = parseFloat(getComputedStyle(refEl).outlineWidth);
+      const width = parseFloat(getComputedStyle(el).outlineWidth);
+      assert_approx_equals(width, refWidth, Math.min(1, refWidth / 2));
+    }, keyword);
+  }
+</script>

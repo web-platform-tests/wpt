@@ -10,7 +10,7 @@ def test_atspi(atspi, session, inline, test_name):
     session.url = inline(TEST_HTML[test_name])
 
     node = atspi.find_node("test", session.url)
-    assert atspi.Accessible.get_role_name(node) == "toggle button"
+    assert atspi.Accessible.get_role(node) == atspi.Role.TOGGLE_BUTTON
 
 @pytest.mark.parametrize("test_name", TEST_HTML)
 def test_axapi(axapi, session, inline, test_name):

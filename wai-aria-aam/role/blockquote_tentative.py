@@ -4,7 +4,7 @@ def test_atspi(atspi, session, inline):
     session.url = inline(TEST_HTML)
 
     node = atspi.find_node("test", session.url)
-    assert atspi.Accessible.get_role_name(node) == "block quote"
+    assert atspi.Accessible.get_role(node) == atspi.Role.BLOCK_QUOTE
 
 
 def test_axapi(axapi, session, inline):

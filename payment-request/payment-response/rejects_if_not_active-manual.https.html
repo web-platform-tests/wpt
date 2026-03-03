@@ -74,9 +74,9 @@ function methodNotFullyActive(button, method, ...args) {
     const promise = response[methodName](...args);
     await promise_rejects_dom(
       t,
-      "AbortError",
+      "InvalidStateError",
       promise,
-      "Inactive document, so must throw AbortError"
+      "Inactive document, so must throw InvalidStateError"
     );
     // We are done, so clean up.
     iframe.remove();
@@ -109,9 +109,9 @@ function methodBecomesNotFullyActive(button, methodName, ...args) {
     // So, promise needs to reject appropriately.
     await promise_rejects_dom(
       t,
-      "AbortError",
+      "InvalidStateError",
       promise,
-      "Inactive document, so must throw AbortError"
+      "Inactive document, so must throw InvalidStateError"
     );
     // We are done, so clean up.
     iframe.remove();

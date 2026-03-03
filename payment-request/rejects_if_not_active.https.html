@@ -72,10 +72,10 @@
       // So, call .show(), and make sure it rejects appropriately.
       await promise_rejects_dom(
         t,
-        "AbortError",
+        "InvalidStateError",
         frameDOMException1,
         request1.show(),
-        "Inactive document, so must throw AbortError"
+        "Inactive document, so must throw InvalidStateError"
       );
       // request2 has an active document tho, so confirm it's working as expected:
       // Get transient activation
@@ -132,10 +132,10 @@
       // So, call request.show() and make sure it rejects appropriately.
       await promise_rejects_dom(
         t,
-        "AbortError",
+        "InvalidStateError",
         innerIframeDOMException,
         showPromise,
-        "Active, but not fully active, so must throw AbortError"
+        "Active, but not fully active, so must throw InvalidStateError"
       );
     }, "PaymentRequest.show() aborts if the document is active, but not fully active.");
   </script>

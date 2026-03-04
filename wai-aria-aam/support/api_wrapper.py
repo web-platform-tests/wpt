@@ -1,8 +1,11 @@
+import abc
 import time
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Generic, Optional, TypeVar
 
+ApiNode = TypeVar('ApiNode')
+PollResult = TypeVar('PollResult')
 
-class ApiWrapper:
+class ApiWrapper(Generic[ApiNode], abc.ABC):
     def __init__(self, pid: int, product_name: str, timeout: float) -> None:
         """Setup for accessibility API testing.
 
@@ -13,7 +16,7 @@ class ApiWrapper:
         self.product_name: str = product_name
         self.pid: int = pid
         self.root: Optional[Any] = None
-        self.document: Optional[Any] = None
+        self.document: Optional[ApiNode] = None
         self.test_url: Optional[str] = None
         self.timeout: float = timeout
 
@@ -24,10 +27,16 @@ class ApiWrapper:
                 f"Couldn't find browser {self.product_name} in accessibility API {self.ApiName}."
             )
 
-    def _find_browser(self) -> Any:
+    @property
+    @abc.abstractmethod
+    def ApiName(self) -> str:
         pass
 
-    def _poll_for(self, find: Callable[[], Any], error: str) -> Any:
+    @abc.abstractmethod
+    def _find_browser(self) -> Optional[ApiNode]:
+        pass
+
+    def _poll_for(self, find: Callable[[], Optional[PollResult]], error: str) -> PollResult:
         """Poll until the `find` function returns something.
 
         :param url: The url of the test.

@@ -70,10 +70,10 @@ def to_ia2(node: IAccessiblePtr) -> IAccessible2Ptr:
     return service.QueryService(IAccessible._iid_, IAccessible2_2)
 
 
-class Ia2Wrapper(ApiWrapper):
+class Ia2Wrapper(ApiWrapper[IAccessible2Ptr]):
 
     @property
-    def ApiName(self):
+    def ApiName(self) -> str:
         return "IA2"
 
     def find_node(self, dom_id: str, url: str) -> IAccessible2Ptr:
@@ -107,7 +107,7 @@ class Ia2Wrapper(ApiWrapper):
     def get_msaa_state_list(self, node: IAccessible2Ptr) -> str:
         return msaa_state_list_to_string(node.accState(CHILDID_SELF))
 
-    def _find_browser(self) -> IAccessible2Ptr:
+    def _find_browser(self) -> Optional[IAccessible2Ptr]:
         """Find the IAccessible2 node representing the browser.
 
         :return: IAccessible2Ptr.

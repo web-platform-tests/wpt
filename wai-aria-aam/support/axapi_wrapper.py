@@ -16,18 +16,19 @@ from Cocoa import (
 
 from .api_wrapper import ApiWrapper
 
+AXUIElement = Any
 
-class AxapiWrapper(ApiWrapper):
+class AxapiWrapper(ApiWrapper[AXUIElement]):
 
     @property
-    def ApiName(self):
+    def ApiName(self) -> str:
         return "AXAPI"
 
     @property
     def AXUIElementCopyAttributeValue(self):
         return AXUIElementCopyAttributeValue
 
-    def find_node(self, dom_id: str, url: str) -> Any:
+    def find_node(self, dom_id: str, url: str) -> AXUIElement:
         """
         :param dom_id: The dom id of the node to test.
         :param url: The url of the test.
@@ -46,7 +47,7 @@ class AxapiWrapper(ApiWrapper):
 
         return test_node
 
-    def _find_browser(self) -> Optional[Any]:
+    def _find_browser(self) -> Optional[AXUIElement]:
         """Find the AXUIElement representing the browser.
 
         :return: AXUIElement or None.
@@ -73,7 +74,7 @@ class AxapiWrapper(ApiWrapper):
             return None
         return AXUIElementCreateApplication(pid)
 
-    def _find_tab(self) -> Optional[Any]:
+    def _find_tab(self) -> Optional[AXUIElement]:
         """Find the active tab of the browser.
 
         :return: AXUIElement representing test document or None.
@@ -95,7 +96,7 @@ class AxapiWrapper(ApiWrapper):
 
         return None
 
-    def _find_node_by_id(self, root: Any, dom_id: str) -> Optional[Any]:
+    def _find_node_by_id(self, root: Any, dom_id: str) -> Optional[AXUIElement]:
         """Find the AXUIElement with a specified dom_id.
 
         :param root: The root node to search from.

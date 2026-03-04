@@ -83,6 +83,8 @@
       await test_driver.bless("payment 2", () => {}, iframe.contentWindow);
       request2.show();
       await request2.abort();
+      // Need another bless() because the previous one was consumed by show()
+      await test_driver.bless("payment 3", () => {}, iframe.contentWindow);
       await promise_rejects_dom(
         t,
         "InvalidStateError",

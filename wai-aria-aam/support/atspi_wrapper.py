@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, List, Dict
+from typing import Any, Optional, List, Dict
 
 import gi
 
@@ -9,13 +9,13 @@ from gi.repository import Atspi
 from .api_wrapper import ApiWrapper
 
 
-class AtspiWrapper(ApiWrapper):
+class AtspiWrapper(ApiWrapper[Atspi.Accessible]):
 
     @property
-    def ApiName(self):
+    def ApiName(self) -> str:
         return "ATSPI"
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         return getattr(Atspi, name)
 
     def find_node(self, dom_id: str, url: str) -> Atspi.Accessible:
@@ -76,7 +76,7 @@ class AtspiWrapper(ApiWrapper):
             state_string_list.append(state.value_name.removeprefix("ATSPI_"))
         return state_string_list
 
-    def _find_browser(self):
+    def _find_browser(self) -> Optional[Atspi.Accessible]:
         if self.pid and self.pid != 0:
             return self._find_browser_by_pid()
         else:

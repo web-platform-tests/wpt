@@ -34,7 +34,7 @@ from .utils import cached_property
 # because relative import beyond toplevel throws *ImportError*!
 from metadata.webfeatures.schema import WEB_FEATURES_YML_FILENAME  # type: ignore
 
-wd_pattern = "*.py"
+py_pattern = "*.py"
 js_meta_re = re.compile(br"//\s*META:\s*(\w*)=(.*)$")
 python_meta_re = re.compile(br"#\s*META:\s*(\w*)=(.*)$")
 
@@ -396,7 +396,7 @@ class SourceFile:
                  (rel_path_parts[:2] == ("infrastructure", "webdriver") and
                   len(rel_path_parts) > 2)) and
                 self.filename not in ("__init__.py", "conftest.py") and
-                fnmatch(self.filename, wd_pattern))
+                fnmatch(self.filename, py_pattern))
 
     @property
     def name_is_wai_aria_aam(self) -> bool:
@@ -405,7 +405,7 @@ class SourceFile:
         rel_path_parts = self.rel_path_parts
         return ((rel_path_parts[0] == "wai-aria-aam" and len(rel_path_parts) > 1) and
                 self.filename not in ("__init__.py", "conftest.py") and
-                fnmatch(self.filename, wd_pattern))
+                fnmatch(self.filename, py_pattern))
 
     @property
     def name_is_reference(self) -> bool:

@@ -198,7 +198,7 @@ def msaa_state_list_to_string(states):
     state_strings = []
     for state in MsaaState:
         if states & state:
-            state_strings.append(state.name.replace("STATE_SYSTEM_", ""))
+            state_strings.append(state.name.removeprefix("STATE_SYSTEM_"))
     return state_strings
 
 
@@ -206,5 +206,5 @@ def state_list_to_string(states):
     state_strings = []
     for state in Ia2State:
         if states & state:
-            state_strings.append(state.name.replace("IA2_STATE_", ""))
+            state_strings.append(state.name.removeprefix("IA2_STATE_"))
     return state_strings

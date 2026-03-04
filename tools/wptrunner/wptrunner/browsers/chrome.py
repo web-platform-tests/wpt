@@ -268,9 +268,7 @@ class ChromeBrowser(WebDriverBrowser):
         # Restart the test runner when switch from/to wdspec or aamtest tests.
         # These tests use a different protocol class so a restart is always needed.
         wdspec_types = {"wdspec", "aamtest"}
-        if old_test_type in wdspec_types or new_test_type in wdspec_types:
-            return True
-        return False
+        return old_test_type in wdspec_types or new_test_type in wdspec_types
 
     def create_output_handler(self, cmd: List[str]) -> OutputHandler:
         return ChromeDriverOutputHandler(

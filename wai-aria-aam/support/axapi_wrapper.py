@@ -51,6 +51,9 @@ class AxapiWrapper(ApiWrapper):
 
         :return: AXUIElement or None.
         """
+        if self.pid and self.pid != 0:
+            return AXUIElementCreateApplication(self.pid)
+
         ws = NSWorkspace.sharedWorkspace()
         regular_predicate = NSPredicate.predicateWithFormat_(
             f"activationPolicy == {NSApplicationActivationPolicyRegular}"

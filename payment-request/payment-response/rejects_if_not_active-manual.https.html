@@ -52,7 +52,7 @@ function getLoadedPaymentResponse(iframe, url) {
   });
 }
 
-function methodNotFullyActive(button, method, ...args) {
+function methodNotFullyActive(button, methodName, ...args) {
   const text = button.textContent.trim();
   promise_test(async t => {
     const iframe = document.createElement("iframe");

@@ -13,9 +13,10 @@
 “<span class=r1>浄</span>” is annotated by “<span class=r1>じょう</span>”.
 “<span class=r2>瑠</span>” is annotated by “<span class=r2>る</span>”.
 “<span class=r3>璃</span>” is annotated by “<span class=r3>り</span>”.
+For ease of comparison, it is preceded by some context text: “例文は”.
 This test passes if:
 <ul>
-    <li>each base character is conveyed as a base, and
+    <li>each base character is presented inline with and similarly to the context text, as if they are all part of the same sentence, and
     <li>each annotation is convenyed as an annotation, and
     <li>the correct annotation is presented clearly as being associated with the correct base.
 </ul>
@@ -29,4 +30,4 @@ The precise appearance is not specified,
 and implementations may therefore validly vary.
 
 <hr> <!-- incorrect rendering: annotations mispaired with spaces incorrectly recognized as bases -->
-<ruby><rb class=r1>浄</rb><rt class=r1>じょう</rt></ruby><ruby><rb> </rb><rt class=r2>る</rt></ruby><ruby><rb class=r2>瑠</rb><rt class=r3>り</rt></ruby> <span class=r3>璃</span>
+例文は<ruby><rb class=r1>浄</rb><rt class=r1>じょう</rt></ruby><ruby><rb> </rb><rt class=r2>る</rt></ruby><ruby><rb class=r2>瑠</rb><rt class=r3>り</rt></ruby> <span class=r3>璃</span>

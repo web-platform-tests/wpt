@@ -12,9 +12,10 @@
 <p>The example below consists of 2 base characters, each annotated twice with its pronunciation (once in the latin alphabet, once in kana)
 “<span class=r1>京</span>” is annotated by “<span class=r1>きょう</span>” and “<span class=r1>kyo</span>”.
 “<span class=r2>都</span>” is annotated by “<span class=r2>と</span>” and “<span class=r2>to</span>”.
+For ease of comparison, it is preceded by some context text: “例文は”.
 This test passes if:
 <ul>
-    <li>each base character is conveyed as a base, and
+    <li>each base character is presented inline with and similarly to the context text, as if they are all part of the same sentence, and
     <li>each annotation is convenyed as an annotation, and
     <li>the correct annotation is presented clearly as being associated with the correct base.
 </ul>
@@ -28,4 +29,4 @@ The precise appearance is not specified,
 and implementations may therefore validly vary.
 
 <hr><!-- incorrect rendering: first annotation displayed properly, second one dropped to base level, with small font size -->
-<ruby><rb class=r1>京<rb class=r2>都<rtc><rt class=r1>きょう<rt class=r2>と</ruby><span class=s><span class=r1>kyo</span><span class=r2>to</span></span>
+例文は<ruby><rb class=r1>京<rb class=r2>都<rtc><rt class=r1>きょう<rt class=r2>と</ruby><span class=s><span class=r1>kyo</span><span class=r2>to</span></span>

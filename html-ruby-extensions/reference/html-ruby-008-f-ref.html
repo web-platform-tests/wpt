@@ -14,9 +14,10 @@
 “<span class=r2>瑠</span>” is annotated by “<span class=r2>る</span>”.
 “<span class=r3>璃</span>” is annotated by “<span class=r3>り</span>”.
 There is also one excess annotation with no base: “け”.
+For ease of comparison, it is preceded by some context text: “例文は”.
 This test passes if:
 <ul>
-    <li>each base character is conveyed as a base, and
+    <li>each base character is presented inline with and similarly to the context text, as if they are all part of the same sentence, and
     <li>each annotation is convenyed as an annotation, and
     <li>the correct annotation is presented clearly as being associated with the correct base, and
     <li>the excess annotation appears to be annotating an empty base.
@@ -31,4 +32,4 @@ The precise appearance is not specified,
 and implementations may therefore validly vary.
 
 <hr> <!-- incorrect rendering: first annotation spanning by all 3 bases, remaining annotations trailing the base text, displayed as base text -->
-<ruby><span class=r1>浄</span><span class=r2>瑠</span><span class=r3>璃</span><rt class=r1>じょう</ruby><span class=r2>る</span><span class=r3>り</span>け
+例文は<ruby><span class=r1>浄</span><span class=r2>瑠</span><span class=r3>璃</span><rt class=r1>じょう</ruby><span class=r2>る</span><span class=r3>り</span>け

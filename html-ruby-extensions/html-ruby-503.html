@@ -27,9 +27,10 @@
 “<span class=r2>い</span>” is annotated by “<span class=r2>2</span>” and “<span class=r2>b</span>”.
 “<span class=r3>う</span>” is annotated by “<span class=r3>3</span>” and “<span class=r3>c</span>”.
 The whole is annotated with “altogether”.
+For ease of comparison, it is preceded by some context text: “例文は”.
 This test passes if:
 <ul>
-    <li>each base character is conveyed as a base, and
+    <li>each base character is presented inline with and similarly to the context text, as if they are all part of the same sentence, and
     <li>each annotation is convenyed as an annotation, and
     <li>the correct annotation is presented clearly as being associated with the correct base, and
     <li>the joint annotation is associated with the whole base, not just a part.
@@ -44,4 +45,4 @@ The precise appearance is not specified,
 and implementations may therefore validly vary.
 
 <hr>
-<ruby><rb class=r1>あ</rb><span class=r2>い</span><rb class=r3>う<rtc><span class=r1>a</span><rt class=r2>b</rt><span class=r3>c</rtc><rtc>altogether</rtc><rt class=r1>1<rt class=r2>2<rt class=r3>3</ruby>
+例文は<ruby><rb class=r1>あ</rb><span class=r2>い</span><rb class=r3>う<rtc><span class=r1>a</span><rt class=r2>b</rt><span class=r3>c</rtc><rtc>altogether</rtc><rt class=r1>1<rt class=r2>2<rt class=r3>3</ruby>

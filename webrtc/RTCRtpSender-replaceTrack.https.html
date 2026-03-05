@@ -333,6 +333,7 @@ if (interop2026) {
     const metadataToBeLoadedAndPlaying = new Promise((resolve) => {
       v.addEventListener('loadedmetadata', async () => {
         await v.play();
+        // note: calling v.play() is required in some browsers, not all.
         resolve();
       });
     });

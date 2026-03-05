@@ -419,7 +419,7 @@ class RefTestImplementation:
         return self.executor.logger
 
     def get_hash(self, test, viewport_size, dpi, page_ranges, safe_printable_inset):
-        key = (test.url, viewport_size, dpi)
+        key = (test.url, viewport_size, dpi, safe_printable_inset)
 
         if key not in self.screenshot_cache:
             success, data = self.get_screenshot_list(test, viewport_size, dpi, page_ranges, safe_printable_inset)

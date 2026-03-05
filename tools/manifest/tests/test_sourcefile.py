@@ -980,7 +980,7 @@ def test_page_ranges_invalid(page_ranges):
     (b"100", 100)])
 def test_safe_printable_inset(safe_printable_inset, expected):
     content = b"""<link rel=match href=ref.html>
-<meta name=reftest-pages content="%s">
+<meta name=safe-printable-inset content="%s">
 """ % safe_printable_inset
 
     s = create("foo/test-print.html", content)
@@ -991,7 +991,7 @@ def test_safe_printable_inset(safe_printable_inset, expected):
 @pytest.mark.parametrize("safe_printable_inset", [b"banana", b"auto", b"-1", b"0,0"])
 def test_safe_printable_inset_invalid(safe_printable_inset):
     content = b"""<link rel=match href=ref.html>
-<meta name=reftest-pages content="%s">
+<meta name=safe-printable-inset content="%s">
 """ % safe_printable_inset
 
     s = create("foo/test-print.html", content)

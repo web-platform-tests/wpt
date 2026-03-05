@@ -973,6 +973,32 @@ def test_page_ranges_invalid(page_ranges):
         s.page_ranges
 
 
+@pytest.mark.parametrize("safe_printable_area, expected", [
+    (b"0", 0),
+    (b"0.5", 0.5),
+    (b"2.54", 2.54),
+    (b"100", 100)])
+def test_safe_printable_area(safe_printable_area, expected):
+    content = b"""<link rel=match href=ref.html>
+<meta name=reftest-pages content="%s">
+""" % safe_printable_area
+
+    s = create("foo/test-print.html", content)
+
+    assert s.safe_printable_area == {"/foo/test-print.html": expected}
+
+
+@pytest.mark.parametrize("safe_printable_area", [b"banana", b"auto", b"-1", b"0,0"])
+def test_safe_printable_area_invalid(safe_printable_area):
+    content = b"""<link rel=match href=ref.html>
+<meta name=reftest-pages content="%s">
+""" % safe_printable_area
+
+    s = create("foo/test-print.html", content)
+    with pytest.raises(ValueError):
+        s.safe_printable_area
+
+
 def test_hash():
     s = SourceFile("/", "foo", "/", contents=b"Hello, World!")
     assert "b45ef6fec89518d314f546fd6c3025367b721684" == s.hash

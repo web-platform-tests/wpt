@@ -985,7 +985,7 @@ def test_safe_printable_inset(safe_printable_inset, expected):
 
     s = create("foo/test-print.html", content)
 
-    assert s.safe_printable_inset == {"/foo/test-print.html": expected}
+    assert s.safe_printable_inset == expected
 
 
 @pytest.mark.parametrize("safe_printable_inset", [b"ananas", b"auto", b"-1", b"0,0"])

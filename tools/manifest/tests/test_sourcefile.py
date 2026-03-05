@@ -988,7 +988,7 @@ def test_safe_printable_inset(safe_printable_inset, expected):
     assert s.safe_printable_inset == {"/foo/test-print.html": expected}
 
 
-@pytest.mark.parametrize("safe_printable_inset", [b"banana", b"auto", b"-1", b"0,0"])
+@pytest.mark.parametrize("safe_printable_inset", [b"ananas", b"auto", b"-1", b"0,0"])
 def test_safe_printable_inset_invalid(safe_printable_inset):
     content = b"""<link rel=match href=ref.html>
 <meta name=safe-printable-inset content="%s">

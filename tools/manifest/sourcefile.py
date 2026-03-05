@@ -681,7 +681,10 @@ class SourceFile:
         assert self.root is not None
         for entry in self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='safe-printable-inset']"):
             key_data, value = self.parse_ref_keyed_meta(entry)
-            return float(value)
+            result = float(value)
+            if result < 0:
+                raise ValueError("Negative value")
+            return result
         return None
 
     @cached_property

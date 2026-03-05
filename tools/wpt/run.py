@@ -353,12 +353,20 @@ Consider installing certutil via your OS package manager or directly.""")
         kwargs["extra_prefs"].append("media.navigator.streams.fake=true")
 
         if kwargs.get("gmp_path") is None and kwargs["browser_channel"] is not None:
-            openh264_dir = os.path.join(
-                self.browser._get_browser_binary_dir(
-                    self.venv.path, kwargs["browser_channel"]
-                ),
-                "gmp-gmpopenh264",
+            binary_dir = self.browser._get_browser_binary_dir(
+                self.venv.path, kwargs["browser_channel"]
             )
+            openh264_dir = os.path.join(binary_dir, "gmp-gmpopenh264")
+
+            if not os.path.isdir(openh264_dir):
+                if self.prompt_install("OpenH264 GMP plugin"):
+                    logger.info("Downloading OpenH264 plugin")
+                    self.browser.install_openh264(
+                        binary_dir=binary_dir,
+                        binary=kwargs["binary"],
+                        channel=kwargs["browser_channel"],
+                    )
+
             if os.path.isdir(openh264_dir):
                 dirs = os.listdir(openh264_dir)
                 openh264_dir = os.path.join(openh264_dir, dirs[0]) if dirs else None

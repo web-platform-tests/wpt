@@ -352,6 +352,25 @@ Consider installing certutil via your OS package manager or directly.""")
         # Allow WebRTC tests to call getUserMedia.
         kwargs["extra_prefs"].append("media.navigator.streams.fake=true")
 
+        if kwargs.get("gmp_path") is None and kwargs["browser_channel"] is not None:
+            openh264_dir = os.path.join(
+                self.browser._get_browser_binary_dir(
+                    self.venv.path, kwargs["browser_channel"]
+                ),
+                "gmp-gmpopenh264",
+            )
+            if os.path.isdir(openh264_dir):
+                dirs = os.listdir(openh264_dir)
+                openh264_dir = os.path.join(openh264_dir, dirs[0]) if dirs else None
+                if len(dirs) > 1:
+                    logger.warning(
+                        "More than one version of OpenH264 found. Using %s" % dirs[0]
+                    )
+            if openh264_dir and os.path.isdir(openh264_dir):
+                logger.info("Using OpenH264 plugin in %s" % openh264_dir)
+                kwargs["gmp_path"] = openh264_dir
+            else:
+                logger.warning("OpenH264 is not installed. Some tests may fail.")
 
 class FirefoxAndroid(BrowserSetup):
     name = "firefox_android"

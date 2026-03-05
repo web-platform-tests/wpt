@@ -2,6 +2,11 @@
 
 Specification: https://www.w3.org/TR/html-ruby-extensions/
 
+WARNING: These are manual tests.
+There is some support for automation,
+but the results must be evaluated manually.
+Simply relying on automated reports of tests passing is not sufficient.
+
 These tests are hard to write reliably,
 because without relying on a styling mechanism (which should be tested separately),
 there's no prescribed rendering,

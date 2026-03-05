@@ -294,8 +294,8 @@ class PrintRefTest(RefTest):
         return cast(PageRanges, self._extras.get("page_ranges", {}))
 
     @property
-    def safe_printable_inset(self) -> float:
-        return cast(float, self._extras.get("safe_printable_inset"))
+    def safe_printable_inset(self) -> Optional[float]:
+        return self._extras.get("safe_printable_inset")
 
     def to_json(self):  # type: ignore
         rv = super().to_json()

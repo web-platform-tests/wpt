@@ -1,1 +1,1 @@
-Permissions-Policy: gyroscope=self
+Permissions-Policy: gyroscope=(self)

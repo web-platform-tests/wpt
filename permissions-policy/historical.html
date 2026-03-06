@@ -21,10 +21,11 @@
       );
     }, "HTMLIFrameElement.prototype.featurePolicy should not be present");
 
-    // Test 3: Feature-Policy header should be ignored when Permissions-Policy is present
-    // The header file sets: Feature-Policy: sync-xhr 'none'
-    // And: Permissions-Policy: sync-xhr=*
-    // If Feature-Policy is correctly ignored, sync XHR should work
+    // Test 3: Permissions-Policy header takes precedence over Feature-Policy header
+    // The header file sets:
+    //   Permissions-Policy: sync-xhr=*  (allows sync-xhr)
+    //   Feature-Policy: sync-xhr 'none' (would block sync-xhr)
+    // If Permissions-Policy correctly takes precedence, sync XHR should work
     test(() => {
       const xhr = new XMLHttpRequest();
       xhr.open("GET", document.location.href, false);
@@ -34,7 +35,7 @@
         200,
         "Sync XHR should succeed because Permissions-Policy allows it"
       );
-    }, "Feature-Policy header should be ignored when Permissions-Policy is present");
+    }, "Permissions-Policy header takes precedence over Feature-Policy header");
 
     // Test 4: iframe allow attribute should work with Permissions Policy
     promise_test(async () => {

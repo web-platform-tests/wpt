@@ -1,1 +1,1 @@
-Permissions-Policy: ambient-light-sensor=self
+Permissions-Policy: ambient-light-sensor=(self)

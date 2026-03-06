@@ -6,6 +6,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-    assert_in_array('vr', document.featurePolicy.features());
-}, 'document.featurePolicy.features should advertise (obsolete) vr.');
+    assert_in_array('vr', document.permissionsPolicy.features());
+}, 'document.permissionsPolicy.features should advertise (obsolete) vr.');
 </script>

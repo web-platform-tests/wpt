@@ -5,11 +5,11 @@
   <script src=/resources/testdriver.js></script>
   <script src=/resources/testdriver-vendor.js></script>
   <script src=/common/media.js></script>
-  <script src=/feature-policy/resources/featurepolicy.js></script>
-  <script src=/feature-policy/resources/autoplay.js></script>
+  <script src=/permissions-policy/resources/permissions-policy.js></script>
+  <script src=/permissions-policy/resources/autoplay.js></script>
   <script>
   'use strict';
-  const same_origin_src = '/feature-policy/resources/feature-policy-autoplay.html';
+  const same_origin_src = '/permissions-policy/resources/permissions-policy-autoplay.html';
   const cross_origin_src = 'https://{{domains[www]}}:{{ports[https][0]}}' +
     same_origin_src;
   const header = 'Feature-Policy header: autoplay "none"';

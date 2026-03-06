@@ -1,1 +1,1 @@
-Permissions-Policy: vr=self
+Permissions-Policy: vr=(self)

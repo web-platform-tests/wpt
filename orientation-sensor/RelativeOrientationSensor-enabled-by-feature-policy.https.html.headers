@@ -1,1 +1,1 @@
-Feature-Policy: accelerometer *; gyroscope *
+Permissions-Policy: accelerometer=*, gyroscope=*

@@ -142,6 +142,9 @@ async def test_download_attribute(
     remove_listener()
 
 
+@pytest.mark.parametrize(
+    "target", ["_self", "_blank"], ids=["in the same page", "in the other page"]
+)
 async def test_content_disposition_header(
     bidi_session,
     subscribe_events,
@@ -151,6 +154,7 @@ async def test_content_disposition_header(
     wait_for_future_safe,
     url,
     expect_download_end,
+    target
 ):
     content_disposition_filename = f"content_disposition_filename{random.random()}.txt"
     content_disposition_link = url(
@@ -158,7 +162,7 @@ async def test_content_disposition_header(
         + f"header=Content-Disposition:attachment;%20filename={content_disposition_filename}"
     )
     page_url = inline(
-        f"""<a id="content_disposition_link" href="{content_disposition_link}">contentdisposition</a>"""
+        f"""<a id="content_disposition_link" target="{target}" href="{content_disposition_link}">contentdisposition</a>"""
     )
 
     await bidi_session.browsing_context.navigate(

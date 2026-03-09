@@ -99,6 +99,9 @@ async def test_download_attribute(bidi_session, subscribe_events, new_tab, inlin
     assert file_content == CONTENT
 
 
+@pytest.mark.parametrize(
+    "target", ["_self", "_blank"], ids=["in the same page", "in the other page"]
+)
 async def test_content_disposition_header(
     bidi_session,
     subscribe_events,
@@ -108,6 +111,7 @@ async def test_content_disposition_header(
     wait_for_event,
     wait_for_future_safe,
     filename,
+    target
 ):
     content_disposition_link = url(
         "/webdriver/tests/support/http_handlers/headers.py?"
@@ -115,7 +119,7 @@ async def test_content_disposition_header(
         + f"&header=Content-Disposition:attachment;%20filename={filename}"
     )
     page_url = inline(
-        f"""<a id="content_disposition_link" href="{content_disposition_link}">contentdisposition</a>"""
+        f"""<a id="content_disposition_link" target={target} href="{content_disposition_link}">contentdisposition</a>"""
     )
 
     await bidi_session.browsing_context.navigate(

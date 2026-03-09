@@ -154,7 +154,7 @@ async def test_content_disposition_header(
     wait_for_future_safe,
     url,
     expect_download_end,
-    target
+    target,
 ):
     content_disposition_filename = f"content_disposition_filename{random.random()}.txt"
     content_disposition_link = url(
@@ -169,7 +169,11 @@ async def test_content_disposition_header(
         context=new_tab["context"], url=page_url, wait="complete"
     )
 
-    await subscribe_events(events=[DOWNLOAD_WILL_BEGIN, NAVIGATION_STARTED])
+    # In some cases Firefox sends an extra navigation event in the temporary browsing context,
+    # to filter them out subscribe only in the observed context.
+    await subscribe_events(
+        events=[DOWNLOAD_WILL_BEGIN, NAVIGATION_STARTED], contexts=[new_tab["context"]]
+    )
 
     # Test clicking on a link which returns a response with a
     # Content-Disposition header.

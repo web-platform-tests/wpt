@@ -111,7 +111,7 @@ async def test_content_disposition_header(
     wait_for_event,
     wait_for_future_safe,
     filename,
-    target
+    target,
 ):
     content_disposition_link = url(
         "/webdriver/tests/support/http_handlers/headers.py?"
@@ -126,7 +126,11 @@ async def test_content_disposition_header(
         context=new_tab["context"], url=page_url, wait="complete"
     )
 
-    await subscribe_events(events=[DOWNLOAD_END, NAVIGATION_STARTED])
+    # In some cases Firefox sends an extra navigation event in the temporary browsing context,
+    # to filter them out subscribe only in the observed context.
+    await subscribe_events(
+        events=[DOWNLOAD_END, NAVIGATION_STARTED], contexts=[new_tab["context"]]
+    )
     on_navigation_started = wait_for_event(NAVIGATION_STARTED)
     on_download_end = wait_for_event(DOWNLOAD_END)
 

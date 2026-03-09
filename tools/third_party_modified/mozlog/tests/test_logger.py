@@ -35,13 +35,13 @@ class TestLogging(unittest.TestCase):
         self.assertEqual(len(default_logger.handlers), 1)
         self.assertTrue(isinstance(default_logger.handlers[0], mozlog.StreamHandler))
 
-        f = mozfile.NamedTemporaryFile()
-        list_logger = mozlog.getLogger(
-            "file.logger", handler=mozlog.FileHandler(f.name)
-        )
-        self.assertEqual(len(list_logger.handlers), 1)
-        self.assertTrue(isinstance(list_logger.handlers[0], mozlog.FileHandler))
-        f.close()
+        with mozfile.NamedTemporaryFile() as f:
+            list_logger = mozlog.getLogger(
+                "file.logger", handler=mozlog.FileHandler(f.name)
+            )
+            self.assertEqual(len(list_logger.handlers), 1)
+            self.assertTrue(isinstance(list_logger.handlers[0], mozlog.FileHandler))
+            list_logger.handlers[0].close()
 
         self.assertRaises(
             ValueError, mozlog.getLogger, "file.logger", handler=ListHandler()

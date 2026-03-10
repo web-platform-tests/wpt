@@ -4,13 +4,13 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script src="/feature-policy/resources/featurepolicy.js"></script>
+<script src="/permissions-policy/resources/permissions-policy.js"></script>
 <script src="../../resources/user-activation.js"></script>
 <script>
 'use strict';
 
 const same_origin_src =
-  '/feature-policy/resources/feature-policy-clipboard-write.html';
+  '/permissions-policy/resources/permissions-policy-clipboard-write.html';
 
 promise_test(async t => {
   await waitForUserActivation();
@@ -21,5 +21,5 @@ promise_test(async t => {
     expect_feature_available_default,
     'clipboard-write'
   );
-}, 'Feature policy "clipboard-write" can be enabled in same-origin iframe using allow="clipboard-write" attribute');
+}, 'Permissions policy "clipboard-write" can be enabled in same-origin iframe using allow="clipboard-write" attribute');
 </script>

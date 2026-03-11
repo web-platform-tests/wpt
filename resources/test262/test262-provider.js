@@ -1,75 +1,91 @@
+/**
+ * This script implements the $262 host provider API (test262-provider.js) for Test262
+ * tests running in WPT. It provides the necessary environment for Test262 tests to
+ * execute and communicate with the WPT runner.
+ *
+ * See Test262 INTERPRETING.md for the specification of this API:
+ * https://github.com/tc39/test262/blob/main/INTERPRETING.md
+ */
+
 function installAPI(global) {
   global.$262 = {
+    /**
+     * Creates a new ECMAScript Realm (iframe), defines this API on it,
+     * and returns the $262 object of the new realm.
+     */
     createRealm: function() {
-      var iframe = global.document.createElement('iframe');
-      iframe.style.cssText = 'display: none';
-      iframe.src = '';  // iframeSrc;
-      if (global.document.body === null) {
-        global.document.body = global.document.createElement('body');
-      }
-      global.document.body.appendChild(iframe);
+      const iframe = global.document.createElement('iframe');
+      iframe.style.display = 'none';
+
+      // Append to body if available, otherwise documentElement.
+      const container = global.document.body || global.document.documentElement;
+      container.appendChild(iframe);
+
       return installAPI(iframe.contentWindow);
     },
+
+    /**
+     * Executes a string as an ECMAScript script.
+     */
     evalScript: function(src) {
-      var script = global.document.createElement('script');
+      const script = global.document.createElement('script');
       script.text = src;
       window.__test262_evalScript_error_ = undefined;
+
       global.document.head.appendChild(script);
+
       // Errors in the above appendChild bubble up to the global error handler.
-      // Our testharnes-client.js stashes them in a global var for rethrowing.
+      // test262-reporter.js stashes them in a global var for rethrowing.
       if (window.__test262_evalScript_error_) {
-          err = window.__test262_evalScript_error_;
+          const err = window.__test262_evalScript_error_;
           window.__test262_evalScript_error_ = undefined;
           throw err;
       }
     },
+
+    /**
+     * Detaches an ArrayBuffer.
+     */
     detachArrayBuffer: function(buffer) {
-      if (typeof postMessage !== 'function') {
-        throw new Error('No method available to detach an ArrayBuffer');
-      } else {
-        postMessage(null, '*', [buffer]);
-        /*
-          See
-          https://html.spec.whatwg.org/multipage/comms.html#dom-window-postmessage
-          which calls
-          https://html.spec.whatwg.org/multipage/infrastructure.html#structuredclonewithtransfer
-          which calls
-          https://html.spec.whatwg.org/multipage/infrastructure.html#transfer-abstract-op
-          which calls the DetachArrayBuffer abstract operation
-          https://tc39.github.io/ecma262/#sec-detacharraybuffer
-        */
-      }
+      // Transfer and thus detach the buffer.
+      postMessage(null, '*', [buffer]);
     },
+
+    /**
+     * Triggers garbage collection if supported by the host.
+     */
     gc: function() {
-      if (typeof gc !== 'function') {
-        throw new Error('No method available to invoke a GC');
-      }
-      gc();
+      throw new Error('Test262 Host API: gc() not supported');
     },
+
+    /**
+     * Reference to the %AbstractModuleSource% constructor.
+     */
     AbstractModuleSource: function() {
-      throw new Error('AbstractModuleSource not available');
+      throw new Error('Test262 Host API: AbstractModuleSource not available');
     },
+
     agent: (function () {
-      var workers = [];
-      var i32a = null;
-      var pendingReports = [];
+      const workers = [];
+      let i32a = null;
+      const pendingReports = [];
 
       // Agents call Atomics.wait on this location to sleep.
-      var SLEEP_LOC = 0;
+      const SLEEP_LOC = 0;
       // 1 if the started worker is ready, 0 otherwise.
-      var START_LOC = 1;
+      const START_LOC = 1;
       // The number of workers that have received the broadcast.
-      var BROADCAST_LOC = 2;
+      const BROADCAST_LOC = 2;
       // Each worker has a count of outstanding reports; worker N uses memory
       // location [WORKER_REPORT_LOC + N].
-      var WORKER_REPORT_LOC = 3;
+      const WORKER_REPORT_LOC = 3;
 
       function workerScript(script) {
         return `
-          var index;
-          var i32a = null;
-          var broadcasts = [];
-          var pendingReceiver = null;
+          let index;
+          let i32a = null;
+          let broadcasts = [];
+          let pendingReceiver = null;
 
           function handleBroadcast() {
             if (pendingReceiver && broadcasts.length > 0) {
@@ -78,7 +94,7 @@ function installAPI(global) {
             }
           };
 
-          var onmessage = function({data:msg}) {
+          self.onmessage = function({data:msg}) {
             switch (msg.kind) {
               case 'start':
                 i32a = msg.i32a;
@@ -94,7 +110,7 @@ function installAPI(global) {
             }
           };
 
-          var $262 = {
+          self.$262 = {
             agent: {
               receiveBroadcast(receiver) {
                 pendingReceiver = receiver;
@@ -117,12 +133,12 @@ function installAPI(global) {
           };`;
       }
 
-      var agent = {
+      const agent = {
         start(script) {
           if (i32a === null) {
             i32a = new Int32Array(new SharedArrayBuffer(256));
           }
-          var w = new Worker(workerScript(script), {type: 'string'});
+          const w = new Worker(URL.createObjectURL(new Blob([workerScript(script)], {type: 'text/javascript'})));
           w.index = workers.length;
           w.postMessage({kind: 'start', i32a: i32a, index: w.index});
           workers.push(w);
@@ -135,7 +151,7 @@ function installAPI(global) {
 
           Atomics.store(i32a, BROADCAST_LOC, 0);
 
-          for (var w of workers) {
+          for (const w of workers) {
             w.postMessage({kind: 'broadcast', sab: sab, id: id|0});
           }
 
@@ -143,7 +159,7 @@ function installAPI(global) {
         },
 
         getReport() {
-          for (var w of workers) {
+          for (const w of workers) {
             while (Atomics.load(i32a, WORKER_REPORT_LOC + w.index) > 0) {
               pendingReports.push(w.getMessage());
               Atomics.sub(i32a, WORKER_REPORT_LOC + w.index, 1);

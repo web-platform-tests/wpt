@@ -1,5 +1,5 @@
 /*
- * Minimalistic testharness-client tailored to run Test262
+ * Minimalistic Test262 reporter file tailored to run Test262
  *
  * Expects parent document to listen for messages using
  * test262/testharness.js.
@@ -16,15 +16,15 @@
     self.Test262Error = Test262Error;
 
     // We stash these in case the test overrides them
-    var Object_prototype_toString = Object.prototype.toString;
-    var Error_prototype_toString = Error.prototype.toString;
-    var String_prototype_indexOf = String.prototype.indexOf;
-    var parentWindow = window.parent;
+    const Object_prototype_toString = Object.prototype.toString;
+    const Error_prototype_toString = Error.prototype.toString;
+    const String_prototype_indexOf = String.prototype.indexOf;
+    const parentWindow = window.parent;
 
-    var expectedError;
-    var test_finished = false;
-    var status = 0;
-    var message = "OK";
+    let expectedError;
+    let test_finished = false;
+    let status = 0;
+    let message = "OK";
 
     window.test262Setup = function() {
     }

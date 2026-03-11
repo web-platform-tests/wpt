@@ -3,20 +3,30 @@
  * Can be used with or without testharnessreport.js.
  *
  * Expects actual test to be run in iframe and using
- * test262/testharness-client.js.
+ * test262/test262-reporter.js.
  *
  */
 (function() {
-    var test_finished = false;
-    var callback;
+    let test_finished = false;
+    let callback;
 
-    var harness_status = {
+    const harness_status = {
         status: 0,
         message: "OK"
     };
 
+    const url_params = new URLSearchParams(window.location.search);
+    const log_enabled = url_params.has('log') || url_params.has('debug');
+    const is_interactive = (!window.__wptrunner_url && !window.opener);
+
     function log(msg) {
-        document.getElementById('log').innerHTML += ""+msg+"<br>";
+        if (!log_enabled || !is_interactive) {
+            return;
+        }
+        const logElement = document.getElementById('log');
+        if (logElement) {
+            logElement.innerHTML += ""+msg+"<br>";
+        }
     }
 
     function report_result() {
@@ -24,16 +34,16 @@
         log(JSON.stringify(harness_status));
 
         if (callback || window.opener) {
-            var tests = [{
+            const tests = [{
                 name: document.title,
                 status: harness_status.subtest_status
             }];
-            var stat = {
+            const stat = {
                 status: harness_status.status,
                 message: harness_status.message,
                 stack: harness_status.stack
             };
-            var message = {
+            const message = {
                 type: "complete",
                 tests: tests,
                 status: stat
@@ -49,8 +59,8 @@
         }
 
         // Fall-back support for running without testharnessreport.js included.
-        var retry = 0;
-        var result_payload = ["url", "complete", [
+        let retry = 0;
+        const result_payload = ["url", "complete", [
             0, document.title, "", []
         ]];
         function raw_report() {

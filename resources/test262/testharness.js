@@ -86,7 +86,9 @@
     }
 
    function done() {
-        if (test_finished) { return; }
+        if (test_finished) {
+            return;
+        }
         test_finished = true;
         report_result();
     }

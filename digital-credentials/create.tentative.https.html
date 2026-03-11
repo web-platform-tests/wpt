@@ -14,7 +14,7 @@
 </body>
 
 <script type="module">
-  import { makeCreateOptions, sendMessage, loadIframe } from "./support/helper.js";
+  import { makeCreateOptions, makeCanonicalCreateRequest, sendMessage, loadIframe } from "./support/helper.js";
 
   const iframeSameOrigin = document.querySelector("iframe#same-origin");
   const iframeCrossOrigin = document.querySelector("iframe#cross-origin");
@@ -259,11 +259,10 @@
   }, "Throws when form element does not contain password.");
 
   promise_test(async (t) => {
-    const options = {
-      digital: {
-        requests: [{ protocol: "unknown-protocol", data: {} }]
-      }
-    };
+    const options = makeCreateOptions({
+      protocol: [],
+      requests: [{ protocol: "unknown-protocol", data: {} }]
+    });
     await promise_rejects_js(
       t,
       TypeError,
@@ -272,15 +271,14 @@
   }, "All unsupported protocols filtered results in TypeError.");
 
   promise_test(async (t) => {
-    const options = {
-      digital: {
-        requests: [
-          { protocol: "fake-protocol-1", data: {} },
-          { protocol: "fake-protocol-2", data: {} },
-          { protocol: "another-unknown", data: {} }
-        ]
-      }
-    };
+    const options = makeCreateOptions({
+      protocol: [],
+      requests: [
+        { protocol: "fake-protocol-1", data: {} },
+        { protocol: "fake-protocol-2", data: {} },
+        { protocol: "another-unknown", data: {} }
+      ]
+    });
     await promise_rejects_js(
       t,
       TypeError,
@@ -291,12 +289,7 @@
   promise_test(async (t) => {
     const abortController = new AbortController();
     const { signal } = abortController;
-    const options = {
-      digital: {
-        requests: [{ protocol: "openid4vci", data: {} }]
-      },
-      signal
-    };
+    const options = makeCreateOptions({ signal });
     await test_driver.bless("user activation");
     const promise = navigator.credentials.create(options);
     abortController.abort();
@@ -311,16 +304,15 @@
   promise_test(async (t) => {
     const abortController = new AbortController();
     const { signal } = abortController;
-    const options = {
-      digital: {
-        requests: [
-          { protocol: "unknown-protocol", data: {} },
-          { protocol: "openid4vci", data: {} },
-          { protocol: "another-fake", data: {} }
-        ]
-      },
+    const options = makeCreateOptions({
+      protocol: [],
+      requests: [
+        { protocol: "unknown-protocol", data: {} },
+        makeCanonicalCreateRequest("openid4vci"),
+        { protocol: "another-fake", data: {} }
+      ],
       signal
-    };
+    });
     await test_driver.bless("user activation");
     const promise = navigator.credentials.create(options);
     abortController.abort();

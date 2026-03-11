@@ -119,6 +119,34 @@ const allMappings = {
 };
 
 /**
+ * Creates a single canonical create request for a protocol.
+ * Useful for tests that need to mix canonical requests with invalid/fake protocols.
+ * @export
+ * @param {CreateProtocol} protocol
+ * @returns {DigitalCredentialCreateRequest}
+ */
+export function makeCanonicalCreateRequest(protocol) {
+  if (protocol in allMappings.create) {
+    return allMappings.create[protocol]();
+  }
+  throw new Error(`Unknown create protocol: ${protocol}`);
+}
+
+/**
+ * Creates a single canonical get request for a protocol.
+ * Useful for tests that need to mix canonical requests with invalid/fake protocols.
+ * @export
+ * @param {GetProtocol} protocol
+ * @returns {DigitalCredentialGetRequest}
+ */
+export function makeCanonicalGetRequest(protocol) {
+  if (protocol in allMappings.get) {
+    return allMappings.get[protocol]();
+  }
+  throw new Error(`Unknown get protocol: ${protocol}`);
+}
+
+/**
  * Generic helper to create credential options from config with protocol already set.
  * @template {MakeGetOptionsConfig | MakeCreateOptionsConfig} TConfig
  * @template {DigitalCredentialGetRequest | DigitalCredentialCreateRequest} TRequest

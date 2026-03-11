@@ -15,17 +15,17 @@
         message: "OK"
     };
 
-    const url_params = new URLSearchParams(window.location.search);
-    const log_enabled = url_params.has('log') || url_params.has('debug');
-    const is_interactive = (!window.__wptrunner_url && !window.opener);
+    const settings = {
+        debug: false
+    };
 
     function log(msg) {
-        if (!log_enabled || !is_interactive) {
+        if (!settings.debug) {
             return;
         }
         const logElement = document.getElementById('log');
         if (logElement) {
-            logElement.innerHTML += ""+msg+"<br>";
+            logElement.innerHTML += "" + msg + "<br>";
         }
     }
 
@@ -96,7 +96,10 @@
     window.add_completion_callback = function(cb) {
         callback = cb;
     };
-    window.setup = function() {
+    window.setup = function(props) {
+        if (props && props.debug) {
+            settings.debug = !!props.debug;
+        }
     };
 
     window.addEventListener('message', (event) => {

@@ -17,8 +17,11 @@ function installAPI(global) {
       const iframe = global.document.createElement('iframe');
       iframe.style.display = 'none';
 
-      // Append to body if available, otherwise documentElement.
-      const container = global.document.body || global.document.documentElement;
+      const container = global.document.body;
+      if (!container) {
+        // Should not happen.
+          throw new Error('Test262 Host API: createRealm() called before document.body was available.');
+      }
       container.appendChild(iframe);
 
       return installAPI(iframe.contentWindow);

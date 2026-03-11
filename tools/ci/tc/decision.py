@@ -9,15 +9,6 @@ import subprocess
 from collections import OrderedDict
 from typing import Any, List, Mapping, MutableMapping, Optional, Tuple, Set
 
-import argparse
-import json
-import logging
-import os
-import re
-import subprocess
-from collections import OrderedDict
-from typing import Any, List, Mapping, Tuple, Set
-
 import taskcluster
 
 from . import taskgraph

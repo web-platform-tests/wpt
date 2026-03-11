@@ -107,4 +107,56 @@ test(function() {
   assert_equals(range.startOffset, 2, "startOffset should be 2");
   assert_equals(text.data, "Heorld", "text data should have middle removed");
 }, "deleteContents handles same CharacterData node correctly");
+
+// --- Mutation during removal via custom element disconnectedCallback ---
+//
+// Structure: container > [before(0), trigger(1), inside(2), sentinel(3)]
+// Range: (container, 1) → (container, 3)
+//
+// trigger's disconnectedCallback removes 'before' (at index 0, before the
+// range start). This exercises live-range adjustment on the collapsed range.
+//
+// Collapse-before-mutations (current spec):
+//   Range collapses to (container, 1). Removals begin. When the callback
+//   removes 'before', live-range adjustment decrements startOffset to 0.
+//   Final: startOffset = 0.
+//
+// Collapse-after-mutations (old spec):
+//   Removals and callback happen first. Then the algorithm sets the range
+//   to the pre-computed (container, 1), overwriting any live-range
+//   adjustments. Final: startOffset = 1.
+
+customElements.define("x-delete-remove-trigger", class extends HTMLElement {
+  disconnectedCallback() {
+    if (this._target && this._target.parentNode) {
+      this._target.remove();
+    }
+  }
+});
+
+test(function() {
+  const container = document.createElement("div");
+  document.body.appendChild(container);
+
+  const before = document.createElement("p");
+  const trigger = document.createElement("x-delete-remove-trigger");
+  const inside = document.createElement("p");
+  const sentinel = document.createElement("p");
+  container.append(before, trigger, inside, sentinel);
+  trigger._target = before;
+
+  const range = document.createRange();
+  range.setStart(container, 1);
+  range.setEnd(container, 3);
+
+  range.deleteContents();
+
+  assert_true(range.collapsed, "range should be collapsed");
+  assert_equals(range.startContainer, container, "startContainer");
+  assert_equals(range.startOffset, 0,
+    "startOffset adjusted to 0 after earlier sibling removed during operation");
+  assert_true(container.contains(sentinel), "sentinel not removed");
+
+  document.body.removeChild(container);
+}, "deleteContents: range valid when disconnectedCallback removes earlier sibling");
 </script>

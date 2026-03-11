@@ -98,4 +98,59 @@ test(function() {
   assert_equals(text.data, "Heorld", "text data should have middle removed");
   assert_equals(fragment.firstChild.data, "llo W", "fragment should contain extracted text");
 }, "extractContents handles same CharacterData node correctly");
+
+// --- Mutation during removal via custom element disconnectedCallback ---
+//
+// Structure: container > [before(0), trigger(1), inside(2), sentinel(3)]
+// Range: (container, 1) → (container, 3)
+//
+// trigger's disconnectedCallback removes 'before' (at index 0, before the
+// range start). This exercises live-range adjustment on the collapsed range.
+//
+// Collapse-before-mutations (current spec):
+//   Range collapses to (container, 1). Removals begin. When the callback
+//   removes 'before', live-range adjustment decrements startOffset to 0.
+//   Final: startOffset = 0.
+//
+// Collapse-after-mutations (old spec):
+//   Removals and callback happen first. Then the algorithm sets the range
+//   to the pre-computed (container, 1), overwriting any live-range
+//   adjustments. Final: startOffset = 1.
+
+customElements.define("x-extract-remove-trigger", class extends HTMLElement {
+  disconnectedCallback() {
+    if (this._target && this._target.parentNode) {
+      this._target.remove();
+    }
+  }
+});
+
+test(function() {
+  const container = document.createElement("div");
+  document.body.appendChild(container);
+
+  const before = document.createElement("p");
+  const trigger = document.createElement("x-extract-remove-trigger");
+  const inside = document.createElement("p");
+  const sentinel = document.createElement("p");
+  container.append(before, trigger, inside, sentinel);
+  trigger._target = before;
+
+  const range = document.createRange();
+  range.setStart(container, 1);
+  range.setEnd(container, 3);
+
+  const fragment = range.extractContents();
+
+  assert_true(range.collapsed, "range should be collapsed");
+  assert_equals(range.startContainer, container, "startContainer");
+  assert_equals(range.startOffset, 0,
+    "startOffset adjusted to 0 after earlier sibling removed during operation");
+  assert_true(container.contains(sentinel), "sentinel not removed");
+  assert_false(
+    Array.from(fragment.childNodes).includes(sentinel),
+    "sentinel not in extracted fragment");
+
+  document.body.removeChild(container);
+}, "extractContents: range valid when disconnectedCallback removes earlier sibling");
 </script>

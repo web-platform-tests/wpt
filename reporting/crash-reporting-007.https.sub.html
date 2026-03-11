@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html class="test-wait">
+<meta charset="utf-8">
+<title>Crash reports delivered to crash-reporting endpoint</title>
+<link rel="help" href="https://wicg.github.io/crash-reporting/">
+<meta name="assert" content="If a `crash-reporting` endpoint is specified, crash reports must be delivered to it.">
+<!--
+  If a `crash-reporting` endpoint is specified, crash reports must be delivered to it.
+-->
+<body>
+<script>
+  const isIframe = new URLSearchParams(window.location.search).has('iframe');
+  
+  if (isIframe) {
+    // Step 1. Trigger a renderer crash.
+    // Trigger Out-Of-Memory (OOM) to crash the renderer
+    const memoryHog = [];
+    while (true) {
+      memoryHog.push(new Array(1000000).fill('crash'));
+    }
+    // Fallback OOM if initialize fails
+  } else {
+    const reportID = 'crash-report-' + Math.random().toString(36).substring(2);
+    const reportUrl = `/reporting/resources/report.py?op=store&reportID=${reportID}`;
+    const retrieveUrl = `/reporting/resources/report.py?op=retrieve&timeout=3&reportID=${reportID}`;
+    
+    const iframe = document.createElement('iframe');
+    
+    // Pre-conditions: Reporting-Endpoints header configured with a `crash-reporting` endpoint.
+    const pipeValue = `header(Reporting-Endpoints,crash-reporting="${reportUrl}")`;
+    const iframeSrc = `${window.location.pathname}?iframe=true&pipe=${encodeURIComponent(pipeValue)}`;
+    iframe.src = iframeSrc;
+    document.body.appendChild(iframe);
+
+    // Step 2. Monitor the configured endpoint for incoming reports.
+    async function monitor() {
+      for (let i = 0; i < 15; i++) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+          const res = await fetch(retrieveUrl);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.length > 0) {
+              // Expected result: A crash report is successfully delivered to the `crash-reporting` endpoint.
+              
+              // Cleanup
+              iframe.remove();
+              document.documentElement.classList.remove('test-wait');
+              return;
+            }
+          }
+        } catch (e) {
+          // Ignore network errors during polling
+        }
+      }
+    }
+    monitor();
+  }
+</script>
+</body>
+</html>

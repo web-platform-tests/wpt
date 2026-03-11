@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html class="test-wait">
+<meta charset="utf-8">
+<title>Crash report includes visibility_state</title>
+<meta name="timeout" content="long">
+<meta name="assert" content="The crash report body must include a visibility_state string of either 'visible' or 'hidden' matching the Document's visibility state at the time of the crash.">
+<link rel="help" href="https://wicg.github.io/crash-reporting/">
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script>
+/*
+ * The crash report body must include a `visibility_state` string of either "visible" or "hidden" matching the Document's visibility state at the time of the crash.
+ */
+
+const params = new URLSearchParams(window.location.search);
+
+if (params.has('popup')) {
+  // Popup context: initialize crash report and trigger a renderer crash
+  
+  // Trigger OOM or Unresponsive crash
+  setTimeout(() => {
+    let a = [];
+    while (true) {
+      a.push(new Array(1000000).join('a'));
+    }
+  }, 100);
+} else {
+  // Main test context
+  const host_info = get_host_info();
+  const reportID = 'crash-report-' + Math.random().toString(36).substring(2);
+  
+  // The endpoint must be absolute so the cross-origin popup sends it to the right place.
+  const endpoint = `${host_info.HTTPS_REMOTE_ORIGIN}/reporting/resources/report.py?op=put&reportID=${reportID}`;
+  
+  // Construct the popup URL using the cross-origin host to ensure it runs in a separate process.
+  // We use WPT pipes to inject the Reporting-Endpoints header.
+  const pipeValue = `header(Reporting-Endpoints,default="${endpoint}")`;
+  const popupUrl = `${host_info.HTTPS_REMOTE_ORIGIN}${window.location.pathname}?popup=1&pipe=${encodeURIComponent(pipeValue)}`;
+  
+  test_driver.bless("open popup").then(() => {
+    const popup = window.open(popupUrl, '_blank', 'noopener');
+    
+    // Poll for the report
+    const reportUrl = `${host_info.HTTPS_REMOTE_ORIGIN}/reporting/resources/report.py?op=take&reportID=${reportID}`;
+    
+    // Poll for up to 40 seconds to allow the crash to occur and the report to be delivered
+    async function checkReport() {
+      for (let i = 0; i < 40; i++) {
+        await new Promise(r => setTimeout(r, 1000));
+        try {
+          const res = await fetch(reportUrl);
+          if (res.ok) {
+            const text = await res.text();
+            if (text) {
+              const reports = JSON.parse(text);
+              if (reports.length > 0) {
+                const report = reports[0];
+                
+                // Verify the custom data was included
+                if (report.body.visibility_state === "visible") {
+                  if (popup) popup.close();
+                  document.documentElement.classList.remove("test-wait");
+                  return;
+                }
+              }
+            }
+          }
+        } catch (e) {
+          // Ignore network errors during polling
+        }
+      }
+      if (popup) popup.close();
+    }
+    
+    checkReport();
+  });
+}
+</script>
+</html>

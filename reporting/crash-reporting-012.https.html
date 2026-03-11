@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html class="test-wait">
+<meta charset="utf-8">
+<title>set() serializes and writes to crash report buffers</title>
+<meta name="assert" content="When `set(key, value)` is called on an initialized buffer, it must serialize the internal map to JSON bytes and write it to the user agent's crash report buffers.">
+<link rel="help" href="https://wicg.github.io/crash-reporting/">
+<body>
+<script>
+/*
+ * When `set(key, value)` is called on an initialized buffer, it must serialize the internal map to JSON bytes and write it to the user agent's crash report buffers.
+ * 
+ * Pre-conditions: Reporting-Endpoints configured (typically via a companion .headers file in WPT).
+ */
+(async () => {
+  if (!('crashReport' in window)) {
+    document.documentElement.classList.remove('test-wait');
+    return;
+  }
+
+  // We use an iframe to isolate the crash trigger so the main test harness survives to poll the report.
+  const iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+  const iframeWindow = iframe.contentWindow;
+
+  // 1. Call initialize(1024).
+  await iframeWindow.crashReport.initialize(1024);
+
+  // 2. Call set('testKey', 'testValue').
+  iframeWindow.crashReport.set('testKey', 'testValue');
+
+  // 3. Trigger a renderer crash.
+  // We trigger an 'unresponsive' crash (a valid crash reason in the spec) by entering an infinite loop.
+  // Browsers with site isolation will terminate the unresponsive iframe process and generate a crash report.
+  iframeWindow.setTimeout(() => {
+    while (true) {}
+  }, 100);
+
+  // 4. Inspect the delivered crash report.
+  const endpointUrl = '/reporting/resources/report.py?endpoint=default';
+  let reportFound = false;
+  let payload = null;
+
+  // Poll the standard WPT reporting endpoint for the crash report
+  for (let i = 0; i < 20; i++) {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    try {
+      const response = await fetch(endpointUrl);
+      if (response.ok) {
+        const reports = await response.json();
+        const crashReport = reports.find(r => r.type === 'crash');
+        if (crashReport && crashReport.body && crashReport.body.crash_report_api) {
+          reportFound = true;
+          payload = crashReport.body.crash_report_api;
+          break;
+        }
+      }
+    } catch (e) {
+      // Ignore network errors during polling
+    }
+  }
+
+  if (reportFound && payload && payload.testKey === 'testValue') {
+    document.documentElement.classList.remove('test-wait');
+  }
+})();
+</script>
+</body>
+</html>

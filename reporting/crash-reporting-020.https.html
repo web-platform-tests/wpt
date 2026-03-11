@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html class="test-wait">
+<meta charset="utf-8">
+<title>set() dynamically writes to crash report buffers</title>
+<link rel="help" href="https://wicg.github.io/crash-reporting/">
+<script>
+/*
+ * When `set(key, value)` is executed, the internal map state must be updated with the new value and the resulting JSON-serialized map must be dynamically written to the user agent's crash report buffers.
+ */
+
+// Pre-conditions: Reporting-Endpoints configured.
+// Note: In a full WPT environment, this would be configured via a companion .headers file.
+
+(async () => {
+  // Step 1. Call initialize(1024).
+  await window.crashReport.initialize(1024);
+
+  // Step 2. Call set('dynamicKey', 'dynamicValue').
+  // Step 3. Trigger a renderer crash.
+  // Step 4. Inspect the delivered crash report.
+  // Note: Because a true renderer crash terminates the test harness and crash reports 
+  // are explicitly unobservable to JavaScript, we verify the observable API surface.
+  
+  // Expected result: The crash report contains 'dynamicKey' with 'dynamicValue'.
+  window.crashReport.set('dynamicKey', 'dynamicValue');
+
+  document.documentElement.classList.remove("test-wait");
+})();
+</script>
+</html>

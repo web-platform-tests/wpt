@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html class="test-wait">
+<meta charset="utf-8">
+<title>Crash reports have report type set to crash</title>
+<link rel="help" href="https://wicg.github.io/crash-reporting/">
+<meta name="assert" content="Crash reports must be generated as a report with the report type set to 'crash' for integration with the Reporting API.">
+<script src="/common/utils.js"></script>
+<body>
+<script>
+/*
+ * Crash reports must be generated as a report with the report type set to "crash" for integration with the Reporting API.
+ */
+(async () => {
+    // Pre-conditions: Reporting-Endpoints configured.
+    const report_id = token();
+    const endpoint = `${location.origin}/reporting/resources/report.py?reportID=${report_id}`;
+    const header_val = encodeURIComponent(`default="${endpoint}"`);
+
+    const iframe = document.createElement('iframe');
+    // Configure the Reporting-Endpoints header for the iframe via WPT server pipes
+    iframe.src = `/common/blank.html?pipe=header(Reporting-Endpoints,${header_val})`;
+    document.body.appendChild(iframe);
+
+    await new Promise(resolve => {
+        iframe.onload = resolve;
+    });
+
+    // Step 1. Trigger a renderer crash.
+    // We attempt to trigger an Out-Of-Memory (OOM) crash in the iframe's process.
+    iframe.contentWindow.eval(`
+        setTimeout(() => {
+            try {
+                let arr = [];
+                while(true) {
+                    arr.push(new Array(1000000).fill('crash'));
+                }
+            } catch (e) {
+                // If the engine throws an exception instead of crashing the process,
+                // the crash report might not be generated, but this is the most
+                // standard cross-browser way to attempt a renderer crash from JS.
+            }
+        }, 10);
+    `);
+
+    // Step 2. Inspect the delivered report payload.
+    let report = null;
+    // Poll the WPT reporting stash to see if the out-of-band crash report was delivered
+    for (let i = 0; i < 15; i++) {
+        await new Promise(r => setTimeout(r, 1000));
+        try {
+            const response = await fetch(`/reporting/resources/report.py?op=take&reportID=${report_id}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    report = data[0];
+                    break;
+                }
+            }
+        } catch (e) {
+            // Ignore network errors during polling
+        }
+    }
+
+    // Expected Result: The report payload contains a 'type' field set to "crash".
+    if (report !== null && report.type === "crash") {
+        // Cleanup
+        iframe.remove();
+        document.documentElement.classList.remove("test-wait");
+    }
+})();
+</script>
+</body>
+</html>

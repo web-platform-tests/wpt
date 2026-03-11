@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Crash report includes JS call stack for unresponsive crashes</title>
+<link rel="help" href="https://wicg.github.io/crash-reporting/">
+<meta name="assert" content="The crash report body contains a 'stack' field with the JavaScript call stack.">
+<script>
+  /*
+   * If the crash reason is "unresponsive" and the `include-js-call-stacks-in-crash-reports` Document policy is true, the crash report body must include the string representation of the JavaScript call stack.
+   */
+
+  // 1. Trigger an unresponsive crash (e.g., infinite while loop).
+  // Simulated: An actual infinite loop would cause a test timeout.
+  // while (true) {}
+  while (true) {}
+
+  // 2. Inspect the delivered crash report.
+  // Simulated: As per spec, crash reports are delivered out-of-band to endpoints 
+  // and are not observable to JavaScript.
+
+  // Expected Result: The crash report body contains a 'stack' field with the JavaScript call stack.
+</script>

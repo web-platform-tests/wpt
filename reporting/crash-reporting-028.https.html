@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html class="test-wait">
+<meta charset="utf-8">
+<title>Integration: Crash report visibility_state matches DocumentVisibilityState</title>
+<meta name="assert" content="The crash report body contains a 'visibility_state' field set to 'hidden'.">
+<link rel="help" href="https://wicg.github.io/crash-reporting/">
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script>
+/*
+ * The report's `visibility_state` field must match the `DocumentVisibilityState` enum ("visible" or "hidden") of the crashed Document.
+ */
+
+if (location.search.includes('crash=1')) {
+    // Subframe execution context
+    window.onload = () => {
+        window.parent.postMessage('iframe-loaded', '*');
+    };
+    
+    window.addEventListener('message', (e) => {
+        if (e.data === 'crash') {
+            // 2. Trigger a renderer crash.
+            // An infinite loop will cause an "unresponsive" crash report in site-isolated browsers.
+            while (true) {}
+        }
+    });
+} else {
+    // Main test execution context
+    async function runTest() {
+        const reportId = Math.random().toString(36).substring(2);
+        const reportUrl = new URL(`/reporting/resources/report.py?reportID=${reportId}`, location.href).href;
+
+        // Pre_conditions: Reporting-Endpoints configured.
+        // We use a cross-origin iframe to ensure the crash does not take down the main test runner process.
+        const iframe = document.createElement('iframe');
+        const hostInfo = get_host_info();
+        const remoteOrigin = hostInfo.HTTPS_REMOTE_ORIGIN;
+
+        // Load the same file cross-origin, appending the Reporting-Endpoints header via WPT pipes.
+        iframe.src = `${remoteOrigin}${location.pathname}?crash=1&pipe=header(Reporting-Endpoints,default="${reportUrl}")`;
+        document.body.appendChild(iframe);
+
+        // Wait for the iframe to fully load before proceeding.
+        await new Promise(resolve => {
+            window.addEventListener('message', function handler(e) {
+                if (e.data === 'iframe-loaded') {
+                    window.removeEventListener('message', handler);
+                    resolve();
+                }
+            });
+        });
+
+        // 1. Hide the document (e.g., via Page Visibility API or backgrounding).
+        await test_driver.minimize_window();
+        if (document.visibilityState !== 'hidden') {
+            return;
+        }
+
+        // 2. Trigger a renderer crash.
+        iframe.contentWindow.postMessage('crash', '*');
+
+        // 3. Inspect the delivered crash report.
+        let reportBody = null;
+        
+        // Poll the reporting endpoint until the out-of-band crash report is delivered.
+        for (let i = 0; i < 30; i++) {
+            await new Promise(r => setTimeout(r, 1000));
+            try {
+                const res = await fetch(reportUrl);
+                if (!res.ok) continue;
+                
+                const reports = await res.json();
+                const crashReport = reports.find(r => r.type === 'crash');
+                
+                if (crashReport) {
+                    reportBody = crashReport.body;
+                    break;
+                }
+            } catch (e) {
+                // Ignore network errors during polling
+            }
+        }
+
+        // Expected Result: The crash report body contains a 'visibility_state' field set to "hidden".
+        if (reportBody !== null && reportBody.visibility_state === 'hidden') {
+            document.documentElement.classList.remove('test-wait');
+        }
+    }
+    runTest();
+}
+</script>
+</html>

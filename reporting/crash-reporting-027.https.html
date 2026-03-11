@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html class="test-wait">
+<meta charset="utf-8">
+<title>Integration: Crash report includes JS call stack</title>
+<link rel="help" href="https://wicg.github.io/crash-reporting/">
+<meta name="assert" content="The crash report body contains a 'stack' field matching the format of Error.prototype.stack.">
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<body>
+<script>
+/*
+ * If the crash reason is "unresponsive", the Document Policy include-js-call-stacks-in-crash-reports is true, and the stack is recoverable, the report's stack field must contain the string representation of the JavaScript call stack matching Error.prototype.stack.
+ */
+
+if (location.search.includes('iframe=true')) {
+  // Iframe context: Wait for the command to trigger an unresponsive crash.
+  window.addEventListener('message', e => {
+    if (e.data === 'crash') {
+      // Step 1: Trigger an unresponsive crash.
+      // This infinite loop will cause the browser's hang monitor to eventually terminate the process
+      // and generate a crash report with reason "unresponsive".
+      while (true) {}
+    }
+  });
+  
+  window.parent.postMessage('ready', '*');
+} else {
+  // Parent context: Setup the test, spawn the iframe, and inspect the report.
+  (async function() {
+    const uid = token();
+    const { HTTPS_ORIGIN, HTTPS_REMOTE_ORIGIN } = get_host_info();
+    const endpoint = `${HTTPS_ORIGIN}/reporting/resources/report.py?reportID=${uid}`;
+    
+    const iframe = document.createElement('iframe');
+    
+    // Pre-conditions: Set Document-Policy and Reporting-Endpoints via WPT server pipes.
+    const headers = `header(Document-Policy, include-js-call-stacks-in-crash-reports=?1)|header(Reporting-Endpoints, default="${endpoint}")`;
+    
+    // Load this same file as a cross-origin iframe to ensure process isolation (in browsers with OOPIFs).
+    // This prevents the iframe's infinite loop from blocking the parent window's event loop.
+    const path = location.pathname;
+    iframe.src = `${HTTPS_REMOTE_ORIGIN}${path}?iframe=true&pipe=${headers}`;
+    document.body.appendChild(iframe);
+    
+    // Wait for the iframe to initialize
+    await new Promise(resolve => {
+      window.addEventListener('message', function handler(e) {
+        if (e.data === 'ready') {
+          window.removeEventListener('message', handler);
+          resolve();
+        }
+      });
+    });
+    
+    // Command the iframe to crash
+    iframe.contentWindow.postMessage('crash', '*');
+    
+    // Step 2: Inspect the delivered crash report.
+    let reports = [];
+    const startTime = Date.now();
+    
+    // Poll the reporting endpoint. We allow up to 15 seconds for the browser to detect the hang,
+    // terminate the process, and deliver the out-of-band crash report.
+    while (Date.now() - startTime < 15000) {
+      try {
+        const res = await fetch(endpoint);
+        if (res.ok) {
+          reports = await res.json();
+          if (reports.length > 0) break;
+        }
+      } catch (e) {
+        // Ignore network errors during polling
+      }
+      await new Promise(r => setTimeout(r, 1000));
+    }
+    
+    if (reports.length > 0) {
+      const crashReport = reports.find(r => r.type === 'crash');
+      if (crashReport && crashReport.body.reason === 'unresponsive') {
+        // Expected result: The crash report body contains a 'stack' field matching the format of Error.prototype.stack.
+        if ('stack' in crashReport.body && typeof crashReport.body.stack === 'string' && crashReport.body.stack.length > 0) {
+          document.documentElement.classList.remove('test-wait');
+        }
+      }
+    }
+  })();
+}
+</script>
+</body>
+</html>

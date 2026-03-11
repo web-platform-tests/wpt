@@ -231,3 +231,29 @@ export function loadIframe(iframe, url) {
     iframe.src = url.toString();
   });
 }
+
+/**
+ * Creates options for getting credentials with an arbitrary protocol string.
+ * Unlike makeGetOptions, this doesn't validate the protocol - useful for testing
+ * invalid/unknown protocols that should be filtered out by the browser.
+ *
+ * @export
+ * @param {string} protocol - The protocol string (can be invalid/unknown)
+ * @param {object} [data={}] - The request data
+ * @param {AbortSignal} [signal] - Optional abort signal
+ * @returns {CredentialRequestOptions}
+ */
+export function makeGetOptionsWithArbitraryProtocol(protocol, data = {}, signal) {
+  /** @type {CredentialRequestOptions} */
+  const options = {
+    digital: {
+      requests: [{ protocol, data }]
+    }
+  };
+
+  if (signal) {
+    options.signal = signal;
+  }
+
+  return options;
+}

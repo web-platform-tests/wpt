@@ -1205,6 +1205,46 @@ features:
 """,
         []
     ),
+    (
+        ["file1.txt", "file2.txt", "file3.txt"],
+        b"""\
+features:
+- name: feature1
+  files:
+  - "*"
+  - "!file3.txt"
+""",
+        []
+    ),
+    (
+        ["foobar.txt", "foo.txt", "bar.txt"],
+        b"""\
+features:
+- name: feature1
+  files:
+  - "*foo*"
+  - "!*bar*"
+""",
+        []
+    ),
+    (
+        ["foo-1.txt", "bar-1.txt"],
+        b"""\
+features:
+- name: feature1
+  files:
+  - foo-*
+  - "!bar-*"
+""",
+        [
+            ("UNNECESSARY-EXCLUSION-IN-WEB-FEATURES-FILE",
+             "The WEB_FEATURES.yml file contains an exclusion pattern "
+             "that does not exclude any included files: "
+             "'!bar-*' in feature 'feature1'",
+             "css/WEB_FEATURES.yml",
+             None),
+        ]
+    ),
 ])
 def test_valid_web_features_file(monkeypatch, files, yml, expected_errors):
     def listdir(dir):

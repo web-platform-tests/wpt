@@ -6,6 +6,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-    assert_in_array('gyroscope', document.permissionsPolicy.features());
-}, 'document.permissionsPolicy.features should advertise gyroscope.');
+    assert_in_array('gyroscope', document.featurePolicy.features());
+}, 'document.featurePolicy.features should advertise gyroscope.');
 </script>

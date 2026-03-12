@@ -6,6 +6,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-    assert_in_array('magnetometer', document.permissionsPolicy.features());
-}, 'document.permissionsPolicy.features should advertise magnetometer.');
+    assert_in_array('magnetometer', document.featurePolicy.features());
+}, 'document.featurePolicy.features should advertise magnetometer.');
 </script>

@@ -1,27 +1,14 @@
 /*
-  Methods for testing the focusgroup feature.
+  Focusgroup-specific test assertion helpers.
+
+  This file depends on focus-utils.js being loaded first for generic
+  primitives (key constants, focusAndKeyPress, sendTabForward, etc.).
 */
 
-// https://w3c.github.io/webdriver/#keyboard-actions
-const kArrowLeft = '\uE012';
-const kArrowUp = '\uE013';
-const kArrowRight = '\uE014';
-const kArrowDown = '\uE015';
-
-// Set the focus on target and send the arrow key press event from it.
-function focusAndKeyPress(target, key) {
-  target.focus();
-  return test_driver.send_keys(target, key);
-}
-
-function sendArrowKey(key) {
-  return new test_driver.Actions().keyDown(key).keyUp(key).send();
-}
-
-// Test bidirectional navigation through a list of elements in visual order.
+// Test bidirectional directional (arrow) navigation through a list of elements in visual order.
 // Tests forward navigation with kArrowRight and backward navigation with kArrowLeft.
 // At boundaries, verifies focus does not move (unless wrap is expected).
-async function assert_focus_navigation_bidirectional(elements, shouldWrap = false) {
+async function assert_arrow_navigation_bidirectional(elements, shouldWrap = false) {
   // Test forward navigation.
   for (let i = 0; i < elements.length; i++) {
     await focusAndKeyPress(elements[i], kArrowRight);
@@ -38,5 +25,58 @@ async function assert_focus_navigation_bidirectional(elements, shouldWrap = fals
     const expectedElement = elements[prevIndex];
     assert_equals(document.activeElement, expectedElement,
       `From ${elements[i].id}, left arrow should move to ${expectedElement.id}`);
+  }
+}
+
+// Test Tab navigation through DOM elements. Unlike assert_focus_navigation_forward
+// in shadow-dom's focus-utils.js (which takes string paths and requires shadow-dom.js),
+// this takes direct element references. Uses sendTabForward (Actions API) to
+// avoid calling focus() on document.body, which would blur the active element
+// and break focusgroup exit behaviour on key-conflict elements.
+async function assert_focusgroup_tab_navigation(elements) {
+  if (elements.length === 0) {
+    return;
+  }
+
+  elements[0].focus();
+  assert_equals(document.activeElement, elements[0],
+    `Failed to focus starting element ${elements[0].id}`);
+
+  for (let i = 0; i < elements.length - 1; i++) {
+    await sendTabForward();
+    assert_equals(document.activeElement, elements[i + 1],
+      `Tab from ${elements[i].id} should move to ${elements[i + 1].id}`);
+  }
+}
+
+// Test Shift+Tab navigation through a list of elements in reverse.
+// Mirrors assert_focusgroup_tab_navigation but navigates backward.
+// Uses navigateFocusBackward (Actions API) for the same reason as above.
+async function assert_focusgroup_shift_tab_navigation(elements) {
+  if (elements.length === 0) {
+    return;
+  }
+
+  // Focus the first element to establish starting point.
+  elements[0].focus();
+  assert_equals(document.activeElement, elements[0],
+    `Failed to focus starting element ${elements[0].id}`);
+
+  for (let i = 0; i < elements.length - 1; i++) {
+    await navigateFocusBackward();
+    assert_equals(document.activeElement, elements[i + 1],
+      `Shift+Tab from ${elements[i].id} should move to ${elements[i + 1].id}`);
+  }
+}
+
+// Assert that arrow keys do not move focus from the given element.
+async function assert_arrow_keys_do_not_move_focus(element) {
+  const arrows = [kArrowRight, kArrowLeft, kArrowDown, kArrowUp];
+  const arrowNames = ['right', 'left', 'down', 'up'];
+
+  for (let i = 0; i < arrows.length; i++) {
+    await focusAndKeyPress(element, arrows[i]);
+    assert_equals(document.activeElement, element,
+      `Arrow ${arrowNames[i]} should not move focus from ${element.id}`);
   }
 }

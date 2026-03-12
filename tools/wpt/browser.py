@@ -2315,7 +2315,7 @@ class Servo(Browser):
 
         resp = self._get(channel)
         decompress(resp.raw, dest=dest)
-        path = which("servo", path=os.path.join(dest, "servo"))
+        path = which("servoshell", path=os.path.join(dest, "servo"))
         st = os.stat(path)
         os.chmod(path, st.st_mode | stat.S_IEXEC)
         return path
@@ -2339,9 +2339,9 @@ class Servo(Browser):
         if m:
             return m.group(0)
 
-
-class ServoWebDriver(Servo):
-    product = "servodriver"
+# Uses same configuration as Servo
+class ServoLegacy(Servo):
+    product = "servo_legacy"
 
 
 class Sauce(Browser):

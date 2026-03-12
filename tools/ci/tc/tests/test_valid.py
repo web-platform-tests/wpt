@@ -1,4 +1,5 @@
 # mypy: ignore-errors
+from urllib.parse import urlsplit
 
 import json
 import os
@@ -9,6 +10,8 @@ import jsone
 import pytest
 import yaml
 from jsonschema import validate
+from referencing import Resource
+from referencing.jsonschema import DRAFT6, SchemaRegistry
 
 from tools.ci.tc import decision
 
@@ -86,13 +89,24 @@ def test_verify_payload():
     """Verify that the decision task produces tasks with a valid payload"""
     from tools.ci.tc.decision import decide
 
-    r = httpx.get("https://community-tc.services.mozilla.com/schemas/queue/v1/create-task-request.json")
-    r.raise_for_status()
-    create_task_schema = r.json()
+    schema_urls = ["https://community-tc.services.mozilla.com/schemas/common/metaschema.json",
+                   "https://community-tc.services.mozilla.com/schemas/queue/v1/task-metadata.json",
+                   "https://community-tc.services.mozilla.com/schemas/queue/v1/task.json",
+                   "https://community-tc.services.mozilla.com/schemas/queue/v1/create-task-request.json",
+                   "https://community-tc.services.mozilla.com/references/schemas/docker-worker/v1/payload.json"]
 
-    r = httpx.get("https://community-tc.services.mozilla.com/references/schemas/docker-worker/v1/payload.json")
-    r.raise_for_status()
-    payload_schema = r.json()
+    schemas = {}
+    for schema_url in schema_urls:
+        name = urlsplit(schema_url).path.rsplit("/", 1)[-1].rsplit(".", 1)[0]
+        r = httpx.get(schema_url)
+        r.raise_for_status()
+        schemas[name] = (schema_url, r.json())
+
+
+    registry = SchemaRegistry()
+    for url, schema_doc in schemas.values():
+        resource = Resource.from_contents(schema_doc, default_specification=DRAFT6)
+        registry = registry.with_resource(url, resource)
 
     jobs = ["lint",
             "manifest_upload",
@@ -111,8 +125,12 @@ def test_verify_payload():
                 task_id_map = decide(event)
         for name, (task_id, task_data) in task_id_map.items():
             try:
-                validate(instance=task_data, schema=create_task_schema)
-                validate(instance=task_data["payload"], schema=payload_schema)
+                validate(instance=task_data,
+                         schema=schemas["create-task-request"][1],
+                         registry=registry)
+                validate(instance=task_data["payload"],
+                         schema=schemas["payload"][1],
+                         registry=registry)
             except Exception as e:
                 print(f"Validation failed for task '{name}':\n{json.dumps(task_data, indent=2)}")
                 raise e
@@ -176,12 +194,12 @@ def test_verify_payload():
       'lint']),
     ("pr_event.json", True, {".taskcluster.yml", ".travis.yml", "tools/ci/start.sh"},
      ['lint',
-      'tools/ unittests (Python 3.8)',
-      'tools/ unittests (Python 3.13)',
-      'tools/ integration tests (Python 3.8)',
-      'tools/ integration tests (Python 3.13)',
-      'resources/ tests (Python 3.8)',
-      'resources/ tests (Python 3.13)',
+      'tools/ unittests (Python 3.9)',
+      'tools/ unittests (Python 3.14)',
+      'tools/ integration tests (Python 3.9)',
+      'tools/ integration tests (Python 3.14)',
+      'resources/ tests (Python 3.9)',
+      'resources/ tests (Python 3.14)',
       'download-firefox-nightly',
       'infrastructure/ tests (firefox)',
       'infrastructure/ tests (chrome)',
@@ -200,15 +218,32 @@ def test_verify_payload():
       'sink-task']),
     ("pr_event_tests_affected.json", True, {"resources/testharness.js"},
      ['lint',
-      'resources/ tests (Python 3.8)',
-      'resources/ tests (Python 3.13)',
+      'resources/ tests (Python 3.9)',
+      'resources/ tests (Python 3.14)',
       'download-firefox-nightly',
       'infrastructure/ tests (firefox)',
       'infrastructure/ tests (chrome)',
       'infrastructure/ tests (firefox_android)',
       'sink-task']),
     ("epochs_daily_push_event.json", False, None,
-     ['download-firefox-stable',
+     ['download-firefox-beta',
+      'wpt-firefox-beta-testharness-1',
+      'wpt-firefox-beta-testharness-2',
+      'wpt-firefox-beta-testharness-3',
+      'wpt-firefox-beta-testharness-4',
+      'wpt-firefox-beta-testharness-5',
+      'wpt-firefox-beta-testharness-6',
+      'wpt-firefox-beta-testharness-7',
+      'wpt-firefox-beta-testharness-8',
+      'wpt-firefox-beta-testharness-9',
+      'wpt-firefox-beta-testharness-10',
+      'wpt-firefox-beta-testharness-11',
+      'wpt-firefox-beta-testharness-12',
+      'wpt-firefox-beta-testharness-13',
+      'wpt-firefox-beta-testharness-14',
+      'wpt-firefox-beta-testharness-15',
+      'wpt-firefox-beta-testharness-16',
+      'download-firefox-stable',
       'wpt-firefox-stable-testharness-1',
       'wpt-firefox-stable-testharness-2',
       'wpt-firefox-stable-testharness-3',
@@ -365,6 +400,8 @@ def test_verify_payload():
       'wpt-firefox_android-stable-testharness-28',
       'wpt-firefox_android-stable-testharness-29',
       'wpt-firefox_android-stable-testharness-30',
+      'wpt-firefox-beta-wdspec-1',
+      'wpt-firefox-beta-wdspec-2',
       'wpt-firefox-stable-wdspec-1',
       'wpt-firefox-stable-wdspec-2',
       'wpt-chromium-nightly-wdspec-1',
@@ -381,6 +418,7 @@ def test_verify_payload():
       'wpt-firefox_android-nightly-wdspec-2',
       'wpt-firefox_android-stable-wdspec-1',
       'wpt-firefox_android-stable-wdspec-2',
+      'wpt-firefox-beta-crashtest-1',
       'wpt-firefox-stable-crashtest-1',
       'wpt-chromium-nightly-crashtest-1',
       'wpt-chrome-stable-crashtest-1',
@@ -389,6 +427,12 @@ def test_verify_payload():
       'wpt-servo-nightly-crashtest-1',
       'wpt-firefox_android-nightly-crashtest-1',
       'wpt-firefox_android-stable-crashtest-1',
+      'wpt-firefox-beta-reftest-1',
+      'wpt-firefox-beta-reftest-2',
+      'wpt-firefox-beta-reftest-3',
+      'wpt-firefox-beta-reftest-4',
+      'wpt-firefox-beta-reftest-5',
+      'wpt-firefox-beta-reftest-6',
       'wpt-firefox-stable-reftest-1',
       'wpt-firefox-stable-reftest-2',
       'wpt-firefox-stable-reftest-3',
@@ -425,6 +469,7 @@ def test_verify_payload():
       'wpt-servo-nightly-reftest-4',
       'wpt-servo-nightly-reftest-5',
       'wpt-servo-nightly-reftest-6',
+      'wpt-firefox-beta-print-reftest-1',
       'wpt-firefox-stable-print-reftest-1',
       'wpt-chromium-nightly-print-reftest-1',
       'wpt-chrome-stable-print-reftest-1'])

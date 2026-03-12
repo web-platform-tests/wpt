@@ -116,7 +116,28 @@ async def test_method_timeEnd(bidi_session, subscribe_events, top_context, wait_
 
     event_data = await wait_for_future_safe(on_entry_added)
 
+    # Verify that `console.time` didn't trigger the event.
     assert_console_entry(event_data, method="timeEnd")
+
+
+@pytest.mark.asyncio
+async def test_method_clear(bidi_session, subscribe_events, top_context, wait_for_event, wait_for_future_safe):
+    await subscribe_events(events=["log.entryAdded"])
+
+    on_entry_added = wait_for_event("log.entryAdded")
+
+    script = "console.clear(); console.log('test');"
+
+    await bidi_session.script.evaluate(
+        expression=script,
+        await_promise=True,
+        target=ContextTarget(top_context["context"]),
+    )
+
+    event_data = await wait_for_future_safe(on_entry_added)
+
+    # Verify that `console.clear` didn't trigger the event.
+    assert_console_entry(event_data, method="log")
 
 
 @pytest.mark.asyncio

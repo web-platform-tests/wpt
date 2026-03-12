@@ -760,8 +760,8 @@ def check_web_features_file(repo_root: Text, path: Text, f: IO[bytes]) -> List[r
         return []
     try:
         web_features_file: WebFeaturesFile = WebFeaturesFile(load_data_to_dict(f))
-    except Exception:
-        return [rules.InvalidWebFeaturesFile.error(path)]
+    except Exception as e:
+        return [rules.InvalidWebFeaturesFile.error(path, (str(e),))]
     errors = []
     base_dir = os.path.join(repo_root, os.path.dirname(path))
     files_in_directory = [

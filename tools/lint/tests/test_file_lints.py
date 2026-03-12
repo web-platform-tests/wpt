@@ -1231,7 +1231,7 @@ def test_valid_web_features_file(monkeypatch, files, yml, expected_errors):
 """,
         [
             ('INVALID-WEB-FEATURES-FILE',
-            'The WEB_FEATURES.yml file contains an invalid structure',
+            "The WEB_FEATURES.yml file contains an invalid structure: Input value ['test'] is not a dict",
             "css/WEB_FEATURES.yml",
             None),
         ]
@@ -1245,7 +1245,7 @@ features:
 """,
         [
             ('INVALID-WEB-FEATURES-FILE',
-            'The WEB_FEATURES.yml file contains an invalid structure',
+            'The WEB_FEATURES.yml file contains an invalid structure: Feature feature1 contains "**" in a list. It should be `files: "**"`',
             "css/WEB_FEATURES.yml",
             None),
         ]
@@ -1282,7 +1282,7 @@ features:
 
     assert errors == [
         ('INVALID-WEB-FEATURES-FILE',
-         'The WEB_FEATURES.yml file contains an invalid structure',
+         "The WEB_FEATURES.yml file contains an invalid structure: Duplicate 'features' key found in YAML.",
          "css/WEB_FEATURES.yml",
          None),
     ]

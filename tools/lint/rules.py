@@ -369,7 +369,7 @@ class InvalidMetaFile(Rule):
 
 class InvalidWebFeaturesFile(Rule):
     name = "INVALID-WEB-FEATURES-FILE"
-    description = "The WEB_FEATURES.yml file contains an invalid structure"
+    description = "The WEB_FEATURES.yml file contains an invalid structure: %s"
 
 
 class MissingTestInWebFeaturesFile(Rule):

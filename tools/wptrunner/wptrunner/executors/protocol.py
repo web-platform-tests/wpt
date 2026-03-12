@@ -357,13 +357,13 @@ class AccessibilityProtocolPart(ProtocolPart):
         """Return the accessibility properties for a specific element.
 
         :param element: A protocol-specific handle to an element."""
-        pass
+        raise NotImplementedError
 
     def get_accessibility_properties_for_accessibility_node(self, id):
         """Return the properties for a specific accessibility node.
 
         :param id: The id of the accessibility node."""
-        pass
+        raise NotImplementedError
 
 
 class WebExtensionsProtocolPart(ProtocolPart):

@@ -353,15 +353,15 @@ class Test262WindowTestBaseHandler(HtmlWrapperHandler):
     pre_wrapper = """<!doctype html>
 <meta charset=utf-8>
 <title>Test</title>
-<script src="/resources/test262/testharness-client.js"></script>
+<script src="/resources/test262/test262-reporter.js"></script>
 <script src="/third_party/test262/harness/assert.js"></script>
 <script src="/third_party/test262/harness/sta.js"></script>
-<script src="/resources/test262/harness-adapter.js"></script>
+<script src="/resources/test262/test262-provider.js"></script>
 %(meta)s
 %(script)s"""
-    wrapper = pre_wrapper + """<script>test262Setup()</script>
+    wrapper = pre_wrapper + """<body><script>test262Setup()</script>
 <script src="%(path)s"></script>
-<script>test262Done()</script>"""
+<script>test262Done()</script></body>"""
 
     def _get_metadata(self, request):
         path = self._get_filesystem_path(request)
@@ -389,11 +389,11 @@ class Test262WindowModuleHandler(Test262WindowHandler):
 
 class Test262WindowModuleTestHandler(Test262WindowTestBaseHandler):
     path_replace = [(".test262-module-test.html", ".js")]
-    wrapper = Test262WindowTestBaseHandler.pre_wrapper + """<script type="module">
+    wrapper = Test262WindowTestHandler.pre_wrapper + """<body><script type="module">
   test262Setup();
   import {} from "%(path)s";
   test262Done();
-</script>"""
+</script></body>"""
 
 
 class Test262StrictWindowHandler(Test262WindowHandler):

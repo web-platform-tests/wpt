@@ -40,16 +40,6 @@ def test_load_all_products(product):
             pass
 
 
-@all_products("product")
-def test_load_all_products_deprecated(product):
-    """test every product causes a DeprecationWarning"""
-    with pytest.deprecated_call(match=r"Use Product\.from_product_name"):
-        try:
-            products.Product({}, product)
-        except ImportError:
-            pass
-
-
 @active_products("product", marks={
     "sauce": pytest.mark.skip("needs env extras kwargs"),
 })

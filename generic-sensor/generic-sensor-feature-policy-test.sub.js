@@ -12,10 +12,10 @@ const permissions_policies = {
 };
 
 const same_origin_src =
-  "/feature-policy/resources/feature-policy-generic-sensor.html#";
+  "/permissions-policy/resources/permissions-policy-generic-sensor.html#";
 const cross_origin_src =
   "https://{{domains[www]}}:{{ports[https][0]}}" + same_origin_src;
-const base_src = "/feature-policy/resources/redirect-on-load.html#";
+const base_src = "/permissions-policy/resources/redirect-on-load.html#";
 
 function get_permissions_policies_for_sensor(sensorType) {
   return permissions_policies[sensorType];

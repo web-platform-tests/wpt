@@ -46,7 +46,6 @@ components:
     vars:
       test-type: test262
 
-
   run-options:
     options:
       xvfb: true

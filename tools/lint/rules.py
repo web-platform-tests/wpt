@@ -382,8 +382,7 @@ class MissingTestInWebFeaturesFile(Rule):
 class UnnecessaryExclusionInWebFeaturesFile(Rule):
     name = "UNNECESSARY-EXCLUSION-IN-WEB-FEATURES-FILE"
     description = collapse("""
-        The WEB_FEATURES.yml file contains an exclusion pattern
-        that does not exclude any included files: %s
+        The WEB_FEATURES.yml file contains a redundant or inoperable exclusion pattern: %s
     """)
 
 

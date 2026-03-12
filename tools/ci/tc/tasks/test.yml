@@ -42,7 +42,7 @@ components:
       test-type: crashtest
 
   wpt-test262:
-    chunks: 16
+    chunks: 8
     vars:
       test-type: test262
 

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+
+<style>
+  .hidden {
+    display: none;
+  }
+</style>
+
+<script>
+  const t = async_test(
+    "Video with loading=lazy and display:none should not load data until load() is called"
+  );
+
+  const video = document.createElement("video");
+  video.className = "hidden";
+  video.loading = "lazy";
+  video.src = "/media/A4.webm";
+  video.muted = true;
+  video.playsInline = true;
+
+  let loadstartFired = false;
+  let loadCalled = false;
+  video.addEventListener("loadstart", t.step_func(() => {
+    loadstartFired = true;
+    // Verify that load() was called before loadstart fired
+    assert_true(loadCalled, "load should have been called");
+    if(loadCalled) {
+      t.done();
+    }
+  }));
+
+  document.body.appendChild(video);
+
+  // Verify loadstart has not fired initially
+  t.step(() => {
+    assert_false(loadstartFired, "loadstart should not have fired initially");
+  });
+
+  // Call load() explicitly and wait for loadstart to fire
+  loadCalled = true;
+  video.load();
+</script>
+</body>

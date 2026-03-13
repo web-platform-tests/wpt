@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+
+<style>
+  .hidden {
+    display: none;
+  }
+</style>
+
+<script>
+  const t = async_test(
+    "Audio with loading=lazy and display:none should not load data until load() is called"
+  );
+
+  const audio = document.createElement("audio");
+  audio.className = "hidden";
+  audio.loading = "lazy";
+  audio.src = "/media/sine440.mp3";
+
+  let loadstartFired = false;
+  let loadCalled = false;
+  audio.addEventListener("loadstart", t.step_func(() => {
+    loadstartFired = true;
+    // Verify that load() was called before loadstart fired
+    assert_true(loadCalled, "load should have been called");
+    if(loadCalled) {
+      t.done();
+    }
+  }));
+
+  document.body.appendChild(audio);
+
+  // Verify loadstart has not fired initially
+  t.step(() => {
+    assert_false(loadstartFired, "loadstart should not have fired initially");
+  });
+
+  // Call load() explicitly and wait for loadstart to fire
+  loadCalled = true;
+  audio.load();
+
+</script>
+</body>

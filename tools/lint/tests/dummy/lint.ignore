@@ -1,1 +1,8 @@
+# Totally ignore broken_ignored.html
 *:broken_ignored.html
+
+# used_entry.html has trailing whitespace
+TRAILING WHITESPACE: used_entry.html
+
+# unused_entry.html but file has no errors
+TRAILING WHITESPACE: unused_entry.html

@@ -403,7 +403,8 @@ SET TIMEOUT: common/dispatcher/dispatcher.js
 SET TIMEOUT: css/css-fonts/font-display/font-display.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-change.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-change-ref.html
-SET TIMEOUT: css/css-fonts/font-display/font-display-document-policy-02.tentative.html
+SET TIMEOUT: css/css-fonts/font-display/font-display-feature-policy-01.tentative.html
+SET TIMEOUT: css/css-fonts/font-display/font-display-feature-policy-02.tentative.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-preload.html
 SET TIMEOUT: css/css-view-transitions/no-painting-while-render-blocked.html
 SET TIMEOUT: document-policy/font-display/override-to-optional.tentative.html

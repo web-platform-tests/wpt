@@ -389,11 +389,12 @@ class Test262WindowModuleHandler(Test262WindowHandler):
 
 class Test262WindowModuleTestHandler(Test262WindowTestBaseHandler):
     path_replace = [(".test262-module-test.html", ".js")]
-    wrapper = Test262WindowTestHandler.pre_wrapper + """<body><script type="module">
+    wrapper = Test262WindowTestHandler.pre_wrapper + """<body>
+<script type="module">
   test262Setup();
-  import {} from "%(path)s";
-  test262Done();
-</script></body>"""
+  import("%(path)s").then(() => test262Done());
+</script>
+</body>"""
 
 
 class Test262StrictWindowHandler(Test262WindowHandler):

@@ -1,0 +1,66 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSS Overflow: scrollbar-gutter keeps content box width stable when overflow changes (auto → hidden)</title>
+<link rel="help" href="https://drafts.csswg.org/css-overflow-4/#scrollbar-gutter-property">
+<link rel="author" title="Kate Lee" href="mailto:klee@igalia.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #test {
+    overflow: auto;              /* initial: scrollbar is present due to content overflow */
+    scrollbar-gutter: stable;    /* gutter should be reserved even when scrollbar disappears */
+    width: 200px;
+    height: 100px;
+    border: 2px solid black;
+    background: lightblue;
+    box-sizing: border-box;
+  }
+  .content {
+    width: 100%;
+    height: 200px;
+    background: orange;
+  }
+
+</style>
+
+<body>
+  <div id="note">
+    When <code>scrollbar-gutter: stable</code> is set, the content width remains the same when <code>overflow</code> changes from <code>auto</code> to <code>hidden</code>, because the gutter is preserved.
+  </div>
+
+  <div id="test">
+    <div class="content" id="content">
+      <!-- explanatory text to appear in expected.txt -->
+      When scrollbar-gutter: stable is set, the content width remains the same even when overflow changes from auto to hidden, because the gutter area is preserved and not removed with the scrollbar
+    </div>
+  </div>
+
+  <script>
+    const container = document.getElementById('test');
+    const content = document.getElementById('content');
+
+    function nextFrame() {
+      return new Promise(resolve => requestAnimationFrame(() => resolve()));
+    }
+
+    promise_test(async t => {
+      await nextFrame();
+
+      const before = content.clientWidth;
+
+      // Change overflow to hidden; with 'stable' the gutter space should remain
+      container.style.overflow = 'hidden';
+
+      await nextFrame();
+      await nextFrame();
+
+      const after = content.clientWidth;
+
+      assert_equals(
+        after, before,
+        "content clientWidth should remain the same when overflow changes from auto to hidden with scrollbar-gutter: stable"
+      );
+    }, "content width remains the same when overflow changes from auto to hidden with scrollbar-gutter: stable");
+  </script>
+</body>
+

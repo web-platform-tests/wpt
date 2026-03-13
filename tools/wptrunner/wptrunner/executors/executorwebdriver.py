@@ -523,7 +523,7 @@ class WebDriverPrintProtocolPart(PrintProtocolPart):
             raise
         self.runner_handle = self.webdriver.window_handle
 
-    def render_as_pdf(self, width, height):
+    def render_as_pdf(self, width, height, safe_printable_inset_param):
         # All units passed to `print()` are in cm. See [0] for testing specifications.
         #
         # [0]: https://web-platform-tests.org/writing-tests/print-reftests.html
@@ -531,6 +531,7 @@ class WebDriverPrintProtocolPart(PrintProtocolPart):
         pdf_base64 = self.webdriver.print(page={"width": width, "height": height},
                                           margin={"top": margin, "right": margin, "bottom": margin,
                                                   "left": margin},
+                                          safe_printable_inset=safe_printable_inset_param,
                                           background=True,
                                           shrink_to_fit=False)
         return pdf_base64
@@ -1387,7 +1388,7 @@ class WebDriverRefTestExecutor(RefTestExecutor):
 
         return self.convert_result(test, result)
 
-    def screenshot(self, test, viewport_size, dpi, page_ranges):
+    def screenshot(self, test, viewport_size, dpi, page_ranges, safe_printable_inset):
         # https://github.com/web-platform-tests/wpt/issues/7135
         assert viewport_size is None
         assert dpi is None
@@ -1427,7 +1428,7 @@ class WebDriverPrintRefTestExecutor(WebDriverRefTestExecutor):
         with open(os.path.join(here, "reftest.js")) as f:
             self.script = f.read()
 
-    def screenshot(self, test, viewport_size, dpi, page_ranges):
+    def screenshot(self, test, viewport_size, dpi, page_ranges, safe_printable_inset):
         # https://github.com/web-platform-tests/wpt/issues/7140
         assert dpi is None
 
@@ -1438,6 +1439,7 @@ class WebDriverPrintRefTestExecutor(WebDriverRefTestExecutor):
 
         self.viewport_size = viewport_size
         self.page_ranges = page_ranges.get(test.url)
+        self.safe_printable_inset = safe_printable_inset
         timeout = self.timeout_multiplier * test.timeout if self.debug_info is None else None
         test_url = self.test_url(test)
 
@@ -1453,7 +1455,7 @@ class WebDriverPrintRefTestExecutor(WebDriverRefTestExecutor):
         # return value.
         protocol.testdriver.run(url, self.wait_script)
 
-        pdf = protocol.pdf_print.render_as_pdf(*self.viewport_size)
+        pdf = protocol.pdf_print.render_as_pdf(*self.viewport_size, self.safe_printable_inset)
         screenshots = protocol.pdf_print.pdf_to_png(pdf, self.page_ranges)
         for i, screenshot in enumerate(screenshots):
             # strip off the data:img/png, part of the url

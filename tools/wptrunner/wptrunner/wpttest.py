@@ -699,22 +699,28 @@ class ReftestTest(Test):
     def page_ranges(self):
         return {}
 
+    @property
+    def safe_printable_inset(self):
+        return 0
 
 class PrintReftestTest(ReftestTest):
     test_type = "print-reftest"
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, references,
                  timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None,
-                 page_ranges=None, protocol="http", subdomain=False, testdriver=False):
+                 page_ranges=None, safe_printable_inset=None, protocol="http", subdomain=False,
+                 testdriver=False):
         super().__init__(url_base, tests_root, url, inherit_metadata, test_metadata,
                          references, timeout, path, viewport_size, dpi,
                          fuzzy, protocol, subdomain=subdomain, testdriver=testdriver)
         self._page_ranges = page_ranges
+        self._safe_printable_inset = safe_printable_inset
 
     @classmethod
     def cls_kwargs(cls, manifest_test):
         rv = super().cls_kwargs(manifest_test)
         rv["page_ranges"] = manifest_test.page_ranges
+        rv["safe_printable_inset"] = manifest_test.safe_printable_inset
         return rv
 
     def get_viewport_size(self, override):
@@ -725,6 +731,9 @@ class PrintReftestTest(ReftestTest):
     def page_ranges(self):
         return self._page_ranges
 
+    @property
+    def safe_printable_inset(self):
+        return self._safe_printable_inset
 
 class WdspecTest(Test):
     result_cls = WdspecResult

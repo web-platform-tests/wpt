@@ -973,6 +973,32 @@ def test_page_ranges_invalid(page_ranges):
         s.page_ranges
 
 
+@pytest.mark.parametrize("safe_printable_inset, expected", [
+    (b"0", 0),
+    (b"0.5", 0.5),
+    (b"2.54", 2.54),
+    (b"100", 100)])
+def test_safe_printable_inset(safe_printable_inset, expected):
+    content = b"""<link rel=match href=ref.html>
+<meta name=safe-printable-inset content="%s">
+""" % safe_printable_inset
+
+    s = create("foo/test-print.html", content)
+
+    assert s.safe_printable_inset == expected
+
+
+@pytest.mark.parametrize("safe_printable_inset", [b"ananas", b"auto", b"-1", b"0,0"])
+def test_safe_printable_inset_invalid(safe_printable_inset):
+    content = b"""<link rel=match href=ref.html>
+<meta name=safe-printable-inset content="%s">
+""" % safe_printable_inset
+
+    s = create("foo/test-print.html", content)
+    with pytest.raises(ValueError):
+        s.safe_printable_inset
+
+
 def test_hash():
     s = SourceFile("/", "foo", "/", contents=b"Hello, World!")
     assert "b45ef6fec89518d314f546fd6c3025367b721684" == s.hash

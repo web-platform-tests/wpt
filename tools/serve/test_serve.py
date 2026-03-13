@@ -329,7 +329,7 @@ def test_get_metadata(test262_handlers, handler_cls, request_path, expected_meta
     (
         Test262WindowModuleTestHandler,
         "/test262/module.test262-module-test.html",
-        ['<script type="module">', 'import {} from "/test262/module.js";', 'test262Setup();', 'test262Done();']
+        ['<script type="module">', 'test262Setup();', 'import("/test262/module.js")', 'test262Done());']
     ),
     # Verification of the 'negative' replacement in the HTML
     (

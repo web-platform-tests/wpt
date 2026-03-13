@@ -1027,13 +1027,13 @@ class SourceFile:
                 )]
 
         elif self.name_is_multi_global:
-            globals = ""
+            globals_list = []
             script_metadata = self.script_metadata
             assert script_metadata is not None
             for (key, value) in script_metadata:
                 if key == "global":
-                    globals = value
-                    break
+                    globals_list.append(value)
+            globals = ",".join(globals_list)
 
             tests: List[ManifestItem] = [
                 TestharnessTest(

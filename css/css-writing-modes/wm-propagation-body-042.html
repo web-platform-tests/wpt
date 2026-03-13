@@ -13,7 +13,7 @@
   -->
   <link rel="match" href="wm-propagation-body-042-ref.html">
 
-  <meta name="assert" content="This test checks that when the root element has a &lt;body&gt; child element, then the principal writing mode is instead taken from the values of writing-mode and direction on the first such child element instead of taken from the root element. Finally, in order to make sure that the principal writing mode is indeed 'sideways-rl', the test checks that a simple text is not affected by 'text-orientation: upright' since 'text-orientation: upright' should have no impact and no rendering effect on it.">
+   <meta name="assert" content="This test checks two things: (1) When the root element has a &lt;body&gt; child, the principal writing mode (USED value on the root) is taken from &lt;body&gt; (here, 'sideways-rl'). (2) Pseudo-elements of &lt;html&gt; (e.g., html::after) inherit from the root’s COMPUTED value, not the propagated used value; therefore with html { writing-mode: vertical-rl }, 'text-orientation: upright' DOES apply to html::after.">
 
   <!--
   Tests 032 to 035: html's writing-mode is not specified
@@ -39,7 +39,12 @@
     {
       content: "This text must be written sideways: vertically, with letters rotated 90 degrees.";
       text-orientation: upright;
-      /* 'text-orientation: upright' has no effect with 'sideways-rl', but does with 'vertical-rl' */
+       /* IMPORTANT:
+         Pseudo-elements inherit from <html>'s COMPUTED value.
+         Body→root propagation changes only the root's USED value.
+         Therefore html::after inherits 'vertical-rl' from <html> (computed),
+         so 'text-orientation: upright' DOES apply here.
+      */
     }
 
   body

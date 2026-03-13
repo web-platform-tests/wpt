@@ -1,3 +1,4 @@
 features:
-- name: viewport
-  files: "**"
+- name: viewport-segments
+  files:
+  - "viewport-segments.html"

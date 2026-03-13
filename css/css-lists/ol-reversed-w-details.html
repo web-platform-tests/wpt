@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Reversed ol containing details elements</title>
+<link rel="help" href="https://html.spec.whatwg.org/#attr-ol-reversed">
+<link rel="help" href="https://html.spec.whatwg.org/#ordinal-value">
+<link rel="match" href="ol-reversed-w-details-ref.html">
+<meta name="assert" content="List numbering should not change when list items contain details elements.">
+<p>List item numbers should match the numbers in the list items.</p>
+<ol reversed>
+ <li><details><summary>3</summary>three</details></li>
+ <li><details><summary>2</summary>two</details></li>
+ <li><details><summary>1</summary>one</details></li>
+</ol>

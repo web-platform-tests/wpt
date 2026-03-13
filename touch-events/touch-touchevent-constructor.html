@@ -120,7 +120,7 @@ test(function() {
         clientY: 20,
     });
 
-    var touchEvent1 = new TouchEvent("ontouchstart", {
+    var touchEvent1 = new TouchEvent("touchstart", {
         touches: [touch1, touch2],
         targetTouches: [touch1],
         altKey: true,
@@ -128,7 +128,7 @@ test(function() {
     });
 
     check_TouchEvent(touchEvent1);
-    assert_equals(touchEvent1.type, "ontouchstart", "touchEvent.type is requested value");
+    assert_equals(touchEvent1.type, "touchstart", "touchEvent.type is requested value");
     assert_equals(touchEvent1.touches.length, 2, "touchEvent.touches.length is requested value");
     assert_equals(touchEvent1.touches[0], touch1, "touchEvent.touches[0] is requested value");
     assert_equals(touchEvent1.touches[1], touch2, "touchEvent.touches[1] is requested value");

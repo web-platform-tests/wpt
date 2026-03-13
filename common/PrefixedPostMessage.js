@@ -3,7 +3,7 @@
  * by generating and using a unique prefix that gets wrapped into message
  * objects. This makes it more feasible to have multiple tests that use
  * `window.postMessage` in a single test file. Basically, make it possible
- * for the each test to listen for only the messages that are pertinent to it.
+ * for each test to listen for only the messages that are pertinent to it.
  *
  * 'Prefix' not an elegant term to use here but this models itself after
  * PrefixedLocalStorage.

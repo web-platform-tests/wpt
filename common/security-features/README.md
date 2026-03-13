@@ -280,7 +280,7 @@ Taking the spec JSON, the generator follows this algorithm:
 
 * Expand all ```excluded_tests``` to create a denylist of selections
 
-* For each `specification` entries: Expand the ```test_expansion``` pattern into selections and check each against the denylist, if not marked as suppresed, generate the test resources for the selection
+* For each `specification` entries: Expand the ```test_expansion``` pattern into selections and check each against the denylist, if not marked as suppressed, generate the test resources for the selection
 
 ###  SourceContext Resolution
 
@@ -400,7 +400,7 @@ which means
 ### Scenario Object
 
 The **scenario** object is the JSON object written to the generated HTML files, and passed to JavaScript test runtime (as an argument of `TestCase`).
-A scenario object is an selection object, minus the keys used in [SourceContext Resolution](#sourceContext-resolution):
+A scenario object is a selection object, minus the keys used in [SourceContext Resolution](#sourceContext-resolution):
 
 - `source_context_list`
 - `delivery_type`
@@ -450,7 +450,7 @@ TODO(https://github.com/web-platform-tests/wpt/issues/21710): Currently the name
 
 ## How the test runtime works
 
-All the information needed at runtime is contained in an scenario object. See the code/comments of the following files.
+All the information needed at runtime is contained in a scenario object. See the code/comments of the following files.
 
 - `project-directory/generic/test-case.js` defines `TestCase`, the entry point that receives a scenario object. `resources/common.sub.js` does the most of common JavaScript work.
     - Subresource URLs (which point to `subresource/` scripts) are calculated from `origin` and `redirection` values.

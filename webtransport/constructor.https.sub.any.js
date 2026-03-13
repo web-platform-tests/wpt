@@ -7,11 +7,11 @@ const BAD_URLS = [
   null,
   '',
   'no-scheme',
-  'http://example.com/' /* scheme is wrong */,
-  'quic-transport://example.com/' /* scheme is wrong */,
+  'http://{{domains[nonexistent]}}/' /* scheme is wrong */,
+  'quic-transport://{{domains[nonexistent]}}/' /* scheme is wrong */,
   'https:///' /* no host  specified */,
-  'https://example.com/#failing' /* has fragment */,
-  `https://${HOST}:999999/` /* invalid port */,
+  'https://{{domains[nonexistent]}}/#failing' /* has fragment */,
+  'https://{{host}}:999999/' /* invalid port */,
 ];
 
 for (const url of BAD_URLS) {
@@ -60,7 +60,7 @@ for (const options of OPTIONS) {
 }
 
 promise_test(async t => {
-  const wt = new WebTransport(`https://${HOST}:0/`);
+  const wt = new WebTransport('https://{{host}}:0/');
 
   // Sadly we cannot use promise_rejects_dom as the error constructor is
   // WebTransportError rather than DOMException.

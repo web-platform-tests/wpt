@@ -1238,8 +1238,7 @@ features:
 """,
         [
             ("UNNECESSARY-EXCLUSION-IN-WEB-FEATURES-FILE",
-             "The WEB_FEATURES.yml file contains an exclusion pattern "
-             "that does not exclude any included files: "
+             "The WEB_FEATURES.yml file contains a redundant or inoperable exclusion pattern: "
              "'!bar-*' in feature 'feature1'",
              "css/WEB_FEATURES.yml",
              None),

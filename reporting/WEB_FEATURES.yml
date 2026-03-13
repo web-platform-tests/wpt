@@ -1,3 +1,7 @@
 features:
 - name: reporting
   files: "**"
+- name: crash-reporting
+  files:
+  - crash-reporting-*
+  - crashReport-*

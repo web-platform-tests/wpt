@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <head>
 <title>Performance Paint Timing Test: FP due to background color</title>
+<style>html{background: yellow}</style>
 </head>
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/utils.js"></script>
+<style>
+body {
+    background: red;
+    opacity: 0.5;
+    height: 100px;
+}
+</style>
 <div id="main"></div>
 </body>
 

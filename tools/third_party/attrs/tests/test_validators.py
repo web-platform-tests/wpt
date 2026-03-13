@@ -4,7 +4,6 @@
 Tests for `attr.validators`.
 """
 
-
 import re
 
 import pytest
@@ -30,23 +29,10 @@ from attr.validators import (
     min_len,
     not_,
     optional,
-    provides,
+    or_,
 )
 
 from .utils import simple_attr
-
-
-@pytest.fixture(scope="module")
-def zope_interface():
-    """Provides ``zope.interface`` if available, skipping the test if not."""
-    try:
-        import zope.interface
-    except ImportError:
-        raise pytest.skip(
-            "zope-related tests skipped when zope.interface is not installed"
-        )
-
-    return zope.interface
 
 
 class TestDisableValidators:
@@ -314,79 +300,6 @@ class TestAnd:
         assert C.__attrs_attrs__[0].validator == C.__attrs_attrs__[1].validator
 
 
-@pytest.fixture(scope="module")
-def ifoo(zope_interface):
-    """Provides a test ``zope.interface.Interface`` in ``zope`` tests."""
-
-    class IFoo(zope_interface.Interface):
-        """
-        An interface.
-        """
-
-        def f():
-            """
-            A function called f.
-            """
-
-    return IFoo
-
-
-class TestProvides:
-    """
-    Tests for `provides`.
-    """
-
-    def test_in_all(self):
-        """
-        Verify that this validator is in ``__all__``.
-        """
-        assert provides.__name__ in validator_module.__all__
-
-    def test_success(self, zope_interface, ifoo):
-        """
-        Nothing happens if value provides requested interface.
-        """
-
-        @zope_interface.implementer(ifoo)
-        class C:
-            def f(self):
-                pass
-
-        with pytest.deprecated_call():
-            v = provides(ifoo)
-
-        v(None, simple_attr("x"), C())
-
-    def test_fail(self, ifoo):
-        """
-        Raises `TypeError` if interfaces isn't provided by value.
-        """
-        value = object()
-        a = simple_attr("x")
-
-        with pytest.deprecated_call():
-            v = provides(ifoo)
-
-        with pytest.raises(TypeError) as e:
-            v(None, a, value)
-
-        assert (
-            f"'x' must provide {ifoo!r} which {value!r} doesn't.",
-            a,
-            ifoo,
-            value,
-        ) == e.value.args
-
-    def test_repr(self, ifoo):
-        """
-        Returned validator has a useful `__repr__`.
-        """
-        with pytest.deprecated_call():
-            v = provides(ifoo)
-
-        assert (f"<provides validator for interface {ifoo!r}>") == repr(v)
-
-
 @pytest.mark.parametrize(
     "validator",
     [
@@ -443,14 +356,14 @@ class TestOptional:
 
         if isinstance(validator, list):
             repr_s = (
-                "<optional validator for _AndValidator(_validators=[{func}, "
+                f"<optional validator for _AndValidator(_validators=[{always_pass!r}, "
                 "<instance_of validator for type <class 'int'>>]) or None>"
-            ).format(func=repr(always_pass))
+            )
         elif isinstance(validator, tuple):
             repr_s = (
-                "<optional validator for _AndValidator(_validators=({func}, "
+                f"<optional validator for _AndValidator(_validators=({always_pass!r}, "
                 "<instance_of validator for type <class 'int'>>)) or None>"
-            ).format(func=repr(always_pass))
+            )
         else:
             repr_s = (
                 "<optional validator for <instance_of validator for type "
@@ -477,6 +390,7 @@ class TestIn_:
         """
         v = in_([1, 2, 3])
         a = simple_attr("test")
+
         v(1, a, 3)
 
     def test_fail(self):
@@ -518,6 +432,21 @@ class TestIn_:
         """
         v = in_([3, 4, 5])
         assert ("<in_ validator with options [3, 4, 5]>") == repr(v)
+
+    def test_is_hashable(self):
+        """
+        `in_` is hashable, so fields using it can be used with the include and
+        exclude filters.
+        """
+
+        @attr.s
+        class C:
+            x: int = attr.ib(validator=attr.validators.in_({1, 2}))
+
+        i = C(2)
+
+        attr.asdict(i, filter=attr.filters.include(lambda val: True))
+        attr.asdict(i, filter=attr.filters.exclude(lambda val: True))
 
 
 @pytest.fixture(
@@ -1145,8 +1074,7 @@ class TestNot_:
         v = not_(wrapped)
 
         assert (
-            f"<not_ validator wrapping {wrapped!r}, "
-            f"capturing {v.exc_types!r}>"
+            f"<not_ validator wrapping {wrapped!r}, capturing {v.exc_types!r}>"
         ) == repr(v)
 
     def test_success_because_fails(self):
@@ -1180,8 +1108,8 @@ class TestNot_:
 
         assert (
             (
-                "not_ validator child '{!r}' did not raise a captured error"
-            ).format(always_passes),
+                f"not_ validator child '{always_passes!r}' did not raise a captured error"
+            ),
             a,
             always_passes,
             input_value,
@@ -1276,8 +1204,8 @@ class TestNot_:
 
         assert (
             (
-                "not_ validator child '{!r}' did not raise a captured error"
-            ).format(instance_of((int, float))),
+                f"not_ validator child '{instance_of((int, float))!r}' did not raise a captured error"
+            ),
             a,
             wrapped,
             input_value,
@@ -1348,3 +1276,38 @@ class TestNot_:
             "'exc_types' must be a subclass of <class 'Exception'> "
             "(got <class 'str'>)."
         ) == e.value.args[0]
+
+
+class TestOr:
+    def test_in_all(self):
+        """
+        Verify that this validator is in ``__all__``.
+        """
+        assert or_.__name__ in validator_module.__all__
+
+    def test_success(self):
+        """
+        Succeeds if at least one of wrapped validators succeed.
+        """
+        v = or_(instance_of(str), always_pass)
+
+        v(None, simple_attr("test"), 42)
+
+    def test_fail(self):
+        """
+        Fails if all wrapped validators fail.
+        """
+        v = or_(instance_of(str), always_fail)
+
+        with pytest.raises(ValueError):
+            v(None, simple_attr("test"), 42)
+
+    def test_repr(self):
+        """
+        Returned validator has a useful `__repr__`.
+        """
+        v = or_(instance_of(int), instance_of(str))
+        assert (
+            "<or validator wrapping (<instance_of validator for type "
+            "<class 'int'>>, <instance_of validator for type <class 'str'>>)>"
+        ) == repr(v)

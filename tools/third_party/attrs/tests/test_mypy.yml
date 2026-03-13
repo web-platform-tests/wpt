@@ -589,7 +589,7 @@
         x: Optional[T]
         @classmethod
         def clsmeth(cls) -> None:
-           reveal_type(cls)  # N: Revealed type is "Type[main.A[T`1]]"
+           reveal_type(cls)  # N: Revealed type is "type[main.A[T`1]]"
 
 - case: testAttrsForwardReference
   main: |
@@ -645,7 +645,7 @@
         b: str = attr.ib()
         @classmethod
         def new(cls) -> A:
-           reveal_type(cls)  # N: Revealed type is "Type[main.A]"
+           reveal_type(cls)  # N: Revealed type is "type[main.A]"
            return cls(6, 'hello')
         @classmethod
         def bad(cls) -> A:
@@ -680,7 +680,7 @@
 
         @classmethod
         def foo(cls, x: Union[int, str]) -> Union[int, str]:
-            reveal_type(cls)            # N: Revealed type is "Type[main.A]"
+            reveal_type(cls)            # N: Revealed type is "type[main.A]"
             reveal_type(cls.other())    # N: Revealed type is "builtins.str"
             return x
 
@@ -767,7 +767,7 @@
             return 'hello'
 
 - case: testAttrsUsingBadConverter
-  regex: true
+  skip: sys.version_info[:2] < (3, 10)
   main: |
     import attr
     from typing import overload
@@ -787,14 +787,14 @@
         bad_overloaded: int = attr.ib(converter=bad_overloaded_converter)
     reveal_type(A)
   out: |
-    main:15: error: Cannot determine __init__ type from converter  \[misc\]
-    main:15: error: Argument "converter" has incompatible type \"Callable\[\[\], str\]\"; expected (\"Callable\[\[Any\], Any\] \| None\"|\"Optional\[Callable\[\[Any\], Any\]\]\")  \[arg-type\]
-    main:16: error: Cannot determine __init__ type from converter  \[misc\]
-    main:16: error: Argument "converter" has incompatible type overloaded function; expected (\"Callable\[\[Any\], Any\] \| None\"|\"Optional\[Callable\[\[Any\], Any\]\]\")  \[arg-type\]
-    main:17: note: Revealed type is "def (bad: Any, bad_overloaded: Any\) -> main.A"
+    main:15: error: Cannot determine __init__ type from converter  [misc]
+    main:15: error: Argument "converter" has incompatible type "Callable[[], str]"; expected "Callable[[Any], Any] | Converter[Any, Any] | list[Callable[[Any], Any] | Converter[Any, Any]] | tuple[Callable[[Any], Any] | Converter[Any, Any]] | None"  [arg-type]
+    main:16: error: Cannot determine __init__ type from converter  [misc]
+    main:16: error: Argument "converter" has incompatible type overloaded function; expected "Callable[[Any], Any] | Converter[Any, Any] | list[Callable[[Any], Any] | Converter[Any, Any]] | tuple[Callable[[Any], Any] | Converter[Any, Any]] | None"  [arg-type]
+    main:17: note: Revealed type is "def (bad: Any, bad_overloaded: Any) -> main.A"
 
 - case: testAttrsUsingBadConverterReprocess
-  regex: true
+  skip: sys.version_info[:2] < (3, 10)
   main: |
     import attr
     from typing import overload
@@ -815,11 +815,11 @@
         bad_overloaded: int = attr.ib(converter=bad_overloaded_converter)
     reveal_type(A)
   out: |
-    main:16: error: Cannot determine __init__ type from converter  \[misc\]
-    main:16: error: Argument \"converter\" has incompatible type \"Callable\[\[\], str\]\"; expected (\"Callable\[\[Any\], Any\] \| None\"|\"Optional\[Callable\[\[Any\], Any\]\]\")  \[arg-type\]
-    main:17: error: Cannot determine __init__ type from converter  \[misc\]
-    main:17: error: Argument "converter" has incompatible type overloaded function; expected (\"Callable\[\[Any\], Any\] \| None\"|\"Optional\[Callable\[\[Any\], Any\]\]\")  \[arg-type\]
-    main:18: note: Revealed type is "def (bad: Any, bad_overloaded: Any\) -> main.A"
+    main:16: error: Cannot determine __init__ type from converter  [misc]
+    main:16: error: Argument "converter" has incompatible type "Callable[[], str]"; expected "Callable[[Any], Any] | Converter[Any, Any] | list[Callable[[Any], Any] | Converter[Any, Any]] | tuple[Callable[[Any], Any] | Converter[Any, Any]] | None"  [arg-type]
+    main:17: error: Cannot determine __init__ type from converter  [misc]
+    main:17: error: Argument "converter" has incompatible type overloaded function; expected "Callable[[Any], Any] | Converter[Any, Any] | list[Callable[[Any], Any] | Converter[Any, Any]] | tuple[Callable[[Any], Any] | Converter[Any, Any]] | None"  [arg-type]
+    main:18: note: Revealed type is "def (bad: Any, bad_overloaded: Any) -> main.A"
 
 - case: testAttrsUsingUnsupportedConverter
   main: |
@@ -873,6 +873,66 @@
 
     o = C("1", "2", "3")
     o = C(1, 2, "3")
+
+- case: testThreeArgConverterTypes
+  main: |
+    from typing import Any
+    from attrs import AttrsInstance, Attribute, Converter
+
+    def my_converter(value: Any) -> str:
+        """A converter that only takes the value."""
+        return str(value)
+
+    def my_converter_with_self(value: Any, self: AttrsInstance) -> str:
+        """This converter takes the value and the self."""
+        return str(value)
+
+
+    def my_converter_with_field(value: Any, field: Attribute) -> str:
+        """This converter takes the value and the field."""
+        return str(value)
+
+    reveal_type(Converter(my_converter))
+    Converter(my_converter_with_self)
+    Converter(my_converter_with_field)
+
+    reveal_type(Converter(my_converter_with_self, takes_self=True))
+    Converter(my_converter, takes_self=True)
+    Converter(my_converter_with_field, takes_self=True)
+
+    reveal_type(Converter(my_converter_with_field, takes_field=True))
+    Converter(my_converter, takes_field=True)
+    Converter(my_converter_with_self, takes_field=True)
+  out: |
+    main:17: note: Revealed type is "attr.Converter[Any, builtins.str]"
+    main:18: error: Argument 1 to "Converter" has incompatible type "Callable[[Any, AttrsInstance], str]"; expected "Callable[[Any], str]"  [arg-type]
+    main:19: error: Argument 1 to "Converter" has incompatible type "Callable[[Any, Attribute[Any]], str]"; expected "Callable[[Any], str]"  [arg-type]
+    main:21: note: Revealed type is "attr.Converter[Any, builtins.str]"
+    main:22: error: No overload variant of "Converter" matches argument types "Callable[[Any], str]", "bool"  [call-overload]
+    main:22: note: Possible overload variants:
+    main:22: note:     def [In, Out] Converter(self, converter: Callable[[In], Out]) -> Converter[In, Out]
+    main:22: note:     def [In, Out] Converter(self, converter: Callable[[In, AttrsInstance, Attribute[Any]], Out], *, takes_self: Literal[True], takes_field: Literal[True]) -> Converter[In, Out]
+    main:22: note:     def [In, Out] Converter(self, converter: Callable[[In, Attribute[Any]], Out], *, takes_field: Literal[True]) -> Converter[In, Out]
+    main:22: note:     def [In, Out] Converter(self, converter: Callable[[In, AttrsInstance], Out], *, takes_self: Literal[True]) -> Converter[In, Out]
+    main:23: error: No overload variant of "Converter" matches argument types "Callable[[Any, Attribute[Any]], str]", "bool"  [call-overload]
+    main:23: note: Possible overload variants:
+    main:23: note:     def [In, Out] Converter(self, converter: Callable[[In], Out]) -> Converter[In, Out]
+    main:23: note:     def [In, Out] Converter(self, converter: Callable[[In, AttrsInstance, Attribute[Any]], Out], *, takes_self: Literal[True], takes_field: Literal[True]) -> Converter[In, Out]
+    main:23: note:     def [In, Out] Converter(self, converter: Callable[[In, Attribute[Any]], Out], *, takes_field: Literal[True]) -> Converter[In, Out]
+    main:23: note:     def [In, Out] Converter(self, converter: Callable[[In, AttrsInstance], Out], *, takes_self: Literal[True]) -> Converter[In, Out]
+    main:25: note: Revealed type is "attr.Converter[Any, builtins.str]"
+    main:26: error: No overload variant of "Converter" matches argument types "Callable[[Any], str]", "bool"  [call-overload]
+    main:26: note: Possible overload variants:
+    main:26: note:     def [In, Out] Converter(self, converter: Callable[[In], Out]) -> Converter[In, Out]
+    main:26: note:     def [In, Out] Converter(self, converter: Callable[[In, AttrsInstance, Attribute[Any]], Out], *, takes_self: Literal[True], takes_field: Literal[True]) -> Converter[In, Out]
+    main:26: note:     def [In, Out] Converter(self, converter: Callable[[In, Attribute[Any]], Out], *, takes_field: Literal[True]) -> Converter[In, Out]
+    main:26: note:     def [In, Out] Converter(self, converter: Callable[[In, AttrsInstance], Out], *, takes_self: Literal[True]) -> Converter[In, Out]
+    main:27: error: No overload variant of "Converter" matches argument types "Callable[[Any, AttrsInstance], str]", "bool"  [call-overload]
+    main:27: note: Possible overload variants:
+    main:27: note:     def [In, Out] Converter(self, converter: Callable[[In], Out]) -> Converter[In, Out]
+    main:27: note:     def [In, Out] Converter(self, converter: Callable[[In, AttrsInstance, Attribute[Any]], Out], *, takes_self: Literal[True], takes_field: Literal[True]) -> Converter[In, Out]
+    main:27: note:     def [In, Out] Converter(self, converter: Callable[[In, Attribute[Any]], Out], *, takes_field: Literal[True]) -> Converter[In, Out]
+    main:27: note:     def [In, Out] Converter(self, converter: Callable[[In, AttrsInstance], Out], *, takes_self: Literal[True]) -> Converter[In, Out]
 
 - case: testAttrsCmpWithSubclasses
   regex: true
@@ -1411,4 +1471,17 @@
 
     reveal_type(A)  # N: Revealed type is "def () -> main.A"
     if has(A):
-        reveal_type(A)  # N: Revealed type is "Type[attr.AttrsInstance]"
+        reveal_type(A)  # N: Revealed type is "type[attr.AttrsInstance]"
+
+- case: testNothingType
+  regex: true
+  main: |
+    from typing import Optional
+    from attrs import NOTHING, NothingType
+
+    def takes_nothing(arg: Optional[NothingType]) -> None:
+        return None
+
+    takes_nothing(NOTHING)
+    takes_nothing(None)
+    takes_nothing(1)  # E: Argument 1 to "takes_nothing" has incompatible type "Literal\[1\]"; expected "(Optional\[Literal\[_Nothing.NOTHING\]\]|Literal\[_Nothing.NOTHING\] \| None)"  \[arg-type\]

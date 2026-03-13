@@ -19,10 +19,10 @@ We recommend our modern APIs for new code:
 - and {func}`attrs.field()` to define an attribute.
 
 They have been added in *attrs* 20.1.0, they are expressive, and they have modern defaults like slots and type annotation awareness switched on by default.
-Sometimes they're referred to as *next-generation* or *NG* APIs.
+Sometimes, they're referred to as *next-generation* or *NG* APIs.
 As of *attrs* 21.3.0 you can also import them from the `attrs` package namespace.
 
-The traditional APIs {func}`attr.s` / {func}`attr.ib`, their serious-business aliases `attr.attrs` / `attr.attrib`, and the never-documented, but popular `attr.dataclass` easter egg will stay **forever**.
+The traditional, or *OG*, APIs {func}`attr.s` / {func}`attr.ib`, their serious-business aliases `attr.attrs` / `attr.attrib`, and the never-documented, but popular `attr.dataclass` easter egg will stay **forever**.
 
 *attrs* will **never** force you to use type annotations.
 
@@ -81,7 +81,7 @@ And so it happened that *attrs* [shipped](https://www.attrs.org/en/17.3.0.post2/
 ---
 
 Due to backwards-compatibility concerns, this feature is off by default in the {func}`attr.s` decorator and has to be activated using `@attr.s(auto_attribs=True)`, though.
-As a little easter egg and to save ourselves some typing, we've also [added](https://github.com/python-attrs/attrs/commit/88aa1c897dfe2ee4aa987e4a56f2ba1344a17238#diff-4fc63db1f2fcb7c6e464ee9a77c3c74e90dd191d1c9ffc3bdd1234d3a6663dc0R48) an alias called `attr.dataclasses` that just set `auto_attribs=True`.
+As a little easter egg and to save ourselves some typing, we've also [added](https://github.com/python-attrs/attrs/commit/88aa1c897dfe2ee4aa987e4a56f2ba1344a17238#diff-4fc63db1f2fcb7c6e464ee9a77c3c74e90dd191d1c9ffc3bdd1234d3a6663dc0R48) an alias called `attr.dataclass` that just set `auto_attribs=True`.
 It was never documented, but people found it and used it and loved it.
 
 Over the next months and years it became clear that type annotations have become the popular way to define classes and their attributes.

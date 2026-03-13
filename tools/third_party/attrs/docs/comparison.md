@@ -5,13 +5,14 @@ For that, *attrs* writes `__eq__` and `__ne__` methods for you.
 
 Additionally, if you pass `order=True`, *attrs* will also create a complete set of ordering methods: `__le__`, `__lt__`, `__ge__`, and `__gt__`.
 
-Both for equality and order, *attrs* will:
+For equality, *attrs* will generate a statement comparing the types of both instances,
+and then comparing each attribute in turn using `==`.
+
+For order, *attrs* will:
 
 - Check if the types of the instances you're comparing are equal,
 - if so, create a tuple of all field values for each instance,
 - and finally perform the desired comparison operation on those tuples.
-
-[^default]: That's the default if you use the {func}`attr.s` decorator, but not with {func}`~attrs.define`.
 
 (custom-comparison)=
 

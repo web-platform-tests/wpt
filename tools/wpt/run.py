@@ -725,9 +725,6 @@ class Safari(BrowserSetup):
     name = "safari"
     browser_cls = browser.Safari
 
-    def install(self, channel=None, url=None):
-        raise NotImplementedError
-
     def setup_kwargs(self, kwargs):
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = self.browser.find_webdriver(channel=kwargs["browser_channel"])

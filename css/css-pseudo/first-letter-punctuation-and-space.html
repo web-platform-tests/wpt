@@ -1,25 +1,341 @@
 <!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>CSS Test: ::first-letter formatting</title>
-    <link rel="author" title="Johannes Odland" href="mailto:johannes.odland@gmail.com">
-    <link rel="match" href="first-letter-punctuation-and-space-ref.html">
-    <link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#first-letter-pseudo">
-    <meta name="assert" content="Test checks that punctuation, intervening space separators and letters still have proper ::first-letter styling.">
-    <style>
-        div {
-            font-size: 36px;
+<meta charset="utf-8">
+<title>CSS Test: punctuation and intervening whitespace codepoints that are included in ::first-letter</title>
+<link rel="author" title="Johannes Odland" href="mailto:johannes.odland@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#first-letter-pseudo">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+    #target div {
+        position: absolute;
+        top: 0;
+        left: 0;
+        font-family: Ahem;
+        font-size: 16px !important;
+        opacity: 0;
+    }
+
+    #target div::first-letter {
+        color: green;
+        font-size: 0;
+    }
+</style>
+<script>
+    /* Punctuation in (Pc), (Pd), (Ps), (Pe), (Pi), (Pf), (Po) */
+    const Pc = ['_', '‿', '⁀', '⁔', '︳', '︴', '﹍', '﹎', '﹏', '＿'];
+    const Pd = ['-', '֊', '־', '᐀', '᠆', '‐', '‑', '‒', '–', '—', '―', '⸗', '⸚', '⸺', '⸻', '⹀', '⹝', '〜', '〰', '゠', '︱', '︲', '﹘', '﹣', '－', '𐺭'];
+    const Ps = ['(', '[', '{', '༺', '༼', '᚛', '‚', '„', '⁅', '⁽', '₍', '⌈', '⌊', '〈', '❨', '❪', '❬', '❮', '❰', '❲',
+        '❴', '⟅', '⟦', '⟨', '⟪', '⟬', '⟮', '⦃', '⦅', '⦇', '⦉', '⦋', '⦑', '⦓', '⦕', '⦗', '⧼', '⦍', '⦏', '⧘', '⧚', '⸢', '⸤',
+        '⸦', '⸨', '⹕', '⹗', '⹂', '⹙', '⹛', '〈', '《', '「', '『', '【', '〔', '〖', '〘', '〚', '〝', '﴿', '︗', '︵',
+        '︷', '︹', '︻', '︽', '︿', '﹁', '﹃', '﹇', '﹙', '﹛', '﹝', '（', '［', '｛', '｟', '｢'];
+    const Pe = [')', ']', '}', '༻', '༽', '᚜', '⁆', '⁾', '₎', '⌉', '⌋', '〉', '❩', '❫', '❭', '❯', '❱', '❳',
+        '❵', '⟆', '⟧', '⟩', '⟫', '⟭', '⟯', '⦄', '⦆', '⦈', '⦊', '⦌', '⦒', '⦔', '⦖', '⦘', '⧽', '⦎', '⦐', '⧙', '⧛', '⸣', '⸥',
+        '⸧', '⸩', '⹖', '⹘', '⹚', '⹜', '〉', '》', '」', '』', '】', '〕', '〗', '〙', '〛', '〞', '〟', '﴾', '︘', '︶',
+        '︸', '︺', '︼', '︾', '﹀', '﹂', '﹄', '﹈', '﹚', '﹜', '﹞', '）', '］', '｝', '｠', '｣'];
+    const Pi = ['«', '‘', '‛', '“', '‟', '‹', '⸂', '⸄', '⸉', '⸌', '⸜', '⸠'];
+    const Pf = ['»', '’', '”', '›', '⸃', '⸅', '⸊', '⸍', '⸝', '⸡'];
+    const Po = [
+        // Basic Latin
+        '!', '"', '#', '%', '&', '\'', '*', '\\',
+        ',', '.', '/', ':', ';', '?', '@',
+        // Latin 1 Supplement
+        '¡', '§', '¶', '·', '¿',
+        // Greek And Coptic
+        ';', '·',
+        // Armenian
+        '՚', '՛', '՜', '՝', '՞', '՟', '։',
+        // Hebrew
+        '׀', '׃', '׆', '׳', '״',
+        // Arabic
+        '؉', '؊', '،', '؍', '؛', '؝', '؞', '؟', '٪', '٫', '٬', '٭', '۔',
+        // Syriac
+        '܀', '܁', '܂', '܃', '܄', '܅', '܆', '܇', '܈', '܉', '܊', '܋', '܌', '܍',
+        // NKo
+        '߷', '߸', '߹',
+        // Samaritan
+        '࠰', '࠱', '࠲', '࠳', '࠴', '࠵', '࠶', '࠷', '࠸', '࠹', '࠺', '࠻', '࠼', '࠽', '࠾',
+        // Mandaic
+        '࡞',
+        // Devanagari
+        '।', '॥', '॰',
+        // Bengali
+        '৽',
+        // Gurmukhi
+        '੶',
+        // Gujarati
+        '૰',
+        // Telugu
+        '౷',
+        // Kannada
+        '಄',
+        // Sinhala,
+        '෴',
+        // Thai
+        '๏', '๚', '๛',
+        // Tibetan
+        '༄', '༅', '༆', '༇', '࿓', '࿔', '༈', '༉', '༊', '་', '༌', '།', '༎', '༏', '༐', '༑', '༒', '༔', '྅', '࿐', '࿑', '࿒', '࿙', '࿚',
+        // Myanmar
+        '၊', '။', '၌', '၍', '၎', '၏',
+        // Georgian
+        '჻',
+        // Ethiopic
+        '፠', '፡', '።', '፣', '፤', '፥', '፦', '፧', '፨',
+        // Unified Canadian Aboriginal Syllabics
+        '᙮',
+        // Runic
+        '᛫', '᛬', '᛭',
+        // Hanunoo
+        '᜵', '᜶',
+        // Khmer
+        '។', '៕', '៖', '៘', '៙', '៚',
+        // Mongolian
+        '᠀', '᠁', '᠂', '᠃', '᠄', '᠅', '᠇', '᠈', '᠉', '᠊',
+        // Limbu
+        '᥄', '᥅',
+        // Buginese
+        '᨞', '᨟',
+        // Tai Tham
+        '᪠', '᪡', '᪢', '᪣', '᪤', '᪥', '᪦', '᪨', '᪩', '᪪', '᪫', '᪬', '᪭',
+        // Balinese
+        '᭚', '᭛', '᭜', '᭝', '᭞', '᭟', '᭠', '᭽', '᭾',
+        // Batak
+        '᯼', '᯽', '᯾', '᯿',
+        // Lepcha
+        '᰻', '᰼', '᰽', '᰾', '᰿',
+        // Ol Chiki
+        '᱾', '᱿',
+        // Sundanese Supplement
+        '᳀', '᳁', '᳂', '᳃', '᳄', '᳅', '᳆', '᳇',
+        // Vedic Extensions
+        '᳓',
+        // General Punctuation
+        '‖', '‗', '†', '‡', '•', '‣', '․', '‥', '…', '‧', '‰', '‱', '′', '″', '‴', '‵', '‶', '‷', '‸', '※', '‽', '‾',
+        '⁁', '⁂', '⁃', '⁊', '⁋', '⁌', '⁍', '⁎', '⁏', '⁐', '⁑', '⁓', '⁕', '⁗', '‼', '⁇', '⁈', '⁉', '⁖', '⁘', '⁙', '⁚', '⁛',
+        '⁜', '⁝', '⁞',
+        // Coptic
+        '⳹', '⳺', '⳻', '⳼', '⳾', '⳿',
+        // Tifinagh
+        '⵰',
+        // Supplemental Punctuation
+        '⸀', '⸁', '⸆', '⸇', '⸈', '⸋', '⸎', '⸏', '⸐', '⸑', '⸒', '⸓', '⸔', '⸕', '⸖', '⸘', '⸙', '⸛', '⸞', '⸟', '⸪', '⸫',
+        '⸬', '⸭', '⸮', '⸰', '⸱', '⸳', '⸴', '⸿', '⹊', '⹋', '⹌', '⹍', '⹎', '⹏', '⹒', '⹓', '⹔', '⸲', '⸵', '⸶', '⸷', '⸸',
+        '⸹', '⸼', '⸽', '⸾', '⹁', '⹃', '⹄', '⹅', '⹆', '⹇', '⹈', '⹉',
+        // CJK Symbols And Punctuation
+        '、', '。', '〃', '〽',
+        // Katakana
+        '・',
+        // Lisu
+        '꓾', '꓿',
+        // Vai
+        '꘍', '꘎', '꘏',
+        // Cyrillic Extended B
+        '꙳', '꙾',
+        // Bamum
+        '꛲', '꛳', '꛴', '꛵', '꛶', '꛷',
+        // Phags Pa
+        '꡴', '꡵', '꡶', '꡷',
+        // Saurashtra
+        '꣎', '꣏',
+        // Devanagari Extended
+        '꣸', '꣹', '꣺', '꣼',
+        // Kayah Li
+        '꤮', '꤯',
+        // Rejang
+        '꥟',
+        // Javanese
+        '꧁', '꧂', '꧃', '꧄', '꧅', '꧆', '꧇', '꧈', '꧉', '꧊', '꧋', '꧌', '꧍', '꧞', '꧟',
+        // Cham
+        '꩜', '꩝', '꩞', '꩟',
+        // Tai Viet
+        '꫞', '꫟',
+        // Meetei Mayek Extensions, Meetei Mayek
+        '꫰', '꫱', '꯫',
+        // Vertical Forms
+        '︐', '︑', '︒', '︓', '︔', '︕', '︖', '︙',
+        // CJK Compatibility Forms
+        '︰', '﹅', '﹆', '﹉', '﹊', '﹋', '﹌',
+        // Small Form Variants
+        '﹐', '﹑', '﹒', '﹔', '﹕', '﹖', '﹗', '﹟', '﹠', '﹡', '﹨', '﹪', '﹫',
+        // Halfwidth And Fullwidth Forms
+        '！', '＂', '＃', '％', '＆', '＇', '＊', '，', '．', '／', '：', '；', '？', '＠', '＼', '｡', '､', '･',
+        // Aegean Numbers
+        '𐄀', '𐄁', '𐄂',
+        // Ugaritic
+        '𐎟',
+        // Old Persian
+        '𐏐',
+        // Caucasian Albanian
+        '𐕯',
+        // Imperial Aramaic
+        '𐡗',
+        // Phoenician
+        '𐤟',
+        // Lydian
+        '𐤿',
+        // Kharoshthi
+        '𐩐', '𐩑', '𐩒', '𐩓', '𐩔', '𐩕', '𐩖', '𐩗', '𐩘',
+        // Old South Arabian
+        '𐩿',
+        // Manichaean
+        '𐫰', '𐫱', '𐫲', '𐫳', '𐫴', '𐫵', '𐫶',
+        // Avestan
+        '𐬹', '𐬺', '𐬻', '𐬼', '𐬽', '𐬾', '𐬿',
+        // Psalter Pahlavi
+        '𐮙', '𐮚', '𐮛', '𐮜',
+        // Sogdian
+        '𐽕', '𐽖', '𐽗', '𐽘', '𐽙',
+        // Old Uyghur
+        '𐾆', '𐾇', '𐾈', '𐾉',
+        // Brahmi
+        '𑁇', '𑁈', '𑁉', '𑁊', '𑁋', '𑁌', '𑁍',
+        // Kaithi
+        '𑂻', '𑂼', '𑂾', '𑂿', '𑃀', '𑃁',
+        // Chakma
+        '𑅀', '𑅁', '𑅂', '𑅃',
+        // Mahajani
+        '𑅴', '𑅵',
+        // Sharada
+        '𑇅', '𑇆', '𑇇', '𑇈', '𑇍', '𑇛', '𑇝', '𑇞', '𑇟',
+        // Khojki
+        '𑈸', '𑈹', '𑈺', '𑈻', '𑈼', '𑈽',
+        // Multani
+        '𑊩',
+        // Newa
+        '𑑋', '𑑌', '𑑍', '𑑎', '𑑏', '𑑚', '𑑛', '𑑝',
+        // Tirhuta
+        '𑓆',
+        // Siddham
+        '𑗁', '𑗂', '𑗃', '𑗄', '𑗅', '𑗆', '𑗇', '𑗈', '𑗉', '𑗊', '𑗋', '𑗌', '𑗍', '𑗎', '𑗏', '𑗐', '𑗑', '𑗒', '𑗓', '𑗔', '𑗕', '𑗖', '𑗗',
+        // Modi
+        '𑙁', '𑙂', '𑙃',
+        // Mongolian Supplement
+        '𑙠', '𑙡', '𑙢', '𑙣', '𑙤', '𑙥', '𑙦', '𑙧', '𑙨', '𑙩', '𑙪', '𑙫', '𑙬',
+        // Takri
+        '𑚹',
+        // Ahom
+        '𑜼', '𑜽', '𑜾',
+        // Dogra
+        '𑠻',
+        // Dives Akuru
+        '𑥄', '𑥅', '𑥆',
+        // Nandinagari
+        '𑧢',
+        // Zanabazar Square
+        '𑨿', '𑩀', '𑩅', '𑩆', '𑩁', '𑩂', '𑩃', '𑩄',
+        // Soyombo
+        '𑪚', '𑪛', '𑪜', '𑪞', '𑪟', '𑪠', '𑪡', '𑪢',
+        // Devanagari Extended A
+        '𑬀', '𑬁', '𑬂', '𑬃', '𑬄', '𑬅', '𑬆', '𑬇', '𑬈', '𑬉',
+        // Bhaiksuki
+        '𑱁', '𑱂', '𑱃', '𑱄', '𑱅',
+        // Marchen
+        '𑱰', '𑱱',
+        // Makasar
+        '𑻷', '𑻸',
+        // Kawi
+        '𑽃', '𑽄', '𑽅', '𑽆', '𑽇', '𑽈', '𑽉', '𑽊', '𑽋', '𑽌', '𑽍', '𑽎', '𑽏',
+        // Tamil Supplement
+        '𑿿',
+        // Cuneiform Numbers And Punctuation
+        '𒑰', '𒑱', '𒑲', '𒑳', '𒑴',
+        // Cypro Minoan
+        '𒿱', '𒿲',
+        // Mro
+        '𖩮', '𖩯',
+        // Bassa Vah
+        '𖫵',
+        // Pahawh Hmong
+        '𖬷', '𖬸', '𖬹', '𖬺', '𖬻', '𖭄',
+        // Medefaidrin
+        '𖺗', '𖺘', '𖺙', '𖺚',
+        // Ideographic Symbols And Punctuation
+        '𖿢',
+        // Duployan
+        '𛲟',
+        // Sutton SignWriting
+        '𝪇', '𝪈', '𝪉', '𝪊', '𝪋',
+        // Adlam
+        '𞥞', '𞥟'
+    ];
+
+    const Zs = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '　'];
+
+    // Word-separator characters are typographic character units whose primary purpose and general usage is to separate
+    // words. In Unicode this includes (but is not exhaustively defined as) the space (U+0020),
+    // the no-break space (U+00A0), the Ethiopic word space (U+1361), the Aegean word separators (U+10100,U+10101),
+    // the Ugaritic word divider (U+1039F), and the Phoenician word separator (U+1091F).
+    const wordSeparators = [' ', ' ', '፡', '𐄀', '𐄁', '𐎟', '𐤟'];
+
+    function formatCodepoint(str) {
+        return `\\u+${str.codePointAt(0).toString(16).padStart(4, '0')}`;
+    }
+
+    setup({explicit_done: true});
+
+    async function runTest() {
+        const target = document.querySelector("#target");
+        let tests = [];
+
+        function setupTest(testString, name) {
+            const el = document.createElement('div');
+            el.innerHTML = testString;
+            target.appendChild(el);
+
+            tests.push({el, name});
         }
-        div::first-letter {
-            color: green;
+
+        // All punctuation—i.e, characters that belong to the Punctuation (P*) Unicode
+        // general category [UAX44]—that precedes the first letter,
+        for (const p of [Pc, Pd, Ps, Pe, Pi, Pf, Po].flat()) {
+            setupTest(`${p}Test`, `Preceding punctuation ${p} (${formatCodepoint(p)}) should be included`)
         }
-    </style>
-</head>
-<body>
-    <p>Test passes if the "T"s and preceding punctuation below are green.</p>
-    <div>– Test</div>
-    <div>« Test</div>
-    <div>&#xab;&nbsp;Test</div>
+
+        const multiplePrecedingCharacters = Pc[0] + Pd[0] + Ps[0]
+        setupTest(`${multiplePrecedingCharacters}Test`, `Multiple preceding punctuation characters ${multiplePrecedingCharacters} should be included`)
+
+        // as well as any intervening typographic space—characters belonging to the Zs
+        // Unicode general category [UAX44] other than U+3000 IDEOGRAPHIC SPACE.
+        for (const s of Zs.filter(char => char.codePointAt(0) !== 0x3000)) {
+            setupTest(`"${s}Test`, `Intervening typographic space ${(formatCodepoint(s))} before the first-letter should be included`)
+        }
+
+        const multipleInterveningSpaces = Zs[5] + Zs[6] + Zs[7]
+        setupTest(`"${multipleInterveningSpaces}Test`, `Multiple intervening typographic spaces before the first-letter should be included`)
+
+        // Any punctuation other than opening punctuation and dashes—i.e. characters that belong to the Punctuation (P*)
+        // Unicode general category, excluding Open Punctuation (Ps) and Dash Punctuation (Pd)—that follows the first letter,
+        for (const p of [Pc, Pe, Pi, Pf, Po].flat()) {
+            setupTest(`T${p}est`, `Following punctuation ${p} (${formatCodepoint(p)}) should be included`)
+        }
+
+        const multipleFollowingCharacters = Pc[0] + Pe[0] + Pi[0]
+        setupTest(`${multipleFollowingCharacters}Test`, `Multiple following punctuation characters ${multipleFollowingCharacters} should be included`)
+
+        // as well as any intervening typographic space—characters belonging to the Zs Unicode general category [UAX44]
+        // other than U+3000 IDEOGRAPHIC SPACE or a word separator.
+        for (const s of Zs.filter(char => char.codePointAt(0) !== 0x3000 && !wordSeparators.includes(char))) {
+            setupTest(`T${s}"est`, `Intervening typographic space ${(formatCodepoint(s))} after the first-letter should be included`)
+        }
+
+        setupTest(`T${multipleInterveningSpaces}"est`, `Multiple intervening typographic spaces after the first-letter should be included`)
+
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+
+        for (const {el, name} of tests) {
+            // First-letter should include the T and surrounding punctuation and whitespace.
+            // As the ::first-letter has font-size 0, the remaining size of the 'est' letters should be 3em = 48px
+            test(() => assert_equals(el.offsetWidth, 48, 'width'), name);
+        }
+
+        target.innerHTML = ''
+        tests = []
+        done();
+    }
+</script>
+<body onload="document.fonts.ready.then(() => { runTest(); })">
+<div id="target">
+    <div>Placeholder to ensure font has loaded</div>
+</div>
 </body>
-</html>

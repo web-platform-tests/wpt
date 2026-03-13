@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>will-change custom property has no effect</title>
+<link rel="help" href="https://drafts.csswg.org/css-will-change-1/">
+<link rel="match" href="will-change-003-ref.html">
+<meta name="assert" content="If a custom CSS property is specified as a <custom-ident> value in the will-change property, it must have no effect.">
+<style>
+  .wrapper {
+    position: relative;
+    z-index: 0;
+    width: 100px;
+    height: 100px;
+  }
+  .container {
+    will-change: --custom-prop;
+    background: green;
+    width: 100px;
+    height: 100px;
+  }
+  .child {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    background: red;
+    width: 100px;
+    height: 100px;
+  }
+</style>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div class="wrapper">
+  <div class="container">
+    <div class="child"></div>
+  </div>
+</div>

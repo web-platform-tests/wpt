@@ -1,28 +1,76 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Check form-data for image submit button with non-empty 'value' attribute</title>
+<title>Check form-data for image submit button</title>
 <link rel="author" title="Shanmuga Pandi" href="mailto:shanmuga.m@samsung.com">
+<link rel="author" title="Andreu Botella" href="mailto:andreu@andreubotella.com">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#constructing-form-data-set">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 
 <body>
 <script>
 "use strict";
 
+const tests = [
+  {
+    path: "resources/image-submit-click.html",
+    expected: "?name.x=0&name.y=0",
+    description: "Image submit button should not add extra form data if 'value' attribute is present with non-empty value"
+  },
+  {
+    path: "resources/image-submit-click-coordinates.html",
+    onload(iframe) {
+      const input = iframe.contentDocument.querySelector("input");
+
+      // WebKit's testdriver implementation doesn't seem to support moving the
+      // pointer to a position relative to an iframe's element, so we calculate
+      // its absolute position into the parent window.
+      const iframeRect = iframe.getBoundingClientRect();
+      const inputRect = input.getBoundingClientRect();
+
+      new test_driver.Actions()
+        .pointerMove(
+          // In the browser's default stylesheet, iframes have a border of 2px
+          // and no margins or padding.
+          iframeRect.x + 2 + inputRect.x + 10,
+          iframeRect.y + 2 + inputRect.y + 5
+        )
+        .pointerDown()
+        .pointerUp()
+        .send();
+    },
+    expected: "?image.x=10&image.y=5",
+    description: "Image submit button should submit the right coordinates on mouse clicks"
+  },
+  {
+    path: "resources/image-submit-click-multiple.html",
+    expected: "?b.x=0&b.y=0",
+    description: "With multiple image submit buttons, the correct one should be used"
+  }
+];
+
 // promise_test instead of async_test because this test use window.success, and so can't run at the same time.
 
-promise_test(t => {
-  return new Promise(resolve => {
-    window.success = t.step_func(locationLoaded => {
-      const expected = (new URL("resources/image-submit-click.html?name.x=0&name.y=0", location.href)).href;
-      assert_equals(locationLoaded, expected);
-      resolve();
-    });
+for (const test of tests) {
+  promise_test(t => {
+    return new Promise(resolve => {
+      window.success = t.step_func(locationLoaded => {
+        const query = new URL(locationLoaded).search;
+        assert_equals(query, test.expected);
+        resolve();
+      });
 
-    const iframe = document.createElement("iframe");
-    iframe.src = "resources/image-submit-click.html";
-    document.body.appendChild(iframe);
-  });
-}, "Image submit button should not add extra form data if 'value' attribute is present with non-empty value");
+      const iframe = document.createElement("iframe");
+      if (test.onload) {
+        iframe.addEventListener("load", t.step_func(() => test.onload(iframe)));
+      }
+      iframe.src = test.path;
+      document.body.appendChild(iframe);
+      t.add_cleanup(() => iframe.remove());
+    });
+  }, test.description);
+}
 </script>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<title>Editing: test for keyboard shortcuts with contenteditable=plaintext-only</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#contenteditable">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<div id="contentEditablePlaintextOnly" contenteditable="plaintext-only">plaintext-only</div>
+<script>
+    const kControl = "\uE009";
+    const kMeta = "\uE03D"; // Command key on macOS
+    const kB = "B";
+
+    promise_test(async () => {
+        const contentEditablePlaintextOnly = document.getElementById('contentEditablePlaintextOnly');
+
+        const selection = document.getSelection();
+        selection.selectAllChildren(contentEditablePlaintextOnly);
+
+        await new test_driver.Actions()
+            .keyDown(kControl)
+            .keyDown(kB)
+            .keyUp(kB)
+            .keyUp(kControl)
+            .send();
+
+        assert_equals(document.queryCommandState('bold'), false, 'Ctrl+B should have no effect for plaintext-only');
+
+        await new test_driver.Actions()
+            .keyDown(kMeta)
+            .keyDown(kB)
+            .keyUp(kB)
+            .keyUp(kMeta)
+            .send();
+
+        assert_equals(document.queryCommandState('bold'), false, 'Meta+B should have no effect for plaintext-only');
+
+    }, 'Send Ctrl+B and Meta+B shortcuts for making text bold should have no effect for plaintext-only');
+</script>

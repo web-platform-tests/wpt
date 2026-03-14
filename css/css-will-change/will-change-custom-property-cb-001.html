@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Test: will-change with custom property does not create containing block</title>
+<link rel="help" href="https://drafts.csswg.org/css-will-change/#will-change">
+<link rel="match" href="will-change-custom-property-cb-001-ref.html">
+<meta name="assert" content="If a custom property is specified in the will-change property, it must have no effect and must not trigger the creation of stacking contexts or containing blocks.">
+<style>
+  .wrapper {
+    position: relative;
+    display: flow-root;
+    width: 200px;
+    height: 200px;
+  }
+  .red-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    background: red;
+  }
+  .container {
+    will-change: --my-custom-property;
+    margin-top: 100px;
+    margin-left: 100px;
+    width: 100px;
+    height: 100px;
+  }
+  .child {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    background: green;
+  }
+</style>
+<body>
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+  <div class="wrapper">
+    <div class="red-box"></div>
+    <div class="container">
+      <div class="child"></div>
+    </div>
+  </div>
+</body>

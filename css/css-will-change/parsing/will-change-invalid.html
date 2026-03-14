@@ -45,6 +45,13 @@ for (let keyword of excludedKeywords) {
 test_invalid_value("will-change", "will-change");
 test_invalid_value("will-change", "none");
 test_invalid_value("will-change", "all");
+
+test(() => {
+  assert_false(CSS.supports("will-change", "NONE"));
+  assert_false(CSS.supports("will-change", "ALL"));
+  assert_false(CSS.supports("will-change", "WILL-CHANGE"));
+  assert_false(CSS.supports("will-change", "AUTO, transform"));
+}, "will-change invalid custom-ident case-insensitivity");
 </script>
 </body>
 </html>

@@ -52,6 +52,7 @@ def run(path, server_config, session_config, timeout=0):
 
             config = session_config.copy()
             config["wptserve"] = server_config.as_dict()
+            config["timeout"] = timeout
 
             with open(config_path, "w") as f:
                 json.dump(config, f)
@@ -144,12 +145,15 @@ class SubtestResultRecorder:
         self.record(report.nodeid, "ERROR", message, report.longrepr)
 
     def record_skip(self, report):
-        self.record(
-            report.nodeid,
-            "ERROR",
-            "In-test skip decorators are disallowed, "
-            "please use WPT metadata to ignore tests.",
-        )
+        if "PRECONDITION_FAILED" in report.longrepr[2]:
+            self.record(report.nodeid, "PRECONDITION_FAILED")
+        else:
+            self.record(
+                report.nodeid,
+                "ERROR",
+                "In-test skip decorators are disallowed, "
+                "please use WPT metadata to ignore tests.",
+            )
 
     def record(self, test, status, message=None, stack=None):
         if stack is not None:

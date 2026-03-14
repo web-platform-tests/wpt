@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Product Plugins &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="product-plugins">
+<h1>Product Plugins<a class="headerlink" href="#product-plugins" title="Link to this heading">¶</a></h1>
+<p>External packages can register custom browser products with wptrunner using
+entry points. Products registered this way are automatically
+available to both the wptrunner test harness and the <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code> CLI command.</p>
+<section id="creating-a-product-plugin">
+<h2>Creating a Product Plugin<a class="headerlink" href="#creating-a-product-plugin" title="Link to this heading">¶</a></h2>
+<p>A product plugin consists of three components:</p>
+<ul class="simple">
+<li><p>A Python package containing your product implementation</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">get_product()</span></code> function that returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">Product</span></code> instance</p></li>
+<li><p>An entry point registration in <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> or <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></p></li>
+</ul>
+<section id="entry-point-registration">
+<h3>Entry Point Registration<a class="headerlink" href="#entry-point-registration" title="Link to this heading">¶</a></h3>
+<p>Register via the <code class="docutils literal notranslate"><span class="pre">wptrunner.products</span></code> entry point group. Example <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;wptrunner-mybrowser&#39;</span><span class="p">,</span>
+    <span class="n">install_requires</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;wptrunner&#39;</span><span class="p">],</span>
+    <span class="n">entry_points</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;wptrunner.products&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mybrowser = wptrunner_mybrowser:get_product&#39;</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Or <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">project</span><span class="o">.</span><span class="n">entry</span><span class="o">-</span><span class="n">points</span><span class="o">.</span><span class="s2">&quot;wptrunner.products&quot;</span><span class="p">]</span>
+<span class="n">mybrowser</span> <span class="o">=</span> <span class="s2">&quot;wptrunner_mybrowser:get_product&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="product-module-implementation">
+<h3>Product Module Implementation<a class="headerlink" href="#product-module-implementation" title="Link to this heading">¶</a></h3>
+<p>Implement a Browser class and helper functions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">wptrunner.products</span><span class="w"> </span><span class="kn">import</span> <span class="n">Product</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">wptrunner.browsers.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Browser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">wptrunner.executors.executorwebdriver</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">WebDriverTestharnessExecutor</span><span class="p">,</span>
+    <span class="n">WebDriverRefTestExecutor</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyBrowser</span><span class="p">(</span><span class="n">Browser</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Launch browser process</span>
+        <span class="c1"># ...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># ...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">executor_browser</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">wptrunner.executors.executorwebdriver</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebDriverBrowser</span>
+        <span class="k">return</span> <span class="n">WebDriverBrowser</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;webdriver_url&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">webdriver_url</span><span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">check_args</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">pass</span>  <span class="c1"># Validate required arguments</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">browser_kwargs</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">test_type</span><span class="p">,</span> <span class="n">run_info_data</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">subsuite</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;binary&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">)}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">executor_kwargs</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">test_type</span><span class="p">,</span> <span class="n">test_environment</span><span class="p">,</span> <span class="n">run_info_data</span><span class="p">,</span>
+                    <span class="n">subsuite</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;capabilities&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;browserName&quot;</span><span class="p">:</span> <span class="s2">&quot;mybrowser&quot;</span><span class="p">}}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_product</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">Product</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mybrowser&quot;</span><span class="p">,</span>
+        <span class="n">browser_classes</span><span class="o">=</span><span class="p">{</span><span class="kc">None</span><span class="p">:</span> <span class="n">MyBrowser</span><span class="p">},</span>
+        <span class="n">check_args</span><span class="o">=</span><span class="n">check_args</span><span class="p">,</span>
+        <span class="n">get_browser_kwargs</span><span class="o">=</span><span class="n">browser_kwargs</span><span class="p">,</span>
+        <span class="n">get_executor_kwargs</span><span class="o">=</span><span class="n">executor_kwargs</span><span class="p">,</span>
+        <span class="n">env_options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;web-platform.test&quot;</span><span class="p">,</span> <span class="s2">&quot;bind_address&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="n">get_env_extras</span><span class="o">=</span><span class="k">lambda</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="n">get_timeout_multiplier</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">executor_classes</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;testharness&quot;</span><span class="p">:</span> <span class="n">WebDriverTestharnessExecutor</span><span class="p">,</span>
+            <span class="s2">&quot;reftest&quot;</span><span class="p">:</span> <span class="n">WebDriverRefTestExecutor</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="advanced-features">
+<h2>Advanced Features<a class="headerlink" href="#advanced-features" title="Link to this heading">¶</a></h2>
+<section id="multi-browser-support">
+<h3>Multi-Browser Support<a class="headerlink" href="#multi-browser-support" title="Link to this heading">¶</a></h3>
+<p>Specify different browser classes per test type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">browser_classes</span><span class="o">=</span><span class="p">{</span>
+    <span class="kc">None</span><span class="p">:</span> <span class="n">MyBrowser</span><span class="p">,</span>              <span class="c1"># Default</span>
+    <span class="s2">&quot;wdspec&quot;</span><span class="p">:</span> <span class="n">MyWdSpecBrowser</span><span class="p">,</span>    <span class="c1"># WebDriver spec tests</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="run-info-extras">
+<h3>Run Info Extras<a class="headerlink" href="#run-info-extras" title="Link to this heading">¶</a></h3>
+<p>Add custom metadata to test run information:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">run_info_extras</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;mybrowser_version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">}</span>
+
+<span class="c1"># Include in Product(..., run_info_extras=run_info_extras)</span>
+</pre></div>
+</div>
+</section>
+<section id="custom-command-line-arguments">
+<h3>Custom Command-Line Arguments<a class="headerlink" href="#custom-command-line-arguments" title="Link to this heading">¶</a></h3>
+<p>Products can register their own command-line arguments that appear when users
+run <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span> <span class="pre">--help</span></code>. Use the <code class="docutils literal notranslate"><span class="pre">add_arguments</span></code> attribute to add a function
+that receives an <code class="docutils literal notranslate"><span class="pre">argparse.ArgumentParser</span></code> and adds product-specific options:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">add_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;MyBrowser-specific&quot;</span><span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--mybrowser-profile&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to browser profile directory&quot;</span>
+    <span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--mybrowser-debug&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable debug mode&quot;</span>
+    <span class="p">)</span>
+
+<span class="c1"># Include in Product(..., add_arguments=add_arguments)</span>
+</pre></div>
+</div>
+<p>These arguments will be available in your <code class="docutils literal notranslate"><span class="pre">check_args</span></code>, <code class="docutils literal notranslate"><span class="pre">browser_kwargs</span></code>,
+and other functions via <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>. The <code class="docutils literal notranslate"><span class="pre">add_arguments</span></code> function is called
+for all available products during argument parser setup, so arguments are
+always visible regardless of which product is selected.</p>
+</section>
+</section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h2>
+<p>See the <code class="xref py py-class docutils literal notranslate"><span class="pre">Product</span></code> dataclass documentation for complete
+field descriptions. All fields are documented in the Product class docstring,
+including required and optional attributes, function signatures, and usage
+examples.</p>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h2>
+<section id="product-not-found">
+<h3>Product Not Found<a class="headerlink" href="#product-not-found" title="Link to this heading">¶</a></h3>
+<p>If your product doesn’t appear in <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span> <span class="pre">--help</span></code>:</p>
+<ul class="simple">
+<li><p>Verify entry point is registered correctly</p></li>
+<li><p>Reinstall: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">uninstall</span> <span class="pre">wptrunner-mybrowser</span> <span class="pre">&amp;&amp;</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">.</span></code></p></li>
+</ul>
+</section>
+<section id="import-errors">
+<h3>Import Errors<a class="headerlink" href="#import-errors" title="Link to this heading">¶</a></h3>
+<p>Ensure all imports are available:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">wptrunner.products</span><span class="w"> </span><span class="kn">import</span> <span class="n">Product</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">wptrunner.browsers.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Browser</span>
+</pre></div>
+</div>
+</section>
+<section id="product-name-mismatch">
+<h3>Product Name Mismatch<a class="headerlink" href="#product-name-mismatch" title="Link to this heading">¶</a></h3>
+<p>Entry point name must match Product name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;mybrowser = ...&#39;</span>  <span class="c1"># Entry point</span>
+<span class="n">Product</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mybrowser&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>  <span class="c1"># Product</span>
+</pre></div>
+</div>
+<p>For usage with <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code>, see the running-tests documentation.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../test-suite-design.html">Test Suite Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro-video-transcript.html">“Introduction to WPT” video transcript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../admin/index.html">Project Administration</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2019, wpt contributors.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../../../_sources/tools/wptrunner/docs/plugins.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

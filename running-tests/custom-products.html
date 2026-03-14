@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Custom Products &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="custom-products">
+<h1>Custom Products<a class="headerlink" href="#custom-products" title="Link to this heading">¶</a></h1>
+<p>External browser products can be registered with wptrunner using entry points. Once installed, these products are available to the <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code> command.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
+<p>Custom products do not support automatic browser installation. Install the browser
+manually before running tests.</p>
+<p>Which command-line arguments are required (such as <code class="docutils literal notranslate"><span class="pre">--binary</span></code> or
+<code class="docutils literal notranslate"><span class="pre">--webdriver-binary</span></code>) depends on the product plugin. Consult the plugin’s
+documentation.</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
+<p>First, install the custom product plugin into the same Python that <code class="docutils literal notranslate"><span class="pre">./wpt</span></code> uses:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>wptrunner-mybrowser
+</pre></div>
+</div>
+<p>Then run tests using the product name:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt<span class="w"> </span>run<span class="w"> </span>mybrowser<span class="w"> </span>test.html
+</pre></div>
+</div>
+<p>Some products require a browser binary path:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt<span class="w"> </span>run<span class="w"> </span>mybrowser<span class="w"> </span>--binary<span class="o">=</span>/path/to/mybrowser<span class="w"> </span>test.html
+</pre></div>
+</div>
+<p>Some products require a WebDriver binary path:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt<span class="w"> </span>run<span class="w"> </span>mybrowser<span class="w"> </span>--webdriver-binary<span class="o">=</span>/path/to/mydriver<span class="w"> </span>test.html
+</pre></div>
+</div>
+<p>Additional arguments can be passed to the browser using <code class="docutils literal notranslate"><span class="pre">--binary-arg</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt<span class="w"> </span>run<span class="w"> </span>mybrowser<span class="w"> </span>--binary<span class="o">=</span>/path/to/mybrowser<span class="w"> </span>--binary-arg<span class="o">=</span>--headless<span class="w"> </span>test.html
+</pre></div>
+</div>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h2>
+<p>If you see “Product mybrowser not found”:</p>
+<ul class="simple">
+<li><p>The plugin may not be installed: <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">wptrunner-mybrowser</span></code></p></li>
+<li><p>Check that the plugin is registered correctly (run <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">show</span> <span class="pre">wptrunner-mybrowser</span></code>)</p></li>
+</ul>
+<p>For information on creating custom product plugins, see the
+<a class="reference external" href="../../tools/wptrunner/docs/plugins.rst">wptrunner plugin documentation</a>.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../test-suite-design.html">Test Suite Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro-video-transcript.html">“Introduction to WPT” video transcript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Running Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2019, wpt contributors.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../_sources/running-tests/custom-products.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

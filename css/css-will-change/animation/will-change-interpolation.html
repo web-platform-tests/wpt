@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>will-change is not animatable</title>
+<link rel="help" href="https://drafts.csswg.org/css-will-change-1/#will-change">
+<meta name="assert" content="The will-change property must not be animatable.">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/interpolation-testcommon.js"></script>
+
+<body>
+  <div id="target"></div>
+</body>
+
+<script>
+test_not_animatable({
+  property: 'will-change',
+  from: 'opacity',
+  to: 'transform',
+  underlying: 'auto',
+});
+</script>

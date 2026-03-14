@@ -13,18 +13,32 @@
 <body>
 <script>
 test_valid_value("will-change", "auto");
+test_valid_value("will-change", "AUTO", "auto");
+test_valid_value("will-change", "Auto", "auto");
 
 // <animateable-feature> = scroll-position | contents | <custom-ident>
 test_valid_value("will-change", "scroll-position");
+test_valid_value("will-change", "SCROLL-POSITION", "scroll-position");
+test_valid_value("will-change", "Scroll-Position", "scroll-position");
+
 test_valid_value("will-change", "contents");
+test_valid_value("will-change", "CONTENTS", "contents");
+test_valid_value("will-change", "Contents", "contents");
+
 test_valid_value("will-change", "transform");
 test_valid_value("will-change", "background-color");
 test_valid_value("will-change", "TRANSFORM");
 test_valid_value("will-change", "Not-A-Property");
 
 test_valid_value("will-change", "scroll-position, contents");
+test_valid_value("will-change", "SCROLL-POSITION, CONTENTS", "scroll-position, contents");
+
 test_valid_value("will-change", "scroll-position, transform");
+test_valid_value("will-change", "SCROLL-POSITION, transform", "scroll-position, transform");
+
 test_valid_value("will-change", "contents, transform");
+test_valid_value("will-change", "CONTENTS, transform", "contents, transform");
+
 test_valid_value("will-change", "transform, background-color");
 
 test_valid_value("will-change", "transform, transform");

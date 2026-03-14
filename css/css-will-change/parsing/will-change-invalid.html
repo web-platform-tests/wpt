@@ -13,11 +13,9 @@
 <body>
 <script>
 test_invalid_value("will-change", "auto transform");
-test_invalid_value("will-change", "auto, transform");
 test_invalid_value("will-change", "contents auto");
-test_invalid_value("will-change", "contents, auto");
 
-let excludedKeywords = [
+let baseExcludedKeywords = [
   // CSS-wide keywords are excluded from <custom-ident>
   // https://drafts.csswg.org/css-values-4/#identifier-value
   "initial",
@@ -32,7 +30,16 @@ let excludedKeywords = [
   "will-change",
   "none",
   "all",
+  "auto",
 ];
+
+let excludedKeywords = [];
+for (let keyword of baseExcludedKeywords) {
+  excludedKeywords.push(keyword);
+  excludedKeywords.push(keyword.toUpperCase());
+  // Mixed case
+  excludedKeywords.push(keyword[0].toUpperCase() + keyword.slice(1));
+}
 
 for (let keyword of excludedKeywords) {
   test_invalid_value("will-change", `transform, ${keyword}`);
@@ -42,9 +49,17 @@ for (let keyword of excludedKeywords) {
   }
 }
 
-test_invalid_value("will-change", "will-change");
-test_invalid_value("will-change", "none");
-test_invalid_value("will-change", "all");
+// These are completely invalid as standalone values
+let standaloneInvalid = ["will-change", "none", "all"];
+for (let keyword of standaloneInvalid) {
+  test_invalid_value("will-change", keyword);
+  test_invalid_value("will-change", keyword.toUpperCase());
+  test_invalid_value("will-change", keyword[0].toUpperCase() + keyword.slice(1));
+}
+
+// auto is valid as a standalone value, but we still test it in excludedKeywords loops
+// scroll-position and contents are valid as standalone and in list contexts,
+// so they are tested in will-change-valid.html.
 </script>
 </body>
 </html>

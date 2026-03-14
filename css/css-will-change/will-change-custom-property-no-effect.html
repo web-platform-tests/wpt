@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>will-change: custom property no stacking context or containing block</title>
+<link rel="help" href="https://drafts.csswg.org/css-will-change-1/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .test-container {
+    will-change: --my-prop;
+    width: 100px;
+    height: 100px;
+  }
+
+  #wc-sc {
+    background: green;
+  }
+
+  #child-sc {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    background: red;
+    width: 100px;
+    height: 100px;
+  }
+
+  #wc-abspos {
+    margin-top: 50px;
+    margin-left: 150px;
+    background: blue;
+  }
+
+  #child-abspos {
+    position: absolute;
+    top: 0;
+    left: 150px;
+    width: 100px;
+    height: 100px;
+    background: yellow;
+  }
+
+  #wc-fixedpos {
+    margin-top: 50px;
+    margin-left: 300px;
+    background: purple;
+  }
+
+  #child-fixedpos {
+    position: fixed;
+    top: 0;
+    left: 300px;
+    width: 100px;
+    height: 100px;
+    background: orange;
+  }
+</style>
+
+<div class="test-container" id="wc-sc">
+  <div id="child-sc"></div>
+</div>
+
+<div class="test-container" id="wc-abspos">
+  <div id="child-abspos"></div>
+</div>
+
+<div class="test-container" id="wc-fixedpos">
+  <div id="child-fixedpos"></div>
+</div>
+
+<script>
+  test(() => {
+    assert_equals(document.elementFromPoint(50, 50).id, 'wc-sc');
+  }, "will-change: custom property does not create a stacking context");
+
+  test(() => {
+    const rect = document.getElementById('child-abspos').getBoundingClientRect();
+    // Position should be relative to initial containing block
+    assert_equals(rect.top, 0, "top");
+    assert_equals(rect.left, 150, "left");
+  }, "will-change: custom property does not create a containing block for absolute positioned elements");
+
+  test(() => {
+    const rect = document.getElementById('child-fixedpos').getBoundingClientRect();
+    // Position should be relative to viewport
+    assert_equals(rect.top, 0, "top");
+    assert_equals(rect.left, 300, "left");
+  }, "will-change: custom property does not create a containing block for fixed positioned elements");
+</script>

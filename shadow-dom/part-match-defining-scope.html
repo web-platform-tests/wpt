@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="help" href="https://drafts.csswg.org/css-shadow-parts/#part">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1993859">
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+
+<div id=host>
+  <template shadowrootmode=open>
+    <div part="x"></div>
+  </template>
+</div>
+
+<script>
+  const host = document.getElementById('host');
+  test(() => {
+    const el = host.shadowRoot.querySelector('::part(x)');
+    assert_equals(el, null, '::part() should not match in the same scope');
+  },'::part() should not match in defining scope using querySelector');
+
+  test(() => {
+    const el = host.shadowRoot.querySelector('[part="x"]');
+    assert_false(el.matches('::part(x)'));
+  },'::part() should not match in defining scope using matches()');
+</script>
+

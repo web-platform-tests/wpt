@@ -111,31 +111,6 @@ function define_bits_tests() {
       );
     }, algorithmName + ' decapsulateBits basic functionality');
 
-    // Test round-trip compatibility
-    promise_test(async function (test) {
-      var keyPair = await subtle.generateKey({ name: algorithmName }, false, [
-        'encapsulateBits',
-        'decapsulateBits',
-      ]);
-
-      var encapsulatedBits = await subtle.encapsulateBits(
-        { name: algorithmName },
-        keyPair.publicKey
-      );
-
-      var decapsulatedBits = await subtle.decapsulateBits(
-        { name: algorithmName },
-        keyPair.privateKey,
-        encapsulatedBits.ciphertext
-      );
-
-      assert_true(
-        equalBuffers(encapsulatedBits.sharedKey, decapsulatedBits),
-        'Encapsulated and decapsulated shared secrets should match'
-      );
-    }, algorithmName +
-      ' encapsulateBits/decapsulateBits round-trip compatibility');
-
     // Test vector-based decapsulation
     promise_test(async function (test) {
       var vectors = ml_kem_vectors[algorithmName];

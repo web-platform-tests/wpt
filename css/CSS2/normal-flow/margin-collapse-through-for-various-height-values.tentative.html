@@ -54,9 +54,9 @@ let testcases = [
   { height: "calc(1px + 1%)", parentHeight: "auto" },
   { height: "calc(1px + 1%)", parentHeight: "0px" },
   { height: "calc(1px + 1%)", parentHeight: "100px" },
-  { height: "stretch", parentHeight: "auto" },
-  { height: "stretch", parentHeight: "0px" },
-  { height: "stretch", parentHeight: "100px" },
+  { height: "stretch", parentHeight: "auto", noCollapse: true },
+  { height: "stretch", parentHeight: "0px", noCollapse: true },
+  { height: "stretch", parentHeight: "100px", noCollapse: true },
 
   // Tests for `min-height` (with `height: auto`)
   { minHeight: "auto" },
@@ -80,9 +80,9 @@ let testcases = [
   { minHeight: "calc(1px + 1%)", parentHeight: "auto" },
   { minHeight: "calc(1px + 1%)", parentHeight: "0px" },
   { minHeight: "calc(1px + 1%)", parentHeight: "100px" },
-  { minHeight: "stretch", parentHeight: "auto" },
-  { minHeight: "stretch", parentHeight: "0px" },
-  { minHeight: "stretch", parentHeight: "100px" },
+  { minHeight: "stretch", parentHeight: "auto", noCollapse: true },
+  { minHeight: "stretch", parentHeight: "0px", noCollapse: true },
+  { minHeight: "stretch", parentHeight: "100px", noCollapse: true },
 
   // Tests for `max-height` (with `height: 1px`)
   { height: "1px", maxHeight: "none" },
@@ -107,13 +107,13 @@ let testcases = [
   { height: "1px", maxHeight: "calc(1px + 1%)", parentHeight: "0px" },
   { height: "1px", maxHeight: "calc(1px + 1%)", parentHeight: "100px" },
   { height: "1px", maxHeight: "stretch", parentHeight: "auto" },
-  { height: "1px", maxHeight: "stretch", parentHeight: "0px" },
-  { height: "1px", maxHeight: "stretch", parentHeight: "100px" },
+  { height: "1px", maxHeight: "stretch", parentHeight: "0px", noCollapse: true },
+  { height: "1px", maxHeight: "stretch", parentHeight: "100px", noCollapse: true },
 ];
 
 // The checks below force layout, so as an optimization, generate all elements first.
 let generatedData = testcases.map(testcase => {
-  let { height, minHeight, maxHeight, parentHeight, ...unrecognized } = testcase;
+  let { height, minHeight, maxHeight, parentHeight, noCollapse, ...unrecognized } = testcase;
   assert_array_equals(Object.keys(unrecognized), [], "No unrecognized key.");
   let serialization = JSON.stringify(testcase);
   let wrapper = document.createElement("div");
@@ -131,7 +131,7 @@ let generatedData = testcases.map(testcase => {
   test.style.maxHeight = maxHeight || "";
   wrapper.append(before, test, after);
   document.body.append(wrapper);
-  return { serialization, before, test, after };
+  return { serialization, before, test, after, noCollapse };
 });
 
 function round(value) {
@@ -143,7 +143,7 @@ for (let data of generatedData) {
     let { before, test, after } = data;
     let height = round(test.getBoundingClientRect().height);
     let marginSum = round(after.getBoundingClientRect().top - before.getBoundingClientRect().bottom) - height;
-    if (height === 0) {
+    if (height === 0 && !data.noCollapse) {
       assert_equals(marginSum, 50, "margins should collapse through");
     } else {
       assert_equals(marginSum, 100, "margins should NOT collapse through when height is " + height);

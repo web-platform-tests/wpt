@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Test Reference</title>
+<style>
+  .wrapper {
+    position: relative;
+    display: flow-root;
+    width: 200px;
+    height: 200px;
+  }
+  .green-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    background: green;
+  }
+</style>
+<body>
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+  <div class="wrapper">
+    <div class="green-box"></div>
+  </div>
+</body>

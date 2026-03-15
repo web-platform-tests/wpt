@@ -19,7 +19,7 @@ promise_test(t => {
   return fetch(get_host_info()["HTTPS_ORIGIN"] + "/client-hints/resources/echo-client-hints-received.py").then(r => {
     assert_equals(r.status, 200)
     // Verify that the browser includes client hints in the headers for a
-    // same-origin fetch which not specifically excluded via Feature-Policy.
+    // same-origin fetch which not specifically excluded via Permissions-Policy.
     assert_true(r.headers.has("device-memory-received"), "device-memory-received");
     assert_true(r.headers.has("device-memory-deprecated-received"), "device-memory-deprecated-received");
     assert_false(r.headers.has("dpr-received"), "dpr-received");
@@ -54,7 +54,7 @@ promise_test(t => {
   return fetch(get_host_info()["HTTPS_REMOTE_ORIGIN"] + "/client-hints/resources/echo-client-hints-received.py").then(r => {
     assert_equals(r.status, 200)
     // Verify that the browser includes client hints in the headers for a
-    // cross-origin fetch which are specifically requested via Feature-Policy.
+    // cross-origin fetch which are specifically requested via Permissions-Policy.
     assert_true(r.headers.has("device-memory-received"), "device-memory-received");
     assert_true(r.headers.has("device-memory-deprecated-received"), "device-memory-deprecated-received");
     assert_false(r.headers.has("dpr-received"), "dpr-received");

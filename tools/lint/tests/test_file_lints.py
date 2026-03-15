@@ -1205,6 +1205,45 @@ features:
 """,
         []
     ),
+    (
+        ["file1.txt", "file2.txt", "file3.txt"],
+        b"""\
+features:
+- name: feature1
+  files:
+  - "*"
+  - "!file3.txt"
+""",
+        []
+    ),
+    (
+        ["foobar.txt", "foo.txt", "bar.txt"],
+        b"""\
+features:
+- name: feature1
+  files:
+  - "*foo*"
+  - "!*bar*"
+""",
+        []
+    ),
+    (
+        ["foo-1.txt", "bar-1.txt"],
+        b"""\
+features:
+- name: feature1
+  files:
+  - foo-*
+  - "!bar-*"
+""",
+        [
+            ("UNNECESSARY-EXCLUSION-IN-WEB-FEATURES-FILE",
+             "The WEB_FEATURES.yml file contains a redundant or inoperable exclusion pattern: "
+             "'!bar-*' in feature 'feature1'",
+             "css/WEB_FEATURES.yml",
+             None),
+        ]
+    ),
 ])
 def test_valid_web_features_file(monkeypatch, files, yml, expected_errors):
     def listdir(dir):
@@ -1231,7 +1270,7 @@ def test_valid_web_features_file(monkeypatch, files, yml, expected_errors):
 """,
         [
             ('INVALID-WEB-FEATURES-FILE',
-            'The WEB_FEATURES.yml file contains an invalid structure',
+            "The WEB_FEATURES.yml file contains an invalid structure: Input value ['test'] is not a dict",
             "css/WEB_FEATURES.yml",
             None),
         ]
@@ -1245,7 +1284,7 @@ features:
 """,
         [
             ('INVALID-WEB-FEATURES-FILE',
-            'The WEB_FEATURES.yml file contains an invalid structure',
+            'The WEB_FEATURES.yml file contains an invalid structure: Feature feature1 contains "**" in a list. It should be `files: "**"`',
             "css/WEB_FEATURES.yml",
             None),
         ]
@@ -1282,7 +1321,7 @@ features:
 
     assert errors == [
         ('INVALID-WEB-FEATURES-FILE',
-         'The WEB_FEATURES.yml file contains an invalid structure',
+         "The WEB_FEATURES.yml file contains an invalid structure: Duplicate 'features' key found in YAML.",
          "css/WEB_FEATURES.yml",
          None),
     ]

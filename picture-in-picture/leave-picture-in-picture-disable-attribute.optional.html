@@ -20,7 +20,6 @@ promise_test(async () => {
   const leavePipPromise = new Promise(resolve => {
     video.addEventListener('leavepictureinpicture', event => {
       assert_equals(pictureInPictureWindow, event.pictureInPictureWindow);
-
       assert_equals(event.target, video);
       assert_equals(event.bubbles, true);
       assert_equals(event.cancelable, false);
@@ -31,9 +30,7 @@ promise_test(async () => {
   });
 
   await requestPictureInPictureWithTrustedClick(video);
-  await document.exitPictureInPicture();
-
-  // Wait for leavepictureinpicture event or timeout
+  video.disablePictureInPicture = true;
   await leavePipPromise;
-}, 'leavepictureinpicture event is fired if document.exitPictureInPicture');
+}, 'leavepictureinpicture event is fired if video.disablePictureInPicture is set to true');
 </script>

@@ -77,7 +77,7 @@ def env_options():
 
     version, _, _ = platform.mac_ver()
     if version:
-        if Version(macos_version_str) >= Version("26.4"):
+        if Version(version) >= Version("26.4"):
             rv["enable_webtransport_h3"] = True
 
     return rv

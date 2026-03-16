@@ -274,6 +274,8 @@ def create_tc_task(event, task, taskgroup_id, depends_on_ids, env_extra=None):
         if "capabilities" not in task_data["payload"]:
             task_data["payload"]["capabilities"] = {}
         task_data["payload"]["capabilities"]["privileged"] = True
+    if "scopes" in task_data:
+        task_data["scopes"] = [s.replace("docker-worker:capability:privileged", "generic-worker:docker-privileged") for s in task_data["scopes"]]
     if env_extra:
         task_data["payload"]["env"].update(env_extra)
     if depends_on_ids:

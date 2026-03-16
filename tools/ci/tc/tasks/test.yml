@@ -113,7 +113,7 @@ components:
   browser-firefox_android:
     privileged: true
     scopes:
-      - "docker-worker:capability:privileged"
+      - "generic-worker:docker-privileged"
     chunks-override:
       testharness: 30
 

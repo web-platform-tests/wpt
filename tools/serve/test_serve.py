@@ -7,7 +7,7 @@ import os
 import pickle
 import platform
 from unittest.mock import MagicMock, patch
-from typing import Generator, List, Tuple, Type
+from typing import Generator, Tuple
 
 import pytest
 
@@ -22,7 +22,6 @@ from .serve import (
     Test262StrictWindowHandler,
     Test262StrictWindowTestHandler,
     Test262StrictHandler,
-    WrapperHandler,
     inject_script)
 
 
@@ -171,7 +170,8 @@ def test_inject_script_parse_error():
 
 
 @pytest.fixture
-def test262_handlers() -> Generator[Tuple[str, str], None, None]:
+def handler_setup() -> Generator[Tuple[str, str], None, None]:
+    """Provides a mocked filesystem environment for testing any handler class."""
     tests_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "tests", "testdata"))
     url_base = "/"
 
@@ -237,38 +237,6 @@ def _create_mock_request(path: str) -> MagicMock:
     return mock_request
 
 
-def _test_handler_path_replace(handler_cls: Type[WrapperHandler],
-                               tests_root: str,
-                               url_base: str,
-                               expected: List[Tuple[str, str]]) -> None:
-    handler = handler_cls(base_path=tests_root, url_base=url_base)
-    assert handler.path_replace == expected
-
-def _test_handler_wrapper_content(handler_cls: Type[WrapperHandler],
-                                  tests_root: str,
-                                  url_base: str,
-                                  request_path: str,
-                                  expected_content: List[str]) -> None:
-    handler = handler_cls(base_path=tests_root, url_base=url_base)
-    mock_request = _create_mock_request(request_path)
-    mock_response = MagicMock()
-    handler.handle_request(mock_request, mock_response)  # type: ignore[no-untyped-call]
-    content = mock_response.content
-    for item in expected_content:
-        assert item in content
-
-def _test_handler_get_metadata(handler_cls: Type[WrapperHandler],
-                               tests_root: str,
-                               url_base: str,
-                               request_path: str,
-                               expected_metadata: List[Tuple[str, str]]) -> None:
-    handler = handler_cls(tests_root, url_base)
-    mock_request = _create_mock_request(request_path)
-    metadata = list(handler._get_metadata(mock_request))  # type: ignore[no-untyped-call]
-    for item in expected_metadata:
-        assert item in metadata
-    assert len(expected_metadata) == len(metadata), f"{expected_metadata} != {metadata}"
-
 Test262WindowHandler.__test__ = False  # type: ignore[attr-defined]
 Test262WindowTestHandler.__test__ = False  # type: ignore[attr-defined]
 Test262WindowModuleHandler.__test__ = False  # type: ignore[attr-defined]
@@ -285,9 +253,11 @@ Test262StrictHandler.__test__ = False  # type: ignore[attr-defined]
     (Test262StrictWindowHandler, [(".test262.strict.html", ".js", ".test262-test.strict.html")]),
     (Test262StrictWindowTestHandler, [(".test262-test.strict.html", ".js", ".test262.strict.js")]),
 ])
-def test_path_replace(test262_handlers, handler_cls, expected):
-    tests_root, url_base = test262_handlers
-    _test_handler_path_replace(handler_cls, tests_root, url_base, expected)
+def test_path_replace(handler_setup, handler_cls, expected):
+    """Verifies that handlers correctly map request paths to internal resources."""
+    root, url_base = handler_setup
+    handler = handler_cls(base_path=root, url_base=url_base)
+    assert handler.path_replace == expected
 
 
 @pytest.mark.parametrize("handler_cls, request_path, expected_metadata", [
@@ -307,9 +277,15 @@ def test_path_replace(test262_handlers, handler_cls, expected):
         [('script', '/third_party/test262/harness/propertyHelper.js')]
     ),
 ])
-def test_get_metadata(test262_handlers, handler_cls, request_path, expected_metadata):
-    tests_root, url_base = test262_handlers
-    _test_handler_get_metadata(handler_cls, tests_root, url_base, request_path, expected_metadata)
+def test_get_metadata(handler_setup, handler_cls, request_path, expected_metadata):
+    """Verifies metadata extraction logic for any handler."""
+    root, url_base = handler_setup
+    handler = handler_cls(root, url_base)
+    mock_request = _create_mock_request(request_path)
+    metadata = list(handler._get_metadata(mock_request))
+    for item in expected_metadata:
+        assert item in metadata
+    assert len(expected_metadata) == len(metadata)
 
 
 @pytest.mark.parametrize("handler_cls, request_path, expected_substrings", [
@@ -329,7 +305,7 @@ def test_get_metadata(test262_handlers, handler_cls, request_path, expected_meta
     (
         Test262WindowModuleTestHandler,
         "/test262/module.test262-module-test.html",
-        ['<script type="module">', 'test262Setup();', 'import("/test262/module.js")', 'test262Done());']
+        ['<script type="module">', 'test262Setup();', 'import("/test262/module.js")', 'test262Done()']
     ),
     # Verification of the 'negative' replacement in the HTML
     (
@@ -350,6 +326,13 @@ def test_get_metadata(test262_handlers, handler_cls, request_path, expected_meta
         ['"use strict";', "console.log('hello');"]
     ),
 ])
-def test_wrapper_content(test262_handlers, handler_cls, request_path, expected_substrings):
-    tests_root, url_base = test262_handlers
-    _test_handler_wrapper_content(handler_cls, tests_root, url_base, request_path, expected_substrings)
+def test_wrapper_content(handler_setup, handler_cls, request_path, expected_substrings):
+    """Verifies generated HTML/JS content for any handler."""
+    root, url_base = handler_setup
+    handler = handler_cls(base_path=root, url_base=url_base)
+    mock_request = _create_mock_request(request_path)
+    mock_response = MagicMock()
+    handler.handle_request(mock_request, mock_response)
+    content = mock_response.content
+    for item in expected_substrings:
+        assert item in content

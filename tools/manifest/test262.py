@@ -48,9 +48,9 @@ def _yaml_attr_parser(logger: Logger, test_record: TestRecord, attrs: Text, name
 def _find_attrs(src: Text) -> Tuple[Optional[Text], Optional[Text]]:
     match = _YAML_PATTERN.search(src)
     if not match:
-        return (None, None)
+        return None, None
 
-    return (match.group(0), match.group(1).strip())
+    return match.group(0), match.group(1).strip()
 
 
 def parse(logger: Logger, src: Text, name: Text) -> Optional[TestRecord]:
@@ -58,7 +58,7 @@ def parse(logger: Logger, src: Text, name: Text) -> Optional[TestRecord]:
         return None
 
     # Find the YAML frontmatter.
-    (frontmatter, attrs) = _find_attrs(src)
+    frontmatter, attrs = _find_attrs(src)
 
     # YAML frontmatter is required for all tests.
     if frontmatter is None:

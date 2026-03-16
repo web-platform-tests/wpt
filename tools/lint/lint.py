@@ -756,6 +756,27 @@ def check_meta_file(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Err
     return []
 
 
+# Non-test directory indicators, mirroring SourceFile in manifest/sourcefile.py.
+_NON_TEST_DIRS = {"resources", "support", "tools"}
+
+
+def _path_in_non_test_dir(path: str) -> bool:
+    """Check if a path is inside a non-test directory."""
+    parts = path.split(os.path.sep)
+    if parts[0] == "common":
+        return True
+    return bool(_NON_TEST_DIRS & set(parts))
+
+
+def check_web_features_file_path(repo_root: Text, path: Text) -> List[rules.Error]:
+    if os.path.basename(path) != WEB_FEATURES_YML_FILENAME:
+        return []
+    dir_path = os.path.dirname(path)
+    if dir_path and _path_in_non_test_dir(dir_path):
+        return [rules.WebFeaturesFileInNonTestDirectory.error(path, (dir_path,))]
+    return []
+
+
 def check_web_features_file(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]:
     if os.path.basename(path) != WEB_FEATURES_YML_FILENAME:
         return []
@@ -1106,7 +1127,8 @@ def lint(repo_root: Text,
 
 
 path_lints = [check_file_type, check_path_length, check_worker_collision, check_ahem_copy,
-              check_mojom_js, check_tentative_directories, check_gitignore_file]
+              check_mojom_js, check_tentative_directories, check_gitignore_file,
+              check_web_features_file_path]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata,
               check_ahem_system_font, check_meta_file, check_web_features_file]
 

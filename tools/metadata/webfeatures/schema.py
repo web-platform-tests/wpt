@@ -14,6 +14,24 @@ WEB_FEATURES_YML_FILENAME = "WEB_FEATURES.yml"
 # File prefix to indicate that this FeatureFile should run in EXCLUDE mode.
 EXCLUSION_PREFIX = "!"
 
+# Non-test file indicators, mirroring SourceFile in manifest/sourcefile.py.
+_NON_TEST_FILE_PREFIXES = ("MANIFEST",)
+_NON_TEST_FILENAMES = {"META.yml", WEB_FEATURES_YML_FILENAME}
+_NON_TEST_FILE_EXTENSIONS = {".headers", ".ini", ".yml", ".yaml"}
+
+
+def _is_non_test_filename(filename: str) -> bool:
+    """Check if a filename is obviously not a test, using name-only heuristics."""
+    if any(filename.startswith(p) for p in _NON_TEST_FILE_PREFIXES):
+        return True
+    if filename in _NON_TEST_FILENAMES:
+        return True
+    if filename.startswith("."):
+        return True
+    if any(filename.endswith(ext) for ext in _NON_TEST_FILE_EXTENSIONS):
+        return True
+    return False
+
 
 class SpecialFileEnum(Enum):
     """All files recursively"""
@@ -82,6 +100,14 @@ class FeatureEntry:
         # If "**" is used, it should be the only item. Not in a list.
         if isinstance(self.files, list) and SpecialFileEnum.RECURSIVE.value in self.files:
             raise ValueError(f'Feature {self.name} contains "**" in a list. It should be `files: "**"`')
+        # Non-test files should not be referenced in WEB_FEATURES.yml.
+        if isinstance(self.files, list):
+            for f in self.files:
+                if f.matching_mode == FileMatchingMode.EXCLUDE:
+                    continue
+                if _is_non_test_filename(f.processed_filename):
+                    raise ValueError(
+                        f"Feature {self.name} references a non-test file pattern: '{f}'")
 
 
     def does_feature_apply_recursively(self) -> bool:

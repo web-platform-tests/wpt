@@ -1244,6 +1244,66 @@ features:
              None),
         ]
     ),
+    (
+        ["test.html", "META.yml"],
+        b"""\
+features:
+- name: feature1
+  files:
+  - META.yml
+""",
+        [
+            ("INVALID-WEB-FEATURES-FILE",
+             "The WEB_FEATURES.yml file contains an invalid structure: Feature feature1 references a non-test file pattern: 'META.yml'",
+             "css/WEB_FEATURES.yml",
+             None),
+        ]
+    ),
+    (
+        ["test.html", "test.html.headers"],
+        b"""\
+features:
+- name: feature1
+  files:
+  - test.html.headers
+""",
+        [
+            ("INVALID-WEB-FEATURES-FILE",
+             "The WEB_FEATURES.yml file contains an invalid structure: Feature feature1 references a non-test file pattern: 'test.html.headers'",
+             "css/WEB_FEATURES.yml",
+             None),
+        ]
+    ),
+    (
+        ["test.html", ".hidden"],
+        b"""\
+features:
+- name: feature1
+  files:
+  - .hidden
+""",
+        [
+            ("INVALID-WEB-FEATURES-FILE",
+             "The WEB_FEATURES.yml file contains an invalid structure: Feature feature1 references a non-test file pattern: '.hidden'",
+             "css/WEB_FEATURES.yml",
+             None),
+        ]
+    ),
+    (
+        ["test.html", "MANIFEST.json"],
+        b"""\
+features:
+- name: feature1
+  files:
+  - MANIFEST.json
+""",
+        [
+            ("INVALID-WEB-FEATURES-FILE",
+             "The WEB_FEATURES.yml file contains an invalid structure: Feature feature1 references a non-test file pattern: 'MANIFEST.json'",
+             "css/WEB_FEATURES.yml",
+             None),
+        ]
+    ),
 ])
 def test_valid_web_features_file(monkeypatch, files, yml, expected_errors):
     def listdir(dir):

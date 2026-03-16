@@ -386,6 +386,13 @@ class UnnecessaryExclusionInWebFeaturesFile(Rule):
     """)
 
 
+class WebFeaturesFileInNonTestDirectory(Rule):
+    name = "WEB-FEATURES-FILE-IN-NON-TEST-DIRECTORY"
+    description = collapse("""
+        WEB_FEATURES.yml is located in a non-test directory: '%s'
+    """)
+
+
 EXTENSIONS = {
     "html": [".html", ".htm"],
     "xhtml": [".xht", ".xhtml"],

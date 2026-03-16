@@ -403,11 +403,11 @@ class SourceFile:
                 fnmatch(self.filename, py_pattern))
 
     @property
-    def name_is_wai_aria_aam(self) -> bool:
+    def name_includes_aamtests(self) -> bool:
         """Check if the file name matches the conditions for the file to
-        be a WAI-ARIA AAM spec test file"""
+        be an accessibility API test"""
         rel_path_parts = self.rel_path_parts
-        return ((rel_path_parts[0] == "wai-aria-aam" and len(rel_path_parts) > 1) and
+        return ("aamtests" in rel_path_parts and
                 self.filename not in ("__init__.py", "conftest.py") and
                 fnmatch(self.filename, py_pattern))
 
@@ -502,7 +502,7 @@ class SourceFile:
     def script_metadata(self) -> Optional[List[Tuple[Text, Text]]]:
         if self.name_is_worker or self.name_is_multi_global or self.name_is_window or self.name_is_extension:
             regexp = js_meta_re
-        elif self.name_is_webdriver or self.name_is_wai_aria_aam:
+        elif self.name_is_webdriver or self.name_includes_aamtests:
             regexp = python_meta_re
         elif self.name_is_test262:
             if self.test262_test_record is None:
@@ -941,7 +941,7 @@ class SourceFile:
         if self.name_is_webdriver:
             return {WebDriverSpecTest.item_type}
 
-        if self.name_is_wai_aria_aam:
+        if self.name_includes_aamtests:
             return {AccessibilityAPIMappingTest.item_type}
 
         if self.name_is_visual:
@@ -1034,7 +1034,7 @@ class SourceFile:
                     timeout=self.timeout
                 )]
 
-        elif self.name_is_wai_aria_aam:
+        elif self.name_includes_aamtests:
             rv = AccessibilityAPIMappingTest.item_type, [
                 AccessibilityAPIMappingTest(
                     self.tests_root,

@@ -23,18 +23,10 @@ div {
   right: 0;
   background: red;
 }
-.fixed {
-  position: fixed;
-  right: 0px;
-  top: 0px;
-  background: white;
-  z-index: 1;
-}
 </style>
 <div></div><div></div><div></div><div class="sticky"></div>
-<div class="fixed"></div>
 <script>
-document.querySelector(".fixed").scrollIntoView({ behavior: "instant" });
+document.querySelector(".sticky").scrollIntoView({ behavior: "instant" });
 document.documentElement.classList.remove("reftest-wait");
 </script>
 </html>

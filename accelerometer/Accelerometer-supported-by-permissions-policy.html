@@ -6,6 +6,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-    assert_in_array('accelerometer', document.permissionsPolicy.features());
-}, 'document.permissionsPolicy.features should advertise accelerometer.');
+    assert_in_array('accelerometer', document.featurePolicy.features());
+}, 'document.featurePolicy.features should advertise accelerometer.');
 </script>

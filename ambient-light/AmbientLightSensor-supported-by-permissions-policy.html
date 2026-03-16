@@ -6,6 +6,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-    assert_in_array('ambient-light-sensor', document.permissionsPolicy.features());
-}, 'document.permissionsPolicy.features should advertise ambient-light-sensor.');
+    assert_in_array('ambient-light-sensor', document.featurePolicy.features());
+}, 'document.featurePolicy.features should advertise ambient-light-sensor.');
 </script>

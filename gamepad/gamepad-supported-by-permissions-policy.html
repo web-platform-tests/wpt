@@ -6,6 +6,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-    assert_in_array('gamepad', document.permissionsPolicy.features());
-}, 'document.permissionsPolicy.features should advertise gamepad.');
+    assert_in_array('gamepad', document.featurePolicy.features());
+}, 'document.featurePolicy.features should advertise gamepad.');
 </script>

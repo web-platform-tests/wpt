@@ -6,10 +6,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-    assert_in_array('camera', document.permissionsPolicy.features());
-}, 'document.permissionsPolicy.features should advertise camera.');
+    assert_in_array('camera', document.featurePolicy.features());
+}, 'document.featurePolicy.features should advertise camera.');
 
 test(() => {
-    assert_in_array('microphone', document.permissionsPolicy.features());
-}, 'document.permissionsPolicy.features should advertise microphone.');
+    assert_in_array('microphone', document.featurePolicy.features());
+}, 'document.featurePolicy.features should advertise microphone.');
 </script>

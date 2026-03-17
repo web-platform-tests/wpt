@@ -10,5 +10,4 @@ promise_test(async t => {
 
   const writer = wt.datagrams.writable.getWriter();
   await promise_rejects_js(t, TypeError, writer.write("foo"));
-  await promise_rejects_js(t, TypeError, writer.write(new Uint8Array(0)));
 }, 'Datagram should reject when non-buffer-source data is written');

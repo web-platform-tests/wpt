@@ -237,6 +237,7 @@ def _create_mock_request(path: str) -> MagicMock:
     return mock_request
 
 
+# Ensure pytest doesn't consider Test-prefixed classes to be testcases
 Test262WindowHandler.__test__ = False  # type: ignore[attr-defined]
 Test262WindowTestHandler.__test__ = False  # type: ignore[attr-defined]
 Test262WindowModuleHandler.__test__ = False  # type: ignore[attr-defined]

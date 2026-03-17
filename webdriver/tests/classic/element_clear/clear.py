@@ -176,27 +176,40 @@ def test_input(session, inline, add_event_listeners, tracked_events, type, value
 
 @pytest.mark.parametrize("type",
                          ["number",
-                          "range",
                           "email",
                           "password",
                           "search",
                           "tel",
                           "text",
                           "url",
-                          "color",
                           "date",
                           "datetime",
                           "datetime-local",
                           "time",
                           "month",
-                          "week",
-                          "file"])
+                          "week"])
 def test_input_readonly(session, inline, type):
     session.url = inline("<input type=%s readonly>" % type)
     element = session.find.css("input", all=False)
 
     response = element_clear(session, element)
     assert_error(response, "invalid element state")
+
+
+@pytest.mark.parametrize("type,value,default",
+                         [("range", "42", "50"),
+                          ("color", "#ff0000", "#000000")])
+def test_input_readonly_excluded(session, inline, add_event_listeners, tracked_events, type, value, default):
+    session.url = inline("<input type=%s value='%s' readonly>" % (type, value))
+    element = session.find.css("input", all=False)
+    add_event_listeners(element, tracked_events)
+    assert element.property("value") == value
+
+    response = element_clear(session, element)
+    assert_success(response)
+    assert element.property("value") == default
+    assert_in_events(session, ["focus", "change", "blur"])
+    assert_element_has_focus(session.execute_script("return document.body"))
 
 
 def test_textarea(session, inline, add_event_listeners, tracked_events):
@@ -221,6 +234,16 @@ def test_textarea_readonly(session, inline):
 
 def test_input_file(session, text_file, inline):
     session.url = inline("<input type=file>")
+    element = session.find.css("input", all=False)
+    element.send_keys(str(text_file))
+
+    response = element_clear(session, element)
+    assert_success(response)
+    assert element.property("value") == ""
+
+
+def test_input_file_readonly(session, text_file, inline):
+    session.url = inline("<input type=file readonly>")
     element = session.find.css("input", all=False)
     element.send_keys(str(text_file))
 

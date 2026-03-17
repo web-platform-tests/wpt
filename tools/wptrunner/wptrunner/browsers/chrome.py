@@ -1,6 +1,5 @@
 # mypy: allow-untyped-defs
 
-import os
 import re
 import time
 
@@ -52,10 +51,15 @@ def check_args(**kwargs):
 
 
 def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
-    return {"binary": kwargs["binary"],
+    browser_kwargs = {"binary": kwargs["binary"],
             "webdriver_binary": kwargs["webdriver_binary"],
             "webdriver_args": kwargs.get("webdriver_args"),
             "leak_check": kwargs.get("leak_check", False)}
+    if test_type == "aamtest":
+        # Necessary to force chrome to register in AT-SPI2.
+        browser_kwargs["env"] = {"ACCESSIBILITY_ENABLED": "1"}
+    return browser_kwargs
+
 
 
 def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite,
@@ -228,8 +232,6 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
         executor_kwargs["binary_args"] = chrome_options["args"]
 
     if test_type == "aamtest":
-        # Necessary to force chrome to register in AT-SPI2.
-        os.environ["ACCESSIBILITY_ENABLED"] = "1"
         if "--force-renderer-accessibility" not in chrome_options["args"]:
             chrome_options["args"].append("--force-renderer-accessibility")
             executor_kwargs["binary_args"] = chrome_options["args"]

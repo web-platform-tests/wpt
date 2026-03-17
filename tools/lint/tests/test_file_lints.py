@@ -1130,74 +1130,74 @@ def test_invalid_meta_file():
 
 @pytest.mark.parametrize("files,yml,expected_errors", [
     (
-        ["file1.txt", "file2.txt", "file3.txt"],
+        ["file1.html", "file2.html", "file3.html"],
         b"""\
 features:
 - name: feature1
   files:
-  - file1.txt
+  - file1.html
 """,
         []
     ),
     (
-        ["file1.txt", "file2.txt", "file3.txt"],
+        ["file1.html", "file2.html", "file3.html"],
         b"""\
 features:
 - name: feature1
   files:
-  - file*.txt
+  - file*.html
 """,
         []
     ),
     (
-        ["file1.txt", "file2.txt", "file3.txt"],
+        ["file1.html", "file2.html", "file3.html"],
         b"""\
 features:
 - name: feature1
   files:
-  - file*.txt
-  - foo.txt
+  - file*.html
+  - foo.html
 """,
         [
             ("MISSING-WEB-FEATURES-FILE",
-             "The WEB_FEATURES.yml file references a test that does not exist: 'foo.txt'",
+             "The WEB_FEATURES.yml file references a test that does not exist: 'foo.html'",
              "css/WEB_FEATURES.yml",
              None),
         ]
     ),
     (
-        ["bar1.txt", "bar2.txt", "bar3.txt"],
+        ["bar1.html", "bar2.html", "bar3.html"],
         b"""\
 features:
 - name: feature1
   files:
-  - file*.txt
-  - bar*.txt
+  - file*.html
+  - bar*.html
 """,
         [
             ("MISSING-WEB-FEATURES-FILE",
-             "The WEB_FEATURES.yml file references a test that does not exist: 'file*.txt'",
+             "The WEB_FEATURES.yml file references a test that does not exist: 'file*.html'",
              "css/WEB_FEATURES.yml",
              None),
         ]
     ),
     (
-        ["file1.txt", "file2.txt", "file3.txt"],
+        ["file1.html", "file2.html", "file3.html"],
         b"""\
 features:
 - name: feature1
   files:
-  - foo.txt
+  - foo.html
 """,
         [
             ("MISSING-WEB-FEATURES-FILE",
-             "The WEB_FEATURES.yml file references a test that does not exist: 'foo.txt'",
+             "The WEB_FEATURES.yml file references a test that does not exist: 'foo.html'",
              "css/WEB_FEATURES.yml",
              None),
         ]
     ),
     (
-        ["file1.txt", "file2.txt", "file3.txt"],
+        ["file1.html", "file2.html", "file3.html"],
         b"""\
 features:
 - name: feature1
@@ -1206,18 +1206,18 @@ features:
         []
     ),
     (
-        ["file1.txt", "file2.txt", "file3.txt"],
+        ["file1.html", "file2.html", "file3.html"],
         b"""\
 features:
 - name: feature1
   files:
   - "*"
-  - "!file3.txt"
+  - "!file3.html"
 """,
         []
     ),
     (
-        ["foobar.txt", "foo.txt", "bar.txt"],
+        ["foobar.html", "foo.html", "bar.html"],
         b"""\
 features:
 - name: feature1
@@ -1228,7 +1228,7 @@ features:
         []
     ),
     (
-        ["foo-1.txt", "bar-1.txt"],
+        ["foo-1.html", "bar-1.html"],
         b"""\
 features:
 - name: feature1
@@ -1253,8 +1253,8 @@ features:
   - META.yml
 """,
         [
-            ("INVALID-WEB-FEATURES-FILE",
-             "The WEB_FEATURES.yml file contains an invalid structure: Feature feature1 references a non-test file pattern: 'META.yml'",
+            ("NON-TEST-FILE-IN-WEB-FEATURES-FILE",
+             "The WEB_FEATURES.yml file references a non-test file: 'META.yml' in feature 'feature1'",
              "css/WEB_FEATURES.yml",
              None),
         ]
@@ -1268,8 +1268,8 @@ features:
   - test.html.headers
 """,
         [
-            ("INVALID-WEB-FEATURES-FILE",
-             "The WEB_FEATURES.yml file contains an invalid structure: Feature feature1 references a non-test file pattern: 'test.html.headers'",
+            ("NON-TEST-FILE-IN-WEB-FEATURES-FILE",
+             "The WEB_FEATURES.yml file references a non-test file: 'test.html.headers' in feature 'feature1'",
              "css/WEB_FEATURES.yml",
              None),
         ]
@@ -1283,8 +1283,8 @@ features:
   - .hidden
 """,
         [
-            ("INVALID-WEB-FEATURES-FILE",
-             "The WEB_FEATURES.yml file contains an invalid structure: Feature feature1 references a non-test file pattern: '.hidden'",
+            ("NON-TEST-FILE-IN-WEB-FEATURES-FILE",
+             "The WEB_FEATURES.yml file references a non-test file: '.hidden' in feature 'feature1'",
              "css/WEB_FEATURES.yml",
              None),
         ]
@@ -1298,8 +1298,8 @@ features:
   - MANIFEST.json
 """,
         [
-            ("INVALID-WEB-FEATURES-FILE",
-             "The WEB_FEATURES.yml file contains an invalid structure: Feature feature1 references a non-test file pattern: 'MANIFEST.json'",
+            ("NON-TEST-FILE-IN-WEB-FEATURES-FILE",
+             "The WEB_FEATURES.yml file references a non-test file: 'MANIFEST.json' in feature 'feature1'",
              "css/WEB_FEATURES.yml",
              None),
         ]

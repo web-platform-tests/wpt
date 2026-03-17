@@ -756,23 +756,12 @@ def check_meta_file(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Err
     return []
 
 
-# Non-test directory indicators, mirroring SourceFile in manifest/sourcefile.py.
-_NON_TEST_DIRS = {"resources", "support", "tools"}
-
-
-def _path_in_non_test_dir(path: str) -> bool:
-    """Check if a path is inside a non-test directory."""
-    parts = path.split(os.path.sep)
-    if parts[0] == "common":
-        return True
-    return bool(_NON_TEST_DIRS & set(parts))
-
-
 def check_web_features_file_path(repo_root: Text, path: Text) -> List[rules.Error]:
     if os.path.basename(path) != WEB_FEATURES_YML_FILENAME:
         return []
-    dir_path = os.path.dirname(path)
-    if dir_path and _path_in_non_test_dir(dir_path):
+    source_file = SourceFile(repo_root, path, "/")
+    if source_file.in_non_test_dir():
+        dir_path = os.path.dirname(path)
         return [rules.WebFeaturesFileInNonTestDirectory.error(path, (dir_path,))]
     return []
 
@@ -792,12 +781,21 @@ def check_web_features_file(repo_root: Text, path: Text, f: IO[bytes]) -> List[r
         if isinstance(feature.files, list):
             # Resolve inclusion patterns to files, then subtract exclusions.
             included: Set[str] = set()
+            dir_path = os.path.dirname(path)
             for file in feature.files:
                 matched = file.match_files(files_in_directory)
                 if file.matching_mode == FileMatchingMode.INCLUDE:
                     if not matched:
                         errors.append(rules.MissingTestInWebFeaturesFile.error(path, (file)))
                     included.update(matched)
+                    # Only check explicitly named files (no wildcards).
+                    if "*" not in str(file):
+                        for filename in matched:
+                            rel_path = os.path.join(dir_path, filename)
+                            source_file = SourceFile(repo_root, rel_path, "/")
+                            if source_file.possible_types == {"support"}:
+                                errors.append(rules.NonTestFileInWebFeaturesFile.error(path, (
+                                    filename, feature.name)))
                 elif file.matching_mode == FileMatchingMode.EXCLUDE:
                     excluded = set(matched) & included
                     if not excluded:

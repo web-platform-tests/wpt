@@ -393,6 +393,13 @@ class WebFeaturesFileInNonTestDirectory(Rule):
     """)
 
 
+class NonTestFileInWebFeaturesFile(Rule):
+    name = "NON-TEST-FILE-IN-WEB-FEATURES-FILE"
+    description = collapse("""
+        The WEB_FEATURES.yml file references a non-test file: '%s' in feature '%s'
+    """)
+
+
 EXTENSIONS = {
     "html": [".html", ".htm"],
     "xhtml": [".xht", ".xhtml"],

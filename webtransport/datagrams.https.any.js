@@ -340,8 +340,8 @@ promise_test(async t => {
   const wt = new WebTransport(webtransport_url('echo.py'));
   await wt.ready;
 
-  assert_equals(wt.datagrams.incomingMaxAge, Infinity);
-  assert_equals(wt.datagrams.outgoingMaxAge, Infinity);
+  assert_equals(wt.datagrams.incomingMaxAge, null);
+  assert_equals(wt.datagrams.outgoingMaxAge, null);
 
   wt.datagrams.incomingMaxAge = 5;
   assert_equals(wt.datagrams.incomingMaxAge, 5);
@@ -354,9 +354,9 @@ promise_test(async t => {
   assert_throws_js(RangeError, () => { wt.datagrams.outgoingMaxAge = NaN; });
 
   wt.datagrams.incomingMaxAge = 0;
-  assert_equals(wt.datagrams.incomingMaxAge, Infinity);
+  assert_equals(wt.datagrams.incomingMaxAge, null);
   wt.datagrams.outgoingMaxAge = 0;
-  assert_equals(wt.datagrams.outgoingMaxAge, Infinity);
+  assert_equals(wt.datagrams.outgoingMaxAge, null);
 }, 'Datagram MaxAge getters/setters work correctly');
 
 promise_test(async t => {

@@ -69,20 +69,3 @@ function define_tests() {
     });
   }
 }
-
-function equalBuffers(a, b) {
-  if (a.byteLength !== b.byteLength) {
-    return false;
-  }
-
-  var aView = new Uint8Array(a);
-  var bView = new Uint8Array(b);
-
-  for (var i = 0; i < aView.length; i++) {
-    if (aView[i] !== bView[i]) {
-      return false;
-    }
-  }
-
-  return true;
-}

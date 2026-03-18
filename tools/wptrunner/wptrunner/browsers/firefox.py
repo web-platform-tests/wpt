@@ -263,22 +263,23 @@ def run_info_browser_version(**kwargs):
 
 
 def update_properties():
-    return ([
-        "os",
-        "debug",
-        "display",
-        "fission",
-        "isolated_process",
-        "processor",
-        "swgl",
-        "useDrawSnapshot",
-        "asan",
-        "tsan",
-        "remoteAsyncEvents",
-        "sessionHistoryInParent",
-        "subsuite"], {
-        "os": ["version", "os_version"],
-        "processor": ["bits"]})
+    return (
+        [
+            "os",
+            "debug",
+            "fission",
+            "isolated_process",
+            "processor",
+            "swgl",
+            "useDrawSnapshot",
+            "asan",
+            "tsan",
+            "remoteAsyncEvents",
+            "sessionHistoryInParent",
+            "subsuite",
+        ],
+        {"os": ["display", "version", "os_version"], "processor": ["bits"]},
+    )
 
 
 def log_gecko_crashes(logger, process, test, profile_dir, symbols_path, stackwalk_binary):

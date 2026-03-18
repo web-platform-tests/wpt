@@ -125,6 +125,7 @@ CONSOLE: service-workers/service-worker/resources/clients-get-other-origin.html
 CONSOLE: webrtc/tools/*
 CONSOLE: webrtc/RTCDataChannel-worker.js
 CONSOLE: webaudio/resources/audit.js:41
+CONSOLE: webdriver/tests/classic/web_extensions/resources/extension/background.js
 
 # Intentional use of console.*
 CONSOLE: infrastructure/testdriver/bidi/subscription.html

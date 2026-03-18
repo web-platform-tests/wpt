@@ -1,0 +1,9 @@
+{
+    "manifest_version": 3,
+    "name": "WPT Test Extension",
+    "description": "This extension is to be used in web platform tests.",
+    "version": "1.0",
+    "background": {
+        "scripts": [ "background.js" ]
+    }
+}

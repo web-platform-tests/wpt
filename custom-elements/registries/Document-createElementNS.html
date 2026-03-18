@@ -2,6 +2,8 @@
 <html>
 <head>
 <link rel="help" href="https://github.com/whatwg/html/issues/10854">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/custom-elements.html#custom-elements-api">
+<link rel="help" href="https://dom.spec.whatwg.org/#element-custom-element-registry">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -93,6 +95,18 @@ test(() => {
     assert_equals(abElement.customElementRegistry, scopedRegistry);
     assert_false(abElement instanceof ScopedABElement);
 }, 'createElementNS on a non-HTML document should still handle registries correctly');
+
+test(() => {
+    assert_throws_dom("NotSupportedError", () => {
+        document.createElementNS('http://www.w3.org/1999/xhtml', 'div', { is: 'my-div', customElementRegistry: scopedRegistry });
+    });
+}, 'createElementNS should throw a NotSupportedError when options dictionary contains both customElementRegistry and is members');
+
+test(() => {
+    assert_throws_dom("NotSupportedError", () => {
+        document.createElementNS('http://www.w3.org/1999/xhtml', 'div', { is: 'my-div', customElementRegistry: window.customElements });
+    });
+}, 'createElementNS should throw a NotSupportedError when options dictionary contains both customElementRegistry (global) and is members');
 
 </script>
 </body>

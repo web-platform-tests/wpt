@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>Custom Elements: Scoped registry define throws with extends</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/custom-elements.html#custom-elements-api">
+<link rel="help" href="https://dom.spec.whatwg.org/#element-custom-element-registry">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const extendsValues = [
+  'button',
+  'div',
+  'custom-name',
+  '',
+  'unknown'
+];
+
+for (const ext of extendsValues) {
+  test(() => {
+    const registry = new CustomElementRegistry();
+    assert_throws_dom('NotSupportedError', () => {
+      registry.define(`test-element-${ext || 'empty'}`, class extends HTMLElement {}, { extends: ext });
+    });
+  }, `CustomElementRegistry.define() on a scoped registry throws NotSupportedError if extends is "${ext}"`);
+}
+</script>

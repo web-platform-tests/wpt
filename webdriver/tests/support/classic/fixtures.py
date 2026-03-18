@@ -216,7 +216,7 @@ def create_frame(session):
 
 
 @pytest.fixture
-def http_new_tab(session):
+def new_tab_classic(session):
     """Create a new tab to run the test isolated."""
     original_handle = session.window_handle
     new_handle = session.new_window(type_hint="tab")
@@ -261,21 +261,19 @@ def stale_element(current_session, get_test_page):
 
 
 @pytest.fixture
-def load_pdf_http(current_session, test_page_with_pdf_js):
+def load_pdf_classic(current_session, test_page_with_pdf_js):
     """Load a PDF document in the browser using pdf.js"""
-    def load_pdf_http(encoded_pdf_data):
+    def load_pdf_classic(encoded_pdf_data):
         current_session.url = test_page_with_pdf_js(encoded_pdf_data)
 
-    return load_pdf_http
+    return load_pdf_classic
 
 
 @pytest.fixture
-def render_pdf_to_png_http(current_session, url):
+def render_pdf_to_png_classic(current_session, url):
     """Render a PDF document to png"""
 
-    def render_pdf_to_png_http(
-        encoded_pdf_data, page=1
-    ):
+    def render_pdf_to_png_classic(encoded_pdf_data, page=1):
         current_session.url = url(path="/print_pdf_runner.html")
         result = current_session.execute_async_script(f"""arguments[0](window.render("{encoded_pdf_data}"))""")
         index = page - 1
@@ -287,12 +285,12 @@ def render_pdf_to_png_http(current_session, url):
 
         return base64.b64decode(image_string_without_data_type)
 
-    return render_pdf_to_png_http
+    return render_pdf_to_png_classic
 
 
 @pytest.fixture
-def compare_png_http(current_session, url):
-    def compare_png_http(img1, img2):
+def compare_png_classic(current_session, url):
+    def compare_png_classic(img1, img2):
         """Calculate difference statistics between two PNG images.
 
         :param img1: Bytes of first PNG image
@@ -317,7 +315,7 @@ def compare_png_http(current_session, url):
 
         return ImageDifference(result["totalPixels"], result["maxDifference"])
 
-    return compare_png_http
+    return compare_png_classic
 
 
 @pytest.fixture()

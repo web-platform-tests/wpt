@@ -2,10 +2,11 @@
 // META: script=/resources/idlharness.js
 // META: timeout=long
 
-// https://w3c.github.io/webcrypto/Overview.html
+// https://wicg.github.io/webcrypto-secure-curves/
+// https://wicg.github.io/webcrypto-modern-algos/
 
 idl_test(
-  ['webcrypto'],
+  ['webcrypto', 'webcrypto-secure-curves', 'webcrypto-modern-algos'],
   ['html', 'dom'],
   idl_array => {
     idl_array.add_objects({

@@ -5,7 +5,7 @@
 // https://w3c.github.io/webcrypto/Overview.html
 
 idl_test(
-  ['webcrypto'],
+  ['webcrypto', 'webcrypto-secure-curves', 'webcrypto-modern-algos'],
   ['html', 'dom'],
   idl_array => {
     idl_array.add_objects({

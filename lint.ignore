@@ -751,7 +751,7 @@ REFERENCE-IN-OTHER-TYPE: css/css-multicol/moz-multicol3-column-balancing-break-i
 
 PRINT STATEMENT: webdriver/tests/bidi/browsing_context/print/*
 PRINT STATEMENT: webdriver/tests/classic/print/*
-PRINT STATEMENT: webdriver/tests/support/fixtures_bidi.py
+PRINT STATEMENT: webdriver/tests/support/bidi/fixtures.py
 
 DUPLICATE-BASENAME-PATH: acid/acid3/empty.html
 DUPLICATE-BASENAME-PATH: acid/acid3/empty.xml

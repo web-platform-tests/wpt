@@ -1,10 +1,69 @@
 import base64
+import copy
 
 import pytest
+import pytest_asyncio
+import webdriver
 from webdriver.error import NoSuchAlertException, NoSuchWindowException
 
+import tests.support.fixtures as global_fixtures
+from tests.support import defaults
+from tests.support.helpers import cleanup_session, deep_update
 from tests.support.image import png_dimensions, ImageDifference
 from tests.support.sync import Poll
+
+
+SCRIPT_TIMEOUT = 1
+PAGE_LOAD_TIMEOUT = 3
+IMPLICIT_WAIT_TIMEOUT = 0
+
+
+@pytest_asyncio.fixture(scope="function")
+async def session(capabilities, configuration):
+    """Create and start a session for a test that does not itself test session creation.
+
+    By default the session will stay open after each test, but we always try to start a
+    new one and assume that if that fails there is already a valid session. This makes it
+    possible to recover from some errors that might leave the session in a bad state, but
+    does not demand that we start a new session per test.
+    """
+    # Update configuration capabilities with custom ones from the
+    # capabilities fixture, which can be set by tests
+    caps = copy.deepcopy(configuration["capabilities"])
+    deep_update(caps, capabilities)
+    caps = {"alwaysMatch": caps}
+
+    await global_fixtures.reset_current_session_if_necessary(caps)
+
+    if global_fixtures.get_current_session() is None:
+        global_fixtures.set_current_session(webdriver.Session(
+            configuration["host"],
+            configuration["port"],
+            capabilities=caps))
+
+    try:
+        session = global_fixtures.get_current_session()
+        session.start()
+
+        # Enforce a fixed default window size and position
+        if session.capabilities.get("setWindowRect"):
+            session.window.size = defaults.WINDOW_SIZE
+            session.window.position = defaults.WINDOW_POSITION
+
+        # Set default timeouts
+        multiplier = configuration["timeout_multiplier"]
+        session.timeouts.implicit = IMPLICIT_WAIT_TIMEOUT * multiplier
+        session.timeouts.page_load = PAGE_LOAD_TIMEOUT * multiplier
+        session.timeouts.script = SCRIPT_TIMEOUT * multiplier
+
+        yield session
+
+        cleanup_session(session)
+
+    except Exception:
+        # Make sure we end up in a known state if something goes wrong.
+        global_fixtures.get_current_session().end()
+        raise
 
 
 @pytest.fixture
@@ -258,3 +317,52 @@ def compare_png_http(current_session, url):
         return ImageDifference(result["totalPixels"], result["maxDifference"])
 
     return compare_png_http
+
+
+@pytest.fixture()
+def available_screen_size(session):
+    """Return the effective available screen size (width/height).
+
+    This is size which excludes any fixed window manager elements like menu
+    bars, and the dock on MacOS.
+    """
+    return tuple(
+        session.execute_script(
+            """
+        return [
+            screen.availWidth,
+            screen.availHeight,
+        ];
+        """
+        )
+    )
+
+
+@pytest.fixture()
+def minimal_screen_position(session):
+    """Return the minimal position (x/y) a window can be positioned at."""
+    return tuple(
+        session.execute_script(
+            """
+        return [
+            screen.availLeft,
+            screen.availTop,
+        ];
+        """
+        )
+    )
+
+
+@pytest.fixture()
+def screen_size(session):
+    """Return the size (width/height) of the screen."""
+    return tuple(
+        session.execute_script(
+            """
+        return [
+            screen.width,
+            screen.height,
+        ];
+        """
+        )
+    )

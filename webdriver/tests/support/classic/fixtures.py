@@ -8,7 +8,8 @@ from webdriver.error import NoSuchAlertException, NoSuchWindowException
 
 import tests.support.fixtures as global_fixtures
 from tests.support import defaults
-from tests.support.helpers import cleanup_session, deep_update
+from tests.support.classic.helpers import cleanup_session
+from tests.support.helpers import deep_update
 from tests.support.image import png_dimensions, ImageDifference
 from tests.support.sync import Poll
 

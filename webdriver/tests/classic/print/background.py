@@ -2,7 +2,8 @@ import base64
 
 import pytest
 
-from tests.support.asserts import assert_pdf, assert_success
+from tests.support.classic.asserts import assert_success
+from tests.support.asserts import assert_pdf
 from tests.support.image import pt_to_cm
 
 from . import do_print

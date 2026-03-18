@@ -41,8 +41,8 @@ TEXT_FORMATTERS = ("raw", "mach")
 DOCS_URL = "https://firefox-source-docs.mozilla.org/mozbase/mozlog.html"
 
 
-def level_filter_wrapper(formatter, level):
-    return handlers.LogLevelFilter(formatter, level)
+def level_filter_wrapper(handler, level):
+    return handlers.LogLevelFilter(handler, level)
 
 
 def verbose_wrapper(formatter, verbose):
@@ -227,7 +227,7 @@ def setup_handlers(logger, formatters, formatter_options, allow_unused_options=F
             wrapper, wrapper_args = None, ()
             if option == "valgrind":
                 wrapper = valgrind_handler_wrapper
-            elif option == "buffer":
+            elif option in ("buffer", "level"):
                 wrapper, wrapper_args = fmt_options[option][0], (value,)
             else:
                 formatter = fmt_options[option][0](formatter, value)

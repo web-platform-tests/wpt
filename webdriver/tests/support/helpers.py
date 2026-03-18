@@ -209,7 +209,7 @@ def is_fullscreen(session):
     # Remove the prefixed fallback when
     # https://bugs.webkit.org/show_bug.cgi?id=158125 is fixed.
     return session.execute_script("""
-        return !!(window.fullScreen || document.webkitIsFullScreen)
+        return !!(document.fullscreenElement || window.fullScreen || document.webkitIsFullScreen)
         """)
 
 

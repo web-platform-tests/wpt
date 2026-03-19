@@ -12,7 +12,7 @@ import tempfile
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta, timezone
 from shutil import which
-from typing import Any, Dict, List, Mapping, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlsplit, quote
 
 import html5lib
@@ -197,12 +197,27 @@ class Browser:
         return None
 
 
-class FirefoxVcsResources:
+class FirefoxPrefs:
     def __init__(self, logger):
         self.logger = logger
 
     def install_prefs(self, binary: Optional[str], dest: Optional[str] = None, channel: Optional[str] = None) -> str:
-        version, channel, rev = self.get_version_and_channel(binary, channel)
+        if binary and not binary.endswith(".apk"):
+            version, channel_, rev = self.get_version_and_channel(binary)
+            if channel is not None and channel != channel_:
+                # Beta doesn't always seem to have the b in the version string, so allow the
+                # manually supplied value to override the one from the binary
+                self.logger.warning("Supplied channel doesn't match binary, using supplied channel")
+            elif channel is None:
+                channel = channel_
+        else:
+            rev = None
+            version = None
+
+        if channel is None:
+            self.logger.warning("No browser channel passed to install_prefs, taking prefs from main branch")
+            channel = "nightly"
+
         if dest is None:
             dest = os.curdir
 
@@ -230,24 +245,6 @@ class FirefoxVcsResources:
             self.logger.info(f"Using cached test prefs from {dest}")
 
         return dest
-
-    def get_openh264_data(self, binary: Optional[str], channel: Optional[str]) -> Optional[Mapping[str, Any]]:
-        version, channel, rev = self.get_version_and_channel(binary, channel)
-        ref = self.get_git_ref(version, channel, rev)
-        self.logger.info("Downloading openh264.json from git ref %s" % ref)
-        try:
-            openh264_json: Mapping[str, Any] = json.loads(
-                get_file_github(
-                    "mozilla-firefox/firefox",
-                    ref,
-                    "toolkit/content/gmp-sources/openh264.json",
-                )
-            )
-        except Exception as e:
-            self.logger.warning("Failed to download openh264.json: %s" % e)
-            return None
-
-        return openh264_json
 
     def get_profile_github(self, version: Optional[str], channel: str, dest: str, rev: Optional[str]) -> None:
         """Read the testing/profiles data from firefox source on GitHub"""
@@ -291,26 +288,7 @@ class FirefoxVcsResources:
             with open(dest_path, "wb") as f:
                 f.write(data)
 
-    def get_version_and_channel(self, binary: Optional[str], channel: Optional[str]) -> Tuple[Optional[str], str, Optional[str]]:
-        if binary and not binary.endswith(".apk"):
-            version, channel_, rev = self.get_binary_version_and_channel(binary)
-            if channel is not None and channel != channel_:
-                # Beta doesn't always seem to have the b in the version string, so allow the
-                # manually supplied value to override the one from the binary
-                self.logger.warning("Supplied channel doesn't match binary, using supplied channel")
-            elif channel is None:
-                channel = channel_
-        else:
-            rev = None
-            version = None
-
-        if channel is None:
-            self.logger.warning("No browser channel passed to install_prefs, taking prefs from main branch")
-            channel = "nightly"
-
-        return version, channel, rev
-
-    def get_binary_version_and_channel(self, binary: str) -> Tuple[Optional[str], str, Optional[str]]:
+    def get_version_and_channel(self, binary: str) -> Tuple[Optional[str], str, Optional[str]]:
         application_ini_path = os.path.join(os.path.dirname(binary), "application.ini")
         if os.path.exists(application_ini_path):
             try:
@@ -426,10 +404,7 @@ class FirefoxVcsResources:
         return [max(tags)[1], default]
 
 
-class FirefoxAndroidVcsResources(FirefoxVcsResources):
-    def get_openh264_data(self, binary: Optional[str], channel: Optional[str]) -> Optional[Mapping[str, Any]]:
-        raise NotImplementedError
-
+class FirefoxAndroidPrefs(FirefoxPrefs):
     def get_git_ref(self, version: Optional[str], channel: str, rev: Optional[str]) -> str:
         if rev is not None:
             return rev
@@ -483,16 +458,6 @@ class Firefox(Browser):
         "stable": "Firefox.app",
         "beta": "Firefox.app",
         "nightly": "Firefox Nightly.app"
-    }
-
-    openh264_platform = {
-        ("linux", "x86_64"): "Linux_x86_64-gcc3",
-        ("linux", "x86"): "Linux_x86-gcc3",
-        ("linux", "aarch64"): "Linux_aarch64-gcc3",
-        ("win", "AMD64"): "WINNT_x86_64-msvc",
-        ("win", "x86"): "WINNT_x86-msvc",
-        ("macos", "x86_64"): "Darwin_x86_64-gcc3",
-        ("macos", "arm64"): "Darwin_aarch64-gcc3",
     }
 
     def platform_string_geckodriver(self):
@@ -573,76 +538,10 @@ class Firefox(Browser):
                 raise
 
         os.remove(installer_path)
-        binary = self.find_binary_path(dest)
-        self.install_openh264(binary_dir=dest, binary=binary, channel=channel)
-        return binary
-
-    def install_openh264(self, binary_dir, binary, channel="nightly"):
-        import hashlib
-        import io
-
-        platform_key = self.openh264_platform.get((self.platform, uname.machine))
-        if platform_key is None:
-            self.logger.warning(
-                "OpenH264: unsupported platform %s %s, skipping"
-                % (self.platform, uname.machine)
-            )
-            return None
-
-        openh264_json = FirefoxVcsResources(self.logger).get_openh264_data(binary, channel)
-        if openh264_json is None:
-            return None
-
-        version = openh264_json["vendors"]["gmp-gmpopenh264"]["version"]
-        if version is None:
-            self.logger.warning("OpenH264: no entry for version in openh264.json")
-            return None
-
-        openh264_dir = os.path.join(binary_dir, "gmp-gmpopenh264", version)
-        if os.path.isdir(openh264_dir):
-            self.logger.info("Using cached OpenH264 plugin from %s" % openh264_dir)
-            return openh264_dir
-
-        platforms = openh264_json["vendors"]["gmp-gmpopenh264"]["platforms"]
-        platform_data = platforms.get(platform_key)
-        if platform_data is None:
-            self.logger.warning(
-                "OpenH264: no entry for platform %s in openh264.json" % platform_key
-            )
-            return None
-        if "alias" in platform_data:
-            platform_data = platforms.get(platform_data["alias"])
-        if platform_data is None:
-            self.logger.warning("OpenH264: alias target missing in openh264.json")
-            return None
-
-        file_url = platform_data["fileUrl"]
-        expected_hash = platform_data["hashValue"]
-        hash_function = openh264_json.get("hashFunction", "sha512")
-
-        self.logger.info("Downloading OpenH264 plugin from %s" % file_url)
-        try:
-            resp = get(file_url)
-        except Exception as e:
-            self.logger.warning("Failed to download OpenH264 plugin: %s" % e)
-            return None
-
-        data = resp.content
-        actual_hash = getattr(hashlib, hash_function)(data).hexdigest()
-        if actual_hash != expected_hash:
-            self.logger.warning(
-                "OpenH264 hash mismatch: expected %s, got %s"
-                % (expected_hash, actual_hash)
-            )
-            return None
-
-        os.makedirs(openh264_dir, exist_ok=True)
-        unzip(io.BytesIO(data), dest=openh264_dir)
-        self.logger.info("OpenH264 plugin installed to %s" % openh264_dir)
-        return openh264_dir
+        return self.find_binary_path(dest)
 
     def install_prefs(self, binary, dest=None, channel=None):
-        return FirefoxVcsResources(self.logger).install_prefs(binary, dest, channel)
+        return FirefoxPrefs(self.logger).install_prefs(binary, dest, channel)
 
     def find_binary_path(self, path=None, channel="nightly"):
         """Looks for the firefox binary in the virtual environment"""
@@ -832,7 +731,7 @@ class FirefoxAndroid(Browser):
         return self.download(dest, channel, url)
 
     def install_prefs(self, binary, dest=None, channel=None):
-        return FirefoxAndroidVcsResources(self.logger).install_prefs(binary, dest, channel)
+        return FirefoxAndroidPrefs(self.logger).install_prefs(binary, dest, channel)
 
     def find_binary(self, venv_path=None, channel=None):
         return self.apk_path

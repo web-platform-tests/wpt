@@ -233,19 +233,20 @@ class FirefoxVcsResources:
 
     def get_openh264_data(self, binary: Optional[str], channel: Optional[str]) -> Optional[Mapping[str, Any]]:
         version, channel, rev = self.get_version_and_channel(binary, channel)
-        ref = self.get_git_ref(version, channel, rev)
-        self.logger.info("Downloading openh264.json from git ref %s" % ref)
-        try:
-            openh264_json: Mapping[str, Any] = json.loads(
-                get_file_github(
-                    "mozilla-firefox/firefox",
-                    ref,
-                    "toolkit/content/gmp-sources/openh264.json",
+
+        openh264_json: Optional[Mapping[str, Any]] = None
+        for ref in self.get_git_refs(version, channel, rev):
+            self.logger.info("Downloading openh264.json from git ref %s" % ref)
+            try:
+                openh264_json = json.loads(
+                    get_file_github(
+                        "mozilla-firefox/firefox",
+                        ref,
+                        "toolkit/content/gmp-sources/openh264.json",
+                    )
                 )
-            )
-        except Exception as e:
-            self.logger.warning("Failed to download openh264.json: %s" % e)
-            return None
+            except Exception as e:
+                self.logger.warning("Failed to download openh264.json: %s" % e)
 
         return openh264_json
 
@@ -423,6 +424,8 @@ class FirefoxVcsResources:
             tags.append((tuple(order), tag))
         if not tags:
             self.logger.warning(f"No tag found for version {version} channel {channel}")
+            return [default]
+
         return [max(tags)[1], default]
 
 
@@ -430,37 +433,42 @@ class FirefoxAndroidVcsResources(FirefoxVcsResources):
     def get_openh264_data(self, binary: Optional[str], channel: Optional[str]) -> Optional[Mapping[str, Any]]:
         raise NotImplementedError
 
-    def get_git_ref(self, version: Optional[str], channel: str, rev: Optional[str]) -> str:
+    def get_git_refs(self, version: Optional[str], channel: str, rev: Optional[str]) -> List[str]:
         if rev is not None:
-            return rev
+            return [rev]
 
         tags = []
         ref_prefix = "FIREFOX-ANDROID_"
         ref_re = None
+        default = None
         if channel == "stable":
+            default = "release"
             if version is not None:
-                return "FIREFOX-ANDROID_%s_RELEASE" % version.replace(".", "_")
+                return ["FIREFOX-ANDROID_%s_RELEASE" % version.replace(".", "_")]
 
             ref_re = re.compile(r"FIREFOX-ANDROID_(\d+)_(\d+)(?:_(\d+))?_RELEASE")
 
         elif channel == "beta":
+            default = "beta"
             if version:
                 ref_prefix = "FIREFOX-ANDROID_%s" % version.replace(".", "_")
             ref_re = re.compile(r"FIREFOX-ANDROID_(\d+)_(\d+)b(\d+)_RELEASE")
         else:
-            return "main"
+            return ["main"]
 
         assert ref_re is not None
         for tag in self.get_git_tags(ref_prefix):
             m = ref_re.match(tag)
             if m is None:
                 continue
-            order = tuple(int(item) for item in m.groups() if item is not None)
-            tags.append((order, tag))
+            order = [int(item) for item in m.groups() if item is not None]
+            tags.append((tuple(order), tag))
 
         if not tags:
-            raise ValueError(f"No tag found for {version} beta")
-        return max(tags)[1]
+            self.logger.warning(f"No tag found for {version} {channel}")
+            return [default]
+
+        return [max(tags)[1], default]
 
 
 class Firefox(Browser):

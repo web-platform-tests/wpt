@@ -361,6 +361,10 @@ class TentativeDirectoryName(Rule):
     description = "Directories for tentative tests must be named exactly 'tentative'"
     to_fix = "rename directory to be called 'tentative'"
 
+class NonPortableFilename(Rule):
+    name = "NON-PORTABLE-FILENAME"
+    description = "Filename contains a non-portable character: %s"
+    to_fix = "Rename the file to remove any invisible or non-ASCII control characters (e.g. U+200E LEFT-TO-RIGHT MARK)"
 
 class InvalidMetaFile(Rule):
     name = "INVALID-META-FILE"

@@ -181,13 +181,17 @@ def write_manifest_file(path: str, web_features_map: WebFeaturesMap) -> None:
         web_features_map (WebFeaturesMap): The object containing the mapping between
                                            web-features and their corresponding test paths.
     """
-    with open(path, "w") as outfile:
-        outfile.write(
-            json.dumps(
-                {
-                    "version": 1,
-                    "data": web_features_map
-                }, cls=WebFeatureManifestEncoder, sort_keys=True))
+    with open(path, "w", encoding="utf-8", newline="\n") as outfile:
+        json.dump(
+            {
+                "version": 1,
+                "data": web_features_map
+            },
+            outfile,
+            cls=WebFeatureManifestEncoder,
+            sort_keys=True,
+            ensure_ascii=False
+        )
 
 
 def main(venv: Any = None, **kwargs: Any) -> int:

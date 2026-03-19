@@ -30,16 +30,8 @@ class AtspiWrapper(ApiWrapper[Atspi.Accessible]):
             )
 
         test_node = self._find_node_by_id(self.document, dom_id);
-
         if not test_node:
             raise Exception(f"Did not find node with id '{dom_id}' in accessibility API ATSPI.")
-
-        # # Polling for the node with ID because in Firefox the node's
-        # # id attribute may be set after the tab is ready, leading to flakes.
-        # test_node = self._poll_for(
-        #     lambda: self._find_node_by_id(self.document, dom_id),
-        #     f"Timout looking for node with id '{dom_id}' in accessibility API ATSPI.",
-        # )
 
         return test_node
 
@@ -59,10 +51,7 @@ class AtspiWrapper(ApiWrapper[Atspi.Accessible]):
             for i in range(num_targets):
                 target = relation.get_target(i)
                 attributes = Atspi.Accessible.get_attributes(target)
-                if "id" in attributes:
-                    relations_dict[name].append(attributes["id"])
-                else:
-                    relations_dict[name].append("[unknown id]")
+                relations_dict[name].append(attributes.get("id", "[unknown id]"))
 
         return relations_dict
 
@@ -71,10 +60,7 @@ class AtspiWrapper(ApiWrapper[Atspi.Accessible]):
         :returns: A list of states for this Atspi.Accessible.
         """
         state_list = Atspi.Accessible.get_state_set(node).get_states()
-        state_string_list = []
-        for state in state_list:
-            state_string_list.append(state.value_name.removeprefix("ATSPI_"))
-        return state_string_list
+        return [state.value_name.removeprefix("ATSPI_") for state in state_list]
 
     def _find_browser(self) -> Optional[Atspi.Accessible]:
         if self.pid and self.pid != 0:

@@ -1,6 +1,9 @@
 # aamtest tests
 
-The aamtest tests are used to verify the mapping of web content to browser-exposed platform-specific accessibility APIs. These mappings are specified by the ARIA working group of the W3C in the following specifications:
+The aamtest tests are used to verify the mapping of web content to
+browser-exposed platform-specific accessibility APIs. These mappings are
+specified by the ARIA working group of the W3C in the following specifications:
+
 * [Core-AAM](https://w3c.github.io/core-aam)
 * [HTML-AAM](https://w3c.github.io/html-aam)
 * [DPUB-AAM](https://w3c.github.io/dpub-aam)
@@ -8,19 +11,32 @@ The aamtest tests are used to verify the mapping of web content to browser-expos
 * [Graphics-AAM](https://w3c.github.io/graphics-aam)
 * [SVG-AAM](https://w3c.github.io/svg-aam/)
 
-These tests are written in [the Python programming language](https://www.python.org/) and structured with [the pytest testing framework](https://docs.pytest.org/en/latest/).
+These tests are written in [the Python programming
+language](https://www.python.org/) and structured with [the pytest testing
+framework](https://docs.pytest.org/en/latest/).
 
-The aamtest type is built on the [wdspec](wdspec) test type, and has access to all the python fixtures defined for wdspec tests. It uses the web-platform-tests maintained WebDriver client library to load HTML and to send other WebDriver commands to the browser.
+The aamtest type is built on the [wdspec](wdspec) test type, and has access to
+all the python fixtures defined for wdspec tests. It uses the web-platform-tests
+maintained WebDriver client library to load HTML and to send other WebDriver
+commands to the browser.
 
-The `wptrunner` will know a python file is an aamtest if it is contained within an `aamtests` directory.
+The `wptrunner` will know a python file is an aamtest if it is contained within
+an `aamtests` directory.
 
 ## Platform-Specific Accessibility APIs
 
-Accessibility APIs are platform specific, each platform has their own API (sometimes more than one). Assistive technologies, such as screen readers, interact with the browser on behalf of a user via these APIs. The AAM specifications explain how to expose web content through these APIs. You can read more about [the APIs in Core-AAM](https://w3c.github.io/core-aam/#intro_aapi).
+Accessibility APIs are platform specific, each platform has their own API
+(sometimes more than one). Assistive technologies, such as screen readers,
+interact with the browser on behalf of a user via these APIs. The AAM
+specifications explain how to expose web content through these APIs. You can
+read more about [the APIs in
+Core-AAM](https://w3c.github.io/core-aam/#intro_aapi).
 
 The table below lists:
+
 * APIs supported by the aamtest framework
-* The name of the pytest fixture that returns access to the API (if you are on the correct platform).
+* The name of the pytest fixture that returns access to the API (if you are
+  on the correct platform).
 * The platform of that API.
 * The python library that provides bindings to query the API.
 
@@ -30,26 +46,50 @@ The table below lists:
 | The NSAccessibility Protocol for macOS ([AX API](https://developer.apple.com/documentation/appkit/nsaccessibility)) | `axapi` | macOS | [pyobjc-framework-Accessibility](https://pypi.org/project/pyobjc-framework-Accessibility/) |
 | MSAA with IAccessible2 1.3 ([IA2](https://wiki.linuxfoundation.org/accessibility/iaccessible2/start)) | `ia2` | Windows | Loading module [ia2_api_all.idl](https://github.com/LinuxA11y/IAccessible2) with [comtypes](https://pypi.org/project/comtypes/) |
 
-The APIs are exposed through a pytest fixture with the name in the table above. The pytest fixture returns a wrapped version of the API. Requesting this fixture on a platform where it is not supported will result in a `PRECONDITION_FAILED` subtest result. It is expected that each test file run on a given platform will have one or more subtests that run to completion, as well as several subtests that result in `PRECONDITION_FAILED`. This is because each test file should show how the **same markup** is exposed in each supporting accessibility APIs/platforms.
+The APIs are exposed through a pytest fixture with the name in the table
+above. The pytest fixture returns a wrapped version of the API. Requesting this
+fixture on a platform where it is not supported will result in a
+`PRECONDITION_FAILED` subtest result. It is expected that each test file run on
+a given platform will have one or more subtests that run to completion, as well
+as several subtests that result in `PRECONDITION_FAILED`. This is because each
+test file should show how the **same markup** is exposed in each supporting
+accessibility APIs/platforms.
 
 ### Package dependencies for Linux API AT-SPI Python Bindings
 
-In order to test the Linux API AT-SPI, you need to have the following packages installed:
+In order to test the Linux API AT-SPI, you need to have the following packages
+installed:
+
 ```
 sudo apt install libatspi2.0-dev libcairo2-dev libgirepository1.0-dev
 ```
 
 ## Adding new tests
 
-If you would like to add a new aamtest to a specification that does not yet have coverage, add the tests to an `aamtests` subfolder. This subfolder indicates the python files within it will be run as an aamtest. This includes restarting the browser with accessibility enabled, if you are doing a full run of the test suite.
+If you would like to add a new aamtest to a specification that does not yet have
+coverage, add the tests to an `aamtests` subfolder. This subfolder indicates the
+python files within it will be run as an aamtest. This includes restarting the
+browser with accessibility enabled, if you are doing a full run of the test
+suite.
 
-In the `aamtests` subfolder, the `conftest.py` will need to add the `webdriver/test/support` path and `core-aam/aamtests/support` path to the sys.path and add the paths as `pytest_plugins` in order to have access to the appropriate fixtures. See `core-aam/aamtests/conftest.py`.
+In the `aamtests` subfolder, the `conftest.py` will need to add the
+`webdriver/test/support` path and `core-aam/aamtests/support` path to the
+sys.path and add the paths as `pytest_plugins` in order to have access to the
+appropriate fixtures. See `core-aam/aamtests/conftest.py`.
 
 ### Test design
 
-Similar to [testharness.js](testharness) tests, each file is a test, and a function that begins with the name "test_" is a subtest of that test.
+Similar to [testharness.js](testharness) tests, each file is a test, and a
+function that begins with the name "test_" is a subtest of that test.
 
-A typical test file contains some html markup and several subtests. Each subtest will test how that markup is exposed in a single accessibility API. For example, if you are testing how `<div role=foobar>foobar widget</div>` is exposed in accessibility APIs, and foobars are supported in the Linux API AT-SPI and macOS API AX API, you should add a subtest called  `test_atspi` and `test_axapi`, respectively. Both subtests will load the same HTML, then query their respective accessibility APIs. The subtest name should include, at least, the name of the API being tested for ease of understanding the test results.
+A typical test file contains some html markup and several subtests. Each subtest
+will test how that markup is exposed in a single accessibility API. For example,
+if you are testing how `<div role=foobar>foobar widget</div>` is exposed in
+accessibility APIs, and foobars are supported in the Linux API AT-SPI and macOS
+API AX API, you should add a subtest called `test_atspi` and `test_axapi`,
+respectively. Both subtests will load the same HTML, then query their respective
+accessibility APIs. The subtest name should include, at least, the name of the
+API being tested for ease of understanding the test results.
 
 For example, the file `foobar.py`:
 ```python
@@ -80,8 +120,14 @@ def test_axapi(axapi, session, inline):
 ## Adding support for an unsupported API
 
 To add an unsupported API:
-1. Add the python package that provides the python bindings for that API to `tools/wptrunner/requirements_platform_accessibility.txt`.
-2. Create a wrapper object for the new API in `newapi_wrapper.py` in `core-aam/aamtests/support/`. It must inherit from `ApiWrapper` and follow the same conventions as the other API wrappers, as appropriate.
-3. Add the fixture for that API in `core-aam/aamtests/support/fixtures_a11y_api.py`.
-4. Update the table in the "Platform-Specific Accessibility APIs" section of this document.
+
+1. Add the python package that provides the python bindings for that API to
+   `tools/wptrunner/requirements_platform_accessibility.txt`.
+2. Create a wrapper object for the new API in `newapi_wrapper.py` in
+   `core-aam/aamtests/support/`. It must inherit from `ApiWrapper` and follow
+   the same conventions as the other API wrappers, as appropriate.
+3. Add the fixture for that API in
+   `core-aam/aamtests/support/fixtures_a11y_api.py`.
+4. Update the table in the "Platform-Specific Accessibility APIs" section of this
+   document.
 5. Add a new subtest to all the files that contain markup you would like to test.

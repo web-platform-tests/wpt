@@ -9,17 +9,16 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-  div {
+  .square {
     outline-style: solid;
     outline-color: blue;
 
-    display: inline-block;
     width: 20px;
     height: 20px;
     margin: 10px;
   }
 
-  hr~div {
+  .zoomed {
     zoom: 15;
     outline-color: red;
   }
@@ -37,20 +36,21 @@
   }
 </style>
 
-<div class="thin"></div>
-<div class="medium"></div>
-<div class="thick"></div>
+<div class="square thin"></div>
+<div class="square medium"></div>
+<div class="square thick"></div>
 <hr>
-<div class="thin"></div>
-<div class="medium"></div>
-<div class="thick"></div>
+<p>Test passes if below there are 3 squares that are, respectively, 15 times the thickness of the 3 squares above.</p>
+<div class="square thin zoomed"></div>
+<div class="square medium zoomed"></div>
+<div class="square thick zoomed"></div>
 
 <script>
   const keywords = ['thin', 'medium', 'thick'];
   for (const keyword of keywords) {
     test(() => {
       const refEl = document.querySelector(`.${keyword}`);
-      const el = document.querySelector(`hr~.${keyword}`);
+      const el = document.querySelector(`.${keyword}.zoomed`);
       const refWidth = parseFloat(getComputedStyle(refEl).outlineWidth);
       const width = parseFloat(getComputedStyle(el).outlineWidth);
       assert_approx_equals(width, refWidth, Math.min(1, refWidth / 2));

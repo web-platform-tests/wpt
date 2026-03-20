@@ -264,21 +264,17 @@ promise_test(async (t) => {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    const options = {
-      digital: {
-        requests: [
-          {
-            protocol: "unknown-protocol",
-            data: BigInt(1), // malformed/non-serializable
-          },
-          {
-            protocol: "openid4vp-v1-unsigned",
-            data: { some: "data" }, // proper data
-          },
-        ],
-      },
+    // makeGetOptions() with a manual request in `requests` will create a mix
+    // of that request plus the default canonical ones (openid4vp, org-iso-mdoc).
+    const options = makeGetOptions({
+      requests: [
+        {
+          protocol: "unknown-protocol",
+          data: BigInt(1), // malformed/non-serializable
+        },
+      ],
       signal,
-    };
+    });
 
     await test_driver.bless("user activation");
     const promise = navigator.credentials.get(options);

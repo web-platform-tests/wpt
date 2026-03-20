@@ -261,7 +261,7 @@ const AriaUtils = {
     if (typeof subtreeRoot == "string") {
       subtreeRoot = document.querySelector(subtreeRoot);
       if (!subtreeRoot) {
-        throw `selector passed to verifyAccessibilityTree("${subtreeRoot}") doesn't match an element`;
+        throw `selector passed to verifyAccessibilitySubtree("${subtreeRoot}") doesn't match an element`;
       }
     }
     promise_test(async t => {

@@ -78,44 +78,47 @@
     }
   ].forEach(destinationData => {
     ["ArrayBuffer", "SharedArrayBuffer"].forEach(arrayBufferOrSharedArrayBuffer => {
-      test(() => {
-        // Setup
-        const bufferLength = testData.destinationLength + destinationData.bufferIncrease;
-        const destinationOffset = destinationData.destinationOffset;
-        const destinationLength = testData.destinationLength;
-        const destinationFiller = destinationData.filler;
-        const encoder = new TextEncoder();
-        const buffer = createBuffer(arrayBufferOrSharedArrayBuffer, bufferLength);
-        const view = new Uint8Array(buffer, destinationOffset, destinationLength);
-        const fullView = new Uint8Array(buffer);
-        const control = new Array(bufferLength);
-        let byte = destinationFiller;
-        for (let i = 0; i < bufferLength; i++) {
-          if (destinationFiller === "random") {
-            byte = Math.floor(Math.random() * 256);
+      [false, true].forEach(resizable => {
+        test(() => {
+          // Setup
+          const bufferLength = testData.destinationLength + destinationData.bufferIncrease;
+          const destinationOffset = destinationData.destinationOffset;
+          const destinationLength = testData.destinationLength;
+          const destinationFiller = destinationData.filler;
+          const encoder = new TextEncoder();
+          const opts = resizable ? { maxByteLength: bufferLength } : undefined;
+          const buffer = createBuffer(arrayBufferOrSharedArrayBuffer, bufferLength, opts);
+          const view = new Uint8Array(buffer, destinationOffset, destinationLength);
+          const fullView = new Uint8Array(buffer);
+          const control = new Array(bufferLength);
+          let byte = destinationFiller;
+          for (let i = 0; i < bufferLength; i++) {
+            if (destinationFiller === "random") {
+              byte = Math.floor(Math.random() * 256);
+            }
+            control[i] = byte;
+            fullView[i] = byte;
           }
-          control[i] = byte;
-          fullView[i] = byte;
-        }
 
-        // It's happening
-        const result = encoder.encodeInto(testData.input, view);
+          // It's happening
+          const result = encoder.encodeInto(testData.input, view);
 
-        // Basics
-        assert_equals(view.byteLength, destinationLength);
-        assert_equals(view.length, destinationLength);
+          // Basics
+          assert_equals(view.byteLength, destinationLength);
+          assert_equals(view.length, destinationLength);
 
-        // Remainder
-        assert_equals(result.read, testData.read);
-        assert_equals(result.written, testData.written.length);
-        for (let i = 0; i < bufferLength; i++) {
-          if (i < destinationOffset || i >= (destinationOffset + testData.written.length)) {
-            assert_equals(fullView[i], control[i]);
-          } else {
-            assert_equals(fullView[i], testData.written[i - destinationOffset]);
+          // Remainder
+          assert_equals(result.read, testData.read);
+          assert_equals(result.written, testData.written.length);
+          for (let i = 0; i < bufferLength; i++) {
+            if (i < destinationOffset || i >= (destinationOffset + testData.written.length)) {
+              assert_equals(fullView[i], control[i]);
+            } else {
+              assert_equals(fullView[i], testData.written[i - destinationOffset]);
+            }
           }
-        }
-      }, "encodeInto() into "  + arrayBufferOrSharedArrayBuffer + " with " + testData.input + " and destination length " + testData.destinationLength + ", offset " + destinationData.destinationOffset + ", filler " + destinationData.filler);
+        }, "encodeInto() into " + (resizable ? "resizable " : "") + arrayBufferOrSharedArrayBuffer + " with " + testData.input + " and destination length " + testData.destinationLength + ", offset " + destinationData.destinationOffset + ", filler " + destinationData.filler);
+      })
     })
   });
 });

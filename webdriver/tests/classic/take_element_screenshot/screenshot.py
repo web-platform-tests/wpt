@@ -2,7 +2,7 @@ import pytest
 
 from webdriver import WebElement
 
-from tests.support.asserts import assert_error, assert_success
+from tests.support.classic.asserts import assert_error, assert_success
 from tests.support.image import png_dimensions
 from . import element_dimensions, take_element_screenshot
 
@@ -94,7 +94,12 @@ def test_clip_huge_element_to_viewport(session, inline):
     width = "32768px"
     height = "32768px"
 
-    session.url = inline(f"<div style='width: {width}; height: {height}; background-color: black;'></div>")
+    session.url = inline(f"""
+        <style>
+            body {{ margin: 0; }}
+        </style>
+        <div style='width: {width}; height: {height}; background-color: black;'></div>
+    """)
     element = session.find.css("div", all=False)
 
     response = take_element_screenshot(session, element.id)

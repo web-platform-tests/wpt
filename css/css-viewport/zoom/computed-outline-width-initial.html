@@ -50,22 +50,22 @@
 <div id="initial3" class="square zoomed"></div>
 
 <script>
-  const refWidth = parseFloat(getComputedStyle(ref).outlineWidth);
-  const refWidthZoomed = parseFloat(getComputedStyle(ref_zoomed).outlineWidth);
-  const width1 = parseFloat(getComputedStyle(initial1).outlineWidth);
-  const width2 = parseFloat(getComputedStyle(initial2).outlineWidth);
-  const width3 = parseFloat(getComputedStyle(initial3).outlineWidth);
+  const refWidth = getComputedStyle(ref).outlineWidth;
+  const refWidthZoomed = getComputedStyle(ref_zoomed).outlineWidth;
+  const width1 = getComputedStyle(initial1).outlineWidth;
+  const width2 = getComputedStyle(initial2).outlineWidth;
+  const width3 = getComputedStyle(initial3).outlineWidth;
 
   test(() => {
-    assert_approx_equals(width1, refWidth, 1);
+    assert_equals(width1, refWidth);
     assert_equals(width1, refWidthZoomed);
   }, 'implicit initial');
   test(() => {
-    assert_approx_equals(width2, refWidth, 1);
+    assert_equals(width2, refWidth);
     assert_equals(width2, refWidthZoomed);
   }, 'initial keyword: "outline-width: initial"');
   test(() => {
-    assert_approx_equals(width3, refWidth, 1);
+    assert_equals(width3, refWidth);
     assert_equals(width3, refWidthZoomed);
   }, 'shorthand implicit initial: "outline: solid red"');
 </script>

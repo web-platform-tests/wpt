@@ -51,9 +51,9 @@
     test(() => {
       const refEl = document.querySelector(`.${keyword}`);
       const el = document.querySelector(`.${keyword}.zoomed`);
-      const refWidth = parseFloat(getComputedStyle(refEl).outlineWidth);
-      const width = parseFloat(getComputedStyle(el).outlineWidth);
-      assert_approx_equals(width, refWidth, Math.min(1, refWidth / 2));
+      const refWidth = getComputedStyle(refEl).outlineWidth;
+      const width = getComputedStyle(el).outlineWidth;
+      assert_equals(width, refWidth);
     }, keyword);
   }
 </script>

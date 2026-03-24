@@ -153,9 +153,9 @@
     );
   }, "Declarative Shadow DOM: shadowrootslotassignment invalid value defaults to named");
 
-  promise_test(async t => {
+  promise_test(async (t) => {
     t.add_cleanup(() => div.replaceChildren());
-    customElements.define('expose-shadow', class extends HTMLElement {});
+    customElements.define("expose-shadow", class extends HTMLElement {});
     div.setHTMLUnsafe(`
       <expose-shadow id="host">
         <template shadowrootmode="closed" shadowrootslotassignment="manual">
@@ -164,17 +164,17 @@
     `);
     await Promise.resolve();
     var host = div.querySelector("#host");
-    let internals = host.attachInternals();
-    assert_true(!!internals, "No internals found");
-    assert_true(!!internals.shadowRoot, "No shadow root found");
+    let elementInternals = host.attachInternals();
+    assert_true(!!elementInternals, "No internals found");
+    assert_true(!!elementInternals.shadowRoot, "No shadow root found");
     assert_equals(
-      internals.shadowRoot.slotAssignment,
+      elementInternals.shadowRoot.slotAssignment,
       "manual",
       'slotAssignment should be "manual" (closed root)',
     );
   }, "Declarative Shadow DOM: shadowrootslotassignment on closed shadows can be set to manual");
 
-  test(t => {
+  test((t) => {
     t.add_cleanup(() => div.replaceChildren());
     div.setHTMLUnsafe(`
     <div id="host">

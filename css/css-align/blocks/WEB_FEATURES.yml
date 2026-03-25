@@ -2,3 +2,6 @@ features:
 - name: align-content-block
   files:
   - align-content-block-*
+- name: justify-self-block
+  files:
+  - justify-self-widgets.html

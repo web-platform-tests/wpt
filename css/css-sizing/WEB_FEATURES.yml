@@ -51,9 +51,9 @@ features:
   files:
   - ./div-fit-content-*
   - ./fit-content-*
-  - "!./fit-content-length-percentage-*"
   - ./margin-collapse-with-indefinite-block-size-004.html
   - ./percentage-min-width.html
+  - "!#fit-content-function"
 - name: fit-content-function
   files:
   - ./border-box-and-max-content-003.html

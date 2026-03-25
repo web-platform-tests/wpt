@@ -1,16 +1,16 @@
 features:
 - name: min-max-content
   files:
-  - 'block-size-with-min-or-max-content-*'
-  - 'border-box-and-max-content-*'
-  - 'div-max-content-*'
-  - 'div-min-content-*'
-  - 'hori-block-size-small-or-larger-than-container-with-min-or-max-content-*'
-  - 'image-min-max-content-intrinsic-size-change-*'
+  - block-size-with-min-or-max-content-*
+  - border-box-and-max-content-*
+  - div-max-content-*
+  - div-min-content-*
+  - hori-block-size-small-or-larger-than-container-with-min-or-max-content-*
+  - image-min-max-content-intrinsic-size-change-*
   - intrinsic-fixed-width-with-max-content-height.html
   - intrinsic-fixed-width-with-min-content-height.html
-  - 'keyword-sizes-on-*'
-  - 'max-content-input-*'
+  - keyword-sizes-on-*
+  - max-content-input-*
   - min-content-le-max-content.tentative.html
   - min-content-min-width-000.html
   - min-max-content-orthogonal-flow-crash-001.html
@@ -21,7 +21,7 @@ features:
   - shrink-to-fit-sizing-max-width-min-content.html
   - svg-no-ar-max-height-min-content.html
   - svg-no-ar-min-height-min-content.html
-  - 'vert-block-size-small-or-larger-than-container-with-min-or-max-content-*'
+  - vert-block-size-small-or-larger-than-container-with-min-or-max-content-*
 - name: min-max-width-height
   files:
   - button-min-width.html
@@ -49,15 +49,15 @@ features:
   - thin-element-render.html
 - name: fit-content
   files:
-  - 'div-fit-content-*'
-  - 'fit-content-*'
-  - '!fit-content-length-percentage-*'
-  - 'margin-collapse-with-indefinite-block-size-004.html'
-  - 'percentage-min-width.html'
+  - div-fit-content-*
+  - fit-content-*
+  - "!fit-content-length-percentage-*"
+  - margin-collapse-with-indefinite-block-size-004.html
+  - percentage-min-width.html
 - name: fit-content-function
   files:
-  - 'border-box-and-max-content-003.html'
-  - 'fit-content-length-percentage-*'
+  - border-box-and-max-content-003.html
+  - fit-content-length-percentage-*
 - name: width-height
   files:
   - percentage-height-replaced-content-in-auto-cb.html

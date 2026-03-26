@@ -25,3 +25,6 @@ features:
 - name: open-pseudo
   files:
   - dialog-open-pseudo-invalidation.html
+- name: toggleevent-source
+  files:
+  - dialog-toggle-source.html

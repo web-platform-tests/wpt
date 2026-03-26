@@ -31,7 +31,7 @@ promise_test(async (t) => {
 
 <dl>
   <dt contenteditable></dt>
-  <dialog id=test2 open></dialog>
+  <dialog id=test2></dialog>
 </dl>
 
 <script>
@@ -51,6 +51,8 @@ promise_test(async (t) => {
   // the dialog to be closed.
   const dialog = document.querySelector('dialog#test2');
   const controller = new AbortController();
+  document.querySelector('dt').focus();
+  dialog.open = true;
   document.querySelector('dl').addEventListener("focusin", () => {
     dialog.showModal();
   },{signal:controller.signal});
@@ -59,7 +61,6 @@ promise_test(async (t) => {
   dialog.open = false;
   await new Promise(resolve => {
     document.defaultView.requestIdleCallback(() => {
-      window.getSelection().addRange(document.createRange());
       dialog.close();
       resolve();
     });

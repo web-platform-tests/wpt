@@ -5,3 +5,5 @@ features:
 - name: justify-self-block
   files:
   - justify-self-widgets.html
+  - justify-self-normal-1.html
+  - justify-items-anonymous.html

@@ -13,7 +13,7 @@ def main(request, response):
         base_dir = os.path.abspath(os.path.dirname(isomorphic_encode(__file__)))
         target_file = request.GET.first(b"file")
         path = os.path.abspath(os.path.join(base_dir, target_file))
-        if not path.startswith(base_dir):
+        if os.path.commonpath([base_dir, path]) != base_dir:
             response.status = 403
             return b"Forbidden"
 

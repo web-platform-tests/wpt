@@ -847,3 +847,62 @@ PROMISE_REJECTS: wasm/core/js/harness/testharness.js
 
 # Legitimate use of test_driver_internal
 TEST DRIVER INTERNAL: resources/testdriver.js
+
+# Intentional overlapping web feature mappings
+OVERLAPPING-WEB-FEATURES-FILE: css/CSS2/backgrounds/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/CSS2/normal-flow/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/CSS2/page-box/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/CSS2/tables/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/CSS2/text/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-backgrounds/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-break/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-cascade/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-contain/content-visibility/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-display/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-display/parsing/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-flexbox/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-images/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-lists/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-masking/clip-path/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-masking/clip-path/animations/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-multicol/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-overflow/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-page/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-pseudo/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-scrollbars/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-sizing/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-text/text-indent/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-typed-om/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-ui/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-values/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-variables/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-view-transitions/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-writing-modes/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/css-writing-modes/parsing/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/cssom/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/mediaqueries/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/selectors/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/selectors/invalidation/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: css/selectors/parsing/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: custom-elements/reactions/customized-builtins/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: dom/abort/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: dom/nodes/moveBefore/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: fetch/api/basic/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: fetch/api/credentials/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: fetch/http-cache/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: file-system-access/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: html/editing/the-hidden-attribute/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: html/rendering/non-replaced-elements/phrasing-content-0/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: html/rendering/the-details-element/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: html/semantics/document-metadata/the-link-element/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: html/semantics/embedded-content/the-img-element/srcset/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: html/semantics/forms/the-button-element/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: html/semantics/forms/the-input-element/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: html/semantics/interactive-elements/the-dialog-element/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: html/semantics/scripting-1/the-script-element/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: shadow-dom/declarative/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: url/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: webmessaging/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: workers/interfaces/WorkerUtils/navigator/WEB_FEATURES.yml
+OVERLAPPING-WEB-FEATURES-FILE: xhr/WEB_FEATURES.yml

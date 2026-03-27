@@ -777,6 +777,8 @@ def check_web_features_file(repo_root: Text, path: Text, f: IO[bytes]) -> List[r
     base_dir = os.path.join(repo_root, os.path.dirname(path))
     files_in_directory = [
         f for f in os.listdir(base_dir) if os.path.isfile(os.path.join(base_dir, f))]
+    # Track which files are claimed by which feature.
+    file_to_feature: Dict[str, str] = {}
     for feature in web_features_file.features:
         if isinstance(feature.files, list):
             # Resolve inclusion patterns to files, then subtract exclusions.
@@ -802,6 +804,17 @@ def check_web_features_file(repo_root: Text, path: Text, f: IO[bytes]) -> List[r
                         errors.append(rules.UnnecessaryExclusionInWebFeaturesFile.error(path, (
                             f"'{file}' in feature '{feature.name}'",)))
                     included -= excluded
+        elif feature.does_feature_apply_recursively():
+            included = set(files_in_directory)
+        else:
+            continue
+        for filename in sorted(included):
+            if filename in file_to_feature:
+                errors.append(rules.OverlappingWebFeaturesFile.error(path, (
+                    f"'{filename}' is mapped to both "
+                    f"'{file_to_feature[filename]}' and '{feature.name}'",)))
+            else:
+                file_to_feature[filename] = feature.name
 
     return errors
 

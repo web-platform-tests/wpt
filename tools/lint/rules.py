@@ -386,6 +386,13 @@ class UnnecessaryExclusionInWebFeaturesFile(Rule):
     """)
 
 
+class OverlappingWebFeaturesFile(Rule):
+    name = "OVERLAPPING-WEB-FEATURES-FILE"
+    description = collapse("""
+        The WEB_FEATURES.yml file maps the same file to multiple features: %s
+    """)
+
+
 class WebFeaturesFileInNonTestDirectory(Rule):
     name = "WEB-FEATURES-FILE-IN-NON-TEST-DIRECTORY"
     description = collapse("""

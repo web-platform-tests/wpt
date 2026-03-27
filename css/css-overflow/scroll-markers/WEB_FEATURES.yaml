@@ -23,3 +23,6 @@ features:
   files:
   - scroll-marker-target-before-after.html
   - html-scroll-marker-target-before-after.html
+- name: scroll-target-group
+  files:
+  - scroll-target-group*

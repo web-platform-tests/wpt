@@ -10,7 +10,17 @@ def main(request, response):
         response.headers.set(b"Link", link)
 
     if b"file" in request.GET:
-        path = os.path.join(os.path.dirname(isomorphic_encode(__file__)), request.GET.first(b"file"));
-        response.content = open(path, mode=u'rb').read();
+        base_dir = os.path.abspath(os.path.dirname(isomorphic_encode(__file__)))
+        target_file = request.GET.first(b"file")
+        path = os.path.abspath(os.path.join(base_dir, target_file))
+        if not path.startswith(base_dir):
+            response.status = 403
+            return b"Forbidden"
+
+        try:
+            response.content = open(path, mode=u'rb').read()
+        except IOError:
+            response.status = 404
+            return b"Not found"
     else:
         return request.GET.first(b"content")

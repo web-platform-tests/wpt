@@ -1393,7 +1393,7 @@ features:
     assert errors == []
 
 @pytest.mark.parametrize("files,yml,expected_errors", [
-    # ** before explicit files
+    # ** before explicit files — 1 overlapping file
     (
         ["file-1.html", "file-2.html"],
         b"""\
@@ -1407,13 +1407,13 @@ features:
         [
             ("OVERLAPPING-WEB-FEATURES-FILE",
              "The WEB_FEATURES.yml file maps the same file to multiple features: "
-             "'file-1.html' is mapped to both "
-             "'feature-a' and 'feature-b'",
+             "Features 'feature-a' and 'feature-b' share "
+             "1 overlapping test file: file-1.html",
              "css/WEB_FEATURES.yml",
              None),
         ]
     ),
-    # Explicit files before **
+    # Explicit files before ** — 1 overlapping file
     (
         ["file-1.html", "file-2.html"],
         b"""\
@@ -1427,13 +1427,13 @@ features:
         [
             ("OVERLAPPING-WEB-FEATURES-FILE",
              "The WEB_FEATURES.yml file maps the same file to multiple features: "
-             "'file-1.html' is mapped to both "
-             "'feature-a' and 'feature-b'",
+             "Features 'feature-a' and 'feature-b' share "
+             "1 overlapping test file: file-1.html",
              "css/WEB_FEATURES.yml",
              None),
         ]
     ),
-    # ** before wildcard patterns
+    # ** before wildcard patterns — 2 overlapping files
     (
         ["file-1.html", "file-2.html"],
         b"""\
@@ -1447,14 +1447,8 @@ features:
         [
             ("OVERLAPPING-WEB-FEATURES-FILE",
              "The WEB_FEATURES.yml file maps the same file to multiple features: "
-             "'file-1.html' is mapped to both "
-             "'feature-a' and 'feature-b'",
-             "css/WEB_FEATURES.yml",
-             None),
-            ("OVERLAPPING-WEB-FEATURES-FILE",
-             "The WEB_FEATURES.yml file maps the same file to multiple features: "
-             "'file-2.html' is mapped to both "
-             "'feature-a' and 'feature-b'",
+             "Features 'feature-a' and 'feature-b' share "
+             "2 overlapping test files: file-1.html, file-2.html",
              "css/WEB_FEATURES.yml",
              None),
         ]
@@ -1474,13 +1468,13 @@ features:
         [
             ("OVERLAPPING-WEB-FEATURES-FILE",
              "The WEB_FEATURES.yml file maps the same file to multiple features: "
-             "'file-1.html' is mapped to both "
-             "'feature-a' and 'feature-b'",
+             "Features 'feature-a' and 'feature-b' share "
+             "1 overlapping test file: file-1.html",
              "css/WEB_FEATURES.yml",
              None),
         ]
     ),
-    # Same wildcard pattern in two features
+    # Same wildcard pattern in two features — 2 overlapping files
     (
         ["file-1.html", "file-2.html"],
         b"""\
@@ -1495,14 +1489,8 @@ features:
         [
             ("OVERLAPPING-WEB-FEATURES-FILE",
              "The WEB_FEATURES.yml file maps the same file to multiple features: "
-             "'file-1.html' is mapped to both "
-             "'feature-a' and 'feature-b'",
-             "css/WEB_FEATURES.yml",
-             None),
-            ("OVERLAPPING-WEB-FEATURES-FILE",
-             "The WEB_FEATURES.yml file maps the same file to multiple features: "
-             "'file-2.html' is mapped to both "
-             "'feature-a' and 'feature-b'",
+             "Features 'feature-a' and 'feature-b' share "
+             "2 overlapping test files: file-1.html, file-2.html",
              "css/WEB_FEATURES.yml",
              None),
         ]
@@ -1549,6 +1537,27 @@ features:
   - file-2.html
 """,
         []
+    ),
+    # Many overlapping files — capped at 5 in the message
+    (
+        ["f-1.html", "f-2.html", "f-3.html", "f-4.html", "f-5.html", "f-6.html", "f-7.html"],
+        b"""\
+features:
+- name: feature-a
+  files:
+  - f-*
+- name: feature-b
+  files:
+  - f-*
+""",
+        [
+            ("OVERLAPPING-WEB-FEATURES-FILE",
+             "The WEB_FEATURES.yml file maps the same file to multiple features: "
+             "Features 'feature-a' and 'feature-b' share "
+             "7 overlapping test files: f-1.html, f-2.html, f-3.html, f-4.html, f-5.html, and 2 more",
+             "css/WEB_FEATURES.yml",
+             None),
+        ]
     ),
 ])
 def test_overlapping_web_features_file(monkeypatch, files, yml, expected_errors):

@@ -779,6 +779,8 @@ def check_web_features_file(repo_root: Text, path: Text, f: IO[bytes]) -> List[r
         f for f in os.listdir(base_dir) if os.path.isfile(os.path.join(base_dir, f))]
     # Track which files are claimed by which feature.
     file_to_feature: Dict[str, str] = {}
+    # Track overlaps grouped by feature pair: (earlier_feature, later_feature) -> [filenames]
+    overlap_pairs: Dict[Tuple[str, str], List[str]] = {}
     for feature in web_features_file.features:
         if isinstance(feature.files, list):
             # Resolve inclusion patterns to files, then subtract exclusions.
@@ -810,11 +812,20 @@ def check_web_features_file(repo_root: Text, path: Text, f: IO[bytes]) -> List[r
             continue
         for filename in sorted(included):
             if filename in file_to_feature:
-                errors.append(rules.OverlappingWebFeaturesFile.error(path, (
-                    f"'{filename}' is mapped to both "
-                    f"'{file_to_feature[filename]}' and '{feature.name}'",)))
+                pair = (file_to_feature[filename], feature.name)
+                overlap_pairs.setdefault(pair, []).append(filename)
             else:
                 file_to_feature[filename] = feature.name
+
+    for (feature_a, feature_b), filenames in overlap_pairs.items():
+        max_files = 5
+        file_list = ", ".join(filenames[:max_files])
+        if len(filenames) > max_files:
+            file_list += f", and {len(filenames) - max_files} more"
+        errors.append(rules.OverlappingWebFeaturesFile.error(path, (
+            f"Features '{feature_a}' and '{feature_b}' share "
+            f"{len(filenames)} overlapping test file{'s' if len(filenames) > 1 else ''}: "
+            f"{file_list}",)))
 
     return errors
 

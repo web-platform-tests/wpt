@@ -14,7 +14,11 @@ def get_browser_args(product, channel, artifact_path, wpt_args):
     if product == "firefox" and not any(item.startswith("--install-browser") for item in wpt_args):
         local_binary = os.path.expanduser(os.path.join("~", "build", "firefox", "firefox"))
         if os.path.exists(local_binary):
-            return ["--binary=%s" % local_binary]
+            return [
+                "--binary=%s" % local_binary,
+                "--setpref=layout.css.typed-om.enabled=true",
+                "--setpref=layout.css.typed-om-color.enabled=true",
+            ]
         print("WARNING: Local firefox binary not found")
         return ["--install-browser", "--install-webdriver"]
     if product == "firefox_android":

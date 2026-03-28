@@ -67,3 +67,4 @@ for (const { subclass, clamp } of gAddTypesMathValueSubclasses) {
     assert_numeric_type_equals(result.type(), { length: 1, percentHint: 'length' });
   }, 'Adding two types with the same percent hint in the ' + subclass.name + ' constructor returns a type with that percent hint');
 }
+

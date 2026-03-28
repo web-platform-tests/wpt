@@ -161,3 +161,4 @@ for (const methodName of ["mul", "div"]) {
       assert_throws_js(TypeError, () => a[methodName](b));
     }, 'CSSNumericValue.' + methodName + ' should throw TypeError when the types are different.');
 }
+

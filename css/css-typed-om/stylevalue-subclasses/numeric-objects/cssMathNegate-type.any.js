@@ -14,3 +14,4 @@ test(() => {
   const result = new CSSMathNegate(new CSSUnitValue(0, 'px'));
   assert_numeric_type_equals(result.type(), { length: 1 });
 }, 'Negating a type returns the same type');
+

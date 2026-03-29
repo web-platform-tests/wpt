@@ -10359,17 +10359,17 @@
     "hash": ""
   },
   {
-    "comment": "Non-special relative: \\ in RelativeSlash should not be treated as /",
+    "comment": "Non-special relative: \\ should not enter RelativeSlash, so / is a path separator",
     "input": "\\/a",
     "base": "foo://foo/a",
-    "href": "foo://foo/\\a",
+    "href": "foo://foo/\\/a",
     "protocol": "foo:",
     "username": "",
     "password": "",
     "host": "foo",
     "hostname": "foo",
     "port": "",
-    "pathname": "/\\a",
+    "pathname": "/\\/a",
     "search": "",
     "hash": ""
   },

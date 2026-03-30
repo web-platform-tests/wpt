@@ -15,7 +15,7 @@ import comtypes.client
 from comtypes import IServiceProvider
 
 from .api_wrapper import ApiWrapper
-from iaccessible2.constants import (  # type: ignore[attr-defined]
+from ia2 import (  # type: ignore[attr-defined]
     IAccessible2_2,
     Role,
     msaa_state_list_to_string,

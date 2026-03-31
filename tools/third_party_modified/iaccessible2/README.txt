@@ -1,7 +1,7 @@
 This folder contains IAccessible2 (and MSAA) support files for tests of type
 `aamtest`.
 
-ia2_api_all.idl
+ia2_api_all.tlb
 
   Contains the IAccessible2 COM interfaces, generated from
   https://github.com/LinuxA11y/IAccessible2.

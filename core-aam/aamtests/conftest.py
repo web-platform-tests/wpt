@@ -7,5 +7,6 @@ sys.path.insert(0, str(webdriver_tests_path))
 
 pytest_plugins = (
     "tests.support.fixtures",
+    "tests.support.classic.fixtures",
     "aamtests.support.fixtures_a11y_api",
 )

@@ -3,6 +3,10 @@ features:
   files:
   - '*'
   - '!path-function-*'
+  - '!shape-function-*'
 - name: path-shape
   files:
   - 'path-function-*'
+- name: shape-function
+  files:
+  - shape-function-*

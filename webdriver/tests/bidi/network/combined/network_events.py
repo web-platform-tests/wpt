@@ -140,26 +140,6 @@ async def test_iframe_navigation_request(
         expected_response = {"url": url}
         assert_before_request_sent_event(
             network_events[BEFORE_REQUEST_SENT_EVENT][event_index],
-<<<<<<< HEAD
-            expected_request=expected_request,
-            context=context,
-            user_context=user_context,
-            navigation=navigation,
-        )
-        assert_response_event(
-            network_events[RESPONSE_STARTED_EVENT][event_index],
-            expected_response=expected_response,
-            context=context,
-            user_context=user_context,
-            navigation=navigation,
-        )
-        assert_response_event(
-            network_events[RESPONSE_COMPLETED_EVENT][event_index],
-            expected_response=expected_response,
-            context=context,
-            user_context=user_context,
-            navigation=navigation,
-=======
             expected_event={
                 "request": expected_request,
                 "context": context,
@@ -181,7 +161,6 @@ async def test_iframe_navigation_request(
                 "context": context,
                 "navigation": navigation,
             },
->>>>>>> master
         )
 
     assert_events(
@@ -245,26 +224,6 @@ async def test_same_navigation_id(
     expected_response = {"url": html_url}
     assert_before_request_sent_event(
         network_events[BEFORE_REQUEST_SENT_EVENT][0],
-<<<<<<< HEAD
-        expected_request=expected_request,
-        context=top_context["context"],
-        user_context=top_context["userContext"],
-        navigation=result["navigation"],
-    )
-    assert_response_event(
-        network_events[RESPONSE_STARTED_EVENT][0],
-        expected_response=expected_response,
-        context=top_context["context"],
-        user_context=top_context["userContext"],
-        navigation=result["navigation"],
-    )
-    assert_response_event(
-        network_events[RESPONSE_COMPLETED_EVENT][0],
-        expected_response=expected_response,
-        context=top_context["context"],
-        user_context=top_context["userContext"],
-        navigation=result["navigation"],
-=======
         expected_event={
             "request": expected_request,
             "context": top_context["context"],
@@ -286,7 +245,6 @@ async def test_same_navigation_id(
             "context": top_context["context"],
             "navigation": result["navigation"],
         },
->>>>>>> master
     )
 
 
@@ -374,23 +332,6 @@ async def test_subscribe_to_one_context(
     expected_response = {"url": text_url}
     assert_before_request_sent_event(
         network_events[BEFORE_REQUEST_SENT_EVENT][0],
-<<<<<<< HEAD
-        expected_request=expected_request,
-        context=top_context["context"],
-        user_context=top_context["userContext"],
-    )
-    assert_response_event(
-        network_events[RESPONSE_STARTED_EVENT][0],
-        expected_response=expected_response,
-        context=top_context["context"],
-        user_context=top_context["userContext"],
-    )
-    assert_response_event(
-        network_events[RESPONSE_COMPLETED_EVENT][0],
-        expected_response=expected_response,
-        context=top_context["context"],
-        user_context=top_context["userContext"],
-=======
         expected_event={
             "request": expected_request,
             "context": top_context["context"],
@@ -409,7 +350,6 @@ async def test_subscribe_to_one_context(
             "response": expected_response,
             "context": top_context["context"],
         },
->>>>>>> master
     )
 
     # Perform another fetch request in the other context.

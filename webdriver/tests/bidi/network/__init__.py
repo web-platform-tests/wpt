@@ -116,17 +116,7 @@ def assert_request_data(request_data, expected_request, expected_time_range):
     recursive_compare(expected_request, request_data)
 
 
-def assert_base_parameters(
-    event,
-    context=None,
-    intercepts=None,
-    is_blocked=None,
-    navigation=None,
-    redirect_count=None,
-    user_context=None,
-    expected_request=None,
-    expected_time_range=None,
-):
+def assert_base_parameters(event, expected_event):
     recursive_compare(
         {
             "context": any_string_or_null,
@@ -135,18 +125,16 @@ def assert_base_parameters(
             "redirectCount": any_int,
             "request": any_dict,
             "timestamp": any_int,
+            "userContext": any_string_or_null,
         },
         event,
     )
 
-    if context is not None:
-        assert event["context"] == context
+    if "context" in expected_event:
+        assert event["context"] == expected_event["context"]
 
-    if user_context is not None:
-        assert event["userContext"] == user_context
-
-    if is_blocked is not None:
-        assert event["isBlocked"] == is_blocked
+    if "isBlocked" in expected_event:
+        assert event["isBlocked"] == expected_event["isBlocked"]
 
     if event["isBlocked"]:
         assert isinstance(event["intercepts"], list)
@@ -156,31 +144,28 @@ def assert_base_parameters(
     else:
         assert "intercepts" not in event
 
-    if intercepts is not None:
-        assert event["intercepts"] == intercepts
+    if "intercepts" in expected_event:
+        assert event["intercepts"] == expected_event["intercepts"]
 
-    if navigation is not None:
-        assert event["navigation"] == navigation
+    if "navigation" in expected_event:
+        assert event["navigation"] == expected_event["navigation"]
 
-    if redirect_count is not None:
-        assert event["redirectCount"] == redirect_count
+    if "redirectCount" in expected_event:
+        assert event["redirectCount"] == expected_event["redirectCount"]
 
     # Assert request data (expected_time_range is optional)
-    if expected_request is not None:
-        assert_request_data(event["request"], expected_request, expected_time_range)
+    if "request" in expected_event:
+        assert_request_data(
+            event["request"],
+            expected_event["request"],
+            expected_event.get("timestamp"),
+        )
+
+    if "userContext" in expected_event:
+        assert event["userContext"] == expected_event["userContext"]
 
 
-def assert_before_request_sent_event(
-    event,
-    context=None,
-    intercepts=None,
-    is_blocked=None,
-    navigation=None,
-    redirect_count=None,
-    user_context=None,
-    expected_request=None,
-    expected_time_range=None,
-):
+def assert_before_request_sent_event(event, expected_event):
     # Assert initiator
     if "initiator" in event:
         assert isinstance(event["initiator"], dict)
@@ -188,46 +173,21 @@ def assert_before_request_sent_event(
     # Assert base parameters
     assert_base_parameters(
         event,
-        context=context,
-        intercepts=intercepts,
-        is_blocked=is_blocked,
-        navigation=navigation,
-        redirect_count=redirect_count,
-        user_context=user_context,
-        expected_request=expected_request,
-        expected_time_range=expected_time_range,
+        expected_event
     )
 
 
-def assert_fetch_error_event(
-    event,
-    context=None,
-    errorText=None,
-    intercepts=None,
-    is_blocked=None,
-    navigation=None,
-    redirect_count=None,
-    user_context=None,
-    expected_request=None,
-    expected_time_range=None,
-):
+def assert_fetch_error_event(event, expected_event):
     # Assert errorText
     assert isinstance(event["errorText"], str)
 
-    if errorText is not None:
-        assert event["errorText"] == errorText
+    if "errorText" in expected_event:
+        assert event["errorText"] == expected_event["errorText"]
 
     # Assert base parameters
     assert_base_parameters(
         event,
-        context=context,
-        intercepts=intercepts,
-        is_blocked=is_blocked,
-        navigation=navigation,
-        redirect_count=redirect_count,
-        user_context=user_context,
-        expected_request=expected_request,
-        expected_time_range=expected_time_range,
+        expected_event
     )
 
 
@@ -269,34 +229,16 @@ def assert_response_data(response_data, expected_response):
     recursive_compare(expected_response, response_data)
 
 
-def assert_response_event(
-    event,
-    context=None,
-    intercepts=None,
-    is_blocked=None,
-    navigation=None,
-    redirect_count=None,
-    user_context=None,
-    expected_request=None,
-    expected_response=None,
-    expected_time_range=None,
-):
+def assert_response_event(event, expected_event):
     # Assert response data
     any_dict(event["response"])
-    if expected_response is not None:
-        assert_response_data(event["response"], expected_response)
+    if "response" in expected_event:
+        assert_response_data(event["response"], expected_event["response"])
 
     # Assert base parameters
     assert_base_parameters(
         event,
-        context=context,
-        intercepts=intercepts,
-        is_blocked=is_blocked,
-        navigation=navigation,
-        redirect_count=redirect_count,
-        user_context=user_context,
-        expected_request=expected_request,
-        expected_time_range=expected_time_range,
+        expected_event
     )
 
 

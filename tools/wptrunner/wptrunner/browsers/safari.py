@@ -1,6 +1,7 @@
 # mypy: allow-untyped-defs
 
 import os
+import platform
 import plistlib
 from packaging.version import Version
 from shutil import which
@@ -53,10 +54,16 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, **kwargs
     browser_bundle_version = run_info_data["browser_bundle_version"]
     if (browser_bundle_version is not None and
         Version(browser_bundle_version[2:]) >= Version("613.1.7.1")):
-        logger.debug("using acceptInsecureCerts=True")
         executor_kwargs["capabilities"]["acceptInsecureCerts"] = True
     else:
         logger.warning("not using acceptInsecureCerts, Safari will require certificates to be trusted")
+
+    if (browser_bundle_version is not None and
+        Version(browser_bundle_version[2:]) >= Version("622.1.17")):
+        executor_kwargs["capabilities"]["webkit:alwaysAllowAutoplay"] = True
+    else:
+        logger.warning("not using webkit:alwaysAllowAutoplay, " +
+                       "Safari will require all autoplay for all WPT domains to be allowed")
 
     return executor_kwargs
 
@@ -66,7 +73,14 @@ def env_extras(**kwargs):
 
 
 def env_options():
-    return {}
+    rv = {}
+
+    version, _, _ = platform.mac_ver()
+    if version:
+        if Version(version) >= Version("26.4"):
+            rv["enable_webtransport_h3"] = True
+
+    return rv
 
 
 def run_info_extras(logger, **kwargs):
@@ -123,8 +137,8 @@ def get_safari_info(wd_path):
 
 def get_webkit_info(safari_bundle_path):
     framework_paths = [
-        os.path.join(os.path.dirname(safari_bundle_path), "Contents", "Frameworks"),  # bundled Safari (e.g. STP)
-        os.path.join(os.path.dirname(safari_bundle_path), ".."),  # local Safari build
+        os.path.join(os.path.normpath(safari_bundle_path), "Contents", "Frameworks"),  # bundled Safari (e.g. STP)
+        os.path.join(os.path.normpath(safari_bundle_path), ".."),  # local Safari build
         "/System/Library/PrivateFrameworks",
         "/Library/Frameworks",
         "/System/Library/Frameworks",

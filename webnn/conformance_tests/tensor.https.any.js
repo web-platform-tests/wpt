@@ -252,7 +252,7 @@ const testCreateConstantTensorFails = (testName, descriptor) => {
 promise_test(async t => {
   const tensorDescriptor = {
     dataType: 'int32',
-    shape: [(context.opSupportLimits().maxTensorByteLength + 1) / 4],
+    shape: [context.opSupportLimits().maxTensorByteLength / 4 + 1],
     writable: true,
   };
   await promise_rejects_js(
@@ -1401,8 +1401,16 @@ const testExportToGPU = (testName, dataType) => {
       return;
     }
 
-    gpuDevice =
-        await gpuAdapter.requestDevice({requiredFeatures: ['shader-f16']});
+    const requiredFeatures = [];
+    if (dataType === 'float16') {
+      if (!gpuAdapter.features.has('shader-f16')) {
+        isExportToGPUSupported = false;
+        return;
+      }
+      requiredFeatures.push('shader-f16');
+    }
+
+    gpuDevice = await gpuAdapter.requestDevice({requiredFeatures});
     if (!gpuDevice) {
       isExportToGPUSupported = false;
       return;

@@ -37,7 +37,6 @@ from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # no
                                             MarionetteCrashtestExecutor)  # noqa: F401
 
 
-
 __wptrunner__ = {"product": "firefox",
                  "check_args": "check_args",
                  "browser": {None: "FirefoxBrowser",
@@ -235,8 +234,7 @@ def run_info_extras(logger, default_prefs=None, **kwargs):
           "verify": kwargs["verify"],
           "headless": kwargs.get("headless", False) or "MOZ_HEADLESS" in os.environ,
           "fission": not kwargs.get("disable_fission"),
-          "sessionHistoryInParent": (not kwargs.get("disable_fission") or
-                                     not bool_pref("fission.disableSessionHistoryInParent")),
+          "sessionHistoryInParent": True,
           "swgl": bool_pref("gfx.webrender.software"),
           "useDrawSnapshot": bool_pref("reftest.use-draw-snapshot"),
           "privateBrowsing": bool_pref("browser.privatebrowsing.autostart"),
@@ -264,22 +262,23 @@ def run_info_browser_version(**kwargs):
 
 
 def update_properties():
-    return ([
-        "os",
-        "debug",
-        "display",
-        "fission",
-        "isolated_process",
-        "processor",
-        "swgl",
-        "useDrawSnapshot",
-        "asan",
-        "tsan",
-        "remoteAsyncEvents",
-        "sessionHistoryInParent",
-        "subsuite"], {
-        "os": ["version", "os_version"],
-        "processor": ["bits"]})
+    return (
+        [
+            "os",
+            "debug",
+            "fission",
+            "isolated_process",
+            "processor",
+            "swgl",
+            "useDrawSnapshot",
+            "asan",
+            "tsan",
+            "remoteAsyncEvents",
+            "sessionHistoryInParent",
+            "subsuite",
+        ],
+        {"os": ["display", "version", "os_version"], "processor": ["bits"]},
+    )
 
 
 def log_gecko_crashes(logger, process, test, profile_dir, symbols_path, stackwalk_binary):
@@ -581,22 +580,19 @@ class FirefoxOutputHandler(OutputHandler):
         self.lsan_handler = None
         self.mozleak_allowed = None
         self.mozleak_thresholds = None
-        self.group_metadata = {}
+        self.group_metadata = None
 
-    def start(self, group_metadata=None, lsan_disabled=False, lsan_allowed=None,
+    def start(self, group_metadata, lsan_disabled=False, lsan_allowed=None,
               lsan_max_stack_depth=None, mozleak_allowed=None, mozleak_thresholds=None,
               **kwargs):
         """Configure the output handler"""
-        if group_metadata is None:
-            group_metadata = {}
         self.group_metadata = group_metadata
-
         self.mozleak_allowed = mozleak_allowed
         self.mozleak_thresholds = mozleak_thresholds
 
         if self.asan:
             self.lsan_handler = mozleak.LSANLeaks(self.logger,
-                                                  scope=group_metadata.get("scope", "/"),
+                                                  scope=group_metadata.scope,
                                                   allowed=lsan_allowed,
                                                   maxNumRecordedFrames=lsan_max_stack_depth,
                                                   allowAll=lsan_disabled)
@@ -624,7 +620,7 @@ class FirefoxOutputHandler(OutputHandler):
                     ignore_missing_leaks=["tab", "gmplugin"],
                     log=self.logger,
                     stack_fixer=self.stack_fixer,
-                    scope=self.group_metadata.get("scope"),
+                    scope=self.group_metadata.scope,
                     allowed=self.mozleak_allowed)
             if processed_files:
                 for path in processed_files:
@@ -692,7 +688,6 @@ class ProfileCreator:
         self.disable_fission = disable_fission
         self.debug_test = debug_test
         self.browser_channel = browser_channel
-        self.ca_certificate_path = ca_certificate_path
         self.binary = binary
         self.package_name = package_name
         self.certutil_binary = certutil_binary
@@ -705,25 +700,41 @@ class ProfileCreator:
 
         :param kwargs: Additional arguments to pass into the profile constructor
         """
-        preferences = self._load_prefs()
+        profile = FirefoxProfile(
+            preferences=self._build_preferences(),
+            restore=False,
+            allowlistpaths=self.allow_list_paths,
+            **kwargs,
+        )
 
-        profile = FirefoxProfile(preferences=preferences,
-                                 restore=False,
-                                 allowlistpaths=self.allow_list_paths,
-                                 **kwargs)
-        self._set_required_prefs(profile)
         if self.ca_certificate_path is not None:
             self._setup_ssl(profile)
 
         return profile
 
-    @staticmethod
-    def default_prefs():
-        return {}
+    def _build_preferences(self):
+        preferences = Preferences()
+        self._load_user_prefs(preferences)
 
-    def _load_prefs(self):
-        prefs = Preferences()
+        required_prefs = self._get_required_prefs()
 
+        prefs = {}
+        prefs.update(self._get_default_prefs())
+        prefs.update(required_prefs)
+        preferences.add(prefs, cast=False)
+
+        for pref, _ in self.extra_prefs:
+            if pref in required_prefs:
+                self.logger.error(f"Can't override required preference {pref}")
+                raise ValueError(f"Invalid extra prefs {pref} specified")
+
+        # Preference values provided via the command line
+        # need to be casted to the appropriate type.
+        preferences.add(self.extra_prefs, cast=True)
+
+        return preferences()
+
+    def _load_user_prefs(self, preferences):
         pref_paths = []
 
         profiles = os.path.join(self.prefs_root, 'profiles.json')
@@ -739,52 +750,44 @@ class ProfileCreator:
 
         for path in pref_paths:
             if os.path.exists(path):
-                prefs.add(Preferences.read_prefs(path))
+                preferences.add(Preferences.read_prefs(path))
             else:
                 self.logger.warning(f"Failed to find prefs file in {path}")
 
-        # Add any custom preferences
-        all_prefs = self.default_prefs()
-        all_prefs.update(self.extra_prefs)
-        prefs.add(all_prefs, cast=True)
-
-        return prefs()
-
-    def _set_required_prefs(self, profile):
-        """Set preferences required for wptrunner to function.
-
-        Note that this doesn't set the marionette port, since we don't always
-        know that at profile creation time. So the caller is responisble for
-        setting that once it's available."""
-        profile.set_preferences({
+    def _get_required_prefs(self):
+        return {
+            "fission.autostart": not self.disable_fission,
             "network.dns.localDomains": ",".join(self.config.domains_set),
-            "dom.file.createInChild": True,
-            # TODO: Remove preferences once Firefox 64 is stable (Bug 905404)
-            "network.proxy.type": 0,
-            "places.history.enabled": False,
-        })
+        }
 
-        profile.set_preferences({"fission.autostart": True})
-        if self.disable_fission:
-            profile.set_preferences({"fission.autostart": False})
+    def _get_default_prefs(self):
+        prefs = {
+            "dom.file.createInChild": True,
+            "places.history.enabled": False,
+        }
 
         if self.test_type in ("reftest", "print-reftest"):
-            profile.set_preferences({"layout.interruptible-reflow.enabled": False})
+            prefs["layout.interruptible-reflow.enabled"] = False
 
         if self.test_type == "print-reftest":
-            profile.set_preferences({"print.always_print_silent": True})
+            prefs["print.always_print_silent"] = True
 
         if self.test_type == "wdspec":
-            profile.set_preferences({"remote.prefs.recommended": True})
-            profile.set_preferences({
-                "geo.provider.network.url": "https://web-platform.test:8444/webdriver/tests/support/http_handlers/geolocation_override.py"
-            })
+            prefs.update(
+                {
+                    "remote.prefs.recommended": True,
+                    "geo.provider.network.url":
+                        "https://web-platform.test:8444/webdriver/tests/support/http_handlers/geolocation_override.py",
+                }
+            )
         else:
             # Except for wdspec dispatch wheel scroll as widget event by default.
-            profile.set_preferences({"remote.events.async.wheel.enabled": True})
+            prefs["remote.events.async.wheel.enabled"] = True
 
         if self.debug_test:
-            profile.set_preferences({"devtools.console.stdout.content": True})
+            prefs["devtools.console.stdout.content"] = True
+
+        return prefs
 
     def _setup_ssl(self, profile):
         """Create a certificate database to use in the test profile. This is configured
@@ -807,7 +810,6 @@ class ProfileCreator:
             env_var = "LD_LIBRARY_PATH"
         else:
             env_var = "PATH"
-
 
         env[env_var] = (os.path.pathsep.join([certutil_dir, env[env_var]])
                         if env_var in env else certutil_dir)
@@ -910,7 +912,7 @@ class FirefoxBrowser(Browser):
                           "testdriver": True if test.test_type == "testharness" else getattr(test, "testdriver", False)}
         return self._settings
 
-    def start(self, group_metadata=None, **kwargs):
+    def start(self, group_metadata, **kwargs):
         self.instance = self.instance_manager.get()
         self.instance.output_handler.start(group_metadata,
                                            **kwargs)

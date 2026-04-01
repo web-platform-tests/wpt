@@ -3,15 +3,16 @@
 // (https://github.com/w3c/webref)
 // Source: WebRTC Encoded Transform (https://w3c.github.io/webrtc-encoded-transform/)
 
-typedef (SFrameTransform or RTCRtpScriptTransform) RTCRtpTransform;
+typedef (RTCSFrameSenderTransform or RTCRtpScriptTransform) RTCRtpSenderTransform;
+typedef (RTCSFrameReceiverTransform or RTCRtpScriptTransform) RTCRtpReceiverTransform;
 
 // New methods for RTCRtpSender and RTCRtpReceiver
 partial interface RTCRtpSender {
-    attribute RTCRtpTransform? transform;
+    attribute RTCRtpSenderTransform? transform;
 };
 
 partial interface RTCRtpReceiver {
-    attribute RTCRtpTransform? transform;
+    attribute RTCRtpReceiverTransform? transform;
 };
 
 // List of supported cipher suites, as defined in [[RFC9605]] section 4.5.
@@ -27,33 +28,53 @@ dictionary SFrameTransformOptions {
     required SFrameCipherSuite cipherSuite;
 };
 
+enum SFrameType {
+    "per-frame",
+    "per-packet"
+};
+
+dictionary RTCSFrameSenderTransformOptions : SFrameTransformOptions {
+    SFrameType type = "per-frame";
+};
+
 typedef [EnforceRange] unsigned long long SmallCryptoKeyID;
 typedef (SmallCryptoKeyID or bigint) CryptoKeyID;
 
-interface mixin SFrameKeyManagement {
-    Promise<undefined> setEncryptionKey(CryptoKey key, optional CryptoKeyID keyID);
+interface mixin SFrameEncrypterManager {
+    Promise<undefined> setEncryptionKey(CryptoKey key, CryptoKeyID keyId);
+};
+
+interface mixin SFrameDecrypterManager {
+    Promise<undefined> addDecryptionKey(CryptoKey key, CryptoKeyID keyId);
+    Promise<undefined> removeDecryptionKey(CryptoKeyID keyId);
     attribute EventHandler onerror;
 };
 
 [Exposed=Window]
-interface SFrameTransform : EventTarget {
+interface RTCSFrameSenderTransform {
+    constructor(optional RTCSFrameSenderTransformOptions options = {});
+};
+RTCSFrameSenderTransform includes SFrameEncrypterManager;
+
+[Exposed=Window]
+interface RTCSFrameReceiverTransform : EventTarget {
     constructor(optional SFrameTransformOptions options = {});
 };
-SFrameTransform includes SFrameKeyManagement;
+RTCSFrameReceiverTransform includes SFrameDecrypterManager;
 
 [Exposed=(Window,DedicatedWorker)]
 interface SFrameEncrypterStream : EventTarget {
     constructor(optional SFrameTransformOptions options = {});
 };
 SFrameEncrypterStream includes GenericTransformStream;
-SFrameEncrypterStream includes SFrameKeyManagement;
+SFrameEncrypterStream includes SFrameEncrypterManager;
 
 [Exposed=(Window,DedicatedWorker)]
 interface SFrameDecrypterStream : EventTarget {
     constructor(optional SFrameTransformOptions options = {});
 };
 SFrameDecrypterStream includes GenericTransformStream;
-SFrameDecrypterStream includes SFrameKeyManagement;
+SFrameDecrypterStream includes SFrameDecrypterManager;
 
 enum SFrameTransformErrorEventType {
     "authentication",
@@ -126,13 +147,20 @@ interface RTCEncodedAudioFrame {
     RTCEncodedAudioFrameMetadata getMetadata();
 };
 
-[Exposed=DedicatedWorker]
-interface RTCTransformEvent : Event {
-    readonly attribute RTCRtpScriptTransformer transformer;
+enum RTCRtpScriptTransformType {
+    "sframe"
 };
 
-partial interface DedicatedWorkerGlobalScope {
-    attribute EventHandler onrtctransform;
+dictionary WorkerAndParameters {
+     required Worker worker;
+     RTCRtpScriptTransformType type;
+};
+
+typedef (Worker or WorkerAndParameters) WorkerOrWorkerAndParameters;
+
+[Exposed=Window]
+interface RTCRtpScriptTransform {
+    constructor(WorkerOrWorkerAndParameters workerOrWorkerAndParameters, optional any options, optional sequence<object> transfer);
 };
 
 [Exposed=DedicatedWorker]
@@ -148,9 +176,13 @@ interface RTCRtpScriptTransformer : EventTarget {
     readonly attribute any options;
 };
 
-[Exposed=Window]
-interface RTCRtpScriptTransform {
-    constructor(Worker worker, optional any options, optional sequence<object> transfer);
+[Exposed=DedicatedWorker]
+interface RTCTransformEvent : Event {
+    readonly attribute RTCRtpScriptTransformer transformer;
+};
+
+partial interface DedicatedWorkerGlobalScope {
+    attribute EventHandler onrtctransform;
 };
 
 [Exposed=DedicatedWorker]

@@ -99,7 +99,7 @@ def assert_navigation_info(event, expected_navigation_info):
 
     # This parameter should become mandatory when
     # https://github.com/w3c/webdriver-bidi/issues/1071 is resolved.
-    if "userContext" in expected_navigation_info:
+    if "userContext" in expected_navigation_info and "userContext" in event:
         assert event["userContext"] == expected_navigation_info["userContext"]
 
 

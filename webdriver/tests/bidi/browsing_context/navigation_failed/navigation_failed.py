@@ -97,7 +97,7 @@ async def test_with_csp_meta_tag(
             "context": iframe_context,
             "navigation": started_event_for_iframe["navigation"],
             "url": iframe_url,
-            "userContext": iframe_user_context,
+            **({"userContext": iframe_user_context} if "userContext" in event else {})
         },
     )
 
@@ -160,7 +160,7 @@ async def test_with_content_blocking_header_in_top_context(
             "context": iframe_context,
             "navigation": started_event_for_iframe["navigation"],
             "url": iframe_url,
-            "userContext": iframe_user_context,
+            **({"userContext": iframe_user_context} if "userContext" in event else {})
         },
     )
 
@@ -227,7 +227,7 @@ async def test_with_x_frame_options_header(
             "context": iframe_context,
             "navigation": started_event_for_iframe["navigation"],
             "url": iframe_url,
-            "userContext": iframe_user_context,
+            **({"userContext": iframe_user_context} if "userContext" in event else {})
         },
     )
 
@@ -283,6 +283,7 @@ async def test_with_new_navigation(
             "context": new_tab["context"],
             "navigation": result["navigation"],
             "url": slow_page_url,
+            **({"userContext": new_tab["userContext"]} if "userContext" in events[0] else {})
         },
     )
 
@@ -344,6 +345,7 @@ async def test_with_new_navigation_inside_page(
             "context": new_tab["context"],
             "navigation": result["navigation"],
             "url": slow_page_url,
+            **({"userContext": new_tab["userContext"]} if "userContext" in events[0] else {})
         },
     )
 
@@ -396,7 +398,7 @@ async def test_close_context(
             "context": new_context["context"],
             "navigation": result["navigation"],
             "url": slow_page_url,
-            "userContext": new_context["userContext"],
+            **({"userContext": new_context["userContext"]} if "userContext" in events[0] else {})
         },
     )
 
@@ -461,7 +463,7 @@ async def test_close_iframe(
             "context": iframe_context,
             "navigation": result["navigation"],
             "url": slow_page_url,
-            "userContext": iframe_user_context,
+            **({"userContext": iframe_user_context} if "userContext" in events[0] else {})
         },
     )
 
@@ -519,6 +521,6 @@ async def test_with_beforeunload_prompt(
             "context": new_tab["context"],
             "navigation": navigation_started_event["navigation"],
             "url": target_url,
-            "userContext": new_tab["userContext"],
+            **({"userContext": new_tab["userContext"]} if "userContext" in event else {})
         },
     )

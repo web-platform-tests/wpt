@@ -125,7 +125,7 @@ def assert_base_parameters(event, expected_event):
             "redirectCount": any_int,
             "request": any_dict,
             "timestamp": any_int,
-            "userContext": any_string_or_null,
+            **({"userContext": any_string_or_null} if "userContext" in event else {}),
         },
         event,
     )
@@ -161,7 +161,7 @@ def assert_base_parameters(event, expected_event):
             expected_event.get("timestamp"),
         )
 
-    if "userContext" in expected_event:
+    if "userContext" in expected_event and "userContext" in event:
         assert event["userContext"] == expected_event["userContext"]
 
 

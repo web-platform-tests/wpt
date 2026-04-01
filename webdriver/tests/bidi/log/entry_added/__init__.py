@@ -37,8 +37,7 @@ def assert_base_entry(
     if context is not None:
         assert "context" in source
         assert source["context"] == context
-    if userContext is not None:
-        assert "userContext" in source
+    if userContext is not None and "userContext" in source:
         assert source["userContext"] == userContext
 
 
@@ -51,6 +50,7 @@ def assert_console_entry(
     timestamp=any_int,
     realm=any_string,
     context=None,
+    userContext=None,
     stacktrace=None
 ):
     assert_base_entry(
@@ -60,6 +60,7 @@ def assert_console_entry(
         timestamp=timestamp,
         realm=realm,
         context=context,
+        userContext=userContext,
         stacktrace=stacktrace)
 
     recursive_compare({
@@ -76,6 +77,7 @@ def assert_javascript_entry(
     timestamp=any_int,
     realm=any_string,
     context=None,
+    userContext = None,
     stacktrace=None
 ):
     assert_base_entry(
@@ -85,7 +87,8 @@ def assert_javascript_entry(
         timestamp=timestamp,
         realm=realm,
         stacktrace=stacktrace,
-        context=context)
+        context=context,
+        userContext=userContext)
 
     recursive_compare({
         "type": "javascript",

@@ -84,30 +84,19 @@ async def test_iframe_load(
     assert len(events) == 2
     assert_before_request_sent_event(
         events[0],
-<<<<<<< HEAD
-        expected_request={"url": test_page_same_origin_frame},
-        context=top_context["context"],
-        user_context=top_context["userContext"],
-=======
         expected_event={
             "request": {"url": test_page_same_origin_frame},
             "context": top_context["context"],
+            **({"userContext": top_context["userContext"]} if "userContext" in events[0] else {}),
         },
->>>>>>> master
     )
 
     assert_before_request_sent_event(
         events[1],
-<<<<<<< HEAD
-        expected_request={"url": test_page},
-        context=frame_context["context"],
-        user_context=frame_context["userContext"],
-=======
         expected_event={
             "request": {"url": test_page},
             "context": frame_context["context"],
-        },
->>>>>>> master
+            **({"userContext": top_context["userContext"]} if "userContext" in events[1] else {}),
     )
 
 

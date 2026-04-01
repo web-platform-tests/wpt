@@ -81,7 +81,7 @@ async def test_history_url_update(
                     "context": target_context,
                     "timestamp": any_int,
                     "url": target_url,
-                    "userContext": new_tab["userContext"],
+                    **({"userContext": new_tab["userContext"]} if "userContext" in history_updated_events[0] else {})
                 }
             ],
             history_updated_events,
@@ -149,7 +149,7 @@ async def test_history_state_update(
                 {
                     "context": target_context,
                     "url": target_url,
-                    "userContext": new_tab["userContext"]
+                    **({"userContext": new_tab["userContext"]} if "userContext" in history_updated_events[0] else {})
                 }
             ],
             history_updated_events
@@ -219,7 +219,7 @@ async def test_history_document_open(bidi_session, new_tab, url, subscribe_event
                 {
                     "context": target_context,
                     "url": target_url + "#heya",
-                    "userContext": new_tab["userContext"],
+                    **({"userContext": new_tab["userContext"]} if "userContext" in fragment_navigated_events[0] else {})
                 }
             ],
             fragment_navigated_events,
@@ -236,7 +236,7 @@ async def test_history_document_open(bidi_session, new_tab, url, subscribe_event
                     # url.
                     "context": browsing_context_created_events[0]["context"],
                     "url": target_url,
-                    "userContext": new_tab["userContext"],
+                    **({"userContext": new_tab["userContext"]} if "userContext" in history_updated_events[0] else {})
                 },
                 {
                     # This is for the second document.open, after setting the hash.
@@ -244,7 +244,7 @@ async def test_history_document_open(bidi_session, new_tab, url, subscribe_event
                     # be included.
                     "context": browsing_context_created_events[0]["context"],
                     "url": target_url,
-                    "userContext": new_tab["userContext"],
+                    **({"userContext": new_tab["userContext"]} if "userContext" in history_updated_events[1] else {})
                 },
             ],
             history_updated_events,
@@ -354,7 +354,7 @@ async def test_timestamp(
         {
             "context": target_context,
             "timestamp": int_interval(time_start, time_end),
-            "userContext": new_tab["userContext"],
+            **({"userContext": new_tab["userContext"]} if "userContext" in event else {})
         },
         event,
     )

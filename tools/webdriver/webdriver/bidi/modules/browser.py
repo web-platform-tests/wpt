@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Mapping, MutableMapping, Optional, List, Literal, Union
+from typing import Any, Mapping, MutableMapping, List, Union
 
 from ._module import BidiModule, command
 from ..undefined import UNDEFINED, Maybe, Nullable

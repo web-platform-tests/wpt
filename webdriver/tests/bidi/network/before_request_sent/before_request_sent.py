@@ -97,6 +97,7 @@ async def test_iframe_load(
             "request": {"url": test_page},
             "context": frame_context["context"],
             **({"userContext": top_context["userContext"]} if "userContext" in events[1] else {}),
+        }
     )
 
 

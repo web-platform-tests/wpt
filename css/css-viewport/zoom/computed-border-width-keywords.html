@@ -48,11 +48,11 @@
     const cs = getComputedStyle(document.querySelector(`.${keyword}`));
     const csZoomed = getComputedStyle(document.querySelector(`.${keyword}.zoomed`));
 
-    for (const propSuffix of propSuffixes) {
-      const prop = `border-${propSuffix}`;
-      test(() => {
-        assert_equals(csZoomed[prop], cs[prop]);
-      }, `${prop}: ${keyword}`);
-    }
+    test(() => {
+      for (const propSuffix of propSuffixes) {
+        const prop = `border-${propSuffix}`;
+        assert_equals(csZoomed[prop], cs[prop], `${prop}: ${keyword}`);
+      }
+    }, `border-width: ${keyword}`);
   }
 </script>

@@ -1,35 +1,35 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS-viewport test: outline-width keyword values returned by getComputedStyle() are unscaled</title>
+<title>CSS-viewport test: border-width keyword values returned by getComputedStyle() are unscaled</title>
 <link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
-<meta name="assert" content="This test verifies that zoom does not scale outline-width keyword values returned by getComputedStyle()">
+<meta name="assert" content="This test verifies that zoom does not scale border-width keyword values returned by getComputedStyle()">
 <link rel="help" href="https://drafts.csswg.org/css-viewport/#zoom-om">
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
 <style>
   .thin, .medium, .thick {
-    outline-style: solid;
+    border-style: solid;
 
     width: 10px;
     height: 10px;
-    margin: 10px;
+    margin: 5px;
   }
 
   .thin {
-    outline-width: thin;
+    border-width: thin;
   }
 
   .medium {
-    outline-width: medium;
+    border-width: medium;
   }
 
   .thick {
-    outline-width: thick;
+    border-width: thick;
   }
 
   .zoomed {
     zoom: 10;
-    outline-color: blue;
+    border-color: blue;
   }
 </style>
 
@@ -43,12 +43,16 @@
 
 <script>
   const keywords = ['thin', 'medium', 'thick'];
+  const propSuffixes = ['width', 'top-width', 'right-width', 'bottom-width', 'left-width', 'inline-start-width', 'inline-end-width', 'block-start-width', 'block-end-width'];
   for (const keyword of keywords) {
     const cs = getComputedStyle(document.querySelector(`.${keyword}`));
     const csZoomed = getComputedStyle(document.querySelector(`.${keyword}.zoomed`));
 
-    test(() => {
-      assert_equals(csZoomed['outline-width'], cs['outline-width']);
-    }, `outline-width: ${keyword}`);
+    for (const propSuffix of propSuffixes) {
+      const prop = `border-${propSuffix}`;
+      test(() => {
+        assert_equals(csZoomed[prop], cs[prop]);
+      }, `${prop}: ${keyword}`);
+    }
   }
 </script>

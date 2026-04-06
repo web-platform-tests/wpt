@@ -10,6 +10,6 @@
   ],
   "serviceworker": {
     "src": "app-reject-errors.js",
-    "scope": "payment-request-reject-errors-payment-app/"
+    "scope": "./"
   }
 }

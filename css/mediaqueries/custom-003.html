@@ -9,12 +9,12 @@
 		<style>
 			div {
 				background-color: red;
-				height: 15px;
+				height: 10px;
 				width: 100px;
 			}
 
 			div:last-child {
-				height: 25px; /* fill out to 100px */
+				height: 30px; /* fill out to 100px */
 			}
 
 			@custom-media --test screen;
@@ -54,16 +54,45 @@
 				.test4 { background: green; }
 			}
 
+			/* cyclic queries do invalidate an entire query */
 			@custom-media --test5-a (--test5-b);
 			@custom-media --test5-b (--test5-a);
 			@media (color) or (--test5-a) {
 				.test5 { background: green; }
 			}
 
+			/* cyclic queries do not invalid the entire list */
 			@custom-media --test6-a (--test6-b);
 			@custom-media --test6-b (--test6-a);
 			@media screen, (--test6-a) {
 				.test6 { background: green; }
+			}
+
+			/* detect cycles in conditionals */
+			@media (--test7) {
+				@layer --test7-y, --test7-x;
+			}
+			@layer --test7-x {
+				@custom-media --test7 false;
+			}
+			@layer --test7-y {
+				@custom-media --test7 true;
+			}
+
+			@media (--test7) {
+				.test7 { background: green; }
+			}
+
+			/* sanity check for test 7, layer order must be `--test7-x, `--test7-y` */
+			.test8 {
+				background: revert-layer;
+			}
+
+			@layer --test7-x {
+				.test8 { background: red; }
+			}
+			@layer --test7-y {
+				.test8 { background: green; }
 			}
 	</style>
 	</head>
@@ -75,5 +104,7 @@
 		<div class="test4"></div>
 		<div class="test5"></div>
 		<div class="test6"></div>
+		<div class="test7"></div>
+		<div class="test8"></div>
 	</body>
 </html>

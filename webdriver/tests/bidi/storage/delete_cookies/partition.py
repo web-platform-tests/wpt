@@ -25,7 +25,7 @@ async def test_default_partition(
     test_page,
     test_page_cross_origin,
     domain_value,
-    add_cookie,
+    add_document_cookie,
     set_cookie,
     with_document_cookie,
 ):
@@ -43,8 +43,8 @@ async def test_default_partition(
     cookie2_value = "bar_2"
 
     if with_document_cookie:
-        await add_cookie(new_tab["context"], cookie1_name, cookie1_value, secure=True)
-        await add_cookie(top_context["context"], cookie2_name, cookie2_value, secure=True)
+        await add_document_cookie(new_tab["context"], cookie1_name, cookie1_value, secure=True)
+        await add_document_cookie(top_context["context"], cookie2_name, cookie2_value, secure=True)
     else:
         await set_cookie(
             cookie=create_cookie(
@@ -77,7 +77,7 @@ async def test_partition_context(
     new_tab,
     test_page,
     domain_value,
-    add_cookie,
+    add_document_cookie,
     set_cookie,
     with_document_cookie,
 ):
@@ -89,7 +89,7 @@ async def test_partition_context(
     cookie_value = "bar"
     partition = BrowsingContextPartitionDescriptor(new_tab["context"])
     if with_document_cookie:
-        await add_cookie(new_tab["context"], cookie_name, cookie_value, secure=True)
+        await add_document_cookie(new_tab["context"], cookie_name, cookie_value, secure=True)
     else:
         await set_cookie(
             cookie=create_cookie(
@@ -108,10 +108,9 @@ async def test_partition_context(
 
 @pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
 async def test_partition_context_iframe(
-    bidi_session, new_tab, inline, domain_value, domain, set_cookie
+    bidi_session, new_tab, inline, domain_value, domain, set_cookie, iframe
 ):
-    iframe_url = inline("<div id='in-iframe'>foo</div>", domain=domain)
-    page_url = inline(f"<iframe src='{iframe_url}'></iframe>")
+    page_url = inline(iframe("<div id='in-iframe'>foo</div>", domain=domain))
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"], url=page_url, wait="complete"
     )
@@ -224,7 +223,7 @@ async def test_partition_user_context(
     create_user_context,
     test_page_cross_origin,
     domain_value,
-    add_cookie,
+    add_document_cookie,
     set_cookie,
     with_document_cookie,
 ):
@@ -255,10 +254,10 @@ async def test_partition_user_context(
     cookie2_partition = StorageKeyPartitionDescriptor(user_context=user_context_2)
 
     if with_document_cookie:
-        await add_cookie(
+        await add_document_cookie(
             new_context_1["context"], cookie1_name, cookie1_value, path="/", secure=True
         )
-        await add_cookie(
+        await add_document_cookie(
             new_context_2["context"], cookie2_name, cookie2_value, path="/", secure=True
         )
     else:

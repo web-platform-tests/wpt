@@ -2,3 +2,10 @@ features:
 - name: tabindex
   files:
   - tabindex-focus-flag.html
+- name: input-file
+  files:
+  - focus-file-input.html
+- name: keyboard-events
+  files:
+  - focus-01.html
+  - focus-02.html

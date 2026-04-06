@@ -5,33 +5,42 @@ import hashlib
 import io
 import json
 import os
+import socket
+import struct
+import sys
 import threading
 import traceback
-import socket
-import sys
 from abc import ABCMeta, abstractmethod
-from typing import Any, Callable, ClassVar, Tuple, Type
+from typing import Any, Callable, ClassVar, Optional, Union, Tuple, Type
 from urllib.parse import urljoin, urlsplit, urlunsplit
 
 from . import pytestrunner
 from .actions import actions
 from .asyncactions import async_actions
-from .protocol import Protocol, WdspecProtocol
+from .protocol import Protocol, WdspecProtocol, merge_dicts
 
 
 here = os.path.dirname(__file__)
 
 
 def executor_kwargs(test_type, test_environment, run_info_data, subsuite, **kwargs):
+    headless = kwargs["headless"]
+    if headless is None:
+        headless = False
+
     timeout_multiplier = kwargs["timeout_multiplier"]
     if timeout_multiplier is None:
         timeout_multiplier = 1
 
-    executor_kwargs = {"server_config": test_environment.config,
-                       "timeout_multiplier": timeout_multiplier,
-                       "debug_info": kwargs["debug_info"],
-                       "subsuite": subsuite.name,
-                       "target_platform": run_info_data["os"]}
+    executor_kwargs = {
+        "debug_info": kwargs["debug_info"],
+        "display": run_info_data.get("display"),
+        "headless": headless,
+        "server_config": test_environment.config,
+        "subsuite": subsuite.name,
+        "target_platform": run_info_data["os"],
+        "timeout_multiplier": timeout_multiplier,
+    }
 
     if test_type in ("reftest", "print-reftest"):
         screenshot_cache = test_environment.screenshot_caches[test_type, subsuite.name]
@@ -618,10 +627,50 @@ class RefTestImplementation:
         self.screenshot_cache[key] = hash_val, data
         return True, data
 
+    def get_png_dimensions(
+        self, base64_image_data: Union[bytes, str], png_name: str
+    ) -> Optional[Tuple[int, int]]:
+        needed_bytes = 32  # math.ceil(24 / 3) * 4
+        image_data = base64.b64decode(base64_image_data[:needed_bytes])
+
+        png_signature = b"\x89PNG\x0d\x0a\x1a\x0a"
+
+        if not image_data.startswith(png_signature):
+            self.logger.warning(f"Got data which wasn't a PNG for {png_name}")
+            return None
+
+        chunk_length, chunk_type = struct.unpack(">L4s", image_data[8:16])
+        if chunk_type != b"IHDR" or chunk_length < 8:
+            self.logger.warning(
+                f"Got PNG whose first chunk was {chunk_type.decode('ASCII')}, "
+                f"not IHDR, for {png_name}"
+            )
+            return None
+
+        return struct.unpack(">LL", image_data[16:24])
+
     def get_screenshot_list(self, node, viewport_size, dpi, page_ranges):
         success, data = self.executor.screenshot(node, viewport_size, dpi, page_ranges)
-        if success and not isinstance(data, list):
-            return success, [data]
+        viewport_size = (800, 600) if viewport_size is None else viewport_size
+        dpi = 96 if dpi is None else dpi
+        dpcm = dpi / 2.54
+
+        if self.executor.is_print:
+            # In the print case, viewport_size is in cm.
+            vw, vh = viewport_size
+            viewport_size = (round(vw * dpcm), round(vh * dpcm))
+
+        if success:
+            if not isinstance(data, list):
+                data = [data]
+
+            for screenshot in data:
+                image_size = self.get_png_dimensions(screenshot, node.url)
+                if image_size is not None and image_size != viewport_size:
+                    self.logger.warning(
+                        f"Unexpected viewport size for {node.url}, "
+                        f"{image_size}, expected {viewport_size}"
+                    )
         return success, data
 
 
@@ -629,14 +678,30 @@ class WdspecExecutor(TestExecutor):
     convert_result = pytest_result_converter
     protocol_cls: ClassVar[Type[Protocol]] = WdspecProtocol
 
-    def __init__(self, logger, browser, server_config, webdriver_binary,
-                 webdriver_args, target_platform, timeout_multiplier=1, capabilities=None,
-                 debug_info=None, binary=None, binary_args=None, **kwargs):
+    def __init__(
+        self,
+        logger,
+        browser,
+        server_config,
+        webdriver_binary,
+        webdriver_args,
+        target_platform,
+        display=None,
+        headless=False,
+        timeout_multiplier=1,
+        capabilities=None,
+        debug_info=None,
+        binary=None,
+        binary_args=None,
+        **kwargs,
+    ):
         super().__init__(logger, browser, server_config,
                          timeout_multiplier=timeout_multiplier,
                          debug_info=debug_info)
         self.webdriver_binary = webdriver_binary
         self.webdriver_args = webdriver_args
+        self.display = display
+        self.headless = headless
         self.timeout_multiplier = timeout_multiplier
         self.capabilities = capabilities
         self.binary = binary
@@ -645,6 +710,24 @@ class WdspecExecutor(TestExecutor):
         # Map OS to WebDriver specific platform names
         os_map = {"win": "windows"}
         self.target_platform = os_map.get(target_platform, target_platform)
+
+        # See also: executorwebdriver.py
+        if hasattr(browser, "capabilities"):
+            if self.capabilities is None:
+                self.capabilities = browser.capabilities
+            else:
+                merge_dicts(self.capabilities, browser.capabilities)
+
+        pac = browser.pac
+        if pac is not None:
+            if self.capabilities is None:
+                self.capabilities = {}
+            merge_dicts(self.capabilities, {"proxy":
+                {
+                    "proxyType": "pac",
+                    "proxyAutoconfigUrl": urljoin(self.server_url("http"), pac)
+                }
+            })
 
     def setup(self, runner, protocol=None):
         assert protocol is None, "Switch executor not allowed for wdspec tests."
@@ -670,20 +753,21 @@ class WdspecExecutor(TestExecutor):
         return (test.make_result(*data), [])
 
     def do_wdspec(self, path, timeout):
-        session_config = {"host": self.browser.host,
-                          "port": self.browser.port,
-                          "capabilities": self.capabilities,
-                          "target_platform": self.target_platform,
-                          "timeout_multiplier": self.timeout_multiplier,
-                          "browser": {
-                              "binary": self.binary,
-                              "args": self.binary_args,
-                              "env": self.browser.env,
-                          },
-                          "webdriver": {
-                              "binary": self.webdriver_binary,
-                              "args": self.webdriver_args
-                          }}
+        session_config = {
+            "host": self.browser.host,
+            "port": self.browser.port,
+            "capabilities": self.capabilities,
+            "display": self.display,
+            "headless": self.headless,
+            "target_platform": self.target_platform,
+            "timeout_multiplier": self.timeout_multiplier,
+            "browser": {
+                "binary": self.binary,
+                "args": self.binary_args,
+                "env": self.browser.env,
+            },
+            "webdriver": {"binary": self.webdriver_binary, "args": self.webdriver_args},
+        }
 
         return pytestrunner.run(path,
                                 self.server_config,

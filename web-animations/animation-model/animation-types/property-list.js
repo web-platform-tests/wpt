@@ -866,7 +866,7 @@ const gCSSProperties2 = {
   },
   'letter-spacing': {
     // https://drafts.csswg.org/css-text-3/#propdef-letter-spacing
-    types: [ 'length' ]
+    types: [ 'lengthPercentageOrCalc' ]
   },
   'lighting-color': {
     // https://drafts.fxtf.org/filters/#LightingColorProperty
@@ -904,6 +904,22 @@ const gCSSProperties2 = {
     types: [
       { type: 'discrete', options: [ [ 'circle', 'square' ] ] }
     ]
+  },
+  "math-depth": {
+    // https://w3c.github.io/mathml-core/#propdef-math-depth
+    types: [ "integer" ],
+  },
+  "math-shift": {
+    // https://w3c.github.io/mathml-core/#propdef-math-shift
+    types: [
+      { type: "discrete", options: [ [ "normal", "compact" ] ] },
+    ],
+  },
+  "math-style": {
+    // https://w3c.github.io/mathml-core/#propdef-math-style
+    types: [
+      { type: "discrete", options: [ [ "normal", "compact" ] ] },
+    ],
   },
   'margin-block-end': {
     // https://drafts.csswg.org/css-logical-props/#propdef-margin-block-end
@@ -1246,6 +1262,13 @@ const gCSSProperties2 = {
     types: [
       { type: 'discrete', options: [ [ 'fill', 'stroke' ] ] }
     ]
+  },
+  'path-length': {
+    // https://svgwg.org/svg2-draft/paths.html#PathLengthAttribute
+    types: [ 'positiveNumber' ],
+    setup: t => {
+      return createElement(t, 'path');
+    }
   },
   'perspective': {
     // https://drafts.csswg.org/css-transforms-1/#propdef-perspective

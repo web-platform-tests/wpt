@@ -160,13 +160,40 @@ const scatterNDTests = [
         }
       }
     }
+  },
+  {
+    'name': 'scatterND 2D int8 tensors with index out of bound',
+    'graph': {
+      'inputs': {
+        'input': {
+          'data': [0, 0],
+          'descriptor': {shape: [2, 1], dataType: 'int8'}
+        },
+        'indices': {
+          'data': [2147483647 /* INT32_MAX */],
+          'descriptor': {shape: [1, 1], dataType: 'int32'}
+        },
+        'updates': {
+          'data': [1],
+          'descriptor': {shape: [1, 1], dataType: 'int8'}
+        }
+      },
+      'operators': [{
+        'name': 'scatterND',
+        'arguments': [
+          {'input': 'input'}, {'indices': 'indices'}, {'updates': 'updates'}
+        ],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [0, 1],
+          'descriptor': {shape: [2, 1], dataType: 'int8'}
+        }
+      }
+    }
   }
 ];
 
-if (navigator.ml) {
-  scatterNDTests.forEach((test) => {
-    webnn_conformance_test(buildAndExecuteGraph, getZeroULPTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    scatterNDTests, buildAndExecuteGraph, getZeroULPTolerance);

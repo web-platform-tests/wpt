@@ -41,7 +41,7 @@ def create_parser(product_choices=None):
     from mozlog import commandline
 
     if product_choices is None:
-        product_choices = products.product_list
+        product_choices = list(products.get_all_products())
 
     parser = argparse.ArgumentParser(description="""Runner for web-platform-tests tests.""",
                                      usage="""%(prog)s [OPTION]... [TEST]...
@@ -92,7 +92,9 @@ scheme host and port.""")
     mode_group.add_argument("--list-disabled", action="store_true",
                             help="List the tests that are disabled on the current platform")
     mode_group.add_argument("--list-tests", action="store_true",
-                            help="List all tests that will run")
+                            help="List all tests included in the given test_list (whether or not they would be executed)")
+    mode_group.add_argument("--list-tests-json", action="store_true",
+                            help="List details of all tests included in the given test_list in JSON format")
     stability_group = mode_group.add_mutually_exclusive_group()
     stability_group.add_argument("--verify", action="store_true",
                                  help="Run a stability check on the selected tests")
@@ -166,6 +168,12 @@ scheme host and port.""")
                                       help="Enable tests that require WebTransport over HTTP/3 server (default: false)")
     test_selection_group.add_argument("--no-enable-webtransport-h3", action="store_false", dest="enable_webtransport_h3",
                                       help="Do not enable WebTransport tests on experimental channels")
+    test_selection_group.add_argument("--enable-dns",
+                                      action="store_true",
+                                      default=None,
+                                      help="Enable the DNS server for resolving test domains")
+    test_selection_group.add_argument("--no-enable-dns", action="store_false", dest="enable_dns",
+                                      help="Do not enable DNS server")
     test_selection_group.add_argument("--tag", action="append", dest="tags",
                                       help="Labels applied to tests to include in the run. "
                                            "Labels starting dir: are equivalent to top-level directories.")
@@ -274,6 +282,11 @@ scheme host and port.""")
     config_group.add_argument("--no-suppress-handler-traceback", action="store_false",
                               dest="supress_handler_traceback",
                               help="Write the stacktrace for exceptions in server handlers")
+    config_group.add_argument("--update-status-on-crash", action="store_true", default=None,
+                              help="Update test status to CRASH if a crash dump is found")
+    config_group.add_argument("--no-update-status-on-crash", dest="update_status_on_crash",
+                              action="store_false",
+                              help="Don't update test status to CRASH if a crash dump is found")
     config_group.add_argument("--ws-extra", action="append",
                               help="Extra paths containing websockets handlers")
 
@@ -374,6 +387,12 @@ scheme host and port.""")
         help=("Reuse a window across `testharness.js` tests where possible, "
               "which can speed up testing. Also useful for ensuring that the "
               "renderer process has a stable PID for a debugger to attach to."))
+    chrome_group.add_argument(
+        "--trace-categories",
+        metavar="CATEGORIES",
+        nargs="?",
+        const="blink,blink.bindings",
+        help="Record traces under the given categories for each test.")
 
     sauce_group = parser.add_argument_group("Sauce Labs-specific")
     sauce_group.add_argument("--sauce-browser", help="Sauce Labs browser name")
@@ -426,6 +445,16 @@ scheme host and port.""")
     commandline.log_formatters["wptscreenshot"] = (wptscreenshot.WptscreenshotFormatter, "wpt.fyi screenshots")
 
     commandline.add_logging_group(parser)
+
+    for product_name in products.get_all_products():
+        try:
+            product = products.Product.from_product_name(product_name)
+        except Exception as e:
+            print(f"Warning: could not load product {product_name!r} for argument registration: {e}",
+                  file=sys.stderr)
+        else:
+            product.add_arguments(parser)
+
     return parser
 
 
@@ -439,7 +468,7 @@ def set_from_config(kwargs):
 
     kwargs["config"] = config.read(kwargs["config_path"])
 
-    kwargs["product"] = products.Product(kwargs["config"], kwargs["product"])
+    kwargs["product"] = products.Product.from_product_name(kwargs["product"])
 
     keys = {"paths": [("prefs", "prefs_root", "path"),
                       ("run_info", "run_info", "path"),
@@ -634,6 +663,9 @@ def check_args(kwargs):
             print("Binary path %s does not exist" % kwargs["binary"], file=sys.stderr)
             sys.exit(1)
 
+    if kwargs["update_status_on_crash"] is None:
+        kwargs["update_status_on_crash"] = True
+
     if kwargs["ssl_type"] is None:
         if None not in (kwargs["ca_cert_path"], kwargs["host_cert_path"], kwargs["host_key_path"]):
             kwargs["ssl_type"] = "pregenerated"
@@ -719,7 +751,7 @@ def create_parser_metadata_update(product_choices=None):
     from . import products
 
     if product_choices is None:
-        product_choices = products.product_list
+        product_choices = list(products.get_all_products())
 
     parser = argparse.ArgumentParser("web-platform-tests-update",
                                      description="Update script for web-platform-tests tests.")

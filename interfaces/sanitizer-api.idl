@@ -18,17 +18,17 @@ interface Sanitizer {
   // Query configuration:
   SanitizerConfig get();
 
-  // Modify a Sanitizer’s lists and fields:
-  undefined allowElement(SanitizerElementWithAttributes element);
-  undefined removeElement(SanitizerElement element);
-  undefined replaceElementWithChildren(SanitizerElement element);
-  undefined allowAttribute(SanitizerAttribute attribute);
-  undefined removeAttribute(SanitizerAttribute attribute);
-  undefined setComments(boolean allow);
-  undefined setDataAttributes(boolean allow);
+  // Modify a Sanitizer's lists and fields:
+  boolean allowElement(SanitizerElementWithAttributes element);
+  boolean removeElement(SanitizerElement element);
+  boolean replaceElementWithChildren(SanitizerElement element);
+  boolean allowAttribute(SanitizerAttribute attribute);
+  boolean removeAttribute(SanitizerAttribute attribute);
+  boolean setComments(boolean allow);
+  boolean setDataAttributes(boolean allow);
 
-  // Remove markup that executes script. May modify multiple lists:
-  undefined removeUnsafe();
+  // Remove markup that executes script.
+  boolean removeUnsafe();
 };
 
 dictionary SanitizerElementNamespace {

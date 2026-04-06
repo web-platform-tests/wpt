@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: CSS Functions and Mixins Module (https://drafts.csswg.org/css-mixins-1/)
+// Source: CSS Custom Functions and Mixins Module Level 1 (https://drafts.csswg.org/css-mixins-1/)
 
 [Exposed=Window]
 interface CSSFunctionRule : CSSGroupingRule {
@@ -13,7 +13,7 @@ interface CSSFunctionRule : CSSGroupingRule {
 dictionary FunctionParameter {
   required CSSOMString name;
   required CSSOMString type;
-  CSSOMString? defaultValue;
+  CSSOMString defaultValue;
 };
 
 [Exposed=Window]
@@ -25,3 +25,29 @@ interface CSSFunctionDescriptors : CSSStyleDeclaration {
 interface CSSFunctionDeclarations : CSSRule {
   [SameObject, PutForwards=cssText] readonly attribute CSSFunctionDescriptors style;
 };
+
+[Exposed=Window]
+interface CSSMixinRule : CSSGroupingRule {
+  readonly attribute CSSOMString name;
+  sequence<FunctionParameter> getParameters();
+  readonly attribute boolean contents;
+};
+
+[Exposed=Window]
+interface CSSApplyBlockRule : CSSGroupingRule {
+  readonly attribute CSSOMString name;
+  sequence<CSSOMString> getArguments();
+};
+
+[Exposed=Window]
+interface CSSApplyStatementRule : CSSRule {
+
+  readonly attribute CSSOMString name;
+  sequence<CSSOMString> getArguments();
+};
+
+[Exposed=Window]
+interface CSSContentsBlockRule : CSSGroupingRule { };
+
+[Exposed=Window]
+interface CSSContentsStatementRule : CSSRule { };

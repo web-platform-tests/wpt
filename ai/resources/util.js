@@ -2,8 +2,41 @@ const kValidAvailabilities =
     ['unavailable', 'downloadable', 'downloading', 'available'];
 const kAvailableAvailabilities = ['downloadable', 'downloading', 'available'];
 
+const kAudioPrompt = 'transcribe this';
+const kImagePrompt = 'describe this';
 const kTestPrompt = 'Please write a sentence in English.';
+
 const kTestContext = 'This is a test; this is only a test.';
+
+const kValidAudioPath = '/media/speech.wav';
+const kValidImagePath = '/images/computer.jpg';
+const kValidSVGImagePath = '/images/pattern.svg';
+const kValidVideoPath = '/media/test.webm';
+
+const kAudioOptions = {
+  expectedInputs: [{type: 'audio'}]
+};
+const kImageOptions = {
+  expectedInputs: [{type: 'image'}]
+};
+
+const kValidAudioKeywords =
+    ['audio', 'speech', 'sentence', 'single', 'segment'];
+const kValidCanvasImageKeywords = ['image', 'black', 'square', 'blank'];
+const kValidImageKeywords =
+    ['image', 'computer', 'keyboard', 'desk', 'PC', 'monitor', 'screen'];
+const kValidSVGImageKeywords =
+    ['image', 'color', 'red', 'green', 'blue', 'black'];
+const kValidVideoKeywords = [
+  'image', 'color', 'bip', 'black', 'white', 'yellow', 'green', 'blue', 'red',
+  'video', 'screen'
+];
+
+const kValidAudioRegex = matchKeywordsRegex(kValidAudioKeywords);
+const kValidCanvasImageRegex = matchKeywordsRegex(kValidCanvasImageKeywords);
+const kValidImageRegex = matchKeywordsRegex(kValidImageKeywords);
+const kValidSVGImageRegex = matchKeywordsRegex(kValidSVGImageKeywords);
+const kValidVideoRegex = matchKeywordsRegex(kValidVideoKeywords);
 
 const getId = (() => {
   let idCount = 0;
@@ -88,7 +121,7 @@ async function testCreateMonitorWithAbortAt(
 
       if (hadEvent) {
         assert_unreached(
-            'This should never be reached since LanguageDetector.create() was aborted.');
+            'This should never be reached since the create() operation was aborted.');
         return;
       }
 
@@ -225,6 +258,11 @@ function load_iframe(src, permission_policy) {
   return promise;
 }
 
+async function createLanguageModel(options = {}) {
+  await test_driver.bless();
+  return LanguageModel.create(options);
+}
+
 async function createSummarizer(options = {}) {
   await test_driver.bless();
   return await Summarizer.create(options);
@@ -239,6 +277,19 @@ async function createRewriter(options = {}) {
   await test_driver.bless();
   return await Rewriter.create(options);
 }
+
+async function createProofreader(options = {}) {
+  await test_driver.bless();
+  return await Proofreader.create(options);
+}
+
+async function ensureLanguageModel(options = {}) {
+  assert_true(!!LanguageModel);
+  const availability = await LanguageModel.availability(options);
+  assert_in_array(availability, kValidAvailabilities);
+  // Yield PRECONDITION_FAILED if the API is unavailable on this device.
+  assert_implements_optional(availability != 'unavailable', 'API unavailable');
+};
 
 async function testDestroy(t, createMethod, options, instanceMethods) {
   const instance = await createMethod(options);
@@ -268,4 +319,23 @@ async function testCreateAbort(t, createMethod, options, instanceMethods) {
   for (const promise of promises) {
     await promise_rejects_exactly(t, error, promise);
   }
+}
+
+function consumeTransientUserActivation() {
+  const win = window.open('about:blank', '_blank');
+  if (win)
+    win.close();
+}
+
+// Helper function to create a regex from some keywords.
+function matchKeywordsRegex(keywords) {
+  const keywordsPattern = keywords.join('|');
+  return new RegExp(`(${keywordsPattern})`, 'i');
+}
+
+function messageWithContent(prompt, type, value) {
+  return [{
+    role: 'user',
+    content: [{type: 'text', value: prompt}, {type: type, value: value}]
+  }];
 }

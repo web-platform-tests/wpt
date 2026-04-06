@@ -86,6 +86,15 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
         # fail to create a session if they don't recognize this capability.
         chrome_options["quitGracefully"] = True
 
+    if trace_categories := kwargs.get("trace_categories"):
+        executor_kwargs["enable_tracing"] = True
+        capabilities["goog:loggingPrefs"] = {
+            "performance": "INFO",
+        }
+        chrome_options["perfLoggingPrefs"] = {
+            "traceCategories": trace_categories,
+        }
+
     # Here we set a few Chrome flags that are always passed.
     # ChromeDriver's "acceptInsecureCerts" capability only controls the current
     # browsing context, whereas the CLI flag works for workers, too.
@@ -139,6 +148,14 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     # This is needed to test extensions, PWA, compilation caches that
     # require local CDP access.
     chrome_options["args"].append("--remote-debugging-pipe")
+    # For Device Bound Session Credentials tests, which are only eligible on
+    # Windows, Mac, and Linux.
+    if run_info_data.get("os") in ["win", "mac", "linux"]:
+        chrome_options["args"].append("--enable-features=" + ",".join([
+            "EnableBoundSessionCredentialsSoftwareKeysForManualTesting",
+            "DeviceBoundSessions:RefreshQuota/false/RequireOriginTrialTokens/false",
+            "DeviceBoundSessionsFederatedRegistration",
+        ]))
 
     # Classify `http-local`, `http-public` and https variants in the
     # appropriate IP address spaces.
@@ -294,7 +311,12 @@ class ChromeBrowser(WebDriverBrowser):
     def settings(self, test: Test) -> BrowserSettings:
         """ Required to store `require_webdriver_bidi` in browser settings."""
         settings = super().settings(test)
-        self._require_webdriver_bidi = test.testdriver_features is not None and 'bidi' in test.testdriver_features
+        self._require_webdriver_bidi = (
+            test.testdriver_features is not None and (
+                'bidi' in test.testdriver_features or
+                'extensions' in test.testdriver_features
+            )
+        )
 
         return {
             **settings,

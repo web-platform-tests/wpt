@@ -176,14 +176,14 @@ class BidiEmulationSetGeolocationOverrideAction:
             raise ValueError(
                 "Params `error` and `coordinates` are mutually exclusive")
 
-        # If `error` is present, set it. Otherwise, do not pass it (error: None).
-        # Note, unlike `coordinates`, `error` cannot be `UNDEFINED`. It's either
-        # `None` and it's not passed, or some dict value which is passed.
-        error = payload['error'] if 'error' in payload else None
-        # If `error` is present, do not pass `coordinates` (coordinates: UNDEFINED).
-        # Otherwise, remove emulation (coordinates: None).
-        coordinates = payload['coordinates'] if 'coordinates' in payload else (
-            None if error is None else webdriver.bidi.undefined.UNDEFINED)
+        # If `error` is present, set it. Otherwise, use `UNDEFINED`.
+        error = payload['error'] if 'error' in payload else webdriver.bidi.undefined.UNDEFINED
+        coordinates = webdriver.bidi.undefined.UNDEFINED
+        if 'coordinates' in payload:
+            coordinates = payload['coordinates']
+        elif error is webdriver.bidi.undefined.UNDEFINED:
+            # If `error` is not present, pass `coordinates` of null.
+            coordinates = None
 
         if "contexts" not in payload:
             raise ValueError("Missing required parameter: contexts")
@@ -245,6 +245,31 @@ class BidiEmulationSetScreenOrientationOverrideAction:
             screen_orientation, contexts)
 
 
+class BidiEmulationSetTouchOverrideAction:
+    name = "bidi.emulation.set_touch_override"
+
+    def __init__(self, logger, protocol):
+        do_delayed_imports()
+        self.logger = logger
+        self.protocol = protocol
+
+    async def __call__(self, payload):
+        max_touch_points = payload['maxTouchPoints'] \
+            if 'maxTouchPoints' in payload \
+            else None
+
+        if "contexts" not in payload:
+            raise ValueError("Missing required parameter: contexts")
+        contexts = []
+        for context in payload["contexts"]:
+            contexts.append(get_browsing_context_id(context))
+        if len(contexts) == 0:
+            raise ValueError("At least one context must be provided")
+
+        return await self.protocol.bidi_emulation.set_touch_override(
+            max_touch_points, contexts)
+
+
 class BidiSessionSubscribeAction:
     name = "bidi.session.subscribe"
 
@@ -263,6 +288,41 @@ class BidiSessionSubscribeAction:
         return await self.protocol.bidi_events.subscribe(events, contexts)
 
 
+class BidiUserAgentClientHintsSetClientHintsOverrideAction:
+    name = "bidi.user_agent_client_hints.set_client_hints_override"
+
+    def __init__(self, logger, protocol):
+        do_delayed_imports()
+        self.logger = logger
+        self.protocol = protocol
+
+    async def __call__(self, payload):
+        client_hints = payload.get("clientHints", None)
+
+        contexts = payload.get("contexts", None)
+        if contexts is not None:
+            contexts = [get_browsing_context_id(context) for context in contexts]
+        return await self.protocol.bidi_user_agent_client_hints.set_client_hints_override(
+            client_hints, contexts)
+
+
+class BidiSessionUnsubscribeAction:
+    name = "bidi.session.unsubscribe"
+
+    def __init__(self, logger, protocol):
+        do_delayed_imports()
+        self.logger = logger
+        self.protocol = protocol
+
+    async def __call__(self, payload):
+        subscriptions = payload["subscriptions"]
+        if len(subscriptions) == 0:
+            raise ValueError("At least one subscription ID should be provided")
+
+        return await self.protocol.bidi_events.unsubscribe(
+            subscriptions=subscriptions)
+
+
 class BidiPermissionsSetPermissionAction:
     name = "bidi.permissions.set_permission"
 
@@ -275,9 +335,11 @@ class BidiPermissionsSetPermissionAction:
         descriptor = payload['descriptor']
         state = payload['state']
         origin = payload['origin']
+        embedded_origin = payload.get('embeddedOrigin')
         return await self.protocol.bidi_permissions.set_permission(descriptor,
                                                                    state,
-                                                                   origin)
+                                                                   origin,
+                                                                   embedded_origin)
 
 
 async_actions = [
@@ -295,5 +357,9 @@ async_actions = [
     BidiEmulationSetGeolocationOverrideAction,
     BidiEmulationSetLocaleOverrideAction,
     BidiEmulationSetScreenOrientationOverrideAction,
+    BidiEmulationSetTouchOverrideAction,
+    BidiUserAgentClientHintsSetClientHintsOverrideAction,
     BidiPermissionsSetPermissionAction,
-    BidiSessionSubscribeAction]
+    BidiSessionSubscribeAction,
+    BidiSessionUnsubscribeAction,
+    BidiPermissionsSetPermissionAction]

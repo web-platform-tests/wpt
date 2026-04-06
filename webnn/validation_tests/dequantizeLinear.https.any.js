@@ -20,18 +20,18 @@ const tests = [
   },
   {
     name:
-        '[dequantizeLinear] Test scale\'s shape = [5] and zeroPoint\'s shape = [5] which is unidirectionally broadcastable to input\'s shape.',
+        '[dequantizeLinear] Test scale\'s shape = [1, 1, 5] and zeroPoint\'s shape = [1, 1, 5] which is unidirectionally broadcastable to input\'s shape.',
     input: {dataType: 'int8', shape: [3, 2, 5]},
-    scale: {dataType: 'float32', shape: [5]},
-    zeroPoint: {dataType: 'int8', shape: [5]},
+    scale: {dataType: 'float32', shape: [1, 1, 5]},
+    zeroPoint: {dataType: 'int8', shape: [1, 1, 5]},
     output: {dataType: 'float32', shape: [3, 2, 5]},
   },
   {
     name:
-        '[dequantizeLinear] Test scale\'s shape = [] and zeroPoint\'s shape = [] which is unidirectionally broadcastable to input\'s shape.',
+        '[dequantizeLinear] Test scale\'s shape = [1, 1, 1] and zeroPoint\'s shape = [1, 1, 1] which is unidirectionally broadcastable to input\'s shape.',
     input: {dataType: 'uint8', shape: [3, 2, 5]},
-    scale: {dataType: 'float32', shape: []},
-    zeroPoint: {dataType: 'uint8', shape: []},
+    scale: {dataType: 'float32', shape: [1, 1, 1]},
+    zeroPoint: {dataType: 'uint8', shape: [1, 1, 1]},
     output: {dataType: 'float32', shape: [3, 2, 5]},
   },
   {
@@ -41,6 +41,13 @@ const tests = [
     scale: {dataType: 'float32', shape: [3, 2, 1]},
     zeroPoint: {dataType: 'uint8', shape: [3, 2, 1]},
     output: {dataType: 'float32', shape: [6, 4, 5]},
+  },
+  {
+    name:
+        '[dequantizeLinear] Throw if the scale rank is not equal to input rank.',
+    input: {dataType: 'uint8', shape: [3, 2, 5]},
+    scale: {dataType: 'float32', shape: [5]},
+    zeroPoint: {dataType: 'uint8', shape: [5]},
   },
   {
     name:
@@ -149,7 +156,7 @@ promise_test(async t => {
 
   const input = builder.input('input', {
       dataType: 'int8',
-      shape: [context.opSupportLimits().maxTensorByteLength / 5, 5]});
+      shape: [context.opSupportLimits().maxTensorByteLength / 20 + 1, 5]});
   const scale = builder.input('scale', {dataType: 'float32', shape: [5]});
   const zeroPoint = builder.input('zeroPoint', {dataType: 'int8', shape: [5]});
 

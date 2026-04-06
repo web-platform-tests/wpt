@@ -1,5 +1,7 @@
 from typing import Any, Mapping
 
+import pytest
+from webdriver.bidi.error import UnknownErrorException
 from webdriver.bidi.modules.script import ContextTarget
 
 from .. import (
@@ -14,12 +16,12 @@ def assert_browsing_context(
     info,
     context,
     children=None,
+    client_window=None,
     original_opener=None,
     parent_expected=True,
     parent=None,
     url=None,
     user_context="default",
-    client_window=None
 ):
     assert "children" in info
     if children is not None:
@@ -27,6 +29,14 @@ def assert_browsing_context(
         assert len(info["children"]) == children
     else:
         assert info["children"] is None
+
+    assert "clientWindow" in info
+    assert isinstance(info["clientWindow"], str)
+    # Note: Only the tests for browsingContext.getTree should be allowed to
+    # pass None here because it's not possible to assert the exact client
+    # window id for other browser windows.
+    if client_window is not None:
+        assert info["clientWindow"] == client_window
 
     assert "context" in info
     assert isinstance(info["context"], str)
@@ -54,7 +64,6 @@ def assert_browsing_context(
     assert info["url"] == url
     assert info["userContext"] == user_context
     assert info["originalOpener"] == original_opener
-    assert info["clientWindow"] == client_window
 
 
 async def assert_document_status(bidi_session, context, visible, focused):
@@ -117,3 +126,31 @@ def find_context_info(contexts, context):
         ),
         None,
     )
+
+
+async def navigate_and_assert(
+    bidi_session, context, url, wait="complete", expected_error=False, expected_url=None
+):
+    if expected_url is None:
+        expected_url = url
+
+    if expected_error:
+        with pytest.raises(UnknownErrorException):
+            await bidi_session.browsing_context.navigate(
+                context=context['context'], url=url, wait=wait
+            )
+
+    else:
+        result = await bidi_session.browsing_context.navigate(
+            context=context['context'], url=url, wait=wait
+        )
+        assert result["url"] == expected_url
+        any_string(result["navigation"])
+
+        contexts = await bidi_session.browsing_context.get_tree(
+            root=context['context']
+        )
+        assert len(contexts) == 1
+        assert contexts[0]["url"] == expected_url
+
+        return contexts

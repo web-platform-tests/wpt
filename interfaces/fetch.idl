@@ -85,7 +85,8 @@ enum RequestRedirect { "follow", "error", "manual" };
 enum RequestDuplex { "half" };
 enum RequestPriority { "high", "low", "auto" };
 
-[Exposed=(Window,Worker)]interface Response {
+[Exposed=(Window,Worker)]
+interface Response {
   constructor(optional BodyInit? body = null, optional ResponseInit init = {});
 
   [NewObject] static Response error();
@@ -115,4 +116,17 @@ enum ResponseType { "basic", "cors", "default", "error", "opaque", "opaqueredire
 
 partial interface mixin WindowOrWorkerGlobalScope {
   [NewObject] Promise<Response> fetch(RequestInfo input, optional RequestInit init = {});
+};
+
+dictionary DeferredRequestInit : RequestInit {
+  DOMHighResTimeStamp activateAfter;
+};
+
+[Exposed=Window]
+interface FetchLaterResult {
+  readonly attribute boolean activated;
+};
+
+partial interface Window {
+  [NewObject, SecureContext] FetchLaterResult fetchLater(RequestInfo input, optional DeferredRequestInit init = {});
 };

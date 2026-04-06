@@ -477,7 +477,7 @@ var browserTests = [
     {"stylewithcss":[false,true,"",false,false,""],"inserthtml":[false,false,"",false,false,""]}],
 ["<p>[foo]</p>",
     [["inserthtml","<!--abc-->"]],
-    "<p><!--abc-->{}</p>",
+    "<p><!--abc--><br></p>",
     [true],
     {"inserthtml":[false,false,"",false,false,""]}],
 ["<p>{}<br></p>",
@@ -487,7 +487,7 @@ var browserTests = [
     {"inserthtml":[false,false,"",false,false,""]}],
 ["<p>{}<br></p>",
     [["inserthtml","<!--abc-->"]],
-    "<p><!--abc-->{}</p>",
+    "<p><!--abc--><br></p>",
     [true],
     {"inserthtml":[false,false,"",false,false,""]}],
 ["<p><!--foo-->{}<span><br></span><!--bar--></p>",
@@ -521,7 +521,8 @@ var browserTests = [
     {"inserthtml":[false,false,"",false,false,""]}],
 ["<p><br>{}</p>",
     [["inserthtml","<!--abc-->"]],
-    "<p><!--abc--></p>",
+    ["<p><br><!--abc--></p>",
+     "<p><!--abc--><br></p>"],
     [true],
     {"inserthtml":[false,false,"",false,false,""]}],
 ["<p><!--foo--><span><br></span>{}<!--bar--></p>",
@@ -535,18 +536,25 @@ var browserTests = [
     "<p><!--foo--><span><!--abc-->{}<br></span><!--bar--></p>",
     [true],
     {"inserthtml":[false,false,"",false,false,""]}],
-// TODO: Fix the insertion not occurring at caret position.
-// Updating the expected value of below two tests as to how other
-// browsers behave these tests will still fail and since the insertion
-// position is incorrect br tag gets removed, after fixing this it shouldn't.
+// Don't insert text after the invisible <br> element. In the normal cases
+// (meaning without the Comment nodes), caret should be put at the <br>.
+//  Therefore, inserting text should be done before the <br>. Then, the <br>
+// becomes unnecessary so that it should be removed.
 ["<p><span><!--foo--><br><!--bar--></span>{}</p>",
     [["inserthtml","abc"]],
-    "<p><span><!--foo--><br><!--bar--></span>abc</p>",
+    "<p><span><!--foo-->abc<!--bar--></span></p>",
     [true],
     {"inserthtml":[false,false,"",false,false,""]}],
+// It may be allowed to insert new Comment after the invisible <br> element.
+// Therefore, the first one expects the new position as same as the `Selection`.
+// On the other hand, if the inserting content includes visible things,
+// everything should be inserted before the invisible <br>.  Therefore, the
+// new position can be before the <br> as same as handled as inserting visible
+// things.
 ["<p><span><!--foo--><br><!--bar--></span>{}</p>",
     [["inserthtml","<!--abc-->"]],
-    "<p><span><!--foo--><br><!--bar--></span><!--abc--></p>",
+    ["<p><span><!--foo--><br><!--bar--></span><!--abc--></p>",
+     "<p><span><!--foo--><!--abc--><br><!--bar--></span></p>"],
     [true],
     {"inserthtml":[false,false,"",false,false,""]}],
 
@@ -600,6 +608,70 @@ var browserTests = [
     [["inserthtml","<i>Z</i>"]],
     ["<p><b><span contenteditable=\"false\">abc</span></b><i>Z</i><i>def</i></p>",
      "<p><b><span contenteditable=\"false\">abc</span></b><i>Zdef</i></p>"],
+    [true],
+    {}],
+
+
+// Some apps may refer the invisible preformatted linefeed for the further
+// processing after inserting Text. Therefore, the following preformatted
+// linefeed shouldn't be deleted even if it's unnecessary.
+["<div style=white-space:pre>abc[]\n</div>",
+    [["inserthtml","X"]],
+    "<div style=\"white-space:pre\">abcX\n</div>",
+    [true],
+    {}],
+["<div style=white-space:pre>abc[]\n</div>",
+    [["inserthtml","X"],["inserthtml","Y"]],
+    "<div style=\"white-space:pre\">abcXY\n</div>",
+    [true,true],
+    {}],
+["<div style=white-space:pre-line>abc[]\n</div>",
+    [["inserthtml","X"]],
+    "<div style=\"white-space:pre-line\">abcX\n</div>",
+    [true],
+    {}],
+["<div style=white-space:pre-line>abc[]\n</div>",
+    [["inserthtml","X"],["inserthtml","Y"]],
+    "<div style=\"white-space:pre-line\">abcXY\n</div>",
+    [true,true],
+    {}],
+["<div style=white-space:pre>abc []\n</div>",
+    [["inserthtml","X"]],
+    "<div style=\"white-space:pre\">abc X\n</div>",
+    [true],
+    {}],
+["<div style=white-space:pre>abc []\n</div>",
+    [["inserthtml","X"],["inserthtml","Y"]],
+    "<div style=\"white-space:pre\">abc XY\n</div>",
+    [true,true],
+    {}],
+// I'm not sure whether the following expectations are right or consistent with
+// the other results. In theory, if selection is collapsed in invisible
+// white-spaces at block boundary, the invisible white-spaces should be deleted
+// or at least the selection should be adjusted before the invisible
+// white-spaces before inserting new content. However, insertHTML command may be
+// a raw command to touch the DOM with an undo transaction. Therefore, not
+// handling invisible white-spaces might be expected by the web developer.
+["<div style=white-space:pre-line>abc []\n</div>",
+    [["inserthtml","X"]],
+    ["<div style=\"white-space:pre-line\">abcX\n</div>",
+     "<div style=\"white-space:pre-line\">abcX \n</div>"],
+    [true],
+    {}],
+["<div style=white-space:pre-line>abc []\n</div>",
+    [["inserthtml","X"],["inserthtml","Y"]],
+    ["<div style=\"white-space:pre-line\">abcXY\n</div>",
+     "<div style=\"white-space:pre-line\">abcXY \n</div>"],
+    [true,true],
+    {}],
+["<div style=white-space:pre>[]\n</div>",
+    [["inserthtml","X"]],
+    "<div style=\"white-space:pre\">X</div>",
+    [true],
+    {}],
+["<div style=white-space:pre-line>[]\n</div>",
+    [["inserthtml","X"]],
+    "<div style=\"white-space:pre-line\">X</div>",
     [true],
     {}],
 ]

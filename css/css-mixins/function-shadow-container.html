@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <title>Custom Functions: Container Queries + ShadowDOM</title>
 <link rel="help" href="https://drafts.csswg.org/css-mixins-1/#using-custom-functions">
-<link rel="help" href="https://drafts.csswg.org/css-scoping-1/#css-tree-scoped-reference">
+<link rel="help" href="https://drafts.csswg.org/css-shadow-1/#css-tree-scoped-reference">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
@@ -28,7 +28,7 @@
   </template>
 </div>
 
-<div data-name="::part() can not see inner named containers">
+<div data-name="::part() can see inner named containers">
   <template shadowrootmode=open>
     <style>
       @function --b() {
@@ -41,7 +41,7 @@
       }
       ::part(target) {
         --actual: --b();
-        --expected: 10px;
+        --expected: 5px;
       }
       .container {
         container: --cont / size;
@@ -104,7 +104,7 @@
           }
           ::slotted(#target) {
             --actual: --b() --c();
-            --expected: 10px 5px;
+            --expected: 5px 5px;
           }
         </style>
         <div class=container>

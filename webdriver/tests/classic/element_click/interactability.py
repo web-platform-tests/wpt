@@ -1,6 +1,6 @@
 import pytest
 
-from tests.support.asserts import assert_error, assert_success
+from tests.support.classic.asserts import assert_error, assert_success
 
 
 def element_click(session, element):
@@ -115,11 +115,11 @@ def test_element_intercepted(session, inline):
     assert_error(response, "element click intercepted")
 
 
-def test_element_intercepted_no_pointer_events(session, inline):
+def test_element_not_interactable_pointer_events_none(session, inline):
     session.url = inline("""<input type=button value=Roger style="pointer-events: none">""")
     element = session.find.css("input", all=False)
     response = element_click(session, element)
-    assert_error(response, "element click intercepted")
+    assert_error(response, "element not interactable")
 
 
 def test_element_not_visible_overflow_hidden(session, inline):

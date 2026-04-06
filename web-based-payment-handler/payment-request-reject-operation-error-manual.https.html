@@ -18,20 +18,36 @@
       + 'payment-request-reject-errors-manifest.json';
 
   promise_test(async t => {
+    console.log('[Test] Starting OperationError test case');
     await test_driver.bless('invoking a payment app for OperationError');
     const request = new PaymentRequest([{supportedMethods: methodName}], {
       total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
     });
+    console.log('[Test] Calling show() for OperationError');
     // show() should reject with the SAME error if it's OperationError.
-    await promise_rejects_dom(t, 'OperationError', request.show());
+    try {
+      await promise_rejects_dom(t, 'OperationError', request.show());
+      console.log('[Test] show() rejected correctly with OperationError');
+    } catch (err) {
+      console.error(`[Test] show() failed to reject as expected: ${err}`);
+      throw err;
+    }
   }, 'If a payment app rejects with OperationError, show() rejects with OperationError');
 
   promise_test(async t => {
+    console.log('[Test] Starting SyntaxError test case');
     await test_driver.bless('invoking a payment app for SyntaxError');
     const request = new PaymentRequest([{supportedMethods: methodName}], {
       total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
     });
+    console.log('[Test] Calling show() for SyntaxError');
     // show() should reject with AbortError for other error types.
-    await promise_rejects_dom(t, 'AbortError', request.show());
+    try {
+      await promise_rejects_dom(t, 'AbortError', request.show());
+      console.log('[Test] show() rejected correctly with AbortError');
+    } catch (err) {
+      console.error(`[Test] show() failed to reject as expected: ${err}`);
+      throw err;
+    }
   }, 'If a payment app rejects with SyntaxError, show() rejects with AbortError');
 </script>

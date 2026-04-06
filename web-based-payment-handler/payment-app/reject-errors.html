@@ -9,14 +9,9 @@
 <script>
   for (const id of ['success', 'reject-operation-error', 'reject-syntax-error']) {
     document.getElementById(id).onclick = () => {
-      console.log(`[PaymentApp] Button clicked: ${id}`);
       if (navigator.serviceWorker.controller) {
-        console.log(`[PaymentApp] Posting message to service worker: ${id}`);
         navigator.serviceWorker.controller.postMessage(id);
-      } else {
-        console.error('[PaymentApp] No service worker controller found!');
       }
-      console.log('[PaymentApp] Closing window');
       window.close();
     };
   }

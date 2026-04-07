@@ -145,8 +145,11 @@ class SubtestResultRecorder:
         self.record(report.nodeid, "ERROR", message, report.longrepr)
 
     def record_skip(self, report):
-        if "PRECONDITION_FAILED" in report.longrepr[2]:
-            self.record(report.nodeid, "PRECONDITION_FAILED")
+        # Do not record a not applicable subtest, used
+        # for an `aamtest` subtest that is not applicable
+        # to the current platform.
+        if "NOT_APPLICABLE" in report.longrepr[2]:
+            return
         else:
             self.record(
                 report.nodeid,

@@ -37,10 +37,10 @@ features:
 - name: caret-color
   files:
   - caret-color-*
-  - caret-eol-*
 - name: caret-shape
   files:
   - caret-shape-*
+  - caret-eol-*
 - name: cross-fade
   files:
   - cursor-image-016-manual.html

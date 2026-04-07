@@ -8,9 +8,8 @@ Test262 tests are integrated into WPT using a "Window Wrapper" pattern. Each Tes
 
 ### Architecture
 
-1.  **Top-Level Wrapper**: A standard WPT HTML file (`testharness.js`-enabled) that hosts a `test262-harness-bridge.js`. It contains an `<iframe>` where the actual test code runs.
-2.  **Harness Bridge**: Listens for `postMessage` events from the iframe. It maps Test262 results to a single WPT `async_test`. It uses `setup({ explicit_done: true })` to ensure it captures results from both synchronous and asynchronous tests correctly.
-3.  **Test Iframe**: The environment where the Test262 test executes. It includes:
+1.  **Top-Level Wrapper**: A standard WPT HTML file (`testharness.js`-enabled) that contains an `<iframe>` where the actual test code runs. It defines a global hook `window.test262HarnessDone` to receive results. It maps Test262 results to a single WPT `async_test` and uses `setup({ explicit_done: true })` to ensure it captures results correctly.
+2.  **Test Iframe**: The environment where the Test262 test executes. It includes:
     - **Harness Files**: Required Test262 harness files (e.g., `assert.js`, `sta.js`) from `third_party/test262/harness/`.
     - **Provider (`test262-provider.js`)**: Implements the `$262` host API required by the spec.
     - **Reporter (`test262-reporter.js`)**: Captures errors, handles async signals, and communicates with the parent bridge.
@@ -48,9 +47,8 @@ Test262 module tests are served as `<script type="module">`. The runner uses dyn
 
 ## Communication Protocol
 
-The bridge uses a structured object mapping for communication between the executing iframe and the parent WPT test harness:
-- `{ type: 'complete' }`: **OK** (Mapped to `t.done()`)
-- `{ type: 'fail', message: '...' }`: **FAIL** (Mapped to `assert_unreached()`)
-- `{ type: 'error', message: '...' }`: **ERROR** (Mapped to throwing a global harness `Error`)
-
-*Note: Additional payload types like 'timeout' or 'precondition_failed' are reserved for future WPT-specific extensions such as automated feature-skipping.*
+The test executes in the iframe and reports results back to the parent window by calling `window.parent.test262HarnessDone(status, message)`.
+The status values are mapped as follows:
+- `0`: **OK** (Success)
+- `1`: **FAIL** (Mapped to `assert_unreached(message)`)
+- `2`: **ERROR** (Mapped to a harness error and re-thrown)

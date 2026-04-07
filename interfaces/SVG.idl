@@ -13,6 +13,7 @@ interface SVGElement : Element {
 };
 
 SVGElement includes GlobalEventHandlers;
+SVGElement includes SVGElementInstance;
 SVGElement includes HTMLOrSVGElement;
 
 dictionary SVGBoundingBoxOptions {
@@ -306,6 +307,11 @@ SVGUseElement includes SVGURIReference;
 
 [Exposed=Window]
 interface SVGUseElementShadowRoot : ShadowRoot {
+};
+
+interface mixin SVGElementInstance {
+  [SameObject] readonly attribute SVGElement? correspondingElement;
+  [SameObject] readonly attribute SVGUseElement? correspondingUseElement;
 };
 
 [Exposed=Window]

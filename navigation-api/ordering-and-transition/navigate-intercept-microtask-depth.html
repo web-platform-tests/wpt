@@ -7,15 +7,15 @@
 <script type="module">
 import { Recorder, hasVariant } from "./resources/helpers.mjs";
 
-// This test verifies that the "get a promise for waiting for all" algorithm
-// (https://webidl.spec.whatwg.org/#dfn-get-a-promise-for-waiting-for-all)
-// provides the correct microtask timing: navigatesuccess fires one microtask
-// deeper than the handler promise reactions, not deferred to a separate task.
+// This test verifies that the "wait for all" algorithm
+// (https://webidl.spec.whatwg.org/#wait-for-all) provides the correct microtask
+// timing: navigatesuccess fires as a direct PerformPromiseThen reaction on the
+// handler promise, not deferred to a separate task or via a wrapper promise.
 //
-// A single-level Promise.resolve().then() microtask should fire BEFORE
-// navigatesuccess, while a two-level chained microtask should fire AFTER it,
-// since both navigatesuccess and the double microtask are at the same depth
-// but navigatesuccess is queued first.
+// Because the wait-for-all reaction is queued during navigate() (before
+// navigate() returns), it fires before any microtasks queued after navigate()
+// returns, such as committed.then() reactions or user Promise.resolve().then()
+// microtasks.
 
 promise_test(async t => {
   // Wait for after the load event so that the navigation doesn't get converted
@@ -50,13 +50,13 @@ promise_test(async t => {
     ["navigate", "", null],
     ["currententrychange", "#1", { from, navigationType: "push" }],
     ["handler run", "#1", { from, navigationType: "push" }],
-    ["committed fulfilled", "#1", { from, navigationType: "push" }],
-    ["transition.committed fulfilled", "#1", { from, navigationType: "push" }],
-    ["promise microtask", "#1", { from, navigationType: "push" }],
     ["navigatesuccess", "#1", { from, navigationType: "push" }],
-    ["double promise microtask", "#1", null],
+    ["committed fulfilled", "#1", null],
+    ["transition.committed fulfilled", "#1", null],
+    ["promise microtask", "#1", null],
     ["finished fulfilled", "#1", null],
     ["transition.finished fulfilled", "#1", null],
+    ["double promise microtask", "#1", null],
   ]);
-}, "navigatesuccess fires at the correct microtask depth relative to handler promise reactions");
+}, "navigatesuccess fires as a direct microtask from wait-for-all, before other queued microtasks");
 </script>

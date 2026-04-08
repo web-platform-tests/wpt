@@ -337,7 +337,7 @@ def test_get_metadata(handler_setup, handler_cls, request_path, expected_metadat
             '<script>test262Done()</script>',
         ]
     ),
-    # Test262WindowModuleTestHandler: Should contain module import
+    # Test262WindowModuleTestHandler: Should contain module import and new catch logic
     (
         Test262WindowModuleTestHandler,
         "/test262/module.test262-module-test.html",
@@ -346,6 +346,7 @@ def test_get_metadata(handler_setup, handler_cls, request_path, expected_metadat
             'test262Setup();',
             'import("/test262/module.js")',
             'test262Done()',
+            'setTimeout(() => { throw error; });',
         ]
     ),
     # Verification of the 'negative' replacement in the HTML

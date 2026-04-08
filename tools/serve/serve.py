@@ -2,6 +2,7 @@
 
 import abc
 import argparse
+import html
 import importlib
 import json
 import logging
@@ -436,19 +437,26 @@ class Test262WindowTestBaseHandler(HtmlWrapperHandler):
         if query:
             query = "?" + query
 
-        # Collect all metadata, prioritizing the special 'done_script' for formatting.
+        # Template for script tags, explicitly named for Test262
+        TEST262_SCRIPT_TAG_TEMPLATE = '<script src="%s"></script>'
+
         meta_parts = []
+        script_parts = []
         kwargs = {"path": path, "query": query, "done_script": ""}
         for key, value in self._get_metadata(request):
             replacement = self._meta_replacement(key, value)
             if replacement:
                 meta_parts.append(replacement)
-            # Ensure done_script is available for template formatting.
+            elif key == 'script':
+                # Use standard python html.escape to prevent XSS and ensure valid HTML
+                attribute = html.escape(value)
+                script_parts.append(TEST262_SCRIPT_TAG_TEMPLATE % attribute)
+
             if key == "done_script":
                 kwargs["done_script"] = value
 
         kwargs["meta"] = "\n".join(meta_parts)
-        kwargs["script"] = "\n".join(self._get_script(request))
+        kwargs["script"] = "\n".join(script_parts)
 
         # Format and serve the wrapped HTML.
         response.content = self.wrapper % kwargs
@@ -476,16 +484,7 @@ class Test262WindowModuleTestHandler(Test262WindowTestBaseHandler):
       test262Done();
     }
   }).catch(error => {
-    // For module resolution/execution errors
-    if (window.onunhandledrejection) {
-        window.onunhandledrejection({ reason: error });
-    } else {
-        let status = 2;
-        if (error && (error instanceof self.Test262Error || error.name === 'Test262Error')) {
-            status = 1;
-        }
-        window.parent.test262HarnessDone(status, error.message || error.toString());
-    }
+    setTimeout(() => { throw error; });
   });
 </script>
 </body>"""

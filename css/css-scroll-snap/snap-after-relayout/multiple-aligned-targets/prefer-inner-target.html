@@ -34,7 +34,6 @@
         position: absolute;
         width: 100px;
         height: 100px;
-        border: solid 1px black;
       }
       .top {
         top: 0px;
@@ -54,29 +53,29 @@
       .inner1 {
         height: 150px;
         width: 150px;
-        top: 150px;
-        left: 100px;
+        top: 0px;
+        left: 50px;
         background-color: blue;
       }
       .inner2 {
         height: 100px;
         width: 100px;
-        top: 150px;
-        left: 100px;
+        top: 0px;
+        left: 0px;
         background-color: pink;
       }
       .inner3 {
         height: 75px;
         width: 75px;
-        top: 150px;
-        left: 100px;
+        top: 0px;
+        left: 0px;
         background-color: green;
       }
       .inner4 {
         height: 50px;
         width: 50px;
-        top: 150px;
-        left: 100px;
+        top: 0px;
+        left: 0px;
         background-color: grey;
       }
       .outer {
@@ -91,11 +90,15 @@
       <div class="large-space"></div>
       <div class="top left target">Top Left</div>
       <div class="top right target">Top Right</div>
-      <div class="outer target" id="outer">Outer</div>
-      <div class="inner inner1 target" id="inner1">I1</div>
-      <div class="inner inner2 target" id="inner2">I2</div>
-      <div class="inner inner3 target" id="inner3">I3</div>
-      <div class="inner inner4 target" id="inner4">I4</div>
+      <div class="outer target" id="outer">Outer
+        <div class="inner inner1 target" id="inner1">I1
+          <div class="inner inner2 target" id="inner2">I2
+            <div class="inner inner3 target" id="inner3">I3
+              <div class="inner inner4 target" id="inner4">I4</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <script>
       window.onload = (async () => {

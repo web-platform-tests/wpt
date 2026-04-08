@@ -3,7 +3,7 @@
 <title>Tests for ruby-overhang: spaces with preserved spaces</title>
 <link rel="help" href="https://drafts.csswg.org/css-ruby-1/#ruby-overhang">
 <link rel="match" href="ruby-overhang-spaces-003-ref.html">
-<meta name=assert content="With 'ruby-overhang: spaces', excess ruby overhangs on top of preserved spaces, but no further.">
+<meta name=assert content="With 'ruby-overhang: spaces', excess ruby overhangs on top of preserved spaces and &nbsp;, but no further.">
 <style>
 ruby {
     ruby-overhang: spaces;
@@ -19,4 +19,5 @@ div {
 </style>
 <p>Test passes if orange and blue lines are aligned.
 <div class=test>あ <ruby>あ<rt>ああああああ</ruby> あ</div>
+<div class=test>あ <ruby>あ<rt>ああああああ</ruby> あ</div>
 <div class=measure>あ　あ　あ</div>

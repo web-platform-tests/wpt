@@ -448,7 +448,7 @@ class Test262WindowTestBaseHandler(HtmlWrapperHandler):
             if replacement:
                 meta_parts.append(replacement)
             elif key == 'script':
-                # Use standard python html.escape to prevent XSS and ensure valid HTML
+                # Prevent XSS and ensure valid HTML
                 attribute = html.escape(value)
                 script_parts.append(TEST262_SCRIPT_TAG_TEMPLATE % attribute)
 

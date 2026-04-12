@@ -1299,6 +1299,34 @@ const reduceLogSumExpTests = [
         }
       }
     }
+  },
+  {
+    'name':
+        'reduceLogSumExp "large" inputs (overflow)',
+    'graph': {
+      'inputs': {
+        'reduceLogSumExpInput': {
+          'data': [
+            100.0, -100.0
+          ],
+          'descriptor': {shape: [2], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceLogSumExp',
+        'arguments': [
+          {'input': 'reduceLogSumExpInput'},
+          {'options': {'axes': [0], 'keepDimensions': false}}
+        ],
+        'outputs': 'reduceLogSumExpOutput'
+      }],
+      'expectedOutputs': {
+        'reduceLogSumExpOutput': {
+          'data': [100.0],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
   }
 ];
 

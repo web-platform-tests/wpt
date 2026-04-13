@@ -1302,7 +1302,7 @@ const reduceLogSumExpTests = [
   },
   {
     'name':
-        'reduceLogSumExp "large" inputs (overflow)',
+        'reduceLogSumExp avoids overflows caused by taking the exp of large inputs',
     'graph': {
       'inputs': {
         'reduceLogSumExpInput': {

@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: SVG Paths (https://w3c.github.io/svgwg/specs/paths/)
+// Source: SVG Paths (https://svgwg.org/specs/paths/)
 
 [LegacyNoInterfaceObject, Exposed=Window]
 interface SVGPathSegment {

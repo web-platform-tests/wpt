@@ -142,7 +142,7 @@ if (rest) {
     const pc = makePc({ iceServers: [{
       urls: 'turns:turn.example.org',
       username: '',
-      credential: ''
+      credential: 'cred'
     }] });
 
     const { iceServers } = pc.getConfiguration();
@@ -151,15 +151,15 @@ if (rest) {
     const server = iceServers[0];
     assert_array_equals(server.urls, ['turns:turn.example.org']);
     assert_equals(server.username, '');
-    assert_equals(server.credential, '');
+    assert_equals(server.credential, 'cred');
 
-  }, `with turns server and empty string username, credential should succeed`);
+  }, `with turns server and empty string username should succeed`);
 
   config_test(makePc => {
     const pc = makePc({ iceServers: [{
       urls: 'turn:turn.example.org',
       username: '',
-      credential: ''
+      credential: 'cred'
     }] });
 
     const { iceServers } = pc.getConfiguration();
@@ -168,9 +168,9 @@ if (rest) {
     const server = iceServers[0];
     assert_array_equals(server.urls, ['turn:turn.example.org']);
     assert_equals(server.username, '');
-    assert_equals(server.credential, '');
+    assert_equals(server.credential, 'cred');
 
-  }, `with turn server and empty string username, credential should succeed`);
+  }, `with turn server and empty string username should succeed`);
 
   config_test(makePc => {
     const pc = makePc({ iceServers: [{
@@ -261,6 +261,24 @@ if (interop2026) {
   }, `with a turn server and a username of 510 characters throw InvalidAccessError`);
 }
 if (rest) {
+  config_test(makePc => {
+    assert_throws_dom('InvalidAccessError', () =>
+      makePc({ iceServers: [{
+        urls: 'turn:turn.example.net',
+        username: 'user',
+        credential: ''
+      }] }));
+  }, `with a turn server and an empty credential throw InvalidAccessError`);
+
+  config_test(makePc => {
+    assert_throws_dom('InvalidAccessError', () =>
+      makePc({ iceServers: [{
+        urls: 'turns:turn.example.net',
+        username: 'user',
+        credential: ''
+      }] }));
+  }, `with a turns server and an empty credential throw InvalidAccessError`);
+
   /*
     4.3.2.  To set a configuration
       11.3. For each url in server.urls parse url and obtain scheme name.

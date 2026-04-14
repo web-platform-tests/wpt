@@ -113,6 +113,120 @@ promise_test(async t => {
     const formData = await response2.formData();
     assert_array_equals(Array.from(formData.entries()), []);
 }, "Empty form data");
+
+// File parts: filename parameter produces File objects
+promise_test(async t => {
+    const body = "--boundary\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"hello.txt\"\r\n\r\nfile contents\r\n--boundary--\r\n";
+    const response = new Response(body, { headers: [["Content-Type", "multipart/form-data; boundary=boundary"]] });
+    const formData = await response.formData();
+    const file = formData.get("file1");
+    assert_true(file instanceof File, "Value should be a File");
+    assert_equals(file.name, "hello.txt", "Filename should match");
+    assert_equals(file.type, "text/plain", "Default type should be text/plain");
+    assert_equals(await file.text(), "file contents", "File contents should match");
+}, "File part with default Content-Type");
+
+promise_test(async t => {
+    const body = "--boundary\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"image.png\"\r\nContent-Type: image/png\r\n\r\nPNG\r\n--boundary--\r\n";
+    const response = new Response(body, { headers: [["Content-Type", "multipart/form-data; boundary=boundary"]] });
+    const formData = await response.formData();
+    const file = formData.get("file1");
+    assert_true(file instanceof File, "Value should be a File");
+    assert_equals(file.name, "image.png", "Filename should match");
+    assert_equals(file.type, "image/png", "Content-Type should match");
+    assert_equals(await file.text(), "PNG", "File contents should match");
+}, "File part with explicit Content-Type");
+
+// Mixed string and file parts
+promise_test(async t => {
+    const body = "--boundary\r\nContent-Disposition: form-data; name=\"field1\"\r\n\r\nvalue1\r\n--boundary\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"doc.txt\"\r\nContent-Type: text/plain\r\n\r\nfile data\r\n--boundary\r\nContent-Disposition: form-data; name=\"field2\"\r\n\r\nvalue2\r\n--boundary--\r\n";
+    const response = new Response(body, { headers: [["Content-Type", "multipart/form-data; boundary=boundary"]] });
+    const formData = await response.formData();
+    assert_equals(formData.get("field1"), "value1");
+    const file = formData.get("file1");
+    assert_true(file instanceof File);
+    assert_equals(file.name, "doc.txt");
+    assert_equals(await file.text(), "file data");
+    assert_equals(formData.get("field2"), "value2");
+}, "Mixed string and file parts");
+
+// Name escaping roundtrip
+promise_test(async t => {
+    const body = "--boundary\r\nContent-Disposition: form-data; name=\"a%0Ab\"\r\n\r\nvalue\r\n--boundary--\r\n";
+    const response = new Response(body, { headers: [["Content-Type", "multipart/form-data; boundary=boundary"]] });
+    const formData = await response.formData();
+    assert_equals(formData.get("a\nb"), "value");
+}, "Name with escaped LF");
+
+promise_test(async t => {
+    const body = "--boundary\r\nContent-Disposition: form-data; name=\"a%0Db\"\r\n\r\nvalue\r\n--boundary--\r\n";
+    const response = new Response(body, { headers: [["Content-Type", "multipart/form-data; boundary=boundary"]] });
+    const formData = await response.formData();
+    assert_equals(formData.get("a\rb"), "value");
+}, "Name with escaped CR");
+
+promise_test(async t => {
+    const body = "--boundary\r\nContent-Disposition: form-data; name=\"a%22b\"\r\n\r\nvalue\r\n--boundary--\r\n";
+    const response = new Response(body, { headers: [["Content-Type", "multipart/form-data; boundary=boundary"]] });
+    const formData = await response.formData();
+    assert_equals(formData.get('a"b'), "value");
+}, 'Name with escaped quote');
+
+// Unknown headers should be ignored
+promise_test(async t => {
+    const body = "--boundary\r\nContent-Disposition: form-data; name=\"field\"\r\nX-Custom: ignored\r\n\r\nvalue\r\n--boundary--\r\n";
+    const response = new Response(body, { headers: [["Content-Type", "multipart/form-data; boundary=boundary"]] });
+    const formData = await response.formData();
+    assert_equals(formData.get("field"), "value");
+}, "Unknown headers are ignored");
+
+// Missing boundary parameter
+promise_test(async t => {
+    const body = "--boundary\r\nContent-Disposition: form-data; name=\"field\"\r\n\r\nvalue\r\n--boundary--\r\n";
+    const response = new Response(body, { headers: [["Content-Type", "multipart/form-data"]] });
+    await promise_rejects_js(t, TypeError, response.formData());
+}, "Missing boundary parameter");
+
+// Transport padding on close delimiter
+promise_test(async t => {
+    const body = "--boundary\r\nContent-Disposition: form-data; name=\"field\"\r\n\r\nvalue\r\n--boundary-- \t\r\n";
+    const response = new Response(body, { headers: [["Content-Type", "multipart/form-data; boundary=boundary"]] });
+    const formData = await response.formData();
+    assert_equals(formData.get("field"), "value");
+}, "Transport padding on close delimiter");
+
+// Serialization roundtrip with string entries
+promise_test(async t => {
+    const fd = new FormData();
+    fd.append("key1", "value1");
+    fd.append("key2", "value2");
+    const response1 = new Response(fd);
+    const formData = await response1.formData();
+    assert_equals(formData.get("key1"), "value1");
+    assert_equals(formData.get("key2"), "value2");
+}, "Serialization roundtrip with string entries");
+
+// Serialization roundtrip with File entries
+promise_test(async t => {
+    const fd = new FormData();
+    fd.append("myfile", new File(["content"], "test.txt", { type: "text/plain" }));
+    const response1 = new Response(fd);
+    const formData = await response1.formData();
+    const file = formData.get("myfile");
+    assert_true(file instanceof File);
+    assert_equals(file.name, "test.txt");
+    assert_equals(file.type, "text/plain");
+    assert_equals(await file.text(), "content");
+}, "Serialization roundtrip with File entry");
+
+// CRLF normalization of string values
+promise_test(async t => {
+    const fd = new FormData();
+    fd.append("field", "a\nb\rc\r\nd");
+    const response1 = new Response(fd);
+    const formData = await response1.formData();
+    assert_equals(formData.get("field"), "a\r\nb\r\nc\r\nd");
+}, "CRLF normalization of lone CR and LF in string values");
     </script>
   </body>
 </html>

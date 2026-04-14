@@ -88,6 +88,11 @@ const invalidCases = [
         boundary: "boundary",
         value: "--boundary-%20---boundary--%0D%0A"
     },
+    {
+        name: "boundary",
+        boundary: "boundary--",
+        value: "--boundary--%0D%0A"
+    },
 ];
 
 invalidCases.forEach(testData => {
@@ -103,7 +108,7 @@ promise_test(async t => {
     assert_true(response1Body.startsWith("--"), "start");
     let boundary = response1Body.substring(2).trim();
     assert_true(boundary.endsWith("--"), "end");
-    boundary = boundary.substring(-2);
+    boundary = boundary.slice(0, -2);
     const response2 = new Response(response1Body, { "headers": [["Content-Type", "multipart/form-data; boundary=" + boundary]] });
     const formData = await response2.formData();
     assert_array_equals(Array.from(formData.entries()), []);

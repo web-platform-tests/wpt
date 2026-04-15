@@ -337,23 +337,16 @@ class Test262WindowHandler(HtmlWrapperHandler):
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-setup({explicit_done: true});
 const t = async_test(document.title);
-window.test262HarnessDone = function(status, message) {
+window.test262HarnessDone = t.step_func(function(status, message) {
     if (status === 1) {
-        t.step(() => assert_unreached(message || "Test failed"));
-        t.done();
-        done();
+        throw new Error(message || "Test failed");
     } else if (status === 2) {
-        t.step(() => assert_unreached(message || "Harness Error"));
-        setTimeout(() => {
-            throw new Error(message || "Harness Error");
-        });
+        throw new Error(message || "Harness Error");
     } else {
         t.done();
-        done();
     }
-};
+});
 </script>
 %(meta)s
 %(script)s

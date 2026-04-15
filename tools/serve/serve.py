@@ -381,12 +381,8 @@ class Test262WindowTestBaseHandler(HtmlWrapperHandler):
 %(script)s"""
     # The base wrapper for Test262 tests.
     # It injects the reporter, the Test262 harness, and the provider.
-    # %(done_script)s is dynamically populated: it's empty for 'async' tests
-    # (which must signal completion via print()) and contains the test262Done()
-    # call for standard tests.
     wrapper = pre_wrapper + """<body><script>test262Setup()</script>
-<script src="%(path)s"></script>
-%(done_script)s</body>"""
+<script src="%(path)s"></script></body>"""
 
     def _get_metadata(self, request):
         path = self._get_filesystem_path(request)
@@ -406,13 +402,9 @@ class Test262WindowTestBaseHandler(HtmlWrapperHandler):
             yield ("negative_phase", test_record.negative.get("phase"))
 
         # If it's an async test, the harness must wait for a print() signal.
-        # Otherwise, we inject a test262Done() call to complete the test automatically.
         if test_record.is_async:
             yield ("is_async", "true")
-            yield ("done_script", "")
             yield ("script", "/third_party/test262/harness/doneprintHandle.js")
-        else:
-            yield ("done_script", "<script>test262Done()</script>")
 
     def _meta_replacement(self, key: str, value: str) -> Optional[str]:
         # Translates metadata keys into reporter-side configuration calls.
@@ -424,43 +416,13 @@ class Test262WindowTestBaseHandler(HtmlWrapperHandler):
             return """<script>test262IsAsync(true)</script>"""
         return None
 
-    def handle_request(self, request, response):
-        headers = self.headers + handlers.load_headers(
-            request, self._get_filesystem_path(request))
-        for header_name, header_value in headers:
-            response.headers.set(header_name, header_value)
+    def _script_replacement(self, key, value):
+        if key == 'script':
+            attribute = html.escape(value)
+            return '<script src="%s"></script>' % attribute
+        return None
 
-        self.check_exposure(request)
 
-        path = self._get_path(request.url_parts.path, True)
-        query = request.url_parts.query
-        if query:
-            query = "?" + query
-
-        # Template for script tags, explicitly named for Test262
-        TEST262_SCRIPT_TAG_TEMPLATE = '<script src="%s"></script>'
-
-        meta_parts = []
-        script_parts = []
-        kwargs = {"path": path, "query": query, "done_script": ""}
-        for key, value in self._get_metadata(request):
-            replacement = self._meta_replacement(key, value)
-            if replacement:
-                meta_parts.append(replacement)
-            elif key == 'script':
-                # Prevent XSS and ensure valid HTML
-                attribute = html.escape(value)
-                script_parts.append(TEST262_SCRIPT_TAG_TEMPLATE % attribute)
-
-            if key == "done_script":
-                kwargs["done_script"] = value
-
-        kwargs["meta"] = "\n".join(meta_parts)
-        kwargs["script"] = "\n".join(script_parts)
-
-        # Format and serve the wrapped HTML.
-        response.content = self.wrapper % kwargs
-        wrap_pipeline(path, request, response)
 
 
 class Test262WindowTestHandler(Test262WindowTestBaseHandler):

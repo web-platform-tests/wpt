@@ -17,10 +17,6 @@
     Test262Error.prototype.name = "Test262Error";
     self.Test262Error = Test262Error;
 
-    // We stash these in case the test overrides them
-    const Object_prototype_toString = Object.prototype.toString;
-    const Error_prototype_toString = Error.prototype.toString;
-    const String_prototype_indexOf = String.prototype.indexOf;
     const parentWindow = window.parent;
 
     let expectedType;
@@ -33,36 +29,41 @@
     window.test262Setup = function() {
     };
 
-    window.test262IsAsync = function(b) {
-        isAsync = b;
-        window.test262Async = b; // For synchronization with server-injected scripts
+    window.test262IsAsync = function(isAsyncTest) {
+        isAsync = isAsyncTest;
+        window.test262Async = isAsyncTest; // For synchronization with server-injected scripts
     };
 
-    window.test262NegativeType = function(t) {
-        expectedType = t;
+    window.test262NegativeType = function(type) {
+        expectedType = type;
         // Default message for negative tests
-        message = "Expected " + t;
+        message = "Expected " + type;
         // Negative tests fail if they complete without throwing
         status = 1;
     };
 
-    window.test262NegativePhase = function(p) {
-        expectedPhase = p;
+    window.test262NegativePhase = function(phase) {
+        expectedPhase = phase;
     };
 
     /**
      * TC39 INTERPRETING.md: Async tests use the print function.
      * print('Test262:AsyncTestComplete') -> PASS
      * print('Test262:AsyncTestFailure: ' + reason) -> FAIL
+     *
+     * This override is mandatory for the Test262 specification to capture
+     * output and prevent the browser's native print dialog.
      */
-    window.print = function(s) {
-        if (s === 'Test262:AsyncTestComplete') {
+    // Overriding window.print is mandatory for the Test262 specification to capture
+    // async results and prevent the browser's native print dialog.
+    window.print = function(output) {
+        if (output === 'Test262:AsyncTestComplete') {
             status = 0;
             message = "OK";
             done();
-        } else if (typeof s === 'string' && String_prototype_indexOf.call(s, 'Test262:AsyncTestFailure:') === 0) {
+        } else if (typeof output === 'string' && output.indexOf('Test262:AsyncTestFailure:') === 0) {
             status = 1;
-            message = s;
+            message = output;
             done();
         }
     };
@@ -89,14 +90,16 @@
     });
 
     function on_error(event) {
-        // This hack ensures that errors thrown inside of a $262.evalScript get
-        // rethrown in the correct place.
-        if (event.error && String_prototype_indexOf.call(event.error.message, "Failed to execute 'appendChild' on 'Node'") === 0) {
+        // Capture errors thrown synchronously inside $262.evalScript so they
+        // can be rethrown in the correct execution context (see test262-provider.js).
+        if (window.__test262_evalScript_active_ && event.error) {
             window.__test262_evalScript_error_ = event.error;
             return;
         }
 
-        if (test_finished) return;
+        if (test_finished) {
+            return;
+        }
 
         /**
          * INTERPRETING.md Handling Errors and Negative Test Cases:
@@ -104,11 +107,13 @@
          */
         let errorMatches = false;
         if (expectedType && event.error) {
-            if (String_prototype_indexOf.call(event.error.toString(), expectedType) === 0 ||
-                String_prototype_indexOf.call(Error_prototype_toString.call(event.error), expectedType) === 0) {
+            // Test262 INTERPRETING.md: A test fails if "the name of the thrown
+            // exception's constructor does not match the specified constructor name".
+            const constructorName = event.error.constructor && event.error.constructor.name;
+            if (constructorName === expectedType) {
                 errorMatches = true;
             }
-        } else if (expectedType && event.message && String_prototype_indexOf.call(event.message, expectedType) === 0) {
+        } else if (expectedType && event.message && event.message.indexOf(expectedType) === 0) {
             errorMatches = true;
         }
 

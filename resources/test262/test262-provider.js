@@ -34,8 +34,12 @@ function installAPI(global) {
       const script = global.document.createElement('script');
       script.text = src;
       window.__test262_evalScript_error_ = undefined;
-
-      global.document.head.appendChild(script);
+      window.__test262_evalScript_active_ = true;
+      try {
+          global.document.head.appendChild(script);
+      } finally {
+          window.__test262_evalScript_active_ = false;
+      }
 
       // Errors in the above appendChild bubble up to the global error handler.
       // test262-reporter.js stashes them in a global var for rethrowing.
@@ -58,7 +62,11 @@ function installAPI(global) {
      * Triggers garbage collection if supported by the host.
      */
     gc: function() {
-      throw new Error('Test262 Host API: gc() not supported');
+      try {
+        TestUtils.gc();
+      } catch (e) {
+        throw new Error('Test262 Host API: gc() failed or not supported: ' + (e.message || e));
+      }
     },
 
     /**
@@ -191,20 +199,21 @@ function installAPI(global) {
     global: global
   };
 
-  // Ensure print is available in this realm if it's available in the parent
-  if (typeof global.print === 'undefined' && typeof window.print === 'function') {
-      global.print = window.print;
-  }
+  // Ensure print is available in this realm if it's available in the parent.
+  global.print = window.print;
 
   global.$DONE = function(err) {
-    if (err) {
-      if (typeof global.print === 'function') {
+    if (typeof global.print === 'function') {
+      if (err) {
         global.print('Test262:AsyncTestFailure: ' + err);
-      }
-    } else {
-      if (typeof global.print === 'function') {
+      } else {
         global.print('Test262:AsyncTestComplete');
       }
+    } else {
+      if (err) {
+        throw err;
+      }
+      throw new Error('Test262 Host API: global.print is not a function in $DONE');
     }
   };
 

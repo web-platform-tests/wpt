@@ -274,7 +274,6 @@ def test_path_replace(handler_setup, handler_cls, expected):
         [
             ('script', '/third_party/test262/harness/assert.js'),
             ('script', '/third_party/test262/harness/sta.js'),
-            ('done_script', '<script>test262Done()</script>'),
         ]
     ),
     (
@@ -283,7 +282,6 @@ def test_path_replace(handler_setup, handler_cls, expected):
         [
             ('negative_type', 'TypeError'),
             ('negative_phase', 'runtime'),
-            ('done_script', '<script>test262Done()</script>'),
         ]
     ),
     (
@@ -291,7 +289,6 @@ def test_path_replace(handler_setup, handler_cls, expected):
         "/test262/async.test262-test.html",
         [
             ('is_async', 'true'),
-            ('done_script', ''),
             ('script', '/third_party/test262/harness/doneprintHandle.js'),
         ]
     ),
@@ -300,7 +297,6 @@ def test_path_replace(handler_setup, handler_cls, expected):
         "/test262/teststrict.test262-test.strict.html",
         [
             ('script', '/third_party/test262/harness/propertyHelper.js'),
-            ('done_script', '<script>test262Done()</script>'),
         ]
     ),
 ])
@@ -334,7 +330,6 @@ def test_get_metadata(handler_setup, handler_cls, request_path, expected_metadat
         [
             '<script src="/test262/basic.js"></script>',
             '<script>test262Setup()</script>',
-            '<script>test262Done()</script>',
         ]
     ),
     # Test262WindowModuleTestHandler: Should contain module import and new catch logic
@@ -345,7 +340,6 @@ def test_get_metadata(handler_setup, handler_cls, request_path, expected_metadat
             '<script type="module">',
             'test262Setup();',
             'import("/test262/module.js")',
-            'test262Done()',
             'setTimeout(() => { throw error; });',
         ]
     ),

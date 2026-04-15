@@ -19,14 +19,34 @@
 
     const parentWindow = window.parent;
 
+    const PHASE_PARSE = "parse";
+    const PHASE_EARLY = "early";
+    const PHASE_RESOLUTION = "resolution";
+    const PHASE_RUNTIME = "runtime";
+
     let expectedType;
-    let expectedPhase;
+    let expectedPhase = PHASE_RUNTIME;
     let isAsync = false;
     let test_finished = false;
     let status = 0;
     let message = "OK";
 
     window.test262Setup = function() {
+    };
+
+    window.test262ScriptError = function() {
+        if (test_finished) {
+            return;
+        }
+        // If we expected parse, early, or resolution error, this is a success!
+        if (expectedPhase === PHASE_PARSE || expectedPhase === PHASE_RESOLUTION || expectedPhase === PHASE_EARLY) {
+            status = 0;
+            message = "OK";
+        } else {
+            status = 2;
+            message = "Script failed to load or parse unexpectedly.";
+        }
+        done();
     };
 
     window.test262IsAsync = function(isAsyncTest) {
@@ -118,8 +138,16 @@
         }
 
         if (errorMatches) {
-            status = 0; // OK
-            message = "OK";
+            if (expectedPhase === PHASE_PARSE || expectedPhase === PHASE_RESOLUTION || expectedPhase === PHASE_EARLY) {
+                status = 0;
+                message = "OK";
+            } else if (expectedPhase === PHASE_RUNTIME) {
+                status = 0;
+                message = "OK";
+            } else {
+                status = 2;
+                message = "Expected error in phase " + expectedPhase + " but it occurred in another phase.";
+            }
         } else if (event.error && (event.error instanceof self.Test262Error)) {
             status = 1; // FAIL
             message = event.error.message || "Test262Error";

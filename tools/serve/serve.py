@@ -373,7 +373,7 @@ class Test262WindowTestBaseHandler(HtmlWrapperHandler):
     # The base wrapper for Test262 tests.
     # It injects the reporter, the Test262 harness, and the provider.
     wrapper = pre_wrapper + """<body><script>test262Setup()</script>
-<script src="%(path)s"></script></body>"""
+<script src="%(path)s" onerror="test262ScriptError()"></script></body>"""
 
     def _get_test_record(self, request):
         path = self._get_filesystem_path(request)

@@ -329,7 +329,7 @@ def test_get_meta_and_script(handler_setup, handler_cls, request_path, expected_
         Test262WindowTestHandler,
         "/test262/basic.test262-test.html",
         [
-            '<script src="/test262/basic.js"></script>',
+            '<script src="/test262/basic.js" onerror="test262ScriptError()"></script>',
             '<script>test262Setup()</script>',
         ]
     ),

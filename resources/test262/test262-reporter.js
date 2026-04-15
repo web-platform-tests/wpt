@@ -1,7 +1,7 @@
 /**
  * @fileoverview Test262-specific reporter for WPT.
  * This script runs inside the test iframe. It captures errors and completion
- * signals and communicates them to the parent window (test262-harness-bridge.js).
+ * signals and communicates them to the parent window.
  *
  * This implementation strictly follows the TC39 Test262 INTERPRETING.md:
  * https://github.com/tc39/test262/blob/main/INTERPRETING.md

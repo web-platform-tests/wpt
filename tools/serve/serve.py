@@ -385,9 +385,13 @@ class Test262WindowTestBaseHandler(HtmlWrapperHandler):
         test_record = self._get_test_record(request)
         if test_record is None:
             return
+
+        # Pass negative test metadata (type and phase) to the reporter to enable validation.
         if test_record.negative:
             yield "<script>test262NegativeType('%s')</script>" % test_record.negative.get("type")
             yield "<script>test262NegativePhase('%s')</script>" % test_record.negative.get("phase")
+
+        # Signal to the reporter if this is an async test.
         if test_record.is_async:
             yield "<script>test262IsAsync(true)</script>"
 
@@ -396,8 +400,13 @@ class Test262WindowTestBaseHandler(HtmlWrapperHandler):
         test_record = self._get_test_record(request)
         if test_record is None:
             return
+
+        # Include any harness files specified in the 'includes' frontmatter attribute.
         for filename in (test_record.includes or []):
             yield '<script src="/third_party/test262/harness/%s"></script>' % html.escape(filename)
+
+        # If it's an async test, the harness must wait for a print() signal,
+        # provided by Test262's doneprintHandle.js.
         if test_record.is_async:
             yield '<script src="/third_party/test262/harness/doneprintHandle.js"></script>'
 

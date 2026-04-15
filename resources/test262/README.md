@@ -8,11 +8,11 @@ Test262 tests are integrated into WPT using a "Window Wrapper" pattern. Each Tes
 
 ### Architecture
 
-1.  **Top-Level Wrapper**: A standard WPT HTML file (`testharness.js`-enabled) that contains an `<iframe>` where the actual test code runs. It defines a global hook `window.test262HarnessDone` to receive results. It maps Test262 results to a single WPT `async_test` and uses `setup({ explicit_done: true })` to ensure it captures results correctly.
+1.  **Top-Level Wrapper**: A standard WPT HTML file (`testharness.js`-enabled) that contains an `<iframe>` where the actual test code runs. It defines a global hook `window.test262HarnessDone` to receive results. It maps Test262 results to a single WPT `async_test`.
 2.  **Test Iframe**: The environment where the Test262 test executes. It includes:
     - **Harness Files**: Required Test262 harness files (e.g., `assert.js`, `sta.js`) from `third_party/test262/harness/`.
     - **Provider (`test262-provider.js`)**: Implements the `$262` host API required by the spec.
-    - **Reporter (`test262-reporter.js`)**: Captures errors, handles async signals, and communicates with the parent bridge.
+    - **Reporter (`test262-reporter.js`)**: Captures errors, handles async signals, and communicates with the parent window.
 
 ## Core Protocol (INTERPRETING.md)
 

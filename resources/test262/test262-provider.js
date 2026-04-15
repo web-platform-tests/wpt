@@ -202,19 +202,16 @@ function installAPI(global) {
   // Ensure print is available in this realm if it's available in the parent.
   global.print = window.print;
 
+  // Placeholder $DONE for non-async tests.
+  // Async tests will have this overwritten by doneprintHandle.js.
+  // If called in a non-async test, we throw to fail fast and loudly:
+  // - If err is passed, throwing it ensures the test fails with that error.
+  // - If no err is passed, it signals that a sync test incorrectly tried to use async signaling.
   global.$DONE = function(err) {
-    if (typeof global.print === 'function') {
-      if (err) {
-        global.print('Test262:AsyncTestFailure: ' + err);
-      } else {
-        global.print('Test262:AsyncTestComplete');
-      }
-    } else {
-      if (err) {
-        throw err;
-      }
-      throw new Error('Test262 Host API: global.print is not a function in $DONE');
+    if (err) {
+      throw err;
     }
+    throw new Error('Test262 Host API: $DONE called in a non-async test.');
   };
 
   return global.$262;

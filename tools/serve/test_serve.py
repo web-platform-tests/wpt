@@ -267,48 +267,49 @@ def test_path_replace(handler_setup, handler_cls, expected):
     assert handler.path_replace == expected
 
 
-@pytest.mark.parametrize("handler_cls, request_path, expected_metadata", [
+@pytest.mark.parametrize("handler_cls, request_path, expected_tags", [
     (
         Test262WindowTestHandler,
         "/test262/basic.test262-test.html",
         [
-            ('script', '/third_party/test262/harness/assert.js'),
-            ('script', '/third_party/test262/harness/sta.js'),
+            '<script src="/third_party/test262/harness/assert.js"></script>',
+            '<script src="/third_party/test262/harness/sta.js"></script>',
         ]
     ),
     (
         Test262WindowTestHandler,
         "/test262/negative.test262-test.html",
         [
-            ('negative_type', 'TypeError'),
-            ('negative_phase', 'runtime'),
+            "<script>test262NegativeType('TypeError')</script>",
+            "<script>test262NegativePhase('runtime')</script>",
         ]
     ),
     (
         Test262WindowTestHandler,
         "/test262/async.test262-test.html",
         [
-            ('is_async', 'true'),
-            ('script', '/third_party/test262/harness/doneprintHandle.js'),
+            "<script>test262IsAsync(true)</script>",
+            '<script src="/third_party/test262/harness/doneprintHandle.js"></script>',
         ]
     ),
     (
         Test262StrictWindowTestHandler,
         "/test262/teststrict.test262-test.strict.html",
         [
-            ('script', '/third_party/test262/harness/propertyHelper.js'),
+            '<script src="/third_party/test262/harness/propertyHelper.js"></script>',
         ]
     ),
 ])
-def test_get_metadata(handler_setup, handler_cls, request_path, expected_metadata):
-    """Verifies metadata extraction logic for any handler."""
+def test_get_meta_and_script(handler_setup, handler_cls, request_path, expected_tags):
+    """Verifies script and meta injection logic for Test262 handlers."""
     root, url_base = handler_setup
     handler = handler_cls(root, url_base)
     mock_request = _create_mock_request(request_path)
-    metadata = list(handler._get_metadata(mock_request))
-    for item in expected_metadata:
-        assert item in metadata
-    assert len(expected_metadata) == len(metadata)
+    # Combine output of _get_meta and _get_script
+    output = list(handler._get_meta(mock_request)) + list(handler._get_script(mock_request))
+    for item in expected_tags:
+        assert item in output
+    assert len(expected_tags) == len(output)
 
 
 @pytest.mark.parametrize("handler_cls, request_path, expected_substrings", [
@@ -319,7 +320,7 @@ def test_get_metadata(handler_setup, handler_cls, request_path, expected_metadat
         [
             '<script src="/resources/testharness.js"></script>',
             '<script src="/resources/testharnessreport.js"></script>',
-            'window.test262HarnessDone = t.step_func(function(status, message)',
+            'window.test262HarnessDone = t.step_func_done(function(status, message)',
             '<iframe id="test262-iframe" src="/test262/basic.test262-test.html"></iframe>'
         ]
     ),

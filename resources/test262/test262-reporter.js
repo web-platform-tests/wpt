@@ -54,16 +54,13 @@
         window.test262Async = isAsyncTest; // For synchronization with server-injected scripts
     };
 
-    window.test262NegativeType = function(type) {
+    window.test262Negative = function(type, phase) {
         expectedType = type;
+        expectedPhase = phase;
         // Default message for negative tests
         message = "Expected " + type;
         // Negative tests fail if they complete without throwing
         status = 1;
-    };
-
-    window.test262NegativePhase = function(phase) {
-        expectedPhase = phase;
     };
 
     /**
@@ -138,10 +135,7 @@
         }
 
         if (errorMatches) {
-            if (expectedPhase === PHASE_PARSE || expectedPhase === PHASE_RESOLUTION || expectedPhase === PHASE_EARLY) {
-                status = 0;
-                message = "OK";
-            } else if (expectedPhase === PHASE_RUNTIME) {
+            if (expectedPhase === PHASE_PARSE || expectedPhase === PHASE_RESOLUTION || expectedPhase === PHASE_EARLY || expectedPhase === PHASE_RUNTIME) {
                 status = 0;
                 message = "OK";
             } else {

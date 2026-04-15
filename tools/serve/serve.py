@@ -388,8 +388,7 @@ class Test262WindowTestBaseHandler(HtmlWrapperHandler):
 
         # Pass negative test metadata (type and phase) to the reporter to enable validation.
         if test_record.negative:
-            yield "<script>test262NegativeType('%s')</script>" % test_record.negative.get("type")
-            yield "<script>test262NegativePhase('%s')</script>" % test_record.negative.get("phase")
+            yield "<script>test262Negative('%s', '%s')</script>" % (test_record.negative.get("type"), test_record.negative.get("phase"))
 
         # Signal to the reporter if this is an async test.
         if test_record.is_async:

@@ -280,8 +280,7 @@ def test_path_replace(handler_setup, handler_cls, expected):
         Test262WindowTestHandler,
         "/test262/negative.test262-test.html",
         [
-            "<script>test262NegativeType('TypeError')</script>",
-            "<script>test262NegativePhase('runtime')</script>",
+            "<script>test262Negative('TypeError', 'runtime')</script>",
         ]
     ),
     (
@@ -349,8 +348,7 @@ def test_get_meta_and_script(handler_setup, handler_cls, request_path, expected_
         Test262WindowTestHandler,
         "/test262/negative.test262-test.html",
         [
-            "<script>test262NegativeType('TypeError')</script>",
-            "<script>test262NegativePhase('runtime')</script>",
+            "<script>test262Negative('TypeError', 'runtime')</script>",
         ]
     ),
     # Verification of the 'async' replacement in the HTML

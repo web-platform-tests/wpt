@@ -48,12 +48,11 @@ The table below lists:
 
 The APIs are exposed through a pytest fixture with the name in the table
 above. The pytest fixture returns a wrapped version of the API. Requesting this
-fixture on a platform where it is not supported will result in a
-`PRECONDITION_FAILED` subtest result. It is expected that each test file run on
-a given platform will have one or more subtests that run to completion, as well
-as several subtests that result in `PRECONDITION_FAILED`. This is because each
-test file should show how the **same markup** is exposed in each supporting
-accessibility APIs/platforms.
+fixture on a platform where it is not supported will result in a `MISSING`
+subtest. It is expected that each test file run on a given platform will have
+one or more subtests that run to completion, as well as several subtests who's
+results will not be recorded. This is because each test file should show how the
+**same markup** is exposed in each supporting accessibility APIs/platforms.
 
 ### Package dependencies for Linux API AT-SPI Python Bindings
 

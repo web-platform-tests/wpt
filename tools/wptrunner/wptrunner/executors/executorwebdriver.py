@@ -53,11 +53,14 @@ from .protocol import (BaseProtocolPart,
                        WebExtensionsProtocolPart,
                        merge_dicts)
 
-from typing import Any, List, Dict, Optional, Mapping, Union
+from typing import Any, List, Dict, Optional, Mapping, TYPE_CHECKING, Union
 from webdriver.client import Session
 from webdriver import error as webdriver_error
 from webdriver.bidi import error as webdriver_bidi_error
 from webdriver.bidi.protocol import bidi_deserialize
+
+if TYPE_CHECKING:
+    from webdriver.bidi.undefined import Undefined
 
 here = os.path.dirname(__file__)
 

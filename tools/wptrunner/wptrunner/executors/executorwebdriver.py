@@ -277,6 +277,16 @@ class WebDriverBidiBrowsingContextProtocolPart(BidiBrowsingContextProtocolPart):
                                  user_text: Optional[str] = None) -> None:
         await self.webdriver.bidi_session.browsing_context.handle_user_prompt(
             context=context, accept=accept, user_text=user_text)
+    async def set_viewport(self,
+                           context: Optional[str],
+                           viewport,
+                           device_pixel_ratio,
+                           user_contexts: Optional[List[str]]) -> None:
+        await self.webdriver.bidi_session.browsing_context.set_viewport(
+            context=context,
+            viewport=viewport,
+            device_pixel_ratio=device_pixel_ratio,
+            user_contexts=user_contexts)
 
 
 class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):

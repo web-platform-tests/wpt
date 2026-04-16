@@ -386,3 +386,22 @@ promise_test(async t => {
   wt.datagrams.outgoingHighWaterMark = 0;
   assert_equals(wt.datagrams.outgoingHighWaterMark, 1);
 }, 'Datagram HighWaterMark getters/setters work correctly');
+
+promise_test(async t => {
+  // Establish a WebTransport session.
+  const wt = new WebTransport(webtransport_url('echo.py'));
+  await wt.ready;
+
+  const writer = wt.datagrams.createWritable().getWriter();
+  const reader = wt.datagrams.readable.getReader();
+
+  // Empty buffers are valid BufferSources and should be accepted.
+  await writer.write(new Uint8Array(0));
+
+  // The echo handler echoes back datagrams, so we should receive the empty datagram.
+  const { value: datagram, done } = await reader.read();
+  assert_false(done);
+  assert_equals(datagram.byteLength, 0);
+
+  reader.releaseLock();
+}, 'Datagram should accept and echo empty buffer-source data');

@@ -279,3 +279,24 @@ promise_test(async t => {
 
   await bidi_stream.readable.closed;
 }, 'Closing the stream with no data still resolves the read request');
+
+promise_test(async t => {
+  // Establish a WebTransport session.
+  const wt = new WebTransport(webtransport_url('echo.py'));
+  await wt.ready;
+
+  // Create a bidirectional stream.
+  const bidi_stream = await wt.createBidirectionalStream();
+
+  // Empty buffers are valid BufferSources and should be accepted.
+  const writer = bidi_stream.writable.getWriter();
+  await writer.write(new Uint8Array(0));
+  await writer.close();
+
+  // The echo handler echoes back stream data, so we should receive the empty chunk.
+  const chunks = await read_stream(bidi_stream.readable);
+
+  // Verify we received one chunk and it is empty.
+  assert_equals(chunks.length, 1);
+  assert_equals(chunks[0].byteLength, 0);
+}, 'WebTransportSendStream should accept and echo empty buffer-source data');

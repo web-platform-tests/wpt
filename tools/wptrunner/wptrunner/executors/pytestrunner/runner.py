@@ -150,13 +150,12 @@ class SubtestResultRecorder:
         # to the current platform.
         if "NOT_APPLICABLE" in report.longrepr[2]:
             return
-        else:
-            self.record(
-                report.nodeid,
-                "ERROR",
-                "In-test skip decorators are disallowed, "
-                "please use WPT metadata to ignore tests.",
-            )
+        self.record(
+            report.nodeid,
+            "ERROR",
+            "In-test skip decorators are disallowed, "
+            "please use WPT metadata to ignore tests.",
+        )
 
     def record(self, test, status, message=None, stack=None):
         if stack is not None:

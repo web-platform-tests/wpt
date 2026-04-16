@@ -53,7 +53,7 @@ from .protocol import (BaseProtocolPart,
                        WebExtensionsProtocolPart,
                        merge_dicts)
 
-from typing import Any, List, Dict, Optional
+from typing import Any, List, Dict, Optional, Mapping, Union
 from webdriver.client import Session
 from webdriver import error as webdriver_error
 from webdriver.bidi import error as webdriver_bidi_error
@@ -280,8 +280,8 @@ class WebDriverBidiBrowsingContextProtocolPart(BidiBrowsingContextProtocolPart):
 
     async def set_viewport(self,
                            context: Optional[str],
-                           viewport: Any,
-                           device_pixel_ratio: Any,
+                           viewport: Union[Optional[Mapping[str, Any]], "Undefined"],
+                           device_pixel_ratio: Union[Optional[float], "Undefined"],
                            user_contexts: Optional[List[str]]) -> None:
         await self.webdriver.bidi_session.browsing_context.set_viewport(
             context=context,

@@ -6,9 +6,11 @@ import re
 from collections import OrderedDict
 from copy import deepcopy
 
+import jsone
 import yaml
 
 here = os.path.dirname(__file__)
+chunks_config_path = os.path.join(os.path.dirname(here), "chunks.yml")
 
 
 def first(iterable):
@@ -62,19 +64,26 @@ def resolve_name(task_data, default_name):
     return task_data
 
 
-def resolve_chunks(task_data):
-    if "chunks" not in task_data:
+def resolve_chunks(task_data, chunks_template):
+    suite = task_data.get("vars", {}).get("suite")
+    if suite is None:
         return [task_data]
+
+    browser = task_data["vars"].get("browser", "")
+    config = jsone.render(chunks_template, {"browser": browser, "ci": "taskcluster"})
+
+    if suite not in config["test_types"]:
+        raise ValueError(f"Unknown test type '{suite}'")
+
+    settings = config["test_types"][suite]
+    total_chunks = settings["chunks"]
+    timeout_minutes = settings.get("timeout") or config["defaults"]["timeout"]
+
     rv = []
-    total_chunks = task_data["chunks"]
-    if "chunks-override" in task_data:
-        override = task_data["chunks-override"].get(task_data["vars"]["test-type"])
-        if override is not None:
-            total_chunks = override
     for i in range(1, total_chunks + 1):
         chunk_data = deepcopy(task_data)
-        chunk_data["chunks"] = {"id": i,
-                                "total": total_chunks}
+        chunk_data["chunks"] = {"id": i, "total": total_chunks}
+        chunk_data["maxRunTime"] = timeout_minutes * 60
         rv.append(chunk_data)
     return rv
 
@@ -141,7 +150,7 @@ def expand_maps(task):
     return rv
 
 
-def load_tasks(tasks_data):
+def load_tasks(tasks_data, chunks_template):
     map_resolved_tasks = OrderedDict()
     tasks = []
 
@@ -161,14 +170,16 @@ def load_tasks(tasks_data):
     for task_default_name, data in map_resolved_tasks.items():
         task = resolve_use(data, tasks_data["components"])
         task = resolve_name(task, task_default_name)
-        tasks.extend(resolve_chunks(task))
+        tasks.extend(resolve_chunks(task, chunks_template))
 
     tasks = [substitute_variables(task_data) for task_data in tasks]
     return OrderedDict([(t["name"], t) for t in tasks])
 
 
 def load_tasks_from_path(path):
-    return load_tasks(load_task_file(path))
+    with open(chunks_config_path) as f:
+        chunks_template = yaml.safe_load(f)
+    return load_tasks(load_task_file(path), chunks_template)
 
 
 def run(venv, **kwargs):

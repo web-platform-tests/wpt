@@ -38,7 +38,7 @@ tasks:
       c: "e"
 """
     tasks_data = yaml.safe_load(data)
-    assert taskgraph.load_tasks(tasks_data) == {
+    assert taskgraph.load_tasks(tasks_data, {}) == {
         "task1": {
             "a": 2,
             "b": [1,2,3],
@@ -62,7 +62,7 @@ tasks:
         value: 1
 """
     tasks_data = yaml.safe_load(data)
-    assert taskgraph.load_tasks(tasks_data) == {
+    assert taskgraph.load_tasks(tasks_data, {}) == {
         "task1": {
             "a": "1",
             "vars": {"value": 1},
@@ -92,7 +92,7 @@ tasks:
            b: [4]
 """
     tasks_data = yaml.safe_load(data)
-    assert taskgraph.load_tasks(tasks_data) == {
+    assert taskgraph.load_tasks(tasks_data, {}) == {
         "task1-1": {
             "a": "1",
             "b": [1, 3],
@@ -121,28 +121,55 @@ tasks:
     }
 
 
-def test_chunks():
-    data = """
-components: {}
-tasks:
-  - task1:
-      name: task1-${chunks.id}
-      chunks: 2
-"""
-    tasks_data = yaml.safe_load(data)
-    assert taskgraph.load_tasks(tasks_data) == {
-        "task1-1": {
-            "name": "task1-1",
-            "chunks": {
-                "id": 1,
-                "total": 2
-            }
-        },
-        "task1-2": {
-            "name": "task1-2",
-            "chunks": {
-                "id": 2,
-                "total": 2
-            }
-        }
+@pytest.mark.parametrize("chunks", [0, 1, 2, 3])
+def test_chunk_count_and_numbering(chunks):
+    task_data = {"vars": {"suite": "testharness"}, "name": "test-task"}
+    config = {
+        "defaults": {"timeout": 120},
+        "test_types": {"testharness": {"chunks": chunks}},
     }
+    result = taskgraph.resolve_chunks(task_data, config)
+    assert result == [
+        {
+            "vars": {"suite": "testharness"},
+            "name": "test-task",
+            "chunks": {"id": i, "total": chunks},
+            "maxRunTime": 120 * 60,
+        }
+        for i in range(1, chunks + 1)
+    ]
+
+
+def test_resolve_chunks_no_suite():
+    task_data = {"vars": {"browser": "firefox"}, "name": "stability-task"}
+    config = {"defaults": {"timeout": 120}, "test_types": {}}
+    result = taskgraph.resolve_chunks(task_data, config)
+    assert result == [task_data]
+
+
+@pytest.mark.parametrize(
+    "per_type_timeout,default_timeout,expected_max_run_time",
+    [
+        (240, 120, 240 * 60),
+        (None, 120, 120 * 60),
+    ],
+)
+def test_timeout(per_type_timeout, default_timeout, expected_max_run_time):
+    task_data = {"vars": {"suite": "testharness"}, "name": "test-task"}
+    config = {
+        "defaults": {"timeout": default_timeout},
+        "test_types": {
+            "testharness": {"chunks": 1},
+        },
+    }
+    if per_type_timeout is not None:
+        config["test_types"]["testharness"]["timeout"] = per_type_timeout
+    result = taskgraph.resolve_chunks(task_data, config)
+    assert result == [
+        {
+            "vars": {"suite": "testharness"},
+            "name": "test-task",
+            "chunks": {"id": 1, "total": 1},
+            "maxRunTime": expected_max_run_time,
+        }
+    ]

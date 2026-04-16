@@ -73,7 +73,7 @@ def to_ia2(node: IAccessiblePtr) -> IAccessible2Ptr:
 class Ia2Wrapper(ApiWrapper[IAccessible2Ptr]):
 
     @property
-    def ApiName(self) -> str:
+    def api_name(self) -> str:
         return "IA2"
 
     def find_node(self, dom_id: str, url: str) -> IAccessible2Ptr:

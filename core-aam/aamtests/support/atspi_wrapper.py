@@ -12,7 +12,7 @@ from .api_wrapper import ApiWrapper
 class AtspiWrapper(ApiWrapper[Atspi.Accessible]):
 
     @property
-    def ApiName(self) -> str:
+    def api_name(self) -> str:
         return "ATSPI"
 
     def __getattr__(self, name: str) -> Any:

@@ -21,7 +21,7 @@ AXUIElement = Any
 class AxapiWrapper(ApiWrapper[AXUIElement]):
 
     @property
-    def ApiName(self) -> str:
+    def api_name(self) -> str:
         return "AXAPI"
 
     @property

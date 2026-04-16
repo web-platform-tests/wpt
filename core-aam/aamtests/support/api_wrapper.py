@@ -24,12 +24,12 @@ class ApiWrapper(Generic[ApiNode], abc.ABC):
 
         if not self.root:
             raise Exception(
-                f"Couldn't find browser {self.product_name} in accessibility API {self.ApiName}."
+                f"Couldn't find browser {self.product_name} in accessibility API {self.api_name}."
             )
 
     @property
     @abc.abstractmethod
-    def ApiName(self) -> str:
+    def api_name(self) -> str:
         pass
 
     @abc.abstractmethod

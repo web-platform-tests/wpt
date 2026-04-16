@@ -22,7 +22,6 @@ __wptrunner__ = {"product": "edge",
                               "aamtest": "WdspecExecutor",
                               "crashtest": "WebDriverCrashtestExecutor",
                               "test262": "EdgeDriverTestharnessExecutor"},
-                              "crashtest": "WebDriverCrashtestExecutor"},
 
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",

@@ -51,10 +51,13 @@ def check_args(**kwargs):
 
 
 def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
-    browser_kwargs = {"binary": kwargs["binary"],
-            "webdriver_binary": kwargs["webdriver_binary"],
-            "webdriver_args": kwargs.get("webdriver_args"),
-            "leak_check": kwargs.get("leak_check", False)}
+    browser_kwargs = {
+        "binary": kwargs["binary"],
+        "webdriver_binary": kwargs["webdriver_binary"],
+        "webdriver_args": kwargs.get("webdriver_args"),
+        "leak_check": kwargs.get("leak_check", False),
+    }
+
     if test_type == "aamtest":
         # Necessary to force chrome to register in AT-SPI2.
         browser_kwargs["env"] = {"ACCESSIBILITY_ENABLED": "1"}

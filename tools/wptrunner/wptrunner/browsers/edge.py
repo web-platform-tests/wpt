@@ -4,7 +4,7 @@ from .base import get_timeout_multiplier   # noqa: F401
 from .base import cmd_arg
 from .chrome import executor_kwargs as chrome_executor_kwargs
 from ..executors.executorwebdriver import WebDriverCrashtestExecutor  # noqa: F401
-from ..executors.base import WdspecExecutor  # noqa: F401
+from ..executors.base import PytestExecutor  # noqa: F401
 from ..executors.executoredge import (  # noqa: F401
     EdgeDriverPrintRefTestExecutor,
     EdgeDriverRefTestExecutor,
@@ -18,8 +18,8 @@ __wptrunner__ = {"product": "edge",
                  "executor": {"testharness": "EdgeDriverTestharnessExecutor",
                               "reftest": "EdgeDriverRefTestExecutor",
                               "print-reftest": "EdgeDriverPrintRefTestExecutor",
-                              "wdspec": "WdspecExecutor",
-                              "aamtest": "WdspecExecutor",
+                              "wdspec": "PytestExecutor",
+                              "aamtest": "PytestExecutor",
                               "crashtest": "WebDriverCrashtestExecutor",
                               "test262": "EdgeDriverTestharnessExecutor"},
 

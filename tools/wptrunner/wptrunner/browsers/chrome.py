@@ -14,7 +14,7 @@ from .base import get_free_port
 from .base import get_timeout_multiplier   # noqa: F401
 from .base import cmd_arg
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.base import WdspecExecutor  # noqa: F401
+from ..executors.base import PytestExecutor  # noqa: F401
 from ..executors.executorchrome import (  # noqa: F401
     ChromeDriverPrintRefTestExecutor,
     ChromeDriverRefTestExecutor,
@@ -32,8 +32,8 @@ __wptrunner__ = {"product": "chrome",
                  "executor": {"testharness": "ChromeDriverTestharnessExecutor",
                               "reftest": "ChromeDriverRefTestExecutor",
                               "print-reftest": "ChromeDriverPrintRefTestExecutor",
-                              "wdspec": "WdspecExecutor",
-                              "aamtest": "WdspecExecutor",
+                              "wdspec": "PytestExecutor",
+                              "aamtest": "PytestExecutor",
                               "crashtest": "ChromeDriverCrashTestExecutor",
                               "test262": "ChromeDriverTestharnessExecutor"},
                  "browser_kwargs": "browser_kwargs",

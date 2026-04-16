@@ -33,21 +33,21 @@ from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # noqa: F401
                                             MarionetteRefTestExecutor,  # noqa: F401
                                             MarionettePrintRefTestExecutor,  # noqa: F401
-                                            MarionetteWdspecExecutor,  # noqa: F401
+                                            MarionettePytestExecutor,  # noqa: F401
                                             MarionetteCrashtestExecutor)  # noqa: F401
 
 
 __wptrunner__ = {"product": "firefox",
                  "check_args": "check_args",
                  "browser": {None: "FirefoxBrowser",
-                             "wdspec": "FirefoxWdSpecBrowser",
-                             "aamtest": "FirefoxWdSpecBrowser"},
+                             "wdspec": "FirefoxPytestBrowser",
+                             "aamtest": "FirefoxPytestBrowser"},
                  "executor": {"crashtest": "MarionetteCrashtestExecutor",
                               "testharness": "MarionetteTestharnessExecutor",
                               "reftest": "MarionetteRefTestExecutor",
                               "print-reftest": "MarionettePrintRefTestExecutor",
-                              "wdspec": "MarionetteWdspecExecutor",
-                              "aamtest": "MarionetteWdspecExecutor",
+                              "wdspec": "MarionettePytestExecutor",
+                              "aamtest": "MarionettePytestExecutor",
                               "test262": "MarionetteTestharnessExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
@@ -964,7 +964,7 @@ class FirefoxBrowser(Browser):
                                  self.stackwalk_binary)
 
 
-class FirefoxWdSpecBrowser(WebDriverBrowser):
+class FirefoxPytestBrowser(WebDriverBrowser):
     def __init__(self, logger, binary, package_name, prefs_root, webdriver_binary, webdriver_args,
                  extra_prefs=None, debug_info=None, symbols_path=None, stackwalk_binary=None,
                  certutil_binary=None, ca_certificate_path=None, e10s=False,

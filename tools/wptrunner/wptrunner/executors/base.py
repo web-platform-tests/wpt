@@ -17,22 +17,30 @@ from urllib.parse import urljoin, urlsplit, urlunsplit
 from . import pytestrunner
 from .actions import actions
 from .asyncactions import async_actions
-from .protocol import Protocol, WdspecProtocol
+from .protocol import Protocol, WdspecProtocol, merge_dicts
 
 
 here = os.path.dirname(__file__)
 
 
 def executor_kwargs(test_type, test_environment, run_info_data, subsuite, **kwargs):
+    headless = kwargs["headless"]
+    if headless is None:
+        headless = False
+
     timeout_multiplier = kwargs["timeout_multiplier"]
     if timeout_multiplier is None:
         timeout_multiplier = 1
 
-    executor_kwargs = {"server_config": test_environment.config,
-                       "timeout_multiplier": timeout_multiplier,
-                       "debug_info": kwargs["debug_info"],
-                       "subsuite": subsuite.name,
-                       "target_platform": run_info_data["os"]}
+    executor_kwargs = {
+        "debug_info": kwargs["debug_info"],
+        "display": run_info_data.get("display"),
+        "headless": headless,
+        "server_config": test_environment.config,
+        "subsuite": subsuite.name,
+        "target_platform": run_info_data["os"],
+        "timeout_multiplier": timeout_multiplier,
+    }
 
     if test_type in ("reftest", "print-reftest"):
         screenshot_cache = test_environment.screenshot_caches[test_type, subsuite.name]
@@ -670,14 +678,30 @@ class WdspecExecutor(TestExecutor):
     convert_result = pytest_result_converter
     protocol_cls: ClassVar[Type[Protocol]] = WdspecProtocol
 
-    def __init__(self, logger, browser, server_config, webdriver_binary,
-                 webdriver_args, target_platform, timeout_multiplier=1, capabilities=None,
-                 debug_info=None, binary=None, binary_args=None, **kwargs):
+    def __init__(
+        self,
+        logger,
+        browser,
+        server_config,
+        webdriver_binary,
+        webdriver_args,
+        target_platform,
+        display=None,
+        headless=False,
+        timeout_multiplier=1,
+        capabilities=None,
+        debug_info=None,
+        binary=None,
+        binary_args=None,
+        **kwargs,
+    ):
         super().__init__(logger, browser, server_config,
                          timeout_multiplier=timeout_multiplier,
                          debug_info=debug_info)
         self.webdriver_binary = webdriver_binary
         self.webdriver_args = webdriver_args
+        self.display = display
+        self.headless = headless
         self.timeout_multiplier = timeout_multiplier
         self.capabilities = capabilities
         self.binary = binary
@@ -686,6 +710,24 @@ class WdspecExecutor(TestExecutor):
         # Map OS to WebDriver specific platform names
         os_map = {"win": "windows"}
         self.target_platform = os_map.get(target_platform, target_platform)
+
+        # See also: executorwebdriver.py
+        if hasattr(browser, "capabilities"):
+            if self.capabilities is None:
+                self.capabilities = browser.capabilities
+            else:
+                merge_dicts(self.capabilities, browser.capabilities)
+
+        pac = browser.pac
+        if pac is not None:
+            if self.capabilities is None:
+                self.capabilities = {}
+            merge_dicts(self.capabilities, {"proxy":
+                {
+                    "proxyType": "pac",
+                    "proxyAutoconfigUrl": urljoin(self.server_url("http"), pac)
+                }
+            })
 
     def setup(self, runner, protocol=None):
         assert protocol is None, "Switch executor not allowed for wdspec tests."
@@ -711,20 +753,21 @@ class WdspecExecutor(TestExecutor):
         return (test.make_result(*data), [])
 
     def do_wdspec(self, path, timeout):
-        session_config = {"host": self.browser.host,
-                          "port": self.browser.port,
-                          "capabilities": self.capabilities,
-                          "target_platform": self.target_platform,
-                          "timeout_multiplier": self.timeout_multiplier,
-                          "browser": {
-                              "binary": self.binary,
-                              "args": self.binary_args,
-                              "env": self.browser.env,
-                          },
-                          "webdriver": {
-                              "binary": self.webdriver_binary,
-                              "args": self.webdriver_args
-                          }}
+        session_config = {
+            "host": self.browser.host,
+            "port": self.browser.port,
+            "capabilities": self.capabilities,
+            "display": self.display,
+            "headless": self.headless,
+            "target_platform": self.target_platform,
+            "timeout_multiplier": self.timeout_multiplier,
+            "browser": {
+                "binary": self.binary,
+                "args": self.binary_args,
+                "env": self.browser.env,
+            },
+            "webdriver": {"binary": self.webdriver_binary, "args": self.webdriver_args},
+        }
 
         return pytestrunner.run(path,
                                 self.server_config,

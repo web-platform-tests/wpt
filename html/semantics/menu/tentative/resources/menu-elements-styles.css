@@ -35,6 +35,13 @@
   margin: 0;
 }
 
+.menulist > hr {
+  color: inherit;
+  margin-inline: 0;
+  border: none;
+  border-block-start: 1px solid currentColor;
+}
+
 /* Menulists whose implicit anchor is a menuitem in a menubar. */
 .menulist-with-menubar-anchor {
   position: absolute;
@@ -56,4 +63,9 @@
     min-inline-size: 24px;
     min-block-size: max(24px, 1lh);
   }
+}
+
+.expand-icon::after {
+  content: counter(fake-counter-name, disclosure-closed);
+  margin-inline-start: auto;
 }

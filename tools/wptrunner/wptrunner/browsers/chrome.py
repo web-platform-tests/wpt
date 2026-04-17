@@ -33,7 +33,8 @@ __wptrunner__ = {"product": "chrome",
                               "reftest": "ChromeDriverRefTestExecutor",
                               "print-reftest": "ChromeDriverPrintRefTestExecutor",
                               "wdspec": "WdspecExecutor",
-                              "crashtest": "ChromeDriverCrashTestExecutor"},
+                              "crashtest": "ChromeDriverCrashTestExecutor",
+                              "test262": "ChromeDriverTestharnessExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
@@ -148,6 +149,14 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     # This is needed to test extensions, PWA, compilation caches that
     # require local CDP access.
     chrome_options["args"].append("--remote-debugging-pipe")
+    # For Device Bound Session Credentials tests, which are only eligible on
+    # Windows, Mac, and Linux.
+    if run_info_data.get("os") in ["win", "mac", "linux"]:
+        chrome_options["args"].append("--enable-features=" + ",".join([
+            "EnableBoundSessionCredentialsSoftwareKeysForManualTesting",
+            "DeviceBoundSessions:RefreshQuota/false/RequireOriginTrialTokens/false",
+            "DeviceBoundSessionsFederatedRegistration",
+        ]))
 
     # Classify `http-local`, `http-public` and https variants in the
     # appropriate IP address spaces.

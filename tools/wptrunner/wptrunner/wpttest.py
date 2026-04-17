@@ -4,13 +4,13 @@ import subprocess
 import sys
 from abc import ABC
 from collections import defaultdict
-from typing import Any, ClassVar, Dict, Optional, Set, Type
+from typing import Any, ClassVar, Dict, MutableMapping, Optional, Set, Type
 from urllib.parse import urljoin
 
 from .wptmanifest.parser import atoms
 
 atom_reset = atoms["Reset"]
-enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest"}
+enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest", "test262"}
 
 
 class Result(ABC):
@@ -268,10 +268,8 @@ class Test(ABC):
             known_intermittent = self.known_intermittent(name)
         return self.subtest_result_cls(name, status, message, stack, expected, known_intermittent)
 
-    def update_metadata(self, metadata=None):
-        if metadata is None:
-            metadata = {}
-        return metadata
+    def update_metadata(self, metadata: MutableMapping[str, Any]) -> None:
+        pass
 
     @classmethod
     def from_manifest(cls, manifest_file, manifest_item, inherit_metadata, test_metadata):
@@ -529,6 +527,10 @@ class TestharnessTest(Test):
         return self.url
 
 
+class Test262Test(TestharnessTest):
+    test_type = "test262"
+
+
 class ReftestTest(Test):
     """A reftest
 
@@ -647,7 +649,7 @@ class ReftestTest(Test):
 
         return node
 
-    def update_metadata(self, metadata):
+    def update_metadata(self, metadata: MutableMapping[str, Any]) -> None:
         if "url_count" not in metadata:
             metadata["url_count"] = defaultdict(int)
         for reference, _ in self.references:
@@ -656,7 +658,6 @@ class ReftestTest(Test):
             # for each possible match
             metadata["url_count"][(self.environment["protocol"], reference.url)] += 1
             reference.update_metadata(metadata)
-        return metadata
 
     def get_viewport_size(self, override):
         return override
@@ -764,7 +765,8 @@ manifest_test_cls = {"reftest": ReftestTest,
                      "print-reftest": PrintReftestTest,
                      "testharness": TestharnessTest,
                      "wdspec": WdspecTest,
-                     "crashtest": CrashTest}
+                     "crashtest": CrashTest,
+                     "test262": Test262Test}
 
 
 def from_manifest(manifest_file, manifest_test, inherit_metadata, test_metadata):

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<title>Prerender activation by form submission</title>
+<meta name="variant" content="?target_hint=_self">
+<meta name="variant" content="?target_hint=_blank">
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"></script>
+<script src="../resources/utils.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<script>
+setup(() => assertSpeculationRulesIsSupported('prerender'));
+
+promise_test(async t => {
+  const rcHelper = new PrerenderingRemoteContextHelper();
+  const referrerRC = await rcHelper.addWindow(undefined, { features: 'noopener' });
+  const target_hint = getTargetHint();
+  const prerenderedRC = await referrerRC.addPrerender({
+    extrasInSpeculationRule: { form_submission: true, target_hint }
+  });
+
+  await referrerRC.executeScript((hint) => {
+    window.target_hint = hint;
+  }, [target_hint]);
+
+  await referrerRC.navigateExpectingPrerenderingActivation(prerenderedRC, (url) => {
+    const form = document.createElement('form');
+    const urlObj = new URL(url);
+    form.action = urlObj.origin + urlObj.pathname;
+    form.method = 'GET';
+    form.target = window.target_hint;
+    if (window.target_hint === '_blank') {
+      form.setAttribute('rel', 'noopener');
+    }
+
+    // Add parameters as hidden inputs dynamically
+    const extraParams = new URLSearchParams(urlObj.search);
+    for (const [key, value] of extraParams.entries()) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+  });
+}, "Prerender activation by form submission");
+</script>

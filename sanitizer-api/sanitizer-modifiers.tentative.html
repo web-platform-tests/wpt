@@ -561,6 +561,63 @@ test(() => {
   assert_false(s.replaceElementWithChildren("html"));
   assert_config(s.get(), {});
 }, "sanitizer.replaceElementWithChildren does not allow 'html' element.");
+
+test(() => {
+  let s = new Sanitizer({
+    elements: [],
+    attributes: [],
+    dataAttributes: true
+  });
+
+  assert_true(s.allowElement({name:"a", attributes: ["data-b", "id"]}));
+  assert_config(s.get(), {
+    elements: [{name: "a", attributes: ["id"]}]
+  });
+}, "sanitizer.allowElement() with superfluous data attribute");
+
+test(() => {
+  let s = new Sanitizer({
+    attributes: ["data-a", "class"],
+    elements: [{name: "div", attributes: ["data-b", "id"]}],
+    dataAttributes: false
+  });
+
+  assert_true(s.setDataAttributes(true));
+  assert_config(s.get(), {
+    attributes: ["class"],
+    elements: [{name: "div", attributes: ["id"]}],
+    dataAttributes: true
+  });
+
+  assert_false(s.setDataAttributes(true));
+}, "sanitizer.setDataAttributes() with superfluous data attributes");
+
+test(() => {
+  let s = new Sanitizer({});
+
+  assert_true(s.setComments(false));
+  assert_config(s.get(), {
+    comments: false
+  });
+
+  assert_false(s.setDataAttributes(false));
+}, "sanitizer.setComments()");
+
+test(() => {
+  let s = new Sanitizer({
+    elements: ["script", {name: "body", attributes: ["onload", "id"]}],
+    attributes: ["onfocus", "class"]
+  });
+
+  assert_true(s.removeUnsafe());
+  assert_config(s.get(), {
+    elements: [{name: "body", attributes: ["id"]}],
+    attributes: ["class"]
+  });
+
+
+  assert_false(s.removeUnsafe());
+}, "sanitizer.removeUnsafe() with unsafe allow-list");
 </script>
 </body>
 </html>

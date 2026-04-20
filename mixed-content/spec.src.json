@@ -272,6 +272,7 @@
         "srcdoc-inherit",
         "iframe",
         "iframe-blank-inherit",
+        "iframe-data-inherit",
         "worker-classic-data",
         "worker-module-data",
         "sharedworker-classic-data",
@@ -349,6 +350,39 @@
       "subresource": "*",
       "expectation": "*"
     },
+    {
+      // Service workers are currently not tested in data: iframes, as loading
+      // them from a data: iframe in the current setup would get blocked as a
+      // cross-origin request
+      "expansion": "*",
+      "source_scheme": "*",
+      "source_context_list": [
+        "iframe-data-inherit"
+      ],
+      "delivery_type": "*",
+      "delivery_value": "*",
+      "redirection": "*",
+      "origin": "*",
+      "subresource": [
+        "sharedworker-classic",
+        "sharedworker-import",
+        "sharedworker-import-data",
+        "sharedworker-module",
+        "worker-classic",
+        "worker-import",
+        "worker-import-data",
+        "worker-module",
+        "worklet-animation",
+        "worklet-animation-import-data",
+        "worklet-audio",
+        "worklet-audio-import-data",
+        "worklet-layout",
+        "worklet-layout-import-data",
+        "worklet-paint",
+        "worklet-paint-import-data"
+      ],
+      "expectation": "*"
+    }
   ],
   "source_context_schema": {
     "supported_delivery_type": {
@@ -364,6 +398,9 @@
         "meta"
       ],
       "srcdoc": [
+        "meta"
+      ],
+      "iframe-data": [
         "meta"
       ],
       "worker-classic": [

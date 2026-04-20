@@ -165,6 +165,7 @@
       "iframe": "*",
       "iframe-blank": "*",
       "srcdoc": "*",
+      "iframe-data": "*",
       "worker-classic": [
         "xhr",
         "fetch",
@@ -305,6 +306,21 @@
         },
         {
           "sourceContextType": "iframe-blank"
+        }
+      ],
+      "subresourcePolicyDeliveries": []
+    },
+    "iframe-data-inherit": {
+      "description": "iframe-data-inherit",
+      "sourceContextList": [
+        {
+          "sourceContextType": "top",
+          "policyDeliveries": [
+            "policy"
+          ]
+        },
+        {
+          "sourceContextType": "iframe-data"
         }
       ],
       "subresourcePolicyDeliveries": []
@@ -465,6 +481,7 @@
       "srcdoc",
       "iframe",
       "iframe-blank-inherit",
+      "iframe-data-inherit",
       "worker-classic",
       "worker-classic-data",
       "worker-module",

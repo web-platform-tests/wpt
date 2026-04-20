@@ -1191,6 +1191,9 @@ function invokeRequest(subresource, sourceContextList) {
     "iframe-blank": { // <iframe></iframe>
       invoker: invokeFromIframe,
     },
+    "iframe-data": {
+      invoker: invokeFromIframe,
+    },
     "worker-classic": {
       // Classic dedicated worker loaded from same-origin.
       invoker: invokeFromWorker.bind(undefined, "worker", false, {}),
@@ -1334,6 +1337,15 @@ function invokeFromIframe(subresource, sourceContextList) {
 
           iframe.contentDocument.write(frameContent);
           iframe.contentDocument.close();
+          return iframe.eventPromise;
+        });
+  } else if (currentSourceContext.sourceContextType === 'iframe-data') {
+    promise = fetch(frameUrl)
+      .then(r => r.text())
+      .then(content => {
+          let dataSrc = "data:text/html;base64," + btoa(content)
+          iframe = createElement(
+              "iframe", {src: dataSrc}, document.body, true);
           return iframe.eventPromise;
         });
   }

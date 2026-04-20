@@ -22,10 +22,10 @@
             "video-tag"
           ],
           "origin": [
-            "cross-http",
-            "same-http"
+            "cross-http-downgrade",
+            "same-http-downgrade"
           ],
-          "expectation": "blocked"
+          "expectation": "upgraded"
         },
         {
           // opt-in-blocks-redirects
@@ -34,7 +34,7 @@
           "source_context_list": "*",
           "delivery_type": "*",
           "delivery_value": "opt-in",
-          "redirection": "swap-scheme",
+          "redirection": "downgrade",
           "subresource": [
             "audio-tag",
             "img-tag",
@@ -44,7 +44,7 @@
             "same-https",
             "cross-https"
           ],
-          "expectation": "blocked"
+          "expectation": "allowed"
         },
         {
           // no-opt-in-allows
@@ -60,10 +60,10 @@
             "video-tag"
           ],
           "origin": [
-            "cross-http",
-            "same-http"
+            "cross-http-downgrade",
+            "same-http-downgrade"
           ],
-          "expectation": "allowed"
+          "expectation": "upgraded"
         }
       ]
     },
@@ -122,7 +122,7 @@
           "source_context_list": "*",
           "delivery_type": "*",
           "delivery_value": "opt-in",
-          "redirection": "swap-scheme",
+          "redirection": "downgrade",
           "subresource": [
             "a-tag",
             "beacon",
@@ -293,7 +293,7 @@
       "delivery_value": "opt-in",
       "redirection": [
         "keep-scheme",
-        "swap-scheme"
+        "downgrade"
       ],
       "subresource": "*",
       "origin": "*",
@@ -432,7 +432,8 @@
     ],
     "expectation": [
       "allowed",
-      "blocked"
+      "blocked",
+      "upgraded"
     ]
   }
 }

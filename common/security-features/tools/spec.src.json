@@ -294,6 +294,21 @@
       ],
       "subresourcePolicyDeliveries": []
     },
+    "iframe-inherit": {
+      "description": "iframe should inherit parent Document's policy",
+      "sourceContextList": [
+        {
+          "sourceContextType": "top",
+          "policyDeliveries": [
+            "policy"
+          ]
+        },
+        {
+          "sourceContextType": "iframe"
+        }
+      ],
+      "subresourcePolicyDeliveries": []
+    },
     "iframe-blank-inherit": {
       "description": "blank iframe should inherit parent Document's policy",
       "sourceContextList": [
@@ -464,6 +479,7 @@
       "srcdoc-inherit",
       "srcdoc",
       "iframe",
+      "iframe-inherit",
       "iframe-blank-inherit",
       "worker-classic",
       "worker-classic-data",

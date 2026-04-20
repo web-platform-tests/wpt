@@ -270,7 +270,7 @@
         // this is not redundant because <meta> is not supported.
         "top",
         "srcdoc-inherit",
-        "iframe",
+        "iframe-inherit",
         "iframe-blank-inherit",
         "worker-classic-data",
         "worker-module-data",
@@ -305,7 +305,6 @@
       "source_scheme": "*",
       "source_context_list": [
         "req",
-        "srcdoc-inherit",
         "srcdoc",
         "iframe",
         "iframe-blank-inherit"
@@ -357,7 +356,6 @@
         "meta"
       ],
       "iframe": [
-        "http-rp",
         "meta"
       ],
       "iframe-blank": [

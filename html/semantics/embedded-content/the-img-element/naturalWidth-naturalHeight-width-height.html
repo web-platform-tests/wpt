@@ -251,6 +251,33 @@ img {
      data-density="none"
      data-natural-width="300" data-natural-height="100"
      data-width="720" data-height="240">
+
+<!-- SVG images with intrinsic dimensions that happen to match the default
+     concrete object size (300x150). This group screens for a possible bug
+     where a browser recognizes 300 and/or 150 as "special" values and
+     declines to density-correct them, mistakenly assuming they came from
+     the default concrete object size rather than from the SVG's own
+     intrinsic dimensions. -->
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300'></svg>"
+     title="SVG image, with natural width matching default concrete object size"
+     data-density="width"
+     data-natural-width="300" data-natural-height="150">
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='150'></svg>"
+     title="SVG image, with natural height matching default concrete object size"
+     data-density="height"
+     data-natural-width="300" data-natural-height="150">
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' viewBox='0 0 300 150'></svg>"
+     title="SVG image, with natural width matching default concrete object size, and aspect ratio from viewBox"
+     data-density="both"
+     data-natural-width="300" data-natural-height="150">
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='150' viewBox='0 0 300 150'></svg>"
+     title="SVG image, with natural height matching default concrete object size, and aspect ratio from viewBox"
+     data-density="both"
+     data-natural-width="300" data-natural-height="150">
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='150'></svg>"
+     title="SVG image, with natural width and height matching default concrete object size"
+     data-density="both"
+     data-natural-width="300" data-natural-height="150">
 </template>
 </head>
 <body>
@@ -290,6 +317,10 @@ function cloneTemplateWithDensity(density) {
     // (no data-density attribute), both dimensions are always corrected.
     // For SVG images, only intrinsic (non-default) dimensions are corrected.
     const densityAttr = img.dataset.density || "both";
+    const validDensityValues = ["none", "both", "width", "height"];
+    if (!validDensityValues.includes(densityAttr)) {
+      throw new Error(`test error: data-density="${densityAttr}" on "${img.getAttribute("title")}" is not a recognized value (expected one of: ${validDensityValues})`);
+    }
     const scaleWidth = (densityAttr === "both" || densityAttr === "width");
     const scaleHeight = (densityAttr === "both" || densityAttr === "height");
 

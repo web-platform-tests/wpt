@@ -24,23 +24,22 @@
   let loadCalled = false;
   audio.addEventListener("loadstart", t.step_func(() => {
     loadstartFired = true;
-    // Verify that load() was called before loadstart fired
     assert_true(loadCalled, "load should have been called");
-    if(loadCalled) {
-      t.done();
-    }
+    t.done();
   }));
 
   document.body.appendChild(audio);
 
-  // Verify loadstart has not fired initially
-  t.step(() => {
+  const nonLazyAudio = document.createElement("audio");
+  nonLazyAudio.addEventListener("loadstart", t.step_func(() => {
     assert_false(loadstartFired, "loadstart should not have fired initially");
-  });
+    loadCalled = true;
+    audio.load();
+  }));
 
-  // Call load() explicitly and wait for loadstart to fire
-  loadCalled = true;
-  audio.load();
+  nonLazyAudio.src = "data:,";
+  document.body.appendChild(nonLazyAudio);
+  nonLazyAudio.load();
 
 </script>
 </body>

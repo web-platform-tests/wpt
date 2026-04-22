@@ -26,22 +26,21 @@
   let loadCalled = false;
   video.addEventListener("loadstart", t.step_func(() => {
     loadstartFired = true;
-    // Verify that load() was called before loadstart fired
     assert_true(loadCalled, "load should have been called");
-    if(loadCalled) {
-      t.done();
-    }
+    t.done();
   }));
 
   document.body.appendChild(video);
 
-  // Verify loadstart has not fired initially
-  t.step(() => {
+  const nonLazyVideo = document.createElement("video");
+  nonLazyVideo.addEventListener("loadstart", t.step_func(() => {
     assert_false(loadstartFired, "loadstart should not have fired initially");
-  });
+    loadCalled = true;
+    video.load();
+  }));
 
-  // Call load() explicitly and wait for loadstart to fire
-  loadCalled = true;
-  video.load();
+  nonLazyVideo.src = "data:,";
+  document.body.appendChild(nonLazyVideo);
+  nonLazyVideo.load();
 </script>
 </body>

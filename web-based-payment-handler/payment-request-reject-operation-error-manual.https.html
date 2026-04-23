@@ -4,8 +4,6 @@
 <link rel="help" href="https://w3c.github.io/web-based-payment-handler/#the-paymentrequestevent">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
 <p>This test verifies that if a payment app rejects the promise passed to <code>respondWith</code> with an <code>OperationError</code>, the original <code>PaymentRequest.show()</code> call also rejects with an <code>OperationError</code>. For other error types, it should still reject with an <code>AbortError</code>.</p>
 <p>Please follow these instructions:</p>
 <ol>
@@ -18,7 +16,6 @@
       + 'payment-request-reject-errors-manifest.json';
 
   promise_test(async t => {
-    await test_driver.bless('invoking a payment app for OperationError');
     const request = new PaymentRequest([{supportedMethods: methodName}], {
       total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
     });
@@ -27,7 +24,6 @@
   }, 'If a payment app rejects with OperationError, show() rejects with OperationError');
 
   promise_test(async t => {
-    await test_driver.bless('invoking a payment app for SyntaxError');
     const request = new PaymentRequest([{supportedMethods: methodName}], {
       total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
     });

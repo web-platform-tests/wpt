@@ -83,6 +83,27 @@ promise_test(async (t) => {
   assertOpen('after auto click',auto1);
 }, 'Clicking outside consistently closes both auto and hint popovers.');
 
+// Same as "weirdness 3" but with all popovers nested in an outer auto popover
+promise_test(async (t) => {
+  t.add_cleanup(hideAll);
+
+  auto1.showPopover();
+  auto2.showPopover({source: auto1});
+  hint1.showPopover({source: auto1});
+  assertOpen('initial', auto1, auto2, hint1);
+
+  await clickOn(hint1);
+  assertOpen('after hint click', auto1, hint1);
+
+  auto2.showPopover({source: auto1});
+  assertOpen('auto reopen hides hint', auto1, auto2);
+  hint1.showPopover({source: auto1});
+  assertOpen('reopen hint', auto1, auto2, hint1);
+
+  await clickOn(auto2);
+  assertOpen('after auto click', auto1, auto2);
+}, 'Clicking outside consistently closes both auto and hint popovers (nested).');
+
 // this is "weirdness 4" from https://github.com/whatwg/html/issues/12304
 test((t) => {
   t.add_cleanup(hideAll);

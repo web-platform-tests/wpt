@@ -42,39 +42,21 @@ function runTopLayerTests(testCases) {
         // Activate the top layer element.
         await show(popovers[popovers.length-1]);
         assert_true(showing());
-        popovers.forEach((popover, i) => {
-          let expected = popover.dataset.stayOpen === 'true';
-          if (topLayerType === 'fullscreen' && popover.dataset.stayOpenFullscreen !== undefined) {
-            expected = popover.dataset.stayOpenFullscreen === 'true';
-          }
-
-        });
+        popovers.forEach(popover => assert_equals(popover.matches(':popover-open'),popover.dataset.stayOpen==='true','Incorrect behavior'));
 
         // Add another popover within the top layer element and make sure entire stack stays open.
         const newPopover = document.createElement('div');
         t.add_cleanup(() => newPopover.remove());
         newPopover.popover = 'hint';
         element.appendChild(newPopover);
-                popovers.forEach((popover, i) => {
-          let expected = popover.dataset.stayOpen === 'true';
-          if (topLayerType === 'fullscreen' && popover.dataset.stayOpenFullscreen !== undefined) {
-            expected = popover.dataset.stayOpenFullscreen === 'true';
-          }
-
-        });
+        popovers.forEach(popover => assert_equals(popover.matches(':popover-open'),popover.dataset.stayOpen==='true','Adding another popover shouldn\'t change anything'));
         assert_true(showing(),'top layer element should still be top layer');
         newPopover.showPopover();
         assert_true(newPopover.matches(':popover-open'));
-                popovers.forEach((popover, i) => {
-          let expected = popover.dataset.stayOpen === 'true';
-          if (topLayerType === 'fullscreen' && popover.dataset.stayOpenFullscreen !== undefined) {
-            expected = popover.dataset.stayOpenFullscreen === 'true';
-          }
-
-        });
+        popovers.forEach(popover => assert_equals(popover.matches(':popover-open'),popover.dataset.stayOpen==='true','Showing the popover shouldn\'t change anything'));
         assert_true(showing(),'top layer element should still be top layer');
       },`${description} with ${topLayerType}`);
-
+      
       promise_test(async t => {
         const {element,show,showing} = createTopLayerElement(t,topLayerType);
         element.popover = 'hint';

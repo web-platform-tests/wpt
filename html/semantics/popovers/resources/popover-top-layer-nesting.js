@@ -56,7 +56,7 @@ function runTopLayerTests(testCases) {
         popovers.forEach(popover => assert_equals(popover.matches(':popover-open'),popover.dataset.stayOpen==='true','Showing the popover shouldn\'t change anything'));
         assert_true(showing(),'top layer element should still be top layer');
       },`${description} with ${topLayerType}`);
-      
+
       promise_test(async t => {
         const {element,show,showing} = createTopLayerElement(t,topLayerType);
         element.popover = 'hint';

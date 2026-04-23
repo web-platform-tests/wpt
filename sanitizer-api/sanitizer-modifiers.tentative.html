@@ -552,7 +552,7 @@ test(() => {
     elements: [{name: "p", attributes: undefined, removeAttributes: []}]
   });
 }, "sanitizer.allowElement() with global elements and removeAttributes");
-  
+
 test(() => {
   for (let element of NON_REPLACEABLE_ELEMENTS) {
     let s = new Sanitizer();

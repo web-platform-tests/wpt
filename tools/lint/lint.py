@@ -9,6 +9,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import unicodedata
 from collections import defaultdict
 from typing import (Any, Callable, Dict, IO, Iterable, List, Optional, Sequence, Set, Text, Tuple,
                     Type, TypeVar)
@@ -839,6 +840,24 @@ def check_all_paths(repo_root: Text, paths: List[Text]) -> List[rules.Error]:
     return errors
 
 
+def check_filename_portability(repo_root: Text, path: Text) -> List[rules.Error]:
+    """
+    Checks that the filename contains only characters that are portable
+    across operating systems and common encodings (e.g. Windows CP1252).
+
+    Invisible Unicode format/control characters like U+200E (LEFT-TO-RIGHT MARK)
+    are valid UTF-8 but cannot be encoded by Windows codepage encodings, causing
+    UnicodeEncodeError when tools write cache files containing the path.
+    """
+    filename = os.path.basename(path)
+    for char in filename:
+        category = unicodedata.category(char)
+        if category in ("Cf", "Cc"):
+            char_info = f"U+{ord(char):04X} ({unicodedata.name(char, 'UNKNOWN')})"
+            return [rules.NonPortableFilename.error(path, (char_info,))]
+    return []
+
+
 def check_file_contents(repo_root: Text, path: Text, f: Optional[IO[bytes]] = None) -> List[rules.Error]:
     """
     Runs lints that check the file contents.
@@ -1129,7 +1148,7 @@ def lint(repo_root: Text,
 
 path_lints = [check_file_type, check_path_length, check_worker_collision, check_ahem_copy,
               check_mojom_js, check_tentative_directories, check_gitignore_file,
-              check_web_features_file_path]
+              check_web_features_file_path, check_filename_portability]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata,
               check_ahem_system_font, check_meta_file, check_web_features_file]
 

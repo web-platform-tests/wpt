@@ -1,6 +1,7 @@
 # mypy: allow-untyped-defs
 
 import asyncio
+import logging
 import json
 import os
 import socket
@@ -36,6 +37,7 @@ from .protocol import (BaseProtocolPart,
                        SPCTransactionsProtocolPart,
                        RPHRegistrationsProtocolPart,
                        FedCMProtocolPart,
+                       DigitalCredentialsProtocolPart,
                        VirtualSensorProtocolPart,
                        BidiBluetoothProtocolPart,
                        BidiBrowsingContextProtocolPart,
@@ -965,6 +967,24 @@ class WebDriverDevicePostureProtocolPart(DevicePostureProtocolPart):
         return self.webdriver.send_session_command("DELETE", "deviceposture")
 
 
+class WebDriverDigitalCredentialsPart(DigitalCredentialsProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+        self.logger = logging.getLogger(__name__)
+
+    async def set_virtual_wallet_behavior(self, action, protocol=None, response=None, context=None):
+        if context is None:
+            context = self.webdriver.current_window_handle
+
+        params = {"action": action, "context": context}
+        if protocol is not None:
+            params["protocol"] = protocol
+        if response is not None:
+            params["response"] = response
+
+        return await self.webdriver.bidi_session.send_command("digitalCredentials.setVirtualWalletBehavior", params)
+
+
 class WebDriverStorageProtocolPart(StorageProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
@@ -1056,6 +1076,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverSPCTransactionsProtocolPart,
                   WebDriverRPHRegistrationsProtocolPart,
                   WebDriverFedCMProtocolPart,
+                  WebDriverDigitalCredentialsPart,
                   WebDriverDebugProtocolPart,
                   WebDriverVirtualSensorPart,
                   WebDriverDevicePostureProtocolPart,

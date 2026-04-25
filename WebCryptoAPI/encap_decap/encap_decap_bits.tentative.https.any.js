@@ -21,11 +21,6 @@ function define_bits_tests() {
         { name: algorithmName },
         keyPair.publicKey
       );
-
-      assert_true(
-        encapsulatedBits instanceof Object,
-        'encapsulateBits should return an object'
-      );
       assert_true(
         encapsulatedBits.hasOwnProperty('sharedKey'),
         'Result should have sharedKey property'

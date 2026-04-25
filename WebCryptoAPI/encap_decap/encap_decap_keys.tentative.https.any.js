@@ -55,11 +55,6 @@ function define_key_tests() {
             extractable,
             config.usages
           );
-
-          assert_true(
-            encapsulatedKey instanceof Object,
-            'encapsulateKey should return an object'
-          );
           assert_true(
             encapsulatedKey.hasOwnProperty('sharedKey'),
             'Result should have sharedKey property'

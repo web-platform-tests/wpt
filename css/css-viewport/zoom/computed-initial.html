@@ -25,19 +25,29 @@
     /* allows testing border-related properties */
     border-style: solid;
   }
+
+  #container {
+    /* needed for lengths snapped as a border width */
+    zoom: calc(1 / var(--device-pixel-ratio, 1));
+  }
 </style>
 
-<div class="none"></div>
-<div class="initial"></div>
-<div class="all-initial"></div>
+<div id="container">
+  <div class="none"></div>
+  <div class="initial"></div>
+  <div class="all-initial"></div>
 
-<div class="none zoomed"></div>
-<div class="initial zoomed"></div>
-<div class="all-initial zoomed"></div>
+  <div class="none zoomed"></div>
+  <div class="initial zoomed"></div>
+  <div class="all-initial zoomed"></div>
+</div>
 
 <script>
+  container.style.setProperty('--device-pixel-ratio', window.devicePixelRatio);
+
   const excludedProps = [
     'zoom',
+    '--device-pixel-ratio',
     // exclude properties whose initial value is 'auto' or a percentage,
     // and which return the 'used value' in getComputedStyle().
     'width', 'height',

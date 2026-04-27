@@ -31,6 +31,11 @@
     zoom: 10;
     outline-color: blue;
   }
+
+  #container {
+    /* needed for lengths snapped as a border width */
+    zoom: calc(1 / var(--device-pixel-ratio, 1));
+  }
 </style>
 
 <div class="thin"></div>
@@ -42,6 +47,8 @@
 <div class="thick zoomed"></div>
 
 <script>
+  container.style.setProperty('--device-pixel-ratio', window.devicePixelRatio);
+
   const keywords = ['thin', 'medium', 'thick'];
   for (const keyword of keywords) {
     const cs = getComputedStyle(document.querySelector(`.${keyword}`));

@@ -29,6 +29,11 @@
     zoom: 10;
     column-rule-color: blue;
   }
+
+  #container {
+    /* needed for lengths snapped as a border width */
+    zoom: calc(1 / var(--device-pixel-ratio, 1));
+  }
 </style>
 
 <div class="thin">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore</div>
@@ -40,6 +45,8 @@
 <div class="thick zoomed">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore</div>
 
 <script>
+  container.style.setProperty('--device-pixel-ratio', window.devicePixelRatio);
+
   const keywords = ['thin', 'medium', 'thick'];
   for (const keyword of keywords) {
     const cs = getComputedStyle(document.querySelector(`.${keyword}`));

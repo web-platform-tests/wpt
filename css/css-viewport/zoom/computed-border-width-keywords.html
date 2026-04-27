@@ -31,17 +31,26 @@
     zoom: 10;
     border-color: blue;
   }
+
+  #container {
+    /* needed for lengths snapped as a border width */
+    zoom: calc(1 / var(--device-pixel-ratio, 1));
+  }
 </style>
 
-<div class="thin"></div>
-<div class="medium"></div>
-<div class="thick"></div>
+<div id="container">
+  <div class="thin"></div>
+  <div class="medium"></div>
+  <div class="thick"></div>
 
-<div class="thin zoomed"></div>
-<div class="medium zoomed"></div>
-<div class="thick zoomed"></div>
+  <div class="thin zoomed"></div>
+  <div class="medium zoomed"></div>
+  <div class="thick zoomed"></div>
+</div>
 
 <script>
+  container.style.setProperty('--device-pixel-ratio', window.devicePixelRatio);
+
   const keywords = ['thin', 'medium', 'thick'];
   const propSuffixes = ['width', 'top-width', 'right-width', 'bottom-width', 'left-width', 'inline-start-width', 'inline-end-width', 'block-start-width', 'block-end-width'];
   for (const keyword of keywords) {

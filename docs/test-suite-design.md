@@ -70,7 +70,7 @@ expectations:
 
 * [aamtest][] tests are written in Python and test accessibility API mappings,
   such as [Core Accessibility API Mappings](https://w3c.github.io/core-aam/)
-  or [HTML Accessibility API Mappings](https://w3c.github.io/core-aam/).
+  or [HTML Accessibility API Mappings](https://w3c.github.io/html-aam/).
 
 * [Manual tests][manual] rely on a human to run them and determine their
   result.

@@ -29,13 +29,7 @@ class AtspiWrapper(ApiWrapper[Atspi.Accessible]):
                 self._find_fully_loaded_tab, f"Timeout looking for url: {self.test_url}"
             )
 
-        # Polling for the node with ID because in Firefox the node's
-        # id attribute may be set after the tab is ready, leading to flakes.
-        test_node: Atspi.Accessible = self._poll_for(
-            lambda: self._find_node_by_id(self.document, dom_id),
-            f"Timout looking for node with id '{dom_id}' in accessibility API ATSPI.",
-        )
-
+        test_node = self._find_node_by_id(self.document, dom_id);
         if not test_node:
             raise Exception(f"Did not find node with id '{dom_id}' in accessibility API ATSPI.")
 

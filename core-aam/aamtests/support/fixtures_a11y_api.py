@@ -3,6 +3,7 @@ from sys import platform
 
 
 def pid_from(capabilities):
+    # TODO: add support for Edge, Safari.
     if capabilities["browserName"] == "chrome":
         return capabilities["goog:processID"], "chrome"
     if capabilities["browserName"] == "firefox":

@@ -87,6 +87,8 @@ class AxapiWrapper(ApiWrapper[AXUIElement]):
             if err:
                 continue
             if role == "AXWebArea":
+                # TODO: AtspiWrapper will check that the found tab is the correct
+                # tab by checking the URL. Perform this check here.
                 return node
 
             err, children = AXUIElementCopyAttributeValue(node, "AXChildren", None)

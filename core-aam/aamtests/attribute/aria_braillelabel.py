@@ -1,6 +1,6 @@
 # Testing: https://w3c.github.io/core-aam/#ariaBraillelabel
 
-TEST_HTML = "<button id='test' aria-braillelabel='foobar'> </div>"
+TEST_HTML = "<button id='test' aria-braillelabel='foobar'> </button>"
 
 def test_atspi(atspi, session, inline):
     session.url = inline(TEST_HTML)

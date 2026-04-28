@@ -81,3 +81,4 @@ expectations:
 [manual]: writing-tests/manual
 [running-from-local-system]: running-tests/from-local-system
 [wdspec]: writing-tests/wdspec
+[aamtest]: writing-tests/aamtest

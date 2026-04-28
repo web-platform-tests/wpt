@@ -34,17 +34,33 @@ Core-AAM](https://w3c.github.io/core-aam/#intro_aapi).
 
 The table below lists:
 
-* APIs supported by the aamtest framework
-* The name of the pytest fixture that returns access to the API (if you are
+* **API Name**: APIs supported by the aamtest framework
+* **Fixture Name**: The name of the pytest fixture that returns access to the API (if you are
   on the correct platform).
-* The platform of that API.
-* The Python library that provides bindings to query the API.
+* **Platform**: The platform of that API.
+* **Python Bindings**: The Python library that provides bindings to query the API.
 
-| API Name | Fixture Name | Platform | Python Bindings |
-|---|---|---|---|
-| Accessibility Toolkit ([ATK](https://developer.gnome.org/atk/stable/)) and Assistive Technology Service Provider Interface ([AT-SPI](https://gnome.pages.gitlab.gnome.org/at-spi2-core/libatspi/)) | `atspi` | Linux | [Provided through PyGObject](https://lazka.github.io/pgi-docs/#Atspi-2.0) |
-| The NSAccessibility Protocol for macOS ([AX API](https://developer.apple.com/documentation/appkit/nsaccessibility)) | `axapi` | macOS | [pyobjc-framework-Accessibility](https://pypi.org/project/pyobjc-framework-Accessibility/) |
-| MSAA with IAccessible2 1.3 ([IA2](https://wiki.linuxfoundation.org/accessibility/iaccessible2/start)) | `ia2` | Windows | Loading module [ia2_api_all.idl](https://github.com/LinuxA11y/IAccessible2) with [comtypes](https://pypi.org/project/comtypes/) |
+```eval_rst
+.. list-table::
+   :header-rows: 1
+
+   * - API Name
+     - Fixture Name
+     - Platform
+     - Python Bindings
+   * - Accessibility Toolkit (`ATK <https://developer.gnome.org/atk/stable/>`_) and Assistive Technology Service Provider Interface (`AT-SPI <https://gnome.pages.gitlab.gnome.org/at-spi2-core/libatspi/>`_)
+     - ``atspi``
+     - Linux
+     - `Provided through PyGObject <https://lazka.github.io/pgi-docs/#Atspi-2.0>`_
+   * - The NSAccessibility Protocol for macOS (`AX API <https://developer.apple.com/documentation/appkit/nsaccessibility>`_)
+     - ``axapi``
+     - macOS
+     - `pyobjc-framework-Accessibility <https://pypi.org/project/pyobjc-framework-Accessibility/>`_
+   * - MSAA with IAccessible2 1.3 (`IA2 <https://wiki.linuxfoundation.org/accessibility/iaccessible2/start>`_)
+     - ``ia2``
+     - Windows
+     - Loading module `ia2_api_all.idl <https://github.com/LinuxA11y/IAccessible2>`_ with `comtypes <https://pypi.org/project/comtypes/>`_
+```
 
 The APIs are exposed through a pytest fixture with the name in the table
 above. The pytest fixture returns a wrapped version of the API. Requesting this

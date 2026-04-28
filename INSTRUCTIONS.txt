@@ -1,0 +1,27 @@
+Your task is to create a comprehensive list of Web Platform Tests to create that will thoroughly test the SVG specification draft at https://svgwg.org/svg2-draft/.
+
+The SVG specification is made up a number of chapters. For each chapter, ensure there is a child directory in this repository under svg/ that corresponds to that chapter; there's a number of existing directories that already correspond to chapters in the SVG spec. In that directory, create a new file named TODO.md and add one item to it for every test that should be created for that chapter.
+
+When looking for an existing directory, only look at direct child directories of svg/ and ignore any other directory in the repository. These directories:
+
+- svg/import/ directory, since it just holds old SVG 1.1 tests
+- svg/layout/ directory, which doesn't correspond to a single existing chapter
+
+Ignore these chapters:
+
+- Introduction
+- Conformance Criteria
+- All appendices
+
+You may still consult appendices when considering what tests to add for the chapters.
+
+Each item added to a TODO.md file should contain a link to the section of the spec being tested and a single sentence description of what the test should test. You can link to the chapter at the top of the file, but you must include a link within each item to the specific section of the spec that the test is about. The single sentence description for each test should be very detailed and precise about what's being tested.
+
+You should generate TODO.md items for all normative requirements in the spec that can be tested in a web browser. Be very comprehensive. Every normative statement in the spec should have at least one test. Ensure you add tests for every element, attribute, property, DOM method, and DOM attribute defined in a chapter. Combine multiple tests into one item only if you have a list of similar features being tested. For example, if you add an item to test that all CSS units can be used with the rx property, do not have 20 separate items, one for each CSS unit. Otherwise, create a separate test for every requirement of the spec. When an attribute or property is defined to take a particular value type, add tests for all possible kinds of values.
+
+Don't worry about whether a test should be a reftest or a scripted test, or whether there is already an existing test in the WPT repository.
+
+Don't add tests for performance.
+
+
+

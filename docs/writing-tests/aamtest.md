@@ -2,7 +2,7 @@
 
 The aamtest tests are used to verify the mapping of web content to
 browser-exposed platform-specific accessibility APIs. These mappings are
-specified by the ARIA working group of the W3C in the following specifications:
+specified by working groups of the W3C in the following specifications:
 
 * [Core-AAM](https://w3c.github.io/core-aam)
 * [HTML-AAM](https://w3c.github.io/html-aam)
@@ -16,20 +16,20 @@ language](https://www.python.org/) and structured with [the pytest testing
 framework](https://docs.pytest.org/en/latest/).
 
 The aamtest type is built on the [wdspec](wdspec) test type, and has access to
-all the python fixtures defined for wdspec tests. It uses the web-platform-tests
+all the Python fixtures defined for wdspec tests. It uses the web-platform-tests
 maintained WebDriver client library to load HTML and to send other WebDriver
 commands to the browser.
 
-The `wptrunner` will know a python file is an aamtest if it is contained within
+The `wptrunner` will know a Python file is an aamtest if it is contained within
 an `aamtests` directory.
 
 ## Platform-Specific Accessibility APIs
 
-Accessibility APIs are platform specific, each platform has their own API
-(sometimes more than one). Assistive technologies, such as screen readers,
-interact with the browser on behalf of a user via these APIs. The AAM
-specifications explain how to expose web content through these APIs. You can
-read more about [the APIs in
+Accessibility APIs are platform (or operating system) specific, each platform
+has their own API (sometimes more than one). Assistive technologies, such as
+screen readers, interact with the browser on behalf of a user via these
+APIs. The AAM specifications explain how to expose web content through these
+APIs. You can read more about [the APIs in
 Core-AAM](https://w3c.github.io/core-aam/#intro_aapi).
 
 The table below lists:
@@ -38,7 +38,7 @@ The table below lists:
 * The name of the pytest fixture that returns access to the API (if you are
   on the correct platform).
 * The platform of that API.
-* The python library that provides bindings to query the API.
+* The Python library that provides bindings to query the API.
 
 | API Name | Fixture Name | Platform | Python Bindings |
 |---|---|---|---|
@@ -67,7 +67,7 @@ sudo apt install libatspi2.0-dev libcairo2-dev libgirepository1.0-dev
 
 If you would like to add a new aamtest to a specification that does not yet have
 coverage, add the tests to an `aamtests` subfolder. This subfolder indicates the
-python files within it will be run as an aamtest. This includes restarting the
+Python files within it will be run as an aamtest. This includes restarting the
 browser with accessibility enabled, if you are doing a full run of the test
 suite.
 
@@ -99,7 +99,7 @@ def test_atspi(atspi, session, inline):
     # The `session` and `inline` fixtures are provided from the `wdspec` test infrastructure.
     session.url = inline(TEST_HTML)
 
-    # The `atspi` fixture wraps the AT-SPI python bindings and provides some helper functions,
+    # The `atspi` fixture wraps the AT-SPI Python bindings and provides some helper functions,
     # such as `find_node`, which finds a node by DOM ID.
     node = atspi.find_node("test", session.url)
     assert atspi.Accessible.get_role(node) == atspi.Role.FOOBAR
@@ -109,7 +109,7 @@ def test_axapi(axapi, session, inline):
     # The `session` and `inline` fixtures are provided from the `wdspec` test infrastructure.
     session.url = inline(TEST_HTML)
 
-    # The `axapi` fixture wraps the AX API python bindings and provides some helper functions,
+    # The `axapi` fixture wraps the AX API Python bindings and provides some helper functions,
     # such as `find_node`, which finds a node by DOM ID.
     node = axapi.find_node("test", session.url)
     role = axapi.AXUIElementCopyAttributeValue(node, "AXRole", None)[1]
@@ -120,7 +120,7 @@ def test_axapi(axapi, session, inline):
 
 To add an unsupported API:
 
-1. Add the python package that provides the python bindings for that API to
+1. Add the Python package that provides the Python bindings for that API to
    `tools/wptrunner/requirements_platform_accessibility.txt`.
 2. Create a wrapper object for the new API in `newapi_wrapper.py` in
    `core-aam/aamtests/support/`. It must inherit from `ApiWrapper` and follow

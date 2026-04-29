@@ -154,7 +154,7 @@ features:
   files:
   - "*"              # This line includes all files in the directory
   - "!box-sizing-*"  # This line excludes all files whose name begins with "box-sizing"
-  - "!z-index.html"  # This line exludes the file named "z-index.html"
+  - "!z-index.html"  # This line excludes the file named "z-index.html"
 - name: box-sizing
   files:
   - box-sizing-*  # This line inccludes all files whose name begins with "box-sizing"

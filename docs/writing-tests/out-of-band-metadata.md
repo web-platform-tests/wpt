@@ -157,7 +157,7 @@ features:
   - "!z-index.html"  # This line excludes the file named "z-index.html"
 - name: box-sizing
   files:
-  - box-sizing-*  # This line inccludes all files whose name begins with "box-sizing"
+  - box-sizing-*  # This line includes all files whose name begins with "box-sizing"
 - name: z-index
   files:
   - z-index.html  # This line includes the file named "z-index.html"

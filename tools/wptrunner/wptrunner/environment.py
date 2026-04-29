@@ -21,9 +21,6 @@ from .wptlogging import LogLevelRewriter, QueueHandler, LogQueueThread
 here = os.path.dirname(__file__)
 repo_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir, os.pardir))
 
-sys.path.insert(0, repo_root)
-from tools import localpaths  # noqa: F401
-
 serve = None
 
 

@@ -152,15 +152,15 @@ The contents of the file named `WEB_FEATURES.yml` might appear as follows:
 features:
 - name: aspect-ratio
   files:
-  - "*"              # This line includes all files in the directory
-  - "!box-sizing-*"  # This line excludes all files whose name begins with "box-sizing"
-  - "!z-index.html"  # This line excludes the file named "z-index.html"
+  - "*"              # This line includes all test files in the directory
+  - "!box-sizing-*"  # This line excludes all test files whose name begins with "box-sizing"
+  - "!z-index.html"  # This line excludes the test file named "z-index.html"
 - name: box-sizing
   files:
-  - box-sizing-*  # This line includes all files whose name begins with "box-sizing"
+  - box-sizing-*  # This line includes all test files whose name begins with "box-sizing"
 - name: z-index
   files:
-  - z-index.html  # This line includes the file named "z-index.html"
+  - z-index.html  # This line includes the test file named "z-index.html"
 ```
 
 [^1]: The web-feature identifier is distinct from the web-feature name.

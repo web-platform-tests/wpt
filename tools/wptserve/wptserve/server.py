@@ -849,6 +849,14 @@ class Http1WebTestRequestHandler(BaseWebTestRequestHandler):
             return False
         if not self.raw_requestline:
             self.close_connection = True
+            return True
+        if (len(self.raw_requestline) >= 6 and
+                self.raw_requestline[0] == 0x16 and   # TLS record: content type "handshake"
+                self.raw_requestline[1] == 0x03 and   # TLS record: major version 3 (all of TLS 1.0–1.3)
+                self.raw_requestline[5] == 0x01):      # TLS handshake type: ClientHello
+            self.log_message("TLS ClientHello received on plain HTTP server; "
+                             "client may have sent an HTTPS request to an HTTP port")
+            self.close_connection = True
         return True
 
 class WebTestHttpd:

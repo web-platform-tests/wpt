@@ -6,8 +6,7 @@
 <link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=2033652">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<img id="img" srcset="/images/green-1x1.png 1w, /images/green-16x16.png 16w, /images/green-256x256.png 256w"
-     sizes="1px" style="width:16px;" loading="lazy">
+<img id="img" sizes="1px" style="width:16px;" loading="lazy">
 <script>
 "use strict";
 /*
@@ -17,7 +16,9 @@ image not allow auto-sizes anymore, the browser resize observer would
 still be notified for the now not sizes=auto image.
 */
 promise_test(async t => {
-  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  let waitForLoad = new Promise(r => img.addEventListener('load', r, {once: true}));
+  img.srcset = "/images/green-1x1.png 1w, /images/green-16x16.png 16w, /images/green-256x256.png 256w";
+  await waitForLoad;
   let resizeObserved = false;
   let observer = new ResizeObserver(() => {
     if (img.style.width === "1px") {
@@ -30,12 +31,14 @@ promise_test(async t => {
   let currentSrc = () => new URL(img.currentSrc).pathname;
   assert_equals(currentSrc(), "/images/green-1x1.png",
                 "image's source should be set based on sizes=1px");
+  waitForLoad = new Promise(r => img.addEventListener('load', r, {once: true}));
   img.sizes = "auto";
-  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  await waitForLoad;
   assert_equals(currentSrc(), "/images/green-16x16.png",
                 "image's source should be set based on sizes=auto and content box width of 16px");
+  waitForLoad = new Promise(r => img.addEventListener('load', r, {once: true}));
   img.style.width = "1px";
-  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  await waitForLoad;
   assert_true(resizeObserved, "ResizeObserver should have been notified of resize");
   assert_equals(currentSrc(), "/images/green-256x256.png",
                 "image's source should be set based on sizes=256px from ResizeObserver");

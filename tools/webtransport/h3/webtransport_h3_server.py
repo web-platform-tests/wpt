@@ -526,6 +526,7 @@ class WebTransportH3Server:
         self.cert_path = cert_path
         self.key_path = key_path
         self.started = False
+        self.loop = None
         global _doc_root
         _doc_root = self.doc_root
         global _logger
@@ -575,30 +576,36 @@ class WebTransportH3Server:
     def _start_on_server_thread(
         self, configuration: QuicConfiguration, ticket_store: SessionTicketStore
     ) -> None:
-        # On Windows, the default event loop is ProactorEventLoop but it
-        # doesn't seem to work when aioquic detects a connection loss.
-        # Use SelectorEventLoop to work around the problem.
-        if sys.platform == "win32":
-            self.loop = asyncio.SelectorEventLoop()
-        else:
-            self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
+        try:
+            # On Windows, the default event loop is ProactorEventLoop but it
+            # doesn't seem to work when aioquic detects a connection loss.
+            # Use SelectorEventLoop to work around the problem.
+            if sys.platform == "win32":
+                self.loop = asyncio.SelectorEventLoop()
+            else:
+                self.loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self.loop)
 
-        self.loop.run_until_complete(
-            serve(
-                self.host,
-                self.port,
-                configuration=configuration,
-                create_protocol=WebTransportH3Protocol,
-                session_ticket_fetcher=ticket_store.pop,
-                session_ticket_handler=ticket_store.add,
+            self.loop.run_until_complete(
+                serve(
+                    self.host,
+                    self.port,
+                    configuration=configuration,
+                    create_protocol=WebTransportH3Protocol,
+                    session_ticket_fetcher=ticket_store.pop,
+                    session_ticket_handler=ticket_store.add,
+                )
             )
-        )
-        self.loop.run_forever()
+            self.loop.run_forever()
+        except Exception as e:
+            _logger.error("_start_on_server_thread: %s", e)
+            self._thread_exception = e
 
     def stop(self) -> None:
         """Stop the server."""
         if self.started:
+            if not self.server_thread.is_alive():
+                raise self._thread_exception
             asyncio.run_coroutine_threadsafe(self._stop_on_server_thread(), self.loop)
             self.server_thread.join()
             _logger.info(

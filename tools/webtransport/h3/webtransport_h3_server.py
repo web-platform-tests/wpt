@@ -589,21 +589,28 @@ class WebTransportH3Server:
             else:
                 self.loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.loop)
+            self._stop_event = asyncio.Event()
 
             try:
-                self.loop.run_until_complete(
-                    serve(
-                        self.host,
-                        self.port,
-                        configuration=configuration,
-                        create_protocol=WebTransportH3Protocol,
-                        session_ticket_fetcher=ticket_store.pop,
-                        session_ticket_handler=ticket_store.add,
+                try:
+                    self.loop.run_until_complete(
+                        serve(
+                            self.host,
+                            self.port,
+                            configuration=configuration,
+                            create_protocol=WebTransportH3Protocol,
+                            session_ticket_fetcher=ticket_store.pop,
+                            session_ticket_handler=ticket_store.add,
+                        )
                     )
-                )
+                finally:
+                    self._loop_ready.set()
+
+                self.loop.run_until_complete(self._stop_event.wait())
             finally:
-                self._loop_ready.set()
-            self.loop.run_forever()
+                self.loop.run_until_complete(self.loop.shutdown_asyncgens())
+                self.loop.run_until_complete(self.loop.shutdown_default_executor())
+                self.loop.close()
         except Exception as e:
             _logger.error("_start_on_server_thread: %s", e)
             self._thread_exception = e
@@ -614,7 +621,7 @@ class WebTransportH3Server:
         if self.started:
             if not self.server_thread.is_alive():
                 raise self._thread_exception
-            asyncio.run_coroutine_threadsafe(self._stop_on_server_thread(), self.loop)
+            self.loop.call_soon_threadsafe(self._stop_event.set)
             self.server_thread.join()
             _logger.info(
                 "Stopped WebTransport over HTTP/3 server on %s:%s", self.host, self.port

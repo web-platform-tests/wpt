@@ -534,13 +534,6 @@ class WebTransportH3Server:
 
     def start(self) -> None:
         """Start the server."""
-        self.server_thread = threading.Thread(
-            target=self._start_on_server_thread, daemon=True
-        )
-        self.server_thread.start()
-        self.started = True
-
-    def _start_on_server_thread(self) -> None:
         secrets_log_file = None
         if "SSLKEYLOGFILE" in os.environ:
             try:
@@ -571,6 +564,17 @@ class WebTransportH3Server:
 
         ticket_store = SessionTicketStore()
 
+        self.server_thread = threading.Thread(
+            target=self._start_on_server_thread,
+            args=(configuration, ticket_store),
+            daemon=True,
+        )
+        self.server_thread.start()
+        self.started = True
+
+    def _start_on_server_thread(
+        self, configuration: QuicConfiguration, ticket_store: SessionTicketStore
+    ) -> None:
         # On Windows, the default event loop is ProactorEventLoop but it
         # doesn't seem to work when aioquic detects a connection loss.
         # Use SelectorEventLoop to work around the problem.

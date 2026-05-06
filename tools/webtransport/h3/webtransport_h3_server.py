@@ -527,6 +527,7 @@ class WebTransportH3Server:
         self.key_path = key_path
         self.started = False
         self.loop = None
+        self._loop_ready = threading.Event()
         global _doc_root
         _doc_root = self.doc_root
         global _logger
@@ -571,6 +572,9 @@ class WebTransportH3Server:
             daemon=True,
         )
         self.server_thread.start()
+        self._loop_ready.wait()
+        if not self.server_thread.is_alive():
+            raise self._thread_exception
         self.started = True
 
     def _start_on_server_thread(
@@ -586,20 +590,24 @@ class WebTransportH3Server:
                 self.loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.loop)
 
-            self.loop.run_until_complete(
-                serve(
-                    self.host,
-                    self.port,
-                    configuration=configuration,
-                    create_protocol=WebTransportH3Protocol,
-                    session_ticket_fetcher=ticket_store.pop,
-                    session_ticket_handler=ticket_store.add,
+            try:
+                self.loop.run_until_complete(
+                    serve(
+                        self.host,
+                        self.port,
+                        configuration=configuration,
+                        create_protocol=WebTransportH3Protocol,
+                        session_ticket_fetcher=ticket_store.pop,
+                        session_ticket_handler=ticket_store.add,
+                    )
                 )
-            )
+            finally:
+                self._loop_ready.set()
             self.loop.run_forever()
         except Exception as e:
             _logger.error("_start_on_server_thread: %s", e)
             self._thread_exception = e
+            self._loop_ready.set()
 
     def stop(self) -> None:
         """Stop the server."""

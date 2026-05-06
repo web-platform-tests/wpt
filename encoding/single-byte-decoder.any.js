@@ -1,3 +1,4 @@
+// META: global=window
 // META: timeout=long
 // META: variant=?XMLHttpRequest
 // META: variant=?TextDecoder

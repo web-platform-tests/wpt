@@ -579,8 +579,9 @@ class WebTransportH3Server:
         # doesn't seem to work when aioquic detects a connection loss.
         # Use SelectorEventLoop to work around the problem.
         if sys.platform == "win32":
-            asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-        self.loop = asyncio.new_event_loop()
+            self.loop = asyncio.SelectorEventLoop()
+        else:
+            self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
 
         self.loop.run_until_complete(

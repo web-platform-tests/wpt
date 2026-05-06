@@ -567,7 +567,7 @@ class WebTransportH3Server:
         ticket_store = SessionTicketStore()
 
         self.server_thread = threading.Thread(
-            target=self._start_on_server_thread,
+            target=self._run,
             args=(configuration, ticket_store),
             daemon=True,
         )
@@ -577,7 +577,7 @@ class WebTransportH3Server:
             raise self._thread_exception
         self.started = True
 
-    def _start_on_server_thread(
+    def _run(
         self, configuration: QuicConfiguration, ticket_store: SessionTicketStore
     ) -> None:
         try:
@@ -592,21 +592,9 @@ class WebTransportH3Server:
             self._stop_event = asyncio.Event()
 
             try:
-                try:
-                    self.loop.run_until_complete(
-                        serve(
-                            self.host,
-                            self.port,
-                            configuration=configuration,
-                            create_protocol=WebTransportH3Protocol,
-                            session_ticket_fetcher=ticket_store.pop,
-                            session_ticket_handler=ticket_store.add,
-                        )
-                    )
-                finally:
-                    self._loop_ready.set()
-
-                self.loop.run_until_complete(self._stop_event.wait())
+                self.loop.run_until_complete(
+                    self._serve_forever(configuration, ticket_store)
+                )
             finally:
                 self.loop.run_until_complete(self.loop.shutdown_asyncgens())
                 self.loop.run_until_complete(self.loop.shutdown_default_executor())
@@ -615,6 +603,20 @@ class WebTransportH3Server:
             _logger.error("_start_on_server_thread: %s", e)
             self._thread_exception = e
             self._loop_ready.set()
+
+    async def _serve_forever(
+        self, configuration: QuicConfiguration, ticket_store: SessionTicketStore
+    ) -> None:
+        await serve(
+            self.host,
+            self.port,
+            configuration=configuration,
+            create_protocol=WebTransportH3Protocol,
+            session_ticket_fetcher=ticket_store.pop,
+            session_ticket_handler=ticket_store.add,
+        )
+        self._loop_ready.set()
+        await self._stop_event.wait()
 
     def stop(self) -> None:
         """Stop the server."""

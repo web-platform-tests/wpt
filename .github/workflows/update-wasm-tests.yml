@@ -1,7 +1,6 @@
 name: Update Wasm tests
 
 on:
-  pull_request:
   # Trigger at every Sunday UTC noon, or manually.
   schedule:
     - cron: 0 12 * * 0
@@ -53,7 +52,7 @@ jobs:
           COMMIT_TITLE: "Update Wasm tests"
       - name: Create PR
         # Check outcome for success as continue-on-error will mask failure.
-        if: false()
+        if: ${{ steps.commit.outcome == 'success' }}
         run: |
           cd wpt
           git push --set-upstream origin $BRANCH_NAME

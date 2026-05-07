@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: WebAssembly/spec
-{          path: wasm-spec
+          path: wasm-spec
       - name: Setup OCaml
         uses: ocaml/setup-ocaml@v3
         with:

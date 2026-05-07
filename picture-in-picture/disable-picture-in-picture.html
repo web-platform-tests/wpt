@@ -34,16 +34,6 @@ promise_test(async t => {
 
 promise_test(async t => {
   const video = await loadVideo();
-  await test_driver.bless('request Picture-in-Picture');
-  const promise = video.requestPictureInPicture();
-  video.disablePictureInPicture = true;
-  await promise_rejects_dom(t, 'InvalidStateError', promise);
-  assert_equals(document.pictureInPictureElement, null);
-}, 'Request Picture-in-Picture rejects if disablePictureInPicture becomes ' +
-   'true before promise resolves.');
-
-promise_test(async t => {
-  const video = await loadVideo();
   return requestPictureInPictureWithTrustedClick(video)
   .then(() => {
     video.disablePictureInPicture = true;

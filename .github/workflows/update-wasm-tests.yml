@@ -53,7 +53,7 @@ jobs:
           COMMIT_TITLE: "Update Wasm tests"
       - name: Create PR
         # Check outcome for success as continue-on-error will mask failure.
-        if: false()
+        if: false
         run: |
           cd wpt
           git push --set-upstream origin $BRANCH_NAME

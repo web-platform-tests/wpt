@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Path matching should not decode percent-encoded slashes before matching.</title>
+    <link rel="help" href="https://w3c.github.io/webappsec-csp/#path-part-match">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'unsafe-inline' http://{{host}}:{{ports[http][0]}}/content-security-policy/script-src/support/;">
+</head>
+<body>
+    <script>
+        promise_test(t => {
+            return new Promise((resolve, reject) => {
+                const s = document.createElement('script');
+                s.src = "/content-security-policy/script-src/support%2F..%2FsimpleSourcedScript.js";
+
+                const onViolation = t.step_func(e => {
+                    if (e.blockedURI.includes('simpleSourcedScript.js') || e.blockedURI === "" || e.blockedURI.includes('support%2F..%2F')) {
+                        document.removeEventListener('securitypolicyviolation', onViolation);
+                        resolve();
+                    }
+                });
+                document.addEventListener('securitypolicyviolation', onViolation);
+
+                s.onload = t.step_func(() => {
+                    reject("Script loaded! CSP bypass confirmed (incorrectly allowed).");
+                });
+
+                s.onerror = t.step_func(() => {
+                    // Small delay to allow violation event to propagate if it exists.
+                    t.step_timeout(() => {
+                        reject("Script failed to load but no CSP violation event was received. CSP likely allowed it incorrectly.");
+                    }, 200);
+                });
+
+                document.body.appendChild(s);
+            });
+        }, "Path matching should not decode percent-encoded slashes before matching.");
+    </script>
+</body>
+</html>

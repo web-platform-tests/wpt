@@ -6,6 +6,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-    assert_in_array('encrypted-media', document.permissionsPolicy.features());
-}, 'document.permissionsPolicy.features should advertise encrypted-media.');
+    assert_in_array('encrypted-media', document.featurePolicy.features());
+}, 'document.featurePolicy.features should advertise encrypted-media.');
 </script>

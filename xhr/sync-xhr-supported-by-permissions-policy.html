@@ -6,6 +6,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-    assert_in_array('sync-xhr', document.permissionsPolicy.features());
-}, 'document.permissionsPolicy.features should advertise sync-xhr.');
+    assert_in_array('sync-xhr', document.featurePolicy.features());
+}, 'document.featurePolicy.features should advertise sync-xhr.');
 </script>

@@ -9,7 +9,7 @@
   <p class="fallback">FAIL (fallback content)</p>
 </canvas>
 <script>
-  const canvas = document.getElementById("canvas");
+  const canvas = new OffscreenCanvas(200, 200);
   const ctx = canvas.getContext('2d');
 
   ctx.scale(2, 2);
@@ -22,4 +22,7 @@
   // stored was not transformed.
   ctx.fillStyle = 'green';
   ctx.fillRect(0, 0, 200, 200);
+
+  const outputCanvas = document.getElementById("canvas");
+  outputCanvas.getContext('2d').drawImage(canvas, 0, 0);
 </script>

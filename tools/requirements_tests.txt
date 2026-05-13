@@ -7,3 +7,4 @@ types-pyyaml==6.0.12.20241230
 taskcluster==99.2.1
 mozfile==3.0.0
 mozterm==1.0.0
+-r serve/requirements_dns.txt

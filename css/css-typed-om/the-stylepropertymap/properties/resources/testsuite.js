@@ -190,6 +190,10 @@ const gTestSyntaxExamples = {
       {
         description: "a calc angle",
         input: new CSSMathSum(new CSSUnitValue(0, 'rad'), new CSSUnitValue(0, 'deg')),
+        // TODO: Consider replacing specifiedAlternateExpected with
+        // specifiedExpected once all engines do simplification during
+        // association.
+        specifiedAlternateExpected: new CSSMathSum(new CSSUnitValue(0, 'deg')),
         // Specified/computed calcs are usually simplified.
         // FIXME: Test this properly
         defaultSpecified: (_, result) => assert_is_calc_sum(result),

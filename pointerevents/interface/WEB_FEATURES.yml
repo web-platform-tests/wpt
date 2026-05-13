@@ -1,0 +1,5 @@
+features:
+- name: mouse-events
+  files:
+  - click-event-manual.htm
+  - dblclick-event-manual.htm

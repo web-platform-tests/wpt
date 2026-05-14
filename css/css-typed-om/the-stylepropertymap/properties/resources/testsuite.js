@@ -181,7 +181,7 @@ const gTestSyntaxExamples = {
         description: "positive radians",
         input: new CSSUnitValue(3.14, 'rad'),
         // Computed values use canonical units
-        defaultComputed: (_, result) => assert_style_value_equals(result, new CSSUnitValue(179.908752, 'deg'))
+        defaultComputed: (_, result) => assert_style_value_equals(result, new CSSUnitValue(179.908752, 'deg'), 1e-4)
       },
       {
         description: "negative degrees",

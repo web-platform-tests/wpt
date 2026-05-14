@@ -30,6 +30,8 @@ promise_test(async (t) => {
   assert_equals(pc.sctp.maxChannels, null, 'maxChannels must not be set');
   assert_equals(pc.sctp.maxMessageSize, null, 'maxMessageSize must be null');
 }, 'An unconnected peerconnection must not have maxChannels set');
+}
+if (rest) {
 
 promise_test(async (t) => {
   const pc = new RTCPeerConnection();

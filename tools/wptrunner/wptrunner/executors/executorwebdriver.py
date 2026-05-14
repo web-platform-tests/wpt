@@ -1,7 +1,6 @@
 # mypy: allow-untyped-defs
 
 import asyncio
-import logging
 import json
 import os
 import socket
@@ -970,7 +969,6 @@ class WebDriverDevicePostureProtocolPart(DevicePostureProtocolPart):
 class WebDriverDigitalCredentialsPart(DigitalCredentialsProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
-        self.logger = logging.getLogger(__name__)
 
     async def set_virtual_wallet_behavior(self, action, protocol=None, response=None, context=None):
         if context is None:

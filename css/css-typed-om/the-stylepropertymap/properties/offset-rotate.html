@@ -15,7 +15,23 @@
 runPropertyTests('offset-rotate', [
   { syntax: 'auto' },
   { syntax: 'reverse' },
-  { syntax: '<angle>' },
+  {
+    syntax: '<angle>',
+    specified: (input, result, alternateExpected) => {
+      try {
+        assert_style_value_equals(result, input);
+      } catch(e) {
+        if (alternateExpected === undefined) {
+          throw e;
+        }
+        assert_style_value_equals(result, alternateExpected);
+      }
+    },
+    computed: (input, result) => {
+      const degrees = input.to('deg');
+      assert_style_value_equals(result, degrees);
+    }
+  },
 ]);
 
 runUnsupportedPropertyTests('offset-rotate', [

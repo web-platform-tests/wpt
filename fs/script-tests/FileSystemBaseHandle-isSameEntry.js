@@ -130,3 +130,10 @@ directory_test(async (t, root_dir) => {
   assert_true(await subdir.isSameEntry(cloned));
   assert_true(await cloned.isSameEntry(subdir));
 }, 'isSameEntry with a directory handle that was just cloned via postMessage');
+
+directory_test(async (t, root_dir) => {
+  const cloned = await clone_handle_via_message_channel(root_dir);
+
+  assert_true(await root_dir.isSameEntry(cloned));
+  assert_true(await cloned.isSameEntry(root_dir));
+}, 'isSameEntry with a root directory handle that was just cloned via postMessage');

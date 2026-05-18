@@ -13,8 +13,20 @@
 'use strict';
 
 runPropertyTests('offset-rotate', [
-  { syntax: 'auto' },
-  { syntax: 'reverse' },
+  {
+    syntax: 'auto',
+    computed: (input, result) => {
+      try {
+        assert_is_unsupported(result);
+      } catch(e) {
+        assert_style_value_equals(result, input);
+      }
+    }
+  },
+  {
+    syntax: 'reverse',
+    computed: (_, result) => assert_is_unsupported(result)
+  },
   {
     syntax: '<angle>',
     specified: (input, result, alternateExpected) => {

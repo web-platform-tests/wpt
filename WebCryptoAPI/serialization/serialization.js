@@ -1,24 +1,4 @@
 function run_test(vectors) {
-  function structuredCloneViaMessageChannel(data, t) {
-    const channel = new MessageChannel();
-    t.add_cleanup(() => {
-      channel.port1.close();
-      channel.port2.close();
-    });
-
-    const result = waitForEvent(channel.port1, 'message');
-    channel.port1.start();
-    channel.port2.postMessage(data);
-
-    return result.then(evt => evt.data);
-  }
-
-  function waitForEvent(obj, ev) {
-    return new Promise((resolve) => {
-      obj.addEventListener(ev, resolve, {once: true});
-    });
-  }
-
   function testCryptoKeySerialization(
       generateKeyAlgorithm, generateKeyUsages, exportFormat) {
     promise_test(async t => {
@@ -27,8 +7,7 @@ function run_test(vectors) {
       const keyExported =
           await crypto.subtle.exportKey(exportFormat, cryptoKey);
 
-      const {key} = await structuredCloneViaMessageChannel(
-          {key: cryptoKey}, t);
+      const {key} = structuredClone({key: cryptoKey});
       const newKeyExported =
           await crypto.subtle.exportKey(exportFormat, key);
       assert_true(equalBuffers(keyExported, newKeyExported));
@@ -46,8 +25,8 @@ function run_test(vectors) {
       const privateKeyExported = await crypto.subtle.exportKey(
           privateExportFormat, keyPair.privateKey);
 
-      const {publicKey, privateKey} = await structuredCloneViaMessageChannel(
-          {publicKey: keyPair.publicKey, privateKey: keyPair.privateKey}, t);
+      const {publicKey, privateKey} = structuredClone(
+          {publicKey: keyPair.publicKey, privateKey: keyPair.privateKey});
       const newPublicKeyExported =
           await crypto.subtle.exportKey(publicExportFormat, publicKey);
       assert_true(equalBuffers(publicKeyExported, newPublicKeyExported));

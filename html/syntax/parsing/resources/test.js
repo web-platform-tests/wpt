@@ -72,7 +72,7 @@
           for (const [name, value] of attrs) {
             lines.push(`|${innerPad}${name}="${value}"`);
           }
-          if (node instanceof HTMLTemplateElement) {
+          if (node.namespaceURI === NAMESPACES.html && node.localName === "template") {
             lines.push(`|${innerPad}content`);
             for (const child of node.content.childNodes) walk(child, depth + 2);
           }
@@ -125,7 +125,8 @@
         ? document.createElementNS(NAMESPACES[parts[0]], `${parts[0]}:${parts[1]}`)
         : document.createElement(container);
       containerEl.innerHTML = input;
-      const root = (containerEl instanceof HTMLTemplateElement) ? containerEl.content : containerEl;
+      const root = (containerEl.namespaceURI === NAMESPACES.html && containerEl.localName === "template")
+        ? containerEl.content : containerEl;
       let actual = serializeTree(root);
       record({ id, input, expected, actual, container });
       // serializeTree emits "#document-fragment"; the .dat expected tree uses

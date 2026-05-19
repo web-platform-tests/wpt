@@ -1,201 +1,115 @@
-import glob
-import hashlib
-import itertools
-import json
-import os
+#!/usr/bin/env python3
+"""Refresh html5lib-tests .dat files in resources/ and regenerate the
+three wrapper files from a local html5lib-tests clone.
+
+The pinned revision in html5lib_tests_revision controls what gets exported.
+To upgrade: edit html5lib_tests_revision, then re-run this script.
+
+  update_html5lib_tests.py [--repo PATH]
+
+By default the script expects a local clone at ../../../html5lib-tests
+(sibling of the WPT working tree).
+"""
+
+import argparse
 import re
-import shutil
-import site
 import subprocess
 import sys
-import tempfile
-import urllib
-from importlib import reload
+from pathlib import Path
+
+TOOLS = Path(__file__).resolve().parent
+WPT = TOOLS.parents[1]
+REVISION_FILE = TOOLS / "html5lib_tests_revision"
+PARSING = WPT / "html" / "syntax" / "parsing"
+RESOURCES = PARSING / "resources"
+WRAPPERS = ["url", "write", "write_single"]
+DEFAULT_REPO = WPT.parent / "html5lib-tests"
+
+DAT_PATH_RE = re.compile(r"^tree-construction/(scripted/)?(.+)\.dat$")
+DATA_LINE_RE = re.compile(r"(?m)^#data$")
+SCRIPT_OFF_LINE_RE = re.compile(r"(?m)^#script-off$")
 
 
-import genshi
-from genshi.template import MarkupTemplate
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--repo", type=Path, default=DEFAULT_REPO,
+        help=f"path to a local html5lib-tests clone (default: {DEFAULT_REPO})",
+    )
+    args = parser.parse_args()
 
-
-TESTS_PATH = "html/syntax/parsing/"
-
-def get_paths():
-    script_path = os.path.dirname(os.path.abspath(__file__))
-    repo_base = get_repo_base(script_path)
-    tests_path = os.path.join(repo_base, TESTS_PATH)
-    return script_path, tests_path
-
-
-def get_repo_base(path):
-    while path:
-        if os.path.exists(os.path.join(path, ".git")):
-            return path
-        else:
-            path = os.path.dirname(path)
-
-
-def get_expected(data):
-    data = "#document\n" + data
-    return data
-
-
-def get_hash(data, container=None):
-    if container == None:
-        container = ""
-    return hashlib.sha1(b"#container%s#data%s"%(container.encode("utf8"),
-                                               data.encode("utf8"))).hexdigest()
-
-
-class Html5libInstall:
-    def __init__(self, rev=None, tests_rev=None):
-        self.html5lib_dir = None
-        self.rev = rev
-        self.tests_rev = tests_rev
-
-    def __enter__(self):
-        self.html5lib_dir = tempfile.TemporaryDirectory()
-        html5lib_path = self.html5lib_dir.__enter__()
-        html5lib_python_path = os.path.join(html5lib_path, "html5lib")
-        html5lib_tests_path = os.path.join(
-            html5lib_python_path, "html5lib", "tests", "testdata"
-        )
-
+    revision = REVISION_FILE.read_text().strip()
+    if not (args.repo / ".git").exists():
+        print(f"error: {args.repo} is not a git repository", file=sys.stderr)
+        return 1
+    try:
         subprocess.check_call(
-            [
-                "git",
-                "clone",
-                "--no-checkout",
-                "https://github.com/html5lib/html5lib-python.git",
-                "html5lib",
-            ],
-            cwd=html5lib_path,
+            ["git", "-C", str(args.repo), "cat-file", "-e", f"{revision}^{{commit}}"],
+            stderr=subprocess.DEVNULL,
         )
+    except subprocess.CalledProcessError:
+        print(f"error: revision {revision} not in {args.repo}; run `git fetch` there.",
+              file=sys.stderr)
+        return 1
 
-        rev = self.rev if self.rev is not None else "origin/master"
-        subprocess.check_call(
-            ["git", "checkout", rev], cwd=html5lib_python_path
-        )
+    paths = subprocess.check_output(
+        ["git", "-C", str(args.repo), "ls-tree", "--name-only", "-r", revision, "tree-construction/"],
+        text=True,
+    ).splitlines()
 
-        subprocess.check_call(
-            [
-                "git",
-                "submodule",
-                "update",
-                "--init",
-                "--recursive",
-            ],
-            cwd=html5lib_python_path,
-        )
+    for old in sorted(RESOURCES.glob("*.dat")):
+        old.unlink()
 
-        subprocess.check_call(["pip", "install", "-e", "html5lib"], cwd=html5lib_path)
-        reload(site)
-
-        tests_rev = self.tests_rev if self.tests_rev is not None else "origin/master"
-        subprocess.check_call(["git", "checkout", tests_rev], cwd=html5lib_tests_path)
-
-    def __exit__(self, *args, **kwargs):
-        subprocess.call(["pip", "uninstall", "-y", "html5lib"], cwd=self.html5lib_dir.name)
-        self.html5lib_dir.__exit__(*args, **kwargs)
-        self.html5lib_dir = None
-
-
-def make_tests(script_dir, out_dir, input_file_name, test_data):
-    tests = []
-    innerHTML_tests = []
-    ids_seen = {}
-    print(input_file_name)
-    for test in test_data:
-        if "script-off" in test:
+    runnable: list[str] = []
+    skipped: list[str] = []
+    for path in paths:
+        m = DAT_PATH_RE.match(path)
+        if not m:
             continue
-        is_innerHTML = "document-fragment" in test
-        data = test["data"]
-        container = test["document-fragment"] if is_innerHTML else None
-        assert test["document"], test
-        expected = get_expected(test["document"])
-        test_list = innerHTML_tests if is_innerHTML else tests
-        test_id = get_hash(data, container)
-        if test_id in ids_seen:
-            print("WARNING: id %s seen multiple times in file %s this time for test (%s, %s) before for test %s, skipping"%(test_id, input_file_name, container, data, ids_seen[test_id]))
-            continue
-        ids_seen[test_id] = (container, data)
-        test_list.append({'string_uri_encoded_input':"\"%s\""%urllib.parse.quote(data.encode("utf8")),
-                          'input':data,
-                          'expected':expected,
-                          'string_escaped_expected':json.dumps(urllib.parse.quote(expected.encode("utf8"))),
-                          'id':test_id,
-                          'container':container
-                          })
-    path_normal = None
-    if tests:
-        path_normal = write_test_file(script_dir, out_dir,
-                                      tests, "html5lib_%s"%input_file_name,
-                                      "html5lib_test.xml")
-    path_innerHTML = None
-    if innerHTML_tests:
-        path_innerHTML = write_test_file(script_dir, out_dir,
-                                         innerHTML_tests, "html5lib_innerHTML_%s"%input_file_name,
-                                         "html5lib_test_fragment.xml")
-
-    return path_normal, path_innerHTML
-
-def write_test_file(script_dir, out_dir, tests, file_name, template_file_name):
-    file_name = os.path.join(out_dir, file_name + ".html")
-    short_name = os.path.basename(file_name)
-
-    with open(os.path.join(script_dir, template_file_name), "r") as f:
-        template = MarkupTemplate(f)
-
-    stream = template.generate(file_name=short_name, tests=tests)
-
-    with open(file_name, "w") as f:
-        f.write(str(stream.render('html', doctype='html5',
-                              encoding="utf8"), "utf-8"))
-    return file_name
-
-def escape_js_string(in_data):
-    return in_data.encode("utf8").encode("string-escape")
-
-def serialize_filenames(test_filenames):
-    return "[" + ",\n".join("\"%s\""%item for item in test_filenames) + "]"
-
-def main():
-    script_dir, out_dir = get_paths()
-
-    test_files = []
-    inner_html_files = []
-    with open(os.path.join(script_dir, "html5lib_python_revision"), "r") as f:
-        html5lib_rev = f.read().strip()
-
-    with open(os.path.join(script_dir, "html5lib_tests_revision"), "r") as f:
-        html5lib_tests_rev = f.read().strip()
-
-    with Html5libInstall(html5lib_rev, html5lib_tests_rev):
-        from html5lib.tests import support
-
-        if len(sys.argv) > 2:
-            test_iterator = zip(
-                itertools.repeat(False),
-                sorted(os.path.abspath(item) for item in
-                       glob.glob(os.path.join(sys.argv[2], "*.dat"))))
+        name = ("scripted_" if m.group(1) else "") + m.group(2)
+        content = subprocess.check_output(
+            ["git", "-C", str(args.repo), "show", f"{revision}:{path}"],
+        )
+        (RESOURCES / f"{name}.dat").write_bytes(content)
+        text = content.decode("utf-8")
+        if len(DATA_LINE_RE.findall(text)) > len(SCRIPT_OFF_LINE_RE.findall(text)):
+            runnable.append(name)
         else:
-            test_iterator = itertools.chain(
-                zip(itertools.repeat(False),
-                               sorted(support.get_data_files("tree-construction"))),
-                zip(itertools.repeat(True),
-                               sorted(support.get_data_files(
-                            os.path.join("tree-construction", "scripted")))))
+            skipped.append(name)
 
-        for (scripted, test_file) in test_iterator:
-            input_file_name = os.path.splitext(os.path.basename(test_file))[0]
-            if scripted:
-                input_file_name = "scripted_" + input_file_name
-            test_data = support.TestData(test_file)
-            test_filename, inner_html_file_name = make_tests(script_dir, out_dir,
-                                                             input_file_name, test_data)
-            if test_filename is not None:
-                test_files.append(test_filename)
-            if inner_html_file_name is not None:
-                inner_html_files.append(inner_html_file_name)
+    runnable.sort()
+    print(f"  {len(runnable) + len(skipped)} .dat files written to resources/")
+    if skipped:
+        print(f"  not listed as variants (all #script-off): {', '.join(skipped)}")
+
+    for kind in WRAPPERS:
+        write_wrapper(PARSING / f"html5lib_{kind}.html", kind, runnable)
+    print(f"  refreshed {len(WRAPPERS)} wrapper(s)")
+    return 0
+
+
+def write_wrapper(path: Path, run_type: str, names: list[str]) -> None:
+    variants = "\n".join(f'<meta name="variant" content="?file={n}">' for n in names)
+    path.write_text(f"""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>HTML parser tests (run_type={run_type})</title>
+<meta name="timeout" content="long">
+{variants}
+</head>
+<body>
+<h1>html5lib parser tests</h1>
+<div id="log"></div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/common.js"></script>
+<script src="resources/template.js"></script>
+<script src="resources/test.js" data-run-type="{run_type}"></script>
+</body>
+</html>
+""")
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

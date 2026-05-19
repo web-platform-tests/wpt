@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
 """Refresh html5lib-tests .dat files in resources/ and regenerate the
-three wrapper files from a local html5lib-tests clone.
+three wrapper files at the pinned upstream revision.
 
-The pinned revision in html5lib_tests_revision controls what gets exported.
-To upgrade: edit html5lib_tests_revision, then re-run this script.
+The pinned revision lives in html5lib_tests_revision. To upgrade: edit
+that file, then re-run this script.
 
   update_html5lib_tests.py [--repo PATH]
 
-By default the script expects a local clone at ../../../html5lib-tests
-(sibling of the WPT working tree).
+By default html5lib-tests is cloned fresh into a tempdir. Pass --repo
+PATH to reuse a local clone (must already contain the pinned revision).
 """
 
+from __future__ import annotations
+
 import argparse
+import contextlib
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 TOOLS = Path(__file__).resolve().parent
@@ -23,59 +27,79 @@ REVISION_FILE = TOOLS / "html5lib_tests_revision"
 PARSING = WPT / "html" / "syntax" / "parsing"
 RESOURCES = PARSING / "resources"
 WRAPPERS = ["url", "write", "write_single"]
-DEFAULT_REPO = WPT.parent / "html5lib-tests"
+UPSTREAM = "https://github.com/html5lib/html5lib-tests.git"
 
 DAT_PATH_RE = re.compile(r"^tree-construction/(scripted/)?(.+)\.dat$")
 DATA_LINE_RE = re.compile(r"(?m)^#data$")
 SCRIPT_OFF_LINE_RE = re.compile(r"(?m)^#script-off$")
 
 
+def has_revision(path: Path, revision: str) -> bool:
+    try:
+        subprocess.check_call(
+            ["git", "-C", str(path), "cat-file", "-e", f"{revision}^{{commit}}"],
+            stderr=subprocess.DEVNULL,
+        )
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
+@contextlib.contextmanager
+def open_repo(repo: Path | None, revision: str):
+    if repo is not None:
+        if not (repo / ".git").exists() or not has_revision(repo, revision):
+            print(f"error: {repo} does not contain revision {revision}; "
+                  f"run `git fetch` there or omit --repo to clone fresh.",
+                  file=sys.stderr)
+            sys.exit(1)
+        yield repo
+        return
+    with tempfile.TemporaryDirectory() as tmp:
+        clone = Path(tmp) / "html5lib-tests"
+        print(f"  cloning html5lib-tests into {clone}…")
+        subprocess.check_call(["git", "clone", "--no-checkout", UPSTREAM, str(clone)])
+        if not has_revision(clone, revision):
+            print(f"error: revision {revision} not on origin", file=sys.stderr)
+            sys.exit(1)
+        yield clone
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--repo", type=Path, default=DEFAULT_REPO,
-        help=f"path to a local html5lib-tests clone (default: {DEFAULT_REPO})",
+        "--repo", type=Path, default=None,
+        help="reuse a local html5lib-tests clone instead of cloning fresh",
     )
     args = parser.parse_args()
 
     revision = REVISION_FILE.read_text().strip()
-    if not (args.repo / ".git").exists():
-        print(f"error: {args.repo} is not a git repository", file=sys.stderr)
-        return 1
-    try:
-        subprocess.check_call(
-            ["git", "-C", str(args.repo), "cat-file", "-e", f"{revision}^{{commit}}"],
-            stderr=subprocess.DEVNULL,
-        )
-    except subprocess.CalledProcessError:
-        print(f"error: revision {revision} not in {args.repo}; run `git fetch` there.",
-              file=sys.stderr)
-        return 1
 
-    paths = subprocess.check_output(
-        ["git", "-C", str(args.repo), "ls-tree", "--name-only", "-r", revision, "tree-construction/"],
-        text=True,
-    ).splitlines()
+    with open_repo(args.repo, revision) as repo:
+        paths = subprocess.check_output(
+            ["git", "-C", str(repo), "ls-tree", "--name-only", "-r", revision, "tree-construction/"],
+            text=True,
+        ).splitlines()
 
-    for old in sorted(RESOURCES.glob("*.dat")):
-        old.unlink()
+        for old in sorted(RESOURCES.glob("*.dat")):
+            old.unlink()
 
-    runnable: list[str] = []
-    skipped: list[str] = []
-    for path in paths:
-        m = DAT_PATH_RE.match(path)
-        if not m:
-            continue
-        name = ("scripted_" if m.group(1) else "") + m.group(2)
-        content = subprocess.check_output(
-            ["git", "-C", str(args.repo), "show", f"{revision}:{path}"],
-        )
-        (RESOURCES / f"{name}.dat").write_bytes(content)
-        text = content.decode("utf-8")
-        if len(DATA_LINE_RE.findall(text)) > len(SCRIPT_OFF_LINE_RE.findall(text)):
-            runnable.append(name)
-        else:
-            skipped.append(name)
+        runnable: list[str] = []
+        skipped: list[str] = []
+        for path in paths:
+            m = DAT_PATH_RE.match(path)
+            if not m:
+                continue
+            name = ("scripted_" if m.group(1) else "") + m.group(2)
+            content = subprocess.check_output(
+                ["git", "-C", str(repo), "show", f"{revision}:{path}"],
+            )
+            (RESOURCES / f"{name}.dat").write_bytes(content)
+            text = content.decode("utf-8")
+            if len(DATA_LINE_RE.findall(text)) > len(SCRIPT_OFF_LINE_RE.findall(text)):
+                runnable.append(name)
+            else:
+                skipped.append(name)
 
     runnable.sort()
     print(f"  {len(runnable) + len(skipped)} .dat files written to resources/")

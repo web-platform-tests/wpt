@@ -1988,8 +1988,9 @@
         /**
          * Sets the behavior for the virtual wallet.
          *
-         * Matches the `Set Virtual Wallet Behavior`
-         * WebDriver BiDi command in Digital Credentials spec.
+         * Matches the `Set Virtual Wallet Behavior
+         * <https://w3c-fedid.github.io/digital-credentials/#automated-testing>`_
+         * WebDriver command.
          *
          * @param {String} action - The action to take ("decline", "respond", "wait", "clear").
          * @param {String} [protocol=null] - The protocol requested (required for "respond").

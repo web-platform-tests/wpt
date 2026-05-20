@@ -30,8 +30,24 @@ WRAPPERS = ["url", "write", "write_single"]
 UPSTREAM = "https://github.com/html5lib/html5lib-tests.git"
 
 DAT_PATH_RE = re.compile(r"^tree-construction/(scripted/)?(.+)\.dat$")
-DATA_LINE_RE = re.compile(rb"(?m)^#data$")
-SCRIPT_OFF_LINE_RE = re.compile(rb"(?m)^#script-off$")
+DATA_BOUNDARY = re.compile(rb"(?m)^#data$")
+FRAGMENT_LINE = re.compile(rb"(?m)^#document-fragment$")
+SCRIPT_OFF_LINE = re.compile(rb"(?m)^#script-off$")
+
+
+def classify(content: bytes) -> tuple[bool, bool]:
+    """Return (has_document_test, has_fragment_test) after filtering #script-off."""
+    has_doc = False
+    has_frag = False
+    # The first split chunk is the file preamble (before any #data); skip it.
+    for chunk in DATA_BOUNDARY.split(content)[1:]:
+        if SCRIPT_OFF_LINE.search(chunk):
+            continue
+        if FRAGMENT_LINE.search(chunk):
+            has_frag = True
+        else:
+            has_doc = True
+    return has_doc, has_frag
 
 
 def has_revision(path: Path, revision: str) -> bool:
@@ -84,7 +100,10 @@ def main() -> int:
         for old in sorted(RESOURCES.glob("*.dat")):
             old.unlink()
 
-        runnable: list[str] = []
+        # url runs everything; write/write_single only have meaning for
+        # document-mode tests (fragment tests always go through innerHTML).
+        runnable_url: list[str] = []
+        runnable_doc: list[str] = []
         skipped: list[str] = []
         for path in paths:
             m = DAT_PATH_RE.match(path)
@@ -95,18 +114,26 @@ def main() -> int:
                 ["git", "-C", str(repo), "show", f"{revision}:{path}"],
             )
             (RESOURCES / f"{name}.dat").write_bytes(content)
-            if len(DATA_LINE_RE.findall(content)) > len(SCRIPT_OFF_LINE_RE.findall(content)):
-                runnable.append(name)
-            else:
+            has_doc, has_frag = classify(content)
+            if has_doc or has_frag:
+                runnable_url.append(name)
+            if has_doc:
+                runnable_doc.append(name)
+            if not has_doc and not has_frag:
                 skipped.append(name)
 
-    runnable.sort()
-    print(f"  {len(runnable) + len(skipped)} .dat files written to resources/")
+    runnable_url.sort()
+    runnable_doc.sort()
+    print(f"  {len(runnable_url) + len(skipped)} .dat files written to resources/")
     if skipped:
         print(f"  not listed as variants (all #script-off): {', '.join(skipped)}")
+    fragment_only = sorted(set(runnable_url) - set(runnable_doc))
+    if fragment_only:
+        print(f"  fragment-only (url wrapper only): {', '.join(fragment_only)}")
 
     for kind in WRAPPERS:
-        write_wrapper(PARSING / f"html5lib_{kind}.html", kind, runnable)
+        names = runnable_url if kind == "url" else runnable_doc
+        write_wrapper(PARSING / f"html5lib_{kind}.html", kind, names)
     print(f"  refreshed {len(WRAPPERS)} wrapper(s)")
     return 0
 

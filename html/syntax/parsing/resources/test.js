@@ -275,6 +275,13 @@
         });
       }
 
+      // Nothing to run (e.g. fragment-only .dat in a non-url wrapper). The
+      // updater shouldn't list such variants; surface a clear failure if one
+      // ever does end up here so the cause is obvious.
+      if (entries.length === 0) {
+        throw new Error(`${file}.dat has no tests for run_type=${runType}`);
+      }
+
       const fails = [];
       let started = 0;
       let completed = 0;

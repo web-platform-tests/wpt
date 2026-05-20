@@ -1,4 +1,4 @@
-// Runner for html5lib-tests .dat files, hosted under WPT.
+// Runner for html5lib-tests .dat files.
 //
 // Each wrapper page (html5lib_url.html, html5lib_write.html, …) loads this
 // script with `<script src="resources/test.js" data-run-type="…"></script>`
@@ -238,23 +238,42 @@
     .then(r => r.ok ? r.text() : Promise.reject(new Error(`fetch ${file}.dat: ${r.status}`)))
     .then(text => {
       const cases = parseDat(text).filter(c => !c.scriptOff);
-      const order = [];
-      const tests = new Map();
+      const entries = [];
+      const seenNames = new Set();
       const records = new Map();          // iframe.id -> latest record for that test
       const iframeForTest = new Map();    // test.name -> iframe.id
 
-      cases.forEach((c, i) => {
-        const id = `${file}[${i}]`;
-        const label = c.data.length > 80 ? c.data.slice(0, 77) + "…" : c.data;
-        const t = async_test(`${id} ${label.replace(/\n/g, "\\n")}`);
-        tests.set(id, {
-          t,
+      const escapeForName = s => s.replace(/[\x00-\x1f]/g, ch => {
+        const code = ch.charCodeAt(0);
+        if (code === 0x0a) return "\\n";
+        if (code === 0x0d) return "\\r";
+        if (code === 0x09) return "\\t";
+        return `\\x${code.toString(16).padStart(2, "0")}`;
+      });
+
+      for (const c of cases) {
+        // Fragment tests don't depend on the page's parsing mode (they always
+        // go through innerHTML), so we run them in only one wrapper to avoid
+        // counting the same assertion three times.
+        if (c.fragment !== undefined && runType !== "url") continue;
+        const name = c.fragment !== undefined
+          ? `${escapeForName(c.data)} (innerHTML in ${c.fragment})`
+          : escapeForName(c.data);
+        // Identical (input, fragment-context) pairs would collide as test
+        // names. Upstream html5lib-tests doesn't ship any (after #script-off
+        // is filtered out); if that ever changes we want to know rather than
+        // silently drop one.
+        if (seenNames.has(name)) {
+          throw new Error(`duplicate test in ${file}.dat: ${name}`);
+        }
+        seenNames.add(name);
+        entries.push({
+          t: async_test(name),
           input: c.data,
           expected: "#document\n" + c.document,
           fragment: c.fragment,
         });
-        order.push(id);
-      });
+      }
 
       const fails = [];
       let started = 0;
@@ -271,9 +290,9 @@
           document.body.replaceChild(fresh, iframe);
           iframe = fresh;
         }
-        if (completed === order.length) {
+        if (completed === entries.length) {
           done();
-        } else if (started < order.length) {
+        } else if (started < entries.length) {
           runNext(iframe);
         }
       });
@@ -288,18 +307,17 @@
       }
 
       const runNext = iframe => {
-        const id = order[started++];
-        const entry = tests.get(id);
+        const entry = entries[started++];
         const runner = entry.fragment !== undefined ? RUNNERS.innerHTML : RUNNERS[runType];
         iframeForTest.set(entry.t.name, iframe.id);
         const record = data => records.set(iframe.id, data);
         step_timeout(() => entry.t.step(() => {
-          runner({ iframe, t: entry.t, id, input: entry.input, expected: entry.expected, container: entry.fragment, record });
+          runner({ iframe, t: entry.t, id: entry.t.name, input: entry.input, expected: entry.expected, container: entry.fragment, record });
         }), 0);
       };
 
       for (const iframe of document.getElementsByTagName("iframe")) {
-        if (started < order.length) runNext(iframe);
+        if (started < entries.length) runNext(iframe);
       }
     })
     .catch(err => {

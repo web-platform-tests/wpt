@@ -30,8 +30,8 @@ WRAPPERS = ["url", "write", "write_single"]
 UPSTREAM = "https://github.com/html5lib/html5lib-tests.git"
 
 DAT_PATH_RE = re.compile(r"^tree-construction/(scripted/)?(.+)\.dat$")
-DATA_LINE_RE = re.compile(r"(?m)^#data$")
-SCRIPT_OFF_LINE_RE = re.compile(r"(?m)^#script-off$")
+DATA_LINE_RE = re.compile(rb"(?m)^#data$")
+SCRIPT_OFF_LINE_RE = re.compile(rb"(?m)^#script-off$")
 
 
 def has_revision(path: Path, revision: str) -> bool:
@@ -95,8 +95,7 @@ def main() -> int:
                 ["git", "-C", str(repo), "show", f"{revision}:{path}"],
             )
             (RESOURCES / f"{name}.dat").write_bytes(content)
-            text = content.decode("utf-8")
-            if len(DATA_LINE_RE.findall(text)) > len(SCRIPT_OFF_LINE_RE.findall(text)):
+            if len(DATA_LINE_RE.findall(content)) > len(SCRIPT_OFF_LINE_RE.findall(content)):
                 runnable.append(name)
             else:
                 skipped.append(name)

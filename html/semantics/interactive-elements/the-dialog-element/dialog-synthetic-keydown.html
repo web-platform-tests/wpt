@@ -4,25 +4,24 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
-<script src="../resources/helpers.js"></script>
 
 <body>
+<dialog id="dialog"></dialog>
 <script>
-test(t => {
-  let events = [];
-  let watcher = createRecordingCloseWatcher(t, events);
+test(() => {
+  dialog.showModal();
 
   let keydown = new KeyboardEvent("keydown", {key: "Escape", keyCode: 27});
   document.body.dispatchEvent(keydown);
   let keyup = new KeyboardEvent("keyup", {key: "Escape", keyCode: 27});
   document.body.dispatchEvent(keyup);
 
-  assert_array_equals(events, []);
+  assert_true(dialog.open);
 
   let keyup2 = document.createEvent("Event");
   keyup2.initEvent("keyup", true);
   document.body.dispatchEvent(keyup2);
 
-  assert_array_equals(events, []);
+  assert_true(dialog.open);
 }, "close via synthesized Esc key must not work");
 </script>

@@ -1,0 +1,144 @@
+<!doctype html>
+<title>img sizes="auto" uses the object-fit concrete object size</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#sizes-attributes">
+<link rel="help" href="https://www.w3.org/TR/css-images-3/#cover-contain">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+.case {
+  display: inline-block;
+  margin: 0 4px 4px 0;
+}
+
+img {
+  display: block;
+  width: 200px;
+  height: 200px;
+}
+</style>
+<div id="log"></div>
+<script>
+"use strict";
+
+const wideCandidates = [
+  { width: 200, url: "support/sizes-auto-object-fit-wide.svg" },
+  { width: 300, url: "support/sizes-auto-object-fit-wide.svg" },
+  { width: 400, url: "support/sizes-auto-object-fit-wide.svg" },
+  { width: 600, url: "support/sizes-auto-object-fit-wide.svg" },
+  { width: 800, url: "support/sizes-auto-object-fit-wide.svg" },
+];
+const narrowCandidates = [
+  { width: 100, url: "support/sizes-auto-object-fit-narrow.svg" },
+  { width: 150, url: "support/sizes-auto-object-fit-narrow.svg" },
+  { width: 200, url: "support/sizes-auto-object-fit-narrow.svg" },
+  { width: 300, url: "support/sizes-auto-object-fit-narrow.svg" },
+  { width: 400, url: "support/sizes-auto-object-fit-narrow.svg" },
+];
+
+const cases = [
+  {
+    name: "wide image with object-fit: cover",
+    candidates: wideCandidates,
+    explicitSize: "400px",
+    intrinsicWidth: 800,
+    intrinsicHeight: 400,
+    objectFit: "cover",
+  },
+  {
+    name: "wide image with object-fit: contain",
+    candidates: wideCandidates,
+    explicitSize: "200px",
+    intrinsicWidth: 800,
+    intrinsicHeight: 400,
+    objectFit: "contain",
+  },
+  {
+    name: "narrow image with object-fit: cover",
+    candidates: narrowCandidates,
+    explicitSize: "200px",
+    intrinsicWidth: 400,
+    intrinsicHeight: 800,
+    objectFit: "cover",
+  },
+  {
+    name: "narrow image with object-fit: contain",
+    candidates: narrowCandidates,
+    explicitSize: "100px",
+    intrinsicWidth: 400,
+    intrinsicHeight: 800,
+    objectFit: "contain",
+  },
+];
+
+function candidateToken(testCase, kind, candidate) {
+  return `${testCase.name.replace(/[^a-z0-9]+/gi, "-")}-${kind}-${candidate.width}`;
+}
+
+function srcsetFor(testCase, kind) {
+  return testCase.candidates
+    .map(candidate => {
+      const token = candidateToken(testCase, kind, candidate);
+      return `${candidate.url}?candidate=${token} ${candidate.width}w`;
+    })
+    .join(", ");
+}
+
+function selectedCandidateWidth(img) {
+  const candidate = new URL(img.currentSrc).searchParams.get("candidate");
+  assert_not_equals(candidate, null, "currentSrc should identify a candidate");
+  return Number(candidate.split("-").pop());
+}
+
+function expectedCandidateWidth(testCase) {
+  const sourceSize = Number(testCase.explicitSize.replace("px", ""));
+  const targetWidth = sourceSize * devicePixelRatio;
+  const candidate = testCase.candidates.find(({ width }) => width >= targetWidth);
+  return candidate ? candidate.width : testCase.candidates[testCase.candidates.length - 1].width;
+}
+
+function imageLoaded(img) {
+  return new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+  });
+}
+
+function createImage(testCase, kind, sizes) {
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.sizes = sizes;
+  img.width = testCase.intrinsicWidth;
+  img.height = testCase.intrinsicHeight;
+  img.style.objectFit = testCase.objectFit;
+  img.alt = "";
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "case";
+  wrapper.appendChild(img);
+  document.body.appendChild(wrapper);
+
+  const loadPromise = imageLoaded(img);
+  img.srcset = srcsetFor(testCase, kind);
+  return { img, loadPromise };
+}
+
+for (const testCase of cases) {
+  promise_test(async () => {
+    const auto = createImage(testCase, "auto", "auto");
+    const explicit = createImage(testCase, "explicit", testCase.explicitSize);
+
+    await Promise.all([auto.loadPromise, explicit.loadPromise]);
+
+    assert_equals(
+      selectedCandidateWidth(explicit.img),
+      expectedCandidateWidth(testCase),
+      `sizes=${testCase.explicitSize} should select the expected baseline candidate`
+    );
+    assert_equals(
+      selectedCandidateWidth(auto.img),
+      selectedCandidateWidth(explicit.img),
+      `sizes=auto should select the same candidate as sizes=${testCase.explicitSize}`
+    );
+  }, `sizes=auto uses the object-fit concrete object width for ${testCase.name}`);
+}
+</script>

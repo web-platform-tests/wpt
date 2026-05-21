@@ -13,7 +13,7 @@ def run_cmd(cmd, cwd=None):
 def main():
     wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     proposals_json_path = os.path.join(wpt_root, "wasm", "proposals.json")
-    
+
     if not os.path.exists(proposals_json_path):
         raise FileNotFoundError(f"Proposals config file not found at {proposals_json_path}")
 
@@ -37,14 +37,14 @@ def main():
 
             print(f"\n--- Processing proposal: {name} ---")
             prop_dir = os.path.join(tmp_dir, name)
-            
+
             # 1. Clone proposal repo (default to WebAssembly organization, main branch)
             run_cmd(["git", "clone", "--branch", "main", f"https://github.com/WebAssembly/{name}.git", prop_dir])
-            
+
             # 2. Add upstream remote to find fork point
             run_cmd(["git", "remote", "add", "upstream", "https://github.com/WebAssembly/spec.git"], cwd=prop_dir)
             run_cmd(["git", "fetch", "upstream", "main"], cwd=prop_dir)
-            
+
             # 3. Find the merge base (fork point) commit
             try:
                 base_commit = run_cmd(["git", "merge-base", "upstream/main", "HEAD"], cwd=prop_dir).strip()
@@ -56,7 +56,7 @@ def main():
 
             # 4. Find changed or added files under test/core
             diff_out = run_cmd(["git", "diff", "--name-status", base_commit, "HEAD", "--", "test/core"], cwd=prop_dir)
-            
+
             changed_wast_files = set()
             for line in diff_out.splitlines():
                 if not line.strip():

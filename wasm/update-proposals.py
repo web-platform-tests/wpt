@@ -67,7 +67,7 @@ def main():
                 status, path = parts[0], parts[1]
                 # We care about Added, Modified, Renamed, etc. (anything except Deleted 'D')
                 if 'D' not in status:
-                    if path.startswith("test/core/"):
+                    if path.startswith("test/core/") and path.endswith(".wast"):
                         rel_path = path[len("test/core/"):]
                         changed_wast_files.add(rel_path)
 
@@ -100,6 +100,7 @@ def main():
             # 8. Copy only the files that were changed/added by the proposal
             copied_count = 0
             for rel_wast in changed_wast_files:
+                print(f"Changed wast file: {rel_wast}")
                 rel_out_file = rel_wast + ".js.html"
                 src_file = os.path.join(out_dir, rel_out_file)
                 dst_file = os.path.join(target_dir, rel_out_file.replace(".html", ".tentative.html"))

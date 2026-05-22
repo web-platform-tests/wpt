@@ -104,7 +104,7 @@ function checkSendReceive(data, propertyName, propertyType) {
 function checkReceiveOnly(data, propertyName, propertyType) {
     assert_equals(data.senderBeforeWrite.metadata[propertyName], undefined);
     assert_equals(data.senderBeforeWrite.metadata[propertyName],
-      data.senderAfterWrite[propertyName],
+      data.senderAfterWrite.metadata[propertyName],
       propertyName + ' matches (for sender before and after write)');
     assert_equals(typeof data.receiverBeforeWrite.metadata[propertyName], propertyType);
     assert_equals(data.receiverBeforeWrite.metadata[propertyName],
@@ -260,7 +260,7 @@ promise_test(async (test) => {
         assert_equals(data.senderBeforeWrite.timestamp,
           data.receiverAfterWrite.timestamp,
           'type matches (for receiver before and after write)');
-    }, kind + ' frame: type (renamed to metadata.rtpTimestamp');
+    }, kind + ' frame: timestamp (renamed to metadata.rtpTimestamp');
 });
         </script>
     </body>

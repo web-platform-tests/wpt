@@ -27,10 +27,19 @@ def main():
         print("Proposals list is empty.")
         return
 
+    # 1. Clear out target proposals directory entirely to prune removed proposals
+    proposals_dir = os.path.join(wpt_root, "wasm", "proposals")
+    if os.path.exists(proposals_dir):
+        shutil.rmtree(proposals_dir)
+    os.makedirs(proposals_dir, exist_ok=True)
+
     tmp_dir = os.path.join(os.getcwd(), "tmp_proposals")
     if os.path.exists(tmp_dir):
         shutil.rmtree(tmp_dir)
     os.makedirs(tmp_dir)
+
+    updated_proposals = []
+    merged_proposals = []
 
     try:
         for name in proposals:
@@ -76,6 +85,7 @@ def main():
 
             if not changed_wast_files:
                 print(f"No added or modified tests found in test/core for proposal {name}.")
+                merged_proposals.append(name)
                 continue
 
             print(f"Found {len(changed_wast_files)} changed/added test files.")
@@ -94,10 +104,8 @@ def main():
             print("Converting WAST tests to WPT format...")
             run_cmd([build_script, "--dont-recompile", "--html", out_dir], cwd=proposal_dir)
 
-            # 7. Create `wasm/proposals` directory in WPT
+            # 7. Create target directory in WPT proposals
             target_dir = os.path.join(wpt_root, "wasm", "proposals", name, "core")
-            if os.path.exists(target_dir):
-                shutil.rmtree(target_dir)
             os.makedirs(target_dir, exist_ok=True)
 
             # 8. Copy only the files that were changed/added by the proposal
@@ -112,9 +120,30 @@ def main():
                 shutil.copy2(src_file, dst_file)
                 copied_count += 1
 
+            if copied_count > 0:
+                updated_proposals.append(name)
+
             print(f"Successfully copied {copied_count} test files to {target_dir}")
 
     finally:
+        # 9. Write execution summary
+        summary_path = os.path.join(wpt_root, "wasm", "proposals-summary.txt")
+        if updated_proposals or merged_proposals:
+            with open(summary_path, "w") as f:
+                if updated_proposals:
+                    f.write("The following Wasm proposals were successfully updated:\n")
+                    for name in updated_proposals:
+                        f.write(f"- {name}\n")
+                if updated_proposals and merged_proposals:
+                    f.write("\n")
+                if merged_proposals:
+                    f.write("Note: The following proposals have 0 differences from the main spec and are likely fully merged. Please consider removing them from `wasm/proposals.json`:\n")
+                    for name in merged_proposals:
+                        f.write(f"- {name}\n")
+            print(f"\nWritten proposals summary to {summary_path}")
+        elif os.path.exists(summary_path):
+            os.remove(summary_path)
+
         if os.path.exists(tmp_dir):
             shutil.rmtree(tmp_dir)
 

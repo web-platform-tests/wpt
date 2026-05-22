@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>CSS Borders and Box Decorations Module Level 4: border-width with hairline</title>
+<title>CSS Borders and Box Decorations Test: border-width with hairline"</title>
 <link rel="author" title="Eyvind Lillesveen" href="eyvind.lillesveen@gmail.com">
 <link rel="help" href="https://drafts.csswg.org/css-borders-4/#valdef-line-width-hairline">
 <script src="/resources/testharness.js"></script>
@@ -17,6 +17,8 @@
 </style>
 <div id="t"></div>
 <script>
+    test_valid_value("border", "hairline dotted green");
+    test_valid_value("border-width", "5px hairline");
     test_valid_value("border-width", "hairline");
     test_valid_value("border-left-width", "hairline");
 
@@ -24,7 +26,7 @@
         const pixels = Number(getComputedStyle(t).borderLeftWidth.replace("px", ""));
         assert_less_than_equal(pixels, 1)
         assert_greater_than(pixels, 0)
-    }, "hairline is within bounds");
+    }, "Computed hairline width is within bounds");
 </script>
 </body>
 </html>

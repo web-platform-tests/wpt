@@ -46,8 +46,8 @@ script
 #document
 | <a>
 |   href="https://{{host}}/"
-|   one="two"
 |   onclick="2+2"
+|   one="two"
 
 #data
 <a href="https://{{host}}/" onclick="2+2" one="two">
@@ -76,4 +76,3 @@ script
 |   data-x="1"
 |   data-y="2"
 |   data-z="3"
-

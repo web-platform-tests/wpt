@@ -35,7 +35,7 @@ jobs:
           rsync -a --delete --exclude 'WEB_FEATURES.yml' wasm-spec/out/ wpt/wasm/core/
       - name: Update Wasm proposal tests
         run: |
-          python3 wpt/wasm/update-proposals.py
+          python3 wpt/wasm/tools/update-proposals.py
       - name: Commit changes
         id: commit
         continue-on-error: true

@@ -81,6 +81,7 @@
         integer: {
             canonicalUnit: '',
             customPropertyName: '--custom-integer',
+            round: true,
         },
         length: {
             canonicalUnit: 'px',
@@ -147,7 +148,10 @@
                     ? parseFloat(property.parse(computedTarget))
                     : parseFloat(computedTarget);
 
-                const expected = computeUnitInPixels(container, relativeUnit);
+                let expected = computeUnitInPixels(container, relativeUnit);
+                if (numericType.round) {
+                    expected = Math.round(expected);
+                }
                 assert_approx_equals(parsedCustom, expected, 0.1, specifiedCustom);
                 assert_approx_equals(parsedTarget, expected, 0.1, specifiedTarget);
             }, `${property.name} calc() with registered custom property and ${relativeUnit} uses parent ${relativeUnit}`);

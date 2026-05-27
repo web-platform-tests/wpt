@@ -11,10 +11,13 @@
 <div id="elm"></div>
 <script>
     test(() => {
-        const backdrop_style = getComputedStyle(elm, "::backdrop")
-        assert_equals(backdrop_style.position, "fixed")
-        assert_equals(backdrop_style.inset, "0px")
-    }, "UA styles for ::backdrop")
+        const backdrop_style = getComputedStyle(elm, "::backdrop");
+        assert_equals(backdrop_style.position, "fixed");
+        assert_equals(backdrop_style.top, "0px");
+        assert_equals(backdrop_style.right, "0px");
+        assert_equals(backdrop_style.left, "0px");
+        assert_equals(backdrop_style.bottom, "0px");
+    }, "UA styles for ::backdrop");
 </script>
 </body>
 </html>

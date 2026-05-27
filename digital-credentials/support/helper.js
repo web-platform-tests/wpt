@@ -126,9 +126,9 @@ const CANONICAL_REQUEST_OBJECTS = {
   /** @type MobileDocumentRequest **/
   "org-iso-mdoc": {
     deviceRequest:
-      "omd2ZXJzaW9uYzEuMGtkb2NSZXF1ZXN0c4GhbGl0ZW1zUmVxdWVzdNgYWIKiZ2RvY1R5cGV1b3JnLmlzby4xODAxMy41LjEubURMam5hbWVTcGFjZXOhcW9yZy5pc28uMTgwMTMuNS4x9pWthZ2Vfb3Zlcl8yMfRqZ2l2ZW5fbmFtZfRrZmFtaWx5X25hbWX0cmRyaXZpbmdfcHJpdmlsZWdlc_RocG9ydHJhaXT0",
+      "omd2ZXJzaW9uYzEuMGtkb2NSZXF1ZXN0c4GhbGl0ZW1zUmVxdWVzdNgYWFyiZ2RvY1R5cGV1b3JnLmlzby4xODAxMy41LjEubURMam5hbWVTcGFjZXOhcW9yZy5pc28uMTgwMTMuNS4xomtmYW1pbHlfbmFtZfRvZG9jdW1lbnRfbnVtYmVy9A",
     encryptionInfo:
-      "gmVkY2FwaaJlbm9uY2VYICBetSsDkKlE_G9JSIHwPzr3ctt6Ol9GgmCH8iGdGQNJcnJlY2lwaWVudFB1YmxpY0tleaQBAiABIVggKKm1iPeuOb9bDJeeJEL4QldYlWvY7F_K8eZkmYdS9PwiWCCm9PLEmosiE_ildsE11lqq4kDkjhfQUKPpbX-Hm1ZSLg",
+      "gmVkY2FwaaJlbm9uY2VQuTBR9ybYyMxHk586vsBGt3JyZWNpcGllbnRQdWJsaWNLZXmkAQIgASFYIGDjOSOFBB9RQDBR8kFVMctW3T-ZnHFocBOqxnaLyBh-Ilgg5Y3rj9vpB_fdU2gkVVGjR5b30iFcRAwzm7D3tnvszfo",
   },
 };
 

@@ -270,6 +270,8 @@
     test_invalid_attr('transition-duration', 'attr(data-foo ms)', '10px foo');
 
     test_invalid_attr('width', 'attr(())', '10px');
+    test_invalid_attr('width', 'attr(data-foo type(< length  >))', '10px');
+    test_invalid_attr('width', 'attr(data-foo type(<length> +))', '10px');
 
     test_invalid_attr('--x', 'attr(data-foo type(<url>))', 'url("https://does-not-exist.test/404.png")');
 </script>

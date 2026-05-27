@@ -213,6 +213,7 @@
 
     test_valid_attr('width', 'attr(data-foo xx, 3px)', '10', '3px');
     test_valid_attr('width', 'attr(data-foo xx, 3px)', '10px', '3px');
+    test_invalid_attr('width', 'attr(data-foo &, 3px)', '10');
 
     test_invalid_attr('content', 'attr(data-foo string)', 'abc');
     test_invalid_attr('animation-name', 'attr(data-foo type(string))', 'abc');

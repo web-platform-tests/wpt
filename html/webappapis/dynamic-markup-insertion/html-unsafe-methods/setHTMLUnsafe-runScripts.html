@@ -214,7 +214,7 @@
         container.setHTML(
           "<script>window.did_run = true;</" + "script>",
           {
-            runScripts: true,
+            get runScripts() { throw new Error("runScripts should not be accessed"); },
           }
         );
         t.add_cleanup(() => {
@@ -229,7 +229,7 @@
         const doc = Document.parseHTMLUnsafe(
           "<script>window.did_run = true;</" + "script>",
           {
-            runScripts: true,
+            get runScripts() { throw new Error("runScripts should not be accessed"); },
           }
         );
         t.add_cleanup(() => {

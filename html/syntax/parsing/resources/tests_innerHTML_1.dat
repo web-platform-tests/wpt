@@ -790,10 +790,10 @@ select
 #data
 <input><option>
 #errors
+(1,7): XXX-undefined-error
 #document-fragment
 select
 #document
-| <input>
 | <option>
 
 #data

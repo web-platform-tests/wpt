@@ -728,3 +728,48 @@ eof-in-math
 |             "ib"
 |         <b>
 |           "b"
+
+#data
+<select><button><selectedcontent></button><option>X<option>Y
+#errors
+#document
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <button>
+|         <selectedcontent>
+|           "X"
+|       <option>
+|         "X"
+|       <option>
+|         "Y"
+
+#data
+<select><button><selectedcontent></button><option>X<option selected>Y
+#errors
+#document
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <button>
+|         <selectedcontent>
+|           "Y"
+|       <option>
+|         "X"
+|       <option>
+|         selected=""
+|         "Y"
+
+#data
+<font><select><option>a</option></font></select>
+#errors
+#document
+| <html>
+|   <head>
+|   <body>
+|     <font>
+|       <select>
+|         <option>
+|           "a"

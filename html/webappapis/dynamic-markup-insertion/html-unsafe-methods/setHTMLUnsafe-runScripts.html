@@ -149,11 +149,13 @@
       promise_test(async (t) => {
         const container = createContainer(t);
         container.innerHTML = "";
+        window.did_run_first_script = false;
         window.did_run_next_script = false;
         container.setHTMLUnsafe(
           `<div>
             <script>
             window.scope.getElementById("next-script").remove();
+            window.did_run_first_script = true;
             <` + `/script>
             <script id="next-script">window.did_run_next_script = true;</` + `script>
           </div>`,
@@ -161,6 +163,7 @@
         );
 
         t.add_cleanup(() => {
+          delete window.did_run_first_script;
           delete window.did_run_next_script;
         })
 

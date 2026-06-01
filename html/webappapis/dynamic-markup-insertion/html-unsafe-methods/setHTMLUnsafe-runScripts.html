@@ -243,6 +243,48 @@
 
         assert_false(window.did_run);
       }, `${containerType}: runScripts is ignored for parseHTMLUnsafe.`);
+
+      test((t) => {
+        const container = createContainer(t);
+        const prefix = containerType.toLowerCase();
+        window.operations = [];
+        t.add_cleanup(() => {
+          delete window.operations;
+        });
+        customElements.define(`${prefix}-1`, class E1 extends HTMLElement {
+          constructor() {
+            super();
+            window.operations.push(`${prefix}-1-ctor`);
+          }
+
+          connectedCallback() {
+            window.operations.push(`${prefix}-1-connected`);
+          }
+        });
+        customElements.define(`${prefix}-2`, class E2 extends HTMLElement {
+          constructor() {
+            super();
+            window.operations.push(`${prefix}-2-ctor`);
+          }
+
+          connectedCallback() {
+            window.operations.push(`${prefix}-2-connected`);
+          }
+        });
+        container.setHTMLUnsafe(`
+          <${prefix}-1></${prefix}-1>
+          <script>
+            window.operations.push("run-scripts");
+          </`+`script>
+          <${prefix}-2></${prefix}-2>`, {runScripts: true});
+        assert_array_equals(window.operations, [
+          `run-scripts`,
+          `${prefix}-1-ctor`,
+          `${prefix}-1-connected`,
+          `${prefix}-2-ctor`,
+          `${prefix}-2-connected`,
+        ]);
+      }, `${containerType}: runScripts order of operations with custom element callbacks`);
     }
   </script>
 </body>

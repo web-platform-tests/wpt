@@ -160,6 +160,36 @@ def filter_schedule_if(event: Event, tasks: Mapping[str, Task]) -> MutableMappin
     return scheduled
 
 
+def filter_commit(event: Event, tasks: MutableMapping[str, Task]) -> None:
+    _, branch = get_triggers(event)
+    if branch is None or not branch.startswith("triggers/"):
+        return
+
+    body = get_commit_message(event)
+
+    if not body:
+        return
+
+    regexp = re.compile(r"\s*task-filter:(.*)$")
+    filters = []
+    for line in body.splitlines():
+        m = regexp.match(line)
+        if m:
+            try:
+                task_filter = re.compile(m.group(1).strip())
+            except Exception as e:
+                continue
+            filters.append(task_filter)
+            logger.debug(f"Got task filter {task_filter.pattern}")
+
+    if not filters:
+        return
+
+    for task_name in list(tasks.keys()):
+        if not any(filter.match(task_name) for filter in filters):
+            tasks.pop(task_name)
+
+
 def get_fetch_rev(event: Event) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     is_pr, _ = get_triggers(event)
     if is_pr:
@@ -418,6 +448,7 @@ def decide(event: Event) -> Mapping[str, Tuple[str, TcTask]]:
     triggered_tasks = filter_triggers(event, all_tasks)
     scheduled_tasks = filter_schedule_if(event, triggered_tasks)
     filter_excluded_users(scheduled_tasks, event)
+    filter_commit(scheduled_tasks, event)
 
     logger.info("UNSCHEDULED TASKS:\n  %s" % "\n  ".join(sorted(set(all_tasks.keys()) -
                                                             set(scheduled_tasks.keys()))))

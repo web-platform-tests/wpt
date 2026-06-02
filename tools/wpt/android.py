@@ -281,7 +281,7 @@ def start(logger, dest=None, reinstall=False, prompt=True, device_serial=None):
             logger.critical("Android AVD not found, please run |wpt install-android-emulator|")
             raise OSError
 
-        emulator.start(gpu_arg="swiftshader")
+        emulator.start(gpu_arg="software")
         timer = threading.Timer(300, cancel_start(threading.get_ident()))
         timer.start()
         for i in range(10):

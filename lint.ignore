@@ -15,6 +15,10 @@ TRAILING WHITESPACE: conformance-checkers/*
 TRAILING WHITESPACE: html/syntax/xmldecl/support/no-version-or-space-or-trailing-question-trailing-body-single-quotes-spaces-and-line-breaks-around-equals.htm
 TRAILING WHITESPACE: html/syntax/xmldecl/support/no-version-or-space-or-trailing-question-trailing-body-single-quotes-spaces-and-line-breaks-around-equals-trail.htm
 
+# html5lib-tests .dat files contain trailing whitespace and CR characters as
+# part of literal test inputs.
+TRAILING WHITESPACE, CR AT EOL: html/syntax/parsing/resources/*.dat
+
 ## File types that should never be checked ##
 
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.adts
@@ -52,6 +56,7 @@ TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.wbn
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.avif
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.annexb
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.crx
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.tlb
 
 ## .gitignore
 W3C-TEST.ORG: .gitignore
@@ -90,11 +95,13 @@ CR AT EOL: webvtt/parsing/file-parsing/tests/support/newlines.vtt
 CR AT EOL: css/css-text/ellisize-rtl-text-crash.html
 CR AT EOL: html/syntax/charset/after-head-after-1kb-crlf.html
 CR AT EOL: html/syntax/charset/after-head-in-1kb-crlf.html
+CR AT EOL: fetch/h1-parsing/resources/parsing_*.asis
 
 # Intentional use of tabs
 INDENT TABS: html/canvas/element/canvas-host/2d.canvas.host.size.attributes.parse.whitespace.html
 INDENT TABS: webvtt/parsing/file-parsing/tests/support/header-tab.vtt
 INDENT TABS: webvtt/parsing/file-parsing/tests/support/whitespace-chars.vtt
+INDENT TABS: fetch/h1-parsing/resources/parsing_*.asis
 
 ## Intentional use of trailing whitespace
 TRAILING WHITESPACE: server-timing/resources/parsing/*
@@ -103,6 +110,7 @@ TRAILING WHITESPACE: webvtt/parsing/file-parsing/tests/support/*.vtt
 TRAILING WHITESPACE: xhr/resources/headers-some-are-empty.asis
 TRAILING WHITESPACE: content-security-policy/support/manifest.json
 TRAILING WHITESPACE: xml/xslt/resources/testu1LINE.xml
+TRAILING WHITESPACE: fetch/h1-parsing/resources/parsing_*.asis
 
 # Intentional use of print statements
 PRINT STATEMENT: dom/nodes/Document-createElement-namespace-tests/generate.py
@@ -165,6 +173,7 @@ SET TIMEOUT: css/css-image-animation/image-animation-img-running.tentative.html
 SET TIMEOUT: css/css-image-animation/image-animation-img-running-to-normal.tentative.html
 SET TIMEOUT: css/css-image-animation/image-animation-paused-exact-frame.tentative.html
 SET TIMEOUT: css/css-image-animation/image-animation-stopped-reset-frame.tentative.html
+SET TIMEOUT: css/css-image-animation/image-animation-video-poster-running.html
 SET TIMEOUT: css/compositing/opacity-and-transform-animation-crash.html
 SET TIMEOUT: css/css-contain/contain-body-overflow-002.html
 SET TIMEOUT: css/css-display/display-contents-shadow-dom-1.html
@@ -208,6 +217,11 @@ SET TIMEOUT: html/browsers/history/the-location-interface/*
 SET TIMEOUT: html/browsers/history/the-session-history-of-browsing-contexts/*
 SET TIMEOUT: html/browsers/offline/*
 SET TIMEOUT: html/browsers/the-window-object/*
+SET TIMEOUT: html/canvas/resources/draw-element-image-utils.js
+SET TIMEOUT: html/canvas/element/manual/draw-element-image/intersection-observer-visibility.tentative.html
+SET TIMEOUT: html/canvas/element/manual/draw-element-image/onpaint.tentative.html
+SET TIMEOUT: html/canvas/element/manual/draw-element-image/onpaint-css-animation.tentative.html
+SET TIMEOUT: html/canvas/element/manual/draw-element-image/requestPaint.tentative.html
 SET TIMEOUT: html/cross-origin-opener-policy/resources/fully-loaded.js
 SET TIMEOUT: html/editing/dnd/*
 SET TIMEOUT: html/semantics/embedded-content/media-elements/track/track-element/crashtests/*
@@ -426,6 +440,7 @@ SET TIMEOUT: html/webappapis/timers/*
 SET TIMEOUT: portals/history/resources/portal-harness.js
 SET TIMEOUT: requestidlecallback/deadline-after-expired-timer.html
 SET TIMEOUT: resource-timing/tentative/initiator-url/set-timeout.html
+SET TIMEOUT: resource-timing/tentative/initiator-url/set-timeout.any.js
 SET TIMEOUT: resources/*
 SET TIMEOUT: scheduler/tentative/current-task-signal-async-abort.any.js
 SET TIMEOUT: scheduler/tentative/current-task-signal-async-priority.any.js
@@ -441,6 +456,7 @@ SET TIMEOUT: speculation-rules/prerender/resources/media-autoplay-attribute.html
 SET TIMEOUT: speculation-rules/prerender/resources/media-play.html
 SET TIMEOUT: html/browsers/browsing-the-web/back-forward-cache/timers.html
 SET TIMEOUT: dom/abort/crashtests/timeout-close.html
+SET TIMEOUT: xml/xslt/xslt-mutation-crash.xhtml
 SET TIMEOUT: storage-access-api/storage-access-beyond-cookies.locks.sub.https.window.js
 SET TIMEOUT: pointerevents/crashtests/longpress-crash.html
 
@@ -451,6 +467,7 @@ SET TIMEOUT: acid/acid3/test.html
 *: resources/webidl2/*
 *: tools/*
 *: */third_party/*
+*: third_party/*
 
 # .gitignore files in child directories
 *: cors/resources/.gitignore

@@ -152,14 +152,14 @@ dictionary TogglePopoverOptions : ShowPopoverOptions {
 
 HTMLElement includes GlobalEventHandlers;
 HTMLElement includes ElementContentEditable;
-HTMLElement includes HTMLOrSVGElement;
+HTMLElement includes HTMLOrSVGOrMathMLElement;
 
 [Exposed=Window]
 interface HTMLUnknownElement : HTMLElement {
   // Note: intentionally no [HTMLConstructor]
 };
 
-interface mixin HTMLOrSVGElement {
+interface mixin HTMLOrSVGOrMathMLElement {
   [SameObject] readonly attribute DOMStringMap dataset;
   attribute DOMString nonce; // intentionally no [CEReactions]
 
@@ -349,13 +349,10 @@ interface HTMLDivElement : HTMLElement {
 interface HTMLAnchorElement : HTMLElement {
   [HTMLConstructor] constructor();
 
-  [CEReactions, Reflect] attribute DOMString target;
   [CEReactions, Reflect] attribute DOMString download;
   [CEReactions, Reflect] attribute USVString ping;
   [CEReactions, Reflect] attribute DOMString rel;
   [SameObject, PutForwards=value, Reflect="rel"] readonly attribute DOMTokenList relList;
-  [CEReactions, Reflect] attribute DOMString hreflang;
-  [CEReactions, Reflect] attribute DOMString type;
 
   [CEReactions] attribute DOMString text;
 
@@ -403,10 +400,14 @@ interface mixin HyperlinkElementUtils {
   [CEReactions] attribute USVString pathname;
   [CEReactions] attribute USVString search;
   [CEReactions] attribute USVString hash;
+
+  [CEReactions, Reflect] attribute DOMString hreflang;
+  [CEReactions, Reflect] attribute DOMString type;
 };
 
 interface mixin HTMLHyperlinkElementUtils {
   [CEReactions, ReflectSetter] stringifier attribute USVString href;
+  [CEReactions, Reflect] attribute DOMString target;
 };
 
 [Exposed=Window]
@@ -447,6 +448,7 @@ interface HTMLImageElement : HTMLElement {
   [CEReactions] attribute DOMString? crossOrigin;
   [CEReactions, Reflect] attribute DOMString useMap;
   [CEReactions, Reflect] attribute boolean isMap;
+  [CEReactions, Reflect] attribute boolean controls;
   [CEReactions, ReflectSetter] attribute unsigned long width;
   [CEReactions, ReflectSetter] attribute unsigned long height;
   readonly attribute unsigned long naturalWidth;
@@ -762,7 +764,6 @@ interface HTMLAreaElement : HTMLElement {
   [CEReactions, Reflect] attribute DOMString alt;
   [CEReactions, Reflect] attribute DOMString coords;
   [CEReactions, Reflect] attribute DOMString shape;
-  [CEReactions, Reflect] attribute DOMString target;
   [CEReactions, Reflect] attribute DOMString download;
   [CEReactions, Reflect] attribute USVString ping;
   [CEReactions, Reflect] attribute DOMString rel;
@@ -1275,6 +1276,7 @@ interface HTMLTemplateElement : HTMLElement {
   readonly attribute DocumentFragment content;
   [CEReactions] attribute DOMString shadowRootMode;
   [CEReactions, Reflect] attribute boolean shadowRootDelegatesFocus;
+  [CEReactions] attribute DOMString shadowRootSlotAssignment;
   [CEReactions, Reflect] attribute boolean shadowRootClonable;
   [CEReactions, Reflect] attribute boolean shadowRootSerializable;
   [CEReactions, Reflect] attribute DOMString shadowRootCustomElementRegistry;

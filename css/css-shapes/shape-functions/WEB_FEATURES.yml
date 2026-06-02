@@ -12,8 +12,8 @@ features:
   - 'path-function-*'
 - name: shape-function
   files:
-  - shape-function-*
+  - 'shape-function-*'
 - name: rect-xywh
   files:
-  - rect-function-*
-  - xywh-function-*
+  - 'rect-function-*'
+  - 'xywh-function-*'

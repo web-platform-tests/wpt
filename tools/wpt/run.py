@@ -308,7 +308,8 @@ Consider installing certutil via your OS package manager or directly.""")
 
             kwargs["certutil_binary"] = certutil
 
-        if kwargs["webdriver_binary"] is None and "wdspec" in kwargs["test_types"]:
+        wd_tests = ("wdspec", "aamtest")
+        if kwargs["webdriver_binary"] is None and any(t in kwargs["test_types"] for t in wd_tests):
             webdriver_binary = None
             if not kwargs["install_webdriver"]:
                 webdriver_binary = self.browser.find_webdriver()
@@ -328,8 +329,10 @@ Consider installing certutil via your OS package manager or directly.""")
             if webdriver_binary:
                 kwargs["webdriver_binary"] = webdriver_binary
             else:
-                logger.info("Unable to find or install geckodriver, skipping wdspec tests")
-                kwargs["test_types"].remove("wdspec")
+                logger.info("Unable to find or install geckodriver, skipping wdspec/aamtest tests")
+                for t in wd_tests:
+                    if t in kwargs["test_types"]:
+                        kwargs["test_types"].remove(t)
 
         if kwargs["prefs_root"] is None:
             prefs_root = self.browser.install_prefs(kwargs["binary"],
@@ -947,6 +950,10 @@ def setup_wptrunner(venv, **kwargs):
     if not venv.skip_virtualenv_setup:
         requirements = [os.path.join(wpt_root, "tools", "wptrunner", "requirements.txt")]
         requirements.extend(setup_cls.requirements())
+
+        if "aamtest" in kwargs["test_types"]:
+            requirements.append(os.path.join(wpt_root, "tools", "wptrunner", "requirements_platform_accessibility.txt"))
+
         venv.install_requirements(*requirements)
 
     affected_revish = kwargs.get("affected")

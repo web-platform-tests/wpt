@@ -3,6 +3,7 @@ features:
   files:
   - '*'
   - '!path-function-*'
+  - '!polygon-function-round-*'
 - name: path-shape
   files:
   - 'path-function-*'

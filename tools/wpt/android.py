@@ -47,11 +47,9 @@ def do_delayed_imports(paths):
             "-memory", "3072",
             "-cores", "4",
             "-skin", "1080x1920",
-            "-gpu", "off",
             "-no-snapstorage",
             "-no-snapshot",
             "-no-window",
-            "-prop", "ro.test_harness=true"
         ],
         True,
     )
@@ -283,7 +281,7 @@ def start(logger, dest=None, reinstall=False, prompt=True, device_serial=None):
             logger.critical("Android AVD not found, please run |wpt install-android-emulator|")
             raise OSError
 
-        emulator.start()
+        emulator.start(gpu_arg="host")
         timer = threading.Timer(300, cancel_start(threading.get_ident()))
         timer.start()
         for i in range(10):

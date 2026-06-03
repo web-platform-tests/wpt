@@ -114,6 +114,31 @@ def test_element_larger_than_viewport(session, mouse_chain, get_actions_origin_p
     assert click_coords["y"] == pytest.approx(center["y"], abs=1.0)
 
 
+def test_element_center_point_inline_block_child(
+    session, mouse_chain, inline
+):
+    # margin-top: 0.5px is on purpose: it places the element at a fractional
+    # y-coordinate, which could trigger a rounding issue preventing the click from
+    # working.
+    session.url = inline("""
+        <div style="margin-top: 0.5px">
+          <a id="link" href="#"><div style="width: 32px; height: 32px;"></div></a>
+        </div>
+        <script>
+          document.addEventListener('mousemove',
+            e => { window.coords = { x: e.clientX, y: e.clientY }; });
+        </script>
+    """)
+    elem = session.find.css("#link", all=False)
+    center = get_inview_center(elem.rect, get_viewport_rect(session))
+
+    mouse_chain.pointer_move(0, 0, origin=elem).perform()
+
+    click_coords = get_click_coordinates(session)
+    assert click_coords["x"] == pytest.approx(center["x"], abs=1.0)
+    assert click_coords["y"] == pytest.approx(center["y"], abs=1.0)
+
+
 def test_element_outside_of_view_port(session, mouse_chain, get_actions_origin_page):
     session.url = get_actions_origin_page(
         """width: 100px; height: 50px; background: green;

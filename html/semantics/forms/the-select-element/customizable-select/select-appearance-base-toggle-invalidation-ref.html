@@ -6,7 +6,7 @@
     font-family: monospace;
     font-size: 16px;
   }
-  .select {
+  .button {
     box-sizing: border-box;
     background-color: transparent;
     padding-block: 0.25em;
@@ -14,15 +14,17 @@
     border: 1px solid currentColor;
     border-radius: 0.5em;
     display: inline-flex;
+    gap: 0.5em;
     min-inline-size: 24px;
     min-block-size: max(24px, 1lh);
-    gap: 0.5rem;
+    counter-set: fake-counter-name 1;
   }
-  .no-gap {
-    gap: 0;
+  .button::after {
+    content: counter(fake-counter-name, disclosure-open);
+    display: block;
+    margin-inline-start: auto;
   }
 </style>
 
-<span class="select">One</span>
-<span class="select">One<span></span></span>
-<span class="select no-gap">One</span>
+<span class="button">One</span>
+<span class="button">One</span>

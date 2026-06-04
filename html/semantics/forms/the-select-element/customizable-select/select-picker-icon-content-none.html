@@ -1,0 +1,35 @@
+<!doctype html>
+<link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+<link rel="help" href="https://drafts.csswg.org/css-forms/#picker-icon" />
+<link rel="match" href="select-picker-icon-content-none-ref.html" />
+<meta
+  name="assert"
+  content="::picker-icon with content:none removes the icon"
+/>
+
+<style>
+  body {
+    font-family: monospace;
+    font-size: 16px;
+  }
+  select {
+    appearance: base-select;
+  }
+  select::picker-icon {
+    content: none;
+  }
+  select.one {
+    gap: 0; /* TODO: Chrome is inconsistent with gap and content:none */
+  }
+  select.two::picker-icon {
+    content: "";
+  }
+</style>
+
+<select class="one">
+  <option>One</option>
+</select>
+
+<select class="two">
+  <option>One</option>
+</select>

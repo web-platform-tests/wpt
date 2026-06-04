@@ -80,7 +80,7 @@ def install_fixed_emulator_version(logger, paths):
     # See https://developer.android.com/studio/emulator_archive for what we're doing here
     from xml.etree import ElementTree
 
-    version = "32.1.15"
+    version = "36.3.10"
     urls = {"linux": "https://redirector.gvt1.com/edgedl/android/repository/emulator-linux_x64-10696886.zip"}
 
     os_name = platform.system().lower()
@@ -320,7 +320,7 @@ def start(logger, dest=None, reinstall=False, prompt=True, device_serial=None):
             logger.critical("Android AVD not found, please run |wpt install-android-emulator|")
             raise OSError
 
-        emulator.start(gpu_arg="software")
+        emulator.start(gpu_arg="auto")
         timer = threading.Timer(300, cancel_start(threading.get_ident()))
         timer.start()
         for i in range(10):

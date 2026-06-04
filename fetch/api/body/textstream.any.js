@@ -104,19 +104,35 @@ test(() => {
 promise_test(async () => {
   const response = new Response();
   assert_equals(response.body, null);
-  const stream = response.textStream();
-  assert_true(stream instanceof ReadableStream);
-  const chunks = await readAllChunks(stream);
-  assert_equals(chunks.length, 0, "no chunks should be read from null body textStream");
+  assert_false(response.bodyUsed, "bodyUsed is false initially");
+  const stream1 = response.textStream();
+  assert_true(stream1 instanceof ReadableStream);
+  assert_false(response.bodyUsed, "bodyUsed remains false after first textStream()");
+  const stream2 = response.textStream();
+  assert_true(stream2 instanceof ReadableStream);
+  assert_false(response.bodyUsed, "bodyUsed remains false after second textStream()");
+  assert_not_equals(stream1, stream2, "multiple calls must return different stream objects");
+  const chunks1 = await readAllChunks(stream1);
+  assert_equals(chunks1.length, 0, "no chunks should be read from first null body textStream");
+  const chunks2 = await readAllChunks(stream2);
+  assert_equals(chunks2.length, 0, "no chunks should be read from second null body textStream");
 }, "Response.textStream() with null body");
 
 promise_test(async () => {
   const request = new Request("https://example.com");
   assert_equals(request.body, null);
-  const stream = request.textStream();
-  assert_true(stream instanceof ReadableStream);
-  const chunks = await readAllChunks(stream);
-  assert_equals(chunks.length, 0, "no chunks should be read from null body textStream");
+  assert_false(request.bodyUsed, "bodyUsed is false initially");
+  const stream1 = request.textStream();
+  assert_true(stream1 instanceof ReadableStream);
+  assert_false(request.bodyUsed, "bodyUsed remains false after first textStream()");
+  const stream2 = request.textStream();
+  assert_true(stream2 instanceof ReadableStream);
+  assert_false(request.bodyUsed, "bodyUsed remains false after second textStream()");
+  assert_not_equals(stream1, stream2, "multiple calls must return different stream objects");
+  const chunks1 = await readAllChunks(stream1);
+  assert_equals(chunks1.length, 0, "no chunks should be read from first null body textStream");
+  const chunks2 = await readAllChunks(stream2);
+  assert_equals(chunks2.length, 0, "no chunks should be read from second null body textStream");
 }, "Request.textStream() with null body");
 
 promise_test(async () => {

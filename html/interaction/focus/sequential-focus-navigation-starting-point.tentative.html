@@ -118,6 +118,28 @@
     <button data-next slot="d">button 4</button>
   </div>
 </template>
+<template data-description="Focus navigation starting point should be used when it's a descendant of the focused element.">
+  <div tabindex="0" data-focus>
+    <button data-prev id="button1">button 1</button>
+    <span data-click>in between</span>
+    <button data-next id="button2">button 2</button>
+  </div>
+</template>
+<template data-description="Backwards focus navigation should not be stuck when starting point is inside focused element but before any other focusable areas.">
+  <button data-prev id="button1">button 1</button>
+  <div tabindex="0" id="focusable" data-focus>
+    <span data-click>in between</span>
+    <button data-next id="button2">button 2</button>
+  </div>
+</template>
+<template data-description="Should start from focused element if it was focused after the selection was set.">
+  <button id="button1">button 1</button>
+  <span data-click>in between</span>
+  <button id="button2">button 2</button>
+  <button id="button3" data-prev>button 3</button>
+  <div tabindex="0" id="focusable" data-focus2>focusable</div>
+  <button id="button4" data-next>button 4</button>
+</template>
 
 <script>
 "use strict";
@@ -126,13 +148,15 @@ const kShift = "\uE008";
 const kTab = "\uE004";
 
 // Runs callback on each element matching selector, descending into open shadow roots.
-function forEachMatching(selector, callback, root) {
+async function forEachMatching(selector, callback, root) {
   if (!root) { root = container; }
   for (let element of root.querySelectorAll(selector)) {
-    callback(element);
+    await callback(element);
   }
   for (let element of root.querySelectorAll("[data-shadow]")) {
-    forEachMatching(selector, callback, element.shadowRoot);
+    if (element.shadowRoot) {
+      await forEachMatching(selector, callback, element.shadowRoot);
+    }
   }
 }
 
@@ -149,6 +173,7 @@ for (let template of document.querySelectorAll("template")) {
       forEachMatching("[data-focus]", element => {
         element.focus();
       });
+      await forEachMatching("[data-click]", test_driver.click);
       forEachMatching("[data-blur]", element => {
         element.blur();
       });
@@ -175,6 +200,9 @@ for (let template of document.querySelectorAll("template")) {
       });
       forEachMatching("[data-reenable]", element => {
         element.disabled = false;
+      });
+      forEachMatching("[data-focus2]", element => {
+        element.focus();
       });
 
       let actions = new test_driver.Actions();

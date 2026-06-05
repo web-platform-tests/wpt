@@ -156,6 +156,10 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     chrome_options["args"].append("--enable-features=WebAppInstallation,InstallElement")
     # For testing WebExtensions using WebDriver.
     chrome_options["args"].append("--enable-unsafe-extension-debugging")
+    # Defines `chrome.test` in web-extension-helper.js.
+    chrome_options["args"].append("--extension-test-api-on-web-pages")
+    # Adjusts `chrome.test` API to match the browser.test proposal/standard.
+    chrome_options["args"].append("--extension-test-api-standardized-behavior")
     # Connection between ChromeDriver and Chrome will be over pipes.
     # This is needed to test extensions, PWA, compilation caches that
     # require local CDP access.

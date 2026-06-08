@@ -1,0 +1,27 @@
+<!doctype html>
+<title>pointer updates (moving pointerBefore out of the media element)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<div id="holder"></div>
+<script>
+var events = [];
+var a = 0;
+var b = 0;
+var c = 0;
+</script>
+<video id="v"><source id="source-a" onerror="a++; events.push('a')"><source id="source-b" onerror="b++; events.push('b')" src="resources/delayed-broken-video.py"><source id="source-c" onerror="c++; events.push('c')"></video>
+<script>
+async_test(function(t) {
+  // Move the current candidate, which is pointerBefore, out while it is pending.
+  document.getElementById('holder').appendChild(document.getElementById('source-b'));
+
+  window.onload = t.step_func(function() {
+    assert_equals(a, 1, 'error events on a');
+    assert_equals(b, 1, 'error events on b');
+    assert_equals(c, 1, 'error events on c');
+    assert_array_equals(events, ['a', 'b', 'c'], 'processed source order');
+    t.done();
+  });
+});
+</script>

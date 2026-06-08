@@ -1,0 +1,32 @@
+<!doctype html>
+<title>pointer updates (moving a source element within the pointer)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+var events = [];
+var a = 0;
+var b = 0;
+var c = 0;
+var x = 0;
+var d = 0;
+</script>
+<video id="v"><source id="source-a" onerror="a++; events.push('a')"><source id="source-b" onerror="b++; events.push('b')" src="resources/delayed-broken-video.py"><source id="source-c" onerror="c++; events.push('c')"><source id="source-x" onerror="x++; events.push('x')"><source id="source-d" onerror="d++; events.push('d')"></video>
+<script>
+async_test(function(t) {
+  var video = document.getElementById('v');
+
+  // Move a later source to the pointer position: b | c.
+  video.insertBefore(document.getElementById('source-x'), document.getElementById('source-c'));
+
+  window.onload = t.step_func(function() {
+    assert_equals(a, 1, 'error events on a');
+    assert_equals(b, 1, 'error events on b');
+    assert_equals(x, 1, 'error events on x');
+    assert_equals(c, 1, 'error events on c');
+    assert_equals(d, 1, 'error events on d');
+    assert_array_equals(events, ['a', 'b', 'x', 'c', 'd'], 'processed source order');
+    t.done();
+  });
+});
+</script>

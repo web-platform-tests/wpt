@@ -1,0 +1,34 @@
+<!doctype html>
+<title>pointer updates (moving pointerAfter before the pointer)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+var events = [];
+var a = 0;
+var b = 0;
+var c = 0;
+var d = 0;
+</script>
+<video id="v"><source id="source-a" onerror="a++; events.push('a')"><source id="source-b" onerror="b++; events.push('b')" src="resources/delayed-broken-video.py"><source id="source-c" onerror="c++; events.push('c')"></video>
+<script>
+async_test(function(t) {
+  var video = document.getElementById('v');
+
+  // Move pointerAfter to before pointerBefore: a, b | c becomes a, c, b |.
+  video.insertBefore(document.getElementById('source-c'), document.getElementById('source-b'));
+
+  var sourceD = document.createElement('source');
+  sourceD.onerror = function() { d++; events.push('d'); };
+  video.appendChild(sourceD);
+
+  window.onload = t.step_func(function() {
+    assert_equals(a, 1, 'error events on a');
+    assert_equals(b, 1, 'error events on b');
+    assert_equals(c, 0, 'error events on c');
+    assert_equals(d, 1, 'error events on d');
+    assert_array_equals(events, ['a', 'b', 'd'], 'processed source order');
+    t.done();
+  });
+});
+</script>

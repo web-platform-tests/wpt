@@ -1,0 +1,42 @@
+<!doctype html>
+<title>pointer updates (moving pointerBefore within the media element)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+var events = [];
+var s1 = 0;
+var s2 = 0;
+var s3 = 0;
+var moved = false;
+
+function s2_error() {
+  s2++;
+  events.push('s2');
+  if (moved) {
+    return;
+  }
+  moved = true;
+  var video = document.getElementById('v');
+  var source1 = document.getElementById('source-s1');
+  var source2 = document.getElementById('source-s2');
+  source1.src = 'resources/delayed-broken-video.py?should-not-be-reprocessed';
+  video.insertBefore(source2, source1);
+
+  var source3 = document.createElement('source');
+  source3.onerror = function() { s3++; events.push('s3'); };
+  video.appendChild(source3);
+}
+</script>
+<video id="v"><source id="source-s1" onerror="s1++; events.push('s1')"><source id="source-s2" onerror="s2_error()" src="resources/delayed-broken-video.py"></video>
+<script>
+async_test(function(t) {
+  window.onload = t.step_func(function() {
+    assert_equals(s1, 1, 'error events on s1');
+    assert_equals(s2, 1, 'error events on s2');
+    assert_equals(s3, 1, 'error events on s3');
+    assert_array_equals(events, ['s1', 's2', 's3'], 'processed source order');
+    t.done();
+  });
+});
+</script>

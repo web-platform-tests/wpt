@@ -1,8 +1,9 @@
 <!doctype html>
-<title>pointer updates (moving pointerAfter before the pointer)</title>
+<title>pointer updates (moveBefore pointerAfter before the pointer)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
+<div id="holder"><source id="source-d"></div>
 <script>
 var events = [];
 var a = 0;
@@ -14,13 +15,14 @@ var d = 0;
 <script>
 async_test(function(t) {
   var video = document.getElementById('v');
+  assert_implements(typeof video.moveBefore == 'function', 'ParentNode.moveBefore() is required for this test');
 
   // Move pointerAfter to before pointerBefore: a, b | c becomes a, c, b |.
-  video.insertBefore(document.getElementById('source-c'), document.getElementById('source-b'));
+  video.moveBefore(document.getElementById('source-c'), document.getElementById('source-b'));
 
-  var sourceD = document.createElement('source');
+  var sourceD = document.getElementById('source-d');
   sourceD.onerror = function() { d++; events.push('d'); };
-  video.appendChild(sourceD);
+  video.moveBefore(sourceD, null);
 
   window.onload = t.step_func(function() {
     assert_equals(a, 1, 'error events on a');

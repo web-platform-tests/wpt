@@ -1,9 +1,9 @@
 <!doctype html>
-<title>pointer updates (moving a source element into an empty media element)</title>
+<title>pointer updates (moveBefore source into an empty media element)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<div id="holder"></div>
+<div id="holder"><source id="source-x"></div>
 <script>
 var events = [];
 var b = 0;
@@ -14,16 +14,16 @@ var x = 0;
 async_test(function(t) {
   var video = document.getElementById('v');
   var holder = document.getElementById('holder');
+  assert_implements(typeof video.moveBefore == 'function', 'ParentNode.moveBefore() is required for this test');
 
-  // Remove the current candidate so the video has no children while b is pending.
-  holder.appendChild(document.getElementById('source-b'));
-
-  var sourceX = document.createElement('source');
+  var sourceX = document.getElementById('source-x');
   sourceX.onerror = function() { x++; events.push('x'); };
-  holder.appendChild(sourceX);
+
+  // Move the current candidate out so the video has no children while b is pending.
+  holder.moveBefore(document.getElementById('source-b'), null);
 
   // Move an existing source from another parent into the empty video.
-  video.appendChild(sourceX);
+  video.moveBefore(sourceX, null);
 
   window.onload = t.step_func(function() {
     assert_equals(b, 1, 'error events on b');

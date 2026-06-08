@@ -1,5 +1,5 @@
 <!doctype html>
-<title>pointer updates (moving pointerAfter out of the media element)</title>
+<title>pointer updates (moveBefore pointerAfter out of the media element)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -14,8 +14,11 @@ var d = 0;
 <video id="v"><source id="source-a" onerror="a++; events.push('a')"><source id="source-b" onerror="b++; events.push('b')" src="resources/delayed-broken-video.py"><source id="source-c" onerror="c++; events.push('c')"><source id="source-d" onerror="d++; events.push('d')"></video>
 <script>
 async_test(function(t) {
+  var video = document.getElementById('v');
+  assert_implements(typeof video.moveBefore == 'function', 'ParentNode.moveBefore() is required for this test');
+
   // Move pointerAfter out while b is pending. d should become the next candidate.
-  document.getElementById('holder').appendChild(document.getElementById('source-c'));
+  document.getElementById('holder').moveBefore(document.getElementById('source-c'), null);
 
   window.onload = t.step_func(function() {
     assert_equals(a, 1, 'error events on a');

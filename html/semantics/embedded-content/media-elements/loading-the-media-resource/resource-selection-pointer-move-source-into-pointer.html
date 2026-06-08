@@ -1,9 +1,9 @@
 <!doctype html>
-<title>pointer updates (moving a source element into the pointer)</title>
+<title>pointer updates (moveBefore source into the pointer)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<div id="holder"></div>
+<div id="holder"><source id="source-x"></div>
 <script>
 var events = [];
 var a = 0;
@@ -15,13 +15,13 @@ var x = 0;
 <script>
 async_test(function(t) {
   var video = document.getElementById('v');
-  var holder = document.getElementById('holder');
-  var source = document.createElement('source');
-  source.onerror = function() { x++; events.push('x'); };
-  holder.appendChild(source);
+  assert_implements(typeof video.moveBefore == 'function', 'ParentNode.moveBefore() is required for this test');
+
+  var sourceX = document.getElementById('source-x');
+  sourceX.onerror = function() { x++; events.push('x'); };
 
   // Move an existing source from another parent to the pointer position: b | c.
-  video.insertBefore(source, document.getElementById('source-c'));
+  video.moveBefore(sourceX, document.getElementById('source-c'));
 
   window.onload = t.step_func(function() {
     assert_equals(a, 1, 'error events on a');

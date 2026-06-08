@@ -1,5 +1,5 @@
 <!doctype html>
-<title>pointer updates (moving a source element within the pointer)</title>
+<title>pointer updates (moveBefore source within the pointer)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -15,9 +15,10 @@ var d = 0;
 <script>
 async_test(function(t) {
   var video = document.getElementById('v');
+  assert_implements(typeof video.moveBefore == 'function', 'ParentNode.moveBefore() is required for this test');
 
   // Move a later source to the pointer position: b | c.
-  video.insertBefore(document.getElementById('source-x'), document.getElementById('source-c'));
+  video.moveBefore(document.getElementById('source-x'), document.getElementById('source-c'));
 
   window.onload = t.step_func(function() {
     assert_equals(a, 1, 'error events on a');

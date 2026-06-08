@@ -1,8 +1,9 @@
 <!doctype html>
-<title>pointer updates (moving pointerBefore within the media element)</title>
+<title>pointer updates (moveBefore pointerBefore within the media element)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
+<div id="holder"><source id="source-s3"></div>
 <script>
 var events = [];
 var s1 = 0;
@@ -20,17 +21,20 @@ function s2_error() {
   var video = document.getElementById('v');
   var source1 = document.getElementById('source-s1');
   var source2 = document.getElementById('source-s2');
+  var source3 = document.getElementById('source-s3');
   source1.src = 'resources/delayed-broken-video.py?should-not-be-reprocessed';
-  video.insertBefore(source2, source1);
-
-  var source3 = document.createElement('source');
   source3.onerror = function() { s3++; events.push('s3'); };
-  video.appendChild(source3);
+
+  // Move pointerBefore before s1. The pointer should remain after s1.
+  video.moveBefore(source2, source1);
+  video.moveBefore(source3, null);
 }
 </script>
 <video id="v"><source id="source-s1" onerror="s1++; events.push('s1')"><source id="source-s2" onerror="s2_error()" src="resources/delayed-broken-video.py"></video>
 <script>
 async_test(function(t) {
+  assert_implements(typeof document.getElementById('v').moveBefore == 'function', 'ParentNode.moveBefore() is required for this test');
+
   window.onload = t.step_func(function() {
     assert_equals(s1, 1, 'error events on s1');
     assert_equals(s2, 1, 'error events on s2');

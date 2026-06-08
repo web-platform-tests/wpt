@@ -1,9 +1,9 @@
 <!doctype html>
-<title>pointer updates (moving non-source nodes into the pointer)</title>
+<title>pointer updates (moveBefore non-source nodes into the pointer)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<div id="holder"></div>
+<div id="holder"><br id="br-node"><span id="text-holder">x</span></div>
 <script>
 var brEvents = [];
 var textEvents = [];
@@ -18,14 +18,13 @@ var c2 = 0;
 <video id="v-text"><source id="text-a" onerror="a2++; textEvents.push('a')"><source id="text-b" onerror="b2++; textEvents.push('b')" src="resources/delayed-broken-video.py?text"><source id="text-c" onerror="c2++; textEvents.push('c')"></video>
 <script>
 async_test(function(t) {
-  var holder = document.getElementById('holder');
-  var br = document.createElement('br');
-  holder.appendChild(br);
-  document.getElementById('v-br').insertBefore(br, document.getElementById('br-c'));
+  var videoBr = document.getElementById('v-br');
+  var videoText = document.getElementById('v-text');
+  assert_implements(typeof videoBr.moveBefore == 'function', 'ParentNode.moveBefore() is required for this test');
+  assert_implements(typeof videoText.moveBefore == 'function', 'ParentNode.moveBefore() is required for this test');
 
-  var text = document.createTextNode('x');
-  holder.appendChild(text);
-  document.getElementById('v-text').insertBefore(text, document.getElementById('text-c'));
+  videoBr.moveBefore(document.getElementById('br-node'), document.getElementById('br-c'));
+  videoText.moveBefore(document.getElementById('text-holder').firstChild, document.getElementById('text-c'));
 
   window.onload = t.step_func(function() {
     assert_equals(a1, 1, 'error events on br test a');

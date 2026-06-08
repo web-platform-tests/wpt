@@ -1,5 +1,5 @@
 <!doctype html>
-<title>pointer updates (moving non-source pointerAfter out of the media element)</title>
+<title>pointer updates (moveBefore non-source pointerAfter out of the media element)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -14,6 +14,8 @@ var c = 0;
 <script>
 async_test(function(t) {
   var video = document.getElementById('v');
+  assert_implements(typeof video.moveBefore == 'function', 'ParentNode.moveBefore() is required for this test');
+
   var text = null;
   for (var i = 0; i < video.childNodes.length; ++i) {
     if (video.childNodes[i].nodeType == Node.TEXT_NODE && video.childNodes[i].data == 'x') {
@@ -24,7 +26,7 @@ async_test(function(t) {
   assert_not_equals(text, null, 'text node pointerAfter exists');
 
   // Move the text node that is pointerAfter out while b is pending.
-  document.getElementById('holder').appendChild(text);
+  document.getElementById('holder').moveBefore(text, null);
 
   window.onload = t.step_func(function() {
     assert_equals(a, 1, 'error events on a');

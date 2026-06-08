@@ -3,25 +3,31 @@
 <title>Navigation Timing COOP responseStart reporter</title>
 <script>
 const params = new URLSearchParams(location.search);
-const channel = new BroadcastChannel(params.get("channel"));
 
-channel.addEventListener("message", event => {
-  if (event.data !== "close")
-    return;
-  channel.close();
-  close();
+addEventListener("message", event => {
+  if (event.data === "close")
+    close();
 });
 
 addEventListener("load", () => {
   const navigationTiming = performance.getEntriesByType("navigation")[0];
-  channel.postMessage({
-    name: navigationTiming.name,
-    redirectCount: navigationTiming.redirectCount,
-    redirectStart: navigationTiming.redirectStart,
-    fetchStart: navigationTiming.fetchStart,
-    requestStart: navigationTiming.requestStart,
-    responseStart: navigationTiming.responseStart,
-    responseEnd: navigationTiming.responseEnd,
-  });
+  const postback = new URL(params.get("postback"));
+  postback.searchParams.set("channel", params.get("channel"));
+
+  const iframe = document.createElement("iframe");
+  iframe.hidden = true;
+  iframe.src = postback.href;
+  iframe.addEventListener("load", () => {
+    iframe.contentWindow.postMessage({
+      name: navigationTiming.name,
+      redirectCount: navigationTiming.redirectCount,
+      redirectStart: navigationTiming.redirectStart,
+      fetchStart: navigationTiming.fetchStart,
+      requestStart: navigationTiming.requestStart,
+      responseStart: navigationTiming.responseStart,
+      responseEnd: navigationTiming.responseEnd,
+    }, "*");
+  }, { once: true });
+  document.body.append(iframe);
 }, { once: true });
 </script>

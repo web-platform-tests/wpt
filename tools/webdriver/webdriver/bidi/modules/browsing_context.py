@@ -101,6 +101,9 @@ class BrowsingContext(BidiModule):
     @create.result
     def _create(self, result: Mapping[str, Any]) -> Any:
         assert isinstance(result["context"], str)
+ 
+        if "userContext" in result:
+            assert isinstance(result["userContext"], str)
 
         return result
 

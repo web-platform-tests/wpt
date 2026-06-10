@@ -59,7 +59,6 @@ css/css-anchor-position/anchor-name-multicol-003.html @web-platform-tests/intero
 css/css-anchor-position/anchor-name-multicol-004.html @web-platform-tests/interop
 css/css-anchor-position/anchor-position-circular.html @web-platform-tests/interop
 css/css-anchor-position/anchor-position-dynamic-005.html @web-platform-tests/interop
-css/css-anchor-position/anchor-position-grid-001.html @web-platform-tests/interop
 css/css-anchor-position/anchor-position-inline-004.html @web-platform-tests/interop
 css/css-anchor-position/anchor-position-multicol-002.html @web-platform-tests/interop
 css/css-anchor-position/anchor-position-multicol-003.html @web-platform-tests/interop
@@ -823,7 +822,6 @@ css/css-view-transitions/navigation/root-element-transition-no-opt-in-on-new.htm
 css/css-view-transitions/navigation/root-element-transition-opt-in-removed-on-new.html @web-platform-tests/interop
 css/css-view-transitions/navigation/root-element-transition-opt-in-removed-on-old.html @web-platform-tests/interop
 css/css-view-transitions/navigation/skip-outbound-vt-before-reveal.html @web-platform-tests/interop
-css/css-view-transitions/navigation/two-phase/instant-transition-finish-before-swap.https.html @web-platform-tests/interop
 css/css-view-transitions/navigation/with-types/at-rule-opt-in-auto-with-types-no-cascade.html @web-platform-tests/interop
 css/css-view-transitions/navigation/with-types/at-rule-opt-in-auto-with-types.html @web-platform-tests/interop
 css/css-view-transitions/navigation/with-types/at-rule-with-types-parsing.html @web-platform-tests/interop
@@ -1310,7 +1308,7 @@ navigation-api/ordering-and-transition/anchor-download-aborts-previous-navigatio
 navigation-api/ordering-and-transition/anchor-download-intercept-reject.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/anchor-download-intercept.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/anchor-download.html @web-platform-tests/interop
-navigation-api/ordering-and-transition/back-cross-document-event-order.html @web-platform-tests/interop
+navigation-api/ordering-and-transition/back-cross-document-event-order-with-pagehide.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/back-same-document-intercept-reject.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/back-same-document-intercept.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/back-same-document.html @web-platform-tests/interop
@@ -1325,7 +1323,7 @@ navigation-api/ordering-and-transition/location-href-intercept.html @web-platfor
 navigation-api/ordering-and-transition/navigate-204-205-download-then-same-document.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/navigate-canceled.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/navigate-cross-document-double.html @web-platform-tests/interop
-navigation-api/ordering-and-transition/navigate-cross-document-event-order.html @web-platform-tests/interop
+navigation-api/ordering-and-transition/navigate-cross-document-event-order-with-pagehide.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/navigate-double-intercept.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/navigate-in-transition-finished.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/navigate-intercept-precommitHandler-redirect.html @web-platform-tests/interop
@@ -1421,7 +1419,6 @@ scroll-animations/css/animation-range-normal-matches-cover.html @web-platform-te
 scroll-animations/css/animation-range-scroll-timeline.html @web-platform-tests/interop
 scroll-animations/css/animation-shorthand.html @web-platform-tests/interop
 scroll-animations/css/animation-timeline-computed.html @web-platform-tests/interop
-scroll-animations/css/animation-timeline-deferred.html @web-platform-tests/interop
 scroll-animations/css/animation-timeline-in-keyframe.html @web-platform-tests/interop
 scroll-animations/css/animation-timeline-multiple.html @web-platform-tests/interop
 scroll-animations/css/animation-timeline-none.html @web-platform-tests/interop
@@ -1472,7 +1469,6 @@ scroll-animations/css/view-timeline-lookup.html @web-platform-tests/interop
 scroll-animations/css/view-timeline-name-computed.html @web-platform-tests/interop
 scroll-animations/css/view-timeline-name-parsing.html @web-platform-tests/interop
 scroll-animations/css/view-timeline-name-shadow.html @web-platform-tests/interop
-scroll-animations/css/view-timeline-pseudo-on-scroller.html @web-platform-tests/interop
 scroll-animations/css/view-timeline-range-animation.html @web-platform-tests/interop
 scroll-animations/css/view-timeline-shorthand.html @web-platform-tests/interop
 scroll-animations/css/view-timeline-subject-in-shadow-root-with-timeline-scope.html @web-platform-tests/interop
@@ -1603,7 +1599,6 @@ webrtc/RTCRtpTransceiver-stopping.https.html @web-platform-tests/interop
 webrtc/RTCRtpTransceiver.https.html @web-platform-tests/interop
 webrtc/RTCSctpTransport-events.html @web-platform-tests/interop
 webrtc/RTCSctpTransport-maxChannels.html @web-platform-tests/interop
-webrtc/back-forward-cache-with-open-webrtc-connection.https.window.js @web-platform-tests/interop
 webrtc/historical.html @web-platform-tests/interop
 webrtc/idlharness.https.window.js @web-platform-tests/interop
 webrtc/protocol/additional-codecs.html @web-platform-tests/interop
@@ -1612,10 +1607,8 @@ webrtc/protocol/candidate-exchange.https.html @web-platform-tests/interop
 webrtc/protocol/codecs-subsequent-offer.https.html @web-platform-tests/interop
 webrtc/protocol/crypto-suite.https.html @web-platform-tests/interop
 webrtc/protocol/dtls-setup.https.html @web-platform-tests/interop
-webrtc/protocol/h264-profile-levels.https.html @web-platform-tests/interop
 webrtc/protocol/handover-datachannel.html @web-platform-tests/interop
 webrtc/protocol/handover.html @web-platform-tests/interop
-webrtc/protocol/ice-ufragpwd.html @web-platform-tests/interop
 webrtc/protocol/rtp-demuxing.html @web-platform-tests/interop
 webrtc/protocol/rtp-extension-support.html @web-platform-tests/interop
 webrtc/protocol/rtp-headerextensions.html @web-platform-tests/interop
@@ -1630,21 +1623,8 @@ webrtc/simulcast/screenshare.https.html @web-platform-tests/interop
 webrtc/simulcast/vp9-scalability-mode.https.html @web-platform-tests/interop
 webrtc/toJSON.html @web-platform-tests/interop
 webrtc/transfer-datachannel.html @web-platform-tests/interop
-webrtc-encoded-transform/RTCRtpScriptTransform-bad-chunk.https.html @web-platform-tests/interop
-webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html @web-platform-tests/interop
-webrtc-encoded-transform/RTCRtpScriptTransform-sender-worker-single-frame.https.html @web-platform-tests/interop
-webrtc-encoded-transform/idlharness.https.window.js @web-platform-tests/interop
-webrtc-encoded-transform/script-audio-transform.https.html @web-platform-tests/interop
-webrtc-encoded-transform/script-change-transform.https.html @web-platform-tests/interop
-webrtc-encoded-transform/script-metadata-transform.https.html @web-platform-tests/interop
 webrtc-encoded-transform/script-transform-generateKeyFrame.https.html @web-platform-tests/interop
-webrtc-encoded-transform/script-transform-sendKeyFrameRequest.https.html @web-platform-tests/interop
-webrtc-encoded-transform/script-transform.https.html @web-platform-tests/interop
-webrtc-encoded-transform/script-write-twice-transform.https.html @web-platform-tests/interop
-webtransport/back-forward-cache-with-closed-webtransport-connection-ccns.https.tentative.window.js @web-platform-tests/interop
 webtransport/back-forward-cache-with-closed-webtransport-connection.https.window.js @web-platform-tests/interop
-webtransport/back-forward-cache-with-open-webtransport-connection-ccns.https.tentative.window.js @web-platform-tests/interop
-webtransport/back-forward-cache-with-open-webtransport-connection.https.window.js @web-platform-tests/interop
 webtransport/close.https.any.js @web-platform-tests/interop
 webtransport/connect.https.any.js @web-platform-tests/interop
 webtransport/constructor.https.sub.any.js @web-platform-tests/interop

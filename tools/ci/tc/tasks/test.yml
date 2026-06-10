@@ -4,7 +4,7 @@ components:
     workerType: ci
     schedulerId: taskcluster-github
     deadline: "24 hours"
-    image: ghcr.io/web-platform-tests/wpt:2
+    image: ghcr.io/web-platform-tests/wpt:3
     maxRunTime: 7200
     artifacts:
       public/results:
@@ -40,6 +40,16 @@ components:
     chunks: 1
     vars:
       test-type: crashtest
+
+  wpt-test262:
+    chunks: 8
+    vars:
+      test-type: test262
+
+  wpt-aamtest:
+    chunks: 1
+    vars:
+      test-type: aamtest
 
   run-options:
     options:
@@ -158,6 +168,8 @@ tasks:
             suite: wdspec
         - vars:
             suite: crashtest
+        - vars:
+            suite: test262
       do:
         $map:
           for:
@@ -390,11 +402,13 @@ tasks:
                   of ${chunks.total}), run in the ${vars.channel} release of
                   ${vars.browser}.
 
-  # print-reftest are currently only supported by Chrome and Firefox.
+  # print-reftest amd aamtest are currently only supported by Chrome and Firefox.
   - $map:
       for:
         - vars:
             suite: print-reftest
+        - vars:
+            suite: aamtest
       do:
         $map:
           for:

@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: Scalable Vector Graphics (SVG) 2 (https://svgwg.org/svg2-draft/)
+// Source: Scalable Vector Graphics (SVG) 2 (https://w3c.github.io/svgwg/svg2-draft/)
 
 [Exposed=Window]
 interface SVGElement : Element {
@@ -13,8 +13,7 @@ interface SVGElement : Element {
 };
 
 SVGElement includes GlobalEventHandlers;
-SVGElement includes SVGElementInstance;
-SVGElement includes HTMLOrSVGElement;
+SVGElement includes HTMLOrSVGOrMathMLElement;
 
 dictionary SVGBoundingBoxOptions {
   boolean fill = true;
@@ -309,11 +308,6 @@ SVGUseElement includes SVGURIReference;
 interface SVGUseElementShadowRoot : ShadowRoot {
 };
 
-interface mixin SVGElementInstance {
-  [SameObject] readonly attribute SVGElement? correspondingElement;
-  [SameObject] readonly attribute SVGUseElement? correspondingUseElement;
-};
-
 [Exposed=Window]
 interface ShadowAnimation : Animation {
   constructor(Animation source, (Element or CSSPseudoElement) newTarget);
@@ -330,9 +324,9 @@ interface mixin GetSVGDocument {
 
 [Exposed=Window]
 interface SVGStyleElement : SVGElement {
-  attribute DOMString type;
-  attribute DOMString media;
-  attribute DOMString title;
+  [Reflect] attribute DOMString type;
+  [Reflect] attribute DOMString media;
+  [Reflect] attribute DOMString title;
   attribute boolean disabled;
 };
 
@@ -648,7 +642,7 @@ SVGPatternElement includes SVGURIReference;
 
 [Exposed=Window]
 interface SVGScriptElement : SVGElement {
-  attribute DOMString type;
+  [Reflect] attribute DOMString type;
   attribute DOMString? crossOrigin;
 };
 
@@ -656,13 +650,13 @@ SVGScriptElement includes SVGURIReference;
 
 [Exposed=Window]
 interface SVGAElement : SVGGraphicsElement {
-  [SameObject] readonly attribute SVGAnimatedString target;
-  attribute DOMString download;
-  attribute USVString ping;
-  attribute DOMString rel;
-  [SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
-  attribute DOMString hreflang;
-  attribute DOMString type;
+  [Reflect, SameObject] readonly attribute SVGAnimatedString target;
+  [Reflect] attribute DOMString download;
+  [Reflect] attribute USVString ping;
+  [Reflect] attribute DOMString rel;
+  [Reflect="rel", SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
+  [Reflect] attribute DOMString hreflang;
+  [Reflect] attribute DOMString type;
 
   attribute DOMString referrerPolicy;
 };

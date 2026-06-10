@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<title>shadowrootadoptedstylesheets modulepreload failure</title>
+<meta name="author" title="Kurt Catti-Schmidt" href="mailto:kschmi@microsoft.com" />
+<link rel='help' href='https://github.com/whatwg/html/pull/12339'>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src='./support/helpers.js'></script>
+<body>
+<script type="module">
+  function preload(url) {
+    const link = document.createElement("link");
+    link.rel = "modulepreload";
+    link.as = "style";
+    link.href = url;
+    const p = new Promise((resolve) => {
+      link.onload = () => resolve("load");
+      link.onerror = () => resolve("error");
+    });
+    document.head.appendChild(link);
+    return p;
+  }
+
+  promise_test(async (t) => {
+    // --- Scenario 1: modulepreload a nonexistent CSS file (404). ---
+    const badUrl = "./support/nonexistent.css?modulepreload-failure";
+    const result = await preload(badUrl);
+    assert_equals(result, "error",
+      "Preloading a 404 URL should fire the error event.");
+
+    const { shadowRoot, testElement } = createStylesheetHost(badUrl);
+
+    // A failed CSS module fetch should not contribute an entry.
+    assert_equals(shadowRoot.adoptedStyleSheets.length, 0,
+      "After failed preload: no sheet should be added.");
+    assert_equals(getComputedStyle(testElement).color, "rgb(0, 0, 0)",
+      "No styles should be applied from a failed modulepreload.");
+  }, "Failed modulepreload (404) is skipped by shadowrootadoptedstylesheets.");
+
+  promise_test(async (t) => {
+    // --- Scenario 2: mix of valid and invalid modulepreloads. ---
+    const badUrl2 = "./support/nonexistent-2.css?modulepreload-failure";
+    const goodUrl = "./support/styles.css?modulepreload-failure";
+
+    const [badResult, goodResult] =
+      await Promise.all([preload(badUrl2), preload(goodUrl)]);
+
+    assert_equals(badResult, "error", "Bad URL should fire error.");
+    assert_equals(goodResult, "load", "Good URL should fire load.");
+
+    const { shadowRoot: sr2, testElement: te2 } = createStylesheetHost(
+      [badUrl2, goodUrl]);
+
+    assert_equals(sr2.adoptedStyleSheets.length, 1,
+      "Only the valid preload should contribute a sheet.");
+    assertSheetRule(sr2, 0, "span { color: blue; }", "Valid preload");
+    assert_equals(getComputedStyle(te2).color, "rgb(0, 0, 255)",
+      "Blue styles from the valid preload should be applied.");
+  }, "Mixed valid/invalid modulepreloads: failed ones are skipped and valid ones work.");
+</script>
+</body>

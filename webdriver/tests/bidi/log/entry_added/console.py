@@ -144,7 +144,7 @@ async def test_new_context_with_new_window(bidi_session, subscribe_events, top_c
     await create_console_api_message_from_string(
         bidi_session, top_context, 'log', "'foo'")
     event_data = await wait_for_future_safe(on_entry_added)
-    assert_console_entry(event_data, text="foo", context=top_context["context"], user_context=new_context["userContext"])
+    assert_console_entry(event_data, text="foo", context=top_context["context"], user_context=top_context["userContext"])
 
     new_context = await bidi_session.browsing_context.create(type_hint="tab")
 

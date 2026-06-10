@@ -84,7 +84,7 @@ async def test_timestamp(bidi_session, current_time, subscribe_events, url, new_
         {
             "context": new_tab["context"],
             "timestamp": int_interval(time_start, time_end),
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {})
+            **({"userContext": new_tab["userContext"]} if "userContext" in event else {}),
         }
     )
 

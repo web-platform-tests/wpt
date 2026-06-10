@@ -103,7 +103,7 @@ async def test_iframe(
         events[0],
         {
             "context": child_info["context"],
-            "url": test_page
+            "url": test_page,
             **({"userContext": new_tab["userContext"]} if "userContext" in events[0] else {}),
         },
     )
@@ -165,7 +165,7 @@ async def test_document_write(
     assert_navigation_info(
         event,
         {
-            "context": new_tab["context"]
+            "context": new_tab["context"],
             **({"userContext": new_tab["userContext"]} if "userContext" in event else {}),
         },
     )

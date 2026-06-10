@@ -6,7 +6,7 @@ html,body { color:black; background-color:white; padding:0; margin:0; }
 
 .grid {
   display:inline-grid;
-  grid-template-columns:50px 50px;
+  grid-template-columns:70px 70px 70px 70px;
   border:1px solid;
   background:yellow;
 }
@@ -20,8 +20,8 @@ html,body { color:black; background-color:white; padding:0; margin:0; }
 </head>
 <body>
 <div class="grid">
-  <div class="subgrid" style="column-gap:100px; grid-column:span 2; background:cyan;">
-    <div class="subgrid" style="grid-column:span 1; background:magenta;"></div>
+  <div class="subgrid" style="margin-left: 10px; column-gap:50px; grid-column:span 3; background:cyan;">
+    <div class="subgrid" style="margin-right: 20px;column-gap:100px;grid-column:span 2; background:magenta;"></div>
   </div>
 </div>
 </body>

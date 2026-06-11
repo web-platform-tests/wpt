@@ -79,8 +79,18 @@ compression_dictionary_promise_test(async (t) => {
 
   const entries = performance.getEntriesByName(dictionaryUrl);
   assert_equals(entries.length, 2);
-  assert_not_equals(entries[0].transferSize, 0);
-  assert_equals(entries[1].transferSize, 0);
+  // transferSize is computed using a 300-byte header size approximation
+  // (per standard browser security practices to avoid exposing exact
+  // header sizes):
+  // - A network request (cache miss) returns 300 + encodedBodySize.
+  // - A cached request (cache hit) returns 0 if served from local cache,
+  //   or 300 if it required validation (e.g. 304 response).
+  assert_equals(
+      entries[0].transferSize, 300 + entries[0].encodedBodySize,
+      "Initial compression dictionary triggered a network load.");
+  assert_in_array(
+      entries[1].transferSize, [0, 300],
+      "Second compression dictionary hit cache.");
 }, 'Dictionary registration does not invalidate cache entry');
 
 compression_dictionary_promise_test(async (t) => {

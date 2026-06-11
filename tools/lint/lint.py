@@ -1155,7 +1155,7 @@ def _run_main(argv: List[Text]) -> None:
         raise
     except Exception:
         traceback.print_exc()
-        sys.exit(3)
+        sys.exit(getattr(os, "EX_SOFTWARE", 70))
 
 
 if __name__ == "__main__":

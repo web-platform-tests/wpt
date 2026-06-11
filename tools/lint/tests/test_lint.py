@@ -497,11 +497,11 @@ def test_run_main_argument_error_exits_2():
     assert exc_info.value.code == 2
 
 
-def test_run_main_exception_exits_3(capsys):
+def test_run_main_exception_exits_ex_software(capsys):
     with mock.patch.object(lint_mod, 'main', side_effect=RuntimeError('simulated crash')):
         with pytest.raises(SystemExit) as exc_info:
             lint_mod._run_main(['--all'])
-    assert exc_info.value.code == 3
+    assert exc_info.value.code == getattr(os, "EX_SOFTWARE", 70)
 
     captured = capsys.readouterr()
     assert 'Traceback (most recent call last):' in captured.err

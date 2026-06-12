@@ -221,15 +221,15 @@
   "equal": {
     "a": {
       "dataTypes": ["float32", "float16", "int32"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     },
     "b": {
       "dataTypes": ["float32", "float16", "int32"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     },
     "output": {
       "dataTypes": ["uint8"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     }
   },
   "erf": {
@@ -336,29 +336,29 @@
   "greater": {
     "a": {
       "dataTypes": ["float32", "float16", "int32"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     },
     "b": {
       "dataTypes": ["float32", "float16", "int32"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     },
     "output": {
       "dataTypes": ["uint8"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     }
   },
   "greaterOrEqual": {
     "a": {
       "dataTypes": ["float32", "float16", "int32"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     },
     "b": {
       "dataTypes": ["float32", "float16", "int32"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     },
     "output": {
       "dataTypes": ["uint8"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     }
   },
   "gru": {
@@ -531,29 +531,29 @@
   "lesser": {
     "a": {
       "dataTypes": ["float32", "float16", "int32"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     },
     "b": {
       "dataTypes": ["float32", "float16", "int32"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     },
     "output": {
       "dataTypes": ["uint8"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     }
   },
   "lesserOrEqual": {
     "a": {
       "dataTypes": ["float32", "float16", "int32"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     },
     "b": {
       "dataTypes": ["float32", "float16", "int32"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     },
     "output": {
       "dataTypes": ["uint8"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     }
   },
   "linear": {
@@ -774,15 +774,15 @@
   "notEqual": {
     "a": {
       "dataTypes": ["float32", "float16", "int32"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     },
     "b": {
       "dataTypes": ["float32", "float16", "int32"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     },
     "output": {
       "dataTypes": ["uint8"],
-      "rankRange": {"min": 0, "max": 4}
+      "rankRange": {"min": 0, "max": 5}
     }
   },
   "pad": {

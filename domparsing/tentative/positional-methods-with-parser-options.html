@@ -123,5 +123,44 @@
         }
       }
     }
+
+    // Test that createParserOptions is checked before validation checks (like null parent / invalid parent).
+    for (const pos of ["before", "after", "replaceWith", "append", "prepend"]) {
+      test((t) => {
+        createParserOptions = (options) => {
+          throw new Error("createParserOptions called");
+        };
+        t.add_cleanup(() => {
+          createParserOptions = (options) => options;
+        });
+
+        const element = document.createElement("div");
+        try {
+          element[`${pos}HTMLUnsafe`]("<span>test</span>");
+          assert_unreached("Should have thrown");
+        } catch (e) {
+          assert_equals(e.message, "createParserOptions called");
+        }
+      }, `${pos}HTMLUnsafe checks createParserOptions before hierarchy checks`);
+
+      const method_name = `stream${pos.charAt(0).toUpperCase() + pos.slice(1)}HTMLUnsafe`;
+      test((t) => {
+        createParserOptions = (options) => {
+          throw new Error("createParserOptions called");
+        };
+        t.add_cleanup(() => {
+          createParserOptions = (options) => options;
+        });
+
+        const element = document.createElement("div");
+        try {
+          element[method_name]();
+          assert_unreached("Should have thrown");
+        } catch (e) {
+          assert_equals(e.message, "createParserOptions called");
+        }
+      }, `${method_name} checks createParserOptions before hierarchy checks`);
+    }
   </script>
 </body>
+

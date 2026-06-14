@@ -19,7 +19,7 @@
 <style>
   #container {
     container-type: inline-size;
-    color: rgb(255, 0, 0]);
+    color: rgb(255, 0, 0);
   }
 </style>
 <script>
@@ -91,7 +91,7 @@ tests = [
     ["lch(20 50 20deg/50%)", "lch(20 50 20 / 0.5)"],
     ["lch(10 20 20deg / -10%)", "lch(10 20 20 / 0)"],
     ["lch(10 20 20deg / 110%)", "lch(10 20 20)"],
-    ["lch(10 20 1.28rad)", "lch(10 20 73.3386)"],
+    ["lch(10 20 1.28rad)", "lch(10 20 73.33859778)"],
     ["lch(10 20 380deg)", "lch(10 20 20)"],
     ["lch(10 20 -340deg)", "lch(10 20 20)"],
     ["lch(10 20 740deg)", "lch(10 20 20)"],
@@ -122,7 +122,7 @@ tests = [
     ["oklch(0.2 0.5 20deg/50%)", "oklch(0.2 0.5 20 / 0.5)"],
     ["oklch(0.1 0.2 20deg / -10%)", "oklch(0.1 0.2 20 / 0)"],
     ["oklch(0.1 0.2 20deg / 110%)", "oklch(0.1 0.2 20)"],
-    ["oklch(0.1 0.2 1.28rad)", "oklch(0.1 0.2 73.3386)"],
+    ["oklch(0.1 0.2 1.28rad)", "oklch(0.1 0.2 73.33859778)"],
     ["oklch(0.1 0.2 380deg)", "oklch(0.1 0.2 20)"],
     ["oklch(0.1 0.2 -340deg)", "oklch(0.1 0.2 20)"],
     ["oklch(0.1 0.2 740deg)", "oklch(0.1 0.2 20)"],
@@ -164,7 +164,7 @@ for (const test of tests) {
     test_computed_value("color", test[0], test[1], test[2] ? `[${test[2]}]` : undefined);
 }
 
-// Ensure that `calc` values work with dynamically changing relative units (slighly different alpha values to make test harness not complain about duplicate tests).
+// Ensure that `calc` values work with dynamically changing relative units (slightly different alpha values to make test harness not complain about duplicate tests).
 document.getElementById("container").style.width = "1000px";
 test_computed_value("color", "lab(calc(50 + (sign(2cqw - 10px) * 10)) 30 50 / 0.51)", "lab(60 30 50 / 0.51)");
 test_computed_value("color", "oklab(calc(0.5 + (sign(2cqw - 10px) * 0.1)) 0.3 0.5 / 0.51)", "oklab(0.6 0.3 0.5 / 0.51)");

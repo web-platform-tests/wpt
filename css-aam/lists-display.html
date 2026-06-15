@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-  <title>CSS-AAM: display on lists Verification Tests</title>
+  <title>CSS-AAM Role Verification Tests</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/resources/testdriver.js"></script>
@@ -11,13 +11,8 @@
 </head>
 <body>
 
-
-<p>Tests the computedrole mappings defined in <a href="https://w3c.github.io/html-aam/">HTML-AAM</a>. Most test names correspond to a unique ID defined in the spec.<p>
-
-<p>These should remain in alphabetical order, and include all HTML tagnames. If a tag is not tested here, include a pointer to the file where it is tested, such as: <code>&lt;!-- caption -&gt; ./table-roles.html --&gt;</code></p>
-
-<ol data-testname="el-ol" data-expectedrole="list" class="ex" style="display:inline-block;"><li style="display:flex;">x</li></ol>
-<ul data-testname="el-ul" data-expectedrole="list" class="ex" style="display:inline-block;"><li style="display:flex;">x</li></ul>
+<ol data-testname="el-ol" data-expectedrole="list" class="ex" style="list-style:none;"><li>x</li><li>x</li></ol>
+<ul data-testname="el-ul" data-expectedrole="list" class="ex" style="list-style:none;"><li>x</li><li>x</li></ul>
 
 <script>
 AriaUtils.verifyRolesBySelector(".ex");

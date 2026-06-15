@@ -10,6 +10,11 @@
 <div id="target"></div>
 <script>
 
+// The expected results in the test cases below may be inconsistent between
+// cases. See these issues for clarifying alpha() resolution and serialization:
+// - https://github.com/w3c/csswg-drafts/issues/13992
+// - https://github.com/w3c/csswg-drafts/issues/13994
+
 const target = document.getElementById('target');
 
 // Basic: replace alpha on a named color.

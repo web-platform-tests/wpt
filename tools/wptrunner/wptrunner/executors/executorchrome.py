@@ -1,12 +1,13 @@
 # mypy: allow-untyped-defs
 
 import collections
+import copy
 import json
 import os
 import re
 import time
 import uuid
-from typing import Mapping, MutableMapping
+from typing import Any, Mapping, MutableMapping, Optional
 
 from webdriver import error
 

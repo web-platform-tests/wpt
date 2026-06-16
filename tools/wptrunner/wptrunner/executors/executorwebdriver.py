@@ -966,7 +966,7 @@ class WebDriverDevicePostureProtocolPart(DevicePostureProtocolPart):
         return self.webdriver.send_session_command("DELETE", "deviceposture")
 
 
-class WebDriverDigitalCredentialsPart(DigitalCredentialsProtocolPart):
+class WebDriverBidiDigitalCredentialsProtocolPart(DigitalCredentialsProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
@@ -1074,7 +1074,6 @@ class WebDriverProtocol(Protocol):
                   WebDriverSPCTransactionsProtocolPart,
                   WebDriverRPHRegistrationsProtocolPart,
                   WebDriverFedCMProtocolPart,
-                  WebDriverDigitalCredentialsPart,
                   WebDriverDebugProtocolPart,
                   WebDriverVirtualSensorPart,
                   WebDriverDevicePostureProtocolPart,
@@ -1162,6 +1161,7 @@ class WebDriverBidiProtocol(WebDriverProtocol):
                   WebDriverBidiScriptProtocolPart,
                   WebDriverBidiWebExtensionsProtocolPart,
                   WebDriverBidiUserAgentClientHintsProtocolPart,
+                  WebDriverBidiDigitalCredentialsProtocolPart,
                   *(part for part in WebDriverProtocol.implements)
                   ]
 

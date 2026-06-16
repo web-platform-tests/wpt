@@ -441,21 +441,6 @@ class ResetFedCMCooldownAction:
         return self.protocol.fedcm.reset_fedcm_cooldown()
 
 
-class SetVirtualWalletBehaviorAction:
-    name = "set_virtual_wallet_behavior"
-
-    def __init__(self, logger, protocol):
-        self.logger = logger
-        self.protocol = protocol
-
-    def __call__(self, payload):
-        action = payload["action"]
-        protocol = payload.get("protocol")
-        response = payload.get("response")
-        self.logger.debug("Setting virtual wallet behavior to %s" % action)
-        return self.protocol.digital_credentials.set_virtual_wallet_behavior(action, protocol, response)
-
-
 class CreateVirtualSensorAction:
     name = "create_virtual_sensor"
 
@@ -668,7 +653,6 @@ actions = [ClickAction,
            GetFedCMDialogTypeAction,
            SetFedCMDelayEnabledAction,
            ResetFedCMCooldownAction,
-           SetVirtualWalletBehaviorAction,
            CreateVirtualSensorAction,
            UpdateVirtualSensorAction,
            RemoveVirtualSensorAction,

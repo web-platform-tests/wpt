@@ -16,6 +16,7 @@
 
 <p>These should remain in alphabetical order, and include all HTML tagnames. If a tag is not tested here, include a pointer to the file where it is tested, such as: <code>&lt;!-- caption -&gt; ./table-roles.html --&gt;</code></p>
 
+<template id="template">
 <a href="#" data-testnamebase="el-a" data-expectedrole="link" class="ex">x</a>
 <a data-testnamebase="el-a-no-href" class="ex-generic">x</a>
 <!-- todo: abbr -->
@@ -205,14 +206,23 @@
 <!-- var (not mapped) -->
 <!-- todo: video -->
 <!-- wbr (not mapped) -->
+</template>
 
 <script>
-async function verifyRolesBySelectorWithDisplayValue(selector, displayValue) {
-    const els = document.querySelectorAll(selector);
+function verifyRolesBySelectorWithDisplayValue(selector, displayValue) {
+    console.log({selector, displayValue});
+    let template = document.querySelector("#template");
+    console.log(template);
+    let container = document.body.appendChild(document.createElement("div"));
+    container.id = `display-${displayValue}`;
+    container.appendChild(template.content.cloneNode(true));
+    console.log(container);
+    let containerSelector = `#${container.id} ${selector}`;
+    const els = document.querySelectorAll(containerSelector);
     if (!els.length) {
-      throw `Selector passed in verifyRolesBySelector("${selector}") should match at least one element.`;
+      throw `Selector passed in verifyRolesBySelector("${containerSelector}") should match at least one element.`;
     }
-    let promises = [];
+    console.log(els);
     for (const el of els) {
       if (!el.hasAttribute("data-expectedrole")) {
         throw `Element should have attribute 'data-expectedrole'. Element: ${el.outerHTML}`;
@@ -221,26 +231,25 @@ async function verifyRolesBySelectorWithDisplayValue(selector, displayValue) {
       let testNameBase = el.dataset.testnamebase;
       let role = el.getAttribute("data-expectedrole");
       let testName = `${testNameBase} should have role ${role} with \`display: ${displayValue}\``;
-      promises.push(promise_test(async t => {
+      promise_test(async t => {
+        console.log(`running ${testName}`);
         const expectedRole = el.getAttribute("data-expectedrole");
         const computedRole = await test_driver.get_computed_role(el);
+        console.log({computedRole});
         assert_equals(computedRole, expectedRole, el.outerHTML);
-      }, `${testName}`));
+      }, `${testName}`);
     }
-    await Promise.all(promises);
 }
 
-async () => {
-    await verifyRolesBySelectorWithDisplayValue(".ex", "block");
-    await verifyRolesBySelectorWithDisplayValue(".ex", "inline");
-    await verifyRolesBySelectorWithDisplayValue(".ex", "inline-block");
-    await verifyRolesBySelectorWithDisplayValue(".ex", "flex");
-    await verifyRolesBySelectorWithDisplayValue(".ex", "inline-flex");
-    await verifyRolesBySelectorWithDisplayValue(".ex", "grid");
-    await verifyRolesBySelectorWithDisplayValue(".ex", "inline-grid");
-    await verifyRolesBySelectorWithDisplayValue(".ex", "table");
-    await verifyRolesBySelectorWithDisplayValue(".ex", "inline-table");
-}
+verifyRolesBySelectorWithDisplayValue(".ex", "block");
+verifyRolesBySelectorWithDisplayValue(".ex", "inline");
+verifyRolesBySelectorWithDisplayValue(".ex", "inline-block");
+verifyRolesBySelectorWithDisplayValue(".ex", "flex");
+verifyRolesBySelectorWithDisplayValue(".ex", "inline-flex");
+verifyRolesBySelectorWithDisplayValue(".ex", "grid");
+verifyRolesBySelectorWithDisplayValue(".ex", "inline-grid");
+verifyRolesBySelectorWithDisplayValue(".ex", "table");
+verifyRolesBySelectorWithDisplayValue(".ex", "inline-table");
 
 // const displayValues = ['block', 'inline', 'inline-block', 'flex', 'inline-flex', 'grid', 'inline-grid', 'table', 'inline-table']
 // 

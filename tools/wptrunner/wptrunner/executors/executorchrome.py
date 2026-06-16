@@ -39,7 +39,10 @@ def _update_capabilities_if_extension_test(
             capabilities = copy.deepcopy(capabilities)
         chrome_options = capabilities.setdefault("goog:chromeOptions", {})
         args = chrome_options.setdefault("args", [])
-        add_arg = lambda arg: args.append(arg) if arg not in args else None
+
+        def add_arg(arg: str) -> None:
+            if arg not in args:
+                args.append(arg)
         # Enabled `browser` JS namespace on <test_name>.<api>.html test page.
         add_arg("--extension-browser-namespace-on-webpages")
         # Enables `chrome.test` JS API (and by extension `browser.test`) on <test_name>.<api>.html test page.

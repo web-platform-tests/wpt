@@ -329,18 +329,17 @@ class ChromeBrowser(WebDriverBrowser):
         """ Required to store `require_webdriver_bidi` in browser settings."""
         settings = super().settings(test)
         self._is_extension_test = (
-            (test.testdriver_features is not None
-             and "extensions" in test.testdriver_features)
-            or (test.path is not None and "web-extensions/" in test.path))
+            (test.testdriver_features is not None and
+             "extensions" in test.testdriver_features) or
+            (test.path is not None and "web-extensions/" in test.path))
         self._require_webdriver_bidi = (
             (test.testdriver_features is not None and
-             ("bidi" in test.testdriver_features
-              or "extensions" in test.testdriver_features))
-            or self._is_extension_test)
+             ("bidi" in test.testdriver_features or
+              "extensions" in test.testdriver_features)) or
+            self._is_extension_test)
 
         return {
-            **settings,
-            "require_webdriver_bidi": self._require_webdriver_bidi,
+            **settings, "require_webdriver_bidi": self._require_webdriver_bidi,
             "is_extension_test": self._is_extension_test
         }
 

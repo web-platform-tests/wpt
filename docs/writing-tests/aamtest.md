@@ -72,7 +72,7 @@ results will not be recorded. This is because each test file should show how the
 
 ## Running tests
 
-These test can be run with the `wpt run` but not `wpt serve`.
+These test can be run with `wpt run` but not `wpt serve`.
 
 ### Linux
 
@@ -98,7 +98,7 @@ $ ./wpt run  --log-mach-level debug --log-mach - firefox core-aam/aamtests/role/
 When running these tests on macOS, provide the option `--no-headless`. Otherwise the accessibility API will not be enabled.
 
 ```
-$ python wpt.py run --no-headless chrome core-aam/aamtests/role/blockquote.py
+$ ./wpt run --no-headless chrome core-aam/aamtests/role/blockquote.py
 ```
 
 ### Windows
@@ -106,7 +106,7 @@ $ python wpt.py run --no-headless chrome core-aam/aamtests/role/blockquote.py
 When running these tests on macOS, provide the option `--no-headless`. Otherwise the accessibility API will not be enabled. Additionally, the binaries for the browser and the webdriver binary must be provided on a Windows machine.
 
 ```
-$ python wpt.py run chrome --no-headless --binary="C:\Program Files\Google\Chrome\Application\chrome.exe" --webdriver-binary="C:\Users\spectranaut\Desktop\chromedriver-win64\chromedriver" core-aam\aamtests\role\blockquote.py
+$ python wpt.py run chrome --no-headless --binary="C:\Program Files\Google\Chrome\Application\chrome.exe" --webdriver-binary="C:\whatever\the\path\to\chromedriver" core-aam\aamtests\role\blockquote.py
 ```
 
 ## Adding new tests

@@ -449,10 +449,14 @@ class WebDriverBidiWebExtensionsProtocolPart(WebExtensionsProtocolPart):
         else:
             params["value"] = value
 
-        return self.webdriver.loop.run_until_complete(self.webdriver.bidi_session.web_extension.install(params))
+        return self.parent.loop.run_until_complete(
+            self.webdriver.bidi_session.web_extension.install(
+                extension_data=params))
 
     def uninstall_web_extension(self, extension_id):
-        return self.webdriver.loop.run_until_complete(self.webdriver.bidi_session.web_extension.uninstall(extension_id))
+        return self.parent.loop.run_until_complete(
+            self.webdriver.bidi_session.web_extension.uninstall(
+                extension=extension_id))
 
     def _resolve_path(self, path):
         if self.parent.test_path is not None:

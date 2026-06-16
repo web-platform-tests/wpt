@@ -273,6 +273,7 @@ class ChromeBrowser(WebDriverBrowser):
         self._leak_check = leak_check
         self._actual_port = None
         self._require_webdriver_bidi: Optional[bool] = None
+        self._is_extension_test: Optional[bool] = None
 
     def restart_on_test_type_change(self, new_test_type: str, old_test_type: str) -> bool:
         # Restart the test runner when switch from/to wdspec or aamtest tests.
@@ -327,16 +328,20 @@ class ChromeBrowser(WebDriverBrowser):
     def settings(self, test: Test) -> BrowserSettings:
         """ Required to store `require_webdriver_bidi` in browser settings."""
         settings = super().settings(test)
+        self._is_extension_test = (
+            (test.testdriver_features is not None
+             and "extensions" in test.testdriver_features)
+            or (test.path is not None and "web-extensions/" in test.path))
         self._require_webdriver_bidi = (
-            test.testdriver_features is not None and (
-                'bidi' in test.testdriver_features or
-                'extensions' in test.testdriver_features
-            )
-        )
+            (test.testdriver_features is not None and
+             ("bidi" in test.testdriver_features
+              or "extensions" in test.testdriver_features))
+            or self._is_extension_test)
 
         return {
             **settings,
-            "require_webdriver_bidi": self._require_webdriver_bidi
+            "require_webdriver_bidi": self._require_webdriver_bidi,
+            "is_extension_test": self._is_extension_test
         }
 
 

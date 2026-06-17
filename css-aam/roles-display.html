@@ -210,23 +210,23 @@
 
 <script>
 function verifyRolesBySelectorWithDisplayValue(selector, displayValue) {
-    console.log({selector, displayValue});
+    const escapedDisplay = displayValue.replace(/\W/, "-");
     let template = document.querySelector("#template");
-    console.log(template);
     let container = document.body.appendChild(document.createElement("div"));
-    container.id = `display-${displayValue}`;
+    container.id = `display-${escapedDisplay}`;
     container.appendChild(template.content.cloneNode(true));
-    console.log(container);
     let containerSelector = `#${container.id} ${selector}`;
     const els = document.querySelectorAll(containerSelector);
+
     if (!els.length) {
       throw `Selector passed in verifyRolesBySelector("${containerSelector}") should match at least one element.`;
     }
-    console.log(els);
+
     for (const el of els) {
       if (!el.hasAttribute("data-expectedrole")) {
         throw `Element should have attribute 'data-expectedrole'. Element: ${el.outerHTML}`;
       }
+
       el.style.display = displayValue;
       let testNameBase = el.dataset.testnamebase;
       let role = el.getAttribute("data-expectedrole");
@@ -241,22 +241,14 @@ function verifyRolesBySelectorWithDisplayValue(selector, displayValue) {
     }
 }
 
-verifyRolesBySelectorWithDisplayValue(".ex", "block");
-verifyRolesBySelectorWithDisplayValue(".ex", "inline");
-verifyRolesBySelectorWithDisplayValue(".ex", "inline-block");
-verifyRolesBySelectorWithDisplayValue(".ex", "flex");
-verifyRolesBySelectorWithDisplayValue(".ex", "inline-flex");
-verifyRolesBySelectorWithDisplayValue(".ex", "grid");
-verifyRolesBySelectorWithDisplayValue(".ex", "inline-grid");
-verifyRolesBySelectorWithDisplayValue(".ex", "table");
-verifyRolesBySelectorWithDisplayValue(".ex", "inline-table");
+const displayValues = ["block", "flow-root", "inline", "inline-block", "run-in", "list-item", "inline list-item", "flex", "inline-flex", "grid", "inline-grid", "ruby", "block ruby", "table", "inline-table"]
 
-// const displayValues = ['block', 'inline', 'inline-block', 'flex', 'inline-flex', 'grid', 'inline-grid', 'table', 'inline-table']
-// 
-// for (const displayValue of displayValues) {
-//     verifyRolesBySelectorWithDisplayValue(".ex", displayValue);
-// }
+// Full display options
+// "block flow", "block flow-root", "inline flow", "inline flow-root", "run-in flow", "block flow list-item", "inline flow list-item", "block flex", "inline flex", "block grid", "inline grid", "inline ruby", "block ruby", "block table", "inline table"
 
+for (const displayValue of displayValues) {
+  verifyRolesBySelectorWithDisplayValue(".ex", displayValue);
+}
 </script>
 
 </body>

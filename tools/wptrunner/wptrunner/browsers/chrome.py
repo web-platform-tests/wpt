@@ -319,7 +319,9 @@ class ChromeBrowser(WebDriverBrowser):
 
     def executor_browser(self):
         browser_cls, browser_kwargs = super().executor_browser()
-        return browser_cls, {**browser_kwargs, "leak_check": self._leak_check}
+        return browser_cls, {**browser_kwargs,
+                             "leak_check": self._leak_check,
+                             "is_extension_test": self._is_extension_test}
 
     @property
     def require_webdriver_bidi(self) -> Optional[bool]:

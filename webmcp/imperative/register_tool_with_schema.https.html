@@ -1,5 +1,13 @@
-'use strict';
-
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP registerTool</title>
+<link rel="author" href="mailto:dom@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
 test(() => {
   const tool = {
     name: 'echo',
@@ -37,3 +45,6 @@ test(() => {
     execute: () => {},
   });
 }, "registerTool succeeds when inputSchema.toJSON() returns 'undefined'");
+</script>
+</body>
+</html>

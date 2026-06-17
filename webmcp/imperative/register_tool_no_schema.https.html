@@ -1,5 +1,13 @@
-'use strict';
-
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP registerTool succeeds without schema</title>
+<link rel="author" href="mailto:dom@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
 test(() => {
   const tool = {
     name: 'empty',
@@ -11,3 +19,6 @@ test(() => {
   document.modelContext.registerTool(tool, { signal: controller.signal });
   controller.abort();
 }, 'register tool with only required params');
+</script>
+</body>
+</html>

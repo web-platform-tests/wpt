@@ -1,5 +1,13 @@
-'use strict';
-
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP registerTool throws on invalid schema</title>
+<link rel="author" href="mailto:dom@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
 function test_register_tool_schema_error(inputSchema, expectedError, testName) {
   test(() => {
     assert_throws_js(
@@ -66,3 +74,6 @@ test(() => {
     'Should throw TypeError for circular input schema, before checking if the signal is aborted'
   );
 }, 'registerTool throws on invalid schema even if an aborted signal was provided');
+</script>
+</body>
+</html>

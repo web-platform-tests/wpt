@@ -1,5 +1,13 @@
-'use strict';
-
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP registerTool succeeds with empty annotations</title>
+<link rel="author" href="mailto:dom@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
 test(() => {
   const tool = {
     name: 'echo',
@@ -14,3 +22,6 @@ test(() => {
   document.modelContext.registerTool(tool, { signal: controller.signal });
   controller.abort();
 }, 'register tool with empty annotations');
+</script>
+</body>
+</html>

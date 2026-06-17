@@ -1,3 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP registerTool throws on invalid name</title>
+<link rel="author" href="mailto:dom@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
 test(() => {
   // Valid names
   const validNames = [
@@ -69,3 +79,6 @@ test(() => {
     );
   }
 }, 'Invalid tool names throw InvalidStateError.');
+</script>
+</body>
+</html>

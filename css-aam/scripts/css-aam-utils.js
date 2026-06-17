@@ -2,18 +2,37 @@
 
 const CssAamUtils = {
     /*
+      Clones test container template.
+
+      */
+    cloneTestContainer: function(templateID, containerID) {
+        let template = document.querySelector(`#${templateID}`);
+        let container = document.body.appendChild(document.createElement("div"));
+        container.id = containerID;
+        container.appendChild(template.content.cloneNode(true));
+        
+        return container
+    },
+    
+    /*
+      Replaces white space with dashes.
+    
+      */
+    escapeWhiteSpace: function(value) {
+        return value.replace(/\W/, "-");
+    },
+    
+    /*
       Tests unchanged implicit role with display value: <button style="display: flex">x</div>
 
       Ex: CssAamUtils.verifyRolesBySelectorWithDisplayValue(".ex", "inline-table")
 
       */
     verifyRolesBySelectorWithDisplayValue: function(selector, displayValue) {
-        const escapedDisplay = displayValue.replace(/\W/, "-");
-        let template = document.querySelector("#template");
-        let container = document.body.appendChild(document.createElement("div"));
-        container.id = `display-${escapedDisplay}`;
-        container.appendChild(template.content.cloneNode(true));
-        let containerSelector = `#${container.id} ${selector}`;
+        const escapedDisplay = CssAamUtils.escapeWhiteSpace(displayValue);
+        const containerID = `display-${escapedDisplay}`;
+        const container = CssAamUtils.cloneTestContainer("template", containerID);
+        const containerSelector = `#${container.id} ${selector}`;
         const els = document.querySelectorAll(containerSelector);
 
         if (!els.length) {
@@ -44,12 +63,10 @@ const CssAamUtils = {
 
       */
     verifyGenericRolesBySelectorWithDisplayValue: function(selector, roles, displayValue) {
-        const escapedDisplay = displayValue.replace(/\W/, "-");
-        let template = document.querySelector("#template");
-        let container = document.body.appendChild(document.createElement("div"));
-        container.id = `display-${escapedDisplay}`;
-        container.appendChild(template.content.cloneNode(true));
-        let containerSelector = `#${container.id} ${selector}`;
+        const escapedDisplay = CssAamUtils.escapeWhiteSpace(displayValue);
+        const containerID = `display-${escapedDisplay}`;
+        const container = CssAamUtils.cloneTestContainer("template", containerID);
+        const containerSelector = `#${container.id} ${selector}`;
         const els = document.querySelectorAll(containerSelector);
 
         if (!els.length) {

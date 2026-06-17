@@ -1,4 +1,5 @@
 // META: title=Encoding API: invalid label
+// META: global=window,dedicatedworker,shadowrealm
 // META: timeout=long
 // META: variant=?1-1000
 // META: variant=?1001-2000

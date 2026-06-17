@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+// META: global=window,dedicatedworker,shadowrealm
 
 test(() => {
   const decoder = new TextDecoder('utf-8');
   const buffer = new SharedArrayBuffer(4);
   assert_equals(decoder.decode(new Uint8Array(buffer)), "\u0000\u0000\u0000\u0000");
 }, 'decoding SharedArrayBuffer');
-
-</script>

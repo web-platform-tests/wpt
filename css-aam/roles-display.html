@@ -7,7 +7,7 @@
   <script src="/resources/testdriver.js"></script>
   <script src="/resources/testdriver-vendor.js"></script>
   <script src="/resources/testdriver-actions.js"></script>
-  <script src="/wai-aria/scripts/aria-utils.js"></script>
+  <script src="/css-aam/scripts/css-aam-utils.js"></script>
 </head>
 <body>
 
@@ -209,43 +209,13 @@
 </template>
 
 <script>
-function verifyRolesBySelectorWithDisplayValue(selector, displayValue) {
-    const escapedDisplay = displayValue.replace(/\W/, "-");
-    let template = document.querySelector("#template");
-    let container = document.body.appendChild(document.createElement("div"));
-    container.id = `display-${escapedDisplay}`;
-    container.appendChild(template.content.cloneNode(true));
-    let containerSelector = `#${container.id} ${selector}`;
-    const els = document.querySelectorAll(containerSelector);
-
-    if (!els.length) {
-      throw `Selector passed in verifyRolesBySelector("${containerSelector}") should match at least one element.`;
-    }
-
-    for (const el of els) {
-      if (!el.hasAttribute("data-expectedrole")) {
-        throw `Element should have attribute 'data-expectedrole'. Element: ${el.outerHTML}`;
-      }
-
-      el.style.display = displayValue;
-      let testNameBase = el.dataset.testnamebase;
-      let role = el.getAttribute("data-expectedrole");
-      let testName = `${testNameBase}-with-display-${escapedDisplay}`;
-      promise_test(async t => {
-        const expectedRole = el.getAttribute("data-expectedrole");
-        const computedRole = await test_driver.get_computed_role(el);
-        assert_equals(computedRole, expectedRole, el.outerHTML);
-      }, `${testName}`);
-    }
-}
-
 const displayValues = ["block", "flow-root", "inline", "inline-block", "run-in", "list-item", "inline list-item", "flex", "inline-flex", "grid", "inline-grid", "ruby", "block ruby", "table", "inline-table"]
 
 // Full display options
 // "block flow", "block flow-root", "inline flow", "inline flow-root", "run-in flow", "block flow list-item", "inline flow list-item", "block flex", "inline flex", "block grid", "inline grid", "inline ruby", "block ruby", "block table", "inline table"
 
 for (const displayValue of displayValues) {
-  verifyRolesBySelectorWithDisplayValue(".ex", displayValue);
+  CssAamUtils.verifyRolesBySelectorWithDisplayValue(".ex", displayValue);
 }
 </script>
 

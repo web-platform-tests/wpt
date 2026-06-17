@@ -1,17 +1,15 @@
 // Wait for a declarative WebMCP tool to register with the specified name.
 async function waitForTool(name) {
   let tools = await document.modelContext.getTools();
-  let tool = tools.find(t => t.name === name);
-  if (tool) {
-    return tool;
+  if (tools.some(t => t.name === name)) {
+    return;
   }
-  return new Promise(resolve => {
+  await new Promise(resolve => {
     const handler = async () => {
       let tools = await document.modelContext.getTools();
-      let tool = tools.find(t => t.name === name);
-      if (tool) {
+      if (tools.some(t => t.name === name)) {
         document.modelContext.removeEventListener('toolchange', handler);
-        resolve(tool);
+        resolve();
       }
     };
     document.modelContext.addEventListener('toolchange', handler);

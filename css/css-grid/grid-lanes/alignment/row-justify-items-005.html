@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>CSS Grid Lanes Test: justify-items start and end in row direction stacking axis</title>
+  <title>CSS Grid Lanes Test: safe alignment should have the same behavior as regular alignment for justify-items start and end in row direction</title>
   <link rel="author" title="Celeste Pan" href="mailto:celestepan@microsoft.com">
   <link rel="help" href="https://drafts.csswg.org/css-grid-3/#alignment">
   <link rel="match" href="row-justify-items-002-ref.html">
@@ -29,7 +29,7 @@
 </head>
 <body>
 
-<div class="grid-lanes" style="justify-items: start;">
+<div class="grid-lanes" style="justify-items: safe start;">
   <item style="width: 70px; background: #f4a0a0;">1</item>
   <item style="width: 40px; background: #2ca02c;">2</item>
   <item style="width: 120px; background: #ff7f0e;">3</item>
@@ -41,7 +41,7 @@
   <item style="width: 35px; background: #9edae5;">9</item>
 </div>
 
-<div class="grid-lanes" style="justify-items: end;">
+<div class="grid-lanes" style="justify-items: safe end;">
   <item style="width: 70px; background: #f4a0a0;">1</item>
   <item style="width: 40px; background: #2ca02c;">2</item>
   <item style="width: 120px; background: #ff7f0e;">3</item>

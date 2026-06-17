@@ -60,7 +60,7 @@ function verifyGenericRolesBySelectorWithDisplayValue(selector, roles, displayVa
       el.style.display = displayValue;
       const expectedRoles = roles;
       let testNameBase = el.dataset.testnamebase;
-      let testName = `${testNameBase} should math one of the acceptable role strings in ["${roles.join('", "')}"] with \`display: ${displayValue}\``;
+      let testName = `${testNameBase}-with-display-${escapedDisplay}`;
       promise_test(async t => {
         const expectedRoles = roles;
         const computedRole = await test_driver.get_computed_role(el);

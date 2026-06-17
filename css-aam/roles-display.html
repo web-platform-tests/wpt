@@ -230,7 +230,7 @@ function verifyRolesBySelectorWithDisplayValue(selector, displayValue) {
       el.style.display = displayValue;
       let testNameBase = el.dataset.testnamebase;
       let role = el.getAttribute("data-expectedrole");
-      let testName = `${testNameBase} should have role ${role} with \`display: ${displayValue}\``;
+      let testName = `${testNameBase}-with-display-${escapedDisplay}`;
       promise_test(async t => {
         console.log(`running ${testName}`);
         const expectedRole = el.getAttribute("data-expectedrole");

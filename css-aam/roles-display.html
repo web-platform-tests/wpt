@@ -232,10 +232,8 @@ function verifyRolesBySelectorWithDisplayValue(selector, displayValue) {
       let role = el.getAttribute("data-expectedrole");
       let testName = `${testNameBase}-with-display-${escapedDisplay}`;
       promise_test(async t => {
-        console.log(`running ${testName}`);
         const expectedRole = el.getAttribute("data-expectedrole");
         const computedRole = await test_driver.get_computed_role(el);
-        console.log({computedRole});
         assert_equals(computedRole, expectedRole, el.outerHTML);
       }, `${testName}`);
     }

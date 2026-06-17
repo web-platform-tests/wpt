@@ -10,18 +10,18 @@ const CssAamUtils = {
         let container = document.body.appendChild(document.createElement("div"));
         container.id = containerID;
         container.appendChild(template.content.cloneNode(true));
-        
+
         return container
     },
-    
+
     /*
       Replaces white space with dashes.
-    
+
       */
     escapeWhiteSpace: function(value) {
         return value.replace(/\W/, "-");
     },
-    
+
     /*
       Tests unchanged implicit role with display value: <button style="display: flex">x</div>
 
@@ -55,7 +55,7 @@ const CssAamUtils = {
           }, `${testName}`);
         }
     },
-    
+
     /*
       Tests unchanged implicit generic role with display value: <button style="display: flex">x</div>
 

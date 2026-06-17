@@ -37,6 +37,7 @@
   </ol>
   <br />
 
+  <!-- The tabindex on the anchor is needed for Safari on Apple platforms. Without it the anchor will not get focus on click. -->
   <a id="link" href="#el" tabindex="0">Click me</a>
   <div id="el" tabindex="-1">I will be focused by the fragment navigation</div>
 

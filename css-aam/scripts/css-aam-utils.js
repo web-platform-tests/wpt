@@ -46,6 +46,10 @@ const CssAamUtils = {
           if (!el.hasAttribute("data-expectedrole")) {
             throw `Element should have attribute 'data-expectedrole'. Element: ${el.outerHTML}`;
           }
+          // When display is set to "contents" on leaf-nodes the expected role is "none".
+          if (displayValue === "contents" && (el.tagName === "INPUT" || el.tagName === "METER" || el.tagName === "IMG" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.tagName === "PROGRESS")) {
+              el.dataset.expectedrole = "none";
+          };
 
           el.style.display = displayValue;
           let testNameBase = el.dataset.testnamebase;

@@ -19,13 +19,6 @@
 //
 // MLOperand reduceSum(MLOperand input, optional MLReduceOptions options = {});
 
-const getReductionOperatorsPrecisionTolerance = (graphResources) => {
-  return {
-    metricType: 'ULP',
-    value: getReducedElementCount(graphResources),
-  };
-};
-
 const reduceSumTests = [
   {
     'name': 'reduceSum float32 0D constant tensor default options',
@@ -51,6 +44,29 @@ const reduceSumTests = [
     }
   },
   {
+    'name': 'reduceSum float32 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceSumInput': {
+          'data': [69.6038589477539],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': false
+        }
+      },
+      'operators': [{
+        'name': 'reduceSum',
+        'arguments': [{'input': 'reduceSumInput'}],
+        'outputs': 'reduceSumOutput'
+      }],
+      'expectedOutputs': {
+        'reduceSumOutput': {
+          'data': 69.6038589477539,
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
     'name': 'reduceSum float32 0D constant tensor empty axes',
     'graph': {
       'inputs': {
@@ -58,6 +74,29 @@ const reduceSumTests = [
           'data': [69.6038589477539],
           'descriptor': {shape: [], dataType: 'float32'},
           'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceSum',
+        'arguments': [{'input': 'reduceSumInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceSumOutput'
+      }],
+      'expectedOutputs': {
+        'reduceSumOutput': {
+          'data': 69.6038589477539,
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceSum float32 0D tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceSumInput': {
+          'data': [69.6038589477539],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': false
         }
       },
       'operators': [{
@@ -661,6 +700,27 @@ const reduceSumTests = [
     }
   },
   {
+    'name': 'reduceSum float16 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceSumInput': {
+          'data': [69.625],
+          'descriptor': {shape: [], dataType: 'float16'},
+          'constant': false
+        }
+      },
+      'operators': [{
+        'name': 'reduceSum',
+        'arguments': [{'input': 'reduceSumInput'}],
+        'outputs': 'reduceSumOutput'
+      }],
+      'expectedOutputs': {
+        'reduceSumOutput':
+            {'data': [69.625], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
     'name': 'reduceSum float16 0D constant tensor empty axes',
     'graph': {
       'inputs': {
@@ -668,6 +728,27 @@ const reduceSumTests = [
           'data': [69.625],
           'descriptor': {shape: [], dataType: 'float16'},
           'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceSum',
+        'arguments': [{'input': 'reduceSumInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceSumOutput'
+      }],
+      'expectedOutputs': {
+        'reduceSumOutput':
+            {'data': [69.625], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceSum float16 0D tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceSumInput': {
+          'data': [69.625],
+          'descriptor': {shape: [], dataType: 'float16'},
+          'constant': false
         }
       },
       'operators': [{
@@ -1132,14 +1213,57 @@ const reduceSumTests = [
         }
       }
     }
+  },
+
+  // int32 tests
+  {
+    'name': 'reduceSum int32 2D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceSumInput': {
+          'data': [1, -2, 3, -4, 5, -6, 7, -8, 9],
+          'descriptor': {shape: [3, 3], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceSum',
+        'arguments': [{'input': 'reduceSumInput'}],
+        'outputs': 'reduceSumOutput'
+      }],
+      'expectedOutputs': {
+        'reduceSumOutput': {
+          'data': [5],
+          'descriptor': {shape: [], dataType: 'int32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceSum int32 2D tensor with options.axes and options.keepDimensions',
+    'graph': {
+      'inputs': {
+        'reduceSumInput': {
+          'data': [1, -2, 3, -4, 5, -6, 7, -8, 9],
+          'descriptor': {shape: [3, 3], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceSum',
+        'arguments': [
+          {'input': 'reduceSumInput'},
+          {'options': {'axes': [1], 'keepDimensions': true}}
+        ],
+        'outputs': 'reduceSumOutput'
+      }],
+      'expectedOutputs': {
+        'reduceSumOutput': {
+          'data': [2, -5, 8],
+          'descriptor': {shape: [3, 1], dataType: 'int32'}
+        }
+      }
+    }
   }
 ];
 
-if (navigator.ml) {
-  reduceSumTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getReductionOperatorsPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    reduceSumTests, buildAndExecuteGraph, getPrecisionTolerance);

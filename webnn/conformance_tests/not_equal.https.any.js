@@ -13,15 +13,8 @@
 //
 // MLOperand notEqual(MLOperand a, MLOperand b);
 
-
-const getNotEqualPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {uint8: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const notEqualTests = [
+  // float32 tests
   {
     'name': 'notEqual float32 0D scalar',
     'graph': {
@@ -524,14 +517,837 @@ const notEqualTests = [
         }
       }
     }
+  },
+  {
+    'name': 'notEqual float32 broadcast 4D to 5D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [0, 1, 2, 8, 0, 255],
+          'descriptor': {shape: [2, 1, 1, 3], dataType: 'float32'}
+        },
+        'inputB': {
+          'data': [255, 0, 1, 8],
+          'descriptor': {shape: [1, 2, 2, 1, 1], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1],
+          'descriptor': {shape: [1, 2, 2, 1, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'notEqual float32 5D and broadcastable 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [255, 0, 1, 8],
+          'descriptor': {shape: [1, 2, 2, 1, 1], dataType: 'float32'}
+        },
+        'inputB': {
+          'data': [0, 1, 2, 8, 0, 255],
+          'descriptor': {shape: [2, 1, 1, 3], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1],
+          'descriptor': {shape: [1, 2, 2, 1, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'notEqual float32 broadcasting two 5D inputs with a leading batch size of 1',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [255, 0, 1, 8],
+          'descriptor': {shape: [1, 2, 2, 1, 1], dataType: 'float32'}
+        },
+        'inputB': {
+          'data': [0, 1, 2, 8, 0, 255],
+          'descriptor': {shape: [1, 2, 1, 1, 3], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1],
+          'descriptor': {shape: [1, 2, 2, 1, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    // 5D inputs whose broadcast roles alternate on every axis so no adjacent
+    // axes can be collapsed; exercises the explicit BROADCAST_TO + flatten
+    // fallback path.
+    'name': 'notEqual float32 5D inputs with alternating broadcast axes',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [1, 0, 1, 0, 1, 0, 1, 0],
+          'descriptor': {shape: [2, 1, 2, 1, 2], dataType: 'float32'}
+        },
+        'inputB': {
+          'data': [1, 1, 0, 0],
+          'descriptor': {shape: [1, 2, 1, 2, 1], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0,
+            0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0
+          ],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    // Two 5D inputs with identical shapes (no broadcast); CollapseBroadcast-
+    // Shapes folds both operands down to rank-1 before the binary kernel.
+    'name': 'notEqual float32 two 5D inputs with identical shapes',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -3.5, -2,    -1,   0,    1,   2.5,  3,    4.5,
+            5,    -5.5,  6,    -6.5, 7,   -7.5, 8,    -8.5,
+            9,    10.5,  -11,  12.5, -13, 14.5, -15,  16.5,
+            0,    0.5,   1.5,  2,    2.5, 3,    3.5,  4
+          ],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'float32'}
+        },
+        'inputB': {
+          'data': [
+            -3.5, -2,    0,     1,    1,     2,    3.5,  4,
+            5,    -5.5,  5.5,   -7,   7,     -7.5, 9,    -8.5,
+            9.5,  10.5,  -11.5, 12.5, -12.5, 14.5, -16,  16.5,
+            0,    1,     1,     2,    3,     3,    4,    4
+          ],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+            1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0
+          ],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    // 5D tensor with a 0D scalar; commonly used pattern that broadcasts the
+    // scalar against every element.
+    'name': 'notEqual float32 5D tensor and broadcastable 0D scalar',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -3.5, -2,    -1,   0,    1,   2.5,  3,    4.5,
+            5,    -5.5,  6,    -6.5, 7,   -7.5, 8,    -8.5,
+            9,    10.5,  -11,  12.5, -13, 14.5, -15,  16.5,
+            0,    0.5,   1.5,  2,    2.5, 3,    3.5,  4
+          ],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'float32'}
+        },
+        'inputB':
+            {'data': [2.5], 'descriptor': {shape: [], dataType: 'float32'}}
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1
+          ],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'notEqual float16 0D scalar',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [-0.62841796875],
+          'descriptor': {shape: [], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [-4.41796875],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {'data': [1], 'descriptor': {shape: [], dataType: 'uint8'}}
+      }
+    }
+  },
+  {
+    'name': 'notEqual float16 1D constant tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            2.806640625, 5.58984375,   2.85546875,  4.99609375,  0.97265625,
+            -4.7421875,  2.806640625,  5.58984375,  -5.109375,   6.625,
+            -2.3203125,  -7.0546875,   2.806640625, 5.58984375,  4.98046875,
+            -5.44140625, 1.1455078125, 7.7734375,   2.806640625, 5.58984375,
+            -6.24609375, -2.849609375, -2.6953125,  5.81640625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        },
+        'inputB': {
+          'data': [
+            2.806640625,   5.58984375,  -4.83984375,     4.99609375,
+            0.97265625,    -6.171875,   2.806640625,     5.58984375,
+            7.765625,      -4.30859375, -5.89453125,     -8.53125,
+            2.806640625,   5.58984375,  0.1783447265625, -4.48046875,
+            0.68212890625, -6.6875,     2.806640625,     5.58984375,
+            -9.0390625,    -1.97265625, -3.01171875,     3.626953125
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1
+          ],
+          'descriptor': {shape: [24], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'notEqual float16 1D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            2.806640625, 5.58984375,   2.85546875,  4.99609375,  0.97265625,
+            -4.7421875,  2.806640625,  5.58984375,  -5.109375,   6.625,
+            -2.3203125,  -7.0546875,   2.806640625, 5.58984375,  4.98046875,
+            -5.44140625, 1.1455078125, 7.7734375,   2.806640625, 5.58984375,
+            -6.24609375, -2.849609375, -2.6953125,  5.81640625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            2.806640625,   5.58984375,  -4.83984375,     4.99609375,
+            0.97265625,    -6.171875,   2.806640625,     5.58984375,
+            7.765625,      -4.30859375, -5.89453125,     -8.53125,
+            2.806640625,   5.58984375,  0.1783447265625, -4.48046875,
+            0.68212890625, -6.6875,     2.806640625,     5.58984375,
+            -9.0390625,    -1.97265625, -3.01171875,     3.626953125
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1
+          ],
+          'descriptor': {shape: [24], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'notEqual float16 2D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            2.806640625, 5.58984375,   2.85546875,  4.99609375,  0.97265625,
+            -4.7421875,  2.806640625,  5.58984375,  -5.109375,   6.625,
+            -2.3203125,  -7.0546875,   2.806640625, 5.58984375,  4.98046875,
+            -5.44140625, 1.1455078125, 7.7734375,   2.806640625, 5.58984375,
+            -6.24609375, -2.849609375, -2.6953125,  5.81640625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            2.806640625,   5.58984375,  -4.83984375,     4.99609375,
+            0.97265625,    -6.171875,   2.806640625,     5.58984375,
+            7.765625,      -4.30859375, -5.89453125,     -8.53125,
+            2.806640625,   5.58984375,  0.1783447265625, -4.48046875,
+            0.68212890625, -6.6875,     2.806640625,     5.58984375,
+            -9.0390625,    -1.97265625, -3.01171875,     3.626953125
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'notEqual float16 3D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            2.806640625, 5.58984375,   2.85546875,  4.99609375,  0.97265625,
+            -4.7421875,  2.806640625,  5.58984375,  -5.109375,   6.625,
+            -2.3203125,  -7.0546875,   2.806640625, 5.58984375,  4.98046875,
+            -5.44140625, 1.1455078125, 7.7734375,   2.806640625, 5.58984375,
+            -6.24609375, -2.849609375, -2.6953125,  5.81640625
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            2.806640625,   5.58984375,  -4.83984375,     4.99609375,
+            0.97265625,    -6.171875,   2.806640625,     5.58984375,
+            7.765625,      -4.30859375, -5.89453125,     -8.53125,
+            2.806640625,   5.58984375,  0.1783447265625, -4.48046875,
+            0.68212890625, -6.6875,     2.806640625,     5.58984375,
+            -9.0390625,    -1.97265625, -3.01171875,     3.626953125
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'notEqual float16 4D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            2.806640625, 5.58984375,   2.85546875,  4.99609375,  0.97265625,
+            -4.7421875,  2.806640625,  5.58984375,  -5.109375,   6.625,
+            -2.3203125,  -7.0546875,   2.806640625, 5.58984375,  4.98046875,
+            -5.44140625, 1.1455078125, 7.7734375,   2.806640625, 5.58984375,
+            -6.24609375, -2.849609375, -2.6953125,  5.81640625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            2.806640625,   5.58984375,  -4.83984375,     4.99609375,
+            0.97265625,    -6.171875,   2.806640625,     5.58984375,
+            7.765625,      -4.30859375, -5.89453125,     -8.53125,
+            2.806640625,   5.58984375,  0.1783447265625, -4.48046875,
+            0.68212890625, -6.6875,     2.806640625,     5.58984375,
+            -9.0390625,    -1.97265625, -3.01171875,     3.626953125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'notEqual float16 5D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            2.806640625, 5.58984375,   2.85546875,  4.99609375,  0.97265625,
+            -4.7421875,  2.806640625,  5.58984375,  -5.109375,   6.625,
+            -2.3203125,  -7.0546875,   2.806640625, 5.58984375,  4.98046875,
+            -5.44140625, 1.1455078125, 7.7734375,   2.806640625, 5.58984375,
+            -6.24609375, -2.849609375, -2.6953125,  5.81640625
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            2.806640625,   5.58984375,  -4.83984375,     4.99609375,
+            0.97265625,    -6.171875,   2.806640625,     5.58984375,
+            7.765625,      -4.30859375, -5.89453125,     -8.53125,
+            2.806640625,   5.58984375,  0.1783447265625, -4.48046875,
+            0.68212890625, -6.6875,     2.806640625,     5.58984375,
+            -9.0390625,    -1.97265625, -3.01171875,     3.626953125
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'notEqual float16 broadcast 0D to 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [2.806640625],
+          'descriptor': {shape: [], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            2.806640625, 5.58984375,   2.85546875,  4.99609375,  0.97265625,
+            -4.7421875,  2.806640625,  5.58984375,  -5.109375,   6.625,
+            -2.3203125,  -7.0546875,   2.806640625, 5.58984375,  4.98046875,
+            -5.44140625, 1.1455078125, 7.7734375,   2.806640625, 5.58984375,
+            -6.24609375, -2.849609375, -2.6953125,  5.81640625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'notEqual float16 broadcast 1D to 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [2.806640625],
+          'descriptor': {shape: [1], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            2.806640625, 5.58984375,   2.85546875,  4.99609375,  0.97265625,
+            -4.7421875,  2.806640625,  5.58984375,  -5.109375,   6.625,
+            -2.3203125,  -7.0546875,   2.806640625, 5.58984375,  4.98046875,
+            -5.44140625, 1.1455078125, 7.7734375,   2.806640625, 5.58984375,
+            -6.24609375, -2.849609375, -2.6953125,  5.81640625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'notEqual float16 broadcast 2D to 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            2.806640625, 5.58984375,   2.85546875,  4.99609375,  0.97265625,
+            -4.7421875,  2.806640625,  5.58984375,  -5.109375,   6.625,
+            -2.3203125,  -7.0546875,   2.806640625, 5.58984375,  4.98046875,
+            -5.44140625, 1.1455078125, 7.7734375,   2.806640625, 5.58984375,
+            -6.24609375, -2.849609375, -2.6953125,  5.81640625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            2.806640625, 5.58984375, -4.9609375, -2.86328125, -3.01171875,
+            3.626953125
+          ],
+          'descriptor': {shape: [2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'notEqual float16 broadcast 3D to 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            2.806640625, 5.58984375,   2.85546875,  4.99609375,  0.97265625,
+            -4.7421875,  2.806640625,  5.58984375,  -5.109375,   6.625,
+            -2.3203125,  -7.0546875,   2.806640625, 5.58984375,  4.98046875,
+            -5.44140625, 1.1455078125, 7.7734375,   2.806640625, 5.58984375,
+            -6.24609375, -2.849609375, -2.6953125,  5.81640625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [2.806640625, 5.58984375, -9.0390625, 3.626953125],
+          'descriptor': {shape: [2, 2, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'notEqual float16 broadcast 4D to 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [2.806640625],
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            2.806640625, 5.58984375,   2.85546875,  4.99609375,  0.97265625,
+            -4.7421875,  2.806640625,  5.58984375,  -5.109375,   6.625,
+            -2.3203125,  -7.0546875,   2.806640625, 5.58984375,  4.98046875,
+            -5.44140625, 1.1455078125, 7.7734375,   2.806640625, 5.58984375,
+            -6.24609375, -2.849609375, -2.6953125,  5.81640625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'notEqual float16 broadcast 4D to 5D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [0, 1, 2, 8, 0, 255],
+          'descriptor': {shape: [2, 1, 1, 3], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [255, 0, 1, 8],
+          'descriptor': {shape: [1, 2, 2, 1, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1],
+          'descriptor': {shape: [1, 2, 2, 1, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'notEqual float16 5D and broadcastable 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [255, 0, 1, 8],
+          'descriptor': {shape: [1, 2, 2, 1, 1], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [0, 1, 2, 8, 0, 255],
+          'descriptor': {shape: [2, 1, 1, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1],
+          'descriptor': {shape: [1, 2, 2, 1, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'notEqual float16 broadcasting two 5D inputs with a leading batch size of 1',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [255, 0, 1, 8],
+          'descriptor': {shape: [1, 2, 2, 1, 1], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [0, 1, 2, 8, 0, 255],
+          'descriptor': {shape: [1, 2, 1, 1, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1],
+          'descriptor': {shape: [1, 2, 2, 1, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    // 5D inputs whose broadcast roles alternate on every axis so no adjacent
+    // axes can be collapsed; exercises the explicit BROADCAST_TO + flatten
+    // fallback path.
+    'name': 'notEqual float16 5D inputs with alternating broadcast axes',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [1, 0, 1, 0, 1, 0, 1, 0],
+          'descriptor': {shape: [2, 1, 2, 1, 2], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [1, 1, 0, 0],
+          'descriptor': {shape: [1, 2, 1, 2, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0,
+            0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0
+          ],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    // Two 5D inputs with identical shapes (no broadcast); CollapseBroadcast-
+    // Shapes folds both operands down to rank-1 before the binary kernel.
+    'name': 'notEqual float16 two 5D inputs with identical shapes',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -3.5, -2,    -1,   0,    1,   2.5,  3,    4.5,
+            5,    -5.5,  6,    -6.5, 7,   -7.5, 8,    -8.5,
+            9,    10.5,  -11,  12.5, -13, 14.5, -15,  16.5,
+            0,    0.5,   1.5,  2,    2.5, 3,    3.5,  4
+          ],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            -3.5, -2,    0,     1,    1,     2,    3.5,  4,
+            5,    -5.5,  5.5,   -7,   7,     -7.5, 9,    -8.5,
+            9.5,  10.5,  -11.5, 12.5, -12.5, 14.5, -16,  16.5,
+            0,    1,     1,     2,    3,     3,    4,    4
+          ],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+            1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0
+          ],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    // 5D tensor with a 0D scalar; commonly used pattern that broadcasts the
+    // scalar against every element.
+    'name': 'notEqual float16 5D tensor and broadcastable 0D scalar',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -3.5, -2,    -1,   0,    1,   2.5,  3,    4.5,
+            5,    -5.5,  6,    -6.5, 7,   -7.5, 8,    -8.5,
+            9,    10.5,  -11,  12.5, -13, 14.5, -15,  16.5,
+            0,    0.5,   1.5,  2,    2.5, 3,    3.5,  4
+          ],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'float16'}
+        },
+        'inputB':
+            {'data': [2.5], 'descriptor': {shape: [], dataType: 'float16'}}
+      },
+      'operators': [{
+        'name': 'notEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1
+          ],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'uint8'}
+        }
+      }
+    }
   }
 ];
 
-if (navigator.ml) {
-  notEqualTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getNotEqualPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    notEqualTests, buildAndExecuteGraph, getZeroULPTolerance);

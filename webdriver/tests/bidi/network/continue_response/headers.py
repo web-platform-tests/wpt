@@ -24,6 +24,8 @@ LOAD_EVENT = "browsingContext.load"
         {},
         {"a": "1"},
         {"a": "1", "b": "2"},
+        {"x-diacritics": "ä"},
+        {"x-unicode": "你好世界"},
     ],
 )
 async def test_headers(
@@ -57,7 +59,8 @@ async def test_headers(
 
     response_completed_event = await wait_for_future_safe(on_response_completed)
     assert_response_event(
-        response_completed_event, expected_response={"headers": response_headers}
+        response_completed_event,
+        expected_event={"response": {"headers": response_headers}},
     )
 
 
@@ -101,7 +104,8 @@ async def test_headers_overrides_original_headers(
 
     response_completed_event = await wait_for_future_safe(on_response_completed)
     assert_response_event(
-        response_completed_event, expected_response={"headers": response_headers}
+        response_completed_event,
+        expected_event={"response": {"headers": response_headers}},
     )
 
     # Check that the original foo=bar response header is no longer in the
@@ -132,7 +136,7 @@ async def test_set_cookie_header(
     on_load = wait_for_event(LOAD_EVENT)
 
     response_header = Header(
-        name="Set-Cookie", value=NetworkStringValue("aaa=bbb;Path=/")
+        name="Set-Cookie", value=NetworkStringValue("aaa=bbb;Path=/;SameSite=None;Secure")
     )
 
     await bidi_session.network.continue_response(
@@ -152,7 +156,7 @@ async def test_set_cookie_header(
         "name": "aaa",
         "path": "/",
         "sameSite": "none",
-        "secure": False,
+        "secure": True,
         "size": 6,
         "value": {"type": "string", "value": "bbb"},
     }
@@ -181,10 +185,10 @@ async def test_set_cookie_header_and_cookies(
     on_load = wait_for_event(LOAD_EVENT)
 
     response_header = Header(
-        name="Set-Cookie", value=NetworkStringValue("foo=bar;Path=/")
+        name="Set-Cookie", value=NetworkStringValue("foo=bar;Path=/;SameSite=None;Secure")
     )
     response_cookie = SetCookieHeader(
-        name="baz", value=NetworkStringValue("biz"), path="/"
+        name="baz", value=NetworkStringValue("biz"), path="/", same_site="none", secure=True
     )
 
     await bidi_session.network.continue_response(
@@ -210,7 +214,7 @@ async def test_set_cookie_header_and_cookies(
         "name": "foo",
         "path": "/",
         "sameSite": "none",
-        "secure": False,
+        "secure": True,
         "size": 6,
         "value": {"type": "string", "value": "bar"},
     }
@@ -221,7 +225,7 @@ async def test_set_cookie_header_and_cookies(
         "name": "baz",
         "path": "/",
         "sameSite": "none",
-        "secure": False,
+        "secure": True,
         "size": 6,
         "value": {"type": "string", "value": "biz"},
     }

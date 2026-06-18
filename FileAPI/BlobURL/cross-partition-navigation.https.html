@@ -10,6 +10,7 @@
 <script src="/html/cross-origin-embedder-policy/credentialless/resources/common.js"></script>
 <!-- Pull in importScript / newPopup / newIframe -->
 <script src="/html/anonymous-iframe/resources/common.js"></script>
+<script src="resources/common.js"></script>
 <body>
 <script>
 
@@ -29,40 +30,6 @@ const does_blob_url_open_return_handle = (blob_url, response_queue_name) => `
   }
   await test();
 `;
-
-const add_iframe_js = (iframe_origin, response_queue_uuid) => `
-  const importScript = ${importScript};
-  await importScript("/html/cross-origin-embedder-policy/credentialless" +
-                   "/resources/common.js");
-  await importScript("/html/anonymous-iframe/resources/common.js");
-  await importScript("/common/utils.js");
-
-  // dispatcher.js has already been loaded by the popup this is running in.
-  await send("${response_queue_uuid}", newIframe("${iframe_origin}"));
-`;
-
-const same_site_origin = get_host_info().HTTPS_ORIGIN;
-const cross_site_origin = get_host_info().HTTPS_NOTSAMESITE_ORIGIN;
-
-async function create_test_iframes(t, response_queue_uuid) {
-  assert_equals("https://" + window.location.host, same_site_origin,
-  "this test assumes that the page's window.location.host corresponds to " +
-  "get_host_info().HTTPS_ORIGIN");
-
-  // Create a same-origin iframe in a cross-site popup.
-  const not_same_site_popup_uuid = newPopup(t, cross_site_origin);
-  await send(not_same_site_popup_uuid,
-       add_iframe_js(same_site_origin, response_queue_uuid));
-  const cross_site_iframe_uuid = await receive(response_queue_uuid);
-
-  // Create a same-origin iframe in a same-site popup.
-  const same_origin_popup_uuid = newPopup(t, same_site_origin);
-  await send(same_origin_popup_uuid,
-       add_iframe_js(same_site_origin, response_queue_uuid));
-  const same_site_iframe_uuid = await receive(response_queue_uuid);
-
-  return [cross_site_iframe_uuid, same_site_iframe_uuid];
-}
 
 const opener_check_frame_html = (noopener_response_queue) => `
   <!doctype html>
@@ -279,6 +246,53 @@ promise_test(t => {
     }
   });
 }, "Blob URL area element click should enforce noopener for a cross-top-level-site navigation");
+
+const open_blob_url_window_via_svg_a_click = (blob_url) => `
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const a = document.createElementNS("http://www.w3.org/2000/svg", "a");
+  a.setAttribute("href", "${blob_url}");
+  a.setAttribute("target", "_blank");
+  a.setAttribute("rel", "opener");
+  const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  text.textContent = "click";
+  a.appendChild(text);
+  svg.appendChild(a);
+  document.body.appendChild(svg);
+  a.dispatchEvent(new MouseEvent("click", {bubbles: true}));
+`;
+
+// Tests blob URL SVG `<a target="_blank" rel="opener">` click for same and
+// cross partition iframes.
+promise_test(t => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Creates same and cross partition iframes.
+      const noopener_response_queue = token();
+
+      const [cross_site_iframe_uuid, same_site_iframe_uuid] = await create_test_iframes(t, token());
+
+      const blob = new Blob([opener_check_frame_html(noopener_response_queue)], {type : "text/html"});
+      const blob_url = URL.createObjectURL(blob);
+
+      // Attempt to click blob URL in cross partition iframe.
+      await send(cross_site_iframe_uuid, open_blob_url_window_via_svg_a_click(blob_url));
+      const noopener_response_1 = await receive(noopener_response_queue);
+      if (noopener_response_1 !== opener_null_response) {
+        reject(`Blob URL page opener wasn't null in not-same-top-level-site iframe.`);
+      }
+
+      // Attempt to click blob URL in same partition iframe.
+      await send(same_site_iframe_uuid, open_blob_url_window_via_svg_a_click(blob_url));
+      const noopener_response_2 = await receive(noopener_response_queue);
+      if (noopener_response_2 !== opener_not_null_response) {
+        reject(`Blob URL page opener was null in same-top-level-site iframe`);
+      }
+      resolve();
+    } catch (e) {
+      reject(e);
+    }
+  });
+}, "Blob URL SVG <a> element click should enforce noopener for a cross-top-level-site navigation");
 
 </script>
 </body>

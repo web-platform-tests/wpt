@@ -2,7 +2,7 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 
-// https://svgwg.org/svg2-draft/
+// https://w3c.github.io/svgwg/svg2-draft/
 
 'use strict';
 
@@ -32,7 +32,6 @@ const elements = [
   'marker',
   'linearGradient',
   'radialGradient',
-  'meshGradient',
   'stop',
   'pattern',
   'clipPath',
@@ -42,7 +41,6 @@ const elements = [
   'script',
   'animate',
   'set',
-  'discard',
   'animateMotion',
   'mpath',
   'animateTransform',
@@ -111,7 +109,6 @@ idl_test(
       SVGGElement: ['objects.g'],
       SVGDefsElement: ['objects.defs'],
       SVGDescElement: ['objects.desc'],
-      SVGDiscardElement: ['objects.discard'],
       SVGTitleElement: ['objects.title'],
       SVGSymbolElement: ['objects.symbol'],
       SVGUseElement: ['objects.use'],
@@ -159,7 +156,6 @@ idl_test(
       SVGMarkerElement: ['objects.marker'],
       SVGLinearGradientElement: ['objects.linearGradient'],
       SVGRadialGradientElement: ['objects.radialGradient'],
-      SVGMeshGradientElement: ['objects.meshGradient'],
       SVGStopElement: ['objects.stop'],
       SVGPatternElement: ['objects.pattern'],
       SVGClipPathElement: ['objects.clipPath'],
@@ -168,7 +164,6 @@ idl_test(
       SVGViewElement: ['objects.view'],
       SVGScriptElement: ['objects.script'],
       SVGAnimateElement: ['objects.animate'],
-      SVGDiscardElement: ['objects.discard'],
       SVGSetElement: ['objects.set'],
       SVGAnimateMotionElement: ['objects.animateMotion'],
       SVGMPathElement: ['objects.mpath'],

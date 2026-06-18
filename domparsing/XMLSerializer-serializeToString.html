@@ -81,6 +81,25 @@ test(function() {
 }, 'Check if inconsistent xmlns="..." is dropped.');
 
 test(function() {
+  const root1 = parse('<package></package>');
+  root1.setAttribute('xmlns', 'http://www.idpf.org/2007/opf');
+  const manifest1 = root1.appendChild(root1.ownerDocument.createElement('manifest'));
+  manifest1.setAttribute('xmlns', 'http://www.idpf.org/2007/opf');
+  assert_equals(serialize(root1), '<package><manifest/></package>');
+
+  const root2 = parse('<package xmlns="http://www.idpf.org/2007/opf"></package>');
+  const manifest2 = root2.appendChild(root2.ownerDocument.createElement('manifest'));
+  manifest2.setAttribute('xmlns', 'http://www.idpf.org/2007/opf');
+  assert_equals(serialize(root2),
+                '<package xmlns="http://www.idpf.org/2007/opf"><manifest xmlns=""/></package>');
+
+  const root3 = parse('<package xmlns="http://www.idpf.org/2007/opf"></package>');
+  const manifest3 = root3.appendChild(root3.ownerDocument.createElement('manifest'));
+  assert_equals(serialize(root3),
+                '<package xmlns="http://www.idpf.org/2007/opf"><manifest xmlns=""/></package>');
+}, 'Drop inconsistent xmlns="..." by matching on local name');
+
+test(function() {
   let root = parse('<r xmlns:xx="uri"></r>');
   root.setAttributeNS('uri', 'name', 'v');
   assert_equals(serialize(root), '<r xmlns:xx="uri" xx:name="v"/>');
@@ -172,6 +191,15 @@ test(function() {
 }, 'Check if start tag serialization finds an appropriate prefix.');
 
 test(function() {
+  const root = parse('<root xmlns:p1="u1"><child xmlns:p2="u1"/></root>');
+  const child2 = root.ownerDocument.createElementNS('u1', 'child2');
+  const grandchild = root.ownerDocument.createElementNS('u1', 'grandchild');
+  child2.appendChild(grandchild);
+  root.firstChild.appendChild(child2);
+  assert_equals(serialize(root), '<root xmlns:p1="u1"><child xmlns:p2="u1"><p2:child2><p2:grandchild/></p2:child2></child></root>');
+}, 'Check if end tag serialization matches start tag when an appropriate prefix is found.');
+
+test(function() {
   const root = (new Document()).createElementNS('uri1', 'p:root');
   root.setAttributeNS(XMLNS_URI, 'xmlns:p', 'uri2');
   assert_equals(serialize(root), '<ns1:root xmlns:ns1="uri1" xmlns:p="uri2"/>');
@@ -190,6 +218,16 @@ test(function() {
   assert_equals(serialize(parse('<root xmlns:x="uri1"><table xmlns="uri1"></table></root>')),
       '<root xmlns:x="uri1"><x:table xmlns="uri1"/></root>');
 }, 'Check if start tag serialization does NOT apply the default namespace if its namespace is declared in an ancestor.');
+
+test(function() {
+  const xmlNS = 'http://www.w3.org/XML/1998/namespace';
+  const root = parse('<root/>');
+  const child = root.ownerDocument.createElementNS(xmlNS, 'foo');
+  const grandchild = root.ownerDocument.createElementNS(xmlNS, 'bar');
+  child.appendChild(grandchild);
+  root.appendChild(child);
+  assert_equals(serialize(root), '<root><xml:foo><xml:bar/></xml:foo></root>');
+}, 'Check if end tag serialization matches start tag for elements in the XML namespace.');
 
 test(function() {
   const root = parse('<root><child1/><child2/></root>');
@@ -237,6 +275,10 @@ test(function () {
   root.setAttributeNS(XMLNS_URI, 'xmlns:foo', '');
   assert_equals(serialize(root), '<root xmlns="" xmlns:foo=""/>');
 }, 'Check if a prefix bound to an empty namespace URI ("no namespace") serialize');
+
+test(function() {
+  assert_equals(serialize(document.createAttribute("foobar")), "")
+}, 'Attribute nodes are serialized as the empty string')
 </script>
  </body>
 </html>

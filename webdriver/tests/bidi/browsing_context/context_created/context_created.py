@@ -1,16 +1,17 @@
 import pytest
-from webdriver.error import TimeoutException
+
 from webdriver.bidi.modules.script import ContextTarget
+from webdriver.error import TimeoutException
 
 from tests.support.sync import AsyncPoll
-from .. import assert_browsing_context
+from .. import assert_browsing_context, find_context_info
 
 pytestmark = pytest.mark.asyncio
 
 CONTEXT_CREATED_EVENT = "browsingContext.contextCreated"
 
 
-async def test_not_unsubscribed(bidi_session):
+async def test_not_unsubscribed(bidi_session, wait_for_bidi_events):
     await bidi_session.session.subscribe(events=[CONTEXT_CREATED_EVENT])
     await bidi_session.session.unsubscribe(events=[CONTEXT_CREATED_EVENT])
 
@@ -24,9 +25,8 @@ async def test_not_unsubscribed(bidi_session):
 
     await bidi_session.browsing_context.create(type_hint="tab")
 
-    wait = AsyncPoll(bidi_session, timeout=0.5)
     with pytest.raises(TimeoutException):
-        await wait.until(lambda _: len(events) > 0)
+        await wait_for_bidi_events(events, 1, timeout=0.5)
 
     remove_listener()
 
@@ -38,6 +38,7 @@ async def test_new_context(bidi_session, wait_for_event, wait_for_future_safe, s
     on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
     top_level_context = await bidi_session.browsing_context.create(type_hint=type_hint)
     context_info = await wait_for_future_safe(on_entry)
+    contexts = await bidi_session.browsing_context.get_tree(root=top_level_context["context"])
 
     assert_browsing_context(
         context_info,
@@ -45,7 +46,8 @@ async def test_new_context(bidi_session, wait_for_event, wait_for_future_safe, s
         children=None,
         url="about:blank",
         parent=None,
-        user_context="default"
+        user_context="default",
+        client_window=contexts[0]["clientWindow"],
     )
 
 
@@ -60,6 +62,11 @@ async def test_evaluate_window_open_without_url(bidi_session, subscribe_events, 
         await_promise=False)
 
     context_info = await wait_for_future_safe(on_entry)
+    contexts = await bidi_session.browsing_context.get_tree()
+
+    assert len(contexts) == 2
+
+    found_context = find_context_info(contexts, context_info["context"])
 
     assert_browsing_context(
         context_info,
@@ -68,6 +75,7 @@ async def test_evaluate_window_open_without_url(bidi_session, subscribe_events, 
         url="about:blank",
         parent=None,
         original_opener=top_context["context"],
+        client_window=found_context["clientWindow"],
     )
 
 
@@ -83,6 +91,11 @@ async def test_evaluate_window_open_with_url(bidi_session, subscribe_events, wai
         target=ContextTarget(top_context["context"]),
         await_promise=False)
     context_info = await wait_for_future_safe(on_entry)
+    contexts = await bidi_session.browsing_context.get_tree()
+
+    assert len(contexts) == 2
+
+    found_context = find_context_info(contexts, context_info["context"])
 
     assert_browsing_context(
         context_info,
@@ -91,6 +104,7 @@ async def test_evaluate_window_open_with_url(bidi_session, subscribe_events, wai
         url="about:blank",
         parent=None,
         original_opener=top_context["context"],
+        client_window=found_context["clientWindow"],
     )
 
 
@@ -110,6 +124,7 @@ async def test_event_emitted_before_create_returns(
     remove_listener = bidi_session.add_event_listener(CONTEXT_CREATED_EVENT, on_event)
 
     context = await bidi_session.browsing_context.create(type_hint=type_hint)
+    contexts = await bidi_session.browsing_context.get_tree(root=context["context"])
 
     # If the browsingContext.contextCreated event was emitted after the
     # browsingContext.create command resolved, the array would most likely be
@@ -123,12 +138,13 @@ async def test_event_emitted_before_create_returns(
         url="about:blank",
         parent=None,
         user_context="default",
+        client_window=contexts[0]["clientWindow"],
     )
 
     remove_listener()
 
 
-async def test_navigate_creates_iframes(bidi_session, subscribe_events, top_context, test_page_multiple_frames):
+async def test_navigate_creates_iframes(bidi_session, subscribe_events, top_context, test_page_multiple_frames, wait_for_bidi_events):
     # Subscribe before assigning the listener, as subscription emits the events
     # for already existing contexts.
     await subscribe_events([CONTEXT_CREATED_EVENT])
@@ -144,11 +160,7 @@ async def test_navigate_creates_iframes(bidi_session, subscribe_events, top_cont
         context=top_context["context"], url=test_page_multiple_frames, wait="complete"
     )
 
-    wait = AsyncPoll(
-        bidi_session, message="Didn't receive context created events for frames"
-    )
-    await wait.until(lambda _: len(events) >= 2)
-    assert len(events) == 2
+    await wait_for_bidi_events(events, 2)
 
     # Get all browsing contexts from the first tab
     contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
@@ -166,6 +178,7 @@ async def test_navigate_creates_iframes(bidi_session, subscribe_events, top_cont
         children=None,
         url="about:blank",
         parent=root_info["context"],
+        client_window=contexts[0]["clientWindow"],
     )
 
     assert_browsing_context(
@@ -174,12 +187,13 @@ async def test_navigate_creates_iframes(bidi_session, subscribe_events, top_cont
         children=None,
         url="about:blank",
         parent=root_info["context"],
+        client_window=contexts[0]["children"][0]["clientWindow"],
     )
 
     remove_listener()
 
 
-async def test_navigate_creates_nested_iframes(bidi_session, subscribe_events, top_context, test_page_nested_frames):
+async def test_navigate_creates_nested_iframes(bidi_session, subscribe_events, top_context, test_page_nested_frames, wait_for_bidi_events):
     # Subscribe before assigning the listener, as subscription emits the events
     # for already existing contexts.
     await subscribe_events([CONTEXT_CREATED_EVENT])
@@ -195,11 +209,7 @@ async def test_navigate_creates_nested_iframes(bidi_session, subscribe_events, t
         context=top_context["context"], url=test_page_nested_frames, wait="complete"
     )
 
-    wait = AsyncPoll(
-        bidi_session, message="Didn't receive context created events for frames"
-    )
-    await wait.until(lambda _: len(events) >= 2)
-    assert len(events) == 2
+    await wait_for_bidi_events(events, 2)
 
     # Get all browsing contexts from the first tab
     contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
@@ -219,6 +229,7 @@ async def test_navigate_creates_nested_iframes(bidi_session, subscribe_events, t
         children=None,
         url="about:blank",
         parent=root_info["context"],
+        client_window=contexts[0]["clientWindow"],
     )
 
     assert_browsing_context(
@@ -227,13 +238,14 @@ async def test_navigate_creates_nested_iframes(bidi_session, subscribe_events, t
         children=None,
         url="about:blank",
         parent=child1_info["context"],
+        client_window=contexts[0]["children"][0]["clientWindow"],
     )
 
     remove_listener()
 
 
 async def test_subscribe_to_one_context(
-    bidi_session, subscribe_events, top_context, test_page_same_origin_frame
+    bidi_session, subscribe_events, top_context, test_page_same_origin_frame, wait_for_bidi_events
 ):
     # Subscribe to a specific context
     await subscribe_events(
@@ -251,17 +263,15 @@ async def test_subscribe_to_one_context(
     await bidi_session.browsing_context.create(type_hint="tab")
 
     # Make sure we didn't receive the event for the new tab
-    wait = AsyncPoll(bidi_session, timeout=0.5)
     with pytest.raises(TimeoutException):
-        await wait.until(lambda _: len(events) > 0)
+        await wait_for_bidi_events(events, 1, timeout=0.5)
 
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=test_page_same_origin_frame, wait="complete"
     )
 
     # Make sure we received the event for the iframe
-    await wait.until(lambda _: len(events) >= 1)
-    assert len(events) == 1
+    await wait_for_bidi_events(events, 1)
 
     remove_listener()
 
@@ -293,6 +303,7 @@ async def test_new_user_context(
     context = await bidi_session.browsing_context.create(
         type_hint=type_hint, user_context=user_context
     )
+    contexts = await bidi_session.browsing_context.get_tree(root=context["context"])
     context_info = await wait_for_future_safe(on_entry)
 
     assert len(events) == 1
@@ -304,48 +315,10 @@ async def test_new_user_context(
         url="about:blank",
         parent=None,
         user_context=user_context,
+        client_window=contexts[0]["clientWindow"],
     )
 
     remove_listener()
-
-
-@pytest.mark.parametrize("type_hint", ["tab", "window"])
-async def test_existing_context(bidi_session, wait_for_event, wait_for_future_safe, subscribe_events, type_hint):
-    # See https://w3c.github.io/webdriver-bidi/#ref-for-remote-end-subscribe-steps%E2%91%A1.
-    top_level_context = await bidi_session.browsing_context.create(type_hint=type_hint)
-
-    on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
-    await subscribe_events([CONTEXT_CREATED_EVENT], contexts=[top_level_context["context"]])
-    context_info = await wait_for_future_safe(on_entry)
-
-    assert_browsing_context(
-        context_info,
-        top_level_context["context"],
-        children=None,
-        url="about:blank",
-        parent=None,
-        user_context="default"
-    )
-
-
-@pytest.mark.parametrize("type_hint", ["tab", "window"])
-async def test_existing_context_via_user_context(bidi_session, create_user_context, wait_for_event, wait_for_future_safe, subscribe_events, type_hint):
-    user_context = await create_user_context()
-    # See https://w3c.github.io/webdriver-bidi/#ref-for-remote-end-subscribe-steps%E2%91%A1.
-    top_level_context = await bidi_session.browsing_context.create(type_hint=type_hint, user_context=user_context)
-
-    on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
-    await subscribe_events([CONTEXT_CREATED_EVENT], user_contexts=[user_context])
-    context_info = await wait_for_future_safe(on_entry)
-
-    assert_browsing_context(
-        context_info,
-        top_level_context["context"],
-        children=None,
-        url="about:blank",
-        parent=None,
-        user_context=user_context
-    )
 
 
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
@@ -366,3 +339,28 @@ async def test_client_window(bidi_session, wait_for_event, wait_for_future_safe,
         user_context="default",
         client_window=contexts[0]["clientWindow"]
     )
+
+
+@pytest.mark.parametrize("type_hint", ["tab", "window"])
+async def test_context_is_ready_after_event(
+    bidi_session, subscribe_events, wait_for_event, wait_for_future_safe, type_hint
+):
+    await subscribe_events(events=[CONTEXT_CREATED_EVENT])
+
+    on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
+
+    try:
+        await bidi_session.browsing_context.create(type_hint=type_hint)
+        context_info = await wait_for_future_safe(on_entry)
+
+        result = await bidi_session.script.evaluate(
+            expression="document.readyState",
+            target=ContextTarget(context_info["context"]),
+            await_promise=False
+        )
+
+        # Make sure that the script successfully runs in the newly created context
+        # when "browsingContext.contextCreated" event is sent.
+        assert result["value"] == "complete"
+    finally:
+        await bidi_session.browsing_context.close(context=context_info["context"])

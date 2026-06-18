@@ -4,15 +4,13 @@
 # https://bugs.chromium.org/p/chromedriver/issues/detail?id=4642#c4
 
 import pytest
-
 from webdriver.transport import Response
 
-from tests.support.asserts import assert_error, assert_success
-from tests.support.helpers import (
+from tests.support.classic.asserts import assert_error, assert_success
+from tests.support.classic.helpers import (
     is_fullscreen,
     is_maximized,
     is_not_maximized,
-    is_wayland,
 )
 
 
@@ -139,33 +137,33 @@ def test_restore_from_maximized(session):
     assert value == target_rect
 
 
-def test_x_y_floats(session):
+def test_x_y_floats(session, is_wayland_headful):
     response = set_window_rect(session, {"x": 150.5, "y": 250})
     value = assert_success(response)
 
-    # Wayland doesn't return correct coordinates after changing window position.
-    if not is_wayland():
+    # Wayland forbids programmatic window movement in headful mode.
+    if not is_wayland_headful:
         assert value["x"] == 150
         assert value["y"] == 250
 
     response = set_window_rect(session, {"x": 150, "y": 250.5})
     value = assert_success(response, session.window.rect)
 
-    # Wayland doesn't return correct coordinates after changing window position.
-    if not is_wayland():
+    # Wayland forbids programmatic window movement in headful mode.
+    if not is_wayland_headful:
         assert value["x"] == 150
         assert value["y"] == 250
 
 
 def test_width_height_floats(session):
-    response = set_window_rect(session, {"width": 550.5, "height": 420})
+    response = set_window_rect(session, {"width": 650.5, "height": 420})
     value = assert_success(response, session.window.rect)
-    assert value["width"] == 550
+    assert value["width"] == 650
     assert value["height"] == 420
 
-    response = set_window_rect(session, {"width": 550, "height": 450.5})
+    response = set_window_rect(session, {"width": 650, "height": 450.5})
     value = assert_success(response, session.window.rect)
-    assert value["width"] == 550
+    assert value["width"] == 650
     assert value["height"] == 450
 
 
@@ -186,24 +184,46 @@ def test_width_height_floats(session):
     {"height": None, "Y": None},
 
     {"width": None, "height": None, "x": None, "y": None},
-
-    {"width": 200},
-    {"height": 200},
-    {"x": 200},
-    {"y": 200},
-    {"width": 200, "x": 200},
-    {"height": 200, "x": 200},
-    {"width": 200, "y": 200},
-    {"height": 200, "y": 200},
 ])
-def test_no_change(session, rect):
+def test_with_none_values(session, rect):
     original = session.window.rect
     response = set_window_rect(session, rect)
     assert_success(response, original)
 
 
+@pytest.mark.parametrize(
+    "rect",
+    [
+        {"width": 650},
+        {"height": 550},
+        {"x": 250},
+        {"y": 150},
+        {"width": 650, "x": 250},
+        {"height": 550, "x": 250},
+        {"width": 650, "y": 150},
+        {"height": 550, "y": 150},
+    ],
+    ids=["width", "height", "x", "y", "width_x", "height_x", "width_y", "height_y"],
+)
+def test_partial_input(session, rect, is_wayland_headful):
+    original = session.window.rect
+    response = set_window_rect(session, rect)
+    value = assert_success(response, session.window.rect)
+
+    assert value["width"] == rect.get("width", original["width"])
+    assert value["height"] == rect.get("height", original["height"])
+
+    # Wayland forbids programmatic window movement in headful mode.
+    if is_wayland_headful:
+        assert value["x"] == original["x"]
+        assert value["y"] == original["y"]
+    else:
+        assert value["x"] == rect.get("x", original["x"])
+        assert value["y"] == rect.get("y", original["y"])
+
+
 def test_set_to_available_size(
-    session, available_screen_size, minimal_screen_position
+    session, available_screen_size, is_wayland_headful, minimal_screen_position
 ):
     minimal_x, minimal_y = minimal_screen_position
     available_width, available_height = available_screen_size
@@ -217,12 +237,12 @@ def test_set_to_available_size(
     response = set_window_rect(session, target_rect)
     value = assert_success(response, session.window.rect)
 
-    # Wayland doesn't return correct coordinates after changing window position.
-    if not is_wayland():
-        assert value == target_rect
+    # Wayland forbids programmatic window movement in headful mode.
+    if is_wayland_headful:
+        assert target_rect["width"] == available_width
+        assert target_rect["height"] == available_height
     else:
-        target_rect["width"] == available_width
-        target_rect["height"] == available_height
+        assert value == target_rect
 
 
 def test_set_to_screen_size(
@@ -280,6 +300,15 @@ def test_set_smaller_than_minimum_browser_size(session):
     assert value["height"] > 10
 
 
+def test_x_y_height_width_as_current(session):
+    original = session.window.rect
+
+    response = set_window_rect(session, original)
+    value = assert_success(response, session.window.rect)
+
+    assert value == original
+
+
 def test_height_width_as_current(session):
     original = session.window.rect
 
@@ -326,7 +355,7 @@ def test_width_as_current(session):
     }
 
 
-def test_x_y(session):
+def test_x_y(session, is_wayland_headful):
     original = session.window.rect
     response = set_window_rect(session, {
         "x": original["x"] + 10,
@@ -337,10 +366,11 @@ def test_x_y(session):
     assert value["width"] == original["width"]
     assert value["height"] == original["height"]
 
-    # Wayland doesn't return correct coordinates after changing window position.
-    if not is_wayland():
+    # Wayland forbids programmatic window movement in headful mode.
+    if not is_wayland_headful:
         assert value["x"] == original["x"] + 10
         assert value["y"] == original["y"] + 10
+
 
 def test_x_y_as_current(session):
     original = session.window.rect
@@ -359,7 +389,7 @@ def test_x_y_as_current(session):
     }
 
 
-def test_x_as_current(session):
+def test_x_as_current(session, is_wayland_headful):
     original = session.window.rect
 
     response = set_window_rect(session, {
@@ -371,13 +401,13 @@ def test_x_as_current(session):
     assert value["width"] == original["width"]
     assert value["height"] == original["height"]
 
-    # Wayland doesn't return correct coordinates after changing window position.
-    if not is_wayland():
+    # Wayland forbids programmatic window movement in headful mode.
+    if not is_wayland_headful:
         assert value["x"] == original["x"]
         assert value["y"] == original["y"] + 10
 
 
-def test_y_as_current(session):
+def test_y_as_current(session, is_wayland_headful):
     original = session.window.rect
 
     response = set_window_rect(session, {
@@ -388,13 +418,14 @@ def test_y_as_current(session):
 
     assert value["width"] == original["width"]
     assert value["height"] == original["height"]
-    # Wayland doesn't return correct coordinates after changing window position.
-    if not is_wayland():
+
+    # Wayland forbids programmatic window movement in headful mode.
+    if not is_wayland_headful:
         assert value["x"] == original["x"] + 10
         assert value["y"] == original["y"]
 
 
-def test_negative_x_y(session, minimal_screen_position):
+def test_negative_x_y(session, is_wayland_headful, minimal_screen_position):
     original = session.window.rect
 
     response = set_window_rect(session, {"x": - 8, "y": - 8})
@@ -406,8 +437,8 @@ def test_negative_x_y(session, minimal_screen_position):
         assert value["width"] == original["width"]
         assert value["height"] == original["height"]
 
-        # Wayland doesn't return correct coordinates after changing window position.
-        if not is_wayland():
+        # Wayland forbids programmatic window movement in headful mode.
+        if not is_wayland_headful:
             assert value["x"] <= minimal_screen_position[0]
             assert value["y"] <= minimal_screen_position[1]
 

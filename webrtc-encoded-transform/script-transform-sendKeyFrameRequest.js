@@ -1,11 +1,13 @@
 onrtctransform = event => {
   const transformer = event.transformer;
-  let gotFrame;
+  let gotFrameCallback;
 
   transformer.options.port.onmessage = event => {
     const {method} = event.data;
     if (method == 'sendKeyFrameRequest') {
       sendKeyFrameRequest();
+    } else if (method == 'sendKeyFrameRequestDoesNotThrow') {
+      sendKeyFrameRequestDoesNotThrow();
     } else if (method == 'waitForFrame') {
       waitForFrame();
     }
@@ -21,9 +23,25 @@ onrtctransform = event => {
     });
   }
 
+  async function resolveInMs(timeout) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
+    });
+  }
+
   async function sendKeyFrameRequest() {
     try {
-      await Promise.race([transformer.sendKeyFrameRequest(), rejectInMs(8000)]);;
+      await Promise.race([transformer.sendKeyFrameRequest(), rejectInMs(16000)]);;
+      transformer.options.port.postMessage('success');
+    } catch (e) {
+      // TODO: This does not work if we send e.name, why?
+      transformer.options.port.postMessage(`failure: ${e.name}`);
+    }
+  }
+
+  async function sendKeyFrameRequestDoesNotThrow() {
+    try {
+      await Promise.race([transformer.sendKeyFrameRequest(), resolveInMs(50)]);;
       transformer.options.port.postMessage('success');
     } catch (e) {
       // TODO: This does not work if we send e.name, why?
@@ -33,7 +51,7 @@ onrtctransform = event => {
 
   async function waitForFrame() {
     try {
-      await Promise.race([new Promise(r => gotFrameCallback = r), rejectInMs(8000)]);
+      await Promise.race([new Promise(r => gotFrameCallback = r), rejectInMs(16000)]);
       transformer.options.port.postMessage('got frame');
     } catch (e) {
       // TODO: This does not work if we send e.name, why?

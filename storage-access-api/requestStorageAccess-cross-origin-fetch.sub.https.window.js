@@ -20,12 +20,14 @@
     t.add_cleanup(async () => {
       await test_driver.delete_all_cookies();
       await SetPermissionInFrame(frame, [{ name: 'storage-access' }, 'prompt']);
+      await DeleteCookieInFrame(frame, "cookie", "Secure;SameSite=None;Path=/;Domain={{hosts[alt][]}}");
     });
 
     return frame;
   }
 
   promise_test(async (t) => {
+    await SetFirstPartyCookie(altRoot, "initial-cookie=unpartitioned;Secure;SameSite=None;Path=/");
     const frame = await SetUpResponderFrame(t, altRootResponder);
     await SetDocumentCookieFromFrame(frame, domainCookieString);
 
@@ -51,6 +53,7 @@
   }, "Cross-origin fetches from a frame with storage-access are not credentialed by default");
 
   promise_test(async (t) => {
+    await SetFirstPartyCookie(altRoot, "initial-cookie=unpartitioned;Secure;SameSite=None;Path=/");
     const frame = await SetUpResponderFrame(t, altRootResponder);
     await SetDocumentCookieFromFrame(frame, domainCookieString);
 

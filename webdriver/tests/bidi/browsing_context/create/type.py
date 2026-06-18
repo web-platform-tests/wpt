@@ -2,13 +2,15 @@ import pytest
 
 from webdriver.bidi.modules.script import ContextTarget
 from .. import assert_browsing_context, assert_document_status
+from ... import get_viewport_dimensions
 
 
 pytestmark = pytest.mark.asyncio
 
 
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
-async def test_type(bidi_session, top_context, type_hint):
+async def test_type(bidi_session, wait_for_event, wait_for_future_safe, subscribe_events, top_context, type_hint):
+    await subscribe_events(["browsingContext.contextCreated"])
     is_window = type_hint == "window"
 
     contexts = await bidi_session.browsing_context.get_tree(max_depth=0)
@@ -16,7 +18,9 @@ async def test_type(bidi_session, top_context, type_hint):
 
     await assert_document_status(bidi_session, top_context, visible=True, focused=True)
 
+    on_entry = wait_for_event("browsingContext.contextCreated")
     new_context = await bidi_session.browsing_context.create(type_hint=type_hint)
+    context_info = await wait_for_future_safe(on_entry)
     assert contexts[0]["context"] != new_context["context"]
 
     await assert_document_status(bidi_session, new_context, visible=True, focused=True)
@@ -38,6 +42,7 @@ async def test_type(bidi_session, top_context, type_hint):
         parent_expected=True,
         parent=None,
         url="about:blank",
+        client_window=context_info["clientWindow"],
     )
 
     opener_protocol_value = await bidi_session.script.evaluate(
@@ -47,3 +52,18 @@ async def test_type(bidi_session, top_context, type_hint):
     assert opener_protocol_value["value"] is False
 
     await bidi_session.browsing_context.close(context=new_context["context"])
+
+
+@pytest.mark.parametrize("type_hint", ["tab", "window"])
+@pytest.mark.parametrize("background", [True, False])
+async def test_get_viewport_after_browsing_context_create(
+    bidi_session, type_hint, background
+):
+    new_tab = await bidi_session.browsing_context.create(
+        type_hint=type_hint, background=background
+    )
+
+    viewport_dimensions = await get_viewport_dimensions(bidi_session, new_tab)
+
+    assert viewport_dimensions["width"] > 0
+    assert viewport_dimensions["height"] > 0

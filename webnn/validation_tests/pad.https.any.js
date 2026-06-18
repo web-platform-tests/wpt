@@ -53,11 +53,12 @@ const tests = [
     output: {dataType: 'float32', shape: [4, 7]}
   },
   {
-    name: '[pad] Throw if building pad for scalar input.',
+    name:
+        '[pad] Test pad for scalar input with empty beginningPadding and endingPadding.',
     input: {dataType: 'float32', shape: []},
     beginningPadding: [],
     endingPadding: [],
-    options: {label}
+    output: {dataType: 'float32', shape: []}
   },
   {
     name:
@@ -77,6 +78,50 @@ const tests = [
     input: {dataType: 'float32', shape: [2, 3]},
     beginningPadding: [1, 0],
     endingPadding: [1, 2, 0],
+    options: {
+      mode: 'reflection',
+      label: label,
+    },
+  },
+  {
+    name:
+        '[pad] Throw if beginningPadding[index] is equal to inputShape[index] on reflection mode.',
+    input: {dataType: 'float32', shape: [2, 3]},
+    beginningPadding: [2, 0],
+    endingPadding: [1, 2],
+    options: {
+      mode: 'reflection',
+      label: label,
+    },
+  },
+  {
+    name:
+        '[pad] Throw if beginningPadding[index] is greater than inputShape[index] on reflection mode.',
+    input: {dataType: 'float32', shape: [2, 3]},
+    beginningPadding: [3, 0],
+    endingPadding: [1, 2],
+    options: {
+      mode: 'reflection',
+      label: label,
+    },
+  },
+  {
+    name:
+        '[pad] Throw if endingPadding[index] is equal to inputShape[index] on reflection mode.',
+    input: {dataType: 'float32', shape: [2, 3]},
+    beginningPadding: [1, 0],
+    endingPadding: [1, 3],
+    options: {
+      mode: 'reflection',
+      label: label,
+    },
+  },
+  {
+    name:
+        '[pad] Throw if endingPadding[index] is greater than inputShape[index] on reflection mode.',
+    input: {dataType: 'float32', shape: [2, 3]},
+    beginningPadding: [1, 0],
+    endingPadding: [1, 4],
     options: {
       mode: 'reflection',
       label: label,

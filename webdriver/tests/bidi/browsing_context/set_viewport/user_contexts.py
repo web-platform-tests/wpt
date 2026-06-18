@@ -3,8 +3,9 @@ from webdriver.bidi.undefined import UNDEFINED
 
 from ... import get_device_pixel_ratio, get_viewport_dimensions
 
-
 pytestmark = pytest.mark.asyncio
+
+CONTEXT_LOAD_EVENT = "browsingContext.load"
 
 
 async def test_set_to_user_context(bidi_session, new_tab, create_user_context):

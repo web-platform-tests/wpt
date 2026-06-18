@@ -35,7 +35,6 @@ subsetTest(promise_test, async test => {
     'bidCount': 0,
     'multiBidLimit': 1,
     'prevWinsMs': [],
-    'forDebuggingOnlySampling': false
   };
   let biddingLogicURL = createBiddingScriptURL({
     generateBid:
@@ -48,11 +47,12 @@ subsetTest(promise_test, async test => {
           expectedBrowserSignals.forDebuggingOnlyInCooldownOrLockout =
               browserSignals.forDebuggingOnlyInCooldownOrLockout;
 
+
           // Remove deprecated field, if present.
           delete browserSignals.prevWins;
 
           if (!deepEquals(browserSignals, expectedBrowserSignals))
-             throw "Unexpected browserSignals: " + JSON.stringify(browserSignals);`
+             throw "Unexpected browserSignals: " + JSON.stringify(browserSignals) + " - " + JSON.stringify(expectedBrowserSignals)`
   });
 
   await joinGroupAndRunBasicFledgeTestExpectingWinner(
@@ -947,3 +947,40 @@ subsetTest(promise_test, async test => {
       }
     });
 }, 'browserSignals.wasmHelper.');
+
+
+// Generates 0 or 1 clicks, dependent on `produceAttributionSrc` &
+// `produceUserAction`, and `numViews` views for `igOwner`, provided by
+// `viewClickProvider`.
+async function generateViewsAndClicks(
+    test, uuid, viewClickProvider, igOwner, numViews, produceAttributionSrc,
+    produceUserAction) {
+  let iframe = await createIframe(test, viewClickProvider);
+  let script = `
+    // We use a wrapper iframe here so the original remains in communication.
+    let frame = document.createElement('iframe');
+    document.body.appendChild(frame);
+    let frameDocument = frame.contentDocument;
+    let a = frameDocument.createElement('a');
+    a.href = '${RESOURCE_PATH}/record-click.py?' +
+        'eligible_origin=${igOwner}&num_views=${numViews}';
+    if (${produceAttributionSrc}) {
+      a.attributionSrc = '';
+    }
+    a.target = '_self';
+    a.appendChild(frameDocument.createTextNode('Click me'));
+    frameDocument.body.appendChild(a);
+
+    if (${produceUserAction}) {
+      // Note: test_driver.click() seems to not work well with Chrome's
+      // content_shell; while .bless() does... unreliably.
+      // headless_shell/chrome path seems to work reliably. User activation
+      // is used sparingly to work around content_shell flakiness.
+      await test_driver.bless('User-initiated click', () => { a.click() });
+    } else {
+      a.click();
+    }
+  `;
+
+  await runInFrame(test, iframe, script);
+}

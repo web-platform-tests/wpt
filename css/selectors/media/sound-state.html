@@ -6,6 +6,7 @@
 />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/media.js"></script>
 <body>
   <video width="300" height="300" loop></video>
   <script type="module">
@@ -23,6 +24,7 @@
     }, "Test :pseudo-class syntax is supported without throwing a SyntaxError");
 
     promise_test(async (t) => {
+      assert_implements(CSS.supports("selector(:muted)"), ":muted is not supported");
       assert_equals(
         document.querySelector("video:muted"),
         null,
@@ -31,7 +33,7 @@
       const video = document.querySelector("video");
       await new Promise((r) => {
         video.addEventListener("canplay", r, { once: true });
-        video.src = "/media/counting.mp4";
+        video.src = getVideoURI("/media/counting");
       });
       video.muted = false;
       assert_false(video.muted, "video is unmuted");
@@ -41,5 +43,30 @@
       assert_equals(document.querySelector("video:muted"), video);
       assert_equals(document.querySelector("video:not(:muted)"), null);
     }, "Test :muted pseudo-class");
+
+    test((t) => {
+      assert_implements(CSS.supports("selector(:muted)"), ":muted is not supported");
+
+      const video = document.createElement("video");
+      document.body.appendChild(video);
+      t.add_cleanup(() => video.remove());
+
+      assert_false(video.muted);
+      assert_false(video.matches(":muted"));
+
+      video.setAttribute("muted", "");
+      assert_true(video.muted);
+      assert_true(video.matches(":muted"));
+
+      video.removeAttribute("muted");
+      assert_false(video.muted);
+      assert_false(video.matches(":muted"));
+
+      video.setAttribute("muted", "");
+      assert_true(video.muted);
+      video.muted = false;
+      assert_false(video.muted);
+      assert_false(video.matches(":muted"));
+    }, "Test :muted matches .muted for content attribute default");
   </script>
 </body>

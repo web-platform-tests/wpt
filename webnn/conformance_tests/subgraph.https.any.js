@@ -1,5 +1,5 @@
 // META: title=test WebNN API subgraph with multiple operations
-// META: global=window,worker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -2345,7 +2345,7 @@ const subgraphTests = [
         },
         {
           'name': 'softmax',
-          'arguments': [{'input': 'convTranspose2dOutput'}, , {'axis': 1}],
+          'arguments': [{'input': 'convTranspose2dOutput'}, {'axis': 1}],
           'outputs': 'output'
         },
       ],
@@ -2394,7 +2394,7 @@ const subgraphTests = [
         },
         {
           'name': 'softmax',
-          'arguments': [{'input': 'convTranspose2dOutput'}, , {'axis': 1}],
+          'arguments': [{'input': 'convTranspose2dOutput'}, {'axis': 1}],
           'outputs': 'output'
         },
       ],
@@ -2524,142 +2524,97 @@ const subgraphTests = [
     }
   },
   {
-    'name': 'quantized conv2d',
+    'name': 'gatherElements + matmul',
     'graph': {
       'inputs': {
-        'input': {
-          'data': [0.05605664849281311, 0.7114229798316956, 0.6529743671417236],
-          'descriptor': {shape: [1, 1, 1, 3], dataType: 'float32'},
-          'constant': false
+        'gatherElementsInput': {
+          'data': [
+            -66.05901336669922, -68.9197006225586, -77.02045440673828,
+            -26.158037185668945, 89.0337142944336, -45.89653396606445,
+            43.84803771972656, 48.81806945800781, 51.79948425292969
+          ],
+          'descriptor': {shape: [3, 3], dataType: 'float32'}
         },
-        'inputScale': {
-          'data': [0.003921568859368563],
-          'descriptor': {shape: [1], dataType: 'float32'},
+        'gatherElementsIndices': {
+          'data': [1, 0, 2, 2, 1, 0],
+          'descriptor': {shape: [2, 3], dataType: 'int32'},
           'constant': true
         },
-        'inputZeroPoint': {
-          'data': [-128],
-          'descriptor': {shape: [1], dataType: 'int8'},
-          'constant': true
-        },
-        'filter': {
-          'data': [2, 3, 4],
-          'descriptor': {shape: [1, 1, 1, 3], dataType: 'int8'},
-          'constant': true
-        },
-        'filterScale': {
-          'data': [0.023458752938762234],
-          'descriptor': {shape: [1], dataType: 'float32'},
-          'constant': true
-        },
-        'filterZeroPoint': {
-          'data': [0],
-          'descriptor': {shape: [1], dataType: 'int8'},
-          'constant': true
-        },
-        'bias': {
-          'data': [1],
-          'descriptor': {shape: [1], dataType: 'int32'},
-          'constant': true
-        },
-        'biasScale': {
-          'data': [0.000091995115004270],
-          'descriptor': {shape: [1], dataType: 'float32'},
-          'constant': true
-        },
-        'biasZeroPoint': {
-          'data': [0],
-          'descriptor': {shape: [1], dataType: 'int32'},
-          'constant': true
-        },
-        'outputScale': {
-          'data': [0.003921568859368563],
-          'descriptor': {shape: [1], dataType: 'float32'},
-          'constant': true
-        },
-        'outputZeroPoint': {
-          'data': [0],
-          'descriptor': {shape: [1], dataType: 'int8'},
-          'constant': true
+        'matmulB': {
+          'data': [
+            56.46701431274414,  99.86045837402344,  71.054931640625,
+            32.454383850097656, 17.310747146606445, 2.586275100708008,
+          ],
+          'descriptor': {shape: [3, 2], dataType: 'float32'}
         },
       },
       'operators': [
         {
-          'name': 'quantizeLinear',
+          'name': 'gatherElements',
           'arguments': [
-            {'input': 'input'},
-            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+            {'input': 'gatherElementsInput'}, {'indices': 'gatherElementsIndices'}
           ],
-          'outputs': 'quantizedInput'
+          'outputs': 'gatherElementsOutput'
         },
         {
-          'name': 'dequantizeLinear',
+          'name': 'matmul',
           'arguments': [
-            {'input': 'quantizedInput'},
-            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+            {'a': 'gatherElementsOutput'}, {'b': 'matmulB'}
           ],
-          'outputs': 'dequantizedInput'
-        },
-        {
-          'name': 'dequantizeLinear',
-          'arguments': [
-            {'input': 'filter'},
-            {'scale': 'filterScale', 'zeroPoint': 'filterZeroPoint'}
-          ],
-          'outputs': 'dequantizedFilter'
-        },
-        {
-          'name': 'dequantizeLinear',
-          'arguments': [
-            {'input': 'bias'},
-            {'scale': 'biasScale', 'zeroPoint': 'biasZeroPoint'}
-          ],
-          'outputs': 'dequantizedBias'
-        },
-        {
-          'name': 'conv2d',
-          'arguments': [
-            {'input': 'dequantizedInput'}, {'filter': 'dequantizedFilter'}, {
-              'options': {
-                'inputLayout': 'nhwc',
-                'bias': 'dequantizedBias',
-                'filterLayout': 'ohwi'
-              }
-            }
-          ],
-          'outputs': 'conv2dOutput'
-        },
-        {
-          'name': 'quantizeLinear',
-          'arguments': [
-            {'input': 'conv2dOutput'},
-            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
-          ],
-          'outputs': 'quantizedConv2dOutput'
-        },
-        {
-          'name': 'dequantizeLinear',
-          'arguments': [
-            {'input': 'quantizedConv2dOutput'},
-            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
-          ],
-          'outputs': 'output'
+          'outputs': 'matmulOutput'
         }
       ],
       'expectedOutputs': {
+        'matmulOutput': {
+          'data': [
+            -5477.462890625, -4714.93212890625,
+            7468.97021484375, 7069.02294921875
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'float16 graph with float32 input and output',
+    'graph': {
+      'inputs': {
+        'input': {
+          'data': [1, 2, 3, 4],
+          'descriptor': {shape: [4], dataType: 'float32'}
+        },
+        'weight': {
+          'data': [2],
+          'descriptor': {shape: [], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [
+        {
+          'name': 'cast',
+          'arguments': [{'input': 'input'}, {'type': 'float16'}],
+          'outputs': 'castOutput',
+        },
+        {
+          'name': 'add',
+          'arguments': [{'a': 'castOutput'}, {'b': 'weight'}],
+          'outputs': 'addOutput'
+        },
+        {
+          'name': 'cast',
+          'arguments': [{'input': 'addOutput'}, {'type': 'float32'}],
+          'outputs': 'output'
+        },
+      ],
+      'expectedOutputs': {
         'output': {
-          'data': [0.11372549831867218],
-          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float32'}
+          'data': [3, 4, 5, 6],
+          'descriptor': {shape: [4], dataType: 'float32'}
         }
       }
     }
   },
 ];
 
-if (navigator.ml) {
-  subgraphTests.forEach((test) => {
-    webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    subgraphTests, buildAndExecuteGraph, getPrecisionTolerance);

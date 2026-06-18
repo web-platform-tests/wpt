@@ -7,7 +7,7 @@
 <script>
 'use strict';
 
-// draft-ietf-rtcweb-security-20 section 6.5
+// RFC 8827 section 6.5
 //
 // All Implementations MUST support DTLS 1.2 with the
 // TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 cipher suite and the P-256
@@ -21,15 +21,19 @@
 const acceptableTlsVersions = new Set([
   'FEFD', // DTLS 1.2 - RFC 6437 section 4.1
   '0304', // TLS 1.3 - RFC 8446 section 5.1
+  'FEFC', // DTLS 1.3 - RFC 9147 section 5.3
 ]);
 
 const acceptableDtlsCiphersuites = new Set([
   'TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256',
+  'TLS_AES_128_GCM_SHA256',
 ]);
 
 const acceptableSrtpCiphersuites = new Set([
   'SRTP_AES128_CM_HMAC_SHA1_80',
   'AES_CM_128_HMAC_SHA1_80',
+  'SRTP_AEAD_AES_128_GCM',
+  'SRTP_AEAD_AES_256_GCM',
 ]);
 
 const acceptableValues = {

@@ -1,5 +1,7 @@
 from typing import Any, Mapping
 
+import pytest
+from webdriver.bidi.error import UnknownErrorException
 from webdriver.bidi.modules.script import ContextTarget
 
 from .. import (
@@ -14,12 +16,12 @@ def assert_browsing_context(
     info,
     context,
     children=None,
+    client_window=None,
     original_opener=None,
     parent_expected=True,
     parent=None,
     url=None,
     user_context="default",
-    client_window=None
 ):
     assert "children" in info
     if children is not None:
@@ -27,6 +29,14 @@ def assert_browsing_context(
         assert len(info["children"]) == children
     else:
         assert info["children"] is None
+
+    assert "clientWindow" in info
+    assert isinstance(info["clientWindow"], str)
+    # Note: Only the tests for browsingContext.getTree should be allowed to
+    # pass None here because it's not possible to assert the exact client
+    # window id for other browser windows.
+    if client_window is not None:
+        assert info["clientWindow"] == client_window
 
     assert "context" in info
     assert isinstance(info["context"], str)
@@ -54,8 +64,6 @@ def assert_browsing_context(
     assert info["url"] == url
     assert info["userContext"] == user_context
     assert info["originalOpener"] == original_opener
-    if client_window is not None:
-        assert info["clientWindow"] == client_window
 
 
 async def assert_document_status(bidi_session, context, visible, focused):
@@ -72,6 +80,7 @@ def assert_navigation_info(event, expected_navigation_info):
             "navigation": any_string_or_null,
             "timestamp": any_int,
             "url": any_string,
+            **({"userContext": any_string} if "userContext" in event else {}),
         },
         event,
     )
@@ -87,6 +96,11 @@ def assert_navigation_info(event, expected_navigation_info):
 
     if "url" in expected_navigation_info:
         assert event["url"] == expected_navigation_info["url"]
+
+    # This parameter should become mandatory when
+    # https://github.com/w3c/webdriver-bidi/issues/1071 is resolved.
+    if "userContext" in expected_navigation_info and "userContext" in event:
+        assert event["userContext"] == expected_navigation_info["userContext"]
 
 
 async def get_document_focus(bidi_session, context: Mapping[str, Any]) -> str:
@@ -107,3 +121,42 @@ async def get_visibility_state(bidi_session, context: Mapping[str, Any]) -> str:
         target=ContextTarget(context["context"]),
         await_promise=False)
     return result["value"]
+
+
+def find_context_info(contexts, context):
+    return next(
+        (
+            context_info
+            for context_info in contexts
+            if context_info["context"] == context
+        ),
+        None,
+    )
+
+
+async def navigate_and_assert(
+    bidi_session, context, url, wait="complete", expected_error=False, expected_url=None
+):
+    if expected_url is None:
+        expected_url = url
+
+    if expected_error:
+        with pytest.raises(UnknownErrorException):
+            await bidi_session.browsing_context.navigate(
+                context=context['context'], url=url, wait=wait
+            )
+
+    else:
+        result = await bidi_session.browsing_context.navigate(
+            context=context['context'], url=url, wait=wait
+        )
+        assert result["url"] == expected_url
+        any_string(result["navigation"])
+
+        contexts = await bidi_session.browsing_context.get_tree(
+            root=context['context']
+        )
+        assert len(contexts) == 1
+        assert contexts[0]["url"] == expected_url
+
+        return contexts

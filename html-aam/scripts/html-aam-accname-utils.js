@@ -187,7 +187,6 @@ const HtmlAamAccnameUtils = {
     // Build child-based name sources
     [
       'from first legend',
-      'from first figcaption',
       'from first caption'
     ].forEach(tmpSource => {
       if (nameSources.includes(tmpSource)) {
@@ -339,7 +338,6 @@ const HtmlAamAccnameUtils = {
     'from 2 labels': 'associated label #2 text contents',
     'from subtree': 'subtree text contents',
     'from first legend': 'legend text contents',
-    'from first figcaption': 'figcaption text contents',
     'from first caption': 'caption text contents',
     'from value': 'value attribute value',
     'from label attribute': 'label attribute value',

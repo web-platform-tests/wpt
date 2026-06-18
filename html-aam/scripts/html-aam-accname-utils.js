@@ -148,6 +148,18 @@ const HtmlAamAccnameUtils = {
       elReturn = elTest;
     }
 
+    // Build ancestor-based name source
+    tmpSource = 'from ancestor figure figcaption';
+    if (expSource === tmpSource) {
+      let elFigure = document.createElement('figure');
+      let elFigcaption = document.createElement('figcaption');
+      elFigcaption.appendChild(document.createTextNode(this.nameValues[tmpSource]));
+      elFigure.appendChild(elReturn);
+      elFigure.appendChild(elFigcaption);
+      elReturn = elFigure;
+      expName = this.nameValues[tmpSource];
+    }
+
     // Build label source reference(s)
     tmpSource = 'from 1 label';
     if (nameSources.includes(tmpSource)) {
@@ -208,7 +220,9 @@ const HtmlAamAccnameUtils = {
     ].forEach(tmpSource => {
       if (nameSources.includes(tmpSource)) {
         let attr = tmpSource.replace('from ', '').replace(' attribute', '');
-        let name = elTest.tagName.toLowerCase() + ' ' + this.nameValues[tmpSource];
+        let name = tmpSource === 'from alt' ?
+          this.nameValues[tmpSource] :
+          elTest.tagName.toLowerCase() + ' ' + this.nameValues[tmpSource];
         elTest.setAttribute(attr, name);
         if (expSource === tmpSource) expName = name;
       }
@@ -216,9 +230,9 @@ const HtmlAamAccnameUtils = {
 
     // Build empty alt attribute name source
     tmpSource = 'from empty alt';
-    if (nameSources.includes(tmpSource)) {
+    if (expSource === tmpSource) {
       elTest.setAttribute('alt', this.nameValues[tmpSource]);
-      if (expSource === tmpSource) expName = this.nameValues[tmpSource];
+      expName = this.nameValues[tmpSource];
     }
 
     // If the test element is empty but can contain descendants, add an
@@ -345,5 +359,6 @@ const HtmlAamAccnameUtils = {
     'from empty alt': '',
     'from title': 'title attribute value',
     'from placeholder': 'placeholder attribute value',
+    'from ancestor figure figcaption': 'ancestor figure figcaption text contents',
   }
 };

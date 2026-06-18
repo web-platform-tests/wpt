@@ -212,6 +212,7 @@ const HtmlAamAccnameUtils = {
     // Build attribute-based name sources
     [
       'from aria-label',
+      'from aria-placeholder',
       'from value',
       'from alt',
       'from title',
@@ -359,6 +360,7 @@ const HtmlAamAccnameUtils = {
     'from empty alt': '',
     'from title': 'title attribute value',
     'from placeholder': 'placeholder attribute value',
+    'from aria-placeholder': 'aria-placeholder attribute value',
     'from ancestor figure figcaption': 'ancestor figure figcaption text contents',
   }
 };

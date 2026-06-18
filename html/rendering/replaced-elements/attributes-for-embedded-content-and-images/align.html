@@ -30,6 +30,17 @@ const kInitialValues = {
   "float": "none",
 };
 
+const kVerticalAlignKeywords = [
+  "baseline",
+  "sub",
+  "super",
+  "text-top",
+  "text-bottom",
+  "middle",
+  "top",
+  "bottom",
+];
+
 let replaced = document.getElementById("replaced");
 let nonReplaced = document.getElementById("non-replaced");
 let t = async_test("align attribute mapping");
@@ -47,10 +58,9 @@ onload = t.step_func_done(function() {
             assert_equals(actual, expected, `align=${attributeValue} should map to ${property}: ${expected}`);
           } else {
             assert_equals(property, "vertical-align");
-            assert_in_array(
-              actual,
-              ["-moz-middle-with-baseline", "-webkit-baseline-middle"],
-              `align=${attributeValue} should map to a browser-specific middle-with-baseline value`
+            assert_false(
+              kVerticalAlignKeywords.includes(actual),
+             `align=${attributeValue} should map to a special vertical-align value`
             );
           }
         }

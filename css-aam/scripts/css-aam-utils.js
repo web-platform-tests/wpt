@@ -21,7 +21,7 @@ const CssAamUtils = {
     escapeWhiteSpace: function(value) {
         return value.replace(/\W/, "-");
     },
-    
+
     /*
       Valid generic role values.
 

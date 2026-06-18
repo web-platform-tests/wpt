@@ -23,7 +23,7 @@ then
     do
         echo "- \"${i}\""
     done
-    
+
     exit 0
 fi
 

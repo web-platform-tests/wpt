@@ -21,6 +21,12 @@ const CssAamUtils = {
     escapeWhiteSpace: function(value) {
         return value.replace(/\W/, "-");
     },
+    
+    /*
+      Valid generic role values.
+
+      */
+    genericRoles: ["generic", "", "none"],
 
     /*
       Tests unchanged implicit role with display value: <button style="display: flex">x</div>
@@ -30,13 +36,10 @@ const CssAamUtils = {
       */
     verifyRolesBySelectorWithDisplayValue: function(selector, displayValue) {
         const escapedDisplay = CssAamUtils.escapeWhiteSpace(displayValue);
-        const containerID = `display-${escapedDisplay}`;
-        const container = CssAamUtils.cloneTestContainer("template", containerID);
-        const containerSelector = `#${container.id} ${selector}`;
-        const els = document.querySelectorAll(containerSelector);
+        const els = document.querySelectorAll(selector);
 
         if (!els.length) {
-          throw `Selector passed in verifyRolesBySelector("${containerSelector}") should match at least one element.`;
+          throw `Selector passed in verifyRolesBySelector("${selector}") should match at least one element.`;
         }
 
         for (const el of els) {
@@ -64,13 +67,10 @@ const CssAamUtils = {
       */
     verifyGenericRolesBySelectorWithDisplayValue: function(selector, roles, displayValue) {
         const escapedDisplay = CssAamUtils.escapeWhiteSpace(displayValue);
-        const containerID = `display-${escapedDisplay}`;
-        const container = CssAamUtils.cloneTestContainer("template", containerID);
-        const containerSelector = `#${container.id} ${selector}`;
-        const els = document.querySelectorAll(containerSelector);
+        const els = document.querySelectorAll(selector);
 
         if (!els.length) {
-          throw `Selector passed in verifyRolesBySelector("${containerSelector}") should match at least one element.`;
+          throw `Selector passed in verifyRolesBySelector("${selector}") should match at least one element.`;
         }
         if (!roles.length || roles.length < 2) {
           throw `Roles array ["${roles.join('", "')}"] should include at least two strings, a primary role and at least one acceptable implementation-specific variant. E.g. ["generic", "", "none"]…`;

@@ -1,4 +1,5 @@
 // META: title=WebLocks granted to a dedicated worker in BFCache should be deferred.
+// META: timeout=long
 // META: script=/common/dispatcher/dispatcher.js
 // META: script=/common/get-host-info.sub.js
 // META: script=/common/utils.js

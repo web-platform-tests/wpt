@@ -11,13 +11,14 @@
 
 // Basic usage with literal alpha.
 test_valid_value("color", "alpha(from red / 0.5)");
-test_valid_value("color", "alpha(from blue / 1)", "alpha(from blue)");
+test_valid_value("color", "alpha(from blue / 1)");
 test_valid_value("color", "alpha(from green / 0)");
+test_valid_value("color", "alpha(from rgba(0, 0, 0, 0.5) / 1)");
 
 // Percentage alpha.
 test_valid_value("color", "alpha(from red / 50%)");
 test_valid_value("color", "alpha(from red / 0%)");
-test_valid_value("color", "alpha(from red / 100%)", "alpha(from red)");
+test_valid_value("color", "alpha(from red / 100%)");
 
 // None alpha.
 test_valid_value("color", "alpha(from red / none)");

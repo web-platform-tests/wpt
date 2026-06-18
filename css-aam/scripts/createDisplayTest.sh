@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# This excludes "none" and "block" on purpose.
 knownvalues=("contents" "flow-root" "inline" "inline-block" "run-in" "list-item" "inline list-item" "flex" "inline-flex" "grid" "inline-grid" "ruby" "block ruby" "table" "inline-table")
 
 if [ $# -eq 0 ]
@@ -13,7 +14,7 @@ then
     echo "Usage:"
     echo "./createDisplayTest.sh [-h] [-a] value(s)"
     echo "./createDisplayTest.sh -h -- show help text"
-    echo "./createDisplayTest.sh -a -- create test files for all known display values (except \"block\")."
+    echo "./createDisplayTest.sh -a -- create test files for all known display values (except \"none\" and \"block\")."
     echo "./createDisplayTest.sh \"block\" -- create test file for \"block\""
     echo "./createDisplayTest.sh \"block\" \"inline-block\" \"block flow-root\" -- create test files for \"block\" \"inline-block\" and \"block flow-root\""
     echo

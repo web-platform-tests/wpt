@@ -103,11 +103,37 @@ subtest. It is expected that each test file run on a given platform will have
 one or more subtests that run to completion, as well as several subtests who’s
 results will not be recorded. This is because each test file should show how the
 <strong>same markup</strong> is exposed in each supporting accessibility APIs/platforms.</p>
-<section id="package-dependencies-for-linux-api-at-spi-python-bindings">
-<h3>Package dependencies for Linux API AT-SPI Python Bindings<a class="headerlink" href="#package-dependencies-for-linux-api-at-spi-python-bindings" title="Link to this heading">¶</a></h3>
+</section>
+<section id="running-tests">
+<h2>Running tests<a class="headerlink" href="#running-tests" title="Link to this heading">¶</a></h2>
+<p>These test can be run with <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">run</span></code> but not <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">serve</span></code>.</p>
+<section id="linux">
+<h3>Linux<a class="headerlink" href="#linux" title="Link to this heading">¶</a></h3>
 <p>In order to test the Linux API AT-SPI, you need to have the following packages
 installed:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">libatspi2</span><span class="mf">.0</span><span class="o">-</span><span class="n">dev</span> <span class="n">libcairo2</span><span class="o">-</span><span class="n">dev</span> <span class="n">libgirepository1</span><span class="mf">.0</span><span class="o">-</span><span class="n">dev</span>
+</pre></div>
+</div>
+<p>You can run the tests with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./wpt run firefox core-aam/aamtests/role/blockquote.py
+</pre></div>
+</div>
+<p>To add useful logging:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./wpt run  --log-mach-level debug --log-mach - firefox core-aam/aamtests/role/blockquote.py
+</pre></div>
+</div>
+</section>
+<section id="macos">
+<h3>macOS<a class="headerlink" href="#macos" title="Link to this heading">¶</a></h3>
+<p>When running these tests on macOS, provide the option <code class="docutils literal notranslate"><span class="pre">--no-headless</span></code>. Otherwise the accessibility API will not be enabled.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./wpt run --no-headless chrome core-aam/aamtests/role/blockquote.py
+</pre></div>
+</div>
+</section>
+<section id="windows">
+<h3>Windows<a class="headerlink" href="#windows" title="Link to this heading">¶</a></h3>
+<p>When running these tests on macOS, provide the option <code class="docutils literal notranslate"><span class="pre">--no-headless</span></code>. Otherwise the accessibility API will not be enabled. Additionally, the binaries for the browser and the webdriver binary must be provided on a Windows machine.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python wpt.py run chrome --no-headless --binary=&quot;C:\Program Files\Google\Chrome\Application\chrome.exe&quot; --webdriver-binary=&quot;C:\whatever\the\path\to\chromedriver&quot; core-aam\aamtests\role\blockquote.py
 </pre></div>
 </div>
 </section>

@@ -44,7 +44,7 @@ def _update_capabilities_if_extension_test(
             if arg not in args:
                 args.append(arg)
         # Enabled `browser` JS namespace on <test_name>.<api>.html test page.
-        add_arg("--extension-browser-namespace-on-webpages")
+        add_arg("--enable-features=ExtensionBrowserNamespaceOnWebPages")
         # Enables `chrome.test` JS API (and by extension `browser.test`) on <test_name>.<api>.html test page.
         add_arg("--extension-test-api-on-web-pages")
         # Modifies the `chrome.test` JS API to behave per the `browser.test` API proposal:

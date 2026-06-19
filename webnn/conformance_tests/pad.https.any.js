@@ -27,12 +27,33 @@
 //     sequence<[EnforceRange] unsigned long>endingPadding,
 //     optional MLPadOptions options = {});
 
-
-const getPadPrecisionTolerance = () => {
-  return {metricType: 'ULP', value: 0};
-};
-
 const padTests = [
+  {
+    'name':
+        'padding float32 0D constant tensor with empty paddings should be no-op',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [22.76361846923828],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': []}, {'endingPadding': []}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [22.76361846923828],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
   {
     'name': 'pad float32 1D constant tensor default options',
     'graph': {
@@ -581,6 +602,206 @@ const padTests = [
     }
   },
   {
+    'name': 'pad float32 2D tensor with options.value as NaN',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [
+            22.76361846923828, -21.168529510498047, -91.66168975830078,
+            16.863798141479492, 60.51472091674805, -70.56755065917969,
+            -60.643272399902344, -47.8821907043457, 68.72557830810547
+          ],
+          'descriptor': {shape: [3, 3], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [1, 1]},
+          {'endingPadding': [1, 1]}, {'options': {'value': NaN}}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            22.76361846923828,
+            -21.168529510498047,
+            -91.66168975830078,
+            NaN,
+            NaN,
+            16.863798141479492,
+            60.51472091674805,
+            -70.56755065917969,
+            NaN,
+            NaN,
+            -60.643272399902344,
+            -47.8821907043457,
+            68.72557830810547,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN
+          ],
+          'descriptor': {shape: [5, 5], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'pad float32 2D tensor with options.value as Infinity',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [
+            22.76361846923828, -21.168529510498047, -91.66168975830078,
+            16.863798141479492, 60.51472091674805, -70.56755065917969,
+            -60.643272399902344, -47.8821907043457, 68.72557830810547
+          ],
+          'descriptor': {shape: [3, 3], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [1, 1]},
+          {'endingPadding': [1, 1]}, {'options': {'value': Infinity}}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            Infinity,
+            Infinity,
+            Infinity,
+            Infinity,
+            Infinity,
+            Infinity,
+            22.76361846923828,
+            -21.168529510498047,
+            -91.66168975830078,
+            Infinity,
+            Infinity,
+            16.863798141479492,
+            60.51472091674805,
+            -70.56755065917969,
+            Infinity,
+            Infinity,
+            -60.643272399902344,
+            -47.8821907043457,
+            68.72557830810547,
+            Infinity,
+            Infinity,
+            Infinity,
+            Infinity,
+            Infinity,
+            Infinity
+          ],
+          'descriptor': {shape: [5, 5], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'pad int64 2D tensor with options.value as bigint',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [22, -21, -91, 16, 60, -70, -60, -47, 68],
+          'descriptor': {shape: [3, 3], dataType: 'int64'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [1, 1]},
+          {'endingPadding': [1, 1]}, {'options': {'value': 9007199254740992n}}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            9007199254740992n,
+            9007199254740992n,
+            9007199254740992n,
+            9007199254740992n,
+            9007199254740992n,
+            9007199254740992n,
+            22,
+            -21,
+            -91,
+            9007199254740992n,
+            9007199254740992n,
+            16,
+            60,
+            -70,
+            9007199254740992n,
+            9007199254740992n,
+            -60,
+            -47,
+            68,
+            9007199254740992n,
+            9007199254740992n,
+            9007199254740992n,
+            9007199254740992n,
+            9007199254740992n,
+            9007199254740992n
+          ],
+          'descriptor': {shape: [5, 5], dataType: 'int64'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'pad float32 2D tensor with options.value as -Infinity',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [
+            22.76361846923828, -21.168529510498047, -91.66168975830078,
+            16.863798141479492, 60.51472091674805, -70.56755065917969,
+            -60.643272399902344, -47.8821907043457, 68.72557830810547
+          ],
+          'descriptor': {shape: [3, 3], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [1, 1]},
+          {'endingPadding': [1, 1]}, {'options': {'value': -Infinity}}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            -Infinity,         -Infinity,           -Infinity,
+            -Infinity,         -Infinity,           -Infinity,
+            22.76361846923828, -21.168529510498047, -91.66168975830078,
+            -Infinity,         -Infinity,           16.863798141479492,
+            60.51472091674805, -70.56755065917969,  -Infinity,
+            -Infinity,         -60.643272399902344, -47.8821907043457,
+            68.72557830810547, -Infinity,           -Infinity,
+            -Infinity,         -Infinity,           -Infinity,
+            -Infinity
+          ],
+          'descriptor': {shape: [5, 5], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
     'name': 'pad float32 4D tensor options.mode=\'edge\'',
     'graph': {
       'inputs': {
@@ -1031,14 +1252,104 @@ const padTests = [
         }
       }
     }
+  },
+
+  // int32 tests
+  {
+    'name': 'pad int32 2D tensor default options',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [1, -2, 3, -4, 5, -6, 7, -8, 9],
+          'descriptor': {shape: [3, 3], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [1, 1]},
+          {'endingPadding': [1, 1]}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            0, 0, 0, 0, 0,
+            0, 1, -2, 3, 0,
+            0, -4, 5, -6, 0,
+            0, 7, -8, 9, 0,
+            0, 0, 0, 0, 0
+          ],
+          'descriptor': {shape: [5, 5], dataType: 'int32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'pad int32 2D tensor options.value',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [1, -2, 3, -4, 5, -6, 7, -8, 9],
+          'descriptor': {shape: [3, 3], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [1, 1]},
+          {'endingPadding': [1, 1]}, {'options': {'value': -1}}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            -1, -1, -1, -1, -1,
+            -1, 1, -2, 3, -1,
+            -1, -4, 5, -6, -1,
+            -1, 7, -8, 9, -1,
+            -1, -1, -1, -1, -1
+          ],
+          'descriptor': {shape: [5, 5], dataType: 'int32'}
+        }
+      }
+    }
+  },
+
+  // uint8 tests
+  {
+    'name': 'pad uint8 2D tensor default options',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [1, 2, 3, 4, 5, 6, 7, 8, 9],
+          'descriptor': {shape: [3, 3], dataType: 'uint8'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [1, 1]},
+          {'endingPadding': [1, 1]}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            0, 0, 0, 0, 0,
+            0, 1, 2, 3, 0,
+            0, 4, 5, 6, 0,
+            0, 7, 8, 9, 0,
+            0, 0, 0, 0, 0
+          ],
+          'descriptor': {shape: [5, 5], dataType: 'uint8'}
+        }
+      }
+    }
   }
 ];
 
-if (navigator.ml) {
-  padTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getPadPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(padTests, buildAndExecuteGraph, getZeroULPTolerance);

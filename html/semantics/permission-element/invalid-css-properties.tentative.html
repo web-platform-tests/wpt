@@ -4,7 +4,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
-<!--The permission element does not allow certain CSS properties
+<!--The usermedia element does not allow certain CSS properties
 -->
 <style>
   #id1 {
@@ -18,10 +18,17 @@
     transform: rotate(10);
     border: 0px;
     cursor: none;
+    content-visibility: hidden;
+    contain: size;
+    corner-shape: notch;
+    corner-top-left-shape: scoop;
+    corner-top-right-shape: bevel;
+    corner-bottom-left-shape: squircle;
+    corner-bottom-right-shape: square;
   }
 </style>
 
-<permission id="id1" type="geolocation"></permission>
+<usermedia id="id1" type="camera"></usermedia>
 
 <script>
   test(function(){
@@ -34,6 +41,13 @@
     assert_equals(getComputedStyle(el_with_negatives).paddingLeft, "0px", "padding-left");
     assert_equals(getComputedStyle(el_with_negatives).transform, "none", "transform");
     assert_equals(getComputedStyle(el_with_negatives).cursor, "pointer", "cursor");
+    assert_equals(getComputedStyle(el_with_negatives).contentVisibility, "visible", "content-visibility");
+    assert_equals(getComputedStyle(el_with_negatives).contain, "none", "contain");
+    assert_equals(getComputedStyle(el_with_negatives).cornerShape, "round", "corner-shape");
+    assert_equals(getComputedStyle(el_with_negatives).cornerTopLeftShape, "round", "corner-top-left-shape");
+    assert_equals(getComputedStyle(el_with_negatives).cornerTopRightShape, "round", "corner-top-right-shape");
+    assert_equals(getComputedStyle(el_with_negatives).cornerBottomLeftShape, "round", "corner-bottom-left-shape");
+    assert_equals(getComputedStyle(el_with_negatives).cornerBottomRightShape, "round", "corner-bottom-right-shape");
   }, "None of the listed properties should be applied");
 </script>
 </body>

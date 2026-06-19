@@ -1,4 +1,4 @@
-from tests.support.asserts import assert_error, assert_success
+from tests.support.classic.asserts import assert_error, assert_success
 
 
 def element_send_keys(session, element, text):
@@ -67,7 +67,7 @@ def test_iframe_is_interactable(session, inline, iframe):
 
     # Any key events are immediately routed to the nested
     # browsing context's active document.
-    session.switch_frame(frame)
+    session.switch_to_frame(frame)
     result = session.find.css("input", all=False)
     assert result.property("value") == "foo"
 

@@ -19,11 +19,6 @@
 // MLOperand transpose(
 //     MLOperand input, optional MLTransposeOptions options = {});
 
-
-const getTransposePrecisionTolerance = () => {
-  return {metricType: 'ULP', value: 0};
-};
-
 const transposeTests = [
   {
     'name': 'transpose float32 0D constant tensor default options',
@@ -697,14 +692,32 @@ const transposeTests = [
         }
       }
     }
+  },
+
+  // int32 tests
+  {
+    'name': 'transpose int32 2D tensor default options',
+    'graph': {
+      'inputs': {
+        'transposeInput': {
+          'data': [1, -2, 3, -4, 5, -6],
+          'descriptor': {shape: [2, 3], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'transpose',
+        'arguments': [{'input': 'transposeInput'}],
+        'outputs': 'transposeOutput'
+      }],
+      'expectedOutputs': {
+        'transposeOutput': {
+          'data': [1, -4, -2, 5, 3, -6],
+          'descriptor': {shape: [3, 2], dataType: 'int32'}
+        }
+      }
+    }
   }
 ];
 
-if (navigator.ml) {
-  transposeTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getTransposePrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    transposeTests, buildAndExecuteGraph, getZeroULPTolerance);

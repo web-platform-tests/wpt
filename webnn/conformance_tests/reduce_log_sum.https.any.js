@@ -20,13 +20,6 @@
 // MLOperand reduceLogSum(MLOperand input, optional MLReduceOptions options
 // = {});
 
-const getReductionOperatorsPrecisionTolerance = (graphResources) => {
-  return {
-    metricType: 'ULP',
-    value: getReducedElementCount(graphResources) + 18,
-  };
-};
-
 const reduceLogSumTests = [
   {
     'name': 'reduceLogSum float32 0D constant tensor default options',
@@ -52,6 +45,29 @@ const reduceLogSumTests = [
     }
   },
   {
+    'name': 'reduceLogSum float32 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceLogSumInput': {
+          'data': [64.54827117919922],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': false
+        }
+      },
+      'operators': [{
+        'name': 'reduceLogSum',
+        'arguments': [{'input': 'reduceLogSumInput'}],
+        'outputs': 'reduceLogSumOutput'
+      }],
+      'expectedOutputs': {
+        'reduceLogSumOutput': {
+          'data': 4.167413234710693,
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
     'name': 'reduceLogSum float32 0D constant tensor empty axes',
     'graph': {
       'inputs': {
@@ -59,6 +75,30 @@ const reduceLogSumTests = [
           'data': [64.54827117919922],
           'descriptor': {shape: [], dataType: 'float32'},
           'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceLogSum',
+        'arguments':
+            [{'input': 'reduceLogSumInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceLogSumOutput'
+      }],
+      'expectedOutputs': {
+        'reduceLogSumOutput': {
+          'data': 4.167413234710693,
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceLogSum float32 0D tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceLogSumInput': {
+          'data': [64.54827117919922],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': false
         }
       },
       'operators': [{
@@ -617,6 +657,29 @@ const reduceLogSumTests = [
     }
   },
   {
+    'name': 'reduceLogSum float16 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceLogSumInput': {
+          'data': [64.5625],
+          'descriptor': {shape: [], dataType: 'float16'},
+          'constant': false
+        }
+      },
+      'operators': [{
+        'name': 'reduceLogSum',
+        'arguments': [{'input': 'reduceLogSumInput'}],
+        'outputs': 'reduceLogSumOutput'
+      }],
+      'expectedOutputs': {
+        'reduceLogSumOutput': {
+          'data': [4.16796875],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
     'name': 'reduceLogSum float16 0D constant tensor empty axes',
     'graph': {
       'inputs': {
@@ -624,6 +687,30 @@ const reduceLogSumTests = [
           'data': [64.5625],
           'descriptor': {shape: [], dataType: 'float16'},
           'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceLogSum',
+        'arguments':
+            [{'input': 'reduceLogSumInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceLogSumOutput'
+      }],
+      'expectedOutputs': {
+        'reduceLogSumOutput': {
+          'data': [4.16796875],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceLogSum float16 0D tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceLogSumInput': {
+          'data': [64.5625],
+          'descriptor': {shape: [], dataType: 'float16'},
+          'constant': false
         }
       },
       'operators': [{
@@ -1080,11 +1167,5 @@ const reduceLogSumTests = [
   }
 ];
 
-if (navigator.ml) {
-  reduceLogSumTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getReductionOperatorsPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    reduceLogSumTests, buildAndExecuteGraph, getPrecisionTolerance);

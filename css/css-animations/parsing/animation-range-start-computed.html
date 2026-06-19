@@ -7,6 +7,7 @@
 <script>
 test_computed_value("animation-range-start", "initial", "normal");
 test_computed_value("animation-range-start", "normal");
+test_computed_value("animation-range-start", "cover 0px");
 test_computed_value("animation-range-start", "cover 0%", "cover");
 test_computed_value("animation-range-start", "cover 100%");
 test_computed_value("animation-range-start", "COVER 0%", "cover");
@@ -15,6 +16,8 @@ test_computed_value("animation-range-start", "cover 120%");
 test_computed_value("animation-range-start", "cover 42%");
 test_computed_value("animation-range-start", "0", "0px");
 test_computed_value("animation-range-start", "120%");
+test_computed_value("animation-range-start", "0%");
+test_computed_value("animation-range-start", "100%");
 test_computed_value("animation-range-start", "120px");
 test_computed_value("animation-range-start", "cover -42%");
 test_computed_value("animation-range-start", "contain 42%");

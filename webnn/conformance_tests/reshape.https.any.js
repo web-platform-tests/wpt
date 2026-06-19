@@ -14,7 +14,6 @@
 // MLOperand reshape(
 //     MLOperand input, sequence<[EnforceRange] unsigned long> newShape);
 
-
 const reshapeTests = [
   {
     'name': 'reshape float32 tensor to a new shape (reorder all dimensions)',
@@ -2362,10 +2361,4 @@ const reshapeTests = [
   }
 ];
 
-if (navigator.ml) {
-  reshapeTests.forEach((test) => {
-    webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(reshapeTests, buildAndExecuteGraph, getZeroULPTolerance);

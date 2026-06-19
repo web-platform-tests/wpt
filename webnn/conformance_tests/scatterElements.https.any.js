@@ -8,10 +8,6 @@
 
 'use strict';
 
-const getScatterElementsPrecisionTolerance = () => {
-  return {metricType: 'ULP', value: 0};
-};
-
 const scatterElementsTests = [
   {
     'name': 'scatterElements float32 tensors along axis 0',
@@ -285,11 +281,5 @@ const scatterElementsTests = [
   }
 ];
 
-if (navigator.ml) {
-  scatterElementsTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getScatterElementsPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    scatterElementsTests, buildAndExecuteGraph, getZeroULPTolerance);

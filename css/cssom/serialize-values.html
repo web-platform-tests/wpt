@@ -98,21 +98,21 @@
 
     function attr() {
       var values = ['attr(foo-bar)', 'attr(foo_bar)',
-                    {actual: "attr(|bar)", serialized: "attr(bar)"},
-                    {actual: "attr( |bar )", serialized: "attr(bar)"}];
+                    {actual: "attr(|bar)", serialized: "attr(|bar)"},
+                    {actual: "attr( |bar )", serialized: "attr( |bar )"}];
       return iterable(values);
     }
 
     function attr_fallback() {
       var values = ['attr(foo-bar, "fallback")', 'attr(foo_bar, "fallback")',
-                    {actual: 'attr(|bar, "fallback")', serialized: 'attr(bar, "fallback")'},
+                    {actual: 'attr(|bar, "fallback")', serialized: 'attr(|bar, "fallback")'},
                     {actual: 'attr(foo, "")', serialized: 'attr(foo, "")'},
-                    {actual: 'attr( |foo ,  "" )', serialized: 'attr(foo)'}];
+                    {actual: 'attr( |foo ,  "" )', serialized: 'attr( |foo ,  "" )'}];
       return iterable(values);
     }
 
     function family_name() {
-      var values = ['Arial', {actual: "'Lucida Grande'", serialized: '"Lucida Grande"'}];
+      var values = ['Arial', {actual: "'Lucida Grande'", serialized: 'Lucida Grande'}];
       return iterable(values);
     }
 
@@ -264,6 +264,11 @@
     }
 
     var properties = [
+      ['alignment-baseline', {
+        'values': ['baseline', 'text-bottom', 'alphabetic', 'ideographic', 'middle',
+                   'central', 'mathematical', 'text-top', 'inherit'],
+        'initial': 'baseline'
+      }],
       ['background-attachment', {
         'values': ['scroll', 'fixed', 'inherit'],
         'initial': 'scroll',
@@ -287,6 +292,14 @@
       ['background-repeat', {
         'values': ['repeat', 'repeat-x', 'repeat-y', 'no-repeat', 'inherit'],
         'initial': 'repeat',
+      }],
+      ['baseline-shift', {
+        'values': ['sub', 'super', 'top', 'center', 'bottom', percentage, length, 'inherit'],
+        'initial': '0',
+      }],
+      ['baseline-source', {
+        'values': ['auto', 'first', 'last', 'inherit'],
+        'initial': 'auto',
       }],
       //background
       ['border-collapse', {
@@ -575,11 +588,6 @@
       ['unicode-bidi', {
         'values': ['normal', 'embed', 'bidi-override', 'inherit'],
         'initial': 'normal',
-      }],
-      ['vertical-align', {
-        'values': ['baseline', 'sub', 'super', 'top', 'text-top', 'middle', 'bottom', 'text-bottom',
-                   percentage, length, 'inherit'],
-        'initial': 'baseline',
       }],
       ['visibility', {
         'values': ['visible', 'hidden', 'collapse', 'inherit'],

@@ -1,7 +1,6 @@
-import pytest
 import random
 
-from tests.support.sync import AsyncPoll
+import pytest
 
 from .. import (
     assert_before_request_sent_event,
@@ -14,11 +13,13 @@ from .. import (
     STYLESHEET_RED_COLOR,
 )
 
+pytestmark = pytest.mark.asyncio
+
+
 # Note: The cached status cannot be checked in the beforeRequestSent event, but
 # the goal is to verify that the events are still emitted for cached requests.
 
 
-@pytest.mark.asyncio
 async def test_cached_document(
     wait_for_event,
     wait_for_future_safe,
@@ -45,8 +46,7 @@ async def test_cached_document(
     expected_request = {"method": "GET", "url": cached_url}
 
     assert_before_request_sent_event(
-        events[0],
-        expected_request=expected_request,
+        events[0], expected_event={"request": expected_request}
     )
 
     on_before_request_sent = wait_for_event(BEFORE_REQUEST_SENT_EVENT)
@@ -56,15 +56,14 @@ async def test_cached_document(
     assert len(events) == 2
 
     assert_before_request_sent_event(
-        events[1],
-        expected_request=expected_request,
+        events[1], expected_event={"request": expected_request}
     )
 
 
-@pytest.mark.asyncio
 async def test_page_with_cached_link_stylesheet(
     bidi_session,
     url,
+    wait_for_bidi_events,
     inline,
     setup_network_test,
     top_context,
@@ -91,17 +90,15 @@ async def test_page_with_cached_link_stylesheet(
     )
 
     # Expect two events, one for the document, one for the stylesheet.
-    wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) >= 2)
-    assert len(events) == 2
+    await wait_for_bidi_events(events, 2, timeout=2)
 
+    expected_request = {"method": "GET", "url": page_with_cached_css}
     assert_before_request_sent_event(
-        events[0],
-        expected_request={"method": "GET", "url": page_with_cached_css},
+        events[0], expected_event={"request": expected_request}
     )
+    expected_request = {"method": "GET", "url": cached_link_css_url}
     assert_before_request_sent_event(
-        events[1],
-        expected_request={"method": "GET", "url": cached_link_css_url},
+        events[1], expected_event={"request": expected_request}
     )
 
     # Reload the page.
@@ -110,24 +107,22 @@ async def test_page_with_cached_link_stylesheet(
     )
 
     # Expect two events after reload, for the document and the stylesheet.
-    wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) >= 4)
-    assert len(events) == 4
+    await wait_for_bidi_events(events, 4, timeout=2)
 
+    expected_request = {"method": "GET", "url": page_with_cached_css}
     assert_before_request_sent_event(
-        events[2],
-        expected_request={"method": "GET", "url": page_with_cached_css},
+        events[2], expected_event={"request": expected_request}
     )
+    expected_request = {"method": "GET", "url": cached_link_css_url}
     assert_before_request_sent_event(
-        events[3],
-        expected_request={"method": "GET", "url": cached_link_css_url},
+        events[3], expected_event={"request": expected_request}
     )
 
 
-@pytest.mark.asyncio
 async def test_page_with_cached_import_stylesheet(
     bidi_session,
     url,
+    wait_for_bidi_events,
     inline,
     setup_network_test,
     top_context,
@@ -160,17 +155,16 @@ async def test_page_with_cached_import_stylesheet(
     )
 
     # Expect two events, one for the document, one for the imported stylesheet.
-    wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) >= 2)
-    assert len(events) == 2
+    await wait_for_bidi_events(events, 2, timeout=2)
 
+    expected_request = {"method": "GET", "url": page_with_cached_css}
     assert_before_request_sent_event(
-        events[0],
-        expected_request={"method": "GET", "url": page_with_cached_css},
+        events[0], expected_event={"request": expected_request}
     )
+
+    expected_request = {"method": "GET", "url": cached_import_css_url}
     assert_before_request_sent_event(
-        events[1],
-        expected_request={"method": "GET", "url": cached_import_css_url},
+        events[1], expected_event={"request": expected_request}
     )
 
     # Reload the page.
@@ -179,27 +173,26 @@ async def test_page_with_cached_import_stylesheet(
     )
 
     # Expect two events after reload, for the document and the stylesheet.
-    wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) >= 4)
-    assert len(events) == 4
+    await wait_for_bidi_events(events, 4, timeout=2)
 
+    expected_request = {"method": "GET", "url": page_with_cached_css}
     assert_before_request_sent_event(
-        events[2],
-        expected_request={"method": "GET", "url": page_with_cached_css},
+        events[2], expected_event={"request": expected_request}
     )
+
+    expected_request = {"method": "GET", "url": cached_import_css_url}
     assert_before_request_sent_event(
-        events[3],
-        expected_request={"method": "GET", "url": cached_import_css_url},
+        events[3], expected_event={"request": expected_request}
     )
 
 
 # Similar test to test_page_with_cached_import_stylesheet, but with 3 links
 # loading the same stylesheet, and a style tag with 3 identical imports.
 # The browser should not issue requests for the duplicated stylesheets.
-@pytest.mark.asyncio
 async def test_page_with_cached_duplicated_stylesheets(
     bidi_session,
     url,
+    wait_for_bidi_events,
     inline,
     setup_network_test,
     top_context,
@@ -242,29 +235,29 @@ async def test_page_with_cached_duplicated_stylesheets(
 
     # Expect three events, one for the document, one for the linked stylesheet,
     # one for the imported stylesheet.
-    wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) >= 3)
-    assert len(events) == 3
+    await wait_for_bidi_events(events, 3, timeout=2)
 
+    expected_request = {"method": "GET", "url": page_with_cached_css}
     assert_before_request_sent_event(
-        events[0],
-        expected_request={"method": "GET", "url": page_with_cached_css},
+        events[0], expected_event={"request": expected_request}
     )
 
     link_css_event = next(
         e for e in events if cached_link_css_url == e["request"]["url"]
     )
+
+    expected_request = {"method": "GET", "url": cached_link_css_url}
     assert_before_request_sent_event(
-        link_css_event,
-        expected_request={"method": "GET", "url": cached_link_css_url},
+        link_css_event, expected_event={"request": expected_request}
     )
 
     import_css_event = next(
         e for e in events if cached_import_css_url == e["request"]["url"]
     )
+
+    expected_request = {"method": "GET", "url": cached_import_css_url}
     assert_before_request_sent_event(
-        import_css_event,
-        expected_request={"method": "GET", "url": cached_import_css_url},
+        import_css_event, expected_event={"request": expected_request}
     )
 
     # Reload the page.
@@ -273,37 +266,37 @@ async def test_page_with_cached_duplicated_stylesheets(
     )
 
     # Expect three events after reload, for the document and the 2 stylesheets.
-    wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) >= 6)
-    assert len(events) == 6
+    await wait_for_bidi_events(events, 6, timeout=2)
 
     # Assert only cached events after reload.
     cached_events = events[3:]
 
+    expected_request = {"method": "GET", "url": page_with_cached_css}
     assert_before_request_sent_event(
-        cached_events[0],
-        expected_request={"method": "GET", "url": page_with_cached_css},
+        cached_events[0], expected_event={"request": expected_request}
     )
     cached_link_css_event = next(
         e for e in cached_events if cached_link_css_url == e["request"]["url"]
     )
+
+    expected_request = {"method": "GET", "url": cached_link_css_url}
     assert_before_request_sent_event(
-        cached_link_css_event,
-        expected_request={"method": "GET", "url": cached_link_css_url},
+        cached_link_css_event, expected_event={"request": expected_request}
     )
     cached_import_css_event = next(
         e for e in cached_events if cached_import_css_url == e["request"]["url"]
     )
+
+    expected_request = {"method": "GET", "url": cached_import_css_url}
     assert_before_request_sent_event(
-        cached_import_css_event,
-        expected_request={"method": "GET", "url": cached_import_css_url},
+        cached_import_css_event, expected_event={"request": expected_request}
     )
 
 
-@pytest.mark.asyncio
 async def test_page_with_cached_script_javascript(
     bidi_session,
     url,
+    wait_for_bidi_events,
     inline,
     setup_network_test,
     top_context,
@@ -330,17 +323,16 @@ async def test_page_with_cached_script_javascript(
     )
 
     # Expect two events, one for the document and one for the javascript file.
-    wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) >= 2)
-    assert len(events) == 2
+    await wait_for_bidi_events(events, 2, timeout=2)
 
+    expected_request = {"method": "GET", "url": page_with_cached_js}
     assert_before_request_sent_event(
-        events[0],
-        expected_request={"method": "GET", "url": page_with_cached_js},
+        events[0], expected_event={"request": expected_request}
     )
+
+    expected_request = {"method": "GET", "url": cached_script_js_url}
     assert_before_request_sent_event(
-        events[1],
-        expected_request={"method": "GET", "url": cached_script_js_url},
+        events[1], expected_event={"request": expected_request}
     )
 
     # Reload the page.
@@ -349,17 +341,16 @@ async def test_page_with_cached_script_javascript(
     )
 
     # Expect two events, one for the document and one for the javascript file.
-    wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) >= 4)
-    assert len(events) == 4
+    await wait_for_bidi_events(events, 4, timeout=2)
 
+    expected_request = {"method": "GET", "url": page_with_cached_js}
     assert_before_request_sent_event(
-        events[2],
-        expected_request={"method": "GET", "url": page_with_cached_js},
+        events[2], expected_event={"request": expected_request}
     )
+
+    expected_request = {"method": "GET", "url": cached_script_js_url}
     assert_before_request_sent_event(
-        events[3],
-        expected_request={"method": "GET", "url": cached_script_js_url},
+        events[3], expected_event={"request": expected_request}
     )
 
     page_with_2_cached_js = inline(
@@ -381,32 +372,31 @@ async def test_page_with_cached_script_javascript(
     # Expect two or three events, one for the document and the rest for javascript files.
     # If the browser uses memory caching there may be only single request for the javascript files,
     # see issue https://github.com/whatwg/html/issues/6110.
-    wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) >= 6)
-    assert len(events) >= 6
+    await wait_for_bidi_events(events, 6, timeout=2, equal_check=False)
 
     # Assert only cached events after reload.
     cached_events = events[4:]
 
+    expected_request = {"method": "GET", "url": page_with_2_cached_js}
     assert_before_request_sent_event(
-        cached_events[0],
-        expected_request={"method": "GET", "url": page_with_2_cached_js},
+        cached_events[0], expected_event={"request": expected_request}
     )
+
+    expected_request = {"method": "GET", "url": cached_script_js_url}
     assert_before_request_sent_event(
-        cached_events[1],
-        expected_request={"method": "GET", "url": cached_script_js_url},
+        cached_events[1], expected_event={"request": expected_request}
     )
     if len(events) > 6:
+        expected_request = {"method": "GET", "url": cached_script_js_url}
         assert_before_request_sent_event(
-            cached_events[2],
-            expected_request={"method": "GET", "url": cached_script_js_url},
+            cached_events[2], expected_event={"request": expected_request}
         )
 
 
-@pytest.mark.asyncio
 async def test_page_with_cached_javascript_module(
     bidi_session,
     url,
+    wait_for_bidi_events,
     inline,
     setup_network_test,
     top_context,
@@ -440,17 +430,16 @@ async def test_page_with_cached_javascript_module(
     )
 
     # Expect two events, one for the document and one for the javascript module.
-    wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) >= 2)
-    assert len(events) == 2
+    await wait_for_bidi_events(events, 2, timeout=2)
 
+    expected_request = {"method": "GET", "url": page_with_cached_js_module}
     assert_before_request_sent_event(
-        events[0],
-        expected_request={"method": "GET", "url": page_with_cached_js_module},
+        events[0], expected_event={"request": expected_request}
     )
+
+    expected_request = {"method": "GET", "url": cached_js_module_url}
     assert_before_request_sent_event(
-        events[1],
-        expected_request={"method": "GET", "url": cached_js_module_url},
+        events[1], expected_event={"request": expected_request}
     )
 
     # Reload the page.
@@ -459,17 +448,16 @@ async def test_page_with_cached_javascript_module(
     )
 
     # Expect two events, one for the document and one for the javascript module.
-    wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) >= 4)
-    assert len(events) == 4
+    await wait_for_bidi_events(events, 4, timeout=2)
 
+    expected_request = {"method": "GET", "url": page_with_cached_js_module}
     assert_before_request_sent_event(
-        events[2],
-        expected_request={"method": "GET", "url": page_with_cached_js_module},
+        events[2], expected_event={"request": expected_request}
     )
+
+    expected_request = {"method": "GET", "url": cached_js_module_url}
     assert_before_request_sent_event(
-        events[3],
-        expected_request={"method": "GET", "url": cached_js_module_url},
+        events[3], expected_event={"request": expected_request}
     )
 
     page_with_2_cached_js_modules = inline(
@@ -495,27 +483,26 @@ async def test_page_with_cached_javascript_module(
     )
 
     # Expect two events, one for the document and one for the javascript module.
-    wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) >= 6)
-    assert len(events) == 6
+    await wait_for_bidi_events(events, 6, timeout=2)
 
     # Assert only cached events after reload.
     cached_events = events[4:]
 
+    expected_request = {"method": "GET", "url": page_with_2_cached_js_modules}
     assert_before_request_sent_event(
-        cached_events[0],
-        expected_request={"method": "GET", "url": page_with_2_cached_js_modules},
+        cached_events[0], expected_event={"request": expected_request}
     )
+
+    expected_request = {"method": "GET", "url": cached_js_module_url}
     assert_before_request_sent_event(
-        cached_events[1],
-        expected_request={"method": "GET", "url": cached_js_module_url},
+        cached_events[1], expected_event={"request": expected_request}
     )
 
 
-@pytest.mark.asyncio
 async def test_page_with_cached_image(
     bidi_session,
     url,
+    wait_for_bidi_events,
     inline,
     setup_network_test,
     top_context,
@@ -544,17 +531,16 @@ async def test_page_with_cached_image(
     )
 
     # Expect two events, one for the document and one for the image.
-    wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) >= 2)
-    assert len(events) == 2
+    await wait_for_bidi_events(events, 2, timeout=2)
 
+    expected_request = {"method": "GET", "url": page_with_cached_image}
     assert_before_request_sent_event(
-        events[0],
-        expected_request={"method": "GET", "url": page_with_cached_image},
+        events[0], expected_event={"request": expected_request}
     )
+
+    expected_request = {"method": "GET", "url": cached_image_url}
     assert_before_request_sent_event(
-        events[1],
-        expected_request={"method": "GET", "url": cached_image_url},
+        events[1], expected_event={"request": expected_request}
     )
 
     # Reload the page.
@@ -563,15 +549,14 @@ async def test_page_with_cached_image(
     )
 
     # Expect two events, one for the document and one for the image.
-    wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) >= 4)
-    assert len(events) == 4
+    await wait_for_bidi_events(events, 4, timeout=2)
 
+    expected_request = {"method": "GET", "url": page_with_cached_image}
     assert_before_request_sent_event(
-        events[2],
-        expected_request={"method": "GET", "url": page_with_cached_image},
+        events[2], expected_event={"request": expected_request}
     )
+
+    expected_request = {"method": "GET", "url": cached_image_url}
     assert_before_request_sent_event(
-        events[3],
-        expected_request={"method": "GET", "url": cached_image_url},
+        events[3], expected_event={"request": expected_request}
     )

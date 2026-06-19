@@ -17,9 +17,7 @@
 
       const image = doc.createElementNS(SVG_NS, "image");
       image.addEventListener('load', function() {
-        waitForAtLeastOneFrame().then(() => {
-            takeScreenshot();
-        });
+        takeScreenshot();
       });
       image.setAttribute("width", 100);
       image.setAttribute("height", 100);

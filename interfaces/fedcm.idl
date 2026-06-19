@@ -10,13 +10,25 @@ dictionary IdentityCredentialDisconnectOptions : IdentityProviderConfig {
 [Exposed=Window, SecureContext]
 interface IdentityCredential : Credential {
   static Promise<undefined> disconnect(IdentityCredentialDisconnectOptions options);
-  readonly attribute USVString? token;
+  readonly attribute any token;
   readonly attribute boolean isAutoSelected;
   readonly attribute USVString configURL;
 };
 
 dictionary DisconnectedAccount {
   required USVString account_id;
+};
+
+dictionary IdentityCredentialErrorInit {
+  DOMString error;
+  USVString url;
+};
+
+[Exposed=Window, SecureContext]
+interface IdentityCredentialError : DOMException {
+  constructor(optional DOMString message = "", optional IdentityCredentialErrorInit options = {});
+  readonly attribute DOMString error;
+  readonly attribute USVString url;
 };
 
 partial dictionary CredentialRequestOptions {
@@ -47,7 +59,6 @@ dictionary IdentityProviderConfig {
 };
 
 dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
-  USVString nonce;
   DOMString loginHint;
   DOMString domainHint;
   sequence<USVString> fields;
@@ -79,6 +90,7 @@ dictionary IdentityProviderAPIConfig {
   required USVString login_url;
   USVString disconnect_endpoint;
   IdentityProviderBranding branding;
+  boolean supports_use_other_account = false;
   USVString account_label;
 };
 
@@ -100,13 +112,15 @@ dictionary IdentityProviderAccountList {
 };
 
 dictionary IdentityAssertionResponse {
-  USVString token;
+  any token;
   USVString continue_on;
+  IdentityCredentialErrorInit error;
 };
 
 dictionary IdentityProviderClientMetadata {
   USVString privacy_policy_url;
   USVString terms_of_service_url;
+  boolean client_is_third_party_to_top_frame_origin = false;
 };
 
 dictionary IdentityUserInfo {
@@ -122,6 +136,6 @@ dictionary IdentityResolveOptions {
 
 [Exposed=Window, SecureContext] interface IdentityProvider {
     static undefined close();
-    static undefined resolve(DOMString token, optional IdentityResolveOptions options = {});
+    static Promise<undefined> resolve(any token, optional IdentityResolveOptions options = {});
     static Promise<sequence<IdentityUserInfo>> getUserInfo(IdentityProviderConfig config);
 };

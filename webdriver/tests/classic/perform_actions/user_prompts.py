@@ -4,7 +4,7 @@ import pytest
 from webdriver import error
 
 from tests.classic.perform_actions.support.refine import get_keys
-from tests.support.asserts import assert_error, assert_success, assert_dialog_handled
+from tests.support.classic.asserts import assert_error, assert_success, assert_dialog_handled
 from tests.support.sync import Poll
 from . import perform_actions
 
@@ -135,11 +135,11 @@ def test_dismissed_beforeunload(session, url, mouse_chain):
         .click() \
         .perform()
 
-    wait = Poll(
-        session,
-        timeout=5,
-        message="Target page did not load")
-    wait.until(lambda s: s.url == page_target)
+    def assert_page_loaded(s):
+        assert s.url == page_target, "Target page did not load"
+
+    wait = Poll(session)
+    wait.until(assert_page_loaded)
 
     # navigation auto-dismissed beforeunload prompt
     with pytest.raises(error.NoSuchAlertException):

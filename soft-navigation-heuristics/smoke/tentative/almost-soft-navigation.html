@@ -7,6 +7,7 @@
     <script src="/resources/testharnessreport.js"></script>
     <script src="/resources/testdriver.js"></script>
     <script src="/resources/testdriver-vendor.js"></script>
+    <script src="../../resources/soft-navigation-test-helper.js"></script>
     <script>
       // We append this value to the URL of actualSoftNavigation() to
       // identify the test, and to ensure it's unique.
@@ -55,15 +56,6 @@
       }
 
       // This click handler won't cause a soft navigation, because it
-      // uses history.replaceState() instead of history.pushState().
-      function replaceState() {
-        const greeting = document.createElement("div");
-        greeting.textContent = "Hello, World.";
-        document.body.appendChild(greeting);
-        history.replaceState({}, "", "/replace-state");
-      }
-
-      // This click handler won't cause a soft navigation, because it
       // doesn't pass a URL to pushState().
       function noUrlPassedToPushState() {
         const greeting = document.createElement("div");
@@ -79,41 +71,40 @@
     <div id="dom-not-attached" onclick="domNotAttached()">Click here!</div>
     <div id="no-dom-change" onclick="noDomChange()">Click here!</div>
     <div id="no-paint" onclick="noPaint()">Click here!</div>
-    <div id="replace-state" onclick="replaceState()">Click here!</div>
     <div id="no-url-passed-to-push-state" onclick="noUrlPassedToPushState()">Click here!</div>
 
     <script>
       function test_template(test_id, description) {
-        promise_test(() => {
-          return new Promise((resolve) => {
-            const entries = [];
-            new PerformanceObserver((list, observer) => {
-              entries.push(...list.getEntries());
-              if (entries[entries.length - 1].name.endsWith("actual-softnavigation?" + test_id)) {
-                observer.disconnect();
-                resolve(entries);
-              }
-            }).observe({ type: "soft-navigation" });
-            if (test_driver) {
-              global_test_id = test_id;
-              test_driver.click(document.getElementById(test_id));
-              test_driver.click(document.getElementById("actual-softnavigation"));
-            }
-          }).then((entries) => {
-            assert_equals(
-              entries.length,
-              1,
-              "Expected only one soft navigation (test_id=" + test_id + ").",
-            );
-          });
+        promise_test(async (t) => {
+          const promise =
+              SoftNavigationTestHelper.getPerformanceEntries("soft-navigation");
+          if (test_driver) {
+            global_test_id = test_id;
+            test_driver.click(document.getElementById(test_id));
+            test_driver.click(document.getElementById("actual-softnavigation"));
+          }
+          const helper = new SoftNavigationTestHelper(t);
+          const entries = await helper.withTimeoutMessage(
+            promise,
+            "No soft navigation (test_id=" + test_id + ").",
+            /*timeout=*/ 3000,
+          );
+          assert_equals(
+            entries.length,
+            1,
+            "Expected single soft navigation (test_id=" + test_id + ").",
+          );
+          assert_equals(
+            entries[0].name.replace(/.*\//, ""),
+            "actual-softnavigation?" + test_id,
+            "Expected name ending in 'actual-softnavigation?" + test_id + "'",
+          );
         }, description);
       }
-
       test_template("no-url-change", "The URL change is missing.");
       test_template("dom-not-attached", "Creates an element but doesn't attach it to the DOM.");
       test_template("no-paint", "Doesn't paint because the element is hidden.");
       test_template("no-dom-change", "The DOM change is missing.");
-      test_template("replace-state", "Uses replaceState() instead of pushState().");
       test_template("no-url-passed-to-push-state", "Doesn't pass a URL to pushState().");
     </script>
   </body>

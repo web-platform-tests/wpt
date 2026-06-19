@@ -17,7 +17,7 @@ interface ReadableStream {
   Promise<undefined> pipeTo(WritableStream destination, optional StreamPipeOptions options = {});
   sequence<ReadableStream> tee();
 
-  async iterable<any>(optional ReadableStreamIteratorOptions options = {});
+  async_iterable<any>(optional ReadableStreamIteratorOptions options = {});
 };
 
 typedef (ReadableStreamDefaultReader or ReadableStreamBYOBReader) ReadableStreamReader;
@@ -114,7 +114,7 @@ interface ReadableByteStreamController {
 
 [Exposed=*]
 interface ReadableStreamBYOBRequest {
-  readonly attribute ArrayBufferView? view;
+  readonly attribute Uint8Array? view;
 
   undefined respond([EnforceRange] unsigned long long bytesWritten);
   undefined respondWithNewView(ArrayBufferView view);

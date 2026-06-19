@@ -22,10 +22,6 @@
 // MLOperand argMax(MLOperand input, [EnforceRange] unsigned long axis,
 //                  optional MLArgMinMaxOptions options = {});
 
-const getArgMinMaxPrecisionTolerance = () => {
-  return {metricType: 'ULP', value: 0};
-};
-
 const argMinMaxTests = [
   // argMin tests
   {
@@ -1828,11 +1824,5 @@ const argMinMaxTests = [
   }
 ];
 
-if (navigator.ml) {
-  argMinMaxTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getArgMinMaxPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    argMinMaxTests, buildAndExecuteGraph, getPrecisionTolerance);

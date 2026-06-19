@@ -2,8 +2,41 @@ const kValidAvailabilities =
     ['unavailable', 'downloadable', 'downloading', 'available'];
 const kAvailableAvailabilities = ['downloadable', 'downloading', 'available'];
 
+const kAudioPrompt = 'transcribe this';
+const kImagePrompt = 'describe this';
 const kTestPrompt = 'Please write a sentence in English.';
+
 const kTestContext = 'This is a test; this is only a test.';
+
+const kValidAudioPath = '/media/speech.wav';
+const kValidImagePath = '/images/computer.jpg';
+const kValidSVGImagePath = '/images/pattern.svg';
+const kValidVideoPath = '/media/test.webm';
+
+const kAudioOptions = {
+  expectedInputs: [{type: 'audio'}]
+};
+const kImageOptions = {
+  expectedInputs: [{type: 'image'}]
+};
+
+const kValidAudioKeywords =
+    ['audio', 'speech', 'sentence', 'single', 'segment'];
+const kValidCanvasImageKeywords = ['image', 'red', 'green', 'blue', 'yellow', 'grid', 'color'];
+const kValidImageKeywords =
+    ['image', 'computer', 'keyboard', 'desk', 'PC', 'monitor', 'screen'];
+const kValidSVGImageKeywords =
+    ['image', 'red', 'green', 'blue', 'black'];
+const kValidVideoKeywords = [
+  'image', 'bip', 'black', 'white', 'yellow', 'green', 'blue', 'red',
+  'video', 'screen'
+];
+
+const kValidAudioRegex = matchKeywordsRegex(kValidAudioKeywords);
+const kValidCanvasImageRegex = matchKeywordsRegex(kValidCanvasImageKeywords);
+const kValidImageRegex = matchKeywordsRegex(kValidImageKeywords);
+const kValidSVGImageRegex = matchKeywordsRegex(kValidSVGImageKeywords);
+const kValidVideoRegex = matchKeywordsRegex(kValidVideoKeywords);
 
 const getId = (() => {
   let idCount = 0;
@@ -88,7 +121,7 @@ async function testCreateMonitorWithAbortAt(
 
       if (hadEvent) {
         assert_unreached(
-            'This should never be reached since LanguageDetector.create() was aborted.');
+            'This should never be reached since the create() operation was aborted.');
         return;
       }
 
@@ -225,6 +258,11 @@ function load_iframe(src, permission_policy) {
   return promise;
 }
 
+async function createLanguageModel(options = {}) {
+  await test_driver.bless();
+  return LanguageModel.create(options);
+}
+
 async function createSummarizer(options = {}) {
   await test_driver.bless();
   return await Summarizer.create(options);
@@ -238,4 +276,114 @@ async function createWriter(options = {}) {
 async function createRewriter(options = {}) {
   await test_driver.bless();
   return await Rewriter.create(options);
+}
+
+async function createEmbedder(options = {}) {
+  await test_driver.bless();
+  return await SemanticEmbedder.create(options);
+}
+
+async function createProofreader(options = {}) {
+  await test_driver.bless();
+  return await Proofreader.create(options);
+}
+
+async function createClassifier(options = {}) {
+  await test_driver.bless();
+  return await Classifier.create(options);
+}
+
+async function ensureLanguageModel(options = {}) {
+  assert_true(!!LanguageModel);
+  const availability = await LanguageModel.availability(options);
+  assert_in_array(availability, kValidAvailabilities);
+  // Yield PRECONDITION_FAILED if the API is unavailable on this device.
+  assert_implements_optional(availability != 'unavailable', 'API unavailable');
+};
+
+async function ensureEmbedder(options = {}) {
+  assert_true(!!SemanticEmbedder);
+  const availability = await SemanticEmbedder.availability(options);
+  assert_in_array(availability, kValidAvailabilities);
+  // Yield PRECONDITION_FAILED if the API is unavailable on this device.
+  assert_implements_optional(availability != 'unavailable', 'API unavailable');
+};
+
+
+async function testDestroy(t, createMethod, options, instanceMethods) {
+  const instance = await createMethod(options);
+
+  const promises = instanceMethods.map(method => method(instance));
+
+  instance.destroy();
+
+  promises.push(...instanceMethods.map(method => method(instance)));
+
+  for (const promise of promises) {
+    await promise_rejects_dom(t, 'AbortError', promise);
+  }
+}
+
+async function testCreateAbort(t, createMethod, options, instanceMethods) {
+  const controller = new AbortController();
+  const instance = await createMethod({...options, signal: controller.signal});
+
+  const promises = instanceMethods.map(method => method(instance));
+
+  const error = new Error('The create abort signal was aborted.');
+  controller.abort(error);
+
+  promises.push(...instanceMethods.map(method => method(instance)));
+
+  for (const promise of promises) {
+    await promise_rejects_exactly(t, error, promise);
+  }
+}
+
+function consumeTransientUserActivation() {
+  const win = window.open('about:blank', '_blank');
+  if (win)
+    win.close();
+}
+
+// Helper function to create a regex from some keywords.
+function matchKeywordsRegex(keywords) {
+  const keywordsPattern = keywords.join('|');
+  return new RegExp(`(${keywordsPattern})`, 'i');
+}
+
+function messageWithContent(prompt, type, value) {
+  return [{
+    role: 'user',
+    content: [{type: 'text', value: prompt}, {type: type, value: value}]
+  }];
+}
+
+function createColorGridCanvas(width, height, isOffscreen = false) {
+  const canvas = isOffscreen
+    ? new OffscreenCanvas(width, height)
+    : document.createElement('canvas');
+
+  if (!isOffscreen) {
+    canvas.width = width;
+    canvas.height = height;
+  }
+
+  const context = canvas.getContext('2d');
+  const w2 = width / 2;
+  const h2 = height / 2;
+
+  context.fillStyle = 'red';
+  context.fillRect(0, 0, w2, h2);
+
+  context.fillStyle = 'green';
+  context.fillRect(w2, 0, w2, h2);
+
+  context.fillStyle = 'blue';
+  context.fillRect(0, h2, w2, h2);
+
+  context.fillStyle = 'yellow';
+  context.fillRect(w2, h2, w2, h2);
+
+  return canvas;
 }

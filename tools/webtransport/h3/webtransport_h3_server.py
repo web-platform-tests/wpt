@@ -411,7 +411,7 @@ class WebTransportSession:
         :param data: The data to send.
         """
         if not self._protocol._allow_datagrams:
-            _logger.warn(
+            _logger.warning(
                 "Sending a datagram while that's not allowed - discarding it")
             return
         stream_id = self.session_id
@@ -453,7 +453,7 @@ class WebTransportEventHandler:
         try:
             self._callbacks[callback_name](*args, **kwargs)
         except Exception as e:
-            _logger.warn(str(e))
+            _logger.warning(str(e))
             traceback.print_exc()
 
     def connect_received(self, response_headers: List[Tuple[bytes,
@@ -538,7 +538,7 @@ class WebTransportH3Server:
             try:
                 secrets_log_file = open(os.environ["SSLKEYLOGFILE"], "a")
             except Exception as e:
-                _logger.warn(str(e))
+                _logger.warning(str(e))
 
         # Workaround https://github.com/aiortc/aioquic/issues/567 with if/else
         if secrets_log_file is not None:
@@ -601,7 +601,10 @@ def server_is_running(host: str, port: int, timeout: float) -> bool:
     Check the WebTransport over HTTP/3 server is running at the given `host` and
     `port`.
     """
-    loop = asyncio.get_event_loop()
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
     return loop.run_until_complete(_connect_server_with_timeout(host, port, timeout))
 
 

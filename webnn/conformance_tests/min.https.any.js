@@ -12,14 +12,6 @@
 // Compute the element-wise binary minimum of the two input tensors.
 // MLOperand min(MLOperand a, MLOperand b);
 
-
-const getMinPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const minTests = [
   {
     'name': 'min float32 1D constant tensors',
@@ -935,14 +927,63 @@ const minTests = [
         }
       }
     }
+  },
+
+  // int32 tests
+  {
+    'name': 'min int32 4D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [1, -2, 3, -4, 5, -6, 7, -8, 9, -10, 11, -12],
+          'descriptor': {shape: [1, 2, 2, 3], dataType: 'int32'}
+        },
+        'inputB': {
+          'data': [-1, 2, -3, 4, -5, 6, -7, 8, -9, 10, -11, 12],
+          'descriptor': {shape: [1, 2, 2, 3], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'min',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12],
+          'descriptor': {shape: [1, 2, 2, 3], dataType: 'int32'}
+        }
+      }
+    }
+  },
+
+  // uint8 tests
+  {
+    'name': 'min uint8 4D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
+          'descriptor': {shape: [1, 2, 2, 3], dataType: 'uint8'}
+        },
+        'inputB': {
+          'data': [5, 25, 15, 45, 35, 65, 55, 85, 75, 105, 95, 125],
+          'descriptor': {shape: [1, 2, 2, 3], dataType: 'uint8'}
+        }
+      },
+      'operators': [{
+        'name': 'min',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [5, 20, 15, 40, 35, 60, 55, 80, 75, 100, 95, 120],
+          'descriptor': {shape: [1, 2, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
   }
 ];
 
-if (navigator.ml) {
-  minTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getMinPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(minTests, buildAndExecuteGraph, getPrecisionTolerance);

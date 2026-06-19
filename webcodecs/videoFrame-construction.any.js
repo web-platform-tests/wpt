@@ -332,6 +332,26 @@ test(t => {
 }, 'Test visibleRect metadata override where source display size = 2 * visible size for both width and height');
 
 test(t => {
+  const init = {
+    format: 'I420',
+    timestamp: 1234,
+    codedWidth: 300,
+    codedHeight: 150,
+    displayWidth: 1280,
+    displayHeight: 1
+  };
+  const data = new Uint8Array(1.5 * init.codedWidth * init.codedHeight);
+  const tinyDisplayFrame = new VideoFrame(data, init);
+  t.add_cleanup(() => tinyDisplayFrame.close());
+
+  // heightScale = 1/150, so round(1/150 * 40) = round(0.267) = 0: TypeError
+  assert_throws_js(
+      TypeError,
+      () => new VideoFrame(tinyDisplayFrame, {visibleRect: {width: 187, height: 40}}),
+      'computed display height rounds to zero');
+}, 'Test that a visibleRect override throwing when computed display size rounds to zero');
+
+test(t => {
   let image = makeImageBitmap(32, 16);
 
   let scaledFrame = new VideoFrame(image, {
@@ -642,6 +662,14 @@ test(t => {
   assert_equals(frame_copy.timestamp, 1234);
   assert_equals(frame_copy.duration, 456);
   frame_copy.close();
+
+  let frame_override = new VideoFrame(frame, {timestamp: 1234});
+  assert_equals(frame_override.timestamp, 1234);
+
+  let frame_chain = new VideoFrame(frame_override);
+  assert_equals(frame_chain.timestamp, 1234);
+  frame_chain.close();
+  frame_override.close();
 
   frame.close();
 }, 'Test VideoFrame constructed VideoFrame');
@@ -1003,6 +1031,11 @@ function testAllYUVPixelFormats() {
   for (let yuv of YUVs) {
     test(t => {
       const frame = new VideoFrame(yuv.data, yuv.init);
+      assert_equals(frame.format, yuv.init.format);
+      assert_equals(frame.timestamp, yuv.init.timestamp);
+      // User Agent may choose more optimal coded size allocations.
+      assert_less_than_equal(yuv.init.codedWidth, frame.codedWidth);
+      assert_less_than_equal(yuv.init.codedHeight, frame.codedHeight);
       frame.close();
     }, `Test we can construct a ${yuv.init.format} VideoFrame`);
   }

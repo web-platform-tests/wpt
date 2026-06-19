@@ -112,11 +112,6 @@ test(() => {
         write: test_b64,
       },
       credBlob: test_b64,
-      supplementalPubKeys: {
-        scopes: ["spk scope"],
-        attestation: "directest",
-        attestationFormats: ["asn2"],
-      },
       prf: {
         eval: {
           first: test_b64,
@@ -160,11 +155,6 @@ test(() => {
         write: test_bytes,
       },
       credBlob: test_bytes,
-      supplementalPubKeys: {
-        scopes: ["spk scope"],
-        attestation: "directest",
-        attestationFormats: ["asn2"],
-      },
       prf: {
         eval: {
           first: test_bytes,
@@ -219,11 +209,6 @@ test(() => {
     assert_true(
         bytesEqual(actual.extensions.credBlob, expected.extensions.credBlob));
   }
-  if (actual.extensions.hasOwnProperty('supplementalPubKeys')) {
-    assertJsonEquals(
-        actual.extensions.supplementalPubKeys,
-        expected.extensions.supplementalPubKeys);
-  }
   if (actual.extensions.hasOwnProperty('prf')) {
     let prfValuesEquals = (a, b) => {
       return bytesEqual(a.first, b.first) && bytesEqual(a.second, b.second);
@@ -239,3 +224,51 @@ test(() => {
         'prf ebc');
   }
 }, "parseCreationOptionsFromJSON() with extensions");
+
+test(() => {
+  let actual = PublicKeyCredential.parseCreationOptionsFromJSON({
+    rp: {
+      id: "example.com",
+      name: "Example Inc",
+    },
+    user: {
+      id: test_b64,
+      name: "test@example.com",
+      displayName: "test user"
+    },
+    challenge: test_b64,
+    pubKeyCredParams: [
+      {
+        type: "public-key",
+        alg: -7,
+      },
+    ],
+    hints: ["duplicated-value", "duplicated-value"]
+  });
+  let expected = {
+    rp: {
+      id: "example.com",
+      name: "Example Inc",
+    },
+    user: {
+      id: test_bytes,
+      name: "test@example.com",
+      displayName: "test user"
+    },
+    challenge: test_bytes,
+    pubKeyCredParams: [
+      {
+        type: "public-key",
+        alg: -7,
+      },
+    ],
+    attestation: "none",
+    hints: ["duplicated-value", "duplicated-value"]
+  };
+
+  assert_equals(actual.attestation, expected.attestation);
+  if (actual.hasOwnProperty('hints')) {
+    // Not all implementations support hints yet.
+    assertJsonEquals(actual.hints, expected.hints);
+  }
+}, "parseCreationOptionsFromJSON() with duplicated hints");

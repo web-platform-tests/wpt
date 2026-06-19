@@ -1,4 +1,5 @@
 // META: title=Writer Write Streaming
+// META: script=/common/gc.js
 // META: script=/resources/testdriver.js
 // META: script=../resources/util.js
 // META: timeout=long
@@ -21,8 +22,12 @@ promise_test(async () => {
 
 promise_test(async (t) => {
   const writer = await createWriter();
+  const stream = writer.writeStreaming(kTestPrompt);
+
   writer.destroy();
-  assert_throws_dom('InvalidStateError', () => writer.writeStreaming(kTestPrompt));
+
+  await promise_rejects_dom(
+    t, 'AbortError', stream.pipeTo(new WritableStream()));
 }, 'Writer.writeStreaming() fails after destroyed');
 
 promise_test(async t => {
@@ -43,3 +48,17 @@ promise_test(async () => {
     writer.writeStreaming(kTestPrompt)
   ]);
 }, 'Multiple Writer.writeStreaming() calls are resolved successfully');
+
+promise_test(async () => {
+  const writer = await createWriter();
+  const streamingResponse = writer.writeStreaming(kTestPrompt);
+  garbageCollect();
+  assert_equals(Object.prototype.toString.call(streamingResponse),
+                '[object ReadableStream]');
+  let result = '';
+  for await (const value of streamingResponse) {
+    result += value;
+    garbageCollect();
+  }
+assert_greater_than(result.length, 0, 'The result should not be empty.');
+}, 'Write Streaming API must continue even after GC has been performed.');

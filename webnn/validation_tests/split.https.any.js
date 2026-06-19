@@ -41,7 +41,7 @@ const tests = [
   {
     name: '[split] Throw if splitting a scalar.',
     input: {dataType: 'float32', shape: []},
-    splits: [2],
+    splits: [1],
     options: {label}
   },
   {
@@ -100,6 +100,23 @@ const tests = [
       axis: 1,
       label: label,
     }
+  },
+  {
+    name: '[split] Throw if splits (scalar) exceeds limit.',
+    input: {dataType: 'float32', shape: [2, 6]},
+    splits: 8193,
+    options: {
+      label: label,
+    },
+  },
+  {
+    name: '[split] Throw if number of splits exceeds limit.',
+    input: {dataType: 'float32', shape: [2, 8193]},
+    splits: Array(8193).fill(1),
+    options: {
+      axis: 1,
+      label: label,
+    },
   },
 ];
 

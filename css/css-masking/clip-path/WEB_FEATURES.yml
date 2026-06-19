@@ -1,4 +1,6 @@
 features:
+- name: clip-path
+  files: "**"
 - name: clip-path-boxes
   files:
   - clip-path-fillBox-1a.html
@@ -10,3 +12,6 @@ features:
   - clip-path-viewBox-1b.html
   - clip-path-viewBox-1c.html
   - clip-path-viewBox-1d.html
+- name: clip-path-animatable
+  files:
+  - interpolation.html

@@ -19,11 +19,6 @@
 //     MLOperand input, MLOperand indices,
 //     optional MLGatherOptions options = {});
 
-
-const getGatherPrecisionTolerance = () => {
-  return {metricType: 'ULP', value: 0};
-};
-
 const gatherTests = [
   {
     'name':
@@ -1706,11 +1701,4 @@ const gatherTests = [
   }
 ];
 
-if (navigator.ml) {
-  gatherTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getGatherPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(gatherTests, buildAndExecuteGraph, getZeroULPTolerance);

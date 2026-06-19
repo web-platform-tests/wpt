@@ -20,13 +20,6 @@
 // MLOperand reduceProduct(MLOperand input, optional MLReduceOptions options
 // = {});
 
-const getReductionOperatorsPrecisionTolerance = (graphResources) => {
-  return {
-    metricType: 'ULP',
-    value: getReducedElementCount(graphResources),
-  };
-};
-
 const reduceProductTests = [
   {
     'name': 'reduceProduct float32 0D constant tensor default options',
@@ -52,6 +45,29 @@ const reduceProductTests = [
     }
   },
   {
+    'name': 'reduceProduct float32 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceProductInput': {
+          'data': [-68.75911712646484],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': false
+        }
+      },
+      'operators': [{
+        'name': 'reduceProduct',
+        'arguments': [{'input': 'reduceProductInput'}],
+        'outputs': 'reduceProductOutput'
+      }],
+      'expectedOutputs': {
+        'reduceProductOutput': {
+          'data': -68.75911712646484,
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
     'name': 'reduceProduct float32 0D constant tensor empty axes',
     'graph': {
       'inputs': {
@@ -59,6 +75,30 @@ const reduceProductTests = [
           'data': [-68.75911712646484],
           'descriptor': {shape: [], dataType: 'float32'},
           'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceProduct',
+        'arguments':
+            [{'input': 'reduceProductInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceProductOutput'
+      }],
+      'expectedOutputs': {
+        'reduceProductOutput': {
+          'data': -68.75911712646484,
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceProduct float32 0D tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceProductInput': {
+          'data': [-68.75911712646484],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': false
         }
       },
       'operators': [{
@@ -584,6 +624,27 @@ const reduceProductTests = [
     }
   },
   {
+    'name': 'reduceProduct float16 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceProductInput': {
+          'data': [-68.75],
+          'descriptor': {shape: [], dataType: 'float16'},
+          'constant': false
+        }
+      },
+      'operators': [{
+        'name': 'reduceProduct',
+        'arguments': [{'input': 'reduceProductInput'}],
+        'outputs': 'reduceProductOutput'
+      }],
+      'expectedOutputs': {
+        'reduceProductOutput':
+            {'data': [-68.75], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
     'name': 'reduceProduct float16 0D constant tensor empty axes',
     'graph': {
       'inputs': {
@@ -591,6 +652,28 @@ const reduceProductTests = [
           'data': [-68.75],
           'descriptor': {shape: [], dataType: 'float16'},
           'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceProduct',
+        'arguments':
+            [{'input': 'reduceProductInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceProductOutput'
+      }],
+      'expectedOutputs': {
+        'reduceProductOutput':
+            {'data': [-68.75], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceProduct float16 0D tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceProductInput': {
+          'data': [-68.75],
+          'descriptor': {shape: [], dataType: 'float16'},
+          'constant': false
         }
       },
       'operators': [{
@@ -1040,11 +1123,5 @@ const reduceProductTests = [
   }
 ];
 
-if (navigator.ml) {
-  reduceProductTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getReductionOperatorsPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    reduceProductTests, buildAndExecuteGraph, getPrecisionTolerance);

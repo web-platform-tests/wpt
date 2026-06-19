@@ -14,14 +14,6 @@
 // MLOperand concat(
 //     sequence<MLOperand> inputs, [EnforceRange] unsigned long axis);
 
-
-const getConcatPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const concatTests = [
   {
     'name': 'concat two float32 1D constant tensors of same shape along axis 0',
@@ -2378,14 +2370,64 @@ const concatTests = [
         }
       }
     }
+  },
+
+  // int32 tests
+  {
+    'name': 'concat two int32 2D tensors of same shape along axis 0',
+    'graph': {
+      'inputs': {
+        'concatInput1': {
+          'data': [1, -2, 3, -4, 5, -6],
+          'descriptor': {shape: [2, 3], dataType: 'int32'}
+        },
+        'concatInput2': {
+          'data': [7, -8, 9, -10, 11, -12],
+          'descriptor': {shape: [2, 3], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'concat',
+        'arguments':
+            [{'inputs': ['concatInput1', 'concatInput2']}, {'axis': 0}],
+        'outputs': 'concatOutput'
+      }],
+      'expectedOutputs': {
+        'concatOutput': {
+          'data': [1, -2, 3, -4, 5, -6, 7, -8, 9, -10, 11, -12],
+          'descriptor': {shape: [4, 3], dataType: 'int32'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'concat two int32 2D tensors of same others dimensions except different 2nd dimension along axis 1',
+    'graph': {
+      'inputs': {
+        'concatInput1': {
+          'data': [1, -2, 3, -4, 5, -6],
+          'descriptor': {shape: [2, 3], dataType: 'int32'}
+        },
+        'concatInput2': {
+          'data': [7, -8, 9, -10],
+          'descriptor': {shape: [2, 2], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'concat',
+        'arguments':
+            [{'inputs': ['concatInput1', 'concatInput2']}, {'axis': 1}],
+        'outputs': 'concatOutput'
+      }],
+      'expectedOutputs': {
+        'concatOutput': {
+          'data': [1, -2, 3, 7, -8, -4, 5, -6, 9, -10],
+          'descriptor': {shape: [2, 5], dataType: 'int32'}
+        }
+      }
+    }
   }
 ];
 
-if (navigator.ml) {
-  concatTests.forEach((test) => {
-    webnn_conformance_test(
-      buildAndExecuteGraph, getConcatPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(concatTests, buildAndExecuteGraph, getZeroULPTolerance);

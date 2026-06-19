@@ -15,12 +15,29 @@
 // MLOperand expand(
 //     MLOperand input, sequence<[EnforceRange] unsigned long> newShape);
 
-
-const getExpandPrecisionTolerance = () => {
-  return {metricType: 'ULP', value: 0};
-};
-
 const expandTests = [
+  {
+    'name': 'expand float32 0D scalar to 0D',
+    'graph': {
+      'inputs': {
+        'expandInput': {
+          'data': [-6.461850643157959],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'expand',
+        'arguments': [{'input': 'expandInput'}, {'newShape': []}],
+        'outputs': 'expandOutput'
+      }],
+      'expectedOutputs': {
+        'expandOutput': {
+          'data': [-6.461850643157959],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
   {
     'name': 'expand float32 0D scalar to 1D',
     'graph': {
@@ -1330,14 +1347,32 @@ const expandTests = [
         }
       }
     }
+  },
+
+  // int32 tests
+  {
+    'name': 'expand int32 2D tensor to 2D',
+    'graph': {
+      'inputs': {
+        'expandInput': {
+          'data': [1, -2, 3],
+          'descriptor': {shape: [1, 3], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'expand',
+        'arguments':
+            [{'input': 'expandInput'}, {'newShape': [3, 3]}],
+        'outputs': 'expandOutput'
+      }],
+      'expectedOutputs': {
+        'expandOutput': {
+          'data': [1, -2, 3, 1, -2, 3, 1, -2, 3],
+          'descriptor': {shape: [3, 3], dataType: 'int32'}
+        }
+      }
+    }
   }
 ];
 
-if (navigator.ml) {
-  expandTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getExpandPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(expandTests, buildAndExecuteGraph, getZeroULPTolerance);

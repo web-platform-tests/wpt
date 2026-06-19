@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>SVGTextContentElement.getCharNumAtPosition</title>
-<link rel="help" href="https://svgwg.org/svg2-draft/text.html#__svg__SVGTextContentElement__getCharNumAtPosition">
+<link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/text.html#__svg__SVGTextContentElement__getCharNumAtPosition">
 <link rel="stylesheet" href="/fonts/ahem.css">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -26,47 +26,53 @@ function newPoint(x, y) {
   return p;
 }
 
-test(() => {
-  const element = document.querySelector('#htb');
-  assert_equals(element.getNumberOfChars(), 3);
-  const start = 40;
-  assert_equals(element.getCharNumAtPosition(newPoint(start - 10, 100)), -1);
-  assert_equals(element.getCharNumAtPosition(newPoint(start + 10, 100)), 0);
-  assert_equals(element.getCharNumAtPosition(newPoint(start + 30, 100)), 1);
-  assert_equals(element.getCharNumAtPosition(newPoint(start + 50, 100)), 2);
-  assert_equals(element.getCharNumAtPosition(newPoint(start + 70, 100)), -1);
-}, 'horizontal-tb');
+setup({ explicit_done: true });
 
-test(() => {
-  const element = document.querySelector('#vlr');
-  assert_equals(element.getNumberOfChars(), 3);
-  const start = 120;
-  assert_equals(element.getCharNumAtPosition(newPoint(40, start - 10)), -1);
-  assert_equals(element.getCharNumAtPosition(newPoint(40, start + 10)), 0);
-  assert_equals(element.getCharNumAtPosition(newPoint(40, start + 30)), 1);
-  assert_equals(element.getCharNumAtPosition(newPoint(40, start + 50)), 2);
-  assert_equals(element.getCharNumAtPosition(newPoint(40, start + 70)), -1);
-}, 'virtical-lr');
+document.fonts.ready.then(() => {
+  test(() => {
+    const element = document.querySelector('#htb');
+    assert_equals(element.getNumberOfChars(), 3);
+    const start = 40;
+    assert_equals(element.getCharNumAtPosition(newPoint(start - 10, 100)), -1);
+    assert_equals(element.getCharNumAtPosition(newPoint(start + 10, 100)), 0);
+    assert_equals(element.getCharNumAtPosition(newPoint(start + 30, 100)), 1);
+    assert_equals(element.getCharNumAtPosition(newPoint(start + 50, 100)), 2);
+    assert_equals(element.getCharNumAtPosition(newPoint(start + 70, 100)), -1);
+  }, 'horizontal-tb');
 
-test(() => {
-  const element = document.querySelector('#vrl');
-  assert_equals(element.getNumberOfChars(), 3);
-  const start = 120;
-  assert_equals(element.getCharNumAtPosition(newPoint(80, start - 10)), -1);
-  assert_equals(element.getCharNumAtPosition(newPoint(80, start + 10)), 0);
-  assert_equals(element.getCharNumAtPosition(newPoint(80, start + 30)), 1);
-  assert_equals(element.getCharNumAtPosition(newPoint(80, start + 50)), 2);
-  assert_equals(element.getCharNumAtPosition(newPoint(80, start + 70)), -1);
-}, 'virtical-rl');
+  test(() => {
+    const element = document.querySelector('#vlr');
+    assert_equals(element.getNumberOfChars(), 3);
+    const start = 120;
+    assert_equals(element.getCharNumAtPosition(newPoint(40, start - 10)), -1);
+    assert_equals(element.getCharNumAtPosition(newPoint(40, start + 10)), 0);
+    assert_equals(element.getCharNumAtPosition(newPoint(40, start + 30)), 1);
+    assert_equals(element.getCharNumAtPosition(newPoint(40, start + 50)), 2);
+    assert_equals(element.getCharNumAtPosition(newPoint(40, start + 70)), -1);
+  }, 'vertical-lr');
 
-test(() => {
-  const element = document.querySelector('#srl');
-  assert_equals(element.getNumberOfChars(), 3);
-  const start = 200;
-  assert_equals(element.getCharNumAtPosition(newPoint(80, start - 10)), -1);
-  assert_equals(element.getCharNumAtPosition(newPoint(80, start + 10)), 0);
-  assert_equals(element.getCharNumAtPosition(newPoint(80, start + 30)), 1);
-  assert_equals(element.getCharNumAtPosition(newPoint(80, start + 50)), 2);
-  assert_equals(element.getCharNumAtPosition(newPoint(80, start + 70)), -1);
-}, 'sideways-rl');
+  test(() => {
+    const element = document.querySelector('#vrl');
+    assert_equals(element.getNumberOfChars(), 3);
+    const start = 120;
+    assert_equals(element.getCharNumAtPosition(newPoint(80, start - 10)), -1);
+    assert_equals(element.getCharNumAtPosition(newPoint(80, start + 10)), 0);
+    assert_equals(element.getCharNumAtPosition(newPoint(80, start + 30)), 1);
+    assert_equals(element.getCharNumAtPosition(newPoint(80, start + 50)), 2);
+    assert_equals(element.getCharNumAtPosition(newPoint(80, start + 70)), -1);
+  }, 'vertical-rl');
+
+  test(() => {
+    const element = document.querySelector('#srl');
+    assert_equals(element.getNumberOfChars(), 3);
+    const start = 200;
+    assert_equals(element.getCharNumAtPosition(newPoint(80, start - 10)), -1);
+    assert_equals(element.getCharNumAtPosition(newPoint(80, start + 10)), 0);
+    assert_equals(element.getCharNumAtPosition(newPoint(80, start + 30)), 1);
+    assert_equals(element.getCharNumAtPosition(newPoint(80, start + 50)), 2);
+    assert_equals(element.getCharNumAtPosition(newPoint(80, start + 70)), -1);
+  }, 'sideways-rl');
+
+  done();
+});
 </script>

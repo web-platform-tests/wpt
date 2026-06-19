@@ -1,12 +1,13 @@
 # mypy: allow-untyped-defs
 
 import collections
+import copy
 import json
 import os
 import re
 import time
 import uuid
-from typing import Mapping, MutableMapping
+from typing import Any, Mapping, MutableMapping, Optional
 
 from webdriver import error
 
@@ -27,6 +28,30 @@ from .protocol import LeakProtocolPart, ProtocolPart
 
 here = os.path.dirname(__file__)
 
+def _update_capabilities_if_extension_test(
+    browser: Any, capabilities: Optional[MutableMapping[str, Any]]
+) -> Optional[MutableMapping[str, Any]]:
+    """Updates ChromeDriver capabilities if the browser is running an extension test."""
+    if getattr(browser, "is_extension_test", False):
+        if capabilities is None:
+            capabilities = {}
+        else:
+            capabilities = copy.deepcopy(capabilities)
+        chrome_options = capabilities.setdefault("goog:chromeOptions", {})
+        args = chrome_options.setdefault("args", [])
+
+        def add_arg(arg: str) -> None:
+            if arg not in args:
+                args.append(arg)
+        # Enabled `browser` JS namespace on <test_name>.<api>.html test page.
+        add_arg("--enable-features=ExtensionBrowserNamespaceOnWebPages")
+        # Enables `chrome.test` JS API (and by extension `browser.test`) on <test_name>.<api>.html test page.
+        add_arg("--extension-test-api-on-web-pages")
+        # Modifies the `chrome.test` JS API to behave per the `browser.test` API proposal:
+        # https://github.com/w3c/webextensions/blob/main/proposals/browser_test_api.md
+        add_arg("--extension-test-api-standardized-behavior")
+
+    return capabilities
 
 class ChromeDriverBaseProtocolPart(WebDriverBaseProtocolPart):
     def create_window(self, type="tab", **kwargs):
@@ -185,6 +210,38 @@ class ChromeDriverDevToolsProtocolPart(ProtocolPart):
                                                    body=body)
 
 
+class ChromeDriverTracingProtocolPart(ProtocolPart):
+    name = "tracing"
+
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def get_trace(self):
+        """Retrieve trace events accumulated by ChromeDriver.
+
+        This also clears ChromeDriver's internal buffer of logged events.
+
+        Returns:
+            JSON in the trace array format [0].
+
+        [0]: https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview?tab=t.0#heading=h.f2f0yd51wi15
+        """
+        # Not a standard WebDriver method.
+        perf_data = self.webdriver.send_session_command("POST", "se/log", {
+            "type": "performance",
+        })
+        events = []
+        for entry in perf_data:
+            # Unwrap the inner trace event and discard the unnecessary
+            # ChromeDriver-added fields.
+            data_collected_event = json.loads(entry["message"]).get("message", {})
+            if data_collected_event.get("method") != "Tracing.dataCollected":
+                continue
+            if trace_event := data_collected_event.get("params"):
+                events.append(trace_event)
+        return events
+
+
 class ChromeDriverProtocol(WebDriverProtocol):
     implements = [
         ChromeDriverBaseProtocolPart,
@@ -192,6 +249,7 @@ class ChromeDriverProtocol(WebDriverProtocol):
         ChromeDriverFedCMProtocolPart,
         ChromeDriverTestDriverProtocolPart,
         ChromeDriverTestharnessProtocolPart,
+        ChromeDriverTracingProtocolPart,
     ]
     for base_part in WebDriverProtocol.implements:
         if base_part.name not in {part.name for part in implements}:
@@ -204,6 +262,8 @@ class ChromeDriverProtocol(WebDriverProtocol):
         self.implements = list(ChromeDriverProtocol.implements)
         if getattr(browser, "leak_check", False):
             self.implements.append(ChromeDriverLeakProtocolPart)
+        capabilities = _update_capabilities_if_extension_test(
+            browser, capabilities)
         super().__init__(executor, browser, capabilities, **kwargs)
 
 
@@ -213,6 +273,7 @@ class ChromeDriverBidiProtocol(WebDriverBidiProtocol):
         ChromeDriverDevToolsProtocolPart,
         ChromeDriverFedCMProtocolPart,
         ChromeDriverTestharnessProtocolPart,
+        ChromeDriverTracingProtocolPart,
     ]
     for base_part in WebDriverBidiProtocol.implements:
         if base_part.name not in {part.name for part in implements}:
@@ -225,6 +286,8 @@ class ChromeDriverBidiProtocol(WebDriverBidiProtocol):
         self.implements = list(ChromeDriverBidiProtocol.implements)
         if getattr(browser, "leak_check", False):
             self.implements.append(ChromeDriverLeakProtocolPart)
+        capabilities = _update_capabilities_if_extension_test(
+            browser, capabilities)
         super().__init__(executor, browser, capabilities, **kwargs)
 
 
@@ -258,24 +321,39 @@ def _evaluate_sanitized_result(executor_cls):
 class ChromeDriverCrashTestExecutor(WebDriverCrashtestExecutor):
     protocol_cls = ChromeDriverProtocol
 
-    def __init__(self, *args, sanitizer_enabled=False, **kwargs):
+    def __init__(self, *args, sanitizer_enabled=False, enable_tracing=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.sanitizer_enabled = sanitizer_enabled
+        self.enable_tracing = enable_tracing
+
+    def do_test(self, test):
+        file_result, subtest_results = super().do_test(test)
+        if self.enable_tracing:
+            file_result.extra["trace"] = self.protocol.tracing.get_trace()
+        return file_result, subtest_results
 
 
 @_evaluate_sanitized_result
 class ChromeDriverRefTestExecutor(WebDriverRefTestExecutor):
     protocol_cls = ChromeDriverProtocol
 
-    def __init__(self, *args, sanitizer_enabled=False, **kwargs):
+    def __init__(self, *args, sanitizer_enabled=False, enable_tracing=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.sanitizer_enabled = sanitizer_enabled
+        self.enable_tracing = enable_tracing
+
+    def do_test(self, test):
+        file_result, subtest_results = super().do_test(test)
+        if self.enable_tracing:
+            file_result.extra["trace"] = self.protocol.tracing.get_trace()
+        return file_result, subtest_results
 
 
 @_evaluate_sanitized_result
 class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor):
 
-    def __init__(self, *args, sanitizer_enabled=False, reuse_window=False, **kwargs):
+    def __init__(self, *args, sanitizer_enabled=False, enable_tracing=False, reuse_window=False,
+                 **kwargs):
         require_webdriver_bidi = kwargs.get("browser_settings", {}).get(
             "require_webdriver_bidi", None)
         if require_webdriver_bidi:
@@ -285,9 +363,10 @@ class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor):
 
         super().__init__(*args, **kwargs)
         self.sanitizer_enabled = sanitizer_enabled
+        self.enable_tracing = enable_tracing
         self.reuse_window = reuse_window
 
-    def get_or_create_test_window(self, protocol):
+    def create_test_window(self, protocol):
         test_window = self.protocol.testharness.persistent_test_window
         if test_window:
             try:
@@ -303,16 +382,33 @@ class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor):
                 protocol.base.set_window(protocol.testharness.runner_handle)
                 test_window = self.protocol.testharness.persistent_test_window = None
         if not test_window:
-            test_window = super().get_or_create_test_window(protocol)
+            test_window = super().create_test_window(protocol)
+            if self.reuse_window:
+                self.logger.info(f"Created new test window {test_window}")
+            # Without `--reuse-window`, each testharness test always creates a
+            # new window, so tracing that event is not interesting.
         if self.reuse_window:
             self.protocol.testharness.persistent_test_window = test_window
         return test_window
+
+    def do_test(self, test):
+        file_result, subtest_results = super().do_test(test)
+        if self.enable_tracing:
+            file_result.extra["trace"] = self.protocol.tracing.get_trace()
+        return file_result, subtest_results
 
 
 @_evaluate_sanitized_result
 class ChromeDriverPrintRefTestExecutor(WebDriverPrintRefTestExecutor):
     protocol_cls = ChromeDriverProtocol
 
-    def __init__(self, *args, sanitizer_enabled=False, **kwargs):
+    def __init__(self, *args, sanitizer_enabled=False, enable_tracing=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.sanitizer_enabled = sanitizer_enabled
+        self.enable_tracing = enable_tracing
+
+    def do_test(self, test):
+        file_result, subtest_results = super().do_test(test)
+        if self.enable_tracing:
+            file_result.extra["trace"] = self.protocol.tracing.get_trace()
+        return file_result, subtest_results

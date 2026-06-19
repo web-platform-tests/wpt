@@ -19,8 +19,6 @@
   </main>
   <script>
   (async () => {
-    const link = document.getElementById("link");
-
     // Inject a second image that takes a large part of the viewport.
     await new Promise(resolve => {
       requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -38,33 +36,23 @@
       }));
     });
     testSoftNavigation({
+      testName: "Test that an image LCP followed by a smaller soft navigation LCP"
+        + " properly queues an LCP entry, even when the soft navigation is"
+        + " detected after the LCP, even when initial paints significantly"
+        + " exceed the viewport dimensions.",
       addContent: async () => {
         // Remove the initial image, so that the text would be painted on screen.
         document.getElementById("initial_image1").remove();
         document.getElementById("initial_image2").remove();
-        let lcp_element_painted;
-        const lcp_element_paint_promise = new Promise((r) => { lcp_element_painted = r; });
         // Add an LCP element, but have it be small enough to not trigger the
         // Soft Navigation heuristics.
-        const p = addTextParagraphToMain(
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod",
-          /*element_timing=*/"lcp");
-        (new PerformanceObserver(list => {
-          // Once the first element is fully painted:
-          lcp_element_painted();
-        })).observe({type: "element", buffered: true});
-        await lcp_element_paint_promise;
+        await addTextParagraphToMain(
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
         // Add a smaller element that gets us over that threshold.
-        addTextParagraphToMain("dolore magna aliqua.");
+        await addTextParagraphToMain("dolore magna aliqua.");
       },
-      link: link,
-      test: "Test that an image LCP followed by a smaller soft navigation LCP"
-        + " properly queues an LCP entry, even when the soft navigation is"
-        + " detected after the LCP, even when initial paints significantly"
-        + " exceed the viewport dimensions."});
+    });
   })();
   </script>
 </body>
 </html>
-
-

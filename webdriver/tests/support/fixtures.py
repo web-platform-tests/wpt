@@ -3,25 +3,27 @@ import json
 import os
 
 import pytest
-import pytest_asyncio
 import webdriver
 
 from urllib.parse import urlunsplit
 
-from tests.support import defaults
-from tests.support.helpers import cleanup_session, deep_update
+from tests.support.helpers import deep_update, is_wayland
 from tests.support.web_extension import EXTENSION_DATA
 from tests.support.inline import build_inline
 from tests.support.http_request import HTTPRequest
 from tests.support.keys import Keys
 
-
-SCRIPT_TIMEOUT = 1
-PAGE_LOAD_TIMEOUT = 3
-IMPLICIT_WAIT_TIMEOUT = 0
-
 # The webdriver session can outlive a pytest session
 _current_session = None
+
+
+def get_current_session():
+    return _current_session
+
+
+def set_current_session(session):
+    global _current_session
+    _current_session = session
 
 
 def pytest_configure(config):
@@ -34,11 +36,9 @@ def pytest_configure(config):
 
 def pytest_sessionfinish():
     # Cleanup at the end of a test run
-    global _current_session
-
-    if _current_session is not None:
-        _current_session.end()
-        _current_session = None
+    if get_current_session() is not None:
+        get_current_session().end()
+        set_current_session(None)
 
 
 @pytest.fixture
@@ -103,146 +103,27 @@ def configuration(full_configuration):
 
 
 async def reset_current_session_if_necessary(caps):
-    global _current_session
-
     # If there is a session with different requested capabilities active than
     # the one we would like to create, end it now.
-    if _current_session is not None:
-        if not _current_session.match(caps):
-            is_bidi = isinstance(_current_session, webdriver.BidiSession)
+    session = get_current_session()
+    if session is not None:
+        if not session.match(caps):
+            is_bidi = isinstance(session, webdriver.BidiSession)
             if is_bidi:
-                await _current_session.end()
+                await session.end()
             else:
-                _current_session.end()
-            _current_session = None
-
-
-@pytest.fixture()
-def screen_size(session):
-    """Return the size (width/height) of the screen."""
-    return tuple(session.execute_script("""
-        return [
-            screen.width,
-            screen.height,
-        ];
-        """))
-
-
-@pytest.fixture()
-def available_screen_size(session):
-    """Return the effective available screen size (width/height).
-
-    This is size which excludes any fixed window manager elements like menu
-    bars, and the dock on MacOS.
-    """
-    return tuple(session.execute_script("""
-        return [
-            screen.availWidth,
-            screen.availHeight,
-        ];
-        """))
-
-
-@pytest.fixture()
-def minimal_screen_position(session):
-    """Return the minimal position (x/y) a window can be positioned at."""
-    return tuple(session.execute_script("""
-        return [
-            screen.availLeft,
-            screen.availTop,
-        ];
-        """))
-
-
-@pytest_asyncio.fixture(scope="function")
-async def session(capabilities, configuration):
-    """Create and start a session for a test that does not itself test session creation.
-
-    By default the session will stay open after each test, but we always try to start a
-    new one and assume that if that fails there is already a valid session. This makes it
-    possible to recover from some errors that might leave the session in a bad state, but
-    does not demand that we start a new session per test.
-    """
-    global _current_session
-
-    # Update configuration capabilities with custom ones from the
-    # capabilities fixture, which can be set by tests
-    caps = copy.deepcopy(configuration["capabilities"])
-    deep_update(caps, capabilities)
-    caps = {"alwaysMatch": caps}
-
-    await reset_current_session_if_necessary(caps)
-
-    if _current_session is None:
-        _current_session = webdriver.Session(
-            configuration["host"],
-            configuration["port"],
-            capabilities=caps)
-
-    _current_session.start()
-
-    # Enforce a fixed default window size and position
-    if _current_session.capabilities.get("setWindowRect"):
-        _current_session.window.size = defaults.WINDOW_SIZE
-        _current_session.window.position = defaults.WINDOW_POSITION
-
-    # Set default timeouts
-    multiplier = configuration["timeout_multiplier"]
-    _current_session.timeouts.implicit = IMPLICIT_WAIT_TIMEOUT * multiplier
-    _current_session.timeouts.page_load = PAGE_LOAD_TIMEOUT * multiplier
-    _current_session.timeouts.script = SCRIPT_TIMEOUT * multiplier
-
-    yield _current_session
-
-    cleanup_session(_current_session)
-
-
-@pytest_asyncio.fixture(scope="function")
-async def bidi_session(capabilities, configuration):
-    """Create and start a bidi session.
-
-    Can be used for a test that does not itself test bidi session creation.
-
-    By default the session will stay open after each test, but we always try to start a
-    new one and assume that if that fails there is already a valid session. This makes it
-    possible to recover from some errors that might leave the session in a bad state, but
-    does not demand that we start a new session per test.
-    """
-    global _current_session
-
-    # Update configuration capabilities with custom ones from the
-    # capabilities fixture, which can be set by tests
-    caps = copy.deepcopy(configuration["capabilities"])
-    caps.update({"webSocketUrl": True})
-    deep_update(caps, capabilities)
-    caps = {"alwaysMatch": caps}
-
-    await reset_current_session_if_necessary(caps)
-
-    if _current_session is None:
-        _current_session = webdriver.Session(
-            configuration["host"],
-            configuration["port"],
-            capabilities=caps,
-            enable_bidi=True)
-
-    _current_session.start()
-    await _current_session.bidi_session.start()
-
-    # Enforce a fixed default window size and position
-    if _current_session.capabilities.get("setWindowRect"):
-        _current_session.window.size = defaults.WINDOW_SIZE
-        _current_session.window.position = defaults.WINDOW_POSITION
-
-    yield _current_session.bidi_session
-
-    await _current_session.bidi_session.end()
-    cleanup_session(_current_session)
+                session.end()
+            set_current_session(None)
 
 
 @pytest.fixture(scope="function")
 def current_session():
-    return _current_session
+    return get_current_session()
+
+
+@pytest.fixture
+def is_wayland_headful(configuration):
+    return is_wayland() and not configuration.get("headless", False)
 
 
 @pytest.fixture
@@ -315,12 +196,13 @@ def iframe(inline):
 
 @pytest.fixture
 def get_actions_origin_page(inline):
-    """Create a test pagefor action origin tests, recording mouse coordinates
+    """Create a test page for action origin tests, recording mouse coordinates
     automatically on window.coords."""
 
     def get_actions_origin_page(inner_style, outer_style=""):
         return inline(
             f"""
+          <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
           <div id="outer" style="{outer_style}"
                onmousemove="window.coords = {{x: event.clientX, y: event.clientY}}">
             <div id="inner" style="{inner_style}"></div>
@@ -373,6 +255,12 @@ def get_test_page(iframe, inline):
                 """
 
         page_data = f"""
+            <!-- This is used for tests which check the event position synthesized via
+                TestDriver. Therefore, if the page is initially scaled to non-100%,
+                TestDriver needs to floor the specified position so that the event may be
+                fired at different position. Thus, we need to fix the scale here. -->
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+
             <style>
                 custom-element {{
                     display:block; width:20px; height:20px;
@@ -494,9 +382,3 @@ async function getText() {
 """ % encoded_pdf_data)
 
     return test_page_with_pdf_js
-
-
-@pytest_asyncio.fixture
-async def top_context(bidi_session):
-    contexts = await bidi_session.browsing_context.get_tree()
-    return contexts[0]

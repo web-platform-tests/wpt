@@ -2,7 +2,7 @@ import pytest
 
 from webdriver import WebElement
 
-from tests.support.asserts import assert_error, assert_success
+from tests.support.classic.asserts import assert_error, assert_success
 
 
 def get_element_tag_name(session, element_id):
@@ -66,11 +66,11 @@ def test_no_such_element_from_other_frame(session, get_test_page, closed):
     session.url = get_test_page(as_frame=True)
 
     frame = session.find.css("iframe", all=False)
-    session.switch_frame(frame)
+    session.switch_to_frame(frame)
 
     element = session.find.css("div", all=False)
 
-    session.switch_frame("parent")
+    session.switch_to_parent_frame()
 
     if closed:
         session.execute_script("arguments[0].remove();", args=[frame])
@@ -92,4 +92,4 @@ def test_get_element_tag_name(session, inline):
     element = session.find.css("input", all=False)
 
     result = get_element_tag_name(session, element.id)
-    assert_success(result, "input")
+    assert_success(result, "INPUT")

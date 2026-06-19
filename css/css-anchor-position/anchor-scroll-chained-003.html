@@ -2,7 +2,7 @@
 <title>Tests scroll adjustments of element anchored to another anchored element</title>
 <link rel="author" href="mailto:wangxianzhu@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-anchor-1/">
-<link rel="match" href="reference/anchor-scroll-chained-002-ref.html">
+<link rel="match" href="reference/anchor-scroll-chained-003-ref.html">
 <style>
 body {
   margin: 0;
@@ -20,7 +20,11 @@ div {
 }
 
 #scroller1,#scroller2 {
-  overflow: scroll;
+  /* Using visible scrollbars here tests scrollbar painting order as well, which
+     isn't related to anchor positioning. See:
+     https://github.com/web-platform-tests/wpt/pull/55022#issuecomment-3499478504 */
+overflow: scroll;
+scrollbar-width: none;
 }
 
 #anchor {

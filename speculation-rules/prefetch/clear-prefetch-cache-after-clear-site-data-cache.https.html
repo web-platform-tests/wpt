@@ -8,6 +8,7 @@
 <script>
   setup(() => assertSpeculationRulesIsSupported());
 
+  // Test that Clear-Site-Data header value "prefetchCache" clears prefetch cache
   promise_test(async t => {
     let agent = await spawnWindow(t, { protocol: 'https' });
     let nextUrl = agent.getExecutorURL({protocol: 'https', page: 2 });
@@ -22,8 +23,33 @@
         once: true
       });
     });
-    let cache_helper = "cache_helper=" + token() + "&";
-    window.open("../../clear-site-data/support/clear-site-data-cache.py?" + cache_helper + "response=single_html&cache&clear_first=all");    await gotMessage;
+    window.open("/../../clear-site-data/support/clear-site-data-prefetchCache.py");
+    await gotMessage;
+
+    await agent.navigate(nextUrl);
+    // Because Clear-Site-Data response header is sent, prefetches are expected
+    // to be evicted.
+    // The navigation to nextURL is not expected to use the prefetch cache.
+    assert_not_prefetched(await agent.getRequestHeaders());
+  }, "clear-site-data prefetchCache headers should prevent it from being fetched");
+
+    // Test that Clear-Site-Data header value "cache" clears prefetch cache
+  promise_test(async t => {
+    let agent = await spawnWindow(t, { protocol: 'https' });
+    let nextUrl = agent.getExecutorURL({protocol: 'https', page: 2 });
+    await agent.forceSinglePrefetch(nextUrl);
+
+    // Open new window with url to clear cache data through Clear-Site-Data header.
+    // Ensure that the cache is cleared before the navigation.
+    const gotMessage = new Promise(resolve => {
+      window.addEventListener('message', e => {
+        resolve(e.data);
+      }, {
+        once: true
+      });
+    });
+    let cache_helper = "cache_helper=" + self.crypto.randomUUID() + "&";
+    window.open("/../../clear-site-data/support/clear-site-data-cache.py?" + cache_helper + "response=single_html&cache&clear_first=all");
     await gotMessage;
 
     await agent.navigate(nextUrl);

@@ -1,5 +1,5 @@
 // META: title=test WebNN API element-wise identity operation
-// META: global=window,worker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -12,14 +12,6 @@
 // Copy the value of the input tensor to the output tensor, element-wise.
 //
 // MLOperand identity(MLOperand input);
-
-
-const getIdentityPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
 
 const identityTests = [
   {
@@ -528,11 +520,5 @@ const identityTests = [
   }
 ];
 
-if (navigator.ml) {
-  identityTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getIdentityPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    identityTests, buildAndExecuteGraph, getZeroULPTolerance);

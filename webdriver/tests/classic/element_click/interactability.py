@@ -1,6 +1,6 @@
 import pytest
 
-from tests.support.asserts import assert_error, assert_success
+from tests.support.classic.asserts import assert_error, assert_success
 
 
 def element_click(session, element):
@@ -115,11 +115,33 @@ def test_element_intercepted(session, inline):
     assert_error(response, "element click intercepted")
 
 
-def test_element_intercepted_no_pointer_events(session, inline):
+def test_element_not_interactable_pointer_events_none(session, inline):
     session.url = inline("""<input type=button value=Roger style="pointer-events: none">""")
     element = session.find.css("input", all=False)
     response = element_click(session, element)
-    assert_error(response, "element click intercepted")
+    assert_error(response, "element not interactable")
+
+
+def test_inline_element_at_fractional_position(
+    session, inline
+):
+    # margin-top: 0.5px places the element at a fractional y-coordinate,
+    # which could trigger a rounding issue preventing the click from working.
+    session.url = inline("""
+        <div style="margin-top: 0.5px">
+          <a id="link" href="#"
+             onclick="window.clicked = true">
+            <div style="width: 32px; height: 32px;"></div>
+          </a>
+        </div>
+    """)
+    element = session.find.css("#link", all=False)
+
+    response = element_click(session, element)
+    assert_success(response)
+
+    clicked = session.execute_script("return window.clicked;")
+    assert clicked is True
 
 
 def test_element_not_visible_overflow_hidden(session, inline):

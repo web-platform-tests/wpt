@@ -20,13 +20,6 @@
 // MLOperand reduceLogSumExp(MLOperand input, optional MLReduceOptions options
 // = {});
 
-const getReductionOperatorsPrecisionTolerance = (graphResources) => {
-  return {
-    metricType: 'ULP',
-    value: getReducedElementCount(graphResources) * 2 + 18,
-  };
-};
-
 const reduceLogSumExpTests = [
   {
     'name': 'reduceLogSumExp float32 0D constant tensor default options',
@@ -52,6 +45,29 @@ const reduceLogSumExpTests = [
     }
   },
   {
+    'name': 'reduceLogSumExp float32 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceLogSumExpInput': {
+          'data': [0.7974132895469666],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': false
+        }
+      },
+      'operators': [{
+        'name': 'reduceLogSumExp',
+        'arguments': [{'input': 'reduceLogSumExpInput'}],
+        'outputs': 'reduceLogSumExpOutput'
+      }],
+      'expectedOutputs': {
+        'reduceLogSumExpOutput': {
+          'data': 0.7974132895469666,
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
     'name': 'reduceLogSumExp float32 0D constant tensor empty axes',
     'graph': {
       'inputs': {
@@ -59,6 +75,30 @@ const reduceLogSumExpTests = [
           'data': [0.7974132895469666],
           'descriptor': {shape: [], dataType: 'float32'},
           'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceLogSumExp',
+        'arguments':
+            [{'input': 'reduceLogSumExpInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceLogSumExpOutput'
+      }],
+      'expectedOutputs': {
+        'reduceLogSumExpOutput': {
+          'data': 0.7974132895469666,
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceLogSumExp float32 0D tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceLogSumExpInput': {
+          'data': [0.7974132895469666],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': false
         }
       },
       'operators': [{
@@ -678,6 +718,28 @@ const reduceLogSumExpTests = [
     }
   },
   {
+    'name': 'reduceLogSumExp float16 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceLogSumExpInput': {
+          'data': [0.79736328125],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceLogSumExp',
+        'arguments': [{'input': 'reduceLogSumExpInput'}],
+        'outputs': 'reduceLogSumExpOutput'
+      }],
+      'expectedOutputs': {
+        'reduceLogSumExpOutput': {
+          'data': [0.79736328125],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
     'name': 'reduceLogSumExp float16 0D constant tensor empty axes',
     'graph': {
       'inputs': {
@@ -685,6 +747,29 @@ const reduceLogSumExpTests = [
           'data': [0.79736328125],
           'descriptor': {shape: [], dataType: 'float16'},
           'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceLogSumExp',
+        'arguments':
+            [{'input': 'reduceLogSumExpInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceLogSumExpOutput'
+      }],
+      'expectedOutputs': {
+        'reduceLogSumExpOutput': {
+          'data': [0.79736328125],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceLogSumExp float16 0D tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceLogSumExpInput': {
+          'data': [0.79736328125],
+          'descriptor': {shape: [], dataType: 'float16'},
         }
       },
       'operators': [{
@@ -1214,14 +1299,60 @@ const reduceLogSumExpTests = [
         }
       }
     }
+  },
+  {
+    'name':
+        'reduceLogSumExp avoids overflows caused by taking the exp of large inputs',
+    'graph': {
+      'inputs': {
+        'reduceLogSumExpInput': {
+          'data': [100.0],
+          'descriptor': {shape: [1], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceLogSumExp',
+        'arguments': [
+          {'input': 'reduceLogSumExpInput'},
+          {'options': {'axes': [0], 'keepDimensions': false}}
+        ],
+        'outputs': 'reduceLogSumExpOutput'
+      }],
+      'expectedOutputs': {
+        'reduceLogSumExpOutput': {
+          'data': [100.0],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'reduceLogSumExp avoids underflows caused by taking the log of small inputs',
+    'graph': {
+      'inputs': {
+        'reduceLogSumExpInput': {
+          'data': [-100.0],
+          'descriptor': {shape: [1], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceLogSumExp',
+        'arguments': [
+          {'input': 'reduceLogSumExpInput'},
+          {'options': {'axes': [0], 'keepDimensions': false}}
+        ],
+        'outputs': 'reduceLogSumExpOutput'
+      }],
+      'expectedOutputs': {
+        'reduceLogSumExpOutput': {
+          'data': [-100.0],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
   }
 ];
 
-if (navigator.ml) {
-  reduceLogSumExpTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getReductionOperatorsPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    reduceLogSumExpTests, buildAndExecuteGraph, getPrecisionTolerance);

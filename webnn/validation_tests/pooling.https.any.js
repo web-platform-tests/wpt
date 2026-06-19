@@ -68,35 +68,35 @@ const tests = [
     output: {dataType: 'float32', shape: [1, 3, 4, 4]}
   },
   {
-    name: 'Test pool2d with strides, padding and roundingType="floor".',
+    name: 'Test pool2d with strides, padding and outputShapeRounding="floor".',
     input: {dataType: 'float32', shape: [1, 3, 7, 7]},
     options: {
       windowDimensions: [4, 4],
       padding: [1, 1, 1, 1],
       strides: [2, 2],
-      roundingType: 'floor',
+      outputShapeRounding: 'floor',
     },
     output: {dataType: 'float32', shape: [1, 3, 3, 3]}
   },
   {
-    name: 'Test pool2d with strides, padding and roundingType="ceil".',
+    name: 'Test pool2d with strides, padding and outputShapeRounding="ceil".',
     input: {dataType: 'float16', shape: [1, 3, 7, 7]},
     options: {
       windowDimensions: [4, 4],
       padding: [1, 1, 1, 1],
       strides: [2, 2],
-      roundingType: 'ceil',
+      outputShapeRounding: 'ceil',
     },
     output: {dataType: 'float16', shape: [1, 3, 4, 4]}
   },
   {
-    name: 'Test pool2d with explicit outputSizes ignored roundingType',
+    name: 'Test pool2d with explicit outputSizes ignored outputShapeRounding',
     input: {dataType: 'float32', shape: [1, 3, 7, 7]},
     options: {
       windowDimensions: [4, 4],
       padding: [1, 1, 1, 1],
       strides: [2, 2],
-      roundingType: 'ceil',
+      outputShapeRounding: 'ceil',
       outputSizes: [3, 3],
     },
     output: {dataType: 'float32', shape: [1, 3, 3, 3]}
@@ -293,6 +293,17 @@ const tests = [
     input: {dataType: 'float32', shape: [1, 3, 5, 5]},
     options: {
       padding: [0, 0, kMaxUnsignedLong, kMaxUnsignedLong],
+      label: label,
+    },
+  },
+  {
+    name: 'Throw if the product of window dimensions is too large',
+    input: {dataType: 'float16', shape: [1, 1, 1, 1]},
+    options: {
+      windowDimensions: [1000092567, 1152814792],
+      padding: [500046283, 500046283, 576407395, 576407396],
+      strides: [1, 1],
+      layout: 'nhwc',
       label: label,
     },
   },

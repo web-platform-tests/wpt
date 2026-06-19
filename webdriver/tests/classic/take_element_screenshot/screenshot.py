@@ -2,19 +2,9 @@ import pytest
 
 from webdriver import WebElement
 
-from tests.support.asserts import assert_error, assert_success
+from tests.support.classic.asserts import assert_error, assert_success
 from tests.support.image import png_dimensions
-from . import element_dimensions
-
-
-def take_element_screenshot(session, element_id):
-    return session.transport.send(
-        "GET",
-        "session/{session_id}/element/{element_id}/screenshot".format(
-            session_id=session.session_id,
-            element_id=element_id,
-        )
-    )
+from . import element_dimensions, take_element_screenshot
 
 
 def test_no_top_browsing_context(session, closed_window):
@@ -69,11 +59,11 @@ def test_no_such_element_from_other_frame(session, get_test_page, closed):
     session.url = get_test_page(as_frame=True)
 
     frame = session.find.css("iframe", all=False)
-    session.switch_frame(frame)
+    session.switch_to_frame(frame)
 
     element = session.find.css("div", all=False)
 
-    session.switch_frame("parent")
+    session.switch_to_parent_frame()
 
     if closed:
         session.execute_script("arguments[0].remove();", args=[frame])
@@ -98,3 +88,37 @@ def test_format_and_dimensions(session, inline):
     screenshot = assert_success(response)
 
     assert png_dimensions(screenshot) == element_dimensions(session, element)
+
+
+def test_clip_huge_element_to_viewport(session, inline):
+    width = "32768px"
+    height = "32768px"
+
+    session.url = inline(f"""
+        <style>
+            body {{ margin: 0; }}
+        </style>
+        <div style='width: {width}; height: {height}; background-color: black;'></div>
+    """)
+    element = session.find.css("div", all=False)
+
+    response = take_element_screenshot(session, element.id)
+
+    screenshot = assert_success(response)
+
+    viewport = session.execute_script("""
+        return {
+            width: window.innerWidth,
+            // The element is scrolled into view first, which causes the page to scroll to the bottom.
+            // This means the rectangle intersection logic will only capture the viewport height
+            // without the scrollbar height. Therefore, we use visualViewport.height.
+            height: window.visualViewport.height,
+            devicePixelRatio: window.devicePixelRatio
+        };
+    """)
+
+    expected_width = round(viewport["width"] * viewport["devicePixelRatio"])
+    expected_height = round(viewport["height"] * viewport["devicePixelRatio"])
+
+    # 5. Assert the screenshot was clipped to the viewport size
+    assert png_dimensions(screenshot) == (expected_width, expected_height)

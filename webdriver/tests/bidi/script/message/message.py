@@ -1,6 +1,4 @@
 import pytest
-from tests.support.sync import AsyncPoll
-
 from webdriver.bidi.modules.script import ContextTarget
 from webdriver.error import TimeoutException
 
@@ -53,12 +51,13 @@ async def test_subscribe(bidi_session, subscribe_events, top_context, wait_for_e
         "source": {
             "realm": result["realm"],
             "context": top_context["context"],
+            **({"userContext": top_context["userContext"]} if "userContext" in event["source"] else {})
         },
     }
 
 
 async def test_subscribe_to_one_context(
-    bidi_session, subscribe_events, top_context, new_tab
+    bidi_session, subscribe_events, top_context, wait_for_bidi_events, new_tab
 ):
     # Subscribe to a specific context
     await subscribe_events(
@@ -83,9 +82,8 @@ async def test_subscribe_to_one_context(
     )
 
     # Make sure we didn't receive the event for the new tab
-    wait = AsyncPoll(bidi_session, timeout=0.5)
     with pytest.raises(TimeoutException):
-        await wait.until(lambda _: len(events) > 0)
+        await wait_for_bidi_events(events, 1, timeout=0.5)
 
     await bidi_session.script.call_function(
         raw_result=True,

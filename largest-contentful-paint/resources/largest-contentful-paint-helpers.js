@@ -55,7 +55,7 @@ function checkImage(entry, expectedUrl, expectedID, expectedSize, timeLowerBound
   assert_greater_than_equal(entry.paintTime, timeLowerBound, 'paintTime should represent the time when the UA started painting');
 
   // PaintTimingMixin
-  if ("presentationTime" in entry) {
+  if ("presentationTime" in entry && entry.presentationTime !== null) {
     assert_greater_than(entry.presentationTime, entry.paintTime);
     assert_equals(entry.presentationTime, entry.renderTime);
   } else {
@@ -142,27 +142,6 @@ const loadImage = (url, shouldBeIgnoredForLCP = false) => {
       image.style.opacity = 0;
     document.body.appendChild(image);
   });
-}
-
-const checkLCPEntryForNonTaoImages = (times = {}) => {
-  const lcp = times['lcp'];
-  const fcp = times['fcp'];
-  const lcp_url_components = lcp.url.split('/');
-
-  if (lcp.loadTime <= fcp.startTime) {
-    assert_approx_equals(lcp.startTime, fcp.startTime, 0.001,
-      'LCP start time should be the same as FCP for ' +
-      lcp_url_components[lcp_url_components.length - 1]) +
-      ' when LCP load time is less than FCP.';
-  } else {
-    assert_approx_equals(lcp.startTime, lcp.loadTime, 0.001,
-      'LCP start time should be the same as LCP load time for ' +
-      lcp_url_components[lcp_url_components.length - 1]) +
-      ' when LCP load time is no less than FCP.';
-  }
-
-  assert_equals(lcp.renderTime, 0,
-    'The LCP render time of Non-Tao image should always be 0.');
 }
 
 const raf = () => {

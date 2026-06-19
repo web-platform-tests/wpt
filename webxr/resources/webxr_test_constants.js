@@ -25,8 +25,12 @@ const VALID_POSE_TRANSFORM = {
     orientation: [0.5, 0.5, 0.5, 0.5]
 };
 
-const VALID_PROJECTION_MATRIX =
-    [1, 0, 0, 0, 0, 1, 0, 0, 3, 2, -1, -1, 0, 0, -0.2, 0];
+const VALID_PROJECTION_MATRIX = [
+    1,  0,  0,  0,
+    0,  1,  0,  0,
+    3,  2, -1, -1,
+    0,  0, -0.2, 0
+];
 
 // This is a decomposed version of the above.
 const VALID_FIELD_OF_VIEW = {
@@ -35,6 +39,16 @@ const VALID_FIELD_OF_VIEW = {
     leftDegrees:-63.4349,
     rightDegrees: 75.9637
 };
+
+// This is roughly equivalent to the above, but with a different near plane.
+// The fact that it's the same isn't too concerning, since to be the same
+// ViewGeometry it'd also need the same offset.
+const VALID_DEPTH_PROJECTION_MATRIX = [
+    1,  0,  0,     0,
+    0,  1,  0,     0,
+    3,  2, -1,    -1,
+    0,  0, -0.002, 0
+];
 
 // A valid input grip matrix for  when we don't care about specific values
 const VALID_GRIP = [1, 0, 0, 0,
@@ -94,6 +108,13 @@ const RIGHT_OFFSET = {
     orientation: [0, 0, 0, 1]
 };
 
+// Most depth tests at present are effectively monocular, so just ensure we
+// substantially overlap the left eye.
+const DEPTH_OFFSET = {
+    position: [-0.1, 0.01, 0],
+    orientation: [0, 0, 0, 1]
+};
+
 const FIRST_PERSON_OFFSET = {
   position: [0, 0.1, 0],
   orientation: [0, 0, 0, 1]
@@ -142,8 +163,32 @@ const ALL_FEATURES = [
   'depth-sensing',
   'secondary-views',
   'camera-access',
-  'layers'
+  'layers',
+  'plane-detection'
 ];
+
+const DEFAULT_FLOOR_PLANE = {
+  type: "plane",
+  faces: [
+    { vertices: [{x: -1, y: 0, z: -1}, {x: 1, y: 0, z: -1}, {x: 1, y: 0, z: 1}] },
+    { vertices: [{x: -1, y: 0, z: -1}, {x: 1, y: 0, z: 1}, {x: -1, y: 0, z: 1}] }
+  ],
+  planeInfo: {
+    orientation: "horizontal",
+    origin: { position: [0, 0, 0], orientation: [0, 0, 0, 1] },
+    polygon: [
+      {x: -1, z: -1},
+      {x: 1, z: -1},
+      {x: 1, z: 1},
+      {x: -1, z: 1}
+    ],
+    semanticLabel: "floor"
+  }
+};
+
+const DEFAULT_WORLD_WITH_FLOOR = {
+  hitTestRegions: [ DEFAULT_FLOOR_PLANE ]
+};
 
 const TRACKED_IMMERSIVE_DEVICE = {
     supportsImmersive: true,

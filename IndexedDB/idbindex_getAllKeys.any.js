@@ -5,8 +5,8 @@
 // META: script=resources/support-get-all.js
 // META: script=resources/support-promises.js
 // META: timeout=long
+'use strict';
 
-'use_strict';
 
 index_get_all_keys_test(
     /*storeName=*/ 'out-of-line', /*options=*/ {query: 'C'}, 'Single item get');
@@ -83,3 +83,7 @@ index_get_all_keys_test(
 index_get_all_keys_test(
     /*storeName=*/ 'out-of-line-multi',
     /*options=*/ {query: 'vowel'}, 'Retrieve one key multiple values');
+
+get_all_with_invalid_keys_test(
+    'getAllKeys', /*storeName=*/ 'out-of-line', /*indexName=*/ 'test_idx',
+    /*shouldUseDictionary=*/ false, 'Get all keys with invalid query keys');

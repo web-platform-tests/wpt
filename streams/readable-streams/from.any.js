@@ -591,7 +591,7 @@ promise_test(async () => {
 
 }, `ReadableStream.from: reader.read() inside next()`);
 
-promise_test(async () => {
+promise_test(async t => {
 
   let nextCalls = 0;
   let returnCalls = 0;
@@ -600,7 +600,7 @@ promise_test(async () => {
   const iterable = {
     async next() {
       nextCalls++;
-      await reader.cancel();
+      await reader.cancel().catch(t.unreached_func('cancel() should not reject'));
       return { value: 'something else', done: false };
     },
     async return() {
@@ -619,6 +619,7 @@ promise_test(async () => {
   assert_equals(returnCalls, 1, 'return() should be called once');
 
   await reader.closed;
+  await flushAsyncEvents(); // wait for next() to settle
 
 }, `ReadableStream.from: reader.cancel() inside next()`);
 

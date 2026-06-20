@@ -424,7 +424,6 @@ promise_test(async t => {
 promise_test(async t => {
 
   let nextCalls = 0;
-  let returnCalls = 0;
 
   const iterable = {
     async next() {
@@ -432,10 +431,7 @@ promise_test(async t => {
       return { value: undefined, done: true };
     },
     throw: t.unreached_func('throw() should not be called'),
-    async return() {
-      returnCalls += 1;
-      return { done: true };
-    },
+    return: t.unreached_func('return() should not be called'),
     [Symbol.asyncIterator]: () => iterable
   };
 
@@ -447,7 +443,6 @@ promise_test(async t => {
   assert_equals(nextCalls, 1, 'next() should be called once');
 
   await reader.closed;
-  assert_equals(returnCalls, 0, 'return() should not be called');
 
 }, `ReadableStream.from: return() is not called when iterator completes normally`);
 

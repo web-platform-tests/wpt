@@ -434,6 +434,7 @@ promise_test(async t => {
     throw: t.unreached_func('throw() should not be called'),
     async return() {
       returnCalls += 1;
+      return { done: true };
     },
     [Symbol.asyncIterator]: () => iterable
   };
@@ -605,6 +606,7 @@ promise_test(async () => {
     },
     async return() {
       returnCalls++;
+      return { done: true };
     },
     [Symbol.asyncIterator]: () => iterable
   };

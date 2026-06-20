@@ -601,7 +601,6 @@ promise_test(async () => {
     async next() {
       nextCalls++;
       await reader.cancel();
-      assert_equals(returnCalls, 1, 'return() should be called once');
       return { value: 'something else', done: false };
     },
     async return() {
@@ -617,6 +616,7 @@ promise_test(async () => {
   const read = await reader.read();
   assert_object_equals(read, { value: undefined, done: true }, 'first read should be done');
   assert_equals(nextCalls, 1, 'next() should be called once');
+  assert_equals(returnCalls, 1, 'return() should be called once');
 
   await reader.closed;
 

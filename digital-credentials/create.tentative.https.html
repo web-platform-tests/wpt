@@ -320,7 +320,7 @@
     const { signal } = abortController;
     const options = {
       digital: {
-        requests: [{ protocol: "openid4vci", data: {} }]
+        requests: [makeCanonicalCreateRequest("openid4vci")]
       },
       signal
     };
@@ -342,7 +342,7 @@
       digital: {
         requests: [
           { protocol: "unknown-protocol", data: {} },
-          { protocol: "openid4vci", data: {} },
+          makeCanonicalCreateRequest("openid4vci"),
           { protocol: "another-fake", data: {} }
         ]
       },

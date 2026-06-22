@@ -14,15 +14,22 @@
     switch (source) {
       case "DOM":
         return document.createProcessingInstruction(target, data);
-      case "parser":
+      case "html-parser":
         const div = document.createElement("div");
         div.innerHTML = `<?${target} ${data}?>`;
         return div.firstChild;
-      case "xml":
+      case "xml-parser":
         return createXMLDocument().createProcessingInstruction(target, data);
     }
   }
-  for (const source of ["DOM", "parser", "xml"]) {
+  const all_sources = ["DOM", "xml-parser"];
+
+  // Only test html-parser if the parser supports processing instructions.
+  if (createProcessingInstruction("html-parser", "target", "data").nodeType === Node.PROCESSING_INSTRUCTION_NODE) {
+    all_sources.push("html-parser");
+  }
+
+  for (const source of all_sources) {
     test(() => {
       const pi = createProcessingInstruction(source, "t", 'a=b x="yy"');
       assert_false(pi.hasAttributes());
@@ -148,7 +155,7 @@
   }, "Processing instruction toggleAttribute");
 
   function test_attribute_value(value) {
-    for (const source of ["DOM", "parser", "xml"]) {
+    for (const source of all_sources) {
       test(
         () => {
           const pi = createProcessingInstruction(source, "target", "");
@@ -183,7 +190,7 @@
   }
 
   function test_equivalent_attribute_name(name, expected) {
-    for (const source of ["DOM", "parser", "xml"]) {
+    for (const source of all_sources) {
       test(
         () => {
           const pi = createProcessingInstruction(source, "target", "");

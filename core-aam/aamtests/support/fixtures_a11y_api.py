@@ -6,6 +6,8 @@ def pid_from(capabilities):
     # TODO: add support for getting the PID from other browsers.
     if capabilities["browserName"] == "chrome":
         return capabilities["goog:processID"], "chrome"
+    if capabilities["browserName"].lower() in ("microsoftedge", "edge"):
+        return capabilities.get("ms:processID", capabilities.get("goog:processID", 0)), "edge"
     if capabilities["browserName"] == "firefox":
         return capabilities["moz:processID"], "firefox"
     if "safari:processID" in capabilities:

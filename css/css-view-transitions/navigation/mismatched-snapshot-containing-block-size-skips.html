@@ -9,6 +9,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/utils.js"></script>
+<script src="/web-animations/testcommon.js"></script>
 <script src="resources/common.js"></script>
 <style>
 @view-transition {
@@ -91,7 +92,10 @@ if (is_harness_page) {
   // ========= Popup Script =============
 
   if (is_old_page) {
-    addEventListener('load', () => window.opener.postMessage('load'));
+    addEventListener('load', async () => {
+      await waitForCompositorReady();
+      window.opener.postMessage('load');
+    });
   } else  if (is_new_page) {
     function errorHandler(e) {
       window.opener.postMessage(`FAIL: ${e}`);

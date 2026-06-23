@@ -27,7 +27,7 @@
                 const iframe = document.createElement("iframe");
                 document.body.appendChild(iframe);
                 iframe.contentDocument.open();
-                iframe.contentDocument.write(testcase.data);
+                iframe.contentDocument.write(`<html><body>${testcase.data}</body></html>`);
                 iframe.contentDocument.close();
                 container = iframe.contentDocument.body;
                 t.add_cleanup(() => iframe.remove());

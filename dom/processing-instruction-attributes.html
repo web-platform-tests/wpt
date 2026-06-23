@@ -7,15 +7,14 @@
 <div id="container"><?t a="b" x="yy"?></div>
 
 <script>
-  function createProcessingInstructionFromHTMLParser(target, data) {
-    const div = document.createElement("div");
-    div.innerHTML = `<?${target} ${data}?>`;
-    return div.firstChild;
-  }
-
   const sources = {
     "html-dom": (target, data) =>
       document.createProcessingInstruction(target, data),
+    "html-parser": (target, data) => {
+      const div = document.createElement("div");
+      div.innerHTML = `<?${target} ${data}?>`;
+      return div.firstChild;
+    },
     "xml-dom": (target, data) =>
       new DOMParser()
         .parseFromString("<root></root>", "application/xml")
@@ -25,21 +24,13 @@
         .firstChild
   };
 
-  // Setting this conditionally as parsing PIs in HTML is a new feature.
-  if (
-    createProcessingInstructionFromHTMLParser("target", "data").nodeType ===
-    Node.PROCESSING_INSTRUCTION_NODE
-  ) {
-    sources["html-parser"] = createProcessingInstructionFromHTMLParser;
-
-    test(() => {
-      const div = document.getElementById("container");
-      const pi = div.firstChild;
-      assert_equals(pi.nodeType, Node.PROCESSING_INSTRUCTION_NODE);
-      assert_equals(pi.getAttribute("a"), "b");
-      assert_equals(pi.getAttribute("x"), "yy");
-    }, "Processing instruction in main parser")
-  }
+  test(() => {
+    const div = document.getElementById("container");
+    const pi = div.firstChild;
+    assert_equals(pi.nodeType, Node.PROCESSING_INSTRUCTION_NODE);
+    assert_equals(pi.getAttribute("a"), "b");
+    assert_equals(pi.getAttribute("x"), "yy");
+  }, "Processing instruction in main parser")
 
   for (const [source, createProcessingInstruction] of Object.entries(sources)) {
     test(() => {

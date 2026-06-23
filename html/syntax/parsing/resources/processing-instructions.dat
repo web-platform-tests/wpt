@@ -1,0 +1,571 @@
+#data
+<?something>
+#document
+| <?something ?>
+
+#data
+<?something><span>
+#document
+| <?something ?>
+| <span>
+
+#data
+<?something good>
+#document
+| <?something good?>
+
+#data
+<?something else is good>
+#document
+| <?something else is good?>
+
+#data
+<?one><?two>
+#document
+| <?one ?>
+| <?two ?>
+
+#data
+<?a$><?b$><?good?>
+#document
+| <!-- ?a$ -->
+| <!-- ?b$ -->
+| <?good ?>
+
+#data
+<?hey there?>
+#document
+| <?hey there?>
+
+#data
+<?hey   there?>
+#document
+| <?hey there?>
+
+#data
+<?hey?there>
+#document
+| <?hey ?there?>
+
+#data
+<?hey\tthere=1?>
+#document
+| <?hey there=1?>
+
+#data
+<?hey\nthere=1?>
+#document
+| <?hey there=1?>
+
+#data
+<?hey\rthere=1?>
+#document
+| <?hey there=1?>
+
+#data
+<?hey\fthere=1?>
+#document
+| <?hey there=1?>
+
+#data
+<?something ? >
+#document
+| <?something ? ?>
+
+#data
+<?something x >
+#document
+| <?something x ?>
+
+#data
+<?something ?\t   ??>
+#document
+| <?something ?\t   ??>
+
+#data
+<?t d > ?>
+#document
+| <?t d ?>
+| " ?>"
+
+#data
+<?module-handler>
+#document
+| <?module-handler ?>
+
+#data
+<?module-handler data>
+#document
+| <?module-handler data?>
+
+#data
+<?view-port>
+#document
+| <?view-port ?>
+
+#data
+<?view-port data>
+#document
+| <?view-port data?>
+
+#data
+<?config-v2>
+#document
+| <?config-v2 ?>
+
+#data
+<?config-v2 data>
+#document
+| <?config-v2 data?>
+
+#data
+<?x>
+#document
+| <?x ?>
+
+#data
+<?x data>
+#document
+| <?x data?>
+
+#data
+<?zz2op>
+#document
+| <?zz2op ?>
+
+#data
+<?zz2op data>
+#document
+| <?zz2op data?>
+
+#data
+<?xla->
+#document
+| <?xla- ?>
+
+#data
+<?xla- data>
+#document
+| <?xla- data?>
+
+#data
+<?a-b-c>
+#document
+| <?a-b-c ?>
+
+#data
+<?a-b-c data>
+#document
+| <?a-b-c data?>
+
+#data
+<?v-123>
+#document
+| <?v-123 ?>
+
+#data
+<?v-123 data>
+#document
+| <?v-123 data?>
+
+#data
+<?a0-b1-c2>
+#document
+| <?a0-b1-c2 ?>
+
+#data
+<?a0-b1-c2 data>
+#document
+| <?a0-b1-c2 data?>
+
+#data
+<?page-404>
+#document
+| <?page-404 ?>
+
+#data
+<?page-404 data>
+#document
+| <?page-404 data?>
+
+#data
+<?r2-d2>
+#document
+| <?r2-d2 ?>
+
+#data
+<?r2-d2 data>
+#document
+| <?r2-d2 data?>
+
+#data
+<?level-99>
+#document
+| <?level-99 ?>
+
+#data
+<?level-99 data>
+#document
+| <?level-99 data?>
+
+#data
+<?UPPERCASE>
+#document
+| <?UPPERCASE ?>
+
+#data
+<?UPPERCASE data>
+#document
+| <?UPPERCASE data?>
+
+#data
+<?all-KINDS-of-CaSeS>
+#document
+| <?all-KINDS-of-CaSeS ?>
+
+#data
+<?all-KINDS-of-CaSeS data>
+#document
+| <?all-KINDS-of-CaSeS data?>
+
+#data
+<?user_name>
+#document
+| <?user_name ?>
+
+#data
+<?user_name data>
+#document
+| <?user_name data?>
+
+#data
+<?S_S-S_S>
+#document
+| <?S_S-S_S ?>
+
+#data
+<?S_S-S_S data>
+#document
+| <?S_S-S_S data?>
+
+#data
+<?b_>
+#document
+| <?b_ ?>
+
+#data
+<?b_ data>
+#document
+| <?b_ data?>
+
+#data
+<?_prefix>
+#document
+| <?_prefix ?>
+
+#data
+<?_prefix data>
+#document
+| <?_prefix data?>
+
+#data
+<?_x132>
+#document
+| <?_x132 ?>
+
+#data
+<?_x132 data>
+#document
+| <?_x132 data?>
+
+#data
+<?_-_>
+#document
+| <?_-_ ?>
+
+#data
+<?_-_ data>
+#document
+| <?_-_ data?>
+
+#data
+<?_>
+#document
+| <?_ ?>
+
+#data
+<?_ data>
+#document
+| <?_ data?>
+
+#data
+<?A---------------->
+#document
+| <?A---------------- ?>
+
+#data
+<?A---------------- data>
+#document
+| <?A---------------- data?>
+
+#data
+<?z0123456789>
+#document
+| <?z0123456789 ?>
+
+#data
+<?z0123456789 data>
+#document
+| <?z0123456789 data?>
+
+#data
+<?m-0>
+#document
+| <?m-0 ?>
+
+#data
+<?m-0 data>
+#document
+| <?m-0 data?>
+
+#data
+<?xml>
+#document
+| <!-- ?xml -->
+
+#data
+<?xml-stylesheet>
+#document
+| <!-- ?xml-stylesheet -->
+
+#data
+<?XML>
+#document
+| <!-- ?XML -->
+
+#data
+<?XML-stylesheet>
+#document
+| <!-- ?XML-stylesheet -->
+
+#data
+<?xML>
+#document
+| <!-- ?xML -->
+
+#data
+<?xml-STYLesheet>
+#document
+| <!-- ?xml-STYLesheet -->
+
+#data
+<?1st-place>
+#document
+| <!-- ?1st-place -->
+
+#data
+<?2-factor>
+#document
+| <!-- ?2-factor -->
+
+#data
+<?99-problems>
+#document
+| <!-- ?99-problems -->
+
+#data
+<?\u0665-star>
+#document
+| <!-- ?٥-star -->
+
+#data
+<?-prefix>
+#document
+| <!-- ?-prefix -->
+
+#data
+<?--internal>
+#document
+| <!-- ?--internal -->
+
+#data
+<?-data->
+#document
+| <!-- ?-data- -->
+
+#data
+<?-100>
+#document
+| <!-- ?-100 -->
+
+#data
+<?\u00B7middle-dot>
+#document
+| <!-- ?·middle-dot -->
+
+#data
+<?\u0375greek-numeral>
+#document
+| <!-- ?͵greek-numeral -->
+
+#data
+<?\u0301accent-start>
+#document
+| <!-- ?́accent-start -->
+
+#data
+<?price$value>
+#document
+| <!-- ?price$value -->
+
+#data
+<?user@domain>
+#document
+| <!-- ?user@domain -->
+
+#data
+<?tag#id>
+#document
+| <!-- ?tag#id -->
+
+#data
+<?a+b>
+#document
+| <!-- ?a+b -->
+
+#data
+<?100%>
+#document
+| <!-- ?100% -->
+
+#data
+<?data.v1>
+#document
+| <!-- ?data.v1 -->
+
+#data
+<?namespace:tag>
+#document
+| <!-- ?namespace:tag -->
+
+#data
+<?error!code>
+#document
+| <!-- ?error!code -->
+
+#data
+<?x=y>
+#document
+| <!-- ?x=y -->
+
+#data
+<?a<b>
+#document
+| <!-- ?a<b -->
+
+#data
+<?true&false>
+#document
+| <!-- ?true&false -->
+
+#data
+<?not|or>
+#document
+| <!-- ?not|or -->
+
+#data
+<?lit$123456789>
+#document
+| <!-- ?lit$123456789 -->
+
+#data
+<?lit$$4x>
+#document
+| <!-- ?lit$$4x -->
+
+#data
+<?\uD83D\uDE80-launch>
+#document
+| <!-- ?🚀-launch -->
+
+#data
+<?error-\u26A0\uFE0F>
+#document
+| <!-- ?error-⚠️ -->
+
+#data
+<?fire-\uD83D\uDD25>
+#document
+| <!-- ?fire-🔥 -->
+
+#data
+<?v1-\u2705>
+#document
+| <!-- ?v1-✅ -->
+
+#data
+<?start
+#document
+
+#data
+<?start?
+#document
+
+#data
+<?start 
+#document
+
+#data
+<?start data
+#document
+
+#data
+<?start ? ?
+#document
+
+#data
+<?
+#document
+
+#data
+<? 
+#document
+| <!-- ?  -->
+
+#data
+<div><?something></div>
+#document
+| <div>
+|   <?something ?>
+
+#data
+<div><?something good></div>
+#document
+| <div>
+|   <?something good?>
+
+#data
+<table><?something></table>
+#document
+| <table>
+|   <?something ?>
+
+#data
+<table><tr><?something></tr></table>
+#document
+| <table>
+|   <tbody>
+|     <tr>
+|       <?something ?>
+
+#data
+<script><?something></script>
+#document
+| <script>
+|   "<?something>"
+
+#data
+<style><?something></style>
+#document
+| <style>
+|   "<?something>"

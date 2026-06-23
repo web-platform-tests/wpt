@@ -1,571 +1,987 @@
 #data
-<?something>
+<body><?something>
 #document
-| <?something ?>
+| <html>
+|   <head>
+|   <body>
+|     <?something?>
 
 #data
-<?something><span>
+<body><?something><span>
 #document
-| <?something ?>
-| <span>
+| <html>
+|   <head>
+|   <body>
+|     <?something?>
+|     <span>
 
 #data
-<?something good>
+<body><?something good>
 #document
-| <?something good?>
+| <html>
+|   <head>
+|   <body>
+|     <?something good?>
 
 #data
-<?something else is good>
+<body><?something else is good>
 #document
-| <?something else is good?>
+| <html>
+|   <head>
+|   <body>
+|     <?something else is good?>
 
 #data
-<?one><?two>
+<body><?one><?two>
 #document
-| <?one ?>
-| <?two ?>
+| <html>
+|   <head>
+|   <body>
+|     <?one?>
+|     <?two?>
 
 #data
-<?a$><?b$><?good?>
+<body><?a$><?b$><?good?>
 #document
-| <!-- ?a$ -->
-| <!-- ?b$ -->
-| <?good ?>
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?a$ -->
+|     <!-- ?b$ -->
+|     <?good?>
 
 #data
-<?hey there?>
+<body><?hey there?>
 #document
-| <?hey there?>
+| <html>
+|   <head>
+|   <body>
+|     <?hey there?>
 
 #data
-<?hey   there?>
+<body><?hey   there?>
 #document
-| <?hey there?>
+| <html>
+|   <head>
+|   <body>
+|     <?hey there?>
 
 #data
-<?hey?there>
+<body><?hey?there>
 #document
-| <?hey ?there?>
+| <html>
+|   <head>
+|   <body>
+|     <?hey ?there?>
 
 #data
-<?hey\tthere=1?>
+<body><?hey\tthere=1?>
 #document
-| <?hey there=1?>
+| <html>
+|   <head>
+|   <body>
+|     <?hey there=1?>
 
 #data
-<?hey\nthere=1?>
+<body><?hey\nthere=1?>
 #document
-| <?hey there=1?>
+| <html>
+|   <head>
+|   <body>
+|     <?hey there=1?>
 
 #data
-<?hey\rthere=1?>
+<body><?hey\rthere=1?>
 #document
-| <?hey there=1?>
+| <html>
+|   <head>
+|   <body>
+|     <?hey there=1?>
 
 #data
-<?hey\fthere=1?>
+<body><?hey\fthere=1?>
 #document
-| <?hey there=1?>
+| <html>
+|   <head>
+|   <body>
+|     <?hey there=1?>
 
 #data
-<?something ? >
+<body><?something ? >
 #document
-| <?something ? ?>
+| <html>
+|   <head>
+|   <body>
+|     <?something ? ?>
 
 #data
-<?something x >
+<body><?something x >
 #document
-| <?something x ?>
+| <html>
+|   <head>
+|   <body>
+|     <?something x ?>
 
 #data
-<?something ?\t   ??>
+<body><?something ?\t   ??>
 #document
-| <?something ?\t   ??>
+| <html>
+|   <head>
+|   <body>
+|     <?something ?\t   ??>
 
 #data
-<?t d > ?>
+<body><?t d > ?>
 #document
-| <?t d ?>
-| " ?>"
+| <html>
+|   <head>
+|   <body>
+|     <?t d ?>
+|     " ?>"
 
 #data
-<?module-handler>
+<body><?module-handler>
 #document
-| <?module-handler ?>
+| <html>
+|   <head>
+|   <body>
+|     <?module-handler?>
 
 #data
-<?module-handler data>
+<body><?module-handler data>
 #document
-| <?module-handler data?>
+| <html>
+|   <head>
+|   <body>
+|     <?module-handler data?>
 
 #data
-<?view-port>
+<body><?view-port>
 #document
-| <?view-port ?>
+| <html>
+|   <head>
+|   <body>
+|     <?view-port?>
 
 #data
-<?view-port data>
+<body><?view-port data>
 #document
-| <?view-port data?>
+| <html>
+|   <head>
+|   <body>
+|     <?view-port data?>
 
 #data
-<?config-v2>
+<body><?config-v2>
 #document
-| <?config-v2 ?>
+| <html>
+|   <head>
+|   <body>
+|     <?config-v2?>
 
 #data
-<?config-v2 data>
+<body><?config-v2 data>
 #document
-| <?config-v2 data?>
+| <html>
+|   <head>
+|   <body>
+|     <?config-v2 data?>
 
 #data
-<?x>
+<body><?x>
 #document
-| <?x ?>
+| <html>
+|   <head>
+|   <body>
+|     <?x?>
 
 #data
-<?x data>
+<body><?x data>
 #document
-| <?x data?>
+| <html>
+|   <head>
+|   <body>
+|     <?x data?>
 
 #data
-<?zz2op>
+<body><?zz2op>
 #document
-| <?zz2op ?>
+| <html>
+|   <head>
+|   <body>
+|     <?zz2op?>
 
 #data
-<?zz2op data>
+<body><?zz2op data>
 #document
-| <?zz2op data?>
+| <html>
+|   <head>
+|   <body>
+|     <?zz2op data?>
 
 #data
-<?xla->
+<body><?xla->
 #document
-| <?xla- ?>
+| <html>
+|   <head>
+|   <body>
+|     <?xla-?>
 
 #data
-<?xla- data>
+<body><?xla- data>
 #document
-| <?xla- data?>
+| <html>
+|   <head>
+|   <body>
+|     <?xla- data?>
 
 #data
-<?a-b-c>
+<body><?a-b-c>
 #document
-| <?a-b-c ?>
+| <html>
+|   <head>
+|   <body>
+|     <?a-b-c?>
 
 #data
-<?a-b-c data>
+<body><?a-b-c data>
 #document
-| <?a-b-c data?>
+| <html>
+|   <head>
+|   <body>
+|     <?a-b-c data?>
 
 #data
-<?v-123>
+<body><?v-123>
 #document
-| <?v-123 ?>
+| <html>
+|   <head>
+|   <body>
+|     <?v-123?>
 
 #data
-<?v-123 data>
+<body><?v-123 data>
 #document
-| <?v-123 data?>
+| <html>
+|   <head>
+|   <body>
+|     <?v-123 data?>
 
 #data
-<?a0-b1-c2>
+<body><?a0-b1-c2>
 #document
-| <?a0-b1-c2 ?>
+| <html>
+|   <head>
+|   <body>
+|     <?a0-b1-c2?>
 
 #data
-<?a0-b1-c2 data>
+<body><?a0-b1-c2 data>
 #document
-| <?a0-b1-c2 data?>
+| <html>
+|   <head>
+|   <body>
+|     <?a0-b1-c2 data?>
 
 #data
-<?page-404>
+<body><?page-404>
 #document
-| <?page-404 ?>
+| <html>
+|   <head>
+|   <body>
+|     <?page-404?>
 
 #data
-<?page-404 data>
+<body><?page-404 data>
 #document
-| <?page-404 data?>
+| <html>
+|   <head>
+|   <body>
+|     <?page-404 data?>
 
 #data
-<?r2-d2>
+<body><?r2-d2>
 #document
-| <?r2-d2 ?>
+| <html>
+|   <head>
+|   <body>
+|     <?r2-d2?>
 
 #data
-<?r2-d2 data>
+<body><?r2-d2 data>
 #document
-| <?r2-d2 data?>
+| <html>
+|   <head>
+|   <body>
+|     <?r2-d2 data?>
 
 #data
-<?level-99>
+<body><?level-99>
 #document
-| <?level-99 ?>
+| <html>
+|   <head>
+|   <body>
+|     <?level-99?>
 
 #data
-<?level-99 data>
+<body><?level-99 data>
 #document
-| <?level-99 data?>
+| <html>
+|   <head>
+|   <body>
+|     <?level-99 data?>
 
 #data
-<?UPPERCASE>
+<body><?UPPERCASE>
 #document
-| <?UPPERCASE ?>
+| <html>
+|   <head>
+|   <body>
+|     <?UPPERCASE?>
 
 #data
-<?UPPERCASE data>
+<body><?UPPERCASE data>
 #document
-| <?UPPERCASE data?>
+| <html>
+|   <head>
+|   <body>
+|     <?UPPERCASE data?>
 
 #data
-<?all-KINDS-of-CaSeS>
+<body><?all-KINDS-of-CaSeS>
 #document
-| <?all-KINDS-of-CaSeS ?>
+| <html>
+|   <head>
+|   <body>
+|     <?all-KINDS-of-CaSeS?>
 
 #data
-<?all-KINDS-of-CaSeS data>
+<body><?all-KINDS-of-CaSeS data>
 #document
-| <?all-KINDS-of-CaSeS data?>
+| <html>
+|   <head>
+|   <body>
+|     <?all-KINDS-of-CaSeS data?>
 
 #data
-<?user_name>
+<body><?user_name>
 #document
-| <?user_name ?>
+| <html>
+|   <head>
+|   <body>
+|     <?user_name?>
 
 #data
-<?user_name data>
+<body><?user_name data>
 #document
-| <?user_name data?>
+| <html>
+|   <head>
+|   <body>
+|     <?user_name data?>
 
 #data
-<?S_S-S_S>
+<body><?S_S-S_S>
 #document
-| <?S_S-S_S ?>
+| <html>
+|   <head>
+|   <body>
+|     <?S_S-S_S?>
 
 #data
-<?S_S-S_S data>
+<body><?S_S-S_S data>
 #document
-| <?S_S-S_S data?>
+| <html>
+|   <head>
+|   <body>
+|     <?S_S-S_S data?>
 
 #data
-<?b_>
+<body><?b_>
 #document
-| <?b_ ?>
+| <html>
+|   <head>
+|   <body>
+|     <?b_?>
 
 #data
-<?b_ data>
+<body><?b_ data>
 #document
-| <?b_ data?>
+| <html>
+|   <head>
+|   <body>
+|     <?b_ data?>
 
 #data
-<?_prefix>
+<body><?_prefix>
 #document
-| <?_prefix ?>
+| <html>
+|   <head>
+|   <body>
+|     <?_prefix?>
 
 #data
-<?_prefix data>
+<body><?_prefix data>
 #document
-| <?_prefix data?>
+| <html>
+|   <head>
+|   <body>
+|     <?_prefix data?>
 
 #data
-<?_x132>
+<body><?_x132>
 #document
-| <?_x132 ?>
+| <html>
+|   <head>
+|   <body>
+|     <?_x132?>
 
 #data
-<?_x132 data>
+<body><?_x132 data>
 #document
-| <?_x132 data?>
+| <html>
+|   <head>
+|   <body>
+|     <?_x132 data?>
 
 #data
-<?_-_>
+<body><?_-_>
 #document
-| <?_-_ ?>
+| <html>
+|   <head>
+|   <body>
+|     <?_-_?>
 
 #data
-<?_-_ data>
+<body><?_-_ data>
 #document
-| <?_-_ data?>
+| <html>
+|   <head>
+|   <body>
+|     <?_-_ data?>
 
 #data
-<?_>
+<body><?_>
 #document
-| <?_ ?>
+| <html>
+|   <head>
+|   <body>
+|     <?_?>
 
 #data
-<?_ data>
+<body><?_ data>
 #document
-| <?_ data?>
+| <html>
+|   <head>
+|   <body>
+|     <?_ data?>
 
 #data
-<?A---------------->
+<body><?A---------------->
 #document
-| <?A---------------- ?>
+| <html>
+|   <head>
+|   <body>
+|     <?A----------------?>
 
 #data
-<?A---------------- data>
+<body><?A---------------- data>
 #document
-| <?A---------------- data?>
+| <html>
+|   <head>
+|   <body>
+|     <?A---------------- data?>
 
 #data
-<?z0123456789>
+<body><?z0123456789>
 #document
-| <?z0123456789 ?>
+| <html>
+|   <head>
+|   <body>
+|     <?z0123456789?>
 
 #data
-<?z0123456789 data>
+<body><?z0123456789 data>
 #document
-| <?z0123456789 data?>
+| <html>
+|   <head>
+|   <body>
+|     <?z0123456789 data?>
 
 #data
-<?m-0>
+<body><?m-0>
 #document
-| <?m-0 ?>
+| <html>
+|   <head>
+|   <body>
+|     <?m-0?>
 
 #data
-<?m-0 data>
+<body><?m-0 data>
 #document
-| <?m-0 data?>
+| <html>
+|   <head>
+|   <body>
+|     <?m-0 data?>
 
 #data
-<?xml>
+<body><?xml>
 #document
-| <!-- ?xml -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?xml -->
 
 #data
-<?xml-stylesheet>
+<body><?xml-stylesheet>
 #document
-| <!-- ?xml-stylesheet -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?xml-stylesheet -->
 
 #data
-<?XML>
+<body><?XML>
 #document
-| <!-- ?XML -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?XML -->
 
 #data
-<?XML-stylesheet>
+<body><?XML-stylesheet>
 #document
-| <!-- ?XML-stylesheet -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?XML-stylesheet -->
 
 #data
-<?xML>
+<body><?xML>
 #document
-| <!-- ?xML -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?xML -->
 
 #data
-<?xml-STYLesheet>
+<body><?xml-STYLesheet>
 #document
-| <!-- ?xml-STYLesheet -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?xml-STYLesheet -->
 
 #data
-<?1st-place>
+<body><?1st-place>
 #document
-| <!-- ?1st-place -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?1st-place -->
 
 #data
-<?2-factor>
+<body><?2-factor>
 #document
-| <!-- ?2-factor -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?2-factor -->
 
 #data
-<?99-problems>
+<body><?99-problems>
 #document
-| <!-- ?99-problems -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?99-problems -->
 
 #data
-<?\u0665-star>
+<body><?\u0665-star>
 #document
-| <!-- ?٥-star -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?٥-star -->
 
 #data
-<?-prefix>
+<body><?-prefix>
 #document
-| <!-- ?-prefix -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?-prefix -->
 
 #data
-<?--internal>
+<body><?--internal>
 #document
-| <!-- ?--internal -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?--internal -->
 
 #data
-<?-data->
+<body><?-data->
 #document
-| <!-- ?-data- -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?-data- -->
 
 #data
-<?-100>
+<body><?-100>
 #document
-| <!-- ?-100 -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?-100 -->
 
 #data
-<?\u00B7middle-dot>
+<body><?\u00B7middle-dot>
 #document
-| <!-- ?·middle-dot -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?·middle-dot -->
 
 #data
-<?\u0375greek-numeral>
+<body><?\u0375greek-numeral>
 #document
-| <!-- ?͵greek-numeral -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?͵greek-numeral -->
 
 #data
-<?\u0301accent-start>
+<body><?\u0301accent-start>
 #document
-| <!-- ?́accent-start -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?́accent-start -->
 
 #data
-<?price$value>
+<body><?price$value>
 #document
-| <!-- ?price$value -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?price$value -->
 
 #data
-<?user@domain>
+<body><?user@domain>
 #document
-| <!-- ?user@domain -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?user@domain -->
 
 #data
-<?tag#id>
+<body><?tag#id>
 #document
-| <!-- ?tag#id -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?tag#id -->
 
 #data
-<?a+b>
+<body><?a+b>
 #document
-| <!-- ?a+b -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?a+b -->
 
 #data
-<?100%>
+<body><?100%>
 #document
-| <!-- ?100% -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?100% -->
 
 #data
-<?data.v1>
+<body><?data.v1>
 #document
-| <!-- ?data.v1 -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?data.v1 -->
 
 #data
-<?namespace:tag>
+<body><?namespace:tag>
 #document
-| <!-- ?namespace:tag -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?namespace:tag -->
 
 #data
-<?error!code>
+<body><?error!code>
 #document
-| <!-- ?error!code -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?error!code -->
 
 #data
-<?x=y>
+<body><?x=y>
 #document
-| <!-- ?x=y -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?x=y -->
 
 #data
-<?a<b>
+<body><?a<b>
 #document
-| <!-- ?a<b -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?a<b -->
 
 #data
-<?true&false>
+<body><?true&false>
 #document
-| <!-- ?true&false -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?true&false -->
 
 #data
-<?not|or>
+<body><?not|or>
 #document
-| <!-- ?not|or -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?not|or -->
 
 #data
-<?lit$123456789>
+<body><?lit$123456789>
 #document
-| <!-- ?lit$123456789 -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?lit$123456789 -->
 
 #data
-<?lit$$4x>
+<body><?lit$$4x>
 #document
-| <!-- ?lit$$4x -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?lit$$4x -->
 
 #data
-<?\uD83D\uDE80-launch>
+<body><?\uD83D\uDE80-launch>
 #document
-| <!-- ?🚀-launch -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?🚀-launch -->
 
 #data
-<?error-\u26A0\uFE0F>
+<body><?error-\u26A0\uFE0F>
 #document
-| <!-- ?error-⚠️ -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?error-⚠️ -->
 
 #data
-<?fire-\uD83D\uDD25>
+<body><?fire-\uD83D\uDD25>
 #document
-| <!-- ?fire-🔥 -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?fire-🔥 -->
 
 #data
-<?v1-\u2705>
+<body><?v1-\u2705>
 #document
-| <!-- ?v1-✅ -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?v1-✅ -->
 
 #data
-<?start
+<body><?start
 #document
+| <html>
+|   <head>
+|   <body>
 
 #data
-<?start?
+<body><?start?
 #document
+| <html>
+|   <head>
+|   <body>
 
 #data
-<?start 
+<body><?start 
 #document
+| <html>
+|   <head>
+|   <body>
 
 #data
-<?start data
+<body><?start data
 #document
+| <html>
+|   <head>
+|   <body>
 
 #data
-<?start ? ?
+<body><?start ? ?
 #document
+| <html>
+|   <head>
+|   <body>
 
 #data
-<?
+<body><?
 #document
+| <html>
+|   <head>
+|   <body>
 
 #data
-<? 
+<body><? 
 #document
-| <!-- ?  -->
+| <html>
+|   <head>
+|   <body>
+|     <!-- ?  -->
 
 #data
 <div><?something></div>
 #document
-| <div>
-|   <?something ?>
+| <html>
+|   <head>
+|   <body>
+|     <div>
+|       <?something?>
 
 #data
 <div><?something good></div>
 #document
-| <div>
-|   <?something good?>
+| <html>
+|   <head>
+|   <body>
+|     <div>
+|       <?something good?>
 
 #data
 <table><?something></table>
 #document
-| <table>
-|   <?something ?>
+| <html>
+|   <head>
+|   <body>
+|     <table>
+|       <?something?>
 
 #data
 <table><tr><?something></tr></table>
 #document
-| <table>
-|   <tbody>
-|     <tr>
-|       <?something ?>
+| <html>
+|   <head>
+|   <body>
+|     <table>
+|       <tbody>
+|         <tr>
+|           <?something?>
 
 #data
 <script><?something></script>
 #document
-| <script>
-|   "<?something>"
+| <html>
+|   <head>
+|   <body>
+|     <script>
+|       "<?something>"
 
 #data
 <style><?something></style>
 #document
-| <style>
-|   "<?something>"
+| <html>
+|   <head>
+|   <body>
+|     <style>
+|       "<?something>"
+
+#data
+<?something>
+#document
+| <?something?>
+| <html>
+|   <head>
+|   <body>
+
+#data
+<head><?something>
+#document
+| <html>
+|   <head>
+|     <?something?>
+|   <body>
+
+#data
+<html><?something><head>
+#document
+| <html>
+|   <?something?>
+|   <head>
+|   <body>
+
+#data
+<html><head></head><?something><body>
+#document
+| <html>
+|   <head>
+|   <?something?>
+|   <body>
+
+#data
+<html><body></body><?something>
+#document
+| <html>
+|   <head>
+|   <body>
+|   <?something?>
+
+#data
+<html><body></body></html><?something>
+#document
+| <html>
+|   <head>
+|   <body>
+| <?something?>
+
+#data
+<body><template><?something></template>
+#document
+| <html>
+|   <head>
+|   <body>
+|     <template>
+|       content
+|         <?something?>
+
+#data
+<body><textarea><?something></textarea>
+#document
+| <html>
+|   <head>
+|   <body>
+|     <textarea>
+|       "<?something>"
+
+#data
+<body><title><?something></title>
+#document
+| <html>
+|   <head>
+|   <body>
+|     <title>
+|       "<?something>"
+

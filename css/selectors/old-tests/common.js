@@ -10,3 +10,8 @@ function assert_not_background_color(elementOrId, colorString, comment) {
   const element = typeof elementOrId === 'string' ? document.getElementById(elementOrId) : elementOrId;
   assert_not_equals(getComputedStyle(element).backgroundColor, colorString, comment);
 }
+
+function assert_color(elementOrId, colorString, comment) {
+  const element = typeof elementOrId === 'string' ? document.getElementById(elementOrId) : elementOrId;
+  assert_equals(getComputedStyle(element).color, colorString, comment);
+}

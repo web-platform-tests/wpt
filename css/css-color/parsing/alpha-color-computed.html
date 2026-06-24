@@ -31,7 +31,8 @@ test_computed_value("color", "alpha(from red)", "rgb(255, 0, 0)");
 test_computed_value("color", "alpha(from rgba(255, 0, 0, 0.3))", "rgba(255, 0, 0, 0.3)");
 
 // None alpha.
-test_computed_value("color", "alpha(from red / none)", "rgba(255, 0, 0, 0)");
+test_computed_value("color", "alpha(from red / none)", "color(srgb 1 0 0 / none)");
+test_computed_value("color", "color-mix(in srgb, rgb(255 0 0 / 0.5), alpha(from red / none))", "color(srgb 1 0 0 / 0.5)")
 
 // Alpha clamped to [0, 1].
 test_computed_value("color", "alpha(from red / 2)", "rgb(255, 0, 0)");

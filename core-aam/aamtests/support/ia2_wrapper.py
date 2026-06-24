@@ -62,7 +62,21 @@ def get_browser_hwnd(product_name: str, pid: int) -> HWND:
         # EnumWindows should stop enumerating (since we found the right window)
         return False
 
-    user32.EnumWindows(check_pid, LPARAM(0))
+    @ctypes.WINFUNCTYPE(BOOL, HWND, LPARAM)  # type: ignore[attr-defined, misc]
+    def check_window_name(hwnd: HWND, lParam: LPARAM) -> bool:  # noqa: N803
+        window_name = name_from_hwnd(hwnd)
+        if product_name not in window_name.lower():
+            # EnumWindows should continue enumerating
+            return True
+        found.append(hwnd)
+        # EnumWindows should stop enumerating (since we found the right window)
+        return False
+
+    if pid:
+        user32.EnumWindows(check_pid, LPARAM(0))
+    else:
+        user32.EnumWindows(check_window_name, LPARAM(0))
+
     if not found:
         raise LookupError(f"Couldn't find {product_name} HWND")
     return found[0]

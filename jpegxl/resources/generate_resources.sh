@@ -86,9 +86,6 @@ convert 3x3a.png \
 -fill "rgba(0,0,0,0.5)" -draw "point 2,2" \
 3x3a.png
 
-# Generate initial image with alpha values
-generate_image 3x3a.png
-
 # Generate a version without alpha channel
 convert 3x3a.png -alpha off 3x3.png
 
@@ -101,6 +98,10 @@ for color_space in "${color_spaces[@]}"; do
   convert_and_compress 3x3.png "3x3" "$color_space"
   convert_and_compress 3x3a.png "3x3a" "$color_space"
 done
+
+# lossy modular
+cjxl 3x3.png 3x3_modular_lossy.jxl -m 1 -d 1
+djxl 3x3_modular_lossy.jxl 3x3_modular_lossy.png
 
 convert 3x3.png -quality 70 3x3.jpg
 # lossless recompression
@@ -124,13 +125,11 @@ JXL_RS_TESTDATA="${JXL_RS_TESTDATA:-$HOME/jxl-rs/jxl/resources/test}"
 JXL_RS_CONF="$JXL_RS_TESTDATA/conformance_test_images"
 
 for f in \
-  basic.jxl \
   8x8_noise.jxl \
   with_icc.jxl \
   orientation1_identity.jxl \
   orientation6_rotate_90_cw.jxl \
   orientation8_rotate_90_ccw.jxl \
-  green_queen_modular_e3.jxl \
   green_queen_vardct_e3.jxl \
   has_permutation.jxl \
   progressive_ac.jxl \
@@ -155,9 +154,6 @@ copy_if_exists "$JXL_RS_CONF/patches.jxl" \
 
 # PNG references used by reftests.
 decode_png_ref_if_exists \
-  "$SCRIPT_DIR/green_queen_modular_e3.jxl" \
-  "$SCRIPT_DIR/green_queen_modular_e3.png"
-decode_png_ref_if_exists \
   "$SCRIPT_DIR/conformance_cmyk_layers.jxl" \
   "$SCRIPT_DIR/conformance_cmyk_layers.png"
 decode_png_ref_if_exists \
@@ -175,9 +171,6 @@ decode_png_ref_if_exists \
 decode_png_ref_if_exists \
   "$SCRIPT_DIR/has_permutation.jxl" \
   "$SCRIPT_DIR/has_permutation.png"
-decode_png_ref_if_exists \
-  "$SCRIPT_DIR/basic.jxl" \
-  "$SCRIPT_DIR/basic.png"
 decode_png_ref_if_exists \
   "$SCRIPT_DIR/orientation1_identity.jxl" \
   "$SCRIPT_DIR/orientation1_identity.png"

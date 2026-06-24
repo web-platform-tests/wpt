@@ -26,9 +26,13 @@ def test_atspi(atspi, session, inline):
 #     # Role: ROLE_SYSTEM_GROUPING
 #     # Object Attribute: xml-roles:sectionfooter
 
-# def test_uia(uia, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Control Type: Group
-#     # Localized Control Type: section footer
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: Group
+    # Localized Control Type: section footer
+
+    node = uia.find_node("test", session.url)
+    assert uia.get_control_type(node) == "Group"
+    assert uia.get_property(node, "LocalizedControlType") == "section footer"

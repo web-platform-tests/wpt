@@ -25,10 +25,15 @@ def test_atspi(atspi, session, inline):
 #     # Role: ROLE_SYSTEM_ALERT
 #     # Event: EVENT_SYSTEM_ALERT: .
 
-# def test_uia(uia, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Control Type: Group
-#     # Localized Control Type: alert
-#     # LiveSetting: Assertive (2)
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: Group
+    # Localized Control Type: alert
+    # LiveSetting: Assertive (2)
+
+    node = uia.find_node("test", session.url)
+    assert uia.get_control_type(node) == "Group"
+    assert uia.get_property(node, "LocalizedControlType") == "alert"
+    # Todo: add assertions for the live setting

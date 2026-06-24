@@ -27,9 +27,13 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Role: IA2_ROLE_CONTENT_INSERTION
 
-# def test_uia(uia, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Control Type: Text
-#     # Localized Control Type: insertion
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: Text
+    # Localized Control Type: insertion
+
+    node = uia.find_node("test", session.url)
+    assert uia.get_control_type(node) == "Text"
+    assert uia.get_property(node, "LocalizedControlType") == "insertion"

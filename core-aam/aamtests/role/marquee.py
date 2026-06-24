@@ -31,3 +31,14 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Control Type: Group
 #     # Localized Control Type: marquee
+
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: Group
+    # Localized Control Type: marquee
+
+    node = uia.find_node("test", session.url)
+    assert uia.get_control_type(node) == "Group"
+    assert uia.get_property(node, "LocalizedControlType") == "marquee"

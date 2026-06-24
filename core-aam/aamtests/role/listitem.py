@@ -25,10 +25,17 @@ def test_atspi(atspi, session, inline):
 #     # Role: ROLE_SYSTEM_LISTITEM
 #     # State: STATE_SYSTEM_READONLY
 
-# def test_uia(uia, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Control Type: ListItem
-#     # Control Pattern: SelectionItem
-#     # SelectionItem.SelectionContainer: list
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: ListItem
+    # Control Pattern: SelectionItem
+    # SelectionItem.SelectionContainer: list
+
+    node = uia.find_node("test", session.url)
+    assert uia.get_control_type(node) == "ListItem"
+
+    assert "SelectionItem" in uia.get_supported_patterns(node)
+    selection_pattern_attr = uia.get_pattern_attr(node, "SelectionItem")
+    assert selection_pattern_attr["IsSelected"] == 0

@@ -30,11 +30,18 @@ def test_atspi(atspi, session, inline):
 #     # Object Attribute: xml-roles:switch
 #     # See also: aria-checked in the State and Property Mapping Tables
 
-# def test_uia(uia, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Control Type: Button
-#     # Localized Control Type: toggleswitch
-#     # Control Pattern: Toggle
-#     # See also: aria-checked in the State and Property Mapping Tables
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: Button
+    # Localized Control Type: toggleswitch
+    # Control Pattern: Toggle
+    # See also: aria-checked in the State and Property Mapping Tables
+    node = uia.find_node("test", session.url)
+    assert uia.get_control_type(node) == "Button"
+    assert uia.get_property(node, "LocalizedControlType") == "toggleswitch"
+
+    assert "Toggle" in uia.get_supported_patterns(node)
+    toggle_pattern_attr = uia.get_pattern_attr(node, "Toggle")
+    assert toggle_pattern_attr["ToggleState"] == 0

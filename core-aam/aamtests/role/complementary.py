@@ -27,11 +27,17 @@ def test_atspi(atspi, session, inline):
 #     # Role: IA2_ROLE_LANDMARK
 #     # Object Attribute: xml-roles:complementary
 
-# def test_uia(uia, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Control Type: Group
-#     # Localized Control Type: complementary
-#     # Landmark Type: Custom
-#     # Localized Landmark Type: complementary
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: Group
+    # Localized Control Type: complementary
+    # Landmark Type: Custom
+    # Localized Landmark Type: complementary
+
+    node = uia.find_node("test", session.url)
+    assert uia.get_control_type(node) == "Group"
+    assert uia.get_property(node, "LocalizedControlType") == "complementary"
+    assert uia.get_landmark_type(node) == "Custom"
+    assert uia.get_property(node, "LocalizedLandmarkType") == "complementary"

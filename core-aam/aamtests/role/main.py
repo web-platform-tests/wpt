@@ -34,3 +34,16 @@ def test_atspi(atspi, session, inline):
 #     # Control Type: Group
 #     # Localized Control Type: main
 #     # Landmark Type: Main
+
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: Group
+    # Localized Control Type: main
+    # Landmark Type: Main
+
+    node = uia.find_node("test", session.url)
+    assert uia.get_control_type(node) == "Group"
+    assert uia.get_property(node, "LocalizedControlType") == "main"
+    assert uia.get_landmark_type(node) == "Main"

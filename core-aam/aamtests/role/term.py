@@ -25,9 +25,13 @@ def test_atspi(atspi, session, inline):
 #     # Role: IA2_ROLE_TEXT_FRAME
 #     # Object Attribute: xml-roles:term
 
-# def test_uia(uia, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Control Type: Text
-#     # Localized Control Type: term
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: Text
+    # Localized Control Type: term
+
+    node = uia.find_node("test", session.url)
+    assert uia.get_control_type(node) == "Text"
+    assert uia.get_property(node, "LocalizedControlType") == "term"

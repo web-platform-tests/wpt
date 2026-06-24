@@ -26,9 +26,16 @@ def test_atspi(atspi, session, inline):
 #     # Role: IA2_ROLE_TEXT_FRAME
 #     # Text Attribute: text-position:sub
 
-# def test_uia(uia, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Control Type: Text
-#     # Styles used are exposed by IsSubscript attribute of the TextRange Control Pattern implemented on the accessible object.: IsSubscript: attribute of the TextRange Control Pattern implemented on the accessible object.
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: Text
+    # Styles used are exposed by IsSubscript attribute of the Text Control Pattern implemented on the accessible object.: IsSubscript: attribute of the TextRange Control Pattern implemented on the accessible object.
+
+    node = uia.find_node("test", session.url)
+    assert uia.get_control_type(node) == "Text"
+
+    assert "Text" in uia.get_supported_patterns(node)
+
+    #Todo: Full Text patern support: Add ability to assess control patern for subscript

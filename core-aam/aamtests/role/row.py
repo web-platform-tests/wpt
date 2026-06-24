@@ -24,10 +24,19 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Role: ROLE_SYSTEM_ROW
 
-# def test_uia(uia, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Control Type: DataItem
-#     # Localized Control Type: row
-#     # Control Pattern: SelectionItem
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: DataItem
+    # Localized Control Type: row
+    # Control Pattern: SelectionItem
+
+    node = uia.find_node("test", session.url)
+    assert uia.get_control_type(node) == "DataItem"
+    assert uia.get_property(node, "LocalizedControlType") == "row"
+    patterns = uia.get_supported_patterns(node)
+
+    assert "SelectionItem" in patterns
+    selection_pattern_attr = uia.get_pattern_attr(node, "SelectionItem")
+    assert selection_pattern_attr["IsSelected"] == 0

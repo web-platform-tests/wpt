@@ -27,11 +27,17 @@ def test_atspi(atspi, session, inline):
 #     # Role: IA2_ROLE_RADIO_MENU_ITEM
 #     # See also: aria-checked in the State and Property Mapping Tables
 
-# def test_uia(uia, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Control Type: MenuItem
-#     # Control Pattern: Toggle
-#     # Control Pattern: SelectionItem
-#     # See also: aria-checked in the State and Property Mapping Tables
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: MenuItem
+    # Control Pattern: Toggle
+    # Control Pattern: SelectionItem
+    # See also: aria-checked in the State and Property Mapping Tables
+
+    node = uia.find_node("test", session.url)
+    assert uia.get_control_type(node) == "MenuItem"
+    # assert uia.get_control_pattern(node, "Toggle") is not None
+    # assert uia.get_control_pattern(node, "SelectionItem") is not None
+    # assert uia.get_property(node, "IsChecked") is not None

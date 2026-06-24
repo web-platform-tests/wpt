@@ -26,10 +26,15 @@ def test_atspi(atspi, session, inline):
 #     # Role: ROLE_SYSTEM_LISTITEM
 #     # See also: aria-checked in the State and Property Mapping Tables
 
-# def test_uia(uia, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Control Type: ListItem
-#     # Control Pattern: Invoke
-#     # See also: aria-checked in the State and Property Mapping Tables
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: ListItem
+    # Control Pattern: Invoke
+    # See also: aria-checked in the State and Property Mapping Tables
+
+    node = uia.find_node("test", session.url)
+    assert uia.get_control_type(node) == "ListItem"
+    #Todo: add Invoke Control Pattern assertions here
+    #Todo: add aria-checked state and property assertions here

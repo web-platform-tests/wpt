@@ -27,10 +27,15 @@ def test_atspi(atspi, session, inline):
 #     # Role: IA2_ROLE_LANDMARK
 #     # Object Attribute: xml-roles:navigation
 
-# def test_uia(uia, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Control Type: Group
-#     # Localized Control Type: navigation
-#     # Landmark Type: Navigation
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: Group
+    # Localized Control Type: navigation
+    # Landmark Type: Navigation
+
+    node = uia.find_node("test", session.url)
+    assert uia.get_control_type(node) == "Group"
+    assert uia.get_property(node, "LocalizedControlType") == "navigation"
+    assert uia.get_landmark_type(node) == "Navigation"

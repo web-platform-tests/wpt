@@ -119,7 +119,7 @@ class Ia2Wrapper(ApiWrapper[IAccessible2Ptr]):
 
         :return: IAccessible2Ptr.
         """
-        hwnd = get_browser_hwnd(self.product_name)
+        hwnd = get_browser_hwnd(self.product_name, self.pid)
         root = accessible_object_from_window(hwnd)
         return to_ia2(root)
 

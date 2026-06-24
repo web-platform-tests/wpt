@@ -278,7 +278,7 @@
     // HTML parser ignores xml-stylesheet
     if (source !== "html-parser") {
       test(() => {
-        const pi = document.createProcessingInstruction(
+        const pi = createProcessingInstruction(
           "xml-stylesheet",
           `type="text/css" href="style.css"`,
         );

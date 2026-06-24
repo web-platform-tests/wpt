@@ -12,6 +12,7 @@ const setScrollTop = (scroller, y) => {
   return scrollend_promise;
 }
 
+// TODO: replace "trigger" and "exit" with "activation" and "active"
 function getRangeBoundariesForTest(trigger_start, trigger_end,
                                    exit_start, exit_end, scroller) {
   let rangeBoundaries = {
@@ -45,6 +46,34 @@ function getRangeBoundariesForTest(trigger_start, trigger_end,
   };
 
   return rangeBoundaries;
+}
+
+// Helper function for tests using timeline-trigger[1].
+// This function scrolls into the activation range as configured by
+// getRangeBoundariesForTest above.
+//
+// [1] https://drafts.csswg.org/css-animations-2/#timeline-triggers
+const enter = (rangeBoundaries) => {
+  return runAndWaitForFrameUpdate(() => {
+    rangeBoundaries.enterTriggerRange();
+    // Allow extra frame for main thread to observe compositor effect.
+  }).then(waitForNextFrame);
+}
+
+// Helper function for tests using timeline-trigger[1].
+// This function scrolls outside the active range as configured by
+// getRangeBoundariesForTest above.
+//
+// [1] https://drafts.csswg.org/css-animations-2/#timeline-triggers
+const exit = (rangeBoundaries, exitAbove = true) => {
+  return runAndWaitForFrameUpdate(() => {
+    if (exitAbove) {
+      rangeBoundaries.exitExitRangeAbove();
+    } else {
+      rangeBoundaries.exitExitRangeBelow();
+    }
+    // Allow extra frame for main thread to observe compositor effect.
+  }).then(waitForNextFrame);
 }
 
 // Helper function for animation-trigger tests. Aims to perform a scroll and

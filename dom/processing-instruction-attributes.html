@@ -20,8 +20,10 @@
         .parseFromString("<root></root>", "application/xml")
         .createProcessingInstruction(target, data),
     "xml-parser": (target, data) =>
-      new DOMParser().parseFromString(`<?${target} ${data}?>`, "application/xml")
-        .firstChild
+      new DOMParser().parseFromString(
+        `<?${target} ${data}?>`,
+        "application/xml",
+      ).firstChild,
   };
 
   test(() => {
@@ -30,7 +32,7 @@
     assert_equals(pi.nodeType, Node.PROCESSING_INSTRUCTION_NODE);
     assert_equals(pi.getAttribute("a"), "b");
     assert_equals(pi.getAttribute("x"), "yy");
-  }, "Processing instruction in main parser")
+  }, "Processing instruction in main parser");
 
   for (const [source, createProcessingInstruction] of Object.entries(sources)) {
     test(() => {
@@ -163,21 +165,15 @@
     }, "Processing instruction toggleAttribute from " + source);
 
     function test_attribute_value(value) {
-      test(
-        () => {
-          const pi = createProcessingInstruction("target", "");
-          const element = pi.ownerDocument.createElement("el");
-          pi.setAttribute("attr", value);
-          element.setAttribute("attr", value);
-          assert_equals(
-            pi.getAttribute("attr"),
-            element.getAttribute("attr"),
-          );
-          const extracted = element.outerHTML.match(/el\s+([^>]+?)\s*\/?>/);
-          assert_equals(pi.data, extracted[1]);
-        },
-        `check attribute value: "${value}" (source: "${source}")`,
-      );
+      test(() => {
+        const pi = createProcessingInstruction("target", "");
+        const element = pi.ownerDocument.createElement("el");
+        pi.setAttribute("attr", value);
+        element.setAttribute("attr", value);
+        assert_equals(pi.getAttribute("attr"), element.getAttribute("attr"));
+        const extracted = element.outerHTML.match(/el\s+([^>]+?)\s*\/?>/);
+        assert_equals(pi.data, extracted[1]);
+      }, `check attribute value: "${value}" (source: "${source}")`);
     }
 
     function test_valid_attribute_name(name) {
@@ -276,32 +272,33 @@
     test_distinct_attribute_name("x123A", "x123a");
 
     // HTML parser ignores xml-stylesheet
-    if (source !== "html-parser") {
-      test(() => {
-        const pi = createProcessingInstruction(
-          "xml-stylesheet",
-          `type="text/css" href="style.css"`,
-        );
-        assert_equals(pi.nodeType, Node.PROCESSING_INSTRUCTION_NODE);
-        assert_equals(pi.target, "xml-stylesheet");
-        assert_equals(pi.data, `type="text/css" href="style.css"`);
-        assert_true(pi.hasAttributes());
-        assert_equals(pi.getAttribute("type"), "text/css");
-        assert_equals(pi.getAttribute("href"), "style.css");
-        assert_equals(pi.getAttribute("nada"), null);
-        assert_true(pi.hasAttribute("type"));
-        assert_false(pi.hasAttribute("nope"));
-        pi.setAttribute("href", "style2.css");
-        assert_equals(pi.getAttribute("href"), "style2.css");
-        pi.removeAttribute("href");
-        assert_equals(pi.getAttribute("href"), null);
-        assert_array_equals(pi.getAttributeNames(), ["type"]);
-        assert_true(pi.hasAttributes());
-        pi.data = 'type="text/css" href="style3.css"';
-        assert_equals(pi.getAttribute("type"), "text/css");
-        assert_equals(pi.getAttribute("href"), "style3.css");
-        assert_array_equals(pi.getAttributeNames(), ["type", "href"]);
-      }, "Processing instruction attributes with xml-stylesheet from " + source);
-    }
+    if (source == "html-parser")
+      continue;
+
+    test(() => {
+      const pi = createProcessingInstruction(
+        "xml-stylesheet",
+        `type="text/css" href="style.css"`,
+      );
+      assert_equals(pi.nodeType, Node.PROCESSING_INSTRUCTION_NODE);
+      assert_equals(pi.target, "xml-stylesheet");
+      assert_equals(pi.data, `type="text/css" href="style.css"`);
+      assert_true(pi.hasAttributes());
+      assert_equals(pi.getAttribute("type"), "text/css");
+      assert_equals(pi.getAttribute("href"), "style.css");
+      assert_equals(pi.getAttribute("nada"), null);
+      assert_true(pi.hasAttribute("type"));
+      assert_false(pi.hasAttribute("nope"));
+      pi.setAttribute("href", "style2.css");
+      assert_equals(pi.getAttribute("href"), "style2.css");
+      pi.removeAttribute("href");
+      assert_equals(pi.getAttribute("href"), null);
+      assert_array_equals(pi.getAttributeNames(), ["type"]);
+      assert_true(pi.hasAttributes());
+      pi.data = 'type="text/css" href="style3.css"';
+      assert_equals(pi.getAttribute("type"), "text/css");
+      assert_equals(pi.getAttribute("href"), "style3.css");
+      assert_array_equals(pi.getAttributeNames(), ["type", "href"]);
+    }, "Processing instruction attributes with xml-stylesheet from " + source);
   }
 </script>

@@ -452,7 +452,7 @@ class WebDriverBidiWebExtensionsProtocolPart(WebExtensionsProtocolPart):
         extension_id = self.parent.loop.run_until_complete(
             self.webdriver.bidi_session.web_extension.install(
                 extension_data=params))
-        return {"extension": extension_id}
+        return extension_id
 
     def uninstall_web_extension(self, extension_id):
         return self.parent.loop.run_until_complete(

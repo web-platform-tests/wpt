@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<title>Digital Credential API: issue() webdriver tests.</title>
+<link rel="help" href="https://w3c-fedid.github.io/digital-credentials/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body></body>
+<script type="module">
+  import { makeIssueOptions } from "../support/helper.js";
+
+  promise_test(async (t) => {
+    const responseData = "test-issue-response-data";
+    await test_driver.set_virtual_wallet_behavior("respond", "openid4vci-v1", { "value": responseData });
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+    await test_driver.bless("user activation");
+
+    const options = makeIssueOptions({ protocol: "openid4vci-v1" });
+    const result = await DigitalCredential.issue(options);
+
+    assert_true(
+      result instanceof DigitalCredentialIssuanceResponse,
+      "issue() should resolve with a DigitalCredentialIssuanceResponse."
+    );
+    assert_false(
+      result instanceof DigitalCredential,
+      "The issuance response is not a DigitalCredential."
+    );
+    assert_equals(result.protocol, "openid4vci-v1");
+    assert_equals(result.data.value, responseData);
+  }, "DigitalCredential.issue() with respond mode should resolve with the specified data.");
+
+  promise_test(async (t) => {
+    const complexData = { "a": 1, "b": [2, 3], "c": { "d": 4 } };
+    await test_driver.set_virtual_wallet_behavior("respond", "openid4vci-v1", complexData);
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+    await test_driver.bless("user activation");
+
+    const options = makeIssueOptions({ protocol: "openid4vci-v1" });
+    const result = await DigitalCredential.issue(options);
+
+    assert_equals(result.protocol, "openid4vci-v1");
+    assert_equals(result.data.a, 1);
+    assert_array_equals(result.data.b, [2, 3]);
+    assert_equals(result.data.c.d, 4);
+  }, "DigitalCredential.issue() with complex data response should resolve with structured data.");
+
+  promise_test(async (t) => {
+    await test_driver.set_virtual_wallet_behavior("decline");
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+    await test_driver.bless("user activation");
+
+    const options = makeIssueOptions({ protocol: "openid4vci-v1" });
+    await promise_rejects_dom(t, "NotAllowedError", DigitalCredential.issue(options));
+  }, "DigitalCredential.issue() with decline mode should reject with NotAllowedError.");
+
+  promise_test(async (t) => {
+    await test_driver.set_virtual_wallet_behavior("wait");
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+    await test_driver.bless("user activation");
+
+    const controller = new AbortController();
+    const options = makeIssueOptions({ protocol: "openid4vci-v1", signal: controller.signal });
+    const promise = DigitalCredential.issue(options);
+
+    // Give it some time to make sure it's pending.
+    await new Promise(resolve => t.step_timeout(resolve, 100));
+
+    controller.abort();
+    await promise_rejects_dom(t, "AbortError", promise);
+  }, "DigitalCredential.issue() with wait mode should remain pending until aborted.");
+</script>

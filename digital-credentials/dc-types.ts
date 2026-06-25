@@ -2,9 +2,9 @@ export type OpenIDPresentationProtocol =
   | "openid4vp-v1-unsigned"
   | "openid4vp-v1-signed"
   | "openid4vp-v1-multisigned";
-export type OpenIDIssuanceProtocol = "openid4vci";
+export type OpenIDIssuanceProtocol = "openid4vci-v1";
 export type GetProtocol = OpenIDPresentationProtocol | "org-iso-mdoc";
-export type CreateProtocol = OpenIDIssuanceProtocol;
+export type IssueProtocol = OpenIDIssuanceProtocol;
 
 export type CredentialMediationRequirement =
   | "conditional"
@@ -58,28 +58,24 @@ export interface MakeGetOptionsConfig {
 }
 
 /**
- * Configuration for makeCreateOptions function
+ * Configuration for makeIssueOptions function
  */
-export interface MakeCreateOptionsConfig {
+export interface MakeIssueOptionsConfig {
   /**
    * Protocol(s) to use for the request.
    * Can be a single protocol, array of protocols, or empty array.
    * If not provided, uses the default supported protocol.
    */
-  protocol?: CreateProtocol | CreateProtocol[];
+  protocol?: IssueProtocol | IssueProtocol[];
   /**
    * Explicit credential requests.
    * When provided, these are used in addition to any protocol-based requests.
    */
-  requests?: DigitalCredentialCreateRequest[];
+  requests?: DigitalCredentialIssuanceRequest[];
   /**
    * Optional data to override canonical data for protocol-based requests.
    */
   data?: object;
-  /**
-   * Credential mediation requirement
-   */
-  mediation?: CredentialMediationRequirement;
   /**
    * Optional AbortSignal for request cancellation
    */
@@ -114,37 +110,40 @@ export interface CredentialRequestOptions {
 }
 
 /**
- * @see https://w3c-fedid.github.io/digital-credentials/#the-digitalcredentialcreaterequest-dictionary
+ * @see https://w3c-fedid.github.io/digital-credentials/#the-digitalcredentialissuancerequest-dictionary
  */
-export interface DigitalCredentialCreateRequest {
+export interface DigitalCredentialIssuanceRequest {
   protocol: string;
   data: object;
 }
 
 /**
- * @see https://w3c-fedid.github.io/digital-credentials/#the-digitalcredentialcreationoptions-dictionary
+ * @see https://w3c-fedid.github.io/digital-credentials/#the-digitalcredentialissuanceoptions-dictionary
  */
-export interface DigitalCredentialCreationOptions {
+export interface DigitalCredentialIssuanceOptions {
   /**
    * The list of credential requests.
    */
-  requests: DigitalCredentialCreateRequest[] | any;
+  requests: DigitalCredentialIssuanceRequest[] | any;
+  /**
+   * Optional AbortSignal for request cancellation
+   */
+  signal?: AbortSignal;
 }
 
 /**
- * @see https://w3c-fedid.github.io/digital-credentials/#extensions-to-credentialcreationoptions-dictionary
+ * @see https://w3c-fedid.github.io/digital-credentials/#dom-digitalcredentialissuanceresponse
  */
-export interface CredentialCreationOptions {
-  digital: DigitalCredentialCreationOptions;
-  mediation?: CredentialMediationRequirement;
-  signal?: AbortSignal;
+export interface DigitalCredentialIssuanceResponse {
+  protocol: string;
+  data: object;
 }
 
 /**
  * The actions that can be performed on the API via the iframe.
  */
 export type IframeActionType =
-  | "create"
+  | "issue"
   | "get"
   | "ping"
   | "preventSilentAccess";
@@ -176,7 +175,7 @@ export interface EventData {
 
 export interface SendMessageData {
   action: IframeActionType;
-  options?: CredentialRequestOptions;
+  options?: CredentialRequestOptions | DigitalCredentialIssuanceOptions;
 }
 
 /**
@@ -187,6 +186,12 @@ export interface DigitalCredentialStatic {
    * Check if the user agent allows a specific protocol
    */
   userAgentAllowsProtocol(protocol: string): boolean;
+  /**
+   * Request issuance of a digital credential
+   */
+  issue(
+    options: DigitalCredentialIssuanceOptions,
+  ): Promise<DigitalCredentialIssuanceResponse>;
 }
 
 declare global {

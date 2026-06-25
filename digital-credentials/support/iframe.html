@@ -40,8 +40,8 @@
         case "ping":
           promise = Promise.resolve("pong");
           break;
-        case "create":
-          promise = navigator.credentials.create(data.options);
+        case "issue":
+          promise = DigitalCredential.issue(data.options);
           break;
         case "get":
           promise = navigator.credentials.get(data.options);

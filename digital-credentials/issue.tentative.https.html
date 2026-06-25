@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Digital Credential API tests for issue.</title>
+<link rel="help" href="https://w3c-fedid.github.io/digital-credentials/" />
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body>
+  <iframe id="cross-origin" allow="digital-credentials-issue"></iframe>
+  <iframe id="same-origin"></iframe>
+</body>
+
+<!--
+  Ordering assumptions (from the DigitalCredential.issue() algorithm in
+  w3c-fedid/digital-credentials PR #546). The steps run in this order:
+    3. not fully active            -> InvalidStateError
+    4. no user attention           -> NotAllowedError
+    5. permissions-policy block    -> NotAllowedError
+    7. signal already aborted       -> abort reason (AbortError)
+    9. no transient activation     -> NotAllowedError
+   10. consume user activation
+   12. coordinator validates requests (empty / all-unsupported -> TypeError)
+  A missing `requests` member is a synchronous WebIDL TypeError (required
+  member), thrown before step 1. Consequences exercised below:
+    - issue({}) rejects with TypeError regardless of activation/attention.
+    - issue({requests: []}) only reaches the coordinator's empty-list TypeError
+      after the activation check (step 9), so it needs transient activation.
+    - an aborted signal is checked (step 7) before activation is consumed
+      (step 10), so it rejects with AbortError without consuming activation,
+      but only once user attention (step 4) is satisfied (top-level test
+      documents and focused iframes have it).
+  These expectations are spec-order-derived and should be reconfirmed against
+  an implementation when the suite is run.
+-->
+<script type="module">
+  import { makeIssueOptions, makeCanonicalIssueRequest, sendMessage, loadIframe } from "./support/helper.js";
+
+  const iframeSameOrigin = document.querySelector("iframe#same-origin");
+  const iframeCrossOrigin = document.querySelector("iframe#cross-origin");
+
+  promise_setup(async () => {
+    const hostInfo = get_host_info();
+    await Promise.all([
+      loadIframe(
+        iframeCrossOrigin,
+        `${hostInfo.HTTPS_REMOTE_ORIGIN}/digital-credentials/support/iframe.html`
+      ),
+      loadIframe(iframeSameOrigin, "/digital-credentials/support/iframe.html"),
+    ]);
+  });
+
+  promise_test(async (t) => {
+    // Missing `requests` is a synchronous WebIDL TypeError (no activation needed).
+    await promise_rejects_js(t, TypeError, DigitalCredential.issue({}));
+    // Empty `requests` is rejected by the coordinator, which runs after the
+    // transient-activation check, so activation is required to reach it.
+    await test_driver.bless("user activation");
+    await promise_rejects_js(t, TypeError, DigitalCredential.issue({ requests: [] }));
+  }, "DigitalCredential.issue() rejects with TypeError if there are no credential requests.");
+
+  promise_test(async (t) => {
+    iframeSameOrigin.focus();
+    const { contentWindow: iframeWindow } = iframeSameOrigin;
+    await promise_rejects_js(
+      t,
+      iframeWindow.TypeError,
+      iframeWindow.DigitalCredential.issue({})
+    );
+    // The empty-list TypeError is reached only after the transient-activation
+    // check (step 9), which is against the iframe's global, so the iframe (not
+    // the parent) must be activated.
+    await test_driver.bless("user activation", null, iframeWindow);
+    await promise_rejects_js(
+      t,
+      iframeWindow.TypeError,
+      iframeWindow.DigitalCredential.issue({ requests: [] })
+    );
+  }, "DigitalCredential.issue() rejects with TypeError if there are no credential requests for same-origin iframe.");
+
+  promise_test(async (t) => {
+    iframeCrossOrigin.focus();
+    // Missing requests: synchronous TypeError, no activation needed.
+    let result = await sendMessage(iframeCrossOrigin, {
+      action: "issue",
+      options: {},
+    });
+    assert_equals(result.constructor, "TypeError");
+    // Empty requests: needs activation to reach the coordinator.
+    result = await sendMessage(iframeCrossOrigin, {
+      action: "issue",
+      needsActivation: true,
+      options: { requests: [] },
+    });
+    assert_equals(result.constructor, "TypeError");
+  }, "DigitalCredential.issue() rejects with TypeError if there are no credential requests in cross-origin iframe.");
+
+  promise_test(async (t) => {
+    const abortController = new AbortController();
+    const { signal } = abortController;
+    abortController.abort();
+    // The signal is checked (step 7) before activation is consumed (step 10),
+    // so an aborted signal rejects with AbortError without activation.
+    for (const options of [makeIssueOptions({ signal }), makeIssueOptions({ protocol: [], signal })]) {
+      await promise_rejects_dom(
+        t,
+        "AbortError",
+        DigitalCredential.issue(options)
+      );
+    }
+  }, "DigitalCredential.issue() promise is rejected if called with an aborted controller.");
+
+  promise_test(async (t) => {
+    iframeSameOrigin.focus();
+    const { contentWindow: iframeWindow } = iframeSameOrigin;
+    const abortController = new iframeWindow.AbortController();
+    const { signal } = abortController;
+    abortController.abort();
+    for (const options of [makeIssueOptions({ signal }), makeIssueOptions({ protocol: [], signal })]) {
+      await test_driver.bless("user activation");
+      await promise_rejects_dom(
+        t,
+        "AbortError",
+        iframeWindow.DOMException,
+        iframeWindow.DigitalCredential.issue(options)
+      );
+      assert_true(
+        navigator.userActivation.isActive,
+        "User activation is still active."
+      );
+    }
+  }, "DigitalCredential.issue() promise is rejected if called with an aborted controller in same-origin iframe.");
+
+  promise_test(async (t) => {
+    iframeCrossOrigin.focus();
+    for (const options of [makeIssueOptions(), makeIssueOptions({ protocol: [] })]) {
+      const result = await sendMessage(iframeCrossOrigin, {
+        abort: "before",
+        action: "issue",
+        options,
+      });
+      assert_equals(result.constructor, "DOMException");
+      assert_equals(result.name, "AbortError");
+    }
+  }, "DigitalCredential.issue() promise is rejected if called with an aborted signal in cross-origin iframe.");
+
+  promise_test(async (t) => {
+    const abortController = new AbortController();
+    const { signal } = abortController;
+    const options = makeIssueOptions({ signal });
+    await test_driver.bless("user activation");
+    const promise = promise_rejects_dom(
+      t,
+      "AbortError",
+      DOMException,
+      DigitalCredential.issue(options)
+    );
+    abortController.abort();
+    await promise;
+  }, "DigitalCredential.issue() promise is rejected if abort controller is aborted after call to issue().");
+
+  promise_test(async (t) => {
+    iframeCrossOrigin.focus();
+    const result = await sendMessage(iframeCrossOrigin, {
+      abort: "after",
+      action: "issue",
+      needsActivation: true,
+      options: makeIssueOptions(),
+    });
+    assert_equals(result.constructor, "DOMException");
+    assert_equals(result.name, "AbortError");
+  }, "DigitalCredential.issue() promise is rejected if abort controller is aborted after call to issue() in cross-origin iframe.");
+
+  promise_test(async (t) => {
+    const throwingValues = [
+      { val: BigInt(123) },
+      (() => { const o = {}; o.self = o; return o; })(),
+      { toJSON() { throw new TypeError("toJSON throws"); } }
+    ];
+
+    for (const badValue of throwingValues) {
+      const options = makeIssueOptions({ data: badValue });
+      await test_driver.bless("user activation");
+      await promise_rejects_js(
+        t,
+        TypeError,
+        DigitalCredential.issue(options),
+        `Should throw for: ${String(badValue)}`
+      );
+    }
+  }, "Throws TypeError when request data is not JSON stringifiable.");
+
+  promise_test(async (t) => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    const options = {
+      requests: [
+        {
+          protocol: "unknown-protocol",
+          data: { val: BigInt(1) }, // malformed/non-serializable
+        },
+        {
+          protocol: "openid4vci-v1",
+          data: { some: "data" }, // proper data
+        },
+      ],
+      signal,
+    };
+
+    await test_driver.bless("user activation");
+    const promise = DigitalCredential.issue(options);
+    controller.abort();
+    await promise_rejects_dom(t, "AbortError", promise);
+  }, "DigitalCredential.issue() with one unknown protocol with malformed data and one known protocol with proper data should skip the unknown one and not fail.");
+
+  promise_test(async (t) => {
+    const options = {
+      requests: [{ protocol: "unknown-protocol", data: {} }]
+    };
+    // Protocol filtering happens in the coordinator (after the activation
+    // check), so transient activation is required to reach the TypeError.
+    await test_driver.bless("user activation");
+    await promise_rejects_js(
+      t,
+      TypeError,
+      DigitalCredential.issue(options)
+    );
+  }, "All unsupported protocols filtered results in TypeError.");
+
+  promise_test(async (t) => {
+    const options = {
+      requests: [
+        { protocol: "fake-protocol-1", data: {} },
+        { protocol: "fake-protocol-2", data: {} },
+        { protocol: "another-unknown", data: {} }
+      ]
+    };
+    await test_driver.bless("user activation");
+    await promise_rejects_js(
+      t,
+      TypeError,
+      DigitalCredential.issue(options)
+    );
+  }, "Multiple unsupported protocols all filtered results in TypeError.");
+
+  promise_test(async (t) => {
+    const abortController = new AbortController();
+    const { signal } = abortController;
+    const options = {
+      requests: [makeCanonicalIssueRequest("openid4vci-v1")],
+      signal
+    };
+    await test_driver.bless("user activation");
+    const promise = DigitalCredential.issue(options);
+    abortController.abort();
+    await promise_rejects_dom(
+      t,
+      "AbortError",
+      promise,
+      "Valid 'openid4vci-v1' protocol should not be filtered out"
+    );
+  }, "Valid 'openid4vci-v1' protocol passes through filtering.");
+
+  promise_test(async (t) => {
+    const abortController = new AbortController();
+    const { signal } = abortController;
+    const options = {
+      requests: [
+        { protocol: "unknown-protocol", data: {} },
+        makeCanonicalIssueRequest("openid4vci-v1"),
+        { protocol: "another-fake", data: {} }
+      ],
+      signal
+    };
+    await test_driver.bless("user activation");
+    const promise = DigitalCredential.issue(options);
+    abortController.abort();
+    await promise_rejects_dom(
+      t,
+      "AbortError",
+      promise,
+      "Valid protocol among invalid ones should survive filtering"
+    );
+  }, "Mix of valid and invalid protocols - valid survives filtering.");
+</script>

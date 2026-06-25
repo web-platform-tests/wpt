@@ -8,10 +8,10 @@
 <script src="/common/get-host-info.sub.js"></script>
 <body></body>
 <script type="module">
-    import { makeCreateOptions } from "/digital-credentials/support/helper.js";
+    import { makeIssueOptions } from "/digital-credentials/support/helper.js";
     const { HTTPS_REMOTE_ORIGIN } = get_host_info();
     const same_origin_src =
-        "/digital-credentials/permissions-policy/create.html";
+        "/digital-credentials/permissions-policy/issue.html";
     const cross_origin_src = new URL(same_origin_src, HTTPS_REMOTE_ORIGIN).href;
 
     promise_test(async (test) => {
@@ -19,9 +19,9 @@
         await promise_rejects_dom(
             test,
             "NotAllowedError",
-            navigator.credentials.create(makeCreateOptions({protocol: []}))
+            DigitalCredential.issue(makeIssueOptions({protocol: []}))
         );
-    }, "Permissions-Policy header digital-credentials-create=() disallows the top-level document.");
+    }, "Permissions-Policy header digital-credentials-issue=() disallows the top-level document.");
 
     promise_test(async (test) => {
         await test_feature_availability({
@@ -32,7 +32,7 @@
             is_promise_test: true,
             needs_focus: true,
         });
-    }, "Permissions-Policy header digital-credentials-create=() disallows same-origin iframes.");
+    }, "Permissions-Policy header digital-credentials-issue=() disallows same-origin iframes.");
 
     promise_test(async (test) => {
         await test_feature_availability({
@@ -40,10 +40,10 @@
             test,
             src: cross_origin_src,
             expect_feature_available: expect_feature_unavailable_default,
-            feature_name: "digital-credentials-create",
+            feature_name: "digital-credentials-issue",
             is_promise_test: true,
             needs_focus: true,
         });
-    }, "Permissions-Policy header digital-credentials-create=() cannot be overridden using the allow attribute.");
+    }, "Permissions-Policy header digital-credentials-issue=() cannot be overridden using the allow attribute.");
 
 </script>

@@ -4,20 +4,21 @@
  * @typedef {import('../dc-types').GetProtocol} GetProtocol
  * @typedef {import('../dc-types').DigitalCredentialGetRequest} DigitalCredentialGetRequest
  * @typedef {import('../dc-types').CredentialRequestOptions} CredentialRequestOptions
- * @typedef {import('../dc-types').CreateProtocol} CreateProtocol
- * @typedef {import('../dc-types').DigitalCredentialCreateRequest} DigitalCredentialCreateRequest
- * @typedef {import('../dc-types').CredentialCreationOptions} CredentialCreationOptions
+ * @typedef {import('../dc-types').IssueProtocol} IssueProtocol
+ * @typedef {import('../dc-types').DigitalCredentialIssuanceRequest} DigitalCredentialIssuanceRequest
+ * @typedef {import('../dc-types').DigitalCredentialIssuanceOptions} DigitalCredentialIssuanceOptions
+ * @typedef {import('../dc-types').DigitalCredentialIssuanceResponse} DigitalCredentialIssuanceResponse
  * @typedef {import('../dc-types').SendMessageData} SendMessageData
  * @typedef {import('../dc-types').MakeGetOptionsConfig} MakeGetOptionsConfig
- * @typedef {import('../dc-types').MakeCreateOptionsConfig} MakeCreateOptionsConfig
+ * @typedef {import('../dc-types').MakeIssueOptionsConfig} MakeIssueOptionsConfig
  * @typedef {import('../dc-types').CredentialMediationRequirement} CredentialMediationRequirement
  * @typedef {import('../dc-types').MobileDocumentRequest} MobileDocumentRequest
- * @typedef {GetProtocol | CreateProtocol} Protocol
+ * @typedef {GetProtocol | IssueProtocol} Protocol
  */
 
 /** @type {Record<Protocol, object | MobileDocumentRequest>} */
 const CANONICAL_REQUEST_OBJECTS = {
-  openid4vci: {
+  "openid4vci-v1": {
     /* Canonical object coming soon */
   },
   "openid4vp-v1-unsigned": {
@@ -135,8 +136,8 @@ const CANONICAL_REQUEST_OBJECTS = {
 /**
  * Internal helper to create final options from a list of requests.
  *
- * @template {DigitalCredentialGetRequest[] | DigitalCredentialCreateRequest[]} TRequests
- * @template {CredentialRequestOptions | CredentialCreationOptions} TOptions
+ * @template {DigitalCredentialGetRequest[]} TRequests
+ * @template {CredentialRequestOptions} TOptions
  * @param {TRequests} requests
  * @param {CredentialMediationRequirement} [mediation]
  * @param {AbortSignal} [signal]
@@ -159,12 +160,12 @@ function makeOptionsFromRequests(requests, mediation, signal) {
 
 /**
  * Build requests from protocols, using canonical data for each protocol.
- * For create operations with explicit data, uses that data for all protocols.
+ * For issue operations with explicit data, uses that data for all protocols.
  *
  * @template Req
  * @param {Protocol[]} protocols
  * @param {Record<string, (data?: MobileDocumentRequest | object) => Req>} mapping
- * @param {MobileDocumentRequest | object} [explicitData] - Explicit data for create operations
+ * @param {MobileDocumentRequest | object} [explicitData] - Explicit data for issue operations
  * @returns {Req[]}
  * @throws {Error} If an unknown protocol string is encountered.
  */
@@ -173,14 +174,14 @@ function buildRequestsFromProtocols(protocols, mapping, explicitData) {
     if (!(protocol in mapping)) {
       throw new Error(`Unknown request type within array: ${protocol}`);
     }
-    // Use explicit data if provided (for create with data), otherwise canonical data
+    // Use explicit data if provided (for issue with data), otherwise canonical data
     return mapping[protocol](explicitData);
   });
 }
 
 /** @type {{
  *   get: Record<GetProtocol, (data?: MobileDocumentRequest | object) => DigitalCredentialGetRequest>;
- *   create: Record<CreateProtocol, (data?: object) => DigitalCredentialCreateRequest>;
+ *   issue: Record<IssueProtocol, (data?: object) => DigitalCredentialIssuanceRequest>;
  * }} */
 const allMappings = {
   get: {
@@ -205,18 +206,18 @@ const allMappings = {
       return { protocol: "openid4vp-v1-multisigned", data };
     },
   },
-  create: {
-    "openid4vci": (data = { ...CANONICAL_REQUEST_OBJECTS["openid4vci"] }) => {
-      return { protocol: "openid4vci", data };
+  issue: {
+    "openid4vci-v1": (data = { ...CANONICAL_REQUEST_OBJECTS["openid4vci-v1"] }) => {
+      return { protocol: "openid4vci-v1", data };
     },
   },
 };
 
 /**
- * Internal helper to handle the shared logic for creating and getting credentials.
- * @param {"get" | "create"} type
+ * Internal helper to handle the shared logic for issuing and getting credentials.
+ * @param {"get" | "issue"} type
  * @param {Protocol} protocol
- * @returns {DigitalCredentialGetRequest | DigitalCredentialCreateRequest}
+ * @returns {DigitalCredentialGetRequest | DigitalCredentialIssuanceRequest}
  */
 function makeCanonicalRequest(type, protocol) {
   const mapping = allMappings[type];
@@ -227,13 +228,13 @@ function makeCanonicalRequest(type, protocol) {
 }
 
 /**
- * Creates a single canonical create request for a protocol.
+ * Creates a single canonical issuance request for a protocol.
  * @export
- * @param {CreateProtocol} protocol
- * @returns {DigitalCredentialCreateRequest}
+ * @param {IssueProtocol} protocol
+ * @returns {DigitalCredentialIssuanceRequest}
  */
-export function makeCanonicalCreateRequest(protocol) {
-  return makeCanonicalRequest('create', protocol);
+export function makeCanonicalIssueRequest(protocol) {
+  return makeCanonicalRequest('issue', protocol);
 }
 
 /**
@@ -248,9 +249,9 @@ export function makeCanonicalGetRequest(protocol) {
 
 /**
  * Generic helper to create credential options from config with protocol already set.
- * @template {MakeGetOptionsConfig | MakeCreateOptionsConfig} TConfig
- * @template {DigitalCredentialGetRequest | DigitalCredentialCreateRequest} TRequest
- * @template {CredentialRequestOptions | CredentialCreationOptions} TOptions
+ * @template {MakeGetOptionsConfig} TConfig
+ * @template {DigitalCredentialGetRequest} TRequest
+ * @template {CredentialRequestOptions} TOptions
  * @param {TConfig} config - Configuration options with protocol already defaulted
  * @param {Record<string, (data?: MobileDocumentRequest | object) => TRequest>} mapping - Protocol to request mapping
  * @returns {TOptions}
@@ -296,21 +297,33 @@ export function makeGetOptions(config = {}) {
 }
 
 /**
- * Creates options for creating credentials.
+ * Creates options for issuing credentials.
+ *
+ * Unlike {@link makeGetOptions}, the issuance options are flat: the requests
+ * are not nested under a `digital` member, and there is no `mediation`.
  * @export
- * @param {MakeCreateOptionsConfig} [config={}] - Configuration options
- * @returns {CredentialCreationOptions}
+ * @param {MakeIssueOptionsConfig} [config={}] - Configuration options
+ * @returns {DigitalCredentialIssuanceOptions}
  */
-export function makeCreateOptions(config = {}) {
-  /** @type {MakeCreateOptionsConfig} */
-  const configWithDefaults = {
-    protocol: "openid4vci",
-    ...config,
-  };
+export function makeIssueOptions(config = {}) {
+  const { protocol = "openid4vci-v1", requests = [], data, signal } = config;
 
-  return /** @type {CredentialCreationOptions} */ (
-    makeCredentialOptionsFromConfig(configWithDefaults, allMappings.create)
-  );
+  /** @type {DigitalCredentialIssuanceRequest[]} */
+  const allRequests = [...requests];
+
+  if (protocol) {
+    const protocolArray = Array.isArray(protocol) ? protocol : [protocol];
+    allRequests.push(...buildRequestsFromProtocols(protocolArray, allMappings.issue, data));
+  }
+
+  /** @type {DigitalCredentialIssuanceOptions} */
+  const options = { requests: allRequests };
+
+  if (signal) {
+    options.signal = signal;
+  }
+
+  return options;
 }
 
 /**

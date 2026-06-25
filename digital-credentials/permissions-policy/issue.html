@@ -3,7 +3,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script type="module">
-    import { makeCreateOptions } from "/digital-credentials/support/helper.js";
+    import { makeIssueOptions } from "/digital-credentials/support/helper.js";
     const type = "availability-result";
     async function notify() {
         if (!navigator.userActivation.isActive) {
@@ -11,7 +11,7 @@
         }
         let enabled = undefined;
         try {
-            await navigator.credentials.create(makeCreateOptions({protocol: []}));
+            await DigitalCredential.issue(makeIssueOptions({protocol: []}));
         } catch (e) {
             switch (e.name) {
                 case "NotAllowedError":

@@ -2,8 +2,8 @@
 <html>
     <head>
         <title>
-            Test allow attribute with "digital-credentials-create" and
-            CredentialsContainer's .create() method
+            Test allow attribute with "digital-credentials-issue" and
+            DigitalCredential.issue() method
         </title>
         <script src="/common/get-host-info.sub.js"></script>
         <script src="/resources/testharness.js"></script>
@@ -11,7 +11,7 @@
         <script src="/resources/testdriver.js"></script>
         <script src="/resources/testdriver-vendor.js"></script>
         <script type="module">
-            import { makeCreateOptions } from "./support/helper.js";
+            import { makeIssueOptions } from "./support/helper.js";
 
             const hostInfo = get_host_info();
             const iframeDetails = [
@@ -26,52 +26,52 @@
                     expectIsAllowed: false,
                 },
                 {
-                    policy: "digital-credentials-create",
+                    policy: "digital-credentials-issue",
                     crossOrigin: false,
                     expectIsAllowed: true,
                 },
                 {
-                    policy: "digital-credentials-create",
+                    policy: "digital-credentials-issue",
                     crossOrigin: true,
                     expectIsAllowed: true,
                 },
                 {
-                    policy: "digital-credentials-create *",
+                    policy: "digital-credentials-issue *",
                     crossOrigin: false,
                     expectIsAllowed: true,
                 },
                 {
-                    policy: "digital-credentials-create *",
+                    policy: "digital-credentials-issue *",
                     crossOrigin: true,
                     expectIsAllowed: true,
                 },
                 {
-                    policy: "digital-credentials-create 'none'",
+                    policy: "digital-credentials-issue 'none'",
                     crossOrigin: false,
                     expectIsAllowed: false,
                 },
                 {
-                    policy: "digital-credentials-create 'none'",
+                    policy: "digital-credentials-issue 'none'",
                     crossOrigin: true,
                     expectIsAllowed: false,
                 },
                 {
-                    policy: "digital-credentials-create 'self'",
+                    policy: "digital-credentials-issue 'self'",
                     crossOrigin: false,
                     expectIsAllowed: true,
                 },
                 {
-                    policy: "digital-credentials-create 'self'",
+                    policy: "digital-credentials-issue 'self'",
                     crossOrigin: true,
                     expectIsAllowed: false,
                 },
                 {
-                    policy: `digital-credentials-create ${hostInfo.HTTPS_REMOTE_ORIGIN}`,
+                    policy: `digital-credentials-issue ${hostInfo.HTTPS_REMOTE_ORIGIN}`,
                     crossOrigin: false,
                     expectIsAllowed: false,
                 },
                 {
-                    policy: `digital-credentials-create ${hostInfo.HTTPS_REMOTE_ORIGIN}`,
+                    policy: `digital-credentials-issue ${hostInfo.HTTPS_REMOTE_ORIGIN}`,
                     crossOrigin: true,
                     expectIsAllowed: true,
                 },
@@ -106,9 +106,9 @@
                             document.body.removeChild(iframe);
                         });
                         const { expectIsAllowed } = details;
-                        const action = "create";
+                        const action = "issue";
                         // Results in TypeError when allowed, NotAllowedError when disallowed
-                        const options = makeCreateOptions({ protocol: [] });
+                        const options = makeIssueOptions({ protocol: [] });
                         const { data } = await new Promise((resolve) => {
                             const callback = (e) => {
                                 if (e.source === iframe.contentWindow) {
@@ -132,7 +132,7 @@
                         } else {
                             assert_equals(name, "NotAllowedError", fullMessage);
                         }
-                    }, `With Create: Policy to use: ${details.policy}, is cross-origin: ${details.crossOrigin}, is allowed by policy: ${details.expectIsAllowed}`);
+                    }, `With Issue: Policy to use: ${details.policy}, is cross-origin: ${details.crossOrigin}, is allowed by policy: ${details.expectIsAllowed}`);
                 }
             }
             window.onload = runTests;

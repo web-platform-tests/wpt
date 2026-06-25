@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Digital Credential API: create() user activation tests.</title>
+<title>Digital Credential API: issue() user activation tests.</title>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testharness.js"></script>
@@ -7,50 +7,51 @@
 <script src="support/helper.js" type="module"></script>
 <body></body>
 <script type="module">
-  import { makeCreateOptions } from "./support/helper.js";
+  import { makeIssueOptions } from "./support/helper.js";
 
   promise_test(async (t) => {
     assert_false(
       navigator.userActivation.isActive,
       "User activation should not be active",
     );
-    const options = makeCreateOptions();
+    const options = makeIssueOptions();
     await promise_rejects_dom(
       t,
       "NotAllowedError",
-      navigator.credentials.create(options),
+      DigitalCredential.issue(options),
     );
-  }, "navigator.credentials.create() calling the API without user activation should reject with NotAllowedError.");
+  }, "DigitalCredential.issue() calling the API without user activation should reject with NotAllowedError.");
 
   promise_test(async (t) => {
     assert_false(
       navigator.userActivation.isActive,
       "User activation should not be active",
     );
-    const options = makeCreateOptions({ data: { val: BigInt(1) } });
+    const options = makeIssueOptions({ data: { val: BigInt(1) } });
     await promise_rejects_dom(
       t,
       "NotAllowedError",
-      navigator.credentials.create(options),
+      DigitalCredential.issue(options),
     );
-  }, "navigator.credentials.create() with non-serializable data and no user activation should reject with NotAllowedError.");
+  }, "DigitalCredential.issue() with non-serializable data and no user activation should reject with NotAllowedError.");
 
   promise_test(async (t) => {
     assert_false(
       navigator.userActivation.isActive,
       "User activation should not be active",
     );
-    const options = makeCreateOptions({ protocol: [] });
+    // A missing `requests` member is a synchronous WebIDL TypeError, thrown
+    // before the user-activation check, so no activation is required.
     await promise_rejects_js(
       t,
       TypeError,
-      navigator.credentials.create(options),
+      DigitalCredential.issue({}),
     );
     assert_false(
       navigator.userActivation.isActive,
       "User activation should not be active",
     );
-  }, "navigator.credentials.create() with empty protocol array and no user activation needed should reject with TypeError.");
+  }, "DigitalCredential.issue() with missing requests and no user activation needed should reject with TypeError.");
 
   promise_test(async (t) => {
     await test_driver.bless();
@@ -59,15 +60,15 @@
       "User activation should be active after test_driver.bless().",
     );
     const abort = new AbortController();
-    const options = makeCreateOptions({ signal: abort.signal });
+    const options = makeIssueOptions({ signal: abort.signal });
     abort.abort();
-    const promise = navigator.credentials.create(options);
+    const promise = DigitalCredential.issue(options);
     await promise_rejects_dom(t, "AbortError", promise);
     assert_true(
       navigator.userActivation.isActive,
-      "User activation should not be consumed on early abort with navigator.credentials.create().",
+      "User activation should not be consumed on early abort with DigitalCredential.issue().",
     );
-  }, "navigator.credentials.create() with early abort does not consume user activation.");
+  }, "DigitalCredential.issue() with early abort does not consume user activation.");
 
   promise_test(async (t) => {
     await test_driver.bless();
@@ -76,14 +77,14 @@
       "User activation should be active after test_driver.bless().",
     );
     const abort = new AbortController();
-    const options = makeCreateOptions({ signal: abort.signal });
+    const options = makeIssueOptions({ signal: abort.signal });
 
-    const promise = navigator.credentials.create(options);
+    const promise = DigitalCredential.issue(options);
     abort.abort();
     await promise_rejects_dom(t, "AbortError", promise);
     assert_false(
       navigator.userActivation.isActive,
-      "User activation should be consumed after navigator.credentials.create().",
+      "User activation should be consumed after DigitalCredential.issue().",
     );
-  }, "navigator.credentials.create() with late abort consumes user activation.");
+  }, "DigitalCredential.issue() with late abort consumes user activation.");
 </script>

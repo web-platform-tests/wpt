@@ -15,6 +15,7 @@ from .base import strip_server
 from .executorwebdriver import (
     WebDriverBaseProtocolPart,
     WebDriverCrashtestExecutor,
+    WebDriverAccessibilityProtocolPart,
     WebDriverFedCMProtocolPart,
     WebDriverPrintRefTestExecutor,
     WebDriverProtocol,
@@ -191,6 +192,94 @@ class ChromeDriverFedCMProtocolPart(WebDriverFedCMProtocolPart):
                                                    f"{self.parent.vendor_prefix}/fedcm/confirmidplogin")
 
 
+class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
+    def setup(self):
+        super().setup()
+        self._nodes_by_id = {}
+
+    def after_connect(self):
+        super().after_connect()
+        self.parent.cdp.execute_cdp_command("Accessibility.enable")
+
+    def teardown(self):
+        try:
+            self.parent.cdp.execute_cdp_command("Accessibility.disable")
+        except error.WebDriverException:
+            pass
+
+    def get_computed_label(self, element):
+        node = self._get_ax_node_for_element(element)
+        return self._serialize_node(node).get("label", "") if node else ""
+
+    def get_computed_role(self, element):
+        node = self._get_ax_node_for_element(element)
+        return self._serialize_node(node).get("role", "") if node else ""
+
+    def get_accessibility_properties_for_element(self, element):
+        node = self._get_ax_node_for_element(element)
+        return self._serialize_node(node) if node else {}
+
+    def get_accessibility_properties_for_accessibility_node(self, id):
+        node = self._get_ax_node_by_backend_id(id)
+        return self._serialize_node(node) if node else {}
+
+    def _get_ax_node_for_element(self, element):
+        # Parse the ID, then hand it off to the shared helper
+        parsed_ids = self._extract_chromedriver_ids(element.id)
+
+        if parsed_ids and parsed_ids.get("element"):
+            return self._get_ax_node_by_backend_id(parsed_ids["element"])
+
+        return None
+
+    def _get_ax_node_by_backend_id(self, backend_node_id):
+        """Shared CDP call to fetch an accessibility node by its backend ID."""
+        ax_tree = self.parent.cdp.execute_cdp_command(
+            "Accessibility.getPartialAXTree",
+            {
+                "backendNodeId": int(backend_node_id),
+                "fetchRelatives": False,
+            }
+        )
+        nodes = ax_tree.get("nodes", [])
+        return nodes[0] if nodes else None
+
+    @staticmethod
+    def _extract_chromedriver_ids(element_id_string):
+        """
+        Extracts Frame, Document, and Element IDs from a ChromeDriver id.
+        Expected format: f.[hash].d.[hash].e.[id]
+        """
+        pattern = r"^f\.(?P<frame>[^.]+)\.d\.(?P<document>[^.]+)\.e\.(?P<element>.+)$"
+        match = re.match(pattern, element_id_string)
+
+        return match.groupdict() if match else None
+
+    @staticmethod
+    def _serialize_node(node):
+        rv = {
+            "accessibilityId": node["nodeId"],
+            "children": node.get("childIds", []),
+        }
+
+        if "parentId" in node:
+            rv["parent"] = node["parentId"]
+
+        # Parse native fields
+        if "role" in node:
+            rv["role"] = node["role"].get("value")
+        if "name" in node:
+            rv["label"] = node["name"].get("value")
+        if "value" in node:
+            rv["value"] = node["value"].get("value")
+        if "description" in node:
+            rv["description"] = node["description"].get("value")
+
+        for prop in node.get("properties", []):
+            rv[prop["name"]] = prop["value"].get("value")
+
+        return rv
+
 class ChromeDriverDevToolsProtocolPart(ProtocolPart):
     """A low-level API for sending Chrome DevTools Protocol [0] commands directly to the browser.
 
@@ -244,6 +333,7 @@ class ChromeDriverTracingProtocolPart(ProtocolPart):
 
 class ChromeDriverProtocol(WebDriverProtocol):
     implements = [
+        ChromeDriverAccessibilityProtocolPart,
         ChromeDriverBaseProtocolPart,
         ChromeDriverDevToolsProtocolPart,
         ChromeDriverFedCMProtocolPart,
@@ -269,6 +359,7 @@ class ChromeDriverProtocol(WebDriverProtocol):
 
 class ChromeDriverBidiProtocol(WebDriverBidiProtocol):
     implements = [
+        ChromeDriverAccessibilityProtocolPart,
         ChromeDriverBaseProtocolPart,
         ChromeDriverDevToolsProtocolPart,
         ChromeDriverFedCMProtocolPart,

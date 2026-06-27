@@ -896,18 +896,18 @@
 #document
 | <html>
 |   <head>
-|   <body>
 |     <script>
 |       "<?something>"
+|   <body>
 
 #data
 <style><?something></style>
 #document
 | <html>
 |   <head>
-|   <body>
 |     <style>
 |       "<?something>"
+|   <body>
 
 #data
 <?something>

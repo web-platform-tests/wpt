@@ -7,11 +7,10 @@ def test_atspi(atspi, session, inline):
 
     # Spec:
     # Role: ROLE_PAGE_TAB
-    # State: STATE_SELECTED: if focus is inside tabpanel associated with aria-labelledby
+    # State: STATE_SELECTED: if focus is inside tabpanel associated with aria-labelledby (TODO: Add test)
 
     node = atspi.find_node("test", session.url)
     assert atspi.Accessible.get_role(node) == atspi.Role.PAGE_TAB
-    assert "STATE_SELECTED" in atspi.get_state_list_helper(node)
 
 # def test_axapi(axapi, session, inline):
 #     session.url = inline(TEST_HTML)

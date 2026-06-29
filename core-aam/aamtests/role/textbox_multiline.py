@@ -1,8 +1,9 @@
 # Testing: https://w3c.github.io/core-aam/#role-map-textbox-multiline
 
 TEST_HTML = "<div role='textbox' contenteditable aria-multiline='true' id='test'>content</div>"
+TEST_HTML_READONLY = "<div role='textbox' contenteditable aria-multiline='true' id='test' aria-readonly='true'>content</div>"
 
-def test_atspi(atspi, session, inline):
+def test_atspi_editable(atspi, session, inline):
     session.url = inline(TEST_HTML)
 
     # Spec:
@@ -14,6 +15,20 @@ def test_atspi(atspi, session, inline):
     assert atspi.Accessible.get_role(node) == atspi.Role.ENTRY
     assert "STATE_MULTI_LINE" in atspi.get_state_list_helper(node)
     assert atspi.Accessible.get_editable_text_iface(node) is not None
+
+def test_atspi_readonly(atspi, session, inline):
+    session.url = inline(TEST_HTML_READONLY)
+
+    # Spec:
+    # Role: ROLE_ENTRY
+    # State: STATE_MULTI_LINE
+    # Interface: EditableText: if aria-readonly is not "true"
+
+    node = atspi.find_node("test", session.url)
+    assert atspi.Accessible.get_role(node) == atspi.Role.ENTRY
+    assert "STATE_MULTI_LINE" in atspi.get_state_list_helper(node)
+    assert atspi.Accessible.get_editable_text_iface(node) is None
+
 
 # def test_axapi(axapi, session, inline):
 #     session.url = inline(TEST_HTML)

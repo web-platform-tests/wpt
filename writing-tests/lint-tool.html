@@ -131,12 +131,10 @@ element.</p>
 <strong>To fix:</strong><p>Reimplement the test to use well-documented testing interfaces</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">MISSING-LINK</span></code></dt><dd><p>Testcase file must have a link to a spec</p>
-<strong>To fix:</strong><p>Ensure that there is a <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=&quot;help&quot;</span> <span class="pre">href=&quot;[url]&quot;&gt;</span></code> for the spec.
-<code class="docutils literal notranslate"><span class="pre">MISSING-LINK</span></code> is designed to ensure that the CSS build tool can find
-the tests. Note that the CSS build system is primarily used by
-<a class="reference external" href="http://test.csswg.org/">test.csswg.org/</a>, which doesn’t use
-<code class="docutils literal notranslate"><span class="pre">wptserve</span></code>, so <code class="docutils literal notranslate"><span class="pre">*.any.js</span></code> and similar tests won’t work there; stick
-with the <code class="docutils literal notranslate"><span class="pre">.html</span></code> equivalent.</p>
+<strong>To fix:</strong><p>Ensure that there is a <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=&quot;help&quot;</span> <span class="pre">href=&quot;[url]&quot;&gt;</span></code> for the spec
+in HTML tests, or a <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">META:</span> <span class="pre">spec=[url]</span></code> line in script-based tests
+(<code class="docutils literal notranslate"><span class="pre">*.any.js</span></code>, <code class="docutils literal notranslate"><span class="pre">*.window.js</span></code>, <code class="docutils literal notranslate"><span class="pre">*.worker.js</span></code>). <code class="docutils literal notranslate"><span class="pre">MISSING-LINK</span></code> is designed
+to ensure that tests can be associated with the relevant spec.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">MISSING-REFTESTWAIT</span></code></dt><dd><p>Missing <code class="docutils literal notranslate"><span class="pre">class=reftest-wait</span></code></p>
 <strong>To fix:</strong><p>ensure tests that include reftest-wait.js also use class=reftest-wait on the root element.</p>

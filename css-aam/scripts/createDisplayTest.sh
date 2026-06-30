@@ -47,6 +47,7 @@ do
     # The new file location and name
     newfile="../display/display-${escapedValue}.html"
     # Run sed on the basefile and replace the instances of the base value.
+    # Add a comment about the file being generated.
     # Then save to the new file.
-    sed -E s/"display: block"/"display: ${i}"/g $basefile | sed -E s/'displayValue = "block"'/"${displayValue}"/g > $newfile
+    sed -E s/"display: block"/"display: ${i}"/g $basefile | sed -E s/'displayValue = "block"'/"${displayValue}"/g | sed -E s/'<body>'/'<!-- THIS IS A GENERATED FILE.\n     EDITS ARE OVERWRITTEN. -->\n<body>'/g > $newfile
 done

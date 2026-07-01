@@ -10,6 +10,8 @@ pytestmark = pytest.mark.asyncio
 FILE_DIALOG_OPENED_EVENT = "input.fileDialogOpened"
 
 
+@pytest.mark.capabilities(
+    {"unhandledPromptBehavior": {'file': 'dismiss', 'default': 'ignore'}})
 async def test_unsubscribe(bidi_session, inline, top_context, wait_for_event,
         wait_for_bidi_events, wait_for_future_safe):
     await bidi_session.session.subscribe(events=[FILE_DIALOG_OPENED_EVENT])
@@ -41,6 +43,8 @@ async def test_unsubscribe(bidi_session, inline, top_context, wait_for_event,
     remove_listener()
 
 
+@pytest.mark.capabilities(
+    {"unhandledPromptBehavior": {'file': 'dismiss', 'default': 'ignore'}})
 async def test_subscribe(bidi_session, subscribe_events, inline, top_context,
         wait_for_event, wait_for_future_safe):
     await subscribe_events(events=[FILE_DIALOG_OPENED_EVENT])
@@ -58,9 +62,12 @@ async def test_subscribe(bidi_session, subscribe_events, inline, top_context,
     )
 
     event = await wait_for_future_safe(on_entry)
-    assert_file_dialog_opened_event(event, top_context["context"])
+    assert_file_dialog_opened_event(event, top_context["context"],
+                                    top_context["userContext"])
 
 
+@pytest.mark.capabilities(
+    {"unhandledPromptBehavior": {'file': 'dismiss', 'default': 'ignore'}})
 async def test_show_picker(bidi_session, subscribe_events, inline, top_context,
         wait_for_event, wait_for_future_safe):
     await subscribe_events(events=[FILE_DIALOG_OPENED_EVENT])
@@ -78,9 +85,12 @@ async def test_show_picker(bidi_session, subscribe_events, inline, top_context,
     )
 
     event = await wait_for_future_safe(on_entry)
-    assert_file_dialog_opened_event(event, top_context["context"])
+    assert_file_dialog_opened_event(event, top_context["context"],
+                                    top_context["userContext"])
 
 
+@pytest.mark.capabilities(
+    {"unhandledPromptBehavior": {'file': 'dismiss', 'default': 'ignore'}})
 @pytest.mark.parametrize("multiple", [True, False])
 async def test_multiple(bidi_session, subscribe_events, inline, top_context,
         wait_for_event, wait_for_future_safe, multiple):
@@ -100,9 +110,12 @@ async def test_multiple(bidi_session, subscribe_events, inline, top_context,
     )
     event = await wait_for_future_safe(on_entry)
     assert_file_dialog_opened_event(event, top_context["context"],
+                                    top_context["userContext"],
                                     multiple=multiple)
 
 
+@pytest.mark.capabilities(
+    {"unhandledPromptBehavior": {'file': 'dismiss', 'default': 'ignore'}})
 async def test_element(bidi_session, subscribe_events, inline, top_context,
         wait_for_event, wait_for_future_safe):
     await subscribe_events(events=[FILE_DIALOG_OPENED_EVENT])
@@ -124,4 +137,5 @@ async def test_element(bidi_session, subscribe_events, inline, top_context,
         'sharedId': node["sharedId"],
     }
     assert_file_dialog_opened_event(event, top_context["context"],
+                                    top_context["userContext"],
                                     element=expected_element)

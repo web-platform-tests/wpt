@@ -26,7 +26,7 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
@@ -48,7 +48,7 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
@@ -70,7 +70,7 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
@@ -92,7 +92,7 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
@@ -115,13 +115,39 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
         'isInfiniteOutput': {
           'data': [0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0],
           'descriptor': {shape: [2, 2, 2, 2], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'isInfinite float32 5D tensor',
+    'graph': {
+      'inputs': {
+        'isInfiniteInput': {
+          'data': [1.0,      Infinity, -2.5,      0.0,     NaN,       -Infinity, 3.14,    Infinity,
+                   -0.0,     42.0,     -Infinity, -999.99, 1e10,      -1e-10,    Infinity, 100.5,
+                   0.5,      Infinity, -1.0,      2.0,     -Infinity, 7.7,       -8.8,    9.9,
+                   Infinity, 100.0,    -200.0,    0.001,   -0.001,    -Infinity, 1000.0,  -1000.0],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'isInfinite',
+        'arguments': [{'a': 'isInfiniteInput'}],
+        'outputs': 'isInfiniteOutput'
+      }],
+      'expectedOutputs': {
+        'isInfiniteOutput': {
+          'data': [0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0,
+                   0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'uint8'}
         }
       }
     }
@@ -138,7 +164,7 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
@@ -160,7 +186,7 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
@@ -182,7 +208,7 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
@@ -204,7 +230,7 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
@@ -226,7 +252,7 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
@@ -249,7 +275,7 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
@@ -273,7 +299,7 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
@@ -295,7 +321,7 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
@@ -317,7 +343,7 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
@@ -339,13 +365,39 @@ const isInfiniteTests = [
       },
       'operators': [{
         'name': 'isInfinite',
-        'arguments': [{'input': 'isInfiniteInput'}],
+        'arguments': [{'a': 'isInfiniteInput'}],
         'outputs': 'isInfiniteOutput'
       }],
       'expectedOutputs': {
         'isInfiniteOutput': {
           'data': [1, 1, 0, 0, 0, 0, 0],
           'descriptor': {shape: [7], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'isInfinite float16 5D tensor',
+    'graph': {
+      'inputs': {
+        'isInfiniteInput': {
+          'data': [1.0,      Infinity, -2.5,      0.0,    NaN,       -Infinity, 3.0,     Infinity,
+                   -0.0,     42.0,     -Infinity, -999.0, 1000.0,    -0.5,      Infinity, 100.5,
+                   0.5,      Infinity, -1.0,      2.0,    -Infinity, 7.5,       -8.5,    9.0,
+                   Infinity, 100.0,    -200.0,    0.125,  -0.125,    -Infinity, 500.0,   -500.0],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'isInfinite',
+        'arguments': [{'a': 'isInfiniteInput'}],
+        'outputs': 'isInfiniteOutput'
+      }],
+      'expectedOutputs': {
+        'isInfiniteOutput': {
+          'data': [0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0,
+                   0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+          'descriptor': {shape: [2, 2, 2, 2, 2], dataType: 'uint8'}
         }
       }
     }

@@ -9,6 +9,7 @@ interface HTMLUserMediaElement : HTMLElement {
 
   [CEReactions] attribute DOMString type;
   attribute EventHandler onstream;
+  attribute EventHandler oncancel;
   attribute EventHandler onerror;
 
   static boolean isTypeSupported(DOMString type);

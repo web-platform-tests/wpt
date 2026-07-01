@@ -187,7 +187,7 @@
   }, 'timeline-scope on ancestor sibling, resolve to last match in tree order');
 </script>
 
-<template id=timeline_ancestor_closer_timeline_scope_wins>
+<template id=timeline_ancestor_search_stops_at_timeline_scope>
   <style>
     #scroller {
       timeline-scope: --t1;
@@ -216,10 +216,11 @@
   </div>
 </template>
 <script>
+  // https://drafts.csswg.org/scroll-animations-1/#timeline-scoping
    promise_test(async (t) => {
-     await inflate(t, timeline_ancestor_closer_timeline_scope_wins);
+     await inflate(t, timeline_ancestor_search_stops_at_timeline_scope);
      assert_equals(getComputedStyle(target).zIndex, 'auto');
-   }, 'timeline-scope on ancestor sibling, closer timeline wins');
+   }, 'ancestor search stops at timeline-scope');
 </script>
 
 <template id=timeline_ancestor_scroll_timeline_wins_on_same_element>

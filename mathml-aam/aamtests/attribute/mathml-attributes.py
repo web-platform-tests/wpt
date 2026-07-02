@@ -69,7 +69,7 @@ def test_atspi(atspi, session, inline, element_name):
     session.url = inline(data["html"])
     node = atspi.find_node("test", session.url)
 
-    if "tag" in data and data["tag"]:
+    if "tag" in data:
         obj_attrs = atspi.Accessible.get_attributes(node)
         assert "tag" in obj_attrs, f"<{element_name}> object attributes missing 'tag' key. Found: {obj_attrs}"
         assert obj_attrs["tag"] == data["tag"], f"Expected tag '{data['tag']}', got '{obj_attrs['tag']}'"

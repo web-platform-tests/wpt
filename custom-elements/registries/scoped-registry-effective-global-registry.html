@@ -97,9 +97,7 @@ function adoptedByNewDocument(node, test) {
 
 function runTest(operation, operationName) {
     // Null registry child tests
-    test (test => {
-    test (test => {
-    test (test => {
+    test(test => {
         const [win, host] = operation(addNullRegistryChild(createParentElementWithoutRegistryAttribute(null)), test);
         assert_equals(host.querySelector('a-b').customElementRegistry, win.customElements);
         assert_equals(host.firstElementChild.customElementRegistry, win.customElements);
@@ -160,7 +158,7 @@ function runTest(operation, operationName) {
     },  'Null registry element with imperative shadow root parent (scoped registry) ' + operationName);
 
     // Global registry child tests
-    test (test => {
+    test(test => {
         const [win, host] = operation(addGlobalRegistryChild(createParentElementWithoutRegistryAttribute(null)), test);
         assert_equals(host.querySelector('a-b').customElementRegistry, win.customElements);
         assert_equals(host.firstElementChild.customElementRegistry, win.customElements);
@@ -221,7 +219,7 @@ function runTest(operation, operationName) {
     },  'Global registry element with imperative shadow root parent (scoped registry) ' + operationName);
 
     // Scoped registry child tests
-    test (test => {
+    test(test => {
         const [win, host] = operation(addScopedRegistryChild(createParentElementWithoutRegistryAttribute(null)), test);
         assert_equals(host.querySelector('a-b').customElementRegistry, scopedRegistry);
         assert_equals(host.firstElementChild.customElementRegistry, win.customElements);
@@ -284,6 +282,38 @@ function runTest(operation, operationName) {
 
 runTest(appendToNewDocument, 'appended to new document');
 runTest(adoptedByNewDocument, 'adopted by new document');
+
+// A child whose parent is an exclusive DocumentFragment node (a DocumentFragment that
+// is not a shadow root) uses the new document's custom element registry directly, rather
+// than looking up the registry via its parent.
+function runExclusiveDocumentFragmentTest(operation, operationName) {
+    test(test => {
+        const fragment = document.createDocumentFragment();
+        const child = document.createElement('a-b', {customElementRegistry: null});
+        fragment.append(child);
+        const [win] = operation(fragment, test);
+        assert_equals(child.customElementRegistry, win.customElements);
+    },  'Null registry element with exclusive DocumentFragment parent ' + operationName);
+
+    test(test => {
+        const fragment = document.createDocumentFragment();
+        const child = document.createElement('a-b', {customElementRegistry: customElements});
+        fragment.append(child);
+        const [win] = operation(fragment, test);
+        assert_equals(child.customElementRegistry, win.customElements);
+    },  'Global registry element with exclusive DocumentFragment parent ' + operationName);
+
+    test(test => {
+        const fragment = document.createDocumentFragment();
+        const child = document.createElement('a-b', {customElementRegistry: scopedRegistry});
+        fragment.append(child);
+        const [win] = operation(fragment, test);
+        assert_equals(child.customElementRegistry, scopedRegistry);
+    },  'Scoped registry element with exclusive DocumentFragment parent ' + operationName);
+}
+
+runExclusiveDocumentFragmentTest(appendToNewDocument, 'appended to new document');
+runExclusiveDocumentFragmentTest(adoptedByNewDocument, 'adopted by new document');
 
 </script>
 </body>

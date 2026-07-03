@@ -75,36 +75,39 @@
 |     <?hey ?there?>
 
 #data
-<body><?hey\tthere=1?>
+<body><?hey	there=1?>
 #document
 | <html>
 |   <head>
 |   <body>
-|     <?hey there=1?>
+|     <?hey	there=1?>
 
 #data
-<body><?hey\nthere=1?>
+<body><?hey
+there=1?>
 #document
 | <html>
 |   <head>
 |   <body>
-|     <?hey there=1?>
+|     <?hey
+there=1?>
 
 #data
-<body><?hey\rthere=1?>
+<body><?heythere=1?>
 #document
 | <html>
 |   <head>
 |   <body>
-|     <?hey there=1?>
+|     <?hey
+there=1?>
 
 #data
-<body><?hey\fthere=1?>
+<body><?heythere=1?>
 #document
 | <html>
 |   <head>
 |   <body>
-|     <?hey there=1?>
+|     <?heythere=1?>
 
 #data
 <body><?something ? >

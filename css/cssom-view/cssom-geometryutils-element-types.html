@@ -54,6 +54,32 @@
     border: 2px solid purple;
     padding: 6px;
   }
+
+  #pseudo-host {
+    position: absolute;
+    left: 360px;
+    top: 260px;
+    padding: 12px 24px;
+    transform: rotate(-8deg);
+  }
+
+  #pseudo-host::before {
+    content: "before";
+    display: inline-block;
+    width: 48px;
+    height: 18px;
+    margin-right: 8px;
+    background: deepskyblue;
+  }
+
+  #pseudo-host::after {
+    content: "after";
+    position: absolute;
+    right: -18px;
+    top: -12px;
+    padding: 2px 6px;
+    background: red;
+  }
 </style>
 <div id="html-box"></div>
 <svg id="svg-root" viewBox="0 0 260 170">
@@ -79,6 +105,7 @@
     </msup>
   </math>
 </div>
+<button id="pseudo-host">Pseudo host</button>
 <script>
 const elementCases = [
   ["html-box", "HTML element"],
@@ -128,4 +155,22 @@ for (const [id, description] of elementCases) {
                               `${description} converted local rect`);
   }, `convertRectFromNode() maps a local ${description} rect as a DOMQuad`);
 }
+
+test(() => {
+  const host = document.getElementById("pseudo-host");
+  if (typeof host.pseudo !== "function" || !("CSSPseudoElement" in window)) {
+    return;
+  }
+
+  for (const type of ["::before", "::after"]) {
+    const pseudo = host.pseudo(type);
+    assert_true(pseudo instanceof CSSPseudoElement, `${type} pseudo`);
+    assert_equals(typeof pseudo.getBoxQuads, "function",
+                  `${type} getBoxQuads`);
+    const quad = pseudo.getBoxQuads()[0];
+    assert_true(quad instanceof DOMQuad, `${type} quad`);
+    assert_greater_than(quad.getBounds().width, 0, `${type} width`);
+    assert_greater_than(quad.getBounds().height, 0, `${type} height`);
+  }
+}, "getBoxQuads() returns quads for exposed CSSPseudoElement objects");
 </script>

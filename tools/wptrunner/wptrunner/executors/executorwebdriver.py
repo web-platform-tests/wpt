@@ -46,6 +46,7 @@ from .protocol import (BaseProtocolPart,
                        BidiPermissionsProtocolPart,
                        BidiScriptProtocolPart,
                        DevicePostureProtocolPart,
+                       ConsumeUserActivationProtocolPart,
                        StorageProtocolPart,
                        VirtualPressureSourceProtocolPart,
                        ProtectedAudienceProtocolPart,
@@ -971,6 +972,14 @@ class WebDriverDevicePostureProtocolPart(DevicePostureProtocolPart):
         return self.webdriver.send_session_command("DELETE", "deviceposture")
 
 
+class WebDriverConsumeUserActivationProtocolPart(ConsumeUserActivationProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def consume_user_activation(self):
+        return self.webdriver.send_session_command("POST", "window/consume-user-activation")
+
+
 class WebDriverBidiDigitalCredentialsProtocolPart(DigitalCredentialsProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
@@ -1085,6 +1094,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverDebugProtocolPart,
                   WebDriverVirtualSensorPart,
                   WebDriverDevicePostureProtocolPart,
+                  WebDriverConsumeUserActivationProtocolPart,
                   WebDriverStorageProtocolPart,
                   WebDriverVirtualPressureSourceProtocolPart,
                   WebDriverProtectedAudienceProtocolPart,

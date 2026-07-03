@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>TestDriver consume_user_activation method</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+    promise_test(async (t) => {
+        await test_driver.bless("consume user activation");
+        assert_true(navigator.userActivation.isActive);
+        const consumed = await test_driver.consume_user_activation();
+        assert_true(consumed);
+        assert_false(navigator.userActivation.isActive);
+    }, "Consume transient activation");
+
+    promise_test(async (t) => {
+        assert_false(navigator.userActivation.isActive);
+        const consumed = await test_driver.consume_user_activation();
+        assert_false(consumed);
+    }, "Nothing to consume");
+</script>

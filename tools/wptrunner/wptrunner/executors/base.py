@@ -5,7 +5,6 @@ import hashlib
 import io
 import json
 import os
-import socket
 import struct
 import sys
 import threading
@@ -741,11 +740,14 @@ class PytestExecutor(TestExecutor):
         pass
 
     def do_test(self, test):
-        timeout = test.timeout * self.timeout_multiplier + self.extra_timeout
+        timeout = test.timeout * self.timeout_multiplier
 
-        success, data = PytestRun(self.do_pytest,
+        success, data = PytestRun(self.logger,
+                                  self.do_pytest,
+                                  self.protocol,
                                   test.abs_path,
-                                  timeout).run()
+                                  timeout,
+                                  self.extra_timeout).run()
 
         if success:
             return self.convert_result(test, data)
@@ -775,41 +777,27 @@ class PytestExecutor(TestExecutor):
                                 timeout=timeout)
 
 
-class PytestRun:
-    def __init__(self, func, path, timeout):
-        self.func = func
-        self.result = (None, None)
+class PytestRun(TimedRunner):
+    def __init__(self, logger, func, protocol, path, timeout, extra_timeout):
+        super().__init__(logger, func, protocol, path, timeout, extra_timeout)
         self.path = path
-        self.timeout = timeout
-        self.result_flag = threading.Event()
 
-    def run(self):
-        """Runs function in a thread and interrupts it if it exceeds the
-        given timeout.  Returns (True, (Result, [SubtestResult ...])) in
-        case of success, or (False, (status, extra information)) in the
-        event of failure.
-        """
+    def set_timeout(self):
+        pass  # No session-level timeout to set for pytest-based (wdspec) tests.
 
-        executor = threading.Thread(target=self._run)
-        executor.start()
-
-        self.result_flag.wait(self.timeout)
-        if self.result[1] is None:
-            self.result = False, ("EXTERNAL-TIMEOUT", None)
-
-        return self.result
-
-    def _run(self):
+    def run_func(self):
         try:
-            self.result = True, self.func(self.path, self.timeout)
-        except (socket.timeout, OSError):
-            self.result = False, ("CRASH", None)
+            self.result = True, self.func(self.path, self.timeout + self.extra_timeout)
         except Exception as e:
-            message = getattr(e, "message", "")
-            if message:
-                message += "\n"
-            message += traceback.format_exc()
-            self.result = False, ("INTERNAL-ERROR", message)
+            if self.protocol.is_alive():
+                message = getattr(e, "message", "")
+                if message:
+                    message += "\n"
+                message += traceback.format_exc()
+                self.result = False, ("INTERNAL-ERROR", message)
+            else:
+                self.logger.info("Browser not responding, setting status to CRASH")
+                self.result = False, ("CRASH", None)
         finally:
             self.result_flag.set()
 

@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Demo Payment App</title>
+<script src="/resources/channel.sub.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<button id="btn">Click Me</button>
+<script>
+  (async () => {
+    try {
+      const channel = await start_global_channel();
+      // start_global_channel listens for call commands and executes them.
+    } catch (e) {
+      console.error("Failed to start channel", e);
+    }
+  })();
+</script>

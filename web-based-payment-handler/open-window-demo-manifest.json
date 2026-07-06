@@ -1,0 +1,15 @@
+{
+  "default_applications": ["open-window-demo-manifest.json"],
+  "name": "Demo Payment Handler",
+  "icons": [
+    {
+      "src": "/images/rgrg-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ],
+  "serviceworker": {
+    "src": "app-open-window-demo.js",
+    "scope": "open-window-demo-payment-app/"
+  }
+}

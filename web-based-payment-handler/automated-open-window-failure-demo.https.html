@@ -1,0 +1,50 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Demo failure of channel-based testdriver</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/channel.sub.js"></script>
+<script>
+  const methodName = window.location.origin + '/web-based-payment-handler/'
+      + 'open-window-demo-manifest.json';
+
+  promise_test(async t => {
+    // 1. Create remote global to get UUID
+    const remote = new RemoteGlobal();
+    
+    // 2. Trigger Payment Request passing UUID
+    const request = new PaymentRequest([{
+      supportedMethods: methodName,
+      data: { uuid: remote.uuid }
+    }], {
+      total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
+    });
+    
+    // We don't await show() yet because it blocks until payment is completed/aborted.
+    const showPromise = test_driver.bless('show payment sheet', () => request.show());
+    
+    // 3. Wait for the remote global to connect (the payment app window opening)
+    await remote.connect();
+    
+    // 4. Try to call bless in the remote global
+    try {
+      await remote.call(async () => {
+        // This runs in the payment app window
+        await test_driver.bless("authorize payment", () => {
+          document.getElementById("btn").click();
+        });
+      });
+      assert_unreached("Should have thrown an error");
+    } catch (err) {
+      // We expect it to fail because testdriver has no test context
+      assert_true(err.toString().includes("Tried to run in a non-testharness window"),
+                  "Expected 'non-testharness window' error, but got: " + err.toString());
+    }
+    
+    // Cleanup: abort request to avoid hangs
+    await request.abort();
+    await showPromise.catch(() => {}); // ignore abort error
+  }, 'Demonstrate that testdriver fails in window opened by SW even with channels');
+</script>

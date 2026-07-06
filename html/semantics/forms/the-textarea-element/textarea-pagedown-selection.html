@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>PageDown moves the caret inside the textarea even if not scrollable</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-elements.html#the-textarea-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<div style="height:200vh">
+<textarea id="t" style="height:10em;">foo
+bar
+baz
+</textarea>
+</div>
+<script>
+const kPageDown = "\uE00F";
+
+promise_test(async () => {
+  t.focus();
+  t.setSelectionRange(0, 0);
+
+  await test_driver.send_keys(t, kPageDown);
+
+  assert_equals(t.selectionStart, t.value.length,
+                "caret should move to the end within the textarea");
+  assert_equals(t.selectionEnd, t.value.length,
+                "selection should stay collapsed at the new caret position");
+  assert_equals(window.scrollY, 0, "the root should not have scrolled");
+}, "PageDown moves the caret inside the textarea even if not scrollable");
+</script>

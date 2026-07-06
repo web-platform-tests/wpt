@@ -31,4 +31,4 @@ def test_uia(uia, session, inline):
     # Control Type: Pane
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "Pane"
+    assert node.CurrentControlType == uia.ControlType.Pane

@@ -32,4 +32,4 @@ def test_uia(uia, session, inline):
     # Control Type: Text
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "Text"
+    assert node.CurrentControlType == uia.ControlType.Text

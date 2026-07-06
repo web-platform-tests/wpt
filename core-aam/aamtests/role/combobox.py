@@ -37,4 +37,4 @@ def test_uia(uia, session, inline):
     # Control Type: ComboBox
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "ComboBox"
+    assert node.CurrentControlType == uia.ControlType.ComboBox

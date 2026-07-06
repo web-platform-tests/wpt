@@ -37,7 +37,12 @@ def test_uia(uia, session, inline):
     # See also: aria-checked in the State and Property Mapping Tables
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "MenuItem"
-    # assert uia.get_control_pattern(node, "Toggle") is not None
-    # assert uia.get_control_pattern(node, "SelectionItem") is not None
-    # assert uia.get_property(node, "IsChecked") is not None
+    assert node.CurrentControlType == uia.ControlType.MenuItem
+
+    assert node.GetCurrentPropertyValue(uia.PropertyId.IsTogglePatternAvailable)
+    toggle_pattern = node.GetCurrentPattern(uia.PatternId.Toggle)
+    assert toggle_pattern and toggle_pattern.CurrentToggleState == 0
+
+    assert node.GetCurrentPropertyValue(uia.PropertyId.IsSelectionItemPatternAvailable)
+    selection_pattern = node.GetCurrentPattern(uia.PatternId.SelectionItem)
+    assert selection_pattern and selection_pattern.CurrentIsSelected == 0

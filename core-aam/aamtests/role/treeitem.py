@@ -34,4 +34,4 @@ def test_uia(uia, session, inline):
     # See also: aria-checked in the State and Property Mapping Tables
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "TreeItem"
+    assert node.CurrentControlType == uia.ControlType.TreeItem

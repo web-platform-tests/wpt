@@ -36,13 +36,12 @@ def test_uia(uia, session, inline):
     # See also: aria-checked in the State and Property Mapping Tables
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "RadioButton"
-    patterns = uia.get_supported_patterns(node)
+    assert node.CurrentControlType == uia.ControlType.RadioButton
 
-    assert "Toggle" in patterns
-    toggle_pattern_attr = uia.get_pattern_attr(node, "Toggle")
-    assert toggle_pattern_attr["ToggleState"] == 0
+    assert node.GetCurrentPropertyValue(uia.PropertyId.IsTogglePatternAvailable)
+    toggle_pattern = node.GetCurrentPattern(uia.PatternId.Toggle)
+    assert toggle_pattern and toggle_pattern.CurrentToggleState == 0
 
-    assert "SelectionItem" in patterns
-    selection_pattern_attr = uia.get_pattern_attr(node, "SelectionItem")
-    assert selection_pattern_attr["IsSelected"] == 0
+    assert node.GetCurrentPropertyValue(uia.PropertyId.IsSelectionItemPatternAvailable)
+    selection_pattern = node.GetCurrentPattern(uia.PatternId.SelectionItem)
+    assert selection_pattern and selection_pattern.CurrentIsSelected == 0

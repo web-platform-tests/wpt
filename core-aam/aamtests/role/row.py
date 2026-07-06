@@ -33,10 +33,9 @@ def test_uia(uia, session, inline):
     # Control Pattern: SelectionItem
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "DataItem"
-    assert uia.get_property(node, "LocalizedControlType") == "row"
-    patterns = uia.get_supported_patterns(node)
+    assert node.CurrentControlType == uia.ControlType.DataItem
+    assert node.CurrentLocalizedControlType == "row"
 
-    assert "SelectionItem" in patterns
-    selection_pattern_attr = uia.get_pattern_attr(node, "SelectionItem")
-    assert selection_pattern_attr["IsSelected"] == 0
+    assert node.GetCurrentPropertyValue(uia.PropertyId.IsSelectionItemPatternAvailable)
+    selection_pattern = node.GetCurrentPattern(uia.PatternId.SelectionItem)
+    assert selection_pattern and selection_pattern.CurrentIsSelected == 0

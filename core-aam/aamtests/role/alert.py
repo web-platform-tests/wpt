@@ -34,6 +34,6 @@ def test_uia(uia, session, inline):
     # LiveSetting: Assertive (2)
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "Group"
-    assert uia.get_property(node, "LocalizedControlType") == "alert"
-    # Todo: add assertions for the live setting
+    assert node.CurrentControlType == uia.ControlType.Group
+    assert node.CurrentLocalizedControlType == "alert"
+    assert node.GetCurrentPropertyValue(uia.PropertyId.LiveSetting) == 2

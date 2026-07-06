@@ -35,5 +35,5 @@ def test_uia(uia, session, inline):
     # Localized Control Type: strong
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "Text"
-    assert uia.get_property(node, "LocalizedControlType") == "strong"
+    assert node.CurrentControlType == uia.ControlType.Text
+    assert node.CurrentLocalizedControlType == "strong"

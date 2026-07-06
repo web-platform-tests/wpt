@@ -35,6 +35,7 @@ def test_uia(uia, session, inline):
     # See also: aria-checked in the State and Property Mapping Tables
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "ListItem"
-    #Todo: add Invoke Control Pattern assertions here
-    #Todo: add aria-checked state and property assertions here
+    assert node.CurrentControlType == uia.ControlType.ListItem
+
+    assert node.GetCurrentPropertyValue(uia.PropertyId.IsInvokePatternAvailable)
+    # aria-checked is not mapped when undefined as in the HTML fragment above.

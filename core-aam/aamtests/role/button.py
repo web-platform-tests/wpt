@@ -42,4 +42,4 @@ def test_uia(uia, session, inline, test_html):
     # Control Type: Button
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "Button"
+    assert node.CurrentControlType == uia.ControlType.Button

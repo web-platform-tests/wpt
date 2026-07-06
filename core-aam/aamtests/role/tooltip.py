@@ -31,4 +31,4 @@ def test_uia(uia, session, inline):
     # Control Type: ToolTip
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "ToolTip"
+    assert node.CurrentControlType == uia.ControlType.ToolTip

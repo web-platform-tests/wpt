@@ -34,8 +34,8 @@ def test_uia(uia, session, inline):
     # See also: aria-checked in the State and Property Mapping Tables
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "CheckBox"
+    assert node.CurrentControlType == uia.ControlType.CheckBox
 
-    assert "Toggle" in uia.get_supported_patterns(node)
-    toggle_pattern_attr = uia.get_pattern_attr(node, "Toggle")
-    assert toggle_pattern_attr["ToggleState"] == 0
+    assert node.GetCurrentPropertyValue(uia.PropertyId.IsTogglePatternAvailable)
+    toggle_pattern = node.GetCurrentPattern(uia.PatternId.Toggle)
+    assert toggle_pattern and toggle_pattern.CurrentToggleState == 0

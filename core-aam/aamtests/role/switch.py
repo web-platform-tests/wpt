@@ -39,9 +39,9 @@ def test_uia(uia, session, inline):
     # Control Pattern: Toggle
     # See also: aria-checked in the State and Property Mapping Tables
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "Button"
-    assert uia.get_property(node, "LocalizedControlType") == "toggleswitch"
+    assert node.CurrentControlType == uia.ControlType.Button
+    assert node.CurrentLocalizedControlType == "toggleswitch"
 
-    assert "Toggle" in uia.get_supported_patterns(node)
-    toggle_pattern_attr = uia.get_pattern_attr(node, "Toggle")
-    assert toggle_pattern_attr["ToggleState"] == 0
+    assert node.GetCurrentPropertyValue(uia.PropertyId.IsTogglePatternAvailable)
+    toggle_pattern = node.GetCurrentPattern(uia.PatternId.Toggle)
+    assert toggle_pattern and toggle_pattern.CurrentToggleState == 0

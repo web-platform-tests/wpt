@@ -44,6 +44,6 @@ def test_uia(uia, session, inline):
     # Landmark Type: Main
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "Group"
-    assert uia.get_property(node, "LocalizedControlType") == "main"
-    assert uia.get_landmark_type(node) == "Main"
+    assert node.CurrentControlType == uia.ControlType.Group
+    assert node.CurrentLocalizedControlType == "main"
+    assert node.GetCurrentPropertyValue(uia.PropertyId.LandmarkType) == uia.LandmarkType.Main

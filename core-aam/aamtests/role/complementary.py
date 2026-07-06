@@ -37,7 +37,7 @@ def test_uia(uia, session, inline):
     # Localized Landmark Type: complementary
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "Group"
-    assert uia.get_property(node, "LocalizedControlType") == "complementary"
-    assert uia.get_landmark_type(node) == "Custom"
-    assert uia.get_property(node, "LocalizedLandmarkType") == "complementary"
+    assert node.CurrentControlType == uia.ControlType.Group
+    assert node.CurrentLocalizedControlType == "complementary"
+    assert node.GetCurrentPropertyValue(uia.PropertyId.LandmarkType) == uia.LandmarkType.Custom
+    assert node.GetCurrentPropertyValue(uia.PropertyId.LocalizedLandmarkType) == "complementary"

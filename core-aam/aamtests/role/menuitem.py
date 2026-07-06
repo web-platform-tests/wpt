@@ -37,5 +37,5 @@ def test_uia(uia, session, inline):
     # Control Type: MenuItem
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "MenuItem"
+    assert node.CurrentControlType == uia.ControlType.MenuItem
 

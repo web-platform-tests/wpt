@@ -35,5 +35,5 @@ def test_uia(uia, session, inline):
     # Localized Control Type: feed
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "Group"
-    assert uia.get_property(node, "LocalizedControlType") == "feed"
+    assert node.CurrentControlType == uia.ControlType.Group
+    assert node.CurrentLocalizedControlType == "feed"

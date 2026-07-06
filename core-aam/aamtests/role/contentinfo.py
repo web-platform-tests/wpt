@@ -37,7 +37,7 @@ def test_uia(uia, session, inline):
     # Localized Landmark Type: content information
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "Group"
-    assert uia.get_property(node, "LocalizedControlType") == "content information"
-    assert uia.get_landmark_type(node) == "Custom"
-    assert uia.get_property(node, "LocalizedLandmarkType") == "content information"
+    assert node.CurrentControlType == uia.ControlType.Group
+    assert node.CurrentLocalizedControlType == "content information"
+    assert node.GetCurrentPropertyValue(uia.PropertyId.LandmarkType) == uia.LandmarkType.Custom
+    assert node.GetCurrentPropertyValue(uia.PropertyId.LocalizedLandmarkType) == "content information"

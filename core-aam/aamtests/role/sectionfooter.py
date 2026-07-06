@@ -34,5 +34,5 @@ def test_uia(uia, session, inline):
     # Localized Control Type: section footer
 
     node = uia.find_node("test", session.url)
-    assert uia.get_control_type(node) == "Group"
-    assert uia.get_property(node, "LocalizedControlType") == "section footer"
+    assert node.CurrentControlType == uia.ControlType.Group
+    assert node.CurrentLocalizedControlType == "section footer"

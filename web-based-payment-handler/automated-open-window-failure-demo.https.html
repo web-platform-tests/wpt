@@ -13,7 +13,7 @@
   promise_test(async t => {
     // 1. Create remote global to get UUID
     const remote = new RemoteGlobal();
-    
+
     // 2. Trigger Payment Request passing UUID
     const request = new PaymentRequest([{
       supportedMethods: methodName,
@@ -21,28 +21,47 @@
     }], {
       total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
     });
-    
+
+    let remoteCallPromise = new Promise((resolve, reject) => {
+      request.addEventListener('paymentmethodchange', event => {
+        console.log("Received paymentmethodchange event");
+        const promise = (async () => {
+          try {
+            // Connect and call remote
+            await remote.connect();
+            console.log("Before remote.call in event handler");
+            await remote.call(async () => {
+              console.log("Inside remote.call, before bless");
+              await test_driver.bless("authorize payment", () => {
+                document.getElementById("btn").click();
+              });
+              console.log("After bless");
+            });
+            console.log("After remote.call in event handler");
+            resolve();
+          } catch (err) {
+            console.log("Error in event handler: " + err);
+            reject(err);
+            throw err;
+          }
+        })();
+        event.updateWith(promise.then(() => ({})).catch(() => ({})));
+      });
+    });
+
     // We don't await show() yet because it blocks until payment is completed/aborted.
     const showPromise = test_driver.bless('show payment sheet', () => request.show());
-    
-    // 3. Wait for the remote global to connect (the payment app window opening)
-    await remote.connect();
-    
-    // 4. Try to call bless in the remote global
+
+    // Wait for the remote call to complete (which happens when the window is ready and we call it)
     try {
-      await remote.call(async () => {
-        // This runs in the payment app window
-        await test_driver.bless("authorize payment", () => {
-          document.getElementById("btn").click();
-        });
-      });
+      await remoteCallPromise;
       assert_unreached("Should have thrown an error");
     } catch (err) {
-      // We expect it to fail because testdriver has no test context
+      console.log("Caught expected error: " + err);
       assert_true(err.toString().includes("Tried to run in a non-testharness window"),
                   "Expected 'non-testharness window' error, but got: " + err.toString());
     }
-    
+
     // Cleanup: abort request to avoid hangs
     await request.abort();
     await showPromise.catch(() => {}); // ignore abort error

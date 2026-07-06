@@ -8,8 +8,23 @@
 <script>
   (async () => {
     try {
+      console.log("Starting channel in remote");
       const channel = await start_global_channel();
-      // start_global_channel listens for call commands and executes them.
+      console.log("Channel started in remote, uuid: " + channel.uuid);
+      
+      // Send ready signal to SW
+      if (navigator.serviceWorker) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        const reg = regs.find(r => r.scope.includes('web-based-payment-handler'));
+        if (reg && reg.active) {
+          console.log("Found SW, sending ready");
+          reg.active.postMessage('ready');
+        } else {
+          console.warn("SW not found or not active");
+        }
+      } else {
+        console.warn("navigator.serviceWorker not available");
+      }
     } catch (e) {
       console.error("Failed to start channel", e);
     }

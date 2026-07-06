@@ -1,11 +1,13 @@
 let resolver = null;
 let rejecter = null;
+let payment_request_event = null;
 
 self.addEventListener('canmakepayment', event => {
   event.respondWith(true);
 });
 
 self.addEventListener('paymentrequest', event => {
+  payment_request_event = event;
   event.respondWith(new Promise((resolve, reject) => {
     resolver = resolve;
     rejecter = reject;
@@ -25,8 +27,20 @@ self.addEventListener('paymentrequest', event => {
 self.addEventListener('message', msgEvent => {
   if (msgEvent.data === 'success') {
      resolver({
-       methodName: event.methodData[0].supportedMethods,
+       methodName: payment_request_event.methodData[0].supportedMethods,
        details: {status: 'success'},
      });
+  } else if (msgEvent.data === 'ready') {
+    console.log("SW received ready, calling changePaymentMethod");
+    if (payment_request_event) {
+      payment_request_event.changePaymentMethod(
+        payment_request_event.methodData[0].supportedMethods,
+        {ready: true}
+      ).then(merchantResponse => {
+        console.log("Merchant responded to changePaymentMethod: ", merchantResponse);
+      }).catch(err => {
+        console.error("Failed to changePaymentMethod: ", err);
+      });
+    }
   }
 });

@@ -75,7 +75,7 @@
 |     <?hey ?there?>
 
 #data
-<body><?hey\tthere=1?>
+<body><?hey	there=1?>
 #document
 | <html>
 |   <head>
@@ -83,7 +83,8 @@
 |     <?hey there=1?>
 
 #data
-<body><?hey\nthere=1?>
+<body><?hey
+there=1?>
 #document
 | <html>
 |   <head>
@@ -91,7 +92,7 @@
 |     <?hey there=1?>
 
 #data
-<body><?hey\rthere=1?>
+<body><?heythere=1?>
 #document
 | <html>
 |   <head>
@@ -99,7 +100,7 @@
 |     <?hey there=1?>
 
 #data
-<body><?hey\fthere=1?>
+<body><?heythere=1?>
 #document
 | <html>
 |   <head>
@@ -596,7 +597,7 @@
 |     <!-- ?99-problems -->
 
 #data
-<body><?\u0665-star>
+<body><?٥-star>
 #document
 | <html>
 |   <head>
@@ -636,7 +637,7 @@
 |     <!-- ?-100 -->
 
 #data
-<body><?\u00B7middle-dot>
+<body><?·middle-dot>
 #document
 | <html>
 |   <head>
@@ -644,7 +645,7 @@
 |     <!-- ?·middle-dot -->
 
 #data
-<body><?\u0375greek-numeral>
+<body><?͵greek-numeral>
 #document
 | <html>
 |   <head>
@@ -652,7 +653,7 @@
 |     <!-- ?͵greek-numeral -->
 
 #data
-<body><?\u0301accent-start>
+<body><?́accent-start>
 #document
 | <html>
 |   <head>
@@ -772,7 +773,7 @@
 |     <!-- ?lit$$4x -->
 
 #data
-<body><?\uD83D\uDE80-launch>
+<body><?🚀-launch>
 #document
 | <html>
 |   <head>
@@ -780,7 +781,7 @@
 |     <!-- ?🚀-launch -->
 
 #data
-<body><?error-\u26A0\uFE0F>
+<body><?error-⚠️>
 #document
 | <html>
 |   <head>
@@ -788,7 +789,7 @@
 |     <!-- ?error-⚠️ -->
 
 #data
-<body><?fire-\uD83D\uDD25>
+<body><?fire-🔥>
 #document
 | <html>
 |   <head>
@@ -796,7 +797,7 @@
 |     <!-- ?fire-🔥 -->
 
 #data
-<body><?v1-\u2705>
+<body><?v1-✅>
 #document
 | <html>
 |   <head>

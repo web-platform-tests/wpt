@@ -89,3 +89,61 @@ def test_pytestrun_run_reports_crash_when_browser_dies_during_hang():
     success, (status, message) = runner.run()
     assert not success
     assert status == "CRASH"
+
+
+class FakeBrowser:
+    host = "127.0.0.1"
+    port = 4444
+    env: dict[str, str] = {}
+    pac = None
+
+
+def make_pytest_executor(monkeypatch, protocol_alive, pytest_result):
+    executor = base.PytestExecutor(StructuredLogger("test"), FakeBrowser(), server_config=None,
+                                   webdriver_binary="webdriver", webdriver_args=[],
+                                   target_platform="linux")
+    executor.setup(None)
+    monkeypatch.setattr(executor.protocol, "is_alive", lambda: protocol_alive)
+    monkeypatch.setattr(base.pytestrunner, "run", lambda *args, **kwargs: pytest_result)
+    return executor
+
+
+def test_do_pytest_reports_crash_when_browser_dead_despite_ok_result(monkeypatch):
+    executor = make_pytest_executor(monkeypatch, protocol_alive=False,
+                                    pytest_result=(("OK", None), []))
+
+    harness_result, subtest_results = executor.do_pytest("/some/test.py", 10)
+
+    assert harness_result == ("CRASH", None)
+    assert subtest_results == []
+
+
+def test_do_pytest_reports_crash_when_browser_dead_despite_error_result(monkeypatch):
+    # A non-OK, non-CRASH pytest result (e.g. a collection error) is just as
+    # uninformative about browser liveness as an OK one.
+    executor = make_pytest_executor(monkeypatch, protocol_alive=False,
+                                    pytest_result=(("ERROR", "boom"), []))
+
+    harness_result, subtest_results = executor.do_pytest("/some/test.py", 10)
+
+    assert harness_result == ("CRASH", "boom")
+
+
+def test_do_pytest_keeps_result_when_browser_alive(monkeypatch):
+    executor = make_pytest_executor(monkeypatch, protocol_alive=True,
+                                    pytest_result=(("OK", None), []))
+
+    harness_result, subtest_results = executor.do_pytest("/some/test.py", 10)
+
+    assert harness_result == ("OK", None)
+
+
+def test_do_pytest_skips_is_alive_probe_when_already_crash(monkeypatch):
+    executor = make_pytest_executor(monkeypatch, protocol_alive=True,
+                                    pytest_result=(("CRASH", "boom"), []))
+    monkeypatch.setattr(executor.protocol, "is_alive",
+                        lambda: (_ for _ in ()).throw(AssertionError("should not be called")))
+
+    harness_result, subtest_results = executor.do_pytest("/some/test.py", 10)
+
+    assert harness_result == ("CRASH", "boom")

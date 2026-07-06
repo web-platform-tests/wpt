@@ -771,10 +771,20 @@ class PytestExecutor(TestExecutor):
             "webdriver": {"binary": self.webdriver_binary, "args": self.webdriver_args},
         }
 
-        return pytestrunner.run(path,
-                                self.server_config,
-                                session_config,
-                                timeout=timeout)
+        harness_result, subtest_results = pytestrunner.run(path,
+                                                           self.server_config,
+                                                           session_config,
+                                                           timeout=timeout)
+
+        # pytest catches exceptions raised by individual test items (e.g. from a
+        # WebDriver connection that died mid-run) and reports them as ordinary
+        # subtest failures, so the harness-level result on its own doesn't tell
+        # us whether the browser is actually still alive.
+        if harness_result[0] != "CRASH" and not self.protocol.is_alive():
+            self.logger.info("Browser not responding, setting status to CRASH")
+            harness_result = ("CRASH", harness_result[1])
+
+        return harness_result, subtest_results
 
 
 class PytestRun(TimedRunner):

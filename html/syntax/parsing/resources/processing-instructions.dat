@@ -986,3 +986,13 @@ there=1?>
 |     <title>
 |       "<?something>"
 
+#data
+<noscript><?pi>
+#script-off
+#document
+| <html>
+|   <head>
+|     <noscript>
+|       <?pi ?>
+|   <body>
+

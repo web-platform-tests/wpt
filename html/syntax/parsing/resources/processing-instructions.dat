@@ -996,3 +996,13 @@ there=1?>
 |       <?pi ?>
 |   <body>
 
+#data
+<template><?pi>
+#document
+| <html>
+|   <head>
+|   <body>
+|     <template>
+|       content
+|         <?pi ?>
+

@@ -24,6 +24,10 @@ test_valid_value('mask', 'url("https://{{host}}/")');
 // <position> [ / <bg-size> ]?
 test_valid_value('mask', 'linear-gradient(to left bottom, red, blue) 1px 2px');
 test_valid_value('mask', 'url("https://{{host}}/") 1px 2px / contain');
+// The <position> in the shorthand supports the 3- and 4-value edge-offset syntax.
+test_valid_value('mask', 'linear-gradient(to left bottom, red, blue) right 8px center');
+test_valid_value('mask', 'linear-gradient(to left bottom, red, blue) right 8px center / 20px 20px');
+test_valid_value('mask', 'linear-gradient(to left bottom, red, blue) right 8px bottom 10px');
 
 // <repeat-style> = repeat-x | repeat-y | [repeat | space | round | no-repeat]{1,2}
 test_valid_value('mask', 'repeat-y');

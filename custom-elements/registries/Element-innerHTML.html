@@ -165,6 +165,25 @@ test((test) => {
     class ScopedNewElement extends HTMLElement { };
     registry.define('new-element', ScopedNewElement);
 
+    const template = document.createElement('template', {customElementRegistry: registry});
+    assert_equals(template.customElementRegistry, registry);
+
+    template.innerHTML = '<new-element><new-element></new-element></new-element>';
+    const outer_element = template.content.querySelector('new-element');
+    const inner_element = outer_element.querySelector('new-element');
+    assert_equals(outer_element.customElementRegistry, registry);
+    assert_true(outer_element instanceof ScopedNewElement);
+    assert_false(outer_element instanceof WrongNewElement);
+    assert_equals(inner_element.customElementRegistry, registry);
+    assert_true(inner_element instanceof ScopedNewElement);
+    assert_false(inner_element instanceof WrongNewElement);
+}, 'innerHTML on a template with a scoped registry should use the scoped registry of the template');
+
+test((test) => {
+    const registry = new CustomElementRegistry;
+    class ScopedNewElement extends HTMLElement { };
+    registry.define('new-element', ScopedNewElement);
+
     const div = document.createElement('div', {customElementRegistry: registry});
     assert_equals(div.customElementRegistry, registry);
 

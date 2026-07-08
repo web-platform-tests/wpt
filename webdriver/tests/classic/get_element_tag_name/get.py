@@ -87,9 +87,35 @@ def test_stale_element_reference(session, stale_element, as_frame):
     assert_error(result, "stale element reference")
 
 
-def test_get_element_tag_name(session, inline):
-    session.url = inline("<input id=foo>")
+@pytest.mark.parametrize("markup", ["<input id=foo>", "<INPUT id=foo>"])
+def test_get_element_tag_name(session, inline, markup):
+    session.url = inline(markup)
     element = session.find.css("input", all=False)
 
     result = get_element_tag_name(session, element.id)
-    assert_success(result, "INPUT")
+    assert_success(result, "input")
+
+
+def test_get_svg_element_tag_name(session, inline):
+    session.url = inline("<svg><lineargradient id=foo></lineargradient></svg>")
+    element = session.find.css("#foo", all=False)
+
+    result = get_element_tag_name(session, element.id)
+    assert_success(result, "linearGradient")
+
+
+def test_get_element_tag_name_with_namespace_prefix(session, inline):
+    session.url = inline(
+        """<root xmlns:SvG="http://www.w3.org/2000/svg"><SvG:linearGradient/></root>""",
+        doctype="xml")
+    element = session.find.css("linearGradient", all=False)
+
+    result = get_element_tag_name(session, element.id)
+    assert_success(result, "SvG:linearGradient")
+
+
+def test_get_element_tag_name_xhtml(session, inline):
+    session.url = inline("<div></div>", doctype="xhtml")
+    element = session.find.css("div", all=False)
+    result = get_element_tag_name(session, element.id)
+    assert_success(result, "div")

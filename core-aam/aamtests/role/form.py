@@ -34,6 +34,7 @@ def test_uia(uia, session, inline):
     # Control Type: Group
     # Localized Control Type: form
     # Landmark Type: Form
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.Group
     assert node.CurrentLocalizedControlType == "form"

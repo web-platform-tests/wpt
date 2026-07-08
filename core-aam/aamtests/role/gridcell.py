@@ -37,6 +37,7 @@ def test_uia(uia, session, inline):
     # Control Pattern: TableItem
     # Control Pattern: SelectionItem
     # SelectionItem.SelectionContainer: grid
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.DataItem
     assert node.CurrentLocalizedControlType == "item"

@@ -35,6 +35,7 @@ def test_uia(uia, session, inline):
     # Spec:
     # Control Type: ProgressBar
     # Control Pattern: RangeValue if aria-valuenow, aria-valuemax, or aria-valuemin is present
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.ProgressBar
     assert node.GetCurrentPropertyValue(uia.PropertyId.IsRangeValuePatternAvailable)

@@ -33,6 +33,7 @@ def test_uia(uia, session, inline):
     # Control Type: ListItem
     # Control Pattern: Invoke
     # See also: aria-checked in the State and Property Mapping Tables
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.ListItem
     assert node.GetCurrentPropertyValue(uia.PropertyId.IsInvokePatternAvailable)

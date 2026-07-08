@@ -35,6 +35,7 @@ def test_uia(uia, session, inline):
     # Localized Control Type: banner
     # Landmark Type: Custom
     # Localized Landmark Type: banner
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.Group
     assert node.CurrentLocalizedControlType == "banner"

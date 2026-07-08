@@ -33,6 +33,7 @@ def test_uia(uia, session, inline):
     # Spec:
     # Control Type: Text
     # Localized Control Type: code
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.Text
     assert node.CurrentLocalizedControlType == "code"

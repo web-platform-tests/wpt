@@ -35,6 +35,7 @@ def test_uia(uia, session, inline):
     # Spec:
     # Control Type: List
     # Control Pattern: Selection
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.List
     assert node.GetCurrentPropertyValue(uia.PropertyId.IsSelectionPatternAvailable)

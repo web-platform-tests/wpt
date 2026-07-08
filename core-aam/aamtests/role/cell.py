@@ -35,6 +35,7 @@ def test_uia(uia, session, inline):
     # Localized Control Type: item
     # Control Pattern: GridItem
     # Control Pattern: TableItem
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.DataItem
     assert node.CurrentLocalizedControlType == "item"

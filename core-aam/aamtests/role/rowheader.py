@@ -32,5 +32,6 @@ def test_uia(uia, session, inline):
 
     # Spec:
     # Control Type: HeaderItem
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.HeaderItem

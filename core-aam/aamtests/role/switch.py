@@ -38,6 +38,7 @@ def test_uia(uia, session, inline):
     # Localized Control Type: toggleswitch
     # Control Pattern: Toggle
     # See also: aria-checked in the State and Property Mapping Tables
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.Button
     assert node.CurrentLocalizedControlType == "toggleswitch"

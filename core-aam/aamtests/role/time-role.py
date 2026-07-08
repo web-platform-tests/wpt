@@ -34,6 +34,7 @@ def test_uia(uia, session, inline):
     # Control Type: Text
     # Localized Control Type: time
     # Note: create a separate UIA Control of type Text. This is different from most UIA text mappings, which only create ranges in the page text pattern.
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.Text
     assert node.CurrentLocalizedControlType == "time"

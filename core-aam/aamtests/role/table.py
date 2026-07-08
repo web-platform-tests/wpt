@@ -40,6 +40,7 @@ def test_uia(uia, session, inline):
     # Control Type: Table
     # Control Pattern: Grid
     # Control Pattern: Table
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.Table
     assert node.GetCurrentPropertyValue(uia.PropertyId.IsGridPatternAvailable)

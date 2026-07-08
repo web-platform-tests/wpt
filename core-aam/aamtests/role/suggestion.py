@@ -33,6 +33,7 @@ def test_uia(uia, session, inline):
     # Spec:
     # Control Type: Group
     # Localized Control Type: suggestion
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.Group
     assert node.CurrentLocalizedControlType == "suggestion"

@@ -35,6 +35,7 @@ def test_uia(uia, session, inline):
     # Spec:
     # Control Type: Tab
     # Control Pattern: Selection
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.Tab
 

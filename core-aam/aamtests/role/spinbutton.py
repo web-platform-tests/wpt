@@ -34,6 +34,7 @@ def test_uia(uia, session, inline):
     # Spec:
     # Control Type: Spinner
     # Control Pattern: RangeValue
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.Spinner
     assert node.GetCurrentPropertyValue(uia.PropertyId.IsRangeValuePatternAvailable)

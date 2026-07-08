@@ -34,6 +34,7 @@ def test_uia(uia, session, inline):
 
     # Spec:
     # Control Type: Tree
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.Tree
 

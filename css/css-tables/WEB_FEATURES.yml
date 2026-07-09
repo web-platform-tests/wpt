@@ -1,8 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   3 | ...   - "*"
-#   4 |       # keep exclusions synced with mappings below
-#   5 | ...   - "!box-shadow-*"
-# END ORIGINAL COMMENTS:
 rules:
 - box-shadow-*: [box-shadow]
 - table-cell-inline-size-box-sizing-quirks.html: [box-sizing]

@@ -1,8 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   7 | ... - name: animations-css
-#   8 |       # Everything which does not belong to some other feature, above
-#   9 | ...   files:
-# END ORIGINAL COMMENTS:
 rules:
 - animation-composition-*: [animation-composition]
 - animation-timing-function-invalid.html: [steps-easing]

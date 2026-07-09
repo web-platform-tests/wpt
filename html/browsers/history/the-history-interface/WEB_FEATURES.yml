@@ -1,8 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   3 | ...   - "*"
-#   4 |       # keep exclusions synced with mappings below
-#   5 | ...   - "!004.html"
-# END ORIGINAL COMMENTS:
 rules:
 - 004.html: [hashchange]
 - history_pushstate_url.html: [hashchange]

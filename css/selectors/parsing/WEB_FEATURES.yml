@@ -1,8 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#  14 | ...   - '!parse-slotted.html'
-#  15 |     # Keep all mappings below synced with selectors exclusions above
-#  16 | ... - name: focus-visible
-# END ORIGINAL COMMENTS:
 rules:
 - parse-focus-visible.html: [focus-visible]
 - parse-has.html: [has]

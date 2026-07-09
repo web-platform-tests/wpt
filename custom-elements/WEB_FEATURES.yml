@@ -1,14 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   3 | ...   - "*"
-#   4 |       # Exclude newer and more specific features. Keep in sync with below lists.
-#   5 | ...   - "!builtin-coverage.html"
-#  13 | ...   files:
-#  14 |       # Keep in sync with main list.
-#  15 | ...   - builtin-coverage.html
-#  22 | ...   files:
-#  23 |       # Keep in sync with main list.
-#  24 | ...   - "CustomElementRegistry*"
-# END ORIGINAL COMMENTS:
 rules:
 - builtin-coverage.html: [customized-built-in-elements]
 - customized-built-in-constructor-exceptions.html: [customized-built-in-elements]

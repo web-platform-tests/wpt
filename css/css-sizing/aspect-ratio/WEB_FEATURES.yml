@@ -1,13 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   2 | ...   files:
-#   3 |       #  The following patterns are intended to match every file that isn't matched
-#   4 |       #  by `box-sizing` below.
-#   5 | ...   - "*"
-#  33 | ...   files:
-#  34 |       # When modifying this classifier, please make corresponding changes to the
-#  35 |       # classifier for the `aspect-ration` feature above.
-#  36 | ...   - abspos-010.html
-# END ORIGINAL COMMENTS:
 rules:
 - abspos-010.html: [box-sizing]
 - abspos-011.html: [box-sizing]

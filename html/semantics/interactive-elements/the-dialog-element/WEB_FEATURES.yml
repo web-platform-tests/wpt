@@ -1,11 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   3 | ...   - "*"
-#   4 |       # keep exclusions synced with mappings below
-#   5 | ...   - "!dialog-cancel-events.html"
-#  19 | ...   - "!dialog-toggle-source.html"
-#  20 |     # keep subsequent mappings synced with exclusions above
-#  21 | ... - name: closewatcher
-# END ORIGINAL COMMENTS:
 rules:
 - dialog-cancel-events.html: [closewatcher]
 - dialog-canceling.html: [closewatcher]

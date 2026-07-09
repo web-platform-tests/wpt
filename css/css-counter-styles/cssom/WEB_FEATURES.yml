@@ -1,10 +1,7 @@
-# BEGIN ORIGINAL COMMENTS:
-#   0 |     # All of the tests in this directory are for CSSCounterStyleRule, but tests for
-#   1 |     # other parts of CSS Counter Styles could potentially be added here, so list of
-#   2 |     # the (current) tests to avoid matching tests from unrelated features added
-#   3 |     # later.
-#   4 | ... features:
-# END ORIGINAL COMMENTS:
+# All of the tests in this directory are for CSSCounterStyleRule, but tests for
+# other parts of CSS Counter Styles could potentially be added here, so list of
+# the (current) tests to avoid matching tests from unrelated features added
+# later.
 rules:
 - cssom-additive-symbols-setter-invalid.html: [counter-style]
 - cssom-additive-symbols-setter.html: [counter-style]

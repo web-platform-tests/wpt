@@ -1,8 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#  80 | ...   - viewport-units-*
-#  81 |       # Tests for: vi, svi, lvi, dvi, vb, svb, lvb, dvb
-#  82 | ...   - "!viewport-units-writing-mode-*"
-# END ORIGINAL COMMENTS:
 rules:
 - signs-abs-*: [abs-sign]
 - attr-in-max.html: [min-max-clamp, attr]
@@ -40,6 +35,7 @@ rules:
 - max-*: [min-max-clamp]
 - clamp-*: [min-max-clamp]
 - vh-*: [viewport-units]
+# Tests for: vi, svi, lvi, dvi, vb, svb, lvb, dvb
 - viewport-units-writing-mode-*: []
 - viewport-units-*: [viewport-units]
 - getComputedStyle-border-radius-*: [border-radius]

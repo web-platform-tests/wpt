@@ -1,10 +1,6 @@
-# BEGIN ORIGINAL COMMENTS:
-#   5 | ...     - "!from.any.js"
-#   6 |         # 'owning' type is not yet standardized
-#   7 | ...     - "!owning-type*"
-# END ORIGINAL COMMENTS:
 rules:
 - async-iterator.any.js: [async-iterable-streams]
 - from.any.js: [readablestream-from]
+# 'owning' type is not yet standardized
 - owning-type*: []
 - "*": [streams]

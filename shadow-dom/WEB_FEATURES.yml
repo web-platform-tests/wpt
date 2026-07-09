@@ -1,11 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   3 | ...   - "*"
-#   4 |       # Keep exclusion in sync with mappings below.
-#   5 | ...   - "!imperative-slot-*"
-#  12 | ...   - "!HighlightRegistry-highlightsFromPoint.html"
-#  13 |     # Keep mappings below in sync with `shadow-map` mapping.
-#  14 | ... - name: slot-assign
-# END ORIGINAL COMMENTS:
 rules:
 - imperative-slot-*: [slot-assign]
 - HTMLSlotElement-interface.html: [slot]

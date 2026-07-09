@@ -1,17 +1,8 @@
-# BEGIN ORIGINAL COMMENTS:
-#   5 | ...   - open-url-base.htm
-#   6 |     # The classifier for "http-authentication" intentionally overlaps with the
-#   7 |     # above classifier for "xhr" because the boundary between the two features is
-#   8 |     # somewhat subjective.
-#   9 | ... - name: http-authentication
-#  20 | ...   - send-authentication-prompt-manual.htm
-#  21 |     # The classifier for "httpt2" intentionally overlaps with the above classifier
-#  22 |     # for "xhr" because the boundary between the two features is somewhat
-#  23 |     # subjective.
-#  24 | ... - name: http2
-# END ORIGINAL COMMENTS:
 rules:
 - open-url-base.htm: [base, xhr]
+# The classifier for "http-authentication" intentionally overlaps with the
+# above classifier for "xhr" because the boundary between the two features is
+# somewhat subjective.
 - send-authentication-basic-cors-not-enabled.htm: [http-authentication, xhr]
 - send-authentication-basic-repeat-no-args.htm: [http-authentication, xhr]
 - send-authentication-basic-setrequestheader-and-arguments.htm: [http-authentication,
@@ -24,6 +15,9 @@ rules:
 - send-authentication-existing-session-manual.htm: [http-authentication, xhr]
 - send-authentication-prompt-2-manual.htm: [http-authentication, xhr]
 - send-authentication-prompt-manual.htm: [http-authentication, xhr]
+# The classifier for "http2" intentionally overlaps with the above classifier
+# for "xhr" because the boundary between the two features is somewhat
+# subjective.
 - status.h2.window.js: [http2, xhr]
 - access-control-sandboxed-iframe-*: [iframe-sandbox, xhr]
 - "**": [xhr]

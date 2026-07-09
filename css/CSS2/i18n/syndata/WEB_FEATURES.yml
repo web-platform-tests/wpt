@@ -1,11 +1,7 @@
-# BEGIN ORIGINAL COMMENTS:
-#   2 | ...   files:
-#   3 |       # The tests in this directory employ various (and sometimes conflicting)
-#   4 |       # techniques to specify the CSS document's character set. Those listed below
-#   5 |       # specifically use the `@charset` rule.
-#   6 | ...   - character-encoding-004.xht
-# END ORIGINAL COMMENTS:
 rules:
+# The tests in this directory employ various (and sometimes conflicting)
+# techniques to specify the CSS document's character set. Those listed below
+# specifically use the `@charset` rule.
 - character-encoding-004.xht: [charset]
 - character-encoding-005.xht: [charset]
 - character-encoding-006.xht: [charset]

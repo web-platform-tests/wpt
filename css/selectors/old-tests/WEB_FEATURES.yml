@@ -1,8 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#  20 | ...   - "!css3-modsel-172b*"
-#  21 |     # Keep all mappings below synced with selectors exclusions above
-#  22 | ... - name: target
-# END ORIGINAL COMMENTS:
 rules:
 - css3-modsel-21*: [target]
 - css3-modsel-66*: [target]

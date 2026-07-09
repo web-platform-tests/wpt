@@ -1,8 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#  20 | ... - name: animations-css
-#  21 |       # Everything which does not belong to some other feature, above
-#  22 | ...   files:
-# END ORIGINAL COMMENTS:
 rules:
 - animation-composition.html: [animation-composition]
 - animation-composition-*: [animation-composition]

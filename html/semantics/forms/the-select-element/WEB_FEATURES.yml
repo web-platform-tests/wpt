@@ -1,11 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   3 | ...   - '*'
-#   4 |       # Keep exclusions synced with mappings below
-#   5 | ...   - '!select-setcustomvalidity.html'
-#   8 | ...   - '!show-picker-*'
-#   9 |     # Keep all additional mappings synced with `select` mapping above
-#  10 | ... - name: constraint-validation
-# END ORIGINAL COMMENTS:
 rules:
 - select-setcustomvalidity.html: [constraint-validation]
 - select-validity.html: [constraint-validation]

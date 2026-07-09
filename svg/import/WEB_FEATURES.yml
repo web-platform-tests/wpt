@@ -1,14 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   3 | ...   - "*"
-#   4 |       # Exclude tests mapped to `svg-filters`. Keep in sync with `svg-filters` mapping below
-#   5 | ...   - "!filters-*"
-#   6 | ... 
-#   7 |       # Exclude tests mapped to `opacity-svg`. Keep in sync with `opacity-svg` mapping below
-#   8 | ...   - "!painting-fill-05-b-manual.svg"
-#  10 | ... 
-#  11 |       # Exclude tests mapped to `pointer-events`. Keep in sync with `pointer-events` mapping below
-#  12 | ...   - "!animate-interact-pevents-*"
-# END ORIGINAL COMMENTS:
 rules:
 - filters-*: [svg-filters]
 - painting-fill-05-b-manual.svg: [opacity-svg]

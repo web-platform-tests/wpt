@@ -1,7 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#  20 | ...   - region.html
-#  21 |     # Note: constructor.html spans features and is not mapped.
-# END ORIGINAL COMMENTS:
 rules:
 - constructor-exceptions.html: [webvtt]
 - getCueAsHTML.html: [webvtt]
@@ -15,3 +11,4 @@ rules:
 - lineAlign.html: [webvtt-cue-alignment]
 - positionAlign.html: [webvtt-cue-alignment]
 - region.html: [webvtt-regions]
+# Note: constructor.html spans features and is not mapped.

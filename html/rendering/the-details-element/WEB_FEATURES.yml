@@ -1,11 +1,7 @@
-# BEGIN ORIGINAL COMMENTS:
-#   4 | ...   files:
-#   5 |       # List all of the tests for ::details-content manually instead of using
-#   6 |       # a pattern, since the filename lends itself to testing other pseudo-elements
-#   7 |       # for <details> in the future, if they are added.
-#   8 | ...   - details-pseudo-elements-001.html
-# END ORIGINAL COMMENTS:
 rules:
+# List all of the tests for ::details-content manually instead of using a
+# pattern, since the filename lends itself to testing other pseudo-elements for
+# <details> in the future, if they are added.
 - details-pseudo-elements-001.html: [details-content, details]
 - details-pseudo-elements-002.html: [details-content, details]
 - details-pseudo-elements-003.html: [details-content, details]

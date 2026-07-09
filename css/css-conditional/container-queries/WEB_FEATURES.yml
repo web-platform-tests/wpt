@@ -1,9 +1,5 @@
-# BEGIN ORIGINAL COMMENTS:
-#   0 | ... features:
-#   1 |     # Note: container-queries in web-features is container size queries.
-#   2 | ... - name: container-queries
-# END ORIGINAL COMMENTS:
 rules:
+# Note: container-queries in web-features is container size queries.
 - animation-container-size.html: [container-queries]
 - animation-container-type-dynamic.html: [container-queries]
 - animation-nested-animation.html: [container-queries]

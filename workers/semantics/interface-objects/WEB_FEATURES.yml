@@ -1,10 +1,6 @@
-# BEGIN ORIGINAL COMMENTS:
-#   2 | ...   files:
-#   3 |       # These "any.js" tests are limited to the SharedWorker context via the "META"
-#   4 |       # configuration.
-#   5 | ...   - 003.any.js
-# END ORIGINAL COMMENTS:
 rules:
+# These "any.js" tests are limited to the SharedWorker context via the "META"
+# configuration.
 - 003.any.js: [shared-workers]
 - 004.any.js: [shared-workers]
 - 001.worker.js: [dedicated-workers]

@@ -1,8 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#  14 | ...   - serializing-html-fragments-customized-builtins.html
-#  15 |     # Note that parser-uses-create-an-element-for-a-token-svg.svg isn't listed
-#  16 |     # as it has one subtest for autonomous and one for customized built-ins.
-# END ORIGINAL COMMENTS:
 rules:
 - parser-constructs-custom-element-in-document-write.html: [autonomous-custom-elements]
 - parser-constructs-custom-element-synchronously.html: [autonomous-custom-elements]
@@ -14,3 +9,5 @@ rules:
 - parser-uses-constructed-element.html: [autonomous-custom-elements]
 - parser-uses-registry-of-owner-document.html: [autonomous-custom-elements]
 - serializing-html-fragments-customized-builtins.html: [customized-built-in-elements]
+# Note that parser-uses-create-an-element-for-a-token-svg.svg isn't listed as
+# it has one subtest for autonomous and one for customized built-ins.

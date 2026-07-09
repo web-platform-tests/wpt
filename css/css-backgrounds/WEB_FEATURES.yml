@@ -1,21 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#  20 | ...   - background-color-*
-#  21 |       # The above pattern matches a number of tests which do not use the
-#  22 |       # `background-color` property but which nonetheless test relevant semantics
-#  23 |       # via the `background` shorthand:
-#  24 |       # - background-color-body-propagation-004.html
-#  25 |       # - background-color-body-propagation-005.html
-#  26 |       # - background-color-body-propagation-006.html
-#  27 |       # - background-color-body-propagation-007.html
-#  28 |       # - background-color-root-propagation-001.html
-#  29 |       # - background-color-root-propagation-002.html
-#  30 | ...   - background-none-none-and-color.html
-#  35 | ...   files:
-#  36 |       # The presence of a number of unrelated test files whose name begins with
-#  37 |       # `background-color-` makes the `0` in following pattern the most
-#  38 |       # stable/concise way to express this classifier.
-#  39 | ...   - background-image-0*
-# END ORIGINAL COMMENTS:
 rules:
 - background-3*: [background]
 - background_color_padding_box.htm: [background, background-color]
@@ -27,9 +9,23 @@ rules:
 - local-attachment-content-box-scroll.html: [background-attachment]
 - table-cell-background-local*: [background-attachment]
 - background-color-*: [background-color]
+# The above pattern matches a number of tests which do not use the
+# `background-color` property but which nonetheless test relevant semantics via
+# the `background` shorthand:
+# - background-color-body-propagation-004.html
+# - background-color-body-propagation-005.html
+# - background-color-body-propagation-006.html
+# - background-color-body-propagation-007.html
+# - background-color-root-propagation-001.html
+# - background-color-root-propagation-002.html
+
 - background-none-none-and-color.html: [background-color]
 - bg-color-with-gradient.html: [background-color]
 - color-behind-images.htm: [background-color, background-image]
+
+# The presence of a number of unrelated test files whose name begins with
+# `background-color-` makes the `0` in following pattern the most
+# stable/concise way to express this classifier.
 - background-image-0*: [background-image]
 - background-image-first-letter.html: [background-image]
 - background-image-first-line.html: [background-image]

@@ -1,11 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   3 | ...   - '*'
-#   4 |       # Keep exclusions synced with mappings below
-#   5 | ...   - '!area-download-click.html'
-#   7 | ...   files:
-#   8 |       # Keep in sync with `image-maps` mapping
-#   9 | ...   - 'area-download-click.html'
-# END ORIGINAL COMMENTS:
 rules:
 - area-download-click.html: [download]
 - "*": [image-maps]

@@ -1,8 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   3 | ...   - "*"
-#   4 |       # keep exclusions synced with mappings below
-#   5 | ...   - "!hashchange_event.html"
-# END ORIGINAL COMMENTS:
 rules:
 - hashchange_event.html: [hashchange]
 - "*": [history]

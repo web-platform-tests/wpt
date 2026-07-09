@@ -1,31 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#  57 | ...   files:
-#  58 |       # CSSGroupingRule:
-#  59 | ...   - CSSGroupingRule-*
-#  60 |       # CSSPageDescriptors:
-#  61 | ...   - page-descriptors.html
-#  62 | ...   - cssom-pagerule.html
-#  63 |       # CSSRuleList:
-#  64 | ...   - CSSRuleList.html
-#  65 |       # CSSStyleDeclaration:
-#  66 | ...   - css-style-declaration-modifications.html
-#  68 | ...   - cssstyledeclaration-*
-#  69 |       # CSSStyleRule:
-#  70 | ...   - CSSStyleRule.html
-#  71 |       # Document.styleSheets / StyleSheetList / StyleSheet
-#  72 | ...   - StyleSheetList*
-#  73 |       # HTMLElement.style:
-#  74 | ...   - style-attr-update-across-documents.html
-#  75 |       # HTMLLinkElement.sheet / HTMLStyleElement.sheet:
-#  76 | ...   - style-sheet-interfaces-*
-#  77 |       # MediaList:
-#  78 | ...   - MediaList*
-#  79 | ...   - medialist-*
-#  80 |       # CSSConditionRule:
-#  81 | ...   - CSSConditionRule-conditionText.html
-#  82 |       # CSSMediaRule:
-#  83 | ...   - serialize-media-rule.html
-# END ORIGINAL COMMENTS:
 rules:
 - adoptedstylesheets-observablearray.html: [constructed-stylesheets]
 - CSSStyleSheet-constructable-*: [constructed-stylesheets]
@@ -68,20 +40,31 @@ rules:
 - cssom-fontfacerule*: [font-face]
 - font-variant-shorthand-serialization.html: [font-variant]
 - escape.html: [css-escape]
+# CSSGroupingRule:
 - CSSGroupingRule-*: [css-object-model]
+# CSSPageDescriptors:
 - page-descriptors.html: [css-object-model, page-setup]
 - cssom-pagerule.html: [css-object-model, page-setup]
+# CSSRuleList:
 - CSSRuleList.html: [css-object-model]
+# CSSStyleDeclaration:
 - css-style-declaration-modifications.html: [css-object-model]
 - cssom-cssstyledeclaration-set.html: [css-object-model]
 - cssstyledeclaration-*: [css-object-model]
+# CSSStyleRule:
 - CSSStyleRule.html: [css-object-model]
+# Document.styleSheets / StyleSheetList / StyleSheet
 - StyleSheetList*: [css-object-model]
+# HTMLElement.style:
 - style-attr-update-across-documents.html: [css-object-model]
+# HTMLLinkElement.sheet / HTMLStyleElement.sheet:
 - style-sheet-interfaces-*: [css-object-model]
+# MediaList:
 - MediaList*: [css-object-model]
 - medialist-*: [css-object-model]
+# CSSConditionRule:
 - CSSConditionRule-conditionText.html: [css-object-model]
+# CSSMediaRule:
 - serialize-media-rule.html: [css-object-model]
 - mediaquery-sort-dedup.html: [matchmedia]
 - MutationObserver-style.html: [mutationobserver]

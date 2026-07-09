@@ -1,10 +1,6 @@
-# BEGIN ORIGINAL COMMENTS:
-#   1 | ... - name: masks
-#   2 |       # To match the scope of the feature in web-features, this should only include
-#   3 |       # tests for https://drafts.fxtf.org/css-masking-1/#positioned-masks.
-#   4 | ...   files:
-# END ORIGINAL COMMENTS:
 rules:
+# To match the scope of the feature in web-features, this should only include
+# tests for https://drafts.fxtf.org/css-masking-1/#positioned-masks.
 - mask-image-interpolation.html: [masks]
 - mask-no-interpolation.html: [masks]
 - mask-position-interpolation.html: [masks]

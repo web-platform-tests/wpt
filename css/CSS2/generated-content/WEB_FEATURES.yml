@@ -1,13 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-# 133 | ...   - "*"
-# 134 |       # The following patterns are intended to exclude every file that is matched
-# 135 |       # by `attr-contents` above.
-# 136 | ...   - "!content-037.xht"
-# 224 | ...   - "!other-attribute-001.xht"
-# 225 |       # The following patterns are intended to exclude every file that is matched
-# 226 |       # by `counters` above.
-# 227 | ...   - "!content-005.xht"
-# END ORIGINAL COMMENTS:
 rules:
 - content-037.xht: [attr-contents]
 - content-038.xht: [attr-contents]

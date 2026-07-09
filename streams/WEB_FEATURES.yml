@@ -1,7 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   2 | ...   files:
-#   3 |         # Top-level only. Subdirectories have their own mapping.
-#   4 | ...     - "*"
-# END ORIGINAL COMMENTS:
 rules:
+# Top-level only. Subdirectories have their own mapping.
 - "*": [streams]

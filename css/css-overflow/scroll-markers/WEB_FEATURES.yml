@@ -1,8 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#  13 | ...   - targeted-column-scroll-marker-selection-*
-#  14 |       # scroll-marker-targets exclusions, keep synced
-#  15 | ...   - "!scroll-marker-target-before-after.html"
-# END ORIGINAL COMMENTS:
 rules:
 - column-scroll-marker*: [scroll-markers]
 - html-scroll-marker*: [scroll-marker-targets]

@@ -1,11 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   3 | ...   - "*"
-#   4 |       # keep exclusions synced with mappings below
-#   5 | ...   - "!popover-close-request.html"
-#  11 | ...   - "!popover-toggle-source.html"
-#  12 |     # keep subsequent mappings synced with exclusions above
-#  13 | ... - name: closewatcher
-# END ORIGINAL COMMENTS:
 rules:
 - popover-close-request.html: [closewatcher]
 - popovertarget-disabled-fieldset.html: [invoker-commands]

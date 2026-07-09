@@ -1,10 +1,5 @@
-# BEGIN ORIGINAL COMMENTS:
-#   2 | ...   files:
-#   3 |       # `clipboard-item.https.html` tests both `async-clipboard` and
-#   4 |       # `clipboard-supports`
-#   5 | ...   - async-*
-# END ORIGINAL COMMENTS:
 rules:
+# `clipboard-item.https.html` tests both `async-clipboard` and `clipboard-supports`
 - async-custom-formats-*: [clipboard-custom-format]
 - async-svg-read-write.tentative.https.html: [clipboard-svg]
 - async-unsanitized-*: [clipboard-unsanitized-formats]

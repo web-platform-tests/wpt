@@ -1,11 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   3 | ...   - '*'
-#   4 |       # Keep exclusions synced with mappings below
-#   5 | ...   - '!input-checkvalidity.html'
-#  39 | ...   - '!checkable-*'
-#  40 |     # Keep all additional mappings synced with `input` mapping above
-#  41 | ... - name: constraint-validation
-# END ORIGINAL COMMENTS:
 rules:
 - input-checkvalidity.html: [constraint-validation]
 - input-setcustomvalidity.html: [constraint-validation]

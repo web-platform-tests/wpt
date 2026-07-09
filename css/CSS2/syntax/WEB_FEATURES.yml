@@ -1,15 +1,11 @@
-# BEGIN ORIGINAL COMMENTS:
-#   7 | ... - name: charset
-#   8 |       # The tests in this directory employ various (and sometimes conflicting)
-#   9 |       # techniques to specify the CSS document's character set. Those listed below
-#  10 |       # specifically use the `@charset` rule.
-#  11 | ...   files:
-# END ORIGINAL COMMENTS:
 rules:
 - colors-001*: [rgb]
 - colors-002*: [rgb]
 - colors-003*: [rgb]
 - colors-004*: [rgb]
+# The tests in this directory employ various (and sometimes conflicting)
+# techniques to specify the CSS document's character set. Those listed below
+# specifically use the `@charset` rule.
 - at-charset-002.xht: [charset]
 - at-charset-007.xht: [charset]
 - at-charset-008.xht: [charset]

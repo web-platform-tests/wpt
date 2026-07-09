@@ -1,8 +1,3 @@
-# BEGIN ORIGINAL COMMENTS:
-#   4 | ...   - "!dir-*"
-#   5 |       # keep synced with mappings below
-#   6 | ...   - "!list-style-*"
-# END ORIGINAL COMMENTS:
 rules:
 - dir-*: []
 - list-style-*: [list-style]

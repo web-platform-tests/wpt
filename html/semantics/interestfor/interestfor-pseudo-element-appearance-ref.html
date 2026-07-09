@@ -30,16 +30,17 @@
 <div class="example defaultcontent">
   <button class=invoker>
     <span>Button</span>
-    <span class=fake-interest-button>&#x24D8;</span>
   </button>
 </div>
 <div class="example defaultcontent">
   <a href="#" class=invoker><span>Link</span>
-    <span class=fake-interest-button>&#x24D8;</span>
   </a>
 </div>
 
 <style>
+  .fake-interest-button {
+    display: inline-block;
+  }
   .example:not(.defaultcontent) span:not(.fake-interest-button) {
     border: 1px solid lime;
   }

@@ -15,23 +15,35 @@ menuitem:open { background-color: rgb(12,19,8); }
 </style>
 
 <menubar>
- <menuitem id=openMainMenu commandfor=mainmenu command=toggle-menu>Open first menu</menuitem>
+  <submenu>
+    <menuitem id=openMainMenu>Open first menu</menuitem>
+    <menulist id=mainmenu>
+      <submenu>
+        <menuitem id=openSubMenu>Toggle menu</menuitem>
+        <menulist id=submenu>
+          <menuitem>Sub menu</menuitem>
+        </menulist>
+      </submenu>
+      <menuitem id=showPopoverMenuItem command=toggle-popover commandfor=popover>Show popover</menuitem>
+      <menuitem id=doNothing>Normal item</menuitem>
+    </menulist>
+  </submenu>
 </menubar>
 
-<menulist id=mainmenu>
- <menuitem id=openSubMenu commandfor=submenu command=toggle-menu>Toggle menu</menuitem>
- <menuitem id=showPopoverMenuItem command=toggle-popover commandfor=popover>Show popover</menuitem>
- <menuitem id=doNothing>Normal item</menuitem>
-</menulist>
-
-<menulist id=submenu>
- <menuitem>Sub menu</menuitem>
-</menulist>
-
 <menubar>
-  <menuitem id=toggleSubMenu1 commandfor=submenu command=toggle-menu>Toggle menu</menuitem>
-  <menuitem id=toggleSubMenu2 commandfor=submenu command=toggle-menu>Toggle menu</menuitem>
-  <menuitem id=showSubMenu commandfor=submenu command=show-menu>Show menu</menuitem>
+  <submenu>
+    <menuitem id=toggleSubMenu1>Toggle menu</menuitem>
+    <menulist id=submenu1>
+      <menuitem>Sub menu 1</menuitem>
+    </menulist>
+  </submenu>
+  <submenu>
+    <menuitem id=toggleSubMenu2>Toggle menu</menuitem>
+    <menulist id=submenu2>
+      <menuitem>Sub menu 2</menuitem>
+    </menulist>
+  </submenu>
+  <menuitem id=showSubMenu commandfor=submenu1 command=show-popover>Show menu</menuitem>
 </menubar>
 
 <div popover id=popover>Popover</div>
@@ -41,10 +53,12 @@ menuitem:open { background-color: rgb(12,19,8); }
   <button popovertarget=menuinpopover>Open menu in the popover</button>
   <menulist id=menuinpopover>
     <menuitem id=menuinpopoveritem1>First item</menuitem>
-    <menuitem id=menuinpopoveritem2 command=toggle-menu commandfor=menuinpopover2>Toggle menu 2</menuitem>
-  </menulist>
-  <menulist id=menuinpopover2>
-    <menuitem>Submenu item</menuitem>
+    <submenu>
+      <menuitem id=menuinpopoveritem2>Toggle menu 2</menuitem>
+      <menulist id=menuinpopover2>
+        <menuitem>Submenu item</menuitem>
+      </menulist>
+    </submenu>
   </menulist>
 </div>
 
@@ -55,6 +69,10 @@ menuitem:open { background-color: rgb(12,19,8); }
   }
   menuitem {
     interest-delay: 1000s;
+  }
+  #menuinpopover {
+    padding-block-end: 2em;
+    margin-block-end: 2em;
   }
 </style>
 
@@ -79,17 +97,20 @@ promise_test(async () => {
   assert_true(submenu.matches(":popover-open"), "submenu opens");
   assert_true(openSubMenu.matches(":open"), "openSubMenu item opens");
 
-  // Close the submenu.
   await clickOn(openSubMenu);
 
-  assert_false(submenu.matches(":popover-open"), "submenu popover gets closed");
-  assert_false(openSubMenu.matches(":open"), "openSubMenu item gets closed");
+  assert_true(submenu.matches(":popover-open"), "submenu popover does not get closed");
+  assert_true(openSubMenu.matches(":open"), "openSubMenu item does not get closed");
   assert_true(mainmenu.matches(":popover-open"), "mainmenu still open");
 
-  // Close the mainmenu.
   await clickOn(openMainMenu);
-  assert_false(mainmenu.matches(":popover-open"), "mainmenu gets closed");
-  assert_false(openMainMenu.matches(":open"), "openMainMenu item gets closed");
+  assert_true(mainmenu.matches(":popover-open"), "mainmenu does not get closed");
+  assert_true(openMainMenu.matches(":open"), "openMainMenu item does not get closed");
+  assert_false(submenu.matches(":popover-open"), "submenu gets closed when clicking main menu invoker.");
+  assert_false(openSubMenu.matches(":open"), "openSubMenu gets closed when clicking main menu invoker.");
+
+  submenu.hidePopover();
+  mainmenu.hidePopover();
 }, 'User menuitem activation works with the toggle-menu command');
 
 promise_test(async () => {
@@ -108,12 +129,12 @@ promise_test(async () => {
   assert_false(mainmenu.matches(":popover-open"), "mainmenu popover closes");
   assert_false(showPopoverMenuItem.matches(":open"), "showPopoverMenuItem item stays closed");
 
-  // Close the popover.
   await clickOn(openMainMenu);
   assert_false(popover.matches(":popover-open"), "div popover gets closed");
   assert_true(mainmenu.matches(":popover-open"), "mainmenu gets opened");
   await clickOn(openMainMenu);
-  assert_false(mainmenu.matches(":popover-open"), "mainmenu gets closed");
+  assert_true(mainmenu.matches(":popover-open"), "mainmenu doesn't get closed");
+  mainmenu.hidePopover();
 }, 'User menuitem activation works with show-popover command');
 
 promise_test(async (t) => {
@@ -147,8 +168,13 @@ promise_test(async (t) => {
       "menu in popover remains open");
 
   // Close the second, "sub", menu within the popover by just clicking off of
-  // it.
-  await clickOn(menuinpopoveritem2);
+  // it in the padding of the first menu.
+  const rect = menuinpopover.getBoundingClientRect();
+  await (new test_driver.Actions()
+    .pointerMove(rect.x + (rect.width / 2), rect.y + rect.height - 3)
+    .pointerDown()
+    .pointerUp())
+    .send();
   assert_false(menuinpopover2.matches(":popover-open"),
       "menu 2 in popover closes");
   assert_true(popoverwithmenu.matches(":popover-open"),
@@ -161,15 +187,14 @@ promise_test(async (t) => {
 async function getMenuItemCoords(invoker, targetMenuItem) {
   // test_driver isn't suited to mousedown-drag-mouseup interactions when the
   // mousedown triggers visibility of one of the elements.
-  const menulist = targetMenuItem.parentElement;
+  const menulist = targetMenuItem.closest('menulist');
   assert_false(menulist.matches(":popover-open"), "menulist popover should start closed");
   await clickOn(invoker);
   assert_true(menulist.matches(":popover-open"), "menulist popover opens when clicked");
   let rect = targetMenuItem.getBoundingClientRect();
   let coords = {x: Math.round(rect.x + rect.width / 2),
       y: Math.round(rect.y + rect.height / 2)};
-  await clickOn(invoker);
-  assert_false(menulist.matches(":popover-open"), "menulist popover closes when clicked");
+  menulist.hidePopover();
   return coords;
 }
 
@@ -225,17 +250,18 @@ promise_test(async (t) => {
   await waitForRender();
   assert_true(mainmenu.matches(":popover-open"), "mainmenu popover should remain open, because submenu chosen");
   assert_true(submenu.matches(":popover-open"), "submenu popover should be open");
-  await clickOn(openMainMenu); // Cleanup.
-  assert_false(mainmenu.matches(":popover-open"), "mainmenu popover should be closed");
-  assert_false(submenu.matches(":popover-open"), "submenu popover should be closed");
+  // Cleanup.
+  submenu.hidePopover();
+  mainmenu.hidePopover();
 }, 'A mousedown-drag-mouseup gesture on a submenu item leaves both menus open');
 
 promise_test(async () => {
-  assert_false(submenu.matches(":popover-open"), "submenu popover starts closed");
+  assert_false(submenu1.matches(":popover-open"), "submenu1 popover starts closed");
+  assert_false(submenu2.matches(":popover-open"), "submenu2 popover starts closed");
   assert_false(openMainMenu.matches(":open"), "openMainMenu item starts closed");
   assert_false(bgcolor_is_open(openMainMenu), "openMainMenu item starts closed (style)");
   await clickOn(toggleSubMenu1);
-  assert_true(submenu.matches(":popover-open"), "submenu opens");
+  assert_true(submenu1.matches(":popover-open"), "submenu1 opens");
   assert_true(toggleSubMenu1.matches(":open"), "toggleSubMenu1 item opens");
   assert_true(bgcolor_is_open(toggleSubMenu1), "toggleSubMenu1 item opens (style)");
   assert_false(toggleSubMenu2.matches(":open"), "toggleSubMenu2 item stays closed");
@@ -243,9 +269,9 @@ promise_test(async () => {
   assert_false(showSubMenu.matches(":open"), "showSubMenu item stays closed");
   assert_false(bgcolor_is_open(showSubMenu), "showSubMenu item stays closed (style)");
   // FIXME(https://crbug.com/406566432): Should closing the menu first be needed?
-  await clickOn(toggleSubMenu1);
+  submenu1.hidePopover();
   await clickOn(toggleSubMenu2);
-  assert_true(submenu.matches(":popover-open"), "submenu again open after toggle");
+  assert_true(submenu2.matches(":popover-open"), "submenu2 again open after toggle");
   assert_false(toggleSubMenu1.matches(":open"), "toggleSubMenu1 item closes");
   assert_false(bgcolor_is_open(toggleSubMenu1), "toggleSubMenu1 item closes (style)");
   assert_true(toggleSubMenu2.matches(":open"), "toggleSubMenu2 item opens");
@@ -253,9 +279,9 @@ promise_test(async () => {
   assert_false(showSubMenu.matches(":open"), "showSubMenu item stays closed");
   assert_false(bgcolor_is_open(showSubMenu), "showSubMenu item stays closed (style)");
   // FIXME(https://crbug.com/406566432): Should closing the menu first be needed?
-  await clickOn(toggleSubMenu2);
+  submenu2.hidePopover();
   await clickOn(showSubMenu);
-  assert_true(submenu.matches(":popover-open"), "submenu again open after show");
+  assert_true(submenu1.matches(":popover-open"), "submenu1 again open after show");
   assert_false(toggleSubMenu1.matches(":open"), "toggleSubMenu1 item stays closed");
   assert_false(bgcolor_is_open(toggleSubMenu1), "toggleSubMenu1 item stays closed (style)");
   assert_false(toggleSubMenu2.matches(":open"), "toggleSubMenu2 item closes");

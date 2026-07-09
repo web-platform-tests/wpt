@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
-<link rel="help" href="https://drafts.csswg.org/css-text-4/#text-fit-property">
+<link rel="help" href="https://drafts.csswg.org/css-text-5/#text-fit-property">
 <link rel="match" href="columns-consistent-ref.html">
 <meta name="flags" content="ahem">
 <link rel="stylesheet" href="/fonts/ahem.css">
@@ -30,6 +30,11 @@
 <div class="container">
   <div class="grow">AA<br>p</div>
 </div>
+
+<div class="container" style="text-fit:grow consistent">
+AA<br>p
+</div>
+
 <script>
 document.fonts.ready.then(() => {
   document.documentElement.classList.remove('reftest-wait');

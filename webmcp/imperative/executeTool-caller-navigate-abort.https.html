@@ -46,7 +46,7 @@ function run_test(origin) {
     });
 
     const controller = new AbortController();
-    navigator.modelContext.registerTool({
+    await document.modelContext.registerTool({
       name: 'parent_tool',
       description: 'Parent tool',
       execute: async (input, opts) => {
@@ -67,11 +67,13 @@ function run_test(origin) {
     }, { exposedTo: [origin], signal: controller.signal });
     t.add_cleanup(() => controller.abort());
 
-    await new Promise(resolve => {
-      navigator.modelContext.addEventListener('toolchange', resolve, {once: true});
-    });
-
-    iframe.contentWindow.postMessage({action: 'invoke', name: 'parent_tool'}, '*');
+    iframe.contentWindow.postMessage(
+        {
+          action: 'invoke',
+          name: 'parent_tool',
+          options: {fromOrigins: [self.origin]}
+        },
+        '*');
     await Promise.race([tool_started_promise, timeout_promise(t, 'tool never ran')]);
 
     // The iframe navigates away before the tool has finished executing. Instead

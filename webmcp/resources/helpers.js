@@ -1,18 +1,20 @@
 // Wait for a declarative WebMCP tool to register with the specified name.
 async function waitForTool(name) {
-  let tools = await navigator.modelContext.getTools();
-  if (tools.some(t => t.name === name)) {
-    return;
+  const tools = await document.modelContext.getTools();
+  const tool = tools.find(t => t.name === name);
+  if (tool) {
+    return tool;
   }
-  await new Promise(resolve => {
+  return new Promise(resolve => {
     const handler = async () => {
-      let tools = await navigator.modelContext.getTools();
-      if (tools.some(t => t.name === name)) {
-        navigator.modelContext.removeEventListener('toolchange', handler);
-        resolve();
+      const tools = await document.modelContext.getTools();
+      const tool = tools.find(t => t.name === name);
+      if (tool) {
+        document.modelContext.removeEventListener('toolchange', handler);
+        resolve(tool);
       }
     };
-    navigator.modelContext.addEventListener('toolchange', handler);
+    document.modelContext.addEventListener('toolchange', handler);
   });
 }
 
@@ -20,8 +22,8 @@ async function waitForTool(name) {
 async function waitForFormToolSchemaToMatch(expected_schema) {
   await new Promise(resolve => {
     const ac = new AbortController();
-    navigator.modelContext.addEventListener('toolchange', async e => {
-      const [tool] = await navigator.modelContext.getTools();
+    document.modelContext.addEventListener('toolchange', async e => {
+      const [tool] = await document.modelContext.getTools();
       if (tool && tool.inputSchema === expected_schema) {
         resolve();
         ac.abort();

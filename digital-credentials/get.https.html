@@ -236,9 +236,9 @@
 
 promise_test(async t => {
   const throwingValues = [
-    BigInt(123),
+    { val: BigInt(123) },
     (() => { const o = {}; o.self = o; return o; })(),
-    Symbol("foo")
+    { toJSON() { throw new TypeError("toJSON throws"); } }
   ];
 
   for (const badValue of throwingValues) {
@@ -270,7 +270,7 @@ promise_test(async (t) => {
       requests: [
         {
           protocol: "unknown-protocol",
-          data: BigInt(1), // malformed/non-serializable
+          data: { val: BigInt(1) }, // malformed/non-serializable
         },
       ],
       signal,
@@ -286,9 +286,9 @@ promise_test(async (t) => {
     const options = {
       digital: {
         requests: [
-          { protocol: "bogus-1", data: BigInt(1) },
-          { protocol: "bogus-2", data: BigInt(2) },
-          { protocol: "bogus-3", data: BigInt(3) },
+          { protocol: "bogus-1", data: { val: BigInt(1) } },
+          { protocol: "bogus-2", data: { val: BigInt(2) } },
+          { protocol: "bogus-3", data: { val: BigInt(3) } },
         ],
       },
     };
@@ -308,8 +308,8 @@ promise_test(async (t) => {
       protocol: [], // disable defaults
       requests: [
         openidReq,
-        { protocol: "bogus-1", data: BigInt(1) },
-        { protocol: "bogus-2", data: BigInt(2) },
+        { protocol: "bogus-1", data: { val: BigInt(1) } },
+        { protocol: "bogus-2", data: { val: BigInt(2) } },
         mdocReq,
       ],
       signal,
@@ -331,10 +331,10 @@ promise_test(async (t) => {
     const options = makeGetOptions({
       protocol: [], // disable automatic protocol requests
       requests: [
-        { protocol: "bogus-1", data: BigInt(1) },
+        { protocol: "bogus-1", data: { val: BigInt(1) } },
         openidReq,
         mdocReq,
-        { protocol: "bogus-2", data: BigInt(2) },
+        { protocol: "bogus-2", data: { val: BigInt(2) } },
       ],
       signal,
     });
@@ -344,4 +344,20 @@ promise_test(async (t) => {
     controller.abort();
     await promise_rejects_dom(t, "AbortError", promise);
   }, "navigator.credentials.get() with bogus requests at both ends should skip them and not fail.");
+
+  // State machine: after a mid-flight abort via AbortSignal, the coordinator
+  // must return to the idle state so a subsequent get() works.
+  promise_test(async (t) => {
+    const ac1 = new AbortController();
+    await test_driver.bless("user activation");
+    const p1 = navigator.credentials.get(makeGetOptions({ signal: ac1.signal }));
+    ac1.abort();
+    await promise_rejects_dom(t, "AbortError", DOMException, p1);
+
+    const ac2 = new AbortController();
+    await test_driver.bless("user activation");
+    const p2 = navigator.credentials.get(makeGetOptions({ signal: ac2.signal }));
+    ac2.abort();
+    await promise_rejects_dom(t, "AbortError", DOMException, p2);
+  }, "navigator.credentials.get() returns coordinator to idle after mid-flight abort.");
 </script>

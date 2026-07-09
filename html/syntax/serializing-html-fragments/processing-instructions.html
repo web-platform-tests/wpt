@@ -7,7 +7,7 @@ test(function() {
   const pi = document.createProcessingInstruction("target", "data");
   const div = document.createElement("div");
   div.appendChild(pi);
-  assert_equals(div.innerHTML, "<?target data>");
+  assert_equals(div.innerHTML, "<?target data?>");
 }, "PI created by document.createProcessingInstruction()");
 
 test(function() {
@@ -16,6 +16,6 @@ test(function() {
   const pi = xmlDoc.documentElement.firstChild;
   const div = document.createElement("div");
   div.appendChild(pi);
-  assert_equals(div.innerHTML, "<?target data>");
+  assert_equals(div.innerHTML, "<?target data?>");
 }, "PI adopted from XML document");
 </script>

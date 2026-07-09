@@ -1,3 +1,2 @@
-features:
-- name: attribution-reporting
-  files: "**"
+rules:
+- "**": [attribution-reporting]

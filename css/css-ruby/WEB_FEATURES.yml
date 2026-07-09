@@ -1,17 +1,10 @@
-features:
-- name: display-ruby
-  files:
-  - "*"
-  # Keep exclusions synced with mappings below
-  - "!ruby-align-*"
-  - "!ruby-position*"
-  - "!ruby-overhang*"
-- name: ruby-align
-  files:
-  - ruby-align-*
-- name: ruby-position
-  files:
-  - ruby-position*
-- name: ruby-overhang
-  files:
-  - ruby-overhang*
+# BEGIN ORIGINAL COMMENTS:
+#   3 | ...   - "*"
+#   4 |       # Keep exclusions synced with mappings below
+#   5 | ...   - "!ruby-align-*"
+# END ORIGINAL COMMENTS:
+rules:
+- ruby-align-*: [ruby-align]
+- ruby-position*: [ruby-position]
+- ruby-overhang*: [ruby-overhang]
+- "*": [display-ruby]

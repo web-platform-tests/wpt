@@ -1,12 +1,12 @@
-features:
-- name: service-workers
-  files:
-  - '*'
-  # Keep exclusions in sync with mappings below
-  - '!registration-script-module.https.html'
-  - '!update-registration-with-type.https.html'
-- name: js-modules-service-workers
-  files:
-  # Keep in sync with `service-workers` mapping above
-  - registration-script-module.https.html
-  - update-registration-with-type.https.html
+# BEGIN ORIGINAL COMMENTS:
+#   3 | ...   - '*'
+#   4 |       # Keep exclusions in sync with mappings below
+#   5 | ...   - '!registration-script-module.https.html'
+#   8 | ...   files:
+#   9 |       # Keep in sync with `service-workers` mapping above
+#  10 | ...   - registration-script-module.https.html
+# END ORIGINAL COMMENTS:
+rules:
+- registration-script-module.https.html: [js-modules-service-workers]
+- update-registration-with-type.https.html: [js-modules-service-workers]
+- "*": [service-workers]

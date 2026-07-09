@@ -1,18 +1,14 @@
-features:
-- name: select
-  files:
-  - '*'
-  # Keep exclusions synced with mappings below
-  - '!select-setcustomvalidity.html'
-  - '!select-validity.html'
-  - '!select-willvalidate-readonly-attribute.html'
-  - '!show-picker-*'
-# Keep all additional mappings synced with `select` mapping above
-- name: constraint-validation
-  files:
-  - select-setcustomvalidity.html
-  - select-validity.html
-  - select-willvalidate-readonly-attribute.html
-- name: show-picker-select
-  files:
-  - show-picker-*
+# BEGIN ORIGINAL COMMENTS:
+#   3 | ...   - '*'
+#   4 |       # Keep exclusions synced with mappings below
+#   5 | ...   - '!select-setcustomvalidity.html'
+#   8 | ...   - '!show-picker-*'
+#   9 |     # Keep all additional mappings synced with `select` mapping above
+#  10 | ... - name: constraint-validation
+# END ORIGINAL COMMENTS:
+rules:
+- select-setcustomvalidity.html: [constraint-validation]
+- select-validity.html: [constraint-validation]
+- select-willvalidate-readonly-attribute.html: [constraint-validation]
+- show-picker-*: [show-picker-select]
+- "*": [select]

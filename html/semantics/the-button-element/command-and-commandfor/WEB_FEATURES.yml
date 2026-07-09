@@ -1,9 +1,8 @@
-features:
-- name: invoker-commands
-  files:
-  - "*"
-  # keep exclusions synced with mappings below
-  - "!toggleevent-source-attribute-retargeting.html"
-- name: toggleevent-source
-  files:
-  - toggleevent-source-attribute-retargeting.html
+# BEGIN ORIGINAL COMMENTS:
+#   3 | ...   - "*"
+#   4 |       # keep exclusions synced with mappings below
+#   5 | ...   - "!toggleevent-source-attribute-retargeting.html"
+# END ORIGINAL COMMENTS:
+rules:
+- toggleevent-source-attribute-retargeting.html: [toggleevent-source]
+- "*": [invoker-commands]

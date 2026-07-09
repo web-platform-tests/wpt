@@ -1,12 +1,10 @@
-features:
-- name: list-elements
-  files:
-  - "*"
-  - "!dir-*"
-  # keep synced with mappings below
-  - "!list-style-*"
-  - "!lists-styles*"
-- name: list-style
-  files:
-  - "list-style-*"
-  - "lists-styles*"
+# BEGIN ORIGINAL COMMENTS:
+#   4 | ...   - "!dir-*"
+#   5 |       # keep synced with mappings below
+#   6 | ...   - "!list-style-*"
+# END ORIGINAL COMMENTS:
+rules:
+- dir-*: []
+- list-style-*: [list-style]
+- lists-styles*: [list-style]
+- "*": [list-elements]

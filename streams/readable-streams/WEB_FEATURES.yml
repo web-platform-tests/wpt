@@ -1,14 +1,10 @@
-features:
-- name: streams
-  files:
-    - "*"
-    - "!async-iterator.any.js"
-    - "!from.any.js"
-    # 'owning' type is not yet standardized
-    - "!owning-type*"
-- name: async-iterable-streams
-  files:
-    - async-iterator.any.js
-- name: readablestream-from
-  files:
-    - from.any.js
+# BEGIN ORIGINAL COMMENTS:
+#   5 | ...     - "!from.any.js"
+#   6 |         # 'owning' type is not yet standardized
+#   7 | ...     - "!owning-type*"
+# END ORIGINAL COMMENTS:
+rules:
+- async-iterator.any.js: [async-iterable-streams]
+- from.any.js: [readablestream-from]
+- owning-type*: []
+- "*": [streams]

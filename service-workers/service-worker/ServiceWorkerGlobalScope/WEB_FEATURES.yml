@@ -1,10 +1,11 @@
-features:
-- name: service-workers
-  files:
-  - '*'
-  # Keep exclusions synced with mappings below
-  - '!isSecureContext*'
-- name: is-secure-context
-  files:
-  # Keep in sync with `service-workers` mapping above
-  - isSecureContext*
+# BEGIN ORIGINAL COMMENTS:
+#   3 | ...   - '*'
+#   4 |       # Keep exclusions synced with mappings below
+#   5 | ...   - '!isSecureContext*'
+#   7 | ...   files:
+#   8 |       # Keep in sync with `service-workers` mapping above
+#   9 | ...   - isSecureContext*
+# END ORIGINAL COMMENTS:
+rules:
+- isSecureContext*: [is-secure-context]
+- "*": [service-workers]

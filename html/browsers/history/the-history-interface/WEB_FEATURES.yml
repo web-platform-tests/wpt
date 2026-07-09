@@ -1,11 +1,9 @@
-features:
-- name: history
-  files:
-  - "*"
-  # keep exclusions synced with mappings below
-  - "!004.html"
-  - "!history_pushstate_url.html"
-- name: hashchange
-  files:
-  - 004.html
-  - history_pushstate_url.html
+# BEGIN ORIGINAL COMMENTS:
+#   3 | ...   - "*"
+#   4 |       # keep exclusions synced with mappings below
+#   5 | ...   - "!004.html"
+# END ORIGINAL COMMENTS:
+rules:
+- 004.html: [hashchange]
+- history_pushstate_url.html: [hashchange]
+- "*": [history]

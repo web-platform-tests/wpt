@@ -1,13 +1,9 @@
-features:
-- name: animation-composition
-  files:
-  - animation-composition-*
-- name: steps-easing
-  files:
-  - animation-timing-function-invalid.html
-- name: animations-css
-  # Everything which does not belong to some other feature, above
-  files:
-  - "*"
-  - "!animation-composition-*"
-  - "!animation-timing-function-invalid.html"
+# BEGIN ORIGINAL COMMENTS:
+#   7 | ... - name: animations-css
+#   8 |       # Everything which does not belong to some other feature, above
+#   9 | ...   files:
+# END ORIGINAL COMMENTS:
+rules:
+- animation-composition-*: [animation-composition]
+- animation-timing-function-invalid.html: [steps-easing]
+- "*": [animations-css]

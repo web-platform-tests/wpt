@@ -1,10 +1,11 @@
-features:
-- name: image-maps
-  files:
-  - '*'
-  # Keep exclusions synced with mappings below
-  - '!area-download-click.html'
-- name: download
-  files:
-  # Keep in sync with `image-maps` mapping
-  - 'area-download-click.html'
+# BEGIN ORIGINAL COMMENTS:
+#   3 | ...   - '*'
+#   4 |       # Keep exclusions synced with mappings below
+#   5 | ...   - '!area-download-click.html'
+#   7 | ...   files:
+#   8 |       # Keep in sync with `image-maps` mapping
+#   9 | ...   - 'area-download-click.html'
+# END ORIGINAL COMMENTS:
+rules:
+- area-download-click.html: [download]
+- "*": [image-maps]

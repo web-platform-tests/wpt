@@ -121,7 +121,9 @@ def main():
                 copied_count += 1
 
             if copied_count > 0:
-                updated_proposals.append(name)
+                proposal_repo = f"https://github.com/WebAssembly/{name}"
+                proposal_commit = run_cmd(["git", "rev-parse", "HEAD"], cwd=proposal_dir).strip()
+                updated_proposals.append((name, proposal_repo, proposal_commit))
 
             print(f"Successfully copied {copied_count} test files to {target_dir}")
 
@@ -132,8 +134,8 @@ def main():
             with open(summary_path, "w") as f:
                 if updated_proposals:
                     f.write("The following Wasm proposals were successfully updated:\n")
-                    for name in updated_proposals:
-                        f.write(f"- {name}\n")
+                    for name, repo, commit in updated_proposals:
+                        f.write(f"- {name} ({repo}/commit/{commit})\n")
                 if updated_proposals and merged_proposals:
                     f.write("\n")
                 if merged_proposals:

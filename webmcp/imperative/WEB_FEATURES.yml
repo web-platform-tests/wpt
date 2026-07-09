@@ -1,2 +1,2 @@
 rules:
-- "**": [navigator-modelcontext]
+- "**": [document-modelcontext]

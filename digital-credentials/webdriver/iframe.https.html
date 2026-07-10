@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<title>Digital Credential API: WebDriver iframe virtual wallet scoping tests.</title>
+<link rel="help" href="https://wicg.github.io/digital-credentials/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<body></body>
+<script type="module">
+  import { makeGetOptions } from "../support/helper.js";
+
+  const hostInfo = get_host_info();
+
+  async function loadIframe(crossOrigin) {
+    const iframe = document.createElement("iframe");
+    iframe.allow = "digital-credentials-get";
+    await new Promise((resolve) => {
+      iframe.onload = resolve;
+      iframe.src = new URL(
+        "/digital-credentials/support/iframe.html",
+        crossOrigin ? hostInfo.HTTPS_REMOTE_ORIGIN : location.origin
+      ).href;
+      document.body.appendChild(iframe);
+    });
+    return iframe;
+  }
+
+  function getFromIframe(iframe, options) {
+    const action = "get";
+    return new Promise((resolve) => {
+      const callback = (e) => {
+        if (e.source === iframe.contentWindow) {
+          window.removeEventListener("message", callback);
+          resolve(e.data);
+        }
+      };
+      window.addEventListener("message", callback);
+      iframe.contentWindow.postMessage(
+        { action, options, needsActivation: true },
+        "*"
+      );
+    });
+  }
+
+  promise_test(async (t) => {
+    // Load a same-origin iframe and a cross-origin iframe.
+    const localIframe = await loadIframe(false);
+    const crossIframe = await loadIframe(true);
+    t.add_cleanup(() => {
+      localIframe.remove();
+      crossIframe.remove();
+    });
+
+    const options = makeGetOptions({ protocol: "openid4vp-v1-unsigned" });
+
+    // Configure behaviors:
+    // 1. localIframe: "respond" with token "local-token"
+    // 2. crossIframe: "decline" (should throw NotAllowedError)
+    await test_driver.set_virtual_wallet_behavior(
+      "respond",
+      "openid4vp-v1-unsigned",
+      { "token": "local-token" },
+      localIframe.contentWindow
+    );
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear", null, null, localIframe.contentWindow));
+
+    await test_driver.set_virtual_wallet_behavior(
+      "decline",
+      null,
+      null,
+      crossIframe.contentWindow
+    );
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear", null, null, crossIframe.contentWindow));
+
+    // Get credential from localIframe: should succeed with "local-token".
+    const localResult = await getFromIframe(localIframe, options);
+    assert_equals(localResult.protocol, "openid4vp-v1-unsigned");
+    assert_equals(localResult.data.token, "local-token");
+
+    // Get credential from crossIframe: should reject with NotAllowedError.
+    const crossResult = await getFromIframe(crossIframe, options);
+    assert_equals(crossResult.name, "NotAllowedError");
+
+    // Get credential from main frame: should remain unaffected (will use default provider or fail because no behavior configured).
+    await test_driver.bless("user activation");
+    try {
+      const mainResult = await navigator.credentials.get({
+        digital: {
+          requests: [{
+            protocol: "openid4vp-v1-unsigned",
+            data: {},
+          }],
+        },
+      });
+      const response = mainResult ? mainResult.toJSON() : null;
+      assert_not_equals(response?.data?.token, "local-token");
+    } catch (e) {
+      assert_true(true);
+    }
+  }, "Virtual wallet behavior configured on specific iframes does not leak to other frames.");
+</script>

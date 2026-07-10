@@ -1,0 +1,99 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Parsing into a node adopted into another document creates elements in that document's realm</title>
+<link rel=help href="https://dom.spec.whatwg.org/#concept-create-element">
+<link rel=help href="https://dom.spec.whatwg.org/#create-an-element-internal">
+<link rel=help href="https://github.com/whatwg/dom/issues/977">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<body>
+<script>
+// A node created in an inner (iframe) realm and adopted into the top-level
+// document has its relevant realm in the inner realm but its node document in
+// the top-level document. Per https://dom.spec.whatwg.org/#create-an-element-internal,
+// elements created while parsing into such a node use the realm of the node
+// document (top-level), not the realm running the algorithm (e.g. the realm of
+// the innerHTML setter).
+
+// Resolves with the inner realm's global once the iframe has loaded, and
+// registers x-baz with a distinct class in each realm.
+const ready = (async () => {
+  const inner = await new Promise(resolve => {
+    const iframe = document.createElement("iframe");
+    iframe.onload = () => resolve(iframe.contentWindow);
+    document.body.appendChild(iframe);
+  });
+  inner.customElements.define("x-baz", class extends inner.HTMLElement {});
+  customElements.define("x-baz", class extends HTMLElement {});
+  return inner;
+})();
+
+// Returns a shadow root whose host was created in the inner realm and then
+// adopted into the top-level document.
+function adoptedShadow(inner) {
+  const host = inner.document.createElement("div");
+  document.body.appendChild(host); // adopts into the top-level document
+  return host.attachShadow({ mode: "open" });
+}
+
+// The innerHTML setter belonging to a particular realm.
+function innerHTMLSetter(realm) {
+  return Object.getOwnPropertyDescriptor(realm.ShadowRoot.prototype, "innerHTML").set;
+}
+
+promise_test(async () => {
+  const inner = await ready;
+  const host = inner.document.createElement("div");
+  document.body.appendChild(host);
+  assert_equals(host.ownerDocument, document,
+                "host is adopted into the top-level document");
+  assert_true(host instanceof inner.HTMLElement,
+              "host's relevant realm remains the inner realm after adoption");
+}, "Precondition: the host's node document and relevant realm differ after adoption");
+
+promise_test(async () => {
+  const inner = await ready;
+  const shadow = adoptedShadow(inner);
+  shadow.innerHTML = "<p></p>";
+  const p = shadow.querySelector("p");
+  assert_true(p instanceof HTMLParagraphElement,
+              "<p> is from the node document's (top-level) realm");
+  assert_false(p instanceof inner.HTMLParagraphElement,
+               "<p> is not from the inner realm");
+}, "Built-in element: innerHTML creates it in the node document's realm");
+
+promise_test(async () => {
+  const inner = await ready;
+  const shadow = adoptedShadow(inner);
+  // Explicitly run the inner realm's innerHTML setter, so the algorithm runs in
+  // the inner realm while the node document stays top-level.
+  innerHTMLSetter(inner).call(shadow, "<p></p>");
+  const p = shadow.querySelector("p");
+  assert_true(p instanceof HTMLParagraphElement,
+              "<p> is from the node document's (top-level) realm");
+  assert_false(p instanceof inner.HTMLParagraphElement,
+               "<p> is not from the innerHTML setter's (inner) realm");
+}, "Built-in element: the created element's realm is independent of the setter's realm");
+
+promise_test(async () => {
+  const inner = await ready;
+  const shadow = adoptedShadow(inner);
+  shadow.innerHTML = "<x-baz></x-baz>";
+  const baz = shadow.querySelector("x-baz");
+  assert_true(baz instanceof customElements.get("x-baz"),
+              "<x-baz> uses the node document's (top-level) registry");
+  assert_false(baz instanceof inner.customElements.get("x-baz"),
+               "<x-baz> does not use the inner document's registry");
+}, "Custom element: innerHTML upgrades it using the node document's registry");
+
+promise_test(async () => {
+  const inner = await ready;
+  const shadow = adoptedShadow(inner);
+  innerHTMLSetter(inner).call(shadow, "<x-baz></x-baz>");
+  const baz = shadow.querySelector("x-baz");
+  assert_true(baz instanceof customElements.get("x-baz"),
+              "<x-baz> uses the node document's (top-level) registry");
+  assert_false(baz instanceof inner.customElements.get("x-baz"),
+               "<x-baz> does not use the inner registry via the setter's realm");
+}, "Custom element: the registry used is independent of the setter's realm");
+</script>

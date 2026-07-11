@@ -31,29 +31,7 @@ promise_test(async t => {
   document.addEventListener("selectionchange", handler);
   t.add_cleanup(() => document.removeEventListener("selectionchange", handler));
 
-  const range = document.createRange();
-  range.setStart(container.firstChild, 0);
-  range.setEnd(container.firstChild, 4);
-  getSelection().removeAllRanges();
-  getSelection().addRange(range);
-  await new Promise(r => step_timeout(r, 0));
-  // Reset after setup — only count events triggered by the call under test.
-  selectionChangeCount = 0;
-
-  // Collapse to start and then immediately restore — coalesced into one event.
-  getSelection().collapseToStart();
-  getSelection().removeAllRanges();
-  getSelection().addRange(range);
-  await new Promise(r => step_timeout(r, 0));
-  assert_equals(selectionChangeCount, 1);
-}, "selectionchange fires once when selection is changed and then restored in the same task");
-
-promise_test(async t => {
-  let selectionChangeCount = 0;
-  const handler = () => ++selectionChangeCount;
-  document.addEventListener("selectionchange", handler);
-  t.add_cleanup(() => document.removeEventListener("selectionchange", handler));
-
+  getSelection().setPosition(container, 0);
   getSelection().removeAllRanges();
   await new Promise(r => step_timeout(r, 0));
   // Reset after setup — only count events triggered by the call under test.

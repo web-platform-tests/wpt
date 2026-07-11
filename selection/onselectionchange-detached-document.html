@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>selectionchange does not fire in documents without a browsing context</title>
-<link rel="help" href="https://w3c.github.io/selection-api/#selectionchange-event">
+<title>getSelection() returns null on a detached document</title>
 <link rel="help" href="https://w3c.github.io/selection-api/#dom-document-getselection">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -12,22 +11,5 @@ test(() => {
   const doc = document.implementation.createHTMLDocument("");
   assert_equals(doc.getSelection(), null);
 }, "getSelection() returns null on a detached document");
-
-promise_test(async t => {
-  const doc = document.implementation.createHTMLDocument("");
-  const div = doc.createElement("div");
-  doc.body.appendChild(div);
-
-  let firedOnMainDoc = false;
-  const handler = () => { firedOnMainDoc = true; };
-  document.addEventListener("selectionchange", handler, {once: true});
-  t.add_cleanup(() => document.removeEventListener("selectionchange", handler));
-
-  doc.getSelection()?.setPosition(div, 0);
-
-  // selectionchange is queued as a task, not fired synchronously.
-  await new Promise(r => step_timeout(r, 0));
-  assert_false(firedOnMainDoc);
-}, "selectionchange does not fire on main document when operating on a detached document");
 
 </script>

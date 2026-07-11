@@ -8,22 +8,24 @@
 <div id="container">text</div>
 <script>
 
-promise_test(async t => {
-  let selectionChangeCount = 0;
-  const handler = () => ++selectionChangeCount;
-  document.addEventListener("selectionchange", handler);
-  t.add_cleanup(() => document.removeEventListener("selectionchange", handler));
+for (const offset of [0, 2, container.firstChild.length]) {
+  promise_test(async t => {
+    let selectionChangeCount = 0;
+    const handler = () => ++selectionChangeCount;
+    document.addEventListener("selectionchange", handler);
+    t.add_cleanup(() => document.removeEventListener("selectionchange", handler));
 
-  getSelection().setPosition(container, 0);
-  // selectionchange is queued as a task, not fired synchronously.
-  await new Promise(r => step_timeout(r, 0));
-  // Reset after setup — only count events triggered by the call under test.
-  selectionChangeCount = 0;
+    getSelection().setPosition(container.firstChild, offset);
+    // selectionchange is queued as a task, not fired synchronously.
+    await new Promise(r => step_timeout(r, 0));
+    // Reset after setup — only count events triggered by the call under test.
+    selectionChangeCount = 0;
 
-  getSelection().setPosition(container, 0);
-  await new Promise(r => step_timeout(r, 0));
-  assert_equals(selectionChangeCount, 0);
-}, "selectionchange does not fire when setPosition is called with the same position");
+    getSelection().setPosition(container.firstChild, offset);
+    await new Promise(r => step_timeout(r, 0));
+    assert_equals(selectionChangeCount, 0);
+  }, `selectionchange does not fire when setPosition is called with the same position (offset ${offset})`);
+}
 
 promise_test(async t => {
   let selectionChangeCount = 0;

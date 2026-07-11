@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>selectionchange fires on the correct document when selection is in an iframe</title>
+<link rel="help" href="https://w3c.github.io/selection-api/#selectionchange-event">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<iframe id="iframe" srcdoc="<div id='content'>text</div>"></iframe>
+<script>
+
+const iframeReady = new Promise(resolve => iframe.addEventListener("load", resolve, {once: true}));
+
+promise_test(async t => {
+  await iframeReady;
+
+  const iframeDoc = iframe.contentDocument;
+  const iframeContent = iframeDoc.getElementById("content");
+
+  let firedOnParent = false;
+  let firedOnIframe = false;
+  const parentHandler = () => { firedOnParent = true; };
+  const iframeHandler = () => { firedOnIframe = true; };
+  document.addEventListener("selectionchange", parentHandler, {once: true});
+  iframeDoc.addEventListener("selectionchange", iframeHandler, {once: true});
+  t.add_cleanup(() => document.removeEventListener("selectionchange", parentHandler));
+  t.add_cleanup(() => iframeDoc.removeEventListener("selectionchange", iframeHandler));
+
+  iframe.contentWindow.getSelection().setPosition(iframeContent, 0);
+  // selectionchange is queued as a task, not fired synchronously.
+  await new Promise(r => step_timeout(r, 0));
+
+  assert_false(firedOnParent,
+      "selectionchange must not fire on the parent document when selection changes in an iframe");
+  assert_true(firedOnIframe,
+      "selectionchange must fire on the iframe's document when selection changes in it");
+}, "selectionchange fires on the iframe document, not the parent document");
+
+promise_test(async t => {
+  await iframeReady;
+
+  const iframeDoc = iframe.contentDocument;
+
+  let firedOnParent = false;
+  let firedOnIframe = false;
+  const parentHandler = () => { firedOnParent = true; };
+  const iframeHandler = () => { firedOnIframe = true; };
+  document.addEventListener("selectionchange", parentHandler, {once: true});
+  iframeDoc.addEventListener("selectionchange", iframeHandler, {once: true});
+  t.add_cleanup(() => document.removeEventListener("selectionchange", parentHandler));
+  t.add_cleanup(() => iframeDoc.removeEventListener("selectionchange", iframeHandler));
+
+  const div = document.createElement("div");
+  div.textContent = "parent text";
+  document.body.appendChild(div);
+  t.add_cleanup(() => div.remove());
+  getSelection().setPosition(div, 0);
+
+  // selectionchange is queued as a task, not fired synchronously.
+  await new Promise(r => step_timeout(r, 0));
+
+  assert_true(firedOnParent,
+      "selectionchange must fire on the parent document when selection changes in it");
+  assert_false(firedOnIframe,
+      "selectionchange must not fire on the iframe document when selection changes in the parent");
+}, "selectionchange fires on the parent document, not the iframe document, for parent selections");
+
+</script>

@@ -1,11 +1,11 @@
-// Tracking test for a relative <base> href in an about:srcdoc document, and how
-// it interacts with cloning. Parallels the about:blank case.
+// A relative <base> href in an about:srcdoc document, and how it interacts with
+// cloning. Parallels the about:blank case.
 //
-// Per the "fallback base URL" algorithm, an iframe srcdoc document's base URL is
-// its container's base URL, and a <base> element resolves its href against the
-// fallback base URL. So a relative <base href="sub/"> should resolve against the
-// inherited base URL, both for the document and its clones. Cloning drops the
-// container relationship, which is where this gets interesting.
+// The base URL an about:srcdoc document inherits from its container is exposed
+// through the no-<base> path (base URL override), so ordinary relative URLs
+// resolve against it. A <base> element, however, resolves its href against the
+// document's own URL, so a relative <base href="sub/"> resolves against
+// about:srcdoc rather than the inherited base URL. Cloning does not change this.
 //
 // See https://github.com/whatwg/dom/issues/454
 
@@ -21,14 +21,12 @@ function srcdocDocument(t, srcdoc) {
 
 promise_test(async t => {
   const doc = (await srcdocDocument(t, "<base href='sub/'>x")).contentDocument;
-  const expected = new URL("sub/", document.baseURI).href;
-  assert_equals(doc.baseURI, expected);
-}, "A relative <base> in an about:srcdoc document resolves against the inherited base URL");
+  assert_equals(doc.baseURI, "about:srcdoc");
+}, "A relative <base> in an about:srcdoc document resolves against about:srcdoc");
 
 promise_test(async t => {
   const doc = (await srcdocDocument(t, "<base href='sub/'>x")).contentDocument;
-  const expected = new URL("sub/", document.baseURI).href;
 
-  assert_equals(doc.cloneNode(true).baseURI, expected, "deep");
-  assert_equals(doc.cloneNode(false).baseURI, expected, "shallow");
+  assert_equals(doc.cloneNode(true).baseURI, "about:srcdoc", "deep");
+  assert_equals(doc.cloneNode(false).baseURI, "about:srcdoc", "shallow");
 }, "Clone of an about:srcdoc document with a relative <base>");

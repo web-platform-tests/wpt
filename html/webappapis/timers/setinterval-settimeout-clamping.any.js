@@ -1,11 +1,5 @@
-<!doctype html>
-<meta charset=utf-8>
-<meta name="assert" content ="setTimeout and setInterval sequencing is correct even with 0 timeout">
-<link rel="help" href="https://html.spec.whatwg.org/#run-steps-after-a-timeout" />
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-
-<script>
+// META: title=setTimeout and setInterval sequencing is correct even with 0 timeout
+// META: spec=https://html.spec.whatwg.org/#run-steps-after-a-timeout
 async_test(t => {
   let done = false;
   const id = setInterval(() => {
@@ -31,4 +25,3 @@ async_test(t => {
   }), 0);
   t.add_cleanup(() => clearInterval(id));
 }, "setTimeout(0) before setInterval(0)");
-</script>

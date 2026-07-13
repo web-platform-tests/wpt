@@ -64,8 +64,8 @@ def test_ia2(ia2, session, inline):
     session.url = inline(TEST_HTML)
 
     # Spec:
-    # Role: ROLE_SYSTEM_GROUPING (MSAA)
-    # Role: IA2_ROLE_UNKNOWN
+    # Role: TBD
+    # Role: TBD
 
     node = ia2.find_node("test", session.url)
     assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_GROUPING"

@@ -2,7 +2,7 @@ import pytest
 
 TEST_CASES = {
     "mathml-link": '<math><a href="https://baidu.com" id="test"><mtext>Link</mtext></a></math>',
-    "mathml-link-withou-href": '<math><a id="test"><mtext>Link</mtext></a></math>',
+    "mathml-link-without-href": '<math><a id="test"><mtext>Link</mtext></a></math>',
 }
 
 @pytest.mark.parametrize("test_id, test_html", TEST_CASES.items(), ids=TEST_CASES.keys())

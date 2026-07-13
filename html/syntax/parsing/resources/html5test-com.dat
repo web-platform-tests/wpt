@@ -155,8 +155,8 @@
 | <html>
 |   <head>
 |   <body>
-|     <svg>
-|       <title>
+|     <svg svg>
+|       <svg title>
 |         "x"
 
 #data
@@ -165,8 +165,8 @@
 | <html>
 |   <head>
 |   <body>
-|     <svg>
-|       <foreignObject>
+|     <svg svg>
+|       <svg foreignObject>
 |         "x"
 
 #data
@@ -175,8 +175,8 @@
 | <html>
 |   <head>
 |   <body>
-|     <svg>
-|       <foreignObject>
+|     <svg svg>
+|       <svg foreignObject>
 |         <p>
 |           <!-- [CDATA[x]] -->
 
@@ -186,7 +186,7 @@
 | <html>
 |   <head>
 |   <body>
-|     <math>
+|     <math math>
 |       "x"
 
 #data
@@ -195,8 +195,8 @@
 | <html>
 |   <head>
 |   <body>
-|     <math>
-|       <mtext>
+|     <math math>
+|       <math mtext>
 |         "x"
 
 #data
@@ -205,8 +205,8 @@
 | <html>
 |   <head>
 |   <body>
-|     <math>
-|       <mtext>
+|     <math math>
+|       <math mtext>
 |         <i>
 |           <!-- [CDATA[x]] -->
 

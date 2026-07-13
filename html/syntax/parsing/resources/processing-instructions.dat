@@ -1001,8 +1001,8 @@ there=1?>
 #document
 | <html>
 |   <head>
-|   <body>
 |     <template>
 |       content
 |         <?pi ?>
+|   <body>
 

@@ -92,7 +92,8 @@ there=1?>
 |     <?hey there=1?>
 
 #data
-<body><?heythere=1?>
+<body><?hey
+there=1?>
 #document
 | <html>
 |   <head>
@@ -986,3 +987,22 @@ there=1?>
 |     <title>
 |       "<?something>"
 
+#data
+<noscript><?pi>
+#script-off
+#document
+| <html>
+|   <head>
+|     <noscript>
+|       <?pi ?>
+|   <body>
+
+#data
+<template><?pi>
+#document
+| <html>
+|   <head>
+|   <body>
+|     <template>
+|       content
+|         <?pi ?>

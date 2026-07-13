@@ -7,6 +7,16 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <script>
+    // "Nothing to consume" runs first: it needs a fresh document with no transient
+    // activation, before the bless() in the next test grants any. (Order-independence
+    // guards against activation from an earlier test bleeding in — the CI failure mode
+    // seen when consume_user_activation is unimplemented and its promise rejects.)
+    promise_test(async (t) => {
+        assert_false(navigator.userActivation.isActive);
+        const consumed = await test_driver.consume_user_activation();
+        assert_false(consumed);
+    }, "Nothing to consume");
+
     promise_test(async (t) => {
         await test_driver.bless("consume user activation");
         assert_true(navigator.userActivation.isActive);
@@ -14,10 +24,4 @@
         assert_true(consumed);
         assert_false(navigator.userActivation.isActive);
     }, "Consume transient activation");
-
-    promise_test(async (t) => {
-        assert_false(navigator.userActivation.isActive);
-        const consumed = await test_driver.consume_user_activation();
-        assert_false(consumed);
-    }, "Nothing to consume");
 </script>

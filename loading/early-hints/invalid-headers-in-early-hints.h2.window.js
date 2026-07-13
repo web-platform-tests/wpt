@@ -1,3 +1,4 @@
+// META: timeout=long
 async function testInvalidHeader(t, header_value) {
     const params = new URLSearchParams();
     params.set("header-value", header_value);

@@ -62,6 +62,9 @@ from webdriver.bidi.protocol import bidi_deserialize
 
 here = os.path.dirname(__file__)
 
+WIDTH = 800 * 2
+HEIGHT = 600 * 2
+
 
 class WebDriverCallbackHandler(CallbackHandler):
     unimplemented_exc = (NotImplementedError, webdriver_error.UnknownCommandException)
@@ -1395,7 +1398,7 @@ class WebDriverRefTestExecutor(RefTestExecutor):
         except webdriver_error.InvalidArgumentException:
             # Safari 12 throws with 0 or 1, treating them as bools; fixed in STP
             self.protocol.webdriver.window.position = (2, 2)
-        self.protocol.webdriver.window.size = (800 + width_offset, 600 + height_offset)
+        self.protocol.webdriver.window.size = (WIDTH + width_offset, HEIGHT + height_offset)
 
         result = self.implementation.run_test(test)
 

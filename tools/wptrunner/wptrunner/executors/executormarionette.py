@@ -14,6 +14,9 @@ pytestrunner = None
 
 here = os.path.dirname(__file__)
 
+WIDTH = 800 * 2
+HEIGHT = 600 * 2
+
 from .base import (CallbackHandler,
                    CrashtestExecutor,
                    RefTestExecutor,
@@ -1209,7 +1212,7 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                     };
                 """)
                 self.protocol.marionette.set_window_rect(
-                    x=0, y=0, width=800 + offsets["width"], height=600 + offsets["height"])
+                    x=0, y=0, width=WIDTH + offsets["width"], height=HEIGHT + offsets["height"])
                 self.has_window = True
 
         if self.protocol.coverage.is_enabled:
@@ -1305,8 +1308,8 @@ class InternalRefTestImplementation(RefTestImplementation):
                                                               "references": references,
                                                               "expected": test.expected(),
                                                               "timeout": timeout,
-                                                              "width": 800,
-                                                              "height": 600,
+                                                              "width": WIDTH,
+                                                              "height": HEIGHT,
                                                               "pageRanges": test.page_ranges})["value"]
         return rv
 

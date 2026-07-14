@@ -19,10 +19,7 @@ function getEvent(eventType) {
 
 // Returns a Promise resolved with true iff transient activation was present and consumed.
 async function consumeTransientActivation() {
-  if (!navigator.userActivation.isActive)
-    return false;
-  await test_driver.consume_user_activation();
-  return !navigator.userActivation.isActive;
+  return await test_driver.consume_user_activation();
 }
 
 // Returns a `Promise` that gets resolved when `window` receives a "message"

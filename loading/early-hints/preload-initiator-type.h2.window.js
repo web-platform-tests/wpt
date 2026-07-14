@@ -1,4 +1,3 @@
-// META: timeout=long
 // META: script=resources/early-hints-helpers.sub.js
 
 const preloads = [{

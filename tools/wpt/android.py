@@ -39,17 +39,24 @@ def do_delayed_imports(paths):
         "Android x86_64",
         "mozemulator-android34-x86_64",
         [
+            "-gpu", "on",
             "-skip-adb-auth",
             "-verbose",
             "-show-kernel",
             "-ranchu",
-            "-selinux", "permissive",
-            "-memory", "3072",
-            "-cores", "4",
-            "-skin", "1080x1920",
+            "-selinux",
+            "permissive",
+            "-memory",
+            "4096",
+            "-cores",
+            "4",
+            "-skin",
+            "1080x1920",
             "-no-snapstorage",
             "-no-snapshot",
-            "-no-window",
+            "-no-metrics",
+            # Disables first-run dialogs
+            "-prop", "ro.test_harness=true",
         ],
         True,
     )
@@ -81,7 +88,7 @@ def install_fixed_emulator_version(logger, paths):
     from xml.etree import ElementTree
 
     version = "36.3.10"
-    urls = {"linux": "https://redirector.gvt1.com/edgedl/android/repository/emulator-linux_x64-10696886.zip"}
+    urls = {"linux": "https://edgedl.me.gvt1.com/edgedl/android/repository/emulator-linux_x64-14472402.zip"}
 
     os_name = platform.system().lower()
     if os_name not in urls:
@@ -273,7 +280,8 @@ def android_environment(paths):
     return Environ(ANDROID_EMULATOR_HOME=paths["emulator_home"],
                    ANDROID_AVD_HOME=paths["avd"],
                    ANDROID_SDK_ROOT=paths["sdk"],
-                   ANDROID_SDK_HOME=paths["sdk"])
+                   ANDROID_SDK_HOME=paths["sdk"],
+                   DISPLAY=":0.0")
 
 
 def install(logger, dest=None, reinstall=False, prompt=True):
@@ -304,7 +312,7 @@ def install(logger, dest=None, reinstall=False, prompt=True):
 
 def cancel_start(thread_id):
     def cancel_func():
-        raise signal.pthread_kill(thread_id, signal.SIGINT)
+        signal.pthread_kill(thread_id, signal.SIGINT)
     return cancel_func
 
 
@@ -320,7 +328,7 @@ def start(logger, dest=None, reinstall=False, prompt=True, device_serial=None):
             logger.critical("Android AVD not found, please run |wpt install-android-emulator|")
             raise OSError
 
-        emulator.start(gpu_arg="auto")
+        emulator.start()
         timer = threading.Timer(300, cancel_start(threading.get_ident()))
         timer.start()
         for i in range(10):

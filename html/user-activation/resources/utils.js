@@ -19,7 +19,21 @@ function getEvent(eventType) {
 
 // Returns a Promise resolved with true iff transient activation was present and consumed.
 async function consumeTransientActivation() {
-  return await test_driver.consume_user_activation();
+  try {
+    return await test_driver.consume_user_activation();
+  } catch (e) {
+    // Fall back to the Fullscreen API for browsers that don't implement the
+    // consume-user-activation automation command yet: requesting fullscreen
+    // requires and consumes transient activation, so it succeeds iff activation
+    // was present.
+    try {
+      await document.body.requestFullscreen();
+      await document.exitFullscreen();
+      return true;
+    } catch (e2) {
+      return false;
+    }
+  }
 }
 
 // Returns a `Promise` that gets resolved when `window` receives a "message"

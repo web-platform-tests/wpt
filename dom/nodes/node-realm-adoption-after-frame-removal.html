@@ -8,10 +8,14 @@
 <script src=/resources/testharnessreport.js></script>
 <body>
 <script>
-// A never-wrapped subtree is built in an iframe, the iframe is removed, and only
-// then is the subtree adopted and inspected. The creation realm must have been
-// captured while the frame existed. Interface objects are captured before removal
-// since a detached window can no longer be queried.
+// The <p>/<b> nodes are built by the HTML parser and never touched from script
+// before the frame is removed, so no JS object is ever created for them in the
+// inner realm. This checks that the creation realm is recorded on the node when
+// it is created, rather than derived on demand from a pre-existing JS object: by
+// adoption time the inner realm is gone and can no longer be consulted.
+// Interface objects are captured before removal since a detached window can no
+// longer be queried. Each test asserts on both a direct child and a deep
+// descendant so the realm is checked throughout the parsed subtree.
 
 function freshIframe() {
   const iframe = document.createElement("iframe");
@@ -23,85 +27,62 @@ test(() => {
   const iframe = freshIframe();
   const inner = iframe.contentWindow;
   const InnerParagraph = inner.HTMLParagraphElement;
+  const InnerBold = inner.HTMLElement;
 
   const container = inner.document.createElement("div");
-  container.innerHTML = "<p></p>";
+  container.innerHTML = "<p><b>x</b></p>";
   inner.document.body.appendChild(container);
   container.remove();
   iframe.remove();
 
   document.body.appendChild(container);
   const p = container.querySelector("p");
+  const b = container.querySelector("b");
   assert_equals(p.ownerDocument, document, "adopted into the top-level document");
   assert_true(p instanceof InnerParagraph, "keeps its creation realm");
+  assert_true(b instanceof InnerBold, "deep descendant keeps its creation realm");
 }, "Never-wrapped node keeps its creation realm: subtree detached, iframe removed, then adopted");
 
 test(() => {
   const iframe = freshIframe();
   const inner = iframe.contentWindow;
   const InnerParagraph = inner.HTMLParagraphElement;
+  const InnerBold = inner.HTMLElement;
 
   const container = inner.document.createElement("div");
-  container.innerHTML = "<p></p>";
+  container.innerHTML = "<p><b>x</b></p>";
   inner.document.body.appendChild(container);
   iframe.remove(); // removed without first detaching the subtree
 
   document.body.appendChild(container);
   const p = container.querySelector("p");
+  const b = container.querySelector("b");
   assert_equals(p.ownerDocument, document, "adopted into the top-level document");
   assert_true(p instanceof InnerParagraph, "keeps its creation realm");
+  assert_true(b instanceof InnerBold, "deep descendant keeps its creation realm");
 }, "Never-wrapped node keeps its creation realm: iframe removed before adoption (subtree not pre-detached)");
 
-test(() => {
-  const iframe = freshIframe();
-  const inner = iframe.contentWindow;
-  const InnerBold = inner.HTMLElement;
-
-  const container = inner.document.createElement("div");
-  container.innerHTML = "<p><b>x</b></p>"; // deep descendant
-  inner.document.body.appendChild(container);
-  container.remove();
-  iframe.remove();
-
-  document.body.appendChild(container);
-  const b = container.querySelector("b");
-  assert_equals(b.ownerDocument, document, "descendant adopted into the top-level document");
-  assert_true(b instanceof InnerBold, "deep descendant keeps its creation realm");
-}, "Never-wrapped deep descendant keeps its creation realm after the iframe is removed and it is adopted");
-
-// The subtests above reach the orphan through `container`, whose wrapper is in the
-// creation realm. The subtests below reach it through the adopting document
-// instead, so the realm must be preserved independently of the access path.
+// The tests above reach the adopted nodes through `container`, whose JS object is
+// in the creation realm. The test below reaches them through the adopting
+// document instead, so the realm must be preserved independently of the access
+// path.
 
 test(() => {
   const iframe = freshIframe();
   const inner = iframe.contentWindow;
   const InnerParagraph = inner.HTMLParagraphElement;
-
-  const container = inner.document.createElement("div");
-  container.innerHTML = "<p id=frame-removal-orphan></p>";
-  inner.document.body.appendChild(container);
-  iframe.remove();
-
-  document.body.appendChild(container);
-  const p = document.getElementById("frame-removal-orphan"); // reached through the top-level document
-  assert_equals(p.ownerDocument, document, "adopted into the top-level document");
-  assert_true(p instanceof InnerParagraph, "keeps its creation realm regardless of access path");
-}, "Orphan reached through the adopting document still reports its creation realm (frame removed before adoption)");
-
-test(() => {
-  const iframe = freshIframe();
-  const inner = iframe.contentWindow;
   const InnerBold = inner.HTMLElement;
 
   const container = inner.document.createElement("div");
-  container.innerHTML = "<section><b id=frame-removal-orphan-deep>x</b></section>";
+  container.innerHTML = "<p id=frame-removal-node><b id=frame-removal-node-deep>x</b></p>";
   inner.document.body.appendChild(container);
   iframe.remove();
 
   document.body.appendChild(container);
-  const b = document.getElementById("frame-removal-orphan-deep"); // reached through the top-level document
-  assert_equals(b.ownerDocument, document, "descendant adopted into the top-level document");
+  const p = document.getElementById("frame-removal-node"); // reached through the top-level document
+  const b = document.getElementById("frame-removal-node-deep");
+  assert_equals(p.ownerDocument, document, "adopted into the top-level document");
+  assert_true(p instanceof InnerParagraph, "keeps its creation realm regardless of access path");
   assert_true(b instanceof InnerBold, "deep descendant keeps its creation realm regardless of access path");
-}, "Deep orphan reached through the adopting document still reports its creation realm (frame removed before adoption)");
+}, "Node reached through the adopting document still reports its creation realm (frame removed before adoption)");
 </script>

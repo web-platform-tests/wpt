@@ -18,7 +18,9 @@ const CROSS_ORIGIN_RESOURCES_URL = CROSS_ORIGIN + RESOURCES_PATH;
  */
 function openWindow(url) {
     const win = window.open(url, "_blank");
-    assert_not_equals(win, null, "window.open() should open a popup");
+    if (win === null) {
+        throw new Error("window.open() should open a popup");
+    }
     add_completion_callback(() => win.close());
     return win;
 }

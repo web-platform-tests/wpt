@@ -1,7 +1,6 @@
 from enum import Enum
 from dataclasses import dataclass
 from fnmatch import fnmatchcase
-from functools import cached_property
 from typing import Any, Dict, List, Sequence, Union
 
 from ..schema import SchemaValue, validate_dict
@@ -48,7 +47,7 @@ class FeatureEntry:
 
     _required_keys = {"ids"}
 
-    def __init__(self, obj: Dict[str, Union[str, List[str], None]]):
+    def __init__(self, obj: Dict[str, Union[List[str], Dict[str, List[str]]]]):
         """
         Converts the provided dictionary to an instance of FeatureEntry
         :param obj: The object that will be converted to a FeatureEntry.
@@ -70,10 +69,13 @@ class FeatureEntry:
         if isinstance(value, list):
             self.feature_ids = value
         else:
+            assert isinstance(value, dict)
             validate_dict(value, FeatureEntry._required_keys)
-            self.feature_ids = value.get("ids")
+            feature_ids = value.get("ids")
+            assert feature_ids is not None
+            self.feature_ids = feature_ids
 
-    def __str__(self):
+    def __str__(self) -> str:
         return '{}: {}'.format(self.file, self.feature_ids)
 
     def does_feature_apply_recursively(self) -> bool:

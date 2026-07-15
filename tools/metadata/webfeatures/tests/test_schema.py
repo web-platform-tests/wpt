@@ -86,7 +86,7 @@ def test_web_features_file(input, expected_result, expected_exception_type, exce
             False
         ),
         (
-            FeatureEntry({SpecialFileEnum.RECURSIVE: ["test2"]}),
+            FeatureEntry({SpecialFileEnum.RECURSIVE.value: ["test2"]}),
             True
         ),
     ])

@@ -3,5 +3,4 @@ rules:
 - BrowserCaptureMediaStreamTrack-cropTo.https.html: [region-capture]
 - BrowserCaptureMediaStreamTrack-*: []
 - message-enumerateddevices*.js: []
-- permission-helper.js: []
 - "*": [media-capture]

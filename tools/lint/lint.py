@@ -788,7 +788,7 @@ def check_web_features_file(repo_root: Text, path: Text, f: IO[bytes]) -> List[r
         dir_path = os.path.dirname(path)
         matched = rule.file.match_files(files_in_directory)
         if not matched:
-            errors.append(rules.MissingTestInWebFeaturesFile.error(path, (rule.file)))
+            errors.append(rules.MissingTestInWebFeaturesFile.error(path, (rule.file,)))
         # Only check explicitly named files (no wildcards).
         if "*" not in str(rule):
             for filename in matched:

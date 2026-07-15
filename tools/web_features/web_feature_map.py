@@ -2,7 +2,7 @@ import itertools
 
 from collections import OrderedDict
 from os.path import basename
-from typing import Dict, List, Optional, Sequence, Set, Union
+from typing import Dict, List, Optional, Set, TypeGuard, Union
 
 from ..manifest.item import ManifestItem, URLManifestItem
 from ..manifest.sourcefile import SourceFile
@@ -22,7 +22,7 @@ class WebFeaturesMap:
         self._classified_urls: Set[str] = set()
 
 
-    def _should_classify(self, manifest_item: ManifestItem):
+    def _should_classify(self, manifest_item: ManifestItem) -> TypeGuard[URLManifestItem]:
         return (isinstance(manifest_item, URLManifestItem) and
             manifest_item.url not in self._classified_urls)
 
@@ -129,6 +129,7 @@ class WebFeatureToTestsDirMapper:
 
                 # Handle the non recursive case.
                 elif rule.file:
+                    assert isinstance(rule.file, FeatureFile)
                     self._process_non_recursive_feature(rule.feature_ids, rule.file, result)
         else:
             self._process_inherited_features(inherited_features, result)

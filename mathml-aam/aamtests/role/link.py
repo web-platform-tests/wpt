@@ -1,8 +1,18 @@
 import pytest
 
+# Testing: https://w3c.github.io/mathml-aam/#ma-element
 TEST_CASES = {
-    "mathml-link": '<math><a href="https://baidu.com" id="test"><mtext>Link</mtext></a></math>',
-    "mathml-link-without-href": '<math><a id="test"><mtext>Link</mtext></a></math>',
+    "mathml-link": (
+        '<math><a href="https://baidu.com" id="test"><mtext>Link</mtext></a></math>'
+    ),
+    "mathml-link-without-href": (
+        '<math><a id="test"><mtext>Link</mtext></a></math>'
+    ),
+    # Browser heuristic behavior: treats 'a' as a Link if it has mouse event listeners
+    # Spec issue: https://github.com/w3c/mathml-aam/issues/39
+    "mathml-link-with-onclick": (
+        '<math><a id="test" onclick="void(0)"><mtext>Link</mtext></a></math>'
+    ),
 }
 
 @pytest.mark.parametrize("test_id, test_html", TEST_CASES.items(), ids=TEST_CASES.keys())
@@ -10,17 +20,26 @@ class TestMathMLALink:
 
     def test_atspi(self, atspi, session, inline, test_id, test_html):
         session.url = inline(test_html)
-        
         node = atspi.find_node("test", session.url)
-        has_href = "href" in test_html
-        if has_href:
+        
+        obj_attrs = atspi.Accessible.get_attributes(node)
+        assert obj_attrs.get("tag") == "a"
+
+        if test_id == "mathml-link":
             assert atspi.Accessible.get_role(node) == atspi.Role.LINK
             hyperlink = atspi.Accessible.get_hyperlink(node)
             assert hyperlink is not None, "hyperlink interface should be present for link role"
-            link = hyperlink.get_uri(0)
-            assert link == "https://baidu.com/"
-        else:
+            assert hyperlink.get_uri(0) == "https://baidu.com/"
+            
+        elif test_id == "mathml-link-with-onclick":
+            role = atspi.Accessible.get_role(node)
+            assert role == atspi.Role.LINK
+            
+        elif test_id == "mathml-link-without-href":
             assert atspi.Accessible.get_role(node) == atspi.Role.SECTION
+            
+        else:
+            raise ValueError(f"Unreachable code: missing ATSPI assertions for {test_id}")
 
     def test_axapi(self, axapi, session, inline, test_id, test_html):
         session.url = inline(test_html)
@@ -30,8 +49,17 @@ class TestMathMLALink:
         
         if test_id == "mathml-link":
             assert role == "AXLink"
+            
+        elif test_id == "mathml-link-with-onclick":
+            assert role == "AXLink"
+            
+        elif test_id == "mathml-link-without-href":
+            assert role == "AXGroup"
+            subrole = axapi.AXUIElementCopyAttributeValue(node, "AXSubrole", None)[1]
+            assert subrole == "AXMathRow"
+            
         else:
-            assert role != "AXLink"
+            raise ValueError(f"Unreachable code: missing AXAPI assertions for {test_id}")
 
     def test_ia2(self, ia2, session, inline, test_id, test_html):
         session.url = inline(test_html)
@@ -42,6 +70,16 @@ class TestMathMLALink:
             assert ia2.get_hyperlink_interface(node) is not None
             msaa_state = ia2.get_msaa_state_list(node)
             assert "LINKED" in msaa_state
-        else:
-            assert ia2.get_role(node) != "ROLE_SYSTEM_LINK"
+            
+        elif test_id == "mathml-link-with-onclick":
+            assert ia2.get_role(node) == "ROLE_SYSTEM_LINK"
+            
+        elif test_id == "mathml-link-without-href":
+            # Note: We use IA2_ROLE_SECTION here as a fallback because the strict 
+            # mapping for an href-less mathml:a element is TBD in the IA2 section of MathML-AAM.
+            # See: https://w3c.github.io/mathml-aam/#el-a
+            assert ia2.get_role(node) == "IA2_ROLE_SECTION"
             assert ia2.get_hyperlink_interface(node) is None
+            
+        else:
+            raise ValueError(f"Unreachable code: missing IA2 assertions for {test_id}")

@@ -1,3 +1,0 @@
-rules:
-- web-locks*: [shared-storage-locks]
-- "*": [shared-storage]

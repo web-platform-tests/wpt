@@ -31,7 +31,7 @@
         }
       });
     });
-    observer.observe({ type: "resource", buffered: true});
+    observer.observe({ type: "resource", buffered: true });
 
     compression_dictionary_promise_test(async t => {
       // Initially fetched dictionaries.
@@ -44,8 +44,12 @@
         "?javascriptType",
         "?unsupportedType",
       ];
-      await t.step_wait(_ => fetchedDictionaries.length >= expectedEntries.length, "<link> with omitted type attribute should trigger fetch", 5000);
-      assert_array_equals(fetchedDictionaries.toSorted(), expectedEntries, "dictionary fetched for <link> with omitted type attribute.");
+      await t.step_wait(_ => fetchedDictionaries.length >= expectedEntries.length, "All <link rel=compression-dictionary> elements should trigger dictionary fetches regardless of their type attribute", 5000);
+      assert_array_equals(fetchedDictionaries.toSorted(), expectedEntries, "All <link rel=compression-dictionary> elements should trigger dictionary fetches regardless of their type attribute.");
+
+      fetchedDictionaries = [];
+      await new Promise(resolve => step_timeout(resolve, 1000));
+      assert_equals(fetchedDictionaries.length, 0, "no more dictionary fetched.");
     }, "<link rel=compression-dictionary> are fetched independently of the type.");
   </script>
 </body>

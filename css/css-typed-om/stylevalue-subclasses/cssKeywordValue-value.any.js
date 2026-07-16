@@ -1,12 +1,7 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>CSSKeywordValue.value</title>
-<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-csskeywordvalue-value">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<body>
-<div id="log"></div>
-<script>
+// META: global=window,worker
+// META: title=CSSKeywordValue.value
+// META: spec=https://drafts.css-houdini.org/css-typed-om-1/#dom-csskeywordvalue-csskeywordvalue
+
 'use strict';
 
 const gTestArguments = [
@@ -30,5 +25,3 @@ test(() => {
   assert_throws_js(TypeError, () => result.value = '');
   assert_equals(result.value, 'lemon', 'value does not change');
 }, 'Updating CSSKeywordValue.value with an empty string throws a TypeError');
-
-</script>

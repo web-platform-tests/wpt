@@ -1,11 +1,8 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>Creating Type From A Unit</title>
-<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#create-a-type">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="../../resources/testhelper.js"></script>
-<script>
+// META: global=window,worker
+// META: script=../../resources/testhelper.js
+// META: title=Creating Type From A Unit
+// META: spec=https://drafts.css-houdini.org/css-typed-om-1/#create-a-type
+
 'use strict';
 
 test(() => {
@@ -47,5 +44,3 @@ test(() => {
   const value = new CSSUnitValue(0, 'fr');
   assert_numeric_type_equals(value.type(), { flex: 1 });
 }, 'Creating a type from <flex> returns { flex: 1 }');
-
-</script>

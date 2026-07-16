@@ -1,11 +1,16 @@
-<meta charset="utf-8">
-<title>CSSNumericValue.to tests</title>
-<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-cssnumericvalue-to">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="../../resources/testhelper.js"></script>
-<script>
+// META: global=window,worker
+// META: script=../../resources/testhelper.js
+// META: title=CSSNumericValue.to tests
+// META: spec=https://drafts.css-houdini.org/css-typed-om-1/#dom-cssnumericvalue-to
+
 'use strict';
+
+test(() => {
+  const value = new CSSUnitValue(10, 'px');
+  assert_true(value instanceof CSSUnitValue);
+  assert_true(value instanceof CSSNumericValue);
+  assert_true(value instanceof CSSStyleValue);
+}, 'CSSUnitValue is a CSSNumericValue and a CSSStyleValue');
 
 test(() => {
   assert_throws_dom("SyntaxError", () => CSS.px(1).to('lemon'));
@@ -111,5 +116,3 @@ test(() => {
 
   assert_style_value_equals(expr.to('ms'), CSS.ms(3500));
 }, 'Converting a complex expression to a single unit');
-
-</script>

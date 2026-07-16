@@ -51,7 +51,7 @@ globalThis.runTestsWithWebExtension = function(extensionPath) {
       test_driver.install_web_extension({type: 'path', path: extensionPath});
 
   return installPromise.then(() => {
-    // Add the test listeners *after* extension install to ensure all browser's will 
+    // Add the test listeners *after* extension install to ensure all browser's will
     // fire test events successfully.
     browser.test.onTestStarted.addListener(onTestStartedListener);
     browser.test.onTestFinished.addListener(onTestFinishedListener);

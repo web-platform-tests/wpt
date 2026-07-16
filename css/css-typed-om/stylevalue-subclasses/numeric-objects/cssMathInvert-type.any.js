@@ -1,13 +1,8 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>CSSMathInvert.type</title>
-<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#type-of-a-cssmathvalue">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="../../resources/testhelper.js"></script>
-<body>
-<div id="log">
-<script>
+// META: global=window,worker
+// META: script=../../resources/testhelper.js
+// META: title=CSSMathInvert.type
+// META: spec=https://drafts.css-houdini.org/css-typed-om-1/#type-of-a-cssmathvalue
+
 'use strict';
 
 test(() => {
@@ -26,5 +21,3 @@ test(() => {
   const result = new CSSMathInvert(new CSSMathInvert(x));
   assert_numeric_type_equals(result.type(), { length: 1 });
 }, 'Inverting an inverted type returns the original type');
-
-</script>

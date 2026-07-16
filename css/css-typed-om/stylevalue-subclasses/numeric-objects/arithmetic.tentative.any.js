@@ -1,16 +1,13 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>Arithmetic operations on CSSNumericValue tests</title>
-<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-cssnumericvalue-add">
-<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-cssnumericvalue-sub">
-<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-cssnumericvalue-mul">
-<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-cssnumericvalue-div">
-<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-cssnumericvalue-min">
-<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-cssnumericvalue-max">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="../../resources/testhelper.js"></script>
-<script>
+// META: global=window,worker
+// META: script=../../resources/testhelper.js
+// META: title=Arithmetic operations on CSSNumericValue tests
+// META: spec=https://drafts.css-houdini.org/css-typed-om-1/#dom-cssnumericvalue-add
+// META: spec=https://drafts.css-houdini.org/css-typed-om-1/#dom-cssnumericvalue-sub
+// META: spec=https://drafts.css-houdini.org/css-typed-om-1/#dom-cssnumericvalue-mul
+// META: spec=https://drafts.css-houdini.org/css-typed-om-1/#dom-cssnumericvalue-div
+// META: spec=https://drafts.css-houdini.org/css-typed-om-1/#dom-cssnumericvalue-min
+// META: spec=https://drafts.css-houdini.org/css-typed-om-1/#dom-cssnumericvalue-max
+
 'use strict';
 
 const gArithmeticOps = [
@@ -164,5 +161,3 @@ for (const methodName of ["mul", "div"]) {
       assert_throws_js(TypeError, () => a[methodName](b));
     }, 'CSSNumericValue.' + methodName + ' should throw TypeError when the types are different.');
 }
-
-</script>

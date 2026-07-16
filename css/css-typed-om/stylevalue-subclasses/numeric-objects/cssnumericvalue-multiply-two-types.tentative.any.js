@@ -1,13 +1,8 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>Multiplying Two Numeric Types</title>
-<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-multiply-two-types">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="../../resources/testhelper.js"></script>
-<body>
-<div id="log">
-<script>
+// META: global=window,worker
+// META: script=../../resources/testhelper.js
+// META: title=Multiplying Two Numeric Types
+// META: spec=https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-multiply-two-types
+
 'use strict';
 
 test(() => {
@@ -57,5 +52,3 @@ test(() => {
   const result = new CSSMathProduct(a, b);
   assert_numeric_type_equals(result.type(), { length: 2, percentHint: 'length' });
 }, 'Multiplying two types with same percent hint applies the percent hint');
-
-</script>

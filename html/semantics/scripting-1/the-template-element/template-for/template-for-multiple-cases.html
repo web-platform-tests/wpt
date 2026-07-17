@@ -192,5 +192,28 @@
       `<?marker name=""?>Old`,
       {tail: true}
     );
+
+    // The <span> is left open at </template>, so the current node is the <span>
+    // rather than the template. The markers must still be removed.
+    add_test_scenario(
+      "Unclosed element in template content with start and end",
+      `<?start name="p">Old<?end>`,
+      `<template for="p"><span>New</template>`,
+      `<span>New</span>`,
+    );
+
+    add_test_scenario(
+      "Unclosed element in template content with only start",
+      `<?start name="p">Old content`,
+      `<template for="p"><span>New</template>`,
+      `<span>New content</span>`,
+    );
+
+    add_test_scenario(
+      "Unclosed element in template content with void marker",
+      `New <?marker name="p"> content`,
+      `<template for="p"><span>X</template>`,
+      `New <span>X</span> content`,
+    );
       </script>
 </body>

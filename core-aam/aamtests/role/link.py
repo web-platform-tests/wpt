@@ -64,7 +64,7 @@ def test_uia(uia, session, inline, test_html):
     # Spec:
     # Control Type: HyperLink
     # Control Pattern: Value
-    session.url = inline(test_html)
+
     node = uia.find_node("test", session.url)
     assert node.CurrentControlType == uia.ControlType.Hyperlink
     assert node.GetCurrentPropertyValue(uia.PropertyId.IsValuePatternAvailable)

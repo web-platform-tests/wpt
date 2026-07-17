@@ -1,0 +1,39 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>CSS Animations: animation-delay list coordination</title>
+<link rel="help" href="https://drafts.csswg.org/css-animations-2/#propdef-animation-delay-start"/>
+<link rel="help" href="https://drafts.csswg.org/css-animations-2/#propdef-animation-delay-end"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
+<style>
+@keyframes anim1 {
+  from { margin-left: 0px; }
+  to { margin-left: 10px; }
+}
+@keyframes anim2 {
+  from { margin-top: 0px; }
+  to { margin-top: 10px; }
+}
+</style>
+<div id="log"></div>
+<script>
+'use strict';
+
+test(t => {
+  const div = addDiv(t, {
+    style: 'animation: anim1 100s, anim2 100s; animation-delay: 2s 8s, 3s 12s'
+  });
+  const animations = div.getAnimations();
+  assert_equals(animations.length, 2);
+
+  assert_equals(animations[0].effect.getTiming().delay, 2 * MS_PER_SEC,
+                'First animation start delay');
+  assert_equals(animations[0].effect.getTiming().endDelay, 8 * MS_PER_SEC,
+                'First animation end delay');
+  assert_equals(animations[1].effect.getTiming().delay, 3 * MS_PER_SEC,
+                'Second animation start delay');
+  assert_equals(animations[1].effect.getTiming().endDelay, 12 * MS_PER_SEC,
+                'Second animation end delay');
+}, 'Comma-separated animation-delay values coordinate with animation-name list');
+</script>

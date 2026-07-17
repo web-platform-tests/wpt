@@ -282,6 +282,46 @@ promise_test(async t => {
 }, 'Negative playbackRate sanity test(Before -> Active -> Before)');
 
 promise_test(async t => {
+  const div = addDiv(t, {
+    style: 'animation: anim 100s paused; animation-delay-end: 50s'
+  });
+  const animation = div.getAnimations()[0];
+  const timeoutPromise = armTimeoutWhenReady(animation, fastEventsTimeout);
+  const watcher = new EventWatcher(t, div, ['animationstart', 'animationend'],
+                                   timeoutPromise);
+
+  await animation.ready;
+  animation.finish();
+
+  const events = await watcher.wait_for(['animationstart', 'animationend'], {
+    record: 'all',
+  });
+  assert_equals(events[1].elapsedTime, 100.0,
+                'animationend elapsedTime is active duration, not including end delay');
+
+  await waitForAnimationFrames(2);
+}, 'animationend fires at active duration regardless of end delay');
+
+promise_test(async t => {
+  const div = addDiv(t, {
+    style: 'animation: anim 100s reverse 100s paused; animation-delay-end: 50s'
+  });
+  const animation = div.getAnimations()[0];
+  const timeoutPromise = armTimeoutWhenReady(animation, fastEventsTimeout);
+  const watcher = new EventWatcher(t, div, ['animationstart', 'animationend'],
+                                   timeoutPromise);
+
+  await animation.ready;
+  animation.finish();
+  await watcher.wait_for(['animationstart', 'animationend']);
+
+  animation.playbackRate = -1;
+
+  const evt = await watcher.wait_for('animationstart');
+  assert_equals(evt.elapsedTime, 100.0);
+}, 'Reverse playback with end delay dispatches animationstart when entering active phase');
+
+promise_test(async t => {
   const { animation, watcher } = setupAnimation(t, 'anim 100s 100s');
 
   animation.currentTime = 150 * MS_PER_SEC;

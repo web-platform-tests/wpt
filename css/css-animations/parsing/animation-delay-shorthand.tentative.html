@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Animations: animation-delay shorthand</title>
+<link rel="help" href="https://drafts.csswg.org/css-animations-2/#propdef-animation-delay">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/shorthand-testcommon.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+</head>
+<body>
+<div id="target"></div>
+<script>
+test_valid_value("animation-delay", "-5ms");
+test_valid_value("animation-delay", "0s");
+test_valid_value("animation-delay", "10s");
+test_valid_value("animation-delay", "20s, 10s");
+test_valid_value("animation-delay", "1s 2s");
+test_valid_value("animation-delay", "1s 2s, 3s 4s");
+
+test_computed_value("animation-delay", "-500ms", "-0.5s");
+test_computed_value("animation-delay", "calc(2 * 3s)", "6s");
+test_computed_value("animation-delay", "20s, 10s");
+test_computed_value("animation-delay", "1s 2s");
+test_computed_value("animation-delay", "1s 2s, 3s 4s");
+
+test_invalid_value("animation-delay", "infinite");
+test_invalid_value("animation-delay", "0");
+test_invalid_value("animation-delay", "1s 2s 3s");
+test_invalid_value("animation-delay", "initial, -3s");
+test_invalid_value("animation-delay", "-3s, initial");
+
+test_shorthand_value('animation-delay', '1s 2s', {
+  'animation-delay-start': '1s',
+  'animation-delay-end': '2s',
+});
+
+test_shorthand_value('animation-delay', '20s, 10s', {
+  'animation-delay-start': '20s, 10s',
+});
+
+test(() => {
+  const target = document.getElementById('target');
+  target.style.animationDelayEnd = '5s';
+  target.style.animationDelay = '2s';
+  assert_equals(getComputedStyle(target).getPropertyValue('animation-delay-start'), '2s');
+  assert_equals(getComputedStyle(target).getPropertyValue('animation-delay-end'), '5s');
+  target.style.animationDelay = '';
+  target.style.animationDelayEnd = '';
+}, 'Single-value animation-delay sets start only and leaves end unchanged');
+</script>
+</body>
+</html>

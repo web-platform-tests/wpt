@@ -2,8 +2,6 @@
 function run_test(algorithmNames, slowTest) {
     var subtle = crypto.subtle; // Change to test prefixed implementations
 
-    setup({explicit_timeout: true});
-
 // These tests check that generateKey successfully creates keys
 // when provided any of a wide set of correct parameters
 // and that they can be exported afterwards.

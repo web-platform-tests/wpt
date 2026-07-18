@@ -1,8 +1,6 @@
 function run_test(algorithmNames) {
     var subtle = crypto.subtle; // Change to test prefixed implementations
 
-    setup({explicit_timeout: true});
-
 // These tests check that importKey and exportKey throw an error, and that
 // the error is of the right type, for a wide set of incorrect parameters.
 

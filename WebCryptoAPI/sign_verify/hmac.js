@@ -466,9 +466,7 @@ function run_test() {
 
 
     promise_test(function() {
-        return Promise.all(all_promises)
-            .then(function() {done();})
-            .catch(function() {done();})
+        return Promise.all(all_promises).finally(done);
     }, "setup");
 
     // A test vector has all needed fields for signing and verifying, EXCEPT that the

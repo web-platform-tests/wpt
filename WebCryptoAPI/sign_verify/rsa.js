@@ -328,7 +328,7 @@ function run_test() {
     // Check for successful signing and verification.
     testVectors.forEach(function(vector) {
         // RSA signing is deterministic with PKCS#1 v1.5, or PSS with zero-length salts.
-        const isDeterministic = !("saltLength" in vector.algorithm) || vector.algorithm.saltLength == 0;
+        const isDeterministic = !("saltLength" in vector.algorithm) || vector.algorithm.saltLength === 0;
         var promise = importVectorKeys(vector, ["verify"], ["sign"])
         .then(function(vectors) {
             promise_test(function(test) {

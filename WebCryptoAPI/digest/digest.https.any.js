@@ -49,7 +49,7 @@
         Object.keys(digestedData).forEach(function(alg) {
             var upCase = alg.toUpperCase();
             var downCase = alg.toLowerCase();
-            var mixedCase = upCase.substr(0, 1) + downCase.substr(1);
+            var mixedCase = upCase.slice(0, 1) + downCase.slice(1);
 
             promise_test(function(test) {
                 var promise = subtle.digest({name: upCase}, sourceData[size])

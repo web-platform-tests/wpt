@@ -285,7 +285,7 @@
         }
 
         if ("kty" in exportedKey && algorithmName === "AES-KW") {
-            return JSON.stringify(exportedKey).length % 8 == 0;
+            return JSON.stringify(exportedKey).length % 8 === 0;
         }
 
         if ("kty" in exportedKey && algorithmName === "RSA-OAEP") {
@@ -478,4 +478,3 @@
 
     function str2ab(str)        { return Uint8Array.from( str.split(''), function(s){return s.charCodeAt(0)} ); }
     function ab2str(ab)         { return String.fromCharCode.apply(null, new Uint8Array(ab)); }
-

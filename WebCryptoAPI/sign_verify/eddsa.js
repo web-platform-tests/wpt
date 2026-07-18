@@ -50,11 +50,10 @@ function run_test(algorithmName) {
           let key;
           try {
               key = await subtle.importKey("spki", vector.publicKeyBuffer, algorithm, false, ["verify"]);
-              var signature = copyBuffer(vector.signature);
-              [isVerified] = await Promise.all([
-                  subtle.verify(algorithm, key, signature, vector.data),
-                  signature[0] = 255 - signature[0]
-              ]);
+              const signature = copyBuffer(vector.signature);
+              const operation = subtle.verify(algorithm, key, signature, vector.data);
+              signature[0] = 255 - signature[0];
+              isVerified = await operation;
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
               assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");
@@ -126,11 +125,10 @@ function run_test(algorithmName) {
           let key;
           try {
               key = await subtle.importKey("spki", vector.publicKeyBuffer, algorithm, false, ["verify"]);
-              var data = copyBuffer(vector.data);
-              [isVerified] = await Promise.all([
-                  subtle.verify(algorithm, key, vector.signature, data),
-                  data[0] = 255 - data[0]
-              ]);
+              const data = copyBuffer(vector.data);
+              const operation = subtle.verify(algorithm, key, vector.signature, data);
+              data[0] = 255 - data[0];
+              isVerified = await operation;
           } catch (err) {
               assert_false(key === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
               assert_unreached("Verification should not throw error " + vector.name + ": '" + err.message + "'");

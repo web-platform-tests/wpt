@@ -302,18 +302,25 @@ function bytesToHexString(bytes)
 
 function hexStringToUint8Array(hexString)
 {
-    if (hexString.length % 2 != 0)
-        throw "Invalid hexString";
-    var arrayBuffer = new Uint8Array(hexString.length / 2);
-
-    for (var i = 0; i < hexString.length; i += 2) {
-        var byteValue = parseInt(hexString.substr(i, 2), 16);
-        if (byteValue == NaN)
-            throw "Invalid hexString";
-        arrayBuffer[i/2] = byteValue;
+    if (hexString.length % 2 !== 0 || !/^[0-9a-f]*$/i.test(hexString)) {
+        throw new TypeError("Invalid hexadecimal string");
     }
 
-    return arrayBuffer;
+    const result = new Uint8Array(hexString.length / 2);
+
+    for (let i = 0; i < hexString.length; i += 2) {
+        result[i / 2] = parseInt(hexString.slice(i, i + 2), 16);
+    }
+
+    return result;
+}
+
+function byteView(source) {
+    if (ArrayBuffer.isView(source)) {
+        return new Uint8Array(source.buffer, source.byteOffset, source.byteLength);
+    }
+
+    return new Uint8Array(source);
 }
 
 // Compares two ArrayBuffer or ArrayBufferView objects. If bitCount is
@@ -321,44 +328,39 @@ function hexStringToUint8Array(hexString)
 // in every byte. If bitCount is included, only that leading number of bits
 // have to match.
 function equalBuffers(a, b, bitCount) {
-    var remainder;
+    const aBytes = byteView(a);
+    const bBytes = byteView(b);
 
-    if (typeof bitCount === "undefined" && a.byteLength !== b.byteLength) {
+    if (typeof bitCount === "undefined") {
+        if (aBytes.byteLength !== bBytes.byteLength) {
+            return false;
+        }
+        bitCount = aBytes.byteLength * 8;
+    } else if (!Number.isInteger(bitCount) || bitCount < 0 ||
+               bitCount > aBytes.byteLength * 8 ||
+               bitCount > bBytes.byteLength * 8) {
         return false;
     }
 
-    var aBytes = new Uint8Array(a);
-    var bBytes = new Uint8Array(b);
-
-    var length = a.byteLength;
-    if (typeof bitCount !== "undefined") {
-        length = Math.floor(bitCount / 8);
-    }
-
-    for (var i=0; i<length; i++) {
+    const length = Math.floor(bitCount / 8);
+    for (let i = 0; i < length; i++) {
         if (aBytes[i] !== bBytes[i]) {
             return false;
         }
     }
 
-    if (typeof bitCount !== "undefined") {
-        remainder = bitCount % 8;
-        return aBytes[length] >> (8 - remainder) === bBytes[length] >> (8 - remainder);
+    const remainder = bitCount % 8;
+    if (remainder === 0) {
+        return true;
     }
 
-    return true;
+    const mask = 0xff << (8 - remainder);
+    return (aBytes[length] & mask) === (bBytes[length] & mask);
 }
 
 // Returns a copy of the sourceBuffer it is sent.
 function copyBuffer(sourceBuffer) {
-    var source = new Uint8Array(sourceBuffer);
-    var copy = new Uint8Array(sourceBuffer.byteLength)
-
-    for (var i=0; i<source.byteLength; i++) {
-        copy[i] = source[i];
-    }
-
-    return copy;
+    return new Uint8Array(byteView(sourceBuffer));
 }
 
 // Are two Jwk objects "the same"? That is, does the object returned include

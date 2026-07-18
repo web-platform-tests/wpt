@@ -23,7 +23,7 @@ function run_test() {
             promise_test(function(test) {
                 return subtle.decrypt(vector.algorithm, vector.privateKey, vector.ciphertext)
                 .then(function(plaintext) {
-                    assert_true(equalBuffers(plaintext, vector.plaintext, "Decryption works"));
+                    assert_true(equalBuffers(plaintext, vector.plaintext), "Decryption works");
                 }, function(err) {
                     assert_unreached("Decryption should not throw error " + vector.name + ": '" + err.message + "'");
                 });
@@ -60,7 +60,7 @@ function run_test() {
                     }
                 }, vector.privateKey, ciphertext)
                 .then(function(plaintext) {
-                    assert_true(equalBuffers(plaintext, vector.plaintext, "Decryption works"));
+                    assert_true(equalBuffers(plaintext, vector.plaintext), "Decryption works");
                 }, function(err) {
                     assert_unreached("Decryption should not throw error " + vector.name + ": '" + err.message + "'");
                 });
@@ -91,7 +91,7 @@ function run_test() {
                 var ciphertext = copyBuffer(vector.ciphertext);
                 var operation = subtle.decrypt(vector.algorithm, vector.privateKey, ciphertext)
                 .then(function(plaintext) {
-                    assert_true(equalBuffers(plaintext, vector.plaintext, "Decryption works"));
+                    assert_true(equalBuffers(plaintext, vector.plaintext), "Decryption works");
                 }, function(err) {
                     assert_unreached("Decryption should not throw error " + vector.name + ": '" + err.message + "'");
                 });
@@ -160,7 +160,7 @@ function run_test() {
                 var ciphertext = copyBuffer(vector.ciphertext);
                 var operation = subtle.decrypt(vector.algorithm, vector.privateKey, ciphertext)
                 .then(function(plaintext) {
-                    assert_true(equalBuffers(plaintext, vector.plaintext, "Decryption works"));
+                    assert_true(equalBuffers(plaintext, vector.plaintext), "Decryption works");
                 }, function(err) {
                     assert_unreached("Decryption should not throw error " + vector.name + ": '" + err.message + "'");
                 });

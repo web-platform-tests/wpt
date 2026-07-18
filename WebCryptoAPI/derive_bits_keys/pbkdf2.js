@@ -46,7 +46,7 @@ function define_tests() {
                         subsetTest(promise_test, function(test) {
                             return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], 0)
                             .then(function(derivation) {
-                                assert_true(equalBuffers(derivation.byteLength, 0, "Derived correctly empty key"));
+                                assert_equals(derivation.byteLength, 0, "Derived correctly empty key");
                             }, function(err) {
                                 assert_unreached("deriveBits failed with error " + err.name + ": " + err.message);
                             });

@@ -40,7 +40,7 @@ function define_tests() {
                 return subtle.deriveKey({name: "ECDH", public: publicKeys[namedCurve]}, privateKeys[namedCurve], {name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
                 .then(function(key) {return crypto.subtle.exportKey("raw", key);})
                 .then(function(exportedKey) {
-                    assert_true(equalBuffers(exportedKey, derivations[namedCurve], 8 * exportedKey.length), "Derived correct key");
+                    assert_true(equalBuffers(exportedKey, derivations[namedCurve], 8 * exportedKey.byteLength), "Derived correct key");
                 }, function(err) {
                     assert_unreached("deriveKey failed with error " + err.name + ": " + err.message);
                 });
@@ -51,7 +51,7 @@ function define_tests() {
                 return subtle.deriveKey({name: "EcDh", public: publicKeys[namedCurve]}, privateKeys[namedCurve], {name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
                 .then(function(key) {return crypto.subtle.exportKey("raw", key);})
                 .then(function(exportedKey) {
-                    assert_true(equalBuffers(exportedKey, derivations[namedCurve], 8 * exportedKey.length), "Derived correct key");
+                    assert_true(equalBuffers(exportedKey, derivations[namedCurve], 8 * exportedKey.byteLength), "Derived correct key");
                 }, function(err) {
                     assert_unreached("deriveKey failed with error " + err.name + ": " + err.message);
                 });

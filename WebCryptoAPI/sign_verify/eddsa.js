@@ -228,20 +228,20 @@ function run_test(algorithmName) {
       // Check for successful signing and verification.
       var algorithm = {name: vector.algorithmName};
       promise_test(async() => {
-          let isVerified = false;
-          let privateKey, publicKey;
-          let signature;
-          try {
-              privateKey = await subtle.importKey("pkcs8", vector.privateKeyBuffer, algorithm, false, ["sign"]);
-              publicKey = await subtle.importKey("spki", vector.publicKeyBuffer, algorithm, false, ["verify"]);
-              signature = await subtle.sign(algorithm, privateKey, vector.data);
-              isVerified = await subtle.verify(algorithm, publicKey, vector.signature, vector.data)
-          } catch (err) {
-              assert_false(publicKey === undefined || privateKey === undefined, "importKey failed for " + vector.name + ". Message: ''" + err.message + "''");
-              assert_false(signature === undefined, "sign error for test " + vector.name + ": '" + err.message + "'");
-              assert_unreached("verify error for test " + vector.name + ": '" + err.message + "'");
-          };
-          assert_true(isVerified, "Round trip verification works");
+          const publicKey = await subtle.importKey("spki", vector.publicKeyBuffer, algorithm, false, ["verify"]);
+          const vectorSignatureIsVerified = await subtle.verify(
+              algorithm, publicKey, vector.signature, vector.data);
+          assert_true(vectorSignatureIsVerified, "Known-answer signature verified");
+
+          const privateKey = await subtle.importKey("pkcs8", vector.privateKeyBuffer, algorithm, false, ["sign"]);
+          const signature = await subtle.sign(algorithm, privateKey, vector.data);
+
+          // Hedged EdDSA may produce a different, valid signature.
+          if (!equalBuffers(signature, vector.signature)) {
+              const generatedSignatureIsVerified = await subtle.verify(
+                  algorithm, publicKey, signature, vector.data);
+              assert_true(generatedSignatureIsVerified, "Generated signature verified");
+          }
       }, vector.name + " round trip");
 
       // Test signing with the wrong algorithm

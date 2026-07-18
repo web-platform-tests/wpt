@@ -39,10 +39,12 @@ function define_tests(algorithmName) {
 
   return importKeys(pkcs8, spki, sizes)
   .then(function(results) {
-      publicKeys = results.publicKeys;
-      privateKeys = results.privateKeys;
-      noDeriveBitsKeys = results.noDeriveBitsKeys;
-      ecdhKeys = results.ecdhKeys;
+      const {
+          publicKeys,
+          privateKeys,
+          noDeriveBitsKeys,
+          ecdhKeys,
+      } = results;
 
       {
           // Basic success case

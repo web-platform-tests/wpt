@@ -164,12 +164,9 @@ function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
 
     // The usages parameter could have repeats, but the usages
     // property of the result should not.
-    var usageCount = 0;
-    key.usages.forEach(function(usage) {
-        usageCount += 1;
-        assert_in_array(usage, correctUsages, "Has " + usage + " usage");
-    });
-    assert_equals(key.usages.length, usageCount, "usages property is correct");
+    const expectedUsages = unique(correctUsages).sort();
+    const actualUsages = [...key.usages].sort();
+    assert_array_equals(actualUsages, expectedUsages, "usages property is correct");
     assert_equals(key[Symbol.toStringTag], 'CryptoKey', "has the expected Symbol.toStringTag");
 }
 

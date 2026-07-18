@@ -2,7 +2,7 @@
 // META: timeout=long
 // META: script=../util/helpers.js
 // META: script=ML-DSA_importKey_fixtures.js
-// META: script=ML-DSA_importKey.js
+// META: script=ml_importKey.js
 
 runTests("ML-DSA-44");
 runTests("ML-DSA-65");

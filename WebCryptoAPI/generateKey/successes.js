@@ -93,6 +93,7 @@ function run_test(algorithmNames, slowTest) {
                     ];
                     if (extractable)
                         promises.push(subtle.exportKey('raw-seed', result.privateKey));
+                    await Promise.all(promises);
                 } else if (resultType === "CryptoKeyPair") {
                     const promises = [
                         subtle.exportKey('jwk', result.publicKey),

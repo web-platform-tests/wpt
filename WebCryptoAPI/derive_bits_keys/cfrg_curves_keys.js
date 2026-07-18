@@ -68,7 +68,7 @@ function define_tests(algorithmName) {
               return subtle.deriveKey({name: algorithmName, public: publicKeys[algorithmName]}, privateKeys[algorithmName], {name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
               .then(function(key) {return crypto.subtle.exportKey("raw", key);})
               .then(function(exportedKey) {
-                  assert_true(equalBuffers(exportedKey, derivations[algorithmName], 8 * exportedKey.byteLength), "Derived correct key");
+                  assert_array_equals(new Uint8Array(exportedKey), derivations[algorithmName].slice(0, 32), "Derived correct key");
               }, function(err) {
                   assert_unreached("deriveKey failed with error " + err.name + ": " + err.message);
               });
@@ -79,7 +79,7 @@ function define_tests(algorithmName) {
               return subtle.deriveKey({name: algorithmName.toLowerCase(), public: publicKeys[algorithmName]}, privateKeys[algorithmName], {name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
               .then(function(key) {return crypto.subtle.exportKey("raw", key);})
               .then(function(exportedKey) {
-                  assert_true(equalBuffers(exportedKey, derivations[algorithmName], 8 * exportedKey.byteLength), "Derived correct key");
+                  assert_array_equals(new Uint8Array(exportedKey), derivations[algorithmName].slice(0, 32), "Derived correct key");
               }, function(err) {
                   assert_unreached("deriveKey failed with error " + err.name + ": " + err.message);
               });

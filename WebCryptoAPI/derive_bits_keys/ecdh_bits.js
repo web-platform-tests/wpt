@@ -29,10 +29,12 @@ function define_tests() {
 
     return importKeys(pkcs8, spki, sizes)
     .then(function(results) {
-        publicKeys = results.publicKeys;
-        privateKeys = results.privateKeys;
-        ecdsaKeyPairs = results.ecdsaKeyPairs;
-        noDeriveBitsKeys = results.noDeriveBitsKeys;
+        const {
+            publicKeys,
+            privateKeys,
+            ecdsaKeyPairs,
+            noDeriveBitsKeys,
+        } = results;
 
         Object.keys(sizes).forEach(function(namedCurve) {
             // Basic success case
@@ -99,7 +101,7 @@ function define_tests() {
 
             // - wrong named curve
             promise_test(function(test) {
-                publicKey = publicKeys["P-256"];
+                let publicKey = publicKeys["P-256"];
                 if (namedCurve === "P-256") {
                     publicKey = publicKeys["P-384"];
                 }

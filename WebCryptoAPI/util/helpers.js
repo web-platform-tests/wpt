@@ -101,6 +101,35 @@ function objectToString(obj) {
     }
 }
 
+function mismatchedCryptoKeyAlgorithmMembers(keyAlgorithm, algorithm, registeredAlgorithmName) {
+    const mismatches = [];
+
+    if (["HMAC", "RSASSA-PKCS1-v1_5", "RSA-PSS", "RSA-OAEP"].includes(registeredAlgorithmName)) {
+        const expectedHash = typeof algorithm.hash === "string" ?
+            algorithm.hash : algorithm.hash.name;
+        if (keyAlgorithm.hash.name.toUpperCase() !== expectedHash.toUpperCase()) {
+            mismatches.push("hash");
+        }
+    }
+
+    if (algorithm.namedCurve !== undefined &&
+        keyAlgorithm.namedCurve !== algorithm.namedCurve) {
+        mismatches.push("namedCurve");
+    }
+
+    if (algorithm.modulusLength !== undefined &&
+        keyAlgorithm.modulusLength !== algorithm.modulusLength) {
+        mismatches.push("modulusLength");
+    }
+
+    if (algorithm.publicExponent !== undefined &&
+        !equalBuffers(keyAlgorithm.publicExponent, algorithm.publicExponent)) {
+        mismatches.push("publicExponent");
+    }
+
+    return mismatches;
+}
+
 // Is key a CryptoKey object with correct algorithm, extractable, and usages?
 // Is it a secret, private, or public kind of key?
 function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
@@ -147,9 +176,13 @@ function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
     } else {
         assert_equals(key.algorithm.length, algorithm.length, "Correct length");
     }
-    if (["HMAC", "RSASSA-PKCS1-v1_5", "RSA-PSS"].includes(registeredAlgorithmName)) {
-        assert_equals(key.algorithm.hash.name.toUpperCase(), algorithm.hash.toUpperCase(), "Correct hash function");
-    }
+    assert_array_equals(
+        mismatchedCryptoKeyAlgorithmMembers(
+            key.algorithm,
+            algorithm,
+            registeredAlgorithmName),
+        [],
+        "Algorithm members are correct");
 
     if (/^(?:Ed|X)(?:25519|448)$/.test(key.algorithm.name)) {
         assert_false('namedCurve' in key.algorithm, "Does not have a namedCurve property");

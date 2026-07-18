@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+    <head>
+        <title>Removing a @font-face while it is loading works</title>
+        <meta name="assert" content="Removing a @font-face while it is loading works" />
+        <link rel="author" title="Simon Wülker" href="simon.wuelker@arcor.de">
+        <link rel="stylesheet" href="/fonts/ahem.css">
+        <link rel="match" href="remove-rule-while-font-face-is-loading-ref.html">
+        <link rel="help" href="https://drafts.csswg.org/css-fonts/#font-face-rule">
+    </head>
+    <body>
+        <!-- Ensures that the Lato font is actually loaded once the @font-face rule is available -->
+        <div style="font-family: Lato, Ahem">This text should be rendered using Ahem</div>
+        <script>
+          let style = document.createElement("style");
+          style.textContent = `
+            @font-face {
+                font-family: Lato;
+                src: url("/fonts/Lato-Medium.ttf?pipe=trickle(d1)");
+            }
+          `;
+          document.body.appendChild(style);
+          window.requestAnimationFrame(() => {
+            style.remove();
+
+            document.fonts.ready.then(() => {
+              document.documentElement.classList.remove("reftest-wait");
+            })
+          })
+        </script>
+
+    </body>
+</html>

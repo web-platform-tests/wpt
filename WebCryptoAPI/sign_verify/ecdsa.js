@@ -628,9 +628,7 @@ function run_test() {
         var publicPromise, privatePromise;
 
         if (vector.publicKey !== null) {
-            publicPromise = new Promise(function(resolve, reject) {
-                resolve(vector);
-            });
+            publicPromise = Promise.resolve(vector);
         } else {
             publicPromise = subtle.importKey(vector.publicKeyFormat, vector.publicKeyBuffer, {name: vector.algorithmName, namedCurve: vector.namedCurve}, false, publicKeyUsages)
             .then(function(key) {
@@ -640,9 +638,7 @@ function run_test() {
         }
 
         if (vector.privateKey !== null) {
-            privatePromise = new Promise(function(resolve, reject) {
-                resolve(vector);
-            });
+            privatePromise = Promise.resolve(vector);
         } else {
             privatePromise = subtle.importKey(vector.privateKeyFormat, vector.privateKeyBuffer, {name: vector.algorithmName, namedCurve: vector.namedCurve}, false, privateKeyUsages)
             .then(function(key) {

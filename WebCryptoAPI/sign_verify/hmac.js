@@ -478,9 +478,7 @@ function run_test() {
     // Returns a Promise that yields an updated vector on success.
     function importVectorKeys(vector, keyUsages) {
         if (vector.key !== null) {
-            return new Promise(function(resolve, reject) {
-                resolve(vector);
-            });
+            return Promise.resolve(vector);
         } else {
             return subtle.importKey("raw", vector.keyBuffer, {name: "HMAC", hash: vector.hash}, false, keyUsages)
             .then(function(key) {

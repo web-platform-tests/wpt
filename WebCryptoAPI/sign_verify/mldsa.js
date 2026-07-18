@@ -994,9 +994,7 @@ function run_test() {
     var publicPromise, privatePromise;
 
     if (vector.publicKey !== null) {
-      publicPromise = new Promise(function (resolve, reject) {
-        resolve(vector);
-      });
+      publicPromise = Promise.resolve(vector);
     } else {
       publicPromise = subtle
         .importKey(
@@ -1013,9 +1011,7 @@ function run_test() {
     }
 
     if (vector.privateKey !== null) {
-      privatePromise = new Promise(function (resolve, reject) {
-        resolve(vector);
-      });
+      privatePromise = Promise.resolve(vector);
     } else {
       privatePromise = subtle
         .importKey(

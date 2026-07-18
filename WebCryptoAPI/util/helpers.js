@@ -299,7 +299,7 @@ function bytesToHexString(bytes)
     if (!bytes)
         return null;
 
-    bytes = new Uint8Array(bytes);
+    bytes = byteView(bytes);
     var hexBytes = [];
 
     for (var i = 0; i < bytes.length; ++i) {

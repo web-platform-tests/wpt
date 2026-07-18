@@ -117,16 +117,15 @@ function run_test(algorithmNames) {
     }
 
 
-    // Don't create an exhaustive list of all invalid usages,
-    // because there would usually be nearly 2**8 of them,
-    // way too many to test. Instead, create every singleton
+    // Don't create an exhaustive list of all invalid usages because
+    // there would be too many to test. Instead, create every singleton
     // of an illegal usage, and "poison" every valid usage
     // with an illegal one.
     function invalidUsages(validUsages, mandatoryUsages) {
         var results = [];
 
         var illegalUsages = [];
-        ["encrypt", "decrypt", "sign", "verify", "wrapKey", "unwrapKey", "deriveKey", "deriveBits"].forEach(function(usage) {
+        allKeyUsages.forEach(function(usage) {
             if (!validUsages.includes(usage)) {
                 illegalUsages.push(usage);
             }

@@ -40,6 +40,21 @@ var registeredAlgorithmNames = [
     "KMAC256",
 ];
 
+var allKeyUsages = [
+    "encrypt",
+    "decrypt",
+    "sign",
+    "verify",
+    "wrapKey",
+    "unwrapKey",
+    "deriveKey",
+    "deriveBits",
+    "encapsulateKey",
+    "encapsulateBits",
+    "decapsulateKey",
+    "decapsulateBits",
+];
+
 
 // Treats an array as a set, and generates an array of all non-empty
 // subsets (which are themselves arrays).

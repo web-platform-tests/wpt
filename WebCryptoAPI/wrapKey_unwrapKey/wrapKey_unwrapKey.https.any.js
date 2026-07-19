@@ -1,6 +1,7 @@
 // META: title=WebCryptoAPI: wrapKey() and unwrapKey()
 // META: timeout=long
 // META: script=../util/helpers.js
+// META: script=../util/okp_key_fixtures.js
 // META: script=wrapKey_unwrapKey_vectors.js
 
 // Tests for wrapKey and unwrapKey round tripping

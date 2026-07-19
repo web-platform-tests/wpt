@@ -123,12 +123,8 @@ def test_atspi(atspi, session, inline, element_name):
     interface_name = atspi_config.get("interface")
 
     if interface_name:
-        if interface_name == "AtkTable":
-            table_iface = atspi.Accessible.get_table_iface(node)
-            assert table_iface is not None, f"{element_name} node must implement AtkTable interface"
-        elif interface_name == "AtkTableCell":
-            cell_iface = atspi.Accessible.get_table_cell(node)
-            assert cell_iface is not None, f"{element_name} node must implement AtkTableCell interface"
+        obj = atspi.get_interface(node, interface_name)
+        assert obj is not None, f"{element_name} node must implement {interface_name} interface"
 
 
 AX_ATTR_CASES = [name for name, d in TEST_DATA_ATTRIBUTES.items() if "axapi" in d]

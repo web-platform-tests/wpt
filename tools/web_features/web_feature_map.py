@@ -103,15 +103,14 @@ class WebFeatureToTestsDirMapper:
         # files and match them against all_test_files_in_dir.
         final_test_file_paths: List[ManifestItem] = []
         test_file_paths: Set[str] = set()
-        excluded_test_file_paths: Set[str] = set()
         base_test_file_names = [basename(f.path) for f in self.all_test_files_in_dir]
 
-        matched_base_file_names = test_file.match_files(base_test_file_names)
-        test_file_paths.update(matched_base_file_names)
+        test_file_paths.update(
+            test_file.match_files(base_test_file_names)
+        )
 
-        final_test_file_paths_set = test_file_paths - excluded_test_file_paths
         final_test_file_paths.extend(itertools.chain.from_iterable([
-            self.test_path_to_manifest_items_map[f] for f in final_test_file_paths_set]))
+            self.test_path_to_manifest_items_map[f] for f in test_file_paths]))
 
         result.add(feature_ids, final_test_file_paths)
 

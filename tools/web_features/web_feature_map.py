@@ -2,7 +2,7 @@ import itertools
 
 from collections import OrderedDict
 from os.path import basename
-from typing import Dict, List, Optional, Set, TypeGuard, Union
+from typing import Dict, List, Optional, Set, Union
 
 from ..manifest.item import ManifestItem, URLManifestItem
 from ..manifest.sourcefile import SourceFile
@@ -22,7 +22,7 @@ class WebFeaturesMap:
         self._classified_urls: Set[str] = set()
 
 
-    def _should_classify(self, manifest_item: ManifestItem) -> TypeGuard[URLManifestItem]:
+    def _should_classify(self, manifest_item: ManifestItem) -> bool:
         return (isinstance(manifest_item, URLManifestItem) and
             manifest_item.url not in self._classified_urls)
 
@@ -34,9 +34,12 @@ class WebFeaturesMap:
             feature_ids: The web-features identifier(s).
             manifest_items: The ManifestItem objects representing the test paths.
         """
-        urls = [
-            manifest_item.url for manifest_item in manifest_items if self._should_classify(manifest_item)
-        ]
+        urls = []
+        for manifest_item in manifest_items:
+            if self._should_classify(manifest_item):
+                assert isinstance(manifest_item, URLManifestItem)
+                urls.append(manifest_item.url)
+
         self._classified_urls.update(urls)
         for feature_id in feature_ids:
             tests = self._feature_tests_map_.get(feature_id, set())

@@ -103,7 +103,7 @@ def test_process_inherited_features():
 
 def create_feature_entry(feature_ids, file, recursive=False):
     rv = Mock(does_feature_apply_recursively=Mock(return_value=recursive))
-    rv.feaure_ids = feature_ids
+    rv.feature_ids = feature_ids
     rv.file = file
     return rv
 

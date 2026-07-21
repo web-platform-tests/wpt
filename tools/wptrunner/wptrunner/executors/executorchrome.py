@@ -196,10 +196,7 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
     def setup(self):
         super().setup()
         self._nodes_by_id = {}
-
-    def after_connect(self):
-        super().after_connect()
-        self.parent.cdp.execute_cdp_command("Accessibility.enable")
+        self.full_ax_tree = {}
 
     def teardown(self):
         try:
@@ -207,32 +204,48 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
         except error.WebDriverException:
             pass
 
-    def get_computed_label(self, element):
-        node = self._get_ax_node_for_element(element)
-        return self._serialize_node(node).get("label", "") if node else ""
-
-    def get_computed_role(self, element):
-        node = self._get_ax_node_for_element(element)
-        return self._serialize_node(node).get("role", "") if node else ""
-
     def get_accessibility_properties_for_element(self, element):
+        # Wipe cached tree on new call
+        self.full_ax_tree = {}
+
         node = self._get_ax_node_for_element(element)
         return self._serialize_node(node) if node else {}
 
     def get_accessibility_properties_for_accessibility_node(self, id):
-        node = self._get_ax_node_by_backend_id(id)
+        # Wipe cached tree on new call to avoid stale properties
+        self.full_ax_tree = {}
+
+        node = self._find_ax_node_by_ax_node_id(id)
         return self._serialize_node(node) if node else {}
+
+    def _set_full_ax_tree(self):
+        self.parent.cdp.execute_cdp_command("Accessibility.enable")
+        node_array =  self.parent.cdp.execute_cdp_command(
+            "Accessibility.getFullAXTree",
+            {}
+        ).get("nodes", [])
+
+        self.full_ax_tree = {node["nodeId"]: node for node in node_array}
+
+    def _find_ax_node_by_ax_node_id(self, ax_node_id: str ) -> any:    
+        node = self.full_ax_tree.get(ax_node_id, None)
+
+        if not node:
+            self._set_full_ax_tree()
+            node = self.full_ax_tree.get(ax_node_id, None)
+
+        return node
 
     def _get_ax_node_for_element(self, element):
         # Parse the ID, then hand it off to the shared helper
         parsed_ids = self._extract_chromedriver_ids(element.id)
 
         if parsed_ids and parsed_ids.get("element"):
-            return self._get_ax_node_by_backend_id(parsed_ids["element"])
+            return self._get_ax_node_by_backend_node_id(parsed_ids["element"])
 
         return None
 
-    def _get_ax_node_by_backend_id(self, backend_node_id):
+    def _get_ax_node_by_backend_node_id(self, backend_node_id):
         """Shared CDP call to fetch an accessibility node by its backend ID."""
         ax_tree = self.parent.cdp.execute_cdp_command(
             "Accessibility.getPartialAXTree",
@@ -244,19 +257,10 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
         nodes = ax_tree.get("nodes", [])
         return nodes[0] if nodes else None
 
-    @staticmethod
-    def _extract_chromedriver_ids(element_id_string):
-        """
-        Extracts Frame, Document, and Element IDs from a ChromeDriver id.
-        Expected format: f.[hash].d.[hash].e.[id]
-        """
-        pattern = r"^f\.(?P<frame>[^.]+)\.d\.(?P<document>[^.]+)\.e\.(?P<element>.+)$"
-        match = re.match(pattern, element_id_string)
+    def _serialize_node(self, node):
+        if node.get("ignored", False) and len(node.get("childIds", [])) == 1:
+           node = self._find_ax_node_by_ax_node_id(node.get("childIds", [])[0])
 
-        return match.groupdict() if match else None
-
-    @staticmethod
-    def _serialize_node(node):
         rv = {
             "accessibilityId": node["nodeId"],
             "children": node.get("childIds", []),
@@ -279,6 +283,17 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
             rv[prop["name"]] = prop["value"].get("value")
 
         return rv
+
+    @staticmethod
+    def _extract_chromedriver_ids(element_id_string):
+        """
+        Extracts Frame, Document, and Element IDs from a ChromeDriver id.
+        Expected format: f.[hash].d.[hash].e.[id]
+        """
+        pattern = r"^f\.(?P<frame>[^.]+)\.d\.(?P<document>[^.]+)\.e\.(?P<element>.+)$"
+        match = re.match(pattern, element_id_string)
+
+        return match.groupdict() if match else None
 
 class ChromeDriverDevToolsProtocolPart(ProtocolPart):
     """A low-level API for sending Chrome DevTools Protocol [0] commands directly to the browser.

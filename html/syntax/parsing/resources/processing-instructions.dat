@@ -103,8 +103,7 @@ there=1?>
 |     <?hey there=1?>
 
 #data
-<body><?hey
-there=1?>
+<body><?heythere=1?>
 #errors
 #document
 | <html>

@@ -1112,9 +1112,7 @@ there=1?>
 #data
 <noscript><?pi>
 #errors
-
 #script-off
-
 #document
 | <html>
 |   <head>

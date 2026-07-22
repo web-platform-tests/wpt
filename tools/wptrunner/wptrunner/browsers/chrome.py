@@ -123,12 +123,19 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     # This is needed until https://github.com/web-platform-tests/wpt/pull/40709
     # is merged.
     chrome_options["args"].append("--enable-features=FedCmWithoutWellKnownEnforcement")
-    # Use a fake UI for digital identity to allow testing it.
-    chrome_options["args"].append("--use-fake-ui-for-digital-identity")
     # Shorten delay for Reporting <https://w3c.github.io/reporting/>.
     chrome_options["args"].append("--short-reporting-delay")
-    # Point all .test domains to localhost for Chrome
-    chrome_options["args"].append("--host-resolver-rules=MAP nonexistent.*.test ^NOTFOUND, MAP *.test 127.0.0.1, MAP *.test. 127.0.0.1")
+    # Point all .test domains to localhost for Chrome. Also make payment
+    # method manifest fetches for the Apple Pay method (which many
+    # payment-request tests use, as it is the only method Safari supports)
+    # fail fast and deterministically instead of hitting the live apple.com
+    # servers, whose response timing made those tests flaky.
+    chrome_options["args"].append("--host-resolver-rules="
+                                  "MAP nonexistent.*.test ^NOTFOUND, "
+                                  "MAP *.test 127.0.0.1, "
+                                  "MAP *.test. 127.0.0.1, "
+                                  "MAP apple.com ^NOTFOUND, "
+                                  "MAP *.apple.com ^NOTFOUND")
     # Enable Secure Payment Confirmation for Chrome. This is normally disabled
     # on Linux as it hasn't shipped there yet, but in WPT we enable virtual
     # authenticator devices anyway for testing and so SPC works.

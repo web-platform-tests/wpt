@@ -117,7 +117,7 @@ x {
 </div>
 
 <div style='display:inline-grid-lanes; grid-template-rows: repeat(10, 50px); grid-template-areas: "." "." "." "." "." "." "a" "a" "a" "a";'>
-  <div style='display:grid; grid-template-areas: "." "." "." "." "." "." "." "a" "a" "."; grid-template-rows:subgrid; grid-row:span 10;'>
+  <div style='display:grid; grid-template-areas: "." "." "." "." "." "." "." "a" "a" "."; grid-template-rows:subgrid; grid-row: 1 / span 10;'>
     <div style="display:grid; grid:subgrid/auto; grid-row: 6 / span 5;">
       <x style="grid-row: a">x</x>
     </div>

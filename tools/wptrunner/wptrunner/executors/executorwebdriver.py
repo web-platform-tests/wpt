@@ -449,9 +449,10 @@ class WebDriverBidiWebExtensionsProtocolPart(WebExtensionsProtocolPart):
         else:
             params["value"] = value
 
-        return self.parent.loop.run_until_complete(
+        extension_id = self.parent.loop.run_until_complete(
             self.webdriver.bidi_session.web_extension.install(
                 extension_data=params))
+        return extension_id
 
     def uninstall_web_extension(self, extension_id):
         return self.parent.loop.run_until_complete(
@@ -984,7 +985,10 @@ class WebDriverBidiDigitalCredentialsProtocolPart(DigitalCredentialsProtocolPart
         if response is not None:
             params["response"] = response
 
-        return await self.webdriver.bidi_session.send_command("digitalCredentials.setVirtualWalletBehavior", params)
+        # send_command returns an awaitable resolving to the response future,
+        # which must itself be awaited to get the command result.
+        return await (await self.webdriver.bidi_session.send_command(
+            "digitalCredentials.setVirtualWalletBehavior", params))
 
 
 class WebDriverStorageProtocolPart(StorageProtocolPart):
@@ -1048,7 +1052,7 @@ class WebDriverWebExtensionsProtocolPart(WebExtensionsProtocolPart):
         if path is not None:
             path = self._resolve_path(path)
 
-        return self.webdriver.web_extensions.install(type, path, value)
+        return self.webdriver.web_extensions.install(type, path, value)["extension"]
 
     def uninstall_web_extension(self, extension_id):
         return self.webdriver.web_extensions.uninstall(extension_id)

@@ -21,8 +21,10 @@ function getNonMatchingDPR(target) {
   return target === 2 ? 1 : 2;
 }
 
-function waitForNextAnimationFrame() {
-  return new Promise(resolve => requestAnimationFrame(resolve));
+function waitForTwoAnimationFrames() {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => requestAnimationFrame(resolve));
+  });
 }
 
 async function setDevicePixelRatio(value) {
@@ -30,7 +32,7 @@ async function setDevicePixelRatio(value) {
     context: window,
     devicePixelRatio: value,
   });
-  await waitForNextAnimationFrame();
+  await waitForTwoAnimationFrames();
 }
 
 promise_test(async t => {

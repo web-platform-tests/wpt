@@ -500,3 +500,50 @@ def test_wpewebkit_minibrowser_find_binary(mocked_os_path_isfile, mocked_os_list
     mocked_os_listdir.side_effect = lambda contents: sorted(['wpewebkit-6.0', 'webkit2gtk-4.0', 'wpe-webkit-2.0', 'wpe-webkit-1.0'])
     mocked_which.side_effect = lambda found: None
     assert wpewebkit_minibrowser.find_binary() == '/usr/libexec/wpe-webkit-2.0/MiniBrowser'
+
+
+@pytest.mark.parametrize("pkg_version,installed_version,expect_install", [
+    pytest.param("210", "211", False, id="installed-newer"),
+    pytest.param("210", "210", False, id="installed-equal"),
+    pytest.param("211", "210", True, id="pkg-newer"),
+    pytest.param(None, "210", True, id="pkg-version-unknown"),
+    pytest.param("211", None, True, id="installed-version-unknown"),
+    pytest.param(None, None, True, id="both-unknown"),
+    pytest.param("not-a-version", "also-not-a-version", True, id="invalid-versions"),
+])
+@mock.patch('subprocess.run')
+@mock.patch('os.path.isdir', return_value=True)
+def test_safari_install(mocked_isdir, mocked_run, pkg_version, installed_version, expect_install):
+    safari = browser.Safari(logger)
+    safari.download = mock.MagicMock(return_value="/tmp/STP.pkg")
+    safari._pkg_version = mock.MagicMock(return_value=pkg_version)
+    safari._installed_version = mock.MagicMock(return_value=installed_version)
+    safari.find_binary = mock.MagicMock(return_value="/Applications/Safari Technology Preview.app")
+
+    result = safari.install(channel="preview")
+
+    assert result == "/Applications/Safari Technology Preview.app"
+    if expect_install:
+        mocked_run.assert_called_once()
+        assert "installer" in mocked_run.call_args[0][0]
+    else:
+        mocked_run.assert_not_called()
+
+
+@mock.patch('subprocess.run')
+def test_safari_install_raises_when_app_not_found_after_install(mocked_run):
+    safari = browser.Safari(logger)
+    safari.download = mock.MagicMock(return_value="/tmp/STP.pkg")
+    safari._pkg_version = mock.MagicMock(return_value="211")
+    safari._installed_version = mock.MagicMock(return_value="210")
+    safari.find_binary = mock.MagicMock(return_value=None)
+
+    with pytest.raises(RuntimeError):
+        safari.install(channel="preview")
+
+
+def test_safari_install_rejects_non_preview_channel():
+    safari = browser.Safari(logger)
+
+    with pytest.raises(ValueError):
+        safari.install(channel="stable")

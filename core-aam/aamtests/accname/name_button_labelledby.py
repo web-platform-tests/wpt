@@ -18,7 +18,7 @@ def test_axapi_AXDescription_not_exposed(axapi, session, inline):
     description = axapi.AXUIElementCopyAttributeValue(node, "AXDescription", None)[1]
     assert description == None or description == ""
 
-def test_axapi_AXTitleUIElement_matches_safari(axapi, session, inline):
+def test_axapi_AXTitleUIElement_exposed(axapi, session, inline):
     session.url = inline(TEST_HTML)
     node = axapi.find_node("test", session.url)
     titleUIElement = axapi.AXUIElementCopyAttributeValue(node, "AXTitleUIElement", None)[1]

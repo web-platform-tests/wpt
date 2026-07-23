@@ -21,18 +21,11 @@ function getNonMatchingDPR(target) {
   return target === 2 ? 1 : 2;
 }
 
-function waitForTwoAnimationFrames() {
-  return new Promise(resolve => {
-    requestAnimationFrame(() => requestAnimationFrame(resolve));
-  });
-}
-
 async function setDevicePixelRatio(value) {
   await test_driver.bidi.browsing_context.set_viewport({
     context: window,
     devicePixelRatio: value,
   });
-  await waitForTwoAnimationFrames();
 }
 
 promise_test(async t => {

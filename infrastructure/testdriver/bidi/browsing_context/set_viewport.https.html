@@ -30,8 +30,8 @@ async function setDevicePixelRatio(value) {
 
 promise_test(async t => {
   const targetDPR = getTargetDPR();
-  t.add_cleanup(() => setDevicePixelRatio(null));
   await setDevicePixelRatio(targetDPR);
+  t.add_cleanup(() => setDevicePixelRatio(null));
   assert_equals(
     window.devicePixelRatio,
     targetDPR,
@@ -42,8 +42,8 @@ promise_test(async t => {
 promise_test(async t => {
   const targetDPR = getTargetDPR();
   const nonMatchingDPR = getNonMatchingDPR(targetDPR);
-  t.add_cleanup(() => setDevicePixelRatio(null));
   await setDevicePixelRatio(targetDPR);
+  t.add_cleanup(() => setDevicePixelRatio(null));
   assert_true(
     matchMedia(`(resolution: ${targetDPR}dppx)`).matches,
     "The matching resolution media query should match after the override"

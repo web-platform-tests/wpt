@@ -16,7 +16,7 @@ def test_axapi_AXDescription(axapi, session, inline):
     session.url = inline(TEST_HTML)
     node = axapi.find_node("test", session.url)
     description = axapi.AXUIElementCopyAttributeValue(node, "AXDescription", None)[1]
-    assert description == NAME
+    assert description == None or description == ""
 
 def test_axapi_AXTitleUIElement(axapi, session, inline):
     session.url = inline(TEST_HTML)

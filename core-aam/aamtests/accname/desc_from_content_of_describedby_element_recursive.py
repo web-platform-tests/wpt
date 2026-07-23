@@ -24,4 +24,4 @@ def test_axapi_AXTitleUIElement(axapi, session, inline):
     session.url = inline(TEST_HTML)
     node = axapi.find_node("test", session.url)
     titleUIElement = axapi.AXUIElementCopyAttributeValue(node, "AXTitleUIElement", None)[1]
-    assert titleUIElement == None
+    assert titleUIElement != None

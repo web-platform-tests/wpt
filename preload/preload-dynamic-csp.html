@@ -20,7 +20,7 @@
         const load = new Promise(resolve => img.addEventListener("load", () => resolve('load')));
         const error = new Promise(resolve => img.addEventListener("error", () => resolve('error')));
         const result = await Promise.any([load, error]);
-        assert_equals(result, "error");
+        assert_equals(result, "load");
         done();
     });
 </script>

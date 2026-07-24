@@ -56,7 +56,7 @@
     e.g. referrerPolicy attributes of DOM elements.
     This is handled in invokeRequest().
 
-  - (for [B]) Associated with an nested environmental settings object and
+  - (for [B]) Associated with a nested environmental settings object and
     specified in `SourceContext.policies`,
     e.g. HTTP referrer-policy response headers of HTML/worker scripts.
     This is handled in server-side under /common/security-features/scope/.
@@ -194,7 +194,7 @@ function bindEvents(element, resolveEventName, rejectEventName) {
 
 // Returns a promise wrapping success and error events of objects.
 // This is a variant of bindEvents that can accept separate objects for each
-// events and two events to reject, and doesn't set `eventPromise`.
+// event and two events to reject, and doesn't set `eventPromise`.
 //
 // When `resolveObject`'s `resolveEventName` event (default: "load") is
 // fired, the promise is resolved with the event.
@@ -306,7 +306,7 @@ function wrapResult(server_data) {
 /**
   @typedef RequestResult
   @type {object}
-  Represents the result of sending an request.
+  Represents the result of sending a request.
   All properties are optional. See the comments for
   requestVia*() and invokeRequest() below to see which properties are set.
 

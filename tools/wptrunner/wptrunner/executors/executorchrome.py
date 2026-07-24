@@ -29,6 +29,8 @@ from .protocol import LeakProtocolPart, ProtocolPart
 
 here = os.path.dirname(__file__)
 
+AXNode = Mapping[str, Any]
+
 def _update_capabilities_if_extension_test(
     browser: Any, capabilities: Optional[MutableMapping[str, Any]]
 ) -> Optional[MutableMapping[str, Any]]:
@@ -196,7 +198,7 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
     def setup(self):
         super().setup()
         self._nodes_by_id = {}
-        self.full_ax_tree = {}
+        self.full_ax_tree: MutableMapping[str, AXNode] = {}
 
     def teardown(self):
         try:
@@ -218,17 +220,17 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
         node = self._find_ax_node_by_ax_node_id(id)
         return self._serialize_node(node) if node else {}
 
-    def _set_full_ax_tree(self):
+    def _set_full_ax_tree(self) -> None:
         self.parent.cdp.execute_cdp_command("Accessibility.enable")
-        node_array =  self.parent.cdp.execute_cdp_command(
+        node_array = self.parent.cdp.execute_cdp_command(
             "Accessibility.getFullAXTree",
             {}
         ).get("nodes", [])
 
         self.full_ax_tree = {node["nodeId"]: node for node in node_array}
 
-    def _find_ax_node_by_ax_node_id(self, ax_node_id: str ) -> any:    
-        node = self.full_ax_tree.get(ax_node_id, None)
+    def _find_ax_node_by_ax_node_id(self, ax_node_id: str) -> Optional[AXNode]:
+        node: Optional[AXNode] = self.full_ax_tree.get(ax_node_id, None)
 
         if not node:
             self._set_full_ax_tree()
@@ -236,7 +238,7 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
 
         return node
 
-    def _get_ax_node_for_element(self, element):
+    def _get_ax_node_for_element(self, element: Any) -> Optional[AXNode]:
         # Parse the ID, then hand it off to the shared helper
         parsed_ids = self._extract_chromedriver_ids(element.id)
 
@@ -245,7 +247,7 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
 
         return None
 
-    def _get_ax_node_by_backend_node_id(self, backend_node_id):
+    def _get_ax_node_by_backend_node_id(self, backend_node_id: str) -> Optional[AXNode]:
         """Shared CDP call to fetch an accessibility node by its backend ID."""
         ax_tree = self.parent.cdp.execute_cdp_command(
             "Accessibility.getPartialAXTree",
@@ -254,14 +256,14 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
                 "fetchRelatives": False,
             }
         )
-        nodes = ax_tree.get("nodes", [])
+        nodes: list[AXNode] = ax_tree.get("nodes", [])
         return nodes[0] if nodes else None
 
-    def _serialize_node(self, node):
-        if node.get("ignored", False) and len(node.get("childIds", [])) == 1:
-           node = self._find_ax_node_by_ax_node_id(node.get("childIds", [])[0])
+    def _serialize_node(self, node: AXNode) -> Mapping[str, Any]:
+        # TODO: Define an approach to handle ignored items as this is different
+        # browsers by browser and might make testing the Tree harder.
 
-        rv = {
+        rv: dict[str,Any] = {
             "accessibilityId": node["nodeId"],
             "children": node.get("childIds", []),
         }
@@ -285,7 +287,7 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
         return rv
 
     @staticmethod
-    def _extract_chromedriver_ids(element_id_string):
+    def _extract_chromedriver_ids(element_id_string: str) -> Optional[Mapping[str, str]]:
         """
         Extracts Frame, Document, and Element IDs from a ChromeDriver id.
         Expected format: f.[hash].d.[hash].e.[id]

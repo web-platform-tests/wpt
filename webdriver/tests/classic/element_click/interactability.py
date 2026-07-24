@@ -68,6 +68,63 @@ def test_element_not_interactable_css_transform(session, inline, transform):
     assert_error(response, "element not interactable")
 
 
+@pytest.mark.parametrize("transform", ["translate(-100px, -100px)", "rotate(50deg)"])
+def test_element_interactable_in_iframe_with_css_transform(session, inline, iframe, transform):
+    # The iframe is transformed within the viewport.
+    session.url = inline(f"""
+        <style>
+        iframe {{
+          transform: {transform};
+          width: 200px;
+          height: 200px;
+          position: absolute;
+          left: 200px;
+          top: 200px;
+        }}
+        </style>
+        """
+        + iframe("""
+        <div style="background-color: blue">
+            <input type=button>
+        </div>"""
+        )
+    )
+
+    frame = session.find.css("iframe", all=False)
+    session.switch_frame(frame)
+
+    element = session.find.css("input", all=False)
+    response = element_click(session, element)
+    assert_success(response)
+
+
+@pytest.mark.parametrize("transform", ["translate(-200px, -100px)", "rotate(50deg)"])
+def test_element_not_interactable_in_iframe_with_css_transform(session, inline, iframe, transform):
+    # The iframe is transformed outside of the viewport.
+    session.url = inline(f"""
+        <style>
+        iframe {{
+          transform: {transform};
+          width: 100px;
+          height: 100px;
+        }}
+        </style>
+        """
+        + iframe("""
+        <div style="background-color: blue">
+            <input type=button>
+        </div>"""
+        )
+    )
+
+    frame = session.find.css("iframe", all=False)
+    session.switch_frame(frame)
+
+    element = session.find.css("input", all=False)
+    response = element_click(session, element)
+    assert_error(response, "element not interactable")
+
+
 def test_element_not_interactable_out_of_view(session, inline):
     session.url = inline("""
         <style>

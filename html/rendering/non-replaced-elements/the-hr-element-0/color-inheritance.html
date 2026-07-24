@@ -1,0 +1,34 @@
+<!doctype html>
+<title>The hr element: color inheritance</title>
+<link rel="match" href="color-inheritance-ref.html">
+<body>
+<!-- Should inherit color via inherit -->
+<style>
+  #parent-inherit {
+    color: green;
+    border-color: green;
+  }
+  #parent-inherit hr.color {
+    color: inherit;
+  }
+  #parent-inherit hr.border-color {
+    border-color: inherit;
+  }
+</style>
+<div id="parent-inherit">
+  <hr class="color">
+  <hr class="border-color">
+</div>
+<!-- Should inherit color via currentColor -->
+<style>
+   #parent-currentcolor {
+    color: green;
+  }
+  #parent-currentcolor hr {
+    color: currentColor;
+  }
+</style>
+<div id="parent-currentcolor">
+  <hr>
+</div>
+</body>

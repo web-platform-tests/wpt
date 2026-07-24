@@ -1,0 +1,193 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name="timeout" content="long">
+<title>test ResNet 50 V2 model with NHWC layout</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/libs/numpy.js"></script>
+<script src="../resources/utils.js"></script>
+<script src="../../resources/utils.js"></script>
+<script>
+let context;
+let builder;
+let graph;
+
+const weightsUrl = '../resources/test-data/models/resnet50v2_nhwc/weights/';
+const outputDimensions = [1, 1001];
+
+const autoPad = 'same-upper';
+const strides = [2, 2];
+const layout = 'nhwc';
+
+const buildConv = async (input, nameIndices, options = {}, relu = true) => {
+  let prefix = weightsUrl + 'resnet_v2_50_';
+  // Items in 'nameIndices' represent the indices of block, unit, conv
+  // respectively, except two kinds of specific conv names:
+  // 1. contains 'shortcut', e.g.
+  // resnet_v2_50_block1_unit_1_bottleneck_v2_shortcut_weights.npy
+  // 2. contains 'logits', e.g. resnet_v2_50_logits_weights.npy
+  if (nameIndices[0] !== '' && nameIndices[1] !== '') {
+    prefix += `block${nameIndices[0]}_unit_${nameIndices[1]}_bottleneck_v2_`;
+  }
+  if (nameIndices[2] === 'shortcut') {
+    prefix += 'shortcut';
+  } else if (nameIndices[2] === 'logits') {
+    prefix += nameIndices[2];
+  } else {
+    prefix += 'conv' + nameIndices[2];
+  }
+  const weightsName = prefix + '_weights.npy';
+  const weights = await buildConstantByNpy(builder, weightsName);
+  const biasName = prefix + '_Conv2D_bias.npy';
+  const bias = await buildConstantByNpy(builder, biasName);
+  options.inputLayout = layout;
+  options.filterLayout = 'ohwi';
+  options.bias = bias;
+  if (relu) {
+    options.activation = builder.relu();
+  }
+  return builder.conv2d(input, weights, options);
+};
+
+const buildFusedBatchNorm = async (input, nameIndices) => {
+  let prefix = weightsUrl + 'resnet_v2_50_';
+  if (nameIndices[0] === 'postnorm') {
+    prefix += 'postnorm';
+  } else {
+    prefix +=
+        `block${nameIndices[0]}_unit_${nameIndices[1]}_bottleneck_v2_preact`;
+  }
+  const mulParamName = prefix + '_FusedBatchNorm_mul_0_param.npy';
+  const mulParam = await buildConstantByNpy(builder, mulParamName);
+  const addParamName = prefix + '_FusedBatchNorm_add_param.npy';
+  const addParam = await buildConstantByNpy(builder, addParamName);
+  return builder.relu(
+      builder.add(builder.mul(input, mulParam), addParam));
+};
+
+const buildBottleneckV2 = async (
+    input, nameIndices, downsample = false, shortcut = true) => {
+  let residual = input;
+
+  const fusedBn = await buildFusedBatchNorm(input, nameIndices);
+  const conv1 = await buildConv(
+      fusedBn, nameIndices.concat(['1']), {autoPad});
+  let conv2;
+  if (downsample) {
+    residual = await buildConv(
+        fusedBn, nameIndices.concat(['shortcut']), {autoPad}, false);
+  }
+  if (!downsample && shortcut) {
+    residual = builder.maxPool2d(
+        input, {windowDimensions: [2, 2], strides, layout, autoPad});
+    conv2 = await buildConv(
+        conv1, nameIndices.concat(['2']), {strides, padding: [1, 1, 1, 1]});
+  } else {
+    conv2 = await buildConv(
+        conv1, nameIndices.concat(['2']), {autoPad});
+  }
+  const conv3 = await buildConv(
+      conv2, nameIndices.concat(['3']), {autoPad}, false);
+  return builder.add(conv3, residual);
+}
+
+const load = async () => {
+  const input = builder.input('input',
+      {type: 'float32', dimensions: [1, 224, 224, 3]});
+  const conv1 = await buildConv(
+      input, ['', '', '1'], {strides, padding: [3, 3, 3, 3]}, false);
+  const pool = builder.maxPool2d(
+      conv1, {windowDimensions: [3, 3], strides, layout, autoPad});
+  // Block 1
+  const bottleneck1 = await buildBottleneckV2(pool, ['1', '1'], true);
+  const bottleneck2 = await buildBottleneckV2(
+      bottleneck1, ['1', '2'], false, false);
+  const bottleneck3 = await buildBottleneckV2(
+      bottleneck2, ['1', '3']);
+
+  // Block 2
+  const bottleneck4 = await buildBottleneckV2(
+      bottleneck3, ['2', '1'], true);
+  const bottleneck5 = await buildBottleneckV2(
+      bottleneck4, ['2', '2'], false, false);
+  const bottleneck6 = await buildBottleneckV2(
+      bottleneck5, ['2', '3'], false, false);
+  const bottleneck7 = await buildBottleneckV2(
+      bottleneck6, ['2', '4']);
+
+  // Block 3
+  const bottleneck8 = await buildBottleneckV2(
+      bottleneck7, ['3', '1'], true);
+  const loop = async (node, num) => {
+    if (num > 5) {
+      return node;
+    } else {
+      const newNode = await buildBottleneckV2(
+          node, ['3', num.toString()], false, false);
+      num++;
+      return loop(newNode, num);
+    }
+  };
+  const bottleneck9 = await loop(bottleneck8, 2);
+  const bottleneck10 = await buildBottleneckV2(
+      bottleneck9, ['3', '6']);
+
+  // Block 4
+  const bottleneck11 = await buildBottleneckV2(
+      bottleneck10, ['4', '1'], true);
+  const bottleneck12 = await buildBottleneckV2(
+      bottleneck11, ['4', '2'], false, false);
+  const bottleneck13 = await buildBottleneckV2(
+      bottleneck12, ['4', '3'], false, false);
+
+  const fusedBn =
+      await buildFusedBatchNorm(bottleneck13, ['postnorm']);
+  const mean = builder.averagePool2d(fusedBn, {layout});
+  const conv2 = await buildConv(
+      mean, ['', '', 'logits'], {autoPad}, false);
+  const reshape = builder.reshape(conv2, [1, null]);
+  return builder.softmax(reshape);
+};
+
+const build = async (outputOperand) => {
+  graph = await builder.build({'output': outputOperand});
+};
+
+const compute = async (inputBuffer, outputBuffer) => {
+  const inputs = {'input': inputBuffer};
+  const outputs = {'output': outputBuffer};
+  await context.compute(graph, inputs, outputs);
+};
+
+promise_setup(async () => {
+  context = await navigator.ml.createContext();
+  builder = new MLGraphBuilder(context);
+}, {explicit_timeout: true, test_timeout: 300000});
+
+promise_test(async () => {
+  const inputElement = await createInputElement('img', './test.jpg');
+  const inputBuffer = getInputTensor(inputElement, {
+      mean: [127.5, 127.5, 127.5],
+      std: [127.5, 127.5, 127.5],
+      inputLayout: 'nhwc',
+      inputDimensions: [1, 224, 224, 3],
+  });
+  const outputBuffer = new Float32Array(sizeOfShape(outputDimensions));
+  console.time('[total] Load + build graph ResNet 50 V2 NHWC model');
+  const outputOperand = await load();
+  graph = await builder.build({'output': outputOperand});
+  console.timeEnd('[total] Load + build graph ResNet 50 V2 NHWC model');
+  const inputs = {'input': inputBuffer};
+  const outputs = {'output': outputBuffer};
+  console.time('Compute with ResNet 50 V2 NHWC model');
+  const results = await context.compute(graph, inputs, outputs);
+  console.timeEnd('Compute with ResNet 50 V2 NHWC model');
+  const labels = await fetchLabels('./labels1001.txt');
+  const labelClasses = getTopClasses(results.outputs.output, labels);
+
+  assert_equals(labelClasses[0].label, 'lesser panda', 'Get top 1 label OK.');
+  assert_equals(labelClasses[1].label, 'polecat', 'Get top 2 label OK.');
+  assert_equals(
+      labelClasses[2].label, 'black-footed ferret', 'Get top 3 label OK.');
+}, 'test ResNet 50 V2 model with NHWC layout');
+</script>

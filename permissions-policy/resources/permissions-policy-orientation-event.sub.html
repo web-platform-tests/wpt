@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<body>
+  <script src="/orientation-event/resources/orientation-event-helpers.js"></script>
+  <script src="orientation-event.js"></script>
+  <script>
+    "use strict";
+
+    window.addEventListener("load", () => {
+      waitForOrientationEvent("{{GET[eventName]}}").then((name) => {
+        window.parent.postMessage({ type: "availability-result", name }, "*");
+      });
+    });
+  </script>
+</body>

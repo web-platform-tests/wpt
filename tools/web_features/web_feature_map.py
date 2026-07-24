@@ -22,9 +22,8 @@ class WebFeaturesMap:
         self._classified_urls: Set[str] = set()
 
 
-    def _should_classify(self, manifest_item: ManifestItem) -> bool:
-        return (isinstance(manifest_item, URLManifestItem) and
-            manifest_item.url not in self._classified_urls)
+    def _should_classify(self, manifest_item: URLManifestItem) -> bool:
+        return manifest_item.url not in self._classified_urls
 
     def add(self, feature_ids: List[str], manifest_items: List[ManifestItem]) -> None:
         """
@@ -36,8 +35,7 @@ class WebFeaturesMap:
         """
         urls = []
         for manifest_item in manifest_items:
-            if self._should_classify(manifest_item):
-                assert isinstance(manifest_item, URLManifestItem)
+            if isinstance(manifest_item, URLManifestItem) and self._should_classify(manifest_item):
                 urls.append(manifest_item.url)
 
         self._classified_urls.update(urls)
@@ -130,8 +128,7 @@ class WebFeatureToTestsDirMapper:
                     self._process_recursive_feature(inherited_features, rule, result)
 
                 # Handle the non recursive case.
-                elif rule.file:
-                    assert isinstance(rule.file, FeatureFile)
+                elif isinstance(rule.file, FeatureFile):
                     self._process_non_recursive_feature(rule.feature_ids, rule.file, result)
         else:
             self._process_inherited_features(inherited_features, result)

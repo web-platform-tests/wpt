@@ -65,15 +65,12 @@ class FeatureEntry:
             SchemaValue.from_class(FeatureFile)
         ], key)
 
-        value = obj.get(key)
+        value = obj[key]
         if isinstance(value, list):
             self.feature_ids = value
         else:
-            assert isinstance(value, dict)
             validate_dict(value, FeatureEntry._required_keys)
-            feature_ids = value.get("ids")
-            assert feature_ids is not None
-            self.feature_ids = feature_ids
+            self.feature_ids = value["ids"]
 
     def __str__(self) -> str:
         return '{}: {}'.format(self.file, self.feature_ids)

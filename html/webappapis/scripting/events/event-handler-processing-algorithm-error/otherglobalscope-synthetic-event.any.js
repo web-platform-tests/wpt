@@ -1,5 +1,6 @@
+// META: global=worker,shadowrealm
+
 "use strict";
-importScripts("/resources/testharness.js");
 
 setup({ allow_uncaught_exception: true });
 
@@ -17,6 +18,4 @@ promise_test(t => {
   self.dispatchEvent(new Event("error", { cancelable: true }));
 
   return promise;
-}, "error event is normal (return true does not cancel; one arg) on WorkerGlobalScope, with a synthetic Event");
-
-done();
+}, "error event is normal (return true does not cancel; one arg) on non-Window global scope, with a synthetic Event");

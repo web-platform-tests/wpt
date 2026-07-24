@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html class="test-wait">
+<script>
+function done(){
+  cleanup_ops();
+  document.documentElement.className = '';
+}
+
+function go(){
+  fuzz();
+  window.requestIdleCallback(done, { timeout: 10000 });
+}
+
+document.addEventListener("DOMContentLoaded", go);
+
+function force_relayout() {
+  document.documentElement.style.display = "none";
+}
+
+function cleanup_ops() {
+  force_relayout();
+}
+
+function fzfn86() {
+  fop_19('id66');
+}
+
+function fuzz() {
+  document.getElementById('id81').setAttribute('aria-owns','id77');
+  try {
+    document.getElementById('id14').setAttribute('aria-owns','id57 id24 id80');
+  }
+  catch(e) {};
+
+  try {
+    fop_22('id89', 226.22891152756878);
+  }
+  catch (e) {}
+}
+</script>
+</style>
+<s id='id14' contenteditable=itemscope draggable='true'>
+😃😏
+<output id='id77' form='id78'>
+<mark id='id79'>
+񶕂
+</mark>
+<meter id='id80' tabindex>
+<i id='id81'>
+</i>
+</meter>
+</output>
+</s>
+</html>

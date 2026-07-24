@@ -40,6 +40,8 @@ function testInvalidUrange(input) {
 //  u '+' <ident-token> '?'* |
 /* comments can go between tokens */
 testUrange("u/**/+/**/a/**/?", "U+A0-AF");
+testUrange("/**/u+a?", "U+A0-AF");
+testUrange("u+a?/**/", "U+A0-AF");
 /* capitalization doesn't matter */
 testUrange("u+abc", "U+ABC");
 testUrange("U+abc", "U+ABC");

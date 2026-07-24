@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 test(() => {
   const source = createTestSubject();
   const inner1 = createTestSubject();

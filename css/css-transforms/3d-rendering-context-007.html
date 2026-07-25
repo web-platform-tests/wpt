@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<title>CSS Test (Transforms): 3D Rendering Contexts</title>
+<link rel="author" title="L. David Baron" href="https://dbaron.org/">
+<link rel="author" title="Google" href="http://www.google.com/">
+<link rel="help" href="https://www.w3.org/TR/css-transforms-2/#3d-transform-rendering">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/926">
+<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<meta name="assert" content="Negative z-index works inside a 3D-sorted plane.">
+
+<style>
+
+div {
+  height: 100px;
+  width: 100px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#container {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+#middle {
+  transform: translateZ(20px);
+  background: red;
+}
+
+#one {
+  background: green;
+}
+
+#two {
+  background: red;
+  z-index: -3;
+}
+
+</style>
+
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div id="container">
+  <div id="middle">
+    <div id="one"></div>
+    <div id="two"></div>
+  </div>
+</div>

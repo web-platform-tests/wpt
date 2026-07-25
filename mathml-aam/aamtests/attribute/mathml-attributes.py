@@ -3,7 +3,7 @@ import pytest
 
 TEST_DATA_ATTRIBUTES = {
     "annotation": {
-        "html": "<math><semantics><mn>2</mn><annotation id='test' encoding='TeX' style='display: inline-block;'>\\text{{two}}</annotation></semantics></math>",
+        "html": "<math><semantics><mn>2</mn><annotation id='test' encoding='TeX' style='display: inline-block;'>\\text{two}</annotation></semantics></math>",
     },
     "annotation-xml": {
         "html": "<math><semantics><mn>2</mn><annotation-xml id='test' encoding='MathML-Presentation' style='display: inline-block;'><mtext>two</mtext></annotation-xml></semantics></math>",
@@ -55,7 +55,7 @@ TEST_DATA_ATTRIBUTES = {
         "html": "<math><mrow id='test'><mn>1</mn><mo>+</mo><mn>1</mn></mrow></math>",
     },
     "ms": {
-        "html": "<math><ms id='test'>string</ms></math>",
+        "html": """<math><ms id="test">"string"</ms></math>""",
     },
     "mspace": {
         "html": "<math><mspace id='test' width='2em'/></math>"

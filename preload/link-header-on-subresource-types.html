@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<title>Makes sure that Link headers on subresources preload resources</title>
+<meta name="timeout" content="long">
+<script src="/common/utils.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resource-timing/resources/resource-loaders.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/preload/resources/subresource.js"></script>
+
+<script>
+    const resources = {
+        style: {href: '/preload/resources/dummy-preloads-subresource.css', type: 'text/css', loader: load.stylesheet},
+        font: {href: '/fonts/CanvasTest.ttf', type: 'font/ttf'},
+        image: {href: '/images/blue.png', type: 'image/png'},
+        script: {href: '/preload/resources/dummy.js', type: 'text/javascript'},
+        fetch: {href: '/common/dummy.xml', type: 'text/xml', loader: fetch}
+    };
+
+    function test_preload_subresource(originalType, linkedType, shouldSucceed) {
+        promise_test(async t => {
+            const loader = resources[originalType].loader || load[originalType];
+            const link = {
+                href: `${resources[linkedType].href}?uid=${token()}`,
+                as: linkedType, uid: token()};
+            await loader(getSubresourceWithLinks({...resources[originalType], as: originalType}, [link]));
+
+            await new Promise(resolve => {
+                new PerformanceObserver(() => {
+                    const entries = performance.getEntriesByName(getAbsoluteURL(link.href));
+                    if (entries.length === 1)
+                        resolve();
+                }).observe({type: 'resource'});
+                t.step_timeout(resolve, 1000);
+            });
+
+            const entries = performance.getEntriesByName(getAbsoluteURL(link.href));
+            assert_equals(entries.length, shouldSucceed ? 1 : 0);
+        }, `A ${originalType} should ${shouldSucceed ? 'preload' : 'not preload'} a ${linkedType} as a link header`);
+    }
+
+    test_preload_subresource('style', 'style', true);
+    test_preload_subresource('style', 'font', true);
+    test_preload_subresource('style', 'image', true);
+    test_preload_subresource('style', 'script', false);
+    test_preload_subresource('style', 'fetch', false);
+
+    test_preload_subresource('script', 'style', true);
+    test_preload_subresource('script', 'font', true);
+    test_preload_subresource('script', 'image', true);
+    test_preload_subresource('script', 'script', true);
+    test_preload_subresource('script', 'fetch', true);
+
+    for (const type of ['image', 'font', 'fetch']) {
+        for (const subType in resources)
+            test_preload_subresource(type, subType, false);
+    }
+    </script>
+

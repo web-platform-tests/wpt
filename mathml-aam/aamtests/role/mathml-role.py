@@ -101,7 +101,7 @@ TEST_DATA = {
         "axapi_subrole": "AXMathRow"
     },
     "ms": {
-        "html": "<math><ms id='test'>string</ms></math>",
+        "html": """<math><ms id="test">"string"</ms></math>""",
         "atspi_role": "ROLE_STATIC",
         "axapi_role": "NSAccessibilityGroupRole",
         "axapi_subrole": None # nil

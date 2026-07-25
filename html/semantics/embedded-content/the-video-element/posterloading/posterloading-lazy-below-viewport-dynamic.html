@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<head>
+  <title>Below viewport poster images with posterloading='lazy' and changed to
+         loading='eager' load and do not block the window load event</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+
+<script>
+  const t = async_test();
+
+  let has_below_viewport_loaded = false;
+  let has_window_loaded = false;
+
+  window.addEventListener("load", t.step_func(function() {
+    assert_false(has_window_loaded,
+                 "The window load event should only fire once.");
+    has_window_loaded = true;
+  }));
+
+  const below_viewport_img_onload = t.step_func_done(function() {
+    assert_false(has_below_viewport_loaded,
+               "The in_viewport element should load only once.");
+    assert_true(has_window_loaded,
+                "The window load event should have fired before " +
+                "below_viewport loaded.");
+    has_below_viewport_loaded = true;
+  });
+</script>
+
+<body>
+  <div style="height:10000px;"></div>
+  <video id="below_viewport" poster="/images/blue.png?below-viewport-dynamic&pipe=trickle(d2)"
+       posterloading="lazy"></video>
+  <script>
+    const ro = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        const cr = entry.contentRect;
+        if (cr.width === 300 && cr.height === 150)
+          continue;
+        else
+          below_viewport_img_onload();
+      }
+    });
+
+    ro.observe(document.getElementById('below_viewport'));
+
+    assert_false(has_window_loaded,
+                "The window load event should not fire before " +
+                "changing below_viewport to loading='eager'.");
+    document.getElementById("below_viewport").posterloading = 'eager';
+  </script>
+</body>

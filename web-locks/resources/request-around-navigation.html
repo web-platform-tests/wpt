@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<script>
+'use strict';
+(async () => {
+  const [uuid, phase] = location.search.split('_');
+
+  let firstRequestGranted = false;
+  navigator.locks.request(uuid, () => {
+    firstRequestGranted = true;
+    return new Promise(() => {});
+  });
+
+  // This request should never get granted.
+  let secondRequestGranted = false;
+  navigator.locks.request(uuid, () => {
+    secondRequestGranted = true;
+  });
+
+  // Give the lock manager a chance to grant locks by requesting a second
+  // unrelated lock. Wait for this request to be granted, ensuring that the
+  // prior requests have been received and responded to.
+  await new Promise((resolve) => {
+    navigator.locks.request(uuid + '-' + phase, resolve);
+  });
+
+  parent.postMessage({
+    result: { firstRequestGranted, secondRequestGranted }
+  }, '*');
+
+  if (phase === 'first') {
+    location.search = uuid + '_second';
+  }
+})().catch((err) => parent.postMessage(err, '*'));
+</script>

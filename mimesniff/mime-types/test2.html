@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name="timeout" content="long">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <iframe id="target"></iframe>
+    <script>
+      const mimeTypes = [
+        // https://mimesniff.spec.whatwg.org/#html-mime-type
+        'text/html',
+        // https://mimesniff.spec.whatwg.org/#xml-mime-type
+        'text/xml',
+        'application/xml',
+        'text/+xml',
+        'text/fox+xml',
+        'application/+xml',
+        'application/fox+xml',
+        'image/+xml',
+        'image/fox+xml',
+        'fox/+xml',
+        'fox/fox+xml',
+
+        // https://html.spec.whatwg.org/C/#process-a-navigate-response
+        "text/cache-manifest",
+        "text/css",
+        "text/plain",
+        "text/vtt",
+        'text/javascript',
+        // JSON MIME Types
+        // Accepted by spec and Chromium DOMImplementation:
+        'application/json',
+        'application/+json',
+        'application/fox+json',
+        // Accepted by spec but not by Chromium DOMImplementation:
+        'text/json',
+        'text/+json',
+        'text/fox+json',
+        'image/+json',
+        'image/fox+json',
+        'fox/+json',
+        'fox/fox+json',
+        // Accepted not by spec but by Chromium DOMImplementation:
+        "application/jsonfox",
+        "application/+json fox",
+        "application/fox+json fox",
+        "application/+jsonfox;fox=fox",
+        "application/fox+jsonfox;fox=fox",
+
+        'text/foobar',
+        'fox/fox',
+        'image/png',
+        'application/not-j-s-o-n'
+      ];
+      for (const mimeType of mimeTypes) {
+        promise_test(t => new Promise((resolve, reject) => {
+          const iframe = document.createElement('iframe');
+          iframe.onerror = t.unreached_func('Error should not be fired');
+          iframe.onload = t.step_func(() => {
+            assert_true(!!iframe.contentDocument);
+            if (iframe.contentDocument.body.textContent !== '<b>hi</b>\n' &&
+                iframe.contentDocument.body.textContent !== 'hi\n') {
+              assert_equals(iframe.contentDocument.body.textContent, 'hi\n');
+            }
+            resolve();
+          });
+          iframe.src = '/fetch/content-type/resources/content-type.py?value=' + encodeURIComponent(mimeType);
+          // iframe.src = 'data:' + mimeType + ',fox';
+          document.body.appendChild(iframe);
+          setTimeout(t.unreached_func('Download'), 500);
+        }), mimeType);
+      }
+    </script>
+  </body>
+</html>

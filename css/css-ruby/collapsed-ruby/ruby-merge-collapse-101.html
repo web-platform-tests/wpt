@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8">
+<title>ruby-merge: collapse (v)</title>
+<meta name="assert" content="ruby-merge:collapse will render all annotations evenly across the base text.">
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="http://www.w3.org/TR/css-ruby-1/#collapsed-ruby">
+<link rel="help" href="https://drafts.csswg.org/css-ruby-1/#collapsed-ruby">
+<style type="text/css">
+.test { margin: 20px;  padding: 40px; font-size: 110px; }
+rt { color: blue; }
+rt#middle { color: #b1d7fe; }
+</style>
+<style type="text/css">/* this is the test */
+.test { -webkit-writing-mode: vertical-lr; writing-mode: tb-rl; writing-mode: vertical-rl; }
+ruby { ruby-merge: collapse; }
+</style>
+</head>
+<body>
+<p class="instructions">Skip if the text is not vertical.<br/>Test passes if the text is vertical and the annotation characters are spread evenly across both the base characters.</p>
+<div class="test" lang="ja"><ruby><rb>思</rb><rt>し</rt><rb>春</rb><rt id="middle">しゅん</rt><rb>期</rb><rt>き</rt></ruby></div>
+<!-- Notes:
+-->
+</body>
+</html>

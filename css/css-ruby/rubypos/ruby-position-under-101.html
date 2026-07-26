@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8">
+<title>ruby-position: under (v)</title>
+<meta name="assert" content="ruby-position:under will make ruby appear to the left of the base in vertical text.">
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="http://www.w3.org/TR/css-ruby-1/#rubypos">
+<link rel="help" href="https://drafts.csswg.org/css-ruby-1/#rubypos">
+<style type="text/css">
+.test { margin: 20px;  padding: 40px; font-size: 110px; }
+rt { color: blue; }
+</style>
+<style type="text/css">/* this is the test */
+.test { -webkit-writing-mode: vertical-lr; writing-mode: tb-rl; writing-mode: vertical-rl; }
+ruby { ruby-position: under; }
+</style>
+</head>
+<body>
+<p class="instructions">Skip if the text is not vertical.<br/>Test passes if the text is vertically set and the ruby text appears to the left of the base.</p>
+<div class="test" lang="ja"><ruby>漢<rt>かん</rt>字<rt>じ</rt></ruby></div>
+<!-- Notes:
+-->
+</body>
+</html>

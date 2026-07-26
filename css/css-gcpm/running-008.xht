@@ -1,0 +1,33 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Test: running content counter values</title>
+  <link rel="author" title="Mike Bremford" href="http://bfo.com"/>
+  <link rel="help" href="https://drafts.csswg.org/css-gcpm/#running-syntax"/>
+  <link rel="match" href="reference/running-008-ref.xht"/>
+  <meta name="flags" content="paged" />
+  <meta name="assert" content="Content moved with running inherits from its original position in the page, including counter values"/>
+  <style>
+  :root {
+      counter-reset: bar 0;
+  }
+  @page {
+      margin: 72px;
+      @top-center {
+          content: element(foo, last);
+      }
+  }
+  .set {
+      counter-increment: bar 9;
+      position: running(foo);
+      text-align: center;
+  }
+  span::before {
+      content: counter(bar);
+  }
+  </style>
+ </head>
+ <body>
+  <div class="set">This should say pass: PASS</div>
+  <p>This value should be 9: <span></span></p>
+ </body>
+</html>

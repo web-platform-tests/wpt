@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Referrer Policy: iframes srdoc don't inherit the ancestor's referrer policy if they have own policy</title>
+    <link rel="help" href="https://www.w3.org/TR/referrer-policy/#referrer-policy-delivery-nested">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/common/get-host-info.sub.js"></script>
+    <meta name="referrer" content="unsafe-url">
+  </head>
+  <body onload="runTest()">
+    <script>
+      function createScriptString(origin) {
+        return `<script src = "${origin}/common/security-features/resources/common.sub.js"><\/script>
+                <script>
+                  window.onmessage = () => {
+                     requestViaXhr("${origin}/common/security-features/subresource/xhr.py").then(msg => {
+                      top.postMessage({referrer: msg.referrer}, "*")
+                    }).catch(e => {
+                      top.postMessage({referrer: "FAILURE"}, "*");
+                    });
+                  };
+                <\/script>`;
+      }
+
+      var test = async_test("iframes srcdoc use their own referrer policy if set");
+      window.addEventListener("message", test.step_func_done(msg => {
+        assert_equals(msg.data.referrer, self.origin + "/");
+      }));
+
+      function runTest() {
+        var iframe = document.createElement("iframe");
+        iframe.srcdoc = createScriptString(get_host_info().REMOTE_ORIGIN);
+        iframe.onload = () => {
+          const meta = iframe.contentDocument.createElement('meta');
+          meta.setAttribute('name', 'referrer');
+          meta.setAttribute('content', 'origin');
+          iframe.contentDocument.head.appendChild(meta);
+          iframe.contentWindow.postMessage('start', "*");
+        };
+        document.body.appendChild(iframe);
+      }
+    </script>
+    <div id="log"></div>
+  </body>
+</html>

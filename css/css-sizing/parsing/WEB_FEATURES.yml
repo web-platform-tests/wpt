@@ -1,8 +1,8 @@
 features:
 - name: box-sizing
   files:
-  - box-sizing-*
+  - ./box-sizing-*
 - name: width-height
   files:
-  - width-*
-  - height-*
+  - ./width-*
+  - ./height-*

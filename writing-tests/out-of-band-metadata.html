@@ -50,22 +50,31 @@ people who are notified when pull requests modify files in the directory</p></li
 store a mapping between the tests in the local directory and <a class="reference external" href="https://github.com/web-platform-dx/web-features">the
 web-features</a> which those
 tests validate.</p>
-<p>They define one property, <code class="docutils literal notranslate"><span class="pre">features</span></code>, which is a list of rules that relate one
-web-feature to one or more tests in that directory. Each mapping rule includes
-two properties: <code class="docutils literal notranslate"><span class="pre">name</span></code> (whose value is the string identifier of a
-web-feature[^1]) and <code class="docutils literal notranslate"><span class="pre">files</span></code> (whose value is either the string value <code class="docutils literal notranslate"><span class="pre">**</span></code> or a
-list of file pattern strings).</p>
+<p>They define one property, <code class="docutils literal notranslate"><span class="pre">rules</span></code>, which is a list of rules that relate one or
+more tests in that directory to one or more web-feature. Each mapping rule
+includes one property. That property’s name is a file-pattern string (matching
+one or more tests), and that property’s value is a list of web-feature IDs.</p>
 <details>
   <summary>Formal [CDDL](https://datatracker.ietf.org/doc/html/rfc8610) schema definition</summary><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MappingRules</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="n">features</span><span class="p">:</span> <span class="p">[</span><span class="o">*</span><span class="n">MappingRule</span><span class="p">],</span>
+  <span class="n">rules</span><span class="p">:</span> <span class="p">[</span><span class="o">*</span><span class="n">MappingRule</span><span class="p">],</span>
 <span class="p">}</span>
 
-<span class="n">MappingRule</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="n">name</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span>
-  <span class="n">files</span><span class="p">:</span> <span class="p">[</span><span class="o">*</span><span class="n">FilePattern</span><span class="p">],</span>
+<span class="n">MappingRule</span> <span class="o">=</span> <span class="p">(</span>
+  <span class="n">ConciseMappingRule</span> <span class="o">//</span>
+  <span class="n">ExtendedMappingRule</span>
+<span class="p">)</span>
+
+<span class="n">ConciseMappingRule</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="o">*</span><span class="n">FilePattern</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="o">*</span><span class="n">text</span><span class="p">]</span>
 <span class="p">}</span>
 
-<span class="n">FilePattern</span> <span class="o">=</span> <span class="n">text</span> <span class="o">.</span><span class="n">regexp</span> <span class="s2">&quot;!?[A-Za-z0-9_*.-]+&quot;</span>
+<span class="n">ExtendedMappingRule</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="o">*</span><span class="n">FilePattern</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="n">ids</span><span class="p">:</span> <span class="p">[</span><span class="o">*</span><span class="n">text</span><span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">FilePattern</span> <span class="o">=</span> <span class="n">text</span> <span class="o">.</span><span class="n">regexp</span> <span class="s2">&quot;[A-Za-z0-9_*.-]+&quot;</span>
 </pre></div>
 </div>
 </details><p>These files are used to generate a single JSON-formatted manifest file which
@@ -76,31 +85,25 @@ release</a> under the name
 <code class="docutils literal notranslate"><span class="pre">WEB_FEATURES_MANIFEST</span></code> (available in a number of encodings).</p>
 <section id="file-patterns">
 <h3>File patterns<a class="headerlink" href="#file-patterns" title="Link to this heading">¶</a></h3>
-<p>If the <code class="docutils literal notranslate"><span class="pre">files</span></code> property takes the string value <code class="docutils literal notranslate"><span class="pre">**</span></code>, this signifies that all
-tests in the current directory and all subdirectories (if present) belong to
-the corresponding web-feature.</p>
-<p>If the <code class="docutils literal notranslate"><span class="pre">files</span></code> property is a list of string values, the strings are interpreted
-as file patterns. Each contributes to the definition of a set of files which
-should be associated with the corresponding web-feature. While these “patterns”
-may be literal file names, they also support the following operators which
-alter their meaning:</p>
-<ul class="simple">
-<li><p>An asterisk appearing anywhere in the string (e.g. <code class="docutils literal notranslate"><span class="pre">foo-*.js</span></code>) is a
-placeholder for zero or more other characters. Patterns using a star can
-therefore describe multiple files.</p></li>
-<li><p>A leading exclamation point (e.g. <code class="docutils literal notranslate"><span class="pre">!foobar.html</span></code>) means, “<em>exclude</em> any file
-which matches the pattern.” This operator is intended to refine rules which
-also include patterns with the asterisk operator.</p></li>
-</ul>
-<p>If the <code class="docutils literal notranslate"><span class="pre">*</span></code> pattern appears as a list item, it will match all tests in the
-current directory; it will not match any subdirectories. There is no mechanism
-for matching specific subdirectories (only for matching <em>all</em> subdirectories
-via <code class="docutils literal notranslate"><span class="pre">**</span></code>). To define mappings for files in a given subdirectory, write mapping
-rules in a <code class="docutils literal notranslate"><span class="pre">WEB_FEATURES.yml</span></code> file within that subdirectory.</p>
-<p>The elements of the <code class="docutils literal notranslate"><span class="pre">files</span></code> list are applied from top to bottom to produce the
-set of files which belongs to a given web-feature. (The behavior of this list
-of file patterns is similar to how <a class="reference external" href="https://git-scm.com/docs/gitignore">the Git version control system interprets
-<code class="docutils literal notranslate"><span class="pre">.gitignore</span></code> files</a>.)</p>
+<p>If the property name takes the string value <code class="docutils literal notranslate"><span class="pre">**</span></code>, this signifies that all tests
+in the current directory and all subdirectories (if present) belong to the
+corresponding web-features.</p>
+<p>Any other value of the property name is interpreted as a file pattern. The
+matching set of files will be associated with the corresponding web-feature.
+While these “patterns” may be literal file names, they also support the “star”
+(or “glob”) operators. An asterisk appearing anywhere in the string (e.g.
+<code class="docutils literal notranslate"><span class="pre">foo-*.js</span></code>) is a placeholder for zero or more other characters. Patterns using
+a star can therefore describe multiple files in the same directory as the
+<code class="docutils literal notranslate"><span class="pre">WEB_FEATURES.yml</span></code> file.</p>
+<p>There is no mechanism for matching specific subdirectories (only for matching
+<em>all</em> subdirectories via <code class="docutils literal notranslate"><span class="pre">**</span></code>). To define mappings for files in a given
+subdirectory, write mapping rules in a <code class="docutils literal notranslate"><span class="pre">WEB_FEATURES.yml</span></code> file within that
+subdirectory.</p>
+<p>These rules are interpreted from top to bottom. When a test file matches a
+given rule, it is no longer considered when interpreting subsequent rules. For
+this reason, if an author intends for a test file (or set of test files) to be
+associated with multiple web-features, the author should write a single rule
+that associates that file (or set of files) with all the desired web-features.</p>
 </section>
 <section id="caveat-pattern-matching">
 <h3>Caveat: Pattern Matching<a class="headerlink" href="#caveat-pattern-matching" title="Link to this heading">¶</a></h3>
@@ -141,9 +144,8 @@ priority.)</p>
 web-feature</a>,
 then that directory might include a <code class="docutils literal notranslate"><span class="pre">WEB_FEATURES.yml</span></code> file whose content
 appears as follows:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">features</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fetch</span>
-<span class="w">  </span><span class="nt">files</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;**&quot;</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">fetch</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 </section>
@@ -167,23 +169,73 @@ appears as follows:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">z-index.html</span></code></p></li>
 </ul>
 <p>The contents of the file named <code class="docutils literal notranslate"><span class="pre">WEB_FEATURES.yml</span></code> might appear as follows:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">features</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aspect-ratio</span>
-<span class="w">  </span><span class="nt">files</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;*&quot;</span><span class="w">              </span><span class="c1"># This line includes all test files in the directory</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;!box-sizing-*&quot;</span><span class="w">  </span><span class="c1"># This line excludes all test files whose name begins with &quot;box-sizing&quot;</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;!z-index.html&quot;</span><span class="w">  </span><span class="c1"># This line excludes the test file named &quot;z-index.html&quot;</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">box-sizing</span>
-<span class="w">  </span><span class="nt">files</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">box-sizing-*</span><span class="w">  </span><span class="c1"># This line includes all test files whose name begins with &quot;box-sizing&quot;</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">z-index</span>
-<span class="w">  </span><span class="nt">files</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">z-index.html</span><span class="w">  </span><span class="c1"># This line includes the test file named &quot;z-index.html&quot;</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="c1"># The following rule includes all test files whose name begins with &quot;box-sizing&quot;:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">box-sizing-*</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">box-sizing</span><span class="p p-Indicator">]</span>
+
+<span class="c1"># The following rule includes the test file named &quot;z-index.html&quot;</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">z-index.html</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">z-index</span><span class="p p-Indicator">]</span>
+
+<span class="c1"># The following rule matches all test files which have not been matched above:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;*&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">aspect-ratio</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
-<p>[^1]: The web-feature identifier is distinct from the web-feature name.
-Although the property is “name”, its value should actually be the
-identifier.</p>
+</section>
+<section id="example-3-mapping-the-same-test-file-s-to-more-than-one-web-feature">
+<h3>Example 3: Mapping the same test file(s) to more than one web-feature<a class="headerlink" href="#example-3-mapping-the-same-test-file-s-to-more-than-one-web-feature" title="Link to this heading">¶</a></h3>
+<p>The following <code class="docutils literal notranslate"><span class="pre">WEB_FEATURES.yml</span></code> file will associate the test files bearing the
+<code class="docutils literal notranslate"><span class="pre">foo-</span></code> prefix with the web-feature <code class="docutils literal notranslate"><span class="pre">grape</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">foo-*</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">grape</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>The following <code class="docutils literal notranslate"><span class="pre">WEB_FEATURES.yml</span></code> file is equivalent because the test files
+prefixed with <code class="docutils literal notranslate"><span class="pre">foo-</span></code> are matched by the first rule and ignored by the
+subsequent rule-processing logic:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="c1"># the following rule matches all test files:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">foo-*</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">grape</span><span class="p p-Indicator">]</span>
+
+<span class="c1"># there are no unmatched files when this rule is encountered, so the following</span>
+<span class="c1"># rule matches zero test files:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">foo-*</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">orange</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>To associate the <code class="docutils literal notranslate"><span class="pre">foo-</span></code>-prefixed test files with the web-features named <code class="docutils literal notranslate"><span class="pre">grape</span></code>
+<em>and</em> the <code class="docutils literal notranslate"><span class="pre">web-feature</span></code> named <code class="docutils literal notranslate"><span class="pre">orange</span></code>, one must declare both web-feature IDs
+in the same rule, as in the following <code class="docutils literal notranslate"><span class="pre">WEB_FEATURES.yml</span></code> file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">foo-*</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">grape</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">orange</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</section>
+<section id="example-4-excluding-test-files-from-all-web-features">
+<h3>Example 4: Excluding test files from all web-features<a class="headerlink" href="#example-4-excluding-test-files-from-all-web-features" title="Link to this heading">¶</a></h3>
+<p>If the list value reserved for web-feature IDs is an empty list, then the test
+files matched by the rule will not be associated with any web-feature. This is
+helpful when the majority of test files within a directory should be classified
+but a small number should not.</p>
+<p>For example, consider a directory where the test-file named <code class="docutils literal notranslate"><span class="pre">c.html</span></code> should not
+be associated with any web-feature, but all other web-features should be
+associated with the <code class="docutils literal notranslate"><span class="pre">background</span></code> web-feature. Authors may write rules “around”
+the excluded test file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">a.html</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">background</span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">b.html</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">background</span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">d.html</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">background</span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">e.html</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">background</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>…but the above file does not clearly reflect their intent (that is, “all
+files except <code class="docutils literal notranslate"><span class="pre">c.html</span></code>). Instead, authors may write explicit rules to exclude
+some test files and follow that with a smaller set of more expansive rules:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">c.html</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;*&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">background</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">*</span></code> pattern will not match <code class="docutils literal notranslate"><span class="pre">c.html</span></code> in this context because that test file
+has already been matched by a preceding rule.</p>
 </section>
 </section>
 </section>

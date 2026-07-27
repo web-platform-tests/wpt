@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>popup (helper file)</title></head>
+<body>
+    <p>frame contents</p>
+
+    <script>
+        var passed;
+        try{
+            passed = window.opener === null;
+        }catch(e){
+            passed = false;
+        }
+        top.report(passed, frameElement.id);
+    </script>
+
+</body>
+</html>

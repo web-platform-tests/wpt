@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<base href="beta/">
+<div id='div' onmousedown='import("./import.js").then(resolve, reject);'>
+</div>
+<script src="../alpha/inline-event-handler-2.js"></script>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta http-equiv="Content-Security-Policy" content="frame-src 'self'">
+<script>
+  let log = '';
+  function load(message) { log += 'LOAD: ' + message + '\n'; }
+  function error(message) { log += 'ERROR: ' + message + '\n'; }
+</script>
+<body onload="load('body')">
+  <iframe onload="load('CSP')" onerror="error('CSP')" src="https://{{domains[www1]}}:{{ports[https][0]}}"></iframe>
+  <iframe onload="load('success')" onerror="error('success')" src="https://{{host}}:{{ports[https][0]}}"></iframe>
+  <script>
+    async_test(t => {
+        setTimeout(
+            t.step_func_done(() => assert_equals(log, '')),
+            5000);
+    }
+              );
+  </script>
+</body>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <title>Test several aspects of generated content and lists</title>
+  <link rel="author" title="Mike Bremford" href="http://bfo.com">
+  <link rel="match" href="reference/content-contents-001-ref.html">
+  <link rel="help" href="https://drafts.csswg.org/css-content-3/#content-property">
+  <link rel="help" href="https://drafts.csswg.org/css-lists-3/#list-style-position-property">
+  <link rel="help" href="https://drafts.csswg.org/css-lists-3/#list-item-counter">
+  <link rel="help" href="https://drafts.csswg.org/css-display/#the-display-properties">
+  <style>
+  body {
+      counter-reset: cite;
+  }
+  q[cite]::before {
+      content: open-quote contents close-quote;
+  }
+  q {
+      content: none;
+  }
+  q[cite]::after {
+      display: inline list-item;
+      list-style-position: inside;
+      counter-increment: list-item 0 cite 1;
+      content: "(" attr(cite) ")";
+  }
+  q[cite]::after::marker {
+      content: " [" counter(cite) "]";
+      background-color: #ddd;
+  }
+  </style>
+ </head>
+ <body>
+ <ol>
+  <li>
+   Item one contains two quotes:
+   <q cite="A">this</q>
+   and
+   <q cite="B">that</q>
+  </li>
+  <li>
+   Item two contains one quote:
+   <q cite="C">the other</q>
+  </li>
+ </ol>
+
+ <!--
+ This test works as follows:
+
+ 1. The ::before pseudo-element on Q is genreated, and contains
+    the content of the DOM element, surrounded by open and close quotes.
+
+ 2. The <q> element itself has no content between the ::before and ::after
+    pseudo-elements - the DOM textNode has been moved to the ::before.
+
+ 3. The ::after pseudo-element on Q is a list-item, however it does not
+    increment the normal "list-item" counter - it increments the "cite"
+    counter instead, which is in-scope as it was reset on the body. The
+    display is "inline list-item", so it generates an inline box.
+
+ 4. A ::marker is generated inside the ::after pseudo-element, containing
+    the "cite" counter value in its own style. It's list-position is inside,
+    so the ::marker is generated as an inline box.
+
+ 5. Following the marker, the cite attribute is included inside brackets.
+
+ The hypothetical box tree for the second list item looks like this:
+
+ <li>
+  <li::marker>
+   <text>2.</text>
+  </li::marker>
+  <::linebox>
+   <text>Item two contains one quote: </text>
+   <q>
+    <q::before>
+     <text>&lquot;text>
+     <text>the other</text>
+     <text>&rquot;</text>
+    </q::before>
+    <q::after>
+     <q::after::marker>
+      <text>[3]</txt>
+     </q::after::marker>
+     <text>(source 3)</text>
+    </q::after>
+   </q>
+  </::linebox>
+ </li>
+
+ -->
+</body>
+</html>

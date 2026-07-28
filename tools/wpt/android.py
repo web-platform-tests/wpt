@@ -24,6 +24,10 @@ AVD_MANIFEST_X86_64 = {
     "emulator_package": "system-images;android-34;google_apis;x86_64",
     "emulator_avd_name": "mozemulator-android34-x86_64"
 }
+AVD_MANIFEST_ARM64 = {
+    "emulator_package": "system-images;android-34;google_apis;arm64-v8a",
+    "emulator_avd_name": "mozemulator-arm64"
+}
 
 
 def do_delayed_imports(paths):
@@ -36,30 +40,29 @@ def do_delayed_imports(paths):
                                                 "tooltool",
                                                 "tooltool.py")
     android_device.EMULATOR_HOME_DIR = paths["emulator_home"]
-    android_device.AVD_DICT["x86_64"] = android_device.AvdInfo(
-        "Android x86_64",
-        "mozemulator-android34-x86_64",
-        [
-            "-skip-adb-auth",
-            "-verbose",
-            "-show-kernel",
-            "-ranchu",
-            "-selinux",
-            "permissive",
-            "-memory",
-            "4096",
-            "-cores",
-            "4",
-            "-prop",
-            "ro.test_harness=true",
-            "-no-snapstorage",
-            "-no-snapshot",
-            "-no-metrics",
-            "-skin",
-            "800x1280"
-        ],
-        True,
-    )
+    for avd_info in android_device.AVD_DICT.values():
+        args = avd_info.extra_args
+
+        # -cores and -skins were reverted to their previous mozrunner values by
+        # -#55884 ("Disable reftests on firefox_android") for unclear reasons.
+        if "-cores" in args:
+            args[args.index("-cores") + 1] = "4"
+        if "-skin" in args:
+            args[args.index("-skin") + 1] = "800x1280"
+
+        # From mozilla-firefox/firefox's f87c442c5851, not yet in any mozrunner
+        # release (as of 8.4.0).
+        if "-no-metrics" not in args:
+            args.append("-no-metrics")
+
+
+def get_host_cpu():
+    machine = platform.machine().lower()
+    if machine == "amd64":
+        return "x86_64"
+    if machine == "arm64":
+        return "aarch64"
+    return machine
 
 
 def get_parser_install():
@@ -188,7 +191,14 @@ def install_android_packages(logger, paths, packages, prompt=True):
 
 def install_avd(logger, paths, prompt=True):
     avd_manager = get_avd_manager(paths)
-    avd_manifest = AVD_MANIFEST_X86_64
+    host_cpu = get_host_cpu()
+    if host_cpu == "aarch64":
+        avd_manifest = AVD_MANIFEST_ARM64
+    elif host_cpu == "x86_64":
+        avd_manifest = AVD_MANIFEST_X86_64
+    else:
+        logger.critical("Unsupported host CPU architecture %s" % host_cpu)
+        raise NotImplementedError
 
     install_android_packages(logger, paths, [avd_manifest["emulator_package"]], prompt=prompt)
 
@@ -214,10 +224,11 @@ def get_emulator(paths, device_serial=None):
     if android_device is None:
         do_delayed_imports(paths)
 
+    cpu = get_host_cpu()
     substs = {
         "top_srcdir": wpt_root,
-        "TARGET_CPU": platform.uname().machine,
-        "HOST_CPU_ARCH": platform.uname().machine
+        "TARGET_CPU": cpu,
+        "HOST_CPU_ARCH": cpu
     }
     emulator = android_device.AndroidEmulator(substs=substs,
                                               device_serial=device_serial,

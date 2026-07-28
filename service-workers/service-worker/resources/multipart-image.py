@@ -8,7 +8,7 @@ BOUNDARY = b'cutHere'
 
 def create_part(path):
     with open(path, u'rb') as f:
-        return b'Content-Type: image/png\r\n\r\n' + f.read() + b'--%s' % BOUNDARY
+        return b'Content-Type: image/png\r\n\r\n' + f.read() + b'\r\n--%s\r\n' % BOUNDARY
 
 
 def main(request, response):
@@ -18,6 +18,7 @@ def main(request, response):
         headers.append((b'Access-Control-Allow-Origin', b'*'))
 
     image_path = os.path.join(request.doc_root, u'images')
-    body = create_part(os.path.join(image_path, u'red.png'))
+    body = b'--%s\r\n' % BOUNDARY
+    body = body + create_part(os.path.join(image_path, u'red.png'))
     body = body + create_part(os.path.join(image_path, u'red-16x16.png'))
     return headers, body

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8">
+<title>ruby-align:space-around, long annotation, multiword latin base (v)</title>
+<meta name="assert" content="For a narrow-cell base with multiple words that is shorter than its annotation, ruby-align:space-around will justify the words, with a small amount of space either side.">
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="http://www.w3.org/TR/css-ruby-1/#rubypos">
+<link rel="help" href="https://drafts.csswg.org/css-ruby-1/#rubypos">
+<style type="text/css">/* this is not part of the test */
+.test { margin: 20px;  padding: 40px; font-size: 110px; }
+.test { -webkit-writing-mode: vertical-lr; writing-mode: tb-rl; writing-mode: vertical-rl; }
+rt { color: blue; }
+</style>
+<style type="text/css">/* this is the test */
+ruby { ruby-align: space-around; }
+</style>
+</head>
+<body>
+<p class="instructions">Test passes if the first and last characters of the BASE are about half a character width from the side of the box, and the text is justified between.</p>
+<div class="test" lang="ja"><ruby><rb>a web UI</rb><rt>ウェブインターフェース</rt></ruby></div>
+<div class="test" lang="zh"><ruby><rb>a web UI</rb><rt>ウェブインターフェース</rt></ruby></div>
+</body>
+</html>

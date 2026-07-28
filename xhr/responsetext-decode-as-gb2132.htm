@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>XMLHttpRequest: responseText decoding</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+      function create_html(content) {
+        return "<!doctype html><meta charset=GB2312><x>" + content + "</x>";
+      }
+      function create_document_body(content) {
+        return "<x>" + content + "</x>";
+      }
+      function create_encoded_html(encoded_content) {
+        return encodeURIComponent("<!doctype html><meta charset=GB2312><x>") + encoded_content + encodeURIComponent("<\/x>");
+      }
+      function readBody(client) {
+        var data;
+        if (!client.responseType || client.responseType === "text") {
+          data = client.responseText;
+        } else if (client.responseType === "document") {
+          data = client.responseXML.body.innerHTML;
+        } else {
+          data = client.response;
+        }
+        return data;
+      }
+      function request(type, input, output, responseType, overrideMimeType) {
+        async_test((test) => {
+          const client = new XMLHttpRequest();
+          if (responseType !== undefined) {
+            client.responseType = responseType;
+          }
+          if (overrideMimeType !== undefined) {
+            client.overrideMimeType(overrideMimeType);
+          }
+          client.open("GET", "resources/status.py?content=" + input + "&type=" + encodeURIComponent(type), true);
+          client.onload = test.step_func_done(() => {
+            assert_equals(readBody(client), output);
+          })
+          client.send(null);
+        });//, document.title + " (" + type + " " + input + " " + (responseType ? " " + responseType : "empty") + ")");
+      }
+
+    //   const encoded_content_with_hex = "%e6%a9%9f";
+      const decoded_as_gb2312_hex = "%99%43";
+      const decoded_as_gb2312 = "機";
+      const encoded_html = create_encoded_html(decoded_as_gb2312_hex);
+      const html_decoded_as_gb2312 = create_html(decoded_as_gb2312);
+      const body_decoded_as_gb2312 = create_document_body(decoded_as_gb2312);
+
+      request("text/html", encoded_html, html_decoded_as_gb2312);
+      request("text/html", encoded_html, html_decoded_as_gb2312, '', 'text/html; charset=gb2312');
+      request("text/html", encoded_html, body_decoded_as_gb2312, 'document');
+    </script>
+  </body>
+</html>

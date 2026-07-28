@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:h="http://www.w3.org/1999/xhtml"
+     width="800px" height="800px">
+  <title>SVG Vector effects: parsing vector-effect with valid values</title>
+  <metadata>
+    <h:link rel="help" href="https://svgwg.org/svg2-draft/coords.html#VectorEffectProperty"/>
+    <h:meta name="assert" content="vector-effect supports the full grammar 'none | non-scaling-stroke | non-scaling-size | non-rotation | fixed-position'"/>
+  </metadata>
+  <g id="target"></g>
+  <h:script src="/resources/testharness.js"/>
+  <h:script src="/resources/testharnessreport.js"/>
+  <h:script src="/css/support/parsing-testcommon.js"/>
+  <script><![CDATA[
+
+test_valid_value("vector-effect", "none");
+test_valid_value("vector-effect", "non-scaling-stroke");
+
+// These values are at risk: https://github.com/w3c/svgwg/issues/306
+test_valid_value("vector-effect", "non-scaling-size");
+test_valid_value("vector-effect", "non-rotation");
+test_valid_value("vector-effect", "fixed-position");
+
+  ]]></script>
+</svg>

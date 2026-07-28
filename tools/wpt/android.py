@@ -91,7 +91,7 @@ def get_paths(dest):
     else:
         base_path = dest
 
-    sdk_path = os.environ.get("ANDROID_SDK_HOME", os.path.join(base_path, f"android-sdk-{os_name}"))
+    sdk_path = os.environ.get("ANDROID_SDK_ROOT", os.path.join(base_path, f"android-sdk-{os_name}"))
     avd_path = os.environ.get("ANDROID_AVD_HOME", os.path.join(sdk_path, ".android", "avd"))
     return {
         "base": base_path,
@@ -242,8 +242,7 @@ class Environ:
 def android_environment(paths):
     return Environ(ANDROID_EMULATOR_HOME=paths["emulator_home"],
                    ANDROID_AVD_HOME=paths["avd"],
-                   ANDROID_SDK_ROOT=paths["sdk"],
-                   ANDROID_SDK_HOME=paths["sdk"])
+                   ANDROID_SDK_ROOT=paths["sdk"])
 
 
 def install(logger, dest=None, reinstall=False, prompt=True):

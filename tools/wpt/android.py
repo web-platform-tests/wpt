@@ -125,15 +125,14 @@ def uninstall_sdk(paths):
 
 def get_os_tag(logger):
     os_name = platform.system().lower()
-    if os_name not in ["darwin", "linux", "windows"]:
-        logger.critical("Unsupported platform %s" % os_name)
-        raise NotImplementedError
-
-    if os_name == "macosx":
-        return "darwin"
+    if os_name == "darwin":
+        return "mac"
     if os_name == "windows":
         return "win"
-    return "linux"
+    if os_name == "linux":
+        return "linux"
+    logger.critical("Unsupported platform %s" % os_name)
+    raise NotImplementedError
 
 
 def download_and_extract(url, path):

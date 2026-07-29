@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CanvasRenderingContext2D shapeSmoothingEnabled test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/scripting.html#shape-smoothing">
+<script>
+test(function() {
+  var ctx = document.createElement('canvas').getContext('2d');
+  assert_true(ctx.shapeSmoothingEnabled);
+}, "When the canvas context is created, shapeSmoothingEnabled must be set to true.");
+
+test(function() {
+  var ctx = document.createElement('canvas').getContext('2d');
+  ctx.shapeSmoothingEnabled = false;
+  assert_false(ctx.shapeSmoothingEnabled);
+}, "On getting shapeSmoothingEnabled, the user agent must return the last value it was set to.");
+
+test(function() {
+  var ctx = document.createElement('canvas').getContext('2d');
+  ctx.moveTo(0, 1)
+  ctx.lineTo(1, 0)
+  ctx.stroke()
+  var pixels = ctx.getImageData(0, 0, 2, 2).data;
+  assert_equals(pixels[3], 255);
+  assert_not_equals(pixels[7], 255);
+  assert_not_equals(pixels[7], 0);
+}, "Test that shape smoothing is actually on by default and not just the attribute value.");
+
+test(function() {
+  var ctx = document.createElement('canvas').getContext('2d');
+  ctx.shapeSmoothingEnabled = true;
+  ctx.moveTo(0, 1)
+  ctx.lineTo(1, 0)
+  ctx.stroke()
+  var pixels = ctx.getImageData(0, 0, 2, 2).data;
+  assert_equals(pixels[3], 255);
+  assert_not_equals(pixels[7], 255);
+  assert_not_equals(pixels[7], 0);
+}, "Test that shape smoothing works when shapeSmoothingEnabled is set to true");
+
+test(function() {
+  var ctx = document.createElement('canvas').getContext('2d');
+  ctx.shapeSmoothingEnabled = false;
+  ctx.moveTo(0, 1)
+  ctx.lineTo(1, 0)
+  ctx.stroke()
+  var pixels = ctx.getImageData(0, 0, 2, 2).data;
+  assert_array_equals(pixels, [0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+}, "Test that shapeSmoothingEnabled = false works with stroke().");
+
+test(function() {
+  var ctx = document.createElement('canvas').getContext('2d');
+  ctx.shapeSmoothingEnabled = false;
+  ctx.fillRect(0, 0, 0.5, 0.5);
+  var pixels = ctx.getImageData(0, 0, 1, 1).data;
+  assert_array_equals(pixels, [0, 0, 0, 0]);
+}, "Test that shapeSmoothingEnabled = false works with fillRect().");
+
+test(function() {
+  var ctx = document.createElement('canvas').getContext('2d');
+  ctx.shapeSmoothingEnabled = false;
+  ctx.rect(0, 0, 0.5, 0.5);
+  ctx.fill();
+  var pixels = ctx.getImageData(0, 0, 1, 1).data;
+  assert_array_equals(pixels, [0, 0, 0, 0]);
+}, "Test that shapeSmoothingEnabled = false works with fill().");
+
+test(function() {
+  var repaints = 5;
+  var ctx = document.createElement('canvas').getContext('2d');
+
+  function draw() {
+    ctx.clearRect(0, 0, 10, 10);
+    ctx.shapeSmoothingEnabled = false;
+    ctx.rect(0, 0, 0.5, 0.5);
+    ctx.fill();
+    var pixels = ctx.getImageData(0, 0, 1, 1).data;
+    assert_array_equals(pixels, [0, 0, 0, 0]);
+  }
+
+  while (repaints > 0) {
+    draw();
+    repaints = repaints - 1;
+  }
+
+}, "Test that shapeSmoothingEnabled = false still works after repaints.");
+</script>

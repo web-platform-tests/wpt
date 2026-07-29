@@ -189,7 +189,7 @@ class WebTestServer(http.server.ThreadingHTTPServer):
         self.router = router
         self.rewriter = rewriter
 
-        self.scheme = "http2" if http2 else "https" if use_ssl else "http"
+        self.scheme = "http2" if http2 else "https" if use_ssl and not encrypt_after_connect else "http"
         self.logger = get_logger()
 
         self.latency = latency
@@ -208,7 +208,7 @@ class WebTestServer(http.server.ThreadingHTTPServer):
             with ConfigBuilder(self.logger,
                                browser_host=server_address[0],
                                ports={"http": [self.server_address[1]]}) as config:
-                assert config["ssl_config"] is None
+                assert config["ssl_config"] is None or config.ssl_config["encrypt_after_connect"]
                 Server.config = config
 
 
@@ -400,6 +400,8 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
         if not self.close_connection:
             # Ensure that the whole request has been read from the socket
             request.raw_input.read()
+        else:
+            self.connection.shutdown(socket.SHUT_RDWR)
 
     def handle_connect(self, response):
         self.logger.debug("Got CONNECT")
@@ -412,6 +414,7 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
             self.request = ssl_context.wrap_socket(self.connection,
                                                    server_side=True)
             self.setup()
+            self.close_connection = False
         return
 
     def log_request(self, code="-", size="-"):

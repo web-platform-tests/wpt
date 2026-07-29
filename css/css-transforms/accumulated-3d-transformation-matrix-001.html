@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<title>CSS Test (Transforms): Accumulated 3D transformation matrix</title>
+<link rel="author" title="L. David Baron" href="https://dbaron.org/">
+<link rel="author" title="Google" href="http://www.google.com/">
+<link rel="help" href="https://www.w3.org/TR/css-transforms-2/#accumulated-3d-transformation-matrix-computation">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/6191">
+<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<meta name="assert" content="Accumulated 3D transform matrix includes establishing element's transform.">
+
+<style>
+
+div {
+  height: 100px;
+  width: 100px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#container {
+  position: relative;
+  transform: rotateX(180deg);
+  background: green;
+  transform-style: preserve-3d;
+}
+
+#one {
+  transform: translateZ(20px);
+  background: red;
+}
+
+</style>
+
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div id="container">
+  <div id="one"></div>
+</div>

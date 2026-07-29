@@ -192,6 +192,11 @@ def install_avd(logger, paths, prompt=True):
 
     install_android_packages(logger, paths, [avd_manifest["emulator_package"]], prompt=prompt)
 
+    # avdmanager silently ignores ANDROID_AVD_HOME if the directory
+    # doesn't already exist.
+    if not os.path.exists(paths["avd"]):
+        os.makedirs(paths["avd"])
+
     cmd = [avd_manager,
            "--verbose",
            "create",

@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html lang=en>
+  <title>CSSConditionRule Test</title>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact">
+  <link rel="help" href="http://www.w3.org/TR/css-conditional-3/#the-cssconditionrule-interface">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+
+<style>
+  #test div { height: 50px; background: blue;  margin: 10px;  }
+
+</style>
+<style id="style">
+  @media unsupported and ( { junk } ) {
+    div#test_media { height: 100px; background: yellow; }
+  }
+  @supports (unsupported: value) {
+    div#test_supports { height: 100px; background: yellow; }
+  }
+</style>
+<div id=log></div>
+<div id="test">
+  <div id="test_media"></div>
+  <div id="test_supports"></div>
+</div>
+<script>
+
+  var rules = document.getElementById("style").sheet.cssRules;
+  var rule_names = ["@media", "@supports"];
+  var rule_ids   = ["media", "supports"];
+  var rule_original = [rules[0].media.mediaText, "(unsupported: value)"];
+  var rule_true  = ["all", "(color: green)"];
+  var rule_ungrammatical = ["junk )", "junk )"];
+  var rule_bogus_in = ["junk(value)", "junk(value)"];
+  var rule_bogus_out = ["not all", "junk(value)"];
+
+  for (let i = 0; i < 2; i++) {
+    var rule = rules[i];
+    var rule_name = rule_names[i];
+
+    test(function() {
+           assert_true(rule instanceof CSSConditionRule,
+                       rule_name + " instanceof CSSConditionRule");
+         },
+         rule_name + " is CSSConditionRule");
+
+    test(function() {
+           assert_equals(rule.cssRules.length, 1,
+                         "Length of initial cssRules.length of " + rule_name);
+           assert_equals(rule.cssRules[0].type, CSSRule.STYLE_RULE,
+                         "Type of initial cssRules of " + rule_name);
+         },
+         "False " + rule_name + " still contains its rules");
+
+    test(function() {
+           assert_equals(rule.conditionText, rule_original[i],
+                         ".conditionText of " + rule_name);
+         },
+         ".conditionText of " + rule_name + " represents condition");
+
+    test(function() {
+           rule.conditionText = "\t  " + rule_original[i] + " \t ";
+           assert_equals(rule.conditionText, rule_original[i],
+                         ".conditionText of " + rule_name + " matches original");
+         },
+         "Setting conditionText of " + rule_name + " trims white space");
+
+    test(function() {
+           var div = document.getElementById("test_" + rule_ids[i]);
+           assert_equals(getComputedStyle(div).height, "50px",
+                         "Rules under false " + rule_name + " condition not applied");
+           rule.conditionText = rule_true[i];
+           assert_equals(rule.conditionText, rule_true[i],
+                         "Setting " + rule_name + " conditionText to " + rule_true[i]);
+           assert_equals(getComputedStyle(div).height, "100px",
+                         "Rules under true " + rule_true[i] + " condition are applied");
+         },
+         "Updating " + rule_name + " conditionText re-evaluates condition");
+
+    test(function() {
+           rule.conditionText = rule_ungrammatical[i];
+           assert_equals(rule.conditionText, rule_true[i],
+                         ".conditionText of " + rule_name + " matches previous");
+         },
+         "Setting conditionText of " + rule_name + " to ungrammatical condition");
+
+    test(function() {
+           rule.conditionText = rule_bogus_in[i];
+           assert_equals(rule.conditionText, rule_bogus_out[i],
+                         ".conditionText of " + rule_name + " is changed");     },
+         "Setting conditionText of " + rule_name + " to grammatical invalid condition");
+  }
+</script>
+</body>
+</html>

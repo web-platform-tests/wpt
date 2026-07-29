@@ -143,6 +143,7 @@ def download_and_extract(url, path):
     try:
         with open(temp_path, "wb") as f:
             with requests.get(url, stream=True) as resp:
+                resp.raise_for_status()
                 for chunk in resp.iter_content(2**16):
                     f.write(chunk)
         if not os.path.exists(temp_path):

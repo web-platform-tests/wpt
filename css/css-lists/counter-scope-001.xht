@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+ <meta charset="utf-8"/>
+ <title>Counter Scope test</title>
+ <link rel="match" href="counter-scope-001-ref.xht"/>
+ <link rel="help" href="https://drafts.csswg.org/css-lists-3/#inheriting-counters"/>
+ <link rel="author" href="mailto:mike@bfo.com"/>
+ <meta name="assert" content="Verifies that the counter scope rules inherit from the parent first, then the previous sibling"/>
+ <!--
+  In more detail, what this test is trying to verify is that the final <li>
+  element inherits the counter from its parent and the counter-value also
+  comes from its parent, not its previous sibling.
+
+  Specifically, referencing https://drafts.csswg.org/css-lists-3/#inheriting-counters
+
+  * step 3 requires that the counter inherited by the final <li>
+    is from the parent, not the previous sibling
+  * step 4 requires that the value for that counter is taken from the parent,
+    as it has a different creator from the counter in the previous step.
+
+  The values should be: 0, 0.1, 0.2, 1
+ -->
+ <style>
+body {
+  font:20px/1 monospace;
+}
+ol {
+  list-style: none inside;
+  padding: 0;
+}
+ol::before, li::before {
+  content: counters(list-item,".");
+}
+ </style>
+</head>
+<body>
+ <ol>
+  <ol>
+   <li></li>
+  </ol>
+  <li></li>
+ </ol>
+</body>
+</html>

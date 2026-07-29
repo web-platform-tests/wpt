@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset=UTF-8>
+<title>CSS Test (Transforms): Fixed backgrounds on transformed root element</title>
+<link rel="author" title="L. David Baron" href="https://dbaron.org/">
+<link rel="author" title="Google" href="http://www.google.com/">
+<link rel="help" href="http://www.w3.org/TR/css-transforms-1/#transform-rendering">
+<meta name="assert" content='"Fixed backgrounds on the root element are
+affected by any transform specified for that element."'>
+<meta name="flags" content="svg">
+<link rel="match" href="transform-fixed-bg-root-ref.html">
+
+<style>
+
+html {
+  background-attachment: fixed;
+  background-image: url(support/transform-triangle-down.svg);
+  background-size: 100px 100px;
+  transform-origin: 100px 100px;
+  transform: scale(0.5) rotate(90deg) translate(150px, 50px);
+}
+
+</style>

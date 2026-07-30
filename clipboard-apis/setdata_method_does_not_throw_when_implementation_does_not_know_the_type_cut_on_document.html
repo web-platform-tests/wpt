@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="UTF-8">
+    <title>Clipboard API - setData() method does not throw when implementation does not know the type  - cut on document</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/_lib.js"></script>
+    <script>
+/** setData() method does not throw when implementation does not know the type  */
+/* Events: copy cut */
+/* External pass condition - clipboard data: "unmodified text" */
+/* Test HTML: <form><input autofocus onfocus="this.select()" value="unmodified text"></form>*/
+/* paste data: "unmodified text" */
+//TODO: this test asserts a NOOP.
+// how this SHOULD work is, however, underspecified..
+function clipboard_api_test(e){
+    e.clipboardData.setData('text/foobarbogustype', 'copycutpaste modified text');
+    e.preventDefault();
+    // pass condition is external, check clipboard contents
+}
+
+    </script>
+</head>
+<body>
+
+    <p>FAILED (This TC requires JavaScript enabled)</p>
+    <form><input autofocus onfocus="this.select()" value="unmodified text"></form>
+    <div id="log"></div>
+    <script>
+    (function(){
+        var t = async_test()
+        var dataToPaste="unmodified text" ;
+        var extPassCond="unmodified text" ;
+        var eventTarget=document;
+        var eventType='cut';
+        setup(function(){
+                setupTest(t, eventTarget, eventType, dataToPaste, extPassCond );
+            });
+    })();
+    </script>
+</body></html>

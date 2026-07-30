@@ -3,7 +3,7 @@
 /*---
 description: |
     Collection of assertion functions used throughout test262
-defines: [assert]
+defines: [assert, isPrimitive]
 ---*/
 
 
@@ -113,15 +113,15 @@ assert.compareArray = function (actual, expected, message) {
   }
 
   if (isPrimitive(actual)) {
-    assert(false, `Actual argument [${actual}] shouldn't be primitive. ${message}`);
+    assert(false, "Actual argument [" + actual + "] shouldn't be primitive. " + String(message));
   } else if (isPrimitive(expected)) {
-    assert(false, `Expected argument [${expected}] shouldn't be primitive. ${message}`);
+    assert(false, "Expected argument [" + expected + "] shouldn't be primitive. " + String(message));
   }
   var result = compareArray(actual, expected);
   if (result) return;
 
   var format = compareArray.format;
-  assert(false, `Actual ${format(actual)} and expected ${format(expected)} should have the same contents. ${message}`);
+  assert(false, "Actual " + format(actual) + " and expected " + format(expected) + " should have the same contents. " + String(message));
 };
 
 function compareArray(a, b) {
@@ -137,15 +137,15 @@ function compareArray(a, b) {
 }
 
 compareArray.format = function (arrayLike) {
-  return `[${Array.prototype.map.call(arrayLike, String).join(', ')}]`;
+  return "[" + Array.prototype.map.call(arrayLike, String).join(", ") + "]";
 };
 
 assert._formatIdentityFreeValue = function formatIdentityFreeValue(value) {
   switch (value === null ? 'null' : typeof value) {
     case 'string':
-      return typeof JSON !== "undefined" ? JSON.stringify(value) : `"${value}"`;
+      return typeof JSON !== "undefined" ? JSON.stringify(value) : '"' + value + '"';
     case 'bigint':
-      return `${value}n`;
+      return String(value) + "n";
     case 'number':
       if (value === 0 && 1 / value === -Infinity) return '-0';
       // falls through

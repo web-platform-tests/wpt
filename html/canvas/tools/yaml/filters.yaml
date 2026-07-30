@@ -45,62 +45,6 @@
     ctx.fillStyle = 'rgba(128, 0, 128, 0.5)'
     ctx.fillRect(10, 10, 60, 30);
 
-- name: 2d.filter.canvasFilterObject.tentative
-  desc: Test CanvasFilter() object
-  canvas_types: ['HtmlCanvas']
-  code: |
-    @assert ctx.filter == 'none';
-    ctx.filter = 'blur(5px)';
-    @assert ctx.filter == 'blur(5px)';
-    ctx.filter = new CanvasFilter({name: 'gaussianBlur', stdDeviation: 5});
-    @assert ctx.filter.toString() == '[object CanvasFilter]';
-    ctx.filter = new CanvasFilter({name: 'gaussianBlur', stdDeviation: [1, 2]});
-    @assert ctx.filter.toString() == '[object CanvasFilter]';
-    ctx.filter = new CanvasFilter([
-        {name: 'gaussianBlur', stdDeviation: 5},
-        {name: 'gaussianBlur', stdDeviation: 10}
-    ]);
-    @assert ctx.filter.toString() == '[object CanvasFilter]';
-    var canvas2 = document.createElement('canvas');
-    var ctx2 = canvas2.getContext('2d');
-    ctx2.filter = ctx.filter;
-    @assert ctx.filter.toString() == '[object CanvasFilter]';
-    ctx.filter = 'blur(5px)';
-    @assert ctx.filter == 'blur(5px)';
-    ctx.filter = 'none';
-    @assert ctx.filter == 'none';
-    ctx.filter = new CanvasFilter({name: 'gaussianBlur', stdDeviation: 5});
-    ctx.filter = 'this string is not a filter and should do nothing';
-    @assert ctx.filter.toString() == '[object CanvasFilter]';
-
-- name: 2d.filter.canvasFilterObject.tentative
-  desc: Test CanvasFilter() object
-  canvas_types: ['OffscreenCanvas', 'Worker']
-  code: |
-    @assert ctx.filter == 'none';
-    ctx.filter = 'blur(5px)';
-    @assert ctx.filter == 'blur(5px)';
-    ctx.filter = new CanvasFilter({name: 'gaussianBlur', stdDeviation: 5});
-    @assert ctx.filter.toString() == '[object CanvasFilter]';
-    ctx.filter = new CanvasFilter({name: 'gaussianBlur', stdDeviation: [1, 2]});
-    @assert ctx.filter.toString() == '[object CanvasFilter]';
-    ctx.filter = new CanvasFilter([
-        {name: 'gaussianBlur', stdDeviation: 5},
-        {name: 'gaussianBlur', stdDeviation: 10}
-    ]);
-    @assert ctx.filter.toString() == '[object CanvasFilter]';
-    var canvas2 = new OffscreenCanvas(100, 50);
-    var ctx2 = canvas2.getContext('2d');
-    ctx2.filter = ctx.filter;
-    @assert ctx.filter.toString() == '[object CanvasFilter]';
-    ctx.filter = 'blur(5px)';
-    @assert ctx.filter == 'blur(5px)';
-    ctx.filter = 'none';
-    @assert ctx.filter == 'none';
-    ctx.filter = new CanvasFilter({name: 'gaussianBlur', stdDeviation: 5});
-    ctx.filter = 'this string is not a filter and should do nothing';
-    @assert ctx.filter.toString() == '[object CanvasFilter]';
-
 - name: 2d.filter.{{ variant_name }}.blur.exceptions.tentative
   desc: Test exceptions on gaussianBlur filter
   code: |
@@ -122,10 +66,6 @@
       filter_declaration: |-
         ctx.beginLayer({filter:
           param})
-    canvasFilterObject:
-      filter_declaration: |-
-        ctx.filter = new CanvasFilter(
-          param)
 
 - name: 2d.filter.{{ variant_name }}.colorMatrix.tentative
   desc: Test the functionality of ColorMatrix filters
@@ -216,13 +156,9 @@
           param})
       close_layer: |
         ctx.endLayer();
-    canvasFilterObject:
-      filter_declaration: |-
-        ctx.filter = new CanvasFilter(
-          param)
 
 - name: 2d.filter.{{ variant_name }}.convolveMatrix.exceptions.tentative
-  desc: Test exceptions on CanvasFilter() convolveMatrix
+  desc: Test exceptions on layers convolveMatrix filter
   code: |
     @assert throws TypeError {{ filter_declaration | replace("param",
       "{name: 'convolveMatrix'}") }};
@@ -267,14 +203,10 @@
           param})
       close_layer: |
         ctx.endLayer();
-    canvasFilterObject:
-      filter_declaration: |-
-        ctx.filter = new CanvasFilter(
-          param)
 
 - name: >-
     2d.filter.{{ variant_name }}.componentTransfer.linear.tentative
-  desc: Test pixels on CanvasFilter() componentTransfer with linear type
+  desc: Test pixels on layers componentTransfer filter with linear type
   size: [100, 100]
   fuzzy: maxDifference=0-2; totalPixels=0-500
   code: |
@@ -338,13 +270,10 @@
       filter_declaration: |-
         ctx.beginLayer({filter: param})
       close_layer: ctx.endLayer();
-    canvasFilterObject:
-      filter_declaration: |-
-        ctx.filter = new CanvasFilter(param)
 
 - name: >-
     2d.filter.{{ variant_name }}.componentTransfer.identity.tentative
-  desc: Test pixels on CanvasFilter() componentTransfer with identity type
+  desc: Test pixels on layers componentTransfer filter with identity type
   size: [100, 100]
   code: |
     {{ filter_declaration | replace("param", "{name: 'componentTransfer',
@@ -388,13 +317,10 @@
       filter_declaration: |-
         ctx.beginLayer({filter: param})
       close_layer: ctx.endLayer();
-    canvasFilterObject:
-      filter_declaration: |-
-        ctx.filter = new CanvasFilter(param)
 
 - name: >-
     2d.filter.{{ variant_name }}.componentTransfer.gamma.tentative
-  desc: Test pixels on CanvasFilter() componentTransfer with gamma type
+  desc: Test pixels on layers componentTransfer filter with gamma type
   size: [100, 100]
   fuzzy: maxDifference=0-2; totalPixels=0-500
   code: |
@@ -462,13 +388,10 @@
       filter_declaration: |-
         ctx.beginLayer({filter: param})
       close_layer: ctx.endLayer();
-    canvasFilterObject:
-      filter_declaration: |-
-        ctx.filter = new CanvasFilter(param)
 
 - name: >-
     2d.filter.{{ variant_name }}.componentTransfer.table.tentative
-  desc: Test pixels on CanvasFilter() componentTransfer with table type
+  desc: Test pixels on layers componentTransfer filter with table type
   size: [100, 100]
   fuzzy: maxDifference=0-2; totalPixels=0-500
   code: |
@@ -540,13 +463,10 @@
       filter_declaration: |-
         ctx.beginLayer({filter: param})
       close_layer: ctx.endLayer();
-    canvasFilterObject:
-      filter_declaration: |-
-        ctx.filter = new CanvasFilter(param)
 
 - name: >-
     2d.filter.{{ variant_name }}.componentTransfer.discrete.tentative
-  desc: Test pixels on CanvasFilter() componentTransfer with discrete type
+  desc: Test pixels on layers componentTransfer filter with discrete type
   size: [100, 100]
   fuzzy: maxDifference=0-2; totalPixels=0-500
   code: |
@@ -617,13 +537,10 @@
       filter_declaration: |-
         ctx.beginLayer({filter: param})
       close_layer: ctx.endLayer();
-    canvasFilterObject:
-      filter_declaration: |-
-        ctx.filter = new CanvasFilter(param)
 
 - name: >-
     2d.filter.{{ variant_names[0] }}.gaussianBlur.tentative
-  desc: Test CanvasFilter() with gaussianBlur.
+  desc: Test layers gaussianBlur filter.
   size: [100, 100]
   code: |
     ctx.fillStyle = 'teal';
@@ -650,9 +567,6 @@
       filter_declaration: |-
         ctx.beginLayer({filter: param});
       close_layer: ctx.endLayer();
-    canvasFilterObject:
-      filter_declaration: |-
-        ctx.filter = new CanvasFilter(param);
   - x-only:
       blur_x: 4
       blur_y: 0
@@ -670,7 +584,7 @@
       blur_y: 4
 
 - name: 2d.filter.{{ variant_name }}.dropShadow.tentative
-  desc: Test CanvasFilter() dropShadow object.
+  desc: Test layers dropShadow filter.
   size: [520, 420]
   code: |
     ctx.fillStyle = 'teal';
@@ -826,12 +740,9 @@
         ctx.beginLayer({filter: param});
       close_layer: |
         ctx.endLayer();
-    canvasFilterObject:
-      filter_declaration: |-
-        ctx.filter = new CanvasFilter(param);
 
 - name: 2d.filter.{{ variant_name }}.dropShadow.exceptions.tentative
-  desc: Test exceptions on CanvasFilter() dropShadow object
+  desc: Test exceptions on layers dropShadow filter
   code: |
     // Should not throw an error.
     {% for param_name in ['dx', 'dy', 'floodOpacity'] -%}
@@ -889,13 +800,9 @@
       filter_declaration: |-
         ctx.beginLayer({filter:
           param}); ctx.endLayer()
-    canvasFilterObject:
-      filter_declaration: |-
-        ctx.filter = new CanvasFilter(
-          param)
 
 - name: 2d.filter.{{ variant_name }}.turbulence.inputTypes.tentative
-  desc: Test exceptions on CanvasFilter() turbulence object
+  desc: Test exceptions on layers turbulence filter
   code: |
     const errorTestCases = [
       {baseFrequency: {}},
@@ -1009,6 +916,3 @@
       filter_declaration: |-
         ctx.beginLayer({filter: param})
       close_layer: "\n  ctx.endLayer();"
-    canvasFilterObject:
-      filter_declaration: |-
-        ctx.filter = new CanvasFilter(param)

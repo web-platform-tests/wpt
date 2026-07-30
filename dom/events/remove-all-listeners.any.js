@@ -1,13 +1,11 @@
-<!doctype html>
-<title>Various edge cases where listeners are removed during iteration</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
+// META: title=Various edge cases where listeners are removed during iteration
+
+// There is another version of this test with DOM nodes as event targets, in
+// remove-all-listeners-dom-node.window.js.
 
 test(function() {
   var type = "foo";
-  var target = document.createElement("div");
+  var target = new EventTarget();
 
   var listener1CallCount = 0;
   var listener2CallCount = 0;
@@ -46,7 +44,7 @@ test(function() {
 
 test(function() {
   var type = "foo";
-  var target = document.createElement("div");
+  var target = new EventTarget();
 
   var listener1CallCount = 0;
   var listener2CallCount = 0;
@@ -91,5 +89,3 @@ test(function() {
   assert_equals(listener2CallCount, 1);
   assert_equals(listener3CallCount, 1);
 }, "Nested usage of once listeners should work.");
-
-</script>

@@ -13,17 +13,38 @@
 
 // TODO(crbug.com/390246212): Support model state controls for WPTs.
 promise_test(async t => {
+  console.log('test 0');
   // Create requires user activation when availability is 'downloadable'.
   const languagePair = {sourceLanguage: 'en', targetLanguage: 'ja'};
-  assert_implements_optional(await Translator.availability(languagePair) == 'downloadable');
+  console.log('test 1');
+  const availability = await Translator.availability(languagePair);
+  assert_implements_optional(availability == 'downloadable');
+  console.log(`test 2 | availability = ${availability}`);
   assert_false(navigator.userActivation.isActive);
+  console.log('test 3');
   await promise_rejects_dom(t, 'NotAllowedError', Translator.create(languagePair));
-  await test_driver.bless('Translator.create', async () => { await Translator.create(languagePair); });
-
+  console.log('test 4');
+  await test_driver.bless('Translator.create');
+  console.log('test 5');
+  const translatorPromise = Translator.create({
+    sourceLanguage: 'es',
+    targetLanguage: 'ja',
+    monitor(m) {
+      m.addEventListener('downloadprogress', (e) => {
+        console.log(`test Downloaded ${e.loaded * 100}%`);
+      });
+    }
+  });
+  console.log('test 6.1');
+  await translatorPromise;
+  console.log('test 6.2');
   // Create does not require user activation when availability is 'available'.
   assert_equals(await Translator.availability(languagePair), 'available');
+  console.log('test 7');
   assert_false(navigator.userActivation.isActive);
+  console.log('test 8');
   await Translator.create(languagePair);
+  console.log('test 9');
 }, 'Create requires user activation when availability is "downloadable"');
 
 promise_test(async t => {

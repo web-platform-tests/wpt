@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="windows-1250">
+<title>Bytes modules: Windows-1250 decoding</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script type="module">
+  import mod from "../serve-with-content-type.py?fn=bytes-module/utf-8.json" with { type: "bytes" };
+  test(() => {
+    assert_true(mod instanceof Uint8Array);
+    assert_array_equals(Array.from(mod), [
+      239, 187, 191, 123, 32, 34, 100, 97, 116, 97, 34,
+      58, 32, 34, 104, 101, 108, 108, 111, 34, 32, 125,
+    ]);
+  }, "Bytes should be loaded as is, even when encoded in utf-8 and served though document's encoding is windows-1250");
+</script>
+<script type="module">
+  import mod from "../serve-with-content-type.py?fn=bytes-module/windows-1250.json&ct=text/json%3Bcharset=windows-1250" with { type: "bytes"};
+  test(() => {
+    assert_true(mod instanceof Uint8Array);
+    assert_array_equals(Array.from(mod), [
+      239, 187, 191, 123, 32, 34, 100, 97, 116, 97, 34,
+      58, 32, 34, 104, 101, 108, 108, 111, 34, 32, 125,
+    ]);
+  }, "Bytes should be loaded as is, even when encoded in windows-1250 and served with a windows-1250 charset response header, and this document's encoding is windows-1250");
+</script>

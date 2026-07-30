@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Bytes modules: Content-Type</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+function check(t, v) {
+  t.step(() => {
+    assert_true(v instanceof Uint8Array);
+    const expected = [
+      0x89,
+      0x50,
+      0x4e,
+      0x47,
+      0xd,
+      0xa,
+      0x1a,
+      0xa,
+      0x0,
+      0x0,
+      0x0,
+      0xd,
+      0x49,
+      0x48,
+      0x44,
+      0x52,
+      0x0,
+      0x0,
+      0x0,
+      0x1,
+      0x0,
+      0x0,
+      0x0,
+      0x1,
+      0x1,
+      0x0,
+      0x0,
+      0x0,
+      0x0,
+      0x37,
+      0x6e,
+      0xf9,
+      0x24,
+      0x0,
+      0x0,
+      0x0,
+      0xa,
+      0x49,
+      0x44,
+      0x41,
+      0x54,
+      0x78,
+      0x1,
+      0x63,
+      0x60,
+      0x0,
+      0x0,
+      0x0,
+      0x2,
+      0x0,
+      0x1,
+      0x73,
+      0x75,
+      0x1,
+      0x18,
+      0x0,
+      0x0,
+      0x0,
+      0x0,
+      0x49,
+      0x45,
+      0x4e,
+      0x44,
+      0xae,
+      0x42,
+      0x60,
+      0x82,
+    ];
+    assert_array_equals(Array.from(v), expected);
+    t.done();
+  });
+}
+const t1 = async_test("image/png");
+const t2 = async_test("application/octet-stream");
+const t3 = async_test("application/binary");
+const t4 = async_test("image/svg+xml");
+const t5 = async_test("image/png;boundary=something");
+const t6 = async_test("text/html");
+</script>
+<script type="module" onerror="t1.step(() => assert_unreached(event))">
+import v from "../serve-with-content-type.py?fn=bytes-module/image.png&ct=image/png" with { type: "bytes" };
+check(t1, v);
+</script>
+<script type="module" onerror="t2.step(() => assert_unreached(event))">
+import v from "../serve-with-content-type.py?fn=bytes-module/image.png&ct=application/octet-stream" with { type: "bytes" };
+check(t2, v);
+</script>
+<script type="module" onerror="t3.step(() => assert_unreached(event))">
+import v from "../serve-with-content-type.py?fn=bytes-module/image.png&ct=application/binary" with { type: "bytes" };
+check(t3, v);
+</script>
+<script type="module" onerror="t4.step(() => assert_unreached(event))">
+import v from "../serve-with-content-type.py?fn=bytes-module/image.png&ct=image/svg%2Bxml" with { type: "bytes" };
+check(t4, v);
+</script>
+<script type="module" onerror="t5.step(() => assert_unreached(event))">
+import v from "../serve-with-content-type.py?fn=bytes-module/image.png&ct=image/png;boundary=something" with { type: "bytes" };
+check(t5, v);
+</script>
+<script type="module" onerror="t6.step(() => assert_unreached(event))">
+import v from "../serve-with-content-type.py?fn=bytes-module/image.png&ct=text/html" with { type: "bytes" };
+check(t6, v);
+</script>

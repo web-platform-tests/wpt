@@ -316,6 +316,8 @@ def get_environ(logger, binary, debug_info, headless, gmp_path, chaos_mode_flags
         mozinfo.info["bin_suffix"] = (".exe" if sys.platform in ["win32", "msys", "cygwin"]
                                       else "")
 
+    override_moz_log = "MOZ_LOG" not in os.environ
+
     # test_environment has started returning None values for some environment variables
     # that are only set in a gecko checkout
     env = {key: value for key, value in
@@ -335,6 +337,25 @@ def get_environ(logger, binary, debug_info, headless, gmp_path, chaos_mode_flags
         env["MOZ_HEADLESS"] = "1"
     if not e10s:
         env["MOZ_FORCE_DISABLE_E10S"] = "1"
+
+    if override_moz_log:
+        output = []
+        for part in env["MOZ_LOG"].split(","):
+            if ":" in part:
+                name, level = part.split(":", 1)
+                if name in {"signaling", "mtransport", "DataChannel", "jsep"}:
+                    level = "1"
+                output.append(f"{name}:{level}")
+            else:
+                output.append(part)
+        env["MOZ_LOG"] = ",".join(output)
+
+    for key in ['R_LOG_LEVEL', 'R_LOG_DESTINATION', 'R_LOG_VERBOSE']:
+        if key in env:
+            del env[key]
+
+    env_str = "\n".join(f"{key}: {value}" for key, value in env.items())
+    logger.debug(f"Set environment:\n{env_str}")
     return env
 
 

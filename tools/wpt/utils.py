@@ -24,7 +24,11 @@ def call(*args):
     """
     logger.debug(" ".join(args))
     try:
-        return subprocess.check_output(args).decode('utf8')
+        # Since the ELF interpreter path of the webdriver binary may be
+        # relative, we need to use `cwd` to specify the same directory
+        # of the binary.
+        return subprocess.check_output(args, cwd=os.path.dirname(
+            args[0])).decode('utf8')
     except subprocess.CalledProcessError as e:
         logger.critical("%s exited with return code %i" %
                         (e.cmd, e.returncode))

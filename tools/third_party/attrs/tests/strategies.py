@@ -3,6 +3,7 @@
 """
 Testing strategies for Hypothesis-based tests.
 """
+
 import functools
 import keyword
 import string
@@ -12,8 +13,6 @@ from collections import OrderedDict
 from hypothesis import strategies as st
 
 import attr
-
-from attr._compat import PY_3_8_PLUS
 
 from .utils import make_class
 
@@ -75,7 +74,7 @@ def _create_hyp_nested_strategy(draw, simple_class_strategy):
 bare_attrs = st.builds(attr.ib, default=st.none())
 int_attrs = st.integers().map(lambda i: attr.ib(default=i))
 str_attrs = st.text().map(lambda s: attr.ib(default=s))
-float_attrs = st.floats().map(lambda f: attr.ib(default=f))
+float_attrs = st.floats(allow_nan=False).map(lambda f: attr.ib(default=f))
 dict_attrs = st.dictionaries(keys=st.text(), values=st.integers()).map(
     lambda d: attr.ib(default=d)
 )
@@ -145,7 +144,7 @@ def simple_classes(
     be generated, and if `slots=False` is passed in, no slotted classes will be
     generated. The same applies to `frozen` and `weakref_slot`.
 
-    By default, some attributes will be private (i.e. prefixed with an
+    By default, some attributes will be private (those prefixed with an
     underscore). If `private_attrs=True` is passed in, all attributes will be
     private, and if `private_attrs=False`, no attributes will be private.
     """
@@ -189,9 +188,7 @@ def simple_classes(
         cls_dict["__init__"] = init
 
     bases = (object,)
-    if cached_property or (
-        PY_3_8_PLUS and cached_property is None and cached_property_flag
-    ):
+    if cached_property or (cached_property is None and cached_property_flag):
 
         class BaseWithCachedProperty:
             @functools.cached_property

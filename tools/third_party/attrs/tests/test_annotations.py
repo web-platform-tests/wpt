@@ -11,7 +11,9 @@ import typing
 import pytest
 
 import attr
+import attrs
 
+from attr._compat import PY_3_14_PLUS
 from attr._make import _is_class_var
 from attr.exceptions import UnannotatedAttributeError
 
@@ -60,7 +62,7 @@ class TestAnnotations:
                 x: int = attr.ib(type=int)
 
         assert (
-            "Type annotation and type argument cannot both be present",
+            "Type annotation and type argument cannot both be present for 'x'.",
         ) == e.value.args
 
     def test_typing_annotations(self):
@@ -106,7 +108,7 @@ class TestAnnotations:
         class C:
             cls_var: typing.ClassVar[int] = 23
             a: int
-            x: typing.List[int] = attr.Factory(list)
+            x: typing.List[int] = attrs.Factory(list)
             y: int = 2
             z: int = attr.ib(default=3)
             foo: typing.Any = None
@@ -120,15 +122,15 @@ class TestAnnotations:
 
         attr.resolve_types(C)
 
-        assert int == attr.fields(C).a.type
+        assert int is attr.fields(C).a.type
 
         assert attr.Factory(list) == attr.fields(C).x.default
-        assert typing.List[int] == attr.fields(C).x.type
+        assert typing.List[int] is attr.fields(C).x.type
 
-        assert int == attr.fields(C).y.type
+        assert int is attr.fields(C).y.type
         assert 2 == attr.fields(C).y.default
 
-        assert int == attr.fields(C).z.type
+        assert int is attr.fields(C).z.type
 
         assert typing.Any == attr.fields(C).foo.type
 
@@ -306,8 +308,11 @@ class TestAnnotations:
         """
 
         p = attr.converters.pipe()
+
         assert "val" in p.__annotations__
+
         t = p.__annotations__["val"]
+
         assert isinstance(t, typing.TypeVar)
         assert p.__annotations__ == {"val": t, "return": t}
 
@@ -403,7 +408,7 @@ class TestAnnotations:
             cls_var2: "ClassVar[int]" = 23
             cls_var3: "t.ClassVar[int]" = 23
             a: "int"
-            x: "typing.List[int]" = attr.Factory(list)
+            x: "typing.List[int]" = attrs.Factory(list)
             y: "int" = 2
             z: "int" = attr.ib(default=3)
             foo: "typing.Any" = None
@@ -496,7 +501,7 @@ class TestAnnotations:
 
         @attr.s(auto_attribs=True)
         class C:
-            x: typing.Any = NonComparable()
+            x: typing.Any = NonComparable()  # noqa: RUF009
 
     def test_basic_resolve(self):
         """
@@ -534,7 +539,7 @@ class TestAnnotations:
 
         attr.resolve_types(C, globals)
 
-        assert attr.fields(C).x.type == Annotated[float, "test"]
+        assert Annotated[float, "test"] is attr.fields(C).x.type
 
         @attr.define
         class D:
@@ -542,7 +547,7 @@ class TestAnnotations:
 
         attr.resolve_types(D, globals, include_extras=False)
 
-        assert attr.fields(D).x.type == float
+        assert float is attr.fields(D).x.type
 
     def test_resolve_types_auto_attrib(self, slots):
         """
@@ -583,6 +588,8 @@ class TestAnnotations:
         """
         References to self class using quotes can be resolved.
         """
+        if PY_3_14_PLUS and not slots:
+            pytest.xfail("References are changing a lot in 3.14.")
 
         @attr.s(slots=slots, auto_attribs=True)
         class A:
@@ -598,6 +605,8 @@ class TestAnnotations:
         """
         Forward references can be resolved.
         """
+        if PY_3_14_PLUS and not slots:
+            pytest.xfail("Forward references are changing a lot in 3.14.")
 
         @attr.s(slots=slots, auto_attribs=True)
         class A:
@@ -658,8 +667,8 @@ class TestAnnotations:
         attr.resolve_types(A)
         attr.resolve_types(B)
 
-        assert int == attr.fields(A).n.type
-        assert int == attr.fields(B).n.type
+        assert int is attr.fields(A).n.type
+        assert int is attr.fields(B).n.type
 
     def test_resolve_twice(self):
         """
@@ -672,9 +681,12 @@ class TestAnnotations:
             n: "int"
 
         attr.resolve_types(A)
-        assert int == attr.fields(A).n.type
+
+        assert int is attr.fields(A).n.type
+
         attr.resolve_types(A)
-        assert int == attr.fields(A).n.type
+
+        assert int is attr.fields(A).n.type
 
 
 @pytest.mark.parametrize(

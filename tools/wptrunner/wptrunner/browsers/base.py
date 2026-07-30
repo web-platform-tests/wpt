@@ -103,7 +103,7 @@ class Browser:
 
     init_timeout: float = 30
 
-    def __init__(self, logger: StructuredLogger, *, manager_number: int, **kwargs: Any):
+    def __init__(self, logger: StructuredLogger, *, manager_number: int, **kwargs: Any) -> None:
         if kwargs:
             logger.warning(f"Browser.__init__ kwargs: {kwargs!r}")
         super().__init__()
@@ -160,7 +160,7 @@ class Browser:
         with which it should be instantiated"""
         return ExecutorBrowser, {}
 
-    def check_crash(self, process: int, test: str) -> bool:
+    def check_crash(self, process: Optional[int], test: Optional[str]) -> bool:
         """Check if a crash occured and output any useful information to the
         log. Returns a boolean indicating whether a crash occured."""
         return False
@@ -197,7 +197,7 @@ class ExecutorBrowser:
     but in some cases it may have more elaborate methods for setting
     up the browser from the runner process.
     """
-    def __init__(self, **kwargs: Any):
+    def __init__(self, **kwargs: Any) -> None:
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -246,7 +246,7 @@ class OutputHandler:
     but sometimes use a wrapper e.g. mozrunner.
     """
 
-    def __init__(self, logger: StructuredLogger, command: List[str], **kwargs: Any):
+    def __init__(self, logger: StructuredLogger, command: List[str], **kwargs: Any) -> None:
         self.logger = logger
         self.command = command
         self.pid: Optional[int] = None
@@ -305,7 +305,7 @@ class WebDriverBrowser(Browser):
                  base_path: str = "/",
                  env: Optional[Mapping[str, str]] = None,
                  supports_pac: bool = True,
-                 **kwargs: Any):
+                 **kwargs: Any) -> None:
         super().__init__(logger, **kwargs)
 
         if webdriver_binary is None:

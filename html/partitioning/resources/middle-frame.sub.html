@@ -1,0 +1,14 @@
+<!doctype html>
+<meta charset=utf-8>
+<body>
+  <iframe id="innerFrame"></iframe>
+  <script>
+    window.addEventListener("message", (event) => {
+      if (event.data?.type != "result") {
+        return;
+      }
+      parent.postMessage(event.data, "*");
+    });
+    let innerFrame = document.getElementById("innerFrame");
+    innerFrame.src ="//{{hosts[][]}}:{{ports[https][0]}}{{location[path]}}/../../resources/post-storage.sub.html{{location[query]}}";
+  </script>

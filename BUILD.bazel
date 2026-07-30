@@ -1,0 +1,16 @@
+# Bazel support is added to enable projects that use Bazel to easily
+# access the test suite, and file groups without having the need to float
+# a patch on top of WPT.
+#
+# In order to iterate over the files inside a subfolder of WPT, we expose
+# the globs in the `tests.bzl` file.
+#
+# In order to format and lint a bazel file, you can use the following command:
+# > buildifier -mode=check BUILD.bazel tests.bzl
+load("//:tests.bzl", "directories")
+
+[filegroup(
+    name = dir,
+    srcs = glob(["{}/**/*".format(dir)]),
+    visibility = ["//visibility:public"],
+) for dir in directories]

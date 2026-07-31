@@ -95,6 +95,13 @@
   }
 
   promise_test(async (t) => {
+    const popovers = [hint1, hint2, improperlynestedauto2, manual1];
+    openall(popovers, t);
+    await clickOn(improperlynestedauto2);
+    assertState(popovers, [true, true, true, true]);
+  }, 'Clicking an auto nested inside a hint keeps the whole chain open');
+
+  promise_test(async (t) => {
     openall(setA, t);
     await clickOn(outside);
     assertState(setA, [false,false,false,false,true]);

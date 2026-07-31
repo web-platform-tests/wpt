@@ -97,133 +97,148 @@ function intersection_of([a0, a1], [b0, b1]) {
 }
 
 /**
- * @param {number} x
- * @param {number} y
- * @param {Vector2D} vectorTowardsStart
- * @param {Vector2D} vectorTowardsEnd
- * @param {number} curvature
+ * @param {number} startRadius
+ * @param {number} endRadius
  * @param {number} startInset
  * @param {number} endInset
+ * @param {DOMPointReadOnly} targetOuter
+ * @param {Vector2D} normalizedV3
+ * @param {Vector2D} normalizedV2
+ * @param {number} superellipse_param
  * @param {"fill" | "stroke"} mode
  */
-function get_path_for_corner(
-    x, y, vectorTowardsStart, vectorTowardsEnd, superellipse_param, startInset,
-    endInset, mode = 'fill') {
-  if (superellipse_param === Infinity || vectorTowardsStart.length() < 0.1 ||
-      vectorTowardsEnd.length() < 0.1) {
-    const path = new Path2D();
-    path.moveTo(x, y);
+function get_path_for_corner(startRadius, endRadius, startInset, endInset,
+  targetOuter, normalizedV3, normalizedV2,
+  superellipse_param, mode = 'fill') {
+  const path = new Path2D();
+  if (!startRadius || !endRadius || superellipse_param === Infinity)
+    return path;
+
+  const originalOuter = extend_point(targetOuter, normalizedV3.scale(-endInset),
+    normalizedV2.scale(-startInset));
+  const originalStart =
+    extend_point(originalOuter, normalizedV3.scale(endRadius));
+  const originalEnd =
+    extend_point(originalOuter, normalizedV2.scale(startRadius));
+  const originalCenter =
+    extend_point(originalOuter, normalizedV3.scale(endRadius),
+      normalizedV2.scale(startRadius));
+
+  const map_point_to_corner = (x, y, start, end, center) =>
+    extend_point(center, Vector2D.fromPoints(center, end).scale(x),
+      Vector2D.fromPoints(center, start).scale(y));
+
+  const add_curve = (path, start, outer, end, center) => {
+    path.lineTo(start.x, start.y);
+    if (superellipse_param < -10) {
+      path.lineTo(center.x, center.y);
+      path.lineTo(end.x, end.y);
+      return;
+    }
+
+    const n = Math.pow(2, Math.abs(superellipse_param));
+    const curveCenter = superellipse_param < 0 ? outer : center;
+    const t_set = new Set([0, 1]);
+    const denom = Math.log(1 / n);
+    for (let x = Math.min(start.x, end.x); x < Math.max(start.x, end.x); x++) {
+      const t = Math.log((x - start.x) / (end.x - start.x)) / denom;
+      if (t > 0 && t < 1)
+        t_set.add(t);
+    }
+    for (let y = Math.min(start.y, end.y); y < Math.max(start.y, end.y); y++) {
+      const t = Math.log(1 - (y - start.y) / (end.y - start.y)) / denom;
+      if (t > 0 && t < 1)
+        t_set.add(t);
+    }
+    for (const t of [...t_set].toSorted((a, b) => a - b)) {
+      const x = Math.pow(t, 1 / n);
+      const y = Math.pow(1 - t, 1 / n);
+      const point = map_point_to_corner(x, y, start, end, curveCenter);
+      path.lineTo(point.x, point.y);
+    }
+  };
+
+  if (!startInset && !endInset) {
+    path.moveTo(originalStart.x, originalStart.y);
+    add_curve(path, originalStart, originalOuter, originalEnd, originalCenter);
+    if (mode === 'fill')
+      path.lineTo(targetOuter.x, targetOuter.y);
     return path;
   }
 
-  let curvature =
-      superellipse_param < -10 ? 0.01 : Math.pow(2, superellipse_param);
-  const outer = new DOMPoint(x, y);
-  const inverse = curvature < 1;
-  const near_notch = superellipse_param < -8;
-  if (inverse)
-    curvature = 1 / curvature;
+  const clampedK = Math.max(-1, Math.min(1, superellipse_param));
+  const n = Math.pow(2, Math.abs(clampedK));
+  const convexHalfCorner = Math.pow(0.5, 1 / n);
+  const halfCorner = clampedK < 0 ? 1 - convexHalfCorner : convexHalfCorner;
+  const controlPointX = halfCorner / (Math.SQRT2 - 1) - 1 / Math.SQRT2;
 
-  const corner = {
-    start: extend_point(outer, vectorTowardsStart),
-    end: extend_point(outer, vectorTowardsEnd),
-    outer,
-    center: extend_point(outer, vectorTowardsStart, vectorTowardsEnd)
-  }
+  const insetDiff =
+    Math.max(-startRadius, Math.min(endRadius, endInset - startInset));
+  const normalLength =
+    Math.sqrt(startRadius ** 2 + endRadius ** 2 + insetDiff ** 2);
+  const bevelNormalX = endRadius * insetDiff + startRadius * normalLength;
+  const bevelNormalY = -startRadius * insetDiff + endRadius * normalLength;
+  const bevelControlPointX = startRadius * bevelNormalY /
+    (startRadius * bevelNormalY + endRadius * bevelNormalX);
+  const startControlPointX = superellipse_param < 0 ?
+    bevelControlPointX * (2 * controlPointX) :
+    1 - (1 - bevelControlPointX) * (2 * (1 - controlPointX));
+  const endControlPointX = 2 * controlPointX - startControlPointX;
 
-  const extendStart = Vector2D.fromPoints(corner.start, corner.center)
-                          .normalized()
-                          .scale(startInset);
-  const extendEnd = Vector2D.fromPoints(corner.end, corner.center)
-                        .normalized()
-                        .scale(endInset);
-  const clipStart = extend_point(corner.start, extendStart);
-  const clipOuter = extend_point(outer, extendStart, extendEnd);
-  const clipEnd = extend_point(corner.end, extendEnd);
-  const convexClampedHalfCorner =
-      near_notch ? 0.75 : Math.pow(0.5, 1 / Math.min(2, curvature));
-  const clampedHalfCorner =
-      inverse ? 1 - convexClampedHalfCorner : convexClampedHalfCorner;
-  const unitVectorFromStartToControlPoint =
-      new Vector2D(2 * clampedHalfCorner - 0.5, 1.5 - 2 * clampedHalfCorner);
-  const singlePixelStrokeVector =
-      unitVectorFromStartToControlPoint.normalized().perpendicular();
+  const startNormal = new Vector2D((1 - startControlPointX) * startRadius,
+    startControlPointX * endRadius)
+    .normalized();
+  const endNormal = new Vector2D(endControlPointX * startRadius,
+    (1 - endControlPointX) * endRadius)
+    .normalized();
+  const offsetStartV3 = normalizedV3.scale(startNormal.x * startInset);
+  const offsetStartV2 = normalizedV2.scale(startNormal.y * startInset);
+  const offsetEndV3 = normalizedV3.scale(endNormal.x * endInset);
+  const offsetEndV2 = normalizedV2.scale(endNormal.y * endInset);
 
-  const offsets = [
-    Vector2D.fromPoints(corner.start, outer)
-        .normalized()
-        .scale(startInset * singlePixelStrokeVector.x),
-    Vector2D.fromPoints(outer, corner.end)
-        .normalized()
-        .scale(startInset * singlePixelStrokeVector.y),
-    Vector2D.fromPoints(corner.end, corner.center)
-        .normalized()
-        .scale(endInset * singlePixelStrokeVector.y),
-    Vector2D.fromPoints(corner.center, corner.start)
-        .normalized()
-        .scale(endInset * singlePixelStrokeVector.x)
-  ];
+  const adjustedStart =
+    extend_point(originalStart, offsetStartV3, offsetStartV2);
+  const adjustedOuter = extend_point(originalOuter, offsetEndV3, offsetStartV2);
+  const adjustedEnd = extend_point(originalEnd, offsetEndV3, offsetEndV2);
+  const adjustedCenter =
+    extend_point(originalCenter, offsetStartV3, offsetEndV2);
 
-  const adjusted_start = extend_point(corner.start, offsets[0], offsets[1]);
-  const adjusted_outer = extend_point(corner.outer, offsets[1], offsets[2]);
-  const adjusted_end = extend_point(corner.end, offsets[2], offsets[3]);
-  const adjusted_center = extend_point(corner.center, offsets[3], offsets[0]);
-  const curve_center = inverse ? adjusted_outer : adjusted_center;
-
-  const map_point_to_corner = p => extend_point(
-      curve_center, Vector2D.fromPoints(curve_center, adjusted_end).scale(p.x),
-      Vector2D.fromPoints(curve_center, adjusted_start).scale(p.y));
-
-  const controlPoint = map_point_to_corner(new DOMPointReadOnly(
-      unitVectorFromStartToControlPoint.y,
-      1 - unitVectorFromStartToControlPoint.x));
-  const axisAlignedCornerStart =
-      intersection_of([adjusted_start, controlPoint], [clipStart, clipOuter]) ||
-      adjusted_start;
-  const axisAlignedCornerEnd =
-      intersection_of([adjusted_end, controlPoint], [clipOuter, clipEnd]) ||
-      adjusted_end;
-
-  const path = new Path2D();
-  const lineTo = ({x, y}) => path.lineTo(x, y);
-
-  path.moveTo(axisAlignedCornerStart.x, axisAlignedCornerStart.y);
-  if (near_notch) {
-    lineTo(adjusted_center);
+  const edgeStart = extend_point(targetOuter, normalizedV3);
+  const edgeEnd = extend_point(targetOuter, normalizedV2);
+  let miterStart = adjustedStart;
+  let miterEnd = adjustedEnd;
+  if (superellipse_param < 0) {
+    const startTangent =
+      Vector2D.concat(offsetStartV3, offsetStartV2).perpendicular().scale(-1);
+    const endTangent =
+      Vector2D.concat(offsetEndV3, offsetEndV2).perpendicular();
+    miterStart = intersection_of(
+      [adjustedStart, extend_point(adjustedStart, startTangent)],
+      [edgeStart, targetOuter]) ||
+      adjustedStart;
+    miterEnd =
+      intersection_of([adjustedEnd, extend_point(adjustedEnd, endTangent)],
+        [edgeEnd, targetOuter]) ||
+      adjustedEnd;
   } else {
-    const t_set = new Set([0, 1]);
-    const denom = Math.log(1 / curvature);
-    for (let x = Math.min(adjusted_start.x, adjusted_end.x);
-         x < Math.max(adjusted_start.x, adjusted_end.x); x++) {
-      const t =
-          Math.log(
-              (x - adjusted_start.x) / (adjusted_end.x - adjusted_start.x)) /
-          denom;
-      if (t > 0 && t < 1)
-        t_set.add(t);
-    }
-    for (let y = Math.min(adjusted_start.y, adjusted_end.y);
-         y < Math.max(adjusted_start.y, adjusted_end.y); y++) {
-      const t =
-          Math.log(
-              1 -
-              (y - adjusted_start.y) / (adjusted_end.y - adjusted_start.y)) /
-          denom;
-      if (t > 0 && t < 1)
-        t_set.add(t);
-    }
-
-    for (const t of [...t_set].toSorted((a, b) => a - b)) {
-      const a = Math.pow(t, 1 / curvature);
-      const b = Math.pow(1 - t, 1 / curvature);
-      const point = map_point_to_corner(new DOMPointReadOnly(a, b));
-      lineTo(point);
-    }
+    const controlPoint =
+      map_point_to_corner(controlPointX, controlPointX, adjustedStart,
+        adjustedEnd, adjustedCenter);
+    miterStart = intersection_of([adjustedStart, controlPoint],
+      [edgeStart, targetOuter]) ||
+      adjustedStart;
+    miterEnd =
+      intersection_of([adjustedEnd, controlPoint], [edgeEnd, targetOuter]) ||
+      adjustedEnd;
   }
-  lineTo(axisAlignedCornerEnd);
 
+  path.moveTo(startInset < 0 ? miterStart.x : adjustedStart.x,
+    startInset < 0 ? miterStart.y : adjustedStart.y);
+  add_curve(path, adjustedStart, adjustedOuter, adjustedEnd, adjustedCenter);
+  if (endInset < 0)
+    path.lineTo(miterEnd.x, miterEnd.y);
   if (mode === 'fill')
-    lineTo(clipOuter);
+    path.lineTo(targetOuter.x, targetOuter.y);
   return path;
 }
 
@@ -265,29 +280,42 @@ function draw_contoured_path(
           ctx.lineWidth = 3;
           ctx.stroke(path);
         }
-      }
+    };
+
+  const topRightRadius = style['border-top-right-radius'];
+  const bottomRightRadius = style['border-bottom-right-radius'];
+  const bottomLeftRadius = style['border-bottom-left-radius'];
+  const topLeftRadius = style['border-top-left-radius'];
+  const topRightInset = adjusted_inset(borderEdge.width, borderEdge.height,
+    topRightRadius, inset.right, inset.top);
+  const bottomRightInset =
+    adjusted_inset(borderEdge.width, borderEdge.height, bottomRightRadius,
+      inset.right, inset.bottom);
+  const bottomLeftInset =
+    adjusted_inset(borderEdge.width, borderEdge.height, bottomLeftRadius,
+      inset.left, inset.bottom);
+  const topLeftInset = adjusted_inset(borderEdge.width, borderEdge.height,
+    topLeftRadius, inset.left, inset.top);
 
   ctx.save();
   add_corner(get_path_for_corner(
-      borderEdge.right, borderEdge.top,
-      new Vector2D(-style['border-top-right-radius'][0], 0),
-      new Vector2D(0, style['border-top-right-radius'][1]),
-      style['corner-top-right-shape'], inset.top, inset.right, mode));
+    topRightRadius[1], topRightRadius[0], topRightInset[1], topRightInset[0],
+    new DOMPoint(targetEdge.right, targetEdge.top), new Vector2D(-1, 0),
+    new Vector2D(0, 1), style['corner-top-right-shape'], mode));
   add_corner(get_path_for_corner(
-      borderEdge.right, borderEdge.bottom,
-      new Vector2D(0, -style['border-bottom-right-radius'][1]),
-      new Vector2D(-style['border-bottom-right-radius'][0], 0),
-      style['corner-bottom-right-shape'], inset.right, inset.bottom, mode));
+    bottomRightRadius[0], bottomRightRadius[1], bottomRightInset[0],
+    bottomRightInset[1], new DOMPoint(targetEdge.right, targetEdge.bottom),
+    new Vector2D(0, -1), new Vector2D(-1, 0),
+    style['corner-bottom-right-shape'], mode));
   add_corner(get_path_for_corner(
-      borderEdge.left, borderEdge.bottom,
-      new Vector2D(style['border-bottom-left-radius'][0], 0),
-      new Vector2D(0, -style['border-bottom-left-radius'][1]),
-      style['corner-bottom-left-shape'], inset.bottom, inset.left, mode));
+    bottomLeftRadius[1], bottomLeftRadius[0], bottomLeftInset[1],
+    bottomLeftInset[0], new DOMPoint(targetEdge.left, targetEdge.bottom),
+    new Vector2D(1, 0), new Vector2D(0, -1),
+    style['corner-bottom-left-shape'], mode));
   add_corner(get_path_for_corner(
-      borderEdge.left, borderEdge.top,
-      new Vector2D(0, style['border-top-left-radius'][1]),
-      new Vector2D(style['border-top-left-radius'][0], 0),
-      style['corner-top-left-shape'], inset.left, inset.top, mode));
+    topLeftRadius[0], topLeftRadius[1], topLeftInset[0], topLeftInset[1],
+    new DOMPoint(targetEdge.left, targetEdge.top), new Vector2D(0, 1),
+    new Vector2D(1, 0), style['corner-top-left-shape'], mode));
   if (mode === 'fill') {
     ctx.fillRect(
         targetEdge.x, targetEdge.y, targetEdge.width, targetEdge.height);
@@ -296,30 +324,18 @@ function draw_contoured_path(
 }
 
 
-function adjust_radii(s, spread, width, height) {
-  const style = {...s};
-  style['border-top-left-radius'] = adjusted_radius(
-      width, height, ...style['border-top-left-radius'], spread);
-  style['border-top-right-radius'] = adjusted_radius(
-      width, height, ...style['border-top-right-radius'], spread);
-  style['border-bottom-right-radius'] = adjusted_radius(
-      width, height, ...style['border-bottom-right-radius'], spread);
-  style['border-bottom-left-radius'] = adjusted_radius(
-      width, height, ...style['border-bottom-left-radius'], spread);
-  return style;
-}
-
-function adjusted_radius(width, height, h_radius, v_radius, outset) {
-  const coverage = 2 * Math.min(h_radius / width, v_radius / height);
-  return [
-    adjusted_radius_dimension(coverage, h_radius, outset) - outset,
-    adjusted_radius_dimension(coverage, v_radius, outset) - outset
+function adjusted_inset(width, height, radius, inset_x, inset_y) {
+  const coverage = 2 * Math.min(radius[0] / width, radius[1] / height);
+  const adjusted_radius = [
+    adjusted_radius_dimension(coverage, radius[0], -inset_x),
+    adjusted_radius_dimension(coverage, radius[1], -inset_y)
   ];
+  return [radius[0] - adjusted_radius[0], radius[1] - adjusted_radius[1]];
 }
 
 function adjusted_radius_dimension(coverage, radius, outset) {
   radius = Math.max(radius, 0.01);
-  if (radius > outset || coverage > 1 || radius) {
+  if (radius > outset || coverage > 1) {
     return radius + outset;
   }
   const ratio = radius / outset;
@@ -342,14 +358,13 @@ function render(style, ctx, width, height, mode = 'fill') {
     ctx.save();
     ctx.translate(...shadow_offset);
     ctx.fillStyle = 'black';
-    draw_contoured_path(
-        ctx, adjust_radii(style, shadow_spread, width, height), border_rect, {
-          left: -shadow_spread,
-          top: -shadow_spread,
-          right: -shadow_spread,
-          bottom: -shadow_spread
-        },
-        mode);
+    draw_contoured_path(ctx, style, border_rect, {
+      left: -shadow_spread,
+      top: -shadow_spread,
+      right: -shadow_spread,
+      bottom: -shadow_spread
+    },
+      mode);
     ctx.restore();
   }
   ctx.fillStyle = 'purple';

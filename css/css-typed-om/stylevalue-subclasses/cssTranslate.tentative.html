@@ -26,10 +26,10 @@ test(() => {
 }, 'Constructing a CSSTranslate with a percent for the Z coordinate throws a TypeError');
 
 for (const attr of ['x', 'y', 'z']) {
-  for (const {value, desc} of gInvalidCoordTestCases) {
+  for (const {coord, desc} of gInvalidCoordTestCases) {
     test(() => {
       let result = new CSSTranslate(CSS.px(0), CSS.px(0), CSS.px(0));
-      assert_throws_js(TypeError, () => result[attr] = value);
+      assert_throws_js(TypeError, () => result[attr] = coord);
       assert_style_value_equals(result[attr], CSS.px(0));
     }, 'Updating CSSTranslate.' + attr + ' to ' + desc + ' throws a TypeError');
   }

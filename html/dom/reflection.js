@@ -171,6 +171,59 @@ ReflectionTests.parseFloat = function(input) {
     return value;
 }
 
+/**
+  * Contains a mapping from an interface to the name of the implementing tag
+  */
+ReflectionTests.interfaceToImplementingTagNameMap = new Map([
+    [Element, "div"],
+])
+
+/**
+  * Creates a context and inserts an element into it.
+  *
+  *   "domObj": The element that will replace the first <slot> element of the context.
+  *   "context": The context in which the element is placed.
+  *       If the context is a string or an array of strings,
+  *       it will be parsed as HTML and if necessary wrapped in a DocumentFragment.
+  */
+ReflectionTests.renderInContext = function(domObj, context) {
+    if (context === undefined) {
+      return context;
+    }
+
+    if (typeof context === "string") {
+      context = [context];
+    }
+
+    if (Array.isArray(context)) {
+      var container = document.createElement('div');
+      for (var html of context) {
+          try {
+              container.insertAdjacentHTML('beforeend', html)
+          } catch {
+              throw "Test bug: cannot parse context string as HTML"
+          }
+      }
+
+      if (container.children.length === 1) {
+          context = container.firstElementChild;
+          container.firstElementChild.remove();
+      } else {
+          context = document.createDocumentFragment();
+          for (var child of container.children) {
+            context.append(child);
+          }
+      }
+    }
+
+    var slot = context.querySelector('slot');
+    if (slot !== null) {
+        slot.replaceWith(domObj);
+    }
+
+    return context;
+}
+
 // Used in initializing typeMap
 var binaryString = "\x00\x01\x02\x03\x04\x05\x06\x07 "
     + "\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f "
@@ -664,11 +717,90 @@ ReflectionTests.typeMap = {
             // when the test cases are expanded with more values.
             return ReflectionTests.parseFloat(String(val));
         }
+    },
+    /**
+     * If a reflecting IDL attribute has a FrozenArray<T>? type, then on getting,
+     * if the elements are set explicitly, those elements that are descendants of
+     * any ancestor of the original element must be returned. Otherwise, the content
+     * attribute value must be split by " ", and for each id in the resulting array,
+     * the first candidate such that: 1) the candidate has the same root, 2) the
+     * candidate's ID equals id, and 3) the candidate implements T, must be added
+     * to the result (if such candidate exists).
+     *
+     * Subsequent retrievals must return the same object if the content has not
+     * changed.
+     *
+     * If the value is set explicitly, the content attribute value must be equal
+     * to an empty string.
+     */
+    "FrozenArray<T>?": function (T) {
+        var impl = ReflectionTests.interfaceToImplementingTagNameMap.get(T);
+        if (typeof impl !== "string") {
+          throw "Test bug: " + String(T) + " does not have a corresponding implementing tag name. " +
+            "Perhaps you forgot to add it to interfaceToImplementingTagNameMap?";
+        }
+
+        var root1 = document.createElement('div');
+
+        var slot = document.createElement('slot');
+        root1.append(slot);
+
+        var root2 = document.createElement('div');
+
+        var candidates = ["followingAllCriteria1", "followingAllCriteria2"].map(function(id) {
+          var followingAllCriteria = document.createElement(impl);
+          followingAllCriteria.id = id;
+          root1.append(followingAllCriteria);
+
+          return followingAllCriteria;
+        })
+        var candidateIds = candidates.map(function (candidate) { return candidate.id });
+
+        var notTheFirst = document.createElement(impl);
+        notTheFirst.id = "followingAllCriteria";
+        root1.append(notTheFirst);
+
+        var differentRoot = document.createElement(impl);
+        differentRoot.id = "differentRoot";
+        root2.append(differentRoot);
+
+        var notCandidates = [differentRoot];
+
+        // Only the Element and its inheriting interfaces have an id, so otherwise this case does not exist
+        if (T !== Element) {
+          var nonImplementing = document.createElementNS('xml', 'root');
+          nonImplementing.id = "nonImplementing";
+          root1.append(nonImplementing);
+
+          notCandidates.push(nonImplementing);
+        }
+
+        var notCandidateIds = notCandidates.map(function (notCandidate) { return notCandidate.id });
+
+        var shadowingCandidates = [candidates[0], notTheFirst];
+        var shadowingCandidateIds = [candidates[0].id, notTheFirst.id];
+
+        var data = {
+            "jsType": "object",
+            "defaultVal": null,
+            "domContext": root1,
+            "domTests": ["", "missing", notCandidateIds.join(" "), candidateIds.join(" "), shadowingCandidateIds.join(" ")],
+            "domExpected": [[], [], [], candidates, shadowingCandidates],
+            "idlTests": [null, [], notCandidates, candidates, shadowingCandidates],
+            "idlIdlExpected": [null, [], [], candidates, shadowingCandidates],
+        };
+
+        data["idlDomExpected"] = data.idlTests.map(function () { return ""; })
+
+        return data;
     }
 };
 
 for (var type in ReflectionTests.typeMap) {
     var props = ReflectionTests.typeMap[type];
+    if (typeof props === "function") {
+      continue;
+    }
     var cast = window[props.jsType[0].toUpperCase() + props.jsType.slice(1)];
     if (props.domExpected === undefined) {
         props.domExpected = props.domTests.map(cast);
@@ -731,6 +863,11 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
     }
 
     var typeInfo = this.typeMap[data.type];
+    if (typeof typeInfo === "function") {
+      typeInfo = typeInfo(data.T)
+    }
+
+    this.renderInContext(domObj, typeInfo.domContext);
 
     if (typeof data.isNullable == "undefined") {
         data.isNullable = false;
@@ -953,13 +1090,24 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
             domObj.setAttribute(domName, domTests[i]);
             ReflectionHarness.assertEquals(domObj.getAttribute(domName),
                 String(domTests[i]), "getAttribute()");
-            // Tests can pass an array of acceptable values
-            if (Array.isArray(domExpected[i])) {
-              ReflectionHarness.assertInArray(idlObj[idlName], domExpected[i],
-                  "IDL get");
+
+            if (data.type == "FrozenArray<T>?") {
+                var cachedIdl = idlObj[idlName];
+                if (domExpected[i] === null) {
+                  ReflectionHarness.assertEquals(cachedIdl, domExpected[i], "IDL get")
+                } else {
+                  ReflectionHarness.assertArrayEquals(cachedIdl, domExpected[i], "IDL get")
+                }
+                ReflectionHarness.assertEquals(idlObj[idlName], cachedIdl, "IDL get cached")
             } else {
-              ReflectionHarness.assertEquals(idlObj[idlName], domExpected[i],
-                  "IDL get");
+                // Tests can pass an array of acceptable values
+                if (Array.isArray(domExpected[i])) {
+                  ReflectionHarness.assertInArray(idlObj[idlName], domExpected[i],
+                      "IDL get");
+                } else {
+                  ReflectionHarness.assertEquals(idlObj[idlName], domExpected[i],
+                      "IDL get");
+                }
             }
         }, "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]));
     }
@@ -978,6 +1126,15 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
                 ReflectionHarness.assertEquals(domObj.getAttribute(domName),
                                                "previous value", "getAttribute()");
                 ReflectionHarness.assertEquals(idlObj[idlName], previousIdl, "IDL get");
+            } else if (data.type === "FrozenArray<T>?") {
+                idlObj[idlName] = idlTests[i];
+                var cachedIdl = idlObj[idlName];
+                if (idlIdlExpected[i] === null) {
+                    ReflectionHarness.assertEquals(cachedIdl, idlIdlExpected[i], "IDL get")
+                } else {
+                    ReflectionHarness.assertArrayEquals(cachedIdl, idlIdlExpected[i], "IDL get")
+                }
+                ReflectionHarness.assertEquals(idlObj[idlName], cachedIdl, "IDL get cached")
             } else {
                 var previousValue = domObj.getAttribute(domName);
                 idlObj[idlName] = idlTests[i];

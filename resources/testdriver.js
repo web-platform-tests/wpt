@@ -2191,6 +2191,31 @@
         },
 
         /**
+         * Consumes user activation in the given context.
+         *
+         * Matches the `consume-user-activation
+         * <https://html.spec.whatwg.org/#user-activation-user-agent-automation>`_
+         * WebDriver extension command, which consumes the context's active
+         * window's transient user activation and reports whether activation
+         * was present to consume.
+         *
+         * @example
+         * await test_driver.consume_user_activation();
+         * await test_driver.consume_user_activation(iframe.contentWindow);
+         *
+         * @param {WindowProxy} [context=null] - Browsing context in which to
+         *                                       run the call, or null for the
+         *                                       current browsing context.
+         * @returns {Promise<boolean>} Fulfilled with true if transient
+         *                    activation was present and consumed; otherwise
+         *                    false. Rejected in case the WebDriver command
+         *                    errors out.
+         */
+        consume_user_activation: function(context=null) {
+            return window.test_driver_internal.consume_user_activation(context);
+        },
+
+        /**
          * Runs the `bounce tracking timer algorithm
          * <https://privacycg.github.io/nav-tracking-mitigations/#bounce-tracking-timer>`_,
          * which removes all hosts from the stateful bounce tracking map, without
@@ -2741,6 +2766,10 @@
 
         async clear_device_posture(context=null) {
             throw new Error("clear_device_posture() is not implemented by testdriver-vendor.js");
+        },
+
+        async consume_user_activation(context=null) {
+            throw new Error("consume_user_activation() is not implemented by testdriver-vendor.js");
         },
 
         async run_bounce_tracking_mitigations(context=null) {

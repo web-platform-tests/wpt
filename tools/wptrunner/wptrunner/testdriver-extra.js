@@ -686,6 +686,10 @@
         return create_context_action("clear_device_posture", context, {});
     };
 
+    window.test_driver_internal.consume_user_activation = function(context=null) {
+        return create_context_action("consume_user_activation", context, {});
+    };
+
     window.test_driver_internal.run_bounce_tracking_mitigations = function (context = null) {
         return create_context_action("run_bounce_tracking_mitigations", context, {});
     };

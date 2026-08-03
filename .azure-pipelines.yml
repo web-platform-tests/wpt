@@ -255,6 +255,52 @@ jobs:
       directory: tools/wpt/
       toxenv: py314
 
+- job: winsock_probe_win
+  displayName: 'WinError 997 probe: Windows (throwaway, do not merge)'
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.14'
+      addToPath: false
+  - template: tools/ci/azure/checkout.yml
+  - script: $(pythonLocation)\python.exe tools/ci/winsock_probe.py --mode probes --out $(Agent.TempDirectory)\findings.jsonl
+    displayName: 'Deterministic probes (settles H2, H3)'
+    continueOnError: true
+  - script: $(pythonLocation)\python.exe tools/ci/winsock_probe.py --mode wpt --duration 300 --workers 9 --out $(Agent.TempDirectory)\findings.jsonl
+    displayName: 'wpt-shaped hunt (H1)'
+    continueOnError: true
+  - script: $(pythonLocation)\python.exe tools/ci/winsock_probe.py --summarise $(Agent.TempDirectory)\findings.jsonl
+    displayName: 'Verdicts'
+    condition: always()
+  - publish: $(Agent.TempDirectory)\findings.jsonl
+    artifact: winsock-probe-findings
+    condition: always()
+
+- job: winsock_probe_mac_control
+  displayName: 'WinError 997 probe: macOS negative control (throwaway, do not merge)'
+  pool:
+    vmImage: 'macOS-14'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.14'
+  - template: tools/ci/azure/checkout.yml
+  - script: |
+      set -eux -o pipefail
+      python tools/ci/winsock_probe.py --mode probes --force-fallback --out "$AGENT_TEMPDIRECTORY/findings.jsonl"
+    displayName: 'Deterministic probes, forced loopback-TCP fallback'
+    continueOnError: true
+  - script: |
+      set -eux -o pipefail
+      python tools/ci/winsock_probe.py --summarise "$AGENT_TEMPDIRECTORY/findings.jsonl"
+    displayName: 'Verdicts'
+    condition: always()
+  - publish: $(Agent.TempDirectory)/findings.jsonl
+    artifact: winsock-probe-findings-mac-control
+    condition: always()
+
 - job: results_edge_stable
   displayName: 'all tests: Edge Stable'
   condition: |

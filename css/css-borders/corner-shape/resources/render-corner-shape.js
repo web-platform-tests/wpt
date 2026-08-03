@@ -491,9 +491,9 @@ function create_actual(style, width, height) {
   const div = document.createElement('div');
   div.style.width = width + 'px';
   div.style.height = height + 'px';
-  div.style.position = 'relative';
-  div.style.left = `${padding}px`;
-  div.style.top = `${padding}px`;
+  div.style.position = 'absolute';
+  div.style.left = `${padding - style['margin-left']}px`;
+  div.style.top = `${padding - style['margin-top']}px`;
   for (const prop
     of ['border-top-width', 'border-right-width',
       'border-bottom-width', 'border-left-width']) {

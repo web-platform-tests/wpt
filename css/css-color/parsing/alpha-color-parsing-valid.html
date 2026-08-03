@@ -24,10 +24,15 @@ test_valid_value("color", "alpha(from red / 100%)");
 test_valid_value("color", "alpha(from red / none)");
 
 // Omitted alpha (defaults to origin's alpha).
-test_valid_value("color", "alpha(from red)");
+test_valid_value("color", "alpha(from blue)", "alpha(from blue / 1)");
 test_valid_value("color", "alpha(from currentcolor)");
+test_valid_value("color", "alpha(from transparent)", "alpha(from transparent / 0)");
+test_valid_value("color", "alpha(from #0000)", "alpha(from rgba(0, 0, 0, 0) / 0)");
+test_valid_value("color", "alpha(from rgb(0 0 0 / 0%))", "alpha(from rgba(0, 0, 0, 0) / 0)");
+test_valid_value("color", "alpha(from rgba(0, 255, 0, 0.5))", "alpha(from rgba(0, 255, 0, 0.5) / 0.5)");
 
 // Alpha keyword referencing origin's alpha.
+test_valid_value("color", "alpha(from red / alpha)");
 test_valid_value("color", "alpha(from currentcolor / alpha)");
 
 // Calc with alpha keyword.
@@ -41,6 +46,7 @@ test_valid_value("color", "rgb(from alpha(from currentcolor / 0.5) r g b)");
 // Other color functions as origin.
 test_valid_value("color", "alpha(from color-mix(in srgb, red, blue) / 0.5)");
 test_valid_value("color", "alpha(from rgb(from red r g b) / 0.8)");
+test_valid_value("color", "alpha(from rgba(0, 255, 0, 0.5) / alpha)");
 
 // Non-sRGB color spaces preserved.
 test_valid_value("color", "alpha(from color(display-p3 1 0 0) / 0.5)");
@@ -53,10 +59,13 @@ test_valid_value("color", "alpha(from currentcolor / 0.5)");
 // Out-of-range alpha values.
 test_valid_value("color", "alpha(from red / 2)");
 test_valid_value("color", "alpha(from red / -1)");
+test_valid_value("color", "alpha(from red / 120%)");
+test_valid_value("color", "alpha(from red / -120%)");
 
 // Origin color carrying its own alpha (with and without replacement).
-test_valid_value("color", "alpha(from rgba(255, 0, 0, 0.3))");
-test_valid_value("color", "alpha(from rgba(255, 0, 0, 0.8) / alpha)");
+test_valid_value("color", "alpha(from rgba(255, 0, 0, 0.3))", "alpha(from rgba(255, 0, 0, 0.3) / 0.3)");
+test_valid_value("color", "alpha(from rgba(255, 0, 0, 0.5) / alpha)");
+test_valid_value("color", "alpha(from rgba(255 0 0 / 0.5) / alpha)", "alpha(from rgba(255, 0, 0, 0.5) / alpha)");
 
 // Non-legacy origins keep their color space in the serialized origin.
 test_valid_value("color", "alpha(from color(srgb 1 0 0) / 50%)");

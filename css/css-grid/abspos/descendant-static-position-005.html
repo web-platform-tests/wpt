@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>CSS Grid Layout Test: Grid aligned descendants with static position</title>
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#abspos" title="Absolute Positioning">
+<link rel="help" href="https://drafts.csswg.org/css-align-3/#staticpos-rect" title="Appendix A: Static Position Terminology">
+<link rel="match" href="descendant-static-position-005-ref.html">
+<meta name="assert" content="This test checks that the position and size of the abs.pos. descendant is correct.">
+<style>
+.grid {
+  position: relative;
+  display: grid;
+  grid: 40px / 40px;
+  border: 2px solid;
+  border-left-width: 5px;
+  border-top-width: 3px;
+  height: 20px;
+  padding: 2px 4px 6px 1px;
+  writing-mode: vertical-lr;
+}
+.grid > div {
+  background: red;
+  background-clip: content-box;
+}
+.absolute {
+  position: absolute;
+  background: red;
+  grid-column: 1 / 2;
+  writing-mode: horizontal-tb;
+}
+.content {
+  float: left;
+  width: 20px;
+  height: 40px;
+  background: green;
+}
+.content:nth-child(2) {
+  background: grey;
+}
+
+</style></head>
+<body>
+There should be no red:
+
+<div class="grid">
+  <div>
+    <div class="absolute">
+      <div class="content"></div>
+      <div class="content"></div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:20px;">
+
+<div class="grid" style="grid-template-columns: 43px">
+  <div style="padding-top:3px">
+    <div class="absolute">
+      <div class="content"></div>
+      <div class="content"></div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:20px;">
+
+<div class="grid" style="grid-template-columns: 43px">
+  <div style="border-top:2px solid black; padding-top:1px">
+    <div class="absolute">
+      <div class="content"></div>
+      <div class="content"></div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:20px;">
+
+<div class="grid" style="padding-top:10px">
+  <div>
+    <div class="absolute">
+      <div class="content"></div>
+      <div class="content"></div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:20px;">
+
+<div class="grid" style="grid-template-columns: 10px 33px; padding-top:8px">
+  <div style="padding-top:3px">
+    <div class="absolute" style="grid-column: 2 / 3">
+      <div class="content"></div>
+      <div class="content"></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

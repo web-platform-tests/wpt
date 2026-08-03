@@ -65,6 +65,15 @@ test(() => {
   assert_true(result.is2D);
 }, 'CSSTranslate can be constructed from CSSMathValues');
 
+test(() => {
+  const value = new CSSMathSum(CSS.px(-3.14), CSS.percent(3.14));
+  const result = new CSSTranslate(value, value);
+  assert_style_value_equals(result.x, value);
+  assert_style_value_equals(result.y, value);
+  assert_style_value_equals(result.z, CSS.px(0));
+  assert_true(result.is2D);
+}, 'CSSTranslate can be constructed from mixed length-percentage CSSMathValues');
+
 for (const attr of ['x', 'y']) {
   test(() => {
     let result = new CSSTranslate(CSS.px(0), CSS.px(0), CSS.px(0));

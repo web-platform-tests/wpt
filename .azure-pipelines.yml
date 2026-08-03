@@ -263,15 +263,14 @@ jobs:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.14'
-      addToPath: false
   - template: tools/ci/azure/checkout.yml
-  - script: $(pythonLocation)\python.exe tools/ci/winsock_probe.py --mode probes --out $(Agent.TempDirectory)\findings.jsonl
+  - script: python tools/ci/winsock_probe.py --mode probes --out $(Agent.TempDirectory)\findings.jsonl
     displayName: 'Deterministic probes (settles H2, H3)'
     continueOnError: true
-  - script: $(pythonLocation)\python.exe tools/ci/winsock_probe.py --mode wpt --duration 300 --workers 9 --out $(Agent.TempDirectory)\findings.jsonl
+  - script: python tools/ci/winsock_probe.py --mode wpt --duration 300 --workers 9 --out $(Agent.TempDirectory)\findings.jsonl
     displayName: 'wpt-shaped hunt (H1)'
     continueOnError: true
-  - script: $(pythonLocation)\python.exe tools/ci/winsock_probe.py --summarise $(Agent.TempDirectory)\findings.jsonl
+  - script: python tools/ci/winsock_probe.py --summarise $(Agent.TempDirectory)\findings.jsonl
     displayName: 'Verdicts'
     condition: always()
   - publish: $(Agent.TempDirectory)\findings.jsonl

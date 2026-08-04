@@ -52,3 +52,4 @@ test(() => {
   const result = new CSSMathProduct(a, b);
   assert_numeric_type_equals(result.type(), { length: 2, percentHint: 'length' });
 }, 'Multiplying two types with same percent hint applies the percent hint');
+

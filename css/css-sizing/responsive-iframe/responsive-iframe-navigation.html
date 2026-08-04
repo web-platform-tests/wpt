@@ -32,6 +32,9 @@ async_test(t => {
   const resizeObserver = new ResizeObserver((entries) => {
     for (const entry of entries) {
       assert_equals(entry.target, iframe);
+      if (!heights.length && !entry.contentRect.height) {
+        continue;  // Disregard initial 0. It's sometimes flaky.
+      }
       heights.push(entry.contentRect.height);
       switch (numIframeLoadEvents) {
         case 0:

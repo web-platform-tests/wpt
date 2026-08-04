@@ -52,6 +52,13 @@
       // Should not be able to reference the lower-tree anchor-name, so the fallback value (37px) will be used.
       assert_equals(anchoredRect.left, 37,
         "positioned element outside shadow tree must not resolve anchor-name from lower tree");
+
+      const host = document.getElementById("host");
+      const innerAnchor = host.shadowRoot.getElementById("inner-anchor");
+      const subtreeAnchorRect = innerAnchor.getBoundingClientRect();
+
+      assert_not_equals(anchoredRect.left, subtreeAnchorRect.left,
+        "positioned element outside shadow tree must not be aligned to lower-tree anchor");
     }, "anchor() outside a shadow tree cannot reference an anchor-name defined in a lower shadow tree");
   </script>
 </body>

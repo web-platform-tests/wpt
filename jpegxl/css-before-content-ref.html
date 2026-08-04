@@ -1,10 +1,10 @@
 <html>
 <title>JPEG XL CSS ::before content reference</title>
 <style>
-  img {
-    image-rendering: pixelated;
-    width: 120px; height: 120px;
+  #content::before {
+    content: url(resources/3x3_srgb_lossless.png);
+    display: block;
   }
 </style>
-<img src="resources/3x3_srgb_lossless.png">
+<div id="content"></div>
 </html>

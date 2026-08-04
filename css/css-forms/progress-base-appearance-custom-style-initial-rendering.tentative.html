@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:said@apple.com">
+<link rel=help href="https://drafts.csswg.org/css-forms-1">
+<link rel=match href="progress-base-appearance-custom-style-initial-rendering-ref.tentative.html">
+<style>
+    .container {
+        margin-bottom: 10px;
+    }
+
+    progress {
+        width: 400px;
+        height: 40px;
+        appearance: base;
+    }
+
+    progress::slider-track {
+        font: 16px system-ui;
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+        height: 50%;
+        border: darkgray 1px solid;
+        border-radius: 999em;
+        overflow: hidden;
+        background: linear-gradient(to bottom, #ddd, #eee 20%, #ccc 45%, #ccc 55%, #ddd);
+    }
+
+    progress::slider-fill {
+        height: 100%;
+        width: 100%;
+        block-size: 100%;
+        box-sizing: border-box;
+        border-radius: 999em;
+        overflow: hidden;
+        background: linear-gradient(to bottom, #77f, #ccf 20%, #44d 45%, #44d 55%, #77f);
+    }
+</style>
+<body>
+    <div class="container">
+        <progress class="base" max="100" value="0">0%</progress>
+    </div>
+    <div class="container">
+        <progress class="base" max="100" value="33">33%</progress>
+    </div>
+    <div class="container">
+        <progress class="base" max="100" value="66">66%</progress>
+    </div>
+    <div class="container">
+        <progress class="base" max="100" value="100">100%</progress>
+    </div>
+</body>

@@ -25,17 +25,39 @@ Hypotheses:
   H4  Handle-number reuse after a use-after-close elsewhere in the process.
         predicts: the failing socket's handle equals a handle recorded for some
         other (multiprocessing) object.
+  H5  The fault is thread-scoped, not socket-scoped: mswsock's synchronous path
+      issues an AFD IOCTL and waits on a per-thread event, so if that primitive
+      is corrupted, select() can return early with an unfilled fd_set (giving a
+      phantom readable) *and* the following recv can surface raw STATUS_PENDING
+      as Win32 997 rather than a WSA 10xxx code -- one mechanism for both
+      anomalies.
+        predicts: a brand-new, unrelated pair created on the same thread fails
+        identically.  H1-H4 all predict it does not.
+        This one decides whether the planned fix can work: if the fault is the
+        thread, no amount of socket avoidance addresses the cause.
+
+Base rate (measured over 30 days of epochs/three_hourly and epochs/daily):
+20 occurrences in 3,400 Windows full-run jobs, ~12 daemons each, i.e. roughly
+**5e-4 per daemon start**.  That number governs every hunt here: 2,000 cold
+starts per expected hit, ~6,000 for 95% confidence of at least one, 20,000+
+before two arms can be compared.  Run 1 of --mode wpt had *nine* cold starts and
+reported "zero anomalies"; that had a 99.6% chance of happening regardless.
+Never quote a clean result without its trial count.
 
 Design notes
 ------------
 H2 and H3 are *deterministic* -- `--mode probes` settles them in seconds and
-needs no reproduction.  Only H1 is stochastic.
+needs no reproduction.  Only H1 (and H5) are stochastic.
 
-`--mode wpt` is the load-bearing hunt, not a smoke test: it reproduces the
-population that actually fails (one pair per process, ~9 spawned children, each
-within a couple of seconds of startup, idle, with a random victim).  At
---duration 3600 --restart-every 5 --workers 9 that is roughly 6500 server
-lifetimes of the right shape.
+`--mode burst` is the throughput arm and the one to run when hunting: one
+lifecycle per spawned process, whole batches respawned, K socketpairs per child,
+no http.server and no client traffic.  It exists because --mode wpt's trials are
+mostly not cold starts, and cold starts are the population that fails.
+
+`--mode wpt` is the fidelity arm: wptserve's serve_forever verbatim, on a real
+ThreadingHTTPServer, with client traffic.  Its per-process trial cost is high, so
+use it to check that burst mode has not abstracted away the thing that matters --
+not as the hunt.  Pass --restart-every 0 for one lifecycle per process.
 
 `--mode sweep` is the mechanism-discrimination tool, best used once you have a
 hit -- or to bound a mechanism, not the bug.  It creates pairs serially in one
@@ -56,10 +78,19 @@ socket age, which is what makes the comparison mean anything.
 Usage
 -----
     py -3 winsock_probe.py --mode probes                     # seconds; do first
-    py -3 winsock_probe.py --mode wpt --duration 20 --workers 1   # smoke
-    py -3 winsock_probe.py --mode wpt --duration 3600 --workers 9 # the hunt
+    py -3 winsock_probe.py --mode burst --duration 120       # calibrate
+    py -3 winsock_probe.py --mode burst --duration 9000      # the hunt
+    py -3 winsock_probe.py --mode burst --duration 9000 --poll-interval 0.01
+    py -3 winsock_probe.py --mode wpt --duration 300 --restart-every 0
     py -3 winsock_probe.py --mode sweep --cell-seconds 120 --linger-reset
     py -3 winsock_probe.py --summarise findings.jsonl [more.jsonl ...]
+
+Arms worth running against each other, given enough trials in each: the default
+--poll-interval 0.5 versus 0.01 (does the anomaly have a per-select()-call
+probability or a per-socketpair-lifetime one?  Nobody knows, and the comparison
+is informative whichever way it falls), and --churn-thread on versus off.
+--strict-handle-check is not an arm but a free extra: it fires at a rate not
+bounded by this bug's own.
 
 Also worth running unchanged on Linux/macOS with --force-fallback as a negative
 control on the identical code path: if the hunts fire there, the harness is
@@ -118,6 +149,7 @@ import socket
 import struct
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 import traceback
@@ -131,6 +163,16 @@ WSAECONNRESET = 10054
 WSAENOTCONN = 10057
 ERROR_IO_PENDING = 997
 ERROR_INVALID_PARAMETER = 87
+
+# ioctlsocket(FIONREAD) -- how many bytes are actually readable.  Zero bytes
+# alongside a select() that says readable is the phantom-readability signature.
+FIONREAD_WIN = 0x4004667F
+
+# PROCESS_MITIGATION_POLICY.ProcessStrictHandleCheckPolicy, and the two bits of
+# PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY
+# (RaiseExceptionOnInvalidHandleReference | HandleExceptionsPermanentlyEnabled).
+PROCESS_STRICT_HANDLE_CHECK_POLICY = 3
+STRICT_HANDLE_CHECK_BITS = 0x3
 
 PORT_PRESSURE = frozenset({WSAEADDRINUSE, WSAENOBUFS})
 ABORT_CODES = frozenset({WSAENOTCONN, WSAECONNRESET, WSAECONNABORTED})
@@ -172,6 +214,9 @@ if IS_WINDOWS:
     _ws2.WSAGetLastError.restype = ctypes.c_int
     _ws2.recv.argtypes = [SOCKET, ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
     _ws2.recv.restype = ctypes.c_int
+    _ws2.ioctlsocket.argtypes = [SOCKET, ctypes.c_long,
+                                 ctypes.POINTER(ctypes.c_ulong)]
+    _ws2.ioctlsocket.restype = ctypes.c_int
 
     _k32.GetModuleHandleW.argtypes = [ctypes.c_wchar_p]
     _k32.GetModuleHandleW.restype = ctypes.c_void_p
@@ -189,9 +234,52 @@ if IS_WINDOWS:
     _k32e.CloseHandle.argtypes = [ctypes.c_void_p]
     _k32e.CloseHandle.restype = wt.BOOL
 
+    _k32e.SetProcessMitigationPolicy.argtypes = [
+        ctypes.c_int, ctypes.c_void_p, ctypes.c_size_t,
+    ]
+    _k32e.SetProcessMitigationPolicy.restype = wt.BOOL
+
     def wsa_last_error() -> int:
         """The thread's last-error value, read with no intervening call."""
         return _ws2.WSAGetLastError()
+
+    def bytes_readable(fd: int) -> dict:
+        """ioctlsocket(FIONREAD): how much there is actually to read.
+
+        socket.ioctl() cannot ask this on Windows (it only accepts SIO_RCVALL,
+        SIO_KEEPALIVE_VALS and SIO_LOOPBACK_FAST_PATH), hence the raw call.
+        """
+        n = ctypes.c_ulong(0)
+        rc = _ws2.ioctlsocket(SOCKET(fd), FIONREAD_WIN, ctypes.byref(n))
+        if rc != 0:
+            return {"error": wsa_last_error()}
+        return {"bytes": n.value}
+
+    def enable_strict_handle_check() -> str:
+        """Make an invalid-handle reference raise at the *culprit*.
+
+        Every socket-scoped hypothesis for this bug that involves handle
+        recycling (H4) requires a use-after-close somewhere in the process.
+        The victim event -- that recycled handle happening to land on the
+        shutdown pair -- is by construction far rarer than the culprit event,
+        so this fires at a rate that is *not* bounded by the bug's own base
+        rate.  That makes it the one probe worth running even when the hunt
+        comes up empty.
+
+        Caveat, stated plainly: STATUS_INVALID_HANDLE (0xC0000008) is a hard
+        SEH exception the kernel raises, not something Python can catch, and
+        faulthandler does not install a handler for it.  So a hit shows up as
+        a child exit code of 0xC0000008 with no traceback -- it proves a bad
+        handle operation happened in that process, and localises nothing
+        further without a crash dump.
+        """
+        policy = ctypes.c_ulong(STRICT_HANDLE_CHECK_BITS)
+        ok = _k32e.SetProcessMitigationPolicy(
+            PROCESS_STRICT_HANDLE_CHECK_POLICY, ctypes.byref(policy),
+            ctypes.sizeof(policy))
+        if not ok:
+            return f"failed:{ctypes.get_last_error()}"
+        return "enabled"
 
     def raw_recv(fd: int) -> dict:
         """recv() one byte straight through ws2_32, bypassing CPython."""
@@ -223,6 +311,18 @@ else:
 
     def wsa_last_error() -> int:
         return 0
+
+    def bytes_readable(fd: int) -> dict:
+        try:
+            import fcntl
+            import termios
+            buf = fcntl.ioctl(fd, termios.FIONREAD, struct.pack("i", 0))
+            return {"bytes": struct.unpack("i", buf)[0]}
+        except Exception as exc:  # noqa: BLE001
+            return {"error": repr(exc)}
+
+    def enable_strict_handle_check() -> str:
+        return "skipped:not-windows"
 
     def raw_recv(fd: int) -> dict:
         return {"ret": None, "wsa_error": None, "skipped": "not-windows"}
@@ -532,6 +632,11 @@ def run_probes(sink) -> None:
 # ---------------------------------------------------------------------------
 
 def collect_evidence(sock, peer, created_at, exc, context, extra=None) -> dict:
+    """Describe one occurrence well enough that a single hit is sufficient.
+
+    MUST be called on the thread that saw the anomaly: `fresh_pair_same_thread`
+    below is only meaningful there.
+    """
     ev = {
         "kind": "anomaly",
         "ts": time.time(),
@@ -550,6 +655,11 @@ def collect_evidence(sock, peer, created_at, exc, context, extra=None) -> dict:
     }
     ev["getsockname"] = _safe(sock.getsockname)
     ev["getpeername"] = _safe(sock.getpeername)
+    ev["so_error"] = _safe(
+        lambda: sock.getsockopt(socket.SOL_SOCKET, socket.SO_ERROR))
+    # 0 bytes readable alongside a select() that said readable is the phantom
+    # signature, and distinguishes it from "there was a byte and recv failed".
+    ev["fionread"] = _safe(lambda: bytes_readable(sock.fileno()))
     ev["reselect_readable"] = _safe(
         lambda: bool(select.select([sock], [], [], 0)[0]))
     # The socket under test is blocking and may have nothing to read (the
@@ -559,10 +669,50 @@ def collect_evidence(sock, peer, created_at, exc, context, extra=None) -> dict:
     # measurement.
     ev["retry_recv"] = _safe(lambda: _nonblocking_retry(sock))
     ev["raw_recv"] = _safe(lambda: raw_recv(sock.fileno()))
+    # H5: socket-scoped or thread-scoped?  Everything above describes this
+    # socket; this asks whether the *thread* is the broken thing.
+    ev["fresh_pair_same_thread"] = _safe(_fresh_pair_same_thread)
     ev["iocp"] = _safe(lambda: iocp_association_state(sock.fileno()))
     if extra:
         ev.update(extra)
     return ev
+
+
+def _fresh_pair_same_thread() -> dict:
+    """H5: does a brand-new, unrelated pair fail on this same thread too?
+
+    H1-H4 are all *socket*-scoped: each predicts that a fresh pair on the
+    failing thread behaves normally.  H5 -- that the thread's synchronous-call
+    primitive (mswsock issues an AFD IOCTL and waits on a per-thread event) has
+    been corrupted -- predicts it fails identically, and would explain both
+    anomalies at once: select() returning early with an unfilled fd_set (the
+    phantom readable) *and* the following recv surfacing raw STATUS_PENDING as
+    Win32 997 rather than a WSA 10xxx code.
+
+    This distinction decides whether this plan's fix can work at all: if the
+    fault is thread-scoped, no amount of socket avoidance -- AF_UNIX pair,
+    polling, anything -- addresses the cause.
+
+    Deliberately never calls settimeout(): that would take CPython's
+    internal_select()/retry path in sock_call_ex() instead of the plain
+    blocking path the bug lives on.  select() first, then a blocking recv only
+    once there is provably something to read, is safe without changing paths.
+    """
+    a, b = MAKE_PAIR()
+    try:
+        b.sendall(b"z")
+        if not select.select([a], [], [], 2.0)[0]:
+            return {"ok": False, "never_readable": True}
+        return {"ok": True, "recv_len": len(a.recv(1)),
+                "slot": wsa_last_error()}
+    except OSError as exc:
+        return {"ok": False, "winerror": getattr(exc, "winerror", None),
+                "errno": exc.errno, "slot": wsa_last_error(),
+                "verdict": "THREAD-SCOPED: a fresh unrelated pair fails too"}
+    finally:
+        for s in (a, b):
+            if s.fileno() != -1:
+                s.close()
 
 
 def _nonblocking_retry(sock) -> dict:
@@ -968,13 +1118,20 @@ def _child_main(worker_id, log_queue, stop_flag, duration, poll_interval,
                 return
             sink({"kind": "request-error", "exc": repr(exc), "code": code})
 
+    # restart_every <= 0 means exactly one lifecycle in this process: restarting
+    # the *socket* inside an already-warm process is not a cold start, and the
+    # bug lives in a daemon's first second of life.  hunt_wpt then respawns
+    # whole generations instead, so the run still fills its duration.
+    single = restart_every <= 0
     deadline = time.monotonic() + duration
     restarts = 0
-    while time.monotonic() < deadline and not stop_flag.is_set():
+    while single or (time.monotonic() < deadline and not stop_flag.is_set()):
         try:
             httpd = Server(("127.0.0.1", 0), Handler)
         except OSError as exc:
             sink({"kind": "bind-failed", "exc": repr(exc)})
+            if single:
+                break
             time.sleep(1.0)
             continue
         port = httpd.socket.getsockname()[1]
@@ -1007,18 +1164,22 @@ def _child_main(worker_id, log_queue, stop_flag, duration, poll_interval,
         if thread.is_alive():
             sink({"kind": "serve-forever-stuck", "port": port})
         restarts += 1
+        if restart_every <= 0:
+            # One lifecycle per process.  Restarting the *socket* inside an
+            # already-warm process is not a cold start, and the bug lives in a
+            # daemon's first second of life -- see --mode burst, which is the
+            # throughput version of this.
+            break
 
     sink({"kind": "worker-done", "restarts": restarts})
     log_queue.put(None)
 
 
-def hunt_wpt(sink, duration: float, workers: int, poll_interval: float,
-             restart_every: float, force_fallback: bool = False,
-             idle_first: float = 2.0) -> dict:
-    import multiprocessing
+def _wpt_generation(ctx, sink, counts, workers, duration, poll_interval,
+                    restart_every, force_fallback, idle_first) -> list:
+    """One cohort of spawned daemon children, drained to completion."""
     import queue as queue_mod
 
-    ctx = multiprocessing.get_context("spawn")
     log_queue = ctx.Queue()
     stop_flag = ctx.Event()
     procs = []
@@ -1030,7 +1191,7 @@ def hunt_wpt(sink, duration: float, workers: int, poll_interval: float,
         p.start()
         procs.append(p)
 
-    live, counts = workers, collections.Counter()
+    live = workers
     try:
         while live:
             try:
@@ -1060,14 +1221,559 @@ def hunt_wpt(sink, duration: float, workers: int, poll_interval: float,
             # "log" items exist only to keep the pipe busy; drop them.
     except KeyboardInterrupt:
         stop_flag.set()
-    for p in procs:
-        p.join(timeout=60)
-    return {"records": dict(counts), "exitcodes": [p.exitcode for p in procs]}
+        raise
+    finally:
+        for p in procs:
+            p.join(timeout=60)
+    return [p.exitcode for p in procs]
+
+
+def hunt_wpt(sink, duration: float, workers: int, poll_interval: float,
+             restart_every: float, force_fallback: bool = False,
+             idle_first: float = 2.0) -> dict:
+    """The fidelity arm: wptserve's serve_forever verbatim on a real server.
+
+    With --restart-every 0 each child runs one lifecycle and exits, and whole
+    generations are respawned until the duration is used up -- so every trial is
+    a cold start rather than one cold start plus many warm reruns.  With
+    --restart-every > 0 this keeps the original single-generation behaviour,
+    which is useful for the idle-window question but is not a cold-start hunt.
+    """
+    import multiprocessing
+
+    ctx = multiprocessing.get_context("spawn")
+    counts: collections.Counter = collections.Counter()
+    started = time.monotonic()
+    deadline = started + duration
+    exitcodes: list = []
+    generations = 0
+
+    try:
+        while True:
+            generations += 1
+            exitcodes = _wpt_generation(
+                ctx, sink, counts, workers,
+                # A per-generation duration is meaningless when each child does
+                # exactly one lifecycle; only the outer deadline matters.
+                0.0 if restart_every <= 0 else duration,
+                poll_interval, restart_every, force_fallback, idle_first)
+            if restart_every > 0 or time.monotonic() >= deadline:
+                break
+            # Same guard as burst mode: generations that create no pairs mean
+            # the children are not working, and spinning on that for the whole
+            # duration would report a clean run built on nothing.
+            if generations >= 3 and counts["pair-created"] == 0:
+                print("ABORTING: 3 generations produced no server lifetimes; "
+                      "the children are not running (check for bind-failed).")
+                sink({"kind": "wpt-aborted", "reason": "no-trials",
+                      "generations": generations, "counts": dict(counts)})
+                break
+            if generations % 25 == 0:
+                elapsed = time.monotonic() - started
+                pairs = counts["pair-created"]
+                print(f"  generation {generations}: {pairs} cold-start "
+                      f"lifetimes, {counts['anomaly']} anomalies, "
+                      f"{pairs / elapsed * 60:.0f}/min")
+                sink({"kind": "wpt-progress", "generations": generations,
+                      "cold_start_trials": pairs,
+                      "anomalies": counts["anomaly"],
+                      "elapsed_s": round(elapsed, 1)})
+    except KeyboardInterrupt:
+        print("interrupted")
+
+    elapsed = max(time.monotonic() - started, 1e-9)
+    return {"records": dict(counts), "exitcodes": exitcodes,
+            "generations": generations,
+            "cold_start_trials": counts["pair-created"],
+            "anomalies": counts["anomaly"],
+            "elapsed_s": round(elapsed, 1),
+            "trials_per_min": round(counts["pair-created"] / elapsed * 60, 1)}
+
+
+# ---------------------------------------------------------------------------
+# Phase B3: the burst.  The throughput arm.
+#
+# Run 1 of --mode wpt produced 387 `pair-created` records and read that as 387
+# trials.  It was not: _child_main restarts the *socket* inside an already-warm
+# process, so only the first iteration per worker was a cold start, and the
+# other 386 recvs happened seconds later after a *real* poke.  Nine cold starts,
+# against a measured base rate of ~5e-4 per daemon start, had a 99.6% chance of
+# coming up clean regardless -- it could not have said anything.
+#
+# So this mode optimises for cold-start trials per second:
+#   * one lifecycle per process, whole batches respawned (no warm reruns)
+#   * no http.server and no client traffic -- the failure lands before the
+#     daemon has served a single request, so the hammering phase was dead
+#     weight, and `import http.server` was a large part of the spawn cost.  A
+#     bare socket()+bind()+listen() in the selector is cheaper *and* more
+#     faithful to the failing moment.
+#   * K pairs per process rather than 1: if the mechanism is per-process or
+#     per-thread and merely has to *land* on a socketpair, K targets multiply
+#     the hit rate by up to K for almost no cost.
+#   * a hang counts as a hit (see _blocking_recv_on_thread).
+#
+# Target, at 5e-4 per cold start: 2,000 trials per expected hit, ~6,000 for 95%
+# confidence of at least one, 20,000+ before two arms can be compared.  Any
+# clean result has to be quoted against its trial count or it repeats run 1's
+# mistake.
+# ---------------------------------------------------------------------------
+
+def churn_handles(n_files: int, n_sockets: int) -> dict:
+    """Approximate the handle churn a real daemon child does before its pair.
+
+    A wptserve daemon child imports wptserve, ssl and h2, builds the route
+    table and (for https) loads a cert chain -- hundreds of file opens and
+    closes -- all *before* serve_forever creates the shutdown pair.  This
+    harness's child imports almost nothing, so if H4 (handle-slot reuse) is
+    live, run 1 was missing the mechanism rather than missing the bug.
+    """
+    stats: collections.Counter = collections.Counter()
+    for _ in range(n_files):
+        try:
+            with tempfile.TemporaryFile() as fh:
+                fh.write(b"x")
+        except OSError:
+            stats["file_failed"] += 1
+        else:
+            stats["files"] += 1
+    for _ in range(n_sockets):
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.close()
+            r, w = os.pipe()
+            os.close(r)
+            os.close(w)
+        except OSError:
+            stats["socket_failed"] += 1
+        else:
+            stats["sockets"] += 1
+    return dict(stats)
+
+
+class BackgroundChurn:
+    """Recycle handles on another thread *while* the serve thread selects.
+
+    Handle-slot reuse needs a close concurrent with the window under test, not
+    only before it.
+    """
+
+    def __init__(self, enabled: bool):
+        self.enabled = enabled
+        self._stop = threading.Event()
+        self._thread: threading.Thread | None = None
+        self.rounds = 0
+
+    def __enter__(self):
+        if self.enabled:
+            self._thread = threading.Thread(target=self._run, name="churn",
+                                            daemon=True)
+            self._thread.start()
+        return self
+
+    def __exit__(self, *exc):
+        self._stop.set()
+        if self._thread is not None:
+            self._thread.join(timeout=5)
+        return False
+
+    def _run(self):
+        while not self._stop.is_set():
+            try:
+                with tempfile.TemporaryFile() as fh:
+                    fh.write(b"x")
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.close()
+            except OSError:
+                pass
+            self.rounds += 1
+            time.sleep(0.001)
+
+
+def _blocking_recv_on_thread(rsock, wsock, created_at, sink, extra) -> None:
+    """Issue wptserve's exact call -- a *blocking* recv(1) -- unwedgeably.
+
+    The read end is blocking in wptserve, so a readable socket with nothing to
+    read makes recv block forever rather than raise: serve_forever parks, and in
+    production that is *quieter* than the crash we are chasing.  Run 1 would
+    have scored such a child as merely slow.  Here it is its own anomaly class.
+
+    The recv runs on a throwaway daemon thread so it cannot hold up the trial,
+    and collect_evidence is called from inside that thread on purpose --
+    fresh_pair_same_thread only discriminates H5 if it runs on the thread that
+    failed.
+    """
+    result: dict = {}
+
+    def reader():
+        try:
+            result["len"] = len(rsock.recv(1))
+        except OSError as exc:
+            result["evidence"] = collect_evidence(
+                rsock, wsock, created_at, exc, "burst/spurious-readable-recv",
+                extra)
+
+    thread = threading.Thread(target=reader, name="burst-recv", daemon=True)
+    thread.start()
+    thread.join(timeout=5.0)
+    if thread.is_alive():
+        sink({"kind": "anomaly", "context": "burst/readable-but-recv-blocked",
+              "ts": time.time(), "pid": os.getpid(), "winerror": None,
+              "age_s": time.monotonic() - created_at,
+              "fionread": _safe(lambda: bytes_readable(rsock.fileno())),
+              "fileno": _safe(rsock.fileno), **extra})
+    elif "evidence" in result:
+        sink(result["evidence"])
+    else:
+        # A byte means somebody poked a pair nobody has a handle to; zero bytes
+        # means the write end is already gone, which in wptserve would be a
+        # different bug in the same place.  Do not conflate them.
+        sink({"kind": "anomaly",
+              "context": ("burst/readable-with-data" if result.get("len")
+                          else "burst/readable-peer-gone"),
+              "ts": time.time(), "pid": os.getpid(), "winerror": None,
+              "len": result.get("len"),
+              "age_s": time.monotonic() - created_at,
+              "fileno": _safe(rsock.fileno), **extra})
+
+
+def _inspect_readable_listener(listener, created_at, sink, extra) -> None:
+    """The same select() anomaly on a different socket, for two lines.
+
+    Nothing ever connects to this listener, so any readability is anomalous --
+    and whether accept() then yields a connection or BlockingIOError separates
+    "a stray connection arrived" from "select() lied".
+    """
+    try:
+        listener.setblocking(False)
+        conn, addr = listener.accept()
+    except BlockingIOError:
+        sink({"kind": "anomaly", "context": "burst/listener-readable-no-conn",
+              "ts": time.time(), "pid": os.getpid(), "winerror": None,
+              "fileno": _safe(listener.fileno), **extra})
+        return
+    except OSError as exc:
+        sink(collect_evidence(listener, None, created_at, exc,
+                              "burst/listener-accept-failed", extra))
+        return
+    conn.close()
+    sink({"kind": "anomaly", "context": "burst/listener-unsolicited-conn",
+          "ts": time.time(), "pid": os.getpid(), "winerror": None,
+          "peer": str(addr), **extra})
+
+
+def _burst_child_main(path: str, opts: dict) -> None:
+    t0 = time.monotonic()
+    out = open(path, "w", encoding="utf-8")
+
+    def sink(record):
+        record.setdefault("pid", os.getpid())
+        record.setdefault("trial", opts["trial"])
+        out.write(json.dumps(record, default=str) + "\n")
+        if record.get("kind") == "anomaly":
+            out.flush()
+
+    try:
+        strict = (enable_strict_handle_check() if opts["strict_handle_check"]
+                  else "off")
+        if opts["force_fallback"]:
+            use_fallback_socketpair()
+        churn = churn_handles(opts["churn_files"], opts["churn_sockets"])
+
+        listener = None
+        try:
+            listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # wptserve sets allow_reuse_address and request_queue_size = 2000.
+            listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            listener.bind(("127.0.0.1", 0))
+            listener.listen(2000)
+        except OSError as exc:
+            sink({"kind": "listen-failed", "code": sock_error_code(exc)})
+            if listener is not None:
+                listener.close()
+            listener = None
+
+        pairs, offsets = [], []
+        for i in range(opts["pairs"]):
+            try:
+                rsock, wsock = MAKE_PAIR()
+            except OSError as exc:
+                sink({"kind": "pair-create-failed", "index": i,
+                      "code": sock_error_code(exc)})
+                break
+            pairs.append([rsock, wsock, time.monotonic(), False])
+            offsets.append(round(time.monotonic() - t0, 4))
+
+        select_calls = 0
+        first_select = None
+        with BackgroundChurn(opts["churn_thread"]) as background:
+            with selectors.DefaultSelector() as sel:
+                if listener is not None:
+                    sel.register(listener, selectors.EVENT_READ,
+                                 ("listener", -1))
+                for i, entry in enumerate(pairs):
+                    sel.register(entry[0], selectors.EVENT_READ, ("pair", i))
+
+                idle_until = t0 + opts["idle"]
+                while time.monotonic() < idle_until:
+                    events = sel.select(timeout=opts["poll_interval"])
+                    select_calls += 1
+                    if first_select is None:
+                        # Run 1 only ever recorded a *second* select's answer.
+                        first_select = [key.data for key, _ in events]
+                    for key, _mask in events:
+                        what, idx = key.data
+                        extra = {"pair_index": idx, "pairs": len(pairs),
+                                 "select_calls": select_calls,
+                                 "first_select_events": first_select,
+                                 "age_from_process_start_s":
+                                     round(time.monotonic() - t0, 4),
+                                 "strict_handle_check": strict,
+                                 "churn": churn,
+                                 "churn_rounds": background.rounds}
+                        # Stop selecting on it either way: a sticky readable
+                        # would otherwise spin for the rest of the trial.
+                        sel.unregister(key.fileobj)
+                        if what == "listener":
+                            _inspect_readable_listener(listener, t0, sink,
+                                                       extra)
+                        else:
+                            entry = pairs[idx]
+                            entry[3] = True  # recv in flight; do not close
+                            _blocking_recv_on_thread(entry[0], entry[1],
+                                                     entry[2], sink, extra)
+
+        sink({"kind": "burst-trial", "pairs": len(pairs),
+              "spawn_latency_s": round(time.time() - opts["spawned_at"], 3),
+              "pair_offsets_s": offsets, "select_calls": select_calls,
+              "first_select_events": first_select,
+              "elapsed_s": round(time.monotonic() - t0, 3),
+              "strict_handle_check": strict, "churn": churn,
+              "churn_rounds": background.rounds})
+
+        # RST-close rather than a graceful close: 16 pairs per trial at several
+        # trials a second would otherwise put thousands of loopback sockets into
+        # a two-minute TIME_WAIT and exhaust Windows' ~16k dynamic port range
+        # mid-run, turning the hunt into WSAEADDRINUSE backoff.
+        for rsock, wsock, _created, in_flight in pairs:
+            if in_flight:
+                continue  # a thread may still be blocked in recv on rsock
+            _close_pair(rsock, wsock, True)
+        if listener is not None:
+            listener.close()
+    finally:
+        out.close()
+
+
+def _drain_child(path: str, sink, keep_budget: list) -> collections.Counter:
+    counts: collections.Counter = collections.Counter()
+    try:
+        with open(path, encoding="utf-8") as fh:
+            lines = fh.readlines()
+    except OSError:
+        counts["child-no-file"] += 1
+        return counts
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            record = json.loads(line)
+        except ValueError:
+            counts["child-bad-line"] += 1
+            continue
+        kind = record.get("kind")
+        counts[kind or "?"] += 1
+        if kind == "burst-trial":
+            counts["cold_start_trials"] += record.get("pairs", 0)
+            counts["children_completed"] += 1
+            # Keep a sample so the offset distribution is inspectable without
+            # writing a record per trial for the whole run.
+            if keep_budget[0] > 0:
+                keep_budget[0] -= 1
+                sink(record)
+        else:
+            sink(record)
+            if kind == "anomaly":
+                print("ANOMALY:", json.dumps(record, default=str))
+    try:
+        os.remove(path)
+    except OSError:
+        pass
+    return counts
+
+
+def hunt_burst(sink, duration: float, batch: int, pairs: int, idle: float,
+               poll_interval: float, grace: float, churn_files: int,
+               churn_sockets: int, churn_thread: bool,
+               strict_handle_check: bool, force_fallback: bool,
+               findings_dir: str, keep_trials: int) -> dict:
+    import multiprocessing
+
+    ctx = multiprocessing.get_context("spawn")
+    os.makedirs(findings_dir, exist_ok=True)
+    started = time.monotonic()
+    deadline = started + duration
+    totals: collections.Counter = collections.Counter()
+    keep_budget = [keep_trials]
+    trial_no = 0
+    batches = 0
+
+    child_opts = {
+        "pairs": pairs, "idle": idle, "poll_interval": poll_interval,
+        "churn_files": churn_files, "churn_sockets": churn_sockets,
+        "churn_thread": churn_thread,
+        "strict_handle_check": strict_handle_check,
+        "force_fallback": force_fallback,
+    }
+
+    try:
+        while time.monotonic() < deadline:
+            batches += 1
+            batch_started = time.monotonic()
+            procs = []
+            # Back to back with no stagger, as TestEnvironment.__enter__ spawns
+            # its ~12 daemons.
+            for _ in range(batch):
+                trial_no += 1
+                path = os.path.join(findings_dir, f"t{trial_no}.jsonl")
+                opts = dict(child_opts, trial=trial_no,
+                            spawned_at=time.time())
+                proc = ctx.Process(target=_burst_child_main,
+                                   args=(path, opts))
+                proc.start()
+                procs.append((proc, path, trial_no))
+
+            child_deadline = batch_started + idle + grace
+            for proc, _path, n in procs:
+                proc.join(timeout=max(0.0, child_deadline - time.monotonic()))
+                if proc.is_alive():
+                    # A hang is a hit.  Terminating is safe here only because
+                    # children report through their own file rather than a
+                    # shared mp.Queue -- terminate() on a Queue writer can
+                    # leave the queue's lock held and deadlock every sibling.
+                    totals["child_timeout"] += 1
+                    sink({"kind": "anomaly", "context": "burst/child-timeout",
+                          "trial": n, "pid": proc.pid, "ts": time.time(),
+                          "winerror": None, "idle_s": idle, "grace_s": grace})
+                    print(f"ANOMALY: child for trial {n} did not exit by "
+                          f"deadline (idle={idle}s grace={grace}s)")
+                    proc.terminate()
+                    proc.join(timeout=10)
+                    if proc.is_alive():
+                        proc.kill()
+                        proc.join(timeout=10)
+                elif proc.exitcode != 0:
+                    totals[f"child_exit:{proc.exitcode}"] += 1
+                    sink({"kind": "anomaly", "context": "burst/child-exit",
+                          "trial": n, "exitcode": proc.exitcode,
+                          "winerror": None, "ts": time.time()})
+            for _proc, path, _n in procs:
+                totals.update(_drain_child(path, sink, keep_budget))
+
+            elapsed = time.monotonic() - started
+            trials = totals["cold_start_trials"]
+            progress = {
+                "kind": "burst-progress", "batches": batches,
+                "children_spawned": trial_no,
+                "children_completed": totals["children_completed"],
+                "cold_start_trials": trials,
+                "anomalies": totals["anomaly"],
+                "elapsed_s": round(elapsed, 1),
+                "trials_per_min": round(trials / elapsed * 60, 1) if elapsed
+                else 0,
+            }
+            sink(progress)
+            print(f"  batch {batches}: {trial_no} children, {trials} "
+                  f"cold-start trials, {totals['anomaly']} anomalies, "
+                  f"{progress['trials_per_min']}/min")
+            # Do not burn 150 minutes looking busy.  If children cannot even
+            # create pairs -- a broken interpreter, a sandbox, port exhaustion
+            # -- say so now rather than reporting a clean run with no trials.
+            if batches >= 3 and trials == 0:
+                print("ABORTING: 3 batches produced no cold-start trials at "
+                      "all; the children are not running. Check the findings "
+                      "file for pair-create-failed / child-no-file.")
+                sink({"kind": "burst-aborted", "reason": "no-trials",
+                      "batches": batches, "counts": dict(totals)})
+                break
+    except KeyboardInterrupt:
+        print("interrupted")
+
+    elapsed = max(time.monotonic() - started, 1e-9)
+    trials = totals["cold_start_trials"]
+    result = {
+        "children_spawned": trial_no,
+        "children_completed": totals["children_completed"],
+        "cold_start_trials": trials,
+        "pairs_per_child": pairs,
+        "anomalies": totals["anomaly"],
+        "elapsed_s": round(elapsed, 1),
+        "trials_per_min": round(trials / elapsed * 60, 1),
+        "children_per_min": round(trial_no / elapsed * 60, 1),
+        "counts": dict(totals),
+    }
+    sink({"kind": "burst-summary", "result": result})
+    return result
 
 
 # ---------------------------------------------------------------------------
 # Verdict.
 # ---------------------------------------------------------------------------
+
+def _summarise_burst(records: list, anomalies: list) -> None:
+    """Print the denominator at least as loudly as the numerator.
+
+    Run 1's "zero anomalies" was read as a result when it was a coin that had
+    been flipped nine times.  Nothing below is a verdict until the trial count
+    is in the thousands, so the trial count goes first.
+    """
+    summaries = [r["result"] for r in records
+                 if r.get("kind") == "burst-summary"]
+    if not summaries:
+        return
+    trials = sum(s.get("cold_start_trials", 0) for s in summaries)
+    children = sum(s.get("children_spawned", 0) for s in summaries)
+    completed = sum(s.get("children_completed", 0) for s in summaries)
+    elapsed = sum(s.get("elapsed_s", 0) for s in summaries)
+    burst_anomalies = [a for a in anomalies
+                       if str(a.get("context", "")).startswith("burst/")]
+
+    print("=== burst (cold-start) population ===")
+    print(f"  cold-start trials:   {trials}")
+    print(f"  children spawned:    {children} ({completed} completed cleanly)")
+    if elapsed:
+        print(f"  rate:                {trials / elapsed * 60:.0f} trials/min, "
+              f"{children / elapsed * 60:.0f} children/min "
+              f"({elapsed / 60:.1f} min)")
+        print(f"  projected per 150-minute job: "
+              f"{trials / elapsed * 60 * 150:.0f} trials")
+    print(f"  anomalies:           {len(burst_anomalies)}")
+    for context, n in sorted(collections.Counter(
+            a.get("context") for a in burst_anomalies).items()):
+        print(f"      {context}: {n}")
+
+    # At the measured production rate of ~5e-4 per daemon start.
+    needed = {"1 expected hit": 2000, "95% conf of >=1 hit": 6000,
+              "A/B two arms": 20000}
+    if burst_anomalies:
+        print(f"  => {len(burst_anomalies)}/{trials} = "
+              f"{len(burst_anomalies) / max(trials, 1):.2g} per cold start "
+              f"(production is ~5e-4)")
+    else:
+        verdict = [f"{label} needs {n}" for label, n in needed.items()
+                   if trials < n]
+        bound = f"95% upper bound {3 / trials:.2g} per cold start" if trials \
+            else "no trials"
+        print(f"  => 0 anomalies in {trials} cold-start trials: {bound}")
+        if verdict:
+            print(f"     NOT YET A RESULT: {'; '.join(verdict)}.")
+        else:
+            print("     Above 20,000 trials with production at ~5e-4, a clean "
+                  "run is real evidence")
+            print("     that the synthetic population is missing a condition "
+                  "the real one has.")
+    print()
+
 
 def summarise(paths: list[str]) -> None:
     records = []
@@ -1085,6 +1791,8 @@ def summarise(paths: list[str]) -> None:
     trials = sum(c["stats"].get("trials", 0) for c in cells)
     print(f"{len(records)} records; {trials} sweep trials; "
           f"{len(anomalies)} anomalies\n")
+
+    _summarise_burst(records, anomalies)
 
     def line(tag, supported, detail):
         print(f"{tag:4} {'SUPPORTED' if supported else 'not supported':14} {detail}")
@@ -1140,6 +1848,32 @@ def summarise(paths: list[str]) -> None:
                 collisions.append(a)
     line("H4", bool(collisions), f"handle collisions: {len(collisions)}")
 
+    # H5: socket-scoped or thread-scoped?  This is the one that decides whether
+    # replacing the socketpair can fix anything at all.
+    checked = [a for a in anomalies
+               if isinstance(a.get("fresh_pair_same_thread"), dict)]
+    thread_scoped = [a for a in checked
+                     if a["fresh_pair_same_thread"].get("ok") is False]
+    line("H5", bool(thread_scoped),
+         f"fresh pair on the failing thread also failed: "
+         f"{len(thread_scoped)}/{len(checked)} checked"
+         + ("" if not thread_scoped else
+            " -- the fault is NOT the socket, so avoiding the socketpair "
+            "cannot fix it"))
+
+    # Phantom readability: select() said readable and FIONREAD said 0 bytes.
+    phantom = [a for a in anomalies
+               if isinstance(a.get("fionread"), dict)
+               and a["fionread"].get("bytes") == 0]
+    blocked = [a for a in anomalies
+               if a.get("context") == "burst/readable-but-recv-blocked"]
+    would_block = [a for a in anomalies
+                   if isinstance(a.get("retry_recv"), dict)
+                   and a["retry_recv"].get("would_block")]
+    print(f"\n     phantom readability (0 bytes per FIONREAD): "
+          f"{len(phantom)}/{len(anomalies)}; recv would-block: "
+          f"{len(would_block)}; recv blocked outright: {len(blocked)}")
+
     # The competing "connection was aborted" reading.
     aborted = [a for a in anomalies
                if isinstance(a.get("getpeername"), dict)
@@ -1191,7 +1925,7 @@ def main(argv=None) -> int:
         description="Discriminate WinError 997 hypotheses for MAKE_PAIR()",
         formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--mode", default="probes",
-                   choices=("probes", "sweep", "wpt", "all"))
+                   choices=("probes", "sweep", "wpt", "burst", "all"))
     p.add_argument("--trials", type=int, default=500,
                    help="trial cap per sweep cell (default 500)")
     p.add_argument("--cell-seconds", type=float, default=120.0,
@@ -1215,7 +1949,52 @@ def main(argv=None) -> int:
     p.add_argument("--poll-interval", type=float, default=0.5,
                    help="selector timeout, matching wptserve")
     p.add_argument("--restart-every", type=float, default=5.0,
-                   help="seconds between server restarts in wpt mode")
+                   help="seconds between server restarts in wpt mode; 0 means "
+                        "one lifecycle per process (a restart inside a warm "
+                        "process is not a cold start)")
+    p.add_argument("--batch", type=int, default=24,
+                   help="burst mode: children spawned back to back per batch. "
+                        "At or above WPT's real ~12 daemons; more costs little "
+                        "and adds contention")
+    p.add_argument("--pairs-per-trial", type=int, default=16,
+                   help="burst mode: socketpairs registered in each child's "
+                        "one selector.  Each is an independent target, so this "
+                        "multiplies the hit rate by up to K for free")
+    p.add_argument("--idle", type=float, default=1.5,
+                   help="burst mode: seconds each child selects before "
+                        "exiting.  The real failure lands ~0.7s after the "
+                        "daemon starts")
+    p.add_argument("--grace", type=float, default=45.0,
+                   help="burst mode: seconds beyond --idle before a child is "
+                        "declared hung.  Must cover Windows spawn latency; a "
+                        "child still alive after it is recorded as an anomaly, "
+                        "because a blocking recv on a readable-but-empty "
+                        "socket never returns")
+    p.add_argument("--churn-files", type=int, default=200,
+                   help="burst mode: files opened and closed before the pairs "
+                        "are created, standing in for the cert/route/import "
+                        "churn a real daemon child does")
+    p.add_argument("--churn-sockets", type=int, default=32,
+                   help="burst mode: sockets and pipes opened and closed "
+                        "before the pairs are created")
+    p.add_argument("--churn-thread", action="store_true",
+                   help="burst mode: keep recycling handles on another thread "
+                        "*during* the select window, not only before it")
+    p.add_argument("--strict-handle-check", action="store_true",
+                   help="burst mode: SetProcessMitigationPolicy("
+                        "ProcessStrictHandleCheckPolicy), so an invalid-handle "
+                        "reference raises at the culprit.  Fires at a rate not "
+                        "bounded by this bug's base rate, since bad closes are "
+                        "far commoner than one landing on the pair; shows up "
+                        "as a child exit code of 0xC0000008, with no traceback")
+    p.add_argument("--keep-trial-records", type=int, default=50,
+                   help="burst mode: how many per-trial records to keep in the "
+                        "findings file (the rest are counted, not stored)")
+    p.add_argument("--findings-dir", default=None,
+                   help="burst mode: scratch dir for per-child findings "
+                        "(default: <out>.children).  Children report through "
+                        "their own file rather than a shared mp.Queue so that "
+                        "terminating a hung one cannot deadlock its siblings")
     p.add_argument("--load-threads", type=int, default=0,
                    help="spinning threads for GIL contention")
     p.add_argument("--pipe-traffic", action="store_true",
@@ -1239,7 +2018,18 @@ def main(argv=None) -> int:
               "hunts here is still useful as a negative control.\n")
 
     if args.force_fallback:
-        print(f"socketpair: {use_fallback_socketpair()}\n")
+        status = use_fallback_socketpair()
+        print(f"socketpair: {status}\n")
+        if status.startswith("unavailable") and not IS_WINDOWS:
+            # Continuing here would run the whole hunt on a native AF_UNIX pair
+            # while the log said --force-fallback, i.e. report a clean negative
+            # control for a code path that was never executed.  socket.py only
+            # exposes _fallback_socketpair as a module-level name from 3.10 on.
+            print("ERROR: --force-fallback asked for the loopback-TCP path and "
+                  "this Python cannot provide it, so the run would silently "
+                  "test AF_UNIX instead. Use Python 3.10+ or drop the flag.",
+                  file=sys.stderr)
+            return 2
 
     out = open(args.out, "a", encoding="utf-8")
 
@@ -1267,6 +2057,23 @@ def main(argv=None) -> int:
                               args.force_fallback, args.idle_first)
             print(json.dumps(result, indent=2))
             sink({"kind": "hunt-summary", "hunt": "wpt", "result": result})
+        if args.mode in ("burst", "all"):
+            print("\n=== burst (cold-start) hunt ===")
+            findings_dir = (args.findings_dir
+                            or os.path.abspath(args.out) + ".children")
+            result = hunt_burst(
+                sink, args.duration, args.batch, args.pairs_per_trial,
+                args.idle, args.poll_interval, args.grace, args.churn_files,
+                args.churn_sockets, args.churn_thread,
+                args.strict_handle_check, args.force_fallback, findings_dir,
+                args.keep_trial_records)
+            print(json.dumps(result, indent=2))
+            print(f"\nCALIBRATION: {result['trials_per_min']} cold-start "
+                  f"trials/min, {result['children_per_min']} children/min.")
+            print(f"  A 150-minute job at this rate gives "
+                  f"{result['trials_per_min'] * 150:.0f} trials; 6,000 is the "
+                  f"floor for a clean run to mean anything.")
+            sink({"kind": "hunt-summary", "hunt": "burst", "result": result})
     finally:
         out.close()
 

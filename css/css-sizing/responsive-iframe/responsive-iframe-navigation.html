@@ -60,7 +60,7 @@ async_test(t => {
             } else {
               // Some resizes may be done before capturing start.
               // Check if the last elements match.
-              assert_equals(heights, expect.splice(-heights.length));
+              assert_array_equals(heights, expect.splice(-heights.length));
             }
           } else {
             assert_array_equals(heights, [150, 200, 400]);

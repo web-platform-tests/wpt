@@ -1,16 +1,9 @@
 setup(_ => {
   const meta = document.createElement("meta");
   meta.httpEquiv = "content-security-policy";
-  meta.content = "img-src http://*:{{ports[http][0]}}";
+  meta.content = "img-src http://*:{{ports[http][0]}}/content-security-policy/support/pass.png";
   document.head.appendChild(meta);
 });
-
-async_test((t) => {
-  const img = document.createElement("img");
-  img.onerror = t.step_func_done();
-  img.onload = t.unreached_func("`data:` image should have been blocked.");
-  img.src = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
-}, "Host wildcard doesn't affect scheme matching.");
 
 async_test((t) => {
   const img = document.createElement("img");
@@ -37,5 +30,12 @@ async_test((t) => {
   const img = document.createElement("img");
   img.onerror = t.step_func_done();
   img.onload = t.unreached_func("image from {{domains[]}}:{{ports[http][1]}} should have been blocked.");
-  img.src = "http://{{domains[]}}:{{ports[http][1]}}/content-security-policy/support/fail.png"
+  img.src = "http://{{domains[]}}:{{ports[http][1]}}/content-security-policy/support/pass.png"
 }, "Host wildcard doesn't affect port matching (port {{ports[http][1]}}).");
+
+async_test((t) => {
+  const img = document.createElement("img");
+  img.onerror = t.step_func_done();
+  img.onload = t.unreached_func("image fail.png should have been blocked.");
+  img.src = "http://{{domains[]}}:{{ports[http][0]}}/content-security-policy/support/fail.png"
+}, "Host wildcard doesn't affect path matching.");

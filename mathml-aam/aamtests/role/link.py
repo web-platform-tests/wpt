@@ -47,17 +47,18 @@ class TestMathMLALink:
 
         role = axapi.AXUIElementCopyAttributeValue(node, "AXRole", None)[1]
         
+        subrole = axapi.AXUIElementCopyAttributeValue(node, "AXSubrole", None)[1]
+
         if test_id == "mathml-link":
             assert role == "AXLink"
+            assert subrole == "AXMathRow"
             
         elif test_id == "mathml-link-with-onclick":
             assert role == "AXLink"
+            assert subrole == "AXMathRow"
             
         elif test_id == "mathml-link-without-href":
             assert role == "AXGroup"
-            subrole = axapi.AXUIElementCopyAttributeValue(node, "AXSubrole", None)[1]
-            assert subrole == "AXMathRow"
-            
         else:
             raise ValueError(f"Unreachable code: missing AXAPI assertions for {test_id}")
 

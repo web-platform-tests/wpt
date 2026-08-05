@@ -198,7 +198,6 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
     def setup(self):
         super().setup()
         self._nodes_by_id = {}
-        self.full_ax_tree: MutableMapping[str, AXNode] = {}
 
     def teardown(self):
         try:
@@ -207,34 +206,25 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
             pass
 
     def get_accessibility_properties_for_element(self, element):
-        # Wipe cached tree on new call
-        self.full_ax_tree = {}
-
         node = self._get_ax_node_for_element(element)
         return self._serialize_node(node) if node else {}
 
     def get_accessibility_properties_for_accessibility_node(self, id):
-        # Wipe cached tree on new call to avoid stale properties
-        self.full_ax_tree = {}
-
         node = self._find_ax_node_by_ax_node_id(id)
         return self._serialize_node(node) if node else {}
 
-    def _set_full_ax_tree(self) -> None:
+    def _get_full_ax_tree(self) -> Mapping[str, AXNode]:
         self.parent.cdp.execute_cdp_command("Accessibility.enable")
         node_array = self.parent.cdp.execute_cdp_command(
             "Accessibility.getFullAXTree",
             {}
         ).get("nodes", [])
 
-        self.full_ax_tree = {node["nodeId"]: node for node in node_array}
+        return {node["nodeId"]: node for node in node_array}
 
     def _find_ax_node_by_ax_node_id(self, ax_node_id: str) -> Optional[AXNode]:
-        node: Optional[AXNode] = self.full_ax_tree.get(ax_node_id, None)
-
-        if not node:
-            self._set_full_ax_tree()
-            node = self.full_ax_tree.get(ax_node_id, None)
+        full_ax_tree = self._get_full_ax_tree()
+        node = full_ax_tree.get(ax_node_id, None)
 
         return node
 
@@ -261,7 +251,7 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
 
     def _serialize_node(self, node: AXNode) -> Mapping[str, Any]:
         # TODO: Define an approach to handle ignored items as this is different
-        # browsers by browser and might make testing the Tree harder.
+        # browsers by browser and might make testing the subtree harder.
 
         rv: dict[str,Any] = {
             "accessibilityId": node["nodeId"],
@@ -281,8 +271,14 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
         if "description" in node:
             rv["description"] = node["description"].get("value")
 
+        # We only support a subset of properties for now outside of the native fields.
+        allowed_properties = {'checked', 'pressed', 'level',
+                              'multiline', 'orientation', 'required',
+                              'roledescription', 'selected'}
+
         for prop in node.get("properties", []):
-            rv[prop["name"]] = prop["value"].get("value")
+            if prop["name"] in allowed_properties:
+                rv[prop["name"]] = prop["value"].get("value")
 
         return rv
 

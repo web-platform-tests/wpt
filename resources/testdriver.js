@@ -2358,7 +2358,7 @@
 
         /**
          * Gets the current globally-applied privacy control status
-         * 
+         *
          * Matches the `Get Global Privacy Control
          * <https://www.w3.org/TR/gpc/#get-global-privacy-control>`_
          * WebDriver command.
@@ -2373,7 +2373,7 @@
 
         /**
          * Sets and then gets the current globally-applied privacy control status
-         * 
+         *
          * Matches the `Set Global Privacy Control
          * <https://www.w3.org/TR/gpc/#set-global-privacy-control>`_
          * WebDriver command.

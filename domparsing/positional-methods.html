@@ -83,7 +83,14 @@
           assert_throws_dom("HierarchyRequestError", () => {
             comment[method_name]("<span>fails</span>");
           });
-        }, `${method_name} throws HierarchyRequestError if parent is a Document`);
+        }, `${method_name} throws HierarchyRequestError if parent is a Document (Comment node)`);
+
+        test(() => {
+          const doc = document.implementation.createHTMLDocument();
+          assert_throws_dom("HierarchyRequestError", () => {
+            doc.doctype[method_name]("<span>fails</span>");
+          });
+        }, `${method_name} throws HierarchyRequestError if parent is a Document (DocumentType node)`);
 
         test(() => {
           const fragment = document.createDocumentFragment();
@@ -93,6 +100,31 @@
             span[method_name]("<p>fails</p>");
           });
         }, `${method_name} throws HierarchyRequestError if parent is a DocumentFragment`);
+
+        test(() => {
+          const element = document.createElement("div");
+          assert_equals(element[method_name]("<span>fails</span>"), undefined);
+        }, `${method_name} on disconnected Element returns undefined and does not throw`);
+
+        test(() => {
+          const comment = document.createComment("comment");
+          assert_equals(comment[method_name]("<span>fails</span>"), undefined);
+        }, `${method_name} on disconnected Comment returns undefined and does not throw`);
+
+        test(() => {
+          const text = document.createTextNode("text");
+          assert_equals(text[method_name]("<span>fails</span>"), undefined);
+        }, `${method_name} on disconnected Text returns undefined and does not throw`);
+
+        test(() => {
+          const pi = document.createProcessingInstruction("target", "data");
+          assert_equals(pi[method_name]("<span>fails</span>"), undefined);
+        }, `${method_name} on disconnected ProcessingInstruction returns undefined and does not throw`);
+
+        test(() => {
+          const doctype = document.implementation.createDocumentType("html", "", "");
+          assert_equals(doctype[method_name]("<span>fails</span>"), undefined);
+        }, `${method_name} on disconnected DocumentType returns undefined and does not throw`);
       }
     }
   </script>

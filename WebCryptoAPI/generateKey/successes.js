@@ -114,7 +114,7 @@ function run_test(algorithmNames, slowTest) {
         // Special case for ECDH and ECDSA: check that the generated key length is consistent.
         // Particularly for P-521, there is a high risk of the generated key being one byte short
         // if the implementation isn't careful.
-        if (algorithm.name.substring(0, 2) === 'EC' && extractable) {
+        if (algorithm.namedCurve && extractable) {
             promise_test(async function(test) {
                 // We run about 20 variants of this test, times 10 key generations below,
                 // so this should have a decent chance of catching issues.

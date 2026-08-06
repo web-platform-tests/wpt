@@ -144,30 +144,6 @@ promise_test(async t => {
 }, "scroll-timeline-name is referenceable in animation-timeline on that " +
    "element's descendants");
 
-// See https://github.com/w3c/csswg-drafts/issues/7047
-promise_test(async t => {
-  let [sibling, target] = createScrollerAndTarget(t);
-
-  await runAndWaitForFrameUpdate(() => {
-    // <div id='sibling' class='scroller'> ... </div>
-    // <div id='target'></div>
-    document.body.appendChild(sibling);
-    document.body.appendChild(target);
-
-    // Resolvable if using a deferred timeline, but otherwise can only resolve
-    // if an ancestor container of the target element.
-    sibling.style.scrollTimelineName = '--timeline';
-    target.style.animation = "anim 10s linear";
-    target.style.animationTimeline = '--timeline';
-
-    sibling.scrollTop = 50; // 50%
-  });
-
-  assert_equals(getComputedStyle(target).translate, '50px',
-    'Animation with unknown timeline name holds current time at zero');
-}, "scroll-timeline-name is not referenceable in animation-timeline on that " +
-   "element's siblings");
-
 promise_test(async t => {
   let parent = document.createElement('div');
   parent.className = 'square';

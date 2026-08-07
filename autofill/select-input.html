@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Select Input Autofill Test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/autofill-bidi-helpers.js"></script>
+<style>
+  div { margin: 10px 0; }
+  label { display: inline-block; width: 100px; }
+</style>
+</head>
+<body>
+<form id="test_form">
+  <div>
+    <label for="street">Street:</label>
+    <input type="text" id="street" name="shipping-street" autocomplete="shipping address-line1">
+  </div>
+  <div>
+    <label for="country">Country:</label>
+    <select id="country" name="shipping-country" autocomplete="shipping country">
+      <option value="US">United States</option>
+      <option value="CA">Canada</option>
+      <option value="MX">Mexico</option>
+      <option value="DE">Germany</option>
+    </select>
+  </div>
+</form>
+<script>
+  /**
+   * This test checks autofilling select elements with country values.
+   */
+  promise_test(async t => {
+    const streetField = document.getElementById('street');
+
+    await triggerAutofill(streetField, {
+      'address-line1': '1 Main St',
+      'country': 'CA'
+    });
+
+    assertElementHasValue('street', '1 Main St');
+    assertElementHasValue('country', 'CA');
+  }, 'Autofill correctly sets select element by value');
+</script>
+</body>
+</html>
+

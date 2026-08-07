@@ -12,7 +12,7 @@
 <script>
 'use strict';
 
-// Cross-origin counterpart of crossoriginstorage.https.html: a resource
+// Cross-origin counterpart of crossoriginstorage.tentative.https.html: a resource
 // declaratively stored into COS by this page (the storer) must be
 // reachable, via COS alone, from other origins according to the same
 // origins-style scoping rules as the imperative API -- and a resource
@@ -103,7 +103,7 @@ promise_test(async t => {
   const integrity = await storeDeclarativelyHere(t, {crossoriginstorage: listOrigin});
   const result = await remoteDeclarativeProbe(ctx, integrity, listOrigin);
   if (!result.ok) {
-    // Tolerate GREASE'ing (see origins-scoping.https.html for the general
+    // Tolerate GREASE'ing (see origins-scoping.tentative.https.html for the general
     // rationale); the list-tier has no PHL gate, so an outright failure
     // here is only explainable by GREASE'ing.
     return;

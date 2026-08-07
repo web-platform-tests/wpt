@@ -14,232 +14,99 @@
 
 # THROWAWAY BRANCH -- DO NOT MERGE.
 #
-# Every job below hunts the `[WinError 997]` failure in wptserve's
-# serve_forever.  It is measured at ~5e-4 per daemon start (20 occurrences in
-# 3,400 Windows full-run jobs over 30 days), which sets the arithmetic for the
-# whole exercise: ~2,000 cold-start trials per expected hit, ~6,000 for 95%
-# confidence of at least one, and 20,000+ before two arms can be told apart.
+# Future work step 2: the earlier synthetic-harness hunt (winsock_probe.py,
+# 6.5M+ trials, zero anomalies -- see the plan's Run 2) is clean but is not
+# byte-identical to a real `wpt run`: no real cert chains, no h2/websocket/
+# webtransport-h3/DNS daemons, no real stash.py BaseManager Listener. This
+# job trades trial count for exact fidelity by looping the real `wpt run` /
+# Edge / wptrunner code path instead. It relies on the throwaway evidence
+# capture in wptserve/server.py's serve_forever (WPT_WINSOCK_EVIDENCE_PATH)
+# to turn a hit into a full diagnostic bundle instead of a bare traceback.
 #
-# The previous attempt ran nine cold-start trials and reported "zero
-# anomalies".  That had a 99.6% chance of happening whether the bug exists or
-# not, so it carried no information at all.  Hence the shape here: every arm
-# gets its own agent and its full 150 minutes, so a null result in any of them
-# is a bound rather than a shrug.
-#
-# Cost: ~12 agents x ~2.7h.  That is comparable to one real epoch run
-# (20 x 2h), and it is deliberate -- another round trip costs a day.
+# Cold draws (fresh VM boot) are the scarce resource, so this maximises
+# `parallel:` over iterations within any one agent: 20 cold draws plus
+# ~10-15 warm iterations each, rather than lengthening one job. Don't stop at
+# the first hit within an agent; keep every hit's log/stdout/evidence bundle
+# and every trial's index, delete the rest.
 #
 # Notes for anyone editing this:
-#  - No `dependsOn: decision` and no `condition:`.  Every other job gates on
-#    dependencies.decision.outputs['test_jobs.*'], and `./wpt test-jobs` has no
-#    notion of these, so gating them would mean they never run.
-#  - `strategy: matrix` rather than `parallel`, because artifact names must
-#    differ per leg.  With `parallel` every leg publishes to the same artifact
-#    name and all but one silently lose.  $(System.JobName) is the leg name.
-#  - System.Debug is set to 'true' so configure_watson.yml's condition fires and
-#    LocalDumps collects *full* crash dumps into the artifact staging
-#    directory.  That is what makes the strict_handles arm worth running: a
-#    STATUS_INVALID_HANDLE (0xC0000008) is a hard SEH exception Python cannot
-#    catch and faulthandler does not cover, so without a dump a hit is just an
-#    exit code, and with one it is a stack.
-#  - continueOnError on the hunts, condition: always() on summarise and
-#    publish: several Windows-only ctypes paths in the harness are still
-#    unexecuted, and we want whatever JSON was produced either way.
+#  - No `dependsOn: decision` and no `condition:`. Every other job gates on
+#    dependencies.decision.outputs['test_jobs.*'], and `./wpt test-jobs` has
+#    no notion of this job, so gating it would mean it never runs.
+#  - System.Debug is set to 'true' so configure_watson.yml's condition fires
+#    and LocalDumps collects crash dumps into the artifact staging directory.
+#  - continueOnError on the loop step, condition: always() on publish: a
+#    trial timing out or the deadline elapsing mid-run must not lose whatever
+#    trials/evidence were already produced.
+#  - `strategy: parallel` needs a distinct artifact name per slice --
+#    $(System.JobPositionInPhase) is what Azure populates for that.
 
 jobs:
-# ---------------------------------------------------------------------------
-# The arms.  Same image and same preamble as the job that actually fails
-# (results_edge_dev): windows-latest, Python 3.14 on PATH, certs, Edge, hosts.
-# ---------------------------------------------------------------------------
-- job: winsock_hunt_win
-  displayName: 'WinError 997 hunt: Windows (throwaway, do not merge)'
-  timeoutInMinutes: 180
+- job: winsock_hunt_win_wpt_loop
+  displayName: 'WinError 997 hunt: loop real wpt run (throwaway, do not merge)'
+  timeoutInMinutes: 30
   pool:
     vmImage: 'windows-latest'
   variables:
     System.Debug: true
   strategy:
-    maxParallel: 10
-    matrix:
-      # wptserve's own shape, amplified only by K pairs per process.
-      baseline:
-        HUNT_ARGS: '--mode burst'
-      # Is the anomaly a per-select()-call probability or a per-socketpair
-      # lifetime one?  Nobody knows; 0.01 buys ~50x more select() calls per
-      # trial, and the comparison against baseline is informative either way.
-      fast_poll:
-        HUNT_ARGS: '--mode burst --poll-interval 0.01'
-      # K=1 is exactly one pair per process, as wptserve has.  The honest
-      # control for whether the K=16 amplification is legitimate: if baseline
-      # fires and this does not at comparable pair counts, the amplification is
-      # creating the anomaly rather than exposing it.
-      one_pair:
-        HUNT_ARGS: '--mode burst --pairs-per-trial 1 --batch 32'
-      # H4 needs a close concurrent with the window under test, not only
-      # before it.
-      churn_thread:
-        HUNT_ARGS: '--mode burst --churn-thread'
-      # The control for the churn: if churn is what matters, this is quieter.
-      no_churn:
-        HUNT_ARGS: '--mode burst --churn-files 0 --churn-sockets 0'
-      # Fires at a rate NOT bounded by the bug's own base rate, because a bad
-      # close is far commoner than one that happens to land on the pair.  The
-      # one arm here that can pay off even if nothing else does.
-      strict_handles:
-        HUNT_ARGS: '--mode burst --strict-handle-check --churn-thread'
-      # More concurrent spawns and more targets, at the cost of contention.
-      wide:
-        HUNT_ARGS: '--mode burst --batch 48 --pairs-per-trial 32'
-      # In case the danger window is later than the ~0.7s seen in CI.
-      long_idle:
-        HUNT_ARGS: '--mode burst --idle 8 --batch 32'
-      # The fidelity arm: wptserve's serve_forever verbatim on a real
-      # ThreadingHTTPServer with client traffic, one lifecycle per process and
-      # whole generations respawned.  Far fewer trials per minute, so its job
-      # is to check that burst mode has not abstracted away what matters.
-      wpt_fidelity:
-        HUNT_ARGS: '--mode wpt --restart-every 0 --workers 12 --idle-first 1.5'
-      wpt_fidelity_fast_poll:
-        HUNT_ARGS: '--mode wpt --restart-every 0 --workers 12 --idle-first 1.5 --poll-interval 0.01'
+    parallel: 20
   steps:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.14'
   - template: tools/ci/azure/system_info.yml
   - template: tools/ci/azure/checkout.yml
-  # Lever 4: installing certs and Edge can add LSPs, WFP filters or Winsock
-  # catalog entries that change AFD behaviour process-wide, before anything is
-  # spawned.  The earlier decision not to splice a probe into results_edge_dev
-  # was right about *concurrency* (browser subprocesses only start after every
-  # daemon is confirmed alive) but silent about machine state.
+  - template: tools/ci/azure/update_manifest.yml
   - template: tools/ci/azure/install_certs.yml
   - template: tools/ci/azure/install_edge.yml
     parameters:
       channel: dev
   - template: tools/ci/azure/configure_watson.yml
   - template: tools/ci/azure/update_hosts.yml
-  - script: python tools/ci/winsock_probe.py --mode probes --out $(Agent.TempDirectory)\findings.jsonl
-    displayName: 'Deterministic probes (H2, H3, and this agent environment)'
+  - powershell: |
+      # 25 minutes: leaves time inside the 30-minute job timeout for the
+      # preamble above and for the publish steps below to actually run.
+      $deadline = (Get-Date).AddSeconds(1500)
+      $outDir = "$(Agent.TempDirectory)\trials"
+      New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+      $trial = 0
+      while ((Get-Date) -lt $deadline) {
+        $trial++
+        $log = "$outDir\trial-$trial.log"
+        $stdout = "$outDir\trial-$trial.stdout.log"
+        $env:WPT_WINSOCK_EVIDENCE_PATH = "$outDir\trial-$trial.evidence.jsonl"
+        $proc = Start-Process -FilePath python -ArgumentList @(
+          "./wpt", "run", "--yes", "--no-manifest-update", "--no-restart-on-unexpected",
+          "--no-fail-on-unexpected", "--no-pause", "--log-mach", $log,
+          "--channel", "dev", "--include", "infrastructure/", "edge"
+        ) -RedirectStandardOutput $stdout -RedirectStandardError "$stdout.err" -PassThru -NoNewWindow
+        # 20 min is well over the ~5-7 min a full infrastructure/ pass should
+        # take; this bug does not itself hang (the recv() exception kills
+        # serve_forever immediately), so this is a generic flakiness guard,
+        # not a discriminator.
+        if (-not $proc.WaitForExit(20 * 60 * 1000)) {
+          Stop-Process -Id $proc.Id -Force
+          Write-Host "trial $trial timed out"
+        }
+        $hit = Select-String -Path $log, $stdout, "$stdout.err" `
+          -Pattern 'WinError 997', 'WinError 10038', 'CRITICAL' -ErrorAction SilentlyContinue
+        if ($hit) {
+          Write-Host "HIT on trial $trial -- stopping, evidence is in $outDir"
+          break
+        }
+        Remove-Item $log, $stdout, "$stdout.err", $env:WPT_WINSOCK_EVIDENCE_PATH -ErrorAction SilentlyContinue
+      }
+      Write-Host "trials=$trial"
+      "trials=$trial" | Out-File "$(Agent.TempDirectory)\summary.txt"
+    displayName: 'Loop real wpt run (Edge Dev) against infrastructure/'
     continueOnError: true
-  - script: python tools/ci/winsock_probe.py $(HUNT_ARGS) --duration 8700 --out $(Agent.TempDirectory)\findings.jsonl --findings-dir $(Agent.TempDirectory)\children
-    displayName: 'Hunt: $(HUNT_ARGS)'
-    continueOnError: true
-  - script: python tools/ci/winsock_probe.py --summarise $(Agent.TempDirectory)\findings.jsonl
-    displayName: 'Verdicts'
+  - publish: $(Agent.TempDirectory)\trials
+    artifact: winsock-wpt-loop-$(System.JobPositionInPhase)
     condition: always()
     continueOnError: true
-  - publish: $(Agent.TempDirectory)\findings.jsonl
-    artifact: winsock-$(System.JobName)
-    condition: always()
-    continueOnError: true
-  # Crash dumps, if the strict-handle-check arm caught a culprit.
+  # Crash dumps, if configure_watson.yml's LocalDumps caught anything.
   - publish: $(Build.ArtifactStagingDirectory)
-    artifact: winsock-dumps-$(System.JobName)
-    condition: always()
-    continueOnError: true
-
-# ---------------------------------------------------------------------------
-# Controls.  Each isolates exactly one variable against `baseline` above.
-# ---------------------------------------------------------------------------
-
-# No certs, no Edge, no hosts -- otherwise identical to `baseline`.  Together
-# they answer whether the preamble matters at all, which the previous run could
-# not, since it had no preamble and nothing to compare against.
-- job: winsock_hunt_win_bare
-  displayName: 'WinError 997 hunt: Windows, no preamble (throwaway)'
-  timeoutInMinutes: 180
-  pool:
-    vmImage: 'windows-latest'
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.14'
-  - template: tools/ci/azure/system_info.yml
-  - template: tools/ci/azure/checkout.yml
-  - script: python tools/ci/winsock_probe.py --mode probes --out $(Agent.TempDirectory)\findings.jsonl
-    displayName: 'Deterministic probes'
-    continueOnError: true
-  - script: python tools/ci/winsock_probe.py --mode burst --duration 9600 --out $(Agent.TempDirectory)\findings.jsonl --findings-dir $(Agent.TempDirectory)\children
-    displayName: 'Hunt: burst, no preamble'
-    continueOnError: true
-  - script: python tools/ci/winsock_probe.py --summarise $(Agent.TempDirectory)\findings.jsonl
-    displayName: 'Verdicts'
-    condition: always()
-    continueOnError: true
-  - publish: $(Agent.TempDirectory)\findings.jsonl
-    artifact: winsock-bare
-    condition: always()
-    continueOnError: true
-
-# A different OS build -- windows-latest reported itself as
-# Windows-2025Server-10.0.26100 on the previous run.  A rate difference between
-# images localises the mechanism to the OS/AFD version, and is nearly free
-# given enough trials per image.
-- job: winsock_hunt_win2022
-  displayName: 'WinError 997 hunt: windows-2022 (throwaway)'
-  timeoutInMinutes: 180
-  pool:
-    vmImage: 'windows-2022'
-  variables:
-    System.Debug: true
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.14'
-  - template: tools/ci/azure/system_info.yml
-  - template: tools/ci/azure/checkout.yml
-  - template: tools/ci/azure/install_certs.yml
-  - template: tools/ci/azure/install_edge.yml
-    parameters:
-      channel: dev
-  - template: tools/ci/azure/configure_watson.yml
-  - template: tools/ci/azure/update_hosts.yml
-  - script: python tools/ci/winsock_probe.py --mode probes --out $(Agent.TempDirectory)\findings.jsonl
-    displayName: 'Deterministic probes'
-    continueOnError: true
-  - script: python tools/ci/winsock_probe.py --mode burst --duration 8700 --out $(Agent.TempDirectory)\findings.jsonl --findings-dir $(Agent.TempDirectory)\children
-    displayName: 'Hunt: burst on windows-2022'
-    continueOnError: true
-  - script: python tools/ci/winsock_probe.py --summarise $(Agent.TempDirectory)\findings.jsonl
-    displayName: 'Verdicts'
-    condition: always()
-    continueOnError: true
-  - publish: $(Agent.TempDirectory)\findings.jsonl
-    artifact: winsock-win2022
-    condition: always()
-    continueOnError: true
-
-# The negative control on the identical code path: --force-fallback makes POSIX
-# use Lib/socket.py's _fallback_socketpair (loopback TCP) too, so if these fire
-# the harness is wrong rather than Windows.  A shorter duration is enough --
-# this is here to invalidate a false positive, not to bound a rate.
-- job: winsock_hunt_mac_control
-  displayName: 'WinError 997 hunt: macOS negative control (throwaway)'
-  timeoutInMinutes: 90
-  pool:
-    vmImage: 'macOS-14'
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.14'
-  - template: tools/ci/azure/checkout.yml
-  - script: |
-      set -eux -o pipefail
-      python tools/ci/winsock_probe.py --mode probes --force-fallback --out "$AGENT_TEMPDIRECTORY/findings.jsonl"
-    displayName: 'Deterministic probes, forced loopback-TCP fallback'
-    continueOnError: true
-  - script: |
-      set -eux -o pipefail
-      python tools/ci/winsock_probe.py --mode burst --duration 3600 --force-fallback --churn-thread --out "$AGENT_TEMPDIRECTORY/findings.jsonl" --findings-dir "$AGENT_TEMPDIRECTORY/children"
-    displayName: 'Hunt: burst, forced loopback-TCP fallback'
-    continueOnError: true
-  - script: |
-      set -eux -o pipefail
-      python tools/ci/winsock_probe.py --summarise "$AGENT_TEMPDIRECTORY/findings.jsonl"
-    displayName: 'Verdicts'
-    condition: always()
-    continueOnError: true
-  - publish: $(Agent.TempDirectory)/findings.jsonl
-    artifact: winsock-mac-control
+    artifact: winsock-wpt-loop-dumps-$(System.JobPositionInPhase)
     condition: always()
     continueOnError: true

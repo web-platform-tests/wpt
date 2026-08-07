@@ -4,6 +4,7 @@ import errno
 import http
 import http.server
 import ipaddress
+import json
 import os
 import platform
 import selectors
@@ -131,6 +132,74 @@ class RequestRewriter:
                 new_url[2] = destination
                 new_url = urlunsplit(new_url)
                 request_handler.path = new_url
+
+
+# --------------------------------------------------------------------------
+# winsock-997-probe: throwaway evidence capture for the Windows shutdown-
+# socket anomaly investigation. DO NOT MERGE. See
+# tools/ci/winsock_probe.py for the hypotheses this is trying to settle.
+#
+# Active only when WPT_WINSOCK_EVIDENCE_PATH is set (never true in a normal
+# ./wpt run); behaviour is unchanged otherwise, and the original exception
+# is always re-raised unchanged.
+# --------------------------------------------------------------------------
+_winsock_probe_module_cache = [None, False]
+
+
+def _winsock_probe_module():
+    module, tried = _winsock_probe_module_cache
+    if not tried:
+        _winsock_probe_module_cache[1] = True
+        try:
+            ci_dir = os.path.join(os.path.dirname(__file__), "..", "..", "ci")
+            if ci_dir not in sys.path:
+                sys.path.insert(0, ci_dir)
+            import winsock_probe
+            module = winsock_probe
+        except Exception:
+            module = None
+        _winsock_probe_module_cache[0] = module
+    return module
+
+
+def _winsock_probe_log(record):
+    path = os.environ.get("WPT_WINSOCK_EVIDENCE_PATH")
+    if not path:
+        return
+    try:
+        with open(path, "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(record, default=repr) + "\n")
+    except OSError:
+        pass
+
+
+def _winsock_probe_readable(sock, port, created_at, select_index):
+    if not os.environ.get("WPT_WINSOCK_EVIDENCE_PATH"):
+        return
+    wp = _winsock_probe_module()
+    _winsock_probe_log({
+        "kind": "readable-pre-recv",
+        "ts": time.time(),
+        "pid": os.getpid(),
+        "thread": threading.current_thread().name,
+        "thread_ident": threading.get_ident(),
+        "port": port,
+        "age_s": time.monotonic() - created_at,
+        "select_index": select_index,
+        "fionread": wp._safe(lambda: wp.bytes_readable(sock.fileno())) if wp else None,
+    })
+
+
+def _winsock_probe_anomaly(sock, peer, created_at, exc, select_index):
+    if not os.environ.get("WPT_WINSOCK_EVIDENCE_PATH"):
+        return
+    wp = _winsock_probe_module()
+    if wp is None:
+        _winsock_probe_log({"kind": "anomaly-no-module", "exc": repr(exc)})
+        return
+    _winsock_probe_log(wp.collect_evidence(
+        sock, peer, created_at, exc, "server.serve_forever",
+        extra={"select_index": select_index}))
 
 
 class WebTestServer(http.server.ThreadingHTTPServer):
@@ -263,6 +332,9 @@ class WebTestServer(http.server.ThreadingHTTPServer):
         """
         shutdown_read_sock, self._shutdown_write_sock = socket.socketpair()
         self._shutdown_event.clear()
+        # winsock-997-probe: throwaway, never merge.
+        created_at = time.monotonic()
+        select_index = 0
 
         try:
             with selectors.DefaultSelector() as selector:
@@ -271,13 +343,25 @@ class WebTestServer(http.server.ThreadingHTTPServer):
 
                 while True:
                     events = selector.select(timeout=poll_interval)
+                    select_index += 1  # winsock-997-probe: throwaway, never merge.
 
                     # Handle shutdown requests before any request
                     if any(
                         key.fileobj == shutdown_read_sock and mask == selectors.EVENT_READ
                         for key, mask in events
                     ):
-                        shutdown_read_sock.recv(1)
+                        # winsock-997-probe: throwaway, never merge. Log at the
+                        # readability, not only the error, since a phantom
+                        # readable that doesn't raise would otherwise park this
+                        # thread in recv() forever with no trace at all.
+                        _winsock_probe_readable(shutdown_read_sock, self.server_port,
+                                                 created_at, select_index)
+                        try:
+                            shutdown_read_sock.recv(1)
+                        except OSError as exc:
+                            _winsock_probe_anomaly(shutdown_read_sock, self._shutdown_write_sock,
+                                                    created_at, exc, select_index)
+                            raise
                         break
 
                     for key, mask in events:

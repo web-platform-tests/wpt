@@ -144,7 +144,8 @@ class ConfigBuilder:
                 "password": "web-platform-tests",
                 "force_regenerate": False,
                 "duration": 30,
-                "base_conf_path": None
+                "base_conf_path": None,
+                "additional_hosts": [],
             },
             "pregenerated": {
                 "host_key_path": None,

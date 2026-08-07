@@ -1,6 +1,7 @@
 # mypy: allow-untyped-defs
 
 import functools
+import ipaddress
 import os
 import random
 import shutil
@@ -106,11 +107,24 @@ def make_subject(common_name,
 
     return "".join(rv)
 
+def _get_host_identity(host):
+    try:
+        return "IP", ipaddress.ip_address(host)
+    except ValueError:
+        return "DNS", host
+
+
 def make_alt_names(hosts):
-    return ",".join("DNS:%s" % host for host in hosts)
+    return ",".join("%s:%s" % _get_host_identity(host) for host in hosts)
 
 def make_name_constraints(hosts):
-    return ",".join("permitted;DNS:%s" % host for host in hosts)
+    constraints = []
+    for host in hosts:
+        identity_type, value = _get_host_identity(host)
+        if identity_type == "IP":
+            value = "%s/%s" % (value, ipaddress.ip_network(value).netmask)
+        constraints.append("permitted;%s:%s" % (identity_type, value))
+    return ",".join(constraints)
 
 def get_config(root_dir, hosts, duration=30):
     if hosts is None:
@@ -222,7 +236,7 @@ class OpenSSLEnvironment:
 
     def __init__(self, logger, openssl_binary="openssl", base_path=None,
                  password="web-platform-tests", force_regenerate=False,
-                 duration=30, base_conf_path=None):
+                 duration=30, base_conf_path=None, additional_hosts=None):
         """SSL environment that creates a local CA and host certificate using OpenSSL.
 
         By default this will look in base_path for existing certificates that are still
@@ -235,6 +249,7 @@ class OpenSSLEnvironment:
                           directory will be used and removed when the server shuts down
         :param password: Password to use
         :param force_regenerate: Always create a new certificate even if one already exists.
+        :param additional_hosts: Extra DNS names or IP addresses to add to certificates.
         """
         self.logger = logger
 
@@ -248,6 +263,7 @@ class OpenSSLEnvironment:
         self.force_regenerate = force_regenerate
         self.duration = duration
         self.base_conf_path = base_conf_path
+        self.additional_hosts = tuple(additional_hosts or ())
 
         self.path = None
         self.binary = openssl_binary
@@ -284,9 +300,15 @@ class OpenSSLEnvironment:
         return OpenSSL(self.logger, self.binary, self.base_path, conf_path, hosts,
                        self.duration, self.base_conf_path)
 
+    def _certificate_hosts(self, hosts):
+        hosts = tuple(sorted(hosts, key=lambda x:len(x)))
+        additional_hosts = set(self.additional_hosts) - set(hosts)
+        return hosts + tuple(sorted(additional_hosts, key=lambda x:len(x)))
+
     def ca_cert_path(self, hosts):
         """Get the path to the CA certificate file, generating a
         new one if needed"""
+        hosts = self._certificate_hosts(hosts)
         if self._ca_cert_path is None and not self.force_regenerate:
             self._load_ca_cert()
         if self._ca_cert_path is None:
@@ -359,7 +381,7 @@ class OpenSSLEnvironment:
 
         hosts must be a list of all hosts to appear on the certificate, with
         the primary hostname first."""
-        hosts = tuple(sorted(hosts, key=lambda x:len(x)))
+        hosts = self._certificate_hosts(hosts)
         if hosts not in self.host_certificates:
             if not self.force_regenerate:
                 key_cert = self._load_host_cert(hosts)

@@ -1,0 +1,140 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: declarative HTML integration</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/helpers.js"></script>
+<body>
+<span id="cos-html-marker">marker</span>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/README.md#declarative-html-integration
+//
+// A `crossoriginstorage` attribute on a `<link>`/`<script>` that already
+// carries `integrity` opts the resource into COS, keyed off the same
+// `origins`-style value space as requestFileHandle(): omitted (same-site),
+// a space-separated origin list, or "*" (global). Processing flow: try a
+// COS lookup by the integrity hash first; only fetch from the network (and
+// then store into COS) on a miss.
+//
+// Each test below proves COS involvement the same way: load a first,
+// real-URL element to populate COS, then load a second element pointed at
+// a URL that does not exist, carrying the same integrity hash -- it can
+// only succeed if it was served from COS rather than the network.
+
+const REAL_CSS_URL = '../resources/marker-style.css';
+const REAL_JS_URL = '../resources/marker-script.js';
+const BROKEN_CSS_URL = 'does-not-exist-' + Math.random() + '.css';
+const BROKEN_JS_URL = 'does-not-exist-' + Math.random() + '.js';
+
+let cssIntegrity, jsIntegrity;
+
+promise_setup(async () => {
+  const [cssText, jsText] = await Promise.all([
+    fetch(REAL_CSS_URL).then(r => r.text()),
+    fetch(REAL_JS_URL).then(r => r.text()),
+  ]);
+  cssIntegrity = await cosSha256Integrity(cssText);
+  jsIntegrity = await cosSha256Integrity(jsText);
+});
+
+function markerColor() {
+  return getComputedStyle(document.getElementById('cos-html-marker')).color;
+}
+
+function appendLink(t, {href, integrity, crossoriginstorage}) {
+  return new Promise((resolve, reject) => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    if (integrity !== undefined) link.integrity = integrity;
+    if (crossoriginstorage !== undefined) link.setAttribute('crossoriginstorage', crossoriginstorage);
+    link.onload = () => resolve(link);
+    link.onerror = () => reject(new Error('link failed to load'));
+    t.add_cleanup(() => link.remove());
+    document.head.appendChild(link);
+  });
+}
+
+function appendScript(t, {src, integrity, crossoriginstorage}) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    if (integrity !== undefined) script.integrity = integrity;
+    if (crossoriginstorage !== undefined) script.setAttribute('crossoriginstorage', crossoriginstorage);
+    script.onload = () => resolve(script);
+    script.onerror = () => reject(new Error('script failed to load'));
+    t.add_cleanup(() => script.remove());
+    document.body.appendChild(script);
+  });
+}
+
+promise_test(async t => {
+  // Reset the marker between tests that use it.
+  document.getElementById('cos-html-marker').style.color = '';
+  await appendLink(t, {href: REAL_CSS_URL, integrity: cssIntegrity, crossoriginstorage: ''});
+  assert_equals(markerColor(), 'rgb(1, 2, 3)', 'the real stylesheet applied');
+
+  await appendLink(t, {href: BROKEN_CSS_URL, integrity: cssIntegrity, crossoriginstorage: ''});
+  // The second <link>'s href is broken; success is only possible if this
+  // was served from COS using the same integrity hash.
+  assert_equals(markerColor(), 'rgb(1, 2, 3)',
+    'a same-site-scoped <link> with a broken href but the same integrity hash still applied, via COS');
+}, 'declarative HTML: a same-site (valueless crossoriginstorage) <link> resource is served from COS on a subsequent request');
+
+promise_test(async t => {
+  window.__cosHtmlScriptRunCount = 0;
+  await appendScript(t, {src: REAL_JS_URL, integrity: jsIntegrity, crossoriginstorage: ''});
+  assert_equals(window.__cosHtmlScriptRunCount, 1);
+
+  await appendScript(t, {src: BROKEN_JS_URL, integrity: jsIntegrity, crossoriginstorage: ''});
+  assert_equals(window.__cosHtmlScriptRunCount, 2,
+    'a same-site-scoped <script> with a broken src but the same integrity hash still ran, via COS');
+}, 'declarative HTML: a same-site (valueless crossoriginstorage) <script> resource is served from COS on a subsequent request');
+
+promise_test(async t => {
+  document.getElementById('cos-html-marker').style.color = '';
+  await appendLink(t, {href: REAL_CSS_URL, integrity: cssIntegrity, crossoriginstorage: '*'});
+  await appendLink(t, {href: BROKEN_CSS_URL, integrity: cssIntegrity, crossoriginstorage: '*'});
+  assert_equals(markerColor(), 'rgb(1, 2, 3)', 'a wildcard-scoped <link> served from COS on the second request');
+}, 'declarative HTML: crossoriginstorage="*" opts a <link> into COS');
+
+promise_test(async t => {
+  await appendLink(t, {
+    href: REAL_CSS_URL, integrity: cssIntegrity,
+    crossoriginstorage: location.origin,
+  });
+  await appendLink(t, {
+    href: BROKEN_CSS_URL, integrity: cssIntegrity,
+    crossoriginstorage: location.origin,
+  });
+  assert_equals(markerColor(), 'rgb(1, 2, 3)',
+    'a list-scoped <link> naming the page\'s own origin served from COS on the second request');
+}, 'declarative HTML: crossoriginstorage="<space-separated origins>" opts a <link> into a list-scoped entry');
+
+promise_test(async t => {
+  window.__cosHtmlScriptRunCount = 0;
+  const wrongIntegrity = 'sha256-' + 'A'.repeat(43) + '=';
+  await promise_rejects_js(t, Error,
+    appendScript(t, {src: REAL_JS_URL, integrity: wrongIntegrity, crossoriginstorage: ''}));
+  assert_equals(window.__cosHtmlScriptRunCount, 0,
+    'a hash-mismatched script must not execute, per existing integrity failure semantics');
+}, 'declarative HTML: a crossoriginstorage script whose bytes do not match integrity does not execute');
+
+promise_test(async t => {
+  // Omitting crossoriginstorage entirely, while keeping integrity, must NOT
+  // participate in COS at all: a second, broken-URL element with the same
+  // integrity but no crossoriginstorage attribute must fail to load exactly
+  // like ordinary integrity-checked resource loading without COS.
+  document.getElementById('cos-html-marker').style.color = '';
+  await appendLink(t, {href: REAL_CSS_URL, integrity: cssIntegrity});
+  assert_equals(markerColor(), 'rgb(1, 2, 3)', 'the real stylesheet still applies without crossoriginstorage');
+
+  document.getElementById('cos-html-marker').style.color = '';
+  await promise_rejects_js(t, Error, appendLink(t, {href: BROKEN_CSS_URL, integrity: cssIntegrity}));
+  assert_not_equals(markerColor(), 'rgb(1, 2, 3)',
+    'without crossoriginstorage, a broken-href <link> must not be rescued from COS');
+}, 'declarative HTML: omitting crossoriginstorage preserves ordinary integrity behavior with no COS participation');
+</script>
+</body>

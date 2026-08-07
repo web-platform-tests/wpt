@@ -1389,6 +1389,56 @@ class BackgroundChurn:
             time.sleep(0.001)
 
 
+def _classify_recv_result(result, rsock, created_at, sink, extra) -> None:
+    """Turn one completed recv attempt on a spuriously-readable pair into one
+    anomaly record.  Shared by the off-thread and on-thread callers so both
+    report the same classes."""
+    if "evidence" in result:
+        sink(result["evidence"])
+        return
+    # A byte means somebody poked a pair nobody has a handle to; zero bytes
+    # means the write end is already gone, which in wptserve would be a
+    # different bug in the same place.  Do not conflate them.
+    sink({"kind": "anomaly",
+          "context": ("burst/readable-with-data" if result.get("len")
+                      else "burst/readable-peer-gone"),
+          "ts": time.time(), "pid": os.getpid(), "winerror": None,
+          "len": result.get("len"),
+          "age_s": time.monotonic() - created_at,
+          "fileno": _safe(rsock.fileno), **extra})
+
+
+def _blocking_recv_here(rsock, wsock, created_at, sink, extra) -> None:
+    """wptserve's exact call on *this* thread -- the thread that also created
+    the pair and ran select().
+
+    This is the fidelity that --serve-thread buys.  _blocking_recv_on_thread
+    hands the recv to a throwaway thread so a blocking recv cannot wedge the
+    trial, but that means the create/select/recv sequence is split across two
+    threads, which production never does: serve_forever does all three on the
+    single thread server.py:983 starts.  If the fault is thread-scoped (H5),
+    splitting it is exactly the wrong experiment.
+
+    A wedge is handled by the caller: the trial body runs on a daemon thread
+    that the child's main thread joins with a timeout, so a recv that never
+    returns is reported as burst/serve-thread-wedged rather than hanging the
+    run.  The breadcrumb below is flushed first so a wedge is still
+    attributable to this pair.
+    """
+    sink({"kind": "readable-pre-recv", "ts": time.time(),
+          "age_s": time.monotonic() - created_at,
+          "fionread": _safe(lambda: bytes_readable(rsock.fileno())),
+          "fileno": _safe(rsock.fileno), **extra})
+    result: dict = {}
+    try:
+        result["len"] = len(rsock.recv(1))
+    except OSError as exc:
+        result["evidence"] = collect_evidence(
+            rsock, wsock, created_at, exc, "burst/spurious-readable-recv",
+            extra)
+    _classify_recv_result(result, rsock, created_at, sink, extra)
+
+
 def _blocking_recv_on_thread(rsock, wsock, created_at, sink, extra) -> None:
     """Issue wptserve's exact call -- a *blocking* recv(1) -- unwedgeably.
 
@@ -1400,7 +1450,8 @@ def _blocking_recv_on_thread(rsock, wsock, created_at, sink, extra) -> None:
     The recv runs on a throwaway daemon thread so it cannot hold up the trial,
     and collect_evidence is called from inside that thread on purpose --
     fresh_pair_same_thread only discriminates H5 if it runs on the thread that
-    failed.
+    failed.  Note the thread that failed is then *not* the thread that created
+    the pair or ran select(); use --serve-thread for production's shape.
     """
     result: dict = {}
 
@@ -1421,19 +1472,8 @@ def _blocking_recv_on_thread(rsock, wsock, created_at, sink, extra) -> None:
               "age_s": time.monotonic() - created_at,
               "fionread": _safe(lambda: bytes_readable(rsock.fileno())),
               "fileno": _safe(rsock.fileno), **extra})
-    elif "evidence" in result:
-        sink(result["evidence"])
-    else:
-        # A byte means somebody poked a pair nobody has a handle to; zero bytes
-        # means the write end is already gone, which in wptserve would be a
-        # different bug in the same place.  Do not conflate them.
-        sink({"kind": "anomaly",
-              "context": ("burst/readable-with-data" if result.get("len")
-                          else "burst/readable-peer-gone"),
-              "ts": time.time(), "pid": os.getpid(), "winerror": None,
-              "len": result.get("len"),
-              "age_s": time.monotonic() - created_at,
-              "fileno": _safe(rsock.fileno), **extra})
+        return
+    _classify_recv_result(result, rsock, created_at, sink, extra)
 
 
 def _inspect_readable_listener(listener, created_at, sink, extra) -> None:
@@ -1461,6 +1501,99 @@ def _inspect_readable_listener(listener, created_at, sink, extra) -> None:
           "peer": str(addr), **extra})
 
 
+def _burst_trial_body(t0, opts, sink, strict, churn, listener) -> None:
+    """Create the pairs, poll them, and handle any readable one.
+
+    Split out of _burst_child_main so --serve-thread can run this whole
+    sequence on a freshly spawned thread.  In production every step here
+    happens on the thread `threading.Thread(target=self.httpd.serve_forever)`
+    creates (server.py:983 -> :264): the socketpair is the first statement of
+    serve_forever, the selector loop is that thread's whole life, and the
+    recv is on the same thread.  All 20 observed failures name it --
+    "Exception in thread Thread-1 (serve_forever)".  Run 2 instead did all of
+    this on the spawned child's *main* thread, so 6.47M of its 6.5M trials
+    tested a shape production never has.
+    """
+    pairs, offsets = [], []
+    for i in range(opts["pairs"]):
+        try:
+            rsock, wsock = MAKE_PAIR()
+        except OSError as exc:
+            sink({"kind": "pair-create-failed", "index": i,
+                  "code": sock_error_code(exc)})
+            break
+        pairs.append([rsock, wsock, time.monotonic(), False])
+        offsets.append(round(time.monotonic() - t0, 4))
+
+    select_calls = 0
+    first_select = None
+    with BackgroundChurn(opts["churn_thread"]) as background:
+        with selectors.DefaultSelector() as sel:
+            if listener is not None:
+                sel.register(listener, selectors.EVENT_READ,
+                             ("listener", -1))
+            for i, entry in enumerate(pairs):
+                sel.register(entry[0], selectors.EVENT_READ, ("pair", i))
+
+            # Charge the danger window from the last pair creation, not from
+            # process entry.  Run 2 used t0 + idle, so spawn cost,
+            # churn_handles() and N pair creations were all subtracted from
+            # the window -- and in the widest arms they consumed all of it:
+            # 32/50 sampled `wide` trials and 35/50 `churn_thread` trials
+            # never reached a single select(), so they contributed zero
+            # exposure while still counting as trials.
+            idle_until = time.monotonic() + opts["idle"]
+            while time.monotonic() < idle_until:
+                events = sel.select(timeout=opts["poll_interval"])
+                select_calls += 1
+                if first_select is None:
+                    # Run 1 only ever recorded a *second* select's answer.
+                    first_select = [key.data for key, _ in events]
+                for key, _mask in events:
+                    what, idx = key.data
+                    extra = {"pair_index": idx, "pairs": len(pairs),
+                             "select_calls": select_calls,
+                             "first_select_events": first_select,
+                             "serve_thread": opts["serve_thread"],
+                             "thread_name": threading.current_thread().name,
+                             "age_from_process_start_s":
+                                 round(time.monotonic() - t0, 4),
+                             "strict_handle_check": strict,
+                             "churn": churn,
+                             "churn_rounds": background.rounds}
+                    # Stop selecting on it either way: a sticky readable
+                    # would otherwise spin for the rest of the trial.
+                    sel.unregister(key.fileobj)
+                    if what == "listener":
+                        _inspect_readable_listener(listener, t0, sink,
+                                                   extra)
+                    else:
+                        entry = pairs[idx]
+                        entry[3] = True  # recv in flight; do not close
+                        recv = (_blocking_recv_here if opts["serve_thread"]
+                                else _blocking_recv_on_thread)
+                        recv(entry[0], entry[1], entry[2], sink, extra)
+
+    sink({"kind": "burst-trial", "pairs": len(pairs),
+          "spawn_latency_s": round(time.time() - opts["spawned_at"], 3),
+          "pair_offsets_s": offsets, "select_calls": select_calls,
+          "first_select_events": first_select,
+          "elapsed_s": round(time.monotonic() - t0, 3),
+          "idle_from": "last-pair", "serve_thread": opts["serve_thread"],
+          "thread_name": threading.current_thread().name,
+          "strict_handle_check": strict, "churn": churn,
+          "churn_rounds": background.rounds})
+
+    # RST-close rather than a graceful close: 16 pairs per trial at several
+    # trials a second would otherwise put thousands of loopback sockets into
+    # a two-minute TIME_WAIT and exhaust Windows' ~16k dynamic port range
+    # mid-run, turning the hunt into WSAEADDRINUSE backoff.
+    for rsock, wsock, _created, in_flight in pairs:
+        if in_flight:
+            continue  # a thread may still be blocked in recv on rsock
+        _close_pair(rsock, wsock, True)
+
+
 def _burst_child_main(path: str, opts: dict) -> None:
     t0 = time.monotonic()
     out = open(path, "w", encoding="utf-8")
@@ -1469,7 +1602,7 @@ def _burst_child_main(path: str, opts: dict) -> None:
         record.setdefault("pid", os.getpid())
         record.setdefault("trial", opts["trial"])
         out.write(json.dumps(record, default=str) + "\n")
-        if record.get("kind") == "anomaly":
+        if record.get("kind") in ("anomaly", "readable-pre-recv"):
             out.flush()
 
     try:
@@ -1492,72 +1625,27 @@ def _burst_child_main(path: str, opts: dict) -> None:
                 listener.close()
             listener = None
 
-        pairs, offsets = [], []
-        for i in range(opts["pairs"]):
-            try:
-                rsock, wsock = MAKE_PAIR()
-            except OSError as exc:
-                sink({"kind": "pair-create-failed", "index": i,
-                      "code": sock_error_code(exc)})
-                break
-            pairs.append([rsock, wsock, time.monotonic(), False])
-            offsets.append(round(time.monotonic() - t0, 4))
+        if opts["serve_thread"]:
+            # Production's shape: the child's main thread binds the listener
+            # (WebTestServer.__init__ -> TCPServer.__init__), then a fresh
+            # thread creates the socketpair and runs the loop.  Daemon, and
+            # joined with a timeout, so an inline recv that never returns is
+            # reported rather than hanging the run -- a wedge is a hit.
+            thread = threading.Thread(
+                target=_burst_trial_body,
+                args=(t0, opts, sink, strict, churn, listener),
+                name="serve_forever", daemon=True)
+            thread.start()
+            thread.join(timeout=opts["idle"] + 10.0)
+            if thread.is_alive():
+                sink({"kind": "anomaly",
+                      "context": "burst/serve-thread-wedged",
+                      "ts": time.time(), "winerror": None,
+                      "idle_s": opts["idle"],
+                      "alive_s": round(time.monotonic() - t0, 3)})
+        else:
+            _burst_trial_body(t0, opts, sink, strict, churn, listener)
 
-        select_calls = 0
-        first_select = None
-        with BackgroundChurn(opts["churn_thread"]) as background:
-            with selectors.DefaultSelector() as sel:
-                if listener is not None:
-                    sel.register(listener, selectors.EVENT_READ,
-                                 ("listener", -1))
-                for i, entry in enumerate(pairs):
-                    sel.register(entry[0], selectors.EVENT_READ, ("pair", i))
-
-                idle_until = t0 + opts["idle"]
-                while time.monotonic() < idle_until:
-                    events = sel.select(timeout=opts["poll_interval"])
-                    select_calls += 1
-                    if first_select is None:
-                        # Run 1 only ever recorded a *second* select's answer.
-                        first_select = [key.data for key, _ in events]
-                    for key, _mask in events:
-                        what, idx = key.data
-                        extra = {"pair_index": idx, "pairs": len(pairs),
-                                 "select_calls": select_calls,
-                                 "first_select_events": first_select,
-                                 "age_from_process_start_s":
-                                     round(time.monotonic() - t0, 4),
-                                 "strict_handle_check": strict,
-                                 "churn": churn,
-                                 "churn_rounds": background.rounds}
-                        # Stop selecting on it either way: a sticky readable
-                        # would otherwise spin for the rest of the trial.
-                        sel.unregister(key.fileobj)
-                        if what == "listener":
-                            _inspect_readable_listener(listener, t0, sink,
-                                                       extra)
-                        else:
-                            entry = pairs[idx]
-                            entry[3] = True  # recv in flight; do not close
-                            _blocking_recv_on_thread(entry[0], entry[1],
-                                                     entry[2], sink, extra)
-
-        sink({"kind": "burst-trial", "pairs": len(pairs),
-              "spawn_latency_s": round(time.time() - opts["spawned_at"], 3),
-              "pair_offsets_s": offsets, "select_calls": select_calls,
-              "first_select_events": first_select,
-              "elapsed_s": round(time.monotonic() - t0, 3),
-              "strict_handle_check": strict, "churn": churn,
-              "churn_rounds": background.rounds})
-
-        # RST-close rather than a graceful close: 16 pairs per trial at several
-        # trials a second would otherwise put thousands of loopback sockets into
-        # a two-minute TIME_WAIT and exhaust Windows' ~16k dynamic port range
-        # mid-run, turning the hunt into WSAEADDRINUSE backoff.
-        for rsock, wsock, _created, in_flight in pairs:
-            if in_flight:
-                continue  # a thread may still be blocked in recv on rsock
-            _close_pair(rsock, wsock, True)
         if listener is not None:
             listener.close()
     finally:
@@ -1584,8 +1672,24 @@ def _drain_child(path: str, sink, keep_budget: list) -> collections.Counter:
         kind = record.get("kind")
         counts[kind or "?"] += 1
         if kind == "burst-trial":
-            counts["cold_start_trials"] += record.get("pairs", 0)
+            pairs = record.get("pairs", 0)
+            selects = record.get("select_calls", 0)
+            counts["cold_start_trials"] += pairs
             counts["children_completed"] += 1
+            # A pair that was never select()ed was never exposed to the
+            # failing sequence, so it cannot license a "clean at N trials"
+            # claim.  Run 2 reported only cold_start_trials, which is why
+            # nobody noticed that whole arms were mostly unexposed.
+            counts["select_calls"] += selects
+            if selects:
+                counts["exposed_trials"] += pairs
+            else:
+                counts["unexposed_trials"] += pairs
+            offsets = record.get("pair_offsets_s") or []
+            elapsed = record.get("elapsed_s")
+            if offsets and elapsed is not None:
+                counts["pair_deciseconds"] += int(round(
+                    10 * sum(max(0.0, elapsed - off) for off in offsets)))
             # Keep a sample so the offset distribution is inspectable without
             # writing a record per trial for the whole run.
             if keep_budget[0] > 0:
@@ -1606,7 +1710,8 @@ def hunt_burst(sink, duration: float, batch: int, pairs: int, idle: float,
                poll_interval: float, grace: float, churn_files: int,
                churn_sockets: int, churn_thread: bool,
                strict_handle_check: bool, force_fallback: bool,
-               findings_dir: str, keep_trials: int) -> dict:
+               findings_dir: str, keep_trials: int,
+               serve_thread: bool = False) -> dict:
     import multiprocessing
 
     ctx = multiprocessing.get_context("spawn")
@@ -1624,6 +1729,7 @@ def hunt_burst(sink, duration: float, batch: int, pairs: int, idle: float,
         "churn_thread": churn_thread,
         "strict_handle_check": strict_handle_check,
         "force_fallback": force_fallback,
+        "serve_thread": serve_thread,
     }
 
     try:
@@ -1672,11 +1778,16 @@ def hunt_burst(sink, duration: float, batch: int, pairs: int, idle: float,
 
             elapsed = time.monotonic() - started
             trials = totals["cold_start_trials"]
+            exposed = totals["exposed_trials"]
             progress = {
                 "kind": "burst-progress", "batches": batches,
                 "children_spawned": trial_no,
                 "children_completed": totals["children_completed"],
                 "cold_start_trials": trials,
+                "exposed_trials": exposed,
+                "unexposed_trials": totals["unexposed_trials"],
+                "select_calls": totals["select_calls"],
+                "pair_seconds": round(totals["pair_deciseconds"] / 10.0, 1),
                 "anomalies": totals["anomaly"],
                 "elapsed_s": round(elapsed, 1),
                 "trials_per_min": round(trials / elapsed * 60, 1) if elapsed
@@ -1684,7 +1795,8 @@ def hunt_burst(sink, duration: float, batch: int, pairs: int, idle: float,
             }
             sink(progress)
             print(f"  batch {batches}: {trial_no} children, {trials} "
-                  f"cold-start trials, {totals['anomaly']} anomalies, "
+                  f"cold-start trials ({exposed} exposed), "
+                  f"{totals['anomaly']} anomalies, "
                   f"{progress['trials_per_min']}/min")
             # Do not burn 150 minutes looking busy.  If children cannot even
             # create pairs -- a broken interpreter, a sandbox, port exhaustion
@@ -1701,14 +1813,23 @@ def hunt_burst(sink, duration: float, batch: int, pairs: int, idle: float,
 
     elapsed = max(time.monotonic() - started, 1e-9)
     trials = totals["cold_start_trials"]
+    exposed = totals["exposed_trials"]
     result = {
         "children_spawned": trial_no,
         "children_completed": totals["children_completed"],
         "cold_start_trials": trials,
+        # The denominator that actually licenses a "clean at N" claim: pairs
+        # that reached at least one select().  Quote this one, not the above.
+        "exposed_trials": exposed,
+        "unexposed_trials": totals["unexposed_trials"],
+        "select_calls": totals["select_calls"],
+        "pair_seconds": round(totals["pair_deciseconds"] / 10.0, 1),
+        "serve_thread": serve_thread,
         "pairs_per_child": pairs,
         "anomalies": totals["anomaly"],
         "elapsed_s": round(elapsed, 1),
         "trials_per_min": round(trials / elapsed * 60, 1),
+        "exposed_per_min": round(exposed / elapsed * 60, 1),
         "children_per_min": round(trial_no / elapsed * 60, 1),
         "counts": dict(totals),
     }
@@ -1962,8 +2083,18 @@ def main(argv=None) -> int:
                         "multiplies the hit rate by up to K for free")
     p.add_argument("--idle", type=float, default=1.5,
                    help="burst mode: seconds each child selects before "
-                        "exiting.  The real failure lands ~0.7s after the "
-                        "daemon starts")
+                        "exiting, counted from the last socketpair creation. "
+                        "The real failure lands within the ~3s daemon-startup "
+                        "burst")
+    p.add_argument("--serve-thread", action="store_true",
+                   help="burst mode: create the socketpairs, run the selector "
+                        "loop and issue the recv on one freshly spawned "
+                        "thread, as serve_forever does (server.py:983 -> "
+                        ":264), instead of on the child's main thread.  Run 2 "
+                        "did 6.47M of its 6.5M trials on the main thread, so "
+                        "if the fault is thread-scoped (H5) it never tested "
+                        "the production shape at all.  Pair with "
+                        "--pairs-per-trial 1 --poll-interval 0.5 --idle 1.5")
     p.add_argument("--grace", type=float, default=45.0,
                    help="burst mode: seconds beyond --idle before a child is "
                         "declared hung.  Must cover Windows spawn latency; a "
@@ -2066,13 +2197,19 @@ def main(argv=None) -> int:
                 args.idle, args.poll_interval, args.grace, args.churn_files,
                 args.churn_sockets, args.churn_thread,
                 args.strict_handle_check, args.force_fallback, findings_dir,
-                args.keep_trial_records)
+                args.keep_trial_records, args.serve_thread)
             print(json.dumps(result, indent=2))
             print(f"\nCALIBRATION: {result['trials_per_min']} cold-start "
-                  f"trials/min, {result['children_per_min']} children/min.")
+                  f"trials/min ({result['exposed_per_min']} exposed/min), "
+                  f"{result['children_per_min']} children/min.")
             print(f"  A 150-minute job at this rate gives "
-                  f"{result['trials_per_min'] * 150:.0f} trials; 6,000 is the "
-                  f"floor for a clean run to mean anything.")
+                  f"{result['exposed_per_min'] * 150:.0f} *exposed* trials; "
+                  f"6,000 is the floor for a clean run to mean anything.")
+            if result["unexposed_trials"]:
+                print(f"  NOTE: {result['unexposed_trials']} pairs were never "
+                      f"select()ed and are excluded from that figure; if this "
+                      f"is a large fraction, lower --pairs-per-trial or raise "
+                      f"--idle.")
             sink({"kind": "hunt-summary", "hunt": "burst", "result": result})
     finally:
         out.close()

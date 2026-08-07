@@ -44,7 +44,16 @@
 jobs:
 - job: winsock_hunt_win_wpt_loop
   displayName: 'WinError 997 hunt: loop real wpt run (throwaway, do not merge)'
-  timeoutInMinutes: 30
+  # Not 30: preamble (median 399s, observed up to 541s) plus the loop's own
+  # 1500s deadline below is already ~1900s = 31.65min on a *median* preamble,
+  # so a 30min job timeout guarantees Azure's own watchdog cancels every run
+  # mid-trial -- before the loop's deadline, before summary.txt, sometimes
+  # before that trial's files get cleaned up. Confirmed on build 158745: all
+  # 20 slices canceled at ~30:00-30:16, zero reached a natural loop exit.
+  # 60 rather than a tighter bound: generous headroom over preamble variance
+  # and the publish steps, at no extra cost -- this is one job timeout, not
+  # a lengthened experiment (the loop's own 1500s deadline is unchanged).
+  timeoutInMinutes: 60
   pool:
     vmImage: 'windows-latest'
   variables:

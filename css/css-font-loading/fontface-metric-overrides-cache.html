@@ -1,0 +1,155 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Font metric overrides are isolated across cached faces and update loaded faces</title>
+<link rel="help" href="https://drafts.csswg.org/css-font-loading/#fontface-interface">
+<link rel="help" href="https://drafts.csswg.org/css-fonts-4/#font-metrics-override-desc">
+<meta name="assert" content="Font metric overrides are applied independently to faces that share a font resource, and updates to a loaded FontFace affect layout.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+@font-face {
+  font-family: NoMetricsOverride;
+  src: url("/fonts/Ahem.ttf");
+}
+
+@font-face {
+  font-family: ReferenceMetricsOverride;
+  src: url("/fonts/Ahem.ttf");
+  ascent-override: 50%;
+  descent-override: 20%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: AscentMetricsOverride;
+  src: url("/fonts/Ahem.ttf");
+  ascent-override: 100%;
+  descent-override: 20%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: DescentMetricsOverride;
+  src: url("/fonts/Ahem.ttf");
+  ascent-override: 50%;
+  descent-override: 80%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: LineGapMetricsOverride;
+  src: url("/fonts/Ahem.ttf");
+  ascent-override: 50%;
+  descent-override: 20%;
+  line-gap-override: 70%;
+}
+
+@font-face {
+  font-family: AllMetricsOverride;
+  src: url("/fonts/Ahem.ttf");
+  ascent-override: 50%;
+  descent-override: 80%;
+  line-gap-override: 70%;
+}
+
+.test {
+  position: absolute;
+  visibility: hidden;
+  display: inline-block;
+  font-size: 100px;
+  line-height: normal;
+}
+
+#no-override { font-family: NoMetricsOverride; }
+#reference { font-family: ReferenceMetricsOverride; }
+#ascent { font-family: AscentMetricsOverride; }
+#descent { font-family: DescentMetricsOverride; }
+#line-gap { font-family: LineGapMetricsOverride; }
+#all { font-family: AllMetricsOverride; }
+</style>
+
+<div id="no-override" class="test">X</div>
+<div id="reference" class="test">X</div>
+<div id="ascent" class="test">X</div>
+<div id="descent" class="test">X</div>
+<div id="line-gap" class="test">X</div>
+<div id="all" class="test">X</div>
+
+<script>
+function nextFrame() {
+  return new Promise(resolve => requestAnimationFrame(resolve));
+}
+
+const families = [
+  "NoMetricsOverride",
+  "ReferenceMetricsOverride",
+  "AscentMetricsOverride",
+  "DescentMetricsOverride",
+  "LineGapMetricsOverride",
+  "AllMetricsOverride",
+];
+const fontsLoaded = Promise.all(
+  families.map(family => document.fonts.load(`100px ${family}`))
+);
+
+function referenceFontFace() {
+  return Array.from(document.fonts).find(
+    face => face.family === "ReferenceMetricsOverride"
+  );
+}
+
+promise_test(async () => {
+  await fontsLoaded;
+
+  const noOverride = document.getElementById("no-override");
+  const reference = document.getElementById("reference");
+  const ascent = document.getElementById("ascent");
+  const descent = document.getElementById("descent");
+  const lineGap = document.getElementById("line-gap");
+  const all = document.getElementById("all");
+
+  // Every Ahem glyph has an advance width of 1em, so this also verifies that
+  // the shared font resource loaded before measuring its metrics.
+  for (const element of [noOverride, reference, ascent, descent, lineGap, all])
+    assert_equals(element.offsetWidth, 100, `${element.id} should use Ahem`);
+
+  // Each face differs from the reference in exactly one descriptor.
+  assert_equals(noOverride.offsetHeight, 100, "The font's default metrics apply");
+  assert_equals(reference.offsetHeight, 70, "The reference overrides apply");
+  assert_equals(ascent.offsetHeight, 120, "The ascent override is isolated");
+  assert_equals(descent.offsetHeight, 130, "The descent override is isolated");
+  assert_equals(lineGap.offsetHeight, 140, "The line gap override is isolated");
+  assert_equals(all.offsetHeight, 200, "All three overrides apply together");
+}, "Metric overrides remain distinct for faces sharing a font resource");
+
+promise_test(async () => {
+  await fontsLoaded;
+
+  const reference = document.getElementById("reference");
+  const referenceFace = referenceFontFace();
+  assert_true(!!referenceFace, "The reference FontFace should be present");
+  assert_equals(reference.offsetHeight, 70, "The initial overrides apply");
+
+  // Mutating a loaded face must invalidate the font data used for layout.
+  referenceFace.ascentOverride = "100%";
+  await nextFrame();
+  assert_equals(reference.offsetHeight, 120, "Updating ascentOverride affects layout");
+  referenceFace.ascentOverride = "50%";
+  await nextFrame();
+  assert_equals(reference.offsetHeight, 70, "Restoring ascentOverride affects layout");
+
+  referenceFace.descentOverride = "80%";
+  await nextFrame();
+  assert_equals(reference.offsetHeight, 130, "Updating descentOverride affects layout");
+  referenceFace.descentOverride = "20%";
+  await nextFrame();
+  assert_equals(reference.offsetHeight, 70, "Restoring descentOverride affects layout");
+
+  referenceFace.lineGapOverride = "70%";
+  await nextFrame();
+  assert_equals(reference.offsetHeight, 140, "Updating lineGapOverride affects layout");
+  referenceFace.lineGapOverride = "0%";
+  await nextFrame();
+  assert_equals(reference.offsetHeight, 70, "Restoring lineGapOverride affects layout");
+}, "Metric override updates affect layout after a FontFace has loaded");
+</script>

@@ -4,7 +4,7 @@
 // import() tests do).
 import defaultValue from './marker-module.mjs' with {
   integrity: 'sha256-9HhIS3040t7AAV1BzgsxUv5RLJUTDyhamWV7kh0XdGQ=',
-  crossOriginStorage: [],
+  crossOriginStorage: '',
 };
 
 export const value = defaultValue;

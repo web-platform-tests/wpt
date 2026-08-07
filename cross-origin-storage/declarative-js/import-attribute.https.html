@@ -1,0 +1,108 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: declarative JavaScript (import attribute) integration</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/README.md#declarative-javascript-integration
+//
+// `import ... with { integrity, crossOriginStorage }` and
+// `import(url, { with: { integrity, crossOriginStorage } })` mirror the
+// HTML integration's model and origins-style value space: an empty array
+// means same-site, "*" means global, and an array of origin strings
+// restricts to a list -- all keyed off the same integrity hash used by the
+// declarative HTML/CSS forms.
+//
+// As with the HTML integration tests, COS involvement is proven by
+// importing a second, broken-URL specifier carrying the same integrity
+// hash: it can only resolve via COS.
+
+const REAL_URL = '../resources/marker-module.mjs';
+const EXPECTED_VALUE = 'cos-module-marker-value';
+
+let moduleIntegrity;
+let counter = 0;
+function uniqueQuery() {
+  return `?u=${counter++}-${Math.random()}`;
+}
+
+promise_setup(async () => {
+  const text = await fetch(REAL_URL).then(r => r.text());
+  moduleIntegrity = await cosSha256Integrity(text);
+});
+
+promise_test(async () => {
+  const mod = await import(REAL_URL + uniqueQuery(), {
+    with: {integrity: moduleIntegrity, crossOriginStorage: []},
+  });
+  assert_equals(mod.default, EXPECTED_VALUE);
+}, 'declarative JS: dynamic import() with a real URL and crossOriginStorage: [] (same-site) succeeds and stores into COS');
+
+promise_test(async () => {
+  const brokenUrl = 'does-not-exist-' + Math.random() + '.mjs';
+  const mod = await import(brokenUrl, {
+    with: {integrity: moduleIntegrity, crossOriginStorage: []},
+  });
+  assert_equals(mod.default, EXPECTED_VALUE,
+    'a broken specifier with the same integrity hash must still resolve, served from COS');
+}, 'declarative JS: dynamic import() of a broken URL resolves from COS given a matching integrity hash (same-site)');
+
+promise_test(async () => {
+  const mod1 = await import(REAL_URL + uniqueQuery(), {
+    with: {integrity: moduleIntegrity, crossOriginStorage: '*'},
+  });
+  assert_equals(mod1.default, EXPECTED_VALUE);
+  const brokenUrl = 'does-not-exist-' + Math.random() + '.mjs';
+  const mod2 = await import(brokenUrl, {
+    with: {integrity: moduleIntegrity, crossOriginStorage: '*'},
+  });
+  assert_equals(mod2.default, EXPECTED_VALUE);
+}, 'declarative JS: crossOriginStorage: "*" opts a dynamic import() into a wildcard-scoped COS entry');
+
+promise_test(async () => {
+  const mod1 = await import(REAL_URL + uniqueQuery(), {
+    with: {integrity: moduleIntegrity, crossOriginStorage: [location.origin]},
+  });
+  assert_equals(mod1.default, EXPECTED_VALUE);
+  const brokenUrl = 'does-not-exist-' + Math.random() + '.mjs';
+  const mod2 = await import(brokenUrl, {
+    with: {integrity: moduleIntegrity, crossOriginStorage: [location.origin]},
+  });
+  assert_equals(mod2.default, EXPECTED_VALUE);
+}, 'declarative JS: crossOriginStorage: [origins...] opts a dynamic import() into a list-scoped COS entry');
+
+promise_test(async t => {
+  const wrongIntegrity = 'sha256-' + 'A'.repeat(43) + '=';
+  await promise_rejects_js(t, TypeError, import(REAL_URL + uniqueQuery(), {
+    with: {integrity: wrongIntegrity, crossOriginStorage: []},
+  }));
+}, 'declarative JS: dynamic import() with a mismatched integrity hash rejects, per existing integrity failure semantics');
+
+promise_test(async t => {
+  // Omitting crossOriginStorage while keeping integrity preserves ordinary
+  // integrity-checked import behavior with no COS participation: a broken
+  // URL must fail to import even with a matching integrity hash.
+  const mod1 = await import(REAL_URL + uniqueQuery(), {
+    with: {integrity: moduleIntegrity},
+  });
+  assert_equals(mod1.default, EXPECTED_VALUE);
+
+  const brokenUrl = 'does-not-exist-' + Math.random() + '.mjs';
+  await promise_rejects_js(t, TypeError, import(brokenUrl, {
+    with: {integrity: moduleIntegrity},
+  }));
+}, 'declarative JS: omitting crossOriginStorage preserves ordinary integrity behavior with no COS participation');
+
+promise_test(async () => {
+  // Static form smoke test: `with { crossOriginStorage: [] }` on a
+  // top-level static import must parse and behave equivalently to the
+  // dynamic form for a real, valid specifier.
+  const mod = await import('../resources/static-import-crossoriginstorage.mjs' + uniqueQuery());
+  assert_equals(mod.value, EXPECTED_VALUE);
+}, 'declarative JS: the static import form (import ... with { integrity, crossOriginStorage }) is recognized');
+</script>
+</body>

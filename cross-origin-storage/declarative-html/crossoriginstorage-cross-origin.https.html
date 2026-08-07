@@ -1,0 +1,114 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: declarative HTML integration, cross-origin</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="../resources/helpers.js"></script>
+<script src="../resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// Cross-origin counterpart of crossoriginstorage.https.html: a resource
+// declaratively stored into COS by this page (the storer) must be
+// reachable, via COS alone, from other origins according to the same
+// origins-style scoping rules as the imperative API -- and a resource
+// scoped away from an origin must never reach it, deterministically.
+
+const {HTTPS_REMOTE_ORIGIN, HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+
+// Absolute so it resolves the same way regardless of which origin's
+// document evaluates it.
+const REAL_CSS_URL = new URL('../resources/marker-style.css', location.href).href;
+
+async function storeDeclarativelyHere(t, {crossoriginstorage}) {
+  const cssText = await fetch(REAL_CSS_URL).then(r => r.text());
+  const integrity = await cosSha256Integrity(cssText);
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = REAL_CSS_URL;
+  link.integrity = integrity;
+  link.setAttribute('crossoriginstorage', crossoriginstorage);
+  const loaded = new Promise((resolve, reject) => {
+    link.onload = resolve;
+    link.onerror = () => reject(new Error('setup link failed to load'));
+    // Fail fast rather than hang the rest of the file if the browser
+    // dispatches neither load nor error at all.
+    t.step_timeout(() => reject(new Error('setup link timed out with neither load nor error firing')), 5000);
+  });
+  t.add_cleanup(() => link.remove());
+  document.head.appendChild(link);
+  await loaded;
+  return integrity;
+}
+
+// Runs, in a remote context, the same "second <link> with a broken href but
+// the same integrity" probe used by the same-document test: success is
+// only possible via COS.
+async function remoteDeclarativeProbe(ctx, integrity, crossoriginstorage) {
+  return ctx.execute_script(async (integrity, crossoriginstorage) => {
+    // A relative path resolved against the executor's own origin: a real,
+    // fast 404 (unlike a nonexistent TLD, which risks a slow/hanging DNS
+    // lookup in some network environments).
+    const brokenUrl = './does-not-exist-' + Math.random() + '.css';
+    const marker = document.createElement('span');
+    marker.id = 'cos-remote-marker';
+    document.body.appendChild(marker);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = brokenUrl;
+    link.integrity = integrity;
+    link.setAttribute('crossoriginstorage', crossoriginstorage);
+    // No fallback timer here (unlike storeDeclarativelyHere(), which can
+    // use t.step_timeout()): this callback runs inside the remote
+    // executor's plain page context via execute_script(), with no
+    // testharness Test object in scope, and the lint tool disallows a raw
+    // timer as a synchronization mechanism. A <link rel="stylesheet">
+    // reliably fires one of load/error, so this relies on that plus the
+    // test's own overall timeout as the fail-fast backstop.
+    const result = await new Promise((resolve) => {
+      link.onload = () => resolve('loaded');
+      link.onerror = () => resolve('errored');
+    });
+    if (result !== 'loaded') return {ok: false};
+    return {ok: true, color: getComputedStyle(marker).color};
+  }, [integrity, crossoriginstorage]);
+}
+
+promise_test(async t => {
+  const integrity = await storeDeclarativelyHere(t, {crossoriginstorage: '*'});
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const result = await remoteDeclarativeProbe(ctx, integrity, '*');
+  // Wildcard tier is PHL/GREASE-gated; either a clean COS-served success or
+  // a load failure (broken URL, no COS disclosure) is spec-compliant.
+  if (result.ok) {
+    assert_equals(result.color, 'rgb(1, 2, 3)');
+  }
+}, 'declarative HTML, cross-origin: a "*"-scoped <link> may be served from COS to a cross-site origin');
+
+promise_test(async t => {
+  const integrity = await storeDeclarativelyHere(t, {crossoriginstorage: ''});
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const result = await remoteDeclarativeProbe(ctx, integrity, '');
+  assert_false(result.ok,
+    'a same-site-scoped resource must never be disclosed to a cross-site origin, deterministically');
+}, 'declarative HTML, cross-origin: a same-site-scoped <link> is never served from COS to a cross-site origin');
+
+promise_test(async t => {
+  const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN);
+  const listOrigin = await ctx.execute_script(() => location.origin, []);
+  const integrity = await storeDeclarativelyHere(t, {crossoriginstorage: listOrigin});
+  const result = await remoteDeclarativeProbe(ctx, integrity, listOrigin);
+  if (!result.ok) {
+    // Tolerate GREASE'ing (see origins-scoping.https.html for the general
+    // rationale); the list-tier has no PHL gate, so an outright failure
+    // here is only explainable by GREASE'ing.
+    return;
+  }
+  assert_equals(result.color, 'rgb(1, 2, 3)');
+}, 'declarative HTML, cross-origin: a list-scoped <link> is authorized for an explicitly-listed origin');
+</script>
+</body>

@@ -1,0 +1,165 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: origins scoping and availability gating</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#resource-visibility-upgrades
+// https://wicg.github.io/cross-origin-storage/#availability-gating
+// https://wicg.github.io/cross-origin-storage/#original-storer-access
+
+const {HTTPS_REMOTE_ORIGIN, HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+
+promise_test(async t => {
+  // origins omitted -> same-site tier. The storer (this document's own
+  // origin) can always read its own write back, unconditionally.
+  const {hash, content} = await cosStore(cosUniqueContent('samesite-storer'));
+  assert_equals(await cosReadText(hash), content);
+}, 'same-site tier: the storing origin can always read back its own resource');
+
+promise_test(async t => {
+  const {hash, content} = await cosStore(cosUniqueContent('samesite-samesite-reader'));
+  const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN);
+  const result = await cosRemoteRead(ctx, hash);
+  cosAssertDisclosableOrGreased(result, content,
+    'a same-site sibling origin reading a same-site-scoped resource');
+}, 'same-site tier: a same-site sibling origin is authorized (subject to GREASE\'ing)');
+
+promise_test(async t => {
+  const {hash} = await cosStore(cosUniqueContent('samesite-crosssite-reader'));
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const result = await cosRemoteRead(ctx, hash);
+  cosAssertNotDisclosed(result, 'a cross-site origin reading a same-site-scoped resource');
+}, 'same-site tier: a cross-site origin is never authorized, deterministically');
+
+promise_test(async t => {
+  const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN);
+  const listOrigin = (await ctx.execute_script(() => location.origin, []));
+  const {hash, content} = await cosStore(
+    cosUniqueContent('list-listed-reader'), {origins: [listOrigin]});
+  const result = await cosRemoteRead(ctx, hash);
+  cosAssertDisclosableOrGreased(result, content, 'an explicitly-listed origin reading a list-scoped resource');
+}, 'list tier: an explicitly-listed origin is authorized (subject to GREASE\'ing)');
+
+promise_test(async t => {
+  // List-tier disclosure is never subject to the PHL gate: only
+  // availability gating's GREASE'ing step applies, exactly as for
+  // same-site. This is the cross-site analogue of the previous test, using
+  // an origin that is not same-site with the storer at all.
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const listOrigin = (await ctx.execute_script(() => location.origin, []));
+  const {hash, content} = await cosStore(
+    cosUniqueContent('list-listed-crosssite-reader'), {origins: [listOrigin]});
+  const result = await cosRemoteRead(ctx, hash);
+  cosAssertDisclosableOrGreased(result, content,
+    'a cross-site, explicitly-listed origin reading a list-scoped resource');
+}, 'list tier: an explicitly-listed cross-site origin is authorized, with no PHL gate involved');
+
+promise_test(async t => {
+  const {hash} = await cosStore(
+    cosUniqueContent('list-unlisted-reader'), {origins: [HTTPS_REMOTE_ORIGIN]});
+  // A third origin, not the one listed above, must never be authorized.
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const result = await cosRemoteRead(ctx, hash);
+  cosAssertNotDisclosed(result, 'an origin absent from an explicit origins list');
+}, 'list tier: an origin absent from the explicit list is never authorized, deterministically');
+
+promise_test(async t => {
+  const {hash, content} = await cosStore(
+    cosUniqueContent('list-storer-not-self-listed'), {origins: [HTTPS_REMOTE_ORIGIN]});
+  // The storer is not itself in the origins list it chose, yet it must
+  // still be able to read its own write back (original storer access).
+  assert_equals(await cosReadText(hash), content);
+}, 'list tier: the storing origin can read back its own resource even when absent from its own origins list');
+
+promise_test(async t => {
+  const {hash, content} = await cosStore(cosUniqueContent('wildcard-storer'), {origins: '*'});
+  assert_equals(await cosReadText(hash), content);
+}, 'wildcard tier: the storing origin can always read back its own resource, independent of PHL status');
+
+promise_test(async t => {
+  // A non-storer origin reading a wildcard-scoped resource is subject to
+  // both the origins check (passes, since it's "*") AND the PHL gate, which
+  // this suite has no way to control -- so either NotFoundError or success
+  // with correct content are both spec-compliant outcomes.
+  const {hash, content} = await cosStore(cosUniqueContent('wildcard-other-reader'), {origins: '*'});
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const result = await cosRemoteRead(ctx, hash);
+  cosAssertDisclosableOrGreased(result, content,
+    'a non-storer origin reading a wildcard-scoped resource (PHL membership is out of this suite\'s control)');
+}, 'wildcard tier: a non-storer origin\'s read outcome depends on implementation-defined PHL/GREASE\'ing, but if disclosed the content must be correct');
+
+promise_test(async t => {
+  // Upgrade: list -> wider list. A cross-site origin absent from the
+  // original list must be authorized once a later write (of the same
+  // bytes) adds it. List-tier has no PHL gate, so this isolates the
+  // upgrade mechanism itself from PHL nondeterminism.
+  const content = cosUniqueContent('upgrade-list-to-wider-list');
+  const {hash} = await cosStore(content, {origins: [HTTPS_REMOTE_ORIGIN]});
+
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const notListedYet = await cosRemoteRead(ctx, hash);
+  cosAssertNotDisclosed(notListedYet, 'before the upgrade, the not-yet-listed origin');
+
+  // Re-write the identical bytes, widening the origins list.
+  const handle = await navigator.crossOriginStorage.requestFileHandle(
+    hash, {create: true, origins: [HTTPS_REMOTE_ORIGIN, HTTPS_NOTSAMESITE_ORIGIN]});
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([content]));
+  await writable.close();
+
+  const afterUpgrade = await cosRemoteRead(ctx, hash);
+  cosAssertDisclosableOrGreased(afterUpgrade, content, 'after the upgrade, the newly-listed origin');
+}, 'resource visibility upgrade: a later write can widen a list-scoped entry\'s origins list');
+
+promise_test(async t => {
+  // Upgrade: list -> wildcard. Once an entry becomes "*"-scoped, it stays
+  // "*"-scoped forever (visibility can be upgraded but never downgraded).
+  // We can't directly observe the internal state, but we can confirm the
+  // upgrade path itself doesn't throw and the storer keeps access.
+  const content = cosUniqueContent('upgrade-list-to-wildcard');
+  const {hash} = await cosStore(content, {origins: [HTTPS_REMOTE_ORIGIN]});
+
+  const handle = await navigator.crossOriginStorage.requestFileHandle(
+    hash, {create: true, origins: '*'});
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([content]));
+  await writable.close();
+
+  assert_equals(await cosReadText(hash), content,
+    'the storer can still read its own resource after upgrading it to "*"');
+}, 'resource visibility upgrade: a later write can upgrade a list-scoped entry to wildcard');
+
+promise_test(async t => {
+  // Downgrade attempt: wildcard -> omitted (same-site). Per spec this is a
+  // silent no-op; the entry must remain at least as available as before.
+  // We test this via a same-site (not cross-site, to stay PHL-independent)
+  // reader that would only be authorized under the ORIGINAL "*" scoping
+  // being retained (a same-site reader would also be authorized under a
+  // same-site downgrade, so this alone doesn't isolate the no-op -- but
+  // combined with the storer-write succeeding without error, and the
+  // spec's requirement that visibility never narrows, this documents the
+  // expected behavior).
+  const content = cosUniqueContent('downgrade-attempt-noop');
+  const {hash} = await cosStore(content, {origins: '*'});
+
+  // Attempt to "restrict" back to same-site by omitting origins.
+  const handle = await navigator.crossOriginStorage.requestFileHandle(hash, {create: true});
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([content]));
+  await writable.close();
+
+  // The write itself must succeed (it's a no-op on scoping, not an error),
+  // and the storer must still be able to read its own resource.
+  assert_equals(await cosReadText(hash), content);
+}, 'resource visibility upgrade: omitting origins on a later write to an already-"*" entry is a silent no-op, not an error');
+</script>
+</body>

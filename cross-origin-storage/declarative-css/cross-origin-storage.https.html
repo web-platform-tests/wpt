@@ -1,0 +1,127 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: declarative CSS integration</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/README.md#declarative-css-integration
+//
+// cross-origin-storage() is a <request-url-modifier>, used alongside
+// integrity(), primarily in @font-face src. Same origins-style value space
+// as the HTML/JS forms: no arguments (same-site), a comma-separated string
+// list, or "*". As with the other declarative integrations, COS
+// involvement is proven with a second @font-face pointed at a broken URL
+// but carrying the same integrity() hash.
+
+const REAL_FONT_URL = '/fonts/Ahem.ttf';
+const BROKEN_FONT_URL = 'does-not-exist-' + Math.random() + '.ttf';
+let fontIntegrity;
+let counter = 0;
+function uniqueFamily(label) {
+  return `COSTestFont-${label}-${counter++}`;
+}
+
+promise_setup(async () => {
+  const bytes = await fetch(REAL_FONT_URL).then(r => r.arrayBuffer());
+  fontIntegrity = await cosSha256Integrity(bytes);
+});
+
+function injectFontFace(family, url, modifierArgs) {
+  const style = document.createElement('style');
+  style.textContent = `
+    @font-face {
+      font-family: "${family}";
+      src: url("${url}" integrity("${fontIntegrity}") cross-origin-storage(${modifierArgs}));
+    }
+  `;
+  document.head.appendChild(style);
+  return style;
+}
+
+async function assertFontLoads(t, family, url, modifierArgs, description) {
+  const style = injectFontFace(family, url, modifierArgs);
+  t.add_cleanup(() => style.remove());
+  await document.fonts.load(`16px "${family}"`);
+  assert_true(document.fonts.check(`16px "${family}"`), description);
+}
+
+promise_test(async t => {
+  const family = uniqueFamily('samesite-real');
+  await assertFontLoads(t, family, REAL_FONT_URL, '', 'the real font URL loads with cross-origin-storage()');
+}, 'declarative CSS: cross-origin-storage() with no arguments (same-site) loads a real font and stores it into COS');
+
+promise_test(async t => {
+  const family = uniqueFamily('samesite-broken');
+  await assertFontLoads(t, family, BROKEN_FONT_URL, '',
+    'a broken font URL with the same integrity() hash still loads, served from COS');
+}, 'declarative CSS: a same-site-scoped @font-face is served from COS on a subsequent request');
+
+promise_test(async t => {
+  const family1 = uniqueFamily('wildcard-real');
+  await assertFontLoads(t, family1, REAL_FONT_URL, '*', 'wildcard-scoped real font loads');
+  const family2 = uniqueFamily('wildcard-broken');
+  await assertFontLoads(t, family2, BROKEN_FONT_URL, '*',
+    'a broken URL with wildcard scope still loads, served from COS');
+}, 'declarative CSS: cross-origin-storage(*) opts a @font-face into a wildcard-scoped COS entry');
+
+promise_test(async t => {
+  const list = `"${location.origin}"`;
+  const family1 = uniqueFamily('list-real');
+  await assertFontLoads(t, family1, REAL_FONT_URL, list, 'list-scoped real font loads');
+  const family2 = uniqueFamily('list-broken');
+  await assertFontLoads(t, family2, BROKEN_FONT_URL, list,
+    'a broken URL with a list naming this origin still loads, served from COS');
+}, 'declarative CSS: cross-origin-storage("origin", ...) opts a @font-face into a list-scoped COS entry');
+
+promise_test(async t => {
+  const family = uniqueFamily('hash-mismatch');
+  const style = document.createElement('style');
+  const wrongIntegrity = 'sha256-' + 'A'.repeat(43) + '=';
+  style.textContent = `
+    @font-face {
+      font-family: "${family}";
+      src: url("${REAL_FONT_URL}" integrity("${wrongIntegrity}") cross-origin-storage());
+    }
+  `;
+  t.add_cleanup(() => style.remove());
+  document.head.appendChild(style);
+  await promise_rejects_js(t, DOMException, document.fonts.load(`16px "${family}"`));
+  assert_false(document.fonts.check(`16px "${family}"`));
+}, 'declarative CSS: a cross-origin-storage() font whose bytes do not match integrity() fails to load');
+
+promise_test(async t => {
+  // Omitting cross-origin-storage() entirely, while keeping integrity(),
+  // preserves ordinary integrity-checked loading with no COS participation.
+  const family1 = uniqueFamily('no-cos-real');
+  const style1 = document.createElement('style');
+  style1.textContent = `
+    @font-face {
+      font-family: "${family1}";
+      src: url("${REAL_FONT_URL}" integrity("${fontIntegrity}"));
+    }
+  `;
+  t.add_cleanup(() => style1.remove());
+  document.head.appendChild(style1);
+  await document.fonts.load(`16px "${family1}"`);
+  assert_true(document.fonts.check(`16px "${family1}"`));
+
+  const family2 = uniqueFamily('no-cos-broken');
+  const style2 = document.createElement('style');
+  style2.textContent = `
+    @font-face {
+      font-family: "${family2}";
+      src: url("${BROKEN_FONT_URL}" integrity("${fontIntegrity}"));
+    }
+  `;
+  t.add_cleanup(() => style2.remove());
+  document.head.appendChild(style2);
+  await promise_rejects_js(t, DOMException, document.fonts.load(`16px "${family2}"`));
+  assert_false(document.fonts.check(`16px "${family2}"`),
+    'without cross-origin-storage(), a broken-URL font must not be rescued from COS');
+}, 'declarative CSS: omitting cross-origin-storage() preserves ordinary integrity() behavior with no COS participation');
+</script>
+</body>

@@ -1,0 +1,82 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: Permissions Policy integration</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#permissions-policy-integration
+
+const {HTTPS_ORIGIN, HTTPS_REMOTE_ORIGIN} = get_host_info();
+
+promise_test(async t => {
+  // Default allowlist is "self": a same-origin context is allowed without
+  // any explicit header or iframe `allow` attribute.
+  const {ctx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {allow: null});
+  const result = await cosRemoteRead(ctx, cosMissingHash());
+  // Allowed by policy, so the rejection (if any) must come from the read
+  // path itself (NotFoundError for a hash that was never stored), not from
+  // the policy gate (NotAllowedError).
+  assert_equals(result.name, 'NotFoundError');
+}, 'a same-origin context is allowed to use crossOriginStorage by the default "self" allowlist');
+
+promise_test(async t => {
+  // A cross-origin iframe with no explicit `allow` attribute is NOT covered
+  // by the default "self" allowlist.
+  const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN, {allow: null});
+  const result = await cosRemoteRead(ctx, cosMissingHash());
+  assert_equals(result.ok, false);
+  assert_equals(result.name, 'NotAllowedError');
+}, 'a cross-origin iframe without an explicit allow attribute is blocked by the default "self" allowlist');
+
+promise_test(async t => {
+  // The same cross-origin iframe, but with the feature explicitly allowed
+  // via the iframe's `allow` attribute, must not be policy-blocked.
+  const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN, {allow: 'cross-origin-storage'});
+  const result = await cosRemoteRead(ctx, cosMissingHash());
+  assert_equals(result.name, 'NotFoundError',
+    'explicitly allowed via the iframe allow attribute, so only the read path itself can reject');
+}, 'a cross-origin iframe with an explicit allow="cross-origin-storage" attribute is not policy-blocked');
+
+promise_test(async t => {
+  // An explicit response header can also disable the feature for an
+  // otherwise-same-origin (and therefore normally allowed) context.
+  const {ctx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {
+    allow: null,
+    pipeHeader: 'header(Permissions-Policy,cross-origin-storage=\\(\\))',
+  });
+  const result = await cosRemoteRead(ctx, cosMissingHash());
+  assert_equals(result.ok, false);
+  assert_equals(result.name, 'NotAllowedError');
+}, 'an explicit Permissions-Policy header can disable crossOriginStorage even for a same-origin context');
+
+promise_test(async t => {
+  // The policy check happens before hash validation: a policy-blocked
+  // context gets NotAllowedError even for a request whose hash/options
+  // would otherwise be rejected with TypeError.
+  // https://wicg.github.io/cross-origin-storage/#requestfilehandle
+  const {ctx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {
+    allow: null,
+    pipeHeader: 'header(Permissions-Policy,cross-origin-storage=\\(\\))',
+  });
+  const result = await ctx.execute_script(async () => {
+    try {
+      await navigator.crossOriginStorage.requestFileHandle({algorithm: 'not-an-algorithm', value: 'not-hex'});
+      return {ok: true};
+    } catch (e) {
+      return {ok: false, name: e.name, message: e.message};
+    }
+  }, []);
+  assert_equals(result.ok, false);
+  assert_equals(result.name, 'NotAllowedError',
+    'the Permissions Policy check must run, and reject, before hash validation');
+}, 'a policy-blocked context rejects with NotAllowedError even for a request that would otherwise fail validation');
+</script>
+</body>

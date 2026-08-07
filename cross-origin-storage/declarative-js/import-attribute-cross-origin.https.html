@@ -1,0 +1,71 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: declarative JavaScript integration, cross-origin</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="../resources/helpers.js"></script>
+<script src="../resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+const {HTTPS_REMOTE_ORIGIN, HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+const REAL_URL = new URL('../resources/marker-module.mjs', location.href).href;
+const EXPECTED_VALUE = 'cos-module-marker-value';
+
+async function storeModuleHere(crossOriginStorage) {
+  const text = await fetch(REAL_URL).then(r => r.text());
+  const integrity = await cosSha256Integrity(text);
+  const mod = await import(REAL_URL + '?u=' + Math.random(), {
+    with: {integrity, crossOriginStorage},
+  });
+  assert_equals(mod.default, EXPECTED_VALUE);
+  return integrity;
+}
+
+async function remoteImportProbe(ctx, integrity, crossOriginStorage) {
+  return ctx.execute_script(async (integrity, crossOriginStorage) => {
+    // A relative path resolved against the executor's own origin: a real,
+    // fast 404 (unlike a nonexistent TLD, which risks a slow/hanging DNS
+    // lookup in some network environments).
+    const brokenUrl = './does-not-exist-' + Math.random() + '.mjs';
+    try {
+      const mod = await import(brokenUrl, {with: {integrity, crossOriginStorage}});
+      return {ok: true, value: mod.default};
+    } catch (e) {
+      return {ok: false, name: e.name};
+    }
+  }, [integrity, crossOriginStorage]);
+}
+
+promise_test(async t => {
+  const integrity = await storeModuleHere('*');
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const result = await remoteImportProbe(ctx, integrity, '*');
+  if (result.ok) {
+    assert_equals(result.value, EXPECTED_VALUE);
+  }
+  // Wildcard tier is PHL/GREASE-gated; a load failure is also compliant.
+}, 'declarative JS, cross-origin: crossOriginStorage: "*" may serve a cross-site dynamic import() from COS');
+
+promise_test(async t => {
+  const integrity = await storeModuleHere([]);
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const result = await remoteImportProbe(ctx, integrity, []);
+  assert_false(result.ok,
+    'a same-site-scoped (crossOriginStorage: []) module must never be disclosed to a cross-site origin');
+}, 'declarative JS, cross-origin: crossOriginStorage: [] (same-site) is never served from COS to a cross-site origin');
+
+promise_test(async t => {
+  const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN);
+  const listOrigin = await ctx.execute_script(() => location.origin, []);
+  const integrity = await storeModuleHere([listOrigin]);
+  const result = await remoteImportProbe(ctx, integrity, [listOrigin]);
+  if (!result.ok) return; // Tolerate GREASE'ing; list tier has no PHL gate.
+  assert_equals(result.value, EXPECTED_VALUE);
+}, 'declarative JS, cross-origin: crossOriginStorage: [origin] authorizes that explicitly-listed origin');
+</script>
+</body>

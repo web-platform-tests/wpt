@@ -25,8 +25,9 @@ function cosHash(value, algorithm = 'SHA-256') {
 // Computes a Subresource Integrity string (base64-encoded digest, e.g.
 // "sha256-abc...") for `content`, as used by the `integrity` attribute /
 // `integrity()` CSS modifier / import-attribute `integrity` key -- the
-// declarative integrations' hash format, distinct from requestFileHandle()'s
-// lowercase-hex format (both identify the same underlying bytes).
+// declarative and import-attribute integrations' hash format, distinct from
+// requestFileHandle()'s lowercase-hex format (both identify the same
+// underlying bytes).
 async function cosSha256Integrity(content) {
   const bytes = typeof content === 'string' ? new TextEncoder().encode(content) : content;
   const digest = await crypto.subtle.digest('SHA-256', bytes);

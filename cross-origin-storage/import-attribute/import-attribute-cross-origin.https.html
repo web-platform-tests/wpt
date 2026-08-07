@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>Cross-Origin Storage: declarative JavaScript integration, cross-origin</title>
+<title>Cross-Origin Storage: JavaScript import attribute integration, cross-origin</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -49,7 +49,7 @@ promise_test(async t => {
     assert_equals(result.value, EXPECTED_VALUE);
   }
   // Wildcard tier is PHL/GREASE-gated; a load failure is also compliant.
-}, 'declarative JS, cross-origin: crossOriginStorage: "*" may serve a cross-site dynamic import() from COS');
+}, 'JS import attribute, cross-origin: crossOriginStorage: "*" may serve a cross-site dynamic import() from COS');
 
 promise_test(async t => {
   const integrity = await storeModuleHere('');
@@ -57,7 +57,7 @@ promise_test(async t => {
   const result = await remoteImportProbe(ctx, integrity, '');
   assert_false(result.ok,
     'a same-site-scoped (crossOriginStorage: "") module must never be disclosed to a cross-site origin');
-}, 'declarative JS, cross-origin: crossOriginStorage: "" (same-site) is never served from COS to a cross-site origin');
+}, 'JS import attribute, cross-origin: crossOriginStorage: "" (same-site) is never served from COS to a cross-site origin');
 
 promise_test(async t => {
   const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN);
@@ -66,6 +66,6 @@ promise_test(async t => {
   const result = await remoteImportProbe(ctx, integrity, listOrigin);
   if (!result.ok) return; // Tolerate GREASE'ing; list tier has no PHL gate.
   assert_equals(result.value, EXPECTED_VALUE);
-}, 'declarative JS, cross-origin: crossOriginStorage: "<origin>" authorizes that explicitly-listed origin');
+}, 'JS import attribute, cross-origin: crossOriginStorage: "<origin>" authorizes that explicitly-listed origin');
 </script>
 </body>

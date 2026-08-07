@@ -13,9 +13,9 @@
 // cross-origin-storage() is a <request-url-modifier>, used alongside
 // integrity(), primarily in @font-face src. Same origins-style value space
 // as the HTML/JS forms: no arguments (same-site), a comma-separated string
-// list, or "*". As with the other declarative integrations, COS
-// involvement is proven with a second @font-face pointed at a broken URL
-// but carrying the same integrity() hash.
+// list, or "*". As with the other integrations, COS involvement is proven
+// with a second @font-face pointed at a broken URL but carrying the same
+// integrity() hash.
 
 const REAL_FONT_URL = '/fonts/Ahem.ttf';
 const BROKEN_FONT_URL = 'does-not-exist-' + Math.random() + '.ttf';

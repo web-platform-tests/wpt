@@ -1,5 +1,5 @@
 // Cross-origin test infrastructure shared by COS's origin-scoping and
-// cross-origin declarative-integration tests. Requires
+// cross-origin declarative/import-attribute integration tests. Requires
 // /common/dispatcher/dispatcher.js and /common/utils.js to already be
 // loaded.
 

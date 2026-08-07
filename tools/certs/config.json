@@ -11,7 +11,8 @@
         "openssl": {
             "duration": 365,
             "force_regenerate": true,
-            "base_path": "tools/certs"
+            "base_path": "tools/certs",
+            "additional_hosts": ["127.0.0.1"]
         }
     }
 }

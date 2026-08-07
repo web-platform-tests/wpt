@@ -100,9 +100,9 @@ promise_test(async t => {
 }, 'declarative JS: omitting crossOriginStorage preserves ordinary integrity behavior with no COS participation');
 
 promise_test(async () => {
-  // Static form smoke test: `with { crossOriginStorage: '' }` on a
-  // top-level static import must parse and behave equivalently to the
-  // dynamic form for a real, valid specifier.
+  // `with { crossOriginStorage: '' }` on a top-level static import must
+  // parse and behave equivalently to the dynamic form for a real, valid
+  // specifier.
   const mod = await import('../resources/static-import-crossoriginstorage.mjs' + uniqueQuery());
   assert_equals(mod.value, EXPECTED_VALUE);
 }, 'declarative JS: the static import form (import ... with { integrity, crossOriginStorage }) is recognized');

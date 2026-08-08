@@ -73,12 +73,38 @@ jobs:
       channel: dev
   - template: tools/ci/azure/configure_watson.yml
   - template: tools/ci/azure/update_hosts.yml
+  # Future work step 3.5b. Runs *before* the loop, so this is a genuine cold
+  # boot, but *after* the whole preamble, so the machine state (Winsock
+  # catalog, loaded DLLs, certs, Edge) matches what a production daemon sees --
+  # Run 2's `bare` arm exists precisely because that distinction mattered.
+  #
+  # The new accepted_blocking_mode probe is the point: it settles whether the
+  # accept()ed end of the fallback socketpair is really blocking, which needs
+  # no hit at all. Running it here answers that on 20 independent cold boots
+  # rather than once, and re-samples the five older probes (environment,
+  # last_error_hygiene, error_fidelity, inline_hooks, baseline_iocp) on fresh
+  # VMs for free -- Run 1 had only a handful of cold samples of those.
+  #
+  # No new publish step: $outDir is already published below, and the loop's
+  # own Remove-Item names only trial-* files, so probes.jsonl survives it.
+  - powershell: |
+      $outDir = "$(Agent.TempDirectory)\trials"
+      New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+      python tools/ci/winsock_probe.py --mode probes --out "$outDir\probes.jsonl"
+    displayName: 'Cold-boot winsock probes (blocking-mode inheritance)'
+    continueOnError: true
   - powershell: |
       # 25 minutes: leaves time inside the 30-minute job timeout for the
       # preamble above and for the publish steps below to actually run.
       $deadline = (Get-Date).AddSeconds(1500)
       $outDir = "$(Agent.TempDirectory)\trials"
       New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+      # Future work step 3.5c. Dumps go to the staging directory rather than
+      # $outDir: they are hundreds of MB, and that directory is already
+      # published as its own artifact, so the trials artifact stays small
+      # enough to download casually. Only the victim daemon ever writes one,
+      # and only on a real anomaly, so there is nothing to clean up on a miss.
+      $env:WPT_WINSOCK_DUMP_DIR = "$(Build.ArtifactStagingDirectory)"
       $trial = 0
       while ((Get-Date) -lt $deadline) {
         $trial++
@@ -107,8 +133,24 @@ jobs:
         Remove-Item $log, $stdout, "$stdout.err", $env:WPT_WINSOCK_EVIDENCE_PATH -ErrorAction SilentlyContinue
       }
       Write-Host "trials=$trial"
-      "trials=$trial" | Out-File "$(Agent.TempDirectory)\summary.txt"
+      # Not $(Agent.TempDirectory): only the \trials subdirectory is published,
+      # so every previous run's summary.txt was silently discarded.
+      "trials=$trial" | Out-File "$outDir\summary.txt"
     displayName: 'Loop real wpt run (Edge Dev) against infrastructure/'
+    continueOnError: true
+  # Future work step 3.5b, second half. Must run *after* the loop, not with the
+  # probes before it: the events worth having are the ones from during the
+  # daemon-startup bursts (tcpip/afd driver complaints, resource pressure --
+  # Run 2 produced one real WSAENOBUFS pair-create failure, so this image is
+  # not always resource-comfortable). Exporting at the start of the job would
+  # capture the boot and nothing else.
+  - powershell: |
+      $outDir = "$(Agent.TempDirectory)\trials"
+      New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+      wevtutil epl System "$outDir\System.evtx" /ow:true
+      wevtutil epl Application "$outDir\Application.evtx" /ow:true
+    displayName: 'Export Windows event logs'
+    condition: always()
     continueOnError: true
   - publish: $(Agent.TempDirectory)\trials
     artifact: winsock-wpt-loop-$(System.JobPositionInPhase)

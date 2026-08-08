@@ -161,8 +161,14 @@ WSAENOBUFS = 10055
 WSAECONNABORTED = 10053
 WSAECONNRESET = 10054
 WSAENOTCONN = 10057
+WSAEWOULDBLOCK = 10035
 ERROR_IO_PENDING = 997
 ERROR_INVALID_PARAMETER = 87
+
+# "There is nothing to read right now", in whichever dialect the platform
+# answers in.  A one-byte recv that reports this *at once* is how
+# probe_accepted_blocking_mode() recognises a non-blocking socket.
+WOULD_BLOCK_CODES = frozenset({WSAEWOULDBLOCK, errno.EAGAIN, errno.EWOULDBLOCK})
 
 # ioctlsocket(FIONREAD) -- how many bytes are actually readable.  Zero bytes
 # alongside a select() that says readable is the phantom-readability signature.
@@ -307,6 +313,62 @@ if IS_WINDOWS:
         finally:
             _k32e.CloseHandle(port)
 
+    def write_minidump(path: str) -> dict:
+        """Dump this process, so mswsock's own per-socket state is inspectable.
+
+        Everything else in the bundle is socket-level: getsockname, FIONREAD,
+        the IOCP association.  None of it can show what mswsock thinks is
+        outstanding on this handle, and since CPython never issues an
+        overlapped operation, WSAEventSelect or an IOCP association on these
+        sockets (all of that lives in Modules/overlapped.c, which wptserve
+        never imports), the pending state the 997 names has to come from inside
+        mswsock/AFD.  A user-mode dump is the cheapest look at that.
+
+        Stated plainly: this shows mswsock's *userspace* structures and the
+        handle table, not kernel IRPs.  For IRPs you need an AFD ETW trace.
+
+        dbghelp is loaded here rather than at import time: it is not otherwise
+        needed, and nothing about the rest of the harness should depend on it.
+        Dumping one's own process is officially discouraged in favour of
+        dumping from outside, but it is what in-process crash handlers do, and
+        being in-process on the faulting thread at the instant it happens is
+        the entire reason this is worth doing at all.
+        """
+        MiniDumpWithFullMemory = 0x00000002
+        MiniDumpWithHandleData = 0x00000004
+        MiniDumpWithUnloadedModules = 0x00000020
+        MiniDumpWithThreadInfo = 0x00001000
+        dump_type = (MiniDumpWithFullMemory | MiniDumpWithHandleData
+                     | MiniDumpWithUnloadedModules | MiniDumpWithThreadInfo)
+
+        dbghelp = ctypes.WinDLL("dbghelp", use_last_error=True)
+        dbghelp.MiniDumpWriteDump.argtypes = [
+            ctypes.c_void_p, wt.DWORD, ctypes.c_void_p, ctypes.c_int,
+            ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p,
+        ]
+        dbghelp.MiniDumpWriteDump.restype = wt.BOOL
+
+        import msvcrt
+        t0 = time.monotonic()
+        with open(path, "wb") as fh:
+            handle = msvcrt.get_osfhandle(fh.fileno())
+            ok = dbghelp.MiniDumpWriteDump(
+                _k32.GetCurrentProcess(), os.getpid(),
+                ctypes.c_void_p(handle), dump_type, None, None, None)
+            err = 0 if ok else ctypes.get_last_error()
+        out = {"path": path, "ok": bool(ok), "elapsed_s": round(
+            time.monotonic() - t0, 3)}
+        if not ok:
+            out["error"] = err
+            # A half-written dump is worse than none: it looks like evidence.
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+        else:
+            out["bytes"] = _safe(lambda: os.path.getsize(path))
+        return out
+
 else:
 
     def wsa_last_error() -> int:
@@ -329,6 +391,9 @@ else:
 
     def iocp_association_state(fd: int) -> str:
         return "skipped:not-windows"
+
+    def write_minidump(path: str) -> dict:
+        return {"skipped": "not-windows"}
 
 
 def sock_error_code(exc: BaseException) -> int | None:
@@ -606,12 +671,231 @@ def probe_baseline_iocp() -> dict:
     }
 
 
+def _one_byte_recv(sock) -> dict:
+    """Issue one one-byte recv and describe how it ended.
+
+    On Windows this goes straight through ws2_32, so the answer is
+    WSAGetLastError() rather than CPython's translation of it, and
+    sock_call_ex()'s timeout/pre-select machinery is bypassed entirely.  On
+    POSIX socket.recv is the same discriminator: EAGAIN at once if the socket
+    is non-blocking, park if it is not.
+    """
+    if IS_WINDOWS:
+        r = raw_recv(sock.fileno())
+        return {"ret": r["ret"], "error": r["wsa_error"]}
+    try:
+        return {"ret": len(sock.recv(1)), "error": 0}
+    except OSError as exc:
+        return {"ret": -1, "error": exc.errno}
+
+
+def _fd_nonblocking(sock):
+    """Read O_NONBLOCK straight off the descriptor.  POSIX only.
+
+    Windows having no FIONBIO getter is the entire reason the mode has to be
+    inferred from timing below.  Where the direct read *is* available, take it:
+    it is what gives the timing inference a control rather than leaving it an
+    assumption.
+    """
+    if IS_WINDOWS:
+        return "unavailable: Windows has no FIONBIO getter"
+    try:
+        import fcntl
+        return bool(fcntl.fcntl(sock.fileno(), fcntl.F_GETFL) & os.O_NONBLOCK)
+    except Exception as exc:  # noqa: BLE001
+        return f"error: {exc!r}"
+
+
+def _hand_rolled_pair(explicit_setblocking: bool):
+    """_fallback_socketpair's dance (Lib/socket.py:604-660), reimplemented.
+
+    Only so that one extra call can be inserted into the middle of it.  Kept
+    deliberately line-for-line, peer verification included, because its whole
+    job is to be indistinguishable from the real thing in the control arm.
+    """
+    lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        lsock.bind(("127.0.0.1", 0))
+        lsock.listen()
+        addr, port = lsock.getsockname()[:2]
+        csock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            csock.setblocking(False)
+            try:
+                csock.connect((addr, port))
+            except (BlockingIOError, InterruptedError):
+                pass
+            csock.setblocking(True)
+            ssock, _ = lsock.accept()
+        except BaseException:
+            csock.close()
+            raise
+    finally:
+        lsock.close()
+    try:
+        if (ssock.getsockname() != csock.getpeername()
+                or csock.getsockname() != ssock.getpeername()):
+            raise ConnectionError("Unexpected peer connection")
+    except BaseException:
+        ssock.close()
+        csock.close()
+        raise
+    if explicit_setblocking:
+        # Lib/socket.py:303's forced setblocking(True) -- the call the real
+        # accept() path skips here because the listener has no timeout.
+        ssock.setblocking(True)
+    return ssock, csock
+
+
+def _measure_blocking_mode(ssock, csock, wait_s: float = 0.5) -> dict:
+    """Infer ssock's kernel-side blocking mode from how a recv on it ends.
+
+    Runs the recv on a daemon thread so that a parked one cannot hold the
+    process open, and releases a parked one by closing the *peer* rather than
+    the socket -- a peer close makes a blocked recv return 0, whereas closing
+    the socket out from under a thread that is blocked in a recv on it is a
+    use-after-close, which is the exact class of thing H4 is about.
+
+    Load-bearing assumption: ctypes releases the GIL around a foreign call, so
+    a raw_recv() that parks does not wedge the interpreter.  If that were not
+    true this probe would deadlock the process on its first blocking arm rather
+    than report anything.
+    """
+    result = {}
+    done = threading.Event()
+
+    def worker():
+        try:
+            result["recv"] = _one_byte_recv(ssock)
+        except BaseException as exc:  # noqa: BLE001 - diagnostics must not raise
+            result["recv"] = f"raised: {exc!r}"
+        finally:
+            done.set()
+
+    t0 = time.monotonic()
+    threading.Thread(target=worker, name="blocking-mode-probe",
+                     daemon=True).start()
+    returned = done.wait(wait_s)
+    out = {
+        "wait_s": wait_s,
+        "returned_before_peer_close": returned,
+        "elapsed_s": round(time.monotonic() - t0, 4),
+    }
+
+    csock.close()
+    if not returned:
+        returned = done.wait(2.0)
+        out["returned_after_peer_close"] = returned
+    out["recv"] = result.get("recv")
+    if returned:
+        ssock.close()
+    else:
+        out["leaked_socket"] = ("a thread is still blocked in recv on it; "
+                                "leaking one handle beats closing underneath it")
+    return out
+
+
+def _blocking_mode_verdict(arm: dict) -> str:
+    recv = arm.get("recv")
+    if not isinstance(recv, dict):
+        return f"unexpected: recv probe gave {recv!r}"
+    if not arm.get("returned_before_peer_close"):
+        if not arm.get("returned_after_peer_close"):
+            return ("blocking: recv parked, and even closing the peer did not "
+                    "release it")
+        return "blocking: recv parked until the peer was closed"
+    if recv.get("error") in WOULD_BLOCK_CODES:
+        return "NON-BLOCKING: recv reported would-block immediately"
+    if (recv.get("ret") or 0) > 0:
+        return (f"unexpected: read {recv['ret']} byte(s) from a pair nobody "
+                "wrote to")
+    return f"unexpected: recv gave ret={recv.get('ret')} error={recv.get('error')}"
+
+
+def probe_accepted_blocking_mode() -> dict:
+    """Is the accept()ed end of a fallback socketpair actually blocking?
+
+    wptserve's shutdown_read_sock is `ssock`, the accept()ed end
+    (Lib/socket.py:633, returned first at :660), and CPython never issues
+    ioctlsocket(FIONBIO) on it -- two independent guards are both false.
+    socket.py:303's forced setblocking(True), whose own comment says it exists
+    to "override platform-specific socket flags inheritance" (Issue #7995), is
+    skipped because the listener is blocking and so gettimeout() is None; and
+    init_sockobject() (socketmodule.c:1124-1129) only forces a mode when
+    defaulttimeout >= 0, which it is not.  So CPython believes sock_timeout is
+    -1 while the handle's real kernel-side mode is whatever accept() returned,
+    unverified.  Contrast the *write* end, which gets two real ioctlsocket
+    calls (:627, :632) around a non-blocking connect (:629) -- at the instant
+    accept() returns, that connect has not necessarily settled as far as AFD
+    is concerned.
+
+    Windows has no FIONBIO getter and settimeout() would itself change the
+    mode, so infer it from timing.  Three arms, because one comparison is not
+    enough: arm 1 is the production shape; arm 2 reimplements it, and exists
+    only to show the reimplementation is faithful; arm 3 is arm 2 plus
+    socket.py:303's call, which is what separates "inheritance is fine on this
+    platform" from "that call would have saved us".
+    """
+    out = {"default_timeout": socket.getdefaulttimeout(), "arms": {}}
+    arms = (
+        ("as_socketpair", None),
+        ("hand_rolled", False),
+        ("hand_rolled_setblocking", True),
+    )
+    for name, explicit in arms:
+        arm = {}
+        try:
+            if explicit is None:
+                ssock, csock = MAKE_PAIR()
+            else:
+                ssock, csock = _hand_rolled_pair(explicit)
+            arm["family"] = str(ssock.family)
+            arm["accepted_gettimeout"] = ssock.gettimeout()
+            arm["peer_gettimeout"] = csock.gettimeout()
+            arm["accepted_o_nonblock"] = _fd_nonblocking(ssock)
+            arm.update(_measure_blocking_mode(ssock, csock))
+            arm["verdict"] = _blocking_mode_verdict(arm)
+        except OSError as exc:
+            arm["error"] = {"winerror": getattr(exc, "winerror", None),
+                            "errno": exc.errno}
+            arm["verdict"] = "failed to build the pair"
+        out["arms"][name] = arm
+
+    production = out["arms"]["as_socketpair"].get("verdict", "?")
+    control = out["arms"]["hand_rolled"].get("verdict", "?")
+    fixed = out["arms"]["hand_rolled_setblocking"].get("verdict", "?")
+    if MAKE_PAIR is not getattr(socket, "_fallback_socketpair", None):
+        # Same caveat probe_error_fidelity carries: on POSIX without
+        # --force-fallback arm 1 is a native AF_UNIX pair, so it is not an
+        # accept()ed socket at all and cannot answer the question.
+        out["verdict"] = (f"inapplicable: arm 1 is not the loopback-TCP "
+                          f"fallback (expected on POSIX; rerun with "
+                          f"--force-fallback). arms: {production} / {control} "
+                          f"/ {fixed}")
+    elif production.startswith("NON-BLOCKING"):
+        out["verdict"] = (
+            "GAP CONFIRMED: the accept()ed end is non-blocking despite "
+            f"CPython believing otherwise; with socket.py:303's call: {fixed}")
+    elif production.startswith("blocking"):
+        out["verdict"] = ("no gap: the accept()ed end really is blocking, so "
+                          "CPython's sock_timeout == -1 matches the handle "
+                          "and this sub-hypothesis is dead")
+    else:
+        out["verdict"] = f"inconclusive: {production} / {control} / {fixed}"
+    if control != production and not production.startswith("failed"):
+        out["control_warning"] = (
+            f"the reimplementation disagrees with the real socketpair "
+            f"({control} vs {production}) -- trust arm 1, not arm 3")
+    return out
+
+
 PROBES = (
     ("environment", probe_environment),
     ("last_error_hygiene", probe_last_error_hygiene),
     ("error_fidelity", probe_error_fidelity),
     ("inline_hooks", probe_inline_hooks),
     ("baseline_iocp", probe_baseline_iocp),
+    ("accepted_blocking_mode", probe_accepted_blocking_mode),
 )
 
 

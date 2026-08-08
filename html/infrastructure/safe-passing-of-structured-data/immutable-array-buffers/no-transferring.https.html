@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Immutable ArrayBuffers cannot be transferred</title>
+<link rel="help" href="https://html.spec.whatwg.org/#structuredclone">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+"use strict";
+
+test(() => {
+  const iab = new ArrayBuffer().transferToImmutable();
+  assert_throws_dom("DataCloneError", () => window.postMessage(iab, "*", [iab]));
+  assert_throws_dom("DataCloneError", () => window.postMessage("test", "*", [iab]));
+}, "Trying to transfer an immutable ArrayBuffer to this window throws");
+
+test(() => {
+  const iab = new ArrayBuffer().transferToImmutable();
+  const worker = new Worker("../resources/echo-worker.js");
+  assert_throws_dom("DataCloneError", () => worker.postMessage(iab, [iab]));
+  assert_throws_dom("DataCloneError", () => worker.postMessage("test", [iab]));
+}, "Trying to transfer an immutable ArrayBuffer to a worker throws");
+
+test(() => {
+  const iab = new ArrayBuffer().transferToImmutable();
+  const channel = new MessageChannel();
+  assert_throws_dom("DataCloneError", () => channel.port1.postMessage(iab, [iab]));
+  assert_throws_dom("DataCloneError", () => channel.port1.postMessage("test", [iab]));
+}, "Trying to transfer an immutable ArrayBuffer through a MessagePort throws");
+</script>

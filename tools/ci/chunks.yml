@@ -1,0 +1,37 @@
+defaults:
+  timeout: 120
+
+test_types:
+  testharness:
+    chunks:
+      $switch:
+        'browser == "firefox_android"': 30
+        $default: 16
+    timeout:
+      $switch:
+        'ci == "taskcluster"': 240
+        $default: null
+  reftest:
+    chunks:
+      $switch:
+        # Reftests are currently broken on firefox_android.
+        'browser == "firefox_android"': 0
+        $default: 6
+  print-reftest:
+    chunks:
+      $switch:
+        # print-reftest is currently only supported by Chrome and Firefox.
+        'browser in ["firefox", "chrome", "chromium"]': 1
+        $default: 0
+  wdspec:
+    chunks: 2
+  crashtest:
+    chunks: 1
+  test262:
+    chunks: 8
+  aamtest:
+    chunks:
+      $switch:
+        # aamtest is currently only supported by Chrome and Firefox.
+        'browser in ["firefox", "chrome", "chromium"]': 1
+        $default: 0

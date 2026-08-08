@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Fieldset readonly - nested fieldsets</title>
+<link rel="author" title="Teo Eterovic" href="https://github.com/teoeter">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#attr-fieldset-readonly">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<form>
+  <!-- Outer readonly fieldset contains inner fieldset (no readonly attr) -->
+  <fieldset id=outer readonly>
+    <legend><input type=text id=outer_legend_input></legend>
+    <fieldset id=inner>
+      <legend><input type=text id=inner_legend_input></legend>
+      <input type=text id=inner_input>
+      <textarea id=inner_ta></textarea>
+    </fieldset>
+    <input type=text id=outer_input>
+  </fieldset>
+
+  <!-- Inner readonly fieldset inside non-readonly outer fieldset -->
+  <fieldset id=outer2>
+    <fieldset id=inner2 readonly>
+      <input type=text id=inner2_input>
+    </fieldset>
+    <input type=text id=outer2_input>
+  </fieldset>
+
+  <!-- Nested readonly fieldsets — outer legend should exempt one level -->
+  <fieldset id=outer3 readonly>
+    <legend>
+      <fieldset id=inner3>
+        <input type=text id=inner3_input>
+      </fieldset>
+    </legend>
+    <input type=text id=outer3_input>
+  </fieldset>
+</form>
+<script>
+  test(function () {
+    assert_true(document.getElementById('outer').readOnly, "outer fieldset is readonly");
+    assert_false(document.getElementById('inner').readOnly, "inner fieldset IDL is not readonly");
+    assert_true(document.getElementById('inner_input').readOnly,
+      "input in nested fieldset (descendant of readonly outer) is readonly");
+    assert_true(document.getElementById('inner_ta').readOnly,
+      "textarea in nested fieldset is readonly");
+    assert_true(document.getElementById('outer_input').readOnly,
+      "direct child input of outer readonly fieldset is readonly");
+  }, "Outer readonly fieldset propagates to descendants inside inner non-readonly fieldset");
+
+  test(function () {
+    // inner legend of outer is the first legend child of outer — its descendants are exempt
+    assert_false(document.getElementById('outer_legend_input').readOnly,
+      "input in first legend of outer fieldset is exempt");
+    // inner fieldset's legend is not a child of outer
+    assert_true(document.getElementById('inner_legend_input').readOnly,
+      "input in inner fieldset's legend is still readonly (not exempt from outer)");
+  }, "Legend exemption does not extend to legends of nested fieldsets");
+
+  test(function () {
+    assert_false(document.getElementById('outer2').readOnly, "outer2 is not readonly");
+    assert_true(document.getElementById('inner2').readOnly, "inner2 fieldset is readonly");
+    assert_true(document.getElementById('inner2_input').readOnly,
+      "input inside inner2 readonly fieldset is readonly");
+    assert_false(document.getElementById('outer2_input').readOnly,
+      "input in outer2 (non-readonly) fieldset is not readonly");
+  }, "Inner readonly fieldset only makes its own descendants readonly");
+
+  test(function () {
+    // inner3 is inside the first legend child of outer3 — it and its descendants are exempt
+    assert_false(document.getElementById('inner3_input').readOnly,
+      "input inside fieldset in first legend child is exempt from outer readonly");
+    assert_true(document.getElementById('outer3_input').readOnly,
+      "input outside legend is readonly");
+  }, "Fieldset inside first legend child is fully exempt from outer readonly");
+</script>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Fieldset readonly</title>
+<link rel="author" title="Teo Eterovic" href="https://github.com/teoeter">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#attr-fieldset-readonly">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<form>
+  <fieldset id=fs1 readonly>
+    <legend>
+      <input type=text id=text_l1>
+      <textarea id=ta_l1></textarea>
+    </legend>
+    <legend>
+      <input type=text id=text_l2>
+    </legend>
+    <input type=text id=text1>
+    <textarea id=ta1></textarea>
+  </fieldset>
+
+  <fieldset id=fs2 readonly>
+    <p><legend><input type=text id=text2></legend></p>
+    <input type=text id=text2b>
+  </fieldset>
+
+  <fieldset id=fs3 readonly>
+    <fieldset>
+      <legend><input type=text id=text3></legend>
+    </fieldset>
+    <input type=text id=text3b>
+  </fieldset>
+</form>
+<script>
+  test(function () {
+    assert_true(document.getElementById('fs1').readOnly, "The fieldset IDL readOnly is true");
+    assert_true(document.getElementById('text1').readOnly, "text input descendant is readonly");
+    assert_true(document.getElementById('ta1').readOnly, "textarea descendant is readonly");
+    assert_false(document.getElementById('text_l1').readOnly,
+      "input in first legend child of fieldset is exempt from readonly");
+    assert_false(document.getElementById('ta_l1').readOnly,
+      "textarea in first legend child of fieldset is exempt from readonly");
+    assert_true(document.getElementById('text_l2').readOnly,
+      "input in the second legend child is readonly");
+  }, "The readonly attribute, when specified, causes form control descendants of the fieldset element that support being readonly, excluding those that are descendants of the fieldset element's first legend element child, if any, to be readonly.");
+
+  test(function () {
+    assert_true(document.getElementById('fs2').readOnly, "fs2 is readonly");
+    assert_true(document.getElementById('text2b').readOnly, "non-legend input is readonly");
+    assert_true(document.getElementById('text2').readOnly,
+      "legend not a direct child of fieldset (inside <p>): its input is readonly");
+  }, "First legend exemption requires legend to be a direct child of fieldset");
+
+  test(function () {
+    assert_true(document.getElementById('fs3').readOnly, "fs3 is readonly");
+    assert_true(document.getElementById('text3b').readOnly, "non-legend input is readonly");
+    assert_true(document.getElementById('text3').readOnly,
+      "legend inside nested fieldset, not a direct child of fs3: its input is readonly");
+  }, "First legend inside nested fieldset does not exempt its descendants from outer fieldset's readonly");
+</script>

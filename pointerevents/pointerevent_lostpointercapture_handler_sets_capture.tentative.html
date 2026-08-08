@@ -1,0 +1,94 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Setting capture in lostpointercapture handler defers gotpointercapture to next event</title>
+<link rel="help" href="https://w3c.github.io/pointerevents/#process-pending-pointer-capture">
+<link rel="help" href="https://w3c.github.io/pointerevents/#the-gotpointercapture-event">
+<link rel="help" href="https://w3c.github.io/pointerevents/#the-lostpointercapture-event">
+<link rel="help" href="https://w3c.github.io/pointerevents/#setting-pointer-capture">
+<meta name="viewport" content="width=device-width">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<div id="target">target</div>
+<div id="a">a</div>
+<div id="b">b</div>
+<script>
+"use strict";
+
+promise_test(async () => {
+  const target = document.getElementById("target");
+  const a = document.getElementById("a");
+  const b = document.getElementById("b");
+  const event_log = [];
+
+  function logEvent(event) {
+    event_log.push(event.type + "@" + event.target.id);
+  }
+
+  // Add pointermove listener on target only after pointerdown, so the initial
+  // positioning move is not captured in the event log.
+  target.addEventListener("pointerdown", event => {
+    logEvent(event);
+    a.setPointerCapture(event.pointerId);
+    target.addEventListener("pointermove", logEvent);
+  }, {once: true});
+
+  a.addEventListener("gotpointercapture", logEvent);
+
+  a.addEventListener("pointermove", event => {
+    logEvent(event);
+    a.releasePointerCapture(event.pointerId);
+    a.addEventListener("pointermove", logEvent);
+  }, {once: true});
+
+  // The lostpointercapture@a handler sets capture on b. Browsers read pending
+  // once at algorithm entry, so step 2 still sees pending not set and
+  // gotpointercapture@b is deferred to move 3.
+  a.addEventListener("lostpointercapture", event => {
+    logEvent(event);
+    b.setPointerCapture(event.pointerId);
+  });
+
+  for (const el of [a, b]) {
+    el.addEventListener("pointerover", logEvent);
+    el.addEventListener("pointerout", logEvent);
+    el.addEventListener("pointerup", logEvent);
+  }
+  b.addEventListener("pointermove", logEvent);
+  b.addEventListener("gotpointercapture", logEvent);
+  b.addEventListener("lostpointercapture", logEvent);
+
+  await new test_driver.Actions()
+    .pointerMove(0, 0, {origin: target})
+    .pointerDown()
+    // Move 1: a gets capture; pointermove handler releases
+    .pointerMove(1, 1, {origin: target})
+    // Move 2: lostpointercapture@a fires; handler sets pending=b (ignored)
+    .pointerMove(2, 2, {origin: target})
+    // Move 3: deferred gotpointercapture@b fires
+    .pointerMove(3, 3, {origin: target})
+    .pointerUp()
+    .send();
+
+  assert_array_equals(event_log, [
+    "pointerdown@target",
+    // Move 1
+    "pointerover@a",
+    "gotpointercapture@a",
+    "pointermove@a",
+    // Move 2
+    "lostpointercapture@a",
+    "pointerout@a",
+    "pointermove@target",
+    // Move 3
+    "pointerover@b",
+    "gotpointercapture@b",
+    "pointermove@b",
+    "pointerup@b",
+    "lostpointercapture@b",
+    "pointerout@b",
+  ]);
+}, "Setting capture in lostpointercapture handler defers gotpointercapture to the next event");
+</script>

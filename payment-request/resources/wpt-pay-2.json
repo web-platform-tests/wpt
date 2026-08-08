@@ -1,0 +1,15 @@
+{
+  "default_applications": ["wpt-pay-2.json"],
+  "name": "WPT Pay 2",
+  "icons": [
+    {
+      "src": "/images/rgrg-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ],
+  "serviceworker": {
+    "src": "wpt-pay-app-2.js",
+    "scope": "wpt-pay-2/"
+  }
+}

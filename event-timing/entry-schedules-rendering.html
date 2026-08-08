@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<meta charset=utf-8 />
+<title>Event Timing schedules rendering.</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-actions.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+<script src=resources/event-timing-test-utils.js></script>
+<div id='target'>Click me</div>
+<script>
+
+promise_test(async t => {
+    // This test tries to detect https://bugs.webkit.org/show_bug.cgi?id=305251 by
+    // measuring the duration of entries. This is non-deterministic because an update
+    // may be scheduled for other reasons, producing reasonable values even if the
+    // scheduling is wrong. To avoid spurious passes we repeat the test.
+    target.addEventListener('click', (e) => mainThreadBusy(30));
+    let resolve;
+    new PerformanceObserver( evs => {
+        evs.getEntriesByName('click').forEach( e => {
+            // Durations larger than 200ms result in "needs improvement" INP
+            // scores; they are unreasonable if the handler only takes 30ms.
+            assert_less_than(e.duration, 200);
+            resolve();
+        });
+    }).observe({type: 'event', durationThreshold: 16});
+
+    for (let i=0; i<10; i++) {
+        let promise;
+        ({promise, resolve} = Promise.withResolvers());
+        // Using click(target) triggers rendering, do this instead:
+        const actions = new test_driver.Actions()
+            .pointerMove(0, 0, {origin: target})
+            .pointerDown()
+            .pointerUp();
+        await actions.send();
+        await promise;
+    }
+}, "A rendering update should be scheduled to dispatch event timing entries in time");
+  
+</script>
+</html>

@@ -1,4 +1,4 @@
-﻿/*
+/*
 author: W3C http://www.w3.org/
 help: http://www.w3.org/TR/navigation-timing/#sec-window.performance-attribute
 */

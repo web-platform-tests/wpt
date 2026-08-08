@@ -190,16 +190,54 @@ def _winsock_probe_readable(sock, port, created_at, select_index):
     })
 
 
+_winsock_probe_dump_taken = []
+
+
+def _winsock_probe_dump():
+    """Dump this process at the anomaly, before anything perturbs it.
+
+    Deliberately called *before* collect_evidence(), which is destructive by
+    design: _nonblocking_retry() flips the socket to non-blocking and consumes
+    a byte, and iocp_association_state() associates an unassociated handle with
+    a completion port.  Any of those would be visible in the dump as state the
+    bug did not create.
+
+    One dump per process, ever: a full-memory dump of a daemon child is
+    hundreds of MB, and a second one from the same process would show the
+    aftermath of the first bundle rather than the anomaly.
+    """
+    dump_dir = os.environ.get("WPT_WINSOCK_DUMP_DIR")
+    if not dump_dir or _winsock_probe_dump_taken:
+        return None
+    _winsock_probe_dump_taken.append(True)
+    wp = _winsock_probe_module()
+    if wp is None:
+        return {"error": "winsock_probe module unavailable"}
+    try:
+        os.makedirs(dump_dir, exist_ok=True)
+        path = os.path.join(
+            dump_dir, f"winsock997-pid{os.getpid()}-{int(time.time())}.dmp")
+        return wp.write_minidump(path)
+    except Exception as exc:  # noqa: BLE001 - must not mask the real anomaly
+        return {"error": repr(exc)}
+
+
 def _winsock_probe_anomaly(sock, peer, created_at, exc, select_index):
     if not os.environ.get("WPT_WINSOCK_EVIDENCE_PATH"):
         return
+    # Before collect_evidence(), which is destructive on purpose. The module
+    # import unavoidably happens first (write_minidump lives there), so its
+    # effect on the last-error slot is already baked in either way -- that is
+    # the same defect the bundle's own slot_now field has.
+    dump = _winsock_probe_dump()
     wp = _winsock_probe_module()
     if wp is None:
-        _winsock_probe_log({"kind": "anomaly-no-module", "exc": repr(exc)})
+        _winsock_probe_log({"kind": "anomaly-no-module", "exc": repr(exc),
+                            "dump": dump})
         return
     _winsock_probe_log(wp.collect_evidence(
         sock, peer, created_at, exc, "server.serve_forever",
-        extra={"select_index": select_index}))
+        extra={"select_index": select_index, "dump": dump}))
 
 
 class WebTestServer(http.server.ThreadingHTTPServer):

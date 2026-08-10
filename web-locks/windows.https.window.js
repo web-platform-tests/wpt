@@ -4,48 +4,54 @@
 "use strict";
 
 promise_test(async (t) => {
-  const res = uniqueName(t);
-  const w = await new Promise((resolve) => {
-    const w = window.open("resources/window.html");
-    w.addEventListener('load', () => { resolve(w); }, { once: true });
-    t.add_cleanup(() => w.close());
-    return w;
-  });
-  await acquireLockInWorkerOfWindow(w, res);
+  const { window, lockName } = await openWindowAndAcquireLockInWorker(t);
 
-  w.close();
-  await new Promise((r) => setTimeout(r, 500));
+  // This request should be blocked.
+  let lock_granted = false;
+  const blocked = navigator.locks.request(lockName, lock => { lock_granted = true; });
 
-  // Lock should be released once the window is closed.
-  const { held } = await navigator.locks.query();
-  for (const { name } of held) {
-    assert_false(name == res, 'Lock not held after closing page.');
-  }
+  // Verify that we can't get it.
+  let available = undefined;
+  await navigator.locks.request(
+    lockName, {ifAvailable: true}, lock => { available = lock !== null; });
+  assert_false(available);
+  assert_false(lock_granted);
+
+  // Close the window, after which we should be able to acquire the lock here.
+  window.close();
+  await blocked;
+  assert_true(lock_granted);
 }, 'Closed window with worker holding lock');
 
 promise_test(async (t) => {
-  const res = uniqueName(t);
-  const w = await new Promise((resolve) => {
-    const w = window.open("resources/window.html");
+  const { window, lockName } = await openWindowAndAcquireLockInWorker(t);
+
+  // This request should be blocked.
+  let lock_granted = false;
+  const blocked = navigator.locks.request(lockName, lock => { lock_granted = true; });
+
+  // Verify that we can't get it.
+  let available = undefined;
+  await navigator.locks.request(
+    lockName, {ifAvailable: true}, lock => { available = lock !== null; });
+  assert_false(available);
+  assert_false(lock_granted);
+
+  // Close the window, after which we should be able to acquire the lock here.
+  window.location.href = 'resources/window.html?refresh=1';
+  await blocked;
+  assert_true(lock_granted);
+}, 'Refreshed window with worker holding lock');
+
+async function openWindowAndAcquireLockInWorker(t) {
+  const lockName = uniqueName(t);
+  const window = await new Promise((resolve) => {
+    const w = globalThis.window.open("resources/window.html");
     w.addEventListener('load', () => { resolve(w); }, { once: true });
     t.add_cleanup(() => w.close());
     return w;
   });
-  await acquireLockInWorkerOfWindow(w, res);
 
-  w.location.href = 'resources/window.html?refresh=1';
-  await new Promise((r) => setTimeout(r, 500));
-
-  // Lock should be released since the URL changed and the window no longer
-  // references a worker.
-  const { held } = await navigator.locks.query();
-  w.close();
-  for (const { name } of held) {
-    assert_false(name == res, 'Lock not held after closing page.');
-  }
-}, 'Refreshed window with worker holding lock');
-
-function acquireLockInWorkerOfWindow(window, lockName) {
   const {port1, port2} = new MessageChannel();
   const acquiredLock = new Promise((resolve) => {
     port1.onmessage = (_) => resolve();
@@ -57,5 +63,6 @@ function acquireLockInWorkerOfWindow(window, lockName) {
     '*',
     [port2]
   );
-  return acquiredLock;
+  await acquiredLock;
+  return { window, lockName };
 }

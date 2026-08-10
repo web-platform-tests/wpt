@@ -69,7 +69,7 @@ async def test_timestamp(
             "context": new_tab["context"],
             "navigation": result["navigation"],
             "timestamp": int_interval(time_start, time_end),
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {})
+            "userContext": new_tab["userContext"]
         },
     )
 
@@ -104,7 +104,7 @@ async def test_iframe(
         {
             "context": child_info["context"],
             "url": test_page,
-            **({"userContext": new_tab["userContext"]} if "userContext" in events[0] else {}),
+            "userContext": new_tab["userContext"],
         },
     )
     assert_navigation_info(
@@ -166,7 +166,7 @@ async def test_document_write(
         event,
         {
             "context": new_tab["context"],
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {}),
+            "userContext": new_tab["userContext"],
         },
     )
     assert event["navigation"] is not None
@@ -197,7 +197,7 @@ async def test_early_same_document_navigation(
             "context": new_tab["context"],
             "navigation": result["navigation"],
             "url": url,
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {})
+            "userContext": new_tab["userContext"]
         },
     )
 
@@ -220,6 +220,6 @@ async def test_page_with_base_tag(
             "context": new_tab["context"],
             "navigation": result["navigation"],
             "url": url,
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {})
+            "userContext": new_tab["userContext"]
         },
     )

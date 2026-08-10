@@ -32,7 +32,7 @@ async def check_handler(
             "context": new_tab["context"],
             "type": "alert",
             "handler": expected_handler,
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {})
+            "userContext": new_tab["userContext"]
         }
         recursive_compare(expected, event)
 

@@ -49,12 +49,12 @@ jobs:
           git config user.email "$GIT_AUTHOR_EMAIL"
           git checkout -b $BRANCH_NAME
           git add wasm/core/ wasm/proposals
-          
+
           CORE_CHANGED=false
           git diff --cached --quiet -- wasm/core/ || CORE_CHANGED=true
           PROPOSALS_CHANGED=false
           git diff --cached --quiet -- wasm/proposals/ || PROPOSALS_CHANGED=true
-          
+
           echo "CORE_CHANGED=$CORE_CHANGED" >> $GITHUB_ENV
           echo "PROPOSALS_CHANGED=$PROPOSALS_CHANGED" >> $GITHUB_ENV
 

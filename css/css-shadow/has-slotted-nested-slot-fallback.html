@@ -1,0 +1,28 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>:has-slotted and the fallback content of a nested slot</title>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/pull/10586" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="ancestor"><template shadowrootmode="open"><div id="host"><template shadowrootmode="open"><style>
+  slot {
+    color: rgb(0, 0, 0);
+  }
+  :has-slotted {
+    color: rgb(0, 255, 0);
+  }
+</style><slot id="slot"></slot></template><slot id="nested-slot"><div id="nested-fallback">test</div></slot></div></template></div>
+<script>
+  const host = ancestor.shadowRoot.querySelector("#host");
+  const slot = host.shadowRoot.querySelector("#slot");
+  const nestedSlot = ancestor.shadowRoot.querySelector("#nested-slot");
+  const nestedFallback = ancestor.shadowRoot.querySelector("#nested-fallback");
+
+  test(function () {
+    assert_array_equals(slot.assignedNodes(), [nestedSlot], "the nested slot is assigned to the slot");
+    assert_array_equals(slot.assignedNodes({flatten: true}), [nestedFallback], "flattening finds the nested slot's fallback content, not a whitespace text node");
+    assert_true(slot.matches(":has-slotted"), "slot element should match :has-slotted");
+    assert_equals(getComputedStyle(slot).color, "rgb(0, 255, 0)", "slot element should match :has-slotted");
+    assert_equals(host.shadowRoot.querySelectorAll(":has-slotted").length, 1, "slot element should match :has-slotted");
+  }, ":has-slotted must match when the flattened assigned nodes come from a nested slot's fallback content");
+</script>

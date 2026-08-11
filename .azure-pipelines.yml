@@ -53,6 +53,13 @@
 # zero-hit build otherwise cannot demonstrate at all.
 #
 # Notes for anyone editing this:
+#  - Build 158830 was 3.5g's first attempt and produced NO data at all: the
+#    driver was invoked as `python tools/ci/winsock_serve_loop.py`, outside the
+#    virtualenv that provides mozlog, so all 20 legs died at import in under a
+#    second. It is now a registered wpt subcommand and must be invoked as
+#    `python wpt winsock-serve-loop`. Two lessons are baked in below: run the
+#    driver through the dispatcher, and fail loudly when a leg produces zero
+#    cycles -- continueOnError reported all 20 of those dead legs as SUCCESS.
 #  - No `dependsOn: decision` and no `condition:`. Every other job gates on
 #    dependencies.decision.outputs['test_jobs.*'], and `./wpt test-jobs` has
 #    no notion of this job, so gating it would mean it never runs.
@@ -140,8 +147,13 @@ jobs:
       # job timeout, and a *cancelled* job skips the publish steps below even
       # though they say condition: always(). 1800s is 300s past the driver's
       # own deadline, so this only fires if the driver itself is stuck.
+      #
+      # `python wpt winsock-serve-loop`, NOT `python tools/ci/...` directly:
+      # mozlog lives in the virtualenv the wpt dispatcher builds, and build
+      # 158830 lost all 20 legs to ModuleNotFoundError at import -- in under a
+      # second each, reported SUCCESS by continueOnError.
       $proc = Start-Process -FilePath python -ArgumentList @(
-        "tools/ci/winsock_serve_loop.py",
+        "wpt", "winsock-serve-loop",
         "--deadline", "1500",
         "--restart-every", "25",
         "--out", "$outDir\cycles.jsonl"
@@ -150,6 +162,12 @@ jobs:
       if (-not $proc.WaitForExit(1800 * 1000)) {
         Write-Host "driver did not exit; killing so the artifacts still publish"
         Stop-Process -Id $proc.Id -Force
+      }
+      # A leg that produced no cycles is a broken leg, not a clean null. Fail
+      # loudly here rather than letting a zero-cycle build be read as evidence.
+      if (-not (Test-Path "$outDir\cycles.jsonl")) {
+        Write-Host "##vso[task.logissue type=error]no cycles.jsonl: the driver never ran a cycle"
+        Get-Content "$outDir\driver.err" -ErrorAction SilentlyContinue
       }
     displayName: 'Loop serve.start() daemon bursts'
     continueOnError: true
@@ -169,10 +187,17 @@ jobs:
       # documentation rather than the artifact itself, which is a defect in the
       # artifact. Render the network-stack providers here, where the message
       # tables exist.
-      wevtutil qe System /q:"*[System[Provider[@Name='Tcpip']]]" /f:RenderedText `
-        > "$outDir\System-Tcpip.txt"
-      wevtutil qe System /q:"*[System[(Level=1 or Level=2 or Level=3)]]" /f:RenderedText `
-        > "$outDir\System-warnings.txt"
+      #
+      # /f:Text, not /f:RenderedText: the valid values are XML, Text and
+      # RenderedXml. Build 158830 used RenderedText on all 20 legs and got
+      # "Invalid value for option f." / exit 87, leaving both files empty --
+      # and, because this step comes before the publish steps, it also turned
+      # the whole step red. Out-File rather than `>` so the encoding is utf8
+      # instead of PowerShell 5.1's default UTF-16LE.
+      wevtutil qe System /q:"*[System[Provider[@Name='Tcpip']]]" /f:Text |
+        Out-File -Encoding utf8 "$outDir\System-Tcpip.txt"
+      wevtutil qe System /q:"*[System[(Level=1 or Level=2 or Level=3)]]" /f:Text |
+        Out-File -Encoding utf8 "$outDir\System-warnings.txt"
     displayName: 'Export Windows event logs'
     condition: always()
     continueOnError: true

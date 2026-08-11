@@ -97,5 +97,17 @@
     "requirements": [
       "requirements_update_codeowners.txt"
     ]
+  },
+  "winsock-serve-loop": {
+    "path": "winsock_serve_loop.py",
+    "parser": "get_parser",
+    "script": "run",
+    "help": "THROWAWAY (do not merge): loop serve.start() daemon bursts",
+    "virtualenv": true,
+    "requirements": [
+      "../manifest/requirements.txt",
+      "../wptrunner/requirements.txt",
+      "../webtransport/requirements.txt"
+    ]
   }
 }

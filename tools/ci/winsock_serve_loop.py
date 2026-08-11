@@ -61,11 +61,20 @@ allowed to get.  Analyse cycle 1 separately before pooling.
 Quote every clean result against its cycle count.  The anchor is 5.9e-3 per
 10-daemon run; below that, find out whether the cycles are less *exposed* before
 concluding anything about the mechanism.
+
+How to run it
+-------------
+`python wpt winsock-serve-loop ...`, never `python tools/ci/winsock_serve_loop.py`.
+mozlog and the rest of wptrunner's requirements only exist inside the virtualenv
+the wpt dispatcher builds, so a bare invocation dies at import.  Build 158830 --
+3.5g's first run -- lost all 20 legs to precisely that, in under a second each,
+and `continueOnError: true` reported every one of them SUCCESS.
 """
 
 import argparse
 import json
 import os
+import subprocess
 import sys
 import time
 import traceback
@@ -77,6 +86,13 @@ sys.path.insert(0, wpt_root)
 
 from tools import localpaths  # noqa: F401,E402  (side effect: sys.path)
 
+# mozlog and the rest of wptrunner's requirements are NOT on the bare agent
+# interpreter's path -- localpaths only adds in-tree directories. They arrive
+# via the virtualenv `wpt` builds from tools/wptrunner/requirements.txt, which
+# is why this script must be entered as `python wpt winsock-serve-loop` and not
+# `python tools/ci/winsock_serve_loop.py`. Build 158830 lost all 20 legs to
+# exactly this: ModuleNotFoundError at import, 0 cycles run, and
+# continueOnError reported the job SUCCESS.
 from mozlog import commandline  # noqa: E402
 
 from tools.serve import serve  # noqa: E402
@@ -85,6 +101,15 @@ from tools.serve import serve  # noqa: E402
 # sys.path. This is the same path wptrunner's own entry points take.
 from wptrunner import environment as env  # noqa: E402
 from wptrunner import mpcontext  # noqa: E402
+
+
+# The name this is registered under in tools/ci/commands.json, used to build a
+# child generation's argv.
+COMMAND_NAME = "winsock-serve-loop"
+
+# Distinct from 0/1 so a supervisor can tell "a hit stopped this" from "the
+# generation finished its cycles" and from a crash.
+HIT_EXIT_CODE = 3
 
 
 # environment.py:196-208, verbatim.  Hard-coded rather than "auto" -- see the
@@ -115,8 +140,8 @@ def get_parser():
     parser.add_argument("--deadline", type=float, default=0,
                         help="Stop after this many seconds; 0 means no deadline")
     parser.add_argument("--restart-every", type=int, default=0,
-                        help="Re-exec this script after N cycles, so no process "
-                             "gets arbitrarily warm. 0 disables.")
+                        help="Start a fresh child process every N cycles, so no "
+                             "process gets arbitrarily warm. 0 disables.")
     parser.add_argument("--out", default=None,
                         help="Append newline-delimited JSON records here as well "
                              "as to stdout")
@@ -131,7 +156,11 @@ def get_parser():
     parser.add_argument("--startup-timeout", type=float, default=60,
                         help="Seconds to wait for all daemons to answer")
     parser.add_argument("--cycle-index-base", type=int, default=0,
-                        help=argparse.SUPPRESS)  # set by --restart-every re-exec
+                        help=argparse.SUPPRESS)  # set by the supervisor
+    parser.add_argument("--generation", type=int, default=0,
+                        help=argparse.SUPPRESS)  # set by the supervisor
+    parser.add_argument("--child", action="store_true",
+                        help=argparse.SUPPRESS)  # run cycles, don't supervise
     return parser
 
 
@@ -291,8 +320,13 @@ def evidence_hit(path, seen_bytes):
         return False, seen_bytes
 
 
-def run(**kwargs):
-    opts = argparse.Namespace(**kwargs)
+def run_child(opts):
+    """Run cycles in this process until cycles/deadline/hit stops us.
+
+    One generation. The supervisor starts a fresh one every --restart-every
+    cycles; see run_supervisor for why that is a real child rather than an
+    os.execv.
+    """
     record = Recorder(opts.out)
 
     # mozlog. commandline.setup_logging installs the default logger that
@@ -323,8 +357,10 @@ def run(**kwargs):
     deadline = time.monotonic() + opts.deadline if opts.deadline else None
     cycle = opts.cycle_index_base
     completed = 0
+    hit = False
 
     record(kind="run-start",
+           generation=opts.generation,
            cycle_index_base=opts.cycle_index_base,
            webtransport_h3=opts.webtransport_h3,
            dns=opts.dns,
@@ -339,6 +375,8 @@ def run(**kwargs):
                 break
             if deadline is not None and time.monotonic() >= deadline:
                 break
+            if opts.restart_every and completed >= opts.restart_every:
+                break
 
             cycle += 1
             completed += 1
@@ -348,36 +386,114 @@ def run(**kwargs):
                 # A cycle that blows up is data, not a reason to stop:
                 # production sees WSAENOBUFS pair-create failures on this image.
                 record(kind="cycle-error", cycle=cycle,
+                       generation=opts.generation,
                        traceback=traceback.format_exc())
 
             hit, seen_bytes = evidence_hit(evidence_path, seen_bytes)
             if hit:
-                record(kind="hit", cycle=cycle, evidence_path=evidence_path)
+                record(kind="hit", cycle=cycle, generation=opts.generation,
+                       evidence_path=evidence_path)
                 break
 
-            if opts.restart_every and completed >= opts.restart_every:
-                record(kind="restart", cycle=cycle, completed=completed)
-                argv = [sys.executable, os.path.abspath(__file__)]
-                argv += _forward_args(opts, cycle, deadline)
-                os.execv(sys.executable, argv)
+    record(kind="run-end", generation=opts.generation, cycles=cycle,
+           completed_here=completed)
+    return HIT_EXIT_CODE if hit else 0
 
-    record(kind="run-end", cycles=cycle, completed_here=completed)
+
+def run_supervisor(opts):
+    """Run generations as child processes until the deadline, or a hit.
+
+    Deliberately NOT os.execv, which was the original design and is wrong on
+    the only platform this targets. On Windows there is no exec: the CRT's
+    _wexecv spawns a *new* process and terminates the caller, so the PID
+    changes. The pipeline step waits on the PID it launched
+    (`$proc.WaitForExit(1800 * 1000)`), so the first restart would have looked
+    like a clean exit -- publishing partial artifacts while an orphaned
+    grandchild kept appending to cycles.jsonl underneath the publish step, and
+    defeating the hard kill that exists because the silent-park class is real.
+
+    Each generation is a real child, waited on, with the deadline recomputed
+    from the supervisor's clock so restarts cannot extend the budget.
+    """
+    record = Recorder(opts.out)
+    deadline = time.monotonic() + opts.deadline if opts.deadline else None
+
+    record(kind="supervisor-start",
+           restart_every=opts.restart_every,
+           deadline_s=opts.deadline,
+           evidence_path=os.environ.get("WPT_WINSOCK_EVIDENCE_PATH"),
+           argv=sys.argv)
+
+    generation = 0
+    cycle_base = 0
+    while True:
+        remaining = None
+        if deadline is not None:
+            remaining = deadline - time.monotonic()
+            if remaining <= 1:
+                break
+
+        generation += 1
+        argv = _child_argv(opts, cycle_base, generation, remaining)
+        record(kind="generation-start", generation=generation,
+               cycle_index_base=cycle_base, remaining_s=remaining, argv=argv)
+
+        started = time.monotonic()
+        try:
+            returncode = subprocess.call(argv, cwd=wpt_root)
+        except OSError:
+            record(kind="generation-error", generation=generation,
+                   traceback=traceback.format_exc())
+            break
+
+        record(kind="generation-end", generation=generation,
+               returncode=returncode,
+               elapsed_s=round(time.monotonic() - started, 3))
+
+        if returncode == HIT_EXIT_CODE:
+            record(kind="supervisor-hit", generation=generation)
+            break
+        if returncode != 0:
+            # A child that died on its own is data, but continuing would most
+            # likely just reproduce it every generation until the deadline.
+            record(kind="supervisor-abort", generation=generation,
+                   returncode=returncode)
+            break
+        if not opts.restart_every:
+            break
+
+        cycle_base += opts.restart_every
+
+    record(kind="supervisor-end", generations=generation)
     return 0
 
 
-def _forward_args(opts, cycle, deadline):
-    """Rebuild this process' arguments for the --restart-every re-exec.
+def _child_argv(opts, cycle_base, generation, remaining):
+    """Build one generation's argv.
 
-    The remaining deadline is recomputed rather than passed through unchanged,
-    or each re-exec would grant itself a fresh full budget.
+    Re-entered through `wpt` rather than as a bare script, because the
+    virtualenv that provides mozlog is built by the wpt dispatcher: a child
+    spawned as `python tools/ci/winsock_serve_loop.py` would die at import,
+    which is exactly how build 158830 lost all 20 legs. sys.executable is
+    already the venv interpreter by the time we are running, so --venv plus
+    --skip-venv-setup keeps the child from rebuilding it -- but only when
+    VIRTUAL_ENV is actually set, since `--venv ""` would have the dispatcher
+    build a Virtualenv on the empty path rather than fall back to the default.
     """
-    argv = ["--cycle-index-base", str(cycle),
-            "--restart-every", str(opts.restart_every),
-            "--startup-timeout", str(opts.startup_timeout)]
+    argv = [sys.executable, os.path.join(wpt_root, "wpt")]
+    venv_path = os.environ.get("VIRTUAL_ENV")
+    if venv_path:
+        argv += ["--venv", venv_path, "--skip-venv-setup"]
+    argv += [COMMAND_NAME,
+             "--child",
+             "--generation", str(generation),
+             "--cycle-index-base", str(cycle_base),
+             "--restart-every", str(opts.restart_every),
+             "--startup-timeout", str(opts.startup_timeout)]
     if opts.cycles:
-        argv += ["--cycles", str(max(0, opts.cycles))]
-    if deadline is not None:
-        argv += ["--deadline", str(max(1, int(deadline - time.monotonic())))]
+        argv += ["--cycles", str(opts.cycles)]
+    if remaining is not None:
+        argv += ["--deadline", str(max(1, int(remaining)))]
     if opts.out:
         argv += ["--out", opts.out]
     argv.append("--webtransport-h3" if opts.webtransport_h3
@@ -387,9 +503,22 @@ def _forward_args(opts, cycle, deadline):
     return argv
 
 
+def run(venv, **kwargs):
+    # venv is positional because commands.json marks this virtualenv: true --
+    # wpt.py:228 prepends it. Unused here beyond the fact that entering through
+    # the dispatcher is what built it and put mozlog on sys.path at all.
+    opts = argparse.Namespace(**kwargs)
+    if opts.child or not opts.restart_every:
+        return run_child(opts)
+    return run_supervisor(opts)
+
+
 def main():
-    return run(**vars(get_parser().parse_args()))
+    return run(None, **vars(get_parser().parse_args()))
 
 
 if __name__ == "__main__":
+    # Supported for local debugging only: the dispatcher path
+    # (`python wpt winsock-serve-loop`) is what builds the virtualenv, so a
+    # bare invocation only works in an environment that already has mozlog.
     sys.exit(main())

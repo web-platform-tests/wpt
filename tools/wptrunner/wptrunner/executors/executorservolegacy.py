@@ -244,7 +244,10 @@ class ServoLegacyRefTestExecutor(ServoExecutorMixin, RefTestExecutor):
         os.rmdir(self.tempdir)
         super().teardown()
 
-    def screenshot(self, test, viewport_size, dpi, page_ranges):
+    def screenshot(self, test, viewport_size, dpi, page_ranges, color_space=None):
+        if color_space is not None:
+            raise ValueError("reftest-color-space is not supported by the Servo executor")
+
         with TempFilename(self.tempdir) as output_path:
             extra_args = ["--exit",
                           "--output=%s" % output_path,

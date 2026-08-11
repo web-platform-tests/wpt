@@ -14,6 +14,25 @@
 
 # THROWAWAY BRANCH -- DO NOT MERGE.
 #
+# Future work step 3.5h: the A/B. Build 158874 made this leg work at last (3,605
+# cycles, 8 hits, 8 bundles, 31,647 controls) and put the anomaly on the socket's
+# FIRST select() call 9 times out of 9, never on a later one. So this build stops
+# observing and starts intervening: legs 1-6 are the control, legs 7-12 push a
+# byte through the socketpair before the loop ever polls it. If the rate goes to
+# zero, the first-poll invariant is causal and preventable, and the fix can be
+# preventative rather than tolerate-and-degrade.
+#
+# 12 legs rather than 20, because 158874 also calibrated the leg -- see the
+# reasoning on `strategy:` below. The control arm doubles as the positive control,
+# and a silent control is the outcome that wastes a build, which is the floor on
+# how small this can go.
+#
+# Also carried, as free ride-alongs: the anomalous select()'s ready-set plus a
+# listener-ready counter for its base rate (tests H8 -- the listener and the
+# wakeup socket share one select(), so a listener event mis-reported against the
+# wakeup socket would explain the first-poll invariant), a timestamp isolating
+# the recv from the log emit, and the pair's ports on the healthy controls.
+#
 # Future work step 3.5g: loop the daemon-startup burst, and nothing else.
 #
 # The earlier arm of this job (still below) loops the real `wpt run`, and its
@@ -92,7 +111,26 @@ jobs:
   variables:
     System.Debug: true
   strategy:
-    parallel: 20
+    # 12, not 20, since build 158874 calibrated this leg: a non-hitting leg runs
+    # ~230 cycles at 2.2e-3 per cycle, so it carries 0.51 expected hits and a 0.40
+    # chance of hitting. With a 6/6 split that gives ~1380 cycles per arm, i.e.
+    # p~0.047 for a clean treatment arm and a 4.7% risk that the control arm is
+    # silent -- and a silent control is the outcome that wastes the whole build,
+    # which is what stops this going lower. 20 legs bought p~0.006 for 620
+    # agent-minutes; this buys p~0.047 for ~370.
+    #
+    # The design is sequential on purpose. A treatment arm that still hits needs
+    # no significance test at all, so only the interesting outcome costs a second
+    # build (two 12-leg builds combined: ~2760 cycles/arm, p~0.002). Expected cost
+    # is lower than one 20-leg build.
+    #
+    # Note what retired the case for many legs: cold draws were the scarce
+    # resource while this looked per-fresh-VM, but 158874 found no hit at cycle 1
+    # and a flat hazard across cycles 1-233, so one leg is ~230 draws rather than
+    # one. Do NOT shorten the driver deadline to compensate for fewer legs --
+    # preamble is ~6 of ~31 minutes per leg, so that moves the wrong way (6.2
+    # cycles/agent-min at 750s vs 7.4 at 1500s). Cut legs, not deadline.
+    parallel: 12
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -142,6 +180,34 @@ jobs:
       # cycle appends ~9 readable-pre-recv control records; a hit appends an
       # `anomaly` record, which is what the driver watches for.
       $env:WPT_WINSOCK_EVIDENCE_PATH = "$outDir\evidence.jsonl"
+      # Future work step 3.5h: the campaign's first A/B. Legs 7-12 get the
+      # pre-loop socketpair handshake (server.py's _winsock_probe_handshake),
+      # legs 1-6 are the contemporaneous control. Same commit both sides -- the
+      # arm is an env var, not a code branch, so nothing can differ except this.
+      #
+      # The threshold MUST track `parallel:` above. At parallel: 12 a 6/6 split
+      # needs -gt 6; leaving it at the -gt 10 that suited 20 legs would silently
+      # give 10 control and 2 treatment, i.e. a treatment arm with 0.9 expected
+      # hits under the null and no power whatsoever -- and it would look like a
+      # clean run.
+      #
+      # A within-build split rather than an all-treatment build compared against
+      # 158874: weaker, but immune to image drift, and this campaign has already
+      # been burned once by a rate that turned out to be non-stationary across an
+      # Azure image change. The control arm is also the positive control -- proof
+      # the harness still hits at all in this build -- which is the real reason it
+      # cannot be dropped.
+      #
+      # JobPositionInPhase is 1-based. The driver records `arm` in every
+      # run-start/supervisor-start record, so analysis never has to infer the arm
+      # from the leg number.
+      $pos = [int]"$(System.JobPositionInPhase)"
+      if ($pos -gt 6) {
+        $env:WPT_WINSOCK_PAIR_HANDSHAKE = "1"
+        Write-Host "3.5h arm: TREATMENT (pre-loop socketpair handshake)"
+      } else {
+        Write-Host "3.5h arm: CONTROL"
+      }
       # --restart-every 25 rather than one long-lived process: the driver's own
       # process accumulates state across cycles too, and cycle 1 after a
       # re-exec is closer to a cold start than cycle 200 of the same process.

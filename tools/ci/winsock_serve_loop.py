@@ -119,6 +119,15 @@ COMMAND_NAME = "winsock-serve-loop"
 # generation finished its cycles" and from a crash.
 HIT_EXIT_CODE = 3
 
+# 3.5h A/B: which arm this process is running.  Read from the environment rather
+# than from a flag so it propagates to the daemon children that actually take the
+# code path -- serve.start() spawns them, and they read the same env var in
+# server.py's _winsock_probe_handshake.  Recorded in every run-start and
+# supervisor-start record: an artifact that does not say which arm produced it is
+# one leg-renumbering away from a wrong conclusion.
+ARM = ("handshake" if os.environ.get("WPT_WINSOCK_PAIR_HANDSHAKE")
+       else "control")
+
 
 # environment.py:196-208, verbatim.  Hard-coded rather than "auto" -- see the
 # module docstring: get_port()'s bind/close/rebind is precisely what production
@@ -377,6 +386,10 @@ def run_child(opts):
            webtransport_h3=opts.webtransport_h3,
            dns=opts.dns,
            evidence_path=evidence_path,
+           # 3.5h: which arm of the A/B this is, recorded rather than inferred
+           # from the leg number. An artifact that does not say which arm
+           # produced it is one renumbering away from a wrong conclusion.
+           arm=ARM,
            argv=sys.argv)
 
     # One log-queue thread for the whole process, not one per cycle: production
@@ -434,6 +447,7 @@ def run_supervisor(opts):
            restart_every=opts.restart_every,
            deadline_s=opts.deadline,
            evidence_path=os.environ.get("WPT_WINSOCK_EVIDENCE_PATH"),
+           arm=ARM,
            argv=sys.argv)
 
     generation = 0

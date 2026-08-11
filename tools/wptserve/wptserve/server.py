@@ -7,6 +7,7 @@ import ipaddress
 import json
 import os
 import platform
+import select
 import selectors
 import socket
 import socketserver
@@ -173,10 +174,99 @@ def _winsock_probe_log(record):
         pass
 
 
-def _winsock_probe_readable(sock, port, created_at, select_index):
+def _winsock_probe_ready_set(events, listener, wakeup_sock):
+    """Which handles select() reported ready, by role -- the H8 discriminator.
+
+    serve_forever polls the listening socket and the wakeup socket in ONE
+    selector, so on Windows each iteration is a single select() and therefore a
+    single AFD poll IOCTL covering both handles.  If an event belonging to the
+    listener can be reported against the wakeup socket, that explains why the
+    anomaly is always on the socket's *first* poll (the poll in flight when the
+    first ever connection to the listener arrives) and why fionread is 0.
+
+    So the question this answers is narrow: when the wakeup socket is spuriously
+    readable, was the listener ready in the same call?  Note that on its own a
+    yes proves little -- see listener_ready_count in the readable record, which
+    is what supplies the base rate to compare it against.
+    """
+    roles = []
+    for key, _mask in events:
+        if key.fileobj is wakeup_sock:
+            roles.append("wakeup")
+        elif key.fileobj is listener:
+            roles.append("listener")
+        else:
+            roles.append(repr(key.fileobj))
+    return roles
+
+
+def _winsock_probe_handshake(sock, peer, port):
+    """3.5h treatment arm: prove the pair works before the loop ever polls it.
+
+    Gated on WPT_WINSOCK_PAIR_HANDSHAKE so the same commit runs both arms of the
+    A/B; control legs leave this a no-op.
+
+    Build 158874 put the anomaly on the socket's FIRST select() call 9 times out
+    of 9, and on no later call across 31,647 healthy wakeups.  This arm tests
+    whether that invariant is causal and preventable: push a byte through the
+    pair and read it back, so that by the time the loop polls, the socket has
+    demonstrably carried traffic end to end.
+
+    Deliberately does NOT touch the socket's blocking mode.  settimeout() would
+    have been simpler, but it issues ioctlsocket(FIONBIO) calls, and a working
+    treatment arm could then not be attributed to the byte round-trip rather than
+    to the mode change.  3.5b spent a whole build establishing what this socket's
+    blocking mode is; it is not a thing to perturb casually.
+
+    A byte left unconsumed would poison the loop -- the first poll would find the
+    socket genuinely readable, take the shutdown branch, and stop the daemon at
+    startup.  The select() below is what prevents that.  If the byte were to
+    arrive just after the timeout it would still fail loudly rather than silently:
+    the readiness wait fails and the cycle records a startup_error.
+    """
+    if not os.environ.get("WPT_WINSOCK_PAIR_HANDSHAKE"):
+        return
+    record = {"kind": "pair-handshake", "ts": time.time(), "pid": os.getpid(),
+              "port": port}
+    started = time.monotonic()
+    try:
+        # b'\x00', not b'x': the real shutdown poke sends b'x', and the two must
+        # stay distinguishable if one ever shows up where the other belongs.
+        peer.send(b"\x00")
+        readable, _, _ = select.select([sock], [], [], 5.0)
+        if readable:
+            got = sock.recv(1)
+            record["got"] = got.hex()
+            record["ok"] = got == b"\x00"
+        else:
+            record["ok"] = False
+            record["error"] = "timed out waiting for the handshake byte"
+    except OSError as exc:
+        # The handshake's own recv can hit the anomaly -- that would be a 997 at
+        # select_index 0, which is interesting rather than a failure of the arm.
+        record["ok"] = False
+        record["error"] = repr(exc)
+        record["winerror"] = getattr(exc, "winerror", None)
+    record["elapsed_s"] = time.monotonic() - started
+    _winsock_probe_log(record)
+
+
+def _winsock_probe_readable(sock, port, created_at, select_index,
+                            ready_set=None, listener_ready_count=None):
     if not os.environ.get("WPT_WINSOCK_EVIDENCE_PATH"):
         return
     wp = _winsock_probe_module()
+
+    def _names():
+        # Cheap, and it makes the 4-tuple question answerable from controls
+        # rather than from the handful of anomaly bundles -- 4-tuple reuse is the
+        # one part of H4 still formally untested.
+        try:
+            return {"sockname": sock.getsockname(),
+                    "peername": sock.getpeername()}
+        except OSError as exc:
+            return {"error": repr(exc)}
+
     _winsock_probe_log({
         "kind": "readable-pre-recv",
         "ts": time.time(),
@@ -187,6 +277,13 @@ def _winsock_probe_readable(sock, port, created_at, select_index):
         "age_s": time.monotonic() - created_at,
         "select_index": select_index,
         "fionread": wp._safe(lambda: wp.bytes_readable(sock.fileno())) if wp else None,
+        # 3.5h additions.
+        "ready_set": ready_set,
+        # The base rate the ready_set needs to be read against: how many of this
+        # daemon's select() calls had the listener ready at all.  Without it,
+        # "the listener was ready" is uninterpretable.
+        "listener_ready_count": listener_ready_count,
+        "names": _names(),
     })
 
 
@@ -222,7 +319,8 @@ def _winsock_probe_dump():
         return {"error": repr(exc)}
 
 
-def _winsock_probe_anomaly(sock, peer, created_at, exc, select_index):
+def _winsock_probe_anomaly(sock, peer, created_at, exc, select_index,
+                           recv_s=None, ready_set=None):
     if not os.environ.get("WPT_WINSOCK_EVIDENCE_PATH"):
         return
     # Before collect_evidence(), which is destructive on purpose. The module
@@ -231,13 +329,19 @@ def _winsock_probe_anomaly(sock, peer, created_at, exc, select_index):
     # the same defect the bundle's own slot_now field has.
     dump = _winsock_probe_dump()
     wp = _winsock_probe_module()
+    # recv_s is 3.5h's headline field. Build 158874 showed 1.13-2.64s between the
+    # readable-pre-recv record and the 997 on all eight occurrences, which is the
+    # most surprising thing it found -- but that interval is log-emit PLUS recv,
+    # and the log goes through a QueueHandler onto an mp.Queue while 12 daemons
+    # spawn, so it could not be attributed. This times the recv alone.
+    extra = {"select_index": select_index, "dump": dump,
+             "recv_s": recv_s, "ready_set": ready_set}
     if wp is None:
         _winsock_probe_log({"kind": "anomaly-no-module", "exc": repr(exc),
-                            "dump": dump})
+                            **extra})
         return
     _winsock_probe_log(wp.collect_evidence(
-        sock, peer, created_at, exc, "server.serve_forever",
-        extra={"select_index": select_index, "dump": dump}))
+        sock, peer, created_at, exc, "server.serve_forever", extra=extra))
 
 
 class WebTestServer(http.server.ThreadingHTTPServer):
@@ -373,6 +477,12 @@ class WebTestServer(http.server.ThreadingHTTPServer):
         # winsock-997-probe: throwaway, never merge.
         created_at = time.monotonic()
         select_index = 0
+        listener_ready_count = 0
+        # winsock-997-probe 3.5h treatment arm: throwaway, never merge. A no-op
+        # unless WPT_WINSOCK_PAIR_HANDSHAKE is set, so control and treatment legs
+        # run the identical commit.
+        _winsock_probe_handshake(shutdown_read_sock, self._shutdown_write_sock,
+                                 self.server_port)
 
         try:
             with selectors.DefaultSelector() as selector:
@@ -382,6 +492,10 @@ class WebTestServer(http.server.ThreadingHTTPServer):
                 while True:
                     events = selector.select(timeout=poll_interval)
                     select_index += 1  # winsock-997-probe: throwaway, never merge.
+                    # winsock-997-probe: throwaway, never merge. The base rate
+                    # the anomaly's ready_set has to be read against.
+                    if any(key.fileobj is self for key, _mask in events):
+                        listener_ready_count += 1
 
                     # Handle shutdown requests before any request
                     if any(
@@ -392,13 +506,21 @@ class WebTestServer(http.server.ThreadingHTTPServer):
                         # readability, not only the error, since a phantom
                         # readable that doesn't raise would otherwise park this
                         # thread in recv() forever with no trace at all.
-                        _winsock_probe_readable(shutdown_read_sock, self.server_port,
-                                                 created_at, select_index)
+                        ready_set = _winsock_probe_ready_set(
+                            events, self, shutdown_read_sock)
+                        _winsock_probe_readable(
+                            shutdown_read_sock, self.server_port, created_at,
+                            select_index, ready_set, listener_ready_count)
+                        # Timed separately from the log line above: see recv_s in
+                        # _winsock_probe_anomaly.
+                        recv_started = time.monotonic()
                         try:
                             shutdown_read_sock.recv(1)
                         except OSError as exc:
-                            _winsock_probe_anomaly(shutdown_read_sock, self._shutdown_write_sock,
-                                                    created_at, exc, select_index)
+                            _winsock_probe_anomaly(
+                                shutdown_read_sock, self._shutdown_write_sock,
+                                created_at, exc, select_index,
+                                time.monotonic() - recv_started, ready_set)
                             raise
                         break
 

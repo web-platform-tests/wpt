@@ -426,11 +426,11 @@ class RefTestImplementation:
     def logger(self):
         return self.executor.logger
 
-    def get_hash(self, test, viewport_size, dpi, page_ranges):
-        key = (test.url, viewport_size, dpi)
+    def get_hash(self, test, viewport_size, dpi, page_ranges, color_space=None):
+        key = (test.url, viewport_size, dpi, color_space)
 
         if key not in self.screenshot_cache:
-            success, data = self.get_screenshot_list(test, viewport_size, dpi, page_ranges)
+            success, data = self.get_screenshot_list(test, viewport_size, dpi, page_ranges, color_space=color_space)
 
             if not success:
                 return False, data
@@ -532,6 +532,7 @@ class RefTestImplementation:
         viewport_size = test.viewport_size
         dpi = test.dpi
         page_ranges = test.page_ranges
+        color_space = test.color_space
         self.message = []
 
 
@@ -549,7 +550,7 @@ class RefTestImplementation:
             fuzzy = self.get_fuzzy(test, nodes, relation)
 
             for i, node in enumerate(nodes):
-                success, data = self.get_hash(node, viewport_size, dpi, page_ranges)
+                success, data = self.get_hash(node, viewport_size, dpi, page_ranges, color_space=color_space)
                 if success is False:
                     return {"status": data[0], "message": data[1]}
 
@@ -583,7 +584,7 @@ class RefTestImplementation:
 
         for i, (node, screenshot) in enumerate(zip(nodes, screenshots)):
             if screenshot is None:
-                success, screenshot = self.retake_screenshot(node, viewport_size, dpi, page_ranges)
+                success, screenshot = self.retake_screenshot(node, viewport_size, dpi, page_ranges, color_space=color_space)
                 if success:
                     screenshots[i] = screenshot
 
@@ -614,15 +615,12 @@ class RefTestImplementation:
                 break
         return value
 
-    def retake_screenshot(self, node, viewport_size, dpi, page_ranges):
-        success, data = self.get_screenshot_list(node,
-                                                 viewport_size,
-                                                 dpi,
-                                                 page_ranges)
+    def retake_screenshot(self, node, viewport_size, dpi, page_ranges, color_space=None):
+        success, data = self.get_screenshot_list(node, viewport_size, dpi, page_ranges, color_space=color_space)
         if not success:
             return False, data
 
-        key = (node.url, viewport_size, dpi)
+        key = (node.url, viewport_size, dpi, color_space)
         hash_val, _ = self.screenshot_cache[key]
         self.screenshot_cache[key] = hash_val, data
         return True, data
@@ -649,8 +647,8 @@ class RefTestImplementation:
 
         return struct.unpack(">LL", image_data[16:24])
 
-    def get_screenshot_list(self, node, viewport_size, dpi, page_ranges):
-        success, data = self.executor.screenshot(node, viewport_size, dpi, page_ranges)
+    def get_screenshot_list(self, node, viewport_size, dpi, page_ranges, color_space=None):
+        success, data = self.executor.screenshot(node, viewport_size, dpi, page_ranges, color_space=color_space)
         viewport_size = (800, 600) if viewport_size is None else viewport_size
         dpi = 96 if dpi is None else dpi
         dpcm = dpi / 2.54

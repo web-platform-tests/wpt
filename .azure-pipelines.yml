@@ -165,49 +165,119 @@ jobs:
       python tools/ci/winsock_probe.py --mode probes --out "$outDir\probes.jsonl"
     displayName: 'Cold-boot winsock probes'
     continueOnError: true
+  # Future work step 3.5d: the Winsock/AFD kernel trace. Throwaway, never merge.
+  #
+  # Design change from 3.5d as originally written, and it is the whole reason
+  # this is now cheap. That text said "trace only the first ~10s of each trial
+  # and stop; keep on hit, delete on miss", which suited the `wpt run` loop at
+  # ~214s/trial. Under 3.5g a *cycle* is ~6s, so "the first 10s" is the entire
+  # cycle, and 231 logman start/stop pairs per leg would add latency to exactly
+  # the window being measured. So: one circular-mode session for the whole leg,
+  # frozen in-process the instant the anomaly is detected (server.py's
+  # _winsock_probe_stop_trace). Constant overhead, no per-cycle perturbation.
+  # The ring-buffer machinery 3.5d hoped to avoid is now the simpler option.
+  #
+  # The .etl lives outside $outDir on purpose: circular mode PREALLOCATES the
+  # file to -max, so it is 512MB from the first second and must not land in the
+  # artifact that gets downloaded casually. Note that preallocation also kills
+  # the obvious "did the trace work" check -- the file never grows, so its size
+  # says nothing. Hence the self-test below runs a separate short-lived session.
+  - powershell: |
+      $etl = "$(Agent.TempDirectory)\afd.etl"
+      $session = "wptafd"
+      $outDir = "$(Agent.TempDirectory)\trials"
+      New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+
+      # Provider NAME, not GUID. logman accepts either, but a mistyped GUID
+      # creates a session that captures nothing and is indistinguishable from a
+      # clean null -- the exact failure mode that cost this campaign builds
+      # 158830 and 158837. Print what actually resolves, so if the name is wrong
+      # the log contains the right one.
+      Write-Host "=== matching ETW providers on this image ==="
+      logman query providers | Select-String -Pattern 'Winsock|AFD|TCPIP'
+
+      # POSITIVE CONTROL, before committing 25 minutes of loop time to a session
+      # that might capture nothing. Same machinery as the real session, but
+      # short-lived so it can be stopped and decoded immediately. Runs one
+      # socketpair through create/poke/recv -- i.e. the very operations the
+      # anomaly involves -- and asserts AFD events came back.
+      #
+      # This is the substitute for a local smoke test, which is impossible here:
+      # logman and tracerpt do not exist off Windows. Runs 1 and 2 of 3.5g are
+      # the precedent for why an unverifiable new code path gets its own check.
+      $probeEtl = "$(Agent.TempDirectory)\afd-selftest.etl"
+      logman create trace wptafdtest -ets -o $probeEtl `
+        -p "Microsoft-Windows-Winsock-AFD" 0xffffffffffffffff 5 `
+        -bs 128 -nb 16 64
+      python -c "import socket;a,b=socket.socketpair();b.send(b'x');a.recv(1);a.close();b.close()"
+      Start-Sleep -Seconds 2
+      logman stop -n wptafdtest -ets
+      tracerpt $probeEtl -o "$outDir\afd-selftest.csv" -of CSV `
+        -summary "$outDir\afd-selftest-summary.txt" -y
+      $events = 0
+      if (Test-Path "$outDir\afd-selftest.csv") {
+        $events = @(Get-Content "$outDir\afd-selftest.csv").Count
+      }
+      Write-Host "self-test: $events CSV lines from a single socketpair lifecycle"
+      Get-Content "$outDir\afd-selftest-summary.txt" -ErrorAction SilentlyContinue
+      if ($events -lt 2) {
+        # Loud, but NOT fatal. If the trace cannot work the loop still produces
+        # the ordinary 3.5g/3.5h evidence records, and the agent minutes are
+        # already committed; losing them as well would be strictly worse. The
+        # analysis reads the etw-stop record, so a dead trace cannot be mistaken
+        # for a traced miss.
+        Write-Host "##vso[task.logissue type=error]ETW self-test captured nothing: the AFD provider name or tracerpt invocation is wrong, and no trace will be usable this build"
+      }
+      Remove-Item $probeEtl -ErrorAction SilentlyContinue
+
+      # The real session. Circular file mode is the flight-recorder pattern: the
+      # file always holds the most recent -max MB, so there is no watcher, no
+      # flush-on-detection plumbing, and nothing to size against a 1500s loop.
+      #
+      # 512MB and 40MB of buffers are guesses -- AFD volume on this image has
+      # never been measured, so treat build 1 as partly a calibration build. The
+      # canary is Buffers Lost, printed after the loop: if it is nonzero the
+      # trace is unreliable and -bs/-nb need raising before believing anything.
+      #
+      # AFD only, not TCPIP as well. The target is the AFD poll IRP, and adding
+      # TCPIP would roughly double the volume for a provider that is only
+      # interesting if the AFD trace shows the poll completing with no
+      # AFD-visible cause. That is build 2's question, not build 1's.
+      logman create trace $session -ets -o $etl -mode Circular -max 512 `
+        -p "Microsoft-Windows-Winsock-AFD" 0xffffffffffffffff 5 `
+        -bs 128 -nb 64 320
+      logman query -n $session -ets
+    displayName: 'Start Winsock/AFD ETW trace (3.5d)'
+    continueOnError: true
   - powershell: |
       # 25 minutes, leaving room inside the job timeout for the preamble above
       # and the publish steps below.
       $outDir = "$(Agent.TempDirectory)\trials"
       New-Item -ItemType Directory -Force -Path $outDir | Out-Null
-      # Future work step 3.5c. Dumps go to the staging directory rather than
-      # $outDir: they are hundreds of MB, and that directory is already
-      # published as its own artifact, so the trials artifact stays small
-      # enough to download casually. Only the victim daemon ever writes one,
-      # and only on a real anomaly, so there is nothing to clean up on a miss.
-      $env:WPT_WINSOCK_DUMP_DIR = "$(Build.ArtifactStagingDirectory)"
+      # Future work step 3.5c's minidump is DELIBERATELY OFF for the 3.5d build,
+      # and this is a real interaction rather than tidying. write_minidump runs
+      # on the faulting thread before collect_evidence and was measured at 1.224s
+      # and 27.694s for ~90MB in build 158898. Even with the trace now frozen at
+      # the readability rather than at the raise, a 90MB dump competes for disk
+      # with the ETW flush at the one moment that matters. One instrument at a
+      # time.
+      #   $env:WPT_WINSOCK_DUMP_DIR = "$(Build.ArtifactStagingDirectory)"
+      #
+      # 3.5d: names the session server.py freezes on detection. Absent this var
+      # the hook is a no-op, so the commit is identical either way.
+      $env:WPT_WINSOCK_ETW_SESSION = "wptafd"
       # One file for the whole leg, never deleted (3.5f's follow-on). Every
       # cycle appends ~9 readable-pre-recv control records; a hit appends an
-      # `anomaly` record, which is what the driver watches for.
+      # `anomaly` record, which is what the driver watches for, plus an
+      # `etw-stop` record recording whether the trace was actually frozen.
       $env:WPT_WINSOCK_EVIDENCE_PATH = "$outDir\evidence.jsonl"
-      # Future work step 3.5h: the campaign's first A/B. Legs 7-12 get the
-      # pre-loop socketpair handshake (server.py's _winsock_probe_handshake),
-      # legs 1-6 are the contemporaneous control. Same commit both sides -- the
-      # arm is an env var, not a code branch, so nothing can differ except this.
-      #
-      # The threshold MUST track `parallel:` above. At parallel: 12 a 6/6 split
-      # needs -gt 6; leaving it at the -gt 10 that suited 20 legs would silently
-      # give 10 control and 2 treatment, i.e. a treatment arm with 0.9 expected
-      # hits under the null and no power whatsoever -- and it would look like a
-      # clean run.
-      #
-      # A within-build split rather than an all-treatment build compared against
-      # 158874: weaker, but immune to image drift, and this campaign has already
-      # been burned once by a rate that turned out to be non-stationary across an
-      # Azure image change. The control arm is also the positive control -- proof
-      # the harness still hits at all in this build -- which is the real reason it
-      # cannot be dropped.
-      #
-      # JobPositionInPhase is 1-based. The driver records `arm` in every
-      # run-start/supervisor-start record, so analysis never has to infer the arm
-      # from the leg number.
-      $pos = [int]"$(System.JobPositionInPhase)"
-      if ($pos -gt 6) {
-        $env:WPT_WINSOCK_PAIR_HANDSHAKE = "1"
-        Write-Host "3.5h arm: TREATMENT (pre-loop socketpair handshake)"
-      } else {
-        Write-Host "3.5h arm: CONTROL"
-      }
+      # 3.5h is DONE and negative -- the pre-loop handshake does not stop the
+      # anomaly (3 occurrences in 1,027 treatment cycles against 4 in 690
+      # control, p~0.29 conditional on 7). So all 12 legs run the untreated
+      # shape here: splitting them again would halve the traced population for
+      # an arm already known not to work. WPT_WINSOCK_PAIR_HANDSHAKE is left
+      # unset, which is what makes server.py's handshake a no-op.
+      Write-Host "3.5d arm: all legs untreated, ETW session wptafd"
       # --restart-every 25 rather than one long-lived process: the driver's own
       # process accumulates state across cycles too, and cycle 1 after a
       # re-exec is closer to a cold start than cycle 200 of the same process.
@@ -257,6 +327,61 @@ jobs:
         Get-Content "$outDir\driver.err" -ErrorAction SilentlyContinue
       }
     displayName: 'Loop serve.start() daemon bursts'
+    continueOnError: true
+  # Future work step 3.5d, second half. Throwaway, never merge.
+  #
+  # Keep-on-hit / delete-on-miss, exactly as the loop already does for logs --
+  # but the discriminator is the `etw-stop` record server.py writes, NOT the
+  # presence of the .etl. Circular mode preallocates the file to 512MB, so on a
+  # miss there is a full-size .etl full of nothing in particular, and treating
+  # its existence as evidence would publish 12 x 512MB of noise.
+  - powershell: |
+      $etl = "$(Agent.TempDirectory)\afd.etl"
+      $session = "wptafd"
+      $outDir = "$(Agent.TempDirectory)\trials"
+
+      # Buffers Lost is the canary for whether this trace can be trusted at all.
+      # Print it BEFORE stopping, and tolerate failure: on a hit the in-process
+      # hook has already stopped the session, so this query is expected to fail
+      # in exactly the interesting case.
+      Write-Host "=== session state at end of loop (fails if already frozen) ==="
+      logman query -n $session -ets
+      $frozen = 0
+      if (Test-Path "$outDir\evidence.jsonl") {
+        $frozen = @(Select-String -Path "$outDir\evidence.jsonl" `
+                      -Pattern '"kind": "etw-stop"' -SimpleMatch).Count
+      }
+      Write-Host "etw-stop records: $frozen"
+      logman stop -n $session -ets
+      if ($frozen -eq 0) {
+        Write-Host "no occurrence this leg: discarding the ring buffer"
+        Remove-Item $etl -ErrorAction SilentlyContinue
+      } else {
+        # CSV, not XML: tracerpt's XML is roughly an order of magnitude larger
+        # for the same events, and the point of decoding on the agent at all is
+        # that the result must be readable without a Windows box. The .etl goes
+        # alongside it compressed, so nothing is lost -- full fidelity survives
+        # for anyone who can open it properly later.
+        tracerpt $etl -o "$outDir\afd.csv" -of CSV `
+          -summary "$outDir\afd-summary.txt" -y
+        Get-Content "$outDir\afd-summary.txt" -ErrorAction SilentlyContinue
+        if (Test-Path "$outDir\afd.csv") {
+          $lines = @(Get-Content "$outDir\afd.csv").Count
+          $mb = [math]::Round((Get-Item "$outDir\afd.csv").Length / 1MB, 1)
+          Write-Host "decoded $lines CSV lines ($mb MB)"
+        } else {
+          Write-Host "##vso[task.logissue type=error]the trace was frozen but tracerpt produced no CSV"
+        }
+        # Into the staging directory rather than $outDir, so the trials artifact
+        # stays casually downloadable. This build that artifact carries traces
+        # rather than minidumps, since 3.5c is switched off above -- any .dmp in
+        # it is a genuine Watson crash dump from configure_watson.yml, which
+        # 158874's three access violations show does happen.
+        Compress-Archive -Path $etl `
+          -DestinationPath "$(Build.ArtifactStagingDirectory)\afd-etl.zip" -Force
+      }
+    displayName: 'Stop and decode Winsock/AFD ETW trace (3.5d)'
+    condition: always()
     continueOnError: true
   # Must run *after* the loop, not with the probes before it: the events worth
   # having are the ones from during the daemon-startup bursts (tcpip/afd driver

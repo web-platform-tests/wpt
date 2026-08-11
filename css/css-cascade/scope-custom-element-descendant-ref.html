@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Reference: @scope (custom-element) sole scope styles light-dom children</title>
+<link rel="match" href="scope-custom-element-descendant-ref.html">
+<link rel="author" title="Jack Holden" href="mailto:jack@holdhelm.com">
+<link rel="help" href="https://drafts.csswg.org/css-cascade-6/#scoped-styles">
+<link rel="help" href="https://drafts.csswg.org/css-cascade-6/#scope-atrule">
+
+<style>
+  @scope (my-menu .my-grid) {
+    :scope {
+      background: blue;
+      color: white;
+      padding: 1rem;
+    }
+  }
+</style>
+
+<p>The box below should have a blue background.</p>
+
+<my-menu>
+  <template shadowrootmode="open">
+    <style>
+      :host { display: block; }
+      ::slotted(.my-grid) { display: block; }
+    </style>
+    <slot></slot>
+  </template>
+
+  <div class="my-grid">Scoped content</div>
+</my-menu>

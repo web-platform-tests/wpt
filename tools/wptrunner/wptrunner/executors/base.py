@@ -496,11 +496,20 @@ class RefTestImplementation:
                                                           rhs_screenshots)):
             comparison_screenshots = (lhs_screenshot, rhs_screenshot)
 
+            bit_depth = None
             if contract is not None:
                 for screenshot, url in zip(comparison_screenshots, urls):
                     try:
                         info = parse_png(base64.b64decode(screenshot))
                         validate_contract(info, contract)
+                        if bit_depth is None:
+                            bit_depth = info.bit_depth
+                        elif bit_depth != info.bit_depth:
+                            self.logger.error(
+                                f"Bit depth mismatch between screenshots: "
+                                f"{bit_depth} vs {info.bit_depth}"
+                            )
+                            return (None, page_idx)
                     except InvalidPNGError as e:
                         self.logger.error(f"Invalid PNG for {url}: {e}")
                         return (None, page_idx)
@@ -525,6 +534,10 @@ class RefTestImplementation:
 
                 if max_per_channel is None:
                     return (None, page_idx)
+
+            if fuzzy and bit_depth and bit_depth != 8:
+                self.logger.error("Fuzzy comparison is not yet supported for screenshots above 8 bits per channel")
+                return (None, page_idx)
 
             if not fuzzy or fuzzy == ((0, 0), (0, 0)):
                 equal = pixels_different == 0 and max_per_channel == 0

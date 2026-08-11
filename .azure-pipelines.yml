@@ -60,6 +60,13 @@
 #    `python wpt winsock-serve-loop`. Two lessons are baked in below: run the
 #    driver through the dispatcher, and fail loudly when a leg produces zero
 #    cycles -- continueOnError reported all 20 of those dead legs as SUCCESS.
+#  - Build 158837 was the second attempt and ALSO produced no cycles, for a
+#    variant of the same cause one level down: the supervisor spawned its
+#    children with sys.executable, which is still the base interpreter because
+#    Virtualenv.activate() never rebinds it. The zero-cycle guard below did not
+#    catch it either, because it only tested that cycles.jsonl existed and the
+#    supervisor creates that file before its first child runs. Both are fixed;
+#    the guard now counts actual cycle records.
 #  - No `dependsOn: decision` and no `condition:`. Every other job gates on
 #    dependencies.decision.outputs['test_jobs.*'], and `./wpt test-jobs` has
 #    no notion of this job, so gating it would mean it never runs.
@@ -163,10 +170,24 @@ jobs:
         Write-Host "driver did not exit; killing so the artifacts still publish"
         Stop-Process -Id $proc.Id -Force
       }
-      # A leg that produced no cycles is a broken leg, not a clean null. Fail
-      # loudly here rather than letting a zero-cycle build be read as evidence.
-      if (-not (Test-Path "$outDir\cycles.jsonl")) {
-        Write-Host "##vso[task.logissue type=error]no cycles.jsonl: the driver never ran a cycle"
+      # A leg that produced no cycles is a broken leg, not a clean null.
+      # Count actual `cycle` records, do NOT merely test the file exists: the
+      # supervisor writes supervisor-start before launching its first child,
+      # so build 158837 produced a 5-line cycles.jsonl holding nothing but a
+      # start, a generation and an abort -- and sailed through the Test-Path
+      # guard that was added after 158830 to catch exactly this.
+      #
+      # The trailing quote in the pattern matters: it counts `"kind": "cycle"`
+      # and deliberately NOT `"kind": "cycle-error"`. A leg whose every cycle
+      # raised measured no exposure either, so it should also fail loudly.
+      $cycles = 0
+      if (Test-Path "$outDir\cycles.jsonl") {
+        $cycles = @(Select-String -Path "$outDir\cycles.jsonl" `
+                      -Pattern '"kind": "cycle"' -SimpleMatch).Count
+      }
+      Write-Host "cycle records: $cycles"
+      if ($cycles -eq 0) {
+        Write-Host "##vso[task.logissue type=error]no cycle records: the driver never ran a cycle"
         Get-Content "$outDir\driver.err" -ErrorAction SilentlyContinue
       }
     displayName: 'Loop serve.start() daemon bursts'

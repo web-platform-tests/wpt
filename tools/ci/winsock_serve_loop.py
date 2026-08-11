@@ -69,11 +69,19 @@ mozlog and the rest of wptrunner's requirements only exist inside the virtualenv
 the wpt dispatcher builds, so a bare invocation dies at import.  Build 158830 --
 3.5g's first run -- lost all 20 legs to precisely that, in under a second each,
 and `continueOnError: true` reported every one of them SUCCESS.
+
+Going through `wpt` is necessary but NOT sufficient, which cost a second build.
+`Virtualenv.activate()` never rebinds `sys.executable`, so inside the dispatcher
+it is still the base interpreter; the supervisor must therefore resolve its
+children's interpreter out of the venv's own bin directory rather than reusing
+`sys.executable`.  Build 158837 did the latter and lost all 20 legs to the same
+ModuleNotFoundError one process deeper.  See `_child_argv`.
 """
 
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -329,12 +337,16 @@ def run_child(opts):
     """
     record = Recorder(opts.out)
 
-    # mozlog. commandline.setup_logging installs the default logger that
-    # get_server_logger() then tags with component="wptserve" -- the same
-    # logger object environment.py:103 hands to serve.start().
-    commandline.setup_logging("winsock-serve-loop",
-                              {"mach": sys.stdout},
-                              {"level": "info"})
+    # mozlog. setup_logging's signature is (suite, args, defaults, ...), where
+    # `args` is the parsed --log-<formatter> command line and `defaults` is the
+    # {formatter: stream} map to fall back on. We have no --log-* flags, so
+    # args is empty and the mach formatter goes in defaults. Passing the
+    # formatter map as `args` instead -- as this did until 2026-08-11 -- makes
+    # mozlog treat every *default* key as a formatter name and die on
+    # `KeyError: 'level'` inside setup_handlers. That is in run_child, which
+    # neither build 158830 nor 158837 ever reached, so it would have killed a
+    # third run had the interpreter fix landed on its own.
+    commandline.setup_logging("winsock-serve-loop", {}, {"mach": sys.stdout})
     logger = env.get_server_logger()
 
     # Not serve.MpContext(): that is multiprocessing's *default* context, which
@@ -433,8 +445,22 @@ def run_supervisor(opts):
             if remaining <= 1:
                 break
 
+        # --cycles is a total, not a per-generation budget. Forwarding it
+        # verbatim (as this did until 2026-08-11) bounds each child at N cycles
+        # while leaving the supervisor itself unbounded, so `--cycles 100
+        # --restart-every 25` spins generations forever. CI passes --deadline
+        # and no --cycles, so this was latent -- but an unbounded loop behind a
+        # continueOnError step is precisely the shape that has already cost two
+        # builds.
+        remaining_cycles = None
+        if opts.cycles:
+            remaining_cycles = opts.cycles - (cycle_base - opts.cycle_index_base)
+            if remaining_cycles <= 0:
+                break
+
         generation += 1
-        argv = _child_argv(opts, cycle_base, generation, remaining)
+        argv = _child_argv(opts, cycle_base, generation, remaining,
+                           remaining_cycles)
         record(kind="generation-start", generation=generation,
                cycle_index_base=cycle_base, remaining_s=remaining, argv=argv)
 
@@ -468,30 +494,47 @@ def run_supervisor(opts):
     return 0
 
 
-def _child_argv(opts, cycle_base, generation, remaining):
+def _child_argv(opts, cycle_base, generation, remaining, remaining_cycles):
     """Build one generation's argv.
 
     Re-entered through `wpt` rather than as a bare script, because the
     virtualenv that provides mozlog is built by the wpt dispatcher: a child
-    spawned as `python tools/ci/winsock_serve_loop.py` would die at import,
-    which is exactly how build 158830 lost all 20 legs. sys.executable is
-    already the venv interpreter by the time we are running, so --venv plus
-    --skip-venv-setup keeps the child from rebuilding it -- but only when
-    VIRTUAL_ENV is actually set, since `--venv ""` would have the dispatcher
-    build a Virtualenv on the empty path rather than fall back to the default.
+    spawned as `python tools/ci/winsock_serve_loop.py` dies at import, which is
+    how build 158830 lost all 20 legs.
+
+    The interpreter must be the *venv's*, not `sys.executable`. Going through
+    `wpt` is not on its own enough, and build 158837 lost all 20 legs proving
+    it. `Virtualenv.activate()` (tools/wpt/virtualenv.py:129-152) mutates PATH,
+    sys.path and sys.prefix but never rebinds `sys.executable`, so in the
+    supervisor it is still the base interpreter that launched `wpt` -- the one
+    without mozlog. Handing that to a child alongside `--skip-venv-setup`
+    (which skips `venv.start()`, hence `activate()`, hence the only thing that
+    would have put the venv on sys.path) reproduced the exact same
+    ModuleNotFoundError one level down.
+
+    So resolve the real interpreter out of the venv's own bin directory.
+    `opts.venv_bin_path` comes from the Virtualenv object the dispatcher passed
+    to run(), which is authoritative in a way that $VIRTUAL_ENV is not: it is
+    set whether or not the env var is, and it accounts for the layout
+    differences get_paths() handles. Fall back to sys.executable only when
+    there is no venv at all, i.e. local debugging in an environment that
+    already has mozlog.
     """
-    argv = [sys.executable, os.path.join(wpt_root, "wpt")]
-    venv_path = os.environ.get("VIRTUAL_ENV")
-    if venv_path:
-        argv += ["--venv", venv_path, "--skip-venv-setup"]
+    argv = [_child_python(opts), os.path.join(wpt_root, "wpt")]
+    if opts.venv_path:
+        argv += ["--venv", opts.venv_path, "--skip-venv-setup"]
     argv += [COMMAND_NAME,
              "--child",
              "--generation", str(generation),
              "--cycle-index-base", str(cycle_base),
              "--restart-every", str(opts.restart_every),
              "--startup-timeout", str(opts.startup_timeout)]
-    if opts.cycles:
-        argv += ["--cycles", str(opts.cycles)]
+    if remaining_cycles is not None:
+        # The child stops at whichever of --cycles / --restart-every it reaches
+        # first, so pass the smaller of the two: the supervisor's remaining
+        # total budget, not the original --cycles.
+        argv += ["--cycles", str(min(remaining_cycles, opts.restart_every))
+                 if opts.restart_every else str(remaining_cycles)]
     if remaining is not None:
         argv += ["--deadline", str(max(1, int(remaining)))]
     if opts.out:
@@ -503,11 +546,33 @@ def _child_argv(opts, cycle_base, generation, remaining):
     return argv
 
 
+def _child_python(opts):
+    """The interpreter a child generation must run under.
+
+    See _child_argv: sys.executable is the base interpreter even after the
+    dispatcher has "activated" the venv, so it cannot import mozlog.
+    """
+    if opts.venv_bin_path:
+        found = shutil.which("python", path=opts.venv_bin_path)
+        if found:
+            return found
+    return sys.executable
+
+
 def run(venv, **kwargs):
     # venv is positional because commands.json marks this virtualenv: true --
-    # wpt.py:228 prepends it. Unused here beyond the fact that entering through
-    # the dispatcher is what built it and put mozlog on sys.path at all.
+    # wpt.py:228 prepends it. The supervisor needs it: `sys.executable` is NOT
+    # the venv interpreter (activate() never rebinds it), so the Virtualenv
+    # object is the only reliable source for the interpreter a child must run
+    # under. See _child_argv.
     opts = argparse.Namespace(**kwargs)
+    opts.venv_path = getattr(venv, "path", None)
+    try:
+        opts.venv_bin_path = venv.bin_path if venv is not None else None
+    except Exception:
+        # bin_path goes through sysconfig; a failure here should degrade to
+        # sys.executable rather than take the run down.
+        opts.venv_bin_path = None
     if opts.child or not opts.restart_every:
         return run_child(opts)
     return run_supervisor(opts)

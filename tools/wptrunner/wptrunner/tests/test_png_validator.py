@@ -417,3 +417,15 @@ class TestCheckPass:
         )
         assert result is True
         assert page == -1
+
+
+    def test_fuzzy_with_high_bit_depth_fails(self, impl):
+        png = _make_png(bit_depth=16, extra_chunks=(_chunk(b"cICP", bytes([12, 13, 0, 1])),))
+        b64 = _b64(png)
+        screenshots = ([b64], [b64])
+        hashes = (["h1"], ["h1"])
+        result, page = impl.check_pass(
+            hashes, screenshots, ["test", "ref"], "==", ([10, 10], [100, 100]),
+            color_space="display-p3",
+        )
+        assert result is None

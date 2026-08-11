@@ -2,7 +2,6 @@
 
 import base64
 import hashlib
-import io
 import json
 import os
 import socket
@@ -17,6 +16,14 @@ from urllib.parse import urljoin, urlsplit, urlunsplit
 from . import pytestrunner
 from .actions import actions
 from .asyncactions import async_actions
+from .png_validator import (
+    InvalidPNGError,
+    MalformedCaptureError,
+    decode_pixels_stdlib,
+    get_contract,
+    parse_png,
+    validate_contract,
+)
 from .protocol import Protocol, PytestProtocol, merge_dicts
 
 
@@ -403,6 +410,18 @@ class PrintRefTestExecutor(TestExecutor):
     is_print = True
 
 
+def _composite_rgba_row(row: list) -> list:
+    out = []
+    for i in range(0, len(row), 4):
+        r, g, b, a = row[i], row[i + 1], row[i + 2], row[i + 3]
+        out.extend([r * a // 255, g * a // 255, b * a // 255])
+    return out
+
+
+def _drop_alpha(row: list) -> list:
+    return [v for i, v in enumerate(row) if i % 4 != 3]
+
+
 class RefTestImplementation:
     def __init__(self, executor):
         self.timeout_multiplier = executor.timeout_multiplier
@@ -449,7 +468,7 @@ class RefTestImplementation:
     def reset(self):
         self.screenshot_cache.clear()
 
-    def check_pass(self, hashes, screenshots, urls, relation, fuzzy):
+    def check_pass(self, hashes, screenshots, urls, relation, fuzzy, color_space=None):
         """Check if a test passes, and return a tuple of (pass, page_idx),
         where page_idx is the zero-based index of the first page on which a
         difference occurs if any, or None if there are no differences"""
@@ -464,6 +483,10 @@ class RefTestImplementation:
 
         assert len(lhs_screenshots) == len(lhs_hashes) == len(rhs_screenshots) == len(rhs_hashes)
 
+        contract = None
+        if color_space is not None:
+            contract = get_contract(color_space)
+
         for (page_idx, (lhs_hash,
                         rhs_hash,
                         lhs_screenshot,
@@ -472,15 +495,36 @@ class RefTestImplementation:
                                                           lhs_screenshots,
                                                           rhs_screenshots)):
             comparison_screenshots = (lhs_screenshot, rhs_screenshot)
+
+            if contract is not None:
+                for screenshot, url in zip(comparison_screenshots, urls):
+                    try:
+                        info = parse_png(base64.b64decode(screenshot))
+                        validate_contract(info, contract)
+                    except InvalidPNGError as e:
+                        self.logger.error(f"Invalid PNG for {url}: {e}")
+                        return (None, page_idx)
+                    except MalformedCaptureError as e:
+                        self.logger.error(
+                            f"Capture contract violation for {url}: {e}"
+                        )
+                        return (None, page_idx)
+
             if lhs_hash == rhs_hash:
                 max_per_channel, pixels_different = 0, 0
             else:
                 # sometimes images can have different hashes, but pixels can be identical.
                 self.logger.info("Image hashes didn't match%s, checking pixel differences" %
                                  ("" if len(hashes) == 1 else " on page %i" % (page_idx + 1)))
-                max_per_channel, pixels_different = self.get_differences(comparison_screenshots,
-                                                                         urls,
-                                                                         page_idx if len(hashes) > 1 else None)
+                max_per_channel, pixels_different = self.get_differences(
+                    comparison_screenshots,
+                    urls,
+                    page_idx if len(hashes) > 1 else None,
+                    contract=contract,
+                )
+
+                if max_per_channel is None:
+                    return (None, page_idx)
 
             if not fuzzy or fuzzy == ((0, 0), (0, 0)):
                 equal = pixels_different == 0 and max_per_channel == 0
@@ -498,43 +542,97 @@ class RefTestImplementation:
         # All screenshots were equal within the fuzziness
         return (True if relation == "==" else False, -1)
 
-    def get_differences(self, screenshots, urls, page_idx=None):
-        from PIL import Image, ImageChops, ImageStat
+    def get_differences(self, screenshots, urls, page_idx=None, contract=None):
+        try:
+            left_png = base64.b64decode(screenshots[0])
+            right_png = base64.b64decode(screenshots[1])
+        except Exception as e:
+            self.logger.error(f"Failed to decode base64 screenshot: {e}")
+            return None, None
 
-        lhs = Image.open(io.BytesIO(base64.b64decode(screenshots[0]))).convert("RGB")
-        rhs = Image.open(io.BytesIO(base64.b64decode(screenshots[1]))).convert("RGB")
-        if lhs.size != rhs.size:
+        try:
+            left_info = parse_png(left_png)
+            right_info = parse_png(right_png)
+        except InvalidPNGError as e:
+            self.logger.error(f"Failed to parse PNG: {e}")
+            return None, None
+
+        if left_info.width != right_info.width or left_info.height != right_info.height:
             self.logger.info(
-                f"Images differ in size; {urls[0]} is {lhs.size}, {urls[1]} is {rhs.size}" +
-                ("" if page_idx is None else f" on page {page_idx + 1}")
+                f"Images differ in size; {urls[0]} is {left_info.width}x{left_info.height}, "
+                f"{urls[1]} is {right_info.width}x{right_info.height}"
+                + ("" if page_idx is None else f" on page {page_idx + 1}")
             )
-        self.check_if_solid_color(lhs, urls[0])
-        self.check_if_solid_color(rhs, urls[1])
-        diff = ImageChops.difference(lhs, rhs)
-        minimal_diff = diff.crop(diff.getbbox())
-        mask = minimal_diff.convert("L", dither=None)
-        stat = ImageStat.Stat(minimal_diff, mask)
-        per_channel = max(item[1] for item in stat.extrema)
-        count = stat.count[0]
-        self.logger.info("Found %s pixels different, maximum difference per channel %s%s" %
-                         (count,
-                          per_channel,
-                          "" if page_idx is None else " on page %i" % (page_idx + 1)))
-        return per_channel, count
+            max_pixels = max(left_info.width * left_info.height, right_info.width * right_info.height)
+            return 0, max_pixels
 
-    def check_if_solid_color(self, image, url):
-        extrema = image.getextrema()
-        if all(min == max for min, max in extrema):
-            color = ''.join('%02X' % value for value, _ in extrema)
-            self.message.append(f"Screenshot is solid color 0x{color} for {url}\n")
+        try:
+            left_rows, _lw, _lh, _lch = decode_pixels_stdlib(left_png, left_info)
+            right_rows, _rw, _rh, _rch = decode_pixels_stdlib(right_png, right_info)
+        except Exception as e:
+            self.logger.error(f"Failed to decode PNG pixels: {e}")
+            return None, None
+
+        # Only RGB (2) and RGBA (6) colour types are supported.
+        if left_info.color_type not in (2, 6) or right_info.color_type not in (2, 6):
+            self.logger.error(
+                f"Unsupported PNG colour type: "
+                f"{urls[0]} type={left_info.color_type}, "
+                f"{urls[1]} type={right_info.color_type}"
+            )
+            return None, None
+
+        pixels_different = 0
+        max_per_channel = 0
+
+        # Composite alpha against black to match old PIL .convert("RGB") behaviour.
+        if left_info.alpha:
+            if contract is None:
+                left_rows = [_composite_rgba_row(r) for r in left_rows]
+                right_rows = [_composite_rgba_row(r) for r in right_rows]
+            else:
+                left_rows = [_drop_alpha(r) for r in left_rows]
+                right_rows = [_drop_alpha(r) for r in right_rows]
+
+        self._check_solid_colour(left_rows, urls[0])
+        self._check_solid_colour(right_rows, urls[1])
+
+        for y in range(left_info.height):
+            lr = left_rows[y]
+            rr = right_rows[y]
+            # Count pixels (groups of 3 channel values), matching PIL stat.count[0].
+            for p in range(0, len(lr), 3):
+                pixel_diff = 0
+                for c in range(3):
+                    idx = p + c
+                    pixel_diff = max(pixel_diff, abs(lr[idx] - rr[idx]))
+                if pixel_diff > 0:
+                    pixels_different += 1
+                    if pixel_diff > max_per_channel:
+                        max_per_channel = pixel_diff
+
+        self.logger.info(
+            "Found %s pixels different, maximum difference per channel %s%s"
+            % (pixels_different, max_per_channel,
+               "" if page_idx is None else " on page %i" % (page_idx + 1))
+        )
+        return max_per_channel, pixels_different
+
+    def _check_solid_colour(self, rows, url):
+        if not rows or not rows[0]:
+            return
+        first = rows[0]
+        if all(row == first for row in rows):
+            colour = "".join(f"{v:02X}" for v in first[:3])
+            if self.message is not None:
+                self.message.append(f"Screenshot is solid colour 0x{colour} for {url}\n")
 
     def run_test(self, test):
         viewport_size = test.viewport_size
         dpi = test.dpi
         page_ranges = test.page_ranges
-        color_space = test.color_space
+        color_space = getattr(test, "color_space", None)
         self.message = []
-
 
         # Depth-first search of reference tree, with the goal
         # of reachings a leaf node with only pass results
@@ -557,7 +655,16 @@ class RefTestImplementation:
                 hashes[i], screenshots[i] = data
                 urls[i] = node.url
 
-            is_pass, page_idx = self.check_pass(hashes, screenshots, urls, relation, fuzzy)
+            is_pass, page_idx = self.check_pass(hashes, screenshots, urls, relation, fuzzy, color_space=color_space)
+
+            if is_pass is None:
+                return {
+                    "status": "ERROR",
+                    "message": (
+                        f"Screenshot for {urls[0]} / {urls[1]} did not satisfy "
+                        f"the capture contract for color_space={color_space}"
+                    ),
+                }
             log_data = [
                 {"url": urls[0], "screenshot": screenshots[0][page_idx],
                  "hash": hashes[0][page_idx]},

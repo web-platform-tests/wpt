@@ -37,7 +37,7 @@ promise_test(async (t) => {
   assert_false(available);
   assert_false(lock_granted);
 
-  // Close the window, after which we should be able to acquire the lock here.
+  // Reload the window, after which we should be able to acquire the lock here.
   window.location.href = 'resources/window.html?refresh=1';
   await blocked;
   assert_true(lock_granted);

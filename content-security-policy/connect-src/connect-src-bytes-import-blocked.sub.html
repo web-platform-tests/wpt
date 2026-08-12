@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>connect-src-bytes-import-blocked</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="connect-src 'none'; script-src 'self' 'unsafe-inline';"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+
+  <body>
+    <script>
+      promise_test((t) => {
+        const url = "/html/semantics/scripting-1/the-script-element/bytes-module/file.bin";
+        const check_spv = new Promise((resolve) => {
+          window.addEventListener("securitypolicyviolation", t.step_func((e) => {
+            if (e.blockedURI.endsWith("file.bin")) {
+              assert_equals(e.effectiveDirective, "connect-src");
+              resolve();
+            }
+          }));
+        });
+
+        return Promise.all([
+          promise_rejects_js(t, TypeError, import(url, { with: { type: "bytes" } })),
+          check_spv,
+        ]);
+      }, "Import with type bytes should be blocked by connect-src");
+    </script>
+  </body>
+</html>

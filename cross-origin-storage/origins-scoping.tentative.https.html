@@ -161,5 +161,104 @@ promise_test(async t => {
   // and the storer must still be able to read its own resource.
   assert_equals(await cosReadText(hash), content);
 }, 'resource visibility upgrade: omitting origins on a later write to an already-"*" entry is a silent no-op, not an error');
+
+promise_test(async t => {
+  // §3.4's closing note: "A new site -- not only the original storer --
+  // can widen an entry's origins, as long as it also supplies bytes that
+  // hash to the entry's hash." Every other upgrade test above has the
+  // original storer perform the widening write itself; this exercises a
+  // *different* origin (B) doing so. B is neither the original storer (A)
+  // nor previously authorized to read A's same-site-scoped entry, yet its
+  // independently-supplied, byte-correct write must still widen the
+  // entry's origins to include a third origin (C) that neither A nor B
+  // could otherwise have made C aware of.
+  const content = cosUniqueContent('non-storer-widens-origins');
+  const {hash} = await cosStore(content); // same-site only; this document (A) is the storer.
+
+  const {ctx: ctxB} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN);
+  const {ctx: ctxC} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const originC = await ctxC.execute_script(() => location.origin, []);
+
+  const beforeWiden = await cosRemoteRead(ctxC, hash);
+  cosAssertNotDisclosed(beforeWiden, 'before a non-storer widens the entry, an unrelated origin (C)');
+
+  const widened = await ctxB.execute_script(async (hashArg, contentArg, originCArg) => {
+    const handle = await navigator.crossOriginStorage.requestFileHandle(
+      hashArg, {create: true, origins: [originCArg]});
+    const writable = await handle.createWritable();
+    await writable.write(new Blob([contentArg]));
+    await writable.close();
+    return true;
+  }, [hash, content, originC]);
+  assert_true(widened, "B's widening write (B is not the original storer) must succeed");
+
+  const afterWiden = await cosRemoteRead(ctxC, hash);
+  cosAssertDisclosableOrGreased(afterWiden, content,
+    'after a non-storer (B) widens the entry to include C, origin C');
+}, 'resource visibility upgrade: an origin other than the original storer can widen an entry\'s origins list, as long as it supplies the correct bytes');
+
+promise_test(async t => {
+  // origins: [] is a real, explicit empty list -- not shorthand for
+  // "omitted". Per "determine COS disclosure", an omitted/null origins
+  // value falls through to a same-site check (step 7); an explicit list,
+  // even an empty one, is checked for exact membership (step 5) and can
+  // never contain anything, so an empty list authorizes nobody but the
+  // storer -- not even a same-site sibling, unlike the omitted case tested
+  // above ("same-site tier: a same-site sibling origin is authorized").
+  const {hash, content} = await cosStore(
+    cosUniqueContent('empty-origins-list-not-same-as-omitted'), {origins: []});
+  const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN);
+  const result = await cosRemoteRead(ctx, hash);
+  cosAssertNotDisclosed(result,
+    'a same-site sibling reading an entry stored with an explicit empty origins list ([])');
+  // The storer itself must still be able to read its own write back.
+  assert_equals(await cosReadText(hash), content);
+}, 'list tier: origins: [] is a real (empty) list, not a same-site default -- a same-site sibling is not authorized under it, unlike an omitted origins value');
+
+promise_test(async t => {
+  // "validate a COS request" explicitly treats a single string as a list
+  // of one. requestFileHandle-validation.tentative.https.any.js only
+  // exercises this convenience form on a rejecting path (a malformed
+  // single string); this confirms it is equally honored on a successful
+  // create-then-read roundtrip, equivalent to passing a one-element array.
+  const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN);
+  const listOrigin = await ctx.execute_script(() => location.origin, []);
+  const {hash, content} = await cosStore(
+    cosUniqueContent('bare-string-origins-form'), {origins: listOrigin});
+  const result = await cosRemoteRead(ctx, hash);
+  cosAssertDisclosableOrGreased(result, content,
+    'an explicitly-listed origin reading a resource scoped via the bare-string origins form (not an array)');
+}, 'list tier: options.origins accepts a bare string as shorthand for a one-element array, on the success path');
+
+promise_test(async t => {
+  // "apply availability gating" step 3 exempts any origin already in
+  // storing origins from GREASE'ing, not only the original storer. The
+  // "wildcard tier: the storing origin can always read back its own
+  // resource, independent of PHL status" test above only covers the
+  // *original* storer; this covers a *second*, later-arriving origin that
+  // becomes a storing origin itself by successfully writing the identical
+  // bytes, and must thereafter also read back deterministically.
+  const content = cosUniqueContent('second-storer-wildcard-deterministic');
+  const {hash} = await cosStore(content, {origins: '*'});
+
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const wroteOwnCopy = await ctx.execute_script(async (hashArg, contentArg) => {
+    const handle = await navigator.crossOriginStorage.requestFileHandle(
+      hashArg, {create: true, origins: '*'});
+    const writable = await handle.createWritable();
+    await writable.write(new Blob([contentArg]));
+    await writable.close();
+    return true;
+  }, [hash, content]);
+  assert_true(wroteOwnCopy, "the second origin's own write must succeed");
+
+  // Having itself written the bytes, this origin is now in storing
+  // origins and must read the entry back deterministically -- unlike the
+  // "non-storer reader" test for this same tier above, no GREASE-tolerant
+  // helper is used here.
+  const result = await cosRemoteRead(ctx, hash);
+  assert_true(result.ok, 'a second storing origin must read its own contribution back deterministically');
+  assert_equals(result.text, content);
+}, 'wildcard tier: an origin that itself writes the bytes becomes a storing origin and thereafter reads deterministically, independent of PHL/GREASE\'ing');
 </script>
 </body>

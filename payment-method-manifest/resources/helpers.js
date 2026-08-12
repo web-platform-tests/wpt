@@ -4,14 +4,24 @@
  * @param {string} testId - The unique test run token.
  * @param {Object} [options] - URL configuration options.
  * @param {string|string[]} [options.link] - Custom Link header(s).
+ * @param {number} [options.hops] - Number of redirect hops.
+ * @param {string} [options.redirect_location] - Target URL for redirect.
+ * @param {string} [options.host] - Custom host (default: location.host).
  * @returns {string} Fully qualified PMI URL.
  */
 function createPaymentMethodIdentifierUrl(testId, options = {}) {
-  const url = new URL(`https://${location.host}/payment-method-manifest/resources/payment-method-identifier.py`);
+  const host = options.host || location.host;
+  const url = new URL(`https://${host}/payment-method-manifest/resources/payment-method-identifier.py`);
   url.searchParams.set('id', testId);
   if (options.link !== undefined) {
     const links = Array.isArray(options.link) ? options.link : [options.link];
     links.forEach(l => url.searchParams.append('link', l));
+  }
+  if (options.hops !== undefined) {
+    url.searchParams.set('hops', options.hops);
+  }
+  if (options.redirect_location !== undefined) {
+    url.searchParams.set('redirect_location', options.redirect_location);
   }
   return url.href;
 }
@@ -20,11 +30,18 @@ function createPaymentMethodIdentifierUrl(testId, options = {}) {
  * Creates a Payment Method Manifest URL pointing to payment-method-manifest.py.
  *
  * @param {string} testId - The unique test run token.
+ * @param {Object} [options] - URL configuration options.
+ * @param {string} [options.redirect_location] - Target URL for redirect.
+ * @param {string} [options.host] - Custom host (default: location.host).
  * @returns {string} Fully qualified manifest URL.
  */
-function createPaymentMethodManifestUrl(testId) {
-  const url = new URL(`https://${location.host}/payment-method-manifest/resources/payment-method-manifest.py`);
+function createPaymentMethodManifestUrl(testId, options = {}) {
+  const host = options.host || location.host;
+  const url = new URL(`https://${host}/payment-method-manifest/resources/payment-method-manifest.py`);
   url.searchParams.set('id', testId);
+  if (options.redirect_location !== undefined) {
+    url.searchParams.set('redirect_location', options.redirect_location);
+  }
   return url.href;
 }
 

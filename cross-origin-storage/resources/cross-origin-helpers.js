@@ -54,6 +54,27 @@ async function cosRemoteRead(ctx, hash) {
   }, [hash]);
 }
 
+// As cosRemoteRead(), but returns the SHA-256 of the retrieved bytes rather
+// than their text. Needed whenever the stored resource is binary: reading it
+// back as text is lossy, so comparing text would fail even on a byte-perfect
+// disclosure. Shaped as {ok: true, digest} or {ok: false, name, message}.
+async function cosRemoteReadDigest(ctx, hash) {
+  return ctx.execute_script(async (hash) => {
+    try {
+      const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+      const file = await handle.getFile();
+      const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+      return {
+        ok: true,
+        digest: Array.from(new Uint8Array(digest))
+          .map((b) => b.toString(16).padStart(2, '0')).join(''),
+      };
+    } catch (e) {
+      return {ok: false, name: e.name, message: e.message};
+    }
+  }, [hash]);
+}
+
 // Asserts that a read is authorized by COS entry/origins scoping (the
 // requesting origin is in scope) but tolerates the user agent electing to
 // apply GREASE'ing (https://wicg.github.io/cross-origin-storage/#greasing),

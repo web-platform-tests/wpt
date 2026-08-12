@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Web MIDI API Test: requestMIDIAccess({sysex:%%mode%%}) </title>
+    <link rel="author" title="Ryoya KAWAI" href="mailto:ryoya.kawai@gmail.com">
+    <link rel="help" href="http://webaudio.github.io/web-midi-api/#requestmidiaccess"> <!-- 4.1 -->
+    <link rel="help" href="http://webaudio.github.io/web-midi-api/#midiaccess-interface"> <!-- 5 -->
+    <meta name="assert" content="Return true when test success in requestMIDIAccess().">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="./js/mod_requestMIDIAcccess.js"></script>
+  </head>
+  <body>
+    <p id="description">Success when requestMIDIAccess({sysex:%%mode%%}) exists and MIDIAccess Interface is correctly obtained.</p>
+    <div id="log"></div>
+    <!-- PAGE CONTENT -->
+    <script type="text/javascript">
+    var test_mode=true;
+    document.title=document.title.replace("%%mode%%", test_mode);
+    document.getElementById("description").innerHTML = document.getElementById("description").innerHTML.replace("%%mode%%", test_mode);
+
+    var test_obj = async_test("requestMIDIAccess({sysex: "+test_mode+"})");
+    var test_webmidi = new mod_requestMIDIAccess(test_mode, test, test_obj);
+    test_webmidi.run_test();
+    </script>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-// https://drafts.csswg.org/css-highlight-api-1/
+// META: spec=https://drafts.csswg.org/css-highlight-api-1/
 
 "use strict";
 

@@ -169,3 +169,40 @@ promise_test(async t => {
   assert_true(file instanceof File);
   assert_equals(await file.text(), content);
 }, 'requestFileHandle() read returns a handle whose getFile() resolves to a File with the stored bytes');
+
+promise_test(async t => {
+  // §2.2's "pending writer count" note: a create()'d handle that is never
+  // written through -- createWritable() never called on it at all -- still
+  // permanently counts as an outstanding writer against the entry, exactly
+  // like an abandoned in-flight write would. This means the entry it
+  // created stays "pending" on its own; what this test confirms is that
+  // such an abandoned handle must not prevent a second, independent create
+  // request for the same hash from working normally.
+  const content = cosUniqueContent('abandoned-handle-does-not-block-others');
+  const value = await cosSha256Hex(content);
+  const hash = cosHash(value);
+
+  // Create a handle and abandon it: never call createWritable() on it.
+  const abandonedHandle = await navigator.crossOriginStorage.requestFileHandle(
+    hash, {create: true});
+  assert_true(abandonedHandle instanceof FileSystemFileHandle);
+
+  // A concurrent read while the (abandoned) writer is technically still
+  // outstanding must behave like any other pending entry: NotAllowedError,
+  // not NotFoundError -- exactly as tested for a normal in-flight write in
+  // 'a concurrent read for a hash with a pending write rejects with
+  // NotAllowedError, not NotFoundError' above.
+  await promise_rejects_dom(t, 'NotAllowedError',
+    navigator.crossOriginStorage.requestFileHandle(hash));
+
+  // A second, independent create request for the same hash must still
+  // succeed and be writable normally, unaffected by the first (abandoned)
+  // handle never being written through.
+  const handle2 = await navigator.crossOriginStorage.requestFileHandle(
+    hash, {create: true});
+  const writable2 = await handle2.createWritable();
+  await writable2.write(new Blob([content]));
+  await writable2.close();
+
+  assert_equals(await cosReadText(hash), content);
+}, 'an abandoned create() handle (createWritable() never called) does not prevent a concurrent create request for the same hash from succeeding');

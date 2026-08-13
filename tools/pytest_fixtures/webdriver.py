@@ -1,4 +1,4 @@
-# mypy: allow-untyped-defs
+# mypy: allow-untyped-defs, allow-incomplete-defs
 
 import copy
 import json
@@ -7,6 +7,35 @@ import os
 import pytest
 
 from tests.support.helpers import deep_update
+from typing import Optional
+from urllib.parse import urlencode
+
+
+BOILERPLATES = {
+    "html": "<!doctype html>\n<meta charset={charset}>\n{src}",
+    "html_quirks": "{src}",
+    "xhtml": """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>XHTML might be the future</title>
+  </head>
+
+  <body>
+    {src}
+  </body>
+</html>""",
+    "xml": """<?xml version="1.0" encoding="{charset}"?>\n{src}""",
+    "js": "{src}",
+}
+MIME_TYPES = {
+    "html": "text/html",
+    "html_quirks": "text/html",
+    "xhtml": "application/xhtml+xml",
+    "xml": "text/xml",
+    "js": "text/javascript",
+}
+
 
 @pytest.fixture(scope="session")
 def full_configuration():
@@ -45,3 +74,53 @@ def capabilities(request, default_capabilities):
         return caps
 
     return default_capabilities  # Use defaults if no marker is present
+
+
+def build_inline(build_url, src,
+                 doctype: str = "html",
+                 mime: Optional[str] = None, charset: Optional[str] = None,
+                 parameters=None, **kwargs):
+    if mime is None:
+        mime = MIME_TYPES[doctype]
+    if charset is None:
+        charset = "UTF-8"
+    if parameters is None:
+        parameters = {}
+
+    doc = BOILERPLATES[doctype].format(charset=charset, src=src)
+
+    query = {"doc": doc, "mime": mime, "charset": charset}
+    query.update(parameters)
+
+    return build_url(
+        "/webdriver/tests/support/inline.py",
+        query=urlencode(query),
+        **kwargs)
+
+
+@pytest.fixture
+def inline(url):
+    """Take a source extract and produces well-formed documents.
+
+    Based on the desired document type, the extract is embedded with
+    predefined boilerplate in order to produce well-formed documents.
+    The media type and character set may also be individually configured.
+
+    This helper function originally used data URLs, but since these
+    are not universally supported (or indeed standardised!) across
+    browsers, it now delegates the serving of the document to wptserve.
+    This file also acts as a wptserve handler (see the main function
+    below) which configures the HTTP response using query parameters.
+
+    This function returns a URL to the wptserve handler, which in turn
+    will serve an HTTP response with the requested source extract
+    inlined in a well-formed document, and the Content-Type header
+    optionally configured using the desired media type and character set.
+
+    Any additional keyword arguments are passed on to the build_url
+    function, which comes from the url fixture.
+    """
+    def inline(src, **kwargs):
+        return build_inline(url, src, **kwargs)
+
+    return inline

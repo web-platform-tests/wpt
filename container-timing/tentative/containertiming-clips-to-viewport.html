@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: painted region is clipped to the viewport</title>
+<style>
+  html, body { margin: 0; }
+  /* Wider than the test viewport (anchored at the left), so its right portion
+     paints outside the viewport and must not be counted. */
+  #wide { display: block; width: 3000px; height: 100px; }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<div id="ct" containertiming="ct">
+  <img id="wide" src="/container-timing/resources/square100.png">
+</div>
+<script>
+  async_test(function (t) {
+    assert_implements(window.PerformanceContainerTiming,
+      "PerformanceContainerTiming not implemented");
+
+    let maxSize = 0;
+    const observer = new PerformanceObserver(t.step_func(function (list) {
+      for (const entry of list.getEntries()) {
+        if (entry.identifier === 'ct') {
+          maxSize = Math.max(maxSize, entry.size);
+        }
+      }
+    }));
+    observer.observe({ entryTypes: ['container'], buffered: true });
+
+    t.step_timeout(function () {
+      assert_greater_than(maxSize, 0, "expected a container entry");
+      // The image is 3000x100 = 300,000 px^2 and extends past the viewport's
+      // right edge. Clipped to the viewport its reported size must be strictly
+      // smaller than the full image area; without clipping it would be 300,000.
+      assert_less_than(maxSize, 3000 * 100,
+        "painted size must be clipped to the viewport, got " + maxSize);
+      t.done();
+    }, 1000);
+  }, 'Container painted region is clipped to the viewport');
+</script>
+</body>

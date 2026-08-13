@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: repaints should not create duplicate entries</title>
+<body>
+<style>
+body {
+  margin: 0;
+}
+#container {
+  width: 300px;
+  height: 200px;
+}
+img {
+  width: 100px;
+  height: 100px;
+  float: left;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  async_test(function (t) {
+    assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
+
+    let entries = [];
+
+    const observer = new PerformanceObserver(
+      t.step_func(function(entryList) {
+        for (const entry of entryList.getEntries()) {
+          entries.push({
+            size: entry.size,
+            element: entry.lastPaintedElement?.tagName,
+          });
+        }
+      })
+    );
+    observer.observe({entryTypes: ['container']});
+
+    // Create container - mimicking skeleton layout structure
+    const container = document.createElement('div');
+    container.id = 'container';
+    container.setAttribute('containertiming', 'article');
+    document.body.appendChild(container);
+
+    // Add image on the left (like skeleton layout)
+    const img = document.createElement('img');
+    img.src = '/container-timing/resources/square100.png';
+    container.appendChild(img);
+
+    // Add text content on the right
+    const h2 = document.createElement('h2');
+    h2.textContent = 'Article Title';
+    container.appendChild(h2);
+
+    const p = document.createElement('p');
+    p.textContent = 'Some article content here that wraps.';
+    container.appendChild(p);
+
+    // Wait for everything to paint, then verify there are no duplicate entries.
+    t.step_timeout(() => {
+      // The container painted content, so we must have observed entries;
+      // otherwise the no-duplicate check below would pass vacuously.
+      assert_greater_than(entries.length, 0, "expected container entries");
+
+      // Count how many entries we got for each painted size.
+      const sizeCounts = {};
+      for (const e of entries) {
+        sizeCounts[e.size] = (sizeCounts[e.size] || 0) + 1;
+      }
+
+      // Build a summary string for the assertion message.
+      let summary = "Entries: ";
+      for (const e of entries) {
+        summary += e.element + "(" + e.size + ") ";
+      }
+
+      // The assertion: each unique size should appear only once.
+      for (const [size, count] of Object.entries(sizeCounts)) {
+        assert_equals(count, 1, "Size " + size + " should appear once, not " + count + " times. " + summary);
+      }
+
+      t.done();
+    }, 2000);
+
+  }, 'No duplicate sizes in container timing entries.');
+</script>
+</body>

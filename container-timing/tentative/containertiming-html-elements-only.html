@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: only an HTMLElement can be a container root</title>
+<style>
+  body { margin: 0; }
+  img, svg { display: block; width: 100px; height: 100px; }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/container-timing/resources/container-timing-helpers.js"></script>
+<body>
+<script>
+  // https://wicg.github.io/container-timing/#terminology
+  // "A container root is a HTMLElement that has the containertiming attribute."
+  // The content attribute can be set on any element via setAttribute(), but on a
+  // non-HTML element (e.g. SVG) it must not create a container root. Likewise,
+  // containertimingignore only roots an ignored subtree on an HTMLElement.
+  // A light-DOM HTML container acts as a sentinel so a broken paint pipeline
+  // can't make this test pass vacuously.
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  // Builds an HTML container root containing an SVG element, with an HTML image
+  // nested *inside* that SVG via foreignObject:
+  //   div[containertiming] > svg[containertimingignore?] > foreignObject > div > img
+  // The painting element is therefore an HTMLElement (which unambiguously
+  // contributes) sitting below the SVG, so the only thing under test is whether
+  // the SVG element affects container timing.
+  function appendRootWithNestedSvg(identifier, ignoreOnSvg) {
+    const root = document.createElement('div');
+    root.setAttribute('containertiming', identifier);
+
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('width', '100');
+    svg.setAttribute('height', '100');
+    if (ignoreOnSvg) {
+      svg.setAttribute('containertimingignore', '');
+    }
+
+    const foreignObject = document.createElementNS(SVG_NS, 'foreignObject');
+    foreignObject.setAttribute('width', '100');
+    foreignObject.setAttribute('height', '100');
+
+    const inner = document.createElement('div');
+    const img = document.createElement('img');
+    img.src = '/container-timing/resources/square100.png';
+
+    inner.appendChild(img);
+    foreignObject.appendChild(inner);
+    svg.appendChild(foreignObject);
+    root.appendChild(svg);
+    document.body.appendChild(root);
+  }
+
+  async_test(function (t) {
+    assert_implements(window.PerformanceContainerTiming,
+      "PerformanceContainerTiming not implemented");
+
+    const seen = new Set();
+    const observer = new PerformanceObserver(t.step_func(function (list) {
+      for (const entry of list.getEntries()) {
+        seen.add(entry.identifier);
+      }
+    }));
+    observer.observe({ entryTypes: ['container'], buffered: true });
+
+    // An SVG element carrying `containertiming`, with painted SVG content
+    // inside it. It is not an HTMLElement, so it must not be a container root.
+    const svgRoot = document.createElementNS(SVG_NS, 'svg');
+    svgRoot.setAttribute('containertiming', 'svg-root');
+    const svgImage = document.createElementNS(SVG_NS, 'image');
+    svgImage.setAttribute('href', '/container-timing/resources/square100.png');
+    svgImage.setAttribute('width', '100');
+    svgImage.setAttribute('height', '100');
+    svgRoot.appendChild(svgImage);
+    document.body.appendChild(svgRoot);
+
+    // The image is inside an SVG element carrying `containertimingignore`. That
+    // element is not an HTMLElement, so it does not root an ignored subtree and
+    // the image still contributes to the HTML root.
+    appendRootWithNestedSvg('html-root-with-svg-ignore', true);
+
+    // The same shape without the ignore attribute: a container root propagates
+    // *through* non-HTML elements to the HTML content below them.
+    appendRootWithNestedSvg('through-svg', false);
+
+    // Sentinel: a plain HTML container root that must report.
+    const sentinel = document.createElement('div');
+    sentinel.setAttribute('containertiming', 'sentinel');
+    const sentinelImg = document.createElement('img');
+    sentinelImg.src = '/container-timing/resources/square100.png';
+    sentinel.appendChild(sentinelImg);
+    document.body.appendChild(sentinel);
+
+    waitAfterTest(t, document.body, function () {
+      assert_true(seen.has('sentinel'),
+        "sentinel HTML container root should produce a container entry");
+      assert_false(seen.has('svg-root'),
+        "an SVG element with containertiming must not be a container root");
+      assert_true(seen.has('html-root-with-svg-ignore'),
+        "containertimingignore on a non-HTML element must not create an " +
+        "ignored subtree, so the nested image still reports to the HTML root");
+      assert_true(seen.has('through-svg'),
+        "a container root must propagate through non-HTML elements to HTML " +
+        "content below them");
+      t.done();
+    });
+  }, 'Only an HTMLElement can be a container root or ignored subtree root');
+</script>
+</body>

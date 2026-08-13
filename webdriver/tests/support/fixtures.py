@@ -1,11 +1,9 @@
-import copy
-
 import pytest
 import webdriver
 
 from urllib.parse import urlunsplit
 
-from tests.support.helpers import deep_update, is_wayland
+from tests.support.helpers import is_wayland
 from tests.support.web_extension import EXTENSION_DATA
 from tests.support.inline import build_inline
 from tests.support.http_request import HTTPRequest
@@ -37,27 +35,6 @@ def pytest_sessionfinish():
     if get_current_session() is not None:
         get_current_session().end()
         set_current_session(None)
-
-
-@pytest.fixture
-def default_capabilities():
-    """Default capabilities to use for a new WebDriver session."""
-    return {}
-
-
-@pytest.fixture
-def capabilities(request, default_capabilities):
-    """Merges default capabilities with any test-specific capabilities from a marker."""
-    marker = request.node.get_closest_marker("capabilities")
-    if marker and marker.args:
-        # Ensure the first positional argument is a dictionary
-        assert isinstance(
-            marker.args[0], dict), "capabilities marker must use a dictionary"
-        caps = copy.deepcopy(default_capabilities)
-        deep_update(caps, marker.args[0])
-        return caps
-
-    return default_capabilities  # Use defaults if no marker is present
 
 
 @pytest.fixture

@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: lastPaintedElement is the element with the biggest expansion</title>
+<style>
+  body { margin: 0; }
+  #ct { position: relative; }
+  /* #big contributes 200x200 = 40000 px^2 at the top-left. */
+  #big { position: absolute; left: 0; top: 0; width: 200px; height: 200px; }
+  /* #small contributes 50x50 = 2500 px^2, disjoint from #big and painted last. */
+  #small { position: absolute; left: 0; top: 300px; width: 50px; height: 50px; }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<div id="ct" containertiming="ct">
+  <!-- Same src so both images decode together and paint in the same frame, in
+       DOM order: #big first, then #small. Both are disjoint, so both expand the
+       region, but #big adds far more new area (40000) than #small (2500).
+       lastPaintedElement must be the element that made the biggest expansion
+       (#big), even though #small painted last. -->
+  <img id="big" src="/container-timing/resources/square100.png">
+  <img id="small" src="/container-timing/resources/square100.png">
+</div>
+<script>
+  async_test(function (t) {
+    assert_implements(window.PerformanceContainerTiming,
+      "PerformanceContainerTiming not implemented");
+
+    const entries = [];
+    const observer = new PerformanceObserver(t.step_func(function (list) {
+      for (const entry of list.getEntries()) {
+        if (entry.identifier === 'ct') {
+          entries.push(entry);
+        }
+      }
+    }));
+    observer.observe({ entryTypes: ['container'], buffered: true });
+
+    t.step_timeout(function () {
+      assert_greater_than(entries.length, 0, "expected a container entry");
+      // Once both images have painted the region covers both (40000 + 2500 =
+      // 42500 px^2). #big made the biggest expansion, so it is reported as
+      // lastPaintedElement even though #small painted last.
+      const fullEntry = entries.reduce((a, b) => (b.size > a.size ? b : a));
+      assert_equals(fullEntry.size, 42500, "expected the full painted area");
+      assert_equals(fullEntry.lastPaintedElement.id, 'big',
+        "the element with the biggest expansion (#big) must be reported, not " +
+        "the last-painted element (#small)");
+      t.done();
+    }, 1000);
+  }, 'lastPaintedElement is the element that made the biggest expansion');
+</script>
+</body>

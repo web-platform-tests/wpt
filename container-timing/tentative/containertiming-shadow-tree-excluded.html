@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: shadow-tree content does not contribute</title>
+<style>
+  body { margin: 0; }
+  img { display: block; width: 100px; height: 100px; }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+  // Only document-tree content contributes to container timing; shadow-tree
+  // content is excluded. This covers two vectors: a `containertiming` element
+  // inside a shadow root, and text rendered inside a shadow tree whose light-DOM
+  // ancestor is a container (the text must not be attributed to it). A light-DOM
+  // container acts as a sentinel to confirm the paint pipeline is running, so a
+  // broken pipeline can't make this test pass vacuously.
+  async_test(function (t) {
+    assert_implements(window.PerformanceContainerTiming,
+      "PerformanceContainerTiming not implemented");
+
+    let sawLight = false;
+    let sawShadow = false;
+    let sawShadowText = false;
+    const observer = new PerformanceObserver(t.step_func(function (list) {
+      for (const entry of list.getEntries()) {
+        if (entry.identifier === 'light') {
+          sawLight = true;
+        } else if (entry.identifier === 'shadow') {
+          sawShadow = true;
+        } else if (entry.identifier === 'shadow-text') {
+          sawShadowText = true;
+        }
+      }
+    }));
+    observer.observe({ entryTypes: ['container'], buffered: true });
+
+    // Container (with a child image) inside a shadow root: must be ignored.
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const root = host.attachShadow({ mode: 'open' });
+    const shadowContainer = document.createElement('div');
+    shadowContainer.setAttribute('containertiming', 'shadow');
+    const shadowImg = document.createElement('img');
+    shadowImg.src = '/container-timing/resources/square100.png';
+    shadowContainer.appendChild(shadowImg);
+    root.appendChild(shadowContainer);
+
+    // Light-DOM container whose only painted content is text living inside a
+    // shadow tree. The text renders within the container's box but, being
+    // shadow-tree content, must not be attributed to the container.
+    const textContainer = document.createElement('div');
+    textContainer.setAttribute('containertiming', 'shadow-text');
+    const textHost = document.createElement('div');
+    textContainer.appendChild(textHost);
+    document.body.appendChild(textContainer);
+    textHost.attachShadow({ mode: 'open' }).textContent =
+      'This shadow text must not be reported';
+
+    // Light-DOM sentinel container: this one should produce an entry.
+    const lightContainer = document.createElement('div');
+    lightContainer.setAttribute('containertiming', 'light');
+    const lightImg = document.createElement('img');
+    lightImg.src = '/container-timing/resources/square100.png';
+    lightContainer.appendChild(lightImg);
+    document.body.appendChild(lightContainer);
+
+    t.step_timeout(function () {
+      assert_true(sawLight,
+        "sentinel light-DOM container should produce a container entry");
+      assert_false(sawShadow,
+        "shadow-tree container must not produce a container entry");
+      assert_false(sawShadowText,
+        "shadow-tree text must not be attributed to a light-DOM container");
+      t.done();
+    }, 2000);
+  }, 'Shadow-tree content does not contribute to container timing');
+</script>
+</body>

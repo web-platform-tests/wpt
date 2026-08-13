@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: moveBefore preserves a container's painted region</title>
+<style>
+  body { margin: 0; }
+  #spacer { height: 300px; }
+  img { display: block; width: 100px; height: 100px; }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+  // https://wicg.github.io/container-timing/ section 6.4 empties a container's
+  // painted region when it is *connected* to the document. moveBefore() is a
+  // state-preserving atomic move: the element never leaves the document, so it
+  // is not re-registered and its painted region must be preserved (and keep
+  // accumulating) rather than reset. This is the counterpart to
+  // containertiming-reconnect-empties-region.html, which removes and re-inserts
+  // the element (a genuine reconnection) and therefore does reset.
+  async_test(function (t) {
+    assert_implements(window.PerformanceContainerTiming,
+      "PerformanceContainerTiming not implemented");
+    assert_implements(document.body.moveBefore, "moveBefore not implemented");
+
+    const spacer = document.createElement('div');
+    spacer.id = 'spacer';
+
+    const container = document.createElement('div');
+    container.setAttribute('containertiming', 'ct');
+    const img = document.createElement('img');
+    img.src = '/container-timing/resources/square100.png';
+    container.appendChild(img);
+
+    let phase = 1;
+    const afterMove = [];
+    const observer = new PerformanceObserver(t.step_func(function (list) {
+      for (const entry of list.getEntries()) {
+        if (entry.identifier !== 'ct') {
+          continue;
+        }
+        if (phase === 1) {
+          // First paint observed (image at the top, y=0..100). Atomically move
+          // the container to the end, below the 300px spacer (y=300..400), so
+          // the new paint position is disjoint from the first.
+          phase = 2;
+          document.body.moveBefore(container, null);
+          t.step_timeout(function () {
+            assert_greater_than(afterMove.length, 0,
+              "expected a container entry after moveBefore");
+            // The region is preserved across the move, so it now covers both the
+            // old and new positions: two disjoint 100x100 images = 20000 px^2.
+            // A wrongful reset on move would report only the new image (10000).
+            assert_equals(Math.max(...afterMove), 20000,
+              "moveBefore must preserve the painted region; post-move sizes " +
+              "were [" + afterMove.join(", ") + "]");
+            t.done();
+          }, 1000);
+        } else {
+          afterMove.push(entry.size);
+        }
+      }
+    }));
+    observer.observe({ entryTypes: ['container'], buffered: true });
+
+    document.body.appendChild(container);
+    document.body.appendChild(spacer);
+  }, 'moveBefore preserves a container\'s painted region');
+</script>
+</body>

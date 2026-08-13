@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: reconnecting a container empties its painted region</title>
+<style>
+  body { margin: 0; }
+  img { display: block; width: 100px; height: 100px; }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+  // https://wicg.github.io/container-timing/ section 6.4: when an element with a
+  // containertiming attribute is connected to the document, its painted region
+  // must be initialized empty. So disconnecting and reconnecting the same
+  // container must restart its region from scratch rather than accumulating the
+  // geometry it had before being removed.
+  async_test(function (t) {
+    assert_implements(window.PerformanceContainerTiming,
+      "PerformanceContainerTiming not implemented");
+
+    // The same element object is reused across the disconnect/reconnect.
+    const container = document.createElement('div');
+    container.setAttribute('containertiming', 'ct');
+    const img = document.createElement('img');
+    img.src = '/container-timing/resources/square100.png';
+    container.appendChild(img);
+
+    let phase = 1;
+    const afterReconnect = [];
+    const observer = new PerformanceObserver(t.step_func(function (list) {
+      for (const entry of list.getEntries()) {
+        if (entry.identifier !== 'ct') {
+          continue;
+        }
+        if (phase === 1) {
+          // First paint observed; now reconnect the container at a disjoint
+          // position (300px lower, so its image cannot overlap the first one).
+          phase = 2;
+          container.remove();
+          container.style.marginTop = '300px';
+          document.body.appendChild(container);
+          t.step_timeout(function () {
+            assert_greater_than(afterReconnect.length, 0,
+              "expected a container entry after reconnect");
+            // A single 100x100 image is 10000 px^2. If the region was emptied
+            // on reconnect, the post-reconnect entry reports just that. If it
+            // carried over, it unions the old + new positions (20000 px^2).
+            assert_less_than_equal(Math.max(...afterReconnect), 10000,
+              "painted region must restart empty on reconnect; post-reconnect " +
+              "sizes were [" + afterReconnect.join(", ") + "]");
+            t.done();
+          }, 1000);
+        } else {
+          afterReconnect.push(entry.size);
+        }
+      }
+    }));
+    observer.observe({ entryTypes: ['container'], buffered: true });
+
+    document.body.appendChild(container);
+  }, 'Reconnecting a container empties its painted region');
+</script>
+</body>

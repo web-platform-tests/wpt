@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: containerTiming / containerTimingIgnore attribute reflection</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<div id="el"></div>
+<script>
+  // https://wicg.github.io/container-timing/#extensions-to-element
+  // `containerTiming` reflects the `containertiming` content attribute as a
+  // DOMString; `containerTimingIgnore` reflects the `containertimingignore`
+  // content attribute as a boolean (presence-based).
+  test(function () {
+    assert_true('containerTiming' in HTMLElement.prototype,
+      'containerTiming IDL attribute is exposed');
+    assert_true('containerTimingIgnore' in HTMLElement.prototype,
+      'containerTimingIgnore IDL attribute is exposed');
+  }, 'Reflected attributes are exposed on HTMLElement');
+
+  test(function () {
+    const el = document.getElementById('el');
+
+    // Empty string when the content attribute is absent.
+    assert_equals(el.containerTiming, '', 'empty string when absent');
+
+    el.containerTiming = 'ct';
+    assert_equals(el.getAttribute('containertiming'), 'ct',
+      'setting the IDL attribute sets the content attribute');
+
+    el.setAttribute('containertiming', 'via-attr');
+    assert_equals(el.containerTiming, 'via-attr',
+      'the IDL attribute reflects the content attribute');
+  }, 'containerTiming reflects the content attribute');
+
+  test(function () {
+    const el = document.createElement('div');
+
+    // Boolean: false when the content attribute is absent.
+    assert_false(el.containerTimingIgnore, 'false when absent');
+
+    el.containerTimingIgnore = true;
+    assert_true(el.hasAttribute('containertimingignore'),
+      'setting true adds the content attribute');
+    assert_equals(el.getAttribute('containertimingignore'), '',
+      'the content attribute is set to the empty string');
+
+    el.containerTimingIgnore = false;
+    assert_false(el.hasAttribute('containertimingignore'),
+      'setting false removes the content attribute');
+
+    // Presence is what counts, whatever the value.
+    el.setAttribute('containertimingignore', 'anything');
+    assert_true(el.containerTimingIgnore,
+      'any present value reflects as true');
+
+    el.removeAttribute('containertimingignore');
+    assert_false(el.containerTimingIgnore, 'false again after removal');
+  }, 'containerTimingIgnore reflects the content attribute (boolean)');
+
+  test(function () {
+    // The reflection lives on HTMLElement, not Element, so non-HTML elements
+    // (e.g. SVG) do not expose it.
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    assert_equals(svg.containerTiming, undefined,
+      'containerTiming is not reflected on non-HTML elements');
+  }, 'Reflection is HTMLElement-only');
+</script>
+</body>

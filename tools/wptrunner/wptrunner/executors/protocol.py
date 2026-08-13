@@ -1294,6 +1294,16 @@ class DevicePostureProtocolPart(ProtocolPart):
     def clear_device_posture(self):
         pass
 
+class ConsumeUserActivationProtocolPart(ProtocolPart):
+    """Protocol part for consuming user activation"""
+    __metaclass__ = ABCMeta
+
+    name = "consume_user_activation"
+
+    @abstractmethod
+    def consume_user_activation(self):
+        pass
+
 class VirtualPressureSourceProtocolPart(ProtocolPart):
     """Protocol part for Virtual Pressure Source"""
     __metaclass__ = ABCMeta

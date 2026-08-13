@@ -13,7 +13,14 @@
 
 <map name="areamap">
   <area shape="rect" coords="0,0,15,15" href="#" alt="x" data-testname="el-area" data-expectedrole="link" class="ex">
+  <!-- 
+    GP start tentative, trying to align <area> with no href but js event associated to <a> behaviour:
+    - https://github.com/w3c/aria/pull/2863
+    - https://github.com/w3c/aria/issues/2867
+    - https://github.com/web-platform-tests/interop-accessibility/issues/245
+  -->
   <area shape="rect" coords="0,15,15,31" alt="x" data-testname="el-area-no-href[onclick]" data-expectedrole="link" class="ex" onclick="alert('test')">
+  <!-- GP end tentative -->
   <area shape="rect" coords="15,15,31,31" alt="x" data-testname="el-area-no-href" class="ex-generic">
 </map>
 <img usemap="#areamap" style="width: 32px; height: 32px;" alt="x" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">

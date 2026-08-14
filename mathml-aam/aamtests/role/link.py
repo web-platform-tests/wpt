@@ -21,7 +21,7 @@ class TestMathMLALink:
     def test_atspi(self, atspi, session, inline, test_id, test_html):
         session.url = inline(test_html)
         node = atspi.find_node("test", session.url)
-        
+
         obj_attrs = atspi.Accessible.get_attributes(node)
         assert obj_attrs.get("tag") == "a"
 
@@ -30,14 +30,14 @@ class TestMathMLALink:
             hyperlink = atspi.Accessible.get_hyperlink(node)
             assert hyperlink is not None, "hyperlink interface should be present for link role"
             assert hyperlink.get_uri(0) == "https://baidu.com/"
-            
+
         elif test_id == "mathml-link-with-onclick":
             role = atspi.Accessible.get_role(node)
             assert role == atspi.Role.LINK
-            
+
         elif test_id == "mathml-link-without-href":
             assert atspi.Accessible.get_role(node) == atspi.Role.SECTION
-            
+
         else:
             raise ValueError(f"Unreachable code: missing ATSPI assertions for {test_id}")
 
@@ -46,17 +46,17 @@ class TestMathMLALink:
         node = axapi.find_node("test", session.url)
 
         role = axapi.AXUIElementCopyAttributeValue(node, "AXRole", None)[1]
-        
+
         subrole = axapi.AXUIElementCopyAttributeValue(node, "AXSubrole", None)[1]
 
         if test_id == "mathml-link":
             assert role == "AXLink"
             assert subrole == "AXMathRow"
-            
+
         elif test_id == "mathml-link-with-onclick":
             assert role == "AXLink"
             assert subrole == "AXMathRow"
-            
+
         elif test_id == "mathml-link-without-href":
             assert role == "AXGroup"
         else:
@@ -71,16 +71,16 @@ class TestMathMLALink:
             assert ia2.get_hyperlink_interface(node) is not None
             msaa_state = ia2.get_msaa_state_list(node)
             assert "LINKED" in msaa_state
-            
+
         elif test_id == "mathml-link-with-onclick":
             assert ia2.get_role(node) == "ROLE_SYSTEM_LINK"
-            
+
         elif test_id == "mathml-link-without-href":
-            # Note: We use IA2_ROLE_SECTION here as a fallback because the strict 
+            # Note: We use IA2_ROLE_SECTION here as a fallback because the strict
             # mapping for an href-less mathml:a element is TBD in the IA2 section of MathML-AAM.
             # See: https://w3c.github.io/mathml-aam/#el-a
             assert ia2.get_role(node) == "IA2_ROLE_SECTION"
             assert ia2.get_hyperlink_interface(node) is None
-            
+
         else:
             raise ValueError(f"Unreachable code: missing IA2 assertions for {test_id}")

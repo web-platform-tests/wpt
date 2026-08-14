@@ -5,13 +5,13 @@ import pytest
 # See https://github.com/w3c/mathml-aam/issues/41
 TEST_DATA = {
     "annotation": {
-        "html": "<math><annotation id='test'>XML</annotation></math>",
+        "html": "<math><semantics><mn>2</mn><annotation id='test' encoding='application/x-tex' style='display: inline-block;'>\\text{two}</annotation></semantics></math>",
         "atspi_role": "ROLE_STATIC",
         "axapi_role": "NSAccessibilityGroupRole",
         "axapi_subrole": "AXMathText" # Not mapped, match chrome
     },
     "annotation-xml": {
-        "html": "<math><annotation-xml id='test'>XML</annotation-xml></math>",
+        "html": "<math><semantics><mn>2</mn><annotation-xml id='test' encoding='application/mathml-content+xml' style='display: inline-block;'><mtext>two</mtext></annotation-xml></semantics></math>",
         "atspi_role": "ROLE_SECTION",
         "axapi_role": "NSAccessibilityGroupRole",
         "axapi_subrole": "AXMathRow" # Not mapped, match chrome
@@ -85,7 +85,7 @@ TEST_DATA = {
     "mprescripts": {
         "html": "<math><mmultiscripts><mi>X</mi><mprescripts id='test'/></mmultiscripts></math>",
         "atspi_role": "ROLE_SECTION",
-        "axapi_role": "NSAccessibilityGroupRole", # Not mapped, match chrome 
+        "axapi_role": "NSAccessibilityGroupRole", # Not mapped, match chrome
         "axapi_subrole": "AXMathRow" # Not mapped, match chrome
     },
     "mroot": {
@@ -195,7 +195,7 @@ TEST_DATA = {
 @pytest.mark.parametrize("element_name", TEST_DATA.keys())
 def test_atspi(atspi, session, inline, element_name):
     data = TEST_DATA[element_name]
-    
+
     session.url = inline(data["html"])
     node = atspi.find_node("test", session.url)
 
@@ -224,5 +224,5 @@ def test_axapi(axapi, session, inline, element_name):
 
     subrole_result = axapi.AXUIElementCopyAttributeValue(node, "AXSubrole", None)
     actual_subrole = subrole_result[1] if (subrole_result and len(subrole_result) > 1) else None
-  
+
     assert actual_subrole == data["axapi_subrole"], f"AXSubrole mismatch for <{element_name}>. Expected '{data['axapi_subrole']}', got '{actual_subrole}'"

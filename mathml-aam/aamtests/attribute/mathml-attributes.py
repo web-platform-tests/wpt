@@ -3,10 +3,10 @@ import pytest
 
 TEST_DATA_ATTRIBUTES = {
     "annotation": {
-        "html": "<math><semantics><mn>2</mn><annotation id='test' encoding='TeX' style='display: inline-block;'>\\text{two}</annotation></semantics></math>",
+        "html": "<math><semantics><mn>2</mn><annotation id='test' encoding='application/x-tex' style='display: inline-block;'>\\text{two}</annotation></semantics></math>",
     },
     "annotation-xml": {
-        "html": "<math><semantics><mn>2</mn><annotation-xml id='test' encoding='MathML-Presentation' style='display: inline-block;'><mtext>two</mtext></annotation-xml></semantics></math>",
+        "html": "<math><semantics><mn>2</mn><annotation-xml id='test' encoding='application/mathml-content+xml' style='display: inline-block;'><mtext>two</mtext></annotation-xml></semantics></math>",
     },
     "maction": {
         "html": "<math><maction id='test' actiontype='toggle'><mn>1</mn><mn>2</mn></maction></math>",
@@ -105,7 +105,7 @@ TEST_DATA_ATTRIBUTES = {
         "html": "<math><mmultiscripts><mi>X</mi><mn>1</mn><none id='test'/></mmultiscripts></math>"
     },
     "semantics": {
-        "html": "<math><semantics id='test'><mn>5</mn><annotation encoding='TeX'>5</annotation></semantics></math>",
+        "html": "<math><semantics id='test'><mn>5</mn><annotation encoding='application/x-tex'>5</annotation></semantics></math>",
     }
 }
 
@@ -136,12 +136,12 @@ def test_axapi(axapi, session, inline, element_name):
     node = axapi.find_node("test", session.url)
 
     expected_relationships = data["axapi"]
-    
+
     for ax_attr_key, expected_dom_id in expected_relationships.items():
         attr_res = axapi.AXUIElementCopyAttributeValue(node, ax_attr_key, None)
         target_node = attr_res[1] if (attr_res and len(attr_res) > 1) else None
-        
+
         assert target_node is not None, f"Relationship attribute '{ax_attr_key}' on <{element_name}> returned None."
-        
+
         actual_dom_id = axapi.AXUIElementCopyAttributeValue(target_node, "AXDOMIdentifier", None)[1]
         assert actual_dom_id == expected_dom_id, f"Pointer '{ax_attr_key}' expected to target id '{expected_dom_id}', but got '{actual_dom_id}'"

@@ -22,7 +22,7 @@ def test_atspi(atspi, session, inline):
 
     node = atspi.find_node("test", session.url)
     assert atspi.Accessible.get_role(node) == atspi.Role.SECTION
-    
+
     obj_attrs = atspi.Accessible.get_attributes(node)
     assert obj_attrs.get("tag") == "mmultiscripts"
 
@@ -36,16 +36,16 @@ def test_axapi(axapi, session, inline):
     # AXAttributes: AXMathPostscripts, AXMathPrescripts
 
     node = axapi.find_node("test", session.url)
-    
+
     role = axapi.AXUIElementCopyAttributeValue(node, "AXRole", None)[1]
     assert role == "AXGroup"
-    
+
     subrole = axapi.AXUIElementCopyAttributeValue(node, "AXSubrole", None)[1]
     assert subrole == "AXMathMultiscript"
 
     postscripts = axapi.AXUIElementCopyAttributeValue(node, "AXMathPostscripts", None)[1]
     post_pair = postscripts[0]
-    
+
     sub_node = post_pair.get("AXMathSubscript")
     sup_node = post_pair.get("AXMathSuperscript")
     assert axapi.AXUIElementCopyAttributeValue(sub_node, "AXDOMIdentifier", None)[1] == "sub"
@@ -53,7 +53,7 @@ def test_axapi(axapi, session, inline):
 
     prescripts = axapi.AXUIElementCopyAttributeValue(node, "AXMathPrescripts", None)[1]
     pre_pair = prescripts[0]
-    
+
     presub_node = pre_pair.get("AXMathSubscript")
     presup_node = pre_pair.get("AXMathSuperscript")
     assert axapi.AXUIElementCopyAttributeValue(presub_node, "AXDOMIdentifier", None)[1] == "presub"

@@ -1,7 +1,7 @@
 import sys
 
 import pytest
-from tests.support.helpers import deep_update
+from pytest_fixtures.webdriver import deep_update
 
 
 @pytest.fixture

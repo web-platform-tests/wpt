@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+import collections
 import copy
 import json
 import os
@@ -11,7 +12,6 @@ import webdriver
 
 import tests.support.fixtures as global_fixtures
 from tests.support import defaults
-from tests.support.helpers import deep_update
 from typing import Optional
 from urllib.parse import urlencode
 
@@ -67,6 +67,23 @@ def full_configuration():
 def default_capabilities():
     """Default capabilities to use for a new WebDriver session."""
     return {}
+
+
+def deep_update(source, overrides):
+    """
+    Update a nested dictionary or similar mapping.
+    Modify ``source`` in place.
+    """
+    for key, value in overrides.items():
+        if isinstance(value, collections.abc.Mapping) and value:
+            source[key] = deep_update(source.get(key, {}), value)
+        elif isinstance(value, list) and isinstance(source.get(key), list) and value:
+            # Concatenate lists, ensuring all elements are kept without duplicates
+            source[key] = list(dict.fromkeys(source[key] + value))
+        else:
+            source[key] = value
+
+    return source
 
 
 @pytest.fixture

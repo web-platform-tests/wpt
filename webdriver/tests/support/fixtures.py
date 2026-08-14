@@ -1,22 +1,9 @@
 import pytest
-import webdriver
 
 from tests.support.helpers import is_wayland
 from tests.support.web_extension import EXTENSION_DATA
 from tests.support.http_request import HTTPRequest
 from tests.support.keys import Keys
-
-# The webdriver session can outlive a pytest session
-_current_session = None
-
-
-def get_current_session():
-    return _current_session
-
-
-def set_current_session(session):
-    global _current_session
-    _current_session = session
 
 
 def pytest_configure(config):
@@ -27,35 +14,9 @@ def pytest_configure(config):
     )
 
 
-def pytest_sessionfinish():
-    # Cleanup at the end of a test run
-    if get_current_session() is not None:
-        get_current_session().end()
-        set_current_session(None)
-
-
 @pytest.fixture
 def http(configuration):
     return HTTPRequest(configuration["host"], configuration["port"])
-
-
-async def reset_current_session_if_necessary(caps):
-    # If there is a session with different requested capabilities active than
-    # the one we would like to create, end it now.
-    session = get_current_session()
-    if session is not None:
-        if not session.match(caps):
-            is_bidi = isinstance(session, webdriver.BidiSession)
-            if is_bidi:
-                await session.end()
-            else:
-                session.end()
-            set_current_session(None)
-
-
-@pytest.fixture(scope="function")
-def current_session():
-    return get_current_session()
 
 
 @pytest.fixture

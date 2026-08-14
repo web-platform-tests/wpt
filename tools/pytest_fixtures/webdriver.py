@@ -6,6 +6,7 @@ import json
 import os
 
 import pytest
+import webdriver
 
 from typing import Optional
 from urllib.parse import urlencode
@@ -36,6 +37,44 @@ MIME_TYPES = {
     "xml": "text/xml",
     "js": "text/javascript",
 }
+
+# The webdriver session can outlive a pytest session
+_current_session = None
+
+
+def pytest_sessionfinish():
+    # Cleanup at the end of a test run
+    if get_current_session() is not None:
+        get_current_session().end()
+        set_current_session(None)
+
+
+def get_current_session():
+    return _current_session
+
+
+def set_current_session(session):
+    global _current_session
+    _current_session = session
+
+
+async def reset_current_session_if_necessary(caps):
+    # If there is a session with different requested capabilities active than
+    # the one we would like to create, end it now.
+    session = get_current_session()
+    if session is not None:
+        if not session.match(caps):
+            is_bidi = isinstance(session, webdriver.BidiSession)
+            if is_bidi:
+                await session.end()
+            else:
+                session.end()
+            set_current_session(None)
+
+
+@pytest.fixture(scope="function")
+def current_session():
+    return get_current_session()
 
 
 @pytest.fixture(scope="session")

@@ -6,9 +6,11 @@ import sys
 import pytest_asyncio
 import webdriver
 
-import tests.support.fixtures as global_fixtures
 from tests.support import defaults
 from .webdriver import deep_update
+from .webdriver import get_current_session
+from .webdriver import reset_current_session_if_necessary
+from .webdriver import set_current_session
 
 SCRIPT_TIMEOUT = 1
 PAGE_LOAD_TIMEOUT = 3
@@ -30,16 +32,16 @@ async def session(capabilities, configuration):
     deep_update(caps, capabilities)
     caps = {"alwaysMatch": caps}
 
-    await global_fixtures.reset_current_session_if_necessary(caps)
+    await reset_current_session_if_necessary(caps)
 
-    if global_fixtures.get_current_session() is None:
-        global_fixtures.set_current_session(webdriver.Session(
+    if get_current_session() is None:
+        set_current_session(webdriver.Session(
             configuration["host"],
             configuration["port"],
             capabilities=caps))
 
     try:
-        session = global_fixtures.get_current_session()
+        session = get_current_session()
         session.start()
 
         # Enforce a fixed default window size and position
@@ -59,7 +61,7 @@ async def session(capabilities, configuration):
 
     except Exception:
         # Make sure we end up in a known state if something goes wrong.
-        global_fixtures.get_current_session().end()
+        get_current_session().end()
         raise
 
 

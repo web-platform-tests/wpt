@@ -10,7 +10,6 @@ import pytest
 import pytest_asyncio
 import webdriver
 
-import tests.support.fixtures as global_fixtures
 from tests.support import defaults
 from typing import Optional
 from urllib.parse import urlencode
@@ -44,6 +43,44 @@ MIME_TYPES = {
     "xml": "text/xml",
     "js": "text/javascript",
 }
+
+# The webdriver session can outlive a pytest session
+_current_session = None
+
+
+def pytest_sessionfinish():
+    # Cleanup at the end of a test run
+    if get_current_session() is not None:
+        get_current_session().end()
+        set_current_session(None)
+
+
+def get_current_session():
+    return _current_session
+
+
+def set_current_session(session):
+    global _current_session
+    _current_session = session
+
+
+async def reset_current_session_if_necessary(caps):
+    # If there is a session with different requested capabilities active than
+    # the one we would like to create, end it now.
+    session = get_current_session()
+    if session is not None:
+        if not session.match(caps):
+            is_bidi = isinstance(session, webdriver.BidiSession)
+            if is_bidi:
+                await session.end()
+            else:
+                session.end()
+            set_current_session(None)
+
+
+@pytest.fixture(scope="function")
+def current_session():
+    return get_current_session()
 
 
 @pytest.fixture(scope="session")
@@ -195,16 +232,16 @@ async def session(capabilities, configuration):
     deep_update(caps, capabilities)
     caps = {"alwaysMatch": caps}
 
-    await global_fixtures.reset_current_session_if_necessary(caps)
+    await reset_current_session_if_necessary(caps)
 
-    if global_fixtures.get_current_session() is None:
-        global_fixtures.set_current_session(webdriver.Session(
+    if get_current_session() is None:
+        set_current_session(webdriver.Session(
             configuration["host"],
             configuration["port"],
             capabilities=caps))
 
     try:
-        session = global_fixtures.get_current_session()
+        session = get_current_session()
         session.start()
 
         # Enforce a fixed default window size and position
@@ -224,7 +261,7 @@ async def session(capabilities, configuration):
 
     except Exception:
         # Make sure we end up in a known state if something goes wrong.
-        global_fixtures.get_current_session().end()
+        get_current_session().end()
         raise
 
 

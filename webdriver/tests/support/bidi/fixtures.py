@@ -28,12 +28,12 @@ from webdriver.bidi.modules.script import ContextTarget
 from webdriver.bidi.undefined import UNDEFINED
 from webdriver.error import TimeoutException
 
+from pytest_fixtures import webdriver_defaults as defaults
 from pytest_fixtures.webdriver import cleanup_session
 from pytest_fixtures.webdriver import deep_update
 from pytest_fixtures.webdriver import get_current_session
 from pytest_fixtures.webdriver import reset_current_session_if_necessary
 from pytest_fixtures.webdriver import set_current_session
-from tests.support import defaults
 from tests.support.asserts import assert_pdf
 from tests.support.image import cm_to_px, png_dimensions, ImageDifference
 from tests.support.sync import AsyncPoll

@@ -10,7 +10,7 @@ import pytest
 import pytest_asyncio
 import webdriver
 
-from tests.support import defaults
+from pytest_fixtures import webdriver_defaults as defaults
 from typing import Optional
 from urllib.parse import urlencode
 from urllib.parse import urlunsplit

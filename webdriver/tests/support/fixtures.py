@@ -41,11 +41,6 @@ def http(configuration):
     return HTTPRequest(configuration["host"], configuration["port"])
 
 
-@pytest.fixture(scope="session")
-def server_config(full_configuration):
-    return full_configuration["wptserve"]
-
-
 async def reset_current_session_if_necessary(caps):
     # If there is a session with different requested capabilities active than
     # the one we would like to create, end it now.

@@ -55,6 +55,18 @@ def full_configuration():
         return json.load(f)
 
 
+@pytest.fixture(scope="session")
+def configuration(full_configuration):
+    """Configuation minus server config.
+
+    This makes logging easier to read."""
+
+    config = full_configuration.copy()
+    del config["wptserve"]
+
+    return config
+
+
 @pytest.fixture
 def default_capabilities():
     """Default capabilities to use for a new WebDriver session."""

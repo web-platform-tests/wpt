@@ -46,18 +46,6 @@ def server_config(full_configuration):
     return full_configuration["wptserve"]
 
 
-@pytest.fixture(scope="session")
-def configuration(full_configuration):
-    """Configuation minus server config.
-
-    This makes logging easier to read."""
-
-    config = full_configuration.copy()
-    del config["wptserve"]
-
-    return config
-
-
 async def reset_current_session_if_necessary(caps):
     # If there is a session with different requested capabilities active than
     # the one we would like to create, end it now.

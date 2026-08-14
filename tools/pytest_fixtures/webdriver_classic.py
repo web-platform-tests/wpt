@@ -6,11 +6,12 @@ import sys
 import pytest_asyncio
 import webdriver
 
-from tests.support import defaults
+from . import webdriver_defaults as defaults
 from .webdriver import deep_update
 from .webdriver import get_current_session
 from .webdriver import reset_current_session_if_necessary
 from .webdriver import set_current_session
+
 
 SCRIPT_TIMEOUT = 1
 PAGE_LOAD_TIMEOUT = 3

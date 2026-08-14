@@ -25,3 +25,4 @@ test(() => {
   assert_throws_js(TypeError, () => result.value = '');
   assert_equals(result.value, 'lemon', 'value does not change');
 }, 'Updating CSSKeywordValue.value with an empty string throws a TypeError');
+

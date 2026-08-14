@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>text-box-trim: metrics falling outside a short line box move the content edges outward</title>
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#text-box-trim">
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#text-box-edge">
+<link rel="author" title="Jake Archibald" href="mailto:jarchibald@mozilla.com">
+<link rel="match" href="text-box-trim-negative-half-leading-004-ref.html">
+<link rel="stylesheet" href="/fonts/baseline-diagnostic/baseline-diagnostic-font.css">
+<meta charset="utf-8">
+<meta name="assert" content="When the specified text-box-edge metric falls outside the corresponding edge of the line box, the content edge moves outward to match that metric, increasing the logical height of the box. The trimmed box is exactly the distance between the two specified metrics.">
+<style>
+.spacer {
+  background: lightgray;
+  block-size: 50px;
+}
+.target {
+  /* Ahem-style arithmetic, in px, for a 100px font size:
+       content area:   100px (80px ascent + 20px descent)
+       line box:        20px, so the half-leading is (20 - 100) / 2 = -40px
+       cap-height:      55px above the alphabetic baseline
+     The baseline sits 40px below the line box's block-start edge, so the
+     cap-height metric is 15px above it, and the alphabetic baseline is 20px
+     below the line box's block-end edge. Both metrics fall outside the line
+     box, so trimming grows the content box to 15 + 20 + 20 = 55px, which is
+     exactly the cap-height-to-alphabetic distance. */
+  font: 100px/20px BaselineDiagnosticAlphabeticZero;
+  background: yellow;
+  color: green;
+  text-box: trim-both cap alphabetic;
+}
+</style>
+<div class="spacer"></div>
+<div class="target">B</div>
+<div class="spacer"></div>

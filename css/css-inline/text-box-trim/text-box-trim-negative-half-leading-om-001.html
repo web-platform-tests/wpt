@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<title>text-box-trim: negative half-leading increases the logical height of the box</title>
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#text-box-trim">
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#text-box-edge">
+<link rel="author" title="Jake Archibald" href="mailto:jarchibald@mozilla.com">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<meta name="assert" content="Trimming negative half-leading grows the box: with Ahem's 1em `text` metrics and a 0.5em line-height, each side has -0.25em of half-leading, so trim-start, trim-end and trim-both grow the box by 0.25em, 0.25em and 0.5em respectively.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+.container {
+  /* Ahem's ascent is 0.8em and its descent is 0.2em, so the `text` metrics
+     are 1em apart. With a line-height of 0.5em the half-leading is -25px on
+     each side. */
+  font: 100px/50px Ahem;
+  text-box-edge: text;
+}
+.spacer {
+  background: lightgray;
+  block-size: 100px;
+}
+.none .target { text-box-trim: none; }
+.start .target { text-box-trim: trim-start; }
+.end .target { text-box-trim: trim-end; }
+.both .target { text-box-trim: trim-both; }
+</style>
+
+<div class="container none">
+  <div class="spacer"></div>
+  <div class="target">X</div>
+  <div class="spacer"></div>
+</div>
+<div class="container start">
+  <div class="spacer"></div>
+  <div class="target">X</div>
+  <div class="spacer"></div>
+</div>
+<div class="container end">
+  <div class="spacer"></div>
+  <div class="target">X</div>
+  <div class="spacer"></div>
+</div>
+<div class="container both">
+  <div class="spacer"></div>
+  <div class="target">X</div>
+  <div class="spacer"></div>
+</div>
+
+<script>
+// [class name, expected block size of the box]
+const cases = [
+  ['none', 50],
+  ['start', 75],
+  ['end', 75],
+  ['both', 100],
+];
+
+function run_tests() {
+  for (const [name, blockSize] of cases) {
+    const container = document.querySelector(`.container.${name}`);
+    const containerRect = container.getBoundingClientRect();
+    const target = container.querySelector('.target');
+    const targetRect = target.getBoundingClientRect();
+    const trailingSpacer = container.querySelector('.spacer:last-child');
+
+    test(() => {
+      assert_equals(targetRect.height, blockSize);
+    }, `${name}: block size of the box`);
+
+    test(() => {
+      // The box is in flow after a 100px spacer, so its block-start edge is
+      // 100px into the container regardless of trimming.
+      assert_equals(targetRect.top - containerRect.top, 100);
+    }, `${name}: block-start edge of the box`);
+
+    test(() => {
+      // Trimming negative half-leading grows the box, which pushes the
+      // following content along.
+      const trailingSpacerRect = trailingSpacer.getBoundingClientRect();
+      assert_equals(trailingSpacerRect.top - targetRect.top, blockSize);
+    }, `${name}: block-start edge of the following content`);
+
+    test(() => {
+      assert_equals(containerRect.height, 200 + blockSize);
+    }, `${name}: block size of the containing block`);
+  }
+}
+
+setup({explicit_done: true});
+document.fonts.ready.then(() => {
+  run_tests();
+  done();
+});
+</script>

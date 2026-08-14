@@ -8,7 +8,7 @@ import webdriver
 
 import tests.support.fixtures as global_fixtures
 from tests.support import defaults
-from tests.support.helpers import deep_update
+from .webdriver import deep_update
 
 SCRIPT_TIMEOUT = 1
 PAGE_LOAD_TIMEOUT = 3

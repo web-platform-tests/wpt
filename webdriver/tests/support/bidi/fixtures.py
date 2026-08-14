@@ -29,10 +29,10 @@ from webdriver.bidi.undefined import UNDEFINED
 from webdriver.error import TimeoutException
 
 from pytest_fixtures.webdriver_classic import cleanup_session
+from pytest_fixtures.webdriver import deep_update
 import tests.support.fixtures as global_fixtures
 from tests.support import defaults
 from tests.support.asserts import assert_pdf
-from tests.support.helpers import deep_update
 from tests.support.image import cm_to_px, png_dimensions, ImageDifference
 from tests.support.sync import AsyncPoll
 

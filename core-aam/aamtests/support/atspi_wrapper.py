@@ -61,19 +61,19 @@ class AtspiWrapper(ApiWrapper[Atspi.Accessible]):
         :returns: An interface object returned by corresponding Accessible API.
         """
         interface_map = {
-            # NOTE: Please add new ATK/ATSPI interfaces and their corresponding 
+            # NOTE: Please add new ATK/ATSPI interfaces and their corresponding
             # Accessible API functions here as needed for testing.
             "AtkTable": Atspi.Accessible.get_table_iface,
             "AtkTableCell": Atspi.Accessible.get_table_cell,
         }
-        
+
         if interface_name not in interface_map:
             raise ValueError(
                 f"Unknown or unsupported interface: '{interface_name}'. "
                 f"If this is a valid interface, please register it in the "
                 f"`interface_map` inside `atspi_wrapper.py`."
             )
-            
+
         get_interface_fn = interface_map[interface_name]
         return get_interface_fn(node)
 

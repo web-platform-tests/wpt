@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>margin-trim: block trims negative descendant margins collapsed with the trimmed margins</title>
+<link rel="author" title="Jake Archibald" href="mailto:jarchibald@mozilla.com">
+<link rel="help" href="https://drafts.csswg.org/css-box-4/#margin-trim-block">
+<link rel="match" href="block-container-block-negative-margin-nested-ref.html">
+<meta name="assert" content="block should trim negative descendant margins that collapse with the margins adjacent to the container's block edges">
+<style>
+container {
+    display: block;
+    inline-size: 100px;
+    border: 5px solid black;
+    margin-trim: block;
+}
+wrapper {
+    display: block;
+}
+item {
+    display: block;
+    background-color: green;
+    block-size: 50px;
+    margin-block: -20px;
+}
+</style>
+</head>
+<body>
+<container>
+    <wrapper>
+        <item></item>
+    </wrapper>
+</container>
+</body>
+</html>

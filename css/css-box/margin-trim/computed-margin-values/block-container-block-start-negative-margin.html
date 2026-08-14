@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>margin-trim: negative block-start margins are trimmed at the block-start edge</title>
+<link rel="author" title="Jake Archibald" href="mailto:jarchibald@mozilla.com">
+<link rel="help" href="https://drafts.csswg.org/css-box-4/#margin-trim-block">
+<meta name="assert" content="A negative block-start margin on the first block-level child is truncated to zero, while a negative block-start margin that is not adjacent to the container's block-start edge is left alone">
+<style>
+container {
+    display: block;
+    inline-size: min-content;
+    border: 1px solid black;
+    margin-trim: block-start;
+}
+item {
+    display: block;
+    background-color: green;
+    inline-size: 50px;
+    block-size: 50px;
+    margin-block-start: -20px;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+</head>
+<body onload="checkLayout('#target')">
+    <div id="target">
+        <container>
+            <item data-expected-margin-top="0"></item>
+            <item data-expected-margin-top="-20"></item>
+        </container>
+    </div>
+</body>
+</html>

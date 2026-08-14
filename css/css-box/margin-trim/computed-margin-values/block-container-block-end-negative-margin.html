@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>margin-trim: negative block-end margins are trimmed at the block-end edge</title>
+<link rel="author" title="Jake Archibald" href="mailto:jarchibald@mozilla.com">
+<link rel="help" href="https://drafts.csswg.org/css-box-4/#margin-trim-block">
+<meta name="assert" content="A negative block-end margin on the last block-level child is truncated to zero, while a negative block-end margin that is not adjacent to the container's block-end edge is left alone">
+<style>
+container {
+    display: block;
+    inline-size: min-content;
+    border: 1px solid black;
+    margin-trim: block-end;
+}
+item {
+    display: block;
+    background-color: green;
+    inline-size: 50px;
+    block-size: 50px;
+    margin-block-end: -20px;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+</head>
+<body onload="checkLayout('#target')">
+    <div id="target">
+        <container>
+            <item data-expected-margin-bottom="-20"></item>
+            <item data-expected-margin-bottom="0"></item>
+        </container>
+    </div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>margin-trim: block trims negative descendant margins collapsed with the trimmed margins</title>
+<link rel="author" title="Jake Archibald" href="mailto:jarchibald@mozilla.com">
+<link rel="help" href="https://drafts.csswg.org/css-box-4/#margin-trim-block">
+<style>
+container {
+    display: block;
+    inline-size: 100px;
+    border: 5px solid black;
+}
+wrapper {
+    display: block;
+}
+item {
+    display: block;
+    background-color: green;
+    block-size: 50px;
+}
+</style>
+</head>
+<body>
+<container>
+    <wrapper>
+        <item></item>
+    </wrapper>
+</container>
+</body>
+</html>

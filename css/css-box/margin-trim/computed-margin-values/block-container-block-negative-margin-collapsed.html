@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>margin-trim: descendant margins collapsing to a negative value are trimmed</title>
+<link rel="author" title="Jake Archibald" href="mailto:jarchibald@mozilla.com">
+<link rel="help" href="https://drafts.csswg.org/css-box-4/#margin-trim-block">
+<meta name="assert" content="Margins collapsed with the margins adjacent to the container's block edges are truncated to zero whether the collapsed result is positive or negative, but the container's own margins are not trimmed">
+<style>
+container {
+    display: block;
+    inline-size: min-content;
+    border: 1px solid black;
+    margin-trim: block;
+    margin-block: -30px;
+}
+wrapper {
+    display: block;
+}
+item {
+    display: block;
+    background-color: green;
+    inline-size: 50px;
+    block-size: 50px;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+</head>
+<body onload="checkLayout('#target')">
+    <div id="target">
+        <container data-expected-margin-top="-30"
+                   data-expected-margin-bottom="-30">
+            <wrapper data-expected-margin-top="0" style="margin-block-start: 20px">
+                <item data-expected-margin-top="0" style="margin-block-start: -50px"></item>
+            </wrapper>
+            <wrapper data-expected-margin-bottom="0" style="margin-block-end: -50px">
+                <item data-expected-margin-bottom="0" style="margin-block-end: 20px"></item>
+            </wrapper>
+        </container>
+    </div>
+</body>
+</html>

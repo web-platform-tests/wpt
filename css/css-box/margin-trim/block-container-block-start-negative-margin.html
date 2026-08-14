@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>margin-trim: block-start trims a negative block-start margin</title>
+<link rel="author" title="Jake Archibald" href="mailto:jarchibald@mozilla.com">
+<link rel="help" href="https://drafts.csswg.org/css-box-4/#margin-trim-block">
+<link rel="match" href="block-container-block-start-negative-margin-ref.html">
+<meta name="assert" content="block-start should trim the block-start margin of the first block-level child whether it is positive or negative">
+<style>
+container {
+    display: block;
+    inline-size: 100px;
+    border: 5px solid black;
+    margin-trim: block-start;
+}
+item {
+    display: block;
+    background-color: green;
+    block-size: 50px;
+    margin-block-start: -20px;
+}
+</style>
+</head>
+<body>
+<container>
+    <item></item>
+</container>
+</body>
+</html>

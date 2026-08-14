@@ -75,6 +75,11 @@ def configuration(full_configuration):
     return config
 
 
+@pytest.fixture(scope="session")
+def server_config(full_configuration):
+    return full_configuration["wptserve"]
+
+
 @pytest.fixture
 def default_capabilities():
     """Default capabilities to use for a new WebDriver session."""

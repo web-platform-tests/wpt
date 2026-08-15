@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8">
+<title>ruby-merge: auto, line break (v)</title>
+<meta name="assert" content="When a line break occurs between base characters while applying ruby-merge:auto, ruby annotations are kept together with their respective ruby bases.">
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="http://www.w3.org/TR/css-ruby-1/#collapsed-ruby">
+<link rel="help" href="https://drafts.csswg.org/css-ruby-1/#collapsed-ruby">
+<style type="text/css">
+.test { margin: 20px;  padding: 40px; font-size: 110px; height: 200px; }
+rt { color: blue; }
+rt#middle { color: #b1d7fe; }
+</style>
+<style type="text/css">/* this is the test */
+.test { -webkit-writing-mode: vertical-lr; writing-mode: tb-rl; writing-mode: vertical-rl; }
+ruby { ruby-merge: auto; }
+</style>
+</head>
+<body>
+<p class="instructions">Skip if the text is not vertical.<br/>Test passes if the text is vertical and the first base character is associated with 1 annotation character; the second with 3; and the last with 1.</p>
+<div class="test" lang="ja"><ruby><rb>思</rb><rt>し</rt><rb>春</rb><rt id="middle">しゅん</rt><rb>期</rb><rt>き</rt></ruby></div>
+<!-- Notes:
+This test doesn't give a reliable result if ruby-merge: auto doesn't merge annotation characters without a line break (ie. if ruby-merge-auto-001 fails).
+-->
+</body>
+</html>

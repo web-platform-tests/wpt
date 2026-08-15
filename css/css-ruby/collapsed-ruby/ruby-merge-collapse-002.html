@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8">
+<title>ruby-merge: collapse, line break</title>
+<meta name="assert" content="When a line break occurs between base characters while applying ruby-merge:collapse, ruby annotations are kept together with their respective ruby bases.">
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="http://www.w3.org/TR/css-ruby-1/#collapsed-ruby">
+<link rel="help" href="https://drafts.csswg.org/css-ruby-1/#collapsed-ruby">
+<style type="text/css">
+.test { margin: 20px;  padding: 40px; font-size: 110px; width: 200px; }
+rt { color: blue; }
+rt#middle { color: #b1d7fe; }
+/* the CSS above is not part of the test */
+ruby { ruby-merge: collapse; }
+</style>
+</head>
+<body>
+<p class="instructions">Test passes if the first base character is associated with 1 annotation character; the second with 3; and the last with 1.</p>
+<div class="test" lang="ja"><ruby><rb>思</rb><rt>し</rt><rb>春</rb><rt id="middle">しゅん</rt><rb>期</rb><rt>き</rt></ruby></div>
+<!-- Notes:
+This test doesn't give a reliable result if ruby-merge: collapse doesn't merge annotation characters without a line break (ie. if ruby-merge-collapse-001 fails).
+-->
+</body>
+</html>

@@ -89,7 +89,7 @@ promise_test(async t => {
   `;
   t.add_cleanup(() => style.remove());
   document.head.appendChild(style);
-  await promise_rejects_js(t, DOMException, document.fonts.load(`16px "${family}"`));
+  await promise_rejects_dom(t, 'NetworkError', document.fonts.load(`16px "${family}"`));
   assert_false(document.fonts.check(`16px "${family}"`));
 }, 'declarative CSS: a cross-origin-storage() font whose bytes do not match integrity() fails to load');
 
@@ -119,7 +119,7 @@ promise_test(async t => {
   `;
   t.add_cleanup(() => style2.remove());
   document.head.appendChild(style2);
-  await promise_rejects_js(t, DOMException, document.fonts.load(`16px "${family2}"`));
+  await promise_rejects_dom(t, 'NetworkError', document.fonts.load(`16px "${family2}"`));
   assert_false(document.fonts.check(`16px "${family2}"`),
     'without cross-origin-storage(), a broken-URL font must not be rescued from COS');
 }, 'declarative CSS: omitting cross-origin-storage() preserves ordinary integrity() behavior with no COS participation');

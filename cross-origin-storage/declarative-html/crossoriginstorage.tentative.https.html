@@ -73,8 +73,14 @@ function appendScript(t, {src, integrity, crossoriginstorage}) {
 promise_test(async t => {
   // Reset the marker between tests that use it.
   document.getElementById('cos-html-marker').style.color = '';
-  await appendLink(t, {href: REAL_CSS_URL, integrity: cssIntegrity, crossoriginstorage: ''});
+  const realLink = await appendLink(t, {href: REAL_CSS_URL, integrity: cssIntegrity, crossoriginstorage: ''});
   assert_equals(markerColor(), 'rgb(1, 2, 3)', 'the real stylesheet applied');
+
+  // Dropped before the second load: its rules apply for as long as it is in
+  // the document, and t.add_cleanup() only runs once the whole test is over,
+  // so leaving it would satisfy the assertion below on its own.
+  realLink.remove();
+  assert_not_equals(markerColor(), 'rgb(1, 2, 3)', 'the marker resets once the first stylesheet is gone');
 
   await appendLink(t, {href: BROKEN_CSS_URL, integrity: cssIntegrity, crossoriginstorage: ''});
   // The second <link>'s href is broken; success is only possible if this
@@ -95,16 +101,21 @@ promise_test(async t => {
 
 promise_test(async t => {
   document.getElementById('cos-html-marker').style.color = '';
-  await appendLink(t, {href: REAL_CSS_URL, integrity: cssIntegrity, crossoriginstorage: '*'});
+  const realLink = await appendLink(t, {href: REAL_CSS_URL, integrity: cssIntegrity, crossoriginstorage: '*'});
+  realLink.remove();
+  assert_not_equals(markerColor(), 'rgb(1, 2, 3)', 'the marker resets once the first stylesheet is gone');
   await appendLink(t, {href: BROKEN_CSS_URL, integrity: cssIntegrity, crossoriginstorage: '*'});
   assert_equals(markerColor(), 'rgb(1, 2, 3)', 'a wildcard-scoped <link> served from COS on the second request');
 }, 'declarative HTML: crossoriginstorage="*" opts a <link> into COS');
 
 promise_test(async t => {
-  await appendLink(t, {
+  document.getElementById('cos-html-marker').style.color = '';
+  const realLink = await appendLink(t, {
     href: REAL_CSS_URL, integrity: cssIntegrity,
     crossoriginstorage: location.origin,
   });
+  realLink.remove();
+  assert_not_equals(markerColor(), 'rgb(1, 2, 3)', 'the marker resets once the first stylesheet is gone');
   await appendLink(t, {
     href: BROKEN_CSS_URL, integrity: cssIntegrity,
     crossoriginstorage: location.origin,
@@ -128,10 +139,16 @@ promise_test(async t => {
   // integrity but no crossoriginstorage attribute must fail to load exactly
   // like ordinary integrity-checked resource loading without COS.
   document.getElementById('cos-html-marker').style.color = '';
-  await appendLink(t, {href: REAL_CSS_URL, integrity: cssIntegrity});
+  const realLink = await appendLink(t, {href: REAL_CSS_URL, integrity: cssIntegrity});
   assert_equals(markerColor(), 'rgb(1, 2, 3)', 'the real stylesheet still applies without crossoriginstorage');
 
-  document.getElementById('cos-html-marker').style.color = '';
+  // Without this the check below holds no matter what the second <link> does:
+  // clearing the inline style does not stop the first <link>'s rules from
+  // applying, and t.add_cleanup() has not run yet.
+  realLink.remove();
+  assert_not_equals(markerColor(), 'rgb(1, 2, 3)',
+    'the marker must reset once the first stylesheet is gone, or the check below proves nothing');
+
   await promise_rejects_js(t, Error, appendLink(t, {href: BROKEN_CSS_URL, integrity: cssIntegrity}));
   assert_not_equals(markerColor(), 'rgb(1, 2, 3)',
     'without crossoriginstorage, a broken-href <link> must not be rescued from COS');

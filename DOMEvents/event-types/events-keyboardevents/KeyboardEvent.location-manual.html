@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>KeyboardEvent.location</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+async_test(function() {
+  var event = "keydown";
+  var expected = ["a", 0, "Control", 1, "Shift", 2];
+  var actual = [];
+
+  window.onload = this.step_func(function() {
+    var target = document.getElementById("target");
+    target.addEventListener(event, this.step_func(function test_event(e) {
+      actual.push(e.key, e.location);
+
+      if (e.type == event && e.key == "Shift") {
+        assert_array_equals(actual, expected);
+        target.removeEventListener(event, test_event, true);
+        this.done();
+      }
+    }), true);
+  });
+});
+</script>
+
+<p>KeyboardEvent.location attribute contains an indication of the location of
+the key on the device.</p>
+
+<p><input id="target" value=""></p>
+<ol class=instructions>
+  <li>Type 'a' in the above textbox using keyboard
+  <li>Press '{CTRL}' key on the left side of the keyboard
+  <li>Press '{SHIFT}' key on the right side of the keyboard
+</ol>
+
+<div id=log></div>

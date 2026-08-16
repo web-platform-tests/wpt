@@ -4,7 +4,6 @@
 Common helper functions for tests.
 """
 
-
 from attr import Attribute
 from attr._make import NOTHING, _default_init_alias_for, make_class
 
@@ -13,7 +12,7 @@ def simple_class(
     eq=False,
     order=False,
     repr=False,
-    hash=False,
+    unsafe_hash=False,
     str=False,
     slots=False,
     frozen=False,
@@ -28,7 +27,7 @@ def simple_class(
         eq=eq or order,
         order=order,
         repr=repr,
-        hash=hash,
+        unsafe_hash=unsafe_hash,
         init=True,
         slots=slots,
         str=str,

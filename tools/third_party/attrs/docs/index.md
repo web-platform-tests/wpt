@@ -4,6 +4,28 @@ Release **{sub-ref}`release`**  ([What's new?](changelog.md))
 
 ```{include} ../README.md
 :start-after: 'teaser-begin -->'
+:end-before: '<!-- sponsor-break-begin'
+```
+
+<!-- [[[cog
+# This is mainly called from RTD's pre_build job!
+
+import pathlib, tomllib
+
+for sponsor in tomllib.loads(pathlib.Path("pyproject.toml").read_text())["tool"]["sponcon"]["sponsors"]:
+      print(f'<a href="{sponsor["url"]}"><img title="{sponsor["title"]}" src="_static/sponsors/{sponsor["img"]}" width="190" /></a>')
+]]] -->
+<a href="https://www.variomedia.de/"><img title="Variomedia AG" src="_static/sponsors/Variomedia.svg" width="190" /></a>
+<a href="https://tidelift.com/?utm_source=lifter&utm_medium=referral&utm_campaign=hynek"><img title="Tidelift" src="_static/sponsors/Tidelift.svg" width="190" /></a>
+<a href="https://klaviyo.com/"><img title="Klaviyo" src="_static/sponsors/Klaviyo.svg" width="190" /></a>
+<a href="https://privacy-solutions.org/"><img title="Privacy Solutions" src="_static/sponsors/Privacy-Solutions.svg" width="190" /></a>
+<a href="https://www.emsys-renewables.com/"><img title="emsys renewables" src="_static/sponsors/emsys-renewables.svg" width="190" /></a>
+<a href="https://filepreviews.io/"><img title="FilePreviews" src="_static/sponsors/FilePreviews.svg" width="190" /></a>
+<a href="https://polar.sh/"><img title="Polar" src="_static/sponsors/Polar.svg" width="190" /></a>
+<!-- [[[end]]] -->
+
+```{include} ../README.md
+:start-after: 'sponsor-break-end -->'
 :end-before: '<!-- teaser-end'
 ```
 
@@ -11,13 +33,8 @@ Release **{sub-ref}`release`**  ([What's new?](changelog.md))
 ## Getting Started
 
 *attrs* is a Python-only package [hosted on PyPI](https://pypi.org/project/attrs/).
-The recommended installation method is [pip](https://pip.pypa.io/en/stable/)-installing into a [virtualenv](https://hynek.me/articles/virtualenv-lives/):
 
-```console
-$ python -Im pip install attrs
-```
-
-The next steps will get you up and running in no time:
+The following steps will get you up and running in no time:
 
 - {doc}`overview` will show you a simple example of *attrs* in action and introduce you to its philosophy.
   Afterwards, you can start writing your own classes and understand what drives *attrs*'s design.
@@ -58,19 +75,37 @@ If you need any help while getting started, feel free to use the `python-attrs` 
 
 ```{toctree}
 :maxdepth: 2
+:caption: Getting Started
 
 overview
 why
 examples
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Explanations
+
 types
 init
 comparison
 hashing
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Reference
+
 api
 api-attr
+glossary
+```
+```{toctree}
+:maxdepth: 2
+:caption: Advanced
+
 extending
 how-does-it-work
-glossary
 ```
 
 ```{toctree}
@@ -80,8 +115,9 @@ glossary
 names
 license
 changelog
-Third-party Extentions <https://github.com/python-attrs/attrs/wiki/Extensions-to-attrs>
 PyPI <https://pypi.org/project/attrs/>
+GitHub <https://github.com/python-attrs/attrs>
+Third-party Extensions <https://github.com/python-attrs/attrs/wiki/Extensions-to-attrs>
 Contributing <https://github.com/python-attrs/attrs/blob/main/.github/CONTRIBUTING.md>
 Funding <https://hynek.me/say-thanks/>
 ```

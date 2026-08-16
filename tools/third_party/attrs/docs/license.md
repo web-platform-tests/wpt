@@ -10,4 +10,4 @@ The development is kindly supported by my employer [Variomedia AG](https://www.v
 A full list of contributors can be found in [GitHub's overview](https://github.com/python-attrs/attrs/graphs/contributors).
 
 It’s the spiritual successor of [characteristic](https://characteristic.readthedocs.io/) and aspires to fix some of it clunkiness and unfortunate decisions.
-Both were inspired by Twisted’s [FancyEqMixin](https://docs.twisted.org/en/stable/api/twisted.python.util.FancyEqMixin.html) but both are implemented using class decorators because [subclassing is bad for you](https://www.youtube.com/watch?v=3MNVP9-hglc), m’kay?
+Both were inspired by Twisted’s [FancyEqMixin](https://docs.twisted.org/en/stable/api/twisted.python.util.FancyEqMixin.html) but both are implemented using class decorators because [subclassing is bad for you](https://www.youtube.com/watch?v=3MNVP9-hglc) (except when doing [strict specialization](https://hynek.me/articles/python-subclassing-redux/)).

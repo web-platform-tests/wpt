@@ -58,6 +58,14 @@ explicitly-managed secret.
 - [GitHub](https://github.com/): w3c
   - [@plehegar](https://github.com/plehegar)
   - [@sideshowbarker](https://github.com/sideshowbarker)
+- [Azure Pipelines](https://dev.azure.com/web-platform-tests/wpt)
+  - [@foolip](https://github.com/foolip) (organization owner)
+  - [@gsnedders](https://github.com/gsnedders) (project administrator)
+  - [@jgraham](https://github.com/jgraham) (project administrator)
+  - [@mustjab](https://github.com/mustjab) (project administrator)
+  - [@sideshowbarker](https://github.com/sideshowbarker) (project administrator)
+  - [@thejohnjansen](https://github.com/thejohnjansen) (project administrator)
+  - [@youennf](https://github.com/youennf) (project administrator)
 - [Google Cloud Platform](https://cloud.google.com/): wptdashboard{-staging}
   - danielrsmith@google.com
   - foolip@google.com

@@ -10,6 +10,19 @@
 <img id="imgTestTag3" style="width: 80px; height:auto;">
 <img id="imgTestTag4">
 <img id="imgTestTag5">
+<img srcset="" id="imgTestTag6">
+<picture>
+    <source>
+    <img id="imgTestTag7">
+</picture>
+<picture>
+    <source>
+    <img src="" id="imgTestTag8">
+</picture>
+<picture>
+    <source>
+    <img src="" id="imgTestTag9">
+</picture>
 <div id="image-container"></div>
 
 <script>
@@ -63,6 +76,26 @@
     cont.appendChild(img);
     assert_true(img.complete);
   }, "img src empty and srcset omitted on newly-created-and-inserted image");
+
+
+  test(function() {
+      assert_true(document.getElementById("imgTestTag6").complete);
+  }, "img src omitted and srcset empty");
+
+  test(function() {
+      var img = document.createElement("img");
+      img.setAttribute("srcset", "");
+      assert_true(img.complete);
+  }, "img src omitted and srcset empty on newly-created image");
+
+  test(function() {
+      var cont = document.getElementById("image-container");
+      this.add_cleanup(() => { cont.innerHTML = "" });
+      var img = document.createElement("img");
+      img.setAttribute("srcset", "");
+      cont.appendChild(img);
+      assert_true(img.complete);
+  }, "img src omitted and srcset empty on newly-created-and-inserted image");
 
   test(function() {
     var cont = document.getElementById("image-container");
@@ -213,4 +246,101 @@
       assert_true(img.complete);
     });
   }, "invalid URL");
+
+  test(function() {
+      assert_true(document.getElementById("imgTestTag7").complete);
+  }, "img src and srcset omitted with a picture parent");
+
+  test(function() {
+      var img = document.createElement("img");
+      var picture = document.createElement("picture")
+      var source = document.createElement("source");
+      picture.appendChild(source);
+      picture.appendChild(img);
+      assert_true(img.complete);
+  }, "img src and srcset omitted on newly-created image with a picture parent");
+
+  test(function() {
+      var cont = document.getElementById("image-container");
+      this.add_cleanup(() => { cont.innerHTML = "" });
+      var img = document.createElement("img");
+      var picture = document.createElement("picture")
+      var source = document.createElement("source");
+      picture.appendChild(source);
+      picture.appendChild(img);
+      cont.appendChild(picture);
+      assert_true(img.complete);
+  }, "img src and srcset omitted on newly-created-and-inserted image with a picture parent");
+
+  test(function() {
+      var cont = document.getElementById("image-container");
+      this.add_cleanup(() => { cont.innerHTML = "" });
+      cont.innerHTML = "<picture><source><img></picture>";
+      assert_true(cont.querySelector("img").complete);
+  }, "img src and srcset omitted on newly-created-via-innerHTML image with a picture parent");
+
+  test(function() {
+      assert_true(document.getElementById("imgTestTag8").complete);
+  }, "img src empty and srcset omitted with a picture parent");
+
+  test(function() {
+      var img = document.createElement("img");
+      var picture = document.createElement("picture")
+      var source = document.createElement("source");
+      picture.appendChild(source);
+      picture.appendChild(img);
+      img.setAttribute("src", "");
+      assert_true(img.complete);
+  }, "img src empty and srcset omitted on newly-created image with picture parent");
+
+  test(function() {
+      var cont = document.getElementById("image-container");
+      this.add_cleanup(() => { cont.innerHTML = "" });
+      var img = document.createElement("img");
+      var picture = document.createElement("picture")
+      var source = document.createElement("source");
+      picture.appendChild(source);
+      picture.appendChild(img);
+      img.setAttribute("src", "");
+      cont.appendChild(picture);
+      assert_true(img.complete);
+  }, "img src empty and srcset omitted on newly-created-and-inserted image with picture parent");
+
+  test(function() {
+      var cont = document.getElementById("image-container");
+      this.add_cleanup(() => { cont.innerHTML = "" });
+      cont.innerHTML = "<picture><source><img src=''></picture>";
+      assert_true(cont.querySelector("img").complete);
+  }, "img src empty and srcset omitted on newly-created-via-innerHTML image with picture parent");
+
+  test(function() {
+      var img = document.createElement("img");
+      var picture = document.createElement("picture")
+      var source = document.createElement("source");
+      picture.appendChild(source);
+      picture.appendChild(img);
+
+      source.srcset = location.href;
+      assert_false(img.complete, "Should have a load going");
+      source.removeAttribute("srcset");
+      assert_true(img.complete, "Should be complete");
+  }, "img src and srcset omitted on image with picture parent after it started a load");
+
+  async_test(t => {
+      var loaded = false;
+      const img = document.getElementById("imgTestTag9")
+      const source = img.parentElement.querySelector('source')
+      img.onload = t.step_func_done(function(){
+          assert_false(loaded);
+          loaded = true;
+          assert_true(img.complete);
+      }, "Only one onload, despite setting the srcset twice");
+      //Test if src, srcset is omitted
+      assert_true(img.complete)
+      source.srcset = "/images/green-256x256.png 1x";
+      //test if img.complete is set to false if srcset is present
+      assert_false(img.complete, "srcset present, should be set to false");
+      //change src again, should make only one request as per 'await stable state'
+      source.srcset="/images/green-256x256.png 1.6x"
+  }, "async picture source srcset complete test");
 </script>

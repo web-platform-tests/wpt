@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+// Sanitizer configurations that should be accepted:
+[
+  // Test cases from https://github.com/WICG/sanitizer-api/issues/281#issuecomment-2879417874
+  { elements: [{ name: "p", attributes: ["title"], removeAttributes: ["id"] }], attributes: ["dir", "id"] },
+  { elements: [{name: "p", removeAttributes: ["id"]}], attributes: ["id", "title"] },
+  { elements: [{name: "p", attributes: ["id"]}], attributes: [] },
+
+  // Test cases from https://github.com/WICG/sanitizer-api/issues/281#issuecomment-2882994726
+  { },
+  { attributes: [] },
+  { removeAttributes: [] },
+  { replaceWithChildrenElements: ["div"] },
+  { elements: [] },
+  { removeElements: [] },
+  { replaceWithChildrenElements: ["div"], elements: [] },
+  { replaceWithChildrenElements: ["div"], removeElements: [] },
+
+].forEach((config, index) => {
+  test(t => {
+    new Sanitizer(config);  // doesn't throw.
+  }, `Config #${index} is accepted successfully.`);
+});
+
+// Sanitizer configurations that should be rejected:
+[
+  // Test cases from https://github.com/WICG/sanitizer-api/issues/281#issuecomment-2879417874
+  { attributes: ["foo"], removeAttributes: ["bar"] },
+  { elements: [{ name: "p", attributes: ["title"], removeAttributes: ["title"] }], attributes: ["dir", "id"] },
+  { elements: [{name: "p", attributes: ["title"]}], attributes: ["title"] },
+  { elements: [{name: "p", removeAttributes: ["id"]}], removeAttributes: ["id"] },
+  { elements: [{name: "p", attributes: ["id"]}] },
+
+  // Test cases from https://github.com/WICG/sanitizer-api/issues/281#issuecomment-2882994726
+  { attributes: [], removeAttributes: [] },
+  { elements: [], removeElements: [] },
+
+].forEach((config, index) => {
+  test(t => {
+    assert_throws_js(TypeError, _ => new Sanitizer(config));
+  }, `Config #${index} fails successfully.`);
+});
+</script>
+</body>
+</html>

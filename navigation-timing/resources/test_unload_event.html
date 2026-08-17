@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Navigation Timing Assert Page</title>
+        <link rel="author" title="Google" href="http://www.google.com/" />
+        <link rel="help" href="http://www.w3.org/TR/navigation-timing-2/#sec-PerformanceNavigationTiming"/>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+    </head>
+    <body>
+      <script>
+        test(() => {
+          const entry = window.performance.getEntriesByType("navigation")[0];
+          assert_equals(entry.type, "navigate", "Expected navigation type to be navigate.");
+          // DO NOT SUBMIT test other cases.
+          const unload_exposed = true;
+          if (!unload_exposed) {
+            assert_equals(entry.unloadEventStart, 0, "Expected unloadEventStart to be 0.");
+            assert_equals(entry.unloadEventEnd, 0, "Expected unloadEventEnd to be 0.");
+          } else {
+            assert_greater_than(entry.unloadEventStart, 0, "Expected unloadEventStart to not be 0.");
+            assert_greater_than(entry.unloadEventEnd, 0, "Expected unloadEventEnd to not be 0.");
+            // assert_equals(entry.redirectCount, redirects, "Expected redirectCount to be " + redirects);
+          }
+        },
+        "unload event timings match expectations");
+
+      </script>
+      <h1>Description</h1>
+      <p>This test validates that the values of window.performance.getEntriesByType("navigation")[0].(type/unloadEventEnd/unloadEventStart) are only exposed when the same-origin test passes. It does this by navigating the main frame to this page which asserts about the event.</p>
+    </body>
+</html>

@@ -883,6 +883,9 @@ class WebDriverVirtualAuthenticatorProtocolPart(VirtualAuthenticatorProtocolPart
     def set_user_verified(self, authenticator_id, uv):
         return self.webdriver.send_session_command("POST", "webauthn/authenticator/%s/uv" % authenticator_id, uv)
 
+    def set_credential_properties(self, authenticator_id, credential_id, props):
+        return self.webdriver.send_session_command("POST", f"webauthn/authenticator/{authenticator_id}/credentials/{credential_id}/props", props)
+
 
 class WebDriverSPCTransactionsProtocolPart(SPCTransactionsProtocolPart):
     def setup(self):

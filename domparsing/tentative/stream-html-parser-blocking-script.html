@@ -16,7 +16,7 @@
     const writer = writable.getWriter();
 
     // Chunk 1: A slow script that pushes 'slow' to events.
-    await writer.write("<script src='resources/slow.js?pipe=trickle(d0.3)&t=1'><" + "/script>");
+    await writer.write("<script src='../resources/slow.js?pipe=trickle(d0.3)&t=1'><" + "/script>");
 
     // Chunk 2: An inline script that pushes 'inline' to events and resolves the promise.
     // Because the parser should block on Chunk 1, 'inline' should not be executed until 'slow' is executed.
@@ -41,9 +41,9 @@
     // Script 1 takes 0.3s, Script 2 takes 0.1s.
     // Script 2 must NOT execute before Script 1.
     await writer.write(
-      "<script src='resources/slow.js?pipe=trickle(d0.3)&t=2_1'><" + "/script>" +
+      "<script src='../resources/slow.js?pipe=trickle(d0.3)&t=2_1'><" + "/script>" +
       "<p id='mid'>mid</p>" +
-      "<script src='resources/slow.js?pipe=trickle(d0.1)&t=2_2'><" + "/script>" +
+      "<script src='../resources/slow.js?pipe=trickle(d0.1)&t=2_2'><" + "/script>" +
       "<script>window.events.push('inline'); window.resolvers.resolve();<" + "/script>"
     );
     await writer.close();
@@ -80,7 +80,7 @@
     const writer = writable.getWriter();
 
     await writer.write("<script sr");
-    await writer.write("c='resources/slow.js?pipe=trickle(d0.1)&split=1'");
+    await writer.write("c='../resources/slow.js?pipe=trickle(d0.1)&split=1'");
     await writer.write("><" + "/");
     await writer.write("script>");
     await writer.write("<script>window.events.push('inline'); window.resolvers.resolve();<" + "/script>");
@@ -124,7 +124,7 @@
     const writable = placeholder.streamHTMLUnsafe({ runScripts: true });
     const writer = writable.getWriter();
 
-    await writer.write("<script src='resources/slow.js?pipe=trickle(d0.2)&abort_test=1'><" + "/script>");
+    await writer.write("<script src='../resources/slow.js?pipe=trickle(d0.2)&abort_test=1'><" + "/script>");
     await writer.abort();
 
     // Wait 300ms to ensure the network response for slow.js arrived

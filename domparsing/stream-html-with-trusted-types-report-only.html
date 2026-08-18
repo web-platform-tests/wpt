@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/trusted-types/support/helper.sub.js"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script>
+      const methods = [
+        "streamHTML",
+        "streamHTMLUnsafe",
+        "streamAppendHTML",
+        "streamAppendHTMLUnsafe",
+        "streamPrependHTML",
+        "streamPrependHTMLUnsafe",
+        "streamBeforeHTML",
+        "streamBeforeHTMLUnsafe",
+        "streamAfterHTML",
+        "streamAfterHTMLUnsafe",
+        "streamReplaceWithHTML",
+        "streamReplaceWithHTMLUnsafe",
+      ];
+
+      const safeMethods = methods.filter(m => !m.endsWith("Unsafe"));
+      const unsafeMethods = methods.filter(m => m.endsWith("Unsafe"));
+
+      for (const method of safeMethods) {
+        promise_test(async (t) => {
+          let violationFired = false;
+          const handler = (e) => {
+            if (e.effectiveDirective === "require-trusted-types-for") {
+              violationFired = true;
+            }
+          };
+          document.addEventListener("securitypolicyviolation", handler);
+          t.add_cleanup(() => document.removeEventListener("securitypolicyviolation", handler));
+
+          const container = document.getElementById("container");
+          const d = document.createElement("div");
+          container.appendChild(d);
+          t.add_cleanup(() => d.remove());
+
+          const stream = d[method]();
+          assert_true(stream instanceof WritableStream);
+          const writer = stream.getWriter();
+          await writer.write("<p>safe text</p>");
+          await writer.close();
+
+          await new Promise(resolve => t.step_timeout(resolve, 50));
+          assert_false(violationFired, `Safe method ${method} must not trigger TT violation report in report-only mode`);
+        }, `${method} in TT report-only mode succeeds without violation report`);
+      }
+
+      for (const method of unsafeMethods) {
+        promise_test(async (t) => {
+          let violationPromise = new Promise((resolve) => {
+            const handler = (e) => {
+              if (e.effectiveDirective === "require-trusted-types-for") {
+                document.removeEventListener("securitypolicyviolation", handler);
+                resolve(e);
+              }
+            };
+            document.addEventListener("securitypolicyviolation", handler);
+          });
+
+          const container = document.getElementById("container");
+          const d = document.createElement("div");
+          container.appendChild(d);
+          t.add_cleanup(() => {
+            container.replaceChildren();
+          });
+
+          let stream;
+          try {
+            stream = d[method]();
+          } catch (e) {
+            assert_unreached(`${method} should not throw in report-only mode: ${e}`);
+          }
+          assert_true(stream instanceof WritableStream);
+
+          const writer = stream.getWriter();
+          await writer.write("<span id='report_only_test'>content</span>");
+          await writer.close();
+
+          assert_not_equals(container.querySelector("#report_only_test"), null, "Content should be parsed into DOM in report-only mode");
+
+          const event = await violationPromise;
+          assert_equals(event.disposition, "report", "Violation disposition should be 'report'");
+          assert_equals(event.effectiveDirective, "require-trusted-types-for", "effectiveDirective must be 'require-trusted-types-for'");
+          assert_equals(event.violatedDirective, "require-trusted-types-for 'script'", "violatedDirective must be require-trusted-types-for 'script'");
+          assert_equals(event.blockedURI, "trusted-types-sink", "blockedURI must be 'trusted-types-sink'");
+          assert_true(event.sample.includes(method), `sample '${event.sample}' should include method name ${method}`);
+        }, `${method} in TT report-only mode returns WritableStream and reports securitypolicyviolation with correct metadata`);
+      }
+    </script>
+  </body>
+</html>

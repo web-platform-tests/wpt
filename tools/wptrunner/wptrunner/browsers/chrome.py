@@ -142,6 +142,8 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     chrome_options["args"].append("--enable-features=SecurePaymentConfirmationBrowser")
     # For WebTransport tests.
     chrome_options["args"].append("--webtransport-developer-mode")
+    # For JPEG XL tests.
+    chrome_options["args"].append("--enable-features=JXLImageFormat")
     # The GenericSensorExtraClasses flag enables the browser-side
     # implementation of sensors such as Ambient Light Sensor.
     chrome_options["args"].append("--enable-features=GenericSensorExtraClasses")

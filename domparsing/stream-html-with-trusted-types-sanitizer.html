@@ -35,6 +35,7 @@
         "streamPrependHTMLUnsafe",
         "streamBeforeHTMLUnsafe",
         "streamAfterHTMLUnsafe",
+        "streamReplaceWithHTMLUnsafe",
       ];
 
       for (const method of methods) {
@@ -52,8 +53,8 @@
             "<div id='allowed'><span id=forbidden></span></div>",
           );
           await writer.close();
-          assert_equals(d.parentNode.querySelector("#forbidden"), null);
-          assert_not_equals(d.parentNode.querySelector("#allowed"), null);
+          assert_equals(container.querySelector("#forbidden"), null);
+          assert_not_equals(container.querySelector("#allowed"), null);
         }, `createParserOptions can inject a sanitizer config for ${method}`);
       }
 
@@ -72,8 +73,8 @@
             "<div id=allowed><span id=forbidden></span></div>",
           );
           await writer.close();
-          assert_equals(d.parentNode.querySelector("#forbidden"), null);
-          assert_not_equals(d.parentNode.querySelector("#allowed"), null);
+          assert_equals(container.querySelector("#forbidden"), null);
+          assert_not_equals(container.querySelector("#allowed"), null);
         }, `createParserOptions can inject a sanitizer for ${method}`);
       }
 
@@ -93,8 +94,8 @@
             "<div id=allowed><span id=forbidden></span></div>",
           );
           await writer.close();
-          assert_equals(d.parentNode.querySelector("#forbidden"), null);
-          assert_not_equals(d.parentNode.querySelector("#allowed"), null);
+          assert_equals(container.querySelector("#forbidden"), null);
+          assert_not_equals(container.querySelector("#allowed"), null);
         }, `createParserOptions can override a sanitizer config for ${method}`);
       }
 
@@ -120,7 +121,7 @@
           );
           await writer.close();
           assert_false(window.did_run);
-          assert_not_equals(d.parentNode.querySelector("#allowed"), null);
+          assert_not_equals(container.querySelector("#allowed"), null);
         }, `createParserOptions can remove a sanitizer for ${method}`);
       }
     </script>

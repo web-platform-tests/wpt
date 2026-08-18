@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Anchor Positioning: 'position-anchor: match-parent'</title>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#valdef-position-anchor-match-parent">
+<link rel="author" href="mailto:jeroen.zwartepoorte@gmail.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+/* The anchor box is (50, 50) to (150, 90) in the initial containing block. */
+#anchor {
+  position: absolute;
+  left: 50px;
+  top: 50px;
+  width: 100px;
+  height: 40px;
+  anchor-name: --a;
+}
+
+/* The parents and the probes are all fixed positioned, so that they share the
+   initial containing block and #anchor is an acceptable anchor element for all
+   of them. */
+.parent {
+  position: fixed;
+}
+
+/* A probe ends up at (150, 90) if it has #anchor as its default anchor
+   element, and at (300, 300) if it has no default anchor element at all. */
+.probe, .pseudo-parent::before {
+  position: fixed;
+  position-anchor: match-parent;
+  left: anchor(right, 300px);
+  top: anchor(bottom, 300px);
+  width: 10px;
+  height: 10px;
+}
+
+.pseudo-parent::before {
+  content: "";
+}
+</style>
+
+<div id="anchor"></div>
+
+<div class="parent" style="position-anchor: --a">
+  <div class="probe" id="probe-anchored"></div>
+</div>
+
+<div class="parent" style="position-anchor: none">
+  <div class="probe" id="probe-parent-none"></div>
+</div>
+
+<div class="parent" style="position-anchor: --nonexistent">
+  <div class="probe" id="probe-parent-unknown-name"></div>
+</div>
+
+<div style="position-anchor: --a">
+  <div class="probe" id="probe-parent-static"></div>
+</div>
+
+<div style="position: relative; position-anchor: --a">
+  <div class="probe" id="probe-parent-relative"></div>
+</div>
+
+<div class="parent" style="position-anchor: --a">
+  <div class="parent" style="position-anchor: match-parent">
+    <div class="probe" id="probe-chained"></div>
+  </div>
+</div>
+
+<div class="parent" style="position-anchor: none">
+  <div class="parent" style="position-anchor: match-parent">
+    <div class="probe" id="probe-chained-none"></div>
+  </div>
+</div>
+
+<div class="parent" style="position-anchor: --a">
+  <div class="parent">
+    <div class="probe" id="probe-grandparent"></div>
+  </div>
+</div>
+
+<div class="parent" style="position-anchor: --a">
+  <!-- #anchor is not an acceptable anchor element for an absolutely positioned
+       child, whose containing block is the parent itself. -->
+  <div class="probe" id="probe-unacceptable" style="position: absolute"></div>
+</div>
+
+<div class="parent pseudo-parent" id="pseudo-parent-anchored"
+     style="position-anchor: --a"></div>
+
+<div class="parent pseudo-parent" id="pseudo-parent-none"
+     style="position-anchor: none"></div>
+
+<div class="parent" id="parent-dynamic" style="position-anchor: --a">
+  <div class="probe" id="probe-dynamic"></div>
+</div>
+
+<script>
+// Parsing and computed values of 'match-parent' are covered by
+// position-anchor-basics.html.
+
+// The used insets of a probe with, and without, a default anchor element.
+const ANCHORED = ['150px', '90px'];
+const NO_ANCHOR = ['300px', '300px'];
+
+function assertInsets(id, expected, description, pseudo = null) {
+  const style = getComputedStyle(document.getElementById(id), pseudo);
+  assert_equals(style.left, expected[0], `${description}: used left`);
+  assert_equals(style.top, expected[1], `${description}: used top`);
+}
+
+test(() => {
+  assertInsets('probe-anchored', ANCHORED, 'probe');
+}, "'match-parent' uses the default anchor element of the parent");
+
+test(() => {
+  assertInsets('probe-parent-none', NO_ANCHOR, 'probe');
+}, "'match-parent' yields no default anchor element if the parent has none");
+
+test(() => {
+  assertInsets('probe-parent-unknown-name', NO_ANCHOR, 'probe');
+}, "'match-parent' yields no default anchor element if the parent's " +
+   "'position-anchor' does not select an anchor element");
+
+test(() => {
+  assertInsets('probe-parent-static', NO_ANCHOR, 'probe');
+}, "'match-parent' yields no default anchor element if the parent is not " +
+   "positioned");
+
+test(() => {
+  assertInsets('probe-parent-relative', NO_ANCHOR, 'probe');
+}, "'match-parent' yields no default anchor element if the parent is " +
+   "relatively positioned, since 'position-anchor' only applies to " +
+   "absolutely positioned boxes");
+
+test(() => {
+  assertInsets('probe-chained', ANCHORED, 'probe');
+}, "'match-parent' resolves through a parent that also uses 'match-parent'");
+
+test(() => {
+  assertInsets('probe-chained-none', NO_ANCHOR, 'probe');
+}, "'match-parent' yields no default anchor element if the parent's " +
+   "'match-parent' resolved to no default anchor element");
+
+test(() => {
+  assertInsets('probe-grandparent', NO_ANCHOR, 'probe');
+}, "'match-parent' looks at the parent only, not at further ancestors");
+
+test(() => {
+  assertInsets('probe-unacceptable', NO_ANCHOR, 'probe');
+}, "'match-parent' yields no default anchor element if the parent's default " +
+   "anchor element is not an acceptable anchor element");
+
+test(() => {
+  assertInsets('pseudo-parent-anchored', ANCHORED, '::before', '::before');
+}, "'match-parent' on a pseudo-element uses the default anchor element of the " +
+   "originating element");
+
+test(() => {
+  assertInsets('pseudo-parent-none', NO_ANCHOR, '::before', '::before');
+}, "'match-parent' on a pseudo-element yields no default anchor element if " +
+   "the originating element has none");
+
+test(() => {
+  assertInsets('probe-dynamic', ANCHORED, 'probe');
+
+  document.getElementById('parent-dynamic').style.positionAnchor = 'none';
+  assertInsets('probe-dynamic', NO_ANCHOR,
+               "probe after removing the parent's default anchor element");
+
+  document.getElementById('parent-dynamic').style.positionAnchor = '--a';
+  assertInsets('probe-dynamic', ANCHORED,
+               "probe after restoring the parent's default anchor element");
+}, "'match-parent' reacts to changes of the parent's default anchor element");
+</script>

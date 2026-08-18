@@ -1,32 +1,40 @@
-# mypy: ignore-errors
+# mypy: allow-untyped-calls
+
+from __future__ import annotations
 
 import os
 import sys
 import tempfile
+from typing import TYPE_CHECKING, Iterable
+from unittest.mock import Mock
 
 import pytest
-
 from mozlog import structured
+
+from .. import wpttest
 from ..testloader import (
     DirectoryHashChunker,
     IDHashChunker,
+    ManifestPathData,
     PathHashChunker,
     Subsuite,
+    TagFilter,
     TestFilter,
     TestLoader,
-    TagFilter,
     read_test_prefixes_from_file,
 )
 from .test_wpttest import make_mock_manifest
 
-here = os.path.dirname(__file__)
-sys.path.insert(0, os.path.join(here, os.pardir, os.pardir, os.pardir))
-from manifest.manifest import Manifest as WPTManifest
+if TYPE_CHECKING:
+    from tools.manifest.item import URLManifestItem as WPTURLManifestItem
+    from tools.manifest.manifest import Manifest as WPTManifest
+else:
+    from manifest.manifest import Manifest as WPTManifest
 
 structured.set_default_logger(structured.structuredlog.StructuredLogger("TestLoader"))
 
-TestFilter.__test__ = False
-TestLoader.__test__ = False
+TestFilter.__test__ = False  # type: ignore[attr-defined]
+TestLoader.__test__ = False  # type: ignore[attr-defined]
 
 include_ini = """\
 skip: true
@@ -36,7 +44,7 @@ skip: true
 
 
 @pytest.fixture
-def manifest():
+def manifest() -> WPTManifest:
     manifest_json = {
         "items": {
             "testharness": {
@@ -60,7 +68,7 @@ def manifest():
 
 
 
-def test_loader_h2_tests():
+def test_loader_h2_tests() -> None:
     manifest_json = {
         "items": {
             "testharness": {
@@ -83,14 +91,23 @@ def test_loader_h2_tests():
     subsuites = {}
     subsuites[""] = Subsuite("", config={})
 
+    test_manifests: dict[WPTManifest, ManifestPathData] = {
+        manifest: {
+            "metadata_path": "",
+            "url_base": "/",
+            "tests_path": "",
+            "manifest_path": "",
+        }
+    }
+
     # By default, the loader should include the h2 test.
-    loader = TestLoader({manifest: {"metadata_path": ""}}, ["testharness"], None, subsuites)
+    loader = TestLoader(test_manifests, ["testharness"], {}, subsuites)
     assert "testharness" in loader.tests[""]
     assert len(loader.tests[""]["testharness"]) == 2
     assert len(loader.disabled_tests[""]) == 0
 
     # We can also instruct it to skip them.
-    loader = TestLoader({manifest: {"metadata_path": ""}}, ["testharness"], None, subsuites, include_h2=False)
+    loader = TestLoader(test_manifests, ["testharness"], {}, subsuites, include_h2=False)
     assert "testharness" in loader.tests[""]
     assert len(loader.tests[""]["testharness"]) == 1
     assert "testharness" in loader.disabled_tests[""]
@@ -100,7 +117,7 @@ def test_loader_h2_tests():
 
 @pytest.mark.xfail(sys.platform == "win32",
                    reason="NamedTemporaryFile cannot be reopened on Win32")
-def test_include_file():
+def test_include_file() -> None:
     test_cases = """
 # This is a comment
 /foo/bar-error.https.html
@@ -124,7 +141,7 @@ def test_include_file():
 
 @pytest.mark.xfail(sys.platform == "win32",
                    reason="NamedTemporaryFile cannot be reopened on Win32")
-def test_filter_unicode():
+def test_filter_unicode() -> None:
     tests = make_mock_manifest(("test", "a", 10), ("test", "a/b", 10),
                                ("test", "c", 10))
 
@@ -135,10 +152,11 @@ def test_filter_unicode():
         TestFilter(manifest_path=f.name, test_manifests=tests)
 
 
-def test_tag_filter():
+def test_tag_filter() -> None:
     # Mock a structure with what `TagFilter` actually uses
-    class Tagged:
-        def __init__(self, tags):
+    class Tagged(Mock):
+        def __init__(self, tags: Iterable[str]) -> None:
+            super().__init__(spec_set=wpttest.Test)
             self.tags = set(tags)
 
     # Case: empty filter (allow anything)
@@ -201,7 +219,7 @@ def test_tag_filter():
     assert not filter(Tagged({'b'}))
 
 
-def test_loader_filter_tags():
+def test_loader_filter_tags() -> None:
     manifest_json = {
         "items": {
             "testharness": {
@@ -232,10 +250,12 @@ def test_loader_filter_tags():
     }
     manifest = WPTManifest.from_json("/", manifest_json)
 
-    tmpdir_kwargs = {}
-    if sys.version_info.major >= 3 and sys.version_info.minor >= 10:
-        tmpdir_kwargs["ignore_cleanup_errors"] = True
-    with tempfile.TemporaryDirectory(**tmpdir_kwargs) as metadata_path:
+    if sys.version_info >= (3, 10):
+        tmpdir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+    else:
+        tmpdir = tempfile.TemporaryDirectory()
+
+    with tmpdir as metadata_path:
         a_path = os.path.join(metadata_path, "a")
         os.makedirs(a_path)
         with open(os.path.join(a_path, "bar.html.ini"), "w") as f:
@@ -249,13 +269,21 @@ def test_loader_filter_tags():
         with open(os.path.join(b_path, "baz.html.ini"), "w") as f:
             f.write("tags: [test-include, test-exclude]\n")
 
+        test_manifests: dict[WPTManifest, ManifestPathData] = {
+            manifest: {
+                "metadata_path": metadata_path,
+                "url_base": "/",
+                "tests_path": "",
+                "manifest_path": "",
+            }
+        }
 
         # Check: no filter loads all tests
-        loader = TestLoader({manifest: {"metadata_path": metadata_path}}, ["testharness"], None, subsuites)
+        loader = TestLoader(test_manifests, ["testharness"], {}, subsuites)
         assert len(loader.tests[""]["testharness"]) == 4
 
         # Check: specifying a single `test-include` inclusion yields `/a/bar` and `/b/baz`
-        loader = TestLoader({manifest: {"metadata_path": metadata_path}}, ["testharness"], None, subsuites,
+        loader = TestLoader(test_manifests, ["testharness"], {}, subsuites,
                             test_filters=[TagFilter({"test-include"}, {})])
         assert len(loader.tests[""]["testharness"]) == 2
         assert loader.tests[""]["testharness"][0].id == "/a/bar.html"
@@ -264,13 +292,13 @@ def test_loader_filter_tags():
         assert loader.tests[""]["testharness"][1].tags == {"dir:b", "test-include", "test-exclude"}
 
         # Check: specifying a single `test-exclude` exclusion rejects only `/b/baz`
-        loader = TestLoader({manifest: {"metadata_path": metadata_path}}, ["testharness"], None, subsuites,
+        loader = TestLoader(test_manifests, ["testharness"], {}, subsuites,
                             test_filters=[TagFilter({}, {"test-exclude"})])
         assert len(loader.tests[""]["testharness"]) == 3
         assert all(test.id != "/b/baz.html" for test in loader.tests[""]["testharness"])
 
         # Check: including `test-include` and excluding `test-exclude` yields only `/a/bar`
-        loader = TestLoader({manifest: {"metadata_path": metadata_path}}, ["testharness"], None, subsuites,
+        loader = TestLoader(test_manifests, ["testharness"], {}, subsuites,
                             test_filters=[TagFilter({"test-include"}, {"test-exclude"})])
         assert len(loader.tests[""]["testharness"]) == 1
         assert loader.tests[""]["testharness"][0].id == "/a/bar.html"
@@ -278,21 +306,21 @@ def test_loader_filter_tags():
 
         # Check: non-empty intersection of inclusion and exclusion yield zero tests
 
-        loader = TestLoader({manifest: {"metadata_path": metadata_path}}, ["testharness"], None, subsuites,
+        loader = TestLoader(test_manifests, ["testharness"], {}, subsuites,
                             test_filters=[TagFilter({"test-include"}, {"test-include"})])
         assert len(loader.tests[""]["testharness"]) == 0
 
-        loader = TestLoader({manifest: {"metadata_path": metadata_path}}, ["testharness"], None, subsuites,
+        loader = TestLoader(test_manifests, ["testharness"], {}, subsuites,
                             test_filters=[TagFilter({"test-include", "test-exclude"}, {"test-include"})])
         assert len(loader.tests[""]["testharness"]) == 0
 
 
-def test_chunk_hash(manifest):
+def test_chunk_hash(manifest: WPTManifest) -> None:
     chunker1 = PathHashChunker(total_chunks=2, chunk_number=1)
     chunker2 = PathHashChunker(total_chunks=2, chunk_number=2)
     # Check that the chunkers partition the manifest (i.e., each item is
     # assigned to exactly one chunk).
-    items = sorted([*chunker1(manifest), *chunker2(manifest)],
+    items = sorted([*chunker1(manifest), *chunker2(manifest)],  # type: ignore[arg-type]
                    key=lambda item: item[1])
     assert len(items) == 2
     test_type, test_path, tests = items[0]
@@ -305,11 +333,11 @@ def test_chunk_hash(manifest):
     assert {test.id for test in tests} == {"/a/foo.html?b", "/a/foo.html?c"}
 
 
-def test_chunk_id_hash(manifest):
+def test_chunk_id_hash(manifest: WPTManifest) -> None:
     chunker1 = IDHashChunker(total_chunks=2, chunk_number=1)
     chunker2 = IDHashChunker(total_chunks=2, chunk_number=2)
-    items = []
-    for test_type, test_path, tests in [*chunker1(manifest), *chunker2(manifest)]:
+    items: list[tuple[str, str, WPTURLManifestItem]] = []
+    for test_type, test_path, tests in [*chunker1(manifest), *chunker2(manifest)]:  # type: ignore[arg-type]
         assert len(tests) > 0
         items.extend((test_type, test_path, test) for test in tests)
     assert len(items) == 3
@@ -328,14 +356,14 @@ def test_chunk_id_hash(manifest):
     assert test.id == "/a/foo.html?c"
 
 
-def test_chunk_dir_hash(manifest):
+def test_chunk_dir_hash(manifest: WPTManifest) -> None:
     chunker1 = DirectoryHashChunker(total_chunks=2, chunk_number=1)
     chunker2 = DirectoryHashChunker(total_chunks=2, chunk_number=2)
     # Check that tests in the same directory are located in the same chunk
     # (which particular chunk is irrelevant).
     empty_chunk, chunk_a = sorted([
-        list(chunker1(manifest)),
-        list(chunker2(manifest)),
+        list(chunker1(manifest)),  # type: ignore[arg-type]
+        list(chunker2(manifest)),  # type: ignore[arg-type]
     ], key=len)
     assert len(empty_chunk) == 0
     assert len(chunk_a) == 2

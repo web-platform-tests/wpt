@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Tests boxes are trimmed at text-over/text-under baselines</title>
+<meta description="Verify that an ex trimmed text has a height of 1ex" />
+<link rel="match" href="text-box-trim-half-leading-inline-box-003-ref.html">
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#leading-trim">
+
+<style>
+div {
+  display: inline-flex;
+  font-size: 72px;
+  /* hide the text as this test is about the box height */
+  color: transparent;
+}
+
+span {
+  outline: 1px solid blue;
+  line-height: 3;
+  /* limit theight to 1ex height using text-box-trim */
+  text-box-trim: both;
+  text-box-edge: ex alphabetic;
+}
+</style>
+
+<div>
+  <span>test</span>
+</div>

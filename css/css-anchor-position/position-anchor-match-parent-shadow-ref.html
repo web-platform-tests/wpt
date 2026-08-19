@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Test Reference</title>
+<link rel="author" href="mailto:jeroen.zwartepoorte@gmail.com">
+<style>
+body {
+  font: 12px/1.4 sans-serif;
+}
+
+.test {
+  display: inline-block;
+  vertical-align: top;
+  width: 130px;
+  margin: 0 8px 8px 0;
+}
+
+.test > p {
+  margin: 2px 0 0;
+}
+
+.case {
+  position: relative;
+  transform: translate(0);
+  box-sizing: border-box;
+  width: 122px;
+  height: 102px;
+  border: 1px solid silver;
+}
+
+/* The anchor box is (20, 20) to (70, 40) in the case box. */
+.anchor {
+  position: absolute;
+  anchor-name: --a;
+  left: 20px;
+  top: 20px;
+  width: 50px;
+  height: 20px;
+  background: silver;
+}
+
+.host {
+  position: fixed;
+  inset: 0;
+}
+
+/* Each probe is placed with the insets that the anchor references in the test
+   resolve to. The reference deliberately uses no anchor positioning at all, so
+   that it does not depend on how anchor names are scoped to shadow trees. */
+.probe {
+  position: fixed;
+  left: 20px;
+  top: 70px;
+  width: 20px;
+  height: 20px;
+  background: green;
+}
+
+.probe.anchored {
+  left: 70px;
+  top: 40px;
+}
+</style>
+
+<div class="test">
+  <div class="case">
+    <div class="anchor"></div>
+    <div class="host">
+      <div class="probe anchored"></div>
+    </div>
+  </div>
+  <p>Probe in a shadow tree; the host has a default anchor element.</p>
+</div>
+
+<div class="test">
+  <div class="case">
+    <div class="anchor"></div>
+    <div class="host">
+      <div class="probe"></div>
+    </div>
+  </div>
+  <p>Probe in a shadow tree; the host has no default anchor element.</p>
+</div>
+
+<div class="test">
+  <div class="case">
+    <div class="anchor"></div>
+    <div class="host">
+      <div class="probe"></div>
+    </div>
+  </div>
+  <p>Slotted probe; the slot has no default anchor element.</p>
+</div>
+
+<div class="test">
+  <div class="case">
+    <div class="anchor"></div>
+    <div class="host">
+      <div class="probe anchored"></div>
+    </div>
+  </div>
+  <p>Slotted probe; the slot itself uses 'match-parent'.</p>
+</div>

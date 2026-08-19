@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+  <script>
+    const assertCurrentPosterSupported = () =>
+      assert_implements(
+        'currentPoster' in HTMLVideoElement.prototype,
+        'HTMLVideoElement.currentPoster is not supported'
+      );
+
+    const video = document.createElement('video');
+    const img0 = document.createElement('img');
+    const img1 = document.createElement('img');
+    video.src = '/media/A4.webm';
+    video.controls = true;
+    video.posterFromImg = true;
+    img0.src = '/media/poster.png';
+    img1.src = '/media/poster.png?second=true';
+    video.appendChild(img0);
+    video.appendChild(img1);
+
+    document.body.appendChild(video);
+
+    test(function () {
+      assertCurrentPosterSupported();
+      assert_equals(video.currentPoster, img0.currentSrc);
+      assert_not_equals(video.currentPoster, img1.currentSrc);
+      assert_true(
+        img1.checkVisibility(),
+        'The ignored second img is ordinary fallback content and should render normally, unlike the poster image source'
+      );
+    }, 'HTMLVideoElement.currentPoster matches only the first img.currentSrc');
+
+    test(function () {
+      assertCurrentPosterSupported();
+      const video = document.createElement('video');
+      video.src = '/media/A4.webm';
+      video.controls = true;
+      video.posterFromImg = true;
+
+      const picture0 = document.createElement('picture');
+      const img0 = document.createElement('img');
+      img0.src = '/media/poster.png?picture=0';
+      picture0.appendChild(img0);
+
+      const picture1 = document.createElement('picture');
+      const img1 = document.createElement('img');
+      img1.src = '/media/poster.png?picture=1';
+      picture1.appendChild(img1);
+
+      video.appendChild(picture0);
+      video.appendChild(picture1);
+      document.body.appendChild(video);
+
+      assert_equals(video.currentPoster, img0.currentSrc);
+      assert_not_equals(video.currentPoster, img1.currentSrc);
+      assert_true(
+        img1.checkVisibility(),
+        'The ignored second picture is ordinary fallback content and should render normally, unlike the poster image source'
+      );
+    }, 'HTMLVideoElement.currentPoster matches only the first picture>img; a second picture is ignored as fallback content');
+
+    test(function () {
+      assertCurrentPosterSupported();
+      const video = document.createElement('video');
+      video.src = '/media/A4.webm';
+      video.controls = true;
+      video.posterFromImg = true;
+
+      const img0 = document.createElement('img');
+      img0.src = '/media/poster.png?order=bareImgFirst';
+
+      const picture1 = document.createElement('picture');
+      const img1 = document.createElement('img');
+      img1.src = '/media/poster.png?order=pictureSecond';
+      picture1.appendChild(img1);
+
+      video.appendChild(img0);
+      video.appendChild(picture1);
+      document.body.appendChild(video);
+
+      assert_equals(video.currentPoster, img0.currentSrc);
+      assert_not_equals(video.currentPoster, img1.currentSrc);
+    }, 'HTMLVideoElement.currentPoster matches a bare img over a subsequent picture>img');
+  </script>
+</body>

@@ -119,7 +119,6 @@ def main():
                 dst_html = os.path.join(target_dir, rel_wast +  ".js.tentative.html")
                 src_js = os.path.join(out_dir, "js", rel_wast + ".js")
                 dst_js = os.path.join(target_dir, "js", rel_wast + ".js")
-                print(f" {dst_html} {dst_js}")
 
                 assert os.path.exists(src_html)
                 os.makedirs(os.path.dirname(dst_html), exist_ok=True)

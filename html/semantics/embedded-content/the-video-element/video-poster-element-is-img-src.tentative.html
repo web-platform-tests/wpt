@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body></body>
+
+<script src="resources/poster-utils.js"></script>
+
+<body></body>
+
+<script>
+  const createVideo = () => {
+    const video = document.createElement('video');
+    video.src = '/media/A4.webm';
+    video.controls = true;
+    return document.body.appendChild(video);
+  };
+
+  const createPosterImg = () => {
+    const img = document.createElement('img');
+    img.src = '/media/poster.png?posterImageSrc=true';
+    return img;
+  };
+
+  promise_test(async function () {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    const img = createPosterImg();
+    video.appendChild(createPoster(img));
+    await settled(img);
+
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, 'HTMLVideoElement.currentPoster matches img.currentSrc');
+
+  promise_test(async function () {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    const img = createPosterImg();
+    const picture = document.createElement('picture');
+    picture.appendChild(img);
+    video.appendChild(createPoster(picture));
+    await settled(img);
+
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, 'HTMLVideoElement.currentPoster matches img.currentSrc inside a picture element');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    video.poster = '/media/poster.png';
+    await settledUrl(video.poster);
+    assert_equals(video.currentPoster, video.poster);
+
+    const img = createPosterImg();
+    video.appendChild(createPoster(img));
+    await settled(img);
+
+    assert_equals(video.currentPoster, img.currentSrc);
+    assert_not_equals(video.currentPoster, video.poster);
+  }, 'Inserting a poster element into a video should update HTMLVideoElement.currentPoster');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    video.poster = '/media/poster.png';
+    const img = createPosterImg();
+    const poster = createPoster(img);
+
+    video.appendChild(poster);
+    await settled(img);
+    assert_equals(video.currentPoster, img.currentSrc);
+
+    poster.remove();
+    await settledUrl(video.poster);
+
+    assert_equals(video.currentPoster, video.poster);
+  }, 'Removing a poster element from a video should update HTMLVideoElement.currentPoster');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    const img = createPosterImg();
+    video.appendChild(createPoster(img));
+    await settled(img);
+    const firstSrc = img.currentSrc;
+
+    img.src = '/media/poster.png?posterImageSrc=updated';
+    await t.step_wait(() => img.currentSrc !== firstSrc && img.complete);
+
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, "Changing the poster element's img src should update HTMLVideoElement.currentPoster");
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    video.poster = '/media/poster.png';
+
+    const picture = document.createElement('picture');
+    const img = createPosterImg();
+    picture.appendChild(img);
+    video.appendChild(createPoster(picture));
+    await settled(img);
+    assert_equals(video.currentPoster, img.currentSrc);
+
+    picture.remove();
+    await settledUrl(video.poster);
+
+    assert_equals(
+      video.currentPoster,
+      '',
+      'The poster element is still present, so it has no img and the poster attribute stays unused'
+    );
+  }, 'Removing the picture from the poster element should make HTMLVideoElement.currentPoster empty');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    video.poster = '/media/poster.png';
+    const poster = createPoster();
+    video.appendChild(poster);
+    await settledUrl(video.poster);
+    assert_equals(video.currentPoster, '');
+
+    const img = createPosterImg();
+    poster.appendChild(img);
+    await settled(img);
+
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, 'Inserting an img into an existing poster element should update HTMLVideoElement.currentPoster');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    video.poster = '/media/poster.png';
+    const img = createPosterImg();
+    video.appendChild(createPoster(img));
+    await settled(img);
+    assert_equals(video.currentPoster, img.currentSrc);
+
+    img.remove();
+    await settledUrl(video.poster);
+
+    assert_equals(video.currentPoster, '');
+  }, 'Removing the img from a poster element should make HTMLVideoElement.currentPoster empty');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    video.poster = '/media/poster.png';
+    const img = createPosterImg();
+    const poster = createPoster(img);
+    document.body.appendChild(poster);
+    await settledUrl(video.poster);
+    assert_equals(video.currentPoster, video.poster);
+
+    video.appendChild(poster);
+    await settled(img);
+
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, 'Moving an existing poster element into a video should update HTMLVideoElement.currentPoster');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const videoA = createVideo();
+    const videoB = createVideo();
+    videoA.poster = '/media/poster.png?video=a';
+    videoB.poster = '/media/poster.png?video=b';
+    const img = createPosterImg();
+    const poster = createPoster(img);
+
+    videoA.appendChild(poster);
+    await settled(img);
+    await settledUrl(videoB.poster);
+    assert_equals(videoA.currentPoster, img.currentSrc);
+    assert_equals(videoB.currentPoster, videoB.poster);
+
+    videoB.appendChild(poster);
+    await settledUrl(videoA.poster);
+
+    assert_equals(videoA.currentPoster, videoA.poster);
+    assert_equals(videoB.currentPoster, img.currentSrc);
+  }, 'Moving a poster element between videos should update HTMLVideoElement.currentPoster on both');
+</script>

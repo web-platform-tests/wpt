@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body></body>
+
+<script>
+  const assertCurrentPosterSupported = () =>
+    assert_implements(
+      'currentPoster' in HTMLVideoElement.prototype,
+      'HTMLVideoElement.currentPoster is not supported'
+    );
+
+  // sizes="auto" is only honored for lazy-loaded images.
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+
+    const video = document.createElement('video');
+    video.width = 400;
+    video.height = 300;
+
+    const poster = document.createElement('poster');
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.srcset =
+      '/media/poster.png?w=100 100w, /media/poster.png?w=400 400w, /media/poster.png?w=1600 1600w';
+    img.src = '/media/poster.png?w=fallback';
+    img.width = 50;
+    img.height = 50;
+    poster.appendChild(img);
+    video.appendChild(poster);
+    document.body.appendChild(video);
+
+    const expected = new URL('/media/poster.png?w=400', location.href).href;
+    await t.step_wait(() => img.currentSrc === expected,
+      'sizes=auto should select the candidate matching the video width, not the img width attribute');
+    assert_equals(video.currentPoster, expected);
+  }, 'sizes=auto on the poster image uses the width of the video');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+
+    const video = document.createElement('video');
+    video.width = 100;
+    video.height = 75;
+
+    const poster = document.createElement('poster');
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.srcset =
+      '/media/poster.png?w=100 100w, /media/poster.png?w=400 400w, /media/poster.png?w=1600 1600w';
+    img.width = 1600;
+    img.height = 1200;
+    poster.appendChild(img);
+    video.appendChild(poster);
+    document.body.appendChild(video);
+
+    const small = new URL('/media/poster.png?w=100', location.href).href;
+    const large = new URL('/media/poster.png?w=400', location.href).href;
+    await t.step_wait(() => img.currentSrc === small);
+
+    video.width = 400;
+    video.height = 300;
+
+    await t.step_wait(() => img.currentSrc === large,
+      'resizing the video should re-run source selection for the poster image');
+    assert_equals(video.currentPoster, large);
+  }, 'sizes=auto on the poster image reselects when the video is resized');
+</script>

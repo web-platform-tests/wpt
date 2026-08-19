@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/poster-lazy-load-utils.js"></script>
+
+<body>
+  <script>
+    promise_test(async function (t) {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+
+      // The poster img is never rendered, so laziness must key off the video.
+      const { video, entries } = createPosterVideo(t, {
+        videoLoading: 'lazy',
+        offscreen: true,
+        id: 'lazyPosterVisible',
+      });
+      document.body.appendChild(video);
+
+      await waitForEagerPosterFetch(t);
+      assert_equals(
+        entries.length,
+        0,
+        'Poster image should not be fetched while the video is not visible'
+      );
+
+      video.scrollIntoView();
+      await t.step_wait(
+        () => entries.length > 0,
+        'Poster image should be fetched after the video scrolls into view'
+      );
+    }, "Video with loading=lazy and a poster element does not fetch the poster image while off-screen, then fetches once the video scrolls into view");
+  </script>
+</body>

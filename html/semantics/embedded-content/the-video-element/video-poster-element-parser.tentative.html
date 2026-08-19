@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script src="resources/poster-utils.js"></script>
+
+<body></body>
+
+<script>
+  const loadDoc = async (markup) => {
+    const iframe = document.createElement('iframe');
+    iframe.srcdoc = markup;
+    const loaded = new Promise((resolve) =>
+      iframe.addEventListener('load', resolve, { once: true })
+    );
+    document.body.appendChild(iframe);
+    await loaded;
+    return iframe.contentDocument;
+  };
+
+  promise_test(async function () {
+    assertCurrentPosterSupported();
+    const doc = await loadDoc(`<video id="v" controls>
+      <poster><img id="i" src="/media/poster.png?parser=static"></poster>
+    </video>`);
+    const video = doc.getElementById('v');
+    const img = doc.getElementById('i');
+    await settled(img);
+
+    assert_not_equals(img.currentSrc, '');
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, 'A poster element created by the parser supplies HTMLVideoElement.currentPoster');
+
+  promise_test(async function () {
+    assertCurrentPosterSupported();
+    const doc = await loadDoc(`<video id="v" controls poster="/media/poster.png?parser=attribute">
+      <poster><img id="i" src="/media/poster.png?parser=element"></poster>
+    </video>`);
+    const video = doc.getElementById('v');
+    const img = doc.getElementById('i');
+    await settled(img);
+
+    assert_equals(video.currentPoster, img.currentSrc);
+    assert_not_equals(video.currentPoster, video.poster);
+  }, 'The parser-created poster element takes priority over a poster attribute that is also parsed');
+
+  promise_test(async function () {
+    assertCurrentPosterSupported();
+    const doc = await loadDoc(`<video id="v" controls poster="/media/poster.png?parser=attribute">
+      <poster><picture id="p"><img id="i" src="/media/poster.png?parser=picture"></picture></poster>
+    </video>`);
+    const video = doc.getElementById('v');
+    const img = doc.getElementById('i');
+    await settled(img);
+
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, 'A parser-created poster element containing a picture supplies HTMLVideoElement.currentPoster');
+
+  promise_test(async function () {
+    assertCurrentPosterSupported();
+    const doc = await loadDoc(`<video id="v" controls poster="/media/poster.png?parser=attribute">
+      <poster></poster>
+    </video>`);
+    const video = doc.getElementById('v');
+    await settledUrl(video.poster);
+
+    assert_equals(video.currentPoster, '');
+  }, 'A parser-created empty poster element suppresses the poster attribute');
+
+  promise_test(async function () {
+    assertCurrentPosterSupported();
+    const container = document.createElement('div');
+    container.innerHTML = `<video controls poster="/media/poster.png?parser=innerHTMLAttribute">
+      <poster><img src="/media/poster.png?parser=innerHTML"></poster>
+    </video>`;
+    const video = container.firstElementChild;
+    const img = video.querySelector('img');
+    document.body.appendChild(container);
+    await settled(img);
+
+    assert_equals(video.querySelector('poster').parentNode, video);
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, 'A poster element created via innerHTML supplies HTMLVideoElement.currentPoster');
+</script>

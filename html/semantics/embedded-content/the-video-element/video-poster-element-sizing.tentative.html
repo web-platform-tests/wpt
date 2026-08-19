@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body></body>
+
+<script>
+  const assertCurrentPosterSupported = () =>
+    assert_implements(
+      'currentPoster' in HTMLVideoElement.prototype,
+      'HTMLVideoElement.currentPoster is not supported'
+    );
+
+  const waitForEvent = (target, event) =>
+    new Promise((resolve) => target.addEventListener(event, resolve, { once: true }));
+
+  const sizeOf = (video) => [video.offsetWidth, video.offsetHeight];
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+
+    const reference = document.createElement('video');
+    reference.poster = '/media/poster.png?sizing=reference';
+    document.body.appendChild(reference);
+
+    const video = document.createElement('video');
+    const poster = document.createElement('poster');
+    const img = document.createElement('img');
+    img.src = '/media/poster.png?sizing=reference';
+    img.width = 500;
+    img.height = 400;
+    poster.appendChild(img);
+    video.appendChild(poster);
+    document.body.appendChild(video);
+
+    await waitForEvent(img, 'load');
+    // Let layout pick up the loaded poster frames.
+    await new Promise((resolve) => t.step_timeout(resolve, 100));
+
+    assert_array_equals(
+      sizeOf(video),
+      sizeOf(reference),
+      'width/height attributes on the poster img should not change the video size'
+    );
+    assert_not_equals(video.offsetWidth, 500);
+  }, 'width and height attributes on the poster image do not affect the size of the video');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+
+    const video = document.createElement('video');
+    document.body.appendChild(video);
+    const before = sizeOf(video);
+
+    const poster = document.createElement('poster');
+    const img = document.createElement('img');
+    img.width = 500;
+    img.height = 400;
+    img.alt = 'alt text that must not be laid out inside the video';
+    poster.appendChild(img);
+    video.appendChild(poster);
+
+    await new Promise((resolve) => t.step_timeout(resolve, 100));
+    assert_array_equals(sizeOf(video), before);
+  }, 'A poster image with no source and explicit width and height does not affect the size of the video');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+
+    const createSized = (srcAttributes) => {
+      const video = document.createElement('video');
+      const img = document.createElement('img');
+      for (const [name, value] of Object.entries(srcAttributes)) {
+        img.setAttribute(name, value);
+      }
+      const poster = document.createElement('poster');
+      poster.appendChild(img);
+      video.appendChild(poster);
+      document.body.appendChild(video);
+      return { video, img };
+    };
+
+    const oneX = createSized({ src: '/media/poster.png?density=1x' });
+    const twoX = createSized({ srcset: '/media/poster.png?density=2x 2x' });
+    await Promise.all([waitForEvent(oneX.img, 'load'), waitForEvent(twoX.img, 'load')]);
+    await new Promise((resolve) => t.step_timeout(resolve, 100));
+
+    assert_equals(twoX.img.naturalWidth * 2, oneX.img.naturalWidth);
+    assert_equals(
+      twoX.video.offsetWidth * 2,
+      oneX.video.offsetWidth,
+      'A video with a 2x poster image should be half the width of one with a 1x poster image'
+    );
+    assert_approx_equals(twoX.video.offsetHeight * 2, oneX.video.offsetHeight, 1);
+  }, 'A video without a source is sized by the density-corrected natural size of the poster image');
+</script>

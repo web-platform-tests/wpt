@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<title>CSS Anchor Positioning: 'position-anchor: match-parent' reacts to changes of the parent's default anchor element</title>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#valdef-position-anchor-match-parent">
+<link rel="author" href="mailto:jeroen.zwartepoorte@gmail.com">
+<link rel="match" href="position-anchor-match-parent-dynamic-ref.html">
+<style>
+body {
+  font: 12px/1.4 sans-serif;
+}
+
+.test {
+  display: inline-block;
+  vertical-align: top;
+  width: 130px;
+  margin: 0 8px 8px 0;
+}
+
+.test > p {
+  margin: 2px 0 0;
+}
+
+.case {
+  position: relative;
+  transform: translate(0);
+  box-sizing: border-box;
+  width: 122px;
+  height: 102px;
+  border: 1px solid silver;
+}
+
+/* The anchor box is (20, 20) to (70, 40) in the case box. */
+.anchor {
+  position: absolute;
+  anchor-name: --a;
+  left: 20px;
+  top: 20px;
+  width: 50px;
+  height: 20px;
+  background: silver;
+}
+
+.parent {
+  position: fixed;
+  inset: 0;
+}
+
+/* A probe ends up at (70, 40) if it has the anchor element of its case as its
+   default anchor element, and at (20, 70) if it has no default anchor element
+   at all. */
+.probe {
+  position: fixed;
+  position-anchor: match-parent;
+  left: anchor(right, 20px);
+  top: anchor(bottom, 70px);
+  width: 20px;
+  height: 20px;
+  background: green;
+}
+</style>
+
+<div class="test">
+  <div class="case">
+    <div class="anchor"></div>
+    <div class="parent" id="gains" style="position-anchor: none">
+      <div class="probe"></div>
+    </div>
+  </div>
+  <p>Parent gains a default anchor element.</p>
+</div>
+
+<div class="test">
+  <div class="case">
+    <div class="anchor"></div>
+    <div class="parent" id="loses" style="position-anchor: --a">
+      <div class="probe"></div>
+    </div>
+  </div>
+  <p>Parent loses its default anchor element.</p>
+</div>
+
+<script>
+requestAnimationFrame(() => requestAnimationFrame(() => {
+  document.getElementById('gains').style.positionAnchor = '--a';
+  document.getElementById('loses').style.positionAnchor = 'none';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.documentElement.classList.remove('reftest-wait');
+  }));
+}));
+</script>

@@ -129,6 +129,22 @@ body {
 <div class="test">
   <div class="case">
     <div class="anchor"></div>
+    <div class="parent" style="position-anchor: --a">
+      <div class="parent" style="position-anchor: --a">
+        <div class="parent" style="position-anchor: --a">
+          <div class="parent" style="position-anchor: --a">
+            <div class="probe" style="position-anchor: --a"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p>Chain of 'match-parent' parents, several levels deep.</p>
+</div>
+
+<div class="test">
+  <div class="case">
+    <div class="anchor"></div>
     <div class="parent" style="position-anchor: none">
       <div class="parent" style="position-anchor: none">
         <div class="probe"></div>
@@ -148,6 +164,32 @@ body {
     </div>
   </div>
   <p>Only the grandparent has a default anchor element.</p>
+</div>
+
+<div class="test">
+  <div class="case">
+    <div class="anchor"></div>
+    <div class="parent" style="position-anchor: --a">
+      <div>
+        <div>
+          <div class="probe"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p>Anchored ancestor, with plain wrappers in between.</p>
+</div>
+
+<div class="test">
+  <div class="case">
+    <div class="anchor"></div>
+    <div class="parent" style="position-anchor: --a">
+      <div>
+        <div class="probe"></div>
+      </div>
+    </div>
+  </div>
+  <p>Intermediate 'match-parent' is not absolutely positioned.</p>
 </div>
 
 <div class="test">

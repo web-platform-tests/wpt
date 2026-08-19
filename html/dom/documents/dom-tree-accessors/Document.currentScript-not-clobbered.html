@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Test that document.currentScript should not be possible to get clobbered via a DOM element with name='currentScript'</title>
+<link rel=help href="https://html.spec.whatwg.org/multipage/#dom-document-currentscript">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<img name='currentScript' src='http://some_possibly_malevolent_address_that_clobbers_document_currentScript.com/foo.js'>
+<script>
+test(function() {
+  assert_true(document.currentScript.tagName === 'SCRIPT'); // In particular, should not be "IMG" from the DOM element
+  assert_true(!document.currentScript.src.includes('malevolent_address')); // Should not have gotten the URL address from IMG element
+  assert_true(document.currentScript.src == ''); // In fact, since this is an inline <script> element, .src should be empty.
+}, "Document.currentScript should not get clobbered by a DOM element with name='currentScript' attribute");
+</script>

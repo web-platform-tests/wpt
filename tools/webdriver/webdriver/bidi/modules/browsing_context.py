@@ -65,6 +65,7 @@ class BrowsingContext(BidiModule):
         clip: Optional[ClipOptions] = None,
         origin: Optional[OriginOptions] = None,
         format: Optional[FormatOptions] = None,
+        colorSpace: Optional[str] = None,
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {"context": context}
 
@@ -74,6 +75,8 @@ class BrowsingContext(BidiModule):
             params["clip"] = clip
         if origin is not None:
             params["origin"] = origin
+        if colorSpace is not None:
+            params["colorSpace"] = colorSpace
 
         return params
 

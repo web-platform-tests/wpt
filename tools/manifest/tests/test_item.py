@@ -132,6 +132,44 @@ def test_reftest_fuzzy_multi(fuzzy):
     assert fuzzy == t3.fuzzy
 
 
+@pytest.mark.parametrize("content", [
+    "srgb",
+    "display-p3",
+    "rec2020",
+    "rec2100-pq",
+    "rec2100-hlg",
+])
+def test_reftest_color_space(content):
+    t = RefTest('/',
+                'foo/test.html',
+                '/',
+                'foo/test.html',
+                [('/foo/ref.html', '==')],
+                reftest_color_space=content)
+    assert content == t.reftest_color_space
+
+    json_obj = t.to_json()
+
+    m = Manifest("/", "/")
+    t2 = RefTest.from_json(m, t.path, json_obj)
+    assert content == t2.reftest_color_space
+
+    roundtrip = json.loads(json.dumps(json_obj))
+    t3 = RefTest.from_json(m, t.path, roundtrip)
+    assert content == t3.reftest_color_space
+
+def test_reftest_color_space_none():
+    t = RefTest('/',
+                'foo/test.html',
+                '/',
+                'foo/test.html',
+                [('/foo/ref.html', '==')])
+    assert t.reftest_color_space is None
+
+    json_obj = t.to_json()
+    assert "reftest_color_space" not in json_obj[-1]
+
+
 def test_item_types():
     for key, value in item_types.items():
         assert isinstance(key, str)

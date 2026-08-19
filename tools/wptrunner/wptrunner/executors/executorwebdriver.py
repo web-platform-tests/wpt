@@ -1407,24 +1407,30 @@ class WebDriverRefTestExecutor(RefTestExecutor):
 
         return self.convert_result(test, result)
 
-    def screenshot(self, test, viewport_size, dpi, page_ranges):
+    def screenshot(self, test, viewport_size, dpi, page_ranges, color_space=None):
         # https://github.com/web-platform-tests/wpt/issues/7135
         assert viewport_size is None
         assert dpi is None
 
         timeout = self.timeout_multiplier * test.timeout if self.debug_info is None else None
 
+        def _do_screenshot(protocol, url, timeout):
+            return self._screenshot(protocol, url, timeout, color_space=color_space)
+
         return WebDriverRun(self.logger,
-                            self._screenshot,
+                            _do_screenshot,
                             self.protocol,
                             self.test_url(test),
                             timeout,
                             self.extra_timeout).run()
 
-    def _screenshot(self, protocol, url, timeout):
+    def _screenshot(self, protocol, url, timeout, color_space=None):
         # There's nothing we want from the "complete" message, so discard the
         # return value.
         protocol.testdriver.run(url, self.wait_script)
+
+        if color_space is not None:
+            return self._bidi_screenshot(color_space)
 
         screenshot = self.protocol.webdriver.screenshot()
         if screenshot is None:
@@ -1435,6 +1441,33 @@ class WebDriverRefTestExecutor(RefTestExecutor):
             screenshot = screenshot.split(",", 1)[1]
 
         return screenshot
+
+    def _bidi_screenshot(self, color_space):
+        bidi_session = getattr(self.protocol.webdriver, "bidi_session", None)
+        if bidi_session is None:
+            raise ValueError("reftest-color-space requires a WebDriver BiDi session")
+
+        capture_screenshot = getattr(bidi_session.browsing_context, "capture_screenshot", None)
+        if capture_screenshot is None:
+            raise ValueError("browsingContext.captureScreenshot is not available in the WebDriver BiDi client library")
+
+        try:
+            result = self.protocol.loop.run_until_complete(
+                capture_screenshot(
+                    context=self.protocol.base.current_window,
+                    format={"type": "image/png"},
+                    colorSpace=color_space,
+                    raw_result=True,
+                )
+            )
+        except Exception as e:
+            raise ValueError(f"BiDi captureScreenshot failed for color_space={color_space}: {e}") from e
+
+        data = result.get("data")
+        if data is None:
+            raise ValueError("BiDi captureScreenshot returned no data")
+
+        return data
 
 
 class WebDriverPrintRefTestExecutor(WebDriverRefTestExecutor):
@@ -1447,9 +1480,12 @@ class WebDriverPrintRefTestExecutor(WebDriverRefTestExecutor):
         with open(os.path.join(here, "reftest.js")) as f:
             self.script = f.read()
 
-    def screenshot(self, test, viewport_size, dpi, page_ranges):
+    def screenshot(self, test, viewport_size, dpi, page_ranges, color_space=None):
         # https://github.com/web-platform-tests/wpt/issues/7140
         assert dpi is None
+
+        if color_space is not None:
+            raise ValueError("reftest-color-space is not supported by the WebDriver print reftest executor")
 
         if not self.has_window:
             self.protocol.base.execute_script(self.script)

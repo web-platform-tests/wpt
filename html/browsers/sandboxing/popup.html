@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title>I should have no sandbox restrictions</title>
+  <script>
+    window.onload = function() {
+      window.opener.parent.calledFromPopUp()
+      window.close();
+    }
+  </script>
+  </head>
+  <body>
+    <div id="inner">foo</div>
+  </body>
+</html>

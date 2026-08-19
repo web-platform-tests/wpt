@@ -199,6 +199,7 @@ def build_full_command(event: Event, task: Task) -> List[str]:
         "fetch_ref": fetch_ref,
         "task_cmd": task["command"],
         "install_str": "",
+        "uv_str": "",
         "commit_args": ""
     }
 
@@ -236,6 +237,10 @@ def build_full_command(event: Event, task: Task) -> List[str]:
                              for item in install_packages)
         cmd_args["install_str"] = "\n".join("sudo %s;" % item for item in install_items)
 
+    python_version = task.get("python")
+    if python_version:
+        cmd_args["uv_str"] = f"uv python install {python_version}"
+
     commit_args_name = task.get("commit-args-name")
     if commit_args_name:
         body = get_commit_message(event)
@@ -256,7 +261,8 @@ def build_full_command(event: Event, task: Task) -> List[str]:
 ~/start.sh \
   %(repo_url)s \
   %(fetch_ref)s;
-%(install_str)s
+%(install_str)s;
+%(uv_str)s;
 cd web-platform-tests;
 ./wpt tc-run %(options_str)s -- %(task_cmd)s %(commit_args)s;
 """ % cmd_args]
@@ -347,6 +353,8 @@ def build_task_graph(event: Event,
             env_extra["TASK_ARTIFACTS"] = json.dumps(
                 [get_artifact_data(artifact, task_id_map)
                  for artifact in task["download-artifacts"]])
+        if "python" in task:
+            env_extra["WPT_PYTHON"] = task["python"]
 
         task_id, task_data = create_tc_task(event, task, taskgroup_id, depends_on_ids,
                                             env_extra=env_extra)

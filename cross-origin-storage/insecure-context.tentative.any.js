@@ -1,4 +1,8 @@
-// META: global=window,worker
+// META: global=window,dedicatedworker,sharedworker
+//
+// Service workers are excluded deliberately: a service worker is always
+// a secure context, so the assert_false(isSecureContext) precondition
+// below can never hold there.
 //
 // https://wicg.github.io/cross-origin-storage/#the-crossoriginstoragemanager-interface
 //

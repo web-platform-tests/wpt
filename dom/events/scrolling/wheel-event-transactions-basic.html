@@ -110,6 +110,8 @@ function runTest() {
     // transaction have the same target.
     await new test_driver.Actions()
       .addWheel("wheel1")
+      .scroll(testInfo.scrollX, testInfo.scrollY, 0, 10, {origin: testInfo.origin})
+      .pause(1)
       .scroll(testInfo.scrollX, testInfo.scrollY, 0, 30, {origin: testInfo.origin})
       .pause(1)
       .scroll(testInfo.scrollX, testInfo.scrollY, 0, 30, {origin: testInfo.origin})

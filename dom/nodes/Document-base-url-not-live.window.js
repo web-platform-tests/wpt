@@ -1,13 +1,6 @@
-// Confirms that the base URL an about:blank or about:srcdoc document inherits
-// from its initiator/container is a snapshot taken at creation, not a live view
-// of the initiator's current base URL.
-//
-// Reading baseURI is not enough on its own: implementations cache the base URL,
-// so a live-but-cached implementation would still return the creation-time value
-// on read. To distinguish snapshot from live, the container's base URL is changed
-// and the child is then forced to recompute its base URL (by inserting and
-// removing a <base>). A snapshot yields the creation-time value; a live view
-// yields the container's new base URL.
+// Reading baseURI cannot distinguish a snapshot from a live lookup on its own, as
+// implementations cache the base URL. So change the container's base URL and then
+// force the child to recompute by inserting and removing a <base>.
 //
 // See https://github.com/whatwg/dom/issues/454
 
@@ -20,7 +13,6 @@ function makeIframe(doc, configure) {
   });
 }
 
-// Inserting then removing a <base> makes the document recompute its base URL.
 function forceBaseURLRecompute(doc) {
   const base = doc.createElement("base");
   base.setAttribute("href", "http://example.org/forced/");

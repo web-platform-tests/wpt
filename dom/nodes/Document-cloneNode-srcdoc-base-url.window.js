@@ -1,12 +1,3 @@
-// A relative <base> href in an about:srcdoc document, and how it interacts with
-// cloning. Parallels the about:blank case.
-//
-// The base URL an about:srcdoc document inherits from its container is exposed
-// through the no-<base> path (base URL override), so ordinary relative URLs
-// resolve against it. A <base> element, however, resolves its href against the
-// document's own URL, so a relative <base href="sub/"> resolves against
-// about:srcdoc rather than the inherited base URL. Cloning does not change this.
-//
 // See https://github.com/whatwg/dom/issues/454
 
 function srcdocDocument(t, srcdoc) {

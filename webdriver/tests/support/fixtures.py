@@ -1,29 +1,9 @@
-import copy
-import json
-import os
-
 import pytest
-import webdriver
 
-from urllib.parse import urlunsplit
-
-from tests.support.helpers import deep_update, is_wayland
+from tests.support.helpers import is_wayland
 from tests.support.web_extension import EXTENSION_DATA
-from tests.support.inline import build_inline
 from tests.support.http_request import HTTPRequest
 from tests.support.keys import Keys
-
-# The webdriver session can outlive a pytest session
-_current_session = None
-
-
-def get_current_session():
-    return _current_session
-
-
-def set_current_session(session):
-    global _current_session
-    _current_session = session
 
 
 def pytest_configure(config):
@@ -34,91 +14,9 @@ def pytest_configure(config):
     )
 
 
-def pytest_sessionfinish():
-    # Cleanup at the end of a test run
-    if get_current_session() is not None:
-        get_current_session().end()
-        set_current_session(None)
-
-
-@pytest.fixture
-def default_capabilities():
-    """Default capabilities to use for a new WebDriver session."""
-    return {}
-
-
-@pytest.fixture
-def capabilities(request, default_capabilities):
-    """Merges default capabilities with any test-specific capabilities from a marker."""
-    marker = request.node.get_closest_marker("capabilities")
-    if marker and marker.args:
-        # Ensure the first positional argument is a dictionary
-        assert isinstance(
-            marker.args[0], dict), "capabilities marker must use a dictionary"
-        caps = copy.deepcopy(default_capabilities)
-        deep_update(caps, marker.args[0])
-        return caps
-
-    return default_capabilities  # Use defaults if no marker is present
-
-
 @pytest.fixture
 def http(configuration):
     return HTTPRequest(configuration["host"], configuration["port"])
-
-
-@pytest.fixture(scope="session")
-def full_configuration():
-    """Get test configuration information. Keys are:
-
-    host - WebDriver server host.
-    port -  WebDriver server port.
-    capabilities - Capabilities passed when creating the WebDriver session
-    timeout_multiplier - Multiplier for timeout values
-    webdriver - Dict with keys `binary`: path to webdriver binary, and
-                `args`: Additional command line arguments passed to the webdriver
-                binary. This doesn't include all the required arguments e.g. the
-                port.
-    wptserve - Configuration of the wptserve servers."""
-
-    with open(os.environ.get("WDSPEC_CONFIG_FILE"), "r") as f:
-        return json.load(f)
-
-
-@pytest.fixture(scope="session")
-def server_config(full_configuration):
-    return full_configuration["wptserve"]
-
-
-@pytest.fixture(scope="session")
-def configuration(full_configuration):
-    """Configuation minus server config.
-
-    This makes logging easier to read."""
-
-    config = full_configuration.copy()
-    del config["wptserve"]
-
-    return config
-
-
-async def reset_current_session_if_necessary(caps):
-    # If there is a session with different requested capabilities active than
-    # the one we would like to create, end it now.
-    session = get_current_session()
-    if session is not None:
-        if not session.match(caps):
-            is_bidi = isinstance(session, webdriver.BidiSession)
-            if is_bidi:
-                await session.end()
-            else:
-                session.end()
-            set_current_session(None)
-
-
-@pytest.fixture(scope="function")
-def current_session():
-    return get_current_session()
 
 
 @pytest.fixture
@@ -132,50 +30,11 @@ def target_platform(configuration):
 
 
 @pytest.fixture
-def url(server_config):
-    def url(path, protocol="https", domain="", subdomain="", query="", fragment=""):
-        domain = server_config["domains"][domain][subdomain]
-        port = server_config["ports"][protocol][0]
-        host = "{0}:{1}".format(domain, port)
-        return urlunsplit((protocol, host, path, query, fragment))
-
-    return url
-
-
-@pytest.fixture
 def modifier_key(current_session):
     if current_session.capabilities["platformName"] == "mac":
         return Keys.META
     else:
         return Keys.CONTROL
-
-
-@pytest.fixture
-def inline(url):
-    """Take a source extract and produces well-formed documents.
-
-    Based on the desired document type, the extract is embedded with
-    predefined boilerplate in order to produce well-formed documents.
-    The media type and character set may also be individually configured.
-
-    This helper function originally used data URLs, but since these
-    are not universally supported (or indeed standardised!) across
-    browsers, it now delegates the serving of the document to wptserve.
-    This file also acts as a wptserve handler (see the main function
-    below) which configures the HTTP response using query parameters.
-
-    This function returns a URL to the wptserve handler, which in turn
-    will serve an HTTP response with the requested source extract
-    inlined in a well-formed document, and the Content-Type header
-    optionally configured using the desired media type and character set.
-
-    Any additional keyword arguments are passed on to the build_url
-    function, which comes from the url fixture.
-    """
-    def inline(src, **kwargs):
-        return build_inline(url, src, **kwargs)
-
-    return inline
 
 
 @pytest.fixture

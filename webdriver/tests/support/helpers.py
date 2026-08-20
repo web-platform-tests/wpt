@@ -1,24 +1,6 @@
 import base64
-import collections
 import os
 from urllib.parse import urlparse
-
-
-def deep_update(source, overrides):
-    """
-    Update a nested dictionary or similar mapping.
-    Modify ``source`` in place.
-    """
-    for key, value in overrides.items():
-        if isinstance(value, collections.abc.Mapping) and value:
-            source[key] = deep_update(source.get(key, {}), value)
-        elif isinstance(value, list) and isinstance(source.get(key), list) and value:
-            # Concatenate lists, ensuring all elements are kept without duplicates
-            source[key] = list(dict.fromkeys(source[key] + value))
-        else:
-            source[key] = value
-
-    return source
 
 
 def filter_dict(source, d):

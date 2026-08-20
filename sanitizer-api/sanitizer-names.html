@@ -97,6 +97,7 @@
 
   // A name whose case does not match the parsed name matches nothing.
   // Configurations are never case-folded.
+  // https://html.spec.whatwg.org/#parsing-main-inforeign
   [
     [ "DIV", "<div>text</div>" ],
     [ "feblend", "<svg><feBlend></feBlend></svg>" ],
@@ -116,6 +117,7 @@
 
   // Attribute names are not case folded. The parser adjusts "viewbox" to
   //  "viewBox" in foreign content, so only the adjusted name matches.
+  // https://html.spec.whatwg.org/#adjust-svg-attributes
   [
     [ "viewBox", "0 0 1 1" ],
     [ "viewbox", null ],

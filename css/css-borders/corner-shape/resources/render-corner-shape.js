@@ -212,80 +212,21 @@ function corner_clip_out_path(startRadius, endRadius, startInset, endInset,
   const originalCenter = extend_point(originalOuter, normalizedV3.scale(endRadius),
     normalizedV2.scale(startRadius));
 
-  /**
-   * @param {number} x
-   * @param {number} y
-   * @param {DOMPointReadOnly} start
-   * @param {DOMPointReadOnly} end
-   * @param {DOMPointReadOnly} center
-   * @returns {DOMPointReadOnly}
-   */
-  function map_point_to_corner(x, y, start, end, center) {
-    return extend_point(center,
-      Vector2D.fromPoints(center, end).scale(x),
-      Vector2D.fromPoints(center, start).scale(y));
+  function clamp(l, v, u) {
+    return Math.max(l, Math.min(v, u));
   }
 
-  /**
-   * @param {Path2D} path
-   * @param {DOMPointReadOnly} start
-   * @param {DOMPointReadOnly} outer
-   * @param {DOMPointReadOnly} end
-   * @param {DOMPointReadOnly} center
-   */
-  function add_curve(path, start, outer, end, center) {
-    path.lineTo(start.x, start.y);
-    if (superellipse_param == -Infinity) {
-      path.lineTo(center.x, center.y);
-      path.lineTo(end.x, end.y);
-      return;
-    }
+  const halfCornerX = unit_superellipse_half_corner(superellipse_param);
+  const controlPointX = clamp(0, halfCornerX / (Math.SQRT2 - 1) - 1 / Math.SQRT2, 1);
 
-    const n = 2 ** Math.abs(superellipse_param);
-    const curveCenter = superellipse_param < 0 ? outer : center;
-    const t_set = new Set([0, 1]);
-
-    const denom = Math.log(1 / n);
-    for (let x = Math.min(start.x, end.x); x < Math.max(start.x, end.x); x++) {
-      const t = Math.log((x - start.x) / (end.x - start.x)) / denom;
-      if (t > 0 && t < 1)
-        t_set.add(t);
-    }
-    for (let y = Math.min(start.y, end.y); y < Math.max(start.y, end.y); y++) {
-      const t = Math.log(1 - (y - start.y) / (end.y - start.y)) / denom;
-      if (t > 0 && t < 1)
-        t_set.add(t);
-    }
-
-    for (const t of [...t_set].toSorted((a, b) => a - b)) {
-      const x = t ** (1 / n);
-      const y = (1 - t) ** (1 / n);
-      const point = map_point_to_corner(x, y, start, end, curveCenter);
-      path.lineTo(point.x, point.y);
-    }
-  }
-
-  const path = new Path2D();
-  if (!startInset && !endInset) {
-    path.moveTo(originalStart.x, originalStart.y);
-    add_curve(path, originalStart, originalOuter, originalEnd, originalCenter);
-    if (mode === 'fill')
-      path.lineTo(targetOuter.x, targetOuter.y);
-    return path;
-  }
-
-  const clampedK = Math.max(-1, Math.min(1, superellipse_param));
-  const halfCornerX = unit_superellipse_half_corner(clampedK);
-  const controlPointX = halfCornerX / (Math.SQRT2 - 1) - 1 / Math.SQRT2;
-
-  const insetDiff = Math.max(-startRadius, Math.min(endRadius, endInset - startInset));
+  const insetDiff = clamp(-startRadius, endInset - startInset, endRadius);
 
   if (superellipse_param <= 0 && (insetDiff == -startRadius || insetDiff == endRadius))
     return new Path2D();
 
   let startControlPointX = controlPointX;
   let endControlPointX = controlPointX;
-  if (insetDiff != 0) {
+  if (insetDiff !== 0) {
     const bevelNormalDelta = Math.sqrt(startRadius ** 2 + endRadius ** 2 + insetDiff ** 2);
     const bevelNormalX = endRadius * insetDiff + startRadius * bevelNormalDelta;
     const bevelNormalY = -startRadius * insetDiff + endRadius * bevelNormalDelta;
@@ -300,70 +241,113 @@ function corner_clip_out_path(startRadius, endRadius, startInset, endInset,
 
   const unmappedStartNormal = new Vector2D((1 - startControlPointX) * startRadius, startControlPointX * endRadius).normalized();
   const unmappedEndNormal = new Vector2D(endControlPointX * startRadius, (1 - endControlPointX) * endRadius).normalized();
-  const offsetStartV3 = normalizedV3.scale(unmappedStartNormal.x * startInset);
-  const offsetStartV2 = normalizedV2.scale(unmappedStartNormal.y * startInset);
-  const offsetEndV3 = normalizedV3.scale(unmappedEndNormal.x * endInset);
-  const offsetEndV2 = normalizedV2.scale(unmappedEndNormal.y * endInset);
 
-  const adjustedStart = extend_point(originalStart, offsetStartV3, offsetStartV2);
-  const adjustedOuter = extend_point(originalOuter, offsetEndV3, offsetStartV2);
-  const adjustedEnd = extend_point(originalEnd, offsetEndV3, offsetEndV2);
-  const adjustedCenter = extend_point(originalCenter, offsetStartV3, offsetEndV2);
+  const startNormal = Vector2D.sum(normalizedV3.scale(unmappedStartNormal.x), normalizedV2.scale(unmappedStartNormal.y));
+  const endNormal = Vector2D.sum(normalizedV3.scale(unmappedEndNormal.x), normalizedV2.scale(unmappedEndNormal.y));
 
-  if ((startInset >= 0 && endInset >= 0) || superellipse_param >= 1) {
-    path.moveTo(adjustedStart.x, adjustedStart.y);
-    add_curve(path, adjustedStart, adjustedOuter, adjustedEnd, adjustedCenter);
-    if (mode === 'fill')
-      path.lineTo(targetOuter.x, targetOuter.y);
-    return path;
-  }
+  let adjustedStart = extend_point(originalStart, startNormal.scale(startInset));
+  let adjustedEnd = extend_point(originalEnd, endNormal.scale(endInset));
 
-  const clipStart = extend_point(targetOuter, normalizedV3);
-  const clipEnd = extend_point(targetOuter, normalizedV2);
+  const startTangent = startNormal.perpendicular().scale(-1);
+  const endTangent = endNormal.perpendicular();
+
   let miterStart = adjustedStart;
   let miterEnd = adjustedEnd;
-  if (superellipse_param >= 0) {
-    const controlPoint =
-      map_point_to_corner(controlPointX, controlPointX,
-        adjustedStart, adjustedEnd, adjustedCenter);
+  if (startInset < 0) {
+    const clipStart = extend_point(targetOuter, normalizedV3);
+    miterStart = line_intersection(
+      [adjustedStart, extend_point(adjustedStart, startTangent)],
+      [clipStart, targetOuter])
+      || adjustedStart;
 
-    if (startInset < 0) {
-      miterStart = line_intersection([adjustedStart, controlPoint], [clipStart, targetOuter])
-        || adjustedStart;
-    }
-
-    if (endInset < 0) {
-      miterEnd = line_intersection([adjustedEnd, controlPoint], [clipEnd, targetOuter])
-        || adjustedEnd;
-    }
-  } else {
-    const startTangent =
-      Vector2D.sum(offsetStartV3, offsetStartV2).perpendicular().scale(-1);
-    const endTangent =
-      Vector2D.sum(offsetEndV3, offsetEndV2).perpendicular();
-
-    if (startInset < 0)
-      miterStart = line_intersection(
-        [adjustedStart, extend_point(adjustedStart, startTangent)], [clipStart, targetOuter])
-        || adjustedStart;
-
-    if (endInset < 0)
-      miterEnd = line_intersection([adjustedEnd, extend_point(adjustedEnd, endTangent)], [clipEnd, targetOuter])
-        || adjustedEnd;
+    if (superellipse_param >= 0)
+      adjustedStart = miterStart;
   }
 
+  if (endInset < 0) {
+    const clipEnd = extend_point(targetOuter, normalizedV2);
+    miterEnd = line_intersection(
+      [adjustedEnd, extend_point(adjustedEnd, endTangent)],
+      [clipEnd, targetOuter])
+      || adjustedEnd;
+
+    if (superellipse_param >= 0)
+      adjustedEnd = miterEnd;
+  }
+
+  const adjustedWidth = Vector2D.dot(Vector2D.fromPoints(adjustedEnd, adjustedStart), normalizedV3);
+  const adjustedOuter = extend_point(adjustedStart, normalizedV3.scale(-adjustedWidth));
+  const adjustedCenter = extend_point(adjustedEnd, normalizedV3.scale(adjustedWidth));
+
+  /**
+   * @param {number} x
+   * @param {number} y
+   * @param {DOMPointReadOnly} start
+   * @param {DOMPointReadOnly} end
+   * @param {DOMPointReadOnly} center
+   * @returns {DOMPointReadOnly}
+   */
+  function map_point_to_corner(x, y, start, end, center) {
+    return extend_point(center,
+      Vector2D.fromPoints(center, end).scale(x),
+      Vector2D.fromPoints(center, start).scale(y));
+  }
+
+  function t_arr(superellipse_param) {
+    const n = 2 ** Math.abs(superellipse_param);
+    const t_set = new Set([0, 1]);
+
+    const denom = Math.log(1 / n);
+    for (let x = Math.min(adjustedStart.x, adjustedEnd.x); x < Math.max(adjustedStart.x, adjustedEnd.x); x++) {
+      const t = Math.log((x - adjustedStart.x) / (adjustedEnd.x - adjustedStart.x)) / denom;
+      if (t > 0 && t < 1)
+        t_set.add(t);
+    }
+    for (let y = Math.min(adjustedStart.y, adjustedEnd.y); y < Math.max(adjustedStart.y, adjustedEnd.y); y++) {
+      const t = Math.log(1 - (y - adjustedStart.y) / (adjustedEnd.y - adjustedStart.y)) / denom;
+      if (t > 0 && t < 1)
+        t_set.add(t);
+    }
+
+    return [...t_set].toSorted((a, b) => a - b);
+  }
+
+  const path = new Path2D();
   path.moveTo(miterStart.x, miterStart.y);
 
-  let miterIntersection = null;
+  let selfIntersection = null;
   if (superellipse_param < 0 && startInset < 0 && endInset < 0 &&
     (-endInset >= startRadius || -startInset >= endRadius)) {
-    miterIntersection = segment_line_intersection([miterStart, adjustedStart], [miterEnd, adjustedEnd]);
+    selfIntersection = segment_line_intersection([miterStart, adjustedStart], [miterEnd, adjustedEnd]);
   }
 
-  if (miterIntersection)
-    path.lineTo(miterIntersection.x, miterIntersection.y);
-  else
-    add_curve(path, adjustedStart, adjustedOuter, adjustedEnd, adjustedCenter);
+  if (selfIntersection) {
+    path.lineTo(selfIntersection.x, selfIntersection.y);
+  } else if (superellipse_param == -Infinity) {
+    path.lineTo(adjustedCenter.x, adjustedCenter.y);
+  } else if (superellipse_param > 0 || superellipse_param < -1) {
+    const n = 2 ** Math.abs(superellipse_param);
+    const curveCenter = superellipse_param < 0 ? adjustedOuter : adjustedCenter;
+
+    for (const t of t_arr(superellipse_param)) {
+      const x = t ** (1 / n);
+      const y = (1 - t) ** (1 / n);
+      const point = map_point_to_corner(x, y, adjustedStart, adjustedEnd, curveCenter);
+      path.lineTo(point.x, point.y);
+    }
+  } else if (superellipse_param >= -1 && superellipse_param < 0) {
+    const tangentIntersection = line_intersection(
+      [adjustedStart, extend_point(adjustedStart, startTangent)],
+      [adjustedEnd, extend_point(adjustedEnd, endTangent)])
+      || adjustedStart;
+
+    for (const t of t_arr(1)) {
+      const x = 1 - (1 - t) ** (1 / 2);
+      const y = 1 - t ** (1 / 2);
+      const point = map_point_to_corner(x, y, adjustedStart, adjustedEnd, tangentIntersection);
+      path.lineTo(point.x, point.y);
+    }
+  }
 
   path.lineTo(miterEnd.x, miterEnd.y);
 

@@ -71,7 +71,7 @@ class Vector2D {
 
   /**
    * The signed Z component of the cross product of two 2D vectors.
-   * 
+   *
    * @param {Vector2D} v1
    * @param {Vector2D} v2
    * @returns {number}
@@ -83,7 +83,7 @@ class Vector2D {
 
 /**
  * Returns point translated by the sum of the 2D vectors.
- * 
+ *
  * @param {DOMPointReadOnly} point
  * @param  {...Vector2D} vectors
  * @return {DOMPointReadOnly}

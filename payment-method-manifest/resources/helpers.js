@@ -35,13 +35,13 @@ async function waitForServerAccessLogs(t, testId, requiredCount = 2, timeout = 3
       const resp = await fetch(queryUrl);
       if (!resp.ok) {
         throw new Error(
-          `stash-query.py failed with HTTP status ${resp.status} for test ID '${testId}'`
+          `stash-query.py failed with HTTP status ${resp.status}`
         );
       }
       lastLogs = await resp.json();
       return lastLogs && lastLogs.length >= requiredCount;
     },
-    `Waiting for ${requiredCount} server access logs for test ID '${testId}'`,
+    `Waiting for ${requiredCount} server access logs`,
     timeout,
     interval
   );

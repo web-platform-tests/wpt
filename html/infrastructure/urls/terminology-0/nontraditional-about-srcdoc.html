@@ -34,10 +34,10 @@ promise_test(async t => {
       'The request referrer is retrieved from the parent document for ' +
       'about:srcdoc documents');
 
-  // Observe that the "about base URL" is retrieved [1] for `document.baseURI`
-  // as well, indicating that the document is treated like a normal srcdoc
-  // document.
-  // [1]: https://html.spec.whatwg.org/#fallback-base-url
+  // Observe that the inherited base URL (the "base URL override") is retrieved
+  // [1] for `document.baseURI` as well, indicating that the document is treated
+  // like a normal srcdoc document.
+  // [1]: https://html.spec.whatwg.org/#document-base-url
   assert_equals(iframe.contentDocument.baseURI, location.href,
       'The about base URL is retrieved as the base URL for srcdoc documents');
 }, 'about:srcdoc with document.open() is treated like a normal about:srcdoc document');

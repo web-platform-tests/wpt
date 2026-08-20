@@ -129,16 +129,16 @@ async def test_frame(
     bidi_session,
     url,
     match_media,
-    top_context,
+    new_tab,
     create_iframe,
     domain,
     default_prefers_color_scheme,
     some_prefers_color_scheme,
 ):
-    iframe_id = await create_iframe(top_context, url("/", domain=domain))
+    iframe_id = await create_iframe(new_tab, url("/", domain=domain))
 
     await bidi_session.emulation.set_media_features_override(
-        contexts=[top_context["context"]],
+        contexts=[new_tab["context"]],
         features={"prefers-color-scheme": some_prefers_color_scheme},
     )
 
@@ -150,7 +150,7 @@ async def test_frame(
     )
 
     await bidi_session.emulation.set_media_features_override(
-        contexts=[top_context["context"]],
+        contexts=[new_tab["context"]],
         features=None,
     )
 

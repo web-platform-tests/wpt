@@ -1,3 +1,5 @@
+# META: timeout=long
+
 import pytest
 
 from . import MEDIA_FEATURE_NAMES_AND_SAMPLE_VALUES
@@ -6,7 +8,14 @@ from webdriver.bidi.modules.script import ContextTarget
 pytestmark = pytest.mark.asyncio
 
 
-@pytest.mark.parametrize("feature, value", MEDIA_FEATURE_NAMES_AND_SAMPLE_VALUES)
+@pytest.mark.parametrize(
+    "feature, value",
+    [
+        (feature, value)
+        for feature, values, _ in MEDIA_FEATURE_NAMES_AND_SAMPLE_VALUES
+        for value in values
+    ],
+)
 async def test_media_feature_set_override_and_reset(
     bidi_session, top_context, match_media, feature, value
 ):

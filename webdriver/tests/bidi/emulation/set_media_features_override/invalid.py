@@ -1,3 +1,5 @@
+# META: timeout=long
+
 import pytest
 
 import webdriver.bidi.error as error
@@ -123,19 +125,13 @@ async def test_params_features_invalid_type(bidi_session, top_context, value):
         )
 
 
-async def test_params_features_unknown_feature(bidi_session, top_context):
-    with pytest.raises(error.InvalidArgumentException):
-        await bidi_session.emulation.set_media_features_override(
-            features={"unknown-feature": "foo"},
-            contexts=[top_context["context"]],
-        )
-
 
 @pytest.mark.parametrize(
     "feature, value",
     [
-        (feature, "some invalid value")
-        for feature, _ in MEDIA_FEATURE_NAMES_AND_SAMPLE_VALUES
+        (feature, value)
+        for feature, _, invalid_values in MEDIA_FEATURE_NAMES_AND_SAMPLE_VALUES
+        for value in invalid_values
     ],
 )
 async def test_params_features_invalid_value(

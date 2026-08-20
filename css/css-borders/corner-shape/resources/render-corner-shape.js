@@ -3,13 +3,16 @@ class Vector2D {
   x;
   /** @type {number} */
   y;
+  /**
+   * @param {number} x
+   * @param {number} y
+   */
   constructor(x, y) {
     this.x = x;
     this.y = y;
   }
 
   /**
-   *
    * @param {number} s
    * @returns {Vector2D}
    */
@@ -17,32 +20,29 @@ class Vector2D {
     return new Vector2D(this.x * s, this.y * s);
   }
 
+  /**
+   * @returns {number}
+   */
   length() {
     return Math.hypot(this.x, this.y);
   }
 
+  /**
+   * @returns {Vector2D}
+   */
   normalized() {
     const length = this.length();
     return length ? this.scale(1 / length) : this;
   }
 
+  /**
+   * @returns {Vector2D}
+   */
   perpendicular() {
     return new Vector2D(-this.y, this.x);
   }
 
   /**
-   *
-   * @param {Vector2D} v1
-   * @param {Vector2D} v2
-   *
-   * @returns {number}
-   */
-  static crossLength(v1, v2) {
-    return v1.x * v2.y - v1.y * v2.x;
-  }
-
-  /**
-   *
    * @param {DOMPointReadOnly} p1
    * @param {DOMPointReadOnly} p2
    * @returns {Vector2D}
@@ -52,44 +52,63 @@ class Vector2D {
   }
 
   /**
-   *
    * @param  {...Vector2D} v
    * @returns {Vector2D}
    */
-  static concat(...v) {
+  static sum(...v) {
     return new Vector2D(
       v.reduce((acc, v) => acc + v.x, 0), v.reduce((acc, v) => acc + v.y, 0));
+  }
+
+  /**
+   * @param {Vector2D} v1
+   * @param {Vector2D} v2
+   * @returns {number}
+   */
+  static dot(v1, v2) {
+    return v1.x * v2.x + v1.y * v2.y;
+  }
+
+  /**
+   * The signed Z component of the cross product of two 2D vectors.
+   * 
+   * @param {Vector2D} v1
+   * @param {Vector2D} v2
+   * @returns {number}
+   */
+  static cross(v1, v2) {
+    return v1.x * v2.y - v1.y * v2.x;
   }
 }
 
 /**
- *
+ * Returns point translated by the sum of the 2D vectors.
+ * 
  * @param {DOMPointReadOnly} point
  * @param  {...Vector2D} vectors
- *
  * @return {DOMPointReadOnly}
  */
 function extend_point(point, ...vectors) {
-  const vector = Vector2D.concat(...vectors);
+  const vector = Vector2D.sum(...vectors);
   return new DOMPointReadOnly(point.x + vector.x, point.y + vector.y);
 }
 
 /**
  * Calculates the intersection point of two infinite lines.
  *
- * @param {[DOMPointReadOnly, DOMPointReadOnly]} lineA - The first line [A0, A1].
- * @param {[DOMPointReadOnly, DOMPointReadOnly]} lineB - The second line [B0, B1].
- * @returns {DOMPointReadOnly|null} The intersection point, or null
+ * @param {[DOMPointReadOnly, DOMPointReadOnly]} a - The first line.
+ * @param {[DOMPointReadOnly, DOMPointReadOnly]} b - The second line.
+ * @returns {DOMPointReadOnly | null} The intersection point, or null
  */
-function lineIntersection([a0, a1], [b0, b1]) {
+function line_intersection([a0, a1], [b0, b1]) {
   const a_length = Vector2D.fromPoints(a0, a1);
   const b_length = Vector2D.fromPoints(b0, b1);
-  const denom = Vector2D.crossLength(a_length, b_length);
+  const denom = Vector2D.cross(a_length, b_length);
   if (Math.abs(denom) < 1e-6) {
     return null;
   }
 
-  const a_scale = Vector2D.crossLength(Vector2D.fromPoints(a0, b0), b_length) / denom;
+  const a_scale = Vector2D.cross(Vector2D.fromPoints(a0, b0), b_length) / denom;
   return extend_point(a0, a_length.scale(a_scale));
 }
 
@@ -97,15 +116,15 @@ function lineIntersection([a0, a1], [b0, b1]) {
  * Calculates the intersection point between a finite segment and an infinite line.
  * Checks both cases: segment-line and line-segment.
  *
- * @param {[DOMPointReadOnly, DOMPointReadOnly]} lineA - The first line [A0, A1].
- * @param {[DOMPointReadOnly, DOMPointReadOnly]} lineB - The second line [B0, B1].
- * @returns {DOMPointReadOnly|null} The intersection point, or null
+ * @param {[DOMPointReadOnly, DOMPointReadOnly]} a - The first line.
+ * @param {[DOMPointReadOnly, DOMPointReadOnly]} b - The second line.
+ * @returns {DOMPointReadOnly | null} The intersection point, or null
  */
-function segmentLineIntersection([a0, a1], [b0, b1]) {
+function segment_line_intersection([a0, a1], [b0, b1]) {
   const a_length = Vector2D.fromPoints(a0, a1);
   const b_length = Vector2D.fromPoints(b0, b1);
 
-  const denom = Vector2D.crossLength(a_length, b_length);
+  const denom = Vector2D.cross(a_length, b_length);
   if (Math.abs(denom) < 1e-6) {
     return null;
   }
@@ -113,12 +132,12 @@ function segmentLineIntersection([a0, a1], [b0, b1]) {
   const offset = Vector2D.fromPoints(a0, b0);
   const inv_denom = 1 / denom;
 
-  const a_scale = Vector2D.crossLength(offset, b_length) * inv_denom;
+  const a_scale = Vector2D.cross(offset, b_length) * inv_denom;
   if (a_scale >= 0 && a_scale <= 1) {
     return extend_point(a0, a_length.scale(a_scale));
   }
 
-  const b_scale = Vector2D.crossLength(offset, a_length) * inv_denom;
+  const b_scale = Vector2D.cross(offset, a_length) * inv_denom;
   if (b_scale >= 0 && b_scale <= 1) {
     return extend_point(b0, b_length.scale(b_scale));
   }
@@ -126,6 +145,12 @@ function segmentLineIntersection([a0, a1], [b0, b1]) {
   return null;
 }
 
+/**
+ * @param {number} coverage
+ * @param {number} radius
+ * @param {number} outset
+ * @returns {number}
+ */
 function adjusted_radius_dimension(coverage, radius, outset) {
   if (radius > outset || coverage > 1) {
     return radius + outset;
@@ -134,21 +159,31 @@ function adjusted_radius_dimension(coverage, radius, outset) {
   return radius + outset * (1 - (1 - ratio) ** 3 * (1 - coverage ** 3));
 }
 
+/**
+ * @param {number} width
+ * @param {number} height
+ * @param {[number, number]} radius
+ * @param {number} outset_x
+ * @param {number} outset_y
+ * @returns {[number, number]}
+ */
 function outset_adjusted_border_radius(width, height, radius, outset_x, outset_y) {
   const coverage = 2 * Math.min(radius[0] / width, radius[1] / height);
-  const adjusted_radius = [
+  return [
     adjusted_radius_dimension(coverage, radius[0], outset_x),
     adjusted_radius_dimension(coverage, radius[1], outset_y)
   ];
-  return adjusted_radius;
 }
 
 /**
+ * Calculates the X (or Y) coordinate of the half point along a unit superellipse.
+ *
  * @param {number} superellipse_param
+ * @returns {number}
  */
-function normalized_superellipse_half_corner(superellipse_param) {
-  const n = Math.pow(2, Math.abs(superellipse_param));
-  const convexHalfCorner = Math.pow(0.5, 1 / n);
+function unit_superellipse_half_corner(superellipse_param) {
+  const n = 2 ** Math.abs(superellipse_param);
+  const convexHalfCorner = 0.5 ** (1 / n);
   if (superellipse_param < 0) return 1 - convexHalfCorner;
   return convexHalfCorner;
 }
@@ -177,11 +212,28 @@ function corner_clip_out_path(startRadius, endRadius, startInset, endInset,
   const originalCenter = extend_point(originalOuter, normalizedV3.scale(endRadius),
     normalizedV2.scale(startRadius));
 
-  const map_point_to_corner = (x, y, start, end, center) =>
-    extend_point(center, Vector2D.fromPoints(center, end).scale(x),
+  /**
+   * @param {number} x
+   * @param {number} y
+   * @param {DOMPointReadOnly} start
+   * @param {DOMPointReadOnly} end
+   * @param {DOMPointReadOnly} center
+   * @returns {DOMPointReadOnly}
+   */
+  function map_point_to_corner(x, y, start, end, center) {
+    return extend_point(center,
+      Vector2D.fromPoints(center, end).scale(x),
       Vector2D.fromPoints(center, start).scale(y));
+  }
 
-  const add_curve = (path, start, outer, end, center) => {
+  /**
+   * @param {Path2D} path
+   * @param {DOMPointReadOnly} start
+   * @param {DOMPointReadOnly} outer
+   * @param {DOMPointReadOnly} end
+   * @param {DOMPointReadOnly} center
+   */
+  function add_curve(path, start, outer, end, center) {
     path.lineTo(start.x, start.y);
     if (superellipse_param == -Infinity) {
       path.lineTo(center.x, center.y);
@@ -189,7 +241,7 @@ function corner_clip_out_path(startRadius, endRadius, startInset, endInset,
       return;
     }
 
-    const n = Math.pow(2, Math.abs(superellipse_param));
+    const n = 2 ** Math.abs(superellipse_param);
     const curveCenter = superellipse_param < 0 ? outer : center;
     const t_set = new Set([0, 1]);
 
@@ -206,12 +258,12 @@ function corner_clip_out_path(startRadius, endRadius, startInset, endInset,
     }
 
     for (const t of [...t_set].toSorted((a, b) => a - b)) {
-      const x = Math.pow(t, 1 / n);
-      const y = Math.pow(1 - t, 1 / n);
+      const x = t ** (1 / n);
+      const y = (1 - t) ** (1 / n);
       const point = map_point_to_corner(x, y, start, end, curveCenter);
       path.lineTo(point.x, point.y);
     }
-  };
+  }
 
   const path = new Path2D();
   if (!startInset && !endInset) {
@@ -223,11 +275,10 @@ function corner_clip_out_path(startRadius, endRadius, startInset, endInset,
   }
 
   const clampedK = Math.max(-1, Math.min(1, superellipse_param));
-  const halfCornerX = normalized_superellipse_half_corner(clampedK);
+  const halfCornerX = unit_superellipse_half_corner(clampedK);
   const controlPointX = halfCornerX / (Math.SQRT2 - 1) - 1 / Math.SQRT2;
 
-  const insetDiff =
-    Math.max(-startRadius, Math.min(endRadius, endInset - startInset));
+  const insetDiff = Math.max(-startRadius, Math.min(endRadius, endInset - startInset));
 
   if (superellipse_param <= 0 && (insetDiff == -startRadius || insetDiff == endRadius))
     return new Path2D();
@@ -277,27 +328,27 @@ function corner_clip_out_path(startRadius, endRadius, startInset, endInset,
         adjustedStart, adjustedEnd, adjustedCenter);
 
     if (startInset < 0) {
-      miterStart = lineIntersection([adjustedStart, controlPoint], [clipStart, targetOuter])
+      miterStart = line_intersection([adjustedStart, controlPoint], [clipStart, targetOuter])
         || adjustedStart;
     }
 
     if (endInset < 0) {
-      miterEnd = lineIntersection([adjustedEnd, controlPoint], [clipEnd, targetOuter])
+      miterEnd = line_intersection([adjustedEnd, controlPoint], [clipEnd, targetOuter])
         || adjustedEnd;
     }
   } else {
     const startTangent =
-      Vector2D.concat(offsetStartV3, offsetStartV2).perpendicular().scale(-1);
+      Vector2D.sum(offsetStartV3, offsetStartV2).perpendicular().scale(-1);
     const endTangent =
-      Vector2D.concat(offsetEndV3, offsetEndV2).perpendicular();
+      Vector2D.sum(offsetEndV3, offsetEndV2).perpendicular();
 
     if (startInset < 0)
-      miterStart = lineIntersection(
+      miterStart = line_intersection(
         [adjustedStart, extend_point(adjustedStart, startTangent)], [clipStart, targetOuter])
         || adjustedStart;
 
     if (endInset < 0)
-      miterEnd = lineIntersection([adjustedEnd, extend_point(adjustedEnd, endTangent)], [clipEnd, targetOuter])
+      miterEnd = line_intersection([adjustedEnd, extend_point(adjustedEnd, endTangent)], [clipEnd, targetOuter])
         || adjustedEnd;
   }
 
@@ -306,7 +357,7 @@ function corner_clip_out_path(startRadius, endRadius, startInset, endInset,
   let miterIntersection = null;
   if (superellipse_param < 0 && startInset < 0 && endInset < 0 &&
     (-endInset >= startRadius || -startInset >= endRadius)) {
-    miterIntersection = segmentLineIntersection([miterStart, adjustedStart], [miterEnd, adjustedEnd]);
+    miterIntersection = segment_line_intersection([miterStart, adjustedStart], [miterEnd, adjustedEnd]);
   }
 
   if (miterIntersection)
@@ -327,16 +378,9 @@ function corner_clip_out_path(startRadius, endRadius, startInset, endInset,
  * @param {object} style
  * @param {DOMRectReadOnly} borderEdge
  * @param {{left: number, top: number, right: number, bottom: number}} inset
- * @param {"fill" | "stroke"} mode
+ * @param {"fill" | "stroke" | "clip-fill" | "clip-stroke"} mode
  */
-function draw_contoured_path(
-  ctx, style, borderEdge, inset = {
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0
-  },
-  mode = 'fill') {
+function draw_contoured_path(ctx, style, borderEdge, inset, mode = 'fill') {
   const targetEdge = new DOMRectReadOnly(
     borderEdge.left + inset.left, borderEdge.top + inset.top,
     borderEdge.width - inset.left - inset.right,
@@ -384,7 +428,9 @@ function draw_contoured_path(
     }
   };
 
-  ctx.save();
+  if (mode !== 'clip-fill')
+    ctx.save();
+
   const cornerMode = mode.endsWith('fill') ? 'fill' : 'stroke';
   add_corner(corner_clip_out_path(
     topRightRadius[1], topRightRadius[0], topRightInset[1], topRightInset[0],
@@ -410,6 +456,8 @@ function draw_contoured_path(
 
   if (mode !== 'clip-fill')
     ctx.restore();
+  else
+    ctx.save();
 }
 
 /**
@@ -428,8 +476,7 @@ function render(style, ctx, width, height, mode = 'fill') {
       top: -style['margin-top'],
       right: -style['margin-right'],
       bottom: -style['margin-bottom']
-    },
-      `clip-${mode}`);
+    }, `clip-${mode}`);
   }
 
   const shadow_spread = style['shadow-spread'] || 0;
@@ -443,22 +490,25 @@ function render(style, ctx, width, height, mode = 'fill') {
       top: -shadow_spread,
       right: -shadow_spread,
       bottom: -shadow_spread
-    },
-      mode);
+    }, mode);
     ctx.restore();
   }
+
   ctx.fillStyle = 'purple';
-  draw_contoured_path(
-    ctx, style, border_rect, { left: 0, top: 0, right: 0, bottom: 0 }, mode);
+  draw_contoured_path(ctx, style, border_rect, {
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0
+  }, mode);
+
   ctx.fillStyle = 'yellow';
-  draw_contoured_path(
-    ctx, style, border_rect, {
+  draw_contoured_path(ctx, style, border_rect, {
     left: style['border-left-width'],
     top: style['border-top-width'],
     right: style['border-right-width'],
     bottom: style['border-bottom-width']
-  },
-    mode);
+  }, mode);
 }
 
 const padding = 100;
@@ -556,7 +606,6 @@ const corner_shape_keywords = new Map([
 ]);
 
 /**
- *
  * @param {URLSearchParams} params
  * @param {"ref" | "actual"} mode
  * @returns

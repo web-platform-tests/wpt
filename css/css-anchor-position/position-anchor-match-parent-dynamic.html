@@ -6,31 +6,21 @@
 <link rel="author" href="mailto:jeroen.zwartepoorte@gmail.com">
 <link rel="match" href="position-anchor-match-parent-dynamic-ref.html">
 <style>
-body {
-  font: 12px/1.4 sans-serif;
-}
-
-.test {
-  display: inline-block;
-  vertical-align: top;
-  width: 130px;
-  margin: 0 8px 8px 0;
-}
-
-.test > p {
-  margin: 2px 0 0;
+.cases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 642px;
 }
 
 .case {
   position: relative;
-  transform: translate(0);
   box-sizing: border-box;
   width: 122px;
   height: 102px;
   border: 1px solid silver;
 }
 
-/* The anchor box is (20, 20) to (70, 40) in the case box. */
 .anchor {
   position: absolute;
   anchor-name: --a;
@@ -46,9 +36,6 @@ body {
   inset: 0;
 }
 
-/* A probe ends up at (70, 40) if it has the anchor element of its case as its
-   default anchor element, and at (20, 70) if it has no default anchor element
-   at all. */
 .probe {
   position: fixed;
   position-anchor: match-parent;
@@ -60,24 +47,22 @@ body {
 }
 </style>
 
-<div class="test">
+<div class="cases">
+  <!-- Parent gains a default anchor element. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent" id="gains" style="position-anchor: none">
       <div class="probe"></div>
     </div>
   </div>
-  <p>Parent gains a default anchor element.</p>
-</div>
 
-<div class="test">
+  <!-- Parent loses its default anchor element. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent" id="loses" style="position-anchor: --a">
       <div class="probe"></div>
     </div>
   </div>
-  <p>Parent loses its default anchor element.</p>
 </div>
 
 <script>

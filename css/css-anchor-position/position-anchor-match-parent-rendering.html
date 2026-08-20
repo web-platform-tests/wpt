@@ -5,34 +5,21 @@
 <link rel="author" href="mailto:jeroen.zwartepoorte@gmail.com">
 <link rel="match" href="position-anchor-match-parent-rendering-ref.html">
 <style>
-body {
-  font: 12px/1.4 sans-serif;
+.cases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 642px;
 }
 
-.test {
-  display: inline-block;
-  vertical-align: top;
-  width: 130px;
-  margin: 0 8px 8px 0;
-}
-
-.test > p {
-  margin: 2px 0 0;
-}
-
-/* Each case is self-contained: the transform makes the case box the containing
-   block of the fixed positioned boxes inside it, so a probe can only ever see
-   the anchor element of its own case. */
 .case {
   position: relative;
-  transform: translate(0);
   box-sizing: border-box;
   width: 122px;
   height: 102px;
   border: 1px solid silver;
 }
 
-/* The anchor box is (20, 20) to (70, 40) in the case box. */
 .anchor {
   position: absolute;
   anchor-name: --a;
@@ -43,16 +30,11 @@ body {
   background: silver;
 }
 
-/* A parent covers the whole case box, so that the containing block of a probe
-   is the same rectangle whether the probe is fixed or absolutely positioned. */
 .parent {
   position: fixed;
   inset: 0;
 }
 
-/* A probe ends up at (70, 40) if it has the anchor element of its case as its
-   default anchor element, and at (20, 70) if it has no default anchor element
-   at all. */
 .probe, .pseudo-parent::before {
   position: fixed;
   position-anchor: match-parent;
@@ -68,57 +50,48 @@ body {
 }
 </style>
 
-<div class="test">
+<div class="cases">
+  <!-- Parent has a default anchor element. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent" style="position-anchor: --a">
       <div class="probe"></div>
     </div>
   </div>
-  <p>Parent has a default anchor element.</p>
-</div>
 
-<div class="test">
+  <!-- Parent has 'position-anchor: none'. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent" style="position-anchor: none">
       <div class="probe"></div>
     </div>
   </div>
-  <p>Parent has 'position-anchor: none'.</p>
-</div>
 
-<div class="test">
+  <!-- Parent's 'position-anchor' selects no anchor element. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent" style="position-anchor: --nonexistent">
       <div class="probe"></div>
     </div>
   </div>
-  <p>Parent's 'position-anchor' selects no anchor element.</p>
-</div>
 
-<div class="test">
+  <!-- Parent is not positioned. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent" style="position: static; position-anchor: --a">
       <div class="probe"></div>
     </div>
   </div>
-  <p>Parent is not positioned.</p>
-</div>
 
-<div class="test">
+  <!-- Parent is relatively positioned, so 'position-anchor' does not apply. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent" style="position: relative; position-anchor: --a">
       <div class="probe"></div>
     </div>
   </div>
-  <p>Parent is relatively positioned, so 'position-anchor' does not apply.</p>
-</div>
 
-<div class="test">
+  <!-- Parent also uses 'match-parent'. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent" style="position-anchor: --a">
@@ -127,10 +100,8 @@ body {
       </div>
     </div>
   </div>
-  <p>Parent also uses 'match-parent'.</p>
-</div>
 
-<div class="test">
+  <!-- Chain of 'match-parent' parents, several levels deep. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent" style="position-anchor: --a">
@@ -143,10 +114,8 @@ body {
       </div>
     </div>
   </div>
-  <p>Chain of 'match-parent' parents, several levels deep.</p>
-</div>
 
-<div class="test">
+  <!-- Parent's 'match-parent' resolved to no anchor element. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent" style="position-anchor: none">
@@ -155,10 +124,8 @@ body {
       </div>
     </div>
   </div>
-  <p>Parent's 'match-parent' resolved to no anchor element.</p>
-</div>
 
-<div class="test">
+  <!-- Only the grandparent has a default anchor element. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent" style="position-anchor: --a">
@@ -167,10 +134,8 @@ body {
       </div>
     </div>
   </div>
-  <p>Only the grandparent has a default anchor element.</p>
-</div>
 
-<div class="test">
+  <!-- Anchored ancestor, with plain wrappers in between. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent" style="position-anchor: --a">
@@ -181,10 +146,8 @@ body {
       </div>
     </div>
   </div>
-  <p>Anchored ancestor, with plain wrappers in between.</p>
-</div>
 
-<div class="test">
+  <!-- Intermediate 'match-parent' is not absolutely positioned. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent" style="position-anchor: --a">
@@ -195,10 +158,8 @@ body {
       </div>
     </div>
   </div>
-  <p>Intermediate 'match-parent' is not absolutely positioned.</p>
-</div>
 
-<div class="test">
+  <!-- Parent's default anchor element is not acceptable for the probe. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent" style="position-anchor: --a">
@@ -207,21 +168,16 @@ body {
       <div class="probe" style="position: absolute"></div>
     </div>
   </div>
-  <p>Parent's default anchor element is not acceptable for the probe.</p>
-</div>
 
-<div class="test">
+  <!-- Originating element of a '::before' has a default anchor element. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent pseudo-parent" style="position-anchor: --a"></div>
   </div>
-  <p>Originating element of a '::before' has a default anchor element.</p>
-</div>
 
-<div class="test">
+  <!-- Originating element of a '::before' has no default anchor element. -->
   <div class="case">
     <div class="anchor"></div>
     <div class="parent pseudo-parent" style="position-anchor: none"></div>
   </div>
-  <p>Originating element of a '::before' has no default anchor element.</p>
 </div>

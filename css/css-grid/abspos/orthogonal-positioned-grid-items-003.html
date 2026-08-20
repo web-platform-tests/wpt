@@ -3,8 +3,8 @@
 <title>CSS Grid Layout Test: Orthogonal positioned grid items</title>
 <link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/css-grid/#abspos" title="9. Absolute Positioning">
-<link rel="match" href="orthogonal-positioned-grid-items-001-ref.html">
-<meta name="assert" content="Checks that absolutely positioned orthogonal grid items are properly placed and sized when they have a specific 'top' offset and a static inline position (left/right are 'auto').">
+<link rel="match" href="orthogonal-positioned-grid-items-003-ref.html">
+<meta name="assert" content="Checks that absolutely positioned orthogonal grid items are properly placed and sized when they have specific 'left, 'right', 'top' and 'bottom' offsets.">
 <style>
 #grid {
   display: grid;
@@ -21,7 +21,10 @@
 #grid > div {
   writing-mode: vertical-lr;
   position: absolute;
-  top: 0;
+  left: 10px;
+  right: 5px;
+  top: 15px;
+  bottom: 20px;
 }
 
 #firstItem {

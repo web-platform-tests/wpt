@@ -239,8 +239,10 @@
           const container = frames[0].document.querySelector('.fixedContainer.scrollable');
           const target = container.querySelector('.target');
           target.scrollIntoView({block: 'start', inline: 'start'});
-          // Large approx to account for differences like scrollbars
-          assert_approx_equals(window.scrollX, 740, 20, 'must scroll outer window [scrollX]');
+          // Large approx to account for differences like scrollbars.
+          // Two scrollbars involved here (see below), so twice the slop.
+          // 98vh - 2px of frame border - 10px of body margin - 10px of target width, - 2 * scrollbar width
+          assert_approx_equals(window.scrollX, window.innerWidth * 0.98 - 22, 40, 'must scroll outer window [scrollX]');
           assert_approx_equals(window.scrollY, 360, 20, 'must scroll outer window [scrollY]');
           assert_approx_equals(container.scrollLeft, 145, 20,
               'scrollIntoView in container [scrollLeft]');

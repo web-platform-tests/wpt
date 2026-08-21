@@ -18,3 +18,8 @@
 <img srcset='data:,a 1x, data:,b 1w' sizes='1px' data-expect='data:,a'>
 <img srcset='data:,a 1w, data:,b 2x' sizes='0.5px' data-expect='data:,a'>
 <img srcset='data:,a 2x, data:,b 1w' sizes='0.5px' data-expect='data:,a'>
+<!-- picture source srcset -->
+<picture>
+    <source srcset="data:,a 1x, data:,b 1x" />
+    <img data-expect='data:,a'>
+</picture>

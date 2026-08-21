@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<title>Editing: contentEditable queryCommandEnabled test</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#contenteditable">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="contentEditableTrue" contenteditable="true">true</div>
+<div id="contentEditablePlaintextOnly" contenteditable="plaintext-only">plaintext-only</div>
+<script>
+    const selection = document.getSelection();
+    const contentEditableTrue = document.getElementById('contentEditableTrue');
+    const contentEditablePlaintextOnly = document.getElementById('contentEditablePlaintextOnly');
+
+    function checkQueryCommandEnabled(command) {
+        test(() => {
+            selection.selectAllChildren(contentEditableTrue);
+            assert_equals(document.queryCommandEnabled(command), true);
+        }, `document.queryCommandEnabled('${command}') is true for contenteditable=true`);
+
+        test(() => {
+            selection.selectAllChildren(contentEditablePlaintextOnly);
+            assert_equals(document.queryCommandEnabled(command), false);
+        }, `document.queryCommandEnabled('${command}') is false for contenteditable=plaintext-only`);
+    }
+
+    checkQueryCommandEnabled('bold');
+    checkQueryCommandEnabled('italic');
+    checkQueryCommandEnabled('backColor');
+    checkQueryCommandEnabled('createLink');
+    checkQueryCommandEnabled('fontName');
+    checkQueryCommandEnabled('fontSize');
+    checkQueryCommandEnabled('foreColor');
+    checkQueryCommandEnabled('hiliteColor');
+    checkQueryCommandEnabled('removeFormat');
+    checkQueryCommandEnabled('strikethrough');
+    checkQueryCommandEnabled('subscript');
+    checkQueryCommandEnabled('superscript');
+    checkQueryCommandEnabled('underline');
+    checkQueryCommandEnabled('unlink');
+    checkQueryCommandEnabled('indent');
+    checkQueryCommandEnabled('insertHorizontalRule');
+    checkQueryCommandEnabled('insertImage');
+    checkQueryCommandEnabled('insertOrderedList');
+    checkQueryCommandEnabled('insertUnorderedList');
+    checkQueryCommandEnabled('justifyCenter');
+    checkQueryCommandEnabled('justifyFull');
+    checkQueryCommandEnabled('justifyLeft');
+    checkQueryCommandEnabled('justifyRight');
+    checkQueryCommandEnabled('outdent');
+</script>

@@ -89,8 +89,7 @@ jobs:
         run: |-
           set -eux -o pipefail
           export SYSTEM_VERSION_COMPAT=0
-          ./wpt install --channel preview --download-only -d . --rename STP safari browser
-          sudo installer -pkg STP.pkg -target LocalSystem
+          ./wpt install --channel preview safari browser
           sudo /Applications/Safari\ Technology\ Preview.app/Contents/MacOS/safaridriver --enable
       - name: Update hosts
         run: |-

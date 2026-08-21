@@ -1,14 +1,17 @@
 # mypy: allow-untyped-defs
 import configparser
+import glob
 import json
 import os
 import platform
+import plistlib
 import re
 import shutil
 import stat
 import subprocess
 import sys
 import tempfile
+import xml.etree.ElementTree as etree  # noqa: N813
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta, timezone
 from shutil import which
@@ -18,6 +21,7 @@ from urllib.parse import urlsplit, quote
 import html5lib
 import requests
 from packaging.specifiers import SpecifierSet
+from packaging.version import InvalidVersion, Version
 
 from .utils import (
     call,
@@ -2312,18 +2316,149 @@ class Safari(Browser):
             image_path = self._download_image(stp_downloads, tmpdir, system_version)
             return self._download_extract(image_path, dest, rename)
 
+    def _installed_version(self, channel=None):
+        binary = self.find_binary(channel=channel)
+        if binary is None:
+            return None
+        plist_path = os.path.join(binary, "Contents", "Info.plist")
+        try:
+            with open(plist_path, "rb") as f:
+                return plistlib.load(f).get("CFBundleVersion")
+        except (OSError, plistlib.InvalidFileException) as e:
+            self.logger.debug(f"Failed to read plist at {plist_path}: {e}")
+            return None
+
+    @staticmethod
+    def _stp_version_from_expanded_pkg(expanded):
+        package_infos = glob.glob(os.path.join(expanded, "*.pkg", "PackageInfo"))
+        if not package_infos:
+            return None
+
+        for pi_path in package_infos:
+            try:
+                root = etree.parse(pi_path).getroot()
+            except etree.ParseError:
+                continue
+            bundle = root.find(".//bundle[@id='com.apple.SafariTechnologyPreview']")
+            if bundle is not None:
+                return bundle.get("CFBundleVersion")
+
+        return None
+
+    def _pkg_version(self, pkg_path):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            expanded = os.path.join(tmpdir, "pkg")
+            try:
+                subprocess.run(
+                    ["pkgutil", "--expand", pkg_path, expanded],
+                    capture_output=True,
+                    check=True,
+                )
+            except subprocess.CalledProcessError:
+                self.logger.warning(f"Failed to expand {pkg_path}")
+                return None
+
+            version = self._stp_version_from_expanded_pkg(expanded)
+            if version is None:
+                self.logger.warning(f"STP bundle version not found in {pkg_path}")
+
+            return version
+
+    def _install_package(self, pkg_path):
+        pkg_version = self._pkg_version(pkg_path)
+        if pkg_version is None:
+            self.logger.warning(f"Failed to determine version of downloaded package {pkg_path}")
+        installed_version = self._installed_version()
+
+        if pkg_version is not None and installed_version is not None:
+            try:
+                if Version(installed_version) >= Version(pkg_version):
+                    self.logger.info(f"STP {installed_version} already installed, pkg has {pkg_version}")
+                    return self.find_binary(channel="preview")
+            except InvalidVersion:
+                self.logger.warning(
+                    f"Failed to compare versions: installed {installed_version}, pkg {pkg_version}; "
+                    "proceeding with install"
+                )
+
+        self.logger.info(f"Installing STP: pkg {pkg_version}, installed {installed_version}")
+        subprocess.run(
+            ["sudo", "-p", "Password (installing Safari Technology Preview): ",
+             "installer", "-pkg", pkg_path, "-target", "LocalSystem"],
+            check=True,
+        )
+        app_path = self.find_binary(channel="preview")
+        if app_path is None or not os.path.isdir(app_path):
+            raise RuntimeError(f"STP installation failed: app not found at {app_path}")
+        return app_path
+
     def install(self, dest=None, channel=None, url=None):
-        # We can't do this because stable/beta releases are system components and STP
-        # requires admin permissions to install.
-        raise NotImplementedError
+        if channel != "preview":
+            raise ValueError(f"can only install 'preview', not '{channel}'")
+
+        if dest is not None:
+            self.logger.warning("Safari.install() ignores dest; STP is always installed to /Applications/")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pkg_path = self.download(tmpdir, channel)
+            return self._install_package(pkg_path)
+
+    def find_binary(self, venv_path=None, channel=None):
+        if channel is None or channel == "preview":
+            bundle_id = "com.apple.SafariTechnologyPreview"
+            default = "/Applications/Safari Technology Preview.app"
+        elif channel in ("stable", "beta"):
+            bundle_id = "com.apple.Safari"
+            default = "/Applications/Safari.app"
+        else:
+            return None
+
+        try:
+            result = subprocess.run(
+                ["mdfind", "-0", f"kMDItemCFBundleIdentifier == '{bundle_id}'"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            paths = result.stdout.split("\x00")
+            if default in paths and os.path.isdir(default):
+                return default
+            for path in paths:
+                if os.path.isdir(path):
+                    return path
+        except subprocess.CalledProcessError:
+            self.logger.debug(f"mdfind failed; assuming default path: {default}")
+
+        if not os.path.isdir(default):
+            self.logger.error(
+                f"Unable to find {bundle_id}. Spotlight could not locate it and "
+                f"it does not exist at the default path: {default}"
+            )
+            return None
+
+        return default
 
     def find_webdriver(self, venv_path=None, channel=None):
         path = None
-        if channel == "preview":
-            path = "/Applications/Safari Technology Preview.app/Contents/MacOS"
+        if channel not in ("stable", "beta"):
+            binary = self.find_binary(channel=channel)
+            if binary is None:
+                return None
+            path = os.path.join(binary, "Contents", "MacOS")
         return which("safaridriver", path=path)
 
     def version(self, binary=None, webdriver_binary=None):
+        if binary is not None:
+            plist_path = os.path.join(binary, "Contents", "Info.plist")
+            try:
+                with open(plist_path, "rb") as f:
+                    info = plistlib.load(f)
+            except (OSError, plistlib.InvalidFileException) as e:
+                self.logger.debug(f"Failed to read plist at {plist_path}: {e}")
+                return None
+            if info.get("CFBundleIdentifier") != "com.apple.SafariTechnologyPreview":
+                return info.get("CFBundleShortVersionString")
+
         if webdriver_binary is None:
             self.logger.warning("Cannot find Safari version without safaridriver")
             return None

@@ -225,7 +225,7 @@ function corner_clip_out_path(startRadius, endRadius, startInset, endInset,
   let startControlPointX = controlPointX;
   let endControlPointX = controlPointX;
   if (insetDiff !== 0) {
-    const bevelNormalDelta = Math.sqrt(startRadius ** 2 + endRadius ** 2 + insetDiff ** 2);
+    const bevelNormalDelta = Math.sqrt(startRadius ** 2 + endRadius ** 2 - insetDiff ** 2);
     const bevelNormalX = endRadius * insetDiff + startRadius * bevelNormalDelta;
     const bevelNormalY = -startRadius * insetDiff + endRadius * bevelNormalDelta;
 

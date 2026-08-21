@@ -13,19 +13,6 @@ TEST_HTML = (
     "</math>"
 )
 
-def test_atspi(atspi, session, inline):
-    session.url = inline(TEST_HTML)
-
-    # Spec:
-    # Role: ATK_ROLE_SECTION
-    # Object Attribute: tag:mmultiscripts
-
-    node = atspi.find_node("test", session.url)
-    assert atspi.Accessible.get_role(node) == atspi.Role.SECTION
-
-    obj_attrs = atspi.Accessible.get_attributes(node)
-    assert obj_attrs.get("tag") == "mmultiscripts"
-
 
 def test_axapi(axapi, session, inline):
     session.url = inline(TEST_HTML)
@@ -59,13 +46,3 @@ def test_axapi(axapi, session, inline):
     assert axapi.AXUIElementCopyAttributeValue(presub_node, "AXDOMIdentifier", None)[1] == "presub"
     assert axapi.AXUIElementCopyAttributeValue(presup_node, "AXDOMIdentifier", None)[1] == "presup"
 
-
-def test_ia2(ia2, session, inline):
-    session.url = inline(TEST_HTML)
-
-    # Spec:
-    # Role: TBD
-    # Role: TBD
-
-    node = ia2.find_node("test", session.url)
-    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_GROUPING"

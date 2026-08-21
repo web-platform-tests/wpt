@@ -2,6 +2,9 @@
 import pytest
 
 TEST_DATA_ATTRIBUTES = {
+    "a": {
+        "html": """<math><a href="https://kuaishou.com" id="test"><mtext>Link</mtext></a></math>""",
+    },
     "annotation": {
         "html": "<math><semantics><mn>2</mn><annotation id='test' encoding='application/x-tex' style='display: inline-block;'>\\text{two}</annotation></semantics></math>",
     },

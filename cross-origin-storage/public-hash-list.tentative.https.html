@@ -1,0 +1,128 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: the Public Hash List gate on "*"-scoped disclosure</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#public-hash-list
+// https://wicg.github.io/cross-origin-storage/#availability-gating
+//
+// origins-scoping.tentative.https.html covers the *negative* direction of this
+// gate only: it stores content it invented itself, which therefore cannot be on
+// the Public Hash List, and asserts the outcome either way because PHL
+// membership is implementation-defined. That leaves the gate's whole purpose
+// untested -- a user agent that disclosed nothing at all, or that ignored the
+// list and disclosed everything, would pass it unchanged.
+//
+// Pinning down the positive direction needs a resource whose hash is genuinely
+// on the list, and you cannot construct bytes that hash to a chosen value, so
+// the bytes themselves have to be on hand. resources/phl-listed-resource.js is
+// jQuery 3.7.1's minified build, which the list carries in its core section --
+// admitted there precisely because it is served byte-identically by several
+// independent CDNs, which is also what makes it stable enough to pin a test to.
+// It is MIT-licensed, so it can be redistributed here.
+//
+// It must stay byte-identical to what those CDNs serve: a licence header added
+// to the vendored copy would change its hash and quietly turn this into a test
+// of an unlisted resource, which the digest assertion below exists to catch.
+//
+// The pair of assertions below is what makes this meaningful: the same
+// wildcard-scoped read, from the same cross-site origin, must come out
+// differently for a listed hash than for an unlisted one. Either half alone is
+// satisfiable by a degenerate implementation.
+const {HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+
+const LISTED_RESOURCE = 'resources/phl-listed-resource.js';
+const LISTED_DIGEST =
+  'fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a';
+
+// GREASE'ing may suppress an otherwise-authorized disclosure, so "is this ever
+// disclosed?" cannot be answered by a single read. Whatever probability a user
+// agent picks has to leave the feature useful, so a disclosable entry read this
+// many times will realistically be disclosed at least once; an entry the PHL
+// gate rejects is never disclosed, no matter how many times it is read.
+const ATTEMPTS = 8;
+
+async function storeBytes(bytes, options) {
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  const value = Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0')).join('');
+  const hash = cosHash(value);
+  const handle = await navigator.crossOriginStorage.requestFileHandle(
+    hash, {...options, create: true});
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([bytes]));
+  await writable.close();
+  return hash;
+}
+
+// Reads `hash` from `ctx` up to ATTEMPTS times, stopping at the first
+// disclosure. Returns {disclosed, digest, rejections}.
+async function readUntilDisclosed(ctx, hash) {
+  const rejections = [];
+  for (let i = 0; i < ATTEMPTS; ++i) {
+    const result = await cosRemoteReadDigest(ctx, hash);
+    if (result.ok)
+      return {disclosed: true, digest: result.digest, rejections};
+    rejections.push(result.name);
+  }
+  return {disclosed: false, rejections};
+}
+
+promise_test(async t => {
+  const response = await fetch(LISTED_RESOURCE);
+  assert_true(response.ok, `${LISTED_RESOURCE} must be fetchable`);
+  const bytes = new Uint8Array(await response.arrayBuffer());
+
+  // If this fails, the vendored file was changed and every assertion below
+  // would be meaningless rather than failing for the reason it appears to.
+  assert_equals(await cosSha256Hex(bytes), LISTED_DIGEST,
+    'the vendored resource must still be the hash this test is about');
+
+  const listedHash = await storeBytes(bytes, {origins: '*'});
+
+  // Invented here, so it cannot be on any curated list of ubiquitous
+  // resources, yet it is stored at exactly the same disclosure scope.
+  const unlistedBytes = new TextEncoder().encode(cosUniqueContent('phl-unlisted'));
+  const unlistedHash = await storeBytes(unlistedBytes, {origins: '*'});
+
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+
+  const unlisted = await readUntilDisclosed(ctx, unlistedHash);
+  assert_false(unlisted.disclosed,
+    'a "*"-scoped entry whose hash is not on the PHL must never be disclosed ' +
+    'to an origin outside its storing origins');
+  assert_array_equals(
+    unlisted.rejections, new Array(ATTEMPTS).fill('NotFoundError'),
+    'every refusal must be indistinguishable from a genuine miss');
+
+  const listed = await readUntilDisclosed(ctx, listedHash);
+  assert_true(listed.disclosed,
+    `a "*"-scoped entry whose hash is on the PHL must be disclosable to a ` +
+    `cross-site origin; ${ATTEMPTS} reads were all rejected ` +
+    `(${listed.rejections.join(', ')}), which GREASE'ing alone does not explain`);
+  assert_equals(listed.digest, LISTED_DIGEST,
+    'a disclosed resource must be byte-for-byte what was stored');
+}, 'PHL gate: a listed hash is disclosable "*"-scoped cross-origin, an unlisted one never is');
+
+promise_test(async t => {
+  // The gate is only about disclosure to *other* origins. The origin that
+  // stored the bytes reads them back regardless of PHL membership, which is
+  // what keeps the list from becoming a precondition for using the API at all.
+  const unlistedBytes = new TextEncoder().encode(cosUniqueContent('phl-storer'));
+  const hash = await storeBytes(unlistedBytes, {origins: '*'});
+  const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+  const file = await handle.getFile();
+  assert_equals(await cosSha256Hex(new Uint8Array(await file.arrayBuffer())),
+    await cosSha256Hex(unlistedBytes));
+}, 'PHL gate: the storing origin reads its own "*"-scoped entry back whether or not it is listed');
+</script>
+</body>

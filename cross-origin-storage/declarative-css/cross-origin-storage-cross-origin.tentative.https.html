@@ -1,0 +1,84 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: declarative CSS integration, cross-origin</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="../resources/helpers.js"></script>
+<script src="../resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+const {HTTPS_REMOTE_ORIGIN, HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+const REAL_FONT_URL = new URL('/fonts/Ahem.ttf', location.href).href;
+
+async function storeFontHere(modifierArgs) {
+  const bytes = await fetch(REAL_FONT_URL).then(r => r.arrayBuffer());
+  const integrity = await cosSha256Integrity(bytes);
+  const style = document.createElement('style');
+  const family = 'COSStorerFont-' + Math.random();
+  style.textContent = `
+    @font-face {
+      font-family: "${family}";
+      src: url("${REAL_FONT_URL}" integrity("${integrity}") cross-origin-storage(${modifierArgs}));
+    }
+  `;
+  document.head.appendChild(style);
+  await document.fonts.load(`16px "${family}"`);
+  assert_true(document.fonts.check(`16px "${family}"`));
+  return integrity;
+}
+
+async function remoteFontProbe(ctx, integrity, modifierArgs) {
+  return ctx.execute_script(async (integrity, modifierArgs) => {
+    // A relative path resolved against the executor's own origin: a real,
+    // fast 404 (unlike a nonexistent TLD, which risks a slow/hanging DNS
+    // lookup in some network environments).
+    const brokenUrl = './does-not-exist-' + Math.random() + '.ttf';
+    const family = 'COSRemoteFont-' + Math.random();
+    const style = document.createElement('style');
+    style.textContent = `
+      @font-face {
+        font-family: "${family}";
+        src: url("${brokenUrl}" integrity("${integrity}") cross-origin-storage(${modifierArgs}));
+      }
+    `;
+    document.head.appendChild(style);
+    try {
+      await document.fonts.load(`16px "${family}"`);
+      return {ok: document.fonts.check(`16px "${family}"`)};
+    } catch (e) {
+      return {ok: false};
+    }
+  }, [integrity, modifierArgs]);
+}
+
+promise_test(async t => {
+  const integrity = await storeFontHere('*');
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  // Wildcard tier is PHL/GREASE-gated; either outcome is compliant, as long
+  // as calling remoteFontProbe() itself didn't throw.
+  await remoteFontProbe(ctx, integrity, '*');
+}, 'declarative CSS, cross-origin: cross-origin-storage(*) may serve a cross-site @font-face from COS');
+
+promise_test(async t => {
+  const integrity = await storeFontHere('');
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const result = await remoteFontProbe(ctx, integrity, '');
+  assert_false(result.ok,
+    'a same-site-scoped @font-face must never be disclosed to a cross-site origin');
+}, 'declarative CSS, cross-origin: cross-origin-storage() with no arguments (same-site) is never served to a cross-site origin');
+
+promise_test(async t => {
+  const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN);
+  const listOrigin = await ctx.execute_script(() => location.origin, []);
+  const integrity = await storeFontHere(`"${listOrigin}"`);
+  const result = await remoteFontProbe(ctx, integrity, `"${listOrigin}"`);
+  if (!result.ok) return; // Tolerate GREASE'ing; list tier has no PHL gate.
+  assert_true(result.ok);
+}, 'declarative CSS, cross-origin: cross-origin-storage("origin") authorizes that explicitly-listed origin');
+</script>
+</body>

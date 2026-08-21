@@ -1,0 +1,42 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: transfer receiver</title>
+<!--
+  Receives a transferred FileSystemFileHandle and reports back what happened.
+  Loaded same-origin and cross-origin by transfer.tentative.https.html.
+
+  A handle that fails to deserialize fires `messageerror` rather than
+  `message`, which is how a DataCloneError thrown by the deserialization steps
+  is observable from script.
+-->
+<script>
+function report(result) {
+  parent.postMessage(result, '*');
+}
+
+addEventListener('messageerror', () => {
+  report({event: 'messageerror'});
+});
+
+addEventListener('message', async (e) => {
+  const handle = e.data && e.data.handle;
+  if (!handle) {
+    report({event: 'message', handle: false});
+    return;
+  }
+  const result = {
+    event: 'message',
+    handle: true,
+    isFileSystemFileHandle: handle instanceof FileSystemFileHandle,
+  };
+  try {
+    const file = await handle.getFile();
+    result.read = 'ok';
+    result.text = await file.text();
+  } catch (err) {
+    result.read = 'error';
+    result.errorName = err.name;
+  }
+  report(result);
+});
+</script>

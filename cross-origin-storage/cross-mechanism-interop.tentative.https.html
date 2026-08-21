@@ -1,0 +1,160 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: cross-mechanism interop</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<body>
+<span id="cos-interop-marker">marker</span>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#integration-with-other-specifications
+//
+// Section 8 states that the declarative HTML/CSS forms and the JS import
+// attribute are all expected to consult, and store into, the *same*
+// underlying COS registry that requestFileHandle() uses -- not three (or
+// four) independently-caching mechanisms that merely share a name. None of
+// the other files in this suite check this directly: each of
+// declarative-html/, declarative-css/, and import-attribute/ only proves
+// that a given mechanism is internally self-consistent (store
+// declaratively, read declaratively back, with the same mechanism both
+// times). This file crosses the streams: it stores through one mechanism
+// and reads through a different one, in both directions, and each test can
+// only pass if the two mechanisms are, in fact, backed by one shared
+// registry.
+
+const REAL_CSS_URL = 'resources/marker-style.css';
+const REAL_JS_URL = 'resources/marker-script.js';
+const REAL_MODULE_URL = 'resources/marker-module.mjs';
+const EXPECTED_MODULE_VALUE = 'cos-module-marker-value';
+
+function markerColor() {
+  return getComputedStyle(document.getElementById('cos-interop-marker')).color;
+}
+
+function brokenUrl(extension) {
+  // Never resolves over the network, so a subsequent successful load can
+  // only be explained by a COS hit.
+  return `does-not-exist-${Math.random()}.${extension}`;
+}
+
+promise_test(async t => {
+  // Store: imperative requestFileHandle({create: true}).
+  // Read: declarative HTML <link crossoriginstorage>.
+  const cssText = await fetch(REAL_CSS_URL).then(r => r.text());
+  const value = await cosSha256Hex(cssText);
+  const integrity = await cosSha256Integrity(cssText);
+
+  const handle = await navigator.crossOriginStorage.requestFileHandle(
+    cosHash(value), {create: true});
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([cssText], {type: 'text/css'}));
+  await writable.close();
+
+  document.getElementById('cos-interop-marker').style.color = '';
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = brokenUrl('css');
+  link.integrity = integrity;
+  link.setAttribute('crossoriginstorage', '');
+  const loaded = new Promise((resolve, reject) => {
+    link.onload = resolve;
+    link.onerror = () => reject(new Error('link failed to load'));
+  });
+  t.add_cleanup(() => link.remove());
+  document.head.appendChild(link);
+  await loaded;
+
+  assert_equals(markerColor(), 'rgb(1, 2, 3)',
+    'a <link> pointed at a URL that never resolves can only have loaded via COS, proving the declarative ' +
+    'HTML integration reads from the same registry the imperative API wrote to');
+}, 'cross-mechanism interop: an entry written via requestFileHandle({create:true}) is served by declarative HTML crossoriginstorage');
+
+promise_test(async t => {
+  // Store: declarative CSS cross-origin-storage() in @font-face src.
+  // Read: imperative requestFileHandle().
+  const REAL_FONT_URL = new URL('/fonts/Ahem.ttf', location.href).href;
+  const fontBytes = await fetch(REAL_FONT_URL).then(r => r.arrayBuffer());
+  const value = await cosSha256Hex(fontBytes);
+  const integrity = await cosSha256Integrity(fontBytes);
+  const family = 'COSInteropFont-' + Math.random();
+
+  const style = document.createElement('style');
+  style.textContent = `
+    @font-face {
+      font-family: "${family}";
+      src: url("${REAL_FONT_URL}" integrity("${integrity}") cross-origin-storage());
+    }
+  `;
+  t.add_cleanup(() => style.remove());
+  document.head.appendChild(style);
+  await document.fonts.load(`16px "${family}"`);
+  assert_true(document.fonts.check(`16px "${family}"`),
+    'the real font loads and stores into COS via the declarative CSS integration');
+
+  const handle = await navigator.crossOriginStorage.requestFileHandle(cosHash(value));
+  const file = await handle.getFile();
+  const readBack = new Uint8Array(await file.arrayBuffer());
+  const original = new Uint8Array(fontBytes);
+  assert_equals(readBack.length, original.length,
+    'imperative read-back byte length must match the original font file');
+  assert_array_equals(Array.from(readBack), Array.from(original),
+    'imperative requestFileHandle() must read back the exact bytes stored by the declarative CSS integration');
+}, 'cross-mechanism interop: an entry written by declarative CSS cross-origin-storage() is readable via imperative requestFileHandle()');
+
+promise_test(async t => {
+  // Store: JS import attribute (crossOriginStorage on a dynamic import()).
+  // Read: imperative requestFileHandle().
+  const moduleText = await fetch(REAL_MODULE_URL).then(r => r.text());
+  const value = await cosSha256Hex(moduleText);
+  const integrity = await cosSha256Integrity(moduleText);
+
+  const mod = await import(REAL_MODULE_URL + '?u=' + Math.random(), {
+    with: {integrity, crossOriginStorage: ''},
+  });
+  assert_equals(mod.default, EXPECTED_MODULE_VALUE);
+
+  const handle = await navigator.crossOriginStorage.requestFileHandle(cosHash(value));
+  const file = await handle.getFile();
+  assert_equals(await file.text(), moduleText,
+    'imperative requestFileHandle() must read back the exact source text stored by the JS import attribute integration');
+}, 'cross-mechanism interop: an entry written by the JS import attribute integration is readable via imperative requestFileHandle()');
+
+promise_test(async t => {
+  // Store: imperative requestFileHandle({create: true, origins: '*'}).
+  // Read: declarative HTML <script crossoriginstorage="*">, same document.
+  //
+  // As the original storer, this document's disclosure is unconditional
+  // (independent of PHL/GREASE'ing) even for a "*"-scoped entry -- so
+  // unlike the origins-scoping.tentative.https.html cross-origin tests,
+  // this one asserts success outright rather than tolerating GREASE'ing.
+  window.__cosHtmlScriptRunCount = 0;
+  const jsText = await fetch(REAL_JS_URL).then(r => r.text());
+  const value = await cosSha256Hex(jsText);
+  const integrity = await cosSha256Integrity(jsText);
+
+  const handle = await navigator.crossOriginStorage.requestFileHandle(
+    cosHash(value), {create: true, origins: '*'});
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([jsText], {type: 'text/javascript'}));
+  await writable.close();
+
+  const script = document.createElement('script');
+  script.src = brokenUrl('js');
+  script.integrity = integrity;
+  script.setAttribute('crossoriginstorage', '*');
+  const loaded = new Promise((resolve, reject) => {
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('script failed to load'));
+  });
+  t.add_cleanup(() => script.remove());
+  document.body.appendChild(script);
+  await loaded;
+
+  assert_equals(window.__cosHtmlScriptRunCount, 1,
+    'a <script> pointed at a URL that never resolves can only have run via COS; as the original storer, ' +
+    'disclosure back to this same document is unconditional even for a "*"-scoped entry');
+}, 'cross-mechanism interop: a wildcard-scoped entry written imperatively is served, deterministically, to its own storer by declarative HTML crossoriginstorage="*"');
+</script>
+</body>

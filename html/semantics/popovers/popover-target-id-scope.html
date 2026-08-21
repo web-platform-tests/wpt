@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/pull/8221#discussion_r1046775527">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<div id=popover popover=auto>hello world</div>
+<button id=lightbutton popovershowtarget=popover>show popover</button>
+
+<div id=shadowhost>
+  <template shadowroot=open>
+    <div id=popover popover=auto>hello world</div>
+    <button id=shadowbutton popovershowtarget=popover>show popover</button>
+  </template>
+</div>
+
+<script>
+promise_test(async () => {
+  const lightpopover = document.getElementById('popover');
+  const lightbutton = document.getElementById('lightbutton');
+  const shadowpopover = shadowhost.shadowRoot.getElementById('popover');
+  const shadowbutton = shadowhost.shadowRoot.getElementById('shadowbutton');
+
+  assert_false(lightpopover.matches(':open'),
+    'lightpopover should be closed at the start of the test.');
+  assert_false(shadowpopover.matches(':open'),
+    'shadowpopover should be closed at the start of the test.');
+
+  await test_driver.click(lightbutton);
+  assert_true(lightpopover.matches(':open'),
+    'lightpopover should be opened by the button outside the shadow root.');
+  assert_false(shadowpopover.matches(':open'),
+    'shadowpopover should not be opened by the button outside the shadow root.');
+
+  lightpopover.hidePopover();
+  assert_false(lightpopover.matches(':open'), 'hidePopover should hide lightpopover.');
+
+  await test_driver.click(shadowbutton);
+  assert_false(lightpopover.matches(':open'),
+    'lightpopover should not be opened by the button inside the shadow root.');
+  assert_true(shadowpopover.matches(':open'),
+    'shadowpopover should be opened by the button inside the shadow root.');
+}, 'popover target attributes should target elements within their tree scope.');
+</script>

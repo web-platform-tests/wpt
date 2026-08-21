@@ -181,7 +181,7 @@ function outset_adjusted_border_radius(width, height, radius, outset_x, outset_y
  * @param {number} superellipse_param
  * @returns {number}
  */
-function unit_superellipse_half_corner(superellipse_param) {
+function normalized_superellipse_half_corner(superellipse_param) {
   const n = 2 ** Math.abs(superellipse_param);
   const convexHalfCorner = 0.5 ** (1 / n);
   if (superellipse_param < 0) return 1 - convexHalfCorner;
@@ -209,14 +209,12 @@ function corner_clip_out_path(startRadius, endRadius, startInset, endInset,
     normalizedV2.scale(-startInset));
   const originalStart = extend_point(originalOuter, normalizedV3.scale(endRadius));
   const originalEnd = extend_point(originalOuter, normalizedV2.scale(startRadius));
-  const originalCenter = extend_point(originalOuter, normalizedV3.scale(endRadius),
-    normalizedV2.scale(startRadius));
 
   function clamp(l, v, u) {
     return Math.max(l, Math.min(v, u));
   }
 
-  const halfCornerX = unit_superellipse_half_corner(superellipse_param);
+  const halfCornerX = normalized_superellipse_half_corner(superellipse_param);
   const controlPointX = clamp(0, halfCornerX / (Math.SQRT2 - 1) - 1 / Math.SQRT2, 1);
 
   const insetDiff = clamp(-startRadius, endInset - startInset, endRadius);
@@ -275,9 +273,9 @@ function corner_clip_out_path(startRadius, endRadius, startInset, endInset,
       adjustedEnd = miterEnd;
   }
 
-  const adjustedWidth = Vector2D.dot(Vector2D.fromPoints(adjustedEnd, adjustedStart), normalizedV3);
-  const adjustedOuter = extend_point(adjustedStart, normalizedV3.scale(-adjustedWidth));
-  const adjustedCenter = extend_point(adjustedEnd, normalizedV3.scale(adjustedWidth));
+  const adjustedHeight = Vector2D.dot(Vector2D.fromPoints(adjustedStart, adjustedEnd), normalizedV2);
+  const adjustedOuter = extend_point(adjustedEnd, normalizedV2.scale(-adjustedHeight));
+  const adjustedCenter = extend_point(adjustedStart, normalizedV2.scale(adjustedHeight));
 
   /**
    * @param {number} x
@@ -312,20 +310,20 @@ function corner_clip_out_path(startRadius, endRadius, startInset, endInset,
     return [...t_set].toSorted((a, b) => a - b);
   }
 
-  const path = new Path2D();
-  path.moveTo(miterStart.x, miterStart.y);
-
   let selfIntersection = null;
   if (superellipse_param < 0 && startInset < 0 && endInset < 0 &&
     (-endInset >= startRadius || -startInset >= endRadius)) {
     selfIntersection = segment_line_intersection([miterStart, adjustedStart], [miterEnd, adjustedEnd]);
   }
 
+  const path = new Path2D();
+  path.moveTo(miterStart.x, miterStart.y);
+
   if (selfIntersection) {
     path.lineTo(selfIntersection.x, selfIntersection.y);
   } else if (superellipse_param == -Infinity) {
     path.lineTo(adjustedCenter.x, adjustedCenter.y);
-  } else if (superellipse_param > 0 || superellipse_param < -1) {
+  } else if (superellipse_param > 0 || superellipse_param <= -1) {
     const n = 2 ** Math.abs(superellipse_param);
     const curveCenter = superellipse_param < 0 ? adjustedOuter : adjustedCenter;
 
@@ -335,7 +333,7 @@ function corner_clip_out_path(startRadius, endRadius, startInset, endInset,
       const point = map_point_to_corner(x, y, adjustedStart, adjustedEnd, curveCenter);
       path.lineTo(point.x, point.y);
     }
-  } else if (superellipse_param >= -1 && superellipse_param < 0) {
+  } else if (superellipse_param > -1 && superellipse_param < 0) {
     const tangentIntersection = line_intersection(
       [adjustedStart, extend_point(adjustedStart, startTangent)],
       [adjustedEnd, extend_point(adjustedEnd, endTangent)])

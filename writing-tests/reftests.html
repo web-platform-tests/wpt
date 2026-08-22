@@ -148,21 +148,21 @@ R<sub>x,y,c</sub>|)</code>.</p>
 page containing the <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=[mis]match&gt;</span></code> elements). In the simplest
 case this has a <code class="docutils literal notranslate"><span class="pre">content</span></code> attribute containing the parameters above,
 separated by a semicolon e.g.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;maxDifference=15;totalPixels=300&quot;</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">"maxDifference=15;totalPixels=300"</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>would allow for a  difference of exactly 15 / 255 on any color channel
 and 300 exactly pixels total difference. The argument names are optional
 and may be elided; the above is the same as:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;15;300&quot;</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">"15;300"</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>The values may also be given as ranges e.g.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;maxDifference=10-15;totalPixels=200-300&quot;</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">"maxDifference=10-15;totalPixels=200-300"</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;10-15;200-300&quot;</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">"10-15;200-300"</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>In this case the maximum pixel difference must be in the range
@@ -171,7 +171,7 @@ and may be elided; the above is the same as:</p>
 <p>In cases where a single test has multiple possible refs and the
 fuzziness is not the same for all refs, a ref may be specified by
 prefixing the <code class="docutils literal notranslate"><span class="pre">content</span></code> value with the relative url for the ref e.g.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;option1-ref.html:10-15;200-300&quot;</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">"option1-ref.html:10-15;200-300"</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>One meta element is required per reference requiring a unique
@@ -186,7 +186,7 @@ hypothetical failing test, one might get:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="mi">0</span><span class="p">:</span><span class="mf">08.15</span> <span class="n">TEST_START</span><span class="p">:</span> <span class="o">/</span><span class="n">foo</span><span class="o">/</span><span class="n">bar</span><span class="o">.</span><span class="n">html</span>
  <span class="mi">0</span><span class="p">:</span><span class="mf">09.70</span> <span class="n">INFO</span> <span class="n">Found</span> <span class="mi">250</span> <span class="n">pixels</span> <span class="n">different</span><span class="p">,</span> <span class="n">maximum</span> <span class="n">difference</span> <span class="n">per</span> <span class="n">channel</span> <span class="mi">6</span> <span class="n">on</span> <span class="n">page</span> <span class="mi">1</span>
  <span class="mi">0</span><span class="p">:</span><span class="mf">09.70</span> <span class="n">INFO</span> <span class="n">Allowed</span> <span class="mi">0</span><span class="o">-</span><span class="mi">100</span> <span class="n">pixels</span> <span class="n">different</span><span class="p">,</span> <span class="n">maximum</span> <span class="n">difference</span> <span class="n">per</span> <span class="n">channel</span> <span class="mi">0</span><span class="o">-</span><span class="mi">0</span>
- <span class="mi">0</span><span class="p">:</span><span class="mf">09.70</span> <span class="n">TEST_END</span><span class="p">:</span> <span class="n">FAIL</span><span class="p">,</span> <span class="n">expected</span> <span class="n">PASS</span> <span class="o">-</span> <span class="o">/</span><span class="n">foo</span><span class="o">/</span><span class="n">bar</span><span class="o">.</span><span class="n">html</span> <span class="p">[</span><span class="s1">&#39;f83385ed9c9bea168108b8c448366678c7941627&#39;</span><span class="p">]</span>
+ <span class="mi">0</span><span class="p">:</span><span class="mf">09.70</span> <span class="n">TEST_END</span><span class="p">:</span> <span class="n">FAIL</span><span class="p">,</span> <span class="n">expected</span> <span class="n">PASS</span> <span class="o">-</span> <span class="o">/</span><span class="n">foo</span><span class="o">/</span><span class="n">bar</span><span class="o">.</span><span class="n">html</span> <span class="p">[</span><span class="s1">'f83385ed9c9bea168108b8c448366678c7941627'</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>For other logging flags, see the output of <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">run</span> <span class="pre">--help</span></code>.</p>

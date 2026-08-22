@@ -39,8 +39,8 @@ be sent to the HTTP client. A handler function will take the response
 object and fill in various parts of the response. For example, a plain
 text response with the body ‘Some example content’ could be produced as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s2">&quot;text/plain&quot;</span><span class="p">)</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;Some example content&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Content-Type"</span><span class="p">,</span> <span class="s2">"text/plain"</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="s2">"Some example content"</span>
 </pre></div>
 </div>
 <p>The response object also gives access to a ResponseWriter, which
@@ -49,14 +49,14 @@ write a similar response but with more explicit control as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">add_required_headers</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># Don&#39;t implicitly add HTTP headers</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">add_required_headers</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># Don't implicitly add HTTP headers</span>
     <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_status</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_header</span><span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s2">&quot;text/plain&quot;</span><span class="p">)</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_header</span><span class="p">(</span><span class="s2">&quot;Content-Length&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="s2">&quot;Some example content&quot;</span><span class="p">))</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_header</span><span class="p">(</span><span class="s2">"Content-Type"</span><span class="p">,</span> <span class="s2">"text/plain"</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_header</span><span class="p">(</span><span class="s2">"Content-Length"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="s2">"Some example content"</span><span class="p">))</span>
     <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">end_headers</span><span class="p">()</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Some &quot;</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"Some "</span><span class="p">)</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;example content&quot;</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"example content"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Note that when writing the response directly like this it is always

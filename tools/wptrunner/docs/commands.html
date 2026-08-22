@@ -39,18 +39,18 @@
 directory and sets up subcommands from these JSON files. A typical commands.json
 would look like the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;foo.py&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;script&quot;</span><span class="p">:</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;parser&quot;</span><span class="p">:</span> <span class="s2">&quot;get_parser&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Run foo&quot;</span>
+  <span class="s2">"foo"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"path"</span><span class="p">:</span> <span class="s2">"foo.py"</span><span class="p">,</span>
+    <span class="s2">"script"</span><span class="p">:</span> <span class="s2">"run"</span><span class="p">,</span>
+    <span class="s2">"parser"</span><span class="p">:</span> <span class="s2">"get_parser"</span><span class="p">,</span>
+    <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Run foo"</span>
   <span class="p">},</span>
-  <span class="s2">&quot;bar&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;bar.py&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;script&quot;</span><span class="p">:</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;virtualenv&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-    <span class="s2">&quot;requirements&quot;</span><span class="p">:</span> <span class="p">[</span>
-      <span class="s2">&quot;requirements.txt&quot;</span>
+  <span class="s2">"bar"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"path"</span><span class="p">:</span> <span class="s2">"bar.py"</span><span class="p">,</span>
+    <span class="s2">"script"</span><span class="p">:</span> <span class="s2">"run"</span><span class="p">,</span>
+    <span class="s2">"virtualenv"</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+    <span class="s2">"requirements"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">"requirements.txt"</span>
     <span class="p">]</span>
   <span class="p">}</span>
 <span class="p">}</span>
@@ -86,14 +86,14 @@ same format as <code class="code docutils literal notranslate"><span class="pre"
 supported key. “commandline_flag” is used to specify requirements needed for a
 certain command line flag of the subcommand. For example, given the following
 commands.json:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;baz&quot;</span><span class="p">:</span> <span class="p">{</span>
-  <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;baz.py&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;script&quot;</span><span class="p">:</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;virtualenv&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-  <span class="s2">&quot;conditional_requirements&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;commandline_flag&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;enable_feature1&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;requirements_feature1.txt&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">"baz"</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">"path"</span><span class="p">:</span> <span class="s2">"baz.py"</span><span class="p">,</span>
+  <span class="s2">"script"</span><span class="p">:</span> <span class="s2">"run"</span><span class="p">,</span>
+  <span class="s2">"virtualenv"</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+  <span class="s2">"conditional_requirements"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"commandline_flag"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"enable_feature1"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">"requirements_feature1.txt"</span>
       <span class="p">]</span>
     <span class="p">}</span>
   <span class="p">}</span>

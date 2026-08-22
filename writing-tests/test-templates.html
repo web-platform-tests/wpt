@@ -47,9 +47,9 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
   Syntax highlighting cannot be enabled for the following template because it
   contains invalid CSS.
 --><div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;!DOCTYPE html&gt;
-&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta charset="utf-8"&gt;
 &lt;title&gt;${1:Test title}&lt;/title&gt;
-&lt;link rel=&quot;match&quot; href=&quot;${2:URL of match}&quot;&gt;
+&lt;link rel="match" href="${2:URL of match}"&gt;
 &lt;style&gt;
     ${3:Test CSS}
 &lt;/style&gt;
@@ -66,7 +66,7 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
   Syntax highlighting cannot be enabled for the following template because it
   contains invalid CSS.
 --><div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;!DOCTYPE html&gt;
-&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta charset="utf-8"&gt;
 &lt;title&gt;${1:Reference title}&lt;/title&gt;
 &lt;style&gt;
     ${2:Reference CSS}
@@ -80,11 +80,11 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 </section>
 <section id="svg-test">
 <h3>SVG test<a class="headerlink" href="#svg-test" title="Link to this heading">¶</a></h3>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2000/svg&quot;</span><span class="w"> </span><span class="na">xmlns:h=</span><span class="s">&quot;http://www.w3.org/1999/xhtml&quot;</span><span class="nt">&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">"http://www.w3.org/2000/svg"</span><span class="w"> </span><span class="na">xmlns:h=</span><span class="s">"http://www.w3.org/1999/xhtml"</span><span class="nt">&gt;</span>
 <span class="w">  </span><span class="nt">&lt;title&gt;</span>${1:Test<span class="w"> </span>title}<span class="nt">&lt;/title&gt;</span>
 <span class="w">  </span><span class="nt">&lt;metadata&gt;</span>
-<span class="w">    </span><span class="nt">&lt;h:link</span><span class="w"> </span><span class="na">rel=</span><span class="s">&quot;help&quot;</span><span class="w"> </span><span class="na">href=</span><span class="s">&quot;${2:Specification link}&quot;</span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="nt">&lt;h:link</span><span class="w"> </span><span class="na">rel=</span><span class="s">&quot;match&quot;</span><span class="w"> </span><span class="na">href=</span><span class="s">&quot;${3:URL of match}&quot;</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;h:link</span><span class="w"> </span><span class="na">rel=</span><span class="s">"help"</span><span class="w"> </span><span class="na">href=</span><span class="s">"${2:Specification link}"</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;h:link</span><span class="w"> </span><span class="na">rel=</span><span class="s">"match"</span><span class="w"> </span><span class="na">href=</span><span class="s">"${3:URL of match}"</span><span class="nt">/&gt;</span>
 <span class="w">  </span><span class="nt">&lt;/metadata&gt;</span>
 <span class="w">  </span>${4:Test<span class="w"> </span>body}
 <span class="nt">&lt;/svg&gt;</span>
@@ -94,7 +94,7 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 </section>
 <section id="svg-reference">
 <h3>SVG reference<a class="headerlink" href="#svg-reference" title="Link to this heading">¶</a></h3>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2000/svg&quot;</span><span class="nt">&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">"http://www.w3.org/2000/svg"</span><span class="nt">&gt;</span>
 <span class="w">  </span><span class="nt">&lt;title&gt;</span>${1:Reference<span class="w"> </span>title}<span class="nt">&lt;/title&gt;</span>
 <span class="w">  </span>${2:Reference<span class="w"> </span>content}
 <span class="nt">&lt;/svg&gt;</span>
@@ -108,10 +108,10 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 <section id="html">
 <h3>HTML<a class="headerlink" href="#html" title="Link to this heading">¶</a></h3>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"utf-8"</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>${1:Test title}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testharness.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testharnessreport.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="nx">$</span><span class="p">{</span><span class="mf">2</span><span class="o">:</span><span class="nx">Test</span><span class="w"> </span><span class="nx">body</span><span class="p">}</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
@@ -122,12 +122,12 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 <section id="html-with-testdriver-automation">
 <h3>HTML with <a class="reference internal" href="testdriver.html"><span class="doc">testdriver automation</span></a><a class="headerlink" href="#html-with-testdriver-automation" title="Link to this heading">¶</a></h3>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"utf-8"</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>${1:Test title}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver-vendor.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testharness.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testharnessreport.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testdriver.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testdriver-vendor.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 
 <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="nx">$</span><span class="p">{</span><span class="mf">2</span><span class="o">:</span><span class="nx">Test</span><span class="w"> </span><span class="nx">body</span><span class="p">}</span>
@@ -138,13 +138,13 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 </section>
 <section id="svg">
 <h3>SVG<a class="headerlink" href="#svg" title="Link to this heading">¶</a></h3>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2000/svg&quot;</span><span class="w"> </span><span class="na">xmlns:h=</span><span class="s">&quot;http://www.w3.org/1999/xhtml&quot;</span><span class="nt">&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">"http://www.w3.org/2000/svg"</span><span class="w"> </span><span class="na">xmlns:h=</span><span class="s">"http://www.w3.org/1999/xhtml"</span><span class="nt">&gt;</span>
 <span class="w">  </span><span class="nt">&lt;title&gt;</span>${1:Test<span class="w"> </span>title}<span class="nt">&lt;/title&gt;</span>
 <span class="w">  </span><span class="nt">&lt;metadata&gt;</span>
-<span class="w">    </span><span class="nt">&lt;h:link</span><span class="w"> </span><span class="na">rel=</span><span class="s">&quot;help&quot;</span><span class="w"> </span><span class="na">href=</span><span class="s">&quot;${2:Specification link}&quot;</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;h:link</span><span class="w"> </span><span class="na">rel=</span><span class="s">"help"</span><span class="w"> </span><span class="na">href=</span><span class="s">"${2:Specification link}"</span><span class="nt">/&gt;</span>
 <span class="w">  </span><span class="nt">&lt;/metadata&gt;</span>
-<span class="w">  </span><span class="nt">&lt;h:script</span><span class="w"> </span><span class="na">src=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="nt">/&gt;</span>
-<span class="w">  </span><span class="nt">&lt;h:script</span><span class="w"> </span><span class="na">src=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;h:script</span><span class="w"> </span><span class="na">src=</span><span class="s">"/resources/testharness.js"</span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;h:script</span><span class="w"> </span><span class="na">src=</span><span class="s">"/resources/testharnessreport.js"</span><span class="nt">/&gt;</span>
 <span class="w">  </span><span class="nt">&lt;script&gt;</span><span class="cp">&lt;![CDATA[</span>
 <span class="cp">  ${4:Test body}</span>
 <span class="cp">  ]]&gt;</span><span class="nt">&lt;/script&gt;</span>
@@ -158,10 +158,10 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 <section id="id1">
 <h4>HTML<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h4>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"utf-8"</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>${1:Test title}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testharness.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testharnessreport.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="nx">setup</span><span class="p">({</span><span class="nx">explicit_timeout</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">});</span>
 <span class="nx">$</span><span class="p">{</span><span class="mf">2</span><span class="o">:</span><span class="nx">Test</span><span class="w"> </span><span class="nx">body</span><span class="p">}</span>
@@ -172,13 +172,13 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 </section>
 <section id="id2">
 <h4>SVG<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2000/svg&quot;</span><span class="w"> </span><span class="na">xmlns:h=</span><span class="s">&quot;http://www.w3.org/1999/xhtml&quot;</span><span class="nt">&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">"http://www.w3.org/2000/svg"</span><span class="w"> </span><span class="na">xmlns:h=</span><span class="s">"http://www.w3.org/1999/xhtml"</span><span class="nt">&gt;</span>
 <span class="w">  </span><span class="nt">&lt;title&gt;</span>${1:Test<span class="w"> </span>title}<span class="nt">&lt;/title&gt;</span>
 <span class="w">  </span><span class="nt">&lt;metadata&gt;</span>
-<span class="w">    </span><span class="nt">&lt;h:link</span><span class="w"> </span><span class="na">rel=</span><span class="s">&quot;help&quot;</span><span class="w"> </span><span class="na">href=</span><span class="s">&quot;${2:Specification link}&quot;</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;h:link</span><span class="w"> </span><span class="na">rel=</span><span class="s">"help"</span><span class="w"> </span><span class="na">href=</span><span class="s">"${2:Specification link}"</span><span class="nt">/&gt;</span>
 <span class="w">  </span><span class="nt">&lt;/metadata&gt;</span>
-<span class="w">  </span><span class="nt">&lt;h:script</span><span class="w"> </span><span class="na">src=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="nt">/&gt;</span>
-<span class="w">  </span><span class="nt">&lt;h:script</span><span class="w"> </span><span class="na">src=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;h:script</span><span class="w"> </span><span class="na">src=</span><span class="s">"/resources/testharness.js"</span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;h:script</span><span class="w"> </span><span class="na">src=</span><span class="s">"/resources/testharnessreport.js"</span><span class="nt">/&gt;</span>
 <span class="w">  </span><span class="nt">&lt;script&gt;</span><span class="cp">&lt;![CDATA[</span>
 <span class="cp">  setup({explicit_timeout: true});</span>
 <span class="cp">  ${4:Test body}</span>

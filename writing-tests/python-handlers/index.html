@@ -76,7 +76,7 @@ direct access to the underlying socket. If used, the return value of the
 across multiple handlers. To avoid module name collision, however, imports must
 be relative to the root of WPT. For example, in an imaginary
 <code class="docutils literal notranslate"><span class="pre">cookies/resources/myhandler.py</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># DON&#39;T DO THIS</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># DON'T DO THIS</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">myhelper</span>
 
 <span class="c1"># DO THIS</span>
@@ -87,7 +87,7 @@ be relative to the root of WPT. For example, in an imaginary
 your helper script includes a hyphen (<code class="docutils literal notranslate"><span class="pre">-</span></code>), you can use <code class="docutils literal notranslate"><span class="pre">import_module</span></code> from
 <code class="docutils literal notranslate"><span class="pre">importlib</span></code> to import it. For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
-<span class="n">myhelper</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;common.security-features.myhelper&#39;</span><span class="p">)</span>
+<span class="n">myhelper</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">'common.security-features.myhelper'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Note on <strong>init</strong> files</strong>: Importing helper scripts like this
@@ -105,10 +105,10 @@ to the helper. For example, if your helper is
 <p>The following code defines a Python handler that allows the requester to
 control the value of the <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> HTTP response header:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-    <span class="n">content_type</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="s1">&#39;content-type&#39;</span><span class="p">)</span>
-    <span class="n">headers</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="n">content_type</span><span class="p">)]</span>
+    <span class="n">content_type</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="s1">'content-type'</span><span class="p">)</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">'Content-Type'</span><span class="p">,</span> <span class="n">content_type</span><span class="p">)]</span>
 
-    <span class="k">return</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;my status text&#39;</span><span class="p">),</span> <span class="n">headers</span><span class="p">,</span> <span class="s1">&#39;my response content&#39;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s1">'my status text'</span><span class="p">),</span> <span class="n">headers</span><span class="p">,</span> <span class="s1">'my response content'</span>
 </pre></div>
 </div>
 <p>If saved to a file named <code class="docutils literal notranslate"><span class="pre">resources/control-content-type.py</span></code>, the WPT server
@@ -116,17 +116,17 @@ will respond to requests for <code class="docutils literal notranslate"><span cl
 that code.</p>
 <p>This could be used from a <a class="reference internal" href="../testharness.html"><span class="doc">testharness.js test</span></a> like so:</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Demonstrating the WPT server&#39;s Python handler feature<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"utf-8"</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Demonstrating the WPT server's Python handler feature<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testharness.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testharnessreport.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;resources/control-content-type.py?content-type=text/foobar&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">'resources/control-content-type.py?content-type=text/foobar'</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="p">,</span><span class="w"> </span><span class="mf">200</span><span class="p">);</span>
-<span class="w">      </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusText</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;my status text&#39;</span><span class="p">);</span>
-<span class="w">      </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">),</span><span class="w"> </span><span class="s1">&#39;text/foobar&#39;</span><span class="p">);</span>
+<span class="w">      </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusText</span><span class="p">,</span><span class="w"> </span><span class="s1">'my status text'</span><span class="p">);</span>
+<span class="w">      </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'Content-Type'</span><span class="p">),</span><span class="w"> </span><span class="s1">'text/foobar'</span><span class="p">);</span>
 <span class="w">    </span><span class="p">});</span>
 <span class="p">});</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>

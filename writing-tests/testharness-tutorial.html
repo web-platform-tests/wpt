@@ -112,16 +112,16 @@ responds</span></a>.</p>
 <p>Now, we can write the test! Create a new file named <code class="docutils literal notranslate"><span class="pre">set-cookie.html</span></code> in the
 same directory and insert the following text:</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"utf-8"</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>fetch: setting cookies<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testharness.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testharnessreport.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 
 <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;set-cookie.asis&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">'set-cookie.asis'</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;test1=t1&#39;</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">,</span><span class="w"> </span><span class="s1">'test1=t1'</span><span class="p">);</span>
 <span class="w">      </span><span class="p">});</span>
 <span class="p">});</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
@@ -130,7 +130,7 @@ same directory and insert the following text:</p>
 <p>Let’s step through each part of this file.</p>
 <ul>
 <li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"utf-8"</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 <p>We explicitly set the DOCTYPE and character set to be sure that browsers
@@ -143,8 +143,8 @@ because it makes tests more concise.</p>
 </div>
 <p>The document’s title should succinctly describe the feature under test.</p>
 </li>
-<li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testharness.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testharnessreport.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 <p>These two <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tags retrieve the code that powers testharness.js. A
@@ -152,9 +152,9 @@ testharness.js test can’t run without them!</p>
 </li>
 <li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;thing.asis&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">'thing.asis'</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;test1=t1&#39;</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">,</span><span class="w"> </span><span class="s1">'test1=t1'</span><span class="p">);</span>
 <span class="w">      </span><span class="p">});</span>
 <span class="p">});</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
@@ -196,12 +196,12 @@ cookie is deleted even if the test fails.</p>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gd">-promise_test(function() {</span>
 <span class="gi">+promise_test(function(t) {</span>
 <span class="gi">+  t.add_cleanup(function() {</span>
-<span class="gi">+    document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;</span>
+<span class="gi">+    document.cookie = 'test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';</span>
 <span class="gi">+  });</span>
 <span class="gi">+</span>
-<span class="w"> </span>  return fetch(&#39;thing.asis&#39;)
+<span class="w"> </span>  return fetch('thing.asis')
 <span class="w"> </span>    .then(function() {
-<span class="w"> </span>        assert_equals(document.cookie, &#39;test1=t1&#39;);
+<span class="w"> </span>        assert_equals(document.cookie, 'test1=t1');
 <span class="w"> </span>      });
 <span class="w"> </span>});
 </pre></div>
@@ -212,12 +212,12 @@ we shouldn’t take that for granted. As written, the test will fail if the
 complicated logic to test for the presence of the expected cookie.</p>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>promise_test(function(t) {
 <span class="w"> </span>  t.add_cleanup(function() {
-<span class="w"> </span>    document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;
+<span class="w"> </span>    document.cookie = 'test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 <span class="w"> </span>  });
 
-<span class="w"> </span>  return fetch(&#39;thing.asis&#39;)
+<span class="w"> </span>  return fetch('thing.asis')
 <span class="w"> </span>    .then(function() {
-<span class="gd">-        assert_equals(document.cookie, &#39;test1=t1&#39;);</span>
+<span class="gd">-        assert_equals(document.cookie, 'test1=t1');</span>
 <span class="gi">+        assert_true(/(^|; )test1=t1($|;)/.test(document.cookie);</span>
 <span class="w"> </span>      });
 <span class="w"> </span>});
@@ -228,15 +228,15 @@ document’s title, “fetch: setting cookies”. Since we expect to add another
 subtest, we should give this one a more specific name:</p>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>promise_test(function(t) {
 <span class="w"> </span>  t.add_cleanup(function() {
-<span class="w"> </span>    document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;
+<span class="w"> </span>    document.cookie = 'test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 <span class="w"> </span>  });
 
-<span class="w"> </span>  return fetch(&#39;thing.asis&#39;)
+<span class="w"> </span>  return fetch('thing.asis')
 <span class="w"> </span>    .then(function() {
 <span class="w"> </span>        assert_true(/(^|; )test1=t1($|;)/.test(document.cookie));
 <span class="w"> </span>      });
 <span class="gd">-});</span>
-<span class="gi">+}, &#39;cookie set for successful request&#39;);</span>
+<span class="gi">+}, 'cookie set for successful request');</span>
 </pre></div>
 </div>
 </section>
@@ -253,11 +253,11 @@ For instance, it should <em>not</em> set a cookie if the request fails due to
 cross-origin security restrictions. Let’s write a subtest which verifies that.</p>
 <p>We’ll add another <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag for a JavaScript support file:</p>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>&lt;!DOCTYPE html&gt;
-<span class="w"> </span>&lt;meta charset=&quot;utf-8&quot;&gt;
+<span class="w"> </span>&lt;meta charset="utf-8"&gt;
 <span class="w"> </span>&lt;title&gt;fetch: setting cookies&lt;/title&gt;
-<span class="w"> </span>&lt;script src=&quot;/resources/testharness.js&quot;&gt;&lt;/script&gt;
-<span class="w"> </span>&lt;script src=&quot;/resources/testharnessreport.js&quot;&gt;&lt;/script&gt;
-<span class="gi">+&lt;script src=&quot;/common/get-host-info.sub.js&quot;&gt;&lt;/script&gt;</span>
+<span class="w"> </span>&lt;script src="/resources/testharness.js"&gt;&lt;/script&gt;
+<span class="w"> </span>&lt;script src="/resources/testharnessreport.js"&gt;&lt;/script&gt;
+<span class="gi">+&lt;script src="/common/get-host-info.sub.js"&gt;&lt;/script&gt;</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">get-host-info.sub.js</span></code> is a general-purpose script provided by WPT. It’s
@@ -267,25 +267,25 @@ WPT’s <code class="docutils literal notranslate"><span class="pre">common/</sp
 our first subtest.</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'</span><span class="p">;</span>
 <span class="w">  </span><span class="p">});</span>
 <span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">get_host_info</span><span class="p">().</span><span class="nx">HTTP_NOTSAMESITE_ORIGIN</span><span class="w"> </span><span class="o">+</span>
-<span class="w">    </span><span class="s1">&#39;/fetch/api/basic/set-cookie.asis&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="s1">'/fetch/api/basic/set-cookie.asis'</span><span class="p">;</span>
 
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nx">assert_unreached</span><span class="p">(</span><span class="s1">&#39;The promise for the aborted fetch operation should reject.&#39;</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">assert_unreached</span><span class="p">(</span><span class="s1">'The promise for the aborted fetch operation should reject.'</span><span class="p">);</span>
 <span class="w">      </span><span class="p">},</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nx">assert_false</span><span class="p">(</span><span class="sr">/(^|; )test1=t1($|;)/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">));</span>
 <span class="w">      </span><span class="p">});</span>
-<span class="p">},</span><span class="w"> </span><span class="s1">&#39;no cookie is set for cross-domain fetch operations&#39;</span><span class="p">);</span>
+<span class="p">},</span><span class="w"> </span><span class="s1">'no cookie is set for cross-domain fetch operations'</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>This may look familiar from the previous subtest, but there are some important
 differences.</p>
 <ul>
 <li><div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">get_host_info</span><span class="p">().</span><span class="nx">HTTP_NOTSAMESITE_ORIGIN</span><span class="w"> </span><span class="o">+</span>
-<span class="w">  </span><span class="s1">&#39;/fetch/api/basic/set-cookie.asis&#39;</span><span class="p">;</span>
+<span class="w">  </span><span class="s1">'/fetch/api/basic/set-cookie.asis'</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>We’re requesting the same resource, but we’re referring to it with an
@@ -294,7 +294,7 @@ been configured, so we rely on the helper to provide an appropriate value.</p>
 </li>
 <li><div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
 <span class="w">  </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nx">assert_unreached</span><span class="p">(</span><span class="s1">&#39;The promise for the aborted fetch operation should reject.&#39;</span><span class="p">);</span>
+<span class="w">      </span><span class="nx">assert_unreached</span><span class="p">(</span><span class="s1">'The promise for the aborted fetch operation should reject.'</span><span class="p">);</span>
 <span class="w">    </span><span class="p">},</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nx">assert_false</span><span class="p">(</span><span class="sr">/(^|; )test1=t1($|;)/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">));</span>
 <span class="w">    </span><span class="p">});</span>
@@ -367,7 +367,7 @@ don’t) by using <code class="docutils literal notranslate"><span class="pre">g
 <p>On most systems, you can use the arrow keys to navigate through the changes,
 and you can press the <code class="docutils literal notranslate"><span class="pre">q</span></code> key when you’re done reviewing.</p>
 <p>Next, we’ll create a commit with the staged changes:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git commit -m &#39;[fetch] Add test for setting cookies&#39;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git commit -m '[fetch] Add test for setting cookies'
 </pre></div>
 </div>
 <p>And now we can push the commit to our fork of WPT:</p>

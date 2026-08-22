@@ -62,13 +62,13 @@ output pages in the reftest. This is possible using</p>
 </pre></div>
 </div>
 <p>Where a range specifier has the form</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>range-specifier = &lt;specifier-item&gt; [&quot;,&quot; &lt;specifier-item&gt;]*
-specifier-item = &lt;int&gt; | &lt;int&gt;? &quot;-&quot; &lt;int&gt;?
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>range-specifier = &lt;specifier-item&gt; ["," &lt;specifier-item&gt;]*
+specifier-item = &lt;int&gt; | &lt;int&gt;? "-" &lt;int&gt;?
 </pre></div>
 </div>
 <p>For example to specify rendering pages 1 and 2, 4, 6 and 7, and 9 and
 10 of a 10 page page document one could write:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">reftest</span><span class="o">-</span><span class="n">pages</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;-2,4,6,7,9-&quot;</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">reftest</span><span class="o">-</span><span class="n">pages</span> <span class="n">content</span><span class="o">=</span><span class="s2">"-2,4,6,7,9-"</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 </section>

@@ -100,8 +100,8 @@ completion</p></li>
 <p>The <code class="docutils literal notranslate"><span class="pre">testdriver.js</span></code> and <code class="docutils literal notranslate"><span class="pre">testdriver-vendor.js</span></code> must both be included
 in any document that uses testdriver (and in the top-level test
 document when using testdriver from a different context):</p>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver-vendor.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testdriver.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testdriver-vendor.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 </section>
@@ -113,7 +113,7 @@ document when using testdriver from a different context):</p>
 <h3>Markup<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
 <p>To use WebDriver BiDi, enable the <code class="docutils literal notranslate"><span class="pre">bidi</span></code> feature in <code class="docutils literal notranslate"><span class="pre">testdriver.js</span></code> by adding the
 <code class="docutils literal notranslate"><span class="pre">feature=bidi</span></code> query string parameter. Details are in <a class="reference external" href="https://github.com/web-platform-tests/rfcs/blob/master/rfcs/testdriver-features.md">RFC 214: Add testdriver features</a>.</p>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver.js?feature=bidi&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testdriver.js?feature=bidi"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// META: script=/resources/testdriver.js?feature=bidi</span>
@@ -258,9 +258,9 @@ a provided function.</p>
 </dd>
 </dl>
 <p><strong>Examples:</strong></p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">mediaElement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;video&#39;</span><span class="p">);</span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">mediaElement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">'video'</span><span class="p">);</span>
 
-<span class="nx">test_driver</span><span class="p">.</span><span class="nx">bless</span><span class="p">(</span><span class="s1">&#39;initiate media playback&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="nx">test_driver</span><span class="p">.</span><span class="nx">bless</span><span class="p">(</span><span class="s1">'initiate media playback'</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nx">mediaElement</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
 <span class="p">});</span>
 </pre></div>
@@ -388,8 +388,8 @@ WebDriver command.</p>
 </dd>
 </dl>
 <p><strong>Examples:</strong></p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;background-fetch&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;denied&quot;</span><span class="p">);</span>
-<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;push&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">userVisibleOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;granted&quot;</span><span class="p">);</span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">"background-fetch"</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">"denied"</span><span class="p">);</span>
+<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">"push"</span><span class="p">,</span><span class="w"> </span><span class="nx">userVisibleOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">"granted"</span><span class="p">);</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -419,8 +419,8 @@ WebDriver BiDi command.</p>
 </dl>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">permissions</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span>
-<span class="w">    </span><span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;geolocation&quot;</span><span class="p">},</span>
-<span class="w">    </span><span class="nx">state</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;granted&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">"geolocation"</span><span class="p">},</span>
+<span class="w">    </span><span class="nx">state</span><span class="o">:</span><span class="w"> </span><span class="s2">"granted"</span><span class="p">,</span>
 <span class="p">});</span>
 </pre></div>
 </div>
@@ -707,9 +707,9 @@ WebDriver command.</p>
 </dd>
 </dl>
 <p><strong>Examples:</strong></p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_spc_transaction_mode</span><span class="p">(</span><span class="s2">&quot;autoaccept&quot;</span><span class="p">);</span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_spc_transaction_mode</span><span class="p">(</span><span class="s2">"autoaccept"</span><span class="p">);</span>
 <span class="nx">test</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_spc_transaction_mode</span><span class="p">(</span><span class="s2">&quot;none&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_spc_transaction_mode</span><span class="p">(</span><span class="s2">"none"</span><span class="p">);</span>
 <span class="p">});</span>
 
 <span class="c1">// Assumption: `request` is a PaymentRequest with a secure-payment-confirmation</span>
@@ -927,25 +927,25 @@ latest reading</a>.</p>
 <span class="c1">// the example below otherwise).</span>
 <span class="kd">const</span><span class="w"> </span><span class="nx">reading</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="nx">z</span><span class="o">:</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="p">};</span>
 <span class="k">await</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span>
-<span class="w">  </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">update_virtual_sensor</span><span class="p">(</span><span class="s1">&#39;gyroscope&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">reading</span><span class="p">),</span>
-<span class="w">  </span><span class="nx">watcher</span><span class="p">.</span><span class="nx">wait_for</span><span class="p">(</span><span class="s1">&#39;reading&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">update_virtual_sensor</span><span class="p">(</span><span class="s1">'gyroscope'</span><span class="p">,</span><span class="w"> </span><span class="nx">reading</span><span class="p">),</span>
+<span class="w">  </span><span class="nx">watcher</span><span class="p">.</span><span class="nx">wait_for</span><span class="p">(</span><span class="s1">'reading'</span><span class="p">)</span>
 <span class="p">]);</span>
 </pre></div>
 </div>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// Do not wait forever if you are not sure the reading will be</span>
 <span class="c1">// processed.</span>
-<span class="kd">const</span><span class="w"> </span><span class="nx">readingPromise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">watcher</span><span class="p">.</span><span class="nx">wait_for</span><span class="p">(</span><span class="s1">&#39;reading&#39;</span><span class="p">);</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">readingPromise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">watcher</span><span class="p">.</span><span class="nx">wait_for</span><span class="p">(</span><span class="s1">'reading'</span><span class="p">);</span>
 <span class="kd">const</span><span class="w"> </span><span class="nx">timeoutPromise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_timeout</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">resolve</span><span class="p">(</span><span class="s1">&#39;TIMEOUT&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">3000</span><span class="p">))</span>
+<span class="w">    </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_timeout</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">resolve</span><span class="p">(</span><span class="s1">'TIMEOUT'</span><span class="p">,</span><span class="w"> </span><span class="mf">3000</span><span class="p">))</span>
 <span class="p">});</span>
 
 <span class="kd">const</span><span class="w"> </span><span class="nx">reading</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="nx">z</span><span class="o">:</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="p">};</span>
-<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">update_virtual_sensor</span><span class="p">(</span><span class="s1">&#39;gyroscope&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;reading&#39;</span><span class="p">);</span>
+<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">update_virtual_sensor</span><span class="p">(</span><span class="s1">'gyroscope'</span><span class="p">,</span><span class="w"> </span><span class="s1">'reading'</span><span class="p">);</span>
 
 <span class="kd">const</span><span class="w"> </span><span class="nx">value</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="k">await</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">race</span><span class="p">([</span><span class="nx">timeoutPromise</span><span class="p">,</span><span class="w"> </span><span class="nx">readingPromise</span><span class="p">]);</span>
-<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">value</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">&#39;TIMEOUT&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="c1">// Do something. The &quot;reading&quot; event was fired.</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">value</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">'TIMEOUT'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Do something. The "reading" event was fired.</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1210,9 +1210,9 @@ is done implicitly using the owner document of the element. For
 functions that don’t take an element, this is done via an explicit
 context argument, which takes a WindowProxy object.</p>
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">win</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;example.html&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">win</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"example.html"</span><span class="p">)</span>
 <span class="n">win</span><span class="o">.</span><span class="n">onload</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-  <span class="k">await</span> <span class="n">test_driver</span><span class="o">.</span><span class="n">set_permission</span><span class="p">({</span> <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;background-fetch&quot;</span> <span class="p">},</span> <span class="s2">&quot;denied&quot;</span><span class="p">,</span> <span class="n">win</span><span class="p">);</span>
+  <span class="k">await</span> <span class="n">test_driver</span><span class="o">.</span><span class="n">set_permission</span><span class="p">({</span> <span class="n">name</span><span class="p">:</span> <span class="s2">"background-fetch"</span> <span class="p">},</span> <span class="s2">"denied"</span><span class="p">,</span> <span class="n">win</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1253,8 +1253,8 @@ is also a <a class="reference external" href="#test_driver.message_test"><code c
 function that can be used to send arbitrary messages to the test
 window. For example, in an auxillary browsing context:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_test_context</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">opener</span><span class="p">)</span>
-<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;button&quot;</span><span class="p">)[</span><span class="mf">0</span><span class="p">])</span>
-<span class="nx">test_driver</span><span class="p">.</span><span class="nx">message_test</span><span class="p">(</span><span class="s2">&quot;click complete&quot;</span><span class="p">)</span>
+<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">"button"</span><span class="p">)[</span><span class="mf">0</span><span class="p">])</span>
+<span class="nx">test_driver</span><span class="p">.</span><span class="nx">message_test</span><span class="p">(</span><span class="s2">"click complete"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The requirement to have a handle to the test window does mean it’s
@@ -1267,7 +1267,7 @@ obtained e.g. in the case of <code class="docutils literal notranslate"><span cl
 <h4>Markup<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
 <p>To use the <a class="reference external" href="#Actions">Actions</a> API <code class="docutils literal notranslate"><span class="pre">testdriver-actions.js</span></code> must be
 included in the document, in addition to <code class="docutils literal notranslate"><span class="pre">testdriver.js</span></code>:</p>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver-actions.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"/resources/testdriver-actions.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 </section>
@@ -1294,15 +1294,15 @@ be constructed by chaining method calls.</p>
 </dd>
 </dl>
 <p><strong>Examples:</strong></p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">text_box</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">);</span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">text_box</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"text"</span><span class="p">);</span>
 
 <span class="kd">let</span><span class="w"> </span><span class="nx">actions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">Actions</span><span class="p">()</span>
 <span class="w">   </span><span class="p">.</span><span class="nx">pointerMove</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nx">origin</span><span class="o">:</span><span class="w"> </span><span class="nx">text_box</span><span class="p">})</span>
 <span class="w">   </span><span class="p">.</span><span class="nx">pointerDown</span><span class="p">()</span>
 <span class="w">   </span><span class="p">.</span><span class="nx">pointerUp</span><span class="p">()</span>
 <span class="w">   </span><span class="p">.</span><span class="nx">addTick</span><span class="p">()</span>
-<span class="w">   </span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)</span>
-<span class="w">   </span><span class="p">.</span><span class="nx">keyUp</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">);</span>
+<span class="w">   </span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="s2">"p"</span><span class="p">)</span>
+<span class="w">   </span><span class="p">.</span><span class="nx">keyUp</span><span class="p">(</span><span class="s2">"p"</span><span class="p">);</span>
 
 <span class="k">await</span><span class="w"> </span><span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 </pre></div>
@@ -1619,8 +1619,8 @@ test_driver.action_sequence</p>
 method on the builder:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">actions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">Actions</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="nx">setContext</span><span class="p">(</span><span class="nx">frames</span><span class="p">[</span><span class="mf">0</span><span class="p">])</span>
-<span class="w">    </span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="nx">keyUp</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="s2">"p"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">keyUp</span><span class="p">(</span><span class="s2">"p"</span><span class="p">);</span>
 <span class="k">await</span><span class="w"> </span><span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 </pre></div>
 </div>
@@ -1642,7 +1642,7 @@ browser logs.</p>
 <p><strong>Example:</strong></p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">entry_added</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">();</span>
 <span class="kd">const</span><span class="w"> </span><span class="nx">log_entry_promise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">entry_added</span><span class="p">.</span><span class="nx">once</span><span class="p">();</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;some message&quot;</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"some message"</span><span class="p">);</span>
 <span class="kd">const</span><span class="w"> </span><span class="nx">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">log_entry_promise</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -1722,9 +1722,9 @@ WebDriver BiDi command.</p>
 </dl>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">handleRequestDevicePrompt</span><span class="p">({</span>
-<span class="w">    </span><span class="nx">prompt</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;pmt-e0a234b&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">prompt</span><span class="o">:</span><span class="w"> </span><span class="s2">"pmt-e0a234b"</span><span class="p">,</span>
 <span class="w">    </span><span class="nx">accept</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nx">device</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;dvc-9b3b872&quot;</span>
+<span class="w">    </span><span class="nx">device</span><span class="o">:</span><span class="w"> </span><span class="s2">"dvc-9b3b872"</span>
 <span class="p">});</span>
 </pre></div>
 </div>
@@ -1750,7 +1750,7 @@ WebDriver BiDi command.</p>
 </dl>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulate_adapter</span><span class="p">({</span>
-<span class="w">    </span><span class="nx">state</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;powered-on&quot;</span>
+<span class="w">    </span><span class="nx">state</span><span class="o">:</span><span class="w"> </span><span class="s2">"powered-on"</span>
 <span class="p">});</span>
 </pre></div>
 </div>
@@ -1803,11 +1803,11 @@ WebDriver BiDi command.</p>
 </dl>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulatePreconnectedPeripheral</span><span class="p">({</span>
-<span class="w">    </span><span class="s2">&quot;address&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;09:09:09:09:09:09&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Some Device&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;manufacturerData&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="mf">17</span><span class="p">,</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;AP8BAX8=&quot;</span><span class="p">}],</span>
-<span class="w">    </span><span class="s2">&quot;knownServiceUuids&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">         </span><span class="s2">&quot;12345678-1234-5678-9abc-def123456789&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"address"</span><span class="o">:</span><span class="w"> </span><span class="s2">"09:09:09:09:09:09"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"name"</span><span class="o">:</span><span class="w"> </span><span class="s2">"Some Device"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"manufacturerData"</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="mf">17</span><span class="p">,</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="s2">"AP8BAX8="</span><span class="p">}],</span>
+<span class="w">    </span><span class="s2">"knownServiceUuids"</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">         </span><span class="s2">"12345678-1234-5678-9abc-def123456789"</span><span class="p">,</span>
 <span class="w">    </span><span class="p">],</span>
 <span class="p">});</span>
 </pre></div>
@@ -1835,8 +1835,8 @@ WebDriver BiDi command.</p>
 </dl>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulate_gatt_connection_response</span><span class="p">({</span>
-<span class="w">    </span><span class="s2">&quot;address&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;09:09:09:09:09:09&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;code&quot;</span><span class="o">:</span><span class="w"> </span><span class="mh">0x0</span>
+<span class="w">    </span><span class="s2">"address"</span><span class="o">:</span><span class="w"> </span><span class="s2">"09:09:09:09:09:09"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"code"</span><span class="o">:</span><span class="w"> </span><span class="mh">0x0</span>
 <span class="p">});</span>
 </pre></div>
 </div>
@@ -1862,7 +1862,7 @@ WebDriver BiDi command.</p>
 </dl>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulate_gatt_disconnection</span><span class="p">({</span>
-<span class="w">    </span><span class="s2">&quot;address&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;09:09:09:09:09:09&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"address"</span><span class="o">:</span><span class="w"> </span><span class="s2">"09:09:09:09:09:09"</span><span class="p">,</span>
 <span class="p">});</span>
 </pre></div>
 </div>
@@ -1892,9 +1892,9 @@ WebDriver BiDi command.</p>
 </dl>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulate_service</span><span class="p">({</span>
-<span class="w">    </span><span class="s2">&quot;address&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;09:09:09:09:09:09&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;uuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;0000180d-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;add&quot;</span>
+<span class="w">    </span><span class="s2">"address"</span><span class="o">:</span><span class="w"> </span><span class="s2">"09:09:09:09:09:09"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"uuid"</span><span class="o">:</span><span class="w"> </span><span class="s2">"0000180d-0000-1000-8000-00805f9b34fb"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"type"</span><span class="o">:</span><span class="w"> </span><span class="s2">"add"</span>
 <span class="p">});</span>
 </pre></div>
 </div>
@@ -1928,15 +1928,15 @@ WebDriver BiDi command.</p>
 </dl>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulate_characteristic</span><span class="p">({</span>
-<span class="w">    </span><span class="s2">&quot;address&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;09:09:09:09:09:09&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;serviceUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;0000180d-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;characteristicUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;00002a21-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;characteristicProperties&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">     </span><span class="s2">&quot;read&quot;</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">     </span><span class="s2">&quot;write&quot;</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">     </span><span class="s2">&quot;notify&quot;</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="s2">"address"</span><span class="o">:</span><span class="w"> </span><span class="s2">"09:09:09:09:09:09"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"serviceUuid"</span><span class="o">:</span><span class="w"> </span><span class="s2">"0000180d-0000-1000-8000-00805f9b34fb"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"characteristicUuid"</span><span class="o">:</span><span class="w"> </span><span class="s2">"00002a21-0000-1000-8000-00805f9b34fb"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"characteristicProperties"</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="s2">"read"</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">     </span><span class="s2">"write"</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">     </span><span class="s2">"notify"</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
 <span class="w">   </span><span class="p">},</span>
-<span class="w">   </span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;add&quot;</span>
+<span class="w">   </span><span class="s2">"type"</span><span class="o">:</span><span class="w"> </span><span class="s2">"add"</span>
 <span class="p">});</span>
 </pre></div>
 </div>
@@ -1972,12 +1972,12 @@ WebDriver BiDi command.</p>
 </dl>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulate_characteristic</span><span class="p">({</span>
-<span class="w">    </span><span class="s2">&quot;address&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;09:09:09:09:09:09&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;serviceUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;0000180d-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;characteristicUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;00002a21-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;code&quot;</span><span class="o">:</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;data&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">]</span>
+<span class="w">    </span><span class="s2">"address"</span><span class="o">:</span><span class="w"> </span><span class="s2">"09:09:09:09:09:09"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"serviceUuid"</span><span class="o">:</span><span class="w"> </span><span class="s2">"0000180d-0000-1000-8000-00805f9b34fb"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"characteristicUuid"</span><span class="o">:</span><span class="w"> </span><span class="s2">"00002a21-0000-1000-8000-00805f9b34fb"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"type"</span><span class="o">:</span><span class="w"> </span><span class="s2">"read"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"code"</span><span class="o">:</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"data"</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">]</span>
 <span class="p">});</span>
 </pre></div>
 </div>
@@ -2011,11 +2011,11 @@ WebDriver BiDi command.</p>
 </dl>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulate_descriptor</span><span class="p">({</span>
-<span class="w">    </span><span class="s2">&quot;address&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;09:09:09:09:09:09&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;serviceUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;0000180d-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;characteristicUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;00002a21-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;descriptorUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;00002901-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;add&quot;</span>
+<span class="w">    </span><span class="s2">"address"</span><span class="o">:</span><span class="w"> </span><span class="s2">"09:09:09:09:09:09"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"serviceUuid"</span><span class="o">:</span><span class="w"> </span><span class="s2">"0000180d-0000-1000-8000-00805f9b34fb"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"characteristicUuid"</span><span class="o">:</span><span class="w"> </span><span class="s2">"00002a21-0000-1000-8000-00805f9b34fb"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"descriptorUuid"</span><span class="o">:</span><span class="w"> </span><span class="s2">"00002901-0000-1000-8000-00805f9b34fb"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"type"</span><span class="o">:</span><span class="w"> </span><span class="s2">"add"</span>
 <span class="p">});</span>
 </pre></div>
 </div>
@@ -2053,13 +2053,13 @@ WebDriver BiDi command.</p>
 </dl>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulate_descriptor_response</span><span class="p">({</span>
-<span class="w">    </span><span class="s2">&quot;address&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;09:09:09:09:09:09&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;serviceUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;0000180d-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;characteristicUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;00002a21-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;descriptorUuid&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;00002901-0000-1000-8000-00805f9b34fb&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;code&quot;</span><span class="o">:</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span>
-<span class="w">   </span><span class="s2">&quot;data&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">]</span>
+<span class="w">    </span><span class="s2">"address"</span><span class="o">:</span><span class="w"> </span><span class="s2">"09:09:09:09:09:09"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"serviceUuid"</span><span class="o">:</span><span class="w"> </span><span class="s2">"0000180d-0000-1000-8000-00805f9b34fb"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"characteristicUuid"</span><span class="o">:</span><span class="w"> </span><span class="s2">"00002a21-0000-1000-8000-00805f9b34fb"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"descriptorUuid"</span><span class="o">:</span><span class="w"> </span><span class="s2">"00002901-0000-1000-8000-00805f9b34fb"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"type"</span><span class="o">:</span><span class="w"> </span><span class="s2">"read"</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"code"</span><span class="o">:</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span>
+<span class="w">   </span><span class="s2">"data"</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">]</span>
 <span class="p">});</span>
 </pre></div>
 </div>
@@ -2321,7 +2321,7 @@ WebDriver BiDi command.</p>
 </dl>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">emulation</span><span class="p">.</span><span class="nx">set_locale_override</span><span class="p">({</span>
-<span class="w">    </span><span class="nx">locale</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;de-DE&#39;</span>
+<span class="w">    </span><span class="nx">locale</span><span class="o">:</span><span class="w"> </span><span class="s1">'de-DE'</span>
 <span class="p">});</span>
 </pre></div>
 </div>
@@ -2349,8 +2349,8 @@ WebDriver BiDi command.</p>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">emulation</span><span class="p">.</span><span class="nx">set_screen_orientation_override</span><span class="p">({</span>
 <span class="w">    </span><span class="nx">screenOrientation</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nx">natural</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;portrait&#39;</span><span class="p">,</span>
-<span class="w">        </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;landscape-secondary&#39;</span>
+<span class="w">        </span><span class="nx">natural</span><span class="o">:</span><span class="w"> </span><span class="s1">'portrait'</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">'landscape-secondary'</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">});</span>
 </pre></div>

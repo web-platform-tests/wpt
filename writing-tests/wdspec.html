@@ -67,12 +67,12 @@ command</a>:</p>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_null_response_value</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inline</span><span class="p">):</span>
     <span class="c1"># The high-level API is used to set up a document and locate a click target</span>
-    <span class="n">session</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">inline</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;foo&quot;</span><span class="p">)</span>
-    <span class="n">element</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">find</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">inline</span><span class="p">(</span><span class="s2">"&lt;p&gt;foo"</span><span class="p">)</span>
+    <span class="n">element</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">find</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s2">"p"</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="c1"># An HTTP request is explicitly constructed for the &quot;click&quot; command itself</span>
+    <span class="c1"># An HTTP request is explicitly constructed for the "click" command itself</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
-        <span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;session/</span><span class="si">{session_id}</span><span class="s2">/element/</span><span class="si">{element_id}</span><span class="s2">/click&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="s2">"POST"</span><span class="p">,</span> <span class="s2">"session/</span><span class="si">{session_id}</span><span class="s2">/element/</span><span class="si">{element_id}</span><span class="s2">/click"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">session_id</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">session_id</span><span class="p">,</span>
             <span class="n">element_id</span><span class="o">=</span><span class="n">element</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
 
@@ -160,10 +160,10 @@ command, add the following <code class="docutils literal notranslate"><span clas
           <span class="n">origin</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Undefined</span><span class="p">]</span> <span class="o">=</span> <span class="n">UNDEFINED</span><span class="p">,</span>
           <span class="n">user_context</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Undefined</span><span class="p">]</span> <span class="o">=</span> <span class="n">UNDEFINED</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="n">params</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;descriptor&quot;</span><span class="p">:</span> <span class="n">descriptor</span><span class="p">,</span>
-            <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span>
-            <span class="s2">&quot;origin&quot;</span><span class="p">:</span> <span class="n">origin</span><span class="p">,</span>
-            <span class="s2">&quot;userContext&quot;</span><span class="p">:</span> <span class="n">user_context</span><span class="p">,</span>
+            <span class="s2">"descriptor"</span><span class="p">:</span> <span class="n">descriptor</span><span class="p">,</span>
+            <span class="s2">"state"</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span>
+            <span class="s2">"origin"</span><span class="p">:</span> <span class="n">origin</span><span class="p">,</span>
+            <span class="s2">"userContext"</span><span class="p">:</span> <span class="n">user_context</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">params</span>
 </pre></div>

@@ -71,11 +71,11 @@ to use the provided <cite>wptserve.handlers.handler</cite> decorator:</p>
 
 <span class="nd">@handler</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">[(</span><span class="s2">&quot;X-Test&quot;</span><span class="p">:</span> <span class="s2">&quot;PASS&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s2">&quot;text/plain&quot;</span><span class="p">)],</span> <span class="s2">&quot;test&quot;</span>
+    <span class="k">return</span> <span class="p">[(</span><span class="s2">"X-Test"</span><span class="p">:</span> <span class="s2">"PASS"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Content-Type"</span><span class="p">,</span> <span class="s2">"text/plain"</span><span class="p">)],</span> <span class="s2">"test"</span>
 
-<span class="c1">#Later, assuming we have a Router object called &#39;router&#39;</span>
+<span class="c1">#Later, assuming we have a Router object called 'router'</span>
 
-<span class="n">router</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
+<span class="n">router</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">"GET"</span><span class="p">,</span> <span class="s2">"/test"</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -91,7 +91,7 @@ decorator:</p>
 
 <span class="nd">@json_handler</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;PASS&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"test"</span><span class="p">:</span> <span class="s2">"PASS"</span><span class="p">}</span>
 </pre></div>
 </div>
 </section>

@@ -74,7 +74,7 @@ one or more tests), and that property’s value is a list of web-feature IDs.</p
   <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="n">FilePattern</span> <span class="o">=</span> <span class="n">text</span> <span class="o">.</span><span class="n">regexp</span> <span class="s2">&quot;[A-Za-z0-9_*.-]+&quot;</span>
+<span class="n">FilePattern</span> <span class="o">=</span> <span class="n">text</span> <span class="o">.</span><span class="n">regexp</span> <span class="s2">"[A-Za-z0-9_*.-]+"</span>
 </pre></div>
 </div>
 </details><p>These files are used to generate a single JSON-formatted manifest file which
@@ -145,7 +145,7 @@ web-feature</a>,
 then that directory might include a <code class="docutils literal notranslate"><span class="pre">WEB_FEATURES.yml</span></code> file whose content
 appears as follows:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">fetch</span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"**"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">fetch</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 </section>
@@ -170,14 +170,14 @@ appears as follows:</p>
 </ul>
 <p>The contents of the file named <code class="docutils literal notranslate"><span class="pre">WEB_FEATURES.yml</span></code> might appear as follows:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
-<span class="c1"># The following rule includes all test files whose name begins with &quot;box-sizing&quot;:</span>
+<span class="c1"># The following rule includes all test files whose name begins with "box-sizing":</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">box-sizing-*</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">box-sizing</span><span class="p p-Indicator">]</span>
 
-<span class="c1"># The following rule includes the test file named &quot;z-index.html&quot;</span>
+<span class="c1"># The following rule includes the test file named "z-index.html"</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">z-index.html</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">z-index</span><span class="p p-Indicator">]</span>
 
 <span class="c1"># The following rule matches all test files which have not been matched above:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;*&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">aspect-ratio</span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"*"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">aspect-ratio</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 </section>
@@ -231,7 +231,7 @@ files except <code class="docutils literal notranslate"><span class="pre">c.html
 some test files and follow that with a smaller set of more expansive rules:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">c.html</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;*&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">background</span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"*"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">background</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">*</span></code> pattern will not match <code class="docutils literal notranslate"><span class="pre">c.html</span></code> in this context because that test file

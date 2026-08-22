@@ -123,8 +123,8 @@ inequality by <code class="docutils literal notranslate"><span class="pre">!=</s
 used in the expected way. Parentheses can also be used for
 grouping. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">key</span><span class="p">:</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">a</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span> <span class="ow">and</span> <span class="n">b</span> <span class="o">==</span> <span class="s2">&quot;abc&quot;</span><span class="p">:</span> <span class="n">value1</span>
-  <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">b</span> <span class="o">!=</span> <span class="s2">&quot;abc&quot;</span><span class="p">:</span> <span class="n">value2</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">a</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span> <span class="ow">and</span> <span class="n">b</span> <span class="o">==</span> <span class="s2">"abc"</span><span class="p">:</span> <span class="n">value1</span>
+  <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">b</span> <span class="o">!=</span> <span class="s2">"abc"</span><span class="p">:</span> <span class="n">value2</span>
   <span class="n">value3</span>
 </pre></div>
 </div>
@@ -253,8 +253,8 @@ unless they have an <code class="docutils literal notranslate"><span class="pre"
 <p>A more complex metadata file with conditional properties might be:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">canvas_test</span><span class="o">.</span><span class="n">html</span><span class="p">]</span>
   <span class="n">expected</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">os</span> <span class="o">==</span> <span class="s2">&quot;mac&quot;</span><span class="p">:</span> <span class="n">FAIL</span>
-    <span class="k">if</span> <span class="n">os</span> <span class="o">==</span> <span class="s2">&quot;windows&quot;</span> <span class="ow">and</span> <span class="n">version</span> <span class="o">==</span> <span class="s2">&quot;XP&quot;</span><span class="p">:</span> <span class="n">FAIL</span>
+    <span class="k">if</span> <span class="n">os</span> <span class="o">==</span> <span class="s2">"mac"</span><span class="p">:</span> <span class="n">FAIL</span>
+    <span class="k">if</span> <span class="n">os</span> <span class="o">==</span> <span class="s2">"windows"</span> <span class="ow">and</span> <span class="n">version</span> <span class="o">==</span> <span class="s2">"XP"</span><span class="p">:</span> <span class="n">FAIL</span>
     <span class="n">PASS</span>
 </pre></div>
 </div>
@@ -357,8 +357,8 @@ separate the observed results.</p>
 </dl>
 <p>So an example <code class="docutils literal notranslate"><span class="pre">update-properties.json</span></code> file might look like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;product&quot;</span><span class="p">,</span> <span class="s2">&quot;os&quot;</span><span class="p">],</span>
-  <span class="s2">&quot;dependents&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;product&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;browser_channel&quot;</span><span class="p">],</span> <span class="s2">&quot;os&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]}</span>
+  <span class="s2">"properties"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"product"</span><span class="p">,</span> <span class="s2">"os"</span><span class="p">],</span>
+  <span class="s2">"dependents"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"product"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"browser_channel"</span><span class="p">],</span> <span class="s2">"os"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"version"</span><span class="p">]}</span>
 <span class="p">}</span>
 </pre></div>
 </div>

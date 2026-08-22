@@ -47,17 +47,17 @@ available to both the wptrunner test harness and the <code class="docutils liter
 <h3>Entry Point Registration<a class="headerlink" href="#entry-point-registration" title="Link to this heading">¶</a></h3>
 <p>Register via the <code class="docutils literal notranslate"><span class="pre">wptrunner.products</span></code> entry point group. Example <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">setup</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;wptrunner-mybrowser&#39;</span><span class="p">,</span>
-    <span class="n">install_requires</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;wptrunner&#39;</span><span class="p">],</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">'wptrunner-mybrowser'</span><span class="p">,</span>
+    <span class="n">install_requires</span><span class="o">=</span><span class="p">[</span><span class="s1">'wptrunner'</span><span class="p">],</span>
     <span class="n">entry_points</span><span class="o">=</span><span class="p">{</span>
-        <span class="s1">&#39;wptrunner.products&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mybrowser = wptrunner_mybrowser:get_product&#39;</span><span class="p">]</span>
+        <span class="s1">'wptrunner.products'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'mybrowser = wptrunner_mybrowser:get_product'</span><span class="p">]</span>
     <span class="p">}</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>Or <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">project</span><span class="o">.</span><span class="n">entry</span><span class="o">-</span><span class="n">points</span><span class="o">.</span><span class="s2">&quot;wptrunner.products&quot;</span><span class="p">]</span>
-<span class="n">mybrowser</span> <span class="o">=</span> <span class="s2">&quot;wptrunner_mybrowser:get_product&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">project</span><span class="o">.</span><span class="n">entry</span><span class="o">-</span><span class="n">points</span><span class="o">.</span><span class="s2">"wptrunner.products"</span><span class="p">]</span>
+<span class="n">mybrowser</span> <span class="o">=</span> <span class="s2">"wptrunner_mybrowser:get_product"</span>
 </pre></div>
 </div>
 </section>
@@ -84,31 +84,31 @@ available to both the wptrunner test harness and the <code class="docutils liter
 
     <span class="k">def</span><span class="w"> </span><span class="nf">executor_browser</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">wptrunner.executors.executorwebdriver</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebDriverBrowser</span>
-        <span class="k">return</span> <span class="n">WebDriverBrowser</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;webdriver_url&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">webdriver_url</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">WebDriverBrowser</span><span class="p">,</span> <span class="p">{</span><span class="s2">"webdriver_url"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">webdriver_url</span><span class="p">}</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">check_args</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">pass</span>  <span class="c1"># Validate required arguments</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">browser_kwargs</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">test_type</span><span class="p">,</span> <span class="n">run_info_data</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">subsuite</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;binary&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"binary"</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"binary"</span><span class="p">)}</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">executor_kwargs</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">test_type</span><span class="p">,</span> <span class="n">test_environment</span><span class="p">,</span> <span class="n">run_info_data</span><span class="p">,</span>
                     <span class="n">subsuite</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;capabilities&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;browserName&quot;</span><span class="p">:</span> <span class="s2">&quot;mybrowser&quot;</span><span class="p">}}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"capabilities"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"browserName"</span><span class="p">:</span> <span class="s2">"mybrowser"</span><span class="p">}}</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_product</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">Product</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mybrowser&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"mybrowser"</span><span class="p">,</span>
         <span class="n">browser_classes</span><span class="o">=</span><span class="p">{</span><span class="kc">None</span><span class="p">:</span> <span class="n">MyBrowser</span><span class="p">},</span>
         <span class="n">check_args</span><span class="o">=</span><span class="n">check_args</span><span class="p">,</span>
         <span class="n">get_browser_kwargs</span><span class="o">=</span><span class="n">browser_kwargs</span><span class="p">,</span>
         <span class="n">get_executor_kwargs</span><span class="o">=</span><span class="n">executor_kwargs</span><span class="p">,</span>
-        <span class="n">env_options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;web-platform.test&quot;</span><span class="p">,</span> <span class="s2">&quot;bind_address&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="n">env_options</span><span class="o">=</span><span class="p">{</span><span class="s2">"host"</span><span class="p">:</span> <span class="s2">"web-platform.test"</span><span class="p">,</span> <span class="s2">"bind_address"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
         <span class="n">get_env_extras</span><span class="o">=</span><span class="k">lambda</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="p">[],</span>
         <span class="n">get_timeout_multiplier</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">executor_classes</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;testharness&quot;</span><span class="p">:</span> <span class="n">WebDriverTestharnessExecutor</span><span class="p">,</span>
-            <span class="s2">&quot;reftest&quot;</span><span class="p">:</span> <span class="n">WebDriverRefTestExecutor</span><span class="p">,</span>
+            <span class="s2">"testharness"</span><span class="p">:</span> <span class="n">WebDriverTestharnessExecutor</span><span class="p">,</span>
+            <span class="s2">"reftest"</span><span class="p">:</span> <span class="n">WebDriverRefTestExecutor</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 </pre></div>
@@ -122,7 +122,7 @@ available to both the wptrunner test harness and the <code class="docutils liter
 <p>Specify different browser classes per test type:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">browser_classes</span><span class="o">=</span><span class="p">{</span>
     <span class="kc">None</span><span class="p">:</span> <span class="n">MyBrowser</span><span class="p">,</span>              <span class="c1"># Default</span>
-    <span class="s2">&quot;wdspec&quot;</span><span class="p">:</span> <span class="n">MyWdSpecBrowser</span><span class="p">,</span>    <span class="c1"># WebDriver spec tests</span>
+    <span class="s2">"wdspec"</span><span class="p">:</span> <span class="n">MyWdSpecBrowser</span><span class="p">,</span>    <span class="c1"># WebDriver spec tests</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -131,7 +131,7 @@ available to both the wptrunner test harness and the <code class="docutils liter
 <h3>Run Info Extras<a class="headerlink" href="#run-info-extras" title="Link to this heading">¶</a></h3>
 <p>Add custom metadata to test run information:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">run_info_extras</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;mybrowser_version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"mybrowser_version"</span><span class="p">:</span> <span class="s2">"1.0.0"</span><span class="p">}</span>
 
 <span class="c1"># Include in Product(..., run_info_extras=run_info_extras)</span>
 </pre></div>
@@ -143,15 +143,15 @@ available to both the wptrunner test harness and the <code class="docutils liter
 run <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span> <span class="pre">--help</span></code>. Use the <code class="docutils literal notranslate"><span class="pre">add_arguments</span></code> attribute to add a function
 that receives an <code class="docutils literal notranslate"><span class="pre">argparse.ArgumentParser</span></code> and adds product-specific options:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">add_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
-    <span class="n">group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;MyBrowser-specific&quot;</span><span class="p">)</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">"MyBrowser-specific"</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--mybrowser-profile&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to browser profile directory&quot;</span>
+        <span class="s2">"--mybrowser-profile"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Path to browser profile directory"</span>
     <span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--mybrowser-debug&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable debug mode&quot;</span>
+        <span class="s2">"--mybrowser-debug"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Enable debug mode"</span>
     <span class="p">)</span>
 
 <span class="c1"># Include in Product(..., add_arguments=add_arguments)</span>
@@ -191,8 +191,8 @@ examples.</p>
 <section id="product-name-mismatch">
 <h3>Product Name Mismatch<a class="headerlink" href="#product-name-mismatch" title="Link to this heading">¶</a></h3>
 <p>Entry point name must match Product name:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;mybrowser = ...&#39;</span>  <span class="c1"># Entry point</span>
-<span class="n">Product</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mybrowser&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>  <span class="c1"># Product</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">'mybrowser = ...'</span>  <span class="c1"># Entry point</span>
+<span class="n">Product</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"mybrowser"</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>  <span class="c1"># Product</span>
 </pre></div>
 </div>
 <p>For usage with <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code>, see the running-tests documentation.</p>

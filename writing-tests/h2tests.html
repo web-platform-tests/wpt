@@ -45,13 +45,13 @@ HEADERS frame (RequestReceived event) or a DATA frame (DataReceived event).
 the request in its entirety.</p>
 <p>Here is what a Python script for a test might look like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">handle_headers</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;pass&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">"test"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"pass"</span><span class="p">:</span>
         <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="mi">200</span>
-        <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">([(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;passed&#39;</span><span class="p">)])</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">([(</span><span class="s1">'test'</span><span class="p">,</span> <span class="s1">'passed'</span><span class="p">)])</span>
         <span class="n">response</span><span class="o">.</span><span class="n">write_status_headers</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="mi">403</span>
-        <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">([(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">)])</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">([(</span><span class="s1">'test'</span><span class="p">,</span> <span class="s1">'failed'</span><span class="p">)])</span>
         <span class="n">response</span><span class="o">.</span><span class="n">write_status_headers</span><span class="p">()</span>
         <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">end_stream</span><span class="p">()</span>
 
@@ -59,7 +59,7 @@ the request in its entirety.</p>
     <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_data</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">data</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_data</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">End of File&#39;</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_data</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">End of File'</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The above script is fairly simple:</p>

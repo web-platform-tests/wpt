@@ -183,7 +183,7 @@ tests that are run e.g. for leak suppression).</p></li>
 <span class="n">output_handler</span><span class="o">.</span><span class="n">after_process_start</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
 <span class="p">[</span><span class="o">...</span><span class="p">]</span>
 <span class="c1"># All logging to this point was buffered in-memory, but after start()</span>
-<span class="c1"># it&#39;s actually sent to the logger.</span>
+<span class="c1"># it's actually sent to the logger.</span>
 <span class="n">output_handler</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="o">**</span><span class="n">output_logger_start_kwargs</span><span class="p">)</span>
 <span class="p">[</span><span class="o">...</span><span class="p">]</span>
 <span class="n">proc</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>

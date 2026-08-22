@@ -133,7 +133,7 @@ installed:</p>
 <section id="windows">
 <h3>Windows<a class="headerlink" href="#windows" title="Link to this heading">¶</a></h3>
 <p>When running these tests on macOS, provide the option <code class="docutils literal notranslate"><span class="pre">--no-headless</span></code>. Otherwise the accessibility API will not be enabled. Additionally, the binaries for the browser and the webdriver binary must be provided on a Windows machine.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python wpt.py run chrome --no-headless --binary=&quot;C:\Program Files\Google\Chrome\Application\chrome.exe&quot; --webdriver-binary=&quot;C:\whatever\the\path\to\chromedriver&quot; core-aam\aamtests\role\blockquote.py
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python wpt.py run chrome --no-headless --binary="C:\Program Files\Google\Chrome\Application\chrome.exe" --webdriver-binary="C:\whatever\the\path\to\chromedriver" core-aam\aamtests\role\blockquote.py
 </pre></div>
 </div>
 </section>
@@ -162,7 +162,7 @@ respectively. Both subtests will load the same HTML, then query their respective
 accessibility APIs. The subtest name should include, at least, the name of the
 API being tested for ease of understanding the test results.</p>
 <p>For example, the file <code class="docutils literal notranslate"><span class="pre">foobar.py</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">TEST_HTML</span> <span class="o">=</span> <span class="s2">&quot;&lt;div role=foobar id=test&gt;&lt;/div&gt;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">TEST_HTML</span> <span class="o">=</span> <span class="s2">"&lt;div role=foobar id=test&gt;&lt;/div&gt;"</span>
 
 <span class="c1"># Test of the Linux accessibility API: AT-SPI</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_atspi</span><span class="p">(</span><span class="n">atspi</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">inline</span><span class="p">):</span>
@@ -171,7 +171,7 @@ API being tested for ease of understanding the test results.</p>
 
     <span class="c1"># The `atspi` fixture wraps the AT-SPI Python bindings and provides some helper functions,</span>
     <span class="c1"># such as `find_node`, which finds a node by DOM ID.</span>
-    <span class="n">node</span> <span class="o">=</span> <span class="n">atspi</span><span class="o">.</span><span class="n">find_node</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">atspi</span><span class="o">.</span><span class="n">find_node</span><span class="p">(</span><span class="s2">"test"</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">atspi</span><span class="o">.</span><span class="n">Accessible</span><span class="o">.</span><span class="n">get_role</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="o">==</span> <span class="n">atspi</span><span class="o">.</span><span class="n">Role</span><span class="o">.</span><span class="n">FOOBAR</span>
 
 <span class="c1"># Test of the macOS accessibility API: AX API</span>
@@ -181,9 +181,9 @@ API being tested for ease of understanding the test results.</p>
 
     <span class="c1"># The `axapi` fixture wraps the AX API Python bindings and provides some helper functions,</span>
     <span class="c1"># such as `find_node`, which finds a node by DOM ID.</span>
-    <span class="n">node</span> <span class="o">=</span> <span class="n">axapi</span><span class="o">.</span><span class="n">find_node</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
-    <span class="n">role</span> <span class="o">=</span> <span class="n">axapi</span><span class="o">.</span><span class="n">AXUIElementCopyAttributeValue</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;AXRole&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">role</span> <span class="o">==</span> <span class="s2">&quot;AXFoobar&quot;</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">axapi</span><span class="o">.</span><span class="n">find_node</span><span class="p">(</span><span class="s2">"test"</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">role</span> <span class="o">=</span> <span class="n">axapi</span><span class="o">.</span><span class="n">AXUIElementCopyAttributeValue</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">"AXRole"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">role</span> <span class="o">==</span> <span class="s2">"AXFoobar"</span>
 </pre></div>
 </div>
 </section>

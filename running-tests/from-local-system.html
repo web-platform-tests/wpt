@@ -65,7 +65,7 @@ Ubuntu Focal and later, the package is called <code class="docutils literal notr
 <p>The system-provided Python can be used, while <code class="docutils literal notranslate"><span class="pre">pip</span></code> can be
 installed for the user only:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>ensurepip<span class="w"> </span>--user
-<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PATH</span><span class="s2">:</span><span class="k">$(</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>site<span class="w"> </span>--user-base<span class="w"> </span><span class="k">)</span><span class="s2">/bin&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PATH</span><span class="s2">:</span><span class="k">$(</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>site<span class="w"> </span>--user-base<span class="w"> </span><span class="k">)</span><span class="s2">/bin"</span>
 </pre></div>
 </div>
 <p>To make the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> change persistent, add it to your <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code> file or
@@ -123,9 +123,9 @@ ports are randomly-chosen free ports. Tests must be loaded from the
 create a <code class="docutils literal notranslate"><span class="pre">config.json</span></code> file in the wpt root directory, and add
 port definitions of your choice e.g.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;ports&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;http&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1234</span><span class="p">,</span> <span class="s2">&quot;auto&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;https&quot;</span><span class="p">:[</span><span class="mi">5678</span><span class="p">]</span>
+  <span class="s2">"ports"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"http"</span><span class="p">:</span> <span class="p">[</span><span class="mi">1234</span><span class="p">,</span> <span class="s2">"auto"</span><span class="p">],</span>
+    <span class="s2">"https"</span><span class="p">:[</span><span class="mi">5678</span><span class="p">]</span>
   <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>

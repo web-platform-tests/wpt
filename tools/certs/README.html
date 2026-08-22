@@ -75,7 +75,7 @@ or <code class="docutils literal notranslate"><span class="pre">wpt</span> <span
 command line doesn’t work, you also need to adjust the path to the
 OpenSSL binary. This can be done by adding a section to <code class="docutils literal notranslate"><span class="pre">config.json</span></code>
 like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;ssl&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;openssl&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;binary&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/openssl&quot;</span><span class="p">}}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">"ssl"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"openssl"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"binary"</span><span class="p">:</span> <span class="s2">"/path/to/openssl"</span><span class="p">}}</span>
 </pre></div>
 </div>
 </section>
@@ -103,14 +103,14 @@ ensuring that the key <code class="docutils literal notranslate"><span class="pr
 the path to the OpenSSL config file (typically this will be
 <code class="docutils literal notranslate"><span class="pre">C:\\OpenSSL-Win32\\bin\\openssl.cfg</span></code>):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;ssl&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;openssl&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;encrypt_after_connect&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
-    <span class="s2">&quot;openssl&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;openssl_binary&quot;</span><span class="p">:</span> <span class="s2">&quot;openssl&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;base_path: &quot;</span><span class="n">_certs</span><span class="s2">&quot;,</span>
-      <span class="s2">&quot;force_regenerate&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
-      <span class="s2">&quot;base_conf_path&quot;</span><span class="p">:</span> <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">OpenSSL-Win32</span><span class="se">\\</span><span class="s2">bin</span><span class="se">\\</span><span class="s2">openssl.cfg&quot;</span>
+  <span class="s2">"ssl"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"openssl"</span><span class="p">,</span>
+    <span class="s2">"encrypt_after_connect"</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+    <span class="s2">"openssl"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"openssl_binary"</span><span class="p">:</span> <span class="s2">"openssl"</span><span class="p">,</span>
+      <span class="s2">"base_path: "</span><span class="n">_certs</span><span class="s2">",</span>
+      <span class="s2">"force_regenerate"</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+      <span class="s2">"base_conf_path"</span><span class="p">:</span> <span class="s2">"C:</span><span class="se">\\</span><span class="s2">OpenSSL-Win32</span><span class="se">\\</span><span class="s2">bin</span><span class="se">\\</span><span class="s2">openssl.cfg"</span>
     <span class="p">},</span>
   <span class="p">},</span>
 <span class="p">}</span>

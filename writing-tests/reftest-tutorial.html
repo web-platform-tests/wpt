@@ -96,19 +96,19 @@ so we’ll want to create our new test in the directory
 <code class="docutils literal notranslate"><span class="pre">rtl.html</span></code> and open it in your text editor.</p>
 <p>Here’s one way to demonstrate the feature:</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"utf-8"</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>BDO element dir=rtl<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;help&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;https://html.spec.whatwg.org/#the-bdo-element&quot;</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;assert&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;BDO element&#39;s DIR content attribute renders correctly given value of &#39;rtl&#39;.&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">"help"</span> <span class="na">href</span><span class="o">=</span><span class="s">"https://html.spec.whatwg.org/#the-bdo-element"</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">"assert"</span> <span class="na">content</span><span class="o">=</span><span class="s">"BDO element's DIR content attribute renders correctly given value of 'rtl'."</span><span class="p">&gt;</span>
 
 <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Test passes if WAS is displayed below.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">bdo</span> <span class="na">dir</span><span class="o">=</span><span class="s">&quot;rtl&quot;</span><span class="p">&gt;</span>SAW<span class="p">&lt;/</span><span class="nt">bdo</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">bdo</span> <span class="na">dir</span><span class="o">=</span><span class="s">"rtl"</span><span class="p">&gt;</span>SAW<span class="p">&lt;/</span><span class="nt">bdo</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 <p>That’s pretty dense! Let’s break it down:</p>
 <ul>
 <li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"utf-8"</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 <p>We explicitly set the DOCTYPE and character set to be sure that browsers
@@ -121,7 +121,7 @@ because it makes tests more concise.</p>
 </div>
 <p>The document’s title should succinctly describe the feature under test.</p>
 </li>
-<li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;help&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;https://html.spec.whatwg.org/#the-bdo-element&quot;</span><span class="p">&gt;</span>
+<li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">"help"</span> <span class="na">href</span><span class="o">=</span><span class="s">"https://html.spec.whatwg.org/#the-bdo-element"</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 <p>The “help” metadata should reference the specification under test so that
@@ -129,7 +129,7 @@ everyone understands the motivation. This is so helpful that <a class="reference
 Group requires it for CSS tests</span></a>! If you’re writing a reftest
 for a feature outside of CSS, feel free to omit this tag.</p>
 </li>
-<li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;assert&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;BDO element&#39;s DIR content attribute renders correctly given value of &#39;rtl&#39;.&quot;</span><span class="p">&gt;</span>
+<li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">"assert"</span> <span class="na">content</span><span class="o">=</span><span class="s">"BDO element's DIR content attribute renders correctly given value of 'rtl'."</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 <p>The “assert” metadata is a structured way for you to describe exactly what
@@ -149,7 +149,7 @@ out.</p>
 <p>We’re communicating the “pass” condition in plain English to make the test
 self-describing.</p>
 </li>
-<li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">bdo</span> <span class="na">dir</span><span class="o">=</span><span class="s">&quot;rtl&quot;</span><span class="p">&gt;</span>SAW<span class="p">&lt;/</span><span class="nt">bdo</span><span class="p">&gt;</span>
+<li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">bdo</span> <span class="na">dir</span><span class="o">=</span><span class="s">"rtl"</span><span class="p">&gt;</span>SAW<span class="p">&lt;/</span><span class="nt">bdo</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 <p>This is the real focus of the test. We’re including some text inside a
@@ -179,7 +179,7 @@ corresponding pixel in the reference document.</p>
 <code class="docutils literal notranslate"><span class="pre">html/semantics/text-level-semantics/the-bdo-element/</span></code> directory named
 <code class="docutils literal notranslate"><span class="pre">rtl-ref.html</span></code>, and save the following markup into it:</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"utf-8"</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>BDO element dir=rtl reference<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
 
 <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Test passes if WAS is displayed below.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
@@ -200,15 +200,15 @@ add one more piece of metadata to the test file we created earlier. Open
 editor and add another <code class="docutils literal notranslate"><span class="pre">&lt;link&gt;</span></code> tag as described by the following change
 summary:</p>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>&lt;!DOCTYPE html&gt;
-<span class="w"> </span>&lt;meta charset=&quot;utf-8&quot;&gt;
+<span class="w"> </span>&lt;meta charset="utf-8"&gt;
 <span class="w"> </span>&lt;title&gt;BDO element dir=rtl&lt;/title&gt;
-<span class="w"> </span>&lt;link rel=&quot;author&quot; title=&quot;Sam Smith&quot; href=&quot;mailto:sam@example.com&quot;&gt;
-<span class="w"> </span>&lt;link rel=&quot;help&quot; href=&quot;https://html.spec.whatwg.org/#the-bdo-element&quot;&gt;
-<span class="gi">+&lt;link rel=&quot;match&quot; href=&quot;rtl-ref.html&quot;&gt;</span>
-<span class="w"> </span>&lt;meta name=&quot;assert&quot; content=&quot;BDO element&#39;s DIR content attribute renders correctly given value of &#39;rtl&#39;.&quot;&gt;
+<span class="w"> </span>&lt;link rel="author" title="Sam Smith" href="mailto:sam@example.com"&gt;
+<span class="w"> </span>&lt;link rel="help" href="https://html.spec.whatwg.org/#the-bdo-element"&gt;
+<span class="gi">+&lt;link rel="match" href="rtl-ref.html"&gt;</span>
+<span class="w"> </span>&lt;meta name="assert" content="BDO element's DIR content attribute renders correctly given value of 'rtl'."&gt;
 
 <span class="w"> </span>&lt;p&gt;Test passes if WAS is displayed below.&lt;/p&gt;
-<span class="w"> </span>&lt;bdo dir=&quot;rtl&quot;&gt;SAW&lt;/bdo&gt;
+<span class="w"> </span>&lt;bdo dir="rtl"&gt;SAW&lt;/bdo&gt;
 </pre></div>
 </div>
 <p>Now, anyone (human or computer) reviewing the test file will know where to find
@@ -266,7 +266,7 @@ don’t) by using <code class="docutils literal notranslate"><span class="pre">g
 <p>On most systems, you can use the arrow keys to navigate through the changes,
 and you can press the <code class="docutils literal notranslate"><span class="pre">q</span></code> key when you’re done reviewing.</p>
 <p>Next, we’ll create a commit with the staged changes:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git commit -m &#39;[html] Add test for the `&lt;bdo&gt;` element&#39;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git commit -m '[html] Add test for the `&lt;bdo&gt;` element'
 </pre></div>
 </div>
 <p>And now we can push the commit to our fork of WPT:</p>

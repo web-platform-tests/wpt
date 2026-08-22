@@ -4,18 +4,17 @@
   <title>CSS Test: margin box referencing document counters</title>
   <link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
   <link rel="author" title="Hewlett-Packard Company" href="http://www.hp.com/"/>
-  <link rel="help" href="http://www.w3.org/TR/css3-page/#populating-margin-boxes"/>
-  <link rel="match" href="reference/page-counters-000-ref.xht"/>
+  <link rel="author" title="Mike Bremford" href="http://bfo.com" />
   <meta name="flags" content="paged" />
-  <meta name="assert" content="The value of the counter at the beginning of page processing must be used by default. "/>
-  <style type="text/css"><![CDATA[
-   	body {counter-reset: chapter;}
-	div.chapter {counter-increment: chapter;}
-	@page {
-	  @top-center { content: "Chapter " counter(chapter); }
+  <style type="text/css">
+	@page :right {
+	  @top-center { content: "Chapter 0"; }
+	}
+	@page :left {
+	  @top-center { content: "Chapter 4"; }
 	}
 	div.section {page-break-before: always;}
-  ]]></style>
+  </style>
  </head>
  <body>
   	<div class="chapter">This paragaraph should appear on the first page, which should say &quot;Chapter 0&quot; at the top. A second page with &quot;Chapter 4&quot; at the top should also print.</div>

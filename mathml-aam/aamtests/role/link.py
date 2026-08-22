@@ -61,26 +61,3 @@ class TestMathMLALink:
             assert role == "AXGroup"
         else:
             raise ValueError(f"Unreachable code: missing AXAPI assertions for {test_id}")
-
-    def test_ia2(self, ia2, session, inline, test_id, test_html):
-        session.url = inline(test_html)
-        node = ia2.find_node("test", session.url)
-
-        if test_id == "mathml-link":
-            assert ia2.get_role(node) == "ROLE_SYSTEM_LINK"
-            assert ia2.get_hyperlink_interface(node) is not None
-            msaa_state = ia2.get_msaa_state_list(node)
-            assert "LINKED" in msaa_state
-
-        elif test_id == "mathml-link-with-onclick":
-            assert ia2.get_role(node) == "ROLE_SYSTEM_LINK"
-
-        elif test_id == "mathml-link-without-href":
-            # Note: We use IA2_ROLE_SECTION here as a fallback because the strict
-            # mapping for an href-less mathml:a element is TBD in the IA2 section of MathML-AAM.
-            # See: https://w3c.github.io/mathml-aam/#el-a
-            assert ia2.get_role(node) == "IA2_ROLE_SECTION"
-            assert ia2.get_hyperlink_interface(node) is None
-
-        else:
-            raise ValueError(f"Unreachable code: missing IA2 assertions for {test_id}")

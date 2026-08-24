@@ -10,11 +10,14 @@ var a = 0;
 var b = 0;
 var c = 0;
 </script>
-<video id="v"><source id="source-a" onerror="a++; events.push('a')"><source id="source-b" onerror="b++; events.push('b')" src="resources/delayed-broken-video.py">x<source id="source-c" onerror="c++; events.push('c')"></video>
+<video id="v"><source id="source-a" onerror="a++; events.push('a')"><source id="source-b" onerror="b++; events.push('b')" src="resources/delayed-broken-video.py?ms=500">x<source id="source-c" onerror="c++; events.push('c')"></video>
 <script>
-async_test(function(t) {
+promise_test(async function(t) {
   var video = document.getElementById('v');
+  var sourceB = document.getElementById('source-b');
   assert_implements(typeof video.moveBefore == 'function', 'ParentNode.moveBefore() is required for this test');
+
+  var loaded = new Promise(function(resolve) { window.addEventListener('load', resolve); });
 
   var text = null;
   for (var i = 0; i < video.childNodes.length; ++i) {
@@ -25,15 +28,22 @@ async_test(function(t) {
   }
   assert_not_equals(text, null, 'text node pointerAfter exists');
 
+  // currentSrc is set in the "process candidate" step, after the pointer has
+  // advanced and before the resource fetch algorithm runs, so waiting for it is
+  // how we observe that the pointer is (source-b | text) with source-b pending.
+  // Polling rather than using an event keeps this robust whether the UA runs the
+  // synchronous section at a microtask checkpoint (as specified) or in a task.
+  await t.step_wait(function() { return video.currentSrc == sourceB.src; },
+                    'source-b selected as candidate', 3000, 5);
+  assert_equals(b, 0, 'source-b is still pending when the pointer is moved');
+
   // Move the text node that is pointerAfter out while b is pending.
   document.getElementById('holder').moveBefore(text, null);
 
-  window.onload = t.step_func(function() {
-    assert_equals(a, 1, 'error events on a');
-    assert_equals(b, 1, 'error events on b');
-    assert_equals(c, 1, 'error events on c');
-    assert_array_equals(events, ['a', 'b', 'c'], 'processed source order');
-    t.done();
-  });
+  await loaded;
+  assert_equals(a, 1, 'error events on a');
+  assert_equals(b, 1, 'error events on b');
+  assert_equals(c, 1, 'error events on c');
+  assert_array_equals(events, ['a', 'b', 'c'], 'processed source order');
 });
 </script>

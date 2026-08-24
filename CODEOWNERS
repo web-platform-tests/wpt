@@ -9,8 +9,9 @@
 tools/docker/Dockerfile @web-platform-tests/wpt-core-team @web-platform-tests/admins
 .taskcluster.yml @web-platform-tests/wpt-core-team @web-platform-tests/admins
 
-# Prevent accidentally touching wasm/core which is updated by a workflow
+# Prevent accidentally touching wasm/core and wasm/proposals which are updated by a workflow
 wasm/core/ @web-platform-tests/wpt-core-team
+wasm/proposals @web-platform-tests/wpt-core-team
 
 # GENERATED: interop-tests
 css/css-anchor-position/anchor-as-multicol-crash.html @web-platform-tests/interop
@@ -770,7 +771,6 @@ css/css-view-transitions/duplicate-tag-rejects-start.html @web-platform-tests/in
 css/css-view-transitions/dynamic-stylesheet-animations-timing-function.html @web-platform-tests/interop
 css/css-view-transitions/dynamic-stylesheet-animations.html @web-platform-tests/interop
 css/css-view-transitions/event-pseudo-name.html @web-platform-tests/interop
-css/css-view-transitions/finished-promise-defers-cleanup.html @web-platform-tests/interop
 css/css-view-transitions/group-animation-for-root-transition.html @web-platform-tests/interop
 css/css-view-transitions/hit-test-pseudo-element-element-from-point.html @web-platform-tests/interop
 css/css-view-transitions/hit-test-unpainted-element-from-point.html @web-platform-tests/interop
@@ -1365,7 +1365,6 @@ navigation-api/scroll-behavior/after-transition-intercept-handler-modifies.html 
 navigation-api/scroll-behavior/after-transition-push.html @web-platform-tests/interop
 navigation-api/scroll-behavior/after-transition-reject.html @web-platform-tests/interop
 navigation-api/scroll-behavior/after-transition-reload-no-scroll-anchoring.html @web-platform-tests/interop
-navigation-api/scroll-behavior/after-transition-reload.html @web-platform-tests/interop
 navigation-api/scroll-behavior/after-transition-replace.html @web-platform-tests/interop
 navigation-api/scroll-behavior/after-transition-timing.html @web-platform-tests/interop
 navigation-api/scroll-behavior/manual-basic.html @web-platform-tests/interop
@@ -1376,7 +1375,6 @@ navigation-api/scroll-behavior/manual-scroll-fragment-does-not-exist.html @web-p
 navigation-api/scroll-behavior/manual-scroll-in-precommit-handler.html @web-platform-tests/interop
 navigation-api/scroll-behavior/manual-scroll-push.html @web-platform-tests/interop
 navigation-api/scroll-behavior/manual-scroll-reload-no-scroll-anchoring.html @web-platform-tests/interop
-navigation-api/scroll-behavior/manual-scroll-reload.html @web-platform-tests/interop
 navigation-api/scroll-behavior/manual-scroll-repeated.html @web-platform-tests/interop
 navigation-api/scroll-behavior/manual-scroll-replace.html @web-platform-tests/interop
 navigation-api/scroll-behavior/manual-scroll-resets-when-no-fragment.html @web-platform-tests/interop

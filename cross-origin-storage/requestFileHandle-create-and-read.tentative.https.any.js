@@ -38,6 +38,13 @@ promise_test(async t => {
   // request's entry is still "pending" (created but not yet written
   // through), must reject with NotAllowedError rather than NotFoundError:
   // https://wicg.github.io/cross-origin-storage/#reading-files
+  //
+  // This read is not charged against the cross-origin probe budget: this
+  // origin is in the entry's pending writers, having obtained the create
+  // handle above, and pending writers are exempt alongside storing origins.
+  // The NotAllowedError therefore does not depend on budget being available.
+  // An origin with no write of its own outstanding *is* charged for the same
+  // answer, which does disclose that someone is writing this hash.
   const content = cosUniqueContent('pending-read');
   const hash = cosHash(await cosSha256Hex(content));
   const createHandle = await navigator.crossOriginStorage.requestFileHandle(

@@ -12,7 +12,6 @@
 <script>
 'use strict';
 
-const {HTTPS_REMOTE_ORIGIN, HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
 const REAL_URL = new URL('../resources/marker-module.mjs', location.href).href;
 const EXPECTED_VALUE = 'cos-module-marker-value';
 
@@ -43,7 +42,7 @@ async function remoteImportProbe(ctx, integrity, crossOriginStorage) {
 
 promise_test(async t => {
   const integrity = await storeModuleHere('*');
-  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
   const result = await remoteImportProbe(ctx, integrity, '*');
   if (result.ok) {
     assert_equals(result.value, EXPECTED_VALUE);
@@ -53,14 +52,14 @@ promise_test(async t => {
 
 promise_test(async t => {
   const integrity = await storeModuleHere('');
-  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
   const result = await remoteImportProbe(ctx, integrity, '');
   assert_false(result.ok,
     'a same-site-scoped (crossOriginStorage: "") module must never be disclosed to a cross-site origin');
 }, 'JS import attribute, cross-origin: crossOriginStorage: "" (same-site) is never served from COS to a cross-site origin');
 
 promise_test(async t => {
-  const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN);
+  const {ctx} = await cosOpenRemoteContext(cosNextSameSiteOrigin());
   const listOrigin = await ctx.execute_script(() => location.origin, []);
   const integrity = await storeModuleHere(listOrigin);
   const result = await remoteImportProbe(ctx, integrity, listOrigin);

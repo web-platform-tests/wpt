@@ -96,6 +96,22 @@ promise_test(async t => {
 
   const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
 
+  // The listed hash is read first, deliberately. Both reads are charged
+  // against the remote origin's cross-origin probe budget
+  // (https://wicg.github.io/cross-origin-storage/#cross-site-identifiers), and
+  // a budget refusal is indistinguishable from a genuine miss -- which leaves
+  // the negative assertion below passing either way, but would turn the
+  // positive one into a spurious failure. Spending the budget on the
+  // load-bearing assertion first is the only ordering that is robust to it.
+  // Both readUntilDisclosed() loops repeat a *single* hash, so each costs one
+  // charge, not ATTEMPTS.
+  const listed = await readUntilDisclosed(ctx, listedHash);
+  assert_true(listed.disclosed,
+    `a "*"-scoped entry whose hash is on the PHL must be disclosable to a ` +
+    `cross-site origin; ${ATTEMPTS} reads were all rejected ` +
+    `(${listed.rejections.join(', ')}), which neither GREASE'ing nor an ` +
+    `exhausted cross-origin probe budget alone explains`);
+
   const unlisted = await readUntilDisclosed(ctx, unlistedHash);
   assert_false(unlisted.disclosed,
     'a "*"-scoped entry whose hash is not on the PHL must never be disclosed ' +
@@ -103,12 +119,6 @@ promise_test(async t => {
   assert_array_equals(
     unlisted.rejections, new Array(ATTEMPTS).fill('NotFoundError'),
     'every refusal must be indistinguishable from a genuine miss');
-
-  const listed = await readUntilDisclosed(ctx, listedHash);
-  assert_true(listed.disclosed,
-    `a "*"-scoped entry whose hash is on the PHL must be disclosable to a ` +
-    `cross-site origin; ${ATTEMPTS} reads were all rejected ` +
-    `(${listed.rejections.join(', ')}), which GREASE'ing alone does not explain`);
   assert_equals(listed.digest, LISTED_DIGEST,
     'a disclosed resource must be byte-for-byte what was stored');
 }, 'PHL gate: a listed hash is disclosable "*"-scoped cross-origin, an unlisted one never is');

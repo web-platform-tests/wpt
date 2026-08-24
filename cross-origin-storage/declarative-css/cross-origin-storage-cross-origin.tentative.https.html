@@ -12,7 +12,6 @@
 <script>
 'use strict';
 
-const {HTTPS_REMOTE_ORIGIN, HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
 const REAL_FONT_URL = new URL('/fonts/Ahem.ttf', location.href).href;
 
 async function storeFontHere(modifierArgs) {
@@ -58,7 +57,7 @@ async function remoteFontProbe(ctx, integrity, modifierArgs) {
 
 promise_test(async t => {
   const integrity = await storeFontHere('*');
-  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
   // Wildcard tier is PHL/GREASE-gated; either outcome is compliant, as long
   // as calling remoteFontProbe() itself didn't throw.
   await remoteFontProbe(ctx, integrity, '*');
@@ -66,14 +65,14 @@ promise_test(async t => {
 
 promise_test(async t => {
   const integrity = await storeFontHere('');
-  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
   const result = await remoteFontProbe(ctx, integrity, '');
   assert_false(result.ok,
     'a same-site-scoped @font-face must never be disclosed to a cross-site origin');
 }, 'declarative CSS, cross-origin: cross-origin-storage() with no arguments (same-site) is never served to a cross-site origin');
 
 promise_test(async t => {
-  const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN);
+  const {ctx} = await cosOpenRemoteContext(cosNextSameSiteOrigin());
   const listOrigin = await ctx.execute_script(() => location.origin, []);
   const integrity = await storeFontHere(`"${listOrigin}"`);
   const result = await remoteFontProbe(ctx, integrity, `"${listOrigin}"`);

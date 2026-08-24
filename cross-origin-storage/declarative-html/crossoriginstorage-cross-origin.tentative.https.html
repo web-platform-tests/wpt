@@ -18,7 +18,6 @@
 // origins-style scoping rules as the imperative API -- and a resource
 // scoped away from an origin must never reach it, deterministically.
 
-const {HTTPS_REMOTE_ORIGIN, HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
 
 // Absolute so it resolves the same way regardless of which origin's
 // document evaluates it.
@@ -84,7 +83,7 @@ async function remoteDeclarativeProbe(ctx, integrity, crossoriginstorage) {
 
 promise_test(async t => {
   const integrity = await storeDeclarativelyHere(t, {crossoriginstorage: '*'});
-  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
   const result = await remoteDeclarativeProbe(ctx, integrity, '*');
   // Wildcard tier is PHL/GREASE-gated; either a clean COS-served success or
   // a load failure (broken URL, no COS disclosure) is spec-compliant.
@@ -95,14 +94,14 @@ promise_test(async t => {
 
 promise_test(async t => {
   const integrity = await storeDeclarativelyHere(t, {crossoriginstorage: ''});
-  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
   const result = await remoteDeclarativeProbe(ctx, integrity, '');
   assert_false(result.ok,
     'a same-site-scoped resource must never be disclosed to a cross-site origin, deterministically');
 }, 'declarative HTML, cross-origin: a same-site-scoped <link> is never served from COS to a cross-site origin');
 
 promise_test(async t => {
-  const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN);
+  const {ctx} = await cosOpenRemoteContext(cosNextSameSiteOrigin());
   const listOrigin = await ctx.execute_script(() => location.origin, []);
   const integrity = await storeDeclarativelyHere(t, {crossoriginstorage: listOrigin});
   const result = await remoteDeclarativeProbe(ctx, integrity, listOrigin);

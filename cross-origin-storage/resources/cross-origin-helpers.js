@@ -75,26 +75,124 @@ async function cosRemoteReadDigest(ctx, hash) {
   }, [hash]);
 }
 
+// The cross-origin probe budget
+// (https://wicg.github.io/cross-origin-storage/#cross-site-identifiers) is
+// per-origin, persists across page loads, and replenishes only on user
+// activation -- which an iframe the user never interacts with does not get.
+// Every cross-origin read in this suite is therefore charged against a budget
+// the test can neither observe nor restore, and pointing every test at the
+// same two remote origins would accumulate roughly thirty distinct hashes
+// against them over a full run. Past the budget those reads are refused with
+// NotFoundError, which cosAssertDisclosableOrGreased() tolerates -- so the
+// tests would silently stop testing anything rather than fail.
+//
+// These pools spread that load over every distinct origin wptserve offers, of
+// each site relationship the tests actually depend on. They do not eliminate
+// the ceiling, they divide it: use cosAssertSomeDisclosureObserved() to make a
+// run that still ran out fail loudly instead of going quiet.
+function cosOriginPools() {
+  const info = get_host_info();
+  const port2 = info.HTTPS_PORT2;
+  const hostOf = (origin) => new URL(origin).hostname;
+  return {
+    // Distinct origins that are all same-site with this document's origin.
+    sameSite: [
+      info.HTTPS_REMOTE_ORIGIN,
+      info.AUTHENTICATED_ORIGIN,
+      `https://${info.ORIGINAL_HOST}:${port2}`,
+      `https://${info.REMOTE_HOST}:${port2}`,
+      `https://${hostOf(info.AUTHENTICATED_ORIGIN)}:${port2}`,
+    ],
+    // Distinct origins that are all cross-site with this document's origin.
+    crossSite: [
+      info.HTTPS_NOTSAMESITE_ORIGIN,
+      info.HTTPS_OTHER_NOTSAMESITE_ORIGIN,
+      `https://${info.NOTSAMESITE_HOST}:${port2}`,
+      `https://${hostOf(info.HTTPS_OTHER_NOTSAMESITE_ORIGIN)}:${port2}`,
+    ],
+  };
+}
+
+// Each test file starts at a different point in the pools, so that files do
+// not all pile onto the first entry the way a plain zero-based cursor would.
+function cosPoolSeed() {
+  let h = 0;
+  for (const c of self.location.pathname) {
+    h = (h * 31 + c.charCodeAt(0)) | 0;
+  }
+  return Math.abs(h);
+}
+
+const cosPools_ = cosOriginPools();
+let cosSameSiteCursor_ = cosPoolSeed();
+let cosCrossSiteCursor_ = cosPoolSeed();
+
+// Returns a distinct origin that is same-site with this document, rotating
+// through the pool so that no single origin absorbs the whole file's probes.
+function cosNextSameSiteOrigin() {
+  const pool = cosPools_.sameSite;
+  return pool[cosSameSiteCursor_++ % pool.length];
+}
+
+// As above, for origins that are cross-site with this document.
+function cosNextCrossSiteOrigin() {
+  const pool = cosPools_.crossSite;
+  return pool[cosCrossSiteCursor_++ % pool.length];
+}
+
+// Tally of what cosAssertDisclosableOrGreased() actually saw, so that a file
+// whose authorized reads were *all* refused can say so instead of passing
+// vacuously.
+const cosDisclosureTally = {authorized: 0, disclosed: 0};
+
+// Fails if a file made authorized cross-origin reads and not one of them was
+// ever disclosed. GREASE'ing is probabilistic and the probe budget is finite,
+// so any single refusal is expected; every one of them being refused means the
+// file exercised none of the disclosure path it exists to test.
+function cosAssertSomeDisclosureObserved() {
+  assert_greater_than(cosDisclosureTally.authorized, 0,
+    'this check belongs only in files that make authorized cross-origin reads');
+  assert_greater_than(cosDisclosureTally.disclosed, 0,
+    `all ${cosDisclosureTally.authorized} authorized cross-origin reads in this file were ` +
+    `refused, so none of them tested disclosure. Expected causes: GREASE'ing set so high that ` +
+    `the feature is never useful, an empty Public Hash List, or a cross-origin probe budget too ` +
+    `small for this suite (see the pools above)`);
+}
+
 // Asserts that a read is authorized by COS entry/origins scoping (the
-// requesting origin is in scope) but tolerates the user agent electing to
-// apply GREASE'ing (https://wicg.github.io/cross-origin-storage/#greasing),
-// which may suppress even an authorized disclosure. GREASE'ing never
-// *grants* disclosure that scoping would otherwise deny, so this is only
+// requesting origin is in scope) but tolerates the two mechanisms that may
+// suppress even an authorized disclosure: GREASE'ing
+// (https://wicg.github.io/cross-origin-storage/#greasing), and the requesting
+// origin being over its cross-origin probe budget
+// (https://wicg.github.io/cross-origin-storage/#cross-site-identifiers).
+// Neither ever *grants* disclosure that scoping would otherwise deny, and both
+// refuse with the same NotFoundError as an out-of-scope read, so this is only
 // ever used for reads that the spec says *should* be authorized.
+//
+// Note that a cross-origin read in a test is charged against the *remote*
+// origin's budget, which an iframe the user never interacts with does not
+// replenish -- so a suite that spends many distinct hashes against one remote
+// origin makes these assertions progressively more vacuous rather than
+// failing.
 function cosAssertDisclosableOrGreased(result, expectedText, description) {
+  cosDisclosureTally.authorized++;
   if (result.ok) {
+    cosDisclosureTally.disclosed++;
     assert_equals(result.text, expectedText, `${description}: content`);
   } else {
     assert_equals(result.name, 'NotFoundError',
       `${description}: an unauthorized read always rejects with NotFoundError, ` +
-      `so a rejection for an authorized read must still be NotFoundError (GREASE'd), got ${result.name}: ${result.message}`);
+      `so a rejection for an authorized read must still be NotFoundError ` +
+      `(GREASE'd, or over the probe budget), got ${result.name}: ${result.message}`);
   }
 }
 
 // Asserts that a read is NOT authorized: this must deterministically reject
-// with NotFoundError. Unlike the disclosable case, GREASE'ing is never the
-// explanation here -- an out-of-scope origin is rejected before GREASE'ing
-// is even considered (see "apply availability gating").
+// with NotFoundError. Unlike the disclosable case, neither GREASE'ing nor the
+// probe budget is the explanation here -- an out-of-scope origin is rejected
+// before GREASE'ing is even considered (see "apply availability gating"), and
+// a budget refusal uses the same NotFoundError, so the expected outcome is the
+// same either way.
 function cosAssertNotDisclosed(result, description) {
   assert_false(result.ok, `${description}: expected the read to be rejected`);
   assert_equals(result.name, 'NotFoundError', `${description}: got ${result.name}: ${result.message}`);

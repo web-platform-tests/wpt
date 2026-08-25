@@ -203,6 +203,36 @@ def install_avd(logger, paths, prompt=True):
     input_data = None if prompt else b"no"
     subprocess.run(cmd, check=True, input=input_data)
 
+    # Configure AVD hardware memory and CPU allocation matching Mozilla's CI profile
+    avd_dir = os.path.join(paths["avd"], f"{avd_manifest['emulator_avd_name']}.avd")
+    config_ini = os.path.join(avd_dir, "config.ini")
+    if os.path.exists(config_ini):
+        logger.info(f"Tuning AVD hardware configuration in {config_ini}")
+        try:
+            with open(config_ini, "r") as f:
+                lines = f.readlines()
+            settings = {
+                "hw.ramSize": "4096",
+                "vm.heapSize": "576",
+                "hw.cpu.ncore": "6",
+            }
+            updated = []
+            seen = set()
+            for line in lines:
+                key = line.split("=")[0].strip() if "=" in line else None
+                if key in settings:
+                    updated.append(f"{key} = {settings[key]}\n")
+                    seen.add(key)
+                else:
+                    updated.append(line)
+            for key, val in settings.items():
+                if key not in seen:
+                    updated.append(f"{key} = {val}\n")
+            with open(config_ini, "w") as f:
+                f.writelines(updated)
+        except Exception as e:
+            logger.warning(f"Failed to update AVD hardware settings in {config_ini}: {e}")
+
 
 def get_emulator(paths, device_serial=None):
     if android_device is None:

@@ -18,6 +18,8 @@ def get_browser_args(product, channel, artifact_path, wpt_args):
         print("WARNING: Local firefox binary not found")
         return ["--install-browser", "--install-webdriver"]
     if product == "firefox_android":
+        # Taskcluster machines do not have GPUs, so use SwiftShader software rendering to prevent goldfish_pipe stalls
+        os.environ.setdefault("MOZ_EMULATOR_COMMAND_ARGS", "-gpu swiftshader -no-metrics")
         return ["--install-browser", "--install-webdriver", "--logcat-dir", artifact_path]
     if product == "servo":
         return ["--install-browser", "--processes=12"]

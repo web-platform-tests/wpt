@@ -215,6 +215,7 @@ def install_avd(logger, paths, prompt=True):
                 "hw.ramSize": "4096",
                 "vm.heapSize": "576",
                 "hw.cpu.ncore": "6",
+                "disk.dataPartition.size": "4096M",
             }
             updated = []
             seen = set()

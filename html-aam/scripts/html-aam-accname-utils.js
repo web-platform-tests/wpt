@@ -160,6 +160,16 @@ const HtmlAamAccnameUtils = {
       expName = this.nameValues[tmpSource];
     }
 
+    // Build encapsulating label source, wrapping the test element in a label
+    tmpSource = 'from encapsulating label';
+    if (expSource === tmpSource) {
+      let elLabel = document.createElement('label');
+      elLabel.appendChild(document.createTextNode(this.nameValues[tmpSource]));
+      elLabel.appendChild(elReturn);
+      elReturn = elLabel;
+      expName = this.nameValues[tmpSource];
+    }
+
     // Build label source reference(s)
     tmpSource = 'from 1 label';
     if (nameSources.includes(tmpSource)) {
@@ -352,6 +362,7 @@ const HtmlAamAccnameUtils = {
     'from 1 label': 'associated label #1 text contents',
     'from 2 labels': 'associated label #2 text contents',
     'from subtree': 'subtree text contents',
+    'from encapsulating label': 'encapsulating label text contents',
     'from first legend': 'legend text contents',
     'from first caption': 'caption text contents',
     'from value': 'value attribute value',

@@ -3,6 +3,7 @@
 import os
 import re
 import subprocess
+import time
 import traceback
 
 from mozrunner import FennecEmulatorRunner, get_app_context
@@ -341,8 +342,20 @@ class FirefoxAndroidBrowser(Browser):
             self.logger.debug(f"Could not query Android device properties: {e}")
 
         self.runner.stop()
-        self.runner.start(debug_args=debug_args,
-                          interactive=self.debug_info and self.debug_info.interactive)
+        for attempt in range(5):
+            try:
+                self.runner.start(debug_args=debug_args,
+                                  interactive=self.debug_info and self.debug_info.interactive)
+                break
+            except Exception as e:
+                if "Can't find service: activity" in str(e) and attempt < 4:
+                    self.logger.warning(
+                        f"ActivityManager unavailable during restart; "
+                        f"waiting for system_server recovery (attempt {attempt + 1}/5)..."
+                    )
+                    time.sleep(2 * (attempt + 1))
+                else:
+                    raise
 
         self.runner.device.device.forward(
             local=f"tcp:{self.marionette_port}",

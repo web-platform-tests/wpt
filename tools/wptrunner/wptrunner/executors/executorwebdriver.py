@@ -3,6 +3,7 @@
 import asyncio
 import json
 import os
+import posixpath
 import socket
 import threading
 import traceback
@@ -461,7 +462,10 @@ class WebDriverBidiWebExtensionsProtocolPart(WebExtensionsProtocolPart):
 
     def _resolve_path(self, path):
         if self.parent.test_path is not None:
-            return self.parent.test_path.rsplit("/", 1)[0] + path
+            # Handle Windows forward slashes.
+            dirname = posixpath.dirname(self.parent.test_path.replace("\\", "/"))
+            if dirname:
+                return f"{dirname}/{path.lstrip('/')}"
         return path
 
 class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
@@ -1059,7 +1063,10 @@ class WebDriverWebExtensionsProtocolPart(WebExtensionsProtocolPart):
 
     def _resolve_path(self, path):
         if self.parent.test_path is not None:
-            return self.parent.test_path.rsplit("/", 1)[0] + path
+             # Handle Windows forward slashes.
+            dirname = posixpath.dirname(self.parent.test_path.replace("\\", "/"))
+            if dirname:
+                return f"{dirname}/{path.lstrip('/')}"
         return path
 
 

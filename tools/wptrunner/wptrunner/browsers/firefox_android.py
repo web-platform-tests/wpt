@@ -330,6 +330,16 @@ class FirefoxAndroidBrowser(Browser):
         # connect to a running emulator
         self.runner.device.connect()
 
+        try:
+            device = self.runner.device.device
+            model = device.get_prop("ro.product.model") or "Unknown"
+            release = device.get_prop("ro.build.version.release") or "Unknown"
+            sdk = device.get_prop("ro.build.version.sdk") or "Unknown"
+            abi = device.get_prop("ro.product.cpu.abi") or "Unknown"
+            self.logger.info(f"Connected to Android device: {model} (Android {release}, API {sdk}, ABI {abi})")
+        except Exception as e:
+            self.logger.debug(f"Could not query Android device properties: {e}")
+
         self.runner.stop()
         self.runner.start(debug_args=debug_args,
                           interactive=self.debug_info and self.debug_info.interactive)

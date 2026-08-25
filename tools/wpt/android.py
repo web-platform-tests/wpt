@@ -269,6 +269,37 @@ def install(logger, dest=None, reinstall=False, prompt=True):
     return emulator
 
 
+def get_emulator_info(logger, paths):
+    """Retrieve diagnostic information about the emulator binary and host virtualization."""
+    emulator_bin = os.path.join(paths["sdk"], "emulator", "emulator")
+    info = {
+        "emulator_version": "Unknown",
+        "virtualization": "Unknown",
+        "avd": AVD_MANIFEST_X86_64["emulator_avd_name"],
+        "package": AVD_MANIFEST_X86_64["emulator_package"],
+        "sdk_path": paths["sdk"]
+    }
+    if os.path.exists(emulator_bin):
+        try:
+            res = subprocess.run([emulator_bin, "-version"], capture_output=True, text=True, timeout=5)
+            if res.returncode == 0 and res.stdout:
+                info["emulator_version"] = res.stdout.splitlines()[0].strip()
+        except Exception:
+            pass
+
+    system = platform.system().lower()
+    if system == "linux":
+        info["virtualization"] = "KVM (/dev/kvm available)" if os.path.exists("/dev/kvm") else "KVM (/dev/kvm missing)"
+    elif system == "darwin":
+        info["virtualization"] = "HVF (Hypervisor.framework)"
+    elif system == "windows":
+        info["virtualization"] = "WHPX / Hyper-V"
+    else:
+        info["virtualization"] = system
+
+    return info
+
+
 def cancel_start(thread_id):
     def cancel_func():
         raise signal.pthread_kill(thread_id, signal.SIGINT)
@@ -280,6 +311,11 @@ def start(logger, dest=None, reinstall=False, prompt=True, device_serial=None):
 
     with android_environment(paths):
         install(logger, dest=dest, reinstall=reinstall, prompt=prompt)
+
+        info = get_emulator_info(logger, paths)
+        logger.info(f"Android Emulator Version: {info['emulator_version']}")
+        logger.info(f"Host Virtualization: {info['virtualization']}")
+        logger.info(f"Target AVD: {info['avd']} ({info['package']})")
 
         emulator = get_emulator(paths, device_serial=device_serial)
 
@@ -296,10 +332,17 @@ def start(logger, dest=None, reinstall=False, prompt=True, device_serial=None):
                 emulator.wait_for_start()
             except Exception:
                 import traceback
-                logger.warning(f"""emulator.wait_for_start() failed:
-{traceback.format_exc()}""")
+                is_running = emulator.is_running()
+                logger.warning(
+                    f"emulator.wait_for_start() failed (attempt {i + 1}/10, process alive={is_running}):\n"
+                    f"{traceback.format_exc()}"
+                )
             else:
                 break
+        else:
+            logger.critical(
+                f"Emulator failed to start after 10 attempts (Emulator version: {info['emulator_version']})"
+            )
         timer.cancel()
     return emulator
 

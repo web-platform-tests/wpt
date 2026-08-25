@@ -92,8 +92,16 @@ def main(product, channel, commit_range, artifact_path, wpt_args):
     command = ["python3", "./wpt", "run"] + wpt_args
 
     logger.info("Executing command: %s" % " ".join(command))
+    os.makedirs(artifact_path, exist_ok=True)
     with open(os.path.join(artifact_path, "checkrun.md"), "a") as f:
         f.write("\n**WPT Command:** `%s`\n\n" % " ".join(command))
+        if product == "firefox_android":
+            kvm_status = "Available" if os.path.exists("/dev/kvm") else "Not Available"
+            f.write(
+                f"### 📱 Android CI Telemetry\n"
+                f"- **Product**: `{product}` (`{channel}`)\n"
+                f"- **Host KVM Virtualization**: `{kvm_status}`\n\n"
+            )
 
     retcode = subprocess.call(command, env=dict(os.environ, TERM="dumb"))
     if retcode != 0:

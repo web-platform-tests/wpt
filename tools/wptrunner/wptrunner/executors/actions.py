@@ -164,6 +164,16 @@ class CreateWindowAction:
         type = payload["type"]
         return self.protocol.window.create(type)
 
+class NavigateAction:
+    name = "navigate"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.protocol.base.load(payload["url"])
+
 class ActionSequenceAction:
     name = "action_sequence"
 
@@ -645,6 +655,7 @@ actions = [ClickAction,
            SetWindowRectAction,
            GetWindowRectAction,
            CreateWindowAction,
+           NavigateAction,
            ActionSequenceAction,
            GenerateTestReportAction,
            SetPermissionAction,

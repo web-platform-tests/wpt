@@ -95,6 +95,11 @@ the global scope.
 .. js:autofunction:: test_driver.set_window_rect
 ```
 
+### Navigation ###
+```eval_rst
+.. js:autofunction:: test_driver.navigate
+```
+
 ### Cookies ###
 ```eval_rst
 .. js:autofunction:: test_driver.delete_all_cookies

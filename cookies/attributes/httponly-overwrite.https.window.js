@@ -21,102 +21,116 @@ async function getCookieHeader() {
   return decodeURIComponent(text.replace(/^cookie=/, ''));
 }
 
+function cookieValue(cookieString, name) {
+  for (const pair of cookieString.split('; ')) {
+    const index = pair.indexOf('=');
+    if (index !== -1 && pair.substring(0, index) === name) {
+      return pair.substring(index + 1);
+    }
+  }
+  return null;
+}
+
 // Whether a cookie's http-only is true, observed without reading
 // document.cookie: a cookie can only be overwritten through a non-HTTP API if
 // its http-only is false, so if a write from script does not land the cookie's
 // http-only is true.
 async function isHttpOnly(name) {
   document.cookie = `${name}=overwritten; Path=/`;
-  return !(await getCookieHeader()).includes(`${name}=overwritten`);
+  return cookieValue(await getCookieHeader(), name) !== 'overwritten';
 }
 
-function cookieTest(name, cookieName, body) {
+function cookieTest(description, suffix, body) {
+  const name = `httponly-overwrite-${suffix}`;
   promise_test(async t => {
-    t.add_cleanup(() => setCookieViaHTTP(`${cookieName}=; Path=/; Max-Age=0`));
-    t.add_cleanup(() => setCookieViaHTTP(`${cookieName}=; Path=/; Max-Age=0; HttpOnly`));
-    await body(t);
-  }, name);
+    t.add_cleanup(() => setCookieViaHTTP(`${name}=; Path=/; Max-Age=0`));
+    t.add_cleanup(
+        () => setCookieViaHTTP(`${name}=; Path=/; Max-Age=0; HttpOnly`));
+    await body(t, name);
+  }, description);
 }
 
 // These two establish that isHttpOnly() reports what it claims to.
-cookieTest('A cookie set without HttpOnly is not http-only', 'control1', async t => {
-  await setCookieViaHTTP('control1=1; Path=/');
-  assert_false(await isHttpOnly('control1'));
+cookieTest('A cookie set without HttpOnly is not http-only', 'control1',
+           async (t, name) => {
+  await setCookieViaHTTP(`${name}=1; Path=/`);
+  assert_false(await isHttpOnly(name));
 });
 
-cookieTest('A cookie set with HttpOnly is http-only', 'control2', async t => {
-  await setCookieViaHTTP('control2=1; Path=/; HttpOnly');
-  assert_true(await isHttpOnly('control2'));
+cookieTest('A cookie set with HttpOnly is http-only', 'control2',
+           async (t, name) => {
+  await setCookieViaHTTP(`${name}=1; Path=/; HttpOnly`);
+  assert_true(await isHttpOnly(name));
 });
 
 // A cookie's http-only has to be updated even when nothing else about the cookie
 // changes. Failing to do so leaves the cookie writable by the non-HTTP APIs the
 // server just asked to have it protected from.
 cookieTest('Adding HttpOnly to a cookie with an unchanged value makes it http-only',
-           'test1', async t => {
-  await setCookieViaHTTP('test1=1; Path=/');
-  assert_false(await isHttpOnly('test1'), 'The cookie starts out not http-only');
+           'test1', async (t, name) => {
+  await setCookieViaHTTP(`${name}=1; Path=/`);
+  assert_false(await isHttpOnly(name), 'The cookie starts out not http-only');
 
-  await setCookieViaHTTP('test1=1; Path=/; HttpOnly');
-  assert_equals(await getCookieHeader(), 'test1=1',
+  await setCookieViaHTTP(`${name}=1; Path=/; HttpOnly`);
+  assert_equals(cookieValue(await getCookieHeader(), name), '1',
                 'The cookie is still in the cookie store with its value');
-  assert_true(await isHttpOnly('test1'), 'The cookie is now http-only');
+  assert_true(await isHttpOnly(name), 'The cookie is now http-only');
 });
 
 cookieTest('Removing HttpOnly from a cookie with an unchanged value makes it not http-only',
-           'test2', async t => {
-  await setCookieViaHTTP('test2=1; Path=/; HttpOnly');
-  assert_true(await isHttpOnly('test2'), 'The cookie starts out http-only');
+           'test2', async (t, name) => {
+  await setCookieViaHTTP(`${name}=1; Path=/; HttpOnly`);
+  assert_true(await isHttpOnly(name), 'The cookie starts out http-only');
 
-  await setCookieViaHTTP('test2=1; Path=/');
-  assert_equals(await getCookieHeader(), 'test2=1',
+  await setCookieViaHTTP(`${name}=1; Path=/`);
+  assert_equals(cookieValue(await getCookieHeader(), name), '1',
                 'The cookie is still in the cookie store with its value');
-  assert_false(await isHttpOnly('test2'), 'The cookie is no longer http-only');
+  assert_false(await isHttpOnly(name), 'The cookie is no longer http-only');
 });
 
 // As above, but with both cookies in a single response, so that they also have
 // an identical creation time.
 cookieTest('Adding HttpOnly through a second Set-Cookie in the same response',
-           'test3', async t => {
-  await setCookieViaHTTP(['test3=1; Path=/', 'test3=1; Path=/; HttpOnly']);
-  assert_equals(await getCookieHeader(), 'test3=1',
-                'There is exactly one cookie, with its value');
-  assert_true(await isHttpOnly('test3'), 'The cookie is http-only');
+           'test3', async (t, name) => {
+  await setCookieViaHTTP([`${name}=1; Path=/`, `${name}=1; Path=/; HttpOnly`]);
+  assert_equals(cookieValue(await getCookieHeader(), name), '1',
+                'The cookie is in the cookie store with its value');
+  assert_true(await isHttpOnly(name), 'The cookie is http-only');
 });
 
 cookieTest('Removing HttpOnly through a second Set-Cookie in the same response',
-           'test4', async t => {
-  await setCookieViaHTTP(['test4=1; Path=/; HttpOnly', 'test4=1; Path=/']);
-  assert_equals(await getCookieHeader(), 'test4=1',
-                'There is exactly one cookie, with its value');
-  assert_false(await isHttpOnly('test4'), 'The cookie is not http-only');
+           'test4', async (t, name) => {
+  await setCookieViaHTTP([`${name}=1; Path=/; HttpOnly`, `${name}=1; Path=/`]);
+  assert_equals(cookieValue(await getCookieHeader(), name), '1',
+                'The cookie is in the cookie store with its value');
+  assert_false(await isHttpOnly(name), 'The cookie is not http-only');
 });
 
 // An http-only cookie also has to stop being exposed to non-HTTP APIs. This is
 // separate from the tests above so that a user agent that protects the cookie
 // from being overwritten but keeps exposing its value fails only here.
 cookieTest('Adding HttpOnly to a cookie with an unchanged value hides it from document.cookie',
-           'test5', async t => {
-  await setCookieViaHTTP('test5=1; Path=/');
-  assert_equals(document.cookie, 'test5=1',
+           'test5', async (t, name) => {
+  await setCookieViaHTTP(`${name}=1; Path=/`);
+  assert_equals(cookieValue(document.cookie, name), '1',
                 'The cookie is exposed to document.cookie');
 
-  await setCookieViaHTTP('test5=1; Path=/; HttpOnly');
-  assert_equals(await getCookieHeader(), 'test5=1',
+  await setCookieViaHTTP(`${name}=1; Path=/; HttpOnly`);
+  assert_equals(cookieValue(await getCookieHeader(), name), '1',
                 'The cookie is still in the cookie store with its value');
-  assert_equals(document.cookie, '',
+  assert_equals(cookieValue(document.cookie, name), null,
                 'The cookie is no longer exposed to document.cookie');
 });
 
 cookieTest('Removing HttpOnly from a cookie with an unchanged value exposes it to document.cookie',
-           'test6', async t => {
-  await setCookieViaHTTP('test6=1; Path=/; HttpOnly');
-  assert_equals(document.cookie, '',
+           'test6', async (t, name) => {
+  await setCookieViaHTTP(`${name}=1; Path=/; HttpOnly`);
+  assert_equals(cookieValue(document.cookie, name), null,
                 'The cookie is not exposed to document.cookie');
 
-  await setCookieViaHTTP('test6=1; Path=/');
-  assert_equals(await getCookieHeader(), 'test6=1',
+  await setCookieViaHTTP(`${name}=1; Path=/`);
+  assert_equals(cookieValue(await getCookieHeader(), name), '1',
                 'The cookie is still in the cookie store with its value');
-  assert_equals(document.cookie, 'test6=1',
+  assert_equals(cookieValue(document.cookie, name), '1',
                 'The cookie is now exposed to document.cookie');
 });

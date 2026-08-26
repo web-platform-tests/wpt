@@ -1,5 +1,3 @@
-// META: script=/resources/testdriver.js
-// META: script=/resources/testdriver-vendor.js
 // META: title=Cookie Path attribute matching against percent-encoded URL paths
 
 'use strict';
@@ -16,6 +14,7 @@
 // https://github.com/whatwg/url/issues/814
 
 const SCOPE = '/cookies/path/resources/probe/';
+const NAME_PREFIX = 'match-percent-encoded-';
 
 // Sets a Set-Cookie header, replacing "ZZ" in `cookie` with the raw bytes given
 // as percent-escapes. wptserve percent-decodes the query into bytes and cookie.py
@@ -28,6 +27,16 @@ async function setCookieViaHTTP(cookie, rawEscape) {
   }
   const response = await fetch(`/cookies/resources/cookie.py?set=${query}`);
   assert_true(response.ok, 'Setting the cookie via HTTP succeeded');
+}
+
+function cookieValue(cookieString, name) {
+  for (const pair of cookieString.split('; ')) {
+    const index = pair.indexOf('=');
+    if (index !== -1 && pair.substring(0, index) === name) {
+      return pair.substring(index + 1);
+    }
+  }
+  return null;
 }
 
 // Loads a synthesized document at `path` and returns what it reported.
@@ -70,30 +79,34 @@ promise_setup(async () => {
   }
 });
 
-function cookieTest(name, body) {
+// Sets the cookie under test, then expires it again through the same Path, which
+// is what removes it.
+function cookieTest(description, {suffix, pathSegment, raw}, body) {
+  const name = NAME_PREFIX + suffix;
   promise_test(async t => {
-    await test_driver.delete_all_cookies();
-    t.add_cleanup(test_driver.delete_all_cookies);
-    await body(t);
-  }, name);
+    t.add_cleanup(() => setCookieViaHTTP(
+        `${name}=; Max-Age=0; Path=${SCOPE}${pathSegment}`, raw));
+
+    await setCookieViaHTTP(`${name}=1; Path=${SCOPE}${pathSegment}`, raw);
+    await body(t, name);
+  }, description);
 }
 
 // Controls: the service worker synthesizes a document at the probed path and
 // cookies for that path are visible in it, so the apparatus reports what it
 // claims to.
-cookieTest('CONTROL a cookie for the probed path is visible in it', async t => {
-  await setCookieViaHTTP(`control=1; Path=${SCOPE}zzx`);
+cookieTest('CONTROL a cookie for the probed path is visible in it',
+           {suffix: 'control', pathSegment: 'zzx'}, async (t, name) => {
   const result = await probeAtPath(`${SCOPE}zzx/probe.html`);
   assert_equals(result.path, `${SCOPE}zzx/probe.html`,
                 'The document was synthesized at the probed path');
-  assert_equals(result.cookie, 'control=1');
+  assert_equals(cookieValue(result.cookie, name), '1');
 });
 
 cookieTest('CONTROL a cookie for a prefix of the probed path is visible in it',
-           async t => {
-  await setCookieViaHTTP(`prefix=1; Path=${SCOPE}`);
+           {suffix: 'prefix', pathSegment: ''}, async (t, name) => {
   const result = await probeAtPath(`${SCOPE}zzx/probe.html`);
-  assert_equals(result.cookie, 'prefix=1');
+  assert_equals(cookieValue(result.cookie, name), '1');
 });
 
 // Each case sets one cookie whose Path ends in `pathSegment`, with "ZZ" replaced
@@ -155,12 +168,14 @@ const CASES = [
   },
 ];
 
-for (const testCase of CASES) {
-  cookieTest(`A Path attribute where ${testCase.name}`, async t => {
-    await setCookieViaHTTP(
-        `t=1; Path=${SCOPE}${testCase.pathSegment}`, testCase.raw);
-    const result = await probeAtPath(`${SCOPE}${testCase.probeSegment}/probe.html`);
-    assert_equals(result.cookie, testCase.sent ? 't=1' : '');
+for (const [index, testCase] of CASES.entries()) {
+  cookieTest(`A Path attribute where ${testCase.name}`,
+             {suffix: `case${index}`, pathSegment: testCase.pathSegment,
+              raw: testCase.raw},
+             async (t, name) => {
+    const result =
+        await probeAtPath(`${SCOPE}${testCase.probeSegment}/probe.html`);
+    assert_equals(cookieValue(result.cookie, name), testCase.sent ? '1' : null);
   });
 }
 

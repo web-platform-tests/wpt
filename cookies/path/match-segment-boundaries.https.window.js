@@ -1,5 +1,3 @@
-// META: script=/resources/testdriver.js
-// META: script=/resources/testdriver-vendor.js
 // META: title=Cookie Path attribute matching only at path segment boundaries
 
 'use strict';
@@ -13,6 +11,7 @@
 
 const DIR = '/cookies/path/resources';
 const TARGET = `${DIR}/echo.py`;
+const NAME_PREFIX = 'segment-boundaries-';
 
 async function setCookieViaHTTP(cookie) {
   const set = encodeURIComponent(JSON.stringify([cookie]));
@@ -27,60 +26,72 @@ async function cookieHeaderAtTarget() {
   return (await response.text()).trim();
 }
 
-// Each test uses a cookie name of its own and clears the whole jar, so a cookie
-// stored under an unexpected path cannot leak into the next test.
-function pathTest({name, cookieName, path, expected}) {
+function cookieValue(cookieString, name) {
+  for (const pair of cookieString.split('; ')) {
+    const index = pair.indexOf('=');
+    if (index !== -1 && pair.substring(0, index) === name) {
+      return pair.substring(index + 1);
+    }
+  }
+  return null;
+}
+
+// Sets the cookie under test, then expires it again through the same Path, which
+// is what removes it.
+function pathTest({name, suffix, path, sent}) {
+  const cookieName = NAME_PREFIX + suffix;
   promise_test(async t => {
-    await test_driver.delete_all_cookies();
-    t.add_cleanup(test_driver.delete_all_cookies);
+    t.add_cleanup(
+        () => setCookieViaHTTP(`${cookieName}=; Path=${path}; Max-Age=0`));
 
     await setCookieViaHTTP(`${cookieName}=1; Path=${path}`);
-    assert_equals(await cookieHeaderAtTarget(), expected);
+    assert_equals(cookieValue(await cookieHeaderAtTarget(), cookieName),
+                  sent ? '1' : null);
   }, name);
 }
 
 pathTest({
   name: 'A Path equal to the request path matches',
-  cookieName: 'exact',
+  suffix: 'exact',
   path: TARGET,
-  expected: 'exact=1',
+  sent: true,
 });
 
 pathTest({
   name: 'A Path that is a prefix ending at a segment boundary matches',
-  cookieName: 'prefix',
+  suffix: 'prefix',
   path: DIR,
-  expected: 'prefix=1',
+  sent: true,
 });
 
 pathTest({
   name: 'A Path that is a prefix ending in a slash matches',
-  cookieName: 'trailingslash',
+  suffix: 'trailingslash',
   path: `${DIR}/`,
-  expected: 'trailingslash=1',
+  sent: true,
 });
 
 // The request path continues with ".py" rather than a "/", so the cookie path is
 // not a prefix ending at a segment boundary.
 pathTest({
   name: 'A Path that is a prefix not ending at a segment boundary does not match',
-  cookieName: 'midsegment',
+  suffix: 'midsegment',
   path: `${DIR}/echo`,
-  expected: '',
+  sent: false,
 });
 
 // The request path is a prefix of the cookie path rather than the other way
 // around. A cookie path longer than the request path can never match.
 pathTest({
   name: 'A Path that is the request path followed by a slash does not match',
-  cookieName: 'longerslash',
+  suffix: 'longerslash',
   path: `${TARGET}/`,
-  expected: '',
+  sent: false,
 });
 
 pathTest({
   name: 'A Path that is the request path followed by a segment does not match',
-  cookieName: 'longersegment',
+  suffix: 'longersegment',
   path: `${TARGET}/sub`,
-  expected: '',
+  sent: false,
 });

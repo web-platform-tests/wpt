@@ -14,7 +14,7 @@ customElements.define('c-d', class ABElement extends HTMLElement { });
 
 ]]>
 </script>
-<div id="container"><a-b scopedcustomelementregistry=""></a-b><c-d scopedcustomelementregistry=""></c-d></div>
+<div id="container"><a-b scopedcustomelementregistry=""></a-b><c-d scopedcustomelementregistry=""></c-d><a-b id="non-empty" scopedcustomelementregistry="named"></a-b></div>
 <script>
 <![CDATA[
 
@@ -26,6 +26,12 @@ test((test) => {
 test((test) => {
     assert_equals(container.querySelector('c-d').customElementRegistry, null);
 }, `XHTML parser should create a defined custom element with null registry if scopedcustomelementregistry is set`);
+
+test(() => {
+    const element = document.getElementById('non-empty');
+    assert_equals(element.customElementRegistry, null);
+    assert_equals(element.scopedCustomElementRegistry, 'named');
+}, `XHTML parser should use null registry for a non-empty scopedcustomelementregistry value`);
 
 test((test) => {
     container.setHTMLUnsafe(`<a-b scopedcustomelementregistry></a-b>`);

@@ -13,7 +13,7 @@
 //
 // https://github.com/whatwg/url/issues/814
 
-const SCOPE = '/cookies/path/resources/probe/';
+const PROBE_DIR = '/cookies/path/resources/probe';
 const NAME_PREFIX = 'match-percent-encoded-';
 
 // Sets a Set-Cookie header, replacing "ZZ" in `cookie` with the raw bytes given
@@ -62,7 +62,7 @@ let registration;
 
 promise_setup(async () => {
   registration = await navigator.serviceWorker.register(
-      'resources/probe/sw.js', {scope: SCOPE});
+      'resources/probe/sw.js', {scope: `${PROBE_DIR}/`});
   // navigator.serviceWorker.ready is not usable here: it waits for a worker
   // controlling this document, and this document is outside the scope the probe
   // paths need. Wait on the registration's own worker instead.
@@ -85,9 +85,9 @@ function cookieTest(description, {suffix, pathSegment, raw}, body) {
   const name = NAME_PREFIX + suffix;
   promise_test(async t => {
     t.add_cleanup(() => setCookieViaHTTP(
-        `${name}=; Max-Age=0; Path=${SCOPE}${pathSegment}`, raw));
+        `${name}=; Max-Age=0; Path=${PROBE_DIR}/${pathSegment}`, raw));
 
-    await setCookieViaHTTP(`${name}=1; Path=${SCOPE}${pathSegment}`, raw);
+    await setCookieViaHTTP(`${name}=1; Path=${PROBE_DIR}/${pathSegment}`, raw);
     await body(t, name);
   }, description);
 }
@@ -97,15 +97,15 @@ function cookieTest(description, {suffix, pathSegment, raw}, body) {
 // claims to.
 cookieTest('CONTROL a cookie for the probed path is visible in it',
            {suffix: 'control', pathSegment: 'zzx'}, async (t, name) => {
-  const result = await probeAtPath(`${SCOPE}zzx/probe.html`);
-  assert_equals(result.path, `${SCOPE}zzx/probe.html`,
+  const result = await probeAtPath(`${PROBE_DIR}/zzx/probe.html`);
+  assert_equals(result.path, `${PROBE_DIR}/zzx/probe.html`,
                 'The document was synthesized at the probed path');
   assert_equals(cookieValue(result.cookie, name), '1');
 });
 
 cookieTest('CONTROL a cookie for a prefix of the probed path is visible in it',
            {suffix: 'prefix', pathSegment: ''}, async (t, name) => {
-  const result = await probeAtPath(`${SCOPE}zzx/probe.html`);
+  const result = await probeAtPath(`${PROBE_DIR}/zzx/probe.html`);
   assert_equals(cookieValue(result.cookie, name), '1');
 });
 
@@ -174,7 +174,7 @@ for (const [index, testCase] of CASES.entries()) {
               raw: testCase.raw},
              async (t, name) => {
     const result =
-        await probeAtPath(`${SCOPE}${testCase.probeSegment}/probe.html`);
+        await probeAtPath(`${PROBE_DIR}/${testCase.probeSegment}/probe.html`);
     assert_equals(cookieValue(result.cookie, name), testCase.sent ? '1' : null);
   });
 }

@@ -463,9 +463,9 @@ class WebDriverBidiWebExtensionsProtocolPart(WebExtensionsProtocolPart):
     def _resolve_path(self, path):
         if self.parent.test_path is not None:
             # Handle Windows forward slashes.
-            dirname = posixpath.dirname(self.parent.test_path.replace("\\", "/"))
-            if dirname:
-                return f"{dirname}/{path.lstrip('/')}"
+            test_dir = pathlib.Path(self.parent.test_path).parent
+            if test_dir.parts:
+                return f"{test_dir.as_posix()}/{path.lstrip('/')}"
         return path
 
 class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
@@ -1064,9 +1064,9 @@ class WebDriverWebExtensionsProtocolPart(WebExtensionsProtocolPart):
     def _resolve_path(self, path):
         if self.parent.test_path is not None:
              # Handle Windows forward slashes.
-            dirname = posixpath.dirname(self.parent.test_path.replace("\\", "/"))
-            if dirname:
-                return f"{dirname}/{path.lstrip('/')}"
+            test_dir = pathlib.Path(self.parent.test_path).parent
+            if test_dir.parts:
+                return f"{test_dir.as_posix()}/{path.lstrip('/')}"
         return path
 
 

@@ -39,7 +39,6 @@ def do_delayed_imports(paths):
         "Android x86_64",
         "mozemulator-android34-x86_64",
         [
-            "-gpu", "on",
             "-skip-adb-auth",
             "-verbose",
             "-show-kernel",
@@ -47,7 +46,7 @@ def do_delayed_imports(paths):
             "-selinux",
             "permissive",
             "-memory",
-            "4096",
+            "8192",
             "-cores",
             "4",
             "-skin",
@@ -280,8 +279,7 @@ def android_environment(paths):
     return Environ(ANDROID_EMULATOR_HOME=paths["emulator_home"],
                    ANDROID_AVD_HOME=paths["avd"],
                    ANDROID_SDK_ROOT=paths["sdk"],
-                   ANDROID_SDK_HOME=paths["sdk"],
-                   DISPLAY=":0.0")
+                   ANDROID_SDK_HOME=paths["sdk"])
 
 
 def install(logger, dest=None, reinstall=False, prompt=True):

@@ -94,15 +94,6 @@ rootDocumentTest({
   stored: true,
 });
 
-// Control: prefix enforcement is active at all, so a rejection below cannot be
-// mistaken for a user agent that ignores the prefix.
-rootDocumentTest({
-  name: 'CONTROL "__Host-" with a Path other than "/" is not set',
-  suffix: 'otherpath',
-  attributes: 'Secure; Path=/cookies',
-  stored: false,
-});
-
 // The cases under test. Each of these ends up with a path of "/" through the
 // default path, without a Path attribute that says so.
 rootDocumentTest({

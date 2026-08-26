@@ -1,5 +1,3 @@
-// META: script=/resources/testdriver.js
-// META: script=/resources/testdriver-vendor.js
 // META: title=The "__Host-" prefix requires an explicit Path attribute of "/"
 // META: timeout=long
 
@@ -18,6 +16,8 @@
 //
 // https://httpwg.org/http-extensions/draft-ietf-httpbis-layered-cookies.html#sane-set-cookie
 
+const NAME_PREFIX = 'explicit-path-';
+
 // A document whose default cookie path is "/".
 function loadRootDocument() {
   return new Promise(resolve => {
@@ -29,14 +29,24 @@ function loadRootDocument() {
   });
 }
 
-function hasCookie(cookieString, name) {
-  return cookieString.split('; ').some(pair => pair.split('=')[0] === name);
+function cookieValue(cookieString, name) {
+  for (const pair of cookieString.split('; ')) {
+    const index = pair.indexOf('=');
+    if (index !== -1 && pair.substring(0, index) === name) {
+      return pair.substring(index + 1);
+    }
+  }
+  return null;
 }
 
-function rootDocumentTest({name, cookieName, attributes, stored}) {
+// A "__Host-" prefixed cookie can only be expired by a Set-Cookie that satisfies
+// the prefix itself, so the cleanup below carries Secure and Path=/ too.
+function rootDocumentTest({name, suffix, attributes, stored}) {
+  const cookieName = `__Host-${NAME_PREFIX}${suffix}`;
   promise_test(async t => {
-    await test_driver.delete_all_cookies();
-    t.add_cleanup(test_driver.delete_all_cookies);
+    t.add_cleanup(() => {
+      document.cookie = `${cookieName}=; Secure; Path=/; Max-Age=0`;
+    });
 
     const iframe = await loadRootDocument();
     t.add_cleanup(() => iframe.remove());
@@ -45,7 +55,7 @@ function rootDocumentTest({name, cookieName, attributes, stored}) {
                   'The document has a single path segment');
 
     doc.cookie = `${cookieName}=1; ${attributes}`;
-    assert_equals(hasCookie(doc.cookie, cookieName), stored);
+    assert_equals(cookieValue(doc.cookie, cookieName), stored ? '1' : null);
   }, name);
 }
 
@@ -53,12 +63,14 @@ function rootDocumentTest({name, cookieName, attributes, stored}) {
 // attribute has a default path of "/", so it reaches a path outside this test's
 // own directory.
 promise_test(async t => {
-  await test_driver.delete_all_cookies();
-  t.add_cleanup(test_driver.delete_all_cookies);
+  const cookieName = `${NAME_PREFIX}defaultpath`;
+  t.add_cleanup(() => {
+    document.cookie = `${cookieName}=; Path=/; Max-Age=0`;
+  });
 
   const root = await loadRootDocument();
   t.add_cleanup(() => root.remove());
-  root.contentWindow.document.cookie = 'defaultpath=1';
+  root.contentWindow.document.cookie = `${cookieName}=1`;
 
   const elsewhere = await new Promise(resolve => {
     const iframe = document.createElement('iframe');
@@ -69,14 +81,15 @@ promise_test(async t => {
   });
   t.add_cleanup(() => elsewhere.remove());
 
-  assert_true(hasCookie(elsewhere.contentWindow.document.cookie, 'defaultpath'),
-              'The cookie reaches /common/blank.html, so its path is "/"');
+  assert_equals(
+      cookieValue(elsewhere.contentWindow.document.cookie, cookieName), '1',
+      'The cookie reaches /common/blank.html, so its path is "/"');
 }, 'CONTROL a cookie set without a Path attribute here has a path of "/"');
 
 // Control: the prefix is honoured when the Path attribute is there.
 rootDocumentTest({
   name: 'CONTROL "__Host-" with an explicit Path of "/" is set',
-  cookieName: '__Host-withpath',
+  suffix: 'withpath',
   attributes: 'Secure; Path=/',
   stored: true,
 });
@@ -85,7 +98,7 @@ rootDocumentTest({
 // mistaken for a user agent that ignores the prefix.
 rootDocumentTest({
   name: 'CONTROL "__Host-" with a Path other than "/" is not set',
-  cookieName: '__Host-otherpath',
+  suffix: 'otherpath',
   attributes: 'Secure; Path=/cookies',
   stored: false,
 });
@@ -94,21 +107,21 @@ rootDocumentTest({
 // default path, without a Path attribute that says so.
 rootDocumentTest({
   name: '"__Host-" without a Path attribute is not set',
-  cookieName: '__Host-nopath',
+  suffix: 'nopath',
   attributes: 'Secure',
   stored: false,
 });
 
 rootDocumentTest({
   name: '"__Host-" with an empty Path attribute is not set',
-  cookieName: '__Host-emptypath',
+  suffix: 'emptypath',
   attributes: 'Secure; Path=',
   stored: false,
 });
 
 rootDocumentTest({
   name: '"__Host-" with a valueless Path attribute is not set',
-  cookieName: '__Host-barepath',
+  suffix: 'barepath',
   attributes: 'Secure; Path',
   stored: false,
 });

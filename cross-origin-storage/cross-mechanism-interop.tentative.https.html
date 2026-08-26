@@ -11,13 +11,13 @@
 
 // https://wicg.github.io/cross-origin-storage/#integration-with-other-specifications
 //
-// Section 8 states that the declarative HTML/CSS forms and the JS import
-// attribute are all expected to consult, and store into, the *same*
-// underlying COS registry that requestFileHandle() uses -- not three (or
-// four) independently-caching mechanisms that merely share a name. None of
-// the other files in this suite check this directly: each of
-// declarative-html/, declarative-css/, and import-attribute/ only proves
-// that a given mechanism is internally self-consistent (store
+// Section 8 states that the declarative HTML/CSS forms, the JS import
+// attribute, and the fetch() request option are all expected to consult, and
+// store into, the *same* underlying COS registry that requestFileHandle()
+// uses -- not four independently-caching mechanisms that merely share a
+// name. None of the other files in this suite check this directly: each of
+// declarative-html/, declarative-css/, import-attribute/, and fetch/ only
+// proves that a given mechanism is internally self-consistent (store
 // declaratively, read declaratively back, with the same mechanism both
 // times). This file crosses the streams: it stores through one mechanism
 // and reads through a different one, in both directions, and each test can
@@ -27,6 +27,8 @@
 const REAL_CSS_URL = 'resources/marker-style.css';
 const REAL_JS_URL = 'resources/marker-script.js';
 const REAL_MODULE_URL = 'resources/marker-module.mjs';
+// Stored by nothing but the fetch() interop test below.
+const FETCH_ONLY_JS_URL = 'resources/fetch-marker-script.js';
 const EXPECTED_MODULE_VALUE = 'cos-module-marker-value';
 
 function markerColor() {
@@ -156,5 +158,77 @@ promise_test(async t => {
     'a <script> pointed at a URL that never resolves can only have run via COS; as the original storer, ' +
     'disclosure back to this same document is unconditional even for a "*"-scoped entry');
 }, 'cross-mechanism interop: a wildcard-scoped entry written imperatively is served, deterministically, to its own storer by declarative HTML crossoriginstorage="*"');
+
+promise_test(async t => {
+  // Store: fetch() with crossOriginStorage.
+  // Read: imperative requestFileHandle().
+  //
+  // Deliberately not one of the marker fixtures: the wildcard test above
+  // stores marker-script.js imperatively, so reading that hash back here
+  // would succeed on *its* entry and this test would pass without the fetch
+  // integration doing anything. These bytes are unique to this run, so the
+  // only thing that can have stored them is the fetch under test.
+  const content = cosUniqueContent('interop-fetch-to-imperative');
+  const url = new URL(
+      `/common/echo.py?content=${encodeURIComponent(content)}`, location.href).href;
+  const integrity = await cosSha256Integrity(content);
+
+  const response = await fetch(url, {integrity, crossOriginStorage: ''});
+  assert_true(response.ok, 'the storing fetch itself succeeded');
+  assert_equals(await response.text(), content);
+
+  const handle = await navigator.crossOriginStorage.requestFileHandle(
+    cosHash(await cosSha256Hex(content)));
+  const file = await handle.getFile();
+  assert_equals(await file.text(), content,
+    'imperative requestFileHandle() must read back the exact bytes stored by the fetch integration');
+}, 'cross-mechanism interop: an entry written by the fetch() integration is readable via imperative requestFileHandle()');
+
+promise_test(async t => {
+  // Store: imperative requestFileHandle({create: true}).
+  // Read: fetch() with crossOriginStorage, from a URL that never resolves.
+  const content = cosUniqueContent('interop-imperative-to-fetch');
+  await cosStore(content);
+  const integrity = await cosSha256Integrity(content);
+
+  const response = await fetch(brokenUrl('txt'), {integrity, crossOriginStorage: ''});
+  assert_true(response.ok,
+    'a fetch of a URL that never resolves can only have succeeded via COS, proving the fetch ' +
+    'integration reads from the same registry the imperative API wrote to');
+  assert_equals(await response.text(), content);
+}, 'cross-mechanism interop: an entry written via requestFileHandle({create:true}) is served by the fetch() integration');
+
+promise_test(async t => {
+  // Store: fetch() with crossOriginStorage.
+  // Read: declarative HTML <script crossoriginstorage>, from a broken src.
+  //
+  // Neither side of this crossing involves the imperative API at all, so it
+  // is the one test here that would still pass if requestFileHandle() and the
+  // host integrations shared nothing but a name. It uses a fixture no other
+  // test stores, so a pass cannot be explained by some other test's entry.
+  window.__cosFetchScriptRunCount = 0;
+  const jsText = await fetch(FETCH_ONLY_JS_URL).then(r => r.text());
+  const integrity = await cosSha256Integrity(jsText);
+
+  const response = await fetch(FETCH_ONLY_JS_URL, {integrity, crossOriginStorage: '*'});
+  assert_true(response.ok);
+  await response.text();
+
+  const script = document.createElement('script');
+  script.src = brokenUrl('js');
+  script.integrity = integrity;
+  script.setAttribute('crossoriginstorage', '*');
+  const loaded = new Promise((resolve, reject) => {
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('script failed to load'));
+  });
+  t.add_cleanup(() => script.remove());
+  document.body.appendChild(script);
+  await loaded;
+
+  assert_equals(window.__cosFetchScriptRunCount, 1,
+    'a <script> with a broken src ran from bytes the fetch() integration stored, so the two ' +
+    'host integrations share one registry without the imperative API mediating');
+}, 'cross-mechanism interop: an entry written by the fetch() integration is served by declarative HTML crossoriginstorage');
 </script>
 </body>

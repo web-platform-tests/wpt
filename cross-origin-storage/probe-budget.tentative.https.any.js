@@ -18,6 +18,13 @@
 // on user activation -- which a worker can never obtain -- so a test that
 // exhausted it on purpose would degrade every later test sharing this origin
 // for the rest of the run, with no way to restore it.
+//
+// The budget is charged on every surface that reaches the registry, not only
+// requestFileHandle(): the three declarative integrations and the
+// crossOriginStorage option on fetch() all resolve a hash the same way and
+// all yield the same single bit. The last two tests here cover the fetch
+// surface, which is the one a page can drive in a loop as easily as an
+// imperative call.
 
 'use strict';
 
@@ -113,3 +120,56 @@ promise_test(async t => {
     await writable.close();
   }
 }, 'an origin with a write of its own in flight is never charged for reading it back');
+
+// A same-origin URL that reliably 404s, so a fetch that succeeds against it
+// can only have been served from COS.
+function cosBrokenUrl() {
+  return new URL(`./does-not-exist-${Math.random()}.txt`, location.href).href;
+}
+
+promise_test(async t => {
+  // The storing-origin exemption is a property of the lookup algorithm, not
+  // of requestFileHandle(), so it must hold for an integration lookup too.
+  // If the fetch integration reached the registry by some other route it
+  // would either be charged when it should not be, or -- worse -- not be
+  // charged when it should.
+  const content = cosUniqueContent('budget-fetch-storer-exempt');
+  await cosStore(content);
+  const integrity = await cosSha256Integrity(content);
+
+  for (let i = 0; i < REPEATS; ++i) {
+    const response = await fetch(cosBrokenUrl(), {integrity, crossOriginStorage: ''});
+    assert_true(response.ok,
+      `COS-served fetch ${i + 1} of ${REPEATS} of an entry this origin stored itself`);
+    assert_equals(await response.text(), content);
+  }
+}, 'a storing origin is never charged for reading its own entry back through fetch()');
+
+promise_test(async t => {
+  // Running out of budget must be indistinguishable from a miss on every
+  // surface. On this one that is structural: a refused lookup falls through
+  // to the network, so the caller sees whatever the network did and never a
+  // COS-specific error. A user agent that surfaced one here would hand
+  // callers the oracle the budget exists to deny them.
+  //
+  // Note that this holds trivially in a browser that does not implement the
+  // integration at all, so a pass here is weaker evidence than the tests
+  // above it. It is still worth pinning down: the failure it guards against
+  // is a user agent that grows a distinct signal for a refused lookup.
+  const names = new Set();
+  for (let i = 0; i < DISTINCT; ++i) {
+    const content = cosUniqueContent(`budget-fetch-miss-${i}`);
+    try {
+      await fetch(cosBrokenUrl(), {
+        integrity: await cosSha256Integrity(content),
+        crossOriginStorage: '*',
+      });
+      assert_unreached('a fetch of a 404 URL declaring a never-stored hash must not resolve');
+    } catch (e) {
+      names.add(e.name);
+    }
+  }
+  assert_array_equals([...names], ['TypeError'],
+    'a fetch whose COS lookup does not produce an entry fails as an ordinary ' +
+    'integrity-checked network error, with no distinct signal for a refused lookup');
+}, 'a fetch() lookup that finds nothing is indistinguishable from an ordinary network miss');

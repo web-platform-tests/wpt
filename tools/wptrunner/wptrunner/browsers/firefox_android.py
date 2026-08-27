@@ -3,6 +3,7 @@
 import os
 import re
 import subprocess
+import time
 import traceback
 
 from mozrunner import FennecEmulatorRunner, get_app_context
@@ -340,9 +341,22 @@ class FirefoxAndroidBrowser(Browser):
         except Exception as e:
             self.logger.debug(f"Could not query Android device properties: {e}")
 
+        self._wait_for_activity_manager()
         self.runner.stop()
-        self.runner.start(debug_args=debug_args,
-                          interactive=self.debug_info and self.debug_info.interactive)
+
+        for attempt in range(5):
+            try:
+                self.runner.start(debug_args=debug_args,
+                                  interactive=self.debug_info and self.debug_info.interactive)
+                break
+            except Exception as e:
+                if attempt < 4 and any(k in str(e).lower() for k in ["activity", "service", "process"]):
+                    self.logger.warning(
+                        f"Android ActivityManager unavailable ({e}); waiting 3s before retry ({attempt + 1}/5)..."
+                    )
+                    time.sleep(3)
+                else:
+                    raise
 
         self.runner.device.device.forward(
             local=f"tcp:{self.marionette_port}",
@@ -406,6 +420,22 @@ class FirefoxAndroidBrowser(Browser):
             self.logger.warning(f"""Failed to complete crash check, assuming no crash:
 {traceback.format_exc()}""")
             return False
+
+    def _wait_for_activity_manager(self, timeout=15):
+        """Wait until Android ActivityManager is available to accept intents."""
+        if not self.runner or not self.runner.device:
+            return True
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            try:
+                device = self.runner.device.device
+                res = device.shell_output("service check activity").strip()
+                if "found" in res:
+                    return True
+            except Exception:
+                pass
+            time.sleep(1)
+        return False
 
 
 class FirefoxAndroidWdSpecBrowser(FirefoxPytestBrowser):

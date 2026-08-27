@@ -3,7 +3,7 @@
 import asyncio
 import json
 import os
-import posixpath
+import pathlib
 import socket
 import threading
 import traceback
@@ -1063,7 +1063,7 @@ class WebDriverWebExtensionsProtocolPart(WebExtensionsProtocolPart):
 
     def _resolve_path(self, path):
         if self.parent.test_path is not None:
-             # Handle Windows forward slashes.
+            # Handle Windows forward slashes.
             test_dir = pathlib.Path(self.parent.test_path).parent
             if test_dir.parts:
                 return f"{test_dir.as_posix()}/{path.lstrip('/')}"

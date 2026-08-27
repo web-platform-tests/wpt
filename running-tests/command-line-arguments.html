@@ -39,7 +39,7 @@ with WPT. The functionality is organized into “sub-commands”, and each accep
 a different set of command-line arguments.</p>
 <p>This page documents all of the available sub-commands and associated arguments.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">wpt</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-           <span class="p">{</span><span class="n">build</span><span class="o">-</span><span class="n">docs</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">jobs</span><span class="p">,</span><span class="n">make</span><span class="o">-</span><span class="n">hosts</span><span class="o">-</span><span class="n">file</span><span class="p">,</span><span class="n">regen</span><span class="o">-</span><span class="n">certs</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">built</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">decision</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">sink</span><span class="o">-</span><span class="n">task</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">run</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">codeowners</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">run</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">push</span><span class="p">,</span><span class="n">lint</span><span class="p">,</span><span class="n">manifest</span><span class="p">,</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">paths</span><span class="p">,</span><span class="n">spec</span><span class="p">,</span><span class="n">serve</span><span class="p">,</span><span class="n">serve</span><span class="o">-</span><span class="n">wave</span><span class="p">,</span><span class="n">run</span><span class="p">,</span><span class="n">create</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">expectations</span><span class="p">,</span><span class="n">files</span><span class="o">-</span><span class="n">changed</span><span class="p">,</span><span class="n">tests</span><span class="o">-</span><span class="n">affected</span><span class="p">,</span><span class="n">install</span><span class="p">,</span><span class="n">rev</span><span class="o">-</span><span class="nb">list</span><span class="p">,</span><span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">,</span><span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">,</span><span class="n">metadata</span><span class="o">-</span><span class="n">validate</span><span class="p">,</span><span class="n">metadata</span><span class="o">-</span><span class="nb">list</span><span class="p">,</span><span class="n">web</span><span class="o">-</span><span class="n">features</span><span class="o">-</span><span class="n">manifest</span><span class="p">}</span>
+           <span class="p">{</span><span class="n">build</span><span class="o">-</span><span class="n">docs</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">jobs</span><span class="p">,</span><span class="n">make</span><span class="o">-</span><span class="n">hosts</span><span class="o">-</span><span class="n">file</span><span class="p">,</span><span class="n">regen</span><span class="o">-</span><span class="n">certs</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">built</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">decision</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">sink</span><span class="o">-</span><span class="n">task</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">run</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">codeowners</span><span class="p">,</span><span class="n">generate</span><span class="o">-</span><span class="n">matrix</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">run</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">push</span><span class="p">,</span><span class="n">lint</span><span class="p">,</span><span class="n">manifest</span><span class="p">,</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">paths</span><span class="p">,</span><span class="n">spec</span><span class="p">,</span><span class="n">serve</span><span class="p">,</span><span class="n">serve</span><span class="o">-</span><span class="n">wave</span><span class="p">,</span><span class="n">web</span><span class="o">-</span><span class="n">features</span><span class="o">-</span><span class="n">manifest</span><span class="p">,</span><span class="n">run</span><span class="p">,</span><span class="n">create</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">expectations</span><span class="p">,</span><span class="n">files</span><span class="o">-</span><span class="n">changed</span><span class="p">,</span><span class="n">tests</span><span class="o">-</span><span class="n">affected</span><span class="p">,</span><span class="n">install</span><span class="p">,</span><span class="n">rev</span><span class="o">-</span><span class="nb">list</span><span class="p">,</span><span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">,</span><span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">,</span><span class="n">metadata</span><span class="o">-</span><span class="n">validate</span><span class="p">,</span><span class="n">metadata</span><span class="o">-</span><span class="nb">list</span><span class="p">}</span>
            <span class="o">...</span>
 </pre></div>
 </div>
@@ -341,6 +341,21 @@ a different set of command-line arguments.</p>
 </dl>
 </section>
 </section>
+<section id="generate-matrix">
+<h3>generate-matrix<a class="headerlink" href="#generate-matrix" title="Link to this heading">¶</a></h3>
+<p>Generate a GitHub Actions test matrix from tools/ci/chunks.yml</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">generate</span><span class="o">-</span><span class="n">matrix</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">browser</span> <span class="n">BROWSER</span>
+</pre></div>
+</div>
+<section id="named-arguments_repeat9">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat9" title="Link to this heading">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--browser</kbd></dt>
+<dd><p>Browser name</p>
+</dd>
+</dl>
+</section>
+</section>
 <section id="docker-run">
 <h3>docker-run<a class="headerlink" href="#docker-run" title="Link to this heading">¶</a></h3>
 <p>Run wpt docker image</p>
@@ -348,8 +363,8 @@ a different set of command-line arguments.</p>
                <span class="p">[</span><span class="o">--</span><span class="n">tag</span> <span class="n">TAG</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments_repeat9">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat9" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat10">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat10" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--rebuild</kbd></dt>
 <dd><p>Force rebuild of image</p>
@@ -375,8 +390,8 @@ a different set of command-line arguments.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">docker</span><span class="o">-</span><span class="n">push</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tag</span> <span class="n">TAG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments_repeat10">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat10" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat11">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat11" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--tag</kbd></dt>
 <dd><p>Tag to use (default is taken from .taskcluster.yml)</p>
@@ -406,8 +421,8 @@ a different set of command-line arguments.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat11">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat11" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat12">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat12" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--json</kbd></dt>
 <dd><p>Output machine-readable JSON format</p>
@@ -457,8 +472,8 @@ a different set of command-line arguments.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat12">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat12" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat13">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat13" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>-v, --verbose</kbd></dt>
 <dd><p>Turn on verbose logging</p>
@@ -500,8 +515,8 @@ a different set of command-line arguments.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">manifest</span><span class="o">-</span><span class="n">download</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span><span class="o">-</span><span class="n">root</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments_repeat13">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat13" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat14">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat14" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>-p, --path</kbd></dt>
 <dd><p>Path to manifest file.</p>
@@ -534,8 +549,8 @@ a different set of command-line arguments.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat14">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat14" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat15">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat15" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>-p, --path</kbd></dt>
 <dd><p>Path to manifest file.</p>
@@ -577,8 +592,8 @@ a different set of command-line arguments.</p>
          <span class="p">[</span><span class="o">--</span><span class="n">cache</span><span class="o">-</span><span class="n">root</span> <span class="n">CACHE_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">parallel</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments_repeat15">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat15" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat16">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat16" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>-v, --verbose</kbd></dt>
 <dd><p>Turn on verbose logging</p>
@@ -616,8 +631,8 @@ a different set of command-line arguments.</p>
           <span class="p">[</span><span class="o">--</span><span class="n">dns</span><span class="o">-</span><span class="n">wildcards</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments_repeat16">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat16" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat17">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat17" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--latency</kbd></dt>
 <dd><p>Artificial latency to add before sending http responses, in ms</p>
@@ -676,8 +691,8 @@ a different set of command-line arguments.</p>
                <span class="p">[</span><span class="o">--</span><span class="n">dns</span><span class="o">-</span><span class="n">wildcards</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">report</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments_repeat17">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat17" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat18">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat18" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--latency</kbd></dt>
 <dd><p>Artificial latency to add before sending http responses, in ms</p>
@@ -730,6 +745,21 @@ a different set of command-line arguments.</p>
 </dl>
 </section>
 </section>
+<section id="web-features-manifest">
+<h3>web-features-manifest<a class="headerlink" href="#web-features-manifest" title="Link to this heading">¶</a></h3>
+<p>Create the WEB_FEATURES_MANIFEST.json</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">web</span><span class="o">-</span><span class="n">features</span><span class="o">-</span><span class="n">manifest</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PATH</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="named-arguments_repeat19">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat19" title="Link to this heading">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>-p, --path</kbd></dt>
+<dd><p>Path to manifest file.</p>
+</dd>
+</dl>
+</section>
+</section>
 <section id="run">
 <h3>run<a class="headerlink" href="#run" title="Link to this heading">¶</a></h3>
 <p>Run tests in a browser</p>
@@ -751,7 +781,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">REPEAT_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">test262</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">aamtest</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">reftest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">test262</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="n">aamtest</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">testharness</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">subsuite</span><span class="o">-</span><span class="n">file</span> <span class="n">SUBSUITE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">subsuite</span> <span class="n">SUBSUITES</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">small</span><span class="o">-</span><span class="n">subsuite</span><span class="o">-</span><span class="n">size</span> <span class="n">SMALL_SUBSUITE_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
@@ -773,7 +803,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">binary</span><span class="o">-</span><span class="n">arg</span> <span class="n">BINARY_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">binary</span> <span class="n">BINARY</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">arg</span> <span class="n">WEBDRIVER_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metadata</span> <span class="n">METADATA_ROOT</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">tests</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">manifest</span> <span class="n">MANIFEST_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">run</span><span class="o">-</span><span class="n">info</span> <span class="n">RUN_INFO</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">product</span> <span class="p">{</span><span class="n">epiphany</span><span class="p">,</span><span class="n">chromium</span><span class="p">,</span><span class="n">edge</span><span class="p">,</span><span class="n">sauce</span><span class="p">,</span><span class="n">android_webview</span><span class="p">,</span><span class="n">webkit</span><span class="p">,</span><span class="n">chrome_android</span><span class="p">,</span><span class="n">wktr</span><span class="p">,</span><span class="n">webkitgtk_minibrowser</span><span class="p">,</span><span class="n">chrome</span><span class="p">,</span><span class="n">ladybird</span><span class="p">,</span><span class="n">firefox_android</span><span class="p">,</span><span class="n">wpewebkit_minibrowser</span><span class="p">,</span><span class="n">servo</span><span class="p">,</span><span class="n">headless_shell</span><span class="p">,</span><span class="n">servo_legacy</span><span class="p">,</span><span class="n">opera</span><span class="p">,</span><span class="n">safari</span><span class="p">,</span><span class="n">firefox</span><span class="p">,</span><span class="n">chrome_ios</span><span class="p">}]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">product</span> <span class="p">{</span><span class="n">firefox</span><span class="p">,</span><span class="n">servo</span><span class="p">,</span><span class="n">edge</span><span class="p">,</span><span class="n">servo_legacy</span><span class="p">,</span><span class="n">chrome_android</span><span class="p">,</span><span class="n">android_webview</span><span class="p">,</span><span class="n">opera</span><span class="p">,</span><span class="n">epiphany</span><span class="p">,</span><span class="n">wktr</span><span class="p">,</span><span class="n">webkitgtk_minibrowser</span><span class="p">,</span><span class="n">chrome</span><span class="p">,</span><span class="n">chromium</span><span class="p">,</span><span class="n">wpewebkit_minibrowser</span><span class="p">,</span><span class="n">safari</span><span class="p">,</span><span class="n">chrome_ios</span><span class="p">,</span><span class="n">firefox_android</span><span class="p">,</span><span class="n">headless_shell</span><span class="p">,</span><span class="n">webkit</span><span class="p">,</span><span class="n">sauce</span><span class="p">,</span><span class="n">ladybird</span><span class="p">}]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">browser</span><span class="o">-</span><span class="n">version</span> <span class="n">BROWSER_VERSION</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">browser</span><span class="o">-</span><span class="n">channel</span> <span class="n">BROWSER_CHANNEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">fonts</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">install</span><span class="o">-</span><span class="n">fonts</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">font</span><span class="o">-</span><span class="nb">dir</span> <span class="n">FONT_DIR</span><span class="p">]</span>
@@ -831,8 +861,8 @@ a different set of command-line arguments.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat18">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat18" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat20">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat20" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--channel</kbd></dt>
 <dd><p>Possible choices: stable, release, beta, dev, canary, nightly, preview, experimental</p>
@@ -990,9 +1020,9 @@ channel.) This flag overrides –browser-channel.</p>
 <h4>Test Selection<a class="headerlink" href="#test-selection" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: test262, testharness, print-reftest, wdspec, aamtest, crashtest, reftest</p>
+<dd><p>Possible choices: test262, reftest, aamtest, crashtest, wdspec, print-reftest, testharness</p>
 <p>Test types to run</p>
-<p>Default: {‘test262’, ‘testharness’, ‘print-reftest’, ‘wdspec’, ‘aamtest’, ‘crashtest’, ‘reftest’}</p>
+<p>Default: {‘test262’, ‘reftest’, ‘aamtest’, ‘crashtest’, ‘wdspec’, ‘print-reftest’, ‘testharness’}</p>
 </dd>
 <dt><kbd>--subsuite-file</kbd></dt>
 <dd><p>Path to JSON file containing subsuite configuration</p>
@@ -1170,7 +1200,7 @@ channel.) This flag overrides –browser-channel.</p>
 <dd><p>Path to directory containing extra json files to add to run info</p>
 </dd>
 <dt><kbd>--product</kbd></dt>
-<dd><p>Possible choices: epiphany, chromium, edge, sauce, android_webview, webkit, chrome_android, wktr, webkitgtk_minibrowser, chrome, ladybird, firefox_android, wpewebkit_minibrowser, servo, headless_shell, servo_legacy, opera, safari, firefox, chrome_ios</p>
+<dd><p>Possible choices: firefox, servo, edge, servo_legacy, chrome_android, android_webview, opera, epiphany, wktr, webkitgtk_minibrowser, chrome, chromium, wpewebkit_minibrowser, safari, chrome_ios, firefox_android, headless_shell, webkit, sauce, ladybird</p>
 <p>Browser against which to run tests</p>
 </dd>
 <dt><kbd>--browser-version</kbd></dt>
@@ -1510,8 +1540,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat19">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat19" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat21">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat21" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--no-editor</kbd></dt>
 <dd><p>Don’t try to open the test in an editor</p>
@@ -1585,8 +1615,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat20">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat20" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat22">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat22" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--config</kbd></dt>
 <dd><p>Path to config file</p>
@@ -1715,8 +1745,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat21">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat21" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat23">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat23" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--ignore-rule</kbd></dt>
 <dd><p>Override the rules for paths to exclude from lists of changes. Rules are paths relative to the test root, with * before a separator or the end matching anything other than a path separator and ** in that position matching anything. This flag can be used multiple times for multiple rules. Specifying this flag overrides the default: resources/testharness*, resources/testdriver*</p>
@@ -1756,8 +1786,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat22">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat22" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat24">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat24" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--ignore-rule</kbd></dt>
 <dd><p>Override the rules for paths to exclude from lists of changes. Rules are paths relative to the test root, with * before a separator or the end matching anything other than a path separator and ** in that position matching anything. This flag can be used multiple times for multiple rules. Specifying this flag overrides the default: resources/testharness*, resources/testdriver*</p>
@@ -1808,8 +1838,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat23">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat23" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat25">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat25" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--channel</kbd></dt>
 <dd><p>Possible choices: stable, release, beta, dev, canary, nightly, preview, experimental</p>
@@ -1844,8 +1874,8 @@ channel.) This flag overrides –browser-channel.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">rev</span><span class="o">-</span><span class="nb">list</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">epoch</span> <span class="n">EPOCH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">count</span> <span class="n">MAX_COUNT</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments_repeat24">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat24" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat26">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat26" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--epoch</kbd></dt>
 <dd><p>regular interval of time selected to get the tagged revisions. Valid values are digits followed by h/d/w (e.x. 9h, 9d, 9w …) where the mimimun selectable interval is one hour (1h)</p>
@@ -1865,8 +1895,8 @@ channel.) This flag overrides –browser-channel.</p>
                              <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">prompt</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments_repeat25">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat25" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat27">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat27" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--path</kbd></dt>
 <dd><p>Root path to use for emulator tooling</p>
@@ -1893,8 +1923,8 @@ channel.) This flag overrides –browser-channel.</p>
                            <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">prompt</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">device</span><span class="o">-</span><span class="n">serial</span> <span class="n">DEVICE_SERIAL</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments_repeat26">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat26" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat28">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat28" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--path</kbd></dt>
 <dd><p>Root path to use for emulator tooling</p>
@@ -1931,8 +1961,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat27">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat27" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat29">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat29" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--manifest</kbd></dt>
 <dd><p>Path to MANIFEST.json</p>
@@ -1958,26 +1988,11 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat28">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat28" title="Link to this heading">¶</a></h4>
+<section id="named-arguments_repeat30">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat30" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--manifest</kbd></dt>
 <dd><p>Path to MANIFEST.json</p>
-</dd>
-</dl>
-</section>
-</section>
-<section id="web-features-manifest">
-<h3>web-features-manifest<a class="headerlink" href="#web-features-manifest" title="Link to this heading">¶</a></h3>
-<p>Create the WEB_FEATURES_MANIFEST.json</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">web</span><span class="o">-</span><span class="n">features</span><span class="o">-</span><span class="n">manifest</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PATH</span><span class="p">]</span>
-</pre></div>
-</div>
-<section id="named-arguments_repeat29">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat29" title="Link to this heading">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>-p, --path</kbd></dt>
-<dd><p>Path to manifest file.</p>
 </dd>
 </dl>
 </section>

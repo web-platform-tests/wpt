@@ -5,11 +5,11 @@
 // disclosure question rather than a convenience one.
 // https://wicg.github.io/cross-origin-storage/#creating-and-writing-files
 //
-// SPEC GAP: the specification does not mention keepExistingData at all, so it
-// does not say whether a create-request writable may be seeded with the bytes
-// of an entry the caller cannot read. This test asserts it must not be, for
-// the reason set out below; that reasoning is what should end up in the
-// specification, not this file.
+// The specification now requires this: a create-request writable starts empty
+// regardless of keepExistingData and regardless of the entry's state, because
+// seeding it would be an availability-gating bypass. See
+// https://wicg.github.io/cross-origin-storage/#creating-and-writing-files
+// The reasoning is kept below because it is what the assertions test for.
 
 'use strict';
 

@@ -7,10 +7,10 @@
 // and no identity apart from its hash:
 // https://wicg.github.io/cross-origin-storage/#cos-file-system
 //
-// The specification currently defines only getFile(), the permission-model
-// bypass, and transferring handles. It says nothing about kind, name,
-// isSameEntry(), move(), remove(), or createSyncAccessHandle() on a handle
-// addressing a COS entry.
+// The specification defines getFile(), the permission-model bypass,
+// transferring handles, and isSameEntry(). It still says nothing about kind,
+// name, move(), remove(), or createSyncAccessHandle() on a handle addressing a
+// COS entry.
 //
 // Assertions below that the specification does not decide are marked
 // "SPEC GAP". They record what an implementation has to do *something* about,
@@ -53,11 +53,11 @@ promise_test(async t => {
 }, 'name is the entry hash, not empty and never undefined');
 
 promise_test(async t => {
-  // Not a spec gap so much as a consequence: content-addressability means at
-  // most one entry per hash, so two handles for one hash necessarily address
-  // the same entry. isSameEntry() exists to answer exactly that question and
-  // it is answerable here, unlike the structural operations below. An
-  // implementation that refuses it is discarding information it holds.
+  // Now specified: content-addressability means at most one entry per hash, so
+  // two handles for one hash necessarily address the same entry, and
+  // isSameEntry() must answer rather than refuse -- unlike the structural
+  // operations below, which have nothing to act on.
+  // https://wicg.github.io/cross-origin-storage/#cos-file-system
   const {hash} = await storedHandle('same-entry');
   const a = await navigator.crossOriginStorage.requestFileHandle(hash);
   const b = await navigator.crossOriginStorage.requestFileHandle(hash);

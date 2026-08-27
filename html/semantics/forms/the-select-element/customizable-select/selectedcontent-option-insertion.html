@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>selectedcontent is only updated when option insertion changes selectedness</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+
+<select id=select1>
+  <button>
+    <selectedcontent></selectedcontent>
+  </button>
+  <option id=option1>one</option>
+</select>
+
+<script>
+// The option post-connection steps update every descendant selectedcontent
+// element of the option's select. Doing that unconditionally means inserting an
+// option that changes nothing still runs "replace all" on the selectedcontent,
+// which is observable through node identity and mutation records.
+test(t => {
+  const select = document.getElementById('select1');
+  const selectedcontent = select.querySelector('selectedcontent');
+
+  assert_equals(selectedcontent.textContent, 'one',
+    'selectedcontent should match the selected option at the start of the test.');
+  const originalChild = selectedcontent.firstChild;
+  assert_not_equals(originalChild, null,
+    'selectedcontent should have a child at the start of the test.');
+
+  const observer = new MutationObserver(() => {});
+  t.add_cleanup(() => observer.disconnect());
+  observer.observe(selectedcontent, {childList: true, subtree: true});
+
+  const newOption = document.createElement('option');
+  newOption.textContent = 'two';
+  select.appendChild(newOption);
+
+  assert_false(newOption.selected,
+    'The inserted option should not be selected.');
+  assert_equals(select.value, 'one',
+    'The selected option should not change.');
+  assert_equals(selectedcontent.textContent, 'one',
+    'selectedcontent should still match the selected option.');
+  assert_equals(selectedcontent.firstChild, originalChild,
+    'selectedcontent children should not be replaced when inserting a non-selected option.');
+  assert_equals(observer.takeRecords().length, 0,
+    'Inserting a non-selected option should not mutate selectedcontent.');
+}, 'Inserting a non-selected option does not replace selectedcontent children.');
+</script>
+
+<select id=select2>
+  <button>
+    <selectedcontent></selectedcontent>
+  </button>
+  <option id=option2>one</option>
+</select>
+
+<script>
+test(t => {
+  const select = document.getElementById('select2');
+  const selectedcontent = select.querySelector('selectedcontent');
+
+  const observer = new MutationObserver(() => {});
+  t.add_cleanup(() => observer.disconnect());
+  observer.observe(selectedcontent, {childList: true, subtree: true});
+
+  for (let i = 0; i < 10; i++) {
+    const newOption = document.createElement('option');
+    newOption.textContent = `extra ${i}`;
+    select.appendChild(newOption);
+  }
+
+  assert_equals(select.value, 'one',
+    'The selected option should not change.');
+  assert_equals(observer.takeRecords().length, 0,
+    'Inserting 10 non-selected options should not mutate selectedcontent.');
+}, 'Inserting many non-selected options does not repeatedly replace selectedcontent children.');
+</script>
+
+<select id=select3>
+  <button>
+    <selectedcontent></selectedcontent>
+  </button>
+  <option id=option3a disabled>A</option>
+  <option id=option3b disabled>B</option>
+</select>
+
+<script>
+// The mirror image of the tests above: the update must not be skipped just
+// because the inserted option is itself not selected, because inserting an
+// option can select a different one.
+//
+// This asserts after a microtask so that it stays orthogonal to whether the
+// update happens in the post-connection steps or in a microtask; the timing
+// itself is covered by selectedcontent-insertion-removal.html.
+promise_test(async () => {
+  const select = document.getElementById('select3');
+  const optionA = document.getElementById('option3a');
+  const selectedcontent = select.querySelector('selectedcontent');
+
+  assert_equals(select.value, '',
+    'No option should be selected while every option is disabled.');
+  assert_equals(selectedcontent.textContent, '',
+    'selectedcontent should be empty while no option is selected.');
+
+  // Enabling an option does not run the selectedness setting algorithm, so this
+  // leaves the select with an enabled but unselected option.
+  optionA.disabled = false;
+  assert_equals(select.value, '',
+    'Enabling an option should not select it.');
+
+  // Inserting this disabled option runs the selectedness setting algorithm,
+  // which selects optionA as the first enabled option. The inserted option is
+  // not the one whose selectedness changed.
+  const newOption = document.createElement('option');
+  newOption.disabled = true;
+  newOption.textContent = 'C';
+  select.appendChild(newOption);
+
+  assert_true(optionA.selected,
+    'The first enabled option should become selected.');
+  assert_equals(select.value, 'A',
+    'select.value should reflect the newly selected option.');
+
+  await new Promise(queueMicrotask);
+  assert_equals(selectedcontent.textContent, 'A',
+    'selectedcontent should be updated even though the inserted option is not selected.');
+}, 'Inserting a non-selected option that selects a different option updates selectedcontent.');
+</script>

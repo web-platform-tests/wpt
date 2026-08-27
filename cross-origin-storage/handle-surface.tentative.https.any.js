@@ -7,17 +7,16 @@
 // and no identity apart from its hash:
 // https://wicg.github.io/cross-origin-storage/#cos-file-system
 //
-// The specification defines getFile(), the permission-model bypass,
-// transferring handles, and isSameEntry(). It still says nothing about kind,
-// name, move(), remove(), or createSyncAccessHandle() on a handle addressing a
-// COS entry.
+// Every assertion here is now decided rather than guessed. Some follow from
+// [FS] directly -- name from the locator's path, createSyncAccessHandle()'s
+// "InvalidStateError" from the bucket-file-system check -- and the rest are
+// settled by COS itself. move() and remove() are unspecified upstream
+// (WICG/file-system-access#214), so COS follows removeEntry(), the operation
+// [FS] does define for deleting an entry.
 //
-// Assertions below that the specification does not decide are marked
-// "SPEC GAP". They record what an implementation has to do *something* about,
-// with the reasoning for the choice made here, and should be revisited when
-// the specification covers them -- a test suite is a bad place to settle an
-// open design question by default, so each one names the alternative it was
-// chosen over.
+// This file previously carried "SPEC GAP" notes where it had to choose. They
+// are gone: each choice was either ratified or, in createSyncAccessHandle()'s
+// case, corrected once the standard turned out to have decided it already.
 
 'use strict';
 
@@ -37,15 +36,10 @@ promise_test(async t => {
 
 promise_test(async t => {
   const {handle, hash} = await storedHandle('name');
-  // SPEC GAP: the specification does not say what a COS handle's name is.
-  //
-  // What is *not* open: `name` is declared USVString, so it is always a string
-  // and can never be undefined. That leaves the empty string or the hash. The
-  // hash is the only identity an entry has -- it has no name and no containing
-  // directory -- so reporting it carries information an empty string discards,
-  // and both implementations written so far arrive at it independently. The
-  // empty string is the defensible alternative, on the grounds that a nameless
-  // entry should say so rather than substitute a different concept.
+  // Now specified. [FS] defines name as the last path component of the handle's
+  // locator's path, and COS defines a COS entry's locator path as a single item
+  // holding the entry's hash, so name is the hash rather than a separate
+  // decision. https://wicg.github.io/cross-origin-storage/#cos-file-system
   assert_equals(typeof handle.name, 'string',
     'name is a USVString and must be a string even for a nameless entry');
   assert_equals(handle.name, hash.value,
@@ -74,31 +68,22 @@ promise_test(async t => {
 }, 'isSameEntry() is false for handles addressing different hashes');
 
 promise_test(async t => {
-  // SPEC GAP: the specification does not define move() on a COS handle, and
-  // this test picks "NotSupportedError".
-  //
-  // A COS entry has no name and no containing directory, so there is nothing
-  // for a rename or a reparent to act on -- which is what makes
-  // NotSupportedError read more accurately than NotAllowedError here: the
-  // operation is absent rather than refused. The load-bearing assertion is
-  // that it does not silently succeed; the error name is the guess.
+  // Now specified as "NotAllowedError". move() is unspecified upstream, so COS
+  // follows removeEntry(), the operation [FS] does define for changing what a
+  // directory holds: it rejects with the access result's error name when
+  // readwrite access is not granted.
   const {handle} = await storedHandle('move');
-  await promise_rejects_dom(t, 'NotSupportedError', handle.move('renamed'));
+  await promise_rejects_dom(t, 'NotAllowedError', handle.move('renamed'));
 }, 'move() rejects: a COS entry has no name to change');
 
 promise_test(async t => {
-  // SPEC GAP: the specification does not define remove() on a COS handle, and
-  // this test picks "NotSupportedError".
-  //
-  // This is the case where the alternative is strongest. An entry can have
-  // several storing origins, so honouring remove() would let one site destroy
-  // data other sites depend on -- a refusal on those grounds is arguably
-  // NotAllowedError, since the operation is meaningful and denied rather than
-  // absent. Deletion belongs to eviction and to the user's own storage
-  // controls. Whichever name the specification settles on, the two assertions
-  // that follow must hold.
+  // Now specified as "NotAllowedError", the alternative this test used to name.
+  // An entry can have several storing origins, so honouring remove() would let
+  // one site destroy data other sites depend on: the operation is meaningful
+  // and denied rather than absent. remove() is unspecified upstream
+  // (WICG/file-system-access#214), so the name follows removeEntry().
   const {handle, hash, content} = await storedHandle('remove');
-  await promise_rejects_dom(t, 'NotSupportedError', handle.remove());
+  await promise_rejects_dom(t, 'NotAllowedError', handle.remove());
 
   // Load-bearing: prove the entry actually survived, rather than trusting the
   // rejection. A rejected promise and a deleted file are not the same thing.
@@ -117,11 +102,10 @@ promise_test(async t => {
   // descriptor, and the resolved value is a PermissionState --
   // "granted"/"denied"/"prompt" -- not the mode that was asked about.
   //
-  // SPEC GAP, narrowly: what queryPermission({mode: "readwrite"}) should say
-  // on a handle obtained without create is undecided. "granted" would claim a
-  // capability the handle does not have; "denied" would suggest the handle is
-  // unusable when it reads perfectly well. This test only asserts the "read"
-  // mode, which is unambiguous, rather than pinning the open case.
+  // Now specified: a write mode on a handle obtained without create reports
+  // "denied", because only a create request yields a writable handle and
+  // reporting "granted" would claim a capability createWritable() will refuse.
+  // Read stays "granted" -- a caller holding the handle can read through it.
   const {handle} = await storedHandle('permissions');
   const read = await handle.queryPermission({mode: 'read'});
   assert_in_array(read, ['granted', 'denied', 'prompt'],
@@ -133,4 +117,11 @@ promise_test(async t => {
   assert_in_array(requested, ['granted', 'denied', 'prompt']);
   assert_equals(requested, 'granted',
     'requesting permission on a pre-authorized handle must not prompt');
+
+  // The handle came from a plain read request, so it can never be written
+  // through. Never "prompt": there is no prompt COS can show.
+  assert_equals(await handle.queryPermission({mode: 'readwrite'}), 'denied',
+    'a handle obtained without create reports no write capability');
+  assert_equals(await handle.requestPermission({mode: 'readwrite'}), 'denied',
+    'requesting a write mode cannot grant what create was never asked for');
 }, 'queryPermission()/requestPermission() report a PermissionState, already granted');

@@ -36,6 +36,7 @@ async def test_release_char_sequence_sends_keyup_events_in_reverse(
     (events, expected) = filter_supported_key_events(all_events, expected)
     assert events == expected
 
+
 async def test_release_char_sequence_with_modifier_sends_keyup_events_in_reverse(
     bidi_session, top_context, load_static_test_page, get_focused_key_input
 ):

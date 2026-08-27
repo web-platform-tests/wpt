@@ -29,6 +29,7 @@ def test_release_char_sequence_sends_keyup_events_in_reverse(
     (events, expected) = filter_supported_key_events(all_events, expected)
     assert events == expected
 
+
 def test_release_char_sequence_with_modifier_sends_keyup_events_in_reverse(
     session, key_reporter, key_chain
 ):

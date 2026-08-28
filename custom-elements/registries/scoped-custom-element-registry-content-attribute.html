@@ -3,6 +3,7 @@
 <head>
 <meta name="author" title="Ryosuke Niwa" href="mailto:rniwa@webkit.org">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/custom-elements.html#attr-scopedcustomelementregistry">
+<link rel="help" href="https://dom.spec.whatwg.org/#element-keep-custom-element-registry-null">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -63,6 +64,19 @@ test(() => {
     assert_equals(element.customElementRegistry, null);
     assert_equals(element.firstElementChild.customElementRegistry, null);
 }, 'A non-empty scopedcustomelementregistry value has boolean attribute semantics');
+
+test(() => {
+    const container = document.createElement('div');
+    container.setHTMLUnsafe(`
+      <svg scopedcustomelementregistry><g></g></svg>
+      <math scopedcustomelementregistry><mi></mi></math>`);
+    const [svg, math] = container.children;
+
+    assert_equals(svg.customElementRegistry, customElements);
+    assert_equals(svg.firstElementChild.customElementRegistry, customElements);
+    assert_equals(math.customElementRegistry, customElements);
+    assert_equals(math.firstElementChild.customElementRegistry, customElements);
+}, 'scopedcustomelementregistry has no parser effect on non-HTML elements');
 
 test(() => {
     const container = document.createElement('div');
@@ -277,6 +291,46 @@ test(() => {
     assert_equals(host.shadowRoot.customElementRegistry, null);
     assert_equals(host.shadowRoot.firstElementChild.customElementRegistry, null);
 }, 'Element and shadow root null registry attributes compose');
+
+test(() => {
+    const container = document.createElement('div');
+    container.setHTMLUnsafe(
+        '<div scopedcustomelementregistry><span></span></div>');
+    const element = container.firstElementChild;
+    element.removeAttribute('scopedcustomelementregistry');
+
+    assert_equals(element.customElementRegistry, null);
+    assert_equals(element.firstElementChild.customElementRegistry, null);
+    assert_equals(
+        container.innerHTML,
+        '<div scopedcustomelementregistry=""><span></span></div>');
+
+    element.setAttribute('scopedcustomelementregistry', 'named');
+    assert_equals(element.customElementRegistry, null);
+    assert_equals(element.scopedCustomElementRegistry, 'named');
+}, 'Changing the attribute after parsing does not change the established registry boundary');
+
+test(() => {
+    const container = document.createElement('div');
+    container.setHTMLUnsafe(
+        '<div scopedcustomelementregistry><template shadowrootmode="open" ' +
+        'shadowrootserializable></template></div>');
+    assert_equals(
+        container.getHTML({serializableShadowRoots: true}),
+        '<div scopedcustomelementregistry=""><template shadowrootmode="open" ' +
+        'shadowrootserializable=""></template></div>');
+}, 'Element and global shadow root registry boundaries serialize independently');
+
+test(() => {
+    const container = document.createElement('div');
+    container.setHTMLUnsafe(
+        '<div scopedcustomelementregistry><template shadowrootmode="open" ' +
+        'shadowrootserializable shadowrootcustomelementregistry></template></div>');
+    assert_equals(
+        container.getHTML({serializableShadowRoots: true}),
+        '<div scopedcustomelementregistry=""><template shadowrootmode="open" ' +
+        'shadowrootserializable="" shadowrootcustomelementregistry=""></template></div>');
+}, 'Element and null shadow root registry boundaries serialize independently');
 
 // Tests for scopedcustomelementregistry attribute on elements during initial document parse.
 

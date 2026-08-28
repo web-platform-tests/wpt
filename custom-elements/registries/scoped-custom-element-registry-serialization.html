@@ -153,4 +153,45 @@ test(() => {
       target.firstElementChild.firstElementChild.customElementRegistry, null);
   assert_equals(target.lastElementChild.customElementRegistry, customElements);
 }, 'A serialized null registry boundary survives reparsing without redundant markers');
+
+test(() => {
+  const registry = new CustomElementRegistry();
+  const source = document.createElement('div');
+  const element = elementWithRegistry('section', registry);
+  source.append(element);
+
+  assert_false(element.hasAttribute('scopedcustomelementregistry'));
+  const serialized = source.innerHTML;
+  assert_equals(
+      serialized, '<section scopedcustomelementregistry=""></section>');
+
+  const target = document.createElement('div');
+  target.setHTMLUnsafe(serialized);
+  const parsedElement = target.firstElementChild;
+  assert_equals(parsedElement.customElementRegistry, null);
+
+  registry.initialize(parsedElement);
+  assert_equals(parsedElement.customElementRegistry, registry);
+}, 'A serialized scoped registry boundary reparses as null and can be initialized');
+
+test(() => {
+  const nullParent = elementWithRegistry('div', null);
+  nullParent.setHTMLUnsafe('<svg><g></g></svg>');
+  const svg = nullParent.firstElementChild;
+  assert_equals(svg.customElementRegistry, null);
+
+  const globalParent = document.createElement('div');
+  globalParent.append(svg);
+  assert_equals(svg.customElementRegistry, null);
+  assert_equals(globalParent.innerHTML, '<svg><g></g></svg>');
+}, 'A registry boundary on a non-HTML element does not synthesize the attribute');
+
+test(() => {
+  const parent = document.createElement('div');
+  parent.setHTMLUnsafe('<svg scopedcustomelementregistry></svg>');
+  const svg = parent.firstElementChild;
+  assert_equals(svg.customElementRegistry, customElements);
+  assert_equals(
+      parent.innerHTML, '<svg scopedcustomelementregistry=""></svg>');
+}, 'A literal attribute on a non-HTML element serializes without registry semantics');
 </script>

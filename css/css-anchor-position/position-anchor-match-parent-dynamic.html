@@ -5,6 +5,8 @@
 <link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#valdef-position-anchor-match-parent">
 <link rel="author" href="mailto:jeroen.zwartepoorte@gmail.com">
 <link rel="match" href="position-anchor-match-parent-dynamic-ref.html">
+<script src="/common/rendering-utils.js"></script>
+<script src="/common/reftest-wait.js"></script>
 <style>
 .cases {
   display: flex;
@@ -66,11 +68,11 @@
 </div>
 
 <script>
-requestAnimationFrame(() => requestAnimationFrame(() => {
+(async () => {
+  await waitForAtLeastOneFrame();
   document.getElementById('gains').style.positionAnchor = '--a';
   document.getElementById('loses').style.positionAnchor = 'none';
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    document.documentElement.classList.remove('reftest-wait');
-  }));
-}));
+  await waitForAtLeastOneFrame();
+  takeScreenshot();
+})();
 </script>

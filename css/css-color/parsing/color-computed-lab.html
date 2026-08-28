@@ -114,8 +114,8 @@ tests = [
     ["lch(calc(-infinity) 0 0)", "lch(0 0 0)"],
     ["lch(50 calc(infinity) 0)", "lch(50 calc(infinity) 0)"],
     ["lch(50 calc(-infinity) 0)", "lch(50 0 0)"],
-    ["lch(50 10 calc(infinity))", "lch(50 10 calc(infinity))"],
-    ["lch(50 10 calc(-infinity))", "lch(50 10 calc(-infinity))"],
+    ["lch(50 10 calc(infinity))", "lch(50 10 0)"],
+    ["lch(50 10 calc(-infinity))", "lch(50 10 0)"],
 
     ["lch(calc(NaN) 0 0)", "lch(0 0 0)"],
     ["lch(calc(0 / 0) 0 0)", "lch(0 0 0)"],
@@ -158,8 +158,8 @@ tests = [
     ["oklch(calc(-infinity) 0 0)", "oklch(0 0 0)"],
     ["oklch(0.5 calc(infinity) 0)", "oklch(0.5 calc(infinity) 0)"],
     ["oklch(0.5 calc(-infinity) 0)", "oklch(0.5 0 0)"],
-    ["oklch(0.5 0.1 calc(infinity))", "oklch(0.5 0.1 calc(infinity))"],
-    ["oklch(0.5 0.1 calc(-infinity))", "oklch(0.5 0.1 calc(-infinity))"],
+    ["oklch(0.5 0.1 calc(infinity))", "oklch(0.5 0.1 0)"],
+    ["oklch(0.5 0.1 calc(-infinity))", "oklch(0.5 0.1 0)"],
 
     ["oklch(calc(NaN) 0 0)", "oklch(0 0 0)"],
     ["oklch(calc(0 / 0) 0 0)", "oklch(0 0 0)"],

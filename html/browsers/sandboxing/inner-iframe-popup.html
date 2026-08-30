@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title>I can run scripts, but not act as same-origin</title>
+  <script>
+    function pop(){
+      window.open('./popup.html');
+    }
+    window.onload = function() {
+      try{
+        top.calledFromIframe();
+      }catch(e){}
+      pop();
+      document.getElementById('openme').onclick = pop;
+    }
+  </script>
+  </head>
+  <body>
+    <div id="inner">In case you have a popup blocker: <a href="#" id="openme">Pop a popup</a></div>
+  </body>
+</html>

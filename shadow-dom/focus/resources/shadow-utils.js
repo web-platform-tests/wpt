@@ -70,10 +70,21 @@ function navigateFocusForward() {
   return test_driver.send_keys(document.body, "\ue004");
 }
 
+function navigateFocusBackward() {
+  // SHIFT+TAB = '\ue008\ue004'
+  return test_driver.send_keys(document.body, "\ue008\ue004");
+}
+
 async function assertFocusOrder(expectedOrder) {
   const shadowRoot = document.getElementById("host").shadowRoot;
   for (const el of expectedOrder) {
     await navigateFocusForward();
+    const focused = shadowRoot.activeElement ? shadowRoot.activeElement : document.activeElement;
+    assert_equals(focused, el);
+  }
+  const expectedBackwardOrder = expectedOrder.slice(0, -1).reverse();
+  for (const el of expectedBackwardOrder) {
+    await navigateFocusBackward();
     const focused = shadowRoot.activeElement ? shadowRoot.activeElement : document.activeElement;
     assert_equals(focused, el);
   }

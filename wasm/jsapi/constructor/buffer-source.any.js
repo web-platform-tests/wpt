@@ -12,7 +12,7 @@
 // shared, resizable, length-tracking, out-of-bounds and detached buffers.
 //
 // https://webidl.spec.whatwg.org/#dfn-get-buffer-source-copy
-// https://webidl.spec.whatwg.org/#dfn-BufferSource-byte-length
+// https://webidl.spec.whatwg.org/#buffersource-byte-length
 
 function assert_Module(module) {
   assert_equals(Object.getPrototypeOf(module), WebAssembly.Module.prototype,

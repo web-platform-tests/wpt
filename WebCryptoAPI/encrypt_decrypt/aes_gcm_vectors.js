@@ -56,7 +56,7 @@ function getTestVectors() {
         });
     });
 
-    // Scenarios that should fail because of a bad tag length, causing an OperationError
+    // Scenarios that should fail because of a bad tag length, causing an OperationError or a TypeError
     var failing = [];
     keyLengths.forEach(function(keyLength) {
         [24, 48, 72, 95, 129].forEach(function(badTagLength) {

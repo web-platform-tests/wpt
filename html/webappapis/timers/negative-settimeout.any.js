@@ -1,3 +1,4 @@
 setup({ single_test: true });
-setTimeout(done, -100);
-setTimeout(assert_unreached, 10);
+var otherTimeout;
+setTimeout(() => { clearTimeout(otherTimeout); done(); }, -100);
+otherTimeout = setTimeout(assert_unreached, 10);

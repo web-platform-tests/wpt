@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Navigation Timing Main Frame</title>
+        <link rel="author" title="Google" href="http://www.google.com/" />
+        <link rel="help" href="http://www.w3.org/TR/navigation-timing-2/#sec-PerformanceNavigationTiming"/>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+    </head>
+    <body>
+      <script>
+        setTimeout(() => {
+          location.href = "resources/test_unload_event.html";
+        }, 1000);
+      </script>
+      <h1>Description</h1>
+      <p>This test validates that the values of window.performance.getEntriesByType("navigation")[0].(type/unloadEventEnd/unloadEventStart) are only exposed when the same-origin test passes. It does this by navigating the main frame. The destination page asserts that event it present.</p>
+    </body>
+</html>

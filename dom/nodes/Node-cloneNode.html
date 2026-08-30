@@ -36,6 +36,13 @@ function assert_equal_node(nodeA, nodeB) {
 function check_copy(orig, copy, type) {
     assert_not_equals(orig, copy, "Object equality");
     assert_equal_node(orig, copy, "Node equality");
+    assert_true(orig.constructor.name === type.name, "original instanceof " + type);
+    assert_true(copy.constructor.name === type.name, "copy instanceof " + type);
+}
+
+function check_document_copy(orig, copy, type) {
+    assert_not_equals(orig, copy, "Object equality");
+    assert_equal_node(orig, copy, "Node equality");
     assert_true(orig instanceof type, "original instanceof " + type);
     assert_true(copy instanceof type, "copy instanceof " + type);
 }
@@ -62,9 +69,9 @@ create_element_and_check("b",         "HTMLElement");
 create_element_and_check("base",      "HTMLBaseElement");
 create_element_and_check("bdi",       "HTMLElement");
 create_element_and_check("bdo",       "HTMLElement");
-create_element_and_check("bgsound",   "HTMLElement");
+create_element_and_check("bgsound",   "HTMLUnknownElement");
 create_element_and_check("big",       "HTMLElement");
-create_element_and_check("blockquote","HTMLElement");
+create_element_and_check("blockquote","HTMLQuoteElement");
 create_element_and_check("body",      "HTMLBodyElement");
 create_element_and_check("br",        "HTMLBRElement");
 create_element_and_check("button",    "HTMLButtonElement");
@@ -80,7 +87,7 @@ create_element_and_check("datalist",  "HTMLDataListElement");
 create_element_and_check("dialog",    "HTMLDialogElement");
 create_element_and_check("dd",        "HTMLElement");
 create_element_and_check("del",       "HTMLModElement");
-create_element_and_check("details",   "HTMLElement");
+create_element_and_check("details",   "HTMLDetailsElement");
 create_element_and_check("dfn",       "HTMLElement");
 create_element_and_check("dir",       "HTMLDirectoryElement");
 create_element_and_check("div",       "HTMLDivElement");
@@ -111,7 +118,7 @@ create_element_and_check("iframe",    "HTMLIFrameElement");
 create_element_and_check("img",       "HTMLImageElement");
 create_element_and_check("input",     "HTMLInputElement");
 create_element_and_check("ins",       "HTMLModElement");
-create_element_and_check("isindex",   "HTMLElement");
+create_element_and_check("isindex",   "HTMLUnknownElement");
 create_element_and_check("kbd",       "HTMLElement");
 create_element_and_check("label",     "HTMLLabelElement");
 create_element_and_check("legend",    "HTMLLegendElement");
@@ -120,7 +127,7 @@ create_element_and_check("link",      "HTMLLinkElement");
 create_element_and_check("main",      "HTMLElement");
 create_element_and_check("map",       "HTMLMapElement");
 create_element_and_check("mark",      "HTMLElement");
-create_element_and_check("marquee",   "HTMLElement");
+create_element_and_check("marquee",   "HTMLMarqueeElement");
 create_element_and_check("meta",      "HTMLMetaElement");
 create_element_and_check("meter",     "HTMLMeterElement");
 create_element_and_check("nav",       "HTMLElement");
@@ -147,7 +154,7 @@ create_element_and_check("section",   "HTMLElement");
 create_element_and_check("select",    "HTMLSelectElement");
 create_element_and_check("small",     "HTMLElement");
 create_element_and_check("source",    "HTMLSourceElement");
-create_element_and_check("spacer",    "HTMLElement");
+create_element_and_check("spacer",    "HTMLUnknownElement");
 create_element_and_check("span",      "HTMLSpanElement");
 create_element_and_check("strike",    "HTMLElement");
 create_element_and_check("style",     "HTMLStyleElement");
@@ -198,19 +205,19 @@ test(function() {
   el.setAttribute("a", "b");
   el.setAttribute("c", "d");
   var c = el.cloneNode();
-  check_copy(el, c, Element);
+  check_copy(el, c, {name: "HTMLUnknownElement"});
 }, "createElement with attributes")
 
 test(function() {
   var el = document.createElementNS("http://www.w3.org/1999/xhtml", "foo:div");
   var c = el.cloneNode();
-  check_copy(el, c, HTMLDivElement);
+  check_copy(el, c, {name: "HTMLDivElement"});
 }, "createElementNS HTML")
 
 test(function() {
   var el = document.createElementNS("http://www.example.com/", "foo:div");
   var c = el.cloneNode();
-  check_copy(el, c, Element);
+  check_copy(el, c, {name: "Element"});
 }, "createElementNS non-HTML")
 
 test(function() {
@@ -279,7 +286,7 @@ test(function() {
 test(function() {
     var doc = document.implementation.createDocument(null, null);
     var copy = doc.cloneNode();
-    check_copy(doc, copy, Document);
+    check_document_copy(doc, copy, Document);
     assert_equals(doc.charset, "UTF-8", "charset value");
     assert_equals(doc.charset, copy.charset, "charset equality");
     assert_equals(doc.contentType, "application/xml", "contentType value");
@@ -293,7 +300,7 @@ test(function() {
 test(function() {
     var html = document.implementation.createHTMLDocument("title");
     var copy = html.cloneNode();
-    check_copy(html, copy, Document);
+    check_document_copy(html, copy, Document);
     assert_equals(copy.title, "", "title value");
 }, "implementation.createHTMLDocument");
 

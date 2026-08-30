@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8">
+<title>ruby-position: inter-character, tones</title>
+<meta name="assert" content="ruby-position:intercharacter will make zhuyin non-neutral tone marks appear in the correct relative positions alongside the zhuyin characters in horizontal text.">
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="http://www.w3.org/TR/css-ruby-1/#rubypos">
+<link rel="help" href="https://drafts.csswg.org/css-ruby-1/#rubypos">
+<style type="text/css">
+.test { margin: 20px;  padding: 40px; font-size: 110px; }
+p {margin-top: 0; }
+rt { color: blue; font-size: 30%; }
+</style>
+<style type="text/css">/* this is the test */
+ruby { ruby-position: inter-character; }
+</style>
+</head>
+<body>
+<p class="instructions">Test passes if the tone marks appear in the locations indicated in the images without exceeding the height of the base character.</p>
+<div class="test" lang="zh-hant">
+<p><ruby>哦<rt>ㄛˊ</rt>我<rt>ㄨㄛˇ</rt>嘴<rt>ㄗㄨㄟˇ</rt></ruby></p>
+<p><img src="support/tones-1.png" alt=""/> <img src="support/tones-2.png" alt=""/> <img src="support/tones-3.png" alt=""/></p>
+</div>
+<!-- Notes:
+-->
+</body>
+</html>

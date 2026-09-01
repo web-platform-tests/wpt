@@ -1,0 +1,101 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>
+  Credential Management: origin-bound credentials and opaque origins
+</title>
+<link
+  rel="help"
+  href="https://w3c.github.io/webappsec-credential-management/#algorithm-request"
+/>
+<link
+  rel="help"
+  href="https://w3c.github.io/webappsec-credential-management/#algorithm-create"
+/>
+<link
+  rel="help"
+  href="https://w3c.github.io/webappsec-credential-management/#algorithm-store"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body></body>
+<script>
+  const SUPPORT = "/credential-management/support/";
+
+  // PasswordCredential is origin bound, so get(), create() and store() must all
+  // reject with SecurityError when the calling document has an opaque origin.
+
+  function awaitReport(id) {
+    return new Promise((resolve) => {
+      addEventListener("message", function handler(event) {
+        if (event.data && event.data.id === id) {
+          removeEventListener("message", handler);
+          resolve(event.data);
+        }
+      });
+    });
+  }
+
+  function runInFrame(id, configure) {
+    const frame = document.createElement("iframe");
+    configure(frame, id);
+    document.body.appendChild(frame);
+    return awaitReport(id);
+  }
+
+  const OPAQUE = [
+    [
+      "sandboxed iframe",
+      (frame, id) => {
+        frame.sandbox = "allow-scripts";
+        frame.src = SUPPORT + "origin-bound-report.html?id=" + id;
+      },
+    ],
+    [
+      "iframe whose document has a Content-Security-Policy: sandbox header",
+      (frame, id) => {
+        frame.src = SUPPORT + "origin-bound-report-csp-sandbox.html?id=" + id;
+      },
+    ],
+  ];
+
+  for (const [label, configure] of OPAQUE) {
+    for (const operation of ["get", "create", "store"]) {
+      promise_test(async () => {
+        const report = await runInFrame(
+          `opaque-${operation}-${label}`,
+          configure
+        );
+        assert_equals(report.origin, "null", "expected an opaque origin");
+        assert_equals(
+          report[operation],
+          "SecurityError",
+          `${operation}() from an opaque origin must reject with SecurityError`
+        );
+      }, `${operation}() with an origin-bound credential from an opaque origin (${label}) rejects with SecurityError`);
+    }
+  }
+
+  // A document that is sandboxed but keeps its origin must not be caught by the
+  // opaque-origin check.
+  for (const operation of ["get", "create", "store"]) {
+    promise_test(async () => {
+      const report = await runInFrame(
+        `nonopaque-${operation}`,
+        (frame, id) => {
+          frame.sandbox = "allow-scripts allow-same-origin";
+          frame.src = SUPPORT + "origin-bound-report.html?id=" + id;
+        }
+      );
+      assert_not_equals(
+        report.origin,
+        "null",
+        "expected a normal (non-opaque) origin"
+      );
+      assert_not_equals(
+        report[operation],
+        "SecurityError",
+        `${operation}() from a non-opaque origin must not be rejected as opaque`
+      );
+    }, `${operation}() with an origin-bound credential from a non-opaque origin (sandboxed iframe with allow-same-origin) is not rejected as opaque`);
+  }
+</script>

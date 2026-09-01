@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/trusted-types/support/csp-violations.js"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script>
+      const container = document.getElementById("container");
+
+      function createAttachedElement() {
+        const d = document.createElement("div");
+        container.appendChild(d);
+        return d;
+      }
+
+      function createShadowRoot() {
+        const host = document.createElement("div");
+        container.appendChild(host);
+        return host.attachShadow({ mode: "open" });
+      }
+
+      const testCases = [
+        {
+          target: "Element",
+          method: "streamHTML",
+          createReceiver: createAttachedElement,
+        },
+        {
+          target: "Element",
+          method: "streamAppendHTML",
+          createReceiver: createAttachedElement,
+        },
+        {
+          target: "Element",
+          method: "streamPrependHTML",
+          createReceiver: createAttachedElement,
+        },
+        {
+          target: "ShadowRoot",
+          method: "streamHTML",
+          createReceiver: createShadowRoot,
+        },
+        {
+          target: "ShadowRoot",
+          method: "streamAppendHTML",
+          createReceiver: createShadowRoot,
+        },
+        {
+          target: "ShadowRoot",
+          method: "streamPrependHTML",
+          createReceiver: createShadowRoot,
+        },
+        {
+          target: "ChildNode",
+          method: "streamBeforeHTML",
+          createReceiver: createAttachedElement,
+        },
+        {
+          target: "ChildNode",
+          method: "streamAfterHTML",
+          createReceiver: createAttachedElement,
+        },
+        {
+          target: "ChildNode",
+          method: "streamReplaceWithHTML",
+          createReceiver: createAttachedElement,
+        },
+      ];
+
+      for (const testCase of testCases) {
+        promise_test(async (t) => {
+          t.add_cleanup(() => container.replaceChildren());
+          await no_trusted_type_violation_for(async () => {
+            const receiver = testCase.createReceiver();
+            const stream = receiver[testCase.method]();
+            assert_true(stream instanceof WritableStream);
+            const writer = stream.getWriter();
+            await writer.write("<p>safe text</p>");
+            await writer.close();
+          });
+        }, `${testCase.target} ${testCase.method} in TT report-only mode succeeds without violation report`);
+
+        const unsafeMethod = testCase.method + "Unsafe";
+        const expectedSink = `${testCase.target} ${unsafeMethod}`;
+
+        promise_test(async (t) => {
+          t.add_cleanup(() => container.replaceChildren());
+          let receiver;
+          const violation = await trusted_type_violation_without_exception_for(async () => {
+            receiver = testCase.createReceiver();
+            const stream = receiver[unsafeMethod]();
+            assert_true(stream instanceof WritableStream);
+            const writer = stream.getWriter();
+            await writer.write("<span id='report_only_test'>content</span>");
+            await writer.close();
+          });
+
+          const root = receiver instanceof ShadowRoot ? receiver : container;
+          assert_not_equals(root.querySelector("#report_only_test"), null, "Content should be parsed into DOM in report-only mode");
+
+          assert_equals(violation.disposition, "report", "Violation disposition should be 'report'");
+          assert_equals(violation.effectiveDirective, "require-trusted-types-for", "effectiveDirective must be 'require-trusted-types-for'");
+          assert_equals(violation.violatedDirective, "require-trusted-types-for", "violatedDirective must be 'require-trusted-types-for'");
+          assert_equals(violation.blockedURI, "trusted-types-sink", "blockedURI must be 'trusted-types-sink'");
+          assert_true(violation.sample.startsWith(`${expectedSink}|`), `sample '${violation.sample}' should start with '${expectedSink}|'`);
+        }, `${testCase.target} ${unsafeMethod} in TT report-only mode returns WritableStream and reports securitypolicyviolation with correct metadata`);
+      }
+    </script>
+  </body>
+</html>

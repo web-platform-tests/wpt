@@ -38,6 +38,7 @@
         "streamPrependHTMLUnsafe",
         "streamBeforeHTMLUnsafe",
         "streamAfterHTMLUnsafe",
+        "streamReplaceWithHTMLUnsafe",
       ];
 
       for (const method of methods) {
@@ -89,12 +90,12 @@
           );
           await writer.close();
           assert_equals(
-            d.parentNode.querySelector("#forbidden"),
+            container.querySelector("#forbidden"),
             null,
             "span should be removed",
           );
           assert_not_equals(
-            d.parentNode.querySelector("#allowed"),
+            container.querySelector("#allowed"),
             null,
             "div should be present",
           );

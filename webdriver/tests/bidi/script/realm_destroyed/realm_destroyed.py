@@ -337,6 +337,232 @@ async def test_shared_worker(
     remove_realm_destroyed_listener()
 
 
+async def test_dedicated_worker_self_close(
+    bidi_session,
+    subscribe_events,
+    top_context,
+    wait_for_bidi_events,
+    inline,
+):
+    # A worker that calls close() on itself reaches the end of its lifecycle,
+    # which destroys its event loop just like script.terminate() does.
+    await subscribe_events(events=[REALM_CREATED_EVENT, REALM_DESTROYED_EVENT])
+
+    created_events = []
+    destroyed_events = []
+
+    async def on_realm_created_event(method, data):
+        if data["type"] == "dedicated-worker":
+            created_events.append(data)
+
+    async def on_realm_destroyed_event(method, data):
+        if len(created_events) > 0 and data["realm"] == created_events[0]["realm"]:
+            destroyed_events.append(data)
+
+    remove_realm_created_listener = bidi_session.add_event_listener(
+        REALM_CREATED_EVENT, on_realm_created_event
+    )
+    remove_realm_destroyed_listener = bidi_session.add_event_listener(
+        REALM_DESTROYED_EVENT, on_realm_destroyed_event
+    )
+
+    worker_url = inline("setTimeout(() => close(), 100)", doctype="js")
+    url = inline(f"<script>const worker = new Worker('{worker_url}');</script>")
+    await bidi_session.browsing_context.navigate(
+        url=url, context=top_context["context"], wait="complete"
+    )
+
+    await wait_for_bidi_events(created_events, 1)
+    await wait_for_bidi_events(destroyed_events, 1)
+
+    assert len(created_events) == 1
+    assert len(destroyed_events) == 1
+    assert destroyed_events[0]["realm"] == created_events[0]["realm"]
+
+    remove_realm_created_listener()
+    remove_realm_destroyed_listener()
+
+
+async def test_dedicated_worker_owner_navigates(
+    bidi_session,
+    subscribe_events,
+    new_tab,
+    wait_for_bidi_events,
+    inline,
+):
+    # Navigating the owning document away leaves the worker without an owner,
+    # which terminates it and destroys its realm.
+    await subscribe_events(events=[REALM_CREATED_EVENT, REALM_DESTROYED_EVENT])
+
+    created_events = []
+    destroyed_events = []
+
+    async def on_realm_created_event(method, data):
+        if data["type"] == "dedicated-worker":
+            created_events.append(data)
+
+    async def on_realm_destroyed_event(method, data):
+        if len(created_events) > 0 and data["realm"] == created_events[0]["realm"]:
+            destroyed_events.append(data)
+
+    remove_realm_created_listener = bidi_session.add_event_listener(
+        REALM_CREATED_EVENT, on_realm_created_event
+    )
+    remove_realm_destroyed_listener = bidi_session.add_event_listener(
+        REALM_DESTROYED_EVENT, on_realm_destroyed_event
+    )
+
+    worker_url = inline("setInterval(()=>{}, 1)", doctype="js")
+    url = inline(f"<script>const worker = new Worker('{worker_url}');</script>")
+    await bidi_session.browsing_context.navigate(
+        url=url, context=new_tab["context"], wait="complete"
+    )
+
+    await wait_for_bidi_events(created_events, 1)
+
+    await bidi_session.browsing_context.navigate(
+        url=inline("<div>foo</div>"), context=new_tab["context"], wait="complete"
+    )
+
+    await wait_for_bidi_events(destroyed_events, 1)
+
+    assert len(created_events) == 1
+    assert len(destroyed_events) == 1
+    assert destroyed_events[0]["realm"] == created_events[0]["realm"]
+
+    remove_realm_created_listener()
+    remove_realm_destroyed_listener()
+
+
+async def test_dedicated_worker_close_context(
+    bidi_session,
+    subscribe_events,
+    new_tab,
+    wait_for_bidi_events,
+    inline,
+):
+    # Closing the owning browsing context also terminates the worker.
+    await subscribe_events(events=[REALM_CREATED_EVENT, REALM_DESTROYED_EVENT])
+
+    created_events = []
+    destroyed_events = []
+
+    async def on_realm_created_event(method, data):
+        if data["type"] == "dedicated-worker":
+            created_events.append(data)
+
+    async def on_realm_destroyed_event(method, data):
+        if len(created_events) > 0 and data["realm"] == created_events[0]["realm"]:
+            destroyed_events.append(data)
+
+    remove_realm_created_listener = bidi_session.add_event_listener(
+        REALM_CREATED_EVENT, on_realm_created_event
+    )
+    remove_realm_destroyed_listener = bidi_session.add_event_listener(
+        REALM_DESTROYED_EVENT, on_realm_destroyed_event
+    )
+
+    worker_url = inline("setInterval(()=>{}, 1)", doctype="js")
+    url = inline(f"<script>const worker = new Worker('{worker_url}');</script>")
+    await bidi_session.browsing_context.navigate(
+        url=url, context=new_tab["context"], wait="complete"
+    )
+
+    await wait_for_bidi_events(created_events, 1)
+
+    await bidi_session.browsing_context.close(context=new_tab["context"])
+
+    await wait_for_bidi_events(destroyed_events, 1)
+
+    assert len(created_events) == 1
+    assert len(destroyed_events) == 1
+    assert destroyed_events[0]["realm"] == created_events[0]["realm"]
+
+    remove_realm_created_listener()
+    remove_realm_destroyed_listener()
+
+
+async def test_nested_dedicated_worker(
+    bidi_session,
+    subscribe_events,
+    top_context,
+    wait_for_bidi_events,
+    inline,
+):
+    # Terminating the outer worker destroys the event loop of the nested worker
+    # it owns as well, so both realms have to be announced as destroyed.
+    await subscribe_events(events=[REALM_CREATED_EVENT, REALM_DESTROYED_EVENT])
+
+    nested_worker_url = inline(
+        """
+        postMessage('ready');
+        setInterval(()=>{}, 1);
+        """,
+        doctype="js",
+    )
+    worker_url = inline(
+        f"""
+        const nested = new Worker('{nested_worker_url}');
+        nested.onmessage = () => postMessage('ready');
+        setInterval(()=>{{}}, 1);
+        """,
+        doctype="js",
+    )
+
+    created_events = []
+    # Maps the realm id of each worker realm to the url of its script, so that
+    # the realmDestroyed listener can ignore the document realms.
+    worker_realms = {}
+    destroyed_realm_ids = []
+
+    async def on_realm_created_event(method, data):
+        if data.get("origin") in [worker_url, nested_worker_url]:
+            created_events.append(data)
+            worker_realms[data["realm"]] = data["origin"]
+
+    async def on_realm_destroyed_event(method, data):
+        if data["realm"] in worker_realms:
+            destroyed_realm_ids.append(data["realm"])
+
+    remove_realm_created_listener = bidi_session.add_event_listener(
+        REALM_CREATED_EVENT, on_realm_created_event
+    )
+    remove_realm_destroyed_listener = bidi_session.add_event_listener(
+        REALM_DESTROYED_EVENT, on_realm_destroyed_event
+    )
+
+    # The outer worker only reports back once the nested worker has actually
+    # started, so terminating cannot race with the nested realm creation.
+    url = inline(
+        f"""<script>
+        const worker = new Worker('{worker_url}');
+        worker.onmessage = () => worker.terminate();
+    </script>"""
+    )
+    await bidi_session.browsing_context.navigate(
+        url=url, context=top_context["context"], wait="complete"
+    )
+
+    await wait_for_bidi_events(created_events, 2)
+
+    worker_realm = next(
+        event["realm"] for event in created_events if event["origin"] == worker_url
+    )
+    nested_worker_realm = next(
+        event["realm"]
+        for event in created_events
+        if event["origin"] == nested_worker_url
+    )
+
+    await wait_for_bidi_events(destroyed_realm_ids, 2)
+
+    assert worker_realm in destroyed_realm_ids
+    assert nested_worker_realm in destroyed_realm_ids
+
+    remove_realm_created_listener()
+    remove_realm_destroyed_listener()
+
+
 async def test_dedicated_worker_subscribe_to_one_context(
     bidi_session,
     subscribe_events,

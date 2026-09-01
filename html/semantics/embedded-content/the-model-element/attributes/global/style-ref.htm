@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="help"
+      href="https://html.spec.whatwg.org/multipage/embedded-content-other.html#the-model-element"
+    />
+    <link rel="match" href="style-ref.htm" />
+    <title>Ref test for model's support of the style attribute</title>
+
+    <style>
+      model {
+        background-color: red;
+      }
+    </style>
+  </head>
+
+  <body>
+    <model width="200" height="200">
+      <source src="../../resources/chromeball.usdz" type="model/vnd.usdz+zip" />
+      <source src="../../resources/chromeball.glb" type="model/gltf-binary" />
+    </model>
+  </body>
+</html>

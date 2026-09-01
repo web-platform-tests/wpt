@@ -1,0 +1,33 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>
+  Credential Management: a top-level sandboxed page with allow-same-origin is
+  not treated as opaque
+</title>
+<link
+  rel="help"
+  href="https://w3c.github.io/webappsec-credential-management/#algorithm-request"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    // Served with `Content-Security-Policy: sandbox allow-scripts allow-same-origin`
+    // (see the .headers file): sandboxed, but the page keeps its real origin, so it
+    // is not opaque and the opaque-origin check must not fire.
+    promise_test(async (t) => {
+      assert_implements(self.PasswordCredential, "PasswordCredential");
+      let name = "resolved";
+      try {
+        await navigator.credentials.get({ password: true });
+      } catch (error) {
+        name = error.name;
+      }
+      assert_not_equals(
+        name,
+        "SecurityError",
+        "a sandboxed top-level page that keeps its origin must not be rejected as opaque"
+      );
+    }, "get() from a top-level sandboxed page with allow-same-origin is not rejected as opaque");
+  </script>
+</body>

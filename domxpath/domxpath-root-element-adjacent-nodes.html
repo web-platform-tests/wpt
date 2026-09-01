@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test DOM XPath Behavior with Root Element Adjacent Nodes</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+  <div id="root1">Root Element 1</div>
+  <div id="root2">Root Element 2</div>
+
+  <script>
+    test(function() {
+      // XPath expression to find the adjacent node of the first root element
+      var xpathExpression = "/html/body/div[1]/following-sibling::div[1]";
+
+      // Evaluate the XPath expression
+      var result = document.evaluate(xpathExpression, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+
+      // Get the matched node
+      var adjacentNode = result.singleNodeValue;
+
+      // Assert that the matched node is the second root element
+      assert_equals(adjacentNode.id, "root2", "Adjacent node should be the second root element");
+    });
+  </script>
+</body>
+</html>

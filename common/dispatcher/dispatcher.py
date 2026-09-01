@@ -4,7 +4,7 @@ from wptserve.utils import isomorphic_decode
 # A server used to store and retrieve arbitrary data.
 # This is used by: ./dispatcher.js
 def main(request, response):
-    # This server is configured so that is accept to receive any requests and
+    # This server is configured to accept all requests and
     # any cookies the web browser is willing to send.
     response.headers.set(b"Access-Control-Allow-Credentials", b"true")
     response.headers.set(b'Access-Control-Allow-Methods', b'OPTIONS, GET, POST')
@@ -24,7 +24,7 @@ def main(request, response):
     stash = request.server.stash;
 
     # The stash is accessed concurrently by many clients. A lock is used to
-    # avoid unterleaved read/write from different clients.
+    # avoid interleaved read/write from different clients.
     with stash.lock:
         queue = stash.take(uuid, '/common/dispatcher') or [];
 

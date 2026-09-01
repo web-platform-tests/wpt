@@ -206,7 +206,7 @@ state.
 
 ### 2.6 API titles
 
-The API titles are used to display a more human readible representation of an
+The API titles are used to display a more human readable representation of an
 API that tests are available for. Using the parameter it is possible to assign
 a name to an API subdirectory.
 

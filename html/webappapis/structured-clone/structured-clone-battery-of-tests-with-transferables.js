@@ -44,6 +44,19 @@ structuredCloneBatteryOfTests.push({
 });
 
 structuredCloneBatteryOfTests.push({
+  description: 'An immutable ArrayBuffer cannot be transferred',
+  async f(runner, t) {
+    const buffer = new ArrayBuffer().transferToImmutable();
+    await runner.structuredClone(buffer, [buffer]);
+    await promise_rejects_dom(
+      t,
+      "DataCloneError",
+      runner.structuredClone(buffer, [buffer])
+    );
+  }
+});
+
+structuredCloneBatteryOfTests.push({
   description: 'A detached ArrayBuffer cannot be transferred',
   async f(runner, t) {
     const buffer = new ArrayBuffer();

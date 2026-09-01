@@ -386,6 +386,7 @@ function compare_ArrayBuffer(actual, input) {
   assert_equals(actual.maxByteLength, input.maxByteLength, 'maxByteLength');
   assert_equals(actual.resizable, input.resizable, 'resizable');
   assert_equals(actual.growable, input.growable, 'growable');
+  assert_equals(actual.immutable, input.immutable, 'immutable');
 }
 
 function compare_ArrayBufferView(view) {
@@ -684,6 +685,15 @@ check(
   () => {
     const ab = new ArrayBuffer(16, { maxByteLength: 1024 });
     assert_true(ab.resizable);
+    return ab;
+  },
+  compare_ArrayBuffer);
+
+check(
+  'Immutable ArrayBuffer',
+  () => {
+    const ab = new ArrayBuffer(16).transferToImmutable();
+    assert_true(ab.immutable);
     return ab;
   },
   compare_ArrayBuffer);

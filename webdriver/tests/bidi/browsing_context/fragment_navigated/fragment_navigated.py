@@ -58,7 +58,7 @@ async def test_subscribe(bidi_session, subscribe_events, url, new_tab, wait_for_
         {
             "context": new_tab["context"],
             "url": target_url,
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {}),
+            "userContext": new_tab["userContext"],
         }
     )
 
@@ -84,7 +84,7 @@ async def test_timestamp(bidi_session, current_time, subscribe_events, url, new_
         {
             "context": new_tab["context"],
             "timestamp": int_interval(time_start, time_end),
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {}),
+            "userContext": new_tab["userContext"],
         }
     )
 
@@ -111,7 +111,7 @@ async def test_navigation_id(
             'navigation': result["navigation"],
             'timestamp': any_int,
             'url': target_url,
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {}),
+            "userContext": new_tab["userContext"],
         },
         event,
     )
@@ -133,7 +133,7 @@ async def test_url_with_base_tag(bidi_session, subscribe_events, inline, new_tab
         {
             'context': new_tab["context"],
             'url': target_url,
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {}),
+            "userContext": new_tab["userContext"],
         },
         event,
     )
@@ -179,7 +179,7 @@ async def test_iframe(
             'context': child_info["context"],
             'timestamp': any_int,
             'url': target_url,
-            **({"userContext": child_info["userContext"]} if "userContext" in event else {}),
+            "userContext": child_info["userContext"],
         },
         event,
     )
@@ -230,7 +230,7 @@ async def test_document_location(
             'context': target_context,
             'timestamp': any_int,
             'url': target_url,
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {}),
+            "userContext": new_tab["userContext"],
         },
         event,
     )
@@ -268,7 +268,7 @@ async def test_browsing_context_navigate(
             'context': target_context,
             'timestamp': any_int,
             'url': target_url,
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {}),
+            "userContext": new_tab["userContext"],
         },
         event,
     )

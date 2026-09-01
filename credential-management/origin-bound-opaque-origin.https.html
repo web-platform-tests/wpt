@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset="utf-8" />
 <title>
-  Credential Management: origin-bound credentials and opaque origins
+  Credential Management: PasswordCredential and opaque origins
 </title>
 <link
   rel="help"
@@ -24,22 +24,36 @@
   // PasswordCredential is origin bound, so get(), create() and store() must all
   // reject with SecurityError when the calling document has an opaque origin.
 
-  function awaitReport(id) {
-    return new Promise((resolve) => {
+  function runInFrame(test, id, configure) {
+    const frame = document.createElement("iframe");
+    configure(frame, id);
+    const report = new Promise((resolve) => {
       addEventListener("message", function handler(event) {
         if (event.data && event.data.id === id) {
           removeEventListener("message", handler);
           resolve(event.data);
         }
       });
+      frame.addEventListener("error", () =>
+        resolve({ id, error: "the support frame failed to load" })
+      );
     });
+    test.add_cleanup(() => frame.remove());
+    document.body.appendChild(frame);
+    return report;
   }
 
-  function runInFrame(id, configure) {
-    const frame = document.createElement("iframe");
-    configure(frame, id);
-    document.body.appendChild(frame);
-    return awaitReport(id);
+  // A frame that never reports leaves `report` pending and the subtest times
+  // out with no explanation, so surface the two ways that can happen.
+  function assertReported(report) {
+    assert_false(
+      "error" in report,
+      report.error || "the support frame did not report"
+    );
+    assert_true(
+      report.supported,
+      "PasswordCredential is not supported, so nothing was exercised"
+    );
   }
 
   const OPAQUE = [
@@ -60,32 +74,36 @@
 
   for (const [label, configure] of OPAQUE) {
     for (const operation of ["get", "create", "store"]) {
-      promise_test(async () => {
+      promise_test(async (t) => {
         const report = await runInFrame(
+          t,
           `opaque-${operation}-${label}`,
           configure
         );
+        assertReported(report);
         assert_equals(report.origin, "null", "expected an opaque origin");
         assert_equals(
           report[operation],
           "SecurityError",
           `${operation}() from an opaque origin must reject with SecurityError`
         );
-      }, `${operation}() with an origin-bound credential from an opaque origin (${label}) rejects with SecurityError`);
+      }, `${operation}() with a PasswordCredential from an opaque origin (${label}) rejects with SecurityError`);
     }
   }
 
   // A document that is sandboxed but keeps its origin must not be caught by the
   // opaque-origin check.
   for (const operation of ["get", "create", "store"]) {
-    promise_test(async () => {
+    promise_test(async (t) => {
       const report = await runInFrame(
+        t,
         `nonopaque-${operation}`,
         (frame, id) => {
           frame.sandbox = "allow-scripts allow-same-origin";
           frame.src = SUPPORT + "origin-bound-report.html?id=" + id;
         }
       );
+      assertReported(report);
       assert_not_equals(
         report.origin,
         "null",
@@ -96,6 +114,6 @@
         "SecurityError",
         `${operation}() from a non-opaque origin must not be rejected as opaque`
       );
-    }, `${operation}() with an origin-bound credential from a non-opaque origin (sandboxed iframe with allow-same-origin) is not rejected as opaque`);
+    }, `${operation}() with a PasswordCredential from a non-opaque origin (sandboxed iframe with allow-same-origin) is not rejected as opaque`);
   }
 </script>

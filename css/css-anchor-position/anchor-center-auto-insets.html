@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#anchor-center">
+<title>Tests the behavior of insets when 'anchor-center' is used.</title>
+<style>
+.container {
+  writing-mode: vertical-rl;
+  width: 100px;
+  height: 100px;
+  border: solid 3px;
+  position: relative;
+  margin: 50px;
+}
+
+.anchor {
+  anchor-name: --anchor;
+  position: relative;
+  width: 50px;
+  height: 50px;
+  right: 10px;
+  top: 40px;
+  background: lime;
+}
+
+.target {
+  writing-mode: horizontal-tb;
+  position: absolute;
+  background: cyan;
+  align-self: anchor-center;
+  height: 20px;
+}
+/* used to test the available-size given to the element */
+.target::after {
+  color: transparent;
+  content: 'a a a a a a a a a a a a a a a a a a';
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+
+<body onload="checkLayout('.target')">
+
+<!-- target has no default anchor box and hence 'anchor-center' has no effect on inset properties -->
+<div class="container">
+  <div class="anchor"></div>
+  <div class="target" data-expected-width="50" data-offset-x="0"></div>
+</div>

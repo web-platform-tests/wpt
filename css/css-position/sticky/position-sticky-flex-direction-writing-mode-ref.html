@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<title>position:sticky elements should work correctly with flex-direction</title>
+
+<style>
+.grid {
+  display: grid;
+  gap: 30px;
+  grid-template-columns: repeat(6, 200px);
+  padding: 30px;
+}
+
+.list {
+  max-height: 200px;
+  max-width: 200px;
+  height: 200px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.list-rl {
+  max-height: 200px;
+  max-width: 192px;
+  height: 200px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  writing-mode: vertical-rl;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+}
+
+
+li {
+  padding: 3px 5px;
+  background: #c3c3c3;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+.sticky {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: lightgreen;
+}
+</style>
+
+<p>You should see two green list items. There should be no red list item.</p>
+
+<div class="grid">
+  <ul class="list">
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <ul>
+      <li class="sticky"></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+  </ul>
+
+  <ul class="list-rl">
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <ul>
+      <li class="sticky"></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+  </ul>
+
+</div>

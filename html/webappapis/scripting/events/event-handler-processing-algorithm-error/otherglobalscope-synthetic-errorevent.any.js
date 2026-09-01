@@ -1,5 +1,6 @@
+// META: global=worker,shadowrealm
+
 "use strict";
-importScripts("/resources/testharness.js");
 
 setup({ allow_uncaught_exception: true });
 
@@ -17,7 +18,7 @@ promise_test(t => {
   self.dispatchEvent(new ErrorEvent("error", { cancelable: true }));
 
   return promise;
-}, "error event is weird (return true cancels; many args) on WorkerGlobalScope, with a synthetic ErrorEvent");
+}, "error event is weird (return true cancels; many args) on non-Window global scope, with a synthetic ErrorEvent");
 
 promise_test(t => {
   const theError = { the: "error object" };
@@ -44,6 +45,4 @@ promise_test(t => {
   }));
 
   return promise;
-}, "error event has the right 5 args on WorkerGlobalScope, with a synthetic ErrorEvent");
-
-done();
+}, "error event has the right 5 args on non-Window global scope, with a synthetic ErrorEvent");

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>EventTarget in Detached iframe</title>
+<link rel="help" href="https://dom.spec.whatwg.org/#concept-event-listener-inner-invoke">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<script>
+"use strict";
+
+async function addFrameAndWaitForLoad(srcdoc) {
+  const frame = document.createElement('iframe');
+  frame.srcdoc = srcdoc;
+  await new Promise((resolve) => {
+    frame.addEventListener('load', resolve);
+    document.body.appendChild(frame);
+  });
+  return frame;
+}
+
+for (let eventType of ["inner", "outer"]) {
+  promise_test(async t => {
+    const frame = await addFrameAndWaitForLoad(`<script>
+      window.parent.innerEventTarget = new EventTarget();
+      window.parent.innerEvent = new Event('event');
+    <\/script>`);
+
+    let fireCount = 0;
+    window.innerEventTarget.addEventListener('event', () => {
+      ++fireCount;
+    });
+
+    const event = eventType == "inner" ? window.innerEvent : new Event('event');
+    window.innerEventTarget.dispatchEvent(event);
+    frame.remove();
+    window.innerEventTarget.dispatchEvent(event);
+
+    assert_equals(fireCount, 1, `Expected one listener to run for type "${eventType}"`);
+  }, `Event handlers for EventTargets in detached iframes do not fire with ${eventType} iframe events`);
+}
+
+promise_test(async t => {
+  const frame = await addFrameAndWaitForLoad(`<script>
+    window.parent.innerEventTarget = new EventTarget();
+  <\/script>`);
+
+  let fireCount = 0;
+  window.innerEventTarget.addEventListener('event', () => {
+    ++fireCount;
+    frame.remove();
+  });
+  window.innerEventTarget.addEventListener('event', () => {
+    ++fireCount;
+  });
+
+  window.innerEventTarget.dispatchEvent(new Event('event'));
+
+  assert_equals(fireCount, 1);
+}, "Event listeners do not run after detaching an EventTarget's iframe during event dispatch");
+
+</script>

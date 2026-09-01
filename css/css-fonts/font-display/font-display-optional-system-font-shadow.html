@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>font-display: optional must shadow system font of same name in failure period</title>
+<link rel="author" title="ChangSeok Oh" href="mailto:changseok@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-fonts-4/#font-display-desc">
+<link rel="help" href="https://drafts.csswg.org/css-fonts-4/#font-family-desc">
+<link rel="match" href="font-display-optional-system-font-shadow-ref.html">
+<link rel="assert" title="An @font-face with font-display: optional in failure period must not fall back to a system font of the same family name.">
+<style>
+@font-face {
+  font-family: Ahem;
+  src: url('/fonts/Ahem.ttf?pipe=trickle(d0.2)');
+  font-display: optional;
+}
+#target {
+  font-family: Ahem, monospace;
+  font-size: 20px;
+}
+</style>
+<div id="target">Test</div>
+<script>
+// Wait for the font resource to finish loading. By then:
+// - Re-render with the failure period check applied.
+// - Removing reftest-wait here captures that re-rendered state.
+document.fonts.ready.then(() => {
+  document.documentElement.classList.remove("reftest-wait");
+});
+</script>
+</html>

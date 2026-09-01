@@ -1,0 +1,14 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>window.open() without a browsing context</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<iframe></iframe>
+<script>
+test(() => {
+  const iframe = document.querySelector('iframe');
+  const win = iframe.contentWindow;
+  iframe.remove();
+  assert_equals(win.open(), null);
+});
+</script>

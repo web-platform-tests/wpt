@@ -1,0 +1,25 @@
+<!doctype html>
+<title>complete should be false for invisible lazy-loading image with srcset</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#update-the-image-data">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=2016233">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<img id="nonLazy" src="/images/green-256x256.png">
+<img id="lazy" loading="lazy" style="display:none">
+<script>
+promise_test(async t => {
+  await new Promise(resolve => {
+    addEventListener("load", resolve);
+  });
+  let loadEventFired = false;
+  lazy.addEventListener('load', () => {
+    loadEventFired = true;
+  });
+  lazy.srcset = nonLazy.src;
+  assert_false(lazy.complete, "complete should not be set to true until lazy-loading image comes into view.");
+  // wait for load event (not) to fire
+  await new Promise(resolve => setTimeout(resolve));
+  assert_false(loadEventFired, "load event should not be fired until lazy-loading image comes into view.");
+});
+</script>

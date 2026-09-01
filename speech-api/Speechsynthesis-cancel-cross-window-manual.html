@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>speechSynthesis.cancel() from a different window</title>
+    <link rel="help" href="https://webaudio.github.io/web-speech-api/#tts-methods">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+      iframe  { display: none; }
+    </style>
+  </head>
+  <body>
+    <h3>speechSynthesis.cancel() called from a different frame</h3>
+
+    <p>
+      <b>Instructions:</b> Make sure your device volume is audible.
+      Click <b>"Start Test"</b>. You will hear speech begin.
+      After 1.5 seconds <code>cancel()</code> will be called from a hidden
+      iframe. When the verdict buttons appear, click <b>PASS</b> if speech
+      stopped mid-sentence, or <b>FAIL</b> if it continued to completion.
+    </p>
+
+    <button id="startButton">Start Test</button>
+    <div id="status"></div>
+
+    <iframe id="otherFrame" src="about:blank"></iframe>
+
+    <div id="verdict" style="display:none">
+      <p>Did speech stop immediately when the iframe called cancel()?</p>
+      <button id="passBtn">PASS &#8211; speech stopped immediately</button>
+      <button id="failBtn">FAIL &#8211; speech continued</button>
+    </div>
+
+    <div id="result"></div>
+    <div id="log"></div>
+    <div id="notes"></div>
+
+    <script>
+      var DELAY = 1500;
+
+      var SPEAKING_CHECK_DELAY = 500;
+
+      setup({ explicit_timeout: true });
+      var pendingTest = async_test(
+        "speechSynthesis.pending is false after cancel() called from a different frame"
+      );
+
+      var speakingTest = async_test(
+        "speechSynthesis.speaking is false after cancel() called from a different frame"
+      );
+
+      var audioStopsTest = async_test(
+        "audio output ceases immediately when cancel() is called from a different frame (manual)"
+      );
+
+      function setStatus(msg) {
+        document.getElementById("status").textContent = "Status: " + msg;
+      }
+
+      document.getElementById("passBtn").addEventListener("click",
+        audioStopsTest.step_func_done(function () {
+          document.getElementById("verdict").style.display = "none";
+          document.getElementById("result").textContent =
+            "Manual verdict recorded: PASS \u2013 speech stopped immediately.";
+        })
+      );
+
+      document.getElementById("failBtn").addEventListener("click",
+        audioStopsTest.step_func(function () {
+          assert_unreached(
+            "Audio output did not cease immediately after cancel() was " +
+            "called from a different frame."
+          );
+        })
+      );
+
+      document.getElementById("startButton").addEventListener("click", function () {
+        document.getElementById("startButton").disabled = true;
+        setStatus("Queuing utterances\u2026");
+
+        var u1 = new SpeechSynthesisUtterance(
+          "First utterance. Listen carefully. Speech must stop immediately when cancel is called from the other frame."
+        );
+        var u2 = new SpeechSynthesisUtterance(
+          "Second utterance. You should never hear this if cancel works correctly."
+        );
+        var u3 = new SpeechSynthesisUtterance(
+          "Third utterance. You should not hear this one either."
+        );
+
+        window.speechSynthesis.speak(u1);
+        window.speechSynthesis.speak(u2);
+        window.speechSynthesis.speak(u3);
+
+        pendingTest.step(function () {
+          assert_true(
+            window.speechSynthesis.pending,
+            "speechSynthesis.pending must be true after queuing multiple utterances"
+          );
+        });
+
+        u1.onstart = function () {
+          setStatus("Speech started. cancel() will fire in " + (DELAY / 1000) + "s\u2026");
+          setTimeout(doCancelFromFrame, DELAY);
+        };
+
+        u1.onerror = function (e) {
+          setStatus("Speech error \u2013 check TTS is enabled in OS settings.");
+        };
+      });
+
+      function doCancelFromFrame() {
+        setStatus("Calling cancel() from hidden iframe\u2026");
+
+        var frame = document.getElementById("otherFrame");
+
+        frame.contentWindow.parent.speechSynthesis.cancel();
+        pendingTest.step(function () {
+          assert_false(
+            window.speechSynthesis.pending,
+            "speechSynthesis.pending must be false after cancel() called from a different frame"
+          );
+        });
+        pendingTest.done();
+
+        setTimeout(function () {
+          speakingTest.step(function () {
+            assert_false(
+              window.speechSynthesis.speaking,
+              "speechSynthesis.speaking must be false after cancel() called from a different frame"
+            );
+          });
+          speakingTest.done();
+        }, SPEAKING_CHECK_DELAY);
+
+        setStatus("cancel() called from iframe. Please give your verdict:");
+        document.getElementById("verdict").style.display = "block";
+      }
+    </script>
+  </body>
+</html>

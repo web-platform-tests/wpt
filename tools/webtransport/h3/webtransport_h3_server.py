@@ -530,14 +530,23 @@ class WebTransportH3Server:
     :param logger: a Logger object for this server.
     """
 
-    def __init__(self, host: str, port: int, doc_root: str, cert_path: str,
-                 key_path: str, logger: Optional[logging.Logger]) -> None:
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        doc_root: str,
+        cert_path: str,
+        key_path: str,
+        logger: Optional[logging.Logger],
+    ) -> None:
         self.host = host
         self.port = port
         self.doc_root = doc_root
         self.cert_path = cert_path
         self.key_path = key_path
         self.started = False
+        self.loop = None
+        self._loop_ready = threading.Event()
         global _doc_root
         _doc_root = self.doc_root
         global _logger
@@ -546,12 +555,6 @@ class WebTransportH3Server:
 
     def start(self) -> None:
         """Start the server."""
-        self.server_thread = threading.Thread(
-            target=self._start_on_server_thread, daemon=True)
-        self.server_thread.start()
-        self.started = True
-
-    def _start_on_server_thread(self) -> None:
         secrets_log_file = None
         if "SSLKEYLOGFILE" in os.environ:
             try:
@@ -574,41 +577,76 @@ class WebTransportH3Server:
                 max_datagram_frame_size=65536,
             )
 
-        _logger.info("Starting WebTransport over HTTP/3 server on %s:%s",
-                     self.host, self.port)
+        _logger.info(
+            "Starting WebTransport over HTTP/3 server on %s:%s", self.host, self.port
+        )
 
         configuration.load_cert_chain(Path(self.cert_path), Path(self.key_path))
 
         ticket_store = SessionTicketStore()
 
-        # On Windows, the default event loop is ProactorEventLoop but it
-        # doesn't seem to work when aioquic detects a connection loss.
-        # Use SelectorEventLoop to work around the problem.
-        if sys.platform == "win32":
-            asyncio.set_event_loop_policy(
-                asyncio.WindowsSelectorEventLoopPolicy())
-        self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
+        self.server_thread = threading.Thread(
+            target=self._run,
+            args=(configuration, ticket_store),
+            daemon=True,
+        )
+        self.server_thread.start()
+        self._loop_ready.wait()
+        if not self.server_thread.is_alive():
+            raise self._thread_exception
+        self.started = True
 
-        self.loop.run_until_complete(
-            serve(
-                self.host,
-                self.port,
-                configuration=configuration,
-                create_protocol=WebTransportH3Protocol,
-                session_ticket_fetcher=ticket_store.pop,
-                session_ticket_handler=ticket_store.add,
-            ))
-        self.loop.run_forever()
+    def _run(
+        self, configuration: QuicConfiguration, ticket_store: SessionTicketStore
+    ) -> None:
+        try:
+            # On Windows, the default event loop is ProactorEventLoop but it
+            # doesn't seem to work when aioquic detects a connection loss.
+            # Use SelectorEventLoop to work around the problem.
+            if sys.platform == "win32":
+                self.loop = asyncio.SelectorEventLoop()
+            else:
+                self.loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self.loop)
+            self._stop_event = asyncio.Event()
+
+            try:
+                self.loop.run_until_complete(
+                    self._serve_forever(configuration, ticket_store)
+                )
+            finally:
+                self.loop.run_until_complete(self.loop.shutdown_asyncgens())
+                self.loop.run_until_complete(self.loop.shutdown_default_executor())
+                self.loop.close()
+        except Exception as e:
+            _logger.error("_start_on_server_thread: %s", e)
+            self._thread_exception = e
+            self._loop_ready.set()
+
+    async def _serve_forever(
+        self, configuration: QuicConfiguration, ticket_store: SessionTicketStore
+    ) -> None:
+        await serve(
+            self.host,
+            self.port,
+            configuration=configuration,
+            create_protocol=WebTransportH3Protocol,
+            session_ticket_fetcher=ticket_store.pop,
+            session_ticket_handler=ticket_store.add,
+        )
+        self._loop_ready.set()
+        await self._stop_event.wait()
 
     def stop(self) -> None:
         """Stop the server."""
         if self.started:
-            asyncio.run_coroutine_threadsafe(self._stop_on_server_thread(),
-                                             self.loop)
+            if not self.server_thread.is_alive():
+                raise self._thread_exception
+            self.loop.call_soon_threadsafe(self._stop_event.set)
             self.server_thread.join()
-            _logger.info("Stopped WebTransport over HTTP/3 server on %s:%s",
-                         self.host, self.port)
+            _logger.info(
+                "Stopped WebTransport over HTTP/3 server on %s:%s", self.host, self.port
+            )
         self.started = False
 
     async def _stop_on_server_thread(self) -> None:
@@ -636,7 +674,9 @@ async def _connect_server_with_timeout(host: str, port: int, timeout: float) -> 
     return True
 
 
-def _close_unusable_writer(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+def _close_unusable_writer(
+    reader: asyncio.StreamReader, writer: asyncio.StreamWriter
+) -> None:
     # Starting in python3.11, `StreamWriter.__del__` implicitly `close()`s
     # itself [0], if it has not done so already. Because aioquic sometimes
     # models a unidirectional stream with a bidirectional transport [1], the
@@ -650,7 +690,9 @@ def _close_unusable_writer(reader: asyncio.StreamReader, writer: asyncio.StreamW
     # [0]: https://github.com/python/cpython/blob/3.11/Lib/asyncio/streams.py#L413
     # [1]: https://github.com/aiortc/aioquic/blob/1.2.0/src/aioquic/asyncio/protocol.py#L241
     stream_id = cast(QuicStreamAdapter, writer.transport).stream_id
-    if stream_is_unidirectional(stream_id) and not stream_is_client_initiated(stream_id):
+    if stream_is_unidirectional(stream_id) and not stream_is_client_initiated(
+        stream_id
+    ):
         with contextlib.suppress(ValueError):
             writer.close()
 
@@ -662,6 +704,7 @@ async def _connect_to_server(host: str, port: int) -> None:
         verify_mode=ssl.CERT_NONE,
     )
 
-    async with connect(host, port, configuration=configuration,
-                       stream_handler=_close_unusable_writer) as protocol:
+    async with connect(
+        host, port, configuration=configuration, stream_handler=_close_unusable_writer
+    ) as protocol:
         await protocol.ping()

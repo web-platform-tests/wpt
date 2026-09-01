@@ -21,8 +21,8 @@ function getNonMatchingDPR(target) {
   return target === 2 ? 1 : 2;
 }
 
-async function setDevicePixelRatio(value) {
-  await test_driver.bidi.browsing_context.set_viewport({
+function setDevicePixelRatio(test, value) {
+  return test_driver.bidi.browsing_context.set_viewport(test, {
     context: window,
     devicePixelRatio: value,
   });
@@ -30,8 +30,7 @@ async function setDevicePixelRatio(value) {
 
 promise_test(async t => {
   const targetDPR = getTargetDPR();
-  await setDevicePixelRatio(targetDPR);
-  t.add_cleanup(() => setDevicePixelRatio(null));
+  await setDevicePixelRatio(t, targetDPR);
   assert_equals(
     window.devicePixelRatio,
     targetDPR,
@@ -42,8 +41,7 @@ promise_test(async t => {
 promise_test(async t => {
   const targetDPR = getTargetDPR();
   const nonMatchingDPR = getNonMatchingDPR(targetDPR);
-  await setDevicePixelRatio(targetDPR);
-  t.add_cleanup(() => setDevicePixelRatio(null));
+  await setDevicePixelRatio(t, targetDPR);
   assert_true(
     matchMedia(`(resolution: ${targetDPR}dppx)`).matches,
     "The matching resolution media query should match after the override"

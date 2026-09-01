@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Test that transient activation is consumed</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<body>
+  <script>
+    async function clearRegistration() {
+      const reg = await navigator.serviceWorker.getRegistration(
+        "resources/simple_sw.js"
+      );
+      await reg.unregister();
+    }
+
+    promise_test(async (t) => {
+      const reg = await navigator.serviceWorker.register(
+        "resources/simple_sw.js"
+      );
+      t.add_cleanup(clearRegistration);
+      await reg.active;
+      await test_driver.bless("transient activation");
+
+      // consumes user activation
+      reg.pushManager.subscribe();
+
+      await promise_rejects_dom(
+        t,
+        "NotAllowedError",
+        reg.pushManager.subscribe()
+      );
+    }, `Subsequent calls to subscribe() consumes user activation`);
+  </script>
+</body>

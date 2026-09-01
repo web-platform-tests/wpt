@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Named access on the window object - id on non-HTML elements</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/nav-history-apis.html#named-access-on-the-window-object">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<svg id="parsed-svg"></svg>
+<math id="parsed-math"></math>
+<script>
+"use strict";
+
+const svgNamespace = "http://www.w3.org/2000/svg";
+const mathmlNamespace = "http://www.w3.org/1998/Math/MathML";
+const xmlNamespace = "http://www.w3.org/XML/1998/namespace";
+
+test(() => {
+  assert_equals(window["parsed-svg"], document.querySelector("svg"));
+  assert_equals(window["parsed-math"], document.querySelector("math"));
+}, "Parsed svg and math elements with an id are exposed");
+
+for (const [description, namespace, localName] of [
+  ["the SVG namespace", svgNamespace, "svg"],
+  ["the MathML namespace", mathmlNamespace, "math"],
+  ["a namespace other than HTML, SVG, and MathML", "urn:example:namespace", "element"],
+]) {
+  test(t => {
+    const element = document.createElementNS(namespace, localName);
+    const id = `created-${localName}`;
+    element.setAttribute("id", id);
+    document.body.append(element);
+    t.add_cleanup(() => element.remove());
+
+    assert_equals(window[id], element);
+  }, `An element in ${description} with an id is exposed`);
+}
+
+test(t => {
+  const div = document.createElement("div");
+  div.setAttribute("id", "multiple-matches");
+  const svg = document.createElementNS(svgNamespace, "svg");
+  svg.setAttribute("id", "multiple-matches");
+  document.body.append(div, svg);
+  t.add_cleanup(() => {
+    div.remove();
+    svg.remove();
+  });
+
+  assert_true(window["multiple-matches"] instanceof HTMLCollection);
+  assert_array_equals(window["multiple-matches"], [div, svg]);
+}, "Non-HTML elements are included in the HTMLCollection returned for multiple matches");
+
+test(t => {
+  const element = document.createElement("div");
+  element.setAttributeNS(xmlNamespace, "xml:id", "namespaced-id-attribute");
+  document.body.append(element);
+  t.add_cleanup(() => element.remove());
+
+  assert_false("namespaced-id-attribute" in window);
+}, "An id attribute in the XML namespace is not exposed");
+
+for (const localName of ["embed", "form", "img", "object"]) {
+  test(t => {
+    const element = document.createElementNS(svgNamespace, localName);
+    const name = `svg-${localName}-name`;
+    element.setAttribute("name", name);
+    document.body.append(element);
+    t.add_cleanup(() => element.remove());
+
+    assert_false(name in window);
+  }, `An element in the SVG namespace whose local name is ${localName} is not exposed by its name attribute`);
+}
+</script>

@@ -789,10 +789,12 @@
                  * WebDriver BiDi command.
                  *
                  * @example
-                 * await test_driver.bidi.browsing_context.set_viewport({
+                 * await test_driver.bidi.browsing_context.set_viewport(t, {
                  *     devicePixelRatio: 2
                  * });
                  *
+                 * @param {Test} test - The current testharness Test object used to register
+                 * cleanup.
                  * @param {object} params - Parameters for the command.
                  * @param {Context} [params.context] The optional browsing
                  * context to update. If omitted and `params.userContexts` is
@@ -807,10 +809,42 @@
                  * @returns {Promise<void>} Resolves when the viewport settings
                  * are successfully applied.
                  */
-                set_viewport: function(params) {
+                set_viewport: async function(test, params) {
                     assertBidiIsEnabled();
-                    return window.test_driver_internal.bidi.browsing_context
+                    // Validate before changing browser state so an invalid
+                    // call cannot leave an override without cleanup.
+                    if (!test || typeof test.add_cleanup !== "function") {
+                        throw new TypeError(
+                            "set_viewport requires a testharness Test object " +
+                            "as its first argument");
+                    }
+
+                    const cleanupParams = {};
+
+                    if (params.context !== undefined) {
+                        cleanupParams.context = params.context;
+                    } else if (params.userContexts !== undefined) {
+                        cleanupParams.userContexts = params.userContexts;
+                    }
+                    // Clear only non-null overrides set by this call.
+                    if (params.viewport !== undefined &&
+                        params.viewport !== null) {
+                        cleanupParams.viewport = null;
+                    }
+                    if (params.devicePixelRatio !== undefined &&
+                        params.devicePixelRatio !== null) {
+                        cleanupParams.devicePixelRatio = null;
+                    }
+
+                    await window.test_driver_internal.bidi.browsing_context
                         .set_viewport(params);
+
+                    if ("viewport" in cleanupParams ||
+                        "devicePixelRatio" in cleanupParams) {
+                        test.add_cleanup(() =>
+                            window.test_driver_internal.bidi.browsing_context
+                                .set_viewport(cleanupParams));
+                    }
                 },
             },
             /**

@@ -9,6 +9,7 @@ import pytest
 
 from typing import Optional
 from urllib.parse import urlencode
+from urllib.parse import urlunsplit
 
 
 BOILERPLATES = {
@@ -70,6 +71,17 @@ def configuration(full_configuration):
 @pytest.fixture(scope="session")
 def server_config(full_configuration):
     return full_configuration["wptserve"]
+
+
+@pytest.fixture
+def url(server_config):
+    def url(path, protocol="https", domain="", subdomain="", query="", fragment=""):
+        domain = server_config["domains"][domain][subdomain]
+        port = server_config["ports"][protocol][0]
+        host = "{0}:{1}".format(domain, port)
+        return urlunsplit((protocol, host, path, query, fragment))
+
+    return url
 
 
 @pytest.fixture

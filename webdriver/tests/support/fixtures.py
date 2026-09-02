@@ -1,8 +1,6 @@
 import pytest
 import webdriver
 
-from urllib.parse import urlunsplit
-
 from tests.support.helpers import is_wayland
 from tests.support.web_extension import EXTENSION_DATA
 from tests.support.http_request import HTTPRequest
@@ -68,17 +66,6 @@ def is_wayland_headful(configuration):
 @pytest.fixture
 def target_platform(configuration):
     return configuration["target_platform"]
-
-
-@pytest.fixture
-def url(server_config):
-    def url(path, protocol="https", domain="", subdomain="", query="", fragment=""):
-        domain = server_config["domains"][domain][subdomain]
-        port = server_config["ports"][protocol][0]
-        host = "{0}:{1}".format(domain, port)
-        return urlunsplit((protocol, host, path, query, fragment))
-
-    return url
 
 
 @pytest.fixture

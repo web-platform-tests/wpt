@@ -2,6 +2,11 @@
 // META: script=/common/utils.js
 // META: script=/common/get-host-info.sub.js
 // META: script=resources/utils.js
+// META: variant=?interop-2026
+// META: variant=?rest
+
+const rest = !new URLSearchParams(location.search).has("interop-2026");
+const interop2026 = !new URLSearchParams(location.search).has("rest");
 
 const { REMOTE_HOST } = get_host_info();
 const BASE_SCOPE = 'resources/basic.html?';
@@ -32,6 +37,8 @@ function awaitMessage(obj, id) {
     });
   });
 }
+
+if (interop2026) {
 
 promise_test(async t => {
   const scope = BASE_SCOPE + Math.random();
@@ -148,6 +155,10 @@ promise_test(async t => {
   assert_equals((await audioBroadcast).acceptEncoding, null, "Accept-Encoding should not be set for media");
 }, `Accept-Encoding should not appear in a service worker`);
 
+}
+
+if (rest) {
+
 promise_test(async t => {
   const scope = BASE_SCOPE + Math.random();
   await setupRegistration(t, scope);
@@ -224,3 +235,5 @@ promise_test(async t => {
 
   assert_true(counts_valid, `Opaque range request preloads were different for error and success`);
 }, `Opaque range preload successes and failures should be indistinguishable`);
+
+}

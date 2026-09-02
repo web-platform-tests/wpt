@@ -2,6 +2,11 @@
 // META: script=../resources/utils.js
 // META: script=/common/utils.js
 // META: script=/common/get-host-info.sub.js
+// META: variant=?interop-2026
+// META: variant=?rest
+
+const rest = !new URLSearchParams(location.search).has("interop-2026");
+const interop2026 = !new URLSearchParams(location.search).has("rest");
 
 function testUpload(desc, url, method, createBody, expectedBody) {
   const requestInit = {method};
@@ -31,6 +36,8 @@ function testUploadFailure(desc, url, method, createBody) {
 }
 
 const url = RESOURCES_DIR + "echo-content.py"
+
+if (interop2026) {
 
 testUpload("Fetch with PUT with body", url,
   "PUT",
@@ -122,6 +129,10 @@ testUploadFailure("Fetch with POST with ReadableStream containing Blob", url,
     }})
   });
 
+}
+
+if (rest) {
+
 promise_test(async (test) => {
   const resp = await fetch(
     "/fetch/connection-pool/resources/network-partition-key.py?"
@@ -133,7 +144,13 @@ promise_test(async (test) => {
   assert_equals(text, "ok. Request was sent 2 times. 2 connections were created.");
 }, "Fetch with POST with text body on 421 response should be retried once on new connection.");
 
+}
+
+if (interop2026) {
+
 promise_test(async (test) => {
   const body = new ReadableStream({start: c => c.close()});
   await promise_rejects_js(test, TypeError, fetch('/', {method: 'POST', body}));
 }, "Streaming upload shouldn't work on Http/1.1.");
+
+}

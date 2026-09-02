@@ -33,8 +33,11 @@ test(() => {
   const child = elementWithRegistry('span', registry);
   parent.append(child);
   assert_equals(child.customElementRegistry, registry);
-  assert_equals(parent.innerHTML, '<span scopedcustomelementregistry=""></span>');
-}, 'A scoped registry child of a global registry parent serializes the attribute');
+  const expected = '<span scopedcustomelementregistry=""></span>';
+  assert_equals(parent.innerHTML, expected);
+  assert_equals(parent.getHTML(), expected);
+  assert_equals(child.outerHTML, expected);
+}, 'Serialization entry points agree for a scoped registry boundary');
 
 test(() => {
   const parent = elementWithRegistry('div', null);
@@ -51,7 +54,17 @@ test(() => {
   parent.append(child);
   assert_equals(child.customElementRegistry, registry);
   assert_equals(parent.innerHTML, '<span></span>');
-}, 'A child using the same scoped registry as its parent does not serialize the attribute');
+  assert_equals(parent.getHTML(), '<span></span>');
+  assert_equals(child.outerHTML, '<span></span>');
+}, 'Serialization entry points omit a child using the same scoped registry as its parent');
+
+test(() => {
+  const parent = elementWithRegistry('div', null);
+  const child = elementWithRegistry('span', null);
+  parent.append(child);
+  assert_equals(child.customElementRegistry, null);
+  assert_equals(child.outerHTML, '<span></span>');
+}, 'outerHTML omits the attribute when a null registry matches its parent');
 
 test(() => {
   const parent = elementWithRegistry('div', new CustomElementRegistry());
@@ -103,6 +116,7 @@ test(() => {
   shadow.append(child);
   assert_equals(child.customElementRegistry, null);
   assert_equals(shadow.innerHTML, '<span></span>');
+  assert_equals(shadow.getHTML(), '<span></span>');
 }, 'A shadow tree child compares against its null registry ShadowRoot');
 
 test(() => {
@@ -111,8 +125,38 @@ test(() => {
   const child = elementWithRegistry('span', null);
   shadow.append(child);
   assert_equals(child.customElementRegistry, null);
-  assert_equals(shadow.innerHTML, '<span scopedcustomelementregistry=""></span>');
+  const expected = '<span scopedcustomelementregistry=""></span>';
+  assert_equals(shadow.innerHTML, expected);
+  assert_equals(shadow.getHTML(), expected);
 }, 'A null registry shadow tree child serializes a boundary from a global registry ShadowRoot');
+
+test(() => {
+  const registry = new CustomElementRegistry();
+  const host = elementWithRegistry('div', registry);
+  const shadow = host.attachShadow({mode: 'open', customElementRegistry: registry});
+  const child = elementWithRegistry('span', registry);
+  shadow.append(child);
+  assert_equals(child.customElementRegistry, registry);
+  assert_equals(shadow.innerHTML, '<span></span>');
+  assert_equals(shadow.getHTML(), '<span></span>');
+}, 'ShadowRoot serialization omits a child using the same scoped registry');
+
+test(() => {
+  const template = document.createElement('template');
+  template.innerHTML = '<span></span>';
+  assert_equals(template.content.firstElementChild.customElementRegistry, null);
+  assert_equals(template.innerHTML, '<span></span>');
+  assert_equals(template.getHTML(), '<span></span>');
+}, 'Template serialization uses the template contents registry');
+
+test(() => {
+  const parent = document.createElement('div');
+  parent.innerHTML = '<template><span></span></template>';
+  assert_equals(
+      parent.innerHTML, '<template><span></span></template>');
+  assert_equals(
+      parent.getHTML(), '<template><span></span></template>');
+}, 'Nested template serialization uses the template contents registry');
 
 test(() => {
   const parent = document.createElement('div');

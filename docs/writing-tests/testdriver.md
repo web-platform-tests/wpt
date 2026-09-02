@@ -90,8 +90,14 @@ the global scope.
 
 ### Window State ###
 ```eval_rst
+.. js:autofunction:: test_driver.create_window
 .. js:autofunction:: test_driver.minimize_window
 .. js:autofunction:: test_driver.set_window_rect
+```
+
+### Navigation ###
+```eval_rst
+.. js:autofunction:: test_driver.navigate
 ```
 
 ### Cookies ###

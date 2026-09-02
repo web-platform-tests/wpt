@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/trusted-types/support/csp-violations.js"></script>
+  </head>
+  <body>
+    <script>
+      trustedTypes.createPolicy("default", {
+        createHTML: (html) => html,
+        createParserOptions: (options) => ({
+          sanitizer: { removeElements: ["div"] },
+        }),
+      });
+
+      promise_test(async (t) => {
+        const doc = document.implementation.createDocument("application/xml", "xml");
+        const elem = doc.createElement("div");
+        doc.documentElement.appendChild(elem);
+
+        const violation = await trusted_type_violation_without_exception_for(() => {
+          elem.innerHTML = "<span id='xml-span'></span>";
+        });
+        assert_equals(violation.effectiveDirective, "require-trusted-types-for");
+        assert_equals(violation.disposition, "report");
+        assert_not_equals(elem.querySelector("#xml-span"), null);
+      }, "innerHTML on XML document does not throw TypeError in report-only mode and reports violation");
+
+      promise_test(async (t) => {
+        const doc = document.implementation.createDocument("application/xml", "xml");
+        const elem = doc.createElement("div");
+        doc.documentElement.appendChild(elem);
+
+        const violation = await trusted_type_violation_without_exception_for(() => {
+          elem.outerHTML = "<span id='xml-span'></span>";
+        });
+        assert_equals(violation.effectiveDirective, "require-trusted-types-for");
+        assert_equals(violation.disposition, "report");
+        assert_not_equals(doc.querySelector("#xml-span"), null);
+      }, "outerHTML on XML document does not throw TypeError in report-only mode and reports violation");
+
+      promise_test(async (t) => {
+        const doc = document.implementation.createDocument("application/xml", "xml");
+        const elem = doc.createElement("div");
+        doc.documentElement.appendChild(elem);
+
+        const violation = await trusted_type_violation_without_exception_for(() => {
+          elem.insertAdjacentHTML("beforeend", "<span id='xml-span'></span>");
+        });
+        assert_equals(violation.effectiveDirective, "require-trusted-types-for");
+        assert_equals(violation.disposition, "report");
+        assert_not_equals(elem.querySelector("#xml-span"), null);
+      }, "insertAdjacentHTML on XML document does not throw TypeError in report-only mode and reports violation");
+
+      promise_test(async (t) => {
+        const doc = document.implementation.createDocument("application/xml", "xml");
+        const range = doc.createRange();
+        range.selectNode(doc.documentElement);
+
+        let fragment;
+        const violation = await trusted_type_violation_without_exception_for(() => {
+          fragment = range.createContextualFragment("<span id='xml-span'></span>");
+        });
+        assert_equals(violation.effectiveDirective, "require-trusted-types-for");
+        assert_equals(violation.disposition, "report");
+        assert_not_equals(fragment.querySelector("#xml-span"), null);
+      }, "createContextualFragment on XML document does not throw TypeError in report-only mode and reports violation");
+
+      promise_test(async (t) => {
+        const doc = document.implementation.createDocument("application/xml", "xml");
+        const elem = doc.createElement("div");
+        doc.documentElement.appendChild(elem);
+
+        // setHTMLUnsafe should NOT report a violation because it uses HTML parser mode Unsafe
+        await no_trusted_type_violation_for(() => {
+          elem.setHTMLUnsafe("<span id='xml-span'></span>");
+        });
+        assert_not_equals(elem.querySelector("#xml-span"), null);
+      }, "setHTMLUnsafe on XML document does not report violation in report-only mode");
+
+      promise_test(async (t) => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString("<xml></xml>", "application/xml");
+        const elem = doc.createElement("div");
+        doc.documentElement.appendChild(elem);
+
+        const violation = await trusted_type_violation_without_exception_for(() => {
+          elem.innerHTML = "<span id='xml-span'></span>";
+        });
+        assert_equals(violation.effectiveDirective, "require-trusted-types-for");
+        assert_equals(violation.disposition, "report");
+        assert_not_equals(elem.querySelector("#xml-span"), null);
+      }, "innerHTML on XML document created by DOMParser does not throw TypeError in report-only mode and reports violation");
+    </script>
+  </body>
+</html>

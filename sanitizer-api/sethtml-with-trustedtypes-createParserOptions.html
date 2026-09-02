@@ -111,7 +111,10 @@
           assert_throws_js(Error, () => {
             node.setHTMLUnsafe("<div id='allowed'></div>");
           });
-          assert_false(createHTMLCalled, "createHTML should not have been called");
+          assert_false(
+            createHTMLCalled,
+            "createHTML should not have been called",
+          );
         }, `${target}.setHTMLUnsafe: exception in default createParserOptions prevents createHTML from running`);
 
         test((t) => {
@@ -120,7 +123,9 @@
             sanitizer: { removeElements: ["span"] },
           });
           createHTML = (html) => {
-            throw new Error("createHTML should not be called when sanitizer is present");
+            throw new Error(
+              "createHTML should not be called when sanitizer is present",
+            );
           };
           node.setHTMLUnsafe(
             "<div id='allowed'><span id=forbidden></span></div>",
@@ -130,6 +135,34 @@
         }, `${target}.setHTMLUnsafe: default policy createParserOptions with sanitizer prevents createHTML from running`);
       }
 
+      test((t) => {
+        let capturedArgs = [];
+        const policy = trustedTypes.createPolicy("extra-args-policy", {
+          createParserOptions: (options, ...args) => {
+            capturedArgs = args;
+            return options;
+          },
+        });
+        policy.createParserOptions({}, "arg1", 42, { extra: true });
+        assert_equals(capturedArgs.length, 3);
+        assert_equals(capturedArgs[0], "arg1");
+        assert_equals(capturedArgs[1], 42);
+        assert_true(capturedArgs[2].extra);
+      }, "TrustedTypePolicy.createParserOptions forwards extra arguments to callback");
+
+      test((t) => {
+        let capturedOptions = null;
+        const policy = trustedTypes.createPolicy("options-inspect-policy", {
+          createParserOptions: (options) => {
+            capturedOptions = options;
+            return options;
+          },
+        });
+        const sanitizer = new Sanitizer();
+        policy.createParserOptions({ runScripts: true, sanitizer });
+        assert_true(capturedOptions.runScripts);
+        assert_true(capturedOptions.sanitizer instanceof Sanitizer);
+      }, "TrustedTypePolicy.createParserOptions callback receives converted options dictionary");
 
       test((t) => {
         const policy = trustedTypes.createPolicy("runscripts-reflect-policy", {
@@ -137,31 +170,60 @@
         });
         const optionsDefault = policy.createParserOptions({});
         assert_true(optionsDefault instanceof TrustedHTMLParserOptions);
-        assert_false("runScripts" in optionsDefault, "TrustedHTMLParserOptions has no public runScripts member");
+        assert_false(
+          "runScripts" in optionsDefault,
+          "TrustedHTMLParserOptions has no public runScripts member",
+        );
 
         const optionsTrue = policy.createParserOptions({ runScripts: true });
         assert_true(optionsTrue instanceof TrustedHTMLParserOptions);
-        assert_false("runScripts" in optionsTrue, "TrustedHTMLParserOptions has no public runScripts member");
+        assert_false(
+          "runScripts" in optionsTrue,
+          "TrustedHTMLParserOptions has no public runScripts member",
+        );
 
         const optionsFalse = policy.createParserOptions({ runScripts: false });
         assert_true(optionsFalse instanceof TrustedHTMLParserOptions);
-        assert_false("runScripts" in optionsFalse, "TrustedHTMLParserOptions has no public runScripts member");
+        assert_false(
+          "runScripts" in optionsFalse,
+          "TrustedHTMLParserOptions has no public runScripts member",
+        );
 
         const div = document.createElement("div");
         document.body.appendChild(div);
         t.add_cleanup(() => div.remove());
 
         window.did_run = false;
-        t.add_cleanup(() => { delete window.did_run; });
+        t.add_cleanup(() => {
+          delete window.did_run;
+        });
 
-        div.setHTMLUnsafe("<script>window.did_run = true;<" + "/script>", optionsDefault);
-        assert_false(window.did_run, "runScripts defaults to false in TrustedHTMLParserOptions");
+        div.setHTMLUnsafe(
+          "<script>window.did_run = true;<" + "/script>",
+          optionsDefault,
+        );
+        assert_false(
+          window.did_run,
+          "runScripts defaults to false in TrustedHTMLParserOptions",
+        );
 
-        div.setHTMLUnsafe("<script>window.did_run = true;<" + "/script>", optionsFalse);
-        assert_false(window.did_run, "runScripts false is respected in TrustedHTMLParserOptions");
+        div.setHTMLUnsafe(
+          "<script>window.did_run = true;<" + "/script>",
+          optionsFalse,
+        );
+        assert_false(
+          window.did_run,
+          "runScripts false is respected in TrustedHTMLParserOptions",
+        );
 
-        div.setHTMLUnsafe("<script>window.did_run = true;<" + "/script>", optionsTrue);
-        assert_true(window.did_run, "runScripts true is respected in TrustedHTMLParserOptions");
+        div.setHTMLUnsafe(
+          "<script>window.did_run = true;<" + "/script>",
+          optionsTrue,
+        );
+        assert_true(
+          window.did_run,
+          "runScripts true is respected in TrustedHTMLParserOptions",
+        );
       }, "TrustedHTMLParserOptions applies runScripts option without exposing public members");
     </script>
   </body>

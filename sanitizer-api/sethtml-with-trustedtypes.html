@@ -15,7 +15,7 @@
     <script>
       const container = document.querySelector("#container");
       // We have to replace this global because we are overriding the default policy from within the test.
-      let createParserOptions = (options) => options;
+      let createParserOptions = (options, sink) => options;
       let createHTML = (html) => html;
       const cleanupPolicy = trustedTypes.createPolicy("cleanup", {
         createHTML: (_) => "",
@@ -23,14 +23,14 @@
 
       trustedTypes.createPolicy("default", {
         createHTML: (html) => createHTML(html),
-        createParserOptions: (options) => createParserOptions(options),
+        createParserOptions: (options, sink) => createParserOptions(options, sink),
       });
 
       function cleanup() {}
 
       function createTarget(target_type, t) {
         t.add_cleanup(() => {
-          createParserOptions = (options) => options;
+          createParserOptions = (options, sink) => options;
           createHTML = (html) => html;
         });
 
@@ -133,6 +133,24 @@
             assert_equals(root.querySelector("#forbidden"), null);
             assert_not_equals(root.querySelector("#allowed"), null);
           }, `${target}.${method}: createParserOptions can inject a sanitizer config`);
+
+          test((t) => {
+            const node = createTarget(target, t);
+            let capturedSink = null;
+            createParserOptions = (options, sink) => {
+              capturedSink = sink;
+              return options;
+            };
+            get_root(node, method, "<div id='allowed'></div>");
+            const expectedSink = method === "parseHTMLUnsafe"
+              ? "Document parseHTMLUnsafe"
+              : method === "createContextualFragment"
+              ? "Range createContextualFragment"
+              : method === "afterbegin" || method === "beforeend" || method === "beforebegin" || method === "afterend"
+              ? "Element insertAdjacentHTML"
+              : `${target} ${method}`;
+            assert_equals(capturedSink, expectedSink);
+          }, `${target}.${method}: createParserOptions receives correct sink name`);
 
           test((t) => {
             t.add_cleanup(cleanup);

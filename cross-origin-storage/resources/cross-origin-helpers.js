@@ -197,3 +197,36 @@ function cosAssertNotDisclosed(result, description) {
   assert_false(result.ok, `${description}: expected the read to be rejected`);
   assert_equals(result.name, 'NotFoundError', `${description}: got ${result.name}: ${result.message}`);
 }
+
+// Stores `content` under `hash` from inside a RemoteContext, so that the
+// write is attributed to the remote context's origin (and governed by that
+// context's response headers, e.g. a `Cross-Origin-Storage-Allow-Origin`
+// ceiling applied via `pipeHeader`). `options` is passed through to
+// requestFileHandle() with `create` forced to true. Shaped as {ok: true} or
+// {ok: false, name, message}.
+async function cosRemoteStore(ctx, hash, content, options = {}) {
+  return ctx.execute_script(async (hash, content, options) => {
+    try {
+      const handle = await navigator.crossOriginStorage.requestFileHandle(
+        hash, {...options, create: true});
+      const writable = await handle.createWritable();
+      await writable.write(new Blob([content]));
+      await writable.close();
+      return {ok: true};
+    } catch (e) {
+      return {ok: false, name: e.name, message: e.message};
+    }
+  }, [hash, content, options]);
+}
+
+// Builds a wptserve `pipe` directive that sets a `Cross-Origin-Storage-Allow-Origin`
+// response header (the write-time ceiling of
+// https://wicg.github.io/cross-origin-storage/#allow-origin-header) naming
+// `origins` (a single origin string or an array of them). Pass the result as
+// `pipeHeader` to cosOpenRemoteContext(). Commas between origins are
+// backslash-escaped so wptserve's pipe parser keeps them inside the single
+// header value, mirroring how the Permissions-Policy tests escape parens.
+function cosAllowOriginPipe(origins) {
+  const list = Array.isArray(origins) ? origins : [origins];
+  return `header(Cross-Origin-Storage-Allow-Origin,${list.join('\\,')})`;
+}

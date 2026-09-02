@@ -28,11 +28,13 @@ from webdriver.bidi.modules.script import ContextTarget
 from webdriver.bidi.undefined import UNDEFINED
 from webdriver.error import TimeoutException
 
-import tests.support.fixtures as global_fixtures
-from tests.support import defaults
+from pytest_fixtures import webdriver_defaults as defaults
+from pytest_fixtures.webdriver_classic import cleanup_session
+from pytest_fixtures.webdriver import deep_update
+from pytest_fixtures.webdriver import get_current_session
+from pytest_fixtures.webdriver import reset_current_session_if_necessary
+from pytest_fixtures.webdriver import set_current_session
 from tests.support.asserts import assert_pdf
-from tests.support.classic.helpers import cleanup_session
-from tests.support.helpers import deep_update
 from tests.support.image import cm_to_px, png_dimensions, ImageDifference
 from tests.support.sync import AsyncPoll
 
@@ -55,17 +57,17 @@ async def bidi_session(capabilities, configuration):
     deep_update(caps, capabilities)
     caps = {"alwaysMatch": caps}
 
-    await global_fixtures.reset_current_session_if_necessary(caps)
+    await reset_current_session_if_necessary(caps)
 
-    if global_fixtures.get_current_session() is None:
-        global_fixtures.set_current_session(webdriver.Session(
+    if get_current_session() is None:
+        set_current_session(webdriver.Session(
             configuration["host"],
             configuration["port"],
             capabilities=caps,
             enable_bidi=True))
 
     try:
-        session = global_fixtures.get_current_session()
+        session = get_current_session()
         session.start()
 
         try:
@@ -85,7 +87,7 @@ async def bidi_session(capabilities, configuration):
 
     except Exception:
         # Make sure we end up in a known state if something goes wrong.
-        global_fixtures.get_current_session().end()
+        get_current_session().end()
 
 
 @pytest_asyncio.fixture

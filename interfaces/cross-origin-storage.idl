@@ -1,5 +1,6 @@
-// Hand-transcribed from the IDL block in the spec, since this WICG proposal
-// is not yet mirrored by Reffy/webref. Keep in sync with the spec.
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Cross-Origin Storage (https://wicg.github.io/cross-origin-storage/)
 
 [Exposed=(Window,Worker), SecureContext]

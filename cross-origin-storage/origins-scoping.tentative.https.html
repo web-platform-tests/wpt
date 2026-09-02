@@ -15,6 +15,18 @@
 // https://wicg.github.io/cross-origin-storage/#resource-visibility-upgrades
 // https://wicg.github.io/cross-origin-storage/#availability-gating
 // https://wicg.github.io/cross-origin-storage/#original-storer-access
+//
+// A non-same-site `origins` list is only honored for origins the writing
+// document's `Cross-Origin-Storage-Allow-Origin` response header authorizes
+// (https://wicg.github.io/cross-origin-storage/#allow-origin-header). This
+// document's list-scoped writes therefore rely on the companion
+// origins-scoping.tentative.https.html.sub.headers file, whose ceiling names
+// every origin in the cross-origin pools (see cross-origin-helpers.js) so that
+// any pool origin a test lists is authorized. The one list-scoped write made
+// from a *remote* context (the non-storer-widening test below) carries its own
+// ceiling via pipeHeader instead, since the ceiling is the writer's, not this
+// document's. The dedicated allow-origin-header.tentative.https.html covers the
+// header's filtering behavior directly.
 
 
 promise_test(async t => {
@@ -177,9 +189,15 @@ promise_test(async t => {
   const content = cosUniqueContent('non-storer-widens-origins');
   const {hash} = await cosStore(content); // same-site only; this document (A) is the storer.
 
-  const {ctx: ctxB} = await cosOpenRemoteContext(cosNextSameSiteOrigin());
-  const {ctx: ctxC} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
-  const originC = await ctxC.execute_script(() => location.origin, []);
+  // C's origin is fixed up front so that B's response can carry a
+  // Cross-Origin-Storage-Allow-Origin ceiling naming it: B's widening write is
+  // list-scoped, so without the header the listed origin C would be dropped
+  // (see #the-cross-origin-storage-allow-origin-header). The top-level
+  // document's own list writes are covered by this file's .sub.headers.
+  const originC = cosNextCrossSiteOrigin();
+  const {ctx: ctxB} = await cosOpenRemoteContext(
+    cosNextSameSiteOrigin(), {pipeHeader: cosAllowOriginPipe(originC)});
+  const {ctx: ctxC} = await cosOpenRemoteContext(originC);
 
   const beforeWiden = await cosRemoteRead(ctxC, hash);
   cosAssertNotDisclosed(beforeWiden, 'before a non-storer widens the entry, an unrelated origin (C)');

@@ -21,15 +21,25 @@ const FINAL_URL =
 // Builds a redirect-chain URL from `hops`, an array with one entry per redirect.
 // Each entry is the value to send in that redirect's Timing-Allow-Origin header,
 // or null to send no header (i.e. that hop does not opt in).
-function redirect_chain_url(hops) {
-  let url = FINAL_URL;
+//
+// Options:
+//   delay     - milliseconds each hop stalls before redirecting, so that the
+//               post-redirect timestamps are far enough from the time origin to
+//               be told apart from zero. Defaults to 0.
+//   subdomain - the subdomain serving the redirects. Defaults to "www", which is
+//               cross-origin to the test page; pass "" for a same-origin chain.
+//   finalUrl  - the document the chain lands on. Defaults to FINAL_URL.
+function redirect_chain_url(hops,
+    {delay = 0, subdomain = "www", finalUrl = FINAL_URL} = {}) {
+  let url = finalUrl;
   // Build from the last hop backwards, so each redirect points at the next one.
   for (let i = hops.length - 1; i >= 0; i--) {
     const tao = hops[i] === null ? "" : "tao=" + encodeURIComponent(hops[i]) + "&";
+    const delay_query = delay ? "delay=" + delay + "&" : "";
     url = make_absolute_url({
-      subdomain: "www",
+      subdomain,
       path: "/navigation-timing/resources/redirect-tao.py",
-      query: tao + "location=" + encodeURIComponent(url),
+      query: tao + delay_query + "location=" + encodeURIComponent(url),
     });
   }
   return url;
@@ -37,8 +47,9 @@ function redirect_chain_url(hops) {
 
 // Navigates an iframe through the redirect chain described by `hops` and resolves
 // with the iframe's PerformanceNavigationTiming entry. `referrerPolicy` is an
-// optional referrer policy to apply to the iframe (e.g. "no-referrer").
-function navigation_entry_after_redirects(hops, {referrerPolicy} = {}) {
+// optional referrer policy to apply to the iframe (e.g. "no-referrer"); the
+// remaining options are passed through to redirect_chain_url.
+function navigation_entry_after_redirects(hops, {referrerPolicy, ...options} = {}) {
   return new Promise(resolve => {
     const frame = document.createElement("iframe");
     frame.style.cssText = "width: 250px; height: 250px;";
@@ -48,7 +59,38 @@ function navigation_entry_after_redirects(hops, {referrerPolicy} = {}) {
     frame.onload = () => {
       resolve(frame.contentWindow.performance.getEntriesByType("navigation")[0]);
     };
-    frame.src = redirect_chain_url(hops);
+    frame.src = redirect_chain_url(hops, options);
+    document.body.appendChild(frame);
+  });
+}
+
+// The origin a chain can land on that is cross-origin to the test page, and the
+// reporter document served from it. Used to check a destination that is
+// cross-origin to the navigation's initiator.
+const CROSS_ORIGIN_DESTINATION =
+    new URL(make_absolute_url({subdomain: "www1", path: "/"})).origin;
+const CROSS_ORIGIN_REPORTER_URL = make_absolute_url({
+  subdomain: "www1",
+  path: "/navigation-timing/resources/report-navigation-timing.html",
+});
+
+// Navigates an iframe through the redirect chain described by `hops` onto a
+// destination that is cross-origin to the test page, and resolves with the
+// serialized PerformanceNavigationTiming entry the destination reports back. The
+// parent cannot read that entry directly, hence the postMessage hop.
+function cross_origin_destination_entry_after_redirects(hops, options = {}) {
+  return new Promise(resolve => {
+    const frame = document.createElement("iframe");
+    frame.style.cssText = "width: 250px; height: 250px;";
+    const onMessage = event => {
+      if (event.source !== frame.contentWindow)
+        return;
+      window.removeEventListener("message", onMessage);
+      resolve(event.data);
+    };
+    window.addEventListener("message", onMessage);
+    frame.src = redirect_chain_url(hops,
+        {...options, finalUrl: CROSS_ORIGIN_REPORTER_URL});
     document.body.appendChild(frame);
   });
 }

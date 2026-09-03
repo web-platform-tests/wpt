@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Reports its navigation timing entry to the parent</title>
+<script>
+// Landing page for a redirected iframe navigation whose destination is
+// cross-origin to the test page, which therefore cannot read the entry itself.
+//
+// The report is deferred out of the load handler so that loadEventEnd -- and
+// therefore the entry's duration -- has been recorded by the time it is read.
+addEventListener("load", () => setTimeout(() => {
+  parent.postMessage(
+      performance.getEntriesByType("navigation")[0].toJSON(), "*");
+}, 0));
+</script>

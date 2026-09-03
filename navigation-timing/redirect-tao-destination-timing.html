@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Navigation Timing: a cross-origin redirect does not hide the destination's own connection and request timing</title>
+<link rel="author" title="Yoav Weiss" href="mailto:yoav@yoav.ws">
+<link rel="help" href="https://w3c.github.io/navigation-timing/#sec-PerformanceNavigationTiming">
+<link rel="help" href="https://fetch.spec.whatwg.org/#tao-check">
+<link rel="help" href="https://fetch.spec.whatwg.org/#navigation-tao-check">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/redirect-tao-helper.js"></script>
+<body>
+<script>
+// Navigation timing never validates the results of the TAO check -- see the note
+// on that check in Fetch, which explains that the check exists so that the
+// *container* document's resource timing entry for a nested navigable can be
+// gated, not the nested document's own navigation timing entry. Navigation
+// Timing only overrides redirectStart and redirectEnd (to zero when the redirect
+// count is zero), and the navigation TAO check only zeroes the redirect count.
+//
+// So a document reached through a cross-origin redirect must still see its own
+// connection and request timing: domainLookupStart/End, connectStart/End,
+// requestStart, responseStart, responseEnd and nextHopProtocol. Opting in with
+// Timing-Allow-Origin changes whether the *redirect* is attributed -- which
+// redirect-tao.html covers -- and nothing else.
+//
+// Hiding those fields would not buy any privacy either: they describe the
+// destination's own connection, and the destination can already time its own
+// load through the entry's unconditionally exposed duration, domInteractive and
+// loadEventEnd. It only breaks the destination's own real user monitoring.
+
+const dest = DESTINATION_ORIGIN;
+
+// Each redirect hop stalls for this long, so that the post-redirect timestamps
+// are unambiguously non-zero rather than rounding down to the time origin.
+const DELAY_MS = 500;
+
+// Asserts that the destination's own timing is exposed and correctly ordered.
+function assert_destination_timing_exposed(entry, description) {
+  assert_greater_than(entry.requestStart, 0,
+      `${description}: requestStart is exposed`);
+  assert_greater_than(entry.responseStart, 0,
+      `${description}: responseStart is exposed`);
+  assert_greater_than(entry.responseEnd, 0,
+      `${description}: responseEnd is exposed`);
+  assert_greater_than(entry.domainLookupStart, 0,
+      `${description}: domainLookupStart is exposed`);
+  assert_greater_than(entry.connectStart, 0,
+      `${description}: connectStart is exposed`);
+  assert_not_equals(entry.nextHopProtocol, "",
+      `${description}: nextHopProtocol is exposed`);
+
+  assert_greater_than_equal(entry.domainLookupEnd, entry.domainLookupStart,
+      `${description}: domainLookupEnd is after domainLookupStart`);
+  assert_greater_than_equal(entry.connectStart, entry.domainLookupEnd,
+      `${description}: connectStart is after domainLookupEnd`);
+  assert_greater_than_equal(entry.connectEnd, entry.connectStart,
+      `${description}: connectEnd is after connectStart`);
+  assert_greater_than_equal(entry.requestStart, entry.connectEnd,
+      `${description}: requestStart is after connectEnd`);
+  assert_greater_than_equal(entry.responseStart, entry.requestStart,
+      `${description}: responseStart is after requestStart`);
+  assert_greater_than_equal(entry.responseEnd, entry.responseStart,
+      `${description}: responseEnd is after responseStart`);
+}
+
+promise_test(async () => {
+  const entry = await navigation_entry_after_redirects([dest], {delay: DELAY_MS});
+  assert_equals(entry.redirectCount, 1, "the redirect is attributed");
+  assert_destination_timing_exposed(entry, "opted in to the destination origin");
+}, "Destination timing is exposed after a cross-origin redirect that opts in to the destination origin");
+
+promise_test(async () => {
+  const entry = await navigation_entry_after_redirects(["*"], {delay: DELAY_MS});
+  assert_equals(entry.redirectCount, 1, "the redirect is attributed");
+  assert_destination_timing_exposed(entry, "opted in with a wildcard");
+}, "Destination timing is exposed after a cross-origin redirect that opts in with a wildcard");
+
+promise_test(async () => {
+  const entry = await navigation_entry_after_redirects([null], {delay: DELAY_MS});
+  // The chain does not opt in, so the redirect itself is not attributed...
+  assert_equals(entry.redirectCount, 0, "the redirect is not attributed");
+  assert_equals(entry.redirectStart, 0, "redirectStart is hidden");
+  assert_equals(entry.redirectEnd, 0, "redirectEnd is hidden");
+  // ...but that says nothing about the destination's own timing.
+  assert_destination_timing_exposed(entry, "not opted in");
+}, "Destination timing is exposed after a cross-origin redirect that does not opt in");
+
+promise_test(async () => {
+  const entry = await navigation_entry_after_redirects(
+      ["https://not-the-destination.example"], {delay: DELAY_MS});
+  assert_equals(entry.redirectCount, 0, "the redirect is not attributed");
+  assert_destination_timing_exposed(entry, "opted in to a non-destination origin");
+}, "Destination timing is exposed after a cross-origin redirect that opts in to a non-destination origin");
+
+promise_test(async () => {
+  const entry = await navigation_entry_after_redirects([null],
+      {delay: DELAY_MS, subdomain: ""});
+  assert_equals(entry.redirectCount, 1, "the redirect is attributed");
+  assert_destination_timing_exposed(entry, "same-origin redirect");
+}, "Destination timing is exposed after a same-origin redirect");
+
+// The cases above land back on the test page's own origin. These land on an
+// origin that is cross-origin to the navigation's initiator, which is what makes
+// the TAO check for the navigation request fail outright -- and which still must
+// not hide the destination's own timing from itself.
+
+promise_test(async () => {
+  const entry = await cross_origin_destination_entry_after_redirects(
+      [CROSS_ORIGIN_DESTINATION], {delay: DELAY_MS});
+  assert_equals(entry.redirectCount, 1, "the redirect is attributed");
+  assert_destination_timing_exposed(entry, "cross-origin destination, opted in");
+}, "A cross-origin destination sees its own timing after a redirect that opts in to it");
+
+promise_test(async () => {
+  const entry = await cross_origin_destination_entry_after_redirects(
+      [null], {delay: DELAY_MS});
+  assert_equals(entry.redirectCount, 0, "the redirect is not attributed");
+  assert_destination_timing_exposed(entry, "cross-origin destination, not opted in");
+}, "A cross-origin destination sees its own timing after a redirect that does not opt in");
+</script>
+</body>

@@ -28,7 +28,7 @@
 
   function runInFrame(test, id, operation, configure) {
     const frame = document.createElement("iframe");
-    configure(frame, `id=${id}&op=${operation}`);
+    configure(frame, new URLSearchParams({ id, op: operation }).toString());
     const report = new Promise((resolve) => {
       addEventListener("message", function handler(event) {
         if (event.data && event.data.id === id) {
@@ -36,25 +36,25 @@
           resolve(event.data);
         }
       });
-      frame.addEventListener("error", () =>
-        resolve({ id, error: "the support frame failed to load" })
-      );
     });
     test.add_cleanup(() => frame.remove());
     document.body.appendChild(frame);
     return report;
   }
 
-  // A frame that never reports leaves `report` pending and the subtest times out
-  // with no explanation, so surface the two ways that can happen.
+  // The support frame reports its own failures rather than the result of an
+  // operation. Treating those as results would let a subtest pass without ever
+  // exercising the check under test.
   function assertReported(report) {
-    assert_false(
-      "error" in report,
-      report.error || "the support frame did not report"
-    );
-    assert_true(
+    assert_implements_optional(
       report.supported,
       "PasswordCredential is not supported, so nothing was exercised"
+    );
+    assert_false(
+      report.result.startsWith("construction-failed:") ||
+        report.result.startsWith("harness-error:") ||
+        report.result === "unknown-op",
+      `the support frame failed before the operation ran: ${report.result}`
     );
   }
 

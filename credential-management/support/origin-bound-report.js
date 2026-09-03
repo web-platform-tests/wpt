@@ -1,15 +1,6 @@
-// Reports how one of get(), create() or store() settles for an origin-bound
-// credential type, so an opaque-origin frame can report its result to the
-// top-level test.
-//
 // The operation is chosen by the `op` search parameter, and only that operation
 // runs: a subtest must not depend on an earlier operation settling, and store()
 // has a side effect that should not fire for the get() and create() subtests.
-//
-// PasswordCredential is origin bound, so from an opaque origin the operation is
-// expected to reject with SecurityError. `supported` reports whether the
-// machinery was present at all, so a browser without PasswordCredential says so
-// rather than producing a result that could be mistaken for conformance.
 (async () => {
   const params = new URL(location.href).searchParams;
   const id = params.get("id");

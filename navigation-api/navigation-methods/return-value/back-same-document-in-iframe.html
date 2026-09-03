@@ -1,0 +1,64 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<iframe id="i1" src="/common/blank.html"></iframe>
+<iframe id="i2" src="/common/blank.html"></iframe>
+
+<script>
+// Same-document traversals initiated from an iframe take a different path
+// through "apply the history step" than traversals initiated from the top-level
+// traversable: the traverse navigate event fires later, after the ongoing
+// navigation state has been set up. These tests check that the traversal still
+// completes normally. See https://github.com/whatwg/html/issues/12832.
+
+// Wait for after the load event so that the navigations don't get converted
+// into replace navigations.
+const afterLoad = new Promise(resolve => window.onload = () => setTimeout(resolve, 0));
+
+promise_test(async t => {
+  await afterLoad;
+  const w = i1.contentWindow;
+
+  await w.navigation.navigate("#1").finished;
+  assert_equals(w.navigation.entries().length, 2);
+  const [entry0, entry1] = w.navigation.entries();
+  assert_equals(w.navigation.currentEntry, entry1);
+
+  let successCount = 0;
+  w.navigation.onnavigatesuccess = () => successCount++;
+  w.navigation.onnavigateerror = t.unreached_func("navigateerror must not fire");
+
+  const result = w.navigation.back();
+  await assertBothFulfill(t, result, entry0, w);
+  assert_equals(w.navigation.currentEntry, entry0);
+  assert_equals(successCount, 1, "navigatesuccess must fire exactly once");
+  assert_equals(w.navigation.transition, null);
+}, "same-document back() in an iframe: committed and finished fulfill, navigatesuccess fires");
+
+promise_test(async t => {
+  await afterLoad;
+  const w = i2.contentWindow;
+
+  await w.navigation.navigate("#1").finished;
+  assert_equals(w.navigation.entries().length, 2);
+  const [entry0, entry1] = w.navigation.entries();
+  assert_equals(w.navigation.currentEntry, entry1);
+
+  let handlerCalled = false;
+  let successCount = 0;
+  w.navigation.onnavigate = t.step_func(e => {
+    assert_equals(e.navigationType, "traverse");
+    e.intercept({ handler: () => { handlerCalled = true; return Promise.resolve(); } });
+  });
+  w.navigation.onnavigatesuccess = () => successCount++;
+  w.navigation.onnavigateerror = t.unreached_func("navigateerror must not fire");
+
+  const result = w.navigation.back();
+  await assertBothFulfill(t, result, entry0, w);
+  assert_true(handlerCalled, "intercept() handler must run");
+  assert_equals(w.navigation.currentEntry, entry0);
+  assert_equals(successCount, 1, "navigatesuccess must fire exactly once");
+  assert_equals(w.navigation.transition, null);
+}, "same-document back() in an iframe with intercept(): handler runs, committed and finished fulfill, navigatesuccess fires");
+</script>

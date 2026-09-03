@@ -54,12 +54,12 @@
       }, "Document.parseHTMLUnsafe: without default policy, report-only does not throw and reports violation");
 
       // 2. Now create the default policy and a test policy:
-      let createParserOptions = (options, sink) => options;
-      let createHTML = (html) => html;
+      let createParserOptions = (options, type, sink) => options;
+      let createHTML = (html, ...args) => html;
 
       trustedTypes.createPolicy("default", {
-        createHTML: (html) => createHTML(html),
-        createParserOptions: (options, sink) => createParserOptions(options, sink),
+        createHTML: (html, ...args) => createHTML(html, ...args),
+        createParserOptions: (options, ...args) => createParserOptions(options, ...args),
       });
 
       const testPolicy = trustedTypes.createPolicy("test-policy", {

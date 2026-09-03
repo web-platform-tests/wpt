@@ -1,0 +1,21 @@
+[tool.vendoring]
+destination = "third_party/"
+requirements = "requirements_vendor.txt"
+namespace = ""
+patches-dir = "third_party_patches"
+protected-files = [
+  "README.md",
+]
+
+[tool.vendoring.license.fallback-urls]
+atomicwrites = "https://raw.githubusercontent.com/untitaker/python-atomicwrites/refs/tags/1.1.5/LICENSE"
+webencodings = "https://raw.githubusercontent.com/gsnedders/python-webencodings/refs/tags/v0.5.1/LICENSE"
+
+[tool.vendoring.transformations]
+drop = [
+  "*.dist-info",
+  "*__mypyc*.so",
+  "bin/",
+  "tomli/*.so",
+  "websockets/speedups.*.so",
+]

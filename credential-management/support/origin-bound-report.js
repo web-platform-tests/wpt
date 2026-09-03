@@ -1,33 +1,29 @@
-// Reports how get(), create() and store() settle for an origin-bound credential
-// type, so an opaque-origin frame can report its result to the top-level test.
+// Reports how one of get(), create() or store() settles for an origin-bound
+// credential type, so an opaque-origin frame can report its result to the
+// top-level test.
 //
-// PasswordCredential is origin bound, so from an opaque origin all three are
-// expected to reject with SecurityError. Each operation is reported separately,
-// along with whether the machinery it needs is even present, so a browser that
-// does not implement PasswordCredential reports "unsupported" rather than a
-// result that could be mistaken for conformance.
+// The operation is chosen by the `op` search parameter, and only that operation
+// runs: a subtest must not depend on an earlier operation settling, and store()
+// has a side effect that should not fire for the get() and create() subtests.
+//
+// PasswordCredential is origin bound, so from an opaque origin the operation is
+// expected to reject with SecurityError. `supported` reports whether the
+// machinery was present at all, so a browser without PasswordCredential says so
+// rather than producing a result that could be mistaken for conformance.
 (async () => {
-  const id = new URL(location.href).searchParams.get("id");
+  const params = new URL(location.href).searchParams;
+  const id = params.get("id");
+  const op = params.get("op");
   const report = {
     id,
+    op,
     origin: String(self.origin),
     secure: self.isSecureContext,
     supported: false,
-    get: "unsupported",
-    create: "unsupported",
-    store: "unsupported",
+    result: "unsupported",
   };
 
   const post = () => (window.top || window.parent).postMessage(report, "*");
-
-  const settle = async (operation) => {
-    try {
-      await operation();
-      return "resolved";
-    } catch (error) {
-      return error.name;
-    }
-  };
 
   try {
     if (!self.PasswordCredential || !navigator.credentials) {
@@ -38,27 +34,37 @@
 
     const data = { id: "id", password: "pencil" };
 
-    report.get = await settle(() =>
-      navigator.credentials.get({ password: true })
-    );
-
-    report.create = await settle(() =>
-      navigator.credentials.create({ password: data })
-    );
-
-    // Construct outside settle() so a constructor failure is never reported as
-    // a store() result.
-    let credential;
-    try {
-      credential = new PasswordCredential(data);
-    } catch (error) {
-      report.store = "construction-failed:" + error.name;
+    // Built before the operation runs so a constructor failure is never
+    // reported as a store() result.
+    let operation;
+    if (op === "get") {
+      operation = () => navigator.credentials.get({ password: true });
+    } else if (op === "create") {
+      operation = () => navigator.credentials.create({ password: data });
+    } else if (op === "store") {
+      let credential;
+      try {
+        credential = new PasswordCredential(data);
+      } catch (error) {
+        report.result = "construction-failed:" + error.name;
+        post();
+        return;
+      }
+      operation = () => navigator.credentials.store(credential);
+    } else {
+      report.result = "unknown-op";
       post();
       return;
     }
-    report.store = await settle(() => navigator.credentials.store(credential));
+
+    try {
+      await operation();
+      report.result = "resolved";
+    } catch (error) {
+      report.result = error.name;
+    }
   } catch (error) {
-    report.get = report.create = report.store = "harness-error:" + error.name;
+    report.result = "harness-error:" + error.name;
   }
 
   post();

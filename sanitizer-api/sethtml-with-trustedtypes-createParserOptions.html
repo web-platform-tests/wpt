@@ -129,6 +129,49 @@
           assert_not_equals(node.querySelector("#allowed"), null);
         }, `${target}.setHTMLUnsafe: default policy createParserOptions with sanitizer prevents createHTML from running`);
       }
+
+      test((t) => {
+        let capturedArgs = [];
+        const policy = trustedTypes.createPolicy("extra-args-policy", {
+          createParserOptions: (options, ...args) => {
+            capturedArgs = args;
+            return options;
+          },
+        });
+        policy.createParserOptions({}, "arg1", 42, { extra: true });
+        assert_equals(capturedArgs.length, 3);
+        assert_equals(capturedArgs[0], "arg1");
+        assert_equals(capturedArgs[1], 42);
+        assert_true(capturedArgs[2].extra);
+      }, "TrustedTypePolicy.createParserOptions forwards extra arguments to callback");
+
+      test((t) => {
+        let capturedOptions = null;
+        const policy = trustedTypes.createPolicy("options-inspect-policy", {
+          createParserOptions: (options) => {
+            capturedOptions = options;
+            return options;
+          },
+        });
+        const sanitizer = new Sanitizer();
+        policy.createParserOptions({ runScripts: true, sanitizer });
+        assert_true(capturedOptions.runScripts);
+        assert_true(capturedOptions.sanitizer instanceof Sanitizer);
+      }, "TrustedTypePolicy.createParserOptions callback receives converted options dictionary");
+
+      test((t) => {
+        const policy = trustedTypes.createPolicy("runscripts-reflect-policy", {
+          createParserOptions: (options) => options,
+        });
+        const optionsDefault = policy.createParserOptions({});
+        assert_false(optionsDefault.runScripts, "runScripts defaults to false");
+
+        const optionsTrue = policy.createParserOptions({ runScripts: true });
+        assert_true(optionsTrue.runScripts, "runScripts reflects true");
+
+        const optionsFalse = policy.createParserOptions({ runScripts: false });
+        assert_false(optionsFalse.runScripts, "runScripts reflects false");
+      }, "TrustedParserOptions.runScripts reflects the value provided in createParserOptions");
     </script>
   </body>
 </html>

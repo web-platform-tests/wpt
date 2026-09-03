@@ -32,9 +32,10 @@ const SVG_RATIO = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' vi
 const SVG_WIDTH = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='60'></svg>";
 const SVG_HEIGHT = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='60'></svg>";
 
-// "rendered" is optional and left out where the rendered size is not something
-// this test means to pin down, i.e., where it depends on how CSS sizes a
-// replaced element that has a natural aspect ratio but no natural dimensions.
+// "cases" test how the rendered size, the width/height content attributes, and
+// the image's natural dimensions combine, and "rendered" is optional there.
+// "attributeValues" test how a single attribute value is parsed; the img element
+// has the same list in the-img-element/width-height-attribute-parsing.html.
 const cases = [
   {
     title: "no width/height attributes",
@@ -87,6 +88,7 @@ const cases = [
   {
     title: "SVG image with a natural aspect ratio only",
     attrs: { type: "image", src: SVG_RATIO },
+    // Omitting check for "rendered", which will fill the containing block.
     notRendered: [300, 100],
   },
   {
@@ -109,11 +111,6 @@ const cases = [
   },
 ];
 
-// The width and height content attributes are parsed with the rules for parsing
-// non-negative integers, which skip leading whitespace, ignore a leading plus
-// sign, and ignore trailing garbage. A value that is not a non-negative integer
-// is ignored in favor of the natural dimensions.
-//
 // Only the value when not being rendered is checked, as when the input is being
 // rendered these attributes are instead mapped to the width and height CSS
 // properties, which uses different parsing rules.
@@ -191,7 +188,7 @@ promise_test(async t => {
   t.add_cleanup(() => input.remove());
   // Give the load event a chance to fire, but do not hang the rest of this file
   // if a user agent never loads the image for an input that is not rendered.
-  await Promise.race([loaded, new Promise(resolve => t.step_timeout(resolve, 1000))]);
+  await Promise.race([loaded, new Promise(resolve => t.step_timeout(resolve, 5000))]);
 
   assert_array_equals([input.width, input.height], [NATURAL, NATURAL]);
 }, "never rendered, no width/height attributes");

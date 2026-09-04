@@ -131,7 +131,7 @@ async def test_scroll_position_for_scaled_layout_viewport(
     actions = Actions()
     actions.add_wheel().scroll(
         x=0, y=0, delta_x=60, delta_y=80,
-        origin=get_element_origin(iframes["nodes"][0]),
+        origin=get_element_origin(iframes[0]),
         duration=100,
     )
 
@@ -145,5 +145,5 @@ async def test_scroll_position_for_scaled_layout_viewport(
     )
 
     await assert_scroll_position(
-        bidi_session, new_tab, scrollers["nodes"][0], 60, 80
+        bidi_session, new_tab, scrollers[0], 60, 80
     )

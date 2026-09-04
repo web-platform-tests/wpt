@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    promise_test(async function (t) {
+      assert_implements(
+        'currentPoster' in HTMLVideoElement.prototype,
+        'HTMLVideoElement.currentPoster is not supported'
+      );
+
+      let loadedFromImgSrc = false;
+      let loadedFromPoster = false;
+      const video = document.createElement('video');
+      const img = document.createElement('img');
+      const poster = '/media/poster.png';
+      const imgPoster = '/media/poster.png?posterImageSrc=true';
+
+      video.src = '/media/A4.webm';
+      video.poster = poster;
+      video.posterFromImg = true;
+      img.src = imgPoster;
+      video.appendChild(img);
+
+      // Resolve both URLs up front; img.currentSrc may still be empty when
+      // the observer callback runs.
+      const posterUrl = new URL(poster, location.href).href;
+      const imgPosterUrl = new URL(imgPoster, location.href).href;
+
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.name === posterUrl) {
+            loadedFromPoster = true;
+          }
+          if (entry.name === imgPosterUrl) {
+            loadedFromImgSrc = true;
+          }
+        }
+      });
+
+      observer.observe({ entryTypes: ['resource'] });
+
+      document.body.appendChild(video);
+
+      await t.step_wait(() => loadedFromImgSrc);
+
+      assert_false(
+        loadedFromPoster,
+        'Poster attribute should not be fetched when a poster image source is present'
+      );
+      observer.disconnect();
+    }, 'Only the poster image source should load');
+  </script>
+</body>

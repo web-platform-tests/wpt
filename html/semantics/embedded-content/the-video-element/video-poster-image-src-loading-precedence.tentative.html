@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  .below-viewport {
+    margin-top: 1000vh;
+  }
+</style>
+<body></body>
+
+<script>
+  const assertCurrentPosterSupported = () =>
+    assert_implements(
+      'currentPoster' in HTMLVideoElement.prototype,
+      'HTMLVideoElement.currentPoster is not supported'
+    );
+
+  const observeFetch = (url) => {
+    const entries = [];
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (entry.name === url) entries.push(entry);
+      }
+    });
+    observer.observe({ entryTypes: ['resource'] });
+    return entries;
+  };
+
+  promise_test(async (t) => {
+    assertCurrentPosterSupported();
+    window.scrollTo(0, 0);
+
+    const video = document.createElement('video');
+    video.src = '/media/A4.webm';
+    video.loading = 'eager';
+    video.posterFromImg = true;
+    video.className = 'below-viewport';
+
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.src =
+      '/media/poster.png?loadingPrecedence=eagerVideoLazyImg&t=' + Date.now();
+    video.appendChild(img);
+
+    const imgUrl = new URL(img.src, location.href).href;
+    const entries = observeFetch(imgUrl);
+
+    document.body.appendChild(video);
+
+    const start = performance.now();
+    await t.step_wait(
+      () => entries.length > 0 || performance.now() - start > 300,
+      'Wait for a poster fetch opportunity while the video is below the viewport'
+    );
+    assert_equals(
+      entries.length,
+      0,
+      'Poster image source with loading=lazy should not fetch while the video is below the viewport, even though video.loading is eager'
+    );
+
+    video.scrollIntoView();
+    await t.step_wait(() => entries.length > 0);
+  }, 'Poster image source loading=lazy takes precedence over video loading=eager and defers the poster fetch');
+
+  promise_test(async (t) => {
+    assertCurrentPosterSupported();
+    window.scrollTo(0, 0);
+
+    const video = document.createElement('video');
+    video.src = '/media/A4.webm';
+    video.loading = 'lazy';
+    video.posterFromImg = true;
+    video.className = 'below-viewport';
+
+    const img = document.createElement('img');
+    img.loading = 'eager';
+    img.src =
+      '/media/poster.png?loadingPrecedence=lazyVideoEagerImg&t=' + Date.now();
+    video.appendChild(img);
+
+    const imgUrl = new URL(img.src, location.href).href;
+    const entries = observeFetch(imgUrl);
+
+    document.body.appendChild(video);
+
+    await t.step_wait(
+      () => entries.length > 0,
+      'Poster image source with loading=eager should fetch immediately, even though the video is below the viewport and video.loading is lazy'
+    );
+  }, 'Poster image source loading=eager takes precedence over video loading=lazy and fetches the poster immediately');
+</script>

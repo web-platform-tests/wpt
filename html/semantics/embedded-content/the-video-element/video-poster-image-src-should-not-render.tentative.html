@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body></body>
+
+<script>
+  const createVideo = ({ posterFromImg }) => {
+    const video = document.createElement('video');
+    video.src = '/media/A4.webm';
+    video.controls = true;
+    video.posterFromImg = posterFromImg;
+
+    const img = document.createElement('img');
+    img.src = '/media/poster.png?posterImageSrc=true';
+    video.appendChild(img);
+
+    document.body.appendChild(video);
+    return { video, img };
+  };
+
+  test(function () {
+    assert_implements(
+      'currentPoster' in HTMLVideoElement.prototype,
+      'HTMLVideoElement.currentPoster is not supported'
+    );
+    const { img } = createVideo({ posterFromImg: true });
+
+    assert_false(img.checkVisibility());
+  }, 'Poster image source for HTMLVideoElement.currentPoster should not render when posterfromimg is set');
+
+  test(function () {
+    assert_implements(
+      'currentPoster' in HTMLVideoElement.prototype,
+      'HTMLVideoElement.currentPoster is not supported'
+    );
+    const { img } = createVideo({ posterFromImg: false });
+
+    assert_true(img.checkVisibility());
+  }, 'A child img renders normally when posterfromimg is not set');
+</script>

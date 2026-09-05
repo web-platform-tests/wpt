@@ -14,6 +14,11 @@
         "enable_webtransport_h3": [
           "../webtransport/requirements.txt"
         ]
+      },
+      "commandline_flag": {
+        "enable_webrtc": [
+          "../webrtc/requirements.txt"
+        ]
       }
     }
   },

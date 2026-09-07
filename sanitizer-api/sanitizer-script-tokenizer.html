@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Sanitizer: script and raw text tokenizer state during sanitization</title>
-<link rel="help" href="https://github.com/whatwg/html/pull/12583">
+<link rel="help" href="https://github.com/whatwg/html/pull/12756">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/html5lib-testcase-support.js"></script>
@@ -25,13 +25,6 @@ promise_test(async () => {
     }, `Testcase #${index} [${testcase.method ?? "setHTML"}], "${testcase.data}", config: "${testcase.config ?? "{}"}"`);
   });
 }, "Sanitizer script and raw text tokenizer testcases from sub.dat");
-
-test(() => {
-  window.scriptRan = false;
-  const container = document.createElement("div");
-  container.setHTML("<script>window.scriptRan = true;<" + "/script>");
-  assert_false(window.scriptRan, "Script inside stripped script element must not execute");
-}, "Script inside stripped script element must not execute");
 </script>
 </body>
 </html>

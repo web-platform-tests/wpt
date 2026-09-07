@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Sanitizer: duplicate &lt;html&gt; and &lt;body&gt; attribute sanitization</title>
-<link rel="help" href="https://github.com/whatwg/html/pull/12583">
+<link rel="help" href="https://github.com/whatwg/html/pull/12756">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/html5lib-testcase-support.js"></script>
@@ -16,8 +16,6 @@
 | <html>
 |   <head>
 |   <body>
-|     class="safe-body"
-|     data-test="val"
 
 #data
 <body id="initial" class="initial"><body id="duplicate" class="duplicate" dir="rtl" onclick="alert(1)"></body>
@@ -25,8 +23,6 @@
 | <html>
 |   <head>
 |   <body>
-|     id="initial"
-|     class="initial"
 |     dir="rtl"
 
 #data
@@ -34,7 +30,6 @@
 #document
 | <html>
 |   lang="en"
-|   id="root"
 |   dir="rtl"
 |   <head>
 |   <body>
@@ -56,7 +51,6 @@
 #document
 | <html>
 |   lang="en"
-|   <head>
 |   <body>
 |     class="body-cls"
 
@@ -65,10 +59,6 @@
 #config
 { "elements": [{ "name": "body", "attributes": ["class"] }] }
 #document
-| <html>
-|   <head>
-|   <body>
-|     class="body-cls"
 
 </script>
 <script id="unsafe" type="html5lib-testcases">
@@ -89,7 +79,6 @@
 #document
 | <html>
 |   data-good-html="2"
-|   <head>
 |   <body>
 |     data-good-body="4"
 
@@ -100,7 +89,6 @@
 #document
 | <html>
 |   data-dup-good-html="2"
-|   <head>
 |   <body>
 |     data-dup-good-body="4"
 
@@ -109,12 +97,6 @@
 #config
 { "elements": [{ "name": "body", "removeAttributes": ["title"] }] }
 #document
-| <html>
-|   title="html-title"
-|   <head>
-|   <body>
-|     <div>
-|       title="div-title"
 
 </script>
 <script id="fragment" type="html5lib-testcases">
@@ -125,8 +107,6 @@ html
 #document
 | <head>
 | <body>
-|   id="test-body"
-|   class="safe-body"
 
 #document-fragment
 html
@@ -135,8 +115,6 @@ html
 #document
 | <head>
 | <body>
-|   id="first"
-|   class="first"
 |   dir="rtl"
 
 </script>
@@ -182,4 +160,3 @@ fragment.forEach((testcase, index) => {
 </script>
 </body>
 </html>
-

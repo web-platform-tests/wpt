@@ -405,7 +405,6 @@ test(() => {
 }, "config[replaceWithChildrenElements] allows template elements");
 
 // 5. If both config[elements] and config[replaceWithChildrenElements] exist, then the intersection of config[elements] and config[replaceWithChildrenElements] is empty.
-
 test(() => {
   for (let [a, b] of DUPLICATE_ELEMENT_NAMES) {
     assert_throws_js(TypeError, () => {

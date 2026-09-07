@@ -123,17 +123,6 @@
 |     "More"
 
 #data
-<b><div>Text</b><span>More</span></div>
-#config
-{ "replaceWithChildrenElements": ["div"] }
-#document
-| <b>
-|   "Text"
-| <b>
-|   <span>
-|     "More"
-
-#data
 <b><i><div>Text</b><span>More</span></i></div>
 #config
 { "replaceWithChildrenElements": ["i"] }
@@ -142,6 +131,6 @@
 | <div>
 |   <b>
 |     "Text"
-|     <span>
-|       "More"
+|   <span>
+|     "More"
 

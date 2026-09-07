@@ -5,6 +5,7 @@ tests can freely rely on these assumptions being true:
 
  * The device is a full-color device.
  * The device has viewport dimensions of at least 800px by 600px.
+ * The devicePixelRatio is 1. Refer [this](https://github.com/web-platform-tests/rfcs/issues/220)
  * The UA imposes no minimum font size.
  * The `medium` `font-size` computes to 16px.
  * The canvas background is `white`.

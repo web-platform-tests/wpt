@@ -207,7 +207,7 @@
           assert_equals(
             node.querySelector("#bold"),
             null,
-            "Caller-provided TrustedParserOptions sanitizer must remove b",
+            "Caller-provided TrustedHTMLParserOptions sanitizer must remove b",
           );
           assert_not_equals(
             node.querySelector("#span"),
@@ -215,7 +215,7 @@
             "Default policy sanitizer must not remove span for TrustedHTML",
           );
           assert_not_equals(node.querySelector("#allowed"), null);
-        }, `${target}.setHTMLUnsafe: caller-provided TrustedParserOptions sanitizer is applied with TrustedHTML while default sanitizer is ignored`);
+        }, `${target}.setHTMLUnsafe: caller-provided TrustedHTMLParserOptions sanitizer is applied with TrustedHTML while default sanitizer is ignored`);
 
         // runScripts tests with TrustedHTML
         test((t) => {

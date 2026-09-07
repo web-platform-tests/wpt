@@ -752,3 +752,157 @@ structuredCloneBatteryOfTests.push({
     );
   }
 });
+
+check(
+  'Temporal.PlainDate',
+  () => {
+    const v = new Temporal.PlainDate(2024, 6, 21);
+    v.prop = "test";
+    return v;
+  },
+  function(actual, _input) {
+    assert_true(actual instanceof Temporal.PlainDate, 'instanceof Temporal.PlainDate');
+    assert_equals(actual.prop, "test", "Expando");
+    assert_equals(actual.year, 2024);
+    assert_equals(actual.monthCode, "M06");
+    assert_equals(actual.day, 21);
+    assert_equals(actual.calendarId, "iso8601");
+    assert_equals(actual.toString(), "2024-06-21");
+  });
+
+check(
+  'Temporal.PlainTime',
+  () => {
+    const v = new Temporal.PlainTime(15, 0, 1, 2, 3, 4);
+    v.prop = "test";
+    return v;
+  },
+  function(actual, _input) {
+    assert_true(actual instanceof Temporal.PlainTime, 'instanceof Temporal.PlainTime');
+    assert_equals(actual.prop, "test", "Expando");
+    assert_equals(actual.hour, 15);
+    assert_equals(actual.minute, 0);
+    assert_equals(actual.second, 1);
+    assert_equals(actual.millisecond, 2);
+    assert_equals(actual.microsecond, 3);
+    assert_equals(actual.nanosecond, 4);
+    assert_equals(actual.toString(), "15:00:01.002003004");
+  });
+
+check(
+  'Temporal.PlainDateTime',
+  () => {
+    const v = new Temporal.PlainDateTime(2024, 6, 21, 15, 0, 1, 2, 3, 4);
+    v.prop = "test";
+    return v;
+  },
+  function(actual, _input) {
+    assert_true(actual instanceof Temporal.PlainDateTime, 'instanceof Temporal.PlainDateTime');
+    assert_equals(actual.prop, "test", "Expando");
+    assert_equals(actual.year, 2024);
+    assert_equals(actual.monthCode, "M06");
+    assert_equals(actual.day, 21);
+    assert_equals(actual.hour, 15);
+    assert_equals(actual.minute, 0);
+    assert_equals(actual.second, 1);
+    assert_equals(actual.millisecond, 2);
+    assert_equals(actual.microsecond, 3);
+    assert_equals(actual.nanosecond, 4);
+    assert_equals(actual.calendarId, "iso8601");
+    assert_equals(actual.toString(), "2024-06-21T15:00:01.002003004");
+  });
+
+
+check(
+  'Temporal.ZonedDateTime',
+  () => {
+    const v = new Temporal.ZonedDateTime(1718974801002003004n, "Europe/Brussels", "iso8601");
+    v.prop = "test";
+    return v;
+  },
+  function(actual, _input) {
+    assert_true(actual instanceof Temporal.ZonedDateTime, 'instanceof Temporal.ZonedDateTime');
+    assert_equals(actual.prop, "test", "Expando");
+    assert_equals(actual.year, 2024);
+    assert_equals(actual.monthCode, "M06");
+    assert_equals(actual.day, 21);
+    assert_equals(actual.hour, 15);
+    assert_equals(actual.minute, 0);
+    assert_equals(actual.second, 1);
+    assert_equals(actual.millisecond, 2);
+    assert_equals(actual.microsecond, 3);
+    assert_equals(actual.nanosecond, 4);
+    assert_equals(actual.timeZoneId, "Europe/Brussels");
+    assert_equals(actual.calendarId, "iso8601");
+    assert_equals(actual.toString(), "2024-06-21T15:00:01.002003004+02:00[Europe/Brussels]");
+  });
+
+
+check(
+  'Temporal.Duration',
+  () => {
+    const v = new Temporal.Duration(1, 2, 3, 4, 5, 6, 7, 987, 654, 321);
+    v.prop = "test";
+    return v;
+  },
+  function(actual, _input) {
+    assert_true(actual instanceof Temporal.Duration, 'instanceof Temporal.Duration');
+    assert_equals(actual.prop, "test", "Expando");
+    assert_equals(actual.toString(), "P1Y2M3W4DT5H6M7.987654321S");
+    assert_equals(actual.years, 1);
+    assert_equals(actual.months, 2);
+    assert_equals(actual.weeks, 3);
+    assert_equals(actual.days, 4);
+    assert_equals(actual.hours, 5);
+    assert_equals(actual.minutes, 6);
+    assert_equals(actual.seconds, 7);
+    assert_equals(actual.milliseconds, 987);
+    assert_equals(actual.microseconds, 654);
+    assert_equals(actual.nanoseconds, 321);
+  });
+
+check(
+  'Temporal.Instant',
+  () => {
+    const v = new Temporal.Instant(1718974801002003004n);
+    v.prop = "test";
+    return v;
+  },
+  function(actual, _input) {
+    assert_true(actual instanceof Temporal.Instant, 'instanceof Temporal.Instant');
+    assert_equals(actual.prop, "test", "Expando");
+    assert_equals(actual.epochNanoseconds, 1718974801002003004n);
+    assert_equals(actual.toString(), "2024-06-21T13:00:01.002003004Z");
+  });
+
+check(
+  'Temporal.PlainYearMonth',
+  () => {
+    const v = new Temporal.PlainYearMonth(2024, 6, "iso8601", 21);
+    v.prop = "test";
+    return v;
+  },
+  function(actual, _input) {
+    assert_true(actual instanceof Temporal.PlainYearMonth, 'instanceof Temporal.PlainYearMonth');
+    assert_equals(actual.prop, "test", "Expando");
+    assert_equals(actual.toString(), "2024-06");
+    assert_equals(actual.year, 2024);
+    assert_equals(actual.monthCode, "M06");
+    assert_equals(actual.calendarId, "iso8601");
+  });
+
+check(
+  'Temporal.PlainMonthDay',
+  () => {
+    const v = new Temporal.PlainMonthDay(6, 21, "iso8601", 2024);
+    v.prop = "test";
+    return v;
+  },
+  function(actual, _input) {
+    assert_true(actual instanceof Temporal.PlainMonthDay, 'instanceof Temporal.PlainMonthDay');
+    assert_equals(actual.prop, "test", "Expando");
+    assert_equals(actual.toString(), "06-21");
+    assert_equals(actual.monthCode, "M06");
+    assert_equals(actual.day, 21);
+    assert_equals(actual.calendarId, "iso8601");
+  });

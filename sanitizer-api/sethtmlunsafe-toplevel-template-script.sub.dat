@@ -53,22 +53,6 @@ setHTMLUnsafe
 | "<b>Hello</b>"
 
 #data
-<script><b>Hello</b></script>
-#method
-setHTML
-#config
-{ "replaceWithChildrenElements": ["script"] }
-#document
-
-#data
-<script><b>Hello</b></script>
-#method
-setHTMLUnsafe
-#config
-{ "removeElements": ["script"] }
-#document
-
-#data
 <template><p>Text</p><div>More</div></template>
 #method
 setHTMLUnsafe

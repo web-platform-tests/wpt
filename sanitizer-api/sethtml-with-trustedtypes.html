@@ -151,7 +151,7 @@
               : method === "afterbegin" || method === "beforeend" || method === "beforebegin" || method === "afterend"
               ? "Element insertAdjacentHTML"
               : `${target} ${method}`;
-            assert_equals(capturedType, "TrustedParserOptions");
+            assert_equals(capturedType, "TrustedHTMLParserOptions");
             assert_equals(capturedSink, expectedSink);
           }, `${target}.${method}: createParserOptions receives correct type and sink name`);
 

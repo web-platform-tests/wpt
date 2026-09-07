@@ -118,13 +118,13 @@
               "<div id='allowed'><span id='forbidden'></span></div>",
             );
             const root = run_method(node, method, trustedHTML);
-            assert_not_equals(
+            assert_equals(
               root.querySelector("#forbidden"),
               null,
-              "Default policy sanitizer must not be applied when TrustedHTML is provided",
+              "Default policy sanitizer must be applied even when TrustedHTML is provided",
             );
             assert_not_equals(root.querySelector("#allowed"), null);
-          }, `${target}.${method}: sending TrustedHTML ignores sanitizer in default policy createParserOptions`);
+          }, `${target}.${method}: sending TrustedHTML applies sanitizer in default policy createParserOptions`);
 
           test((t) => {
             const node = createTarget(target, t);
@@ -134,9 +134,12 @@
               throw new Error("default createHTML should not be called");
             };
             createParserOptions = (options) => options;
-            const trustedHTML = testPolicy.createHTML("<div id='allowed'></div>");
+            const trustedHTML = testPolicy.createHTML(
+              "<div id='allowed'><span id='forbidden'></span></div>",
+            );
             const root = run_method(node, method, trustedHTML);
             assert_false(createHTMLCalled, "createHTML must not be called when TrustedHTML is passed");
+            assert_not_equals(root.querySelector("#forbidden"), null);
             assert_not_equals(root.querySelector("#allowed"), null);
           }, `${target}.${method}: sending TrustedHTML does not call default policy createHTML`);
 
@@ -179,24 +182,46 @@
             sanitizer: { removeElements: ["b"] },
           });
           assert_equals(
-            node.querySelector("#bold"),
-            null,
-            "Caller-provided sanitizer must remove b",
-          );
-          assert_not_equals(
             node.querySelector("#span"),
             null,
-            "Default policy sanitizer must not remove span for TrustedHTML",
+            "Default policy sanitizer must remove span",
+          );
+          assert_not_equals(
+            node.querySelector("#bold"),
+            null,
+            "Overridden caller sanitizer must not remove b",
           );
           assert_not_equals(node.querySelector("#allowed"), null);
-        }, `${target}.setHTMLUnsafe: caller-provided sanitizer dictionary is applied with TrustedHTML while default sanitizer is ignored`);
+        }, `${target}.setHTMLUnsafe: default policy createParserOptions sanitizer overrides caller sanitizer dictionary with TrustedHTML`);
 
         test((t) => {
           const node = createTarget(target, t);
-          createParserOptions = (options) => ({
-            ...options,
-            sanitizer: { removeElements: ["span"] },
+          createParserOptions = (options) => options;
+          const trustedHTML = testPolicy.createHTML(
+            "<div id='allowed'><span id='span'></span><b id='bold'></b></div>",
+          );
+          node.setHTMLUnsafe(trustedHTML, {
+            sanitizer: { removeElements: ["b"] },
           });
+          assert_equals(
+            node.querySelector("#bold"),
+            null,
+            "Caller-provided sanitizer dictionary passed through by default policy must remove b",
+          );
+          assert_not_equals(node.querySelector("#span"), null);
+          assert_not_equals(node.querySelector("#allowed"), null);
+        }, `${target}.setHTMLUnsafe: caller-provided sanitizer dictionary is applied with TrustedHTML when default policy passes it through`);
+
+        test((t) => {
+          const node = createTarget(target, t);
+          let createParserOptionsCalled = false;
+          createParserOptions = (options) => {
+            createParserOptionsCalled = true;
+            return {
+              ...options,
+              sanitizer: { removeElements: ["span"] },
+            };
+          };
           const trustedHTML = testPolicy.createHTML(
             "<div id='allowed'><span id='span'></span><b id='bold'></b></div>",
           );
@@ -204,6 +229,10 @@
             sanitizer: { removeElements: ["b"] },
           });
           node.setHTMLUnsafe(trustedHTML, parserOptions);
+          assert_false(
+            createParserOptionsCalled,
+            "Default policy createParserOptions must not be called when TrustedHTMLParserOptions is passed",
+          );
           assert_equals(
             node.querySelector("#bold"),
             null,
@@ -212,10 +241,10 @@
           assert_not_equals(
             node.querySelector("#span"),
             null,
-            "Default policy sanitizer must not remove span for TrustedHTML",
+            "Default policy sanitizer is not applied when default policy is bypassed",
           );
           assert_not_equals(node.querySelector("#allowed"), null);
-        }, `${target}.setHTMLUnsafe: caller-provided TrustedHTMLParserOptions sanitizer is applied with TrustedHTML while default sanitizer is ignored`);
+        }, `${target}.setHTMLUnsafe: caller-provided TrustedHTMLParserOptions sanitizer is applied with TrustedHTML while default policy is bypassed`);
 
         // runScripts tests with TrustedHTML
         test((t) => {
@@ -341,25 +370,90 @@
         const doc = Document.parseHTMLUnsafe(trustedHTML, {
           sanitizer: { removeElements: ["b"] },
         });
-        assert_equals(doc.querySelector("#bold"), null, "Caller sanitizer should remove b");
-        assert_not_equals(
+        assert_equals(
           doc.querySelector("#span"),
           null,
-          "Default policy sanitizer should be ignored for TrustedHTML",
+          "Default policy sanitizer must remove span",
+        );
+        assert_not_equals(
+          doc.querySelector("#bold"),
+          null,
+          "Overridden caller sanitizer must not remove b",
         );
         assert_not_equals(doc.querySelector("#allowed"), null);
-      }, "Document.parseHTMLUnsafe: caller sanitizer is applied with TrustedHTML while default policy sanitizer is ignored");
+      }, "Document.parseHTMLUnsafe: default policy createParserOptions sanitizer overrides caller sanitizer dictionary with TrustedHTML");
 
-      // XML document tests with TrustedHTML:
-      // In XML documents, legacy sinks throw TypeError when default policy provides a sanitizer for raw strings,
-      // but with TrustedHTML, the default policy sanitizer is not applied, so they must NOT throw!
       test((t) => {
         t.add_cleanup(() => {
           createParserOptions = (options) => options;
         });
+        createParserOptions = (options) => options;
+        const trustedHTML = testPolicy.createHTML(
+          "<div id='allowed'><span id='span'></span><b id='bold'></b></div>",
+        );
+        const doc = Document.parseHTMLUnsafe(trustedHTML, {
+          sanitizer: { removeElements: ["b"] },
+        });
+        assert_equals(
+          doc.querySelector("#bold"),
+          null,
+          "Caller-provided sanitizer dictionary passed through by default policy must remove b",
+        );
+        assert_not_equals(doc.querySelector("#span"), null);
+        assert_not_equals(doc.querySelector("#allowed"), null);
+      }, "Document.parseHTMLUnsafe: caller-provided sanitizer dictionary is applied with TrustedHTML when default policy passes it through");
+
+      test((t) => {
+        t.add_cleanup(() => {
+          createParserOptions = (options) => options;
+        });
+        let createParserOptionsCalled = false;
+        createParserOptions = (options) => {
+          createParserOptionsCalled = true;
+          return {
+            ...options,
+            sanitizer: { removeElements: ["span"] },
+          };
+        };
+        const trustedHTML = testPolicy.createHTML(
+          "<div id='allowed'><span id='span'></span><b id='bold'></b></div>",
+        );
+        const parserOptions = testPolicy.createParserOptions({
+          sanitizer: { removeElements: ["b"] },
+        });
+        const doc = Document.parseHTMLUnsafe(trustedHTML, parserOptions);
+        assert_false(
+          createParserOptionsCalled,
+          "Default policy createParserOptions must not be called when TrustedHTMLParserOptions is passed",
+        );
+        assert_equals(
+          doc.querySelector("#bold"),
+          null,
+          "Caller-provided TrustedHTMLParserOptions sanitizer must remove b",
+        );
+        assert_not_equals(
+          doc.querySelector("#span"),
+          null,
+          "Default policy sanitizer is not applied when default policy is bypassed",
+        );
+        assert_not_equals(doc.querySelector("#allowed"), null);
+      }, "Document.parseHTMLUnsafe: caller-provided TrustedHTMLParserOptions sanitizer is applied with TrustedHTML while default policy is bypassed");
+
+      // XML document tests with TrustedHTML:
+      // In XML documents, documentType is "xml" so createParserOptions with sanitizer does not bypass
+      // get trusted type compliant string. However, passing TrustedHTML satisfies get trusted type
+      // compliant string without calling createHTML, so it never throws even if createHTML throws/is absent.
+      test((t) => {
+        t.add_cleanup(() => {
+          createParserOptions = (options) => options;
+          createHTML = (html) => html;
+        });
         createParserOptions = (options) => ({
           sanitizer: { removeElements: ["div"] },
         });
+        createHTML = () => {
+          throw new Error("createHTML should not be called for TrustedHTML in XML document");
+        };
 
         const doc = document.implementation.createDocument("application/xml", "xml");
         const elem = doc.createElement("div");
@@ -377,10 +471,14 @@
       test((t) => {
         t.add_cleanup(() => {
           createParserOptions = (options) => options;
+          createHTML = (html) => html;
         });
         createParserOptions = (options) => ({
           sanitizer: { removeElements: ["div"] },
         });
+        createHTML = () => {
+          throw new Error("createHTML should not be called for TrustedHTML in XML document");
+        };
 
         const doc = document.implementation.createDocument("application/xml", "xml");
         const elem = doc.createElement("div");
@@ -398,10 +496,14 @@
       test((t) => {
         t.add_cleanup(() => {
           createParserOptions = (options) => options;
+          createHTML = (html) => html;
         });
         createParserOptions = (options) => ({
           sanitizer: { removeElements: ["div"] },
         });
+        createHTML = () => {
+          throw new Error("createHTML should not be called for TrustedHTML in XML document");
+        };
 
         const doc = document.implementation.createDocument("application/xml", "xml");
         const elem = doc.createElement("div");
@@ -419,10 +521,14 @@
       test((t) => {
         t.add_cleanup(() => {
           createParserOptions = (options) => options;
+          createHTML = (html) => html;
         });
         createParserOptions = (options) => ({
           sanitizer: { removeElements: ["div"] },
         });
+        createHTML = () => {
+          throw new Error("createHTML should not be called for TrustedHTML in XML document");
+        };
 
         const doc = document.implementation.createDocument("application/xml", "xml");
         const range = doc.createRange();

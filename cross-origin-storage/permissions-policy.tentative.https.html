@@ -1,0 +1,151 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: Permissions Policy integration</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#permissions-policy-integration
+
+const {HTTPS_ORIGIN, HTTPS_REMOTE_ORIGIN} = get_host_info();
+
+promise_test(async t => {
+  // Default allowlist is "self": a same-origin context is allowed without
+  // any explicit header or iframe `allow` attribute.
+  const {ctx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {allow: null});
+  const result = await cosRemoteRead(ctx, cosMissingHash());
+  // Allowed by policy, so the rejection (if any) must come from the read
+  // path itself (NotFoundError for a hash that was never stored), not from
+  // the policy gate (NotAllowedError).
+  assert_equals(result.name, 'NotFoundError');
+}, 'a same-origin context is allowed to use crossOriginStorage by the default "self" allowlist');
+
+promise_test(async t => {
+  // A cross-origin iframe with no explicit `allow` attribute is NOT covered
+  // by the default "self" allowlist.
+  const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN, {allow: null});
+  const result = await cosRemoteRead(ctx, cosMissingHash());
+  assert_equals(result.ok, false);
+  assert_equals(result.name, 'NotAllowedError');
+}, 'a cross-origin iframe without an explicit allow attribute is blocked by the default "self" allowlist');
+
+promise_test(async t => {
+  // The same cross-origin iframe, but with the feature explicitly allowed
+  // via the iframe's `allow` attribute, must not be policy-blocked.
+  const {ctx} = await cosOpenRemoteContext(HTTPS_REMOTE_ORIGIN, {allow: 'cross-origin-storage'});
+  const result = await cosRemoteRead(ctx, cosMissingHash());
+  assert_equals(result.name, 'NotFoundError',
+    'explicitly allowed via the iframe allow attribute, so only the read path itself can reject');
+}, 'a cross-origin iframe with an explicit allow="cross-origin-storage" attribute is not policy-blocked');
+
+promise_test(async t => {
+  // An explicit response header can also disable the feature for an
+  // otherwise-same-origin (and therefore normally allowed) context.
+  const {ctx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {
+    allow: null,
+    pipeHeader: 'header(Permissions-Policy,cross-origin-storage=\\(\\))',
+  });
+  const result = await cosRemoteRead(ctx, cosMissingHash());
+  assert_equals(result.ok, false);
+  assert_equals(result.name, 'NotAllowedError');
+}, 'an explicit Permissions-Policy header can disable crossOriginStorage even for a same-origin context');
+
+promise_test(async t => {
+  // The policy check happens before hash validation: a policy-blocked
+  // context gets NotAllowedError even for a request whose hash/options
+  // would otherwise be rejected with TypeError.
+  // https://wicg.github.io/cross-origin-storage/#requestfilehandle
+  const {ctx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {
+    allow: null,
+    pipeHeader: 'header(Permissions-Policy,cross-origin-storage=\\(\\))',
+  });
+  const result = await ctx.execute_script(async () => {
+    try {
+      await navigator.crossOriginStorage.requestFileHandle({algorithm: 'not-an-algorithm', value: 'not-hex'});
+      return {ok: true};
+    } catch (e) {
+      return {ok: false, name: e.name, message: e.message};
+    }
+  }, []);
+  assert_equals(result.ok, false);
+  assert_equals(result.name, 'NotAllowedError',
+    'the Permissions Policy check must run, and reject, before hash validation');
+}, 'a policy-blocked context rejects with NotAllowedError even for a request that would otherwise fail validation');
+
+promise_test(async t => {
+  // The fetch integration has no exception channel of its own to reject
+  // through: the request is perfectly valid, and failing it would break
+  // ordinary fetching for a page that merely asked for COS and was refused.
+  // The expected behavior is therefore to act as if `crossOriginStorage` had
+  // been absent -- fetch from the network, never touch COS. This is an open
+  // question for whatwg/fetch#1954.
+  //
+  // Asserting only that a blocked context fails to be rescued would pass just
+  // as well in a browser that does not implement the integration at all, so
+  // this test is differential: the same fetch, against the same entry, is run
+  // in an allowed context and in a policy-blocked one, and the point is that
+  // they differ. Both executors are same-origin with this document, which is
+  // the storing origin, so the allowed one's disclosure is unconditional and
+  // needs no tolerance for GREASE'ing or the probe budget.
+  const content = cosUniqueContent('policy-blocked-fetch');
+  const integrity = await cosSha256Integrity(content);
+  await cosStore(content, {origins: '*'});
+
+  const echoUrl = new URL(
+      `/common/echo.py?content=${encodeURIComponent(content)}`, location.href).href;
+
+  const probe = async (ctx) => ctx.execute_script(async (echoUrl, integrity) => {
+    const out = {};
+    // A URL that resolves: the fetch must succeed either way. A disallowing
+    // policy must not turn an ordinary integrity-checked fetch into a failure.
+    try {
+      const response = await fetch(echoUrl, {integrity, crossOriginStorage: '*'});
+      out.network = {ok: response.ok, text: await response.text()};
+    } catch (e) {
+      out.network = {ok: false, name: e.name};
+    }
+    // A URL that 404s: only COS can rescue this, so it is the half that must
+    // differ between the two contexts.
+    try {
+      const response = await fetch('./does-not-exist-' + Math.random() + '.txt',
+                                   {integrity, crossOriginStorage: '*'});
+      out.cos = {ok: true, text: await response.text()};
+    } catch (e) {
+      out.cos = {ok: false, name: e.name};
+    }
+    return out;
+  }, [echoUrl, integrity]);
+
+  const {ctx: allowedCtx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {allow: null});
+  const allowed = await probe(allowedCtx);
+
+  const {ctx: blockedCtx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {
+    allow: null,
+    pipeHeader: 'header(Permissions-Policy,cross-origin-storage=\\(\\))',
+  });
+  const blocked = await probe(blockedCtx);
+
+  assert_true(allowed.network.ok, 'the allowed context fetches the real URL');
+  assert_true(blocked.network.ok,
+    'a disallowing policy must not break the ordinary network fetch');
+  assert_equals(blocked.network.text, content);
+
+  assert_true(allowed.cos.ok,
+    'the allowed context is served the 404 URL from COS, which is what makes the ' +
+    'blocked half below meaningful rather than vacuously true');
+  assert_equals(allowed.cos.text, content);
+
+  assert_false(blocked.cos.ok,
+    'with COS disallowed by policy, the same fetch must not be served from the same entry');
+  assert_equals(blocked.cos.name, 'TypeError',
+    'and it must fail as an ordinary integrity-checked network error, not a COS error');
+}, 'a policy-blocked context runs a crossOriginStorage fetch as if the member were absent, while an allowed one is served from COS');
+</script>
+</body>

@@ -1,0 +1,143 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: the Permissions Policy check covers workers</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#permissions-policy-integration
+//
+// "check Cross-Origin Storage permission" is stated over the calling global,
+// not over a Document. For a worker it resolves through the worker's owner
+// set: every owning Document (transitively) must permit the feature. A
+// CrossOriginStorageManager exposed on a worker global must therefore honor
+// the owning document's Permissions Policy, and in particular a worker cannot
+// be used to escape a `cross-origin-storage=()` policy on the page that
+// created it -- including a blob: worker, which runs in the creating page's
+// own origin and shares its COS view. A ServiceWorkerGlobalScope has an empty
+// owner set, so the check fails closed there.
+
+const {HTTPS_ORIGIN} = get_host_info();
+
+// Runs, inside the RemoteContext `ctx`, a blob: worker that attempts a COS
+// read for `hash` and reports back the exception name (or ok). Returns the
+// worker's {ok} / {ok:false,name,message} descriptor.
+async function blobWorkerRead(ctx, hash) {
+  return ctx.execute_script(async (hash) => {
+    const source = `
+      self.onmessage = async ({data}) => {
+        try {
+          const handle = await navigator.crossOriginStorage.requestFileHandle(data.hash);
+          await handle.getFile();
+          self.postMessage({ok: true});
+        } catch (e) {
+          self.postMessage({ok: false, name: e.name, message: e.message});
+        }
+      };`;
+    const url = URL.createObjectURL(new Blob([source], {type: 'text/javascript'}));
+    const worker = new Worker(url);
+    URL.revokeObjectURL(url);
+    return await new Promise((resolve, reject) => {
+      worker.onmessage = ({data}) => resolve(data);
+      worker.onerror = () => reject(new Error('blob: worker failed to load'));
+      worker.postMessage({hash});
+    });
+  }, [hash]);
+}
+
+promise_test(async t => {
+  // Baseline: in a context where COS is allowed (default "self" allowlist,
+  // same-origin), a blob: worker's read reaches the read path and rejects only
+  // with NotFoundError for a hash that was never stored -- never NotAllowedError.
+  const {ctx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {allow: null});
+  const result = await blobWorkerRead(ctx, cosMissingHash());
+  assert_false(result.ok);
+  assert_equals(result.name, 'NotFoundError',
+    'an allowed context\'s blob: worker is not policy-blocked');
+}, 'a blob: worker in a policy-allowed document may use crossOriginStorage');
+
+promise_test(async t => {
+  // The escape this closes: with COS disabled on the document via
+  // Permissions-Policy, moving the call into new Worker(URL.createObjectURL(...))
+  // must NOT bypass the policy. The blob: worker inherits the creating page's
+  // origin and COS view, so the check -- resolved through the owner set -- must
+  // reject with NotAllowedError just as a call in the document itself would.
+  const {ctx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {
+    allow: null,
+    pipeHeader: 'header(Permissions-Policy,cross-origin-storage=\\(\\))',
+  });
+  const result = await blobWorkerRead(ctx, cosMissingHash());
+  assert_false(result.ok);
+  assert_equals(result.name, 'NotAllowedError',
+    'a blob: worker must not escape its creator document\'s cross-origin-storage=() policy');
+}, 'a blob: worker cannot escape a cross-origin-storage=() policy on the document that created it');
+
+promise_test(async t => {
+  // The policy check runs before hash validation for a worker too: a
+  // policy-blocked worker gets NotAllowedError even for an otherwise-invalid
+  // request.
+  const {ctx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {
+    allow: null,
+    pipeHeader: 'header(Permissions-Policy,cross-origin-storage=\\(\\))',
+  });
+  const result = await ctx.execute_script(async () => {
+    const source = `
+      self.onmessage = async () => {
+        try {
+          await navigator.crossOriginStorage.requestFileHandle(
+            {algorithm: 'not-an-algorithm', value: 'not-hex'});
+          self.postMessage({ok: true});
+        } catch (e) {
+          self.postMessage({ok: false, name: e.name, message: e.message});
+        }
+      };`;
+    const url = URL.createObjectURL(new Blob([source], {type: 'text/javascript'}));
+    const worker = new Worker(url);
+    URL.revokeObjectURL(url);
+    return await new Promise((resolve, reject) => {
+      worker.onmessage = ({data}) => resolve(data);
+      worker.onerror = () => reject(new Error('blob: worker failed to load'));
+      worker.postMessage({});
+    });
+  }, []);
+  assert_false(result.ok);
+  assert_equals(result.name, 'NotAllowedError',
+    'the policy check must run, and reject, before hash validation, in a worker too');
+}, 'a policy-blocked worker rejects with NotAllowedError even for a request that would otherwise fail validation');
+
+promise_test(async t => {
+  // A ServiceWorkerGlobalScope has an empty owner set, so "check Cross-Origin
+  // Storage permission" returns false and the call fails closed with
+  // NotAllowedError -- even from a top-level, same-origin, policy-allowed page.
+  // This is a conservative placeholder (see the spec note), pinned so a change
+  // to it is a deliberate one.
+  const scope = `resources/cos-sw-scope-${token()}/`;
+  const reg = await navigator.serviceWorker.register(
+    'resources/cos-permission-sw.js', {scope});
+  t.add_cleanup(() => reg.unregister());
+  const sw = reg.installing || reg.waiting || reg.active;
+  await new Promise((resolve) => {
+    if (reg.active) return resolve();
+    sw.addEventListener('statechange', () => {
+      if (sw.state === 'activated') resolve();
+    });
+  });
+
+  const result = await new Promise((resolve) => {
+    const channel = new MessageChannel();
+    channel.port1.onmessage = ({data}) => resolve(data);
+    reg.active.postMessage({port: channel.port2, hash: cosMissingHash()}, [channel.port2]);
+  });
+  assert_false(result.ok, 'a service worker must not obtain a COS handle');
+  assert_equals(result.name, 'NotAllowedError',
+    'a ServiceWorkerGlobalScope has an empty owner set, so the permission check fails closed');
+}, 'a service worker cannot use crossOriginStorage (empty owner set fails closed)');
+</script>
+</body>

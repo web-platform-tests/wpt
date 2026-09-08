@@ -1,0 +1,162 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: transferring a handle</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#transferring-handles
+//
+// A FileSystemFileHandle is serializable, so postMessage() is a second way to
+// obtain a handle for a COS entry alongside requestFileHandle(). Every
+// disclosure control in the specification -- `origins`, the Public Hash List,
+// GREASE'ing -- is evaluated on the read path for the origin that asks, so
+// transferring is constrained too: same-origin only, with the handle's
+// readability travelling with it rather than being re-evaluated on arrival.
+
+const {HTTPS_ORIGIN, HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+const RECEIVER_PATH = '/cross-origin-storage/resources/transfer-receiver.html';
+
+// Loads `origin`'s copy of the receiver page, posts `message` to it, and
+// resolves with the single report it sends back.
+function transferToFrame(t, origin, message) {
+  return new Promise((resolve, reject) => {
+    const iframe = document.createElement('iframe');
+    iframe.src = origin + RECEIVER_PATH;
+    t.add_cleanup(() => iframe.remove());
+
+    const onMessage = (e) => {
+      if (e.source !== iframe.contentWindow) return;
+      window.removeEventListener('message', onMessage);
+      resolve(e.data);
+    };
+    window.addEventListener('message', onMessage);
+    t.add_cleanup(() => window.removeEventListener('message', onMessage));
+
+    iframe.onload = () => {
+      try {
+        iframe.contentWindow.postMessage(message, '*');
+      } catch (err) {
+        reject(err);
+      }
+    };
+    iframe.onerror = () => reject(new Error('receiver frame failed to load'));
+    document.body.appendChild(iframe);
+  });
+}
+
+// As above, for a same-origin dedicated worker.
+function transferToWorker(t, message) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker('resources/transfer-worker.js');
+    t.add_cleanup(() => worker.terminate());
+    worker.onmessage = (e) => resolve(e.data);
+    worker.onmessageerror = () => resolve({event: 'messageerror'});
+    worker.onerror = () => reject(new Error('worker failed to load'));
+    try {
+      worker.postMessage(message);
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+promise_test(async t => {
+  const content = cosUniqueContent('transfer-to-worker');
+  const {hash} = await cosStore(content);
+  const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+
+  const result = await transferToWorker(t, {handle});
+  assert_equals(result.event, 'message', 'a same-origin transfer must succeed');
+  assert_true(result.isFileSystemFileHandle,
+    'the transferred value must still be a FileSystemFileHandle');
+  assert_equals(result.read, 'ok',
+    `the worker must be able to read it, got ${result.errorName}`);
+  assert_equals(result.text, content, 'the bytes must round-trip intact');
+}, 'a readable handle transferred to a same-origin worker stays readable');
+
+promise_test(async t => {
+  const content = cosUniqueContent('transfer-to-same-origin-frame');
+  const {hash} = await cosStore(content);
+  const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+
+  const result = await transferToFrame(t, HTTPS_ORIGIN, {handle});
+  assert_equals(result.event, 'message', 'a same-origin transfer must succeed');
+  assert_equals(result.read, 'ok',
+    `the frame must be able to read it, got ${result.errorName}`);
+  assert_equals(result.text, content);
+}, 'a readable handle transferred to a same-origin frame stays readable');
+
+promise_test(async t => {
+  // The disclosure controls all live on the read path, evaluated for the origin
+  // that asked. Handing a readable handle to another origin would give it the
+  // bytes with none of them evaluated for it.
+  //
+  // A COS handle is a FileSystemFileHandle, so what stops that is the existing
+  // same-origin restriction on transferring any file system handle, covered
+  // generically by /fs/script-tests/FileSystemBaseHandle-postMessage-Error.js.
+  // This subtest is here because COS depends on that restriction for a
+  // disclosure guarantee the fs tests are not concerned with, so a regression
+  // in it should fail the COS suite too, not just the fs suite.
+  const content = cosUniqueContent('transfer-cross-origin');
+  const {hash} = await cosStore(content, {origins: '*'});
+  const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+
+  const result = await transferToFrame(t, HTTPS_NOTSAMESITE_ORIGIN, {handle});
+  assert_equals(result.event, 'messageerror',
+    'a cross-origin recipient must not receive a usable handle');
+}, 'a handle transferred cross-origin is not delivered');
+
+promise_test(async t => {
+  // `may read` travels with the handle. A create-request handle is not readable
+  // until that same handle has been written through, and transferring it must
+  // not launder it into a readable one.
+  const content = cosUniqueContent('transfer-unwritten-create-handle');
+  const hash = cosHash(await cosSha256Hex(content));
+  const handle = await navigator.crossOriginStorage.requestFileHandle(
+    hash, {create: true});
+
+  const result = await transferToWorker(t, {handle});
+  assert_equals(result.event, 'message', 'the transfer itself must succeed');
+  assert_equals(result.read, 'error',
+    'an unwritten create handle must not become readable by being transferred');
+  assert_equals(result.errorName, 'NotAllowedError');
+
+  // Leave the entry in a clean, written state for any later run.
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([content]));
+  await writable.close();
+}, 'transferring a not-yet-written create handle does not make it readable');
+
+promise_test(async t => {
+  // Readability is captured when the handle is serialized, not re-evaluated on
+  // arrival: a handle transferred before its write completed stays unreadable
+  // even after the original has become readable. Re-evaluating on arrival would
+  // let a caller re-roll GREASE'ing by transferring one handle repeatedly.
+  const content = cosUniqueContent('transfer-captures-readability');
+  const hash = cosHash(await cosSha256Hex(content));
+  const handle = await navigator.crossOriginStorage.requestFileHandle(
+    hash, {create: true});
+
+  const transferred = transferToWorker(t, {handle});
+
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([content]));
+  await writable.close();
+
+  const result = await transferred;
+  assert_equals(result.event, 'message');
+  assert_equals(result.read, 'error',
+    'the transferred handle must not become readable because the original did');
+  assert_equals(result.errorName, 'NotAllowedError');
+
+  // The original handle, having been written through, is readable.
+  const file = await handle.getFile();
+  assert_equals(await file.text(), content);
+}, 'readability is captured at transfer time, not re-evaluated on arrival');
+</script>
+</body>

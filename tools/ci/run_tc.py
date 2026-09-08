@@ -449,7 +449,11 @@ def run_tc(*args, **kwargs):
         sys.exit(subprocess.call(cmd))
     finally:
         for process in started_processes:
-            process.kill()
+            process.terminate()
+            try:
+                process.wait(30)
+            except subprocess.TimeoutExpired:
+                process.kill()
 
 
 def main():

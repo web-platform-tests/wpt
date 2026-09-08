@@ -15,8 +15,7 @@
 <body>
 
   <h1>WAI-ARIA tests for invalidly nested heading elements</h1>
-  <p>Equivalent ARIA patterns tested in
-    <code>/html-aam/heading/invalid-nesting.html</code>.</p>
+  <p>Equivalent native patterns tested in <code>/html-aam/heading/invalid-nesting.html</code>.</p>
 
   <h2>Accessible names and roles</h2>
   <hr>
@@ -25,8 +24,8 @@
     role="heading"
     aria-level="1"
     class="ex-label"
-    data-testname="div[role=heading][aria-level=1] should not inherit accname from invalid div[role=heading][aria-level=2] descendant"
-    data-expectedlabel=""
+    data-testname="div[role=heading][aria-level=1] with invalid div[role=heading][aria-level=2] descendant"
+    data-expectedlabel="SPEC_AMBIGUOUS_LOG_VALUE — perhaps `` to imitate native html-aam behavior"
   >
     <div
       role="heading"
@@ -38,8 +37,8 @@
     role="heading"
     aria-level="4"
     class="ex-label"
-    data-testname="div[role=heading][aria-level=4] should not inherit accname from  invalid div[role=heading][aria-level=3] descendant"
-    data-expectedlabel=""
+    data-testname="div[role=heading][aria-level=4] with invalid div[role=heading][aria-level=3] descendant"
+    data-expectedlabel="SPEC_AMBIGUOUS_LOG_VALUE — perhaps `` to imitate native html-aam behavior"
   >
     <div
       role="heading"
@@ -51,8 +50,8 @@
     role="heading"
     aria-level="5"
     class="ex-label"
-    data-testname="div[role=heading][aria-level=5] should not inherit accname from invalid div[role=heading][aria-level=6] descendant"
-    data-expectedlabel=""
+    data-testname="div[role=heading][aria-level=5] with invalid div[role=heading][aria-level=6] descendant"
+    data-expectedlabel="SPEC_AMBIGUOUS_LOG_VALUE — perhaps `` to imitate native html-aam behavior"
   >
     <div
       role="heading"
@@ -64,8 +63,8 @@
     role="heading"
     aria-level="1"
     class="ex-label"
-    data-testname="div[role=heading][aria-level=1] with text contents should not accumulate accname from invalid div[role=heading][aria-level=2] descendant"
-    data-expectedlabel="Chocolate"
+    data-testname="div[role=heading][aria-level=1] with text contents and invalid div[role=heading][aria-level=2] descendant"
+  data-expectedlabel="SPEC_AMBIGUOUS_LOG_VALUE — perhaps `Chocolate` to imitate native html-aam behavior"
   >Chocolate
     <div
       role="heading"
@@ -102,8 +101,8 @@
     role="heading"
     aria-level="1"
     class="ex-label"
-    data-testname="button[role=heading][aria-level=1] with text contents should not accumulate accname from invalid span[role=heading][aria-level=2] descendant"
-    data-expectedlabel="Macaroni"
+    data-testname="button[role=heading][aria-level=1] with text contents and invalid span[role=heading][aria-level=2] descendant"
+    data-expectedlabel="SPEC_AMBIGUOUS_LOG_VALUE — perhaps `Macaroni` to imitate native html-aam behavior"
   >Macaroni
     <span
       role="heading"
@@ -115,8 +114,8 @@
     role="heading"
     aria-level="1"
     class="ex-label"
-    data-testname="p[role=heading][aria-level=1] with text contents should not accumulate accname from invalid span[role=heading][aria-level=2] descendant"
-    data-expectedlabel="Biscuits"
+    data-testname="p[role=heading][aria-level=1] with text contents and invalid span[role=heading][aria-level=2] descendant"
+    data-expectedlabel="SPEC_AMBIGUOUS_LOG_VALUE — perhaps `Biscuits` to imitate native html-aam behavior"
   >Biscuits
     <span
     role="heading"

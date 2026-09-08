@@ -83,13 +83,13 @@
       role="heading"
       aria-level="2"
       class="ex-no-heading-ancestor"
-      data-testname="div[role=heading][aria-level=2] invalidly nested inside div[role=heading][aria-level=1] should not, after parsing, have any DOM ancestor with a heading role"
+    data-testname="div[role=heading][aria-level=2] invalidly nested inside div[role=heading][aria-level=1] should not, if imitating native html-aam behavior, have any DOM ancestor with a heading role"
     >Two
       <div
         role="heading"
         aria-level="3"
         class="ex-no-heading-ancestor"
-        data-testname="div[role=heading][aria-level=3] invalidly nested inside div[role=heading][aria-level=1] > div[role=heading][aria-level=2] should not, after parsing, have any DOM ancestor with a heading role"
+        data-testname="div[role=heading][aria-level=3] invalidly nested inside div[role=heading][aria-level=1] > div[role=heading][aria-level=2] should not, if imitating native html-aam behavior, have any DOM ancestor with a heading role"
       >Three</div>
     </div>
   </div>

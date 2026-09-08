@@ -498,9 +498,9 @@ class TestLoader:
 
 
 
-def get_test_queue_builder(**kwargs: Any) -> Tuple[TestQueueBuilder, Mapping[str, Any]]:
+def get_test_queue_builder(logger, **kwargs: Any) -> Tuple[TestQueueBuilder, Mapping[str, Any]]:
     builder_kwargs = {"processes": kwargs["processes"],
-                      "logger": kwargs["logger"]}
+                      "logger": logger}
     chunker_kwargs = {}
     builder_cls: Type[TestQueueBuilder]
     if kwargs["fully_parallel"]:
@@ -515,6 +515,7 @@ def get_test_queue_builder(**kwargs: Any) -> Tuple[TestQueueBuilder, Mapping[str
         builder_kwargs["test_groups"] = kwargs["test_groups"]
     else:
         builder_cls = SingleTestSource
+    logger.debug(f"Using {builder_cls.__name__} test queue builder with kwargs {builder_kwargs}")
     return builder_cls(**builder_kwargs), chunker_kwargs
 
 
@@ -543,7 +544,7 @@ class TestGroup:
 class TestQueueBuilder:
     __metaclass__ = ABCMeta
 
-    def __init__(self, **kwargs: Any):
+    def __init__(self, logger, **kwargs: Any):
         """Class for building a queue of groups of tests to run.
 
         Each item in the queue is a TestGroup, which consists of an iterable of
@@ -552,11 +553,13 @@ class TestQueueBuilder:
 
         Tests in the same group are run in the same TestRunner in the
         provided order."""
+        self.logger = logger
         self.kwargs = kwargs
 
     def make_queue(self, tests_by_type: TestsByType) -> Tuple[ReadQueue, int]:
         test_queue = WriteQueue()
         groups = self.make_groups(tests_by_type)
+        self.logger.debug(f"Grouped tests into {len(groups)} groups")
         processes = self.process_count(self.kwargs["processes"], len(groups))
         if processes > 1:
             groups.sort(key=lambda group: (
@@ -640,7 +643,9 @@ class PathGroupedSource(TestQueueBuilder):
                      subsuite: str,
                      tests: List[wpttest.Test]) -> bool:
         small_subsuite_size = self.kwargs.get("small_subsuite_size", 0)
-        return len(subsuite) > 0 and len(tests) <= small_subsuite_size
+        rv = len(subsuite) > 0 and len(tests) <= small_subsuite_size
+        if rv:
+            self.logger.debug(f"Putting tests in subsuite {subsuite} in a single group")
 
     def make_groups(self, tests_by_type: TestsByType) -> List[TestGroup]:
         groups = []

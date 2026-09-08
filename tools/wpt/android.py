@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+from tools.wpt.utils import get_download_to_descriptor
 import argparse
 import logging
 import os
@@ -10,8 +11,9 @@ import subprocess
 import threading
 from xml.etree import ElementTree
 
-import requests
+from .utils import get_download_to_descriptor
 from .wpt import venv_dir
+
 
 android_device = None
 

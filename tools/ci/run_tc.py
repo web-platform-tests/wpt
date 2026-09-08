@@ -123,10 +123,13 @@ def get_parser():
     return p
 
 
-def start_userspace_oom_killer():
+def start_userspace_oom_killer(log_only=False):
     # Start userspace OOM killer: https://github.com/rfjakob/earlyoom
     # It will report memory usage every minute and prefer to kill browsers.
-    start(["sudo", "earlyoom", "-p", "-r", "60", "--prefer=(chrome|firefox)", "--avoid=python"])
+    cmd = ["sudo", "earlyoom", "-p", "-r", "60", "--prefer=(chrome|firefox)", "--avoid=python"]
+    if log_only:
+        cmd.append("--dryrun")
+    start(cmd)
 
 
 def make_hosts_file():
@@ -284,7 +287,8 @@ def setup_environment(**kwargs):
         start_xvfb()
 
     if kwargs["oom_killer"]:
-        start_userspace_oom_killer()
+        log_only = "firefox_android" in kwargs["browser"]
+        start_userspace_oom_killer(log_only)
 
 
 def setup_repository(**kwargs):

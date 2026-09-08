@@ -7,6 +7,7 @@ import platform
 import signal
 import shutil
 import subprocess
+import time
 import threading
 
 import requests
@@ -138,22 +139,45 @@ def get_os_tag(logger):
     raise NotImplementedError
 
 
-def download_and_extract(url, path):
+def download_with_retry(logger, url, path, retry_count=5):
+    attempt = 0
+    exceptions = []
+    while attempt < retry_count:
+        if attempt != 0:
+            time.sleep(2**attempt)
+        temp_path = os.path.join(path, url.rsplit("/", 1)[1])
+        logger.info(f"Downloading {url}, attempt {attempt+1}/{retry_count}")
+        try:
+            with open(temp_path, "wb") as f:
+                with requests.get(url, stream=True) as resp:
+                    resp.raise_for_status()
+                    for chunk in resp.iter_content(2**16):
+                        f.write(chunk)
+            if not os.path.exists(temp_path):
+                raise ValueError(f"Failed to download {url}, output path doesn't exist")
+            return temp_path
+        except Exception as e:
+            logger.warning(f"Download failed {e}")
+            exceptions.append(e)
+            if os.path.exists(temp_path):
+                os.unlink(temp_path)
+            attempt += 1
+
+    exception_msgs = "\n".join(str(e) for e in exceptions)
+    msg = f"Download failed after {retry_count} attempts. Got exceptions:\n{exception_msgs}"
+    raise RuntimeError(msg)
+
+
+def download_and_extract(logger, url, path):
     if not os.path.exists(path):
         os.makedirs(path)
-    temp_path = os.path.join(path, url.rsplit("/", 1)[1])
+    temp_path = None
     try:
-        with open(temp_path, "wb") as f:
-            with requests.get(url, stream=True) as resp:
-                resp.raise_for_status()
-                for chunk in resp.iter_content(2**16):
-                    f.write(chunk)
-        if not os.path.exists(temp_path):
-            raise ValueError(f"Failed to download {url}, output path doesn't exist")
+        temp_path = download_with_retry(logger, url, path)
         # Python's zipfile module doesn't seem to work here
         subprocess.check_call(["unzip", temp_path], cwd=path)
     finally:
-        if os.path.exists(temp_path):
+        if temp_path is not None and os.path.exists(temp_path):
             os.unlink(temp_path)
 
 
@@ -168,9 +192,8 @@ def install_sdk(logger, paths):
     download_path = os.path.dirname(paths["sdk_tools"])
 
     url = f'https://dl.google.com/android/repository/commandlinetools-{get_os_tag(logger)}-{CMDLINE_TOOLS_VERSION}_latest.zip'
-    logger.info("Getting SDK from %s" % url)
-
-    download_and_extract(url, download_path)
+    logger.info("Getting SDK")
+    download_and_extract(logger, url, download_path)
     os.rename(os.path.join(download_path, "cmdline-tools"), paths["sdk_tools"])
 
     return True

@@ -143,7 +143,8 @@ def update_event_commit_args(event):
 @pytest.mark.parametrize("event_path,event_update,task,expected", [
     ("pr_event.json", None, {"name": "test-task", "command": "test"},"""
 ~/start.sh   https://github.com/web-platform-tests/wpt.git   fetch_ref;
-
+;
+;
 cd web-platform-tests;
 ./wpt tc-run --ref=fetch_ref --no-hosts -- test ;
 """),
@@ -151,10 +152,18 @@ cd web-platform-tests;
      update_event_commit_args,
      {"name": "test-task", "command": "test", "commit-args-name": "test-args"},"""
 ~/start.sh   https://github.com/web-platform-tests/wpt.git   fetch_ref;
-
+;
+;
 cd web-platform-tests;
 ./wpt tc-run --ref=fetch_ref --no-hosts -- test --test1 --test2=value;
-""")
+"""),
+    ("pr_event.json", None, {"name": "test-task", "command": "test", "python": "3.13"},"""
+~/start.sh   https://github.com/web-platform-tests/wpt.git   fetch_ref;
+;
+uv python install 3.13;
+cd web-platform-tests;
+./wpt tc-run --ref=fetch_ref --no-hosts -- test ;
+"""),
 ])
 def test_command(event_path, event_update, task, expected):
     with mock.patch("tools.ci.tc.decision.get_fetch_rev", return_value=("fetch_ref", None, None)):

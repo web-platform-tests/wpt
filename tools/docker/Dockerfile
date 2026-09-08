@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:26.04
 
 # No interactive frontend during docker build
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -24,7 +24,7 @@ RUN apt-get -qqy update \
     libcairo2-dev \
     libgirepository1.0-dev \
     libosmesa6-dev \
-    libproxy1-plugin-webkit \
+    libproxy1v5 \
     libvirt-daemon-system \
     libvirt-clients \
     libunwind8 \
@@ -32,53 +32,46 @@ RUN apt-get -qqy update \
     locales \
     openjdk-17-jre-headless \
     pulseaudio \
+    python-is-python3 \
     python3 \
     python3-dev \
     python3-pip \
     python3-venv \
     software-properties-common \
-    qemu-kvm \
+    qemu-system \
     tzdata \
     sudo \
     unzip \
     wget \
     xvfb
 
-# Ensure all Python versions are available
-RUN apt-add-repository -y ppa:deadsnakes/ppa
-
-# Ensure a `python` binary exists
-RUN apt-get -qqy update \
-    && apt-get install -qqy python-is-python3
-
-# Installing just the deps of firefox and chrome is moderately tricky, so
-# just install the default versions of them, and some extra deps we happen
-# to know that chrome requires
-
-RUN apt-get -qqy install \
-    firefox \
-    libnss3-tools \
-    fonts-liberation \
-    indicator-application \
-    libappindicator1 \
-    libappindicator3-1 \
-    libdbusmenu-gtk3-4 \
-    libindicator3-7 \
-    libindicator7
-
+# Now clean up anything that's no longer needed
 RUN apt-get -y autoremove
 
-RUN pip install --upgrade pip
+# Add Chrome debian repository
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo tee /etc/apt/keyrings/google.asc >/dev/null && \
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.asc] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list && \
+    apt-get -qqy update
 
-ENV TZ "UTC"
+# Install Chrome and Firefox and their dependencies and then remove the main
+# packages leaving just the dependencies
+RUN apt-get -qqy install \
+    firefox \
+    google-chrome-canary && \
+    apt-get -qqy remove firefox google-chrome-canary
+
+# Install uv which we can use to manage python version
+RUN curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR="/usr/bin" sh
+
+ENV TZ="UTC"
 RUN echo "${TZ}" > /etc/timezone \
   && dpkg-reconfigure --frontend noninteractive tzdata
 
 # Set the locale
 RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV LANG="en_US.UTF-8"
+ENV LANGUAGE="en_US:en"
+ENV LC_ALL="en_US.UTF-8"
 
 # Setup on-demand pulseaudio with a "Dummy Output" audio sink.
 # This simply creates a file containing autospawn=yes at
@@ -95,10 +88,10 @@ RUN useradd test \
   && echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers \
   && echo 'test:secret' | chpasswd
 
-ENV SCREEN_WIDTH 1280
-ENV SCREEN_HEIGHT 1024
-ENV SCREEN_DEPTH 24
-ENV DISPLAY :99.0
+ENV SCREEN_WIDTH=1280
+ENV SCREEN_HEIGHT=1024
+ENV SCREEN_DEPTH=24
+ENV DISPLAY=":99.0"
 
 USER test
 

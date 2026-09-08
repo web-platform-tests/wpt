@@ -132,20 +132,13 @@ components:
     env:
       TOXENV: py39
       PY_COLORS: "0"
-    install:
-      - python3.9
-      - python3.9-distutils
-      - python3.9-dev
-      - python3.9-venv
+    python: "3.9"
 
   tox-python3_14:
     env:
       TOXENV: py314
       PY_COLORS: "0"
-    install:
-      - python3.14
-      - python3.14-dev
-      - python3.14-venv
+    python: "3.14"
   tests-affected:
     options:
       browser:
@@ -720,10 +713,8 @@ tasks:
               - browser-${vars.browser}
             command: ./tools/ci/ci_wptrunner_infrastructure.sh ${vars.browser} ${vars.channel}
             install:
-              - python3-pip
               - libnss3-tools
               - libappindicator1
-              - fonts-liberation
             options:
               oom-killer: true
               browser:

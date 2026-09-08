@@ -340,7 +340,10 @@ class ChromeBrowser(WebDriverBrowser):
         self._is_extension_test = (
             (test.testdriver_features is not None and
              "extensions" in test.testdriver_features) or
-            (test.path is not None and "web-extensions/" in test.path))
+            # Normalize path separators with `replace()` to handle Windows
+            # backslashes.
+            (test.path is not None and
+             "web-extensions/" in test.path.replace("\\", "/")))
         self._require_webdriver_bidi = (
             (test.testdriver_features is not None and
              ("bidi" in test.testdriver_features or

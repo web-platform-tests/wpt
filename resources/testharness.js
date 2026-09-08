@@ -5086,8 +5086,10 @@
             var message;
             if (e.reason && e.reason.message) {
                 message = "Unhandled rejection: " + e.reason.message;
+            } else if (typeof e.reason === 'string' && e.reason) {
+              message = 'Unhandled rejection: ' + e.reason;
             } else {
-                message = "Unhandled rejection";
+              message = 'Unhandled rejection';
             }
             var stack;
             if (e.reason && e.reason.stack) {

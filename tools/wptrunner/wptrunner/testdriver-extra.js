@@ -194,7 +194,7 @@
                 resolve(result);
             };
             const on_failure = data => {
-                reject(`${data.status}: ${data.message}`);
+                reject(new Error(`${data.status}: ${data.message}`));
             };
             pending.set(cmd_id, [on_success, on_failure]);
         });

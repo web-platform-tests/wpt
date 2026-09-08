@@ -272,8 +272,9 @@ def run_info_extras(logger, default_prefs=None, **kwargs):
           "swgl": bool_pref("gfx.webrender.software"),
           "useDrawSnapshot": bool_pref("reftest.use-draw-snapshot"),
           "privateBrowsing": bool_pref("browser.privatebrowsing.autostart"),
-          "remoteAsyncEvents": (bool_pref("remote.events.async.mouse.enabled") or
-                                bool_pref("remote.events.async.wheel.enabled")),
+          "remoteAsyncMouseEvents": bool_pref("remote.events.async.mouse.enabled"),
+          "remoteAsyncTouchEvents": bool_pref("remote.events.async.touch.enabled"),
+          "remoteAsyncWheelEvents": bool_pref("remote.events.async.wheel.enabled"),
           "incOriginInit": os.environ.get("MOZ_ENABLE_INC_ORIGIN_INIT") == "1",
           "openh264": prefers_openh264(),
           }
@@ -308,7 +309,9 @@ def update_properties():
             "useDrawSnapshot",
             "asan",
             "tsan",
-            "remoteAsyncEvents",
+            "remoteAsyncMouseEvents",
+            "remoteAsyncTouchEvents",
+            "remoteAsyncWheelEvents",
             "sessionHistoryInParent",
             "openh264",
             "subsuite",

@@ -24,6 +24,12 @@ const algorithms = [
         publicKeyUsages: ["verify"]
     },
     {
+        name: "Ed448",
+        generateKeyParams: { name: "Ed448" },
+        usages: ["sign", "verify"],
+        publicKeyUsages: ["verify"]
+    },
+    {
         name: "RSA-OAEP",
         generateKeyParams: {
             name: "RSA-OAEP",
@@ -63,6 +69,12 @@ const algorithms = [
         publicKeyUsages: []
     },
     {
+        name: "X448",
+        generateKeyParams: { name: "X448" },
+        usages: ["deriveKey", "deriveBits"],
+        publicKeyUsages: []
+    },
+    {
         name: "ML-DSA-44",
         generateKeyParams: { name: "ML-DSA-44" },
         usages: ["sign", "verify"],
@@ -95,6 +107,24 @@ const algorithms = [
     {
         name: "ML-KEM-1024",
         generateKeyParams: { name: "ML-KEM-1024" },
+        usages: ["encapsulateBits", "encapsulateKey", "decapsulateBits", "decapsulateKey"],
+        publicKeyUsages: ["encapsulateBits", "encapsulateKey"]
+    },
+    {
+        name: "MLKEM768-P256",
+        generateKeyParams: { name: "MLKEM768-P256" },
+        usages: ["encapsulateBits", "encapsulateKey", "decapsulateBits", "decapsulateKey"],
+        publicKeyUsages: ["encapsulateBits", "encapsulateKey"]
+    },
+    {
+        name: "MLKEM768-X25519",
+        generateKeyParams: { name: "MLKEM768-X25519" },
+        usages: ["encapsulateBits", "encapsulateKey", "decapsulateBits", "decapsulateKey"],
+        publicKeyUsages: ["encapsulateBits", "encapsulateKey"]
+    },
+    {
+        name: "MLKEM1024-P384",
+        generateKeyParams: { name: "MLKEM1024-P384" },
         usages: ["encapsulateBits", "encapsulateKey", "decapsulateBits", "decapsulateKey"],
         publicKeyUsages: ["encapsulateBits", "encapsulateKey"]
     }
@@ -133,8 +163,9 @@ algorithms.forEach(function(algorithm) {
 
         // Verify that the derived public key matches the original public key
         // by comparing their exported forms
-        const originalExported = await crypto.subtle.exportKey("spki", keyPair.publicKey);
-        const derivedExported = await crypto.subtle.exportKey("spki", publicKey);
+        const exportFormat = algorithm.name.startsWith("MLKEM") ? "raw-public" : "spki";
+        const originalExported = await crypto.subtle.exportKey(exportFormat, keyPair.publicKey);
+        const derivedExported = await crypto.subtle.exportKey(exportFormat, publicKey);
 
         assert_array_equals(
             new Uint8Array(originalExported),

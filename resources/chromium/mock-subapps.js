@@ -1,6 +1,10 @@
 'use strict';
 
-import {SubAppsService, SubAppsServiceReceiver, SubAppsServiceResultCode} from '/gen/third_party/blink/public/mojom/subapps/sub_apps_service.mojom.m.js';
+import {SubAppsService, SubAppsServiceReceiver, SubAppsServiceResultCode, SubAppsServiceAddResultType, SubAppsServiceRemoveResultType} from '/gen/third_party/blink/public/mojom/subapps/sub_apps_service.mojom.m.js';
+
+self.SubAppsServiceAddResultType = SubAppsServiceAddResultType;
+self.SubAppsServiceRemoveResultType = SubAppsServiceRemoveResultType;
+self.SubAppsServiceResultCode = SubAppsServiceResultCode;
 
 self.SubAppsServiceTest = (() => {
   // Class that mocks SubAppsService interface defined in /third_party/blink/public/mojom/subapps/sub_apps_service.mojom
@@ -20,32 +24,32 @@ self.SubAppsServiceTest = (() => {
       this.receiver_.$.close();
     }
 
-    add(sub_apps) {
-      return Promise.resolve({
-        result: testInternal.addCallReturnValue,
-      });
+    add(install_urls) {
+      if (testInternal.serviceResultCode === -1) {
+        return Promise.resolve(testInternal.addCallReturnValue);
+      }
+      throw testInternal.serviceResultCode;
     }
 
     list() {
-      return Promise.resolve({
-        result: {
-          resultCode: testInternal.serviceResultCode,
-          subAppsList: testInternal.listCallReturnValue,
-        }
-      });
+      if (testInternal.serviceResultCode === -1) {
+        return Promise.resolve(testInternal.listCallReturnValue);
+      }
+      throw testInternal.serviceResultCode;
     }
 
-    remove() {
-      return Promise.resolve({
-        result: testInternal.removeCallReturnValue,
-      });
+    remove(manifest_ids) {
+      if (testInternal.serviceResultCode === -1) {
+        return Promise.resolve(testInternal.removeCallReturnValue);
+      }
+      throw testInternal.serviceResultCode;
     }
   }
 
   let testInternal = {
     initialized: false,
     mockSubAppsService: null,
-    serviceResultCode: 0,
+    serviceResultCode: -1,
     addCallReturnValue: [],
     listCallReturnValue: [],
     removeCallReturnValue: [],
@@ -69,13 +73,25 @@ self.SubAppsServiceTest = (() => {
       };
     }
 
+    setAddCallReturnValue(value) {
+      testInternal.addCallReturnValue = value;
+    }
+
+    setListCallReturnValue(value) {
+      testInternal.listCallReturnValue = value;
+    }
+
+    setRemoveCallReturnValue(value) {
+      testInternal.removeCallReturnValue = value;
+    }
+
     async reset() {
       if (testInternal.initialized) {
         testInternal.mockSubAppsService.reset();
         testInternal = {
           mockSubAppsService: null,
           initialized: false,
-          serviceResultCode: 0,
+          serviceResultCode: -1,
           addCallReturnValue: [],
           listCallReturnValue: [],
           removeCallReturnValue: [],

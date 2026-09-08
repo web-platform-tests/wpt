@@ -9,8 +9,12 @@
 tools/docker/Dockerfile @web-platform-tests/wpt-core-team @web-platform-tests/admins
 .taskcluster.yml @web-platform-tests/wpt-core-team @web-platform-tests/admins
 
-# Prevent accidentally touching wasm/core which is updated by a workflow
+# Prevent accidentally touching wasm/core and wasm/proposals which are updated by a workflow
 wasm/core/ @web-platform-tests/wpt-core-team
+wasm/proposals @web-platform-tests/wpt-core-team
+
+# Prevent accidentally touching test262 which is updated by a workflow
+third_party/test262/ @web-platform-tests/wpt-core-team
 
 # GENERATED: interop-tests
 css/css-anchor-position/anchor-as-multicol-crash.html @web-platform-tests/interop
@@ -395,7 +399,6 @@ css/css-view-transitions/old-content-with-overflow.html @web-platform-tests/inte
 css/css-view-transitions/old-root-vertical-writing-mode.html @web-platform-tests/interop
 css/css-view-transitions/outer-padding-inner-background.html @web-platform-tests/interop
 css/css-view-transitions/paint-holding-in-iframe.html @web-platform-tests/interop
-css/css-view-transitions/pseudo-element-overflow-clip-with-border-radius.html @web-platform-tests/interop
 css/css-view-transitions/pseudo-element-overflow-hidden.html @web-platform-tests/interop
 css/css-view-transitions/pseudo-element-preserve-3d.html @web-platform-tests/interop
 css/css-view-transitions/pseudo-rendering-invalidation.html @web-platform-tests/interop
@@ -738,7 +741,6 @@ css/css-scroll-snap/snap-after-relayout/not-resnap-outside-proximity-threshold.h
 css/css-scroll-snap/snap-after-relayout/resnap-on-oveflow-hidden-container.html @web-platform-tests/interop
 css/css-scroll-snap/snap-after-relayout/resnap-on-overflowing-snap-area.html @web-platform-tests/interop
 css/css-scroll-snap/snap-after-relayout/resnap-on-reconstructing-frame.html @web-platform-tests/interop
-css/css-scroll-snap/snap-fling-in-large-area.html @web-platform-tests/interop
 css/css-scroll-snap/snap-intended-direction.html @web-platform-tests/interop
 css/css-scroll-snap/snap-on-focus.html @web-platform-tests/interop
 css/css-scroll-snap/snap-to-combination-of-two-elements-1.html @web-platform-tests/interop
@@ -772,7 +774,6 @@ css/css-view-transitions/duplicate-tag-rejects-start.html @web-platform-tests/in
 css/css-view-transitions/dynamic-stylesheet-animations-timing-function.html @web-platform-tests/interop
 css/css-view-transitions/dynamic-stylesheet-animations.html @web-platform-tests/interop
 css/css-view-transitions/event-pseudo-name.html @web-platform-tests/interop
-css/css-view-transitions/finished-promise-defers-cleanup.html @web-platform-tests/interop
 css/css-view-transitions/group-animation-for-root-transition.html @web-platform-tests/interop
 css/css-view-transitions/hit-test-pseudo-element-element-from-point.html @web-platform-tests/interop
 css/css-view-transitions/hit-test-unpainted-element-from-point.html @web-platform-tests/interop
@@ -902,7 +903,6 @@ custom-elements/registries/global.window.js @web-platform-tests/interop
 custom-elements/registries/pseudo-class-defined.window.js @web-platform-tests/interop
 custom-elements/registries/scoped-custom-element-registry-customelementregistry-attribute-in-xhtml.xhtml @web-platform-tests/interop
 custom-elements/registries/scoped-custom-element-registry-customelementregistry-attribute.html @web-platform-tests/interop
-custom-elements/registries/scoped-registry-append-does-not-upgrade.html @web-platform-tests/interop
 custom-elements/registries/scoped-registry-define-upgrade-criteria.html @web-platform-tests/interop
 custom-elements/registries/scoped-registry-define-upgrade-order.html @web-platform-tests/interop
 custom-elements/registries/scoped-registry-initialize-upgrades.html @web-platform-tests/interop
@@ -963,7 +963,6 @@ html/dom/render-blocking/element-render-blocking-038.html @web-platform-tests/in
 html/dom/render-blocking/element-render-blocking-039.html @web-platform-tests/interop
 html/dom/render-blocking/element-render-blocking-040.html @web-platform-tests/interop
 html/dom/render-blocking/element-render-blocking-041.html @web-platform-tests/interop
-html/dom/render-blocking/non-render-blocking-scripts.optional.html @web-platform-tests/interop
 html/dom/render-blocking/parser-blocking-script.html @web-platform-tests/interop
 html/dom/render-blocking/parser-inserted-async-inline-module-with-import.html @web-platform-tests/interop
 html/dom/render-blocking/parser-inserted-async-script.html @web-platform-tests/interop
@@ -975,8 +974,6 @@ html/dom/render-blocking/parser-inserted-stylesheet-link.html @web-platform-test
 html/dom/render-blocking/remove-attr-script-keeps-blocking.html @web-platform-tests/interop
 html/dom/render-blocking/remove-attr-style-keeps-blocking.html @web-platform-tests/interop
 html/dom/render-blocking/remove-attr-stylesheet-link-keeps-blocking.html @web-platform-tests/interop
-html/dom/render-blocking/remove-attr-unblocks-rendering.optional.html @web-platform-tests/interop
-html/dom/render-blocking/remove-element-unblocks-rendering.optional.html @web-platform-tests/interop
 html/dom/render-blocking/remove-pending-async-render-blocking-script.html @web-platform-tests/interop
 html/dom/render-blocking/script-inserted-inline-module-with-import.html @web-platform-tests/interop
 html/dom/render-blocking/script-inserted-module-script.html @web-platform-tests/interop
@@ -1307,7 +1304,6 @@ navigation-api/ordering-and-transition/back-cross-document-event-order-with-page
 navigation-api/ordering-and-transition/back-same-document-intercept-reject.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/back-same-document-intercept.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/back-same-document.html @web-platform-tests/interop
-navigation-api/ordering-and-transition/currententrychange-before-popstate-intercept.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/currententrychange-dispose-ordering.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/intercept-async.html @web-platform-tests/interop
 navigation-api/ordering-and-transition/location-href-canceled.html @web-platform-tests/interop
@@ -1372,7 +1368,6 @@ navigation-api/scroll-behavior/after-transition-intercept-handler-modifies.html 
 navigation-api/scroll-behavior/after-transition-push.html @web-platform-tests/interop
 navigation-api/scroll-behavior/after-transition-reject.html @web-platform-tests/interop
 navigation-api/scroll-behavior/after-transition-reload-no-scroll-anchoring.html @web-platform-tests/interop
-navigation-api/scroll-behavior/after-transition-reload.html @web-platform-tests/interop
 navigation-api/scroll-behavior/after-transition-replace.html @web-platform-tests/interop
 navigation-api/scroll-behavior/after-transition-timing.html @web-platform-tests/interop
 navigation-api/scroll-behavior/manual-basic.html @web-platform-tests/interop
@@ -1383,7 +1378,6 @@ navigation-api/scroll-behavior/manual-scroll-fragment-does-not-exist.html @web-p
 navigation-api/scroll-behavior/manual-scroll-in-precommit-handler.html @web-platform-tests/interop
 navigation-api/scroll-behavior/manual-scroll-push.html @web-platform-tests/interop
 navigation-api/scroll-behavior/manual-scroll-reload-no-scroll-anchoring.html @web-platform-tests/interop
-navigation-api/scroll-behavior/manual-scroll-reload.html @web-platform-tests/interop
 navigation-api/scroll-behavior/manual-scroll-repeated.html @web-platform-tests/interop
 navigation-api/scroll-behavior/manual-scroll-replace.html @web-platform-tests/interop
 navigation-api/scroll-behavior/manual-scroll-resets-when-no-fragment.html @web-platform-tests/interop

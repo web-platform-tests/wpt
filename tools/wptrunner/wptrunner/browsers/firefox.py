@@ -129,6 +129,9 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
                       "gmp_path": kwargs["gmp_path"] if "gmp_path" in kwargs else None,
                       "debug_test": kwargs["debug_test"]}
 
+    if test_type == "aamtest":
+        browser_kwargs["env"] = {"GNOME_ACCESSIBILITY": "1"}
+
     if test_type in ("wdspec", "aamtest"):
         browser_kwargs["webdriver_binary"] = kwargs["webdriver_binary"]
         browser_kwargs["webdriver_args"] = kwargs["webdriver_args"].copy()
@@ -234,12 +237,29 @@ def get_bool_pref(default_prefs, extra_prefs, pref):
     return False
 
 
+def has_openh264_gmp(gmp_path):
+    """Whether a MOZ_GMP_PATH holds the real OpenH264 plugin.
+
+    Gecko requires each entry to be <dir>/gmp-<name>/<version>, so the parent
+    directory name is what identifies the plugin.
+    """
+    return any(os.path.basename(os.path.dirname(entry)) == "gmp-gmpopenh264"
+               for entry in gmp_path.split(os.pathsep) if entry)
+
+
 def run_info_extras(logger, default_prefs=None, **kwargs):
     extra_prefs = kwargs.get("extra_prefs", [])
     default_prefs = list(default_prefs.items()) if default_prefs is not None else []
 
     def bool_pref(pref):
         return get_bool_pref(default_prefs, extra_prefs, pref)
+
+    def prefers_openh264():
+        """Whether the OpenH264 plugin is present and preferred."""
+        return (has_openh264_gmp(kwargs.get("gmp_path") or
+                                 os.environ.get("MOZ_GMP_PATH", "")) and
+                bool_pref("media.gmp.encoder.preferred") and
+                bool_pref("media.gmp.decoder.preferred"))
 
     # Default fission to on, unless we get --disable-fission
     rv = {"e10s": kwargs["gecko_e10s"],
@@ -254,6 +274,7 @@ def run_info_extras(logger, default_prefs=None, **kwargs):
           "remoteAsyncEvents": (bool_pref("remote.events.async.mouse.enabled") or
                                 bool_pref("remote.events.async.wheel.enabled")),
           "incOriginInit": os.environ.get("MOZ_ENABLE_INC_ORIGIN_INIT") == "1",
+          "openh264": prefers_openh264(),
           }
     rv.update(run_info_browser_version(**kwargs))
 
@@ -288,6 +309,7 @@ def update_properties():
             "tsan",
             "remoteAsyncEvents",
             "sessionHistoryInParent",
+            "openh264",
             "subsuite",
         ],
         {"os": ["display", "version", "os_version"], "processor": ["bits"]},

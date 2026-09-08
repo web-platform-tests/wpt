@@ -18,11 +18,6 @@ const iterableFactories = [
     return ['a', 'b'][Symbol.iterator]();
   }],
 
-  ['a string', () => {
-    // This iterates over the code points of the string.
-    return 'ab';
-  }],
-
   ['a Set', () => {
     return new Set(['a', 'b']);
   }],
@@ -170,6 +165,7 @@ const badIterables = [
   ['Object.create(null)', Object.create(null)],
   ['a function', () => 42],
   ['a symbol', Symbol()],
+  ['a string', 'ab'],
   ['an object with a non-callable @@iterator method', {
     [Symbol.iterator]: 42
   }],
@@ -424,7 +420,6 @@ promise_test(async t => {
 promise_test(async t => {
 
   let nextCalls = 0;
-  let returnCalls = 0;
 
   const iterable = {
     async next() {
@@ -432,9 +427,7 @@ promise_test(async t => {
       return { value: undefined, done: true };
     },
     throw: t.unreached_func('throw() should not be called'),
-    async return() {
-      returnCalls += 1;
-    },
+    return: t.unreached_func('return() should not be called'),
     [Symbol.asyncIterator]: () => iterable
   };
 
@@ -446,7 +439,6 @@ promise_test(async t => {
   assert_equals(nextCalls, 1, 'next() should be called once');
 
   await reader.closed;
-  assert_equals(returnCalls, 0, 'return() should not be called');
 
 }, `ReadableStream.from: return() is not called when iterator completes normally`);
 
@@ -590,7 +582,7 @@ promise_test(async () => {
 
 }, `ReadableStream.from: reader.read() inside next()`);
 
-promise_test(async () => {
+promise_test(async t => {
 
   let nextCalls = 0;
   let returnCalls = 0;
@@ -599,12 +591,12 @@ promise_test(async () => {
   const iterable = {
     async next() {
       nextCalls++;
-      await reader.cancel();
-      assert_equals(returnCalls, 1, 'return() should be called once');
+      await reader.cancel().catch(t.unreached_func('cancel() should not reject'));
       return { value: 'something else', done: false };
     },
     async return() {
       returnCalls++;
+      return { done: true };
     },
     [Symbol.asyncIterator]: () => iterable
   };
@@ -615,8 +607,10 @@ promise_test(async () => {
   const read = await reader.read();
   assert_object_equals(read, { value: undefined, done: true }, 'first read should be done');
   assert_equals(nextCalls, 1, 'next() should be called once');
+  assert_equals(returnCalls, 1, 'return() should be called once');
 
   await reader.closed;
+  await flushAsyncEvents(); // wait for next() to settle
 
 }, `ReadableStream.from: reader.cancel() inside next()`);
 

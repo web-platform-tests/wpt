@@ -62,30 +62,22 @@
       const ACTIVATION_RANGE_START_PX = COVER_START_OFFSET + CSS_TRIGGER_START_PX;
       const ACTIVATION_RANGE_END_PX = COVER_START_OFFSET + CSS_TRIGGER_END_PX;
 
-      const enter = () => {
-        return runAndWaitForFrameUpdate(async () => {
-          scroller.scrollTop =
-              (ACTIVATION_RANGE_START_PX + ACTIVATION_RANGE_END_PX) / 2;
-        }).then(waitForCompositorCommit);
-      }
+      const rangeBoundaries = getRangeBoundariesForTest(
+          ACTIVATION_RANGE_START_PX, ACTIVATION_RANGE_END_PX,
+          ACTIVATION_RANGE_START_PX, ACTIVATION_RANGE_END_PX,
+          scroller);
 
-      const exit = () => {
-        return runAndWaitForFrameUpdate(async () => {
-          scroller.scrollTop = ACTIVATION_RANGE_END_PX + 100;
-        }).then(waitForCompositorCommit);
-      }
-
-      const reset = (target) => {
+      const reset = async (target) => {
         const animation = target.getAnimations()[0];
         animation.pause();
         animation.playbackRate = 1;
         animation.currentTime = 0;
-        scroller.scrollTop = 0;
+        return setScrollTop(scroller, 0);
       }
 
       promise_test(async (test) => {
         const target = document.getElementById("target_forwards");
-        reset(target);
+        await reset(target);
         const animation = target.getAnimations()[0];
         // Setup finished at start (playbackRate = -1, finished -> currentTime = 0).
         animation.playbackRate = -1;
@@ -95,7 +87,7 @@
         assert_times_equal(animation.currentTime, 0);
 
         // Enter to trigger play-forwards. Should change playbackRate to 1 and play.
-        await enter();
+        await enter(rangeBoundaries);
         assert_equals(animation.playState, "running",
           "should start running forwards");
         assert_equals(animation.playbackRate, 1,
@@ -110,8 +102,8 @@
         assert_times_equal(animation.currentTime, CSS_ANIMATION_DURATION);
 
         // Exit and re-enter. Should NOT restart.
-        await exit();
-        await enter();
+        await exit(rangeBoundaries);
+        await enter(rangeBoundaries);
         await waitForAnimationFrames(2);
         assert_equals(animation.playState, "finished",
           "should not restart after re-enter");
@@ -122,7 +114,7 @@
 
       promise_test(async (test) => {
         const target = document.getElementById("target_backwards");
-        reset(target);
+        await reset(target);
         const animation = target.getAnimations()[0];
         // Manually finish it (finished at end, playbackRate = 1).
         animation.finish();
@@ -131,7 +123,7 @@
         assert_times_equal(animation.currentTime, CSS_ANIMATION_DURATION);
 
         // Enter to trigger play-backwards. Should change playbackRate to -1 and play.
-        await enter();
+        await enter(rangeBoundaries);
         assert_equals(animation.playState, "running",
           "should start running backwards");
         assert_equals(animation.playbackRate, -1,
@@ -146,8 +138,8 @@
         assert_times_equal(animation.currentTime, 0);
 
         // Exit and re-enter. Should NOT restart.
-        await exit();
-        await enter();
+        await exit(rangeBoundaries);
+        await enter(rangeBoundaries);
         await waitForAnimationFrames(2);
         assert_equals(animation.playState, "finished",
           "should not restart after re-enter");

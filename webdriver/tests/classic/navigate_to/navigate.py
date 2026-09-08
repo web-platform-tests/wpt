@@ -5,12 +5,9 @@ from webdriver import error
 from webdriver.transport import Response
 
 from tests.support.classic.asserts import assert_error, assert_success
+from tests.support.sync import Poll
 
-
-def navigate_to(session, url):
-    return session.transport.send(
-        "POST", "session/{session_id}/url".format(**vars(session)),
-        {"url": url})
+from . import navigate_to
 
 
 def test_null_parameter_value(session, http):
@@ -102,3 +99,20 @@ def test_utf8_meta_tag_after_1024_bytes(session, url):
     time.sleep(1)
 
     assert session.execute_script("return window.foo") == "bar"
+
+
+# https://github.com/whatwg/html/issues/12803
+def test_same_url_replaces_current_history_entry(session, inline):
+    page = inline("")
+
+    assert_success(navigate_to(session, page))
+    initial_history_length = session.execute_script("return history.length")
+    session.execute_script('document.documentElement.setAttribute("data-original-document", "")')
+
+    # Navigate To does not wait for navigations to the same URL to complete,
+    # so poll until the fresh document load is observable.
+    assert_success(navigate_to(session, page))
+    Poll(session).until(lambda session: session.execute_script('return !document.documentElement.hasAttribute("data-original-document")'))
+
+    assert session.execute_script("return history.length") == initial_history_length
+    assert session.execute_script("return navigation.activation.navigationType") == "replace"

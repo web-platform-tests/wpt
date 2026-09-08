@@ -12,15 +12,15 @@ jobs:
     if: github.repository == 'web-platform-tests/wpt'
     steps:
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v7
       with:
         python-version: '3.12'
     - name: Checkout wpt
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         path: wpt
     - name: Checkout wpt-metadata
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         path: wpt-metadata
         repository: web-platform-tests/wpt-metadata

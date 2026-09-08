@@ -5,13 +5,15 @@ function assertAnimationTriggerSupport() {
   assert_true(document.documentElement.style.animationTrigger !== undefined);
 }
 
-const setScrollTop = (scroller, y) => {
+const setScrollTop = async (scroller, y) => {
+  if (scroller.scrollTop == y) return;
   const scrollend_promise =
     waitForScrollEndFallbackToDelayWithoutScrollEvent(scroller);
   scroller.scrollTop = y;
   return scrollend_promise;
 }
 
+// TODO: replace "trigger" and "exit" with "activation" and "active"
 function getRangeBoundariesForTest(trigger_start, trigger_end,
                                    exit_start, exit_end, scroller) {
   let rangeBoundaries = {
@@ -45,6 +47,41 @@ function getRangeBoundariesForTest(trigger_start, trigger_end,
   };
 
   return rangeBoundaries;
+}
+
+// A common pattern in timeline-trigger tests is to perform a scroll and verify
+// that the trigger did (or didin't do) something. In these cases, we need one
+// frame to let the trigger on the compositor thread observe the
+// (main-thread-originating) scroll update, and one frame to let the main thread
+// observe the trigger's response to the scroll update.
+function runAndWaitForTriggerResponse(callback) {
+  return runAndWaitForFrameUpdate(callback).then(waitForNextFrame);
+}
+
+// Helper function for tests using timeline-trigger[1].
+// This function scrolls into the activation range as configured by
+// getRangeBoundariesForTest above.
+//
+// [1] https://drafts.csswg.org/css-animations-2/#timeline-triggers
+const enter = (rangeBoundaries) => {
+  return runAndWaitForTriggerResponse(() => {
+    return rangeBoundaries.enterTriggerRange();
+  });
+}
+
+// Helper function for tests using timeline-trigger[1].
+// This function scrolls outside the active range as configured by
+// getRangeBoundariesForTest above.
+//
+// [1] https://drafts.csswg.org/css-animations-2/#timeline-triggers
+const exit = (rangeBoundaries, exitAbove = true) => {
+  return runAndWaitForTriggerResponse(() => {
+    if (exitAbove) {
+      return rangeBoundaries.exitExitRangeAbove();
+    } else {
+      return rangeBoundaries.exitExitRangeBelow();
+    }
+  });
 }
 
 // Helper function for animation-trigger tests. Aims to perform a scroll and
@@ -93,7 +130,9 @@ function computeContainOffset(scroller, subject, pct) {
   return contain_start + (pct / 100) * (contain_end - contain_start);
 }
 
-function setupAnimationAndTrigger(target, subject, duration) {
+function setupAnimationAndTrigger(target, subject, duration,
+                                  rangeStart = "contain 0%",
+                                  rangeEnd = "contain 100%") {
   const animation = new Animation(
     new KeyframeEffect(
       target,
@@ -106,8 +145,8 @@ function setupAnimationAndTrigger(target, subject, duration) {
 
   let trigger = new TimelineTrigger([{
     timeline: new ViewTimeline({ subject: subject, axis: "y" }),
-    activationRangeStart: "contain 0%",
-    activationRangeEnd: "contain 100%"
+    activationRangeStart: rangeStart,
+    activationRangeEnd: rangeEnd
   }]);
 
   trigger.addAnimation(animation, "play-forwards", "play-backwards");

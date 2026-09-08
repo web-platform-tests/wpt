@@ -551,12 +551,10 @@ Line1<br>Line2<br>Line3<br>Line4
 #data
 <?
 #errors
-(1,1): expected-tag-name-but-got-question-mark
 (1,2): expected-doctype-but-got-eof
 #new-errors
-(1:2) unexpected-question-mark-instead-of-tag-name
+(1:3) eof-in-processing-instruction
 #document
-| <!-- ? -->
 | <html>
 |   <head>
 |   <body>
@@ -564,10 +562,9 @@ Line1<br>Line2<br>Line3<br>Line4
 #data
 <?#
 #errors
-(1,1): expected-tag-name-but-got-question-mark
 (1,3): expected-doctype-but-got-eof
 #new-errors
-(1:2) unexpected-question-mark-instead-of-tag-name
+(1:3) invalid-first-character-of-processing-instruction-target
 #document
 | <!-- ?# -->
 | <html>
@@ -603,12 +600,9 @@ Line1<br>Line2<br>Line3<br>Line4
 #data
 <?COMMENT?>
 #errors
-(1,1): expected-tag-name-but-got-question-mark
 (1,11): expected-doctype-but-got-eof
-#new-errors
-(1:2) unexpected-question-mark-instead-of-tag-name
 #document
-| <!-- ?COMMENT? -->
+| <?COMMENT ?>
 | <html>
 |   <head>
 |   <body>
@@ -642,12 +636,9 @@ Line1<br>Line2<br>Line3<br>Line4
 #data
 <?COM--MENT?>
 #errors
-(1,1): expected-tag-name-but-got-question-mark
 (1,13): expected-doctype-but-got-eof
-#new-errors
-(1:2) unexpected-question-mark-instead-of-tag-name
 #document
-| <!-- ?COM--MENT? -->
+| <?COM--MENT ?>
 | <html>
 |   <head>
 |   <body>

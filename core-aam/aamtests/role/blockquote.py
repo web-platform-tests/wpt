@@ -21,8 +21,8 @@ def test_axapi(axapi, session, inline):
     node = axapi.find_node("test", session.url)
     role = axapi.AXUIElementCopyAttributeValue(node, "AXRole", None)[1]
     assert role == "AXGroup"
-    role = axapi.AXUIElementCopyAttributeValue(node, "AXSubrole", None)[1]
-    assert role == "AXUnknown"
+    subrole = axapi.AXUIElementCopyAttributeValue(node, "AXSubrole", None)[1]
+    assert subrole == None
 
 def test_ia2(ia2, session, inline):
     session.url = inline(TEST_HTML)
@@ -36,10 +36,13 @@ def test_ia2(ia2, session, inline):
     assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_GROUPING"
 
 
-# def test_uia(uia, session, inline):
-#     session.url = inline(TEST_HTML)
-#     node = uia.find_node("test", session.url)
-#
-#     # Spec:
-#     # Control Type: Group
-#     # Localized Control Type: blockquote
+def test_uia(uia, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Control Type: Group
+    # Localized Control Type: blockquote
+
+    node = uia.find_node("test", session.url)
+    assert node.CurrentControlType == uia.ControlType.Group
+    assert node.CurrentLocalizedControlType == "blockquote"

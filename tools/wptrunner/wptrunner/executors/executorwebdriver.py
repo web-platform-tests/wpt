@@ -3,6 +3,7 @@
 import asyncio
 import json
 import os
+import pathlib
 import socket
 import threading
 import traceback
@@ -449,9 +450,10 @@ class WebDriverBidiWebExtensionsProtocolPart(WebExtensionsProtocolPart):
         else:
             params["value"] = value
 
-        return self.parent.loop.run_until_complete(
+        extension_id = self.parent.loop.run_until_complete(
             self.webdriver.bidi_session.web_extension.install(
                 extension_data=params))
+        return extension_id
 
     def uninstall_web_extension(self, extension_id):
         return self.parent.loop.run_until_complete(
@@ -460,7 +462,10 @@ class WebDriverBidiWebExtensionsProtocolPart(WebExtensionsProtocolPart):
 
     def _resolve_path(self, path):
         if self.parent.test_path is not None:
-            return self.parent.test_path.rsplit("/", 1)[0] + path
+            # Handle Windows forward slashes.
+            test_dir = pathlib.Path(self.parent.test_path).parent
+            if test_dir.parts:
+                return f"{test_dir.as_posix()}/{path.lstrip('/')}"
         return path
 
 class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
@@ -882,6 +887,11 @@ class WebDriverVirtualAuthenticatorProtocolPart(VirtualAuthenticatorProtocolPart
     def set_user_verified(self, authenticator_id, uv):
         return self.webdriver.send_session_command("POST", "webauthn/authenticator/%s/uv" % authenticator_id, uv)
 
+    def set_credential_properties(self, authenticator_id, credential_id, props):
+        return self.webdriver.send_session_command(
+            "POST",
+            "webauthn/authenticator/%s/credentials/%s/props" % (authenticator_id, credential_id), props)
+
 
 class WebDriverSPCTransactionsProtocolPart(SPCTransactionsProtocolPart):
     def setup(self):
@@ -984,7 +994,10 @@ class WebDriverBidiDigitalCredentialsProtocolPart(DigitalCredentialsProtocolPart
         if response is not None:
             params["response"] = response
 
-        return await self.webdriver.bidi_session.send_command("digitalCredentials.setVirtualWalletBehavior", params)
+        # send_command returns an awaitable resolving to the response future,
+        # which must itself be awaited to get the command result.
+        return await (await self.webdriver.bidi_session.send_command(
+            "digitalCredentials.setVirtualWalletBehavior", params))
 
 
 class WebDriverStorageProtocolPart(StorageProtocolPart):
@@ -1048,14 +1061,17 @@ class WebDriverWebExtensionsProtocolPart(WebExtensionsProtocolPart):
         if path is not None:
             path = self._resolve_path(path)
 
-        return self.webdriver.web_extensions.install(type, path, value)
+        return self.webdriver.web_extensions.install(type, path, value)["extension"]
 
     def uninstall_web_extension(self, extension_id):
         return self.webdriver.web_extensions.uninstall(extension_id)
 
     def _resolve_path(self, path):
         if self.parent.test_path is not None:
-            return self.parent.test_path.rsplit("/", 1)[0] + path
+            # Handle Windows forward slashes.
+            test_dir = pathlib.Path(self.parent.test_path).parent
+            if test_dir.parts:
+                return f"{test_dir.as_posix()}/{path.lstrip('/')}"
         return path
 
 

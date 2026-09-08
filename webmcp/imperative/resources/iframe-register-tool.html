@@ -21,14 +21,43 @@
   // manage/unregister any tool that it registers.
   const controllers = new Map();
 
-  window.onmessage = e => {
+  window.onmessage = async e => {
     const action = typeof e.data === 'string' ? e.data : e.data.action;
 
     if (action === 'register') {
       try {
         const controller = new AbortController();
         const tool = e.data.tool;
-        if (e.data.hangsForever) {
+        if (e.data.delayResolutionAndReportAbort) {
+          tool.execute = (input, opts) => new Promise((resolve, reject) => {
+            parent.postMessage({ action: 'tool_started' }, '*');
+            if (!opts || !opts.signal) {
+              parent.postMessage({ action: 'signal_aborted_result', error: 'no signal provided' }, '*');
+              return;
+            }
+            opts.signal.addEventListener('abort', () => {
+              parent.postMessage({ action: 'signal_aborted_result', reason: String(opts.signal.reason) }, '*');
+            });
+            const finishListener = e => {
+              if (typeof e.data === 'string' && e.data === 'finish_tool') {
+                window.removeEventListener('message', finishListener);
+                resolve('delayed_result');
+              }
+            };
+            window.addEventListener('message', finishListener);
+          });
+        } else if (e.data.hangsForeverAndReportsAbort) {
+          tool.execute = (input, opts) => new Promise((resolve, reject) => {
+            parent.postMessage({ action: 'tool_started' }, '*');
+            if (!opts || !opts.signal) {
+              parent.postMessage({ action: 'signal_aborted_result', error: 'no signal provided' }, '*');
+              return;
+            }
+            opts.signal.addEventListener('abort', () => {
+              parent.postMessage({ action: 'signal_aborted_result', reason: String(opts.signal.reason) }, '*');
+            });
+          });
+        } else if (e.data.hangsForever) {
           tool.execute = () => new Promise(() => {});
         } else {
           tool.execute = async () => 'hello from iframe';
@@ -37,7 +66,7 @@
         const givenOptions = e.data.options;
         const options = { signal: controller.signal, ...givenOptions};
 
-        document.modelContext.registerTool(tool, options);
+        await document.modelContext.registerTool(tool, options);
         controllers.set(tool.name, controller);
       } catch (e) {
         parent.postMessage(`tool registration failed: ${e}`, '*');

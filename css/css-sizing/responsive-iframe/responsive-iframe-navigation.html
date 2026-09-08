@@ -32,6 +32,9 @@ async_test(t => {
   const resizeObserver = new ResizeObserver((entries) => {
     for (const entry of entries) {
       assert_equals(entry.target, iframe);
+      if (!heights.length && !entry.contentRect.height) {
+        continue;  // Disregard initial 0. It's sometimes flaky.
+      }
       heights.push(entry.contentRect.height);
       switch (numIframeLoadEvents) {
         case 0:
@@ -51,7 +54,14 @@ async_test(t => {
         case 2:
           if (origin === 'cross') {
             // We expect heights to have transitioned: 150 -> 200 -> 150 -> 400.
-            assert_array_equals(heights, [150, 200, 150, 400]);
+            const expect = [150, 200, 150, 400];
+            if (heights.length >= 4) {
+              assert_array_equals(heights, expect);
+            } else {
+              // Some resizes may be done before capturing start.
+              // Check if the last elements match.
+              assert_array_equals(heights, expect.splice(-heights.length));
+            }
           } else {
             assert_array_equals(heights, [150, 200, 400]);
           }

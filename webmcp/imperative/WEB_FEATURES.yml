@@ -1,3 +1,2 @@
-features:
-- name: navigator-modelcontext
-  files: "**"
+rules:
+- "**": [document-modelcontext]

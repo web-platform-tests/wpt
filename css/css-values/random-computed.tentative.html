@@ -38,6 +38,26 @@
     inherits: true;
     initial-value: 3%;
   }
+  @property --len-a {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 3px;
+  }
+  @property --len-b {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 3px;
+  }
+  @property --len-list {
+    syntax: "<length>+";
+    inherits: true;
+    initial-value: 3px;
+  }
+  @property --len-scoped {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 3px;
+  }
   @property --transform-function {
     syntax: "<transform-function>";
     inherits: true;
@@ -56,6 +76,17 @@
     --y: random(0, 300000);
     --random-length-1: random(fixed random(0, 1), 0px, 100px);
     --random-length-2: random(fixed random(0, 1), 0px, 100px);
+  }
+  .randomNoIdentifierPercent {
+    left: random(0%, 100%);
+    top: random(0%, 100%);
+  }
+  .randomCustomLength {
+    width: random(0px, 300000px);
+    --len-a: random(0px, 300000px);
+    --len-b: random(0px, 300000px);
+    --len-list: random(0px, 300000px) random(0px, 300000px);
+    --len-scoped: random(property-scoped, 0px, 300000px);
   }
   .randomMatchElement {
     width: random(property-index-scoped, 0px, 300000px);
@@ -423,8 +454,8 @@ test_random_computed_value('filter', 'drop-shadow(random(3px, 1px) random(6px, 1
 test_random_computed_value('font-variation-settings', '"wght" random(300, 100)', '"wght" 300');
 test_random_computed_value('font-feature-settings', '"liga" random(3, 1)', '"liga" 3');
 test_random_computed_value('font-style', 'oblique random(90deg, 10deg)', 'oblique 90deg');
-test_random_computed_value('font-palette', 'palette-mix(in lch, --blue calc(90% * random(1, 0)), --yellow 10%)', 'palette-mix(in lch, --blue 90%, --yellow)');
-test_random_computed_value('font-palette', 'palette-mix(in lch, --blue random(90%, 10%), --yellow 10%)', 'palette-mix(in lch, --blue 90%, --yellow)');
+test_random_computed_value('font-palette', 'palette-mix(in lch, --blue calc(90% * random(1, 0)), --yellow 10%)', 'palette-mix(in lch, --blue 90%, --yellow 10%)');
+test_random_computed_value('font-palette', 'palette-mix(in lch, --blue random(90%, 10%), --yellow 10%)', 'palette-mix(in lch, --blue 90%, --yellow 10%)');
 test_random_computed_value('animation-timeline', 'view(random(10px, 10px) random(30px, 10px))', 'view(10px 30px)');
 test_random_computed_value('color', 'light-dark(rgb(random(30, 10) random(60, 10) random(90, 10)),  rgb(random(30, 10) random(60, 10) random(90, 10)))',
                                     'rgb(30, 60, 90)');
@@ -625,6 +656,131 @@ test(() => {
 
   try {
     const el = document.createElement('div');
+    el.className = 'randomCustomLength';
+    holder.appendChild(el);
+
+    const computedA = getComputedStyle(el).getPropertyValue('--len-a');
+    const computedB = getComputedStyle(el).getPropertyValue('--len-b');
+
+    test_random_not_equals(computedA, computedB,
+                          "Different registered <length> custom properties on the same element should not have equal values");
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `random() in different registered <length> custom properties on the same element should not be shared`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    const el = document.createElement('div');
+    el.className = 'randomCustomLength';
+    holder.appendChild(el);
+
+    const other = document.createElement('div');
+    other.className = 'randomCustomLength';
+    holder.appendChild(other);
+
+    const elComputed = getComputedStyle(el).getPropertyValue('--len-a');
+    const otherComputed = getComputedStyle(other).getPropertyValue('--len-a');
+
+    test_random_not_equals(elComputed, otherComputed,
+                          "The same custom property on different elements should not have equal values");
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `random() in a custom property should be element-scoped by default`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    const el = document.createElement('div');
+    el.className = 'randomCustomLength';
+    holder.appendChild(el);
+
+    // Both are the first random() in their own property, so these only differ if the caching key
+    // distinguishes a custom property from a non-custom one.
+    const computedWidth = getComputedStyle(el)['width'];
+    const computedLength = getComputedStyle(el).getPropertyValue('--len-a');
+
+    test_random_not_equals(computedWidth, computedLength,
+                          "A custom property and a non-custom property should not have equal values");
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `random() in a custom property should not be shared with a non-custom property at the same index`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    const el = document.createElement('div');
+    el.className = 'randomCustomLength';
+    holder.appendChild(el);
+
+    const other = document.createElement('div');
+    other.className = 'randomCustomLength';
+    holder.appendChild(other);
+
+    const elComputed = getComputedStyle(el).getPropertyValue('--len-scoped');
+    const otherComputed = getComputedStyle(other).getPropertyValue('--len-scoped');
+
+    test_random_equals(elComputed, otherComputed);
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `random(property-scoped, ...) in a custom property should be equal between elements`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    const el = document.createElement('div');
+    el.className = 'randomCustomLength';
+    holder.appendChild(el);
+
+    const [first, second] = getComputedStyle(el).getPropertyValue('--len-list').split(' ');
+
+    test_random_not_equals(first, second,
+                          "Two random() functions in one custom property should not have equal values");
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `two random() functions in the same custom property should not be shared`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    const el = document.createElement('div');
+    el.style.setProperty('--len-a', 'random(0px, 300000px)');
+    // The author-supplied <dashed-ident> happens to name the other property. It is a separate
+    // namespace from the property a key is implicitly scoped to, so these must not collide.
+    el.style.setProperty('--len-b', 'random(--len-a, 0px, 300000px)');
+    holder.appendChild(el);
+
+    const computedA = getComputedStyle(el).getPropertyValue('--len-a');
+    const computedB = getComputedStyle(el).getPropertyValue('--len-b');
+
+    test_random_not_equals(computedA, computedB,
+                          "An implicit property scope should not collide with an author <dashed-ident> of the same name");
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `random() keyed on a custom property should not collide with an author <dashed-ident> naming it`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    const el = document.createElement('div');
     el.className = 'randomIdentifier';
     holder.appendChild(el);
 
@@ -793,6 +949,47 @@ test(() => {
   document.body.appendChild(holder);
 
   try {
+    const el = document.createElement('div');
+    el.className = 'randomNoIdentifierPercent';
+    holder.appendChild(el);
+
+    const elComputedLeft = getComputedStyle(el)['left'];
+    const elComputedTop = getComputedStyle(el)['top'];
+
+    test_random_not_equals(elComputedLeft, elComputedTop);
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `Different between properties with percentage value: random(0%, 100%)`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    const el1 = document.createElement('div');
+    el1.className = 'randomNoIdentifierPercent';
+    holder.appendChild(el1);
+
+    const el2 = document.createElement('div');
+    el2.className = 'randomNoIdentifierPercent';
+    holder.appendChild(el2);
+
+    const el1ComputedLeft = getComputedStyle(el1)['left'];
+    const el2ComputedLeft = getComputedStyle(el2)['left'];
+
+    test_random_not_equals(el1ComputedLeft, el2ComputedLeft,
+      "random() with percentages should differ on different elements");
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `Different between elements with percentage value: random(0%, 100%)`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
     const el1 = document.createElement('div');
     el1.style['margin'] = 'random(property-index-scoped, 1px, 300000px)';
     holder.appendChild(el1);
@@ -913,8 +1110,10 @@ test(() => {
     const el = document.createElement('div');
     el.className = 'randomNoIdentifier';
     holder.appendChild(el);
-    const computedValue = getComputedStyle(el)['--random-in-initial'];
-    test_random_equals(computedValue, undefined);
+    // The initial-value is invalid, so the @property rule registers nothing and the property is
+    // left unregistered, which reads back as the empty string.
+    const computedValue = getComputedStyle(el).getPropertyValue('--random-in-initial');
+    test_random_equals(computedValue, '');
   } finally {
     document.body.removeChild(holder);
   }

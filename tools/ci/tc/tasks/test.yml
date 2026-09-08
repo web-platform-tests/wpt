@@ -127,6 +127,7 @@ components:
       - "docker-worker:capability:privileged"
     chunks-override:
       testharness: 30
+      test262: 16
 
   tox-python3_9:
     env:

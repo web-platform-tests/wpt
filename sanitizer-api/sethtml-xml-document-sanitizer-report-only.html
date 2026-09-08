@@ -151,6 +151,24 @@
           createParserOptions = null;
           createHTML = null;
         });
+        createParserOptions = (options) => ({});
+        createHTML = null;
+
+        const doc = createXmlDoc();
+        const elem = createXmlElem(doc);
+
+        // setHTMLUnsafe should NOT report a violation because it uses HTML parser mode with createParserOptions even without sanitizer
+        await no_trusted_type_violation_for(() => {
+          elem.setHTMLUnsafe("<span id='xml-span'></span>");
+        });
+        assert_not_equals(elem.querySelector("#xml-span"), null);
+      }, "setHTMLUnsafe on XML document does not report violation in report-only mode when createParserOptions has no sanitizer");
+
+      promise_test(async (t) => {
+        t.add_cleanup(() => {
+          createParserOptions = null;
+          createHTML = null;
+        });
         createParserOptions = (options) => ({
           sanitizer: { removeElements: ["div"] },
         });

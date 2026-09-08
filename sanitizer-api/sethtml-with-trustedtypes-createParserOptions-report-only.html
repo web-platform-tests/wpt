@@ -108,6 +108,28 @@
         assert_not_equals(doc.querySelector("#allowed"), null);
       }, "Document.parseHTMLUnsafe: default policy createParserOptions with sanitizer does not report violation");
 
+      promise_test(async (t) => {
+        const node = createTarget("Element", t);
+        createParserOptions = (options) => ({});
+        await no_trusted_type_violation_for(() => {
+          node.setHTMLUnsafe("<div id='allowed'><span id='allowed-child'></span></div>");
+        });
+        assert_not_equals(node.querySelector("#allowed"), null);
+        assert_not_equals(node.querySelector("#allowed-child"), null);
+      }, "Element.setHTMLUnsafe: default policy createParserOptions without sanitizer does not report violation");
+
+      promise_test(async (t) => {
+        const node = createTarget("Element", t);
+        await no_trusted_type_violation_for(() => {
+          node.setHTMLUnsafe(
+            "<div id='allowed'><span id='allowed-child'></span></div>",
+            testPolicy.createParserOptions({}),
+          );
+        });
+        assert_not_equals(node.querySelector("#allowed"), null);
+        assert_not_equals(node.querySelector("#allowed-child"), null);
+      }, "Element.setHTMLUnsafe: caller-provided TrustedHTMLParserOptions without sanitizer does not report violation");
+
       // When createParserOptions returns null/undefined:
       // In enforcement mode it would throw TypeError, but in report-only mode it must NOT throw and report a violation.
       for (const value of [null, undefined]) {

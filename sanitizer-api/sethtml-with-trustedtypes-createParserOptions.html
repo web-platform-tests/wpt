@@ -151,6 +151,50 @@
           assert_not_equals(node.querySelector("#allowed"), null);
           assert_not_equals(node.querySelector("#allowed-child"), null);
         }, `${target}.setHTMLUnsafe: default policy createParserOptions without sanitizer prevents createHTML from running`);
+
+        test((t) => {
+          const node = createTarget(target, t);
+          window.did_run = false;
+          t.add_cleanup(() => {
+            window.did_run = false;
+          });
+          createParserOptions = (options) => ({
+            runScripts: true,
+          });
+          createHTML = (html) => html;
+          node.setHTMLUnsafe(
+            "<div id='allowed'><script>window.did_run = true;<" +
+              "/script></div>",
+            { runScripts: false },
+          );
+          assert_true(
+            window.did_run,
+            "Default policy createParserOptions can enable runScripts even if caller passed false",
+          );
+          assert_not_equals(node.querySelector("#allowed"), null);
+        }, `${target}.setHTMLUnsafe: default policy createParserOptions can override runScripts from false to true`);
+
+        test((t) => {
+          const node = createTarget(target, t);
+          window.did_run = false;
+          t.add_cleanup(() => {
+            window.did_run = false;
+          });
+          createParserOptions = (options) => ({
+            runScripts: false,
+          });
+          createHTML = (html) => html;
+          node.setHTMLUnsafe(
+            "<div id='allowed'><script>window.did_run = true;<" +
+              "/script></div>",
+            { runScripts: true },
+          );
+          assert_false(
+            window.did_run,
+            "Default policy createParserOptions can override runScripts from true to false",
+          );
+          assert_not_equals(node.querySelector("#allowed"), null);
+        }, `${target}.setHTMLUnsafe: default policy createParserOptions can override runScripts from true to false`);
       }
 
       test((t) => {

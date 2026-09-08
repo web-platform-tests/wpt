@@ -284,12 +284,12 @@
               "script></div>",
           );
           node.setHTMLUnsafe(trustedHTML, { runScripts: false });
-          assert_false(
+          assert_true(
             window.trusted_script_ran,
-            "Default policy createParserOptions cannot enable runScripts if caller passed false",
+            "Default policy createParserOptions can enable runScripts for TrustedHTML even if caller passed false",
           );
           assert_not_equals(node.querySelector("#allowed"), null);
-        }, `${target}.setHTMLUnsafe: default policy createParserOptions cannot enable runScripts for TrustedHTML if caller did not request it`);
+        }, `${target}.setHTMLUnsafe: default policy createParserOptions can enable runScripts for TrustedHTML even if caller passed false`);
 
         test((t) => {
           const node = createTarget(target, t);

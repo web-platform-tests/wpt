@@ -241,10 +241,11 @@
           node.setHTMLUnsafe(
             "<div id=allowed><script>window.did_run = true;<" +
               "/script></div>",
+            { runScripts: true },
           );
-          assert_false(window.did_run);
+          assert_false(window.did_run, "Default policy can override runScripts from true to false");
           assert_not_equals(node.querySelector("#allowed"), null);
-        }, `${target}: createParserOptions can override runScripts`);
+        }, `${target}: createParserOptions can override runScripts from true to false`);
 
         test((t) => {
           const node = createTarget(target, t);
@@ -255,14 +256,14 @@
           createParserOptions = (options) => ({
             runScripts: true,
           });
-          (node.setHTMLUnsafe(
+          node.setHTMLUnsafe(
             "<div id=allowed><script>window.did_run = true;<" +
               "/script></div>",
-          ),
-            { runScripts: false });
-          assert_false(window.did_run);
+            { runScripts: false },
+          );
+          assert_true(window.did_run, "Default policy can override runScripts from false to true");
           assert_not_equals(node.querySelector("#allowed"), null);
-        }, `${target}: createParserOptions cannot change runScripts from false to true`);
+        }, `${target}: createParserOptions can override runScripts from false to true`);
 
         if (target === "Element") {
           test((t) => {

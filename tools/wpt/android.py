@@ -271,7 +271,7 @@ def install(logger, dest=None, reinstall=False, prompt=True):
 
 def cancel_start(thread_id):
     def cancel_func():
-        raise signal.pthread_kill(thread_id, signal.SIGINT)
+        signal.pthread_kill(thread_id, signal.SIGINT)
     return cancel_func
 
 

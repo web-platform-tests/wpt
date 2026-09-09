@@ -588,6 +588,22 @@
     }
 
     /**
+     * Navigates by inserting and clicking a link. Unlike location.href,
+     * a link click is treated as a push navigation even when the load
+     * event has not yet fired.
+     * @param {string|URL} url The URL to navigate to.
+     * @returns {Promise<undefined>}
+     */
+    clickTo(url) {
+      return this.navigate(url => {
+        const a = document.createElement('a');
+        a.href = url;
+        document.body.appendChild(a);
+        a.click();
+      }, [url.toString()]);
+    }
+
+    /**
      * Navigates the context to a new document running an executor.
      * @param {RemoteContextConfig} [extraConfig]
      * @returns {Promise<RemoteContextWrapper>} The remote context.

@@ -21,3 +21,4 @@ test(() => {
   const result = new CSSMathInvert(new CSSMathInvert(x));
   assert_numeric_type_equals(result.type(), { length: 1 });
 }, 'Inverting an inverted type returns the original type');
+

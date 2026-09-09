@@ -336,6 +336,7 @@ test(() => {
   shadow.setHTML('<a href="javascript:alert(1)"></a>', { sanitizer: { javascriptURLs: true } });
   assert_false(shadow.querySelector("a").hasAttribute("href"));
 }, "Template and ShadowRoot handling with javascriptURLs");
+</script>
 </head>
 <body>
 </body>

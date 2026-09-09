@@ -216,6 +216,9 @@ class SeleniumWindowProtocolPart(WindowProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
+    def create(self, type_hint=None):
+        raise NotImplementedError()
+
     def minimize(self):
         self.previous_rect = self.webdriver.window.rect
         self.logger.info("Minimizing")

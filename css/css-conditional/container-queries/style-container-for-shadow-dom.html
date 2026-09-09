@@ -188,6 +188,29 @@
   </div>
 </div>
 
+<div id="named-host-to-slotted">
+  <template shadowrootmode="open">
+    <style>
+      :host {
+        --foo: baz;
+        container-name: --host-container;
+      }
+    </style>
+    <slot></slot>
+  </template>
+  <div id="host-slotted-named">
+    <template shadowrootmode="open">
+      <style>
+        @container --host-container style(--foo: baz) {
+          :host {
+            color: green;
+          }
+        }
+      </style>
+    </template>
+  </div>
+</div>
+
 <script>
   setup(() => {
     assert_implements_style_container_queries();
@@ -256,5 +279,10 @@
     const t12 = document.querySelector("#inner-scope-host-part > div").shadowRoot.querySelector("#t12");
     assert_equals(getComputedStyle(t12).color, green);
   }, "A :host::part rule matching a container in the shadow tree");
+
+  test(() => {
+    const target = document.querySelector("#host-slotted-named");
+    assert_equals(getComputedStyle(target).color, green);
+  }, "Parent container name and style on :host, with query set on slotted child's :host");
 
 </script>

@@ -205,7 +205,7 @@ def _wrap_object(result: Any) -> Any:
 
 # ---- Main API Wrapper
 
-class UiaWrapper(ApiWrapper[UiaObject]):
+class UiaWrapper(ApiWrapper[UiaObject, Any]):
     ControlType = _ConstantsProxy(UIA_CONTROL_TYPE_MAP)
     PropertyId = _ConstantsProxy(UIA_PROPERTY_ID_MAP)
     EventId = _ConstantsProxy(UIA_EVENT_ID_MAP)

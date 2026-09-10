@@ -87,7 +87,7 @@ def to_ia2(node: IAccessiblePtr) -> IAccessible2Ptr:
     return service.QueryService(IAccessible._iid_, IAccessible2_2)
 
 
-class Ia2Wrapper(ApiWrapper[IAccessible2Ptr]):
+class Ia2Wrapper(ApiWrapper[IAccessible2Ptr, Any]):
 
     @property
     def api_name(self) -> str:

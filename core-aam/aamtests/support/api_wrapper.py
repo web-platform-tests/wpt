@@ -2,10 +2,11 @@ import abc
 import time
 from typing import Any, Callable, Generic, Optional, TypeVar
 
+ApiEvent = TypeVar('ApiEvent')
 ApiNode = TypeVar('ApiNode')
 PollResult = TypeVar('PollResult')
 
-class ApiWrapper(Generic[ApiNode], abc.ABC):
+class ApiWrapper(Generic[ApiNode, ApiEvent], abc.ABC):
     def __init__(self, pid: int, product_name: str, timeout: float) -> None:
         """Setup for accessibility API testing.
 
@@ -51,3 +52,15 @@ class ApiWrapper(Generic[ApiNode], abc.ABC):
             found = find()
 
         return found
+
+    def expect_event(self, event_name: str, dom_id: str, action: Callable[[], None]) -> ApiEvent:
+        """Watch for an accessibility API event around a triggering action.
+
+        Starts watching for `event_name`, calls `action` and waits for the event.
+
+        :param event_name: Name of the event.
+        :param dom_id: Node's DOM identifier.
+        :param action: Action to be called, it'll trigger the event.
+        :return: The API's event object.
+        """
+        raise NotImplementedError(f"{self.api_name} does not support `expect_event()` yet")

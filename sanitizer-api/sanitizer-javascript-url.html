@@ -290,12 +290,10 @@ for (const { selector, markup } of defaultConfigTestcases) {
 
     const div = document.createElement("div");
     div.setHTMLUnsafe(markup(javascriptURL), { sanitizer });
-    assert_href(div, selector, javascriptURL, "unsafe method keeps the URL");
+    assert_href(div, selector, javascriptURL, "unsafe method keeps the javascript: URL");
 
-    const safeSanitizer = new Sanitizer();
-    safeSanitizer.setJavascriptURLs(true);
-    div.setHTML(markup(javascriptURL), { sanitizer: safeSanitizer });
-    assert_href(div, selector, null, "safe method removes the URL anyway");
+    div.setHTML(markup(javascriptURL), { sanitizer });
+    assert_href(div, selector, null, "safe method removes the javascript: URL anyway");
   }, `setJavascriptURLs(true) on the default configuration, "${markup(javascriptURL)}"`);
 }
 

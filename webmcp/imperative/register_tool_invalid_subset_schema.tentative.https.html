@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>WebMCP registerTool meta-validation: invalid subset schema (tentative)</title>
+<link rel="author" href="mailto:arnab@example.com">
+<link rel="help" href="https://webmachinelearning.github.io/webmcp/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+"use strict";
+
+function test_invalid_subset(inputSchema, testName) {
+  promise_test(t => {
+    return promise_rejects_js(
+      t,
+      TypeError,
+      document.modelContext.registerTool({
+        name: "mcp-" + testName.replace(/[^a-z0-9]/gi, "-"),
+        description: "test",
+        inputSchema,
+        execute: () => {}
+      }),
+      "should reject with TypeError"
+    );
+  }, testName);
+}
+
+test_invalid_subset(
+  {
+    type: "object",
+    properties: { x: { $ref: "#/foo" } }
+  },
+  "registerTool rejects $ref (remote/DAG, excluded)"
+);
+
+test_invalid_subset(
+  {
+    type: "object",
+    properties: { x: { type: "string", format: "email" } }
+  },
+  "registerTool rejects format (excluded)"
+);
+
+test_invalid_subset(
+  {
+    type: "object",
+    properties: { x: { type: "string" } },
+    additionalProperties: true
+  },
+  "registerTool rejects additionalProperties:true (only false allowed)"
+);
+
+test_invalid_subset(
+  {
+    type: "object",
+    properties: { x: { type: "string" } },
+    additionalProperties: { type: "string" }
+  },
+  "registerTool rejects additionalProperties schema (only false allowed)"
+);
+
+test_invalid_subset(
+  {
+    type: "object",
+    properties: { x: { type: "string" } },
+    unevaluatedProperties: false
+  },
+  "registerTool rejects unevaluatedProperties (excluded)"
+);
+
+test_invalid_subset(
+  {
+    type: "object",
+    properties: { x: { type: "string" } },
+    dependentRequired: { x: ["y"] }
+  },
+  "registerTool rejects dependentRequired (excluded)"
+);
+
+test_invalid_subset(
+  {
+    type: "string",
+    pattern: "["
+  },
+  "registerTool rejects invalid pattern (throws on RegExp)"
+);
+
+test_invalid_subset(
+  {
+    type: "object",
+    properties: { x: { type: "string", $defs: {} } }
+  },
+  "registerTool rejects $defs (excluded)"
+);
+
+test_invalid_subset(
+  {
+    type: "object",
+    properties: { x: { type: "string", contentEncoding: "base64" } }
+  },
+  "registerTool rejects contentEncoding (excluded)"
+);
+</script>

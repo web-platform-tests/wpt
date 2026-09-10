@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+  <script>
+    const assertCurrentPosterSupported = () =>
+      assert_implements(
+        'currentPoster' in HTMLVideoElement.prototype,
+        'HTMLVideoElement.currentPoster is not supported'
+      );
+
+    const createVideo = ({ posterFromImg = true } = {}) => {
+      const video = document.createElement('video');
+      video.src = '/media/A4.webm';
+      video.controls = true;
+      video.posterFromImg = posterFromImg;
+      return document.body.appendChild(video);
+    };
+
+    const createPosterImg = () => {
+      const img = document.createElement('img');
+      img.src = '/media/poster.png?posterImageSrc=true';
+      return img;
+    };
+
+    test(function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+
+      assert_equals(video.currentPoster, '');
+    }, 'HTMLVideoElement.currentPoster is empty if no poster attribute or poster image source is present');
+
+    test(function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      video.poster = '/media/poster.png';
+
+      assert_equals(video.currentPoster, video.poster);
+    }, 'HTMLVideoElement.currentPoster is HTMLVideoElement.poster if no poster image source is present');
+
+    test(function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      video.poster = '/media/poster.png';
+      video.appendChild(document.createElement('picture'));
+
+      assert_equals(video.currentPoster, video.poster);
+    }, 'HTMLVideoElement.currentPoster is HTMLVideoElement.poster if child picture element does not have an img');
+
+    test(function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      video.poster = '/media/poster.png';
+
+      const img = createPosterImg();
+      video.appendChild(img);
+
+      assert_equals(video.currentPoster, img.currentSrc);
+      assert_not_equals(video.currentPoster, video.poster);
+    }, 'HTMLVideoElement.currentPoster picks HTMLImageElement.currentSrc over HTMLVideoElement.poster');
+
+    test(function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      video.poster = '/media/poster.png';
+
+      const img = createPosterImg();
+      const a = document.createElement('a');
+      a.appendChild(img);
+      video.appendChild(a);
+
+      assert_equals(video.currentPoster, video.poster);
+      assert_not_equals(video.currentPoster, img.currentSrc);
+    }, 'HTMLVideoElement.currentPoster picks HTMLVideoElement.poster when img is incorrectly nested inside a non-picture element');
+
+    test(function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      video.poster = '/media/poster.png';
+
+      const source = document.createElement('source');
+      source.src = '/media/poster.png?posterImageSrc=true';
+      video.appendChild(source);
+
+      assert_equals(video.currentPoster, video.poster);
+      assert_not_equals(video.currentPoster, source.src);
+    }, 'HTMLVideoElement.currentPoster does not use images in a source element');
+
+    test(function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      video.poster = '/media/poster.png';
+
+      const track = document.createElement('track');
+      track.src = '/media/poster.png?posterImageSrc=true';
+
+      video.appendChild(track);
+      assert_equals(video.currentPoster, video.poster);
+      assert_not_equals(video.currentPoster, track.src);
+    }, 'HTMLVideoElement.currentPoster does not use images in a track element');
+
+    test(function (t) {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+
+      const img = createPosterImg();
+      video.appendChild(img);
+      assert_equals(video.currentPoster, img.currentSrc);
+      assert_not_equals(video.currentPoster, video.poster);
+
+      video.poster = '/media/poster.png';
+
+      assert_equals(video.currentPoster, img.currentSrc);
+      assert_not_equals(video.currentPoster, video.poster);
+    }, 'Setting HTMLVideoElement.poster while a poster image source is present should not update HTMLVideoElement.currentPoster');
+
+    test(function () {
+      assertCurrentPosterSupported();
+      const video = createVideo({ posterFromImg: false });
+      video.poster = '/media/poster.png';
+
+      const img = createPosterImg();
+      video.appendChild(img);
+
+      assert_equals(video.currentPoster, video.poster);
+      assert_not_equals(video.currentPoster, img.currentSrc);
+    }, 'HTMLVideoElement.currentPoster ignores a child img and uses HTMLVideoElement.poster when posterfromimg is not set');
+
+    test(function () {
+      assertCurrentPosterSupported();
+      const video = createVideo({ posterFromImg: false });
+
+      const img = createPosterImg();
+      video.appendChild(img);
+
+      assert_equals(video.currentPoster, '');
+      assert_not_equals(video.currentPoster, img.currentSrc);
+    }, 'HTMLVideoElement.currentPoster is empty and ignores a child img when posterfromimg is not set and no poster attribute is present');
+
+    promise_test(async function (t) {
+      assertCurrentPosterSupported();
+      const video = createVideo({ posterFromImg: false });
+      video.poster = '/media/poster.png';
+
+      const img = createPosterImg();
+      video.appendChild(img);
+      assert_equals(video.currentPoster, video.poster);
+
+      video.posterFromImg = true;
+
+      await t.step_wait(() => video.currentPoster === img.currentSrc);
+      assert_equals(video.currentPoster, img.currentSrc);
+      assert_not_equals(video.currentPoster, video.poster);
+    }, 'Setting posterfromimg on a video with a child img should update HTMLVideoElement.currentPoster to img.currentSrc');
+
+    promise_test(async function (t) {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      video.poster = '/media/poster.png';
+
+      const img = createPosterImg();
+      video.appendChild(img);
+      assert_equals(video.currentPoster, img.currentSrc);
+
+      video.posterFromImg = false;
+
+      await t.step_wait(() => video.currentPoster === video.poster);
+      assert_equals(video.currentPoster, video.poster);
+      assert_not_equals(video.currentPoster, img.currentSrc);
+    }, 'Removing posterfromimg from a video with a child img should update HTMLVideoElement.currentPoster to HTMLVideoElement.poster');
+  </script>
+</body>

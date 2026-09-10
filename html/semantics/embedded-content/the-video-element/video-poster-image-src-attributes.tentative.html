@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+
+<body></body>
+
+<script>
+  const { HTTP_REMOTE_ORIGIN } = get_host_info();
+
+  const assertCurrentPosterSupported = () =>
+    assert_implements(
+      'currentPoster' in HTMLVideoElement.prototype,
+      'HTMLVideoElement.currentPoster is not supported'
+    );
+
+  const createVideo = () => {
+    const video = document.createElement('video');
+    video.src = '/media/A4.webm';
+    video.posterFromImg = true;
+    return document.body.appendChild(video);
+  };
+
+  const waitForEvent = (target, event) =>
+    new Promise((resolve) => target.addEventListener(event, resolve, { once: true }));
+
+  const recordReferrerUrl = (token) =>
+    `${location.origin}/html/semantics/embedded-content/the-video-element/resources/record-referrer.py?record=${token}`;
+
+  const takeRecordedReferrer = async (token) => {
+    const response = await fetch(
+      `${location.origin}/html/semantics/embedded-content/the-video-element/resources/record-referrer.py?take=${token}`
+    );
+    return response.text();
+  };
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    const img = document.createElement('img');
+    img.src = HTTP_REMOTE_ORIGIN + '/media/poster.png?attrs=noCrossOrigin&t=' + Date.now();
+    video.appendChild(img);
+
+    const event = await Promise.race([waitForEvent(img, 'load'), waitForEvent(img, 'error')]);
+    assert_equals(event.type, 'load', 'img without crossorigin should load a cross-origin resource with no CORS check');
+
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, "Poster image source without crossorigin loads a cross-origin poster with no CORS check");
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    const img = document.createElement('img');
+    img.crossOrigin = 'anonymous';
+    img.src = HTTP_REMOTE_ORIGIN + '/media/poster.png?attrs=crossOriginAnonymous&t=' + Date.now();
+    video.appendChild(img);
+
+    const event = await Promise.race([waitForEvent(img, 'load'), waitForEvent(img, 'error')]);
+    assert_equals(
+      event.type,
+      'error',
+      "img.crossOrigin='anonymous' should fail the CORS check when the cross-origin resource sends no Access-Control-Allow-Origin header"
+    );
+
+    // A failed CORS check still selects a source, so currentSrc is set even
+    // though the fetch failed; the poster image source should still win over
+    // `poster`.
+    assert_not_equals(img.currentSrc, '');
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, "Poster image source's own crossorigin attribute is honored for the poster fetch, independent of the video");
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const token = 'poster-image-src-referrer-no-referrer-' + Date.now() + Math.random();
+    const video = createVideo();
+    const img = document.createElement('img');
+    img.referrerPolicy = 'no-referrer';
+    img.src = recordReferrerUrl(token);
+    video.appendChild(img);
+
+    await waitForEvent(img, 'load');
+    assert_equals(video.currentPoster, img.currentSrc);
+
+    const referrer = await takeRecordedReferrer(token);
+    assert_equals(
+      referrer,
+      '',
+      "The poster image source's own referrerpolicy=no-referrer should suppress the Referer header on the poster fetch"
+    );
+  }, "Poster image source's referrerpolicy=no-referrer is honored for the poster fetch");
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const token = 'poster-image-src-referrer-default-' + Date.now() + Math.random();
+    const video = createVideo();
+    const img = document.createElement('img');
+    img.src = recordReferrerUrl(token);
+    video.appendChild(img);
+
+    await waitForEvent(img, 'load');
+    assert_equals(video.currentPoster, img.currentSrc);
+
+    const referrer = await takeRecordedReferrer(token);
+    assert_not_equals(
+      referrer,
+      '',
+      'Without an explicit referrerpolicy, the poster fetch should carry a Referer header like an ordinary same-origin img request'
+    );
+  }, "Poster image source's poster fetch sends a Referer header by default when no referrerpolicy is set");
+
+  test(function () {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    const img = document.createElement('img');
+    img.fetchPriority = 'high';
+    img.src = '/media/poster.png?attrs=fetchPriority';
+    video.appendChild(img);
+
+    assert_equals(img.fetchPriority, 'high', "the poster image source's own fetchPriority should reflect normally");
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, "Poster image source's fetchpriority attribute is unaffected by acting as the poster image source");
+
+  test(function () {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    const img = document.createElement('img');
+    img.decoding = 'sync';
+    img.src = '/media/poster.png?attrs=decoding';
+    video.appendChild(img);
+
+    assert_equals(img.decoding, 'sync', "the poster image source's own decoding should reflect normally");
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, "Poster image source's decoding attribute is unaffected by acting as the poster image source");
+</script>

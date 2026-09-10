@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<link rel="help" href="https://html.spec.whatwg.org/#reacting-to-environment-changes">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body></body>
+
+<script>
+  const sizes = [600, 400, 200];
+
+  promise_test(async (t) => {
+    assert_implements(
+      'currentPoster' in HTMLVideoElement.prototype,
+      'HTMLVideoElement.currentPoster is not supported'
+    );
+
+    const iframe = document.createElement('iframe');
+    iframe.width = '100';
+    iframe.height = '600';
+    iframe.frameborder = '0';
+
+    iframe.srcdoc = `<video id="video0" controls posterfromimg>
+      <picture>
+        ${sizes.map((size) => `<source srcset="/media/poster.png?width=${size}" media="(min-width: ${size}px)" width="102" height="77" id="source-${size}">`).join('')}
+        <img src="/media/poster.png" width="102" height="77" id="img0">
+      </picture>
+    </video>`;
+
+    const loaded = new Promise((resolve) =>
+      iframe.addEventListener('load', resolve, { once: true })
+    );
+    document.body.appendChild(iframe);
+    await loaded;
+
+    const video = iframe.contentDocument.getElementById('video0');
+    const img = video.querySelector('img');
+
+    for (const size of sizes) {
+      const source = video.querySelector(`#source-${size}`);
+      const srcSetUrl = new URL(source.srcset, location.href).href;
+
+      iframe.width = size;
+
+      await t.step_wait(
+        () => img.currentSrc === srcSetUrl,
+        `img.currentSrc should update to the <source> matching the media query at ${size}px`
+      );
+
+      assert_equals(
+        video.currentPoster,
+        img.currentSrc,
+        `HTMLVideoElement.currentPoster matches img.currentSrc at ${size}px`
+      );
+      assert_equals(
+        video.currentPoster,
+        srcSetUrl,
+        `HTMLVideoElement.currentPoster matches <source>.srcset at ${size}px`
+      );
+    }
+  }, 'HTMLVideoElement.currentPoster uses the <source> matching the media query as the iframe resizes');
+</script>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    const createDisconnectedVideo = () => {
+      const video = document.createElement('video');
+      const img = document.createElement('img');
+
+      video.loading = 'lazy';
+      video.src = '/media/A4.webm';
+      video.posterFromImg = true;
+
+      video.appendChild(img);
+
+      img.loading = 'lazy';
+      img.src = '/media/poster.png?posterImageSrc=true';
+
+      return { video, img };
+    };
+
+    promise_test(async function (t) {
+      assert_implements(
+        'currentPoster' in HTMLVideoElement.prototype,
+        'HTMLVideoElement.currentPoster is not supported'
+      );
+      const { img } = createDisconnectedVideo();
+
+      let loaded = false;
+      img.addEventListener('load', () => { loaded = true; }, { once: true });
+
+      const start = performance.now();
+      await t.step_wait(
+        () => loaded || performance.now() - start > 300,
+        'Wait for a poster fetch opportunity while disconnected'
+      );
+      assert_false(
+        loaded,
+        'Disconnected video with loading=lazy should not load the poster image'
+      );
+    }, 'Poster image source should not load if video is disconnected');
+
+    promise_test(async function () {
+      assert_implements(
+        'currentPoster' in HTMLVideoElement.prototype,
+        'HTMLVideoElement.currentPoster is not supported'
+      );
+      const { video, img } = createDisconnectedVideo();
+
+      assert_equals(video.currentPoster, img.currentSrc);
+    }, 'Disconnected video has HTMLVideoElement.currentPoster set to the poster image source');
+  </script>
+</body>

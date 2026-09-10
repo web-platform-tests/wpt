@@ -214,11 +214,16 @@ achieves the intended effect (e.g., a logging call)</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">TESTDRIVER-VENDOR-PATH</span></code></dt><dd><p>testdriver-vendor.js script seen with incorrect path</p>
 </dd>
+<dt><code class="docutils literal notranslate"><span class="pre">TESTDRIVER-VENDOR-WITHOUT-TESTDRIVER</span></code></dt><dd><p>File contains <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testdriver-vendor.js'&gt;</span></code> but not <code class="docutils literal notranslate"><span class="pre">testdriver.js</span></code></p>
+</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">TESTHARNESS-IN-OTHER-TYPE</span></code></dt><dd><p>testharness.js included in a %s test</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">TESTHARNESS-PATH</span></code></dt><dd><p>testharness.js script seen with incorrect path</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">TESTHARNESSREPORT-PATH</span></code></dt><dd><p>testharnessreport.js script seen with incorrect path</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">TESTHARNESSREPORT-WITHOUT-TESTHARNESS</span></code></dt><dd><p>File contains <script src='/resources/testharnessreport.js'> but not <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code></p>
+<strong>To fix:</strong><p>ensure each test file contains <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharness.js'&gt;</span></code></p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">TRAILING</span> <span class="pre">WHITESPACE</span></code></dt><dd><p>Whitespace at EOL</p>
 <strong>To fix:</strong><p>Remove trailing whitespace from all lines in the file.</p>

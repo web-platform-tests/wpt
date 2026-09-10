@@ -32,6 +32,7 @@ from .protocol import (AccessibilityProtocolPart,
                        CoverageProtocolPart,
                        DebugProtocolPart,
                        DevicePostureProtocolPart,
+                       ConsumeUserActivationProtocolPart,
                        DisplayFeaturesProtocolPart,
                        GenerateTestReportProtocolPart,
                        GlobalPrivacyControlProtocolPart,
@@ -786,6 +787,14 @@ class MarionetteDevicePostureProtocolPart(DevicePostureProtocolPart):
         raise NotImplementedError("clear_device_posture not yet implemented")
 
 
+class MarionetteConsumeUserActivationProtocolPart(ConsumeUserActivationProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def consume_user_activation(self):
+        raise NotImplementedError("consume_user_activation not yet implemented")
+
+
 class MarionetteVirtualPressureSourceProtocolPart(VirtualPressureSourceProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
@@ -851,6 +860,7 @@ class MarionetteProtocol(Protocol):
                   MarionetteAccessibilityProtocolPart,
                   MarionetteVirtualSensorProtocolPart,
                   MarionetteDevicePostureProtocolPart,
+                  MarionetteConsumeUserActivationProtocolPart,
                   MarionetteVirtualPressureSourceProtocolPart,
                   MarionetteDisplayFeaturesProtocolPart,
                   MarionetteWebExtensionsProtocolPart]

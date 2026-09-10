@@ -26,9 +26,12 @@
      step 4 can produce the result. c4 and c5 are reachable by step 1 or by the
      sRGB grouping, since hsl() and hwb() are considered to be in srgb.
 
-     c7 to c11 sit exactly on each space's epsilon, where the inclusive
-     comparison decides the answer. c8 is one step outside the lch() epsilon,
-     pinning it from the other side. */
+     c7 and c9 sit exactly on the lch() and oklch() epsilon, where the inclusive
+     comparison decides the answer, and c8 is one step outside the lch() epsilon,
+     pinning it from the other side. There are deliberately no epsilon-boundary
+     cases for hsl() and hwb(): those resolve to sRGB colors, and at the boundary
+     the residual hue leaves the two sRGB values exactly 1e-5 apart, which the
+     implementation-defined epsilon of step 2 may or may not treat as equal. */
 
   #c1 { --c: oklch(50% 0 40); }
   #c2 { --c: lch(50% 0.001 30); }
@@ -39,8 +42,6 @@
   #c7 { --c: lch(50% 0.0015 30); }
   #c8 { --c: lch(50% 0.0016 30); }
   #c9 { --c: oklch(50% 0.000004 40); }
-  #c10 { --c: hsl(0 0.001% 50%); }
-  #c11 { --c: hwb(30 59.999% 40%); }
 
   @container style(--c: oklch(50% 0 200)) { #t1 { color: green; } }
   @container style(--c: lch(50% 0.001 200)) { #t2 { color: green; } }
@@ -51,8 +52,6 @@
   @container style(--c: lch(50% 0.0015 200)) { #t7 { color: green; } }
   @container style(--c: lch(50% 0.0016 200)) { #t8 { color: green; } }
   @container style(--c: oklch(50% 0.000004 200)) { #t9 { color: green; } }
-  @container style(--c: hsl(200 0.001% 50%)) { #t10 { color: green; } }
-  @container style(--c: hwb(200 59.999% 40%)) { #t11 { color: green; } }
 </style>
 <div id="c1"><div id="t1"></div></div>
 <div id="c2"><div id="t2"></div></div>
@@ -63,8 +62,6 @@
 <div id="c7"><div id="t7"></div></div>
 <div id="c8"><div id="t8"></div></div>
 <div id="c9"><div id="t9"></div></div>
-<div id="c10"><div id="t10"></div></div>
-<div id="c11"><div id="t11"></div></div>
 <script>
   setup(() => assert_implements_style_container_queries());
 
@@ -106,12 +103,4 @@
   test(() => {
     assert_equals(getComputedStyle(t9).color, green);
   }, "oklch() hues are powerless when the chroma is exactly the epsilon of 0.000004");
-
-  test(() => {
-    assert_equals(getComputedStyle(t10).color, green);
-  }, "hsl() hues are powerless when the saturation is exactly the epsilon of 0.001");
-
-  test(() => {
-    assert_equals(getComputedStyle(t11).color, green);
-  }, "hwb() hues are powerless when whiteness and blackness sum to exactly 99.999");
 </script>

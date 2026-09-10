@@ -10,8 +10,10 @@
 </head>
 <body>
   <script>
-      const kBackspaceKey = "\uE003";
-      const kDeleteKey = "\uE017";
+    const kBackspaceKey = "\uE003";
+    const kDeleteKey = "\uE017";
+    // Modifier key to use with backspace/delete to delete words.
+    const kModifierKey = navigator.platform.indexOf("Mac") === 0 ? "\uE00A" : "\uE009";
 
     async function testBasicTestInput(element) {
       const editContext = new EditContext();
@@ -132,6 +134,16 @@
     div.remove();
   }, "EditContext should not receive events after being detached from element");
 
+  function checkTargetRanges(element, ranges, expected, key) {
+    if (element.tagName === "CANVAS") {
+        assert_equals(ranges.length, 0, key + " beforeinput should not have a target range in canvas EditContext");
+      } else {
+        assert_equals(ranges.length, 1, key + " beforeinput should have exactly one target range in DOM-based EditContext");
+        assert_array_equals(ranges[0], expected,
+                            key + " beforeinput target range has incorrect offsets");
+      }
+  }
+
   async function testBackspaceAndDelete(element) {
       const editContext = new EditContext();
       let textForView = "hello there";
@@ -151,19 +163,50 @@
       element.editContext = editContext;
       editContext.updateText(0, 11, "hello there");
       editContext.updateSelection(10, 10);
-      const selection = window.getSelection();
+
+      if (element.tagName !== "CANVAS") {
+        // put selection in a text node which doesn't actually reflect editContext.text
+        let selectionTextNode = document.createTextNode("abcd");
+        element.append(selectionTextNode);
+        getSelection().collapse(selectionTextNode, 2);
+      }
 
       await test_driver.send_keys(element, kBackspaceKey);
       assert_equals(textForView, "hello thee");
       assert_array_equals(textUpdateSelection, [9, 9]);
       assert_equals(beforeInputType, "deleteContentBackward");
-      assert_equals(beforeInputTargetRanges.length, 0, "Backspace should not have a target range in EditContext");
+      // Target range should be based on DOM, not editContext.text
+      checkTargetRanges(element, beforeInputTargetRanges, [1, 2], "Backspace");
 
       await test_driver.send_keys(element, kDeleteKey);
       assert_equals(textForView, "hello the");
       assert_array_equals(textUpdateSelection, [9, 9]);
       assert_equals(beforeInputType, "deleteContentForward");
-      assert_equals(beforeInputTargetRanges.length, 0, "Delete should not have a target range in EditContext");
+      checkTargetRanges(element, beforeInputTargetRanges, [2, 3], "Delete");
+
+      await new test_driver.Actions()
+        .keyDown(kModifierKey)
+        .keyDown(kBackspaceKey)
+        .keyUp(kBackspaceKey)
+        .keyUp(kModifierKey)
+        .send();
+      assert_equals(textForView.trim(), "hello");
+      assert_array_equals(textUpdateSelection, [6, 6]);
+      assert_equals(beforeInputType, "deleteWordBackward");
+      checkTargetRanges(element, beforeInputTargetRanges, [0, 2], "Ctrl+Backspace");
+
+      editContext.updateSelection(0, 0);
+      await new test_driver.Actions()
+        .keyDown(kModifierKey)
+        .keyDown(kDeleteKey)
+        .keyUp(kDeleteKey)
+        .keyUp(kModifierKey)
+        .send();
+      assert_equals(textForView.trim(), "");
+      assert_array_equals(textUpdateSelection, [0, 0]);
+      assert_equals(beforeInputType, "deleteWordForward");
+      checkTargetRanges(element, beforeInputTargetRanges, [2, 4], "Ctrl+Delete");
+
       element.remove();
     }
 
@@ -192,13 +235,21 @@
       textForView = initialText;
       element.focus();
 
+      if (element.tagName !== "CANVAS") {
+        // put selection in a text node which doesn't actually reflect editContext.text
+        let selectionTextNode = document.createTextNode("abcd");
+        element.append(selectionTextNode);
+        getSelection().setBaseAndExtent(selectionTextNode, 1, selectionTextNode, 3);
+      }
+
       editContext.updateSelection(3, 6);
       await test_driver.send_keys(element, kBackspaceKey);
       assert_equals(editContext.text, "abcghijklmnopqrstuvwxyz");
       assert_equals(textForView, "abcghijklmnopqrstuvwxyz");
       assert_array_equals(textUpdateSelection, [3, 3]);
       assert_equals(beforeInputType, "deleteContentBackward");
-      assert_equals(beforeInputTargetRanges.length, 0, "Backspace should not have a target range in EditContext");
+      // Target range should be based on DOM, not editContext.text
+      checkTargetRanges(element, beforeInputTargetRanges, [1, 3], "Backspace");
 
       editContext.updateSelection(3, 6);
       await test_driver.send_keys(element, kDeleteKey);
@@ -206,7 +257,7 @@
       assert_equals(textForView, "abcjklmnopqrstuvwxyz");
       assert_array_equals(textUpdateSelection, [3, 3]);
       assert_equals(beforeInputType, "deleteContentForward");
-      assert_equals(beforeInputTargetRanges.length, 0, "Delete should not have a target range in EditContext");
+      checkTargetRanges(element, beforeInputTargetRanges, [1, 3], "Delete");
 
       editContext.updateSelection(6, 3);
       await test_driver.send_keys(element, kBackspaceKey);
@@ -214,7 +265,7 @@
       assert_equals(textForView, "abcmnopqrstuvwxyz");
       assert_array_equals(textUpdateSelection, [3, 3]);
       assert_equals(beforeInputType, "deleteContentBackward");
-      assert_equals(beforeInputTargetRanges.length, 0, "Backspace should not have a target range in EditContext");
+      checkTargetRanges(element, beforeInputTargetRanges, [1, 3], "Backspace");
 
       editContext.updateSelection(6, 3);
       await test_driver.send_keys(element, kDeleteKey);
@@ -222,7 +273,7 @@
       assert_equals(textForView, "abcpqrstuvwxyz");
       assert_array_equals(textUpdateSelection, [3, 3]);
       assert_equals(beforeInputType, "deleteContentForward");
-      assert_equals(beforeInputTargetRanges.length, 0, "Delete should not have a target range in EditContext");
+      checkTargetRanges(element, beforeInputTargetRanges, [1, 3], "Delete");
 
       element.remove();
     }

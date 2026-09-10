@@ -46,7 +46,10 @@ tests = [
     // Test that rounding happens properly. hwb(320deg 30% 40%) in sRGB has a blue
     // channel of exactly one-half.
     // 0.5 * 255 = 127.5. This value should be rounded UP to 128, not down to 127.
-    ["hwb(320deg 30% 40%)", "rgb(153, 77, 128)"],
+    ["hwb(320deg 30% 40%)", "rgb(153, 77, 128)"], // B = 127.5
+    ["hwb(0deg 10% 50%)", "rgb(128, 26, 26)"],    // R = 127.5
+    ["hwb(120deg 10% 50%)", "rgb(26, 128, 26)"],  // G = 127.5
+    ["hwb(0 20% 100%)", "rgb(43, 43, 43)"],
 
     // In  hsl(calc(-infinity) 0 0) or  hsl(calc(infinity) 0 0), the <hue> component is again normalized to 0 degrees.
     // See: https://drafts.csswg.org/css-color-4/#example-hue-normalization

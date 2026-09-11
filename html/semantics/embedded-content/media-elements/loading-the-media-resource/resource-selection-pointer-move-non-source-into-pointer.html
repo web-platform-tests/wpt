@@ -1,0 +1,58 @@
+<!doctype html>
+<title>pointer updates (moveBefore non-source nodes into the pointer)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<div id="holder"><br id="br-node"><span id="text-holder">x</span></div>
+<script>
+var brEvents = [];
+var textEvents = [];
+var a1 = 0;
+var b1 = 0;
+var c1 = 0;
+var a2 = 0;
+var b2 = 0;
+var c2 = 0;
+</script>
+<video id="v-br"><source id="br-a" onerror="a1++; brEvents.push('a')"><source id="br-b" onerror="b1++; brEvents.push('b')" src="resources/delayed-broken-video.py?ms=500&amp;id=br"><source id="br-c" onerror="c1++; brEvents.push('c')"></video>
+<video id="v-text"><source id="text-a" onerror="a2++; textEvents.push('a')"><source id="text-b" onerror="b2++; textEvents.push('b')" src="resources/delayed-broken-video.py?ms=500&amp;id=text"><source id="text-c" onerror="c2++; textEvents.push('c')"></video>
+<script>
+promise_test(async function(t) {
+  var videoBr = document.getElementById('v-br');
+  var videoText = document.getElementById('v-text');
+  var brB = document.getElementById('br-b');
+  var textB = document.getElementById('text-b');
+  assert_implements(typeof videoBr.moveBefore == 'function', 'ParentNode.moveBefore() is required for this test');
+  assert_implements(typeof videoText.moveBefore == 'function', 'ParentNode.moveBefore() is required for this test');
+
+  var loaded = new Promise(function(resolve) { window.addEventListener('load', resolve); });
+
+  // currentSrc is set in the "process candidate" step, after the pointer has
+  // advanced and before the resource fetch algorithm runs, so waiting for it is
+  // how we observe that each pointer is (b | c) with b pending. Polling rather
+  // than using an event keeps this robust whether the UA runs the synchronous
+  // section at a microtask checkpoint (as specified) or in a task.
+  await Promise.all([
+    t.step_wait(function() { return videoBr.currentSrc == brB.src; },
+                'br test: source b selected as candidate', 3000, 5),
+    t.step_wait(function() { return videoText.currentSrc == textB.src; },
+                'text test: source b selected as candidate', 3000, 5),
+  ]);
+  assert_equals(b1, 0, 'br test: source b is still pending when the pointer is moved');
+  assert_equals(b2, 0, 'text test: source b is still pending when the pointer is moved');
+
+  videoBr.moveBefore(document.getElementById('br-node'), document.getElementById('br-c'));
+  videoText.moveBefore(document.getElementById('text-holder').firstChild, document.getElementById('text-c'));
+
+  await loaded;
+  assert_equals(a1, 1, 'error events on br test a');
+  assert_equals(b1, 1, 'error events on br test b');
+  assert_equals(c1, 1, 'error events on br test c');
+  assert_array_equals(brEvents, ['a', 'b', 'c'], 'br test processed source order');
+
+  assert_equals(a2, 1, 'error events on text test a');
+  assert_equals(b2, 1, 'error events on text test b');
+  assert_equals(c2, 1, 'error events on text test c');
+  assert_array_equals(textEvents, ['a', 'b', 'c'], 'text test processed source order');
+});
+</script>

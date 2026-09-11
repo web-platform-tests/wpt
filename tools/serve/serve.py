@@ -970,6 +970,7 @@ class RoutesBuilder:
             ("GET", "/.well-known/web-app-origin-association", handlers.PythonScriptHandler),
             ("*", "/.well-known/web-identity", handlers.PythonScriptHandler),
             ("*", "/.well-known/device-bound-sessions", handlers.PythonScriptHandler),
+            ("*", "/.well-known/email-verification", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)
         ]

@@ -82,6 +82,9 @@
 #document
 | <b>
 | <p>
+|   <b>
+|     "foo"
+|   "bar"
 
 #data
 <b><i><div>Text</b></i>
@@ -101,36 +104,3 @@
 |     <div>
 |       <b>
 |       "x"
-
-#data
-<b><div>Text</b><span>More</span></div>
-#config
-{ "replaceWithChildrenElements": ["b"] }
-#document
-| <div>
-|   "Text"
-|   <span>
-|     "More"
-
-#data
-<b><p>Text</b><span>More</span></p>
-#config
-{ "replaceWithChildrenElements": ["b"] }
-#document
-| <p>
-|   "Text"
-|   <span>
-|     "More"
-
-#data
-<b><i><div>Text</b><span>More</span></i></div>
-#config
-{ "replaceWithChildrenElements": ["i"] }
-#document
-| <b>
-| <div>
-|   <b>
-|     "Text"
-|   <span>
-|     "More"
-

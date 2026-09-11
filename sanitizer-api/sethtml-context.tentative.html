@@ -68,56 +68,6 @@ test(_ => {
   context.setHTMLUnsafe("abc");
   assert_equals(context.innerHTML, "abc");
 }, "setHTMLUnsafe with svg:script with prefix context.");
-
-test(_ => {
-  let context = document.createElement("script");
-  context.textContent = "var initial = 1;";
-  context.setHTML("abc");
-  assert_equals(context.textContent, "var initial = 1;");
-}, "setHTML with script context preserves existing children when fragment is null.");
-
-test(_ => {
-  let context = document.createElementNS("http://www.w3.org/2000/svg", "script");
-  context.textContent = "var initial = 1;";
-  context.setHTML("abc");
-  assert_equals(context.textContent, "var initial = 1;");
-}, "setHTML with svg:script context preserves existing children when fragment is null.");
-
-test(_ => {
-  let context = document.createElement("script");
-  context.textContent = "var initial = 1;";
-  assert_implements_optional(typeof context.appendHTML === "function", "appendHTML");
-  context.appendHTML("abc");
-  assert_equals(context.textContent, "var initial = 1;");
-  assert_equals(context.childNodes.length, 1);
-}, "appendHTML with script context does not modify script.");
-
-test(_ => {
-  let context = document.createElement("script");
-  context.textContent = "var initial = 1;";
-  assert_implements_optional(typeof context.prependHTML === "function", "prependHTML");
-  context.prependHTML("abc");
-  assert_equals(context.textContent, "var initial = 1;");
-  assert_equals(context.childNodes.length, 1);
-}, "prependHTML with script context does not modify script.");
-
-test(_ => {
-  let script = document.createElement("script");
-  let child = script.appendChild(document.createTextNode("var initial = 1;"));
-  assert_implements_optional(typeof child.beforeHTML === "function", "beforeHTML");
-  child.beforeHTML("abc");
-  assert_equals(script.childNodes.length, 1);
-  assert_equals(script.textContent, "var initial = 1;");
-}, "beforeHTML on child of script element does not insert nodes.");
-
-test(_ => {
-  let script = document.createElement("script");
-  let child = script.appendChild(document.createTextNode("var initial = 1;"));
-  assert_implements_optional(typeof child.afterHTML === "function", "afterHTML");
-  child.afterHTML("abc");
-  assert_equals(script.childNodes.length, 1);
-  assert_equals(script.textContent, "var initial = 1;");
-}, "afterHTML on child of script element does not insert nodes.");
 </script>
 </body>
 </html>

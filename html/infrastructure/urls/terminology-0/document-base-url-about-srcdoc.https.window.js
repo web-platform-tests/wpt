@@ -13,10 +13,10 @@ const runTest = (description, iframe_sandbox) => {
     `;
     const child_base_uri = new Promise(r => onmessage = e => r(e.data));
     document.body.appendChild(iframe);
-    // [spec]: https://html.spec.whatwg.org/C/#fallback-base-url
-    // Step 1: If document is an iframe srcdoc document, then return the
-    //         document base URL of document's browsing context's container
-    //         document.
+    // [spec]: https://html.spec.whatwg.org/C/#document-base-url
+    // Step 2: If document's base URL override is non-null, then return it. For
+    //         an iframe srcdoc document it is a snapshot of the initiator
+    //         document's document base URL.
     assert_equals(await child_base_uri, document.baseURI);
   }, description);
 }

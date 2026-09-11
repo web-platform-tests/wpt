@@ -1165,17 +1165,14 @@ WebDriver command.</p>
 <section id="global-privacy-control">
 <h3>Global Privacy Control<a class="headerlink" href="#global-privacy-control" title="Link to this heading">¶</a></h3>
 <dl class="js staticfunction">
-<dt class="sig sig-object js" id="test_driver.set_global_privacy_control">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_global_privacy_control</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newValue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_global_privacy_control" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="test_driver.get_global_privacy_control">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_global_privacy_control</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_global_privacy_control" title="Link to this definition">¶</a></dt>
 <dd><p>Gets the current globally-applied privacy control status</p>
+<p>Matches the <a class="reference external" href="https://www.w3.org/TR/gpc/#get-global-privacy-control">Get Global Privacy Control</a>
+WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>newValue</strong> (<em>bool</em>) – The a boolean that is true if the browers should convey a “do not sell or share” signal and false otherwise</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>Promise</strong> – Fulfils with an object with boolean property <cite>gpc</cite> that encodes the new “do not sell or share” after applying the new value.</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Promise</strong> – Fulfils with an object with boolean property <cite>gpc</cite> that encodes the current “do not sell or share” signal the browser is configured to convey.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1183,11 +1180,13 @@ WebDriver command.</p>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.set_global_privacy_control">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_global_privacy_control</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newValue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_global_privacy_control" title="Link to this definition">¶</a></dt>
-<dd><p>Gets the current globally-applied privacy control status</p>
+<dd><p>Sets and then gets the current globally-applied privacy control status</p>
+<p>Matches the <a class="reference external" href="https://www.w3.org/TR/gpc/#set-global-privacy-control">Set Global Privacy Control</a>
+WebDriver command.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>newValue</strong> (<em>bool</em>) – The a boolean that is true if the browers should convey a “do not sell or share” signal and false otherwise</p></li>
+<li><p><strong>newValue</strong> (<em>boolean</em>) – A boolean that is true if the browser should convey a “do not sell or share” signal and false otherwise</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

@@ -110,9 +110,21 @@ promise_test(async t => {
 
 promise_test(async t => {
   const wt = new WebTransport(webtransport_url('echo.py'));
-  const stats = await wt.getStats();
-  validate_rtt_stats(stats);
-}, "WebTransport client should be able to provide valid stats when requested before connection established");
+  // getStats() must return a Promise without throwing, even while CONNECTING.
+  const p = wt.getStats();
+  assert_true(p instanceof Promise, 'getStats() during CONNECTING must return a Promise');
+
+  // getStats() must not resolve before ready: step 4.1 waits for the connecting
+  // state to change (which is when ready resolves) before queueing the resolve.
+  const order = [];
+  const ready = wt.ready.then(() => { order.push('ready'); });
+  const stats = p.then(() => { order.push('stats'); });
+  await Promise.all([ready, stats]);
+  assert_equals(order[0], 'ready', 'getStats() must not resolve before ready');
+
+  // The promise must resolve with valid stats once the connection is established.
+  validate_rtt_stats(await p);
+}, 'getStats() during CONNECTING returns a Promise that resolves once connected');
 
 promise_test(async t => {
   const wt = new WebTransport("https://webtransport.invalid/");
@@ -123,6 +135,43 @@ promise_test(async t => {
   const error2 = await wt.getStats().catch(e => e);
   assert_equals(error2.code, DOMException.INVALID_STATE_ERR);
 }, "WebTransport client should throw an error when stats are requested for a failed connection");
+
+// Test spec step 4.2: getStats() called while still CONNECTING must reject
+// (not resolve) once the connection fails.
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('custom-response.py?:status=404'));
+  // Intentionally called before ready, so the transport is CONNECTING.
+  const p = wt.getStats();
+  assert_true(p instanceof Promise, 'getStats() during CONNECTING must return a Promise');
+
+  // getStats() must reject *after* ready rejects and closed settles: the spec
+  // queues the rejection task only once [[State]] has become "failed", which is
+  // also when ready/closed settle.
+  const order = [];
+  const ready = wt.ready.catch(() => { order.push('ready'); });
+  const closed = wt.closed.catch(() => { order.push('closed'); });
+  const stats = p.catch(() => { order.push('stats'); });
+  await Promise.all([ready, closed, stats]);
+  assert_equals(order[order.length - 1], 'stats',
+                'getStats() must reject after ready and closed settle');
+
+  await promise_rejects_dom(t, 'InvalidStateError', p);
+}, 'getStats() called while CONNECTING rejects with InvalidStateError when connection fails');
+
+// Test spec step 3: getStats() called on an already-FAILED transport must
+// return a rejected Promise, not throw synchronously.
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('custom-response.py?:status=404'));
+  wt.closed.catch(() => {});
+  // Wait until the transport has fully transitioned to the FAILED state.
+  await wt.ready.catch(() => {});
+  // getStats() must return a rejected Promise (not a synchronous throw).
+  const p = wt.getStats();
+  assert_true(p instanceof Promise, 'getStats() on a FAILED transport must return a Promise');
+  await promise_rejects_dom(t, 'InvalidStateError', p);
+  // Subsequent calls must also reject consistently.
+  await promise_rejects_dom(t, 'InvalidStateError', wt.getStats());
+}, 'getStats() on an already-failed transport returns a rejected Promise');
 
 promise_test(async t => {
   const wt = new WebTransport(webtransport_url('echo.py'));
@@ -162,7 +211,7 @@ promise_test(async t => {
   const maxAttempts = 40;
   let stats;
   for (let i = 0; i < maxAttempts; i++) {
-    wait(50);
+    await wait(50);
     stats = await wt.getStats();
     if ("droppedIncoming" in stats.datagrams && stats.datagrams.droppedIncoming > 0) {
       break;
@@ -230,9 +279,8 @@ promise_test(async t => {
   assert_greater_than(finalStats.bytesAcknowledged, 0,
                       "bytesAcknowledged should be positive after data transfer");
 
-  // Overhead should be reasonable (not more than total bytes)
-  assert_less_than_equal(finalStats.bytesSentOverhead, finalStats.bytesSent,
-                         "bytesSentOverhead should not exceed total bytes sent");
+  // bytesSentOverhead is omitted (see the note above the first stats test).
+  assert_equals(finalStats.bytesSentOverhead, undefined, "bytesSentOverhead");
 }, "WebTransport stats should accurately track data transfer");
 
 promise_test(async t => {
@@ -254,10 +302,8 @@ promise_test(async t => {
                             "packetsReceived should not decrease");
   assert_greater_than_equal(stats2.bytesAcknowledged, stats1.bytesAcknowledged,
                             "bytesAcknowledged should not decrease");
-  assert_greater_than_equal(stats2.bytesLost, stats1.bytesLost,
-                            "bytesLost should not decrease");
-  assert_greater_than_equal(stats2.packetsLost, stats1.packetsLost,
-                            "packetsLost should not decrease");
+  // bytesLost and packetsLost are not monotonically increasing per spec:
+  // packets initially declared lost can subsequently be received.
 
   // minRtt should not increase (it's the minimum observed)
   assert_less_than_equal(stats2.minRtt, stats1.minRtt,

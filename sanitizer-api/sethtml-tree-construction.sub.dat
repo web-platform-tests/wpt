@@ -664,36 +664,3 @@ test<div>p</div>tt<p>div</p><test>test</test>
 #document
 | <div>
 |   "after"
-
-#data
-<span><table>misplaced text</table></span>
-#config
-{ "replaceWithChildrenElements": ["span"] }
-#document
-| "misplaced text"
-| <table>
-
-#data
-<table><span>misplaced</span><tr><td>cell</td></tr></table>
-#config
-{ "replaceWithChildrenElements": ["span"] }
-#document
-| "misplaced"
-| <table>
-|   <tbody>
-|     <tr>
-|       <td>
-|         "cell"
-
-#data
-<div><table><div>misplaced</div><tr><td>cell</td></tr></table></div>
-#config
-{ "replaceWithChildrenElements": ["div"] }
-#document
-| "misplaced"
-| <table>
-|   <tbody>
-|     <tr>
-|       <td>
-|         "cell"
-

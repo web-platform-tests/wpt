@@ -513,6 +513,46 @@ const parsingCases = [
         expected: [["a", "😀"]]
     },
     {
+        // Only CR and LF terminate a header line, so other controls are part of
+        // the value.
+        description: "NUL in a name",
+        body: payload(
+            "--boundary",
+            "Content-Disposition: form-data; name=\"a\u0000b\"",
+            "",
+            "value",
+            "--boundary--",
+            ""
+        ),
+        expected: [["a\u0000b", "value"]]
+    },
+    {
+        description: "other control characters in a name",
+        body: payload(
+            "--boundary",
+            "Content-Disposition: form-data; name=\"a\u0001bc\"",
+            "",
+            "value",
+            "--boundary--",
+            ""
+        ),
+        expected: [["a\u0001bc", "value"]]
+    },
+    {
+        description: "duplicate Content-Type, last one wins",
+        body: payload(
+            "--boundary",
+            "Content-Disposition: form-data; name=\"a\"; filename=\"f\"",
+            "Content-Type: text/html",
+            "Content-Type: text/plain",
+            "",
+            "value",
+            "--boundary--",
+            ""
+        ),
+        expected: [["a", { name: "f", type: "text/plain", body: "value" }]]
+    },
+    {
         description: "_charset_ is a normal entry",
         body: payload(
             "--boundary",
@@ -606,6 +646,52 @@ const parsingFailureCases = [
             "Content-Disposition: form-data; name=\"a\"",
             "",
             "value--boundary--",
+            ""
+        )
+    },
+    {
+        // Each header line ends with CRLF, so a bare CR or LF is malformed.
+        description: "bare LF in a name",
+        body: payload(
+            "--boundary",
+            "Content-Disposition: form-data; name=\"a\nb\"",
+            "",
+            "value",
+            "--boundary--",
+            ""
+        )
+    },
+    {
+        description: "bare CR in a name",
+        body: payload(
+            "--boundary",
+            "Content-Disposition: form-data; name=\"a\rb\"",
+            "",
+            "value",
+            "--boundary--",
+            ""
+        )
+    },
+    {
+        description: "bare LF in a filename",
+        body: payload(
+            "--boundary",
+            "Content-Disposition: form-data; name=\"a\"; filename=\"f\ng\"",
+            "",
+            "value",
+            "--boundary--",
+            ""
+        )
+    },
+    {
+        description: "bare LF in a header value",
+        body: payload(
+            "--boundary",
+            "Content-Disposition: form-data; name=\"a\"; filename=\"f\"",
+            "Content-Type: text/\nhtml",
+            "",
+            "value",
+            "--boundary--",
             ""
         )
     },

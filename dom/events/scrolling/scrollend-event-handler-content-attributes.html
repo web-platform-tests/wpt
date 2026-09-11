@@ -28,7 +28,7 @@ body {
 }
 </style>
 
-<body onload=runTest() onscrollend="failOnScrollEnd(event)">
+<body onload=runTest() onscrollend="onBodyScrollEnd(event)">
 <div id="targetDiv" onscrollend="onElementScrollEnd(event)">
   <div id="innerDiv">
   </div>
@@ -43,8 +43,10 @@ function onElementScrollEnd(event) {
   element_scrollend_arrived = true;
 }
 
-function failOnScrollEnd(event) {
-  assert_true(false, "Scrollend should not be called on: " + event.target);
+let body_scrollend_arrived = false;
+function onBodyScrollEnd(event) {
+  assert_equals(document.body, event.target, "Event target is the body");
+  body_scrollend_arrived = true;
 }
 
 function runTest() {
@@ -64,14 +66,13 @@ function runTest() {
     await waitForCompositorCommit();
 
     document.scrollingElement.scrollTo({top: 200, left: 200});
-    // The document body onscrollend event handler content attribute will fail
-    // here, if it is fired.
-    await waitForCompositorCommit();
+    await waitFor(() => { return body_scrollend_arrived; },
+                  "Document body did not receive scrollend event.");
     assert_equals(document.scrollingElement.scrollLeft, 200,
-                  "Document scrolled on horizontal axis");
+                  "Document body scrolled on horizontal axis");
     assert_equals(document.scrollingElement.scrollTop, 200,
-                  "Document scrolled on vertical axis");
-  }, "Tests scrollend event is not fired to document body event handler content attribute.");
+                  "Document body scrolled on vertical axis");
+  }, "Tests scrollend event is fired to body event handler content attribute.");
 
   promise_test (async (t) => {
     await waitForCompositorCommit();
@@ -83,9 +84,9 @@ function runTest() {
     document.scrollingElement.scrollTo({top: 200, left: 200});
     await scrollend_event;
 
-    assert_equals(document.scrollingElement.scrollTop, 200,
-                  "Document scrolled on horizontal axis");
     assert_equals(document.scrollingElement.scrollLeft, 200,
+                  "Document scrolled on horizontal axis");
+    assert_equals(document.scrollingElement.scrollTop, 200,
                   "Document scrolled on vertical axis");
   }, "Tests scrollend event is fired to document event handler property");
 

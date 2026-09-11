@@ -236,6 +236,10 @@ class RefTest(URLManifestItem):
         return self._extras.get("dpi")
 
     @property
+    def reftest_color_space(self) -> Optional[Text]:
+        return self._extras.get("reftest_color_space")
+
+    @property
     def fuzzy(self) -> Fuzzy:
         fuzzy: Union[Fuzzy, List[Tuple[Optional[Sequence[Text]], List[int]]]] = self._extras.get("fuzzy", {})
         if not isinstance(fuzzy, list):
@@ -268,6 +272,8 @@ class RefTest(URLManifestItem):
             extras["dpi"] = self.dpi
         if self.fuzzy:
             extras["fuzzy"] = list(self.fuzzy.items())
+        if self.reftest_color_space is not None:
+            extras["reftest_color_space"] = self.reftest_color_space
         if self.testdriver:
             extras["testdriver"] = self.testdriver
         return rv

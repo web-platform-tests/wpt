@@ -4,8 +4,9 @@ import os
 from collections import deque
 from fnmatch import fnmatch
 from io import BytesIO
-from typing import (Any, BinaryIO, Callable, Deque, Dict, Iterable, List,
-                    Optional, Pattern, Set, Text, Tuple, TypedDict, Union)
+from typing import (Any, BinaryIO, Callable, ClassVar, Deque, Dict, FrozenSet,
+                    Iterable, List, Optional, Pattern, Set, Text, Tuple,
+                    TypedDict, Union)
 from urllib.parse import parse_qs, urlparse, urljoin
 
 try:
@@ -675,6 +676,45 @@ class SourceFile:
             assert len(arg_values) == 0 and len(positional_args) == 0
         return rv
 
+    # Valid identifiers for <meta name="reftest-color-space">.
+    _VALID_COLOR_SPACES: ClassVar[FrozenSet[Text]] = frozenset({
+        "srgb",
+        "display-p3",
+        "rec2020",
+        "rec2100-pq",
+        "rec2100-hlg",
+        # TODO: Add an Adobe RGB-compatible identifier if standardized
+    })
+
+    @cached_property
+    def reftest_color_space_nodes(self) -> List[ElementTree.Element]:
+        """List of ElementTree Elements corresponding to nodes in a test that
+        specify the target color space for screenshot capture."""
+        assert self.root is not None
+        return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='reftest-color-space']")
+
+    @cached_property
+    def reftest_color_space(self) -> Optional[Text]:
+        if self.root is None:
+            return None
+
+        nodes = self.reftest_color_space_nodes
+        if not nodes:
+            return None
+
+        if len(nodes) > 1:
+            raise ValueError("%s has multiple reftest-color-space meta tags" % self.rel_url)
+
+        value = nodes[0].attrib.get("content", "").strip()
+        if value not in self._VALID_COLOR_SPACES:
+            raise ValueError(
+                "%s has an invalid reftest-color-space value %r\n"
+                "valid values are: %s"
+                % (self.rel_url, value, ", ".join(sorted(self._VALID_COLOR_SPACES)))
+            )
+
+        return value
+
     @cached_property
     def page_ranges_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes in a test that
@@ -1086,6 +1126,7 @@ class SourceFile:
                     viewport_size=self.viewport_size,
                     fuzzy=self.fuzzy,
                     page_ranges=self.page_ranges,
+                    reftest_color_space=self.reftest_color_space,
                     testdriver=self.has_testdriver,
                 )]
 
@@ -1240,6 +1281,9 @@ class SourceFile:
                     viewport_size=self.viewport_size,
                     dpi=self.dpi,
                     fuzzy=self.fuzzy,
+                    reftest_color_space=(
+                        None if self.name_is_reference else self.reftest_color_space
+                    ),
                     testdriver=self.has_testdriver,
                 ))
 

@@ -35,9 +35,12 @@ class EdgeDriverPrintRefTestExecutor(EdgeDriverRefTestExecutor):
         with open(os.path.join(here, "reftest.js")) as f:
             self.script = f.read()
 
-    def screenshot(self, test, viewport_size, dpi, page_ranges):
+    def screenshot(self, test, viewport_size, dpi, page_ranges, color_space=None):
         # https://github.com/web-platform-tests/wpt/issues/7140
         assert dpi is None
+
+        if color_space is not None:
+            raise ValueError("reftest-color-space is not supported by the Edge executor")
 
         if not self.has_window:
             self.protocol.base.execute_script(self.script)

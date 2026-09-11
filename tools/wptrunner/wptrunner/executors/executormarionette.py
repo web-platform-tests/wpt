@@ -1233,10 +1233,13 @@ class MarionetteRefTestExecutor(RefTestExecutor):
 
         return self.convert_result(test, result)
 
-    def screenshot(self, test, viewport_size, dpi, page_ranges):
+    def screenshot(self, test, viewport_size, dpi, page_ranges, color_space=None):
         # https://github.com/web-platform-tests/wpt/issues/7135
         assert viewport_size is None
         assert dpi is None
+
+        if color_space is not None:
+            raise ValueError("reftest-color-space is not supported by the Marionette executor")
 
         timeout = self.timeout_multiplier * test.timeout if self.debug_info is None else None
 
@@ -1446,9 +1449,12 @@ class MarionettePrintRefTestExecutor(MarionetteRefTestExecutor):
         if not isinstance(self.implementation, InternalRefTestImplementation):
             self.protocol.pdf_print.load_runner()
 
-    def screenshot(self, test, viewport_size, dpi, page_ranges):
+    def screenshot(self, test, viewport_size, dpi, page_ranges, color_space=None):
         # https://github.com/web-platform-tests/wpt/issues/7140
         assert dpi is None
+
+        if color_space is not None:
+            raise ValueError("reftest-color-space is not supported by the Marionette print reftest executor")
 
         self.viewport_size = viewport_size
         timeout = self.timeout_multiplier * test.timeout if self.debug_info is None else None

@@ -57,8 +57,11 @@
 #data
 <html><body><body class="body-cls" data-foo="bar"></body>
 #config
-{ "elements": [{ "name": "body", "attributes": ["class"] }] }
+{ "elements": ["html", { "name": "body", "attributes": ["class"] }] }
 #document
+| <html>
+|   <body>
+|     class="body-cls"
 
 </script>
 <script id="unsafe" type="html5lib-testcases">
@@ -95,8 +98,13 @@
 #data
 <html title="html-title"><body title="body-title"><div title="div-title"></div></body>
 #config
-{ "elements": [{ "name": "body", "removeAttributes": ["title"] }] }
+{ "elements": ["html", { "name": "body", "removeAttributes": ["title"] }, "div"] }
 #document
+| <html>
+|   title="html-title"
+|   <body>
+|     <div>
+|       title="div-title"
 
 </script>
 <script id="fragment" type="html5lib-testcases">

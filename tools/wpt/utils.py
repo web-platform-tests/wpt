@@ -12,6 +12,7 @@ import time
 import zipfile
 from io import BytesIO
 from socket import error as SocketError  # NOQA: N812
+from urllib.error import HTTPError
 from urllib.request import urlopen
 
 logger = logging.getLogger(__name__)
@@ -135,8 +136,9 @@ def get_download_to_descriptor(fd, url, max_retries=5):
             fd.flush()
             # Success
             return
-        except SocketError as e:
-            if current_retry < max_retries and e.errno == errno.ECONNRESET:
+        except (HTTPError, SocketError) as e:
+            if current_retry < max_retries and (isinstance(e, HTTPError) or
+                                                e.errno == errno.ECONNRESET):
                 # Retry
                 logger.error("Connection reset by peer. Retrying after %ds..." % wait)
                 time.sleep(wait)

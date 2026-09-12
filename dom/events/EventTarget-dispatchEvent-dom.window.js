@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<meta charset=utf-8>
-<title>EventTarget.dispatchEvent</title>
-<link rel="author" title="Olli Pettay" href="mailto:Olli.Pettay@gmail.com">
-<link rel="author" title="Ms2ger" href="mailto:Ms2ger@gmail.com">
-<link rel="help" href="https://dom.spec.whatwg.org/#dom-eventtarget-dispatchevent">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/dom/nodes/Document-createEvent.js"></script>
-<div id="log"></div>
-<script>
+// META: title=EventTarget.dispatchEvent
+// META: script=/dom/nodes/Document-createEvent.js
+
+// Author: Olli Pettay <Olli.Pettay@gmail.com>
+// Author: Ms2ger <Ms2ger@gmail.com>
+// https://dom.spec.whatwg.org/#dom-eventtarget-dispatchevent
+
 setup({
   "allow_uncaught_exception": true,
 })
@@ -101,4 +97,3 @@ async_test(function() {
   assert_array_equals(results, [1, 3, 2])
   this.done()
 }, "Capturing event listeners should be called before non-capturing ones")
-</script>

@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<title>Event.type set to the empty string</title>
-<link rel="author" title="Ms2ger" href="mailto:Ms2ger@gmail.com">
-<link rel="help" href="https://dom.spec.whatwg.org/#dom-event-type">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
+// META: title=Event.type set to the empty string (createEvent, dispatched on DOM node)
+
+// Author: Ms2ger <Ms2ger@gmail.com>
+// https://dom.spec.whatwg.org/#dom-event-type
+
 function do_test(t, e) {
   assert_equals(e.type, "", "type");
   assert_equals(e.bubbles, false, "bubbles");
@@ -16,8 +13,8 @@ function do_test(t, e) {
   target.addEventListener("", t.step_func(function(e) {
     handled = true;
   }));
-  assert_true(target.dispatchEvent(e));
-  assert_true(handled);
+  assert_true(target.dispatchEvent(e), "dispatchEvent should return true");
+  assert_true(handled, "callback should be called");
 }
 
 async_test(function() {
@@ -32,4 +29,3 @@ async_test(function() {
   do_test(this, e);
   this.done();
 }, "Constructor");
-</script>

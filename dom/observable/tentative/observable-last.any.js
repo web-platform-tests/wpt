@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 promise_test(async () => {
   const source = new Observable(subscriber => {
     // Never exposed to the `last()` promise.

@@ -129,12 +129,10 @@ async def test_iframe_navigation_request(
     # Check that 2 distinct navigations were captured, for the expected contexts
     assert navigation_events[0]["navigation"] == result["navigation"]
     assert navigation_events[0]["context"] == top_context["context"]
-    if "userContext" in navigation_events[0]:
-        assert navigation_events[0]["userContext"] == top_context["userContext"]
+    assert navigation_events[0]["userContext"] == top_context["userContext"]
     assert navigation_events[1]["navigation"] != result["navigation"]
     assert navigation_events[1]["context"] == frame_context["context"]
-    if "userContext" in navigation_events[1]:
-        assert navigation_events[1]["userContext"] == frame_context["userContext"]
+    assert navigation_events[1]["userContext"] == frame_context["userContext"]
 
     # Helper to assert the 3 main network events for this test
     def assert_events(event_index, url, context, user_context, navigation):
@@ -146,7 +144,7 @@ async def test_iframe_navigation_request(
                 "request": expected_request,
                 "context": context,
                 "navigation": navigation,
-                **({"userContext": user_context} if "userContext" in network_events[BEFORE_REQUEST_SENT_EVENT][event_index] else {}),
+                "userContext": user_context,
             },
         )
         assert_response_event(
@@ -155,7 +153,7 @@ async def test_iframe_navigation_request(
                 "response": expected_response,
                 "context": context,
                 "navigation": navigation,
-                **({"userContext": user_context} if "userContext" in network_events[RESPONSE_STARTED_EVENT][event_index] else {}),
+                "userContext": user_context,
             },
         )
         assert_response_event(
@@ -164,7 +162,7 @@ async def test_iframe_navigation_request(
                 "response": expected_response,
                 "context": context,
                 "navigation": navigation,
-                **({"userContext": user_context} if "userContext" in network_events[RESPONSE_COMPLETED_EVENT][event_index] else {}),
+                "userContext": user_context,
             },
         )
 
@@ -233,7 +231,7 @@ async def test_same_navigation_id(
             "request": expected_request,
             "context": top_context["context"],
             "navigation": result["navigation"],
-            **({"userContext": top_context["userContext"]} if "userContext" in network_events[BEFORE_REQUEST_SENT_EVENT][0] else {}),
+            "userContext": top_context["userContext"],
         },
     )
     assert_response_event(
@@ -242,7 +240,7 @@ async def test_same_navigation_id(
             "response": expected_response,
             "context": top_context["context"],
             "navigation": result["navigation"],
-            **({"userContext": top_context["userContext"]} if "userContext" in network_events[RESPONSE_STARTED_EVENT][0] else {}),
+            "userContext": top_context["userContext"],
         },
     )
     assert_response_event(
@@ -251,7 +249,7 @@ async def test_same_navigation_id(
             "response": expected_response,
             "context": top_context["context"],
             "navigation": result["navigation"],
-            **({"userContext": top_context["userContext"]} if "userContext" in network_events[RESPONSE_COMPLETED_EVENT][0] else {}),
+            "userContext": top_context["userContext"],
         },
     )
 
@@ -343,7 +341,7 @@ async def test_subscribe_to_one_context(
         expected_event={
             "request": expected_request,
             "context": top_context["context"],
-            **({"userContext": top_context["userContext"]} if "userContext" in network_events[BEFORE_REQUEST_SENT_EVENT][0] else {}),
+            "userContext": top_context["userContext"],
         },
     )
     assert_response_event(
@@ -351,7 +349,7 @@ async def test_subscribe_to_one_context(
         expected_event={
             "response": expected_response,
             "context": top_context["context"],
-            **({"userContext": top_context["userContext"]} if "userContext" in network_events[RESPONSE_STARTED_EVENT][0] else {}),
+            "userContext": top_context["userContext"],
         },
     )
     assert_response_event(
@@ -359,7 +357,7 @@ async def test_subscribe_to_one_context(
         expected_event={
             "response": expected_response,
             "context": top_context["context"],
-            **({"userContext": top_context["userContext"]} if "userContext" in network_events[RESPONSE_COMPLETED_EVENT][0] else {}),
+            "userContext": top_context["userContext"],
         },
     )
 

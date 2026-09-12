@@ -33,8 +33,8 @@ function corsPreflightRedirect(desc, redirectUrl, redirectLocation, redirectStat
   }, desc);
 }
 
-var redirectUrl = get_host_info().HTTP_REMOTE_ORIGIN + dirname(location.pathname) + RESOURCES_DIR + "redirect.py";
-var locationUrl =  get_host_info().HTTP_REMOTE_ORIGIN + dirname(location.pathname) + RESOURCES_DIR + "preflight.py";
+var redirectUrl = get_host_info().REMOTE_ORIGIN + dirname(location.pathname) + RESOURCES_DIR + "redirect.py";
+var locationUrl =  get_host_info().REMOTE_ORIGIN + dirname(location.pathname) + RESOURCES_DIR + "preflight.py";
 
 for (var code of [301, 302, 303, 307, 308]) {
   /* preflight should not follow the redirection */

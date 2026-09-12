@@ -1,3 +1,4 @@
+// META: global=window,dedicatedworker,shadowrealm
 // META: title=EventTarget's addEventListener + removeEventListener
 
 "use strict";

@@ -329,6 +329,25 @@ directory_test(async (t, root) => {
 }, 'WriteParams: seek missing position param');
 
 directory_test(async (t, root) => {
+  const handle = await createFileWithContents('content.txt', 'seekable', root);
+  const stream = await handle.createWritable();
+
+  await promise_rejects_js(
+      t, TypeError, stream.write({type: 'seek', position: null}),
+      'seek with null position');
+}, 'WriteParams: seek null position param');
+
+directory_test(async (t, root) => {
+  const handle =
+      await createFileWithContents('content.txt', 'very long string', root);
+  const stream = await handle.createWritable();
+
+  await promise_rejects_js(
+      t, TypeError, stream.write({type: 'truncate', size: null}),
+      'truncate with null size');
+}, 'WriteParams: truncate null size param');
+
+directory_test(async (t, root) => {
   const source_file =
       await createFileWithContents('source_file', 'source data', root);
   const source_blob = await source_file.getFile();

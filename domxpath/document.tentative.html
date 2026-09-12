@@ -1,5 +1,5 @@
 <!doctype html>
-<title>XPath parent of documentElement</title>
+<title>XPath parent axis for document children</title>
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
 <body>
@@ -28,4 +28,40 @@ test(function() {
   }
   assert_array_equals(matched, [document]);
 });
+
+function assert_parent_axis_matches_document(node) {
+  const result = document.evaluate("..",
+                                   node,
+                                   null,
+                                   XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+                                   null);
+  assert_equals(result.snapshotLength, 1);
+  assert_equals(result.snapshotItem(0), document);
+}
+
+test(function(t) {
+  const comment = document.createComment("root-adjacent comment");
+  document.insertBefore(comment, document.documentElement);
+  t.add_cleanup(() => comment.remove());
+
+  assert_parent_axis_matches_document(comment);
+}, "The parent axis of a root-adjacent comment is the document");
+
+test(function(t) {
+  const instruction = document.createProcessingInstruction("target", "data");
+  document.insertBefore(instruction, document.documentElement);
+  t.add_cleanup(() => instruction.remove());
+
+  assert_parent_axis_matches_document(instruction);
+}, "The parent axis of a root-adjacent processing instruction is the document");
+
+test(function() {
+  assert_throws_dom("NotSupportedError", () => {
+    document.evaluate("..",
+                      document.doctype,
+                      null,
+                      XPathResult.ANY_TYPE,
+                      null);
+  });
+}, "A document type cannot be used as an XPath context node");
 </script>

@@ -217,25 +217,6 @@ class UiaWrapper(ApiWrapper[UiaObject]):
     def api_name(self) -> str:
         return "UIA"
 
-    def find_node(self, dom_id: str, url: str) -> Optional[UiaObject]:
-        """
-        :param dom_id: The dom id of the node to test.
-        :param url: The url of the test.
-        """
-        if self.test_url != url or not self.document:
-            self.test_url = url
-            self.document = self._poll_for(
-                self._find_tab,
-                f"Timeout looking for url: {self.test_url}",
-            )
-
-        test_node = self._poll_for(
-            lambda: self._find_node_by_id(self.document, dom_id),
-            f"Timeout looking for node with id {dom_id} in accessibility API UIA.",
-        )
-
-        return test_node
-
     def _find_browser(self) -> Optional[UiaObject]:
         """Find the UIA element representing the browser's top level window.
 

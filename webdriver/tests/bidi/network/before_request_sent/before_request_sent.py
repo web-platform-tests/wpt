@@ -94,7 +94,7 @@ async def test_iframe_load(
         expected_event={
             "request": {"url": test_page_same_origin_frame},
             "context": top_context["context"],
-            **({"userContext": top_context["userContext"]} if "userContext" in events[0] else {}),
+            "userContext": top_context["userContext"],
         },
     )
 
@@ -103,7 +103,7 @@ async def test_iframe_load(
         expected_event={
             "request": {"url": test_page},
             "context": frame_context["context"],
-            **({"userContext": top_context["userContext"]} if "userContext" in events[1] else {}),
+            "userContext": top_context["userContext"],
         }
     )
 

@@ -534,6 +534,16 @@ class ClearDevicePostureAction:
     def __call__(self, payload):
         return self.protocol.device_posture.clear_device_posture()
 
+class ConsumeUserActivationAction:
+    name = "consume_user_activation"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        return self.protocol.consume_user_activation.consume_user_activation()
+
 class RunBounceTrackingMitigationsAction:
     name = "run_bounce_tracking_mitigations"
 
@@ -679,6 +689,7 @@ actions = [ClickAction,
            GetVirtualSensorInformationAction,
            SetDevicePostureAction,
            ClearDevicePostureAction,
+           ConsumeUserActivationAction,
            RunBounceTrackingMitigationsAction,
            CreateVirtualPressureSourceAction,
            UpdateVirtualPressureSourceAction,

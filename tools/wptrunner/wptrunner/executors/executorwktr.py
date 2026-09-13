@@ -197,8 +197,12 @@ class WKTRRefTestExecutor(RefTestExecutor):
         except BaseException as exception:
             return _convert_exception(test, exception, self.protocol.wktr_errors.read_errors())
 
-    def screenshot(self, test, viewport_size, dpi, page_ranges):
+    def screenshot(self, test, viewport_size, dpi, page_ranges, color_space=None):
         assert dpi is None
+
+        if color_space is not None:
+            raise ValueError("reftest-color-space is not supported by the WebKit executor")
+
         command = self.test_url(test)
         command += "'--pixel-test'"
         assert not self.is_print

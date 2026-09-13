@@ -557,7 +557,7 @@ class ReftestTest(Test):
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, references,
                  timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None,
-                 protocol="http", subdomain=False, testdriver=False):
+                 protocol="http", subdomain=False, testdriver=False, color_space=None):
         Test.__init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, timeout,
                       path, protocol, subdomain)
 
@@ -570,6 +570,7 @@ class ReftestTest(Test):
         self.dpi = dpi
         self.testdriver = testdriver
         self._fuzzy = fuzzy or {}
+        self.color_space = color_space
 
     @classmethod
     def cls_kwargs(cls, manifest_test):
@@ -577,6 +578,7 @@ class ReftestTest(Test):
                 "dpi": manifest_test.dpi,
                 "protocol": server_protocol(manifest_test),
                 "fuzzy": manifest_test.fuzzy,
+                "color_space": getattr(manifest_test, "reftest_color_space", None),
                 "testdriver": bool(getattr(manifest_test, "testdriver", False))}
 
     @classmethod

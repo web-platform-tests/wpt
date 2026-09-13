@@ -442,10 +442,13 @@ class SeleniumRefTestExecutor(RefTestExecutor):
 
         return self.convert_result(test, result)
 
-    def screenshot(self, test, viewport_size, dpi, page_ranges):
+    def screenshot(self, test, viewport_size, dpi, page_ranges, color_space=None):
         # https://github.com/web-platform-tests/wpt/issues/7135
         assert viewport_size is None
         assert dpi is None
+
+        if color_space is not None:
+            raise ValueError("reftest-color-space is not supported by the Selenium executor")
 
         return SeleniumRun(self.logger,
                            self._screenshot,

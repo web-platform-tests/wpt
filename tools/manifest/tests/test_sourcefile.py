@@ -951,6 +951,40 @@ def test_reftest_fuzzy_duplicate_key(fuzzy):
         s.fuzzy
 
 
+@pytest.mark.parametrize("content, expected", [
+    (b"srgb", "srgb"),
+    (b"display-p3", "display-p3"),
+    (b"rec2020", "rec2020"),
+    (b"rec2100-pq", "rec2100-pq"),
+    (b"rec2100-hlg", "rec2100-hlg"),
+])
+def test_reftest_color_space_valid(content, expected):
+    html = b"""<link rel=match href=ref.html>
+<meta name="reftest-color-space" content="%s">""" % content
+    s = create("foo/test.html", html)
+    assert s.reftest_color_space == expected
+
+def test_reftest_color_space_absent():
+    html = b"""<link rel=match href=ref.html>"""
+    s = create("foo/test.html", html)
+    assert s.reftest_color_space is None
+
+def test_reftest_color_space_invalid():
+    html = b"""<link rel=match href=ref.html>
+<meta name="reftest-color-space" content="invalid">"""
+    s = create("foo/test.html", html)
+    with pytest.raises(ValueError, match="invalid reftest-color-space"):
+        s.reftest_color_space
+
+def test_reftest_color_space_duplicate():
+    html = b"""<link rel=match href=ref.html>
+<meta name="reftest-color-space" content="srgb">
+<meta name="reftest-color-space" content="display-p3">"""
+    s = create("foo/test.html", html)
+    with pytest.raises(ValueError, match="multiple reftest-color-space"):
+        s.reftest_color_space
+
+
 @pytest.mark.parametrize("pac, expected", [
     (b"proxy.pac", "proxy.pac")])
 def test_pac(pac, expected):

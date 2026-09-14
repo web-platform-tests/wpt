@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>drawFocusIfNeeded when a default path is provided the associated fallback element has focus and is clipped</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <link rel="author" title="Mark Sadecki">
+    <link rel="help" href="http://www.w3.org/TR/2dcontext/#dom-context-2d-drawfocusifneeded">
+  </head>
+  <body>
+    <h1>Description</h1>
+    <p>This test verifies that a focus indicator is drawn when a default path is provided that extends beyond the bounds of the canvas and the associated fallback element has focus.  This test passes if a focus indicator is present (square) in the lower right quarter of the canvas, the canvas has a solid black border. The accessibility API rectangle bounds of the fallback element must match the best fit of bounds encompassing the original path without clipping. Use MSAA Inspect tool to check the bounds.</p>
+    <div>
+      <p>focus indicator on element that extends beyond canvas bounds:</p>
+      <canvas height='100' width='100' id='canvas' style='border: 1px solid black;'>
+          <a href='http://www.w3.org' id='focus' >Fallback</a>
+      </canvas>
+    </div>
+    <script>
+      test(function() {
+        // default path associated fallback has focus
+        var canvas = document.getElementById('canvas');
+        var focus = document.getElementById('focus');
+        var context = canvas.getContext('2d');
+        context.beginPath();
+        context.rect(50, 50, 100, 100);
+        context.fillStyle = "white";
+        context.fill();
+        focus.focus();
+        context.drawFocusIfNeeded(focus);
+        
+        /*// TODO make test automated
+          
+          assert_false(assertion, "Failure");
+        */
+                
+      }, 'drawFocusIfNeeded when a default path is provided, the associated fallback element has focus, and a default path is then set to draw the focus for the fallback element that extends beyond the bounds of the canvas element, the focus outline should be clipped, but the fallback element bounds must not');
+    </script>
+    <div id="log"></div>
+  </body>
+</html>

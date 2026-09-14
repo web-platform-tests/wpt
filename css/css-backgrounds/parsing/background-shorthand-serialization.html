@@ -42,9 +42,59 @@
 
   test((t) => {
     element.style = `background: padding-box border-box;`;
+    // background-origin and background-clip initial values should be omited.
     assert_equals(element.style.background , 'none');
   }, "all initial values");
 
+  test((t) => {
+    element.style = `background: 0% 0%;`;
+    assert_equals(element.style.background , 'none');
+  }, "initial background-position");
+
+  test((t) => {
+    element.style = `background: 0% 0% / auto;`;
+    assert_equals(element.style.background , 'none');
+  }, "initial background-size");
+
+  test((t) => {
+    element.style = `background: repeat;`;
+    assert_equals(element.style.background , 'none');
+  }, "initial background-repeat");
+
+  test((t) => {
+    element.style = `background: scroll;`;
+    assert_equals(element.style.background , 'none');
+  }, "initial background-attachment");
+
+  test((t) => {
+    element.style = `background: transparent;`;
+    assert_equals(element.style.background , 'none');
+  }, "initial background-color");
+
+  test((t) => {
+    element.style = `background: repeat red;`;
+    // The component is dropped, not the layer it sits in.
+    assert_equals(element.style.background , 'red');
+  }, "initial component beside a non-initial one");
+
+  test((t) => {
+    element.style = `background: scroll url(/favicon.ico);`;
+    assert_equals(element.style.background , 'url("/favicon.ico")');
+  }, "initial attachment beside an image");
+
+  test((t) => {
+    element.style = `background: url(/favicon.ico), none, url(/favicon.ico);`;
+    // It pins the rule that a layer left with nothing to serialize still emits
+    // the initial background-image, so it keeps its place in the list instead of
+    // collapsing and shifting the layers after it.
+    assert_equals(element.style.background , 'url("/favicon.ico"), none, url("/favicon.ico")');
+  }, "an all-initial layer between two others");
+
+  test((t) => {
+    element.style = 'background: initial; background-color: black;';
+    // A shorthand with initial and non-initial values can not be serialized.
+    assert_equals(element.style.background , '');
+  }, "initial keyword not surviving an override");
 
   test((t) => {
     element.style = `background: border-area border-box;`;
@@ -71,4 +121,44 @@
     element.style = `background: border-area text;`;
     assert_equals(element.style.backgroundOrigin , 'border-box');
   }, "border-area text sets background-origin to border-box");
+
+  test((t) => {
+    element.style = 'background: none; background-size: contain;';
+    // A <bg-size> can only follow a <bg-position>, so one is synthesized. It
+    // must not be preceded by the space that would separate it from an earlier
+    // component when every earlier component was omitted too.
+    assert_equals(element.style.background , '0% 0% / contain');
+  }, "background-size with every earlier component omitted");
+
+  test((t) => {
+    element.style = 'background: none; background-position-x: right 10px;';
+    // An offset from an edge does not combine with a bare <length-percentage>
+    // on the other axis, so the bare one is anchored to its own default edge.
+    assert_equals(element.style.background , 'right 10px top 0%');
+  }, "horizontal offset from an edge with the initial vertical offset");
+
+  test((t) => {
+    element.style = 'background: none; background-position-y: bottom 20px;';
+    assert_equals(element.style.background , 'left 0% bottom 20px');
+  }, "vertical offset from an edge with the initial horizontal offset");
+
+  test((t) => {
+    // A serialization that cannot be reparsed loses the declaration, which is
+    // only visible on the way back in.
+    for (const declarations of [
+        'background: none; background-size: contain',
+        'background: url(/favicon.ico); background-size: contain',
+        'background: none; background-position-x: right 10px',
+        'background: none; background-position-y: bottom 20px',
+        'background: none; background-position: left 10px center',
+        'background: none; background-position: left -20px top 60px']) {
+      element.style = declarations;
+      const value = element.style.background;
+      assert_not_equals(value, '', declarations);
+
+      element.style = '';
+      element.style.background = value;
+      assert_equals(element.style.background, value, declarations);
+    }
+  }, "the serialized shorthand parses back to itself");
 </script>

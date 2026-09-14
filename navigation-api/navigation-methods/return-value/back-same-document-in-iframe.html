@@ -12,12 +12,10 @@
 // navigation state has been set up. These tests check that the traversal still
 // completes normally. See https://github.com/whatwg/html/issues/12832.
 
-// Wait for after the load event so that the navigations don't get converted
-// into replace navigations.
-const afterLoad = new Promise(resolve => window.onload = () => setTimeout(resolve, 0));
-
 promise_test(async t => {
-  await afterLoad;
+  // Wait for after the load event so that the navigations don't get converted
+  // into replace navigations.
+  await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
   const w = i1.contentWindow;
 
   await w.navigation.navigate("#1").finished;
@@ -37,7 +35,6 @@ promise_test(async t => {
 }, "same-document back() in an iframe: committed and finished fulfill, navigatesuccess fires");
 
 promise_test(async t => {
-  await afterLoad;
   const w = i2.contentWindow;
 
   await w.navigation.navigate("#1").finished;

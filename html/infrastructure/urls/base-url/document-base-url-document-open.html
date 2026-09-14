@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>document.open() does not change an about: document's inherited base URL</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/urls-and-fetching.html#document-base-url">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#dom-document-open">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<base href="/base-url-override/">
+<body>
+<script>
+// See https://github.com/whatwg/dom/issues/454
+
+const INHERITED_BASE_URL = new URL("/base-url-override/", location.href).href;
+
+// document.open() copies the calling document's URL, without its fragment.
+const REWRITTEN_URL = (() => {
+  const url = new URL(location.href);
+  url.hash = "";
+  return url.href;
+})();
+
+function loadIframe(t, configure) {
+  return new Promise(resolve => {
+    const iframe = document.createElement("iframe");
+    configure(iframe);
+    iframe.addEventListener("load", () => resolve(iframe), { once: true });
+    t.add_cleanup(() => iframe.remove());
+    document.body.append(iframe);
+  });
+}
+
+function documentOpenTest(configure) {
+  return async t => {
+    assert_equals(document.baseURI, INHERITED_BASE_URL, "this document's base URL");
+    assert_not_equals(document.baseURI, REWRITTEN_URL,
+                      "this document's base URL has to differ from its URL");
+
+    const doc = (await loadIframe(t, configure)).contentDocument;
+    assert_equals(doc.baseURI, INHERITED_BASE_URL, "inherited base URL");
+
+    doc.open();
+    assert_equals(doc.URL, REWRITTEN_URL, "URL after document.open()");
+    assert_equals(doc.baseURI, INHERITED_BASE_URL, "base URL after document.open()");
+    doc.close();
+  };
+}
+
+promise_test(documentOpenTest(() => {}),
+             "document.open() on an initial about:blank document");
+
+promise_test(documentOpenTest(iframe => iframe.src = "about:blank"),
+             "document.open() on an about:blank document");
+
+promise_test(documentOpenTest(iframe => iframe.srcdoc = "x"),
+             "document.open() on an about:srcdoc document");
+</script>

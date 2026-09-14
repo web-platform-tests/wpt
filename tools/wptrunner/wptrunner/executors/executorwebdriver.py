@@ -618,7 +618,7 @@ class WebDriverWindowProtocolPart(WindowProtocolPart):
         self.webdriver = self.parent.webdriver
 
     def create(self, type_hint=None):
-        self.logger.debug("Creating new window")
+        self.logger.debug(f"Creating new {type_hint or 'tab'}")
         return self.webdriver.new_window(type_hint=type_hint)
 
     def minimize(self):

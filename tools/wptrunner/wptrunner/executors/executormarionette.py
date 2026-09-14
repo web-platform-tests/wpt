@@ -471,7 +471,8 @@ class MarionetteWindowProtocolPart(WindowProtocolPart):
     def create(self, type_hint=None):
         # Unlike the New Window command, WebDriver:NewWindow rejects a null
         # type, and the client always sends the key so the default is
-        # applied here. focus=False retains focus on the test window.
+        # applied here. focus is a Marionette-specific argument. We pass
+        # False to retain focus on the test window.
         return self.marionette.open(type=type_hint or "tab", focus=False)["handle"]
 
     def minimize(self):

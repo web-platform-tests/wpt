@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP executeTool with a tool that unregisters itself mid-execution</title>
+<link rel="author" href="mailto:saksham.mishra2402@gmail.com">
+<link rel="help" href="https://github.com/webmachinelearning/webmcp/issues/300">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+// A tool whose side effect changes page state can cause the page to unregister
+// *that very tool* before its execute steps finish: the state change is
+// observed by whatever derives the registered set from page state, and the
+// abort lands while execute() is still on the stack. This is the ordinary
+// outcome of a state-advancing tool, not an edge case — succeeding is often
+// exactly what makes a tool no longer applicable.
+//
+// executeTool-unregister-resolution-race covers the abort landing *after* the
+// tool's promise has resolved. These cover the abort landing *before* the
+// result is produced, which is the ordering a state-derived registration
+// produces.
+
+promise_test(async t => {
+  const ac = new AbortController();
+  t.add_cleanup(() => ac.abort());
+
+  await document.modelContext.registerTool({
+    name: 'self_unregistering_tool',
+    description: 'Aborts its own registration signal before returning a result',
+    execute: async () => {
+      ac.abort();
+      return {status: 'resolved'};
+    }
+  }, {signal: ac.signal});
+
+  const tool = (await document.modelContext.getTools())
+      .find(candidate => candidate.name === 'self_unregistering_tool');
+  assert_true(!!tool, 'tool should be registered before it is executed');
+
+  const result = await document.modelContext.executeTool(tool);
+  assert_equals(result, '{"status":"resolved"}',
+      'removal from the tool map after the execute steps began must not be ' +
+      'treated as a cancellation');
+
+  const remaining = (await document.modelContext.getTools())
+      .map(candidate => candidate.name);
+  assert_false(remaining.includes('self_unregistering_tool'),
+      'the abort must still take effect, so the result cannot be delivered ' +
+      'merely by ignoring it');
+}, 'executeTool resolves when the tool aborts its own registration signal before returning its result');
+
+promise_test(async t => {
+  const executing_ac = new AbortController();
+  const other_ac = new AbortController();
+  t.add_cleanup(() => { executing_ac.abort(); other_ac.abort(); });
+
+  await document.modelContext.registerTool({
+    name: 'bystander_tool',
+    description: 'Unregistered by another tool while that tool runs',
+    execute: async () => ({status: 'bystander'})
+  }, {signal: other_ac.signal});
+
+  await document.modelContext.registerTool({
+    name: 'unregisters_another_tool',
+    description: 'Aborts a different tool registration before returning',
+    execute: async () => {
+      other_ac.abort();
+      return {status: 'resolved'};
+    }
+  }, {signal: executing_ac.signal});
+
+  const tool = (await document.modelContext.getTools())
+      .find(candidate => candidate.name === 'unregisters_another_tool');
+  assert_true(!!tool, 'tool should be registered before it is executed');
+
+  const result = await document.modelContext.executeTool(tool);
+  assert_equals(result, '{"status":"resolved"}');
+
+  const remaining = (await document.modelContext.getTools())
+      .map(candidate => candidate.name);
+  assert_false(remaining.includes('bystander_tool'),
+      'the other tool should have been unregistered');
+  assert_true(remaining.includes('unregisters_another_tool'),
+      'the executing tool should be unaffected');
+}, 'executeTool resolves when the running tool unregisters a different tool before returning its result');
+</script>
+</body>
+</html>

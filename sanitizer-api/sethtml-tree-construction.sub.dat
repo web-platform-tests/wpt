@@ -720,3 +720,27 @@ a<table><tr><td>y</td></tr>b</table>c
 |   <td>
 |     "y"
 | "x"
+
+#data
+<table><tr><div>x</div><td>y
+#config
+{ "replaceWithChildrenElements": ["div"] }
+#document
+| "x"
+| <table>
+|   <tbody>
+|     <tr>
+|       <td>
+|         "y"
+
+#data
+<table>a<b>y</b>c<tr><td>z
+#config
+{ "replaceWithChildrenElements": ["b"] }
+#document
+| "ayc"
+| <table>
+|   <tbody>
+|     <tr>
+|       <td>
+|         "z"

@@ -104,3 +104,96 @@
 |     <div>
 |       <b>
 |       "x"
+
+#data
+<b><em><div>Text</b>after
+#config
+{ "replaceWithChildrenElements": ["div"] }
+#document
+| <b>
+|   <em>
+|     "Text"
+| <em>
+|   <b>
+|   "after"
+
+#data
+<b><em><u><div>Text</b>after
+#config
+{ "replaceWithChildrenElements": ["div"] }
+#document
+| <b>
+|   <em>
+|     <u>
+|       "Text"
+| <em>
+|   <u>
+|     <b>
+|     "after"
+
+#data
+<b><u><em><div>Text</b>after
+#config
+{ "replaceWithChildrenElements": ["div", "em"] }
+#document
+| <b>
+|   <u>
+|     "Text"
+| <u>
+|   <b>
+|   "after"
+
+#data
+<b><em><div>Text</b>after
+#config
+{ "replaceWithChildrenElements": ["div"], "removeElements": ["em"] }
+#document
+| <b>
+
+#data
+<b><em><div><p>Text</b>after
+#config
+{ "replaceWithChildrenElements": ["div"] }
+#document
+| <b>
+|   <em>
+| <em>
+|   <b>
+|   <p>
+|     <b>
+|       "Text"
+|     "after"
+
+#data
+<b><div><section>Text</b>after
+#config
+{ "replaceWithChildrenElements": ["div", "section"] }
+#document
+| <b>
+|   "Text"
+| <b>
+| <b>
+| "after"
+
+#data
+<b><div><span>Text</b>after
+#config
+{ "replaceWithChildrenElements": ["span"] }
+#document
+| <b>
+| <div>
+|   <b>
+|     "Text"
+|   "after"
+
+#data
+<b><em><div>Text</b>after</div>more
+#config
+{ "replaceWithChildrenElements": ["div"] }
+#document
+| <b>
+|   <em>
+|     "Text"
+| <em>
+|   <b>
+|   "aftermore"

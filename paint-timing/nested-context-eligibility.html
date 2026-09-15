@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Paint Timing: a same-origin nested browsing context reports only its own paint timing</title>
+<link rel="author" title="Shubham Gupta" href="mailto:shubhamg13.work@gmail.com">
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+</head>
+<body>
+<script>
+setup({"hide_test_state": true});
+
+promise_test(async t => {
+  assert_implements(window.PerformancePaintTiming, "Paint Timing isn't supported.");
+
+  // Positive half: the nested browsing context reports its own paint timing.
+  // `resources/subframe-painting.html` paints an image of its own and posts
+  // each of its paint-timing entries to this document as it observes them.
+  const childNames = [];
+  const childReportedBoth = new Promise(resolve => {
+    window.addEventListener('message', e => {
+      if (e.data.entryType !== 'paint')
+        return;
+      childNames.push(e.data.name);
+      if (childNames.includes('first-paint') &&
+          childNames.includes('first-contentful-paint')) {
+        resolve();
+      }
+    });
+  });
+
+  // Negative half: this document must not be aware of the nested context's
+  // paint timing. Register the observer before adding the iframe.
+  let parentObservedFirstContentfulPaint = false;
+  const parentObserver = new PerformanceObserver(list => {
+    for (const entry of list.getEntries()) {
+      if (entry.name === 'first-contentful-paint')
+        parentObservedFirstContentfulPaint = true;
+    }
+  });
+  parentObserver.observe({type: 'paint', buffered: true});
+
+  const iframe = document.createElement('iframe');
+  iframe.src = 'resources/subframe-painting.html';
+  document.body.appendChild(iframe);
+
+  await childReportedBoth;
+  assert_true(childNames.includes('first-paint'),
+    'Nested browsing context reported its own first-paint.');
+  assert_true(childNames.includes('first-contentful-paint'),
+    'Nested browsing context reported its own first-contentful-paint.');
+
+  // Give the parent observer a chance to (incorrectly) observe the child's
+  // paint. A frame that only contains an iframe has first-paint (the frame's
+  // enclosing box) but must not have first-contentful-paint.
+  await waitForAnimationFrames(3);
+  assert_false(parentObservedFirstContentfulPaint,
+    'Parent must not observe first-contentful-paint for nested content.');
+}, 'A same-origin nested browsing context reports only its own paint timing.');
+</script>
+</body>
+</html>

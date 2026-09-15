@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Largest Contentful Paint: a same-origin nested browsing context reports only its own LCP</title>
+<link rel="author" title="Shubham Gupta" href="mailto:shubhamg13.work@gmail.com">
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+setup({"hide_test_state": true});
+
+promise_test(async t => {
+  assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
+
+  // Negative half: this document must not observe content from the nested
+  // context. Register the observer before adding the iframe.
+  let parentObservedEntry = false;
+  const parentObserver = new PerformanceObserver(() => {
+    parentObservedEntry = true;
+  });
+  parentObserver.observe({type: 'largest-contentful-paint', buffered: true});
+
+  // Positive half: the nested browsing context observes its own LCP and posts
+  // the result to this document.
+  // `resources/nested-context-eligibility-iframe.html` paints an image of its
+  // own and reports its own LCP entries.
+  const childObserved = new Promise(resolve => {
+    window.addEventListener('message', e => resolve(e.data), { once: true });
+  });
+
+  const iframe = document.createElement('iframe');
+  iframe.src = 'resources/nested-context-eligibility-iframe.html';
+  document.body.appendChild(iframe);
+
+  const data = await childObserved;
+  assert_greater_than(data.count, 0,
+    'Nested browsing context observed an LCP entry of its own.');
+  assert_true(data.size > 0,
+    'Nested browsing context LCP entry reported a non-zero size.');
+
+  // Give the parent observer a chance to (incorrectly) observe the child's
+  // content before checking that it did not.
+  await new Promise(resolve => t.step_timeout(resolve, 100));
+  assert_false(parentObservedEntry,
+    'Parent must not observe LCP for content painted in a nested context.');
+}, 'A same-origin nested browsing context reports only its own LCP.');
+</script>
+</body>

@@ -664,3 +664,59 @@ test<div>p</div>tt<p>div</p><test>test</test>
 #document
 | <div>
 |   "after"
+
+#data
+<table>x<tr><td>y
+#config
+{ "replaceWithChildrenElements": ["table"] }
+#document
+| "x"
+| <tbody>
+|   <tr>
+|     <td>
+|       "y"
+
+#data
+<table><tr><td>y</td></tr>x</table>
+#config
+{ "replaceWithChildrenElements": ["table"] }
+#document
+| <tbody>
+|   <tr>
+|     <td>
+|       "y"
+| "x"
+
+#data
+<table><tr><td>y</td></tr><div>x</div></table>
+#config
+{ "replaceWithChildrenElements": ["table"] }
+#document
+| <tbody>
+|   <tr>
+|     <td>
+|       "y"
+| <div>
+|   "x"
+
+#data
+a<table><tr><td>y</td></tr>b</table>c
+#config
+{ "replaceWithChildrenElements": ["table"] }
+#document
+| "a"
+| <tbody>
+|   <tr>
+|     <td>
+|       "y"
+| "bc"
+
+#data
+<table><tbody><tr><td>y</td></tr>x</table>
+#config
+{ "replaceWithChildrenElements": ["table", "tbody"] }
+#document
+| <tr>
+|   <td>
+|     "y"
+| "x"

@@ -21,14 +21,12 @@ const iframeLoaded = new Promise(resolve => {
 // The focus update steps fire an event at a Window object rather than at an element
 // for each Document in the focus chain, which only happens when focus moves between
 // documents.
-function eventsFiredAt(target) {
-  const events = [];
-  for (const type of ["focus", "blur"]) {
-    // No capture: focus events do not bubble, so this only observes events whose
-    // target is `target` itself.
-    target.addEventListener(type, e => events.push(e));
-  }
-  return events;
+function firstEventFiredAt(target) {
+  return new Promise(resolve => {
+    for (const type of ["focus", "blur"]) {
+      target.addEventListener(type, e => resolve(e));
+    }
+  });
 }
 
 // Without system focus the focus update steps never run, and the Window would
@@ -38,11 +36,10 @@ test(() => {
 }, "precondition: the test window has system focus");
 
 promise_test(async t => {
-  const events = eventsFiredAt(outer);
+  const eventPromise = firstEventFiredAt(outer);
   outer.focus();
-  await t.step_wait(() => events.length > 0, "focus event fired at the input");
+  const event = await eventPromise;
 
-  const event = events[0];
   assert_equals(event.type, "focus", "type");
   assert_equals(event.target, outer, "target");
   assert_equals(event.view, window, "view");
@@ -50,11 +47,10 @@ promise_test(async t => {
 
 promise_test(async t => {
   outer.focus();
-  const events = eventsFiredAt(outer);
+  const eventPromise = firstEventFiredAt(outer);
   outer.blur();
-  await t.step_wait(() => events.length > 0, "blur event fired at the input");
+  const event = await eventPromise;
 
-  const event = events[0];
   assert_equals(event.type, "blur", "type");
   assert_equals(event.target, outer, "target");
   assert_equals(event.view, window, "view");
@@ -64,11 +60,10 @@ promise_test(async t => {
   await iframeLoaded;
   outer.focus();
 
-  const events = eventsFiredAt(iframe.contentWindow);
+  const eventPromise = firstEventFiredAt(iframe.contentWindow);
   iframe.contentDocument.getElementById("inner").focus();
-  await t.step_wait(() => events.length > 0, "focus event fired at the iframe's Window");
+  const event = await eventPromise;
 
-  const event = events[0];
   assert_equals(event.type, "focus", "type");
   assert_equals(event.target, iframe.contentWindow, "target");
   assert_true(event instanceof iframe.contentWindow.FocusEvent, "is a FocusEvent");
@@ -80,11 +75,10 @@ promise_test(async t => {
   await iframeLoaded;
   iframe.contentDocument.getElementById("inner").focus();
 
-  const events = eventsFiredAt(iframe.contentWindow);
+  const eventPromise = firstEventFiredAt(iframe.contentWindow);
   outer.focus();
-  await t.step_wait(() => events.length > 0, "blur event fired at the iframe's Window");
+  const event = await eventPromise;
 
-  const event = events[0];
   assert_equals(event.type, "blur", "type");
   assert_equals(event.target, iframe.contentWindow, "target");
   assert_true(event instanceof iframe.contentWindow.FocusEvent, "is a FocusEvent");

@@ -194,3 +194,91 @@
 | <em>
 |   <b>
 |   "aftermore"
+
+#data
+<b><div><div><div><div><div><div><div><div><section>Text</b>after
+#config
+{ "replaceWithChildrenElements": ["section"] }
+#document
+| <b>
+| <div>
+|   <b>
+|   <div>
+|     <b>
+|     <div>
+|       <b>
+|       <div>
+|         <b>
+|         <div>
+|           <b>
+|           <div>
+|             <b>
+|             <div>
+|               <b>
+|               <div>
+|                 <b>
+|                   "Textafter"
+
+#data
+<b><div><div><div><div><div><div><div><div><section>Text</b>after
+#config
+{ "replaceWithChildrenElements": ["section", "b"] }
+#document
+| <div>
+|   <div>
+|     <div>
+|       <div>
+|         <div>
+|           <div>
+|             <div>
+|               <div>
+|                 "Textafter"
+
+#data
+<b><div><div><div><div><div><div><div><div><section><span>Text</b>after
+#config
+{ "replaceWithChildrenElements": ["section", "span"] }
+#document
+| <b>
+| <div>
+|   <b>
+|   <div>
+|     <b>
+|     <div>
+|       <b>
+|       <div>
+|         <b>
+|         <div>
+|           <b>
+|           <div>
+|             <b>
+|             <div>
+|               <b>
+|               <div>
+|                 <b>
+|                   "Textafter"
+
+#data
+<b><div><div><div><div><div><div><div><div><section><i><span>Text</b>after
+#config
+{ "replaceWithChildrenElements": ["section", "span"] }
+#document
+| <b>
+| <div>
+|   <b>
+|   <div>
+|     <b>
+|     <div>
+|       <b>
+|       <div>
+|         <b>
+|         <div>
+|           <b>
+|           <div>
+|             <b>
+|             <div>
+|               <b>
+|               <div>
+|                 <b>
+|                   <i>
+|                     "Textafter"

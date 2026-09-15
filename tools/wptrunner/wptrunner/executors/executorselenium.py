@@ -217,7 +217,7 @@ class SeleniumWindowProtocolPart(WindowProtocolPart):
         self.webdriver = self.parent.webdriver
 
     def create(self, type_hint=None):
-        self.logger.info(f"Creating new {type_hint or 'tab'}")
+        self.logger.info(f"Creating new {type_hint}")
         response = self.webdriver.execute(Command.NEW_WINDOW, {"type": type_hint})
         return response["value"]["handle"]
 

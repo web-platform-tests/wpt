@@ -6,20 +6,19 @@ from webdriver.bidi.modules.script import ContextTarget
 @pytest_asyncio.fixture
 async def get_scrollbar_width(bidi_session):
     async def get_scrollbar_width(context):
-        context_id = context["context"] if isinstance(context, dict) else context
         result = await bidi_session.script.call_function(
             function_declaration="""() => {
                 const outer = document.createElement('div');
                 outer.style.visibility = 'hidden';
-                outer.style.width = '100px';
-                outer.style.height = '100px';
                 outer.style.overflow = 'scroll';
                 document.body.appendChild(outer);
+
                 const width = outer.offsetWidth - outer.clientWidth;
-                outer.parentNode.removeChild(outer);
+                outer.remove();
+
                 return width;
             }""",
-            target=ContextTarget(context_id),
+            target=ContextTarget(context["context"]),
             await_promise=False,
         )
         return result["value"]

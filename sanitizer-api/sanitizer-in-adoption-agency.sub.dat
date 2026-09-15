@@ -282,3 +282,56 @@
 |                 <b>
 |                   <i>
 |                     "Textafter"
+
+#data
+<table><b><div>x</b>y
+#document
+| <b>
+| <div>
+|   <b>
+|     "x"
+|   "y"
+| <table>
+
+#data
+<table><b><div>x</b>y
+#config
+{ "removeElements": ["table"] }
+#document
+| <b>
+| <div>
+|   <b>
+|     "x"
+|   "y"
+
+#data
+<table><b><div>x</b>y
+#config
+{ "replaceWithChildrenElements": ["b"] }
+#document
+| <div>
+|   "xy"
+| <table>
+
+#data
+<table><tbody><b><div>x</b>y
+#config
+{ "replaceWithChildrenElements": ["tbody"] }
+#document
+| <b>
+| <div>
+|   <b>
+|     "x"
+|   "y"
+| <table>
+
+#data
+<table><b><div>x</b>y
+#config
+{ "replaceWithChildrenElements": ["div"] }
+#document
+| <b>
+|   "x"
+| <b>
+| "y"
+| <table>

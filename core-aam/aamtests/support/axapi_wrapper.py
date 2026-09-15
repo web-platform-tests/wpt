@@ -18,7 +18,7 @@ from .api_wrapper import ApiWrapper
 
 AXUIElement = Any
 
-class AxapiWrapper(ApiWrapper[AXUIElement]):
+class AxapiWrapper(ApiWrapper[AXUIElement, Any]):
 
     @property
     def api_name(self) -> str:

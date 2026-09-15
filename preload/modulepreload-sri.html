@@ -1,15 +1,58 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>modulepreload with an invalid integrity does not poison a later import</title>
+<meta name="timeout" content="long">
+<title>modulepreload and subresource integrity</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
 <body>
 <script>
+  // For `resources/log.js`.
+  var log = [];
+
+  // Correct hashes of `resources/log.js`.
+  const kCorrectIntegrity = 'sha256-zf0MDFWO9V2PJzYoIHrjrh5i/ZKZ/WCMaJyPlZcIrWo=';
+  const kAnotherCorrectIntegrity = 'sha512-xokYNj552YPmDdiCfO0uivEvvrPdFG18gNDJlGxJTRF9UBgFFUpMrlErI4ljxj3KG2PjbRlO8pmIc++P6YDXzg==';
+
+  // Well-formed but incorrect hash for `resources/log.js`.
+  const kWrongIntegrity = 'sha256-SLE7SyL53Pln6LRqNDYZV3Luj2HFWcXQB9Vkmwwz1nE=';
+
+  function appendAndExpectLoad(element) {
+    return new Promise((resolve, reject) => {
+      element.onload = resolve;
+      element.onerror = () => reject(
+          new Error(`${element.tagName} failed unexpectedly`));
+      document.head.appendChild(element);
+    });
+  }
+
+  function appendAndExpectError(element) {
+    return new Promise((resolve, reject) => {
+      element.onload = () => reject(
+          new Error(`${element.tagName} loaded unexpectedly`));
+      element.onerror = resolve;
+      document.head.appendChild(element);
+    });
+  }
+
+  // Returns a unique URL for every call.
+  function get_log_module_url() {
+    return new URL(
+        `/preload/resources/prefetch-info.py?key=${token()}&file=log.js&type=text/javascript`,
+        location.href).href;
+  }
+
+  async function get_prefetch_info(href) {
+    const response = await fetch(`${href}&mode=info`, {mode: "cors"});
+    return await response.json();
+  }
+
   // A modulepreload whose integrity check fails is a fetch error, which per the
   // HTML spec is not cached in the module map. A later <script type=module> for
   // the same URL that has no integrity requirement must therefore be able to
   // fetch it again and load successfully.
   // https://html.spec.whatwg.org/#fetch-a-single-module-script
+  // https://github.com/whatwg/html/pull/10327
   //
   // The <script> is only inserted after the modulepreload has finished, so the
   // two never join a single in-flight fetch.
@@ -18,19 +61,558 @@
     link.rel = 'modulepreload';
     link.href = 'resources/module1.js';
     link.integrity = 'sha384-invalid';
-    await new Promise((resolve, reject) => {
-      link.onload = () => reject(new Error('modulepreload should have failed its integrity check'));
-      link.onerror = resolve;
-      document.head.appendChild(link);
-    });
+    await appendAndExpectError(link);
 
     const script = document.createElement('script');
     script.type = 'module';
     script.src = 'resources/module1.js';
-    await new Promise((resolve, reject) => {
-      script.onload = resolve;
-      script.onerror = () => reject(new Error('script should have loaded'));
-      document.body.appendChild(script);
-    });
-  }, "A module script should load even if an earlier modulepreload for the same URL failed its integrity check");
+    await appendAndExpectLoad(script);
+  }, "modulepreload with invalid integrity -> module script with no integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    await appendAndExpectLoad(link);
+
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    await appendAndExpectLoad(script);
+
+    assert_equals(log.length, 1, 'Script must be executed exactly once');
+    assert_equals(log[0], url, 'Logged URL must match script URL');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1,
+        'Server must receive exactly one network request');
+  }, "modulepreload with no integrity -> module script with no integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    await appendAndExpectLoad(link);
+
+    // Should fail because the module script has wrong integrity (that would
+    // fail without modulepreload).
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.integrity = kWrongIntegrity;
+    await appendAndExpectError(script);
+
+    assert_equals(log.length, 0, 'Script must not be executed');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1,
+        'Server must receive exactly one network request');
+  }, "modulepreload with no integrity -> module script with wrong integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    await appendAndExpectLoad(link);
+
+    // Even though the integrity is correct here, a modulepreload with no
+    // integrity shouldn't match with subsequent requests with integrity.
+    // Because we can't evict successful module map entries and we don't want
+    // to duplicate module map entries with the same URL (to avoid unintentional
+    // double evaluation just because of different integrity values specified),
+    // the module script load should fail, unfortunately.
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.integrity = kCorrectIntegrity;
+    await appendAndExpectError(script);
+
+    assert_equals(log.length, 0, 'Script must not be executed');
+
+    // The module script loading fails when checking the module map i.e. before
+    // going to the network, so the server should receive the modulepreload
+    // request only.
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1,
+        'Server must receive exactly one network request');
+  }, "modulepreload with no integrity -> module script with correct integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const script0 = document.createElement('script');
+    script0.type = 'module';
+    script0.src = url;
+    await appendAndExpectLoad(script0);
+
+    // Even though the integrity is correct here, a module script with no
+    // integrity shouldn't match with subsequent requests with integrity.
+    // Because we can't evict successful module map entries and we don't want
+    // to duplicate module map entries with the same URL (to avoid unintentional
+    // double evaluation just because of different integrity values specified),
+    // the module script load should fail, unfortunately.
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.integrity = kCorrectIntegrity;
+    await appendAndExpectError(script);
+
+    // `script0` should be evaluated, `script` shoudln't.
+    assert_equals(log.length, 1, 'script should not double evaluated');
+
+    // The module script loading fails when checking the module map i.e. before
+    // going to the network, so the server should receive the `script0`
+    // request only.
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1,
+        'Server must receive exactly one network request');
+  }, "module script with no integrity -> module script with correct integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const script0 = document.createElement('script');
+    script0.type = 'module';
+    script0.src = url;
+    script0.integrity = kAnotherCorrectIntegrity;
+    await appendAndExpectLoad(script0);
+
+    // Even though the integrity is correct here, different correct integrity
+    // values shouldn't match.
+    // Because we can't evict successful module map entries and we don't want
+    // to duplicate module map entries with the same URL (to avoid unintentional
+    // double evaluation just because of different integrity values specified),
+    // the module script load should fail, unfortunately.
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.integrity = kCorrectIntegrity;
+    await appendAndExpectError(script);
+
+    // `script0` should be evaluated, `script` shoudln't.
+    assert_equals(log.length, 1, 'script should not double evaluated');
+
+    // The module script loading fails when checking the module map i.e. before
+    // going to the network, so the server should receive the `script0`
+    // request only.
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1,
+        'Server must receive exactly one network request');
+  }, "module script with correct integrity -> module script with another correct integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    link.integrity = kWrongIntegrity;
+    await appendAndExpectError(link);
+
+    // The modulepreload failing due to SRI failure is ignored and module script
+    // load is performed without hitting the modulepreload (see
+    // https://github.com/whatwg/html/pull/10327).
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    await appendAndExpectLoad(script);
+
+    assert_equals(log.length, 1, 'Script must be executed exactly once');
+    assert_equals(log[0], url, 'Logged URL must match script URL');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 2,
+        'Server must receive one modulepreload and one module script requests');
+  }, "modulepreload with wrong integrity -> module script with no integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    link.integrity = kWrongIntegrity;
+    await appendAndExpectError(link);
+
+    // The modulepreload failing due to SRI failure is ignored and module script
+    // load is performed without hitting the modulepreload (see
+    // https://github.com/whatwg/html/pull/10327).
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.integrity = kWrongIntegrity;
+    await appendAndExpectError(script);
+
+    assert_equals(log.length, 0, 'Script must not be executed');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 2,
+        'Server must receive one modulepreload and one module script requests');
+  }, "modulepreload with wrong integrity -> module script with wrong integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    link.integrity = kWrongIntegrity;
+    await appendAndExpectError(link);
+
+    // The modulepreload failing due to SRI failure is ignored and module script
+    // load is performed without hitting the modulepreload (see
+    // https://github.com/whatwg/html/pull/10327).
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.integrity = kCorrectIntegrity;
+    await appendAndExpectLoad(script);
+
+    assert_equals(log.length, 1, 'Script must be executed exactly once');
+    assert_equals(log[0], url, 'Logged URL must match script URL');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 2,
+        'Server must receive one modulepreload and one module script requests');
+  }, "modulepreload with wrong integrity -> module script with correct integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    link.integrity = kCorrectIntegrity;
+    await appendAndExpectLoad(link);
+
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    await appendAndExpectLoad(script);
+
+    assert_equals(log.length, 1, 'Script must be executed exactly once');
+    assert_equals(log[0], url, 'Logged URL must match script URL');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1, 'Server must receive exactly one network request');
+  }, "modulepreload with correct integrity -> module script with no integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    link.integrity = kCorrectIntegrity;
+    await appendAndExpectLoad(link);
+
+    // Should fail because the module script has wrong integrity (that would
+    // fail without modulepreload).
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.integrity = kWrongIntegrity;
+    await appendAndExpectError(script);
+
+    assert_equals(log.length, 0, 'Script must not be executed when integrity check fails');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1, 'Server must receive exactly one network request');
+  }, "modulepreload with correct integrity -> module script with wrong integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    link.integrity = kCorrectIntegrity;
+    await appendAndExpectLoad(link);
+
+    // Should succeed because the module script has a correct integrity which
+    // matches with modulepreload's integrity.
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.integrity = kCorrectIntegrity;
+    await appendAndExpectLoad(script);
+
+    assert_equals(log.length, 1, 'Script must be executed exactly once');
+    assert_equals(log[0], url, 'Logged URL must match script URL');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1, 'Server must receive exactly one network request');
+  }, "modulepreload with correct integrity -> module script with correct integrity");
+
+  // =========================================================================
+  // In-flight tests: <script type="module"> is inserted while the
+  // <link rel="modulepreload"> fetch is still in flight.
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+
+    // Both have no integrity, so script joins the in-flight fetch.
+    await Promise.all([
+      appendAndExpectLoad(link),
+      appendAndExpectLoad(script),
+    ]);
+
+    assert_equals(log.length, 1, 'Script must be executed exactly once');
+    assert_equals(log[0], url, 'Logged URL must match script URL');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1,
+        'Server must receive exactly one network request');
+  }, "in-flight modulepreload with no integrity -> module script with no integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+
+    // Script specifies wrong integrity; does not match in-flight record with
+    // no integrity, so script fails immediately.
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.integrity = kWrongIntegrity;
+
+    await Promise.all([
+      appendAndExpectLoad(link),
+      appendAndExpectError(script),
+    ]);
+
+    assert_equals(log.length, 0, 'Script must not be executed');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1,
+        'Server must receive exactly one network request');
+  }, "in-flight modulepreload with no integrity -> module script with wrong integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+
+    // Even though the integrity is correct, the in-flight modulepreload has no
+    // integrity, so the script cannot join it. The script must fail
+    // immediately rather than bypassing integrity checking.
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.integrity = kCorrectIntegrity;
+
+    await Promise.all([
+      appendAndExpectLoad(link),
+      appendAndExpectError(script),
+    ]);
+
+    assert_equals(log.length, 0, 'Script must not be executed');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1,
+        'Server must receive exactly one network request');
+  }, "in-flight modulepreload with no integrity -> module script with correct integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    link.integrity = kCorrectIntegrity;
+
+    // A script with no integrity requirement can join an in-flight fetch that
+    // has an integrity requirement.
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+
+    await Promise.all([
+      appendAndExpectLoad(link),
+      appendAndExpectLoad(script),
+    ]);
+
+    assert_equals(log.length, 1, 'Script must be executed exactly once');
+    assert_equals(log[0], url, 'Logged URL must match script URL');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1,
+        'Server must receive exactly one network request');
+  }, "in-flight modulepreload with correct integrity -> module script with no integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    link.integrity = kCorrectIntegrity;
+
+    // Both specify the same correct integrity; script joins the in-flight fetch.
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.integrity = kCorrectIntegrity;
+
+    await Promise.all([
+      appendAndExpectLoad(link),
+      appendAndExpectLoad(script),
+    ]);
+
+    assert_equals(log.length, 1, 'Script must be executed exactly once');
+    assert_equals(log[0], url, 'Logged URL must match script URL');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1,
+        'Server must receive exactly one network request');
+  }, "in-flight modulepreload with correct integrity -> module script with correct integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    link.integrity = kCorrectIntegrity;
+
+    // Script specifies wrong integrity which mismatches the in-flight
+    // modulepreload's integrity, so the script fails immediately.
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.integrity = kWrongIntegrity;
+
+    await Promise.all([
+      appendAndExpectLoad(link),
+      appendAndExpectError(script),
+    ]);
+
+    assert_equals(log.length, 0, 'Script must not be executed');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1,
+        'Server must receive exactly one network request');
+  }, "in-flight modulepreload with correct integrity -> module script with wrong integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    link.integrity = kWrongIntegrity;
+
+    // Script has no integrity so it joins the in-flight fetch. When the fetch
+    // fails its integrity check, both the preload and the script fail.
+    // Unlike the sequential case (where the failed preload is removed from the
+    // module map and script re-fetches), no second fetch is made.
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+
+    await Promise.all([
+      appendAndExpectError(link),
+      appendAndExpectError(script),
+    ]);
+
+    assert_equals(log.length, 0, 'Script must not be executed');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1,
+        'Server must receive exactly one network request');
+  }, "in-flight modulepreload with wrong integrity -> module script with no integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    link.integrity = kWrongIntegrity;
+
+    // Both specify the same wrong integrity, so script joins the in-flight
+    // fetch. Both fail when the response fails the integrity check.
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.integrity = kWrongIntegrity;
+
+    await Promise.all([
+      appendAndExpectError(link),
+      appendAndExpectError(script),
+    ]);
+
+    assert_equals(log.length, 0, 'Script must not be executed');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1,
+        'Server must receive exactly one network request');
+  }, "in-flight modulepreload with wrong integrity -> module script with wrong integrity");
+
+  promise_test(async () => {
+    log = [];
+    const url = get_log_module_url();
+
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = url;
+    link.integrity = kWrongIntegrity;
+
+    // Script specifies correct integrity, which mismatches the in-flight
+    // modulepreload's wrong integrity. The script fails immediately.
+    // The modulepreload fails when its fetch finishes and fails SRI.
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.integrity = kCorrectIntegrity;
+
+    await Promise.all([
+      appendAndExpectError(link),
+      appendAndExpectError(script),
+    ]);
+
+    assert_equals(log.length, 0, 'Script must not be executed');
+
+    const requests = await get_prefetch_info(url);
+    assert_equals(requests.length, 1,
+        'Server must receive exactly one network request');
+  }, "in-flight modulepreload with wrong integrity -> module script with correct integrity");
 </script>

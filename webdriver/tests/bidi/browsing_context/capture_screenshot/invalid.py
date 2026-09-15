@@ -181,3 +181,51 @@ async def test_params_format_quality_invalid_value(bidi_session, top_context, va
             context=top_context["context"], format=FormatOptions(
                 type="image/jpeg", quality=value)
         )
+
+
+@pytest.mark.parametrize("value", [False, 42, "foo", []])
+async def test_params_image_size_invalid_type(bidi_session, top_context, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.browsing_context.capture_screenshot(
+            context=top_context["context"], image_size=value
+        )
+
+
+@pytest.mark.parametrize("value", [False, 1.5, "foo", [], {}])
+async def test_params_image_size_max_height_invalid_type(
+    bidi_session, top_context, value
+):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.browsing_context.capture_screenshot(
+            context=top_context["context"], image_size={"maxHeight": value}
+        )
+
+
+@pytest.mark.parametrize("value", [-1, 0, 2**53])
+async def test_params_image_size_max_height_invalid_value(
+    bidi_session, top_context, value
+):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.browsing_context.capture_screenshot(
+            context=top_context["context"], image_size={"maxHeight": value}
+        )
+
+
+@pytest.mark.parametrize("value", [False, 1.5, "foo", [], {}])
+async def test_params_image_size_max_width_invalid_type(
+    bidi_session, top_context, value
+):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.browsing_context.capture_screenshot(
+            context=top_context["context"], image_size={"maxWidth": value}
+        )
+
+
+@pytest.mark.parametrize("value", [-1, 0, 2**53])
+async def test_params_image_size_max_width_invalid_value(
+    bidi_session, top_context, value
+):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.browsing_context.capture_screenshot(
+            context=top_context["context"], image_size={"maxWidth": value}
+        )

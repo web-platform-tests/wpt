@@ -45,6 +45,17 @@
       );
     }, "template with shadowrootmode should be processed as a normal template when the shadowRootMode attribute is forbidden");
 
+    test((t) => {
+      const element = document.createElement("div");
+      element.setHTMLUnsafe(
+        "<div><template shadowrootmode='open'>s</template>x</div>",
+        { sanitizer: { replaceWithChildrenElements: ["template"] } },
+      );
+      assert_equals(element.firstElementChild.shadowRoot, null);
+      assert_equals(element.firstElementChild.firstElementChild, null);
+      assert_equals(element.firstElementChild.textContent, "x");
+    }, "template with shadowrootmode replaced with its children has no children in the tree");
+
     for (const [attribute, value, property, expectedValue] of [
       ["shadowrootdelegatesfocus", "", "delegatesFocus", false],
       ["shadowrootserializable", "", "serializable", false],

@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 from unittest.mock import Mock
 
+from mozlog.structured.structuredlog import StructuredLogger
+
 from ..testloader import TestQueueBuilder
 from ..wptcommandline import TestRoot
 from ..wptrunner import get_loader, get_pause_after_test
@@ -149,7 +151,7 @@ def get_loader_with_fakes(
     )
 
 
-def test_get_loader(tmp_path: Path) -> None:
+def test_get_loader(tmp_path: Path, logging: StructuredLogger) -> None:
     _, test_loader = get_loader_with_fakes(tmp_path)
 
     assert test_loader.test_ids == [
@@ -166,7 +168,7 @@ def test_get_loader(tmp_path: Path) -> None:
     ]
 
 
-def test_get_loader_include(tmp_path: Path) -> None:
+def test_get_loader_include(tmp_path: Path, logging: StructuredLogger) -> None:
     _, test_loader = get_loader_with_fakes(
         tmp_path,
         include=["/fake-spec/test-007.html", "/fake-spec/test-008.html"],
@@ -178,7 +180,7 @@ def test_get_loader_include(tmp_path: Path) -> None:
     ]
 
 
-def test_get_loader_exclude(tmp_path: Path) -> None:
+def test_get_loader_exclude(tmp_path: Path, logging: StructuredLogger) -> None:
     _, test_loader = get_loader_with_fakes(
         tmp_path,
         exclude=["/fake-spec/test-007.html"],
@@ -197,7 +199,7 @@ def test_get_loader_exclude(tmp_path: Path) -> None:
     ]
 
 
-def test_get_loader_include_exclude(tmp_path: Path) -> None:
+def test_get_loader_include_exclude(tmp_path: Path, logging: StructuredLogger) -> None:
     _, test_loader = get_loader_with_fakes(
         tmp_path,
         include=["/fake-spec/test-007.html", "/fake-spec/test-008.html"],
@@ -209,7 +211,7 @@ def test_get_loader_include_exclude(tmp_path: Path) -> None:
     ]
 
 
-def test_get_loader_include_file(tmp_path: Path) -> None:
+def test_get_loader_include_file(tmp_path: Path, logging: StructuredLogger) -> None:
     include = ["/fake-spec/test-007.html", "/fake-spec/test-008.html"]
 
     with (tmp_path / "include.txt").open("w") as f:
@@ -226,7 +228,7 @@ def test_get_loader_include_file(tmp_path: Path) -> None:
     ]
 
 
-def test_get_loader_exclude_file(tmp_path: Path) -> None:
+def test_get_loader_exclude_file(tmp_path: Path, logging: StructuredLogger) -> None:
     exclude = ["/fake-spec/test-007.html"]
 
     with (tmp_path / "exclude.txt").open("w") as f:
@@ -250,7 +252,7 @@ def test_get_loader_exclude_file(tmp_path: Path) -> None:
     ]
 
 
-def test_get_loader_include_exclude_file(tmp_path: Path) -> None:
+def test_get_loader_include_exclude_file(tmp_path: Path, logging: StructuredLogger) -> None:
     include = ["/fake-spec/test-007.html", "/fake-spec/test-008.html"]
     exclude = ["/fake-spec/test-007.html"]
 

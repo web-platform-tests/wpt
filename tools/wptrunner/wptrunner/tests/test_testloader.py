@@ -6,7 +6,7 @@ import tempfile
 
 import pytest
 
-from mozlog import structured
+from mozlog.structured.stucturedlog import StructuredLogger
 from ..testloader import (
     DirectoryHashChunker,
     IDHashChunker,
@@ -23,7 +23,6 @@ here = os.path.dirname(__file__)
 sys.path.insert(0, os.path.join(here, os.pardir, os.pardir, os.pardir))
 from manifest.manifest import Manifest as WPTManifest
 
-structured.set_default_logger(structured.structuredlog.StructuredLogger("TestLoader"))
 
 TestFilter.__test__ = False
 TestLoader.__test__ = False
@@ -287,9 +286,9 @@ def test_loader_filter_tags():
         assert len(loader.tests[""]["testharness"]) == 0
 
 
-def test_chunk_hash(manifest):
-    chunker1 = PathHashChunker(total_chunks=2, chunk_number=1)
-    chunker2 = PathHashChunker(total_chunks=2, chunk_number=2)
+def test_chunk_hash(manifest, logger: StructuredLogger):
+    chunker1 = PathHashChunker(logger, total_chunks=2, chunk_number=1)
+    chunker2 = PathHashChunker(logger, total_chunks=2, chunk_number=2)
     # Check that the chunkers partition the manifest (i.e., each item is
     # assigned to exactly one chunk).
     items = sorted([*chunker1(manifest), *chunker2(manifest)],
@@ -305,9 +304,9 @@ def test_chunk_hash(manifest):
     assert {test.id for test in tests} == {"/a/foo.html?b", "/a/foo.html?c"}
 
 
-def test_chunk_id_hash(manifest):
-    chunker1 = IDHashChunker(total_chunks=2, chunk_number=1)
-    chunker2 = IDHashChunker(total_chunks=2, chunk_number=2)
+def test_chunk_id_hash(manifest, logger: StructuredLogger):
+    chunker1 = IDHashChunker(logger, total_chunks=2, chunk_number=1)
+    chunker2 = IDHashChunker(logger, total_chunks=2, chunk_number=2)
     items = []
     for test_type, test_path, tests in [*chunker1(manifest), *chunker2(manifest)]:
         assert len(tests) > 0
@@ -328,9 +327,9 @@ def test_chunk_id_hash(manifest):
     assert test.id == "/a/foo.html?c"
 
 
-def test_chunk_dir_hash(manifest):
-    chunker1 = DirectoryHashChunker(total_chunks=2, chunk_number=1)
-    chunker2 = DirectoryHashChunker(total_chunks=2, chunk_number=2)
+def test_chunk_dir_hash(manifest, logger: StructuredLogger):
+    chunker1 = DirectoryHashChunker(logger, total_chunks=2, chunk_number=1)
+    chunker2 = DirectoryHashChunker(logger, total_chunks=2, chunk_number=2)
     # Check that tests in the same directory are located in the same chunk
     # (which particular chunk is irrelevant).
     empty_chunk, chunk_a = sorted([

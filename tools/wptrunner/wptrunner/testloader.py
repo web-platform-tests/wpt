@@ -18,7 +18,7 @@ from . import manifestinclude
 from . import manifestexpected
 from . import manifestupdate
 from . import wpttest
-from mozlog import structured
+from mozlog.structured.structuredlog import StructuredLogger, get_default_logger
 
 manifest = None
 manifest_update = None
@@ -66,7 +66,7 @@ class ReadQueue:
 
 
 class TestGroups:
-    def __init__(self, logger, path, subsuites):
+    def __init__(self, logger: StructuredLogger, path: str, subsuites: Mapping[str, Subsuite]):
         try:
             with open(path) as f:
                 data = json.load(f)
@@ -90,7 +90,7 @@ class TestGroups:
                 self.tests_by_group[group_name].add(test_id)
 
 
-def load_subsuites(logger: Any,
+def load_subsuites(logger: StructuredLogger,
                    base_run_info: wpttest.RunInfo,
                    path: Optional[str],
                    include_subsuites: Set[str]) -> Dict[str, Subsuite]:
@@ -197,12 +197,11 @@ def update_include_for_groups(test_groups, include):
 
 
 class TestChunker(abc.ABC):
-    def __init__(self, total_chunks: int, chunk_number: int, **kwargs: Any):
+    def __init__(self, logger: StructuredLogger, total_chunks: int, chunk_number: int, **kwargs: Any):
         self.total_chunks = total_chunks
         self.chunk_number = chunk_number
         assert self.chunk_number <= self.total_chunks
-        self.logger = structured.get_default_logger()
-        assert self.logger
+        self.logger = logger
         self.kwargs = kwargs
 
     @abstractmethod
@@ -315,15 +314,13 @@ class TagFilter:
 
 class ManifestLoader:
     def __init__(self, test_paths, force_manifest_update=False, manifest_download=False,
-                 types=None):
+                 types=None, logger=None):
         do_delayed_imports()
         self.test_paths = test_paths
         self.force_manifest_update = force_manifest_update
         self.manifest_download = manifest_download
         self.types = types
-        self.logger = structured.get_default_logger()
-        if self.logger is None:
-            self.logger = structured.structuredlog.StructuredLogger("ManifestLoader")
+        self.logger = logger if logger is not None else (get_default_logger() or StructuredLogger("ManifestLoader"))
 
     def load(self):
         rv = {}
@@ -368,7 +365,8 @@ class TestLoader:
                  skip_timeout=False,
                  skip_crash=False,
                  skip_implementation_status=None,
-                 chunker_kwargs=None):
+                 chunker_kwargs=None,
+                 logger=None):
 
         self.test_types = test_types
         self.base_run_info = base_run_info
@@ -389,13 +387,15 @@ class TestLoader:
         self.chunk_type = chunk_type
         self.total_chunks = total_chunks
         self.chunk_number = chunk_number
+        self.logger = logger if logger is not None else get_default_logger()
 
         if chunker_kwargs is None:
             chunker_kwargs = {}
         self.chunker = {"none": Unchunked,
                         "hash": PathHashChunker,
                         "id_hash": IDHashChunker,
-                        "dir_hash": DirectoryHashChunker}[chunk_type](total_chunks,
+                        "dir_hash": DirectoryHashChunker}[chunk_type](self.logger,
+                                                                      total_chunks,
                                                                       chunk_number,
                                                                       **chunker_kwargs)
 
@@ -498,7 +498,7 @@ class TestLoader:
 
 
 
-def get_test_queue_builder(logger, **kwargs: Any) -> Tuple[TestQueueBuilder, Mapping[str, Any]]:
+def get_test_queue_builder(logger: StructuredLogger, **kwargs: Any) -> Tuple[TestQueueBuilder, Mapping[str, Any]]:
     builder_kwargs = {"processes": kwargs["processes"],
                       "logger": logger}
     chunker_kwargs = {}
@@ -544,7 +544,7 @@ class TestGroup:
 class TestQueueBuilder:
     __metaclass__ = ABCMeta
 
-    def __init__(self, logger, **kwargs: Any):
+    def __init__(self, logger: StructuredLogger, **kwargs: Any):
         """Class for building a queue of groups of tests to run.
 
         Each item in the queue is a TestGroup, which consists of an iterable of

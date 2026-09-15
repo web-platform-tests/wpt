@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>Reftests should error after push cross-document navigation</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/nav-history-apis.html#navigationType">
+<link rel="match" href="resources/reftest-navigation-destination.html">
+<script src="/common/reftest-wait.js"></script>
+<p>Reftests should error after a navigation (initial page)</p>
+<script>
+  onload = () => {
+    location.href = "resources/reftest-navigation-destination.html";
+  };
+</script>
+</html>

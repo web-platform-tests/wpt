@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>Reftests should error after reload navigation</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/nav-history-apis.html#navigationType">
+<link rel="match" href="resources/reftest-navigation-destination.html">
+<script src="/common/reftest-wait.js"></script>
+<p>Reftests should error after a navigation (initial page)</p>
+<script>
+  onload = () => {
+    if (sessionStorage.getItem("reloaded")) {
+      sessionStorage.removeItem("reloaded");
+      document.querySelector("p").textContent = "Reftests should error after a navigation";
+      takeScreenshot();
+    } else {
+      sessionStorage.setItem("reloaded", "true");
+      location.reload();
+    }
+  };
+</script>
+</html>

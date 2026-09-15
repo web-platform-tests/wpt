@@ -258,6 +258,41 @@ async def test_params_start_nodes_dom_node_not_element(
         )
 
 
+async def test_params_start_nodes_node_in_template_content(
+    bidi_session, inline, top_context
+):
+    url = inline("""
+        <template></template>
+        <div id="parent">
+            <p>foo</p>
+        </div>
+    """)
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=url, wait="complete"
+    )
+
+    start_node = await bidi_session.script.evaluate(
+        expression="document.querySelector('#parent')",
+        await_promise=False,
+        target=ContextTarget(top_context["context"]),
+    )
+
+    await bidi_session.script.call_function(
+        function_declaration="""(node) =>
+            document.querySelector('template').content.appendChild(node)""",
+        arguments=[start_node],
+        await_promise=False,
+        target=ContextTarget(top_context["context"]),
+    )
+
+    with pytest.raises(error.NoSuchNodeException):
+        await bidi_session.browsing_context.locate_nodes(
+            context=top_context["context"],
+            locator={"type": "css", "value": "p"},
+            start_nodes=[start_node],
+        )
+
+
 async def test_locate_by_context_invalid_context(bidi_session, inline, top_context, iframe):
     page_url = inline(iframe(iframe("<div>foo</div>")))
 

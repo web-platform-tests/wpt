@@ -36,6 +36,24 @@ class ApiWrapper(Generic[ApiNode], abc.ABC):
     def _find_browser(self) -> Optional[ApiNode]:
         pass
 
+    @abc.abstractmethod
+    def _find_tab(self) -> Optional[ApiNode]:
+        """Find the tab with the test url. Only returns it once it's ready.
+
+        :return: The node representing the test document, or None.
+        """
+        pass
+
+    @abc.abstractmethod
+    def _find_node_by_id(self, root: ApiNode, dom_id: str) -> Optional[ApiNode]:
+        """Find the node with a specified dom_id.
+
+        :param root: The root node to search from.
+        :param dom_id: The DOM identifier.
+        :return: The node, or None if not found.
+        """
+        pass
+
     def _poll_for(self, find: Callable[[], Optional[PollResult]], error: str) -> PollResult:
         """Poll until the `find` function returns something.
 
@@ -51,3 +69,20 @@ class ApiWrapper(Generic[ApiNode], abc.ABC):
             found = find()
 
         return found
+
+    def find_node(self, dom_id: str, url: str) -> ApiNode:
+        """Find the node under test with a specified dom_id.
+
+        :param dom_id: The DOM identifier.
+        :param url: The url of the test.
+        """
+        if self.test_url != url or not self.document:
+            self.test_url = url
+            self.document = self._poll_for(
+                self._find_tab, f"Timeout looking for url: {self.test_url}"
+            )
+
+        return self._poll_for(
+            lambda: self._find_node_by_id(self.document, dom_id),
+            f"Timeout looking for node with id '{dom_id}' in accessibility API {self.api_name}.",
+        )

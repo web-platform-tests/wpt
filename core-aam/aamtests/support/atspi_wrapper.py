@@ -25,23 +25,6 @@ class AtspiWrapper(ApiWrapper[Atspi.Accessible]):
     def __getattr__(self, name: str) -> Any:
         return getattr(Atspi, name)
 
-    def find_node(self, dom_id: str, url: str) -> Atspi.Accessible:
-        """
-        :param dom_id: The dom id of the node to test.
-        :param url: The url of the test.
-        """
-        if self.test_url != url or not self.document:
-            self.test_url = url
-            self.document = self._poll_for(
-                self._find_fully_loaded_document, f"Timeout looking for url: {self.test_url}"
-            )
-
-        test_node = self._find_node_by_id(self.document, dom_id);
-        if not test_node:
-            raise Exception(f"Did not find node with id '{dom_id}' in accessibility API ATSPI.")
-
-        return test_node
-
     def get_relations_dictionary_helper(
         self, node: Atspi.Accessible
     ) -> Dict[str, List[str]]:
@@ -104,7 +87,7 @@ class AtspiWrapper(ApiWrapper[Atspi.Accessible]):
                 return app
         return None
 
-    def _find_fully_loaded_document(self) -> Optional[Atspi.Accessible]:
+    def _find_tab(self) -> Optional[Atspi.Accessible]:
         """Find the document with the test url. Only returns it when it is ready.
 
         :return: Atspi.Accessible representing test document or None.

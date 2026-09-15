@@ -161,7 +161,7 @@ class CreateWindowAction:
         self.protocol = protocol
 
     def __call__(self, payload):
-        type = payload["type"]
+        type = payload.get("type")
         return self.protocol.window.create(type)
 
 class ActionSequenceAction:

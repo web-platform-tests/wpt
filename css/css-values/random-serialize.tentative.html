@@ -95,12 +95,12 @@ test_valid_value('width', 'random(fixed calc(2 / 4), 0px, 100px)', 'random(fixed
 test_valid_value('width', 'calc(2 * random(--foo, 0px, 100px))');
 test_valid_value('math-depth', 'add(random(--foo, 0, 3))');
 test_valid_value('color', 'rgb(random(--foo, 0, 255) random(--foo, 0, 255) random(--foo, 0, 255))');
-test_valid_value('color', 'rgb(from blue r g random(--foo, b, (150 + b)))');
+test_valid_value('color', 'rgb(from blue r g random(--foo, b, 150 + b))');
 test_valid_value('color', 'color-mix(in srgb, rgb(random(--foo, 0, 255) 0 random(--foo, 0, 255)), rgb(0 random(--foo, 0, 255) 0))');
 
 // Test other types
-test_valid_value('max-lines', 'random(--foo, 25, 50)');
-test_valid_value('max-lines', 'random(--foo, 25, 50, 5)');
+test_valid_value('z-index', 'random(--foo, 25, 50)');
+test_valid_value('z-index', 'random(--foo, 25, 50, 5)');
 test_valid_value('scale', 'random(--foo, 0.5, 2.5)');
 test_valid_value('scale', 'random(--foo, 0.5, 2.5, 0.1)');
 test_valid_value('rotate', 'random(25deg, 1turn)',

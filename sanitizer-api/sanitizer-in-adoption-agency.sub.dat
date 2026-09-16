@@ -336,3 +336,102 @@
 | "y"
 | <table>
 
+#data
+<b><div>Text</b>after
+#config
+{ "removeElements": ["b"] }
+#document
+| <div>
+|   "after"
+
+#data
+<p><b>x</p>y
+#config
+{ "replaceWithChildrenElements": ["b"] }
+#document
+| <p>
+|   "x"
+| "y"
+
+#data
+<p><b>x</p>y
+#config
+{ "removeElements": ["b"] }
+#document
+| <p>
+
+#data
+<p><i onclick="1">x</p>y
+#document
+| <p>
+|   <i>
+|     "x"
+| <i>
+|   "y"
+
+#data
+<p><b a="1"><b a="2"><b a="3"><b a="4"></p>x
+#config
+{ "removeAttributes": ["a"] }
+#document
+| <p>
+|   <b>
+|     <b>
+|       <b>
+|         <b>
+| <b>
+|   <b>
+|     <b>
+|       <b>
+|         "x"
+
+#data
+<b><i><u><p>foo</b>bar
+#config
+{ "removeElements": ["i"] }
+#document
+| <b>
+
+#data
+<b><div><p>Text</b>after
+#config
+{ "removeElements": ["p"] }
+#document
+| <b>
+| <div>
+|   <b>
+
+#data
+<b><div>Text</b>after
+#config
+{ "replaceWithChildrenElements": ["b", "div"] }
+#document
+| "Textafter"
+
+#data
+<a href="1">x<div>y<a href="2">z
+#config
+{ "replaceWithChildrenElements": ["a"] }
+#document
+| "x"
+| <div>
+|   "yz"
+
+#data
+<a href="1">x<div>y<a href="2">z
+#config
+{ "removeElements": ["a"] }
+#document
+| <div>
+
+#data
+<b><span><div>x</b>y
+#config
+{ "removeElements": ["span"] }
+#document
+| <b>
+| <div>
+|   <b>
+|     "x"
+|   "y"
+

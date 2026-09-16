@@ -48,6 +48,14 @@ promise_test(async () => {
 }, "GC/CC should not discard a cloned FormData body's Blob before it is read");
 
 promise_test(async () => {
+  // Constructing a Request from a Request moves the body over, source included.
+  const request = new Request(new Request("/", { method: "POST", body: blobFormData() }));
+  await garbageCollect();
+  const formData = await request.formData();
+  assert_equals(await formData.get("a").text(), "contents");
+}, "GC/CC should not discard a moved FormData body's Blob before it is read");
+
+promise_test(async () => {
   const response = new Response(blobFormData());
   await garbageCollect();
   const text = await new Response(response.body).text();

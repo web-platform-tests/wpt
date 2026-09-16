@@ -9,7 +9,9 @@ import subprocess
 import threading
 from xml.etree import ElementTree
 
-from .utils import get_download_to_descriptor
+from mozlog import structuredlog
+
+from .utils import get_download_to_descriptor, unzip
 from .wpt import venv_dir
 
 
@@ -179,14 +181,15 @@ def get_os_tag(logger):
     raise NotImplementedError
 
 
-def download_and_extract(logger, url, path):
+def download_and_extract(logger: structuredlog.StructuredLogger, url: str, path: str):
     if not os.path.exists(path):
         os.makedirs(path)
     temp_path = os.path.join(path, url.rsplit("/", 1)[1])
-    with open(temp_path, "wb") as f:
-        get_download_to_descriptor(f, url, max_retries=5)
     try:
-        subprocess.check_call(["unzip", temp_path], cwd=path)
+        with open(temp_path, "wb") as f:
+            get_download_to_descriptor(f, url, max_retries=5)
+        with open(temp_path, "r") as f:
+            unzip(f, dest=path)
     finally:
         if os.path.exists(temp_path):
             os.unlink(temp_path)

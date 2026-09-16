@@ -51,6 +51,27 @@ test(t => {
   assert_equals(window.connected, 0);
 }, "Custom element on a disconnected element, setHTMLUnsafe().");
 
+const attrLog = [];
+customElements.define("x-attrs", class extends HTMLElement {
+  static observedAttributes = ["a", "b"];
+  constructor() { super(); attrLog.push("constructor"); }
+  attributeChangedCallback(name, oldValue, newValue) {
+    attrLog.push(`attributeChanged ${name} ${oldValue} ${newValue}`);
+  }
+  connectedCallback() { attrLog.push("connected"); }
+});
+
+test(t => {
+  attrLog.length = 0;
+  const target = document.body.firstElementChild;
+  target.setHTML('<x-attrs a="1" b="2"></x-attrs>',
+    {sanitizer: {elements: ["x-attrs"], attributes: ["a"]}});
+  assert_array_equals(attrLog,
+    ["constructor", "attributeChanged a null 1", "connected"]);
+  assert_equals(target.firstChild.getAttribute("a"), "1");
+  assert_false(target.firstChild.hasAttribute("b"));
+}, "attributeChangedCallback only fires for attributes the sanitizer keeps.");
+
 // Test cases involving `is=`.
 customElements.define("x-div", class extends HTMLDivElement {
   constructor() { super(); window.constructed++; }

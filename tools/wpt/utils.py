@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+from typing import Optional, IO
 import errno
 import logging
 import os
@@ -31,7 +32,7 @@ def call(*args):
         raise
 
 
-def seekable(fileobj):
+def seekable(fileobj: IO[bytes]) -> IO[bytes]:
     """Attempt to use file.seek on given file, with fallbacks."""
     try:
         fileobj.seek(fileobj.tell())
@@ -52,7 +53,7 @@ def untar(fileobj, dest="."):
         tar_data.extractall(path=dest, **kwargs)
 
 
-def unzip(fileobj, dest=None, limit=None):
+def unzip(fileobj: IO[bytes], dest: str, limit: Optional[set[str]] = None) -> None:
     """Extract zip archive."""
     logger.debug("unzip")
     fileobj = seekable(fileobj)
@@ -99,7 +100,7 @@ def unzip(fileobj, dest=None, limit=None):
                     os.chmod(info_dst_path, perm)
 
 
-def get(url):
+def get(url: str) -> requests.Response:
     """Issue GET request to a given URL and return the response."""
     logger.debug("GET %s" % url)
     resp = requests.get(url, stream=True)
@@ -107,7 +108,7 @@ def get(url):
     return resp
 
 
-def get_download_to_descriptor(fd, url, max_retries=5):
+def get_download_to_descriptor(fd: IO[bytes], url: str, max_retries: int=5) -> None:
     """Download an URL in chunks and saves it to a file descriptor (truncating it)
     It doesn't close the descriptor, but flushes it on success.
     It retries the download up to max_retries.

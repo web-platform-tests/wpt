@@ -272,6 +272,27 @@ a<template>x</template>b
 |     <p>
 |       "xy"
 
+#data
+<head><meta></head><body>x
+#config
+{ "replaceWithChildrenElements": ["head"] }
+#document
+| <html>
+|   <meta>
+|   <body>
+|     "x"
+
+#data
+<head></head><body>x<p>y
+#config
+{ "replaceWithChildrenElements": ["body"] }
+#document
+| <html>
+|   <head>
+|   "x"
+|   <p>
+|     "y"
+
 </script>
 <script id="document" type="html5lib-testcases">
 #data

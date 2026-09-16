@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<link rel="author" title="Shubham Gupta" href="mailto:shubhamg13.work@gmail.com">
+<body>
+<img src="/images/lcp-133x106.png" style="width: 200px; height: 200px;">
+<script>
+  // Observe this nested browsing context's own LCP and report it to the parent.
+  const observer = new PerformanceObserver(entryList => {
+    const entries = entryList.getEntries();
+    window.parent.postMessage({
+      count: entries.length,
+      size: entries.length ? entries[entries.length - 1].size : 0,
+      url: entries.length ? entries[entries.length - 1].url : '',
+    }, '*');
+  });
+  observer.observe({type: 'largest-contentful-paint', buffered: true});
+</script>
+</body>
+</html>

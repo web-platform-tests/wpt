@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Paint Timing: nested browsing contexts report only their own paint timing</title>
+<link rel="author" title="Shubham Gupta" href="mailto:shubhamg13.work@gmail.com">
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+</head>
+<body>
+<script>
+setup({"hide_test_state": true});
+
+promise_test(async t => {
+  assert_implements(window.PerformancePaintTiming, "Paint Timing isn't supported.");
+
+  // Collect the paint-timing entries posted by the nested browsing contexts,
+  // tagged by whether they come from a same-origin or a cross-origin frame.
+  // `resources/subframe-painting.html` paints an image of its own and posts
+  // each of its paint-timing entries to this document as it observes them.
+  const sameOriginNames = [];
+  const crossOriginNames = [];
+  const sameOriginReportedBoth = new Promise(resolve => {
+    window.addEventListener('message', e => {
+      if (e.data.entryType !== 'paint')
+        return;
+      if (e.origin === location.origin) {
+        sameOriginNames.push(e.data.name);
+        if (sameOriginNames.includes('first-paint') &&
+            sameOriginNames.includes('first-contentful-paint')) {
+          resolve();
+        }
+      } else {
+        crossOriginNames.push(e.data.name);
+      }
+    });
+  });
+
+  // Negative half: this document must not be aware of the nested contexts'
+  // paint timing. Register the observer before adding the iframes.
+  let parentObservedFirstContentfulPaint = false;
+  const parentObserver = new PerformanceObserver(list => {
+    for (const entry of list.getEntries()) {
+      if (entry.name === 'first-contentful-paint')
+        parentObservedFirstContentfulPaint = true;
+    }
+  });
+  parentObserver.observe({type: 'paint', buffered: true});
+
+  const sameOriginFrame = document.createElement('iframe');
+  sameOriginFrame.src = 'resources/subframe-painting.html';
+  document.body.appendChild(sameOriginFrame);
+
+  // A cross-origin nested browsing context is only paint-timing eligible if the
+  // user agent has configured it to report paint timing, so its result is
+  // logged below rather than asserted.
+  const crossOriginFrame = document.createElement('iframe');
+  crossOriginFrame.src =
+    'http://{{domains[www]}}:{{ports[http][1]}}/paint-timing/resources/subframe-painting.html';
+  document.body.appendChild(crossOriginFrame);
+
+  await sameOriginReportedBoth;
+  assert_true(sameOriginNames.includes('first-paint'),
+    'Same-origin nested browsing context reported its own first-paint.');
+  assert_true(sameOriginNames.includes('first-contentful-paint'),
+    'Same-origin nested browsing context reported its own first-contentful-paint.');
+
+  // Give the parent observer a chance to (incorrectly) observe the children's
+  // paint. A frame that only contains iframes has first-paint (the frames'
+  // enclosing boxes) but must not have first-contentful-paint.
+  await waitForAnimationFrames(3);
+  assert_false(parentObservedFirstContentfulPaint,
+    'Parent must not observe first-contentful-paint for nested content.');
+
+  // Log (do not assert) whether the cross-origin frame reported paint timing,
+  // as paint-timing eligibility for cross-origin nested contexts is
+  // user-agent defined.
+  assert_true(true,
+    `Cross-origin nested browsing context reported: ${
+      crossOriginNames.length ? crossOriginNames.join(', ') : 'nothing'}`);
+}, 'Nested browsing contexts report only their own paint timing.');
+</script>
+</body>
+</html>

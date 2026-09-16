@@ -48,6 +48,7 @@ async def test_new_context(bidi_session, wait_for_event, wait_for_future_safe, s
         parent=None,
         user_context="default",
         client_window=contexts[0]["clientWindow"],
+        has_immediate_navigation=False
     )
 
 
@@ -76,6 +77,7 @@ async def test_evaluate_window_open_without_url(bidi_session, subscribe_events, 
         parent=None,
         original_opener=top_context["context"],
         client_window=found_context["clientWindow"],
+        has_immediate_navigation=False,
     )
 
 
@@ -105,6 +107,7 @@ async def test_evaluate_window_open_with_url(bidi_session, subscribe_events, wai
         parent=None,
         original_opener=top_context["context"],
         client_window=found_context["clientWindow"],
+        has_immediate_navigation=True,
     )
 
 
@@ -139,6 +142,7 @@ async def test_event_emitted_before_create_returns(
         parent=None,
         user_context="default",
         client_window=contexts[0]["clientWindow"],
+        has_immediate_navigation=False,
     )
 
     remove_listener()
@@ -179,6 +183,7 @@ async def test_navigate_creates_iframes(bidi_session, subscribe_events, top_cont
         url="about:blank",
         parent=root_info["context"],
         client_window=contexts[0]["clientWindow"],
+        has_immediate_navigation=True,
     )
 
     assert_browsing_context(
@@ -188,6 +193,7 @@ async def test_navigate_creates_iframes(bidi_session, subscribe_events, top_cont
         url="about:blank",
         parent=root_info["context"],
         client_window=contexts[0]["children"][0]["clientWindow"],
+        has_immediate_navigation=True,
     )
 
     remove_listener()
@@ -230,6 +236,7 @@ async def test_navigate_creates_nested_iframes(bidi_session, subscribe_events, t
         url="about:blank",
         parent=root_info["context"],
         client_window=contexts[0]["clientWindow"],
+        has_immediate_navigation=True,
     )
 
     assert_browsing_context(
@@ -239,9 +246,54 @@ async def test_navigate_creates_nested_iframes(bidi_session, subscribe_events, t
         url="about:blank",
         parent=child1_info["context"],
         client_window=contexts[0]["children"][0]["clientWindow"],
+        has_immediate_navigation=True,
     )
 
     remove_listener()
+
+
+@pytest.mark.parametrize("is_visible", [True, False], ids=["visible", "not visible"])
+async def test_create_lazy_iframe(
+    bidi_session,
+    subscribe_events,
+    wait_for_event,
+    wait_for_future_safe,
+    inline,
+    top_context,
+    is_visible,
+):
+    frame_url = inline("<div>foo</div>")
+    # A lazy iframe which is below the viewport only loads its url once it
+    # becomes visible.
+    spacer = "" if is_visible else "<div style='height: 2000vh'></div>"
+    url = inline(f"{spacer}<iframe src='{frame_url}' loading='lazy'></iframe>")
+
+    await subscribe_events([CONTEXT_CREATED_EVENT])
+
+    on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
+
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=url, wait="none"
+    )
+
+    context_info = await wait_for_future_safe(on_entry)
+
+    contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
+
+    assert len(contexts) == 1
+    root_info = contexts[0]
+    assert len(root_info["children"]) == 1
+
+    assert_browsing_context(
+        context_info,
+        root_info["children"][0]["context"],
+        children=None,
+        url="about:blank",
+        parent=root_info["context"],
+        client_window=root_info["clientWindow"],
+        # The iframe url is only loaded immediately if the iframe is visible.
+        has_immediate_navigation=is_visible,
+    )
 
 
 async def test_subscribe_to_one_context(
@@ -316,6 +368,7 @@ async def test_new_user_context(
         parent=None,
         user_context=user_context,
         client_window=contexts[0]["clientWindow"],
+        has_immediate_navigation=False,
     )
 
     remove_listener()
@@ -337,7 +390,8 @@ async def test_client_window(bidi_session, wait_for_event, wait_for_future_safe,
         url="about:blank",
         parent=None,
         user_context="default",
-        client_window=contexts[0]["clientWindow"]
+        client_window=contexts[0]["clientWindow"],
+        has_immediate_navigation=False,
     )
 
 

@@ -166,7 +166,8 @@ test(t => {
   div.style.animationDuration = '4s';
   div.style.animationIterationCount = '6';
   div.style.animationDirection = 'reverse';
-  div.style.animationDelay = '8s';
+  div.style.animationDelayStart = '8s';
+  div.style.animationDelayEnd = '12s';
   div.style.animationFillMode = 'both';
   div.style.animationPlayState = 'paused';
   div.style.animationComposition = 'add';
@@ -198,6 +199,11 @@ test(t => {
     'delay should be the value set by the API'
   );
   assert_equals(
+    animation.effect.getTiming().endDelay,
+    0,
+    'endDelay should be the value set by the API'
+  );
+  assert_equals(
     animation.effect.getTiming().fill,
     'auto',
     'fill should be the value set by the API'
@@ -224,6 +230,19 @@ test(t => {
     animation.timeline,
     null,
     'timeline should be the value set by style'
+  );
+
+  div.style.animationDelayStart = '99s';
+  div.style.animationDelayEnd = '99s';
+  assert_equals(
+    animation.effect.getTiming().delay,
+    0,
+    'delay should remain the value set by the API after style change'
+  );
+  assert_equals(
+    animation.effect.getTiming().endDelay,
+    0,
+    'endDelay should remain the value set by the API after style change'
   );
 }, 'Replacing the effect of a CSSAnimation causes subsequent changes to'
    + ' corresponding animation-* properties to be ignored');

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Animations: getComputedStyle().animationDelayEnd</title>
+<link rel="help" href="https://drafts.csswg.org/css-animations-2/#propdef-animation-delay-end">
+<meta name="assert" content="animation-delay-end converts to seconds.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<style>
+  #container {
+    container-type: inline-size;
+    width: 100px;
+  }
+</style>
+</head>
+<body>
+<div id="container">
+  <div id="target"></div>
+</div>
+<script>
+test_computed_value("animation-delay-end", "initial", "0s");
+test_computed_value("animation-delay-end", "500ms", "0.5s");
+test_computed_value("animation-delay-end", "calc(2 * 3s)", "6s");
+test_computed_value("animation-delay-end", "20s, 10s");
+test_computed_value("animation-delay-end", 'calc(10s + (sign(2cqw - 10px) * 5s))', '5s');
+</script>
+</body>
+</html>

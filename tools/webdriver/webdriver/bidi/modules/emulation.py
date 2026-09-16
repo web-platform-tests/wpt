@@ -143,3 +143,16 @@ class Emulation(BidiModule):
             "contexts": contexts,
             "userContexts": user_contexts,
         }
+
+    @command
+    def set_media_features_override(
+            self,
+            features: Nullable[Dict[str, Any]],
+            contexts: Maybe[List[str]] = UNDEFINED,
+            user_contexts: Maybe[List[str]] = UNDEFINED,
+    ) -> Mapping[str, Any]:
+        return {
+            "features": features,
+            "contexts": contexts,
+            "userContexts": user_contexts,
+        }

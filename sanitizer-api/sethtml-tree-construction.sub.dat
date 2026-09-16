@@ -745,3 +745,177 @@ a<table><tr><td>y</td></tr>b</table>c
 |       <td>
 |         "z"
 
+#data
+<table><template>x</template><tr><td>y
+#config
+{ "replaceWithChildrenElements": ["template"] }
+#document
+| <table>
+|   <tbody>
+|     <tr>
+|       <td>
+|         "y"
+
+#data
+<template><table>x</table></template>
+#config
+{ "replaceWithChildrenElements": ["table"] }
+#document
+| <template>
+|   content
+|     "x"
+
+#data
+a<table>b<tr><td>c</table>d
+#config
+{ "removeElements": ["table"] }
+#document
+| "abd"
+
+#data
+<table><tr>x<td>y
+#config
+{ "removeElements": ["tr"] }
+#document
+| "x"
+| <table>
+|   <tbody>
+
+#data
+<table><tr><td>y
+#config
+{ "replaceWithChildrenElements": ["tr"] }
+#document
+| <table>
+|   <tbody>
+|     <td>
+|       "y"
+
+#data
+<table><!-- x --><tr><td>y
+#config
+{ "replaceWithChildrenElements": ["table"], "comments": true }
+#document
+| <!-- x -->
+| <tbody>
+|   <tr>
+|     <td>
+|       "y"
+
+#data
+<template><!-- x --></template>
+#config
+{ "comments": true }
+#document
+| <template>
+|   content
+|     <!-- x -->
+
+#document-fragment
+tr
+#data
+<td>a</td><div>b</div>
+#config
+{ "replaceWithChildrenElements": ["td"] }
+#document
+| "a"
+| <div>
+|   "b"
+
+#data
+<select><option>a<option>b</select>
+#config
+{ "replaceWithChildrenElements": ["option"] }
+#document
+| <select>
+|   "ab"
+
+#data
+<select><option>a</option></select>
+#config
+{ "replaceWithChildrenElements": ["select"] }
+#document
+| <option>
+|   "a"
+
+#data
+<title>a&amp;b<b></title>c
+#config
+{ "replaceWithChildrenElements": ["title"] }
+#document
+| "a&b<b>c"
+
+#data
+<plaintext>x</plaintext>y
+#config
+{ "replaceWithChildrenElements": ["plaintext"] }
+#document
+| "x</plaintext>y"
+
+#data
+<xmp><b>x</xmp>y
+#config
+{ "removeElements": ["xmp"] }
+#document
+| "y"
+
+#data
+<image src="x">
+#config
+{ "removeElements": ["image"] }
+#document
+| <img>
+|   src="x"
+
+#data
+<image src="x">
+#config
+{ "elements": ["img"] }
+#document
+| <img>
+|   src="x"
+
+#data
+<table><tr><td>x
+#config
+{ "replaceWithChildrenElements": ["tbody"] }
+#document
+| <table>
+|   <tr>
+|     <td>
+|       "x"
+
+#data
+<table><col></table>
+#config
+{ "replaceWithChildrenElements": ["colgroup"] }
+#document
+| <table>
+|   <col>
+
+#data
+<p>a<div>b</div>c
+#config
+{ "removeElements": ["p"] }
+#document
+| <div>
+|   "b"
+| "c"
+
+#data
+<svg><g><rect></g></svg>
+#config
+{ "replaceWithChildrenElements": [{ "name": "g", "namespace": "http://www.w3.org/2000/svg" }] }
+#document
+| <svg svg>
+|   <svg rect>
+
+#data
+<svg><foreignObject><div>x</div></foreignObject></svg>
+#config
+{ "replaceWithChildrenElements": [{ "name": "foreignObject", "namespace": "http://www.w3.org/2000/svg" }] }
+#document
+| <svg svg>
+|   <div>
+|     "x"
+

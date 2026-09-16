@@ -181,14 +181,15 @@ def get_os_tag(logger):
     raise NotImplementedError
 
 
-def download_and_extract(logger: structuredlog.StructuredLogger, url: str, path: str):
+def download_and_extract(logger: structuredlog.StructuredLogger, url: str, path: str) -> None:
     if not os.path.exists(path):
         os.makedirs(path)
     temp_path = os.path.join(path, url.rsplit("/", 1)[1])
+    logger.debug(f"Downloading {url} to {temp_path}")
     try:
         with open(temp_path, "wb") as f:
             get_download_to_descriptor(f, url, max_retries=5)
-        with open(temp_path, "r") as f:
+        with open(temp_path, "rb") as f:
             unzip(f, dest=path)
     finally:
         if os.path.exists(temp_path):

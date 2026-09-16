@@ -11,7 +11,8 @@ from xml.etree import ElementTree
 
 from mozlog import structuredlog
 
-from .utils import get_download_to_descriptor, unzip
+from .httputils import get_download_to_descriptor
+from .utils import unzip
 from .wpt import venv_dir
 
 

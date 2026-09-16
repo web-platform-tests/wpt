@@ -19,10 +19,9 @@ import html5lib
 import requests
 from packaging.specifiers import SpecifierSet
 
+from .httputils import get, get_download_to_descriptor
 from .utils import (
     call,
-    get,
-    get_download_to_descriptor,
     rmtree,
     sha256sum,
     untar,

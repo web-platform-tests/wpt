@@ -1,33 +1,67 @@
+# META: timeout=long
+
 import pytest
 
 from math import ceil, floor
 from tests.support.image import png_dimensions
+from webdriver.bidi.modules.script import ContextTarget
 
-from . import get_physical_viewport_dimensions
-from ... import get_device_pixel_ratio, get_viewport_dimensions
+from ... import (get_device_pixel_ratio, get_viewport_dimensions,
+                 remote_mapping_to_dict)
 
 pytestmark = pytest.mark.asyncio
+
+
+async def get_visual_viewport_metrics(bidi_session, context):
+    result = await bidi_session.script.call_function(
+        function_declaration="""() => {
+            return {
+                devicePixelRatio: window.devicePixelRatio,
+                height: window.visualViewport.height,
+                width: window.visualViewport.width,
+            };
+        }""",
+        target=ContextTarget(context["context"]),
+        await_promise=False,
+    )
+    return remote_mapping_to_dict(result["value"])
 
 
 @pytest.mark.parametrize("activate", [True, False],
                          ids=["with activate", "without activate"])
 async def test_capture(bidi_session, top_context, inline, compare_png_bidi,
                        activate):
-    expected_size = await get_physical_viewport_dimensions(bidi_session, top_context)
-
     await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url="about:blank", wait="complete"
-    )
+        context=top_context["context"], url="about:blank", wait="complete")
     if activate:
         await bidi_session.browsing_context.activate(
             context=top_context["context"])
+
+    # The empty document has no scrollable overflow, so this test does not
+    # define whether viewport screenshots include scrollbar dimensions.
+    viewport = await get_visual_viewport_metrics(bidi_session, top_context)
     reference_data = await bidi_session.browsing_context.capture_screenshot(
         context=top_context["context"])
-    assert png_dimensions(reference_data) == expected_size
+    actual_width, actual_height = png_dimensions(reference_data)
+    expected_width = viewport["width"] * viewport["devicePixelRatio"]
+    expected_height = viewport["height"] * viewport["devicePixelRatio"]
+
+    # Bitmap dimensions are integral, but visual viewport dimensions can be
+    # fractional. Use the existing WPT floor-to-ceil tolerance for converting
+    # CSS dimensions to physical pixels.
+    assert floor(expected_width) <= actual_width <= ceil(expected_width), (
+        f"Expected screenshot width between {floor(expected_width)} and "
+        f"{ceil(expected_width)} for visual viewport {viewport}, got "
+        f"{actual_width}")
+    assert floor(expected_height) <= actual_height <= ceil(expected_height), (
+        f"Expected screenshot height between {floor(expected_height)} and "
+        f"{ceil(expected_height)} for visual viewport {viewport}, got "
+        f"{actual_height}")
 
     await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=inline("<div>foo</div>"), wait="complete"
-    )
+        context=top_context["context"],
+        url=inline("<div>foo</div>"),
+        wait="complete")
     if activate:
         await bidi_session.browsing_context.activate(
             context=top_context["context"])

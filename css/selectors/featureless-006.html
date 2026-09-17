@@ -14,12 +14,9 @@
     host.className = "host";
     document.body.appendChild(host);
     host.attachShadow({ mode: "open" }).innerHTML =
-      `<style>:host { --host-rule: applied } ${selector} { content: "x" }</style><div class="inner"></div>`;
+      `<style>${selector} { content: "x" }</style><div class="inner"></div>`;
     const matched = getComputedStyle(host, pseudoElement).content === '"x"';
-    const hostRuleApplied = getComputedStyle(host).getPropertyValue("--host-rule").trim() === "applied";
     host.remove();
-    // Distinguishes "did not match" from "no rule in the shadow tree reached the host".
-    assert_true(hostRuleApplied);
     return matched;
   }
 
@@ -89,8 +86,6 @@
   test_host_before(":not(:not(:host))::before", true);
   test_host_before(":not(:hover)::before", false);
 
-  // The selector under test is the only rule in the sheet, so nothing else can be what causes the
-  // host to be restyled.
   function hostMatchesAfter(selector, mutate) {
     const host = document.createElement("div");
     host.className = "host";

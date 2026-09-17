@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body></body>
+
+<script>
+  const assertCurrentPosterSupported = () =>
+    assert_implements(
+      'currentPoster' in HTMLVideoElement.prototype,
+      'HTMLVideoElement.currentPoster is not supported'
+    );
+
+  const createVideo = () => {
+    const video = document.createElement('video');
+    video.src = '/media/A4.webm';
+    video.controls = true;
+    video.posterFromImg = true;
+    return document.body.appendChild(video);
+  };
+
+  const createPosterImg = () => {
+    const img = document.createElement('img');
+    img.src = '/media/poster.png?posterImageSrc=true';
+    return img;
+  };
+
+  test(function () {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    const img = createPosterImg();
+    video.appendChild(img);
+
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, 'HTMLVideoElement.currentPoster matches img.currentSrc');
+
+  test(function () {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    const img = createPosterImg();
+    const picture = document.createElement('picture');
+
+    video.appendChild(picture.appendChild(img));
+
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, 'HTMLVideoElement.currentPoster matches img.currentSrc inside a picture element');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    video.poster = '/media/poster.png';
+    assert_equals(video.currentPoster, video.poster);
+
+    const img = createPosterImg();
+    video.appendChild(img);
+
+    await t.step_wait(() => video.currentPoster === img.currentSrc);
+    assert_equals(video.currentPoster, img.currentSrc);
+    assert_not_equals(video.currentPoster, video.poster);
+  }, 'Inserting a poster image source into a video should update HTMLVideoElement.currentPoster');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    video.poster = '/media/poster.png';
+    const img = createPosterImg();
+
+    video.appendChild(img);
+    assert_equals(video.currentPoster, img.currentSrc);
+    assert_not_equals(video.currentPoster, video.poster);
+
+    img.remove();
+
+    await t.step_wait(() => !img.isConnected);
+    assert_equals(video.currentPoster, video.poster);
+  }, 'Removing a poster image source from a video should update HTMLVideoElement.currentPoster');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    const img = createPosterImg();
+    video.appendChild(img);
+
+    await t.step_wait(() => video.currentPoster === img.currentSrc);
+    const firstSrc = img.currentSrc;
+
+    img.src = '/media/poster.png?posterImageSrc=updated';
+
+    await t.step_wait(
+      () => video.currentPoster === img.currentSrc && img.currentSrc !== firstSrc
+    );
+    assert_equals(video.currentPoster, img.currentSrc);
+  }, "Changing the poster image source's src should update HTMLVideoElement.currentPoster");
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const video = createVideo();
+    video.poster = '/media/poster.png';
+
+    const picture = document.createElement('picture');
+    const img = createPosterImg();
+    picture.appendChild(img);
+
+    video.appendChild(picture);
+    await t.step_wait(() => video.currentPoster === img.currentSrc);
+    assert_equals(video.currentPoster, img.currentSrc);
+    assert_not_equals(video.currentPoster, video.poster);
+
+    picture.remove();
+
+    await t.step_wait(() => !picture.isConnected);
+    assert_equals(video.currentPoster, video.poster);
+  }, 'Inserting and removing a picture-wrapped poster image source should update HTMLVideoElement.currentPoster');
+</script>

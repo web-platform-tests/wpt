@@ -1438,5 +1438,66 @@ for (const dataType of ['float32', 'float16']) {
       });
 }
 
+triangularTests.push(
+    {
+      'name': 'triangular int32 boundary values options.diagonal=1',
+      'graph': {
+        'inputs': {
+          'triangularInput': {
+            'data': [
+              -2147483648, 16777217, 2147483647,
+              -2147483648, 2147483647, -16777217,
+              2147483646, -16777219, -2147483648
+            ],
+            'descriptor': {shape: [3, 3], dataType: 'int32'}
+          }
+        },
+        'operators': [{
+          'name': 'triangular',
+          'arguments': [
+            {'input': 'triangularInput'},
+            {'options': {'upper': true, 'diagonal': 1}}
+          ],
+          'outputs': 'triangularOutput'
+        }],
+        'expectedOutputs': {
+          'triangularOutput': {
+            'data': [0, 16777217, 2147483647, 0, 0, -16777217, 0, 0, 0],
+            'descriptor': {shape: [3, 3], dataType: 'int32'}
+          }
+        }
+      }
+    },
+    {
+      'name': 'triangular int32 boundary values options.upper=false ' +
+          'options.diagonal=-1',
+      'graph': {
+        'inputs': {
+          'triangularInput': {
+            'data': [
+              -2147483648, 16777217, 2147483647,
+              -2147483648, 2147483647, -16777217,
+              2147483646, -16777219, -2147483648
+            ],
+            'descriptor': {shape: [3, 3], dataType: 'int32'}
+          }
+        },
+        'operators': [{
+          'name': 'triangular',
+          'arguments': [
+            {'input': 'triangularInput'},
+            {'options': {'upper': false, 'diagonal': -1}}
+          ],
+          'outputs': 'triangularOutput'
+        }],
+        'expectedOutputs': {
+          'triangularOutput': {
+            'data': [0, 0, 0, -2147483648, 0, 0, 2147483646, -16777219, 0],
+            'descriptor': {shape: [3, 3], dataType: 'int32'}
+          }
+        }
+      }
+    });
+
 webnn_conformance_test(
     triangularTests, buildAndExecuteGraph, getTriangularPrecisionTolerance);

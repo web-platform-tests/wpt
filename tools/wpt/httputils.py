@@ -4,6 +4,7 @@ from socket import error as SocketError  # NOQA: N812
 from typing import IO
 
 import requests
+import urllib3
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,8 @@ def get_download_to_descriptor(fd: IO[bytes], url: str, max_retries: int = 5) ->
             for chunk in resp.iter_content(16 * 1024):
                 fd.write(chunk)
             fd.flush()
-        except (requests.RequestException, SocketError) as e:
+            return
+        except (requests.RequestException, SocketError, urllib3.exceptions.HTTPError) as e:
             if current_retry < max_retries:
                 # Retry
                 logger.error(f"Connection error: {e}. Retrying after {wait}s...")

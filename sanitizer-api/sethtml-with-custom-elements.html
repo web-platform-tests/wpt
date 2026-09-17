@@ -34,6 +34,44 @@ test(t => {
   assert_equals(window.connected, 1);
 }, "Custom element that is allowed.");
 
+test(t => {
+  t.add_cleanup(cleanup);
+  const div = document.createElement("div");
+  div.setHTML("<x-probe></x-probe>", {sanitizer: {elements: ["x-probe"]}});
+  assert_equals(window.constructed, 1, "constructed before setHTML() returns");
+  assert_equals(window.connected, 0);
+  assert_equals(div.firstChild.constructor.name, "", "upgraded element is not HTMLElement");
+}, "Custom element that is allowed, on a disconnected element.");
+
+test(t => {
+  t.add_cleanup(cleanup);
+  const div = document.createElement("div");
+  div.setHTMLUnsafe("<x-probe></x-probe>");
+  assert_equals(window.constructed, 1, "constructed before setHTMLUnsafe() returns");
+  assert_equals(window.connected, 0);
+}, "Custom element on a disconnected element, setHTMLUnsafe().");
+
+const attrLog = [];
+customElements.define("x-attrs", class extends HTMLElement {
+  static observedAttributes = ["a", "b"];
+  constructor() { super(); attrLog.push("constructor"); }
+  attributeChangedCallback(name, oldValue, newValue) {
+    attrLog.push(`attributeChanged ${name} ${oldValue} ${newValue}`);
+  }
+  connectedCallback() { attrLog.push("connected"); }
+});
+
+test(t => {
+  attrLog.length = 0;
+  const target = document.body.firstElementChild;
+  target.setHTML('<x-attrs a="1" b="2"></x-attrs>',
+    {sanitizer: {elements: ["x-attrs"], attributes: ["a"]}});
+  assert_array_equals(attrLog,
+    ["constructor", "attributeChanged a null 1", "connected"]);
+  assert_equals(target.firstChild.getAttribute("a"), "1");
+  assert_false(target.firstChild.hasAttribute("b"));
+}, "attributeChangedCallback only fires for attributes the sanitizer keeps.");
+
 // Test cases involving `is=`.
 customElements.define("x-div", class extends HTMLDivElement {
   constructor() { super(); window.constructed++; }

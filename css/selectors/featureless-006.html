@@ -13,13 +13,16 @@
     const host = document.createElement("div");
     host.className = "host";
     document.body.appendChild(host);
-    // The :is(:host) rule stops implementations from skipping the rule under test altogether.
     host.attachShadow({ mode: "open" }).innerHTML =
-      `<style>:is(:host) { --flag: y } ${selector} { --matched: yes; content: "x" }</style><div class="inner"></div>`;
+      `<style>:host { --host-rule: applied } ${selector} { --matched: yes; content: "x" }</style><div class="inner"></div>`;
     const style = getComputedStyle(host, pseudoElement);
-    // content is not inherited, so it can report a match on a pseudo-element where a custom property cannot.
+    // A custom property set on the host inherits into the pseudo-element, so the pseudo-element cases
+    // look at content, which does not inherit.
     const matched = pseudoElement ? style.content === '"x"' : style.getPropertyValue("--matched").trim() === "yes";
+    const hostRuleApplied = getComputedStyle(host).getPropertyValue("--host-rule").trim() === "applied";
     host.remove();
+    // Distinguishes "did not match" from "no rule in the shadow tree reached the host".
+    assert_true(hostRuleApplied);
     return matched;
   }
 
@@ -89,8 +92,8 @@
   test_host_before(":not(:not(:host))::before", true);
   test_host_before(":not(:hover)::before", false);
 
-  // Deliberately the only rule in the sheet: a :host rule elsewhere would put the shadow tree on a
-  // separate invalidation path and hide whether this one is invalidated on its own.
+  // The selector under test is the only rule in the sheet, so nothing else can be what causes the
+  // host to be restyled.
   function hostMatchesAfter(selector, mutate) {
     const host = document.createElement("div");
     host.className = "host";

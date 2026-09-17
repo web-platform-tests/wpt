@@ -1356,5 +1356,87 @@ const triangularTests = [
   }
 ];
 
+for (const dataType of ['float32', 'float16']) {
+  triangularTests.push(
+      {
+        'name': `triangular ${dataType} 3x3 tensor options.diagonal=-1`,
+        'graph': {
+          'inputs': {
+            'triangularInput': {
+              'data': [1, 2, 3, 4, 5, 6, 7, 8, 9],
+              'descriptor': {shape: [3, 3], dataType}
+            }
+          },
+          'operators': [{
+            'name': 'triangular',
+            'arguments': [
+              {'input': 'triangularInput'},
+              {'options': {'upper': true, 'diagonal': -1}}
+            ],
+            'outputs': 'triangularOutput'
+          }],
+          'expectedOutputs': {
+            'triangularOutput': {
+              'data': [1, 2, 3, 4, 5, 6, 0, 8, 9],
+              'descriptor': {shape: [3, 3], dataType}
+            }
+          }
+        }
+      },
+      {
+        'name': `triangular ${dataType} non-finite values options.diagonal=1`,
+        'graph': {
+          'inputs': {
+            'triangularInput': {
+              'data': [NaN, Infinity, -Infinity, -Infinity, Infinity, 7,
+                       Infinity, -8, NaN],
+              'descriptor': {shape: [3, 3], dataType}
+            }
+          },
+          'operators': [{
+            'name': 'triangular',
+            'arguments': [
+              {'input': 'triangularInput'},
+              {'options': {'upper': true, 'diagonal': 1}}
+            ],
+            'outputs': 'triangularOutput'
+          }],
+          'expectedOutputs': {
+            'triangularOutput': {
+              'data': [0, Infinity, -Infinity, 0, 0, 7, 0, 0, 0],
+              'descriptor': {shape: [3, 3], dataType}
+            }
+          }
+        }
+      },
+      {
+        'name': `triangular ${dataType} non-finite values options.upper=false ` +
+            'options.diagonal=-1',
+        'graph': {
+          'inputs': {
+            'triangularInput': {
+              'data': [NaN, Infinity, -Infinity, -Infinity, Infinity, 7,
+                       Infinity, -8, NaN],
+              'descriptor': {shape: [3, 3], dataType}
+            }
+          },
+          'operators': [{
+            'name': 'triangular',
+            'arguments': [
+              {'input': 'triangularInput'},
+              {'options': {'upper': false, 'diagonal': -1}}
+            ],
+            'outputs': 'triangularOutput'
+          }],
+          'expectedOutputs': {
+            'triangularOutput': {
+              'data': [0, 0, 0, -Infinity, 0, 0, Infinity, -8, 0],
+              'descriptor': {shape: [3, 3], dataType}
+            }
+          }
+        }
+      });
+}
+
 webnn_conformance_test(
     triangularTests, buildAndExecuteGraph, getTriangularPrecisionTolerance);

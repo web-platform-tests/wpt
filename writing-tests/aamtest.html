@@ -187,6 +187,21 @@ API being tested for ease of understanding the test results.</p>
 </pre></div>
 </div>
 </section>
+<section id="testing-events">
+<h3>Testing events<a class="headerlink" href="#testing-events" title="Link to this heading">¶</a></h3>
+<p>Testing events fired by the accessibility API is possible with the
+<code class="docutils literal notranslate"><span class="pre">expect_event()</span></code> method. It registers a listener for the event, runs an action
+to trigger it, then blocks until the event arrives and returns it. If the event
+never arrives, it raises <code class="docutils literal notranslate"><span class="pre">TimeoutError</span></code>.</p>
+<p>For example, waiting for an <code class="docutils literal notranslate"><span class="pre">object:state-changed:foobar</span></code> event in AT-SPI:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">event</span> <span class="o">=</span> <span class="n">atspi</span><span class="o">.</span><span class="n">expect_event</span><span class="p">(</span>
+    <span class="s2">"object:state-changed:foobar"</span><span class="p">,</span> <span class="n">dom_id</span><span class="o">=</span><span class="s2">"test"</span><span class="p">,</span>
+    <span class="c1"># Trigger the event, e.g. via WebDriver click.</span>
+    <span class="n">action</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">session</span><span class="o">.</span><span class="n">find</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s2">"#test"</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">click</span><span class="p">(),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="adding-support-for-an-unsupported-api">
 <h2>Adding support for an unsupported API<a class="headerlink" href="#adding-support-for-an-unsupported-api" title="Link to this heading">¶</a></h2>

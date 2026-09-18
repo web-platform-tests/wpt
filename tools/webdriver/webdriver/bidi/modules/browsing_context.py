@@ -289,11 +289,14 @@ class BrowsingContext(BidiModule):
     @command
     def start_screencast(self,
                          context: str,
+                         destination_folder: Optional[str] = None,
                          video: Optional[VideoOptions] = None,
                          audio: Optional[bool] = None,
                          mime_type: Optional[str] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {"context": context}
 
+        if destination_folder is not None:
+            params["destinationFolder"] = destination_folder
         if video is not None:
             params["video"] = video
         if audio is not None:

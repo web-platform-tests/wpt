@@ -19,15 +19,7 @@
       });
       trustedTypes.createPolicy("default", {
         createHTML: (_) => "",
-        createScript: (s) => s,
-        createParserOptions: ({sanitizer}) => ({
-          runScripts: false,
-          sanitizer
-        }),
       });
-      function cleanup() {
-        container.innerHTML = cleanupPolicy.createHTML("");
-      }
 
       const methods = [
         "streamHTML",
@@ -40,20 +32,25 @@
         "streamBeforeHTMLUnsafe",
         "streamAfterHTML",
         "streamAfterHTMLUnsafe",
+        "streamReplaceWithHTML",
+        "streamReplaceWithHTMLUnsafe",
       ];
 
       for (const method of methods) {
-        promise_test(async (t) => {
-          t.add_cleanup(cleanup);
-          let d = document.createElement("div");
-          document.querySelector("#container").appendChild(d);
-          t.add_cleanup(() => d.remove());
-          const writer = d[method]({ runScripts: true, sanitizer: {removeElements: ["p"]} }).getWriter();
-          window.did_run = false;
-          await writer.write("<script>window.did_run = true;</" + "script>");
-          await writer.close();
-          assert_false(window.did_run);
-        }, `The default TT policy can turn runScripts off for ${method}`);
+        const safe = !method.endsWith("Unsafe");
+        test(
+          (t) => {
+            let d = document.createElement("div");
+            document.querySelector("#container").appendChild(d);
+            t.add_cleanup(() => d.remove());
+            if (safe) {
+              assert_true(d[method]() instanceof WritableStream);
+            } else {
+              assert_throws_js(TypeError, () => d[method]());
+            }
+          },
+          `Streaming with trusted types and a default policy without createParserOptions ${safe ? "does not throw" : "throws"} for ${method}.`,
+        );
       }
     </script>
   </body>

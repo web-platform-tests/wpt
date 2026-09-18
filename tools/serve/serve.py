@@ -16,7 +16,7 @@ import time
 import traceback
 import urllib
 import uuid
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 from io import IOBase
 from itertools import chain, product
 from html5lib import html5parser
@@ -900,7 +900,7 @@ class RoutesBuilder:
             with open(inject_script, "rb") as f:
                 self.inject_script_data = f.read()
 
-        self.mountpoint_routes = OrderedDict()
+        self.mountpoint_routes = {}
 
         self.add_mount_point("/", None)
 
@@ -970,6 +970,7 @@ class RoutesBuilder:
             ("GET", "/.well-known/web-app-origin-association", handlers.PythonScriptHandler),
             ("*", "/.well-known/web-identity", handlers.PythonScriptHandler),
             ("*", "/.well-known/device-bound-sessions", handlers.PythonScriptHandler),
+            ("*", "/.well-known/email-verification", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)
         ]

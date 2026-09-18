@@ -26,6 +26,19 @@ class CoordinatesOptions(Dict[str, Any]):
 
 class Emulation(BidiModule):
     @command
+    def set_forced_colors_mode_theme_override(
+            self,
+            theme: Nullable[str],
+            contexts: Maybe[List[str]] = UNDEFINED,
+            user_contexts: Maybe[List[str]] = UNDEFINED,
+    ) -> Mapping[str, Any]:
+        return {
+            "theme": theme,
+            "contexts": contexts,
+            "userContexts": user_contexts,
+        }
+
+    @command
     def set_geolocation_override(
             self,
             coordinates: Maybe[Nullable[CoordinatesOptions]] = UNDEFINED,
@@ -93,6 +106,19 @@ class Emulation(BidiModule):
         }
 
     @command
+    def set_text_layout_mode_override(
+            self,
+            text_layout_mode: Nullable[str],
+            contexts: Maybe[List[str]] = UNDEFINED,
+            user_contexts: Maybe[List[str]] = UNDEFINED,
+    ) -> Mapping[str, Any]:
+        return {
+            "textLayoutMode": text_layout_mode,
+            "contexts": contexts,
+            "userContexts": user_contexts,
+        }
+
+    @command
     def set_timezone_override(
             self,
             timezone: Nullable[str],
@@ -114,6 +140,19 @@ class Emulation(BidiModule):
     ) -> Mapping[str, Any]:
         return {
             "userAgent": user_agent,
+            "contexts": contexts,
+            "userContexts": user_contexts,
+        }
+
+    @command
+    def set_viewport_meta_override(
+            self,
+            viewport_meta: Nullable[Literal[True]],
+            contexts: Maybe[List[str]] = UNDEFINED,
+            user_contexts: Maybe[List[str]] = UNDEFINED,
+    ) -> Mapping[str, Any]:
+        return {
+            "viewportMeta": viewport_meta,
             "contexts": contexts,
             "userContexts": user_contexts,
         }
@@ -144,6 +183,19 @@ class Emulation(BidiModule):
             "userContexts": user_contexts,
         }
 
+    def set_media_features_override(
+            self,
+            features: Nullable[Dict[str, Any]],
+            contexts: Maybe[List[str]] = UNDEFINED,
+            user_contexts: Maybe[List[str]] = UNDEFINED,
+    ) -> Mapping[str, Any]:
+        return {
+            "scrollbarType": scrollbar_type,
+            "features": features,
+            "contexts": contexts,
+            "userContexts": user_contexts,
+        }
+
     @command
     def set_scrollbar_type_override(
             self,
@@ -153,6 +205,7 @@ class Emulation(BidiModule):
     ) -> Mapping[str, Any]:
         return {
             "scrollbarType": scrollbar_type,
+            "features": features,
             "contexts": contexts,
             "userContexts": user_contexts,
         }

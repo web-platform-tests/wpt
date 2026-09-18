@@ -1,0 +1,4 @@
+features:
+- name: postmessage
+  files:
+  - no-transferring.https.html

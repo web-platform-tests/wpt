@@ -48,37 +48,38 @@
 <li><p><a class="reference internal" href="#api" id="id9">API</a></p>
 <ul>
 <li><p><a class="reference internal" href="#user-interaction" id="id10">User Interaction</a></p></li>
-<li><p><a class="reference internal" href="#window-state" id="id11">Window State</a></p></li>
-<li><p><a class="reference internal" href="#cookies" id="id12">Cookies</a></p></li>
-<li><p><a class="reference internal" href="#permissions" id="id13">Permissions</a></p></li>
-<li><p><a class="reference internal" href="#authentication" id="id14">Authentication</a></p></li>
-<li><p><a class="reference internal" href="#page-lifecycle" id="id15">Page Lifecycle</a></p></li>
-<li><p><a class="reference internal" href="#reporting-observer" id="id16">Reporting Observer</a></p></li>
-<li><p><a class="reference internal" href="#storage" id="id17">Storage</a></p></li>
-<li><p><a class="reference internal" href="#accessibility" id="id18">Accessibility</a></p></li>
-<li><p><a class="reference internal" href="#secure-payment-confirmation" id="id19">Secure Payment Confirmation</a></p></li>
-<li><p><a class="reference internal" href="#federated-credential-management" id="id20">Federated Credential Management</a></p></li>
-<li><p><a class="reference internal" href="#sensors" id="id21">Sensors</a></p></li>
-<li><p><a class="reference internal" href="#device-posture" id="id22">Device Posture</a></p></li>
-<li><p><a class="reference internal" href="#bounce-tracking-mitigations" id="id23">Bounce Tracking Mitigations</a></p></li>
-<li><p><a class="reference internal" href="#compute-pressure" id="id24">Compute Pressure</a></p></li>
-<li><p><a class="reference internal" href="#viewport-segments" id="id25">Viewport Segments</a></p></li>
-<li><p><a class="reference internal" href="#global-privacy-control" id="id26">Global Privacy Control</a></p></li>
-<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id27">Using test_driver in other browsing contexts</a></p></li>
-<li><p><a class="reference internal" href="#actions" id="id28">Actions</a></p>
+<li><p><a class="reference internal" href="#browsing-context" id="id11">Browsing Context</a></p></li>
+<li><p><a class="reference internal" href="#window-state" id="id12">Window State</a></p></li>
+<li><p><a class="reference internal" href="#cookies" id="id13">Cookies</a></p></li>
+<li><p><a class="reference internal" href="#permissions" id="id14">Permissions</a></p></li>
+<li><p><a class="reference internal" href="#authentication" id="id15">Authentication</a></p></li>
+<li><p><a class="reference internal" href="#page-lifecycle" id="id16">Page Lifecycle</a></p></li>
+<li><p><a class="reference internal" href="#reporting-observer" id="id17">Reporting Observer</a></p></li>
+<li><p><a class="reference internal" href="#storage" id="id18">Storage</a></p></li>
+<li><p><a class="reference internal" href="#accessibility" id="id19">Accessibility</a></p></li>
+<li><p><a class="reference internal" href="#secure-payment-confirmation" id="id20">Secure Payment Confirmation</a></p></li>
+<li><p><a class="reference internal" href="#federated-credential-management" id="id21">Federated Credential Management</a></p></li>
+<li><p><a class="reference internal" href="#sensors" id="id22">Sensors</a></p></li>
+<li><p><a class="reference internal" href="#device-posture" id="id23">Device Posture</a></p></li>
+<li><p><a class="reference internal" href="#bounce-tracking-mitigations" id="id24">Bounce Tracking Mitigations</a></p></li>
+<li><p><a class="reference internal" href="#compute-pressure" id="id25">Compute Pressure</a></p></li>
+<li><p><a class="reference internal" href="#viewport-segments" id="id26">Viewport Segments</a></p></li>
+<li><p><a class="reference internal" href="#global-privacy-control" id="id27">Global Privacy Control</a></p></li>
+<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id28">Using test_driver in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#actions" id="id29">Actions</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id2" id="id29">Markup</a></p></li>
-<li><p><a class="reference internal" href="#id3" id="id30">API</a></p></li>
-<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id31">Using in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id30">Markup</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id31">API</a></p></li>
+<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id32">Using in other browsing contexts</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#log" id="id32">Log</a></p>
+<li><p><a class="reference internal" href="#log" id="id33">Log</a></p>
 <ul>
-<li><p><a class="reference internal" href="#entry-added" id="id33">Entry added</a></p></li>
+<li><p><a class="reference internal" href="#entry-added" id="id34">Entry added</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#bluetooth" id="id34">Bluetooth</a></p></li>
-<li><p><a class="reference internal" href="#emulation" id="id35">Emulation</a></p></li>
+<li><p><a class="reference internal" href="#bluetooth" id="id35">Bluetooth</a></p></li>
+<li><p><a class="reference internal" href="#emulation" id="id36">Emulation</a></p></li>
 </ul>
 </li>
 </ul>
@@ -265,6 +266,32 @@ a provided function.</p>
 <span class="p">});</span>
 </pre></div>
 </div>
+</dd></dl>
+
+</section>
+<section id="browsing-context">
+<h3>Browsing Context<a class="headerlink" href="#browsing-context" title="Link to this heading">¶</a></h3>
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.create_window">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">create_window</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.create_window" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a new top-level browsing context, as if the user requested
+a new tab or window from the browser.</p>
+<p>Matches the behaviour of the <a class="reference external" href="https://www.w3.org/TR/webdriver/#new-window">New Window</a>
+WebDriver command.</p>
+<p>The new window is opened with <cite>about:blank</cite>,
+the test does not get a <code class="docutils literal notranslate"><span class="pre">WindowProxy</span></code> for it,
+and the returned WebDriver window handle is its only identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> (<em>String</em>) – Type hint for the new browsing context, either “tab” or “window” or null for the implementation default.</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null to use the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled with the WebDriver window handle (a string) of the new browsing context, or rejected if the WebDriver command errors.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

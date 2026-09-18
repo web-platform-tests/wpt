@@ -21,12 +21,10 @@ class ApiWrapper(Generic[ApiNode, ApiEvent], abc.ABC):
         self.test_url: Optional[str] = None
         self.timeout: float = timeout
 
-        self.root = self._find_browser()
-
-        if not self.root:
-            raise Exception(
-                f"Couldn't find browser {self.product_name} in accessibility API {self.api_name}."
-            )
+        self.root = self._poll_for(
+            self._find_browser,
+            f"Couldn't find browser {self.product_name} in accessibility API {self.api_name}.",
+        )
 
     @property
     @abc.abstractmethod

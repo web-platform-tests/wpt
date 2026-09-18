@@ -183,6 +183,7 @@ class Emulation(BidiModule):
             "userContexts": user_contexts,
         }
 
+    @command
     def set_media_features_override(
             self,
             features: Nullable[Dict[str, Any]],

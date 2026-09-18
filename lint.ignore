@@ -131,6 +131,7 @@ PRINT STATEMENT: webdriver/tests/support/classic/helpers.py
 # semi-legitimate use of console.*
 CONSOLE: console/*
 CONSOLE: common/gc.js
+CONSOLE: cross-origin-storage/resources/phl-listed-resource.js
 CONSOLE: resources/check-layout-th.js
 CONSOLE: resources/chromium/*
 CONSOLE: resources/testharness.js
@@ -169,6 +170,7 @@ PARSE-FAILED: custom-elements/xhtml-crash.xhtml
 SET TIMEOUT: *-manual.*
 SET TIMEOUT: annotation-model/scripts/ajv.min.js
 SET TIMEOUT: apng/animated-png-timeout.html
+SET TIMEOUT: cross-origin-storage/resources/phl-listed-resource.js
 SET TIMEOUT: avif/animated-avif-timeout.html
 SET TIMEOUT: jpegxl/animated-img-timeout.html
 SET TIMEOUT: cookies/resources/testharness-helpers.js

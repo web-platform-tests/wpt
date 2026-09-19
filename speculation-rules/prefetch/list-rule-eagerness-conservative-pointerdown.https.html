@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Speculation rules: moderate eagerness list rule prefetches on hover</title>
+<title>Speculation rules: conservative eagerness list rule prefetches on pointer down</title>
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -18,23 +18,35 @@
   promise_test(async t => {
     const url = getPrefetchUrl();
     const link = addLink(url);
-    // Give the link a box so the pointer has something to hover.
-    link.textContent = 'hover me';
+    // Give the link a box so the pointer has something to press.
+    link.textContent = 'press me';
 
     insertSpeculationRules({
-      prefetch: [{ source: 'list', urls: [url], eagerness: 'moderate' }]
+      prefetch: [{ source: 'list', urls: [url], eagerness: 'conservative' }]
     });
     await new Promise(resolve => t.step_timeout(resolve, 2000));
     assert_equals(await isUrlPrefetched(url), 0,
-        'moderate candidate must not be prefetched before hover');
+        'conservative candidate must not be prefetched before any interaction');
 
     await new test_driver.Actions()
         .addPointer('mouse')
         .pointerMove(0, 0, { origin: link })
         .send();
+    await new Promise(resolve => t.step_timeout(resolve, 2000));
+    assert_equals(await isUrlPrefetched(url), 0,
+        'conservative candidate must not be prefetched by hover alone');
+
+    // Release the pointer away from the link so that no click navigates.
+    await new test_driver.Actions()
+        .addPointer('mouse')
+        .pointerMove(0, 0, { origin: link })
+        .pointerDown()
+        .pointerMove(0, 0)
+        .pointerUp()
+        .send();
 
     assert_equals(await waitUntilPrefetched(t, url, 2000), 1,
-        'moderate candidate must be prefetched after hovering the link');
-  }, 'moderate eagerness list rule prefetches after hovering the link');
+        'conservative candidate must be prefetched after pointer down on the link');
+  }, 'conservative eagerness list rule prefetches after pointer down on the link');
 </script>
 </body>

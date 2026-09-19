@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Speculation rules: moderate eagerness list rule prefetches on hover</title>
+<title>Speculation rules: eager eagerness list rule prefetches on hover</title>
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -22,11 +22,11 @@
     link.textContent = 'hover me';
 
     insertSpeculationRules({
-      prefetch: [{ source: 'list', urls: [url], eagerness: 'moderate' }]
+      prefetch: [{ source: 'list', urls: [url], eagerness: 'eager' }]
     });
     await new Promise(resolve => t.step_timeout(resolve, 2000));
     assert_equals(await isUrlPrefetched(url), 0,
-        'moderate candidate must not be prefetched before hover');
+        'eager candidate must not be prefetched before hover');
 
     await new test_driver.Actions()
         .addPointer('mouse')
@@ -34,7 +34,7 @@
         .send();
 
     assert_equals(await waitUntilPrefetched(t, url, 2000), 1,
-        'moderate candidate must be prefetched after hovering the link');
-  }, 'moderate eagerness list rule prefetches after hovering the link');
+        'eager candidate must be prefetched after hovering the link');
+  }, 'eager eagerness list rule prefetches after hovering the link');
 </script>
 </body>

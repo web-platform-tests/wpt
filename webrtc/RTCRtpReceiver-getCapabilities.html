@@ -24,16 +24,16 @@
   test(() => {
     const capabilities = RTCRtpReceiver.getCapabilities('audio');
     validateRtpCapabilities(capabilities);
-  }, `RTCRtpSender.getCapabilities('audio') should return RTCRtpCapabilities dictionary`);
+  }, `RTCRtpReceiver.getCapabilities('audio') should return RTCRtpCapabilities dictionary`);
 
   test(() => {
     const capabilities = RTCRtpReceiver.getCapabilities('video');
     validateRtpCapabilities(capabilities);
-  }, `RTCRtpSender.getCapabilities('video') should return RTCRtpCapabilities dictionary`);
+  }, `RTCRtpReceiver.getCapabilities('video') should return RTCRtpCapabilities dictionary`);
 
   test(() => {
     const capabilities = RTCRtpReceiver.getCapabilities('dummy');
     assert_equals(capabilities, null);
-  }, `RTCRtpSender.getCapabilities('dummy') should return null`);
+  }, `RTCRtpReceiver.getCapabilities('dummy') should return null`);
 
  </script>

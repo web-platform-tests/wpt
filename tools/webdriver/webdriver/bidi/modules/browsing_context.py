@@ -38,6 +38,18 @@ class FormatOptions(Dict[str, Any]):
             self["quality"] = quality
 
 
+class ImageSizeOptions(Dict[str, Any]):
+    def __init__(
+        self,
+        max_height: Optional[int] = None,
+        max_width: Optional[int] = None,
+    ):
+        if max_height is not None:
+            self["maxHeight"] = max_height
+        if max_width is not None:
+            self["maxWidth"] = max_width
+
+
 class VideoOptions(Dict[str, Any]):
     def __init__(
         self,
@@ -65,6 +77,7 @@ class BrowsingContext(BidiModule):
         clip: Optional[ClipOptions] = None,
         origin: Optional[OriginOptions] = None,
         format: Optional[FormatOptions] = None,
+        image_size: Optional[ImageSizeOptions] = None,
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {"context": context}
 
@@ -74,6 +87,8 @@ class BrowsingContext(BidiModule):
             params["clip"] = clip
         if origin is not None:
             params["origin"] = origin
+        if image_size is not None:
+            params["imageSize"] = image_size
 
         return params
 

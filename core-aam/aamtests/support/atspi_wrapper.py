@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any, Callable, Optional, List, Dict
 
 import gi
+import time
 
 gi.require_version("Atspi", "2.0")
 from gi.repository import Atspi, GLib
@@ -241,6 +242,16 @@ class AtspiWrapper(ApiWrapper[Atspi.Accessible, Atspi.Event]):
         try:
             # Main loop context.
             context = GLib.MainContext.default()
+
+            # Make sure we're ready to process events to avoid flaky results.
+            stop = time.time() + 0.05
+            while time.time() < stop:
+                while context.iteration(False):
+                    pass
+                time.sleep(0.005)
+            # Discard any matched event if any, as we haven't run the action yet.
+            matched.clear()
+
             def get_event() -> Optional[Atspi.Event]:
                 # Check if events are ready to be processed.
                 while context.iteration(False):

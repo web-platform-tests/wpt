@@ -34,6 +34,11 @@ tests = [
     ["hsl(none 100% 50%)", "hsl(none 100 50)"],
     ["hsl(0 100% 50%)", "rgb(255, 0, 0)"],
 
+    // G = 42.5, this should be rounded UP to 43, not down to 42.
+    ["hsl(10 100% 50%)", "rgb(255, 43, 0)"],
+    ["hsl(0 0% 49.99999%)", "rgb(127, 127, 127)"],
+    ["hsl(0 0% 49.999999%)", "rgb(128, 128, 128)"],
+
     // Test with number components.
     ["hsl(120 30 50)", "rgb(89, 166, 89)"],
     ["hsl(120 30 50 / 0.5)", "rgba(89, 166, 89, 0.5)"],

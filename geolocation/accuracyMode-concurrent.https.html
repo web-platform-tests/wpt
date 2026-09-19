@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+    const latitude = 51.478;
+    const longitude = -0.166;
+    const accuracy = 100;
+    const altitude = 53;
+    const altitudeAccuracy = 30;
+    const heading = 10.4;
+    const speed = 20.7;
+
+    async function override_geolocation(t) {
+        t.add_cleanup(async () => {
+            await test_driver.bidi.emulation.set_geolocation_override(
+                {coordinates: null});
+        });
+
+        await test_driver.bidi.emulation.set_geolocation_override({
+            coordinates: {latitude, longitude, accuracy, altitude,
+                          altitudeAccuracy, heading, speed}
+        });
+    }
+
+    // The coordinates of an approximate position are not compared to the
+    // emulated values: an approximate position is "coarsened to a larger area",
+    // and "What constitutes a coarsened area is left to the underlying system,
+    // which in turn can vary per jurisdiction", so an implementation that
+    // coarsens cannot be required to return them unchanged. They must still be
+    // present.
+    function assert_approximate_coords(coords, description) {
+        assert_equals(typeof coords.latitude, "number",
+                      `${description}: latitude must be a number`);
+        assert_equals(typeof coords.longitude, "number",
+                      `${description}: longitude must be a number`);
+        assert_equals(typeof coords.accuracy, "number",
+                      `${description}: accuracy must be a number`);
+        assert_equals(coords.altitude, null, `${description}: altitude`);
+        assert_equals(coords.altitudeAccuracy, null,
+                      `${description}: altitudeAccuracy`);
+        assert_equals(coords.heading, null, `${description}: heading`);
+        assert_equals(coords.speed, null, `${description}: speed`);
+    }
+
+    function assert_precise_coords(coords, description) {
+        assert_equals(coords.latitude, latitude, `${description}: latitude`);
+        assert_equals(coords.longitude, longitude, `${description}: longitude`);
+        assert_equals(coords.accuracy, accuracy, `${description}: accuracy`);
+        assert_equals(coords.altitude, altitude, `${description}: altitude`);
+        assert_equals(coords.altitudeAccuracy, altitudeAccuracy,
+                      `${description}: altitudeAccuracy`);
+        assert_equals(coords.heading, heading, `${description}: heading`);
+        assert_equals(coords.speed, speed, `${description}: speed`);
+    }
+
+    // Starts a watch with the given `options`, collecting the coordinates of
+    // every position reported into the returned `positions` array.
+    // `firstPosition` resolves with the coordinates of the first reported
+    // position.
+    function start_watch(t, options) {
+        const positions = [];
+        const firstPosition = new Promise((resolve, reject) => {
+            const watchId = window.navigator.geolocation.watchPosition(
+                position => {
+                    const coords = position.coords.toJSON();
+                    positions.push(coords);
+                    resolve(coords);
+                },
+                reject,
+                options
+            );
+            t.add_cleanup(
+                () => window.navigator.geolocation.clearWatch(watchId));
+        });
+        return {positions, firstPosition};
+    }
+
+    function get_current_position(options) {
+        return new Promise((resolve, reject) => {
+            window.navigator.geolocation.getCurrentPosition(
+                position => resolve(position.coords.toJSON()),
+                reject,
+                options
+            );
+        });
+    }
+
+    promise_setup(async () => {
+        // Ensure permission is granted before proceeding.
+        await test_driver.bidi.permissions.set_permission({
+            descriptor: {name: "geolocation"},
+            state: "granted",
+        });
+    });
+
+    promise_test(async (t) => {
+        await override_geolocation(t);
+
+        const watch = start_watch(t, {accuracyMode: "approximate"});
+        assert_approximate_coords(
+            await watch.firstPosition, "first watched position");
+
+        const position = await get_current_position(
+            {accuracyMode: "precise", enableHighAccuracy: true});
+        assert_precise_coords(position, "getCurrentPosition position");
+
+        // A concurrent precise request must not make the approximate watch
+        // precise.
+        for (const coords of watch.positions) {
+            assert_approximate_coords(coords, "watched position");
+        }
+    }, 'getCurrentPosition with accuracyMode: "precise" while watching with ' +
+        'accuracyMode: "approximate"');
+
+    promise_test(async (t) => {
+        await override_geolocation(t);
+
+        const watch = start_watch(
+            t, {accuracyMode: "precise", enableHighAccuracy: true});
+        assert_precise_coords(
+            await watch.firstPosition, "first watched position");
+
+        const position =
+            await get_current_position({accuracyMode: "approximate"});
+        assert_approximate_coords(position, "getCurrentPosition position");
+
+        // A concurrent approximate request must not make the precise watch
+        // approximate.
+        for (const coords of watch.positions) {
+            assert_precise_coords(coords, "watched position");
+        }
+    }, 'getCurrentPosition with accuracyMode: "approximate" while watching ' +
+        'with accuracyMode: "precise"');
+
+    promise_test(async (t) => {
+        await override_geolocation(t);
+
+        const approximateWatch = start_watch(t, {accuracyMode: "approximate"});
+        const preciseWatch = start_watch(
+            t, {accuracyMode: "precise", enableHighAccuracy: true});
+
+        const [approximateCoords, preciseCoords] = await Promise.all(
+            [approximateWatch.firstPosition, preciseWatch.firstPosition]);
+        assert_approximate_coords(
+            approximateCoords, "first position of the approximate watch");
+        assert_precise_coords(
+            preciseCoords, "first position of the precise watch");
+
+        // Neither watch must be affected by the accuracy mode of the other one.
+        for (const coords of approximateWatch.positions) {
+            assert_approximate_coords(
+                coords, "position of the approximate watch");
+        }
+        for (const coords of preciseWatch.positions) {
+            assert_precise_coords(coords, "position of the precise watch");
+        }
+    }, 'Concurrent watchPosition with accuracyMode: "approximate" and ' +
+        'accuracyMode: "precise"');
+</script>

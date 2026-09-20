@@ -25,6 +25,10 @@ test(function() {
 }, 'Parsing of id attribute');
 
 test(function() {
+    assert_true(doc instanceof HTMLDocument);
+}, 'should be an HTMLDocument');
+
+test(function() {
     assert_equals(doc.contentType, "text/html")
 }, 'contentType');
 

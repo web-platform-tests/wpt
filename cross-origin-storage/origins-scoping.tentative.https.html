@@ -218,22 +218,20 @@ promise_test(async t => {
 }, 'resource visibility upgrade: an origin other than the original storer can widen an entry\'s origins list, as long as it supplies the correct bytes');
 
 promise_test(async t => {
-  // origins: [] is a real, explicit empty list -- not shorthand for
-  // "omitted". Per "determine COS disclosure", an omitted/null origins
-  // value falls through to a same-site check (step 7); an explicit list,
-  // even an empty one, is checked for exact membership (step 5) and can
-  // never contain anything, so an empty list authorizes nobody but the
-  // storer -- not even a same-site sibling, unlike the omitted case tested
-  // above ("same-site tier: a same-site sibling origin is authorized").
+  // origins: [] adds no recipient, but it does not withhold the entry from the
+  // writer's own site either: per "determine COS disclosure", every entry
+  // grants the origins same site with its storing origins, whatever its
+  // explicit origins list holds. An explicit empty list is therefore
+  // equivalent to omitting origins, as the same-site tier tests above do.
   const {hash, content} = await cosStore(
-    cosUniqueContent('empty-origins-list-not-same-as-omitted'), {origins: []});
+    cosUniqueContent('empty-origins-list-keeps-same-site'), {origins: []});
   const {ctx} = await cosOpenRemoteContext(cosNextSameSiteOrigin());
   const result = await cosRemoteRead(ctx, hash);
-  cosAssertNotDisclosed(result,
+  cosAssertDisclosableOrGreased(result, content,
     'a same-site sibling reading an entry stored with an explicit empty origins list ([])');
   // The storer itself must still be able to read its own write back.
   assert_equals(await cosReadText(hash), content);
-}, 'list tier: origins: [] is a real (empty) list, not a same-site default -- a same-site sibling is not authorized under it, unlike an omitted origins value');
+}, 'list tier: origins: [] keeps the same-site baseline -- a same-site sibling is authorized under it, as with an omitted origins value');
 
 promise_test(async t => {
   // "validate a COS request" explicitly treats a single string as a list

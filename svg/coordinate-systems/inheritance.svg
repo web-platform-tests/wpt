@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:h="http://www.w3.org/1999/xhtml"
+     width="800px" height="800px">
+  <title>Inheritance of Coordinate Systems and Transformations properties</title>
+  <metadata>
+    <h:link rel="help" href="https://svgwg.org/svg2-draft/coords.html#VectorEffectProperty"/>
+    <h:meta name="assert" content="vector-effect does not inherit."/>
+    <h:meta name="assert" content="vector-effect has initial value 'none'."/>
+  </metadata>
+  <g id="container">
+    <g id="target"></g>
+  </g>
+  <h:script src="/resources/testharness.js"/>
+  <h:script src="/resources/testharnessreport.js"/>
+  <h:script src="/css/support/inheritance-testcommon.js"/>
+  <script><![CDATA[
+
+assert_not_inherited('vector-effect', 'none', 'non-scaling-stroke');
+
+  ]]></script>
+</svg>

@@ -111,8 +111,8 @@ jobs:
             --total-chunks "$TOTAL_CHUNKS" \
             --chunk-type hash \
             ${TEST_TYPE:+--test-types "$TEST_TYPE"} \
-            --log-wptreport ${{ runner.temp }}/wpt_report_"$CURRENT_CHUNK".json \
-            --log-wptscreenshot ${{ runner.temp }}/wpt_screenshot_"$CURRENT_CHUNK".txt \
+            --log-wptreport ${{ runner.temp }}/wpt_report_"${TEST_TYPE:+${TEST_TYPE}_}$CURRENT_CHUNK".json \
+            --log-wptscreenshot ${{ runner.temp }}/wpt_screenshot_"${TEST_TYPE:+${TEST_TYPE}_}$CURRENT_CHUNK".txt \
             --log-mach - \
             --log-mach-level info \
             --channel ${{ inputs.safari-technology-preview && 'preview' || 'stable' }} \

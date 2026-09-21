@@ -1423,6 +1423,33 @@
         },
 
         /**
+         * Creates a new top-level browsing context, as if the user requested
+         * a new tab or window from the browser.
+         *
+         * Matches the behaviour of the `New Window
+         * <https://www.w3.org/TR/webdriver/#new-window>`_
+         * WebDriver command.
+         *
+         * The new window is opened with `about:blank`,
+         * the test does not get a ``WindowProxy`` for it,
+         * and the returned WebDriver window handle is its only identifier.
+         *
+         * @param {String} type - Type hint for the new browsing context,
+         *                        either "tab" or "window" or null for the
+         *                        implementation default.
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null to use the current
+         *                                browsing context.
+         *
+         * @returns {Promise} fulfilled with the WebDriver window handle
+         *                    (a string) of the new browsing context, or
+         *                    rejected if the WebDriver command errors.
+         */
+        create_window: function(type=null, context=null) {
+            return window.test_driver_internal.create_window(type, context);
+        },
+
+        /**
          * Minimizes the browser window.
          *
          * Matches the behaviour of the `Minimize
@@ -2377,6 +2404,10 @@
         /**
          * Gets the current globally-applied privacy control status
          *
+         * Matches the `Get Global Privacy Control
+         * <https://www.w3.org/TR/gpc/#get-global-privacy-control>`_
+         * WebDriver command.
+         *
          * @returns {Promise} Fulfils with an object with boolean property `gpc`
          *                    that encodes the current "do not sell or share"
          *                    signal the browser is configured to convey.
@@ -2386,11 +2417,15 @@
         },
 
         /**
-         * Gets the current globally-applied privacy control status
+         * Sets and then gets the current globally-applied privacy control status
          *
-         * @param {bool} newValue - The a boolean that is true if the browers
-         *                          should convey a "do not sell or share" signal
-         *                          and false otherwise
+         * Matches the `Set Global Privacy Control
+         * <https://www.w3.org/TR/gpc/#set-global-privacy-control>`_
+         * WebDriver command.
+         *
+         * @param {boolean} newValue - A boolean that is true if the browser
+         *                             should convey a "do not sell or share" signal
+         *                             and false otherwise
          *
          * @returns {Promise} Fulfils with an object with boolean property `gpc`
          *                    that encodes the new "do not sell or share"
@@ -2634,6 +2669,10 @@
 
         async freeze(context=null) {
             throw new Error("freeze() is not implemented by testdriver-vendor.js");
+        },
+
+        async create_window(type=null, context=null) {
+            throw new Error("create_window() is not implemented by testdriver-vendor.js");
         },
 
         async minimize_window(context=null) {

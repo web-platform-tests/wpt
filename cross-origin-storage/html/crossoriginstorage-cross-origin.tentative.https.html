@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>Cross-Origin Storage: declarative HTML integration, cross-origin</title>
+<title>Cross-Origin Storage: HTML integration, cross-origin</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -90,7 +90,7 @@ promise_test(async t => {
   if (result.ok) {
     assert_equals(result.color, 'rgb(1, 2, 3)');
   }
-}, 'declarative HTML, cross-origin: a "*"-scoped <link> may be served from COS to a cross-site origin');
+}, 'HTML, cross-origin: a "*"-scoped <link> may be served from COS to a cross-site origin');
 
 promise_test(async t => {
   const integrity = await storeDeclarativelyHere(t, {crossoriginstorage: ''});
@@ -98,7 +98,7 @@ promise_test(async t => {
   const result = await remoteDeclarativeProbe(ctx, integrity, '');
   assert_false(result.ok,
     'a same-site-scoped resource must never be disclosed to a cross-site origin, deterministically');
-}, 'declarative HTML, cross-origin: a same-site-scoped <link> is never served from COS to a cross-site origin');
+}, 'HTML, cross-origin: a same-site-scoped <link> is never served from COS to a cross-site origin');
 
 promise_test(async t => {
   const {ctx} = await cosOpenRemoteContext(cosNextSameSiteOrigin());
@@ -112,6 +112,6 @@ promise_test(async t => {
     return;
   }
   assert_equals(result.color, 'rgb(1, 2, 3)');
-}, 'declarative HTML, cross-origin: a list-scoped <link> is authorized for an explicitly-listed origin');
+}, 'HTML, cross-origin: a list-scoped <link> is authorized for an explicitly-listed origin');
 </script>
 </body>

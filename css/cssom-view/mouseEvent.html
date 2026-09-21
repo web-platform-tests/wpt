@@ -1,42 +1,100 @@
 <!doctype html>
-<meta charset=utf-8>
-<head>
-<title>CSSOM MouseEvent tests</title>
-<div style="background:lightblue; height:10000px">
-  Hello
-</div>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script>
-test(function () {
-    var mouseEvent = new MouseEvent('mousedown', {clientX: 10, clientY: 20});
-    assert_equals(mouseEvent.x, 10);
-    assert_equals(mouseEvent.y, 20);
-    mouseEvent = new MouseEvent('mousedown', {clientX: 30, clientY: 40});
-    assert_equals(mouseEvent.x, 30);
-    assert_equals(mouseEvent.y, 40);
-}, 'MouseEvent\'s x and y must be equal to clientX and clientY.');
+<html style="margin: 0; padding: 0">
+    <head>
+        <meta charset=utf-8>
+        <title>CSSOM MouseEvent tests</title>
+    </head>
+    <body style="margin:0; padding: 20px">
+        <div style="background:lightblue; height:10000px" id="clicktarget">
+            Hello
+        </div>
+        <script src=/resources/testharness.js></script>
+        <script src=/resources/testharnessreport.js></script>
+        <script>
+        var clickTarget = document.getElementById("clicktarget");
+        test(function () {
+            scroll(0, 0);
+            var mouseEvent = new MouseEvent('mousedown', {clientX: 10, clientY: 20});
+            assert_equals(mouseEvent.x, 10);
+            assert_equals(mouseEvent.y, 20);
+            mouseEvent = new MouseEvent('mousedown', {clientX: 30, clientY: 40});
+            assert_equals(mouseEvent.x, 30);
+            assert_equals(mouseEvent.y, 40);
+        }, 'MouseEvent\'s x and y must be equal to clientX and clientY.');
 
-test(function () {
-    var mouseEvent1 = new MouseEvent('mousedown', {clientX: 10, clientY: 20});
-    assert_equals(mouseEvent1.pageX, 10);
-    assert_equals(mouseEvent1.pageY, 20);
-    scrollBy(0, 5000);
-    assert_equals(mouseEvent1.pageX, 10);
-    assert_equals(mouseEvent1.pageY, 5020);
+        test(function () {
+            scroll(0, 0);
+            var mouseEvent1 = new MouseEvent('mousedown', {clientX: 10, clientY: 20});
+            assert_equals(mouseEvent1.pageX, 10);
+            assert_equals(mouseEvent1.pageY, 20);
+            scroll(0, 5000);
+            assert_equals(mouseEvent1.pageX, 10);
+            assert_equals(mouseEvent1.pageY, 5020);
 
-    var mouseEvent2 = new MouseEvent('mousedown', {clientX: 10, clientY: 20});
-    assert_equals(mouseEvent2.pageX, 10);
-    assert_equals(mouseEvent2.pageY, 5020);
-}, 'MouseEvent\'s pageX and pageY attributes should be the sum of the scroll offset and clientX/clientY');
+            var mouseEvent2 = new MouseEvent('mousedown', {clientX: 10, clientY: 20});
+            assert_equals(mouseEvent2.pageX, 10);
+            assert_equals(mouseEvent2.pageY, 5020);
+        }, 'MouseEvent\'s pageX and pageY attributes should be the sum of the scroll offset and clientX/clientY');
 
-test(function () {
-    var mouseEvent = new MouseEvent('mousedown', {clientX: 10, clientY: 20});
-    assert_equals(mouseEvent.offsetX, mouseEvent.pageX);
-    assert_equals(mouseEvent.offsetY, mouseEvent.pageY);
-    scrollBy(0, 5000);
-    assert_equals(mouseEvent.offsetX, mouseEvent.pageX);
-    assert_equals(mouseEvent.offsetY, mouseEvent.pageY);
-}, 'MouseEvent\'s offsetX/offsetY attributes should be the same value as its pageX/pageY attributes.');
-</script>
-</head>
+        test(function () {
+            scroll(0, 0);
+            var mouseEvent = new MouseEvent('mousedown', {clientX: 10, clientY: 20});
+            assert_equals(mouseEvent.offsetX, mouseEvent.pageX);
+            assert_equals(mouseEvent.offsetY, mouseEvent.pageY);
+            scroll(0, 5000);
+            assert_equals(mouseEvent.offsetX, mouseEvent.pageX);
+            assert_equals(mouseEvent.offsetY, mouseEvent.pageY);
+        }, 'MouseEvent\'s offsetX/offsetY attributes should be the same value as its pageX/pageY attributes.');
+
+        async_test(t => {
+            scroll(0, 5000);
+            var mouseEvent = new MouseEvent('click', {clientX: 30, clientY: 40});
+            const callback = t.step_func_done((event) => {
+                clickTarget.removeEventListener('click', callback);
+                assert_equals(mouseEvent.pageX, 30);
+                assert_equals(mouseEvent.pageY, 5040);
+            })
+            clickTarget.addEventListener("click", callback);
+            clickTarget.dispatchEvent(mouseEvent);
+        }, 'Dispatched MouseEvent\'s pageX/pageY should be the document-relative offset of the event position');
+
+        async_test(t => {
+            scroll(0, 5000);
+            var mouseEvent = new MouseEvent('click', {clientX: 30, clientY: 40});
+            const callback = t.step_func_done((event) => {
+                clickTarget.removeEventListener('click', callback);
+                scroll(0, 6000);
+                assert_equals(mouseEvent.pageX, 30);
+                assert_equals(mouseEvent.pageY, 5040);
+            })
+            clickTarget.addEventListener("click", callback);
+            clickTarget.dispatchEvent(mouseEvent);
+        }, 'Dispatched MouseEvent\'s pageX/pageY should not change if the scroll offset changes after the event occurs');
+
+        async_test(t => {
+            scroll(0, 5000);
+            var mouseEvent = new MouseEvent('click', {clientX: 30, clientY: 40});
+            const callback = t.step_func_done((event) => {
+                clickTarget.removeEventListener('click', callback);
+                assert_equals(mouseEvent.offsetX, 10);
+                assert_equals(mouseEvent.offsetY, 5020);
+            })
+            clickTarget.addEventListener("click", callback);
+            clickTarget.dispatchEvent(mouseEvent);
+        }, 'Dispatched MouseEvent\'s offsetX/offsetY should be the target-relative offset of the event position');
+
+        async_test(t => {
+            scroll(0, 5000);
+            var mouseEvent = new MouseEvent('click', {clientX: 30, clientY: 40});
+            const callback = t.step_func_done((event) => {
+                clickTarget.removeEventListener('click', callback);
+                scroll(0, 6000);
+                assert_equals(mouseEvent.offsetX, 10);
+                assert_equals(mouseEvent.offsetY, 5020);
+            })
+            clickTarget.addEventListener("click", callback);
+            clickTarget.dispatchEvent(mouseEvent);
+        }, 'Dispatched MouseEvent\'s offsetX/offsetY should not change if the scroll offset changes after the event occurs');
+        </script>
+    </body>
+</html>

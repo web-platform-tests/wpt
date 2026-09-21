@@ -1,4 +1,4 @@
-// META: global=window,worker
+// META: global=window,dedicatedworker,sharedworker
 // META: script=resources/helpers.js
 //
 // Tests what is testable about storage management without knowing an

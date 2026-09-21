@@ -1,4 +1,4 @@
-// META: global=window,worker
+// META: global=window,dedicatedworker,sharedworker
 // META: script=resources/helpers.js
 //
 // COS's "verify and store" steps run whenever a FileSystemWritableFileStream

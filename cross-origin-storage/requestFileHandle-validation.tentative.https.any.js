@@ -1,4 +1,4 @@
-// META: global=window,worker
+// META: global=window,dedicatedworker,sharedworker
 // META: script=resources/helpers.js
 //
 // Tests "validate a COS request" (the synchronous-ish rejection checks that

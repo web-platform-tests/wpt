@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Test that an image as part of a list of generated content is treated as a content-list</title>
+<link rel="author" title="Mike Bremford" href="https://bfo.com/">
+<link rel="help" href="https://www.w3.org/TR/css-content-3/#content-property">
+<link rel="help" href="https://www.w3.org/TR/css-content-3/#typedef-content-content-list">
+<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<meta name="assert" content="If generated content is not a single image, it is part of a 'content-list' and becomes an anonymous inline child of the node. As an inline child it is not sized by its parent"/>
+<style>
+div::before {
+    display: inline-block;
+    width: 10px;
+    content: "" url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100%' height='100%' fill='green'/></svg>");
+}
+div {
+    width: 100px;
+    height: 100px;
+    background-color: red;
+}
+</style>
+</head>
+<body>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div></div>
+</body>
+</html>

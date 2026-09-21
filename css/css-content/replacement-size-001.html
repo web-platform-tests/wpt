@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Test that a single generated-content image is treated as a content-replacement</title>
+<link rel="author" title="Mike Bremford" href="https://bfo.com/">
+<link rel="help" href="https://www.w3.org/TR/css-content-3/#typedef-content-content-replacement">
+<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<meta name="assert" content="If a node's generated content is a single image it is 'content-replacement'. It becomes the replaced content of the node and, if the node is inline-block, is sized by the width/height properties"/>
+<style>
+div::before {
+    display: inline-block;
+    width: 100px;
+    content: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><rect width='100%' height='100%' fill='green'/></svg>");
+}
+div {
+    width: 100px;
+    height: 100px;
+    background-color: red;
+}
+</style>
+</head>
+<body>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div></div>
+</body>
+</html>

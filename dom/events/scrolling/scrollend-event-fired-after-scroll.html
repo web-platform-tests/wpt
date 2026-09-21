@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
+<meta name="variant" content="?include=programmatic-scroll"/>
+<meta name="variant" content="?include=wheel-scroll"/>
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1881974">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/subset-tests-by-key.js"></script>
+<script src="scroll_support.js"></script>
+<style>
+#scroller {
+  width: 500px;
+  height: 500px;
+  overflow: scroll;
+  border: solid black 5px;
+}
+#spacer {
+  width: 5000px;
+  height: 5000px;
+}
+</style>
+
+<body style="margin:0" onload=runTests()>
+  <div id="scroller">
+    <div id="spacer"></div>
+  </div>
+</body>
+
+<script>
+
+let scroller = document.getElementById("scroller");
+let scroll_arrived_after_scroll_end = false;
+let scroll_end_event_count = 0;
+let scroll_event_count = 0;
+
+scroller.addEventListener("scroll", () => {
+  scroll_event_count += 1;
+  if (scroll_end_event_count != 0) {
+    scroll_arrived_after_scroll_end = true;
+  }
+});
+
+scroller.addEventListener("scrollend", () => {
+  scroll_end_event_count += 1
+});
+
+function runTests() {
+  async function wheelScroll() {
+    await new test_driver.Actions()
+      .addWheel("wheel1")
+      .scroll(50, 50, 0, 100, {origin: scroller})
+      .send();
+  }
+
+  async function programmaticScroll() {
+    spacer.scrollIntoView({behavior: "smooth", block: "end", inline: "end"});
+  }
+
+  function promiseFrame() {
+    return new Promise((resolve) => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(resolve);
+      });
+    });
+  }
+
+  async function runTestForScrollFn(runScroll, t) {
+    await waitForCompositorReady();
+    await promiseFrame();
+
+    assert_equals(scroller.scrollTop, 0, "Scroller has not scrolled");
+
+    await runScroll();
+
+    await waitFor(() => { return scroll_end_event_count != 0; });
+
+    assert_true(scroll_event_count > 0, "A scroll event has fired");
+
+    await promiseFrame();
+
+    assert_equals(scroll_end_event_count, 1, "Only one scrollend event was fired");
+    assert_false(scroll_arrived_after_scroll_end,
+                 "No scroll events arrive after the scrollend");
+  }
+
+  subsetTestByKey("wheel-scroll", promise_test,
+                  t => runTestForScrollFn(wheelScroll, t),
+                 "Scrollend event fired after a wheel scroll.");
+
+  subsetTestByKey("programmatic-scroll", promise_test,
+                  t => runTestForScrollFn(programmaticScroll, t),
+                 "Scrollend event fired after a programmatic scroll.");
+}
+</script>

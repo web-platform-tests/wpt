@@ -7,11 +7,12 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <div style="height: 1000vh"></div>
-<video id="video" loading="lazy" muted src="/media/A4.webm?play"></video>
+<video loading="lazy" muted src="/media/A4.webm?play"></video>
 <script>
 const loaded = new Promise(resolve => window.addEventListener("load", resolve));
 
 promise_test(async () => {
+  const video = document.querySelector("video");
   await loaded;
   // By the time the load event fires, the video has been deferred.
   assert_equals(video.readyState, HTMLMediaElement.HAVE_NOTHING,

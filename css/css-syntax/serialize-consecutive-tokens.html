@@ -26,7 +26,15 @@ function testTokenPairs(t1, t2) {
         assert_equals(result.slice(0, t1.length), t1, `Result must start with ${t1}`);
         assert_equals(result.slice(-t2.length), t2, `Result must end with ${t2}`);
         assert_not_equals(result, t1+t2, `Result must have a comment between ${t1} and ${t2}`);
-    }, `Serialization of consecutive ${t1} and ${t2} tokens.`);
+    }, `Serialization of consecutive ${t1} and ${t2} tokens from different var() functions.`);
+
+    test(()=>{
+        b.style.setProperty("--result", `${t1}/**/${t2}`);
+        const result = getComputedStyle(b).getPropertyValue("--result");
+        assert_equals(result.slice(0, t1.length), t1, `Result must start with ${t1}`);
+        assert_equals(result.slice(-t2.length), t2, `Result must end with ${t2}`);
+        assert_not_equals(result, t1+t2, `Result must have a comment between ${t1} and ${t2}`);
+    }, `Serialization of consecutive ${t1} and ${t2} tokens separated by a comment.`);
 }
 testTokenPairs("foo", "bar");
 testTokenPairs("foo", "bar()");

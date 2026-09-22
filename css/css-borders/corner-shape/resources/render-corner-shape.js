@@ -461,11 +461,13 @@ function render(style, ctx, width, height, mode = 'fill') {
     }, `clip-${mode}`);
   }
 
-  const shadow_spread = style['shadow-spread'] || 0;
-  const shadow_offset = [style['shadow-offset-x'] || 0, style['shadow-offset-y'] || 0];
-  if (shadow_offset[0] || shadow_offset[1] || shadow_spread) {
+  const shadow_spread = style['shadow-spread'];
+  const shadow_offset_x = style['shadow-offset-x'];
+  const shadow_offset_y = style['shadow-offset-y'];
+  const has_shadow = shadow_offset_x || shadow_offset_y || shadow_spread;
+  if (has_shadow && style['shadow-position'] !== 'inset') {
     ctx.save();
-    ctx.translate(...shadow_offset);
+    ctx.translate(shadow_offset_x, shadow_offset_y);
     ctx.fillStyle = 'black';
     draw_contoured_path(ctx, style, border_rect, {
       left: -shadow_spread,
@@ -476,21 +478,48 @@ function render(style, ctx, width, height, mode = 'fill') {
     ctx.restore();
   }
 
-  ctx.fillStyle = 'purple';
-  draw_contoured_path(ctx, style, border_rect, {
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0
-  }, mode);
+  const has_border = style['border-left-width'] || style['border-top-width']
+    || style['border-right-width'] || style['border-bottom-width'];
+  if (has_border) {
+    ctx.fillStyle = 'purple';
+    draw_contoured_path(ctx, style, border_rect, {
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0
+    }, mode);
+  }
 
-  ctx.fillStyle = 'yellow';
-  draw_contoured_path(ctx, style, border_rect, {
-    left: style['border-left-width'],
-    top: style['border-top-width'],
-    right: style['border-right-width'],
-    bottom: style['border-bottom-width']
-  }, mode);
+  if (!has_shadow || style['shadow-position'] !== 'inset') {
+    ctx.fillStyle = 'yellow';
+    draw_contoured_path(ctx, style, border_rect, {
+      left: style['border-left-width'],
+      top: style['border-top-width'],
+      right: style['border-right-width'],
+      bottom: style['border-bottom-width']
+    }, mode);
+  } else {
+    ctx.fillStyle = 'black';
+    for (const shadowMode of [mode, `clip-fill`]) {
+      draw_contoured_path(ctx, style, border_rect, {
+        left: style['border-left-width'],
+        top: style['border-top-width'],
+        right: style['border-right-width'],
+        bottom: style['border-bottom-width']
+      }, shadowMode);
+    }
+
+    ctx.save();
+    ctx.translate(shadow_offset_x, shadow_offset_y);
+    ctx.fillStyle = 'yellow';
+    draw_contoured_path(ctx, style, border_rect, {
+      left: style['border-left-width'] + shadow_spread,
+      top: style['border-top-width'] + shadow_spread,
+      right: style['border-right-width'] + shadow_spread,
+      bottom: style['border-bottom-width'] + shadow_spread
+    }, mode);
+    ctx.restore();
+  }
 }
 
 const padding = 100;
@@ -558,7 +587,7 @@ function create_actual(style, width, height) {
   }
 
   div.style.boxShadow =
-    `${style['shadow-offset-x'] || 0}px ${style['shadow-offset-y'] || 0}px 0px ${style['shadow-spread'] || 0}px black`;
+    `${style['shadow-position']} ${style['shadow-offset-x']}px ${style['shadow-offset-y']}px 0px ${style['shadow-spread']}px black`;
 
   div.style.borderRadius = border_radius;
 
@@ -594,8 +623,8 @@ const corner_shape_keywords = new Map([
  */
 function create_element_with_corner_shape(params, mode) {
   const style = Object.fromEntries(params.entries());
-  const width = +(params.get('width') || 200);
-  const height = +(params.get('height') || 100);
+  const width = params.has('width') ? parseFloat(params.get('width')) : 200;
+  const height = params.has('height') ? parseFloat(params.get('height')) : 100;
   for (const prop
     of ['border-left-width', 'border-top-width', 'border-bottom-width',
       'border-right-width']) {
@@ -603,16 +632,15 @@ function create_element_with_corner_shape(params, mode) {
       params.has('border-width') ? parseFloat(params.get('border-width')) : 0;
   }
 
+  style['shadow-position'] = params.get('shadow-position') === 'inset' ? 'inset' : '';
   for (const prop
-    of ['shadow-spread', 'shadow-offset-x',
-      'shadow-offset-y']) {
+    of ['shadow-spread', 'shadow-offset-x', 'shadow-offset-y']) {
     style[prop] = params.has(prop) ? parseFloat(params.get(prop)) : 0;
   }
 
   style['clip-path'] = params.get('clip-path') === 'margin-box' ? 'margin-box' : 'none';
   for (const prop
-    of ['margin-left', 'margin-top', 'margin-bottom',
-      'margin-right']) {
+    of ['margin-left', 'margin-top', 'margin-bottom', 'margin-right']) {
     style[prop] = params.has(prop) ? parseFloat(params.get(prop)) :
       params.has('margin') ? parseFloat(params.get('margin')) : 0;
   }

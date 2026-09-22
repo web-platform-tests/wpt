@@ -6,5 +6,5 @@ rules:
 - XMLSerializer-serializeToString.html: [xml-serializer]
 - xml-serialization.xhtml: [xml-serializer]
 - positional-*: [html-setters]
-- *stream*: [html-streaming-setters]
+- "*stream*": [html-streaming-setters]
 - move-head-during-prepend-before-close-crash.html: [html-streaming-setters]

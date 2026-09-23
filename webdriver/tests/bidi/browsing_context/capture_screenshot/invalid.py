@@ -119,11 +119,16 @@ async def test_params_clip_box_height_invalid_type(bidi_session, top_context, va
         )
 
 
-async def test_params_clip_box_dimensions_invalid_value(bidi_session, top_context):
+@pytest.mark.parametrize(
+    "width,height", [(0, 100), (100, 0), (0, 0)], ids=["x", "y", "x_y"]
+)
+async def test_params_clip_box_dimensions_invalid_value(
+    bidi_session, top_context, width, height
+):
     with pytest.raises(error.UnableToCaptureScreenException):
         await bidi_session.browsing_context.capture_screenshot(
             context=top_context["context"],
-            clip=BoxOptions(x=0, y=0, width=0, height=0),
+            clip=BoxOptions(x=0, y=0, width=width, height=height),
         )
 
 

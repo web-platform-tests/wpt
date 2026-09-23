@@ -53,6 +53,35 @@ class GetAccessibilityPropertiesForElementAction:
         return self.protocol.accessibility.get_accessibility_properties_for_element(element)
 
 
+class SetTextMarkerAction:
+    name = "set_text_marker"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        selector = payload["selector"]
+        type = payload["type"]
+        start = payload["start"]
+        end = payload["end"]
+        element = self.protocol.select.element_by_selector(selector)
+        self.logger.debug("Setting %s text marker on %s at [%s, %s)" % (type, selector, start, end))
+        return self.protocol.text_markers.set_text_marker(element, type, start, end)
+
+
+class ClearTextMarkersAction:
+    name = "clear_text_markers"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("Clearing text markers")
+        return self.protocol.text_markers.clear_text_markers()
+
+
 class GetAllCookiesAction:
     name = "get_all_cookies"
 
@@ -659,6 +688,8 @@ actions = [ClickAction,
            GetComputedRoleAction,
            GetAccessibilityPropertiesForAccessibilityNodeAction,
            GetAccessibilityPropertiesForElementAction,
+           SetTextMarkerAction,
+           ClearTextMarkersAction,
            SendKeysAction,
            MinimizeWindowAction,
            SetWindowRectAction,

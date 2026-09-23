@@ -5,6 +5,3 @@ rules:
 - xml-parse-serialize-roundtrip.html: [domparser]
 - XMLSerializer-serializeToString.html: [xml-serializer]
 - xml-serialization.xhtml: [xml-serializer]
-- tentative/positional-*: [html-setters]
-- tentative/*stream*: [html-streaming-setters]
-- tentative/move-head-during-prepend-before-close-crash.html: [html-streaming-setters]

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Event handlers and event listeners when scripting is disabled for the target</title>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#the-event-handler-processing-algorithm">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#getting-the-current-value-of-the-event-handler">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-n-noscript">
+<link rel="help" href="https://html.spec.whatwg.org/#the-event-handler-processing-algorithm">
+<link rel="help" href="https://html.spec.whatwg.org/#getting-the-current-value-of-the-event-handler">
+<link rel="help" href="https://html.spec.whatwg.org/#concept-n-noscript">
 <link rel="help" href="https://dom.spec.whatwg.org/#concept-event-listener-inner-invoke">
 <link rel="help" href="https://github.com/whatwg/dom/issues/1084">
 <script src="/resources/testharness.js"></script>
@@ -13,12 +13,12 @@
 "use strict";
 
 // Scripting is disabled for objects in a document that is sandboxed without
-// allow-scripts, and the event handler processing algorithm returns early in
-// that case. But a document sandboxed without allow-scripts cannot register
-// anything itself: the listeners and handlers here belong to the embedder, and
-// running them does not run any script of the sandboxed document. They do run,
-// so the only thing "scripting is disabled" needs to block is *compiling* an
-// event handler content attribute.
+// allow-scripts, which prevents compiling an event handler content attribute.
+// It does not prevent invoking an event handler whose value is already a
+// function, or an event listener: a document sandboxed without allow-scripts
+// cannot register anything itself, so the listeners and handlers here belong
+// to the embedder, and running them does not run any script of the sandboxed
+// document.
 
 function addSandboxedFrame(t) {
   const frame = document.createElement("iframe");

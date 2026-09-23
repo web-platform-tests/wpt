@@ -16,8 +16,8 @@
 // different globals, which can independently stop being fully active.
 //
 // These tests assert that it is the node document's global that determines
-// whether listeners run, matching the "scripting is disabled" check that the
-// event handler processing algorithm uses for event handler attributes.
+// whether listeners run, matching how HTML defines "scripting is disabled" for
+// a node.
 
 const frameURL = "resources/not-fully-active-frame.html";
 

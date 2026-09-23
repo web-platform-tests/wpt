@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>Event listener callbacks from a document that is not fully active</title>
 <link rel="help" href="https://dom.spec.whatwg.org/#concept-event-listener-inner-invoke">
-<link rel="help" href="https://webidl.spec.whatwg.org/#call-a-user-objects-operation">
+<link rel="help" href="https://html.spec.whatwg.org/#the-event-handler-processing-algorithm">
 <link rel="help" href="https://github.com/whatwg/dom/issues/1084">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -13,9 +13,9 @@
 
 // Separately from the event target's global, a listener is also not invoked
 // when the global of its callback is a Window whose associated Document is not
-// fully active — even when the target itself is fine. This is not in DOM or
-// Web IDL yet; see
-// https://github.com/whatwg/dom/pull/1085#issuecomment-1192287296.
+// fully active — even when the target itself is fine. "Inner invoke" checks
+// both globals, and the event handler processing algorithm checks the
+// callback's global as well.
 //
 // What is *not* checked is the realm that addEventListener() happened to be
 // called from.

@@ -280,6 +280,37 @@ promise_test(async t => {
 }, 'wildcard tier: an origin that itself writes the bytes becomes a storing origin and thereafter reads deterministically, independent of PHL/GREASE\'ing');
 
 promise_test(async t => {
+  // In-progress writes: a create request registers nothing, so a hash whose
+  // only write is still in flight must be indistinguishable from a hash
+  // nothing has ever written -- for every origin, and regardless of the scope
+  // that write is eventually going to request.
+  // https://wicg.github.io/cross-origin-storage/#in-progress-writes
+  //
+  // A distinguishable answer here would be the whole attack: any origin could
+  // derive hashes from a per-user value, open create handles for a chosen
+  // subset of them on one site, and read that subset back on another, with no
+  // bytes written and with origins scoping, the Public Hash List and
+  // GREASE'ing never consulted.
+  const content = cosUniqueContent('in-flight-not-observable');
+  const hash = cosHash(await cosSha256Hex(content));
+
+  // Open a globally-scoped write and deliberately leave it unfinished.
+  await navigator.crossOriginStorage.requestFileHandle(
+    hash, {create: true, origins: '*'});
+
+  const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
+  const inFlight = await cosRemoteRead(ctx, hash);
+  cosAssertNotDisclosed(inFlight, 'a cross-site origin reading a hash whose write is in flight');
+
+  // The control: the same context reading a hash nothing has ever touched.
+  // The two answers must agree, or the in-flight state is observable.
+  const neverWritten = await cosRemoteRead(ctx, cosMissingHash());
+  cosAssertNotDisclosed(neverWritten, 'a cross-site origin reading a never-written hash');
+  assert_equals(inFlight.name, neverWritten.name,
+    'an in-flight write must be answered exactly as a never-written hash is');
+}, 'in-progress writes: a cross-site origin cannot distinguish an in-flight write from a hash that was never written');
+
+promise_test(async t => {
   // Every authorized cross-origin read above tolerates a NotFoundError,
   // because GREASE'ing and the cross-origin probe budget may each suppress a
   // disclosure the origins scoping permits. Individually that is correct; all

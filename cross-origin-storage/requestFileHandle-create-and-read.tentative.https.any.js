@@ -34,30 +34,32 @@ promise_test(async t => {
 }, 'getFile() on a freshly-created, not-yet-written handle rejects with NotAllowedError');
 
 promise_test(async t => {
-  // A concurrent requestFileHandle() read for the same hash, while a create
-  // request's entry is still "pending" (created but not yet written
-  // through), must reject with NotAllowedError rather than NotFoundError:
-  // https://wicg.github.io/cross-origin-storage/#reading-files
+  // A create request registers nothing. An entry is added to the COS registry
+  // only once a writer has supplied the complete bytes and the user agent has
+  // verified them against the hash:
+  // https://wicg.github.io/cross-origin-storage/#creating-and-writing-files
   //
-  // This read is not charged against the cross-origin probe budget: this
-  // origin is in the entry's pending writers, having obtained the create
-  // handle above, and pending writers are exempt alongside storing origins.
-  // The NotAllowedError therefore does not depend on budget being available.
-  // An origin with no write of its own outstanding *is* charged for the same
-  // answer, which does disclose that someone is writing this hash.
-  const content = cosUniqueContent('pending-read');
+  // A concurrent requestFileHandle() read for the same hash therefore finds no
+  // entry and rejects with an ordinary NotFoundError, indistinguishable from a
+  // read of a hash nothing has ever written. An in-progress write must not be
+  // observable by anyone, including the writer's own origin: a distinguishable
+  // answer here would hand any origin a noiseless bit about any hash, decided
+  // ahead of origins scoping, the Public Hash List and GREASE'ing, and without
+  // writing any bytes for the storage limit to bound.
+  // https://wicg.github.io/cross-origin-storage/#in-progress-writes
+  const content = cosUniqueContent('in-flight-write');
   const hash = cosHash(await cosSha256Hex(content));
   const createHandle = await navigator.crossOriginStorage.requestFileHandle(
     hash, {create: true});
-  await promise_rejects_dom(t, 'NotAllowedError',
+  await promise_rejects_dom(t, 'NotFoundError',
     navigator.crossOriginStorage.requestFileHandle(hash));
 
-  // Finish the write so the entry is left in a clean, written state.
+  // The same hash becomes readable once, and only once, the write completes.
   const writable = await createHandle.createWritable();
   await writable.write(new Blob([content]));
   await writable.close();
   assert_equals(await cosReadText(hash), content);
-}, 'a concurrent read for a hash with a pending write rejects with NotAllowedError, not NotFoundError');
+}, 'a read of a hash whose only write is still in flight rejects with NotFoundError, like any other miss');
 
 promise_test(async t => {
   const content = cosUniqueContent('hash-mismatch');
@@ -71,9 +73,9 @@ promise_test(async t => {
 }, 'closing a writable whose written bytes do not hash to the requested value rejects with DataError');
 
 promise_test(async t => {
-  // "Verify and store" cleans up after a hash-mismatched write: since no
-  // other writer is outstanding for this hash, the entry is removed
-  // entirely rather than left "pending" forever.
+  // A hash-mismatched write has nothing to clean up: the create request
+  // registered no entry, so "verify and store" rejects without ever touching
+  // the COS registry.
   // https://wicg.github.io/cross-origin-storage/#verify-and-store
   // A subsequent plain read for that hash must therefore reject with an
   // ordinary NotFoundError, exactly as if the failed write had never
@@ -88,12 +90,12 @@ promise_test(async t => {
   await promise_rejects_dom(t, 'DataError', writable.close());
   await promise_rejects_dom(t, 'NotFoundError',
     navigator.crossOriginStorage.requestFileHandle(hash));
-}, 'a hash-mismatched write with no other writer in flight leaves no entry behind: a subsequent plain read rejects with NotFoundError');
+}, 'a hash-mismatched write leaves no entry behind: a subsequent plain read rejects with NotFoundError');
 
 promise_test(async t => {
-  // Because the failed write's entry was cleaned up, a later create request
-  // for the same hash starts fresh (rather than "recovering" a stuck
-  // entry) and, supplying the correct bytes this time, succeeds normally.
+  // Because the failed write left nothing behind, a later create request for
+  // the same hash starts fresh, with no stuck entry to recover, and succeeds
+  // normally when it supplies the correct bytes.
   const content = cosUniqueContent('hash-mismatch-then-recovered');
   const value = await cosSha256Hex(content);
   const hash = cosHash(value);
@@ -114,11 +116,11 @@ promise_test(async t => {
 }, 'a hash left absent by a failed write is freely reusable by a later create request supplying the correct bytes');
 
 promise_test(async t => {
-  // The cleanup above must not disturb a concurrent, still-outstanding
-  // writer for the same hash: if two writers race and one supplies wrong
-  // bytes while the other supplies correct bytes, the failure must not
-  // prevent the success from being stored and readable afterward, however
-  // the two closes happen to interleave.
+  // A failed write must not disturb a concurrent writer for the same hash. A
+  // failure removes nothing, because it registered nothing, so if two writers
+  // race and one supplies wrong bytes while the other supplies correct bytes,
+  // the success must be stored and readable afterward however the two closes
+  // happen to interleave.
   const content = cosUniqueContent('concurrent-fail-and-succeed');
   const value = await cosSha256Hex(content);
   const hash = cosHash(value);
@@ -178,13 +180,13 @@ promise_test(async t => {
 }, 'requestFileHandle() read returns a handle whose getFile() resolves to a File with the stored bytes');
 
 promise_test(async t => {
-  // §2.2's "pending writer count" note: a create()'d handle that is never
-  // written through -- createWritable() never called on it at all -- still
-  // permanently counts as an outstanding writer against the entry, exactly
-  // like an abandoned in-flight write would. This means the entry it
-  // created stays "pending" on its own; what this test confirms is that
-  // such an abandoned handle must not prevent a second, independent create
-  // request for the same hash from working normally.
+  // A create()'d handle that is never written through -- createWritable()
+  // never called on it at all -- registers nothing and pins nothing. Earlier
+  // drafts counted it as an outstanding writer against a placeholder entry,
+  // which let any origin suppress every other origin's reads of a hash of its
+  // choosing, for free and indefinitely. Abandoning a handle must instead be
+  // entirely inert.
+  // https://wicg.github.io/cross-origin-storage/#in-progress-writes
   const content = cosUniqueContent('abandoned-handle-does-not-block-others');
   const value = await cosSha256Hex(content);
   const hash = cosHash(value);
@@ -194,12 +196,8 @@ promise_test(async t => {
     hash, {create: true});
   assert_true(abandonedHandle instanceof FileSystemFileHandle);
 
-  // A concurrent read while the (abandoned) writer is technically still
-  // outstanding must behave like any other pending entry: NotAllowedError,
-  // not NotFoundError -- exactly as tested for a normal in-flight write in
-  // 'a concurrent read for a hash with a pending write rejects with
-  // NotAllowedError, not NotFoundError' above.
-  await promise_rejects_dom(t, 'NotAllowedError',
+  // The abandoned handle must leave the hash reading as a plain miss.
+  await promise_rejects_dom(t, 'NotFoundError',
     navigator.crossOriginStorage.requestFileHandle(hash));
 
   // A second, independent create request for the same hash must still
@@ -212,4 +210,4 @@ promise_test(async t => {
   await writable2.close();
 
   assert_equals(await cosReadText(hash), content);
-}, 'an abandoned create() handle (createWritable() never called) does not prevent a concurrent create request for the same hash from succeeding');
+}, 'an abandoned create() handle (createWritable() never called) leaves no trace and does not block a later create request for the same hash');

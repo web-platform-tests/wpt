@@ -74,9 +74,10 @@ promise_test(async t => {
 }, 'requestFileHandle({create:true}) rejects with TypeError when the origins list exceeds the implementation-defined maximum length');
 
 promise_test(async t => {
-  // A validation failure must not create a pending (or any) registry entry:
-  // a subsequent read for the same hash must behave exactly as if the call
-  // had never been made.
+  // A validation failure must not create a registry entry: a subsequent read
+  // for the same hash must behave exactly as if the call had never been made.
+  // No create request registers anything in any case, so this holds for the
+  // same reason a well-formed but unfinished create request leaves no trace.
   const hash = cosMissingHash();
   await promise_rejects_js(t, TypeError,
     navigator.crossOriginStorage.requestFileHandle(hash, {create: true, origins: 'not a url'}));

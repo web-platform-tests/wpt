@@ -100,26 +100,28 @@ promise_test(async t => {
 }, 'running out of budget is not distinguishable from a genuine miss');
 
 promise_test(async t => {
-  // An origin holding an outstanding create handle is exempt too, for the same
-  // reason a storing origin is: the NotAllowedError it gets back tells it only
-  // that its own write is still in flight. Probing under a fresh hash each
-  // time would be charged; this must not be.
+  // An origin with a write of its own still in flight gets no special answer
+  // and no exemption: the hash has no entry yet, so the read is an ordinary
+  // miss and is charged like any other probe of an absent hash. Earlier drafts
+  // gave a pending writer a distinguishable NotAllowedError here, which was
+  // both an exemption and a disclosure; neither survives.
+  // https://wicg.github.io/cross-origin-storage/#in-progress-writes
   for (let i = 0; i < DISTINCT; ++i) {
-    const content = cosUniqueContent(`budget-pending-writer-${i}`);
+    const content = cosUniqueContent(`budget-in-flight-${i}`);
     const hash = cosHash(await cosSha256Hex(content));
     const handle = await navigator.crossOriginStorage.requestFileHandle(
       hash, {create: true});
-    await promise_rejects_dom(t, 'NotAllowedError',
+    await promise_rejects_dom(t, 'NotFoundError',
       navigator.crossOriginStorage.requestFileHandle(hash),
-      'a pending writer reading its own in-flight entry is exempt from the charge, ' +
-      'so this must be NotAllowedError and never a budget-refused NotFoundError');
+      'a hash with only an in-flight write must read as a plain miss');
 
-    // Finish the write so the entry is not left pending for later tests.
+    // Finish the write, so this leaves behind an entry rather than nothing.
     const writable = await handle.createWritable();
     await writable.write(new Blob([content]));
     await writable.close();
+    assert_equals(await cosReadText(hash), content);
   }
-}, 'an origin with a write of its own in flight is never charged for reading it back');
+}, 'an origin reading back a hash it has begun writing gets an ordinary miss');
 
 // A same-origin URL that reliably 404s, so a fetch that succeeds against it
 // can only have been served from COS.

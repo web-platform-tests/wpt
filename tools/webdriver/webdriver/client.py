@@ -452,7 +452,7 @@ class Session:
         capabilities=None,
         extension=None,
     ):
-
+        print("[Session.__init__] start")
         if enable_bidi:
             if capabilities is not None:
                 capabilities.setdefault("alwaysMatch", {}).update(
@@ -481,6 +481,7 @@ class Session:
 
         self.web_authn = WebAuthn(self)
         self.web_extensions = WebExtensions(self)
+        print("[Session.__init__] end")
 
     def __repr__(self):
         return "<%s %s>" % (
@@ -516,7 +517,9 @@ class Session:
         :raises error.WebDriverException: If the remote end returns
             an error.
         """
+        print("[Session.start] start")
         if self.session_id is not None:
+            print("[Session.start] early return")
             return
 
         self.transport.close()
@@ -527,7 +530,9 @@ class Session:
             body["capabilities"] = self.requested_capabilities
 
         try:
+            print("[Session.start] call send_command()")
             value = self.send_command("POST", "session", body=body)
+            print("[Session.start] send_command() returns")
             assert isinstance(value["sessionId"], str)
             assert isinstance(value["capabilities"], Dict)
 
@@ -547,6 +552,7 @@ class Session:
             if self.extension_cls:
                 self.extension = self.extension_cls(self)
 
+            print("[Session.start] return value")
             return value
 
         except Exception:

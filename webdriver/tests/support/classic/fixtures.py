@@ -30,6 +30,7 @@ async def session(capabilities, configuration):
     """
     # Update configuration capabilities with custom ones from the
     # capabilities fixture, which can be set by tests
+    print("[session] - start")
     caps = copy.deepcopy(configuration["capabilities"])
     deep_update(caps, capabilities)
     caps = {"alwaysMatch": caps}
@@ -44,7 +45,9 @@ async def session(capabilities, configuration):
 
     try:
         session = global_fixtures.get_current_session()
+        print("[session] - Call session.start()")
         session.start()
+        print("[session] - session.start() returns")
 
         # Enforce a fixed default window size and position
         if session.capabilities.get("setWindowRect"):
@@ -60,6 +63,8 @@ async def session(capabilities, configuration):
         yield session
 
         cleanup_session(session)
+
+        print("[session] - end")
 
     except Exception:
         # Make sure we end up in a known state if something goes wrong.

@@ -667,6 +667,12 @@ class BidiEmulationProtocolPart(ProtocolPart):
             contexts: List[str]) -> None:
         pass
 
+    @abstractmethod
+    async def set_viewport_meta_override(self,
+            viewport_meta: Optional[bool],
+            contexts: List[str]) -> None:
+        pass
+
 
 class BidiUserAgentClientHintsProtocolPart(ProtocolPart):
     """Protocol part for User Agent Client Hints"""

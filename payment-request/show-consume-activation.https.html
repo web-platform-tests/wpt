@@ -12,7 +12,14 @@
   <body>
     <script>
       const defaultMethods = [
-        { supportedMethods: "basic-card" },
+        {
+          supportedMethods:
+            window.location.origin + "/payment-request/resources/wpt-pay-1.json",
+        },
+        {
+          supportedMethods:
+            window.location.origin + "/payment-request/resources/wpt-pay-2.json",
+        },
         {
           supportedMethods: "https://apple.com/apple-pay",
           data: {

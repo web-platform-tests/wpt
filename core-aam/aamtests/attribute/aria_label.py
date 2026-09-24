@@ -9,7 +9,7 @@ def test_atspi(atspi, session, inline):
     # Property: Name: <value>
 
     node = atspi.find_node("test", session.url)
-    assert atspi.Accessible.get_name(node) == label
+    assert atspi.Accessible.get_name(node) == "hello world"
 
 # def test_axapi(axapi, session, inline):
 #     session.url = inline(TEST_HTML)

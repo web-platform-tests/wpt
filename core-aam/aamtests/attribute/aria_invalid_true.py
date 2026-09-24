@@ -11,7 +11,7 @@ def test_atspi(atspi, session, inline):
 
     node = atspi.find_node("test", session.url)
     assert "STATE_INVALID_ENTRY" in atspi.get_state_list_helper(node)
-    atspi.Text.getAttribute(invalid) == true
+    assert atspi.Text.get_text_attribute_value(node, 0, "invalid") == "true"
 
 # def test_axapi(axapi, session, inline):
 #     session.url = inline(TEST_HTML)

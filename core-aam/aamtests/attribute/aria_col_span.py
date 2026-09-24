@@ -11,7 +11,7 @@ def test_atspi(atspi, session, inline):
 
     node = atspi.find_node("test", session.url)
     assert "colspan:3" in atspi.Accessible.get_attributes_as_array(node)
-    assert atspi.Table.cell_get_row_column_span(node) == 3
+    assert atspi.TableCell.get_row_column_span(node) == 3
 
 # def test_axapi(axapi, session, inline):
 #     session.url = inline(TEST_HTML)

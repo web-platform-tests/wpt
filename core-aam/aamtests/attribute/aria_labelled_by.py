@@ -11,7 +11,7 @@ def test_atspi(atspi, session, inline):
     # Reverse Relation: RELATION_LABEL_FOR: points to element
 
     node = atspi.find_node("test", session.url)
-    assert atspi.Accessible.get_name(node) == hello world
+    assert atspi.Accessible.get_name(node) == "hello world"
     relations = atspi.get_relations_dictionary_helper(node)
     assert 'RELATION_LABELLED_BY' in relations
     assert 'label' in relations['RELATION_LABELLED_BY']

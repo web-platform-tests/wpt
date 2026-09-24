@@ -1006,7 +1006,7 @@
                  * });
                  *
                  * @param {object} params - Parameters for the command.
-                 * @param {null|boolean} params.viewportMeta - Whether to enable
+                 * @param {null|true} params.viewportMeta - Whether to enable
                  * viewport meta tag parsing (`true`). If `null` or omitted, the
                  * override will be removed.
                  * @param {null|Array.<(Context)>} [params.contexts] The

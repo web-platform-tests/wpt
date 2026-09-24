@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>getComputedStyle().top resolved value differs per position scheme</title>
+<link rel="author" href="https://github.com/BHUVANSH855" title="BHUVANSH855">
+<link rel="help" href="https://drafts.csswg.org/cssom/#resolved-value">
+<link rel="help" href="https://drafts.csswg.org/css-position/#propdef-top">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+  }
+  .target {
+    width: 50px;
+    height: 50px;
+  }
+</style>
+<div id="container">
+  <div id="el-static"   class="target" style="position: static;"></div>
+  <div id="el-relative" class="target" style="position: relative; top: 10px;"></div>
+  <div id="el-sticky"   class="target" style="position: sticky; top: 10px;"></div>
+  <div id="el-absolute" class="target" style="position: absolute; top: 10px;"></div>
+  <div id="el-fixed"    class="target" style="position: fixed; top: 10px;"></div>
+</div>
+<script>
+"use strict";
+
+test(() => {
+  const cs = getComputedStyle(document.getElementById("el-static"));
+  assert_equals(cs.top, "auto");
+}, "getComputedStyle().top is 'auto' for position:static");
+
+test(() => {
+  const cs = getComputedStyle(document.getElementById("el-relative"));
+  assert_equals(cs.top, "10px");
+}, "getComputedStyle().top is '10px' for position:relative");
+
+test(() => {
+  const cs = getComputedStyle(document.getElementById("el-sticky"));
+  assert_equals(cs.top, "10px");
+}, "getComputedStyle().top is '10px' for position:sticky");
+
+test(() => {
+  const cs = getComputedStyle(document.getElementById("el-absolute"));
+  assert_equals(cs.top, "10px");
+}, "getComputedStyle().top is '10px' for position:absolute");
+
+test(() => {
+  const cs = getComputedStyle(document.getElementById("el-fixed"));
+  assert_equals(cs.top, "10px");
+}, "getComputedStyle().top is '10px' for position:fixed");
+
+test(() => {
+  const el = document.createElement("div");
+  el.className = "target";
+  el.style.position = "static";
+  document.getElementById("container").appendChild(el);
+  const cs = getComputedStyle(el);
+  assert_equals(cs.top, "auto", "initially static: top must be 'auto'");
+  el.style.position = "relative";
+  el.style.top = "10px";
+  assert_equals(cs.top, "10px", "after switching to relative: top must be '10px'");
+  el.remove();
+}, "Switching position from static to relative changes resolved 'top' from 'auto' to '10px'");
+</script>

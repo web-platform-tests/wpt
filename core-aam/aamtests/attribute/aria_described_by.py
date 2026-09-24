@@ -11,7 +11,7 @@ def test_atspi(atspi, session, inline):
     # Reverse Relation: RELATION_DESCRIPTION_FOR: points to element
 
     node = atspi.find_node("test", session.url)
-    assert atspi.Accessible.get_description(node) == hello world
+    assert atspi.Accessible.get_description(node) == "hello world"
     relations = atspi.get_relations_dictionary_helper(node)
     assert 'RELATION_DESCRIBED_BY' in relations
     assert 'description' in relations['RELATION_DESCRIBED_BY']

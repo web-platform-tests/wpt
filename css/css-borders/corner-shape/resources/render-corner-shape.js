@@ -531,29 +531,20 @@ function create_ref_canvas(style, width, height, mode = 'fill') {
   const canvas = document.createElement('canvas');
   canvas.width = width + padding * 2;
   canvas.height = height + padding * 2;
-
-  const ctx = canvas.getContext('2d',
-    { colorSpace: "srgb", desynchronized: false, willReadFrequently: false });
-  ctx.imageSmoothingEnabled = false;
-  ctx.resetTransform();
-
-  ctx.save();
-
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
   ctx.translate(padding, padding);
   canvas.style.position = 'absolute';
   canvas.style.top = '0';
   canvas.style.left = '0';
   render(style, ctx, width, height, mode);
-
-  ctx.restore();
   return canvas;
 }
 
 function create_ref(style, width, height) {
   const article = document.createElement('article');
   article.style.position = 'relative';
-  const fill_canvas = create_ref_canvas(style, width, height, 'fill');
   const stroke_canvas = create_ref_canvas(style, width, height, 'stroke');
+  const fill_canvas = create_ref_canvas(style, width, height, 'fill');
   article.appendChild(fill_canvas);
   article.appendChild(stroke_canvas);
   return article;

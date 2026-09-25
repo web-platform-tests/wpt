@@ -782,6 +782,67 @@ a<table>b<tr><td>c</table>d
 |   <tbody>
 
 #data
+<div><table>x
+#config
+{ "removeElements": ["div"] }
+#document
+
+#data
+<b><table>x
+#config
+{ "replaceWithChildrenElements": ["b"] }
+#document
+| "x"
+| <table>
+
+#data
+<b><table><div>x
+#config
+{ "replaceWithChildrenElements": ["b"], "removeElements": ["table"] }
+#document
+| <div>
+|   "x"
+
+#data
+<table><div><input type="hidden"><td>x
+#config
+{ "replaceWithChildrenElements": ["div"] }
+#document
+| <input>
+|   type="hidden"
+| <table>
+|   <tbody>
+|     <tr>
+|       <td>
+|         "x"
+
+#data
+<table><div><template>t</template><td>x
+#config
+{ "replaceWithChildrenElements": ["div"] }
+#document
+| <template>
+|   content
+|     "t"
+| <table>
+|   <tbody>
+|     <tr>
+|       <td>
+|         "x"
+
+#data
+<table><div><!-- c --><td>x
+#config
+{ "replaceWithChildrenElements": ["div"], "comments": true }
+#document
+| <!-- c -->
+| <table>
+|   <tbody>
+|     <tr>
+|       <td>
+|         "x"
+
+#data
 <table><tr><td>y
 #config
 { "replaceWithChildrenElements": ["tr"] }

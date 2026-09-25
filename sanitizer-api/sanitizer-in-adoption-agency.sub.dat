@@ -435,3 +435,78 @@
 |     "x"
 |   "y"
 
+#data
+<b><div><table></b>x
+#config
+{ "replaceWithChildrenElements": ["b"] }
+#document
+| <div>
+|   "x"
+|   <table>
+
+#data
+<b><i><div>Text</b>after
+#config
+{ "removeElements": ["div"] }
+#document
+| <b>
+|   <i>
+| <i>
+
+#data
+<b><i><div>Text</b>after
+#config
+{ "replaceWithChildrenElements": ["i", "div"] }
+#document
+| <b>
+|   "Text"
+| <b>
+| "after"
+
+#data
+<div><b><p>x</b>y
+#config
+{ "replaceWithChildrenElements": ["div"] }
+#document
+| <b>
+| <p>
+|   <b>
+|     "x"
+|   "y"
+
+#data
+<div><b><p>x</b>y
+#config
+{ "removeElements": ["div"] }
+#document
+
+#data
+<b><u><em><div>Text</b>after</div>more
+#config
+{ "replaceWithChildrenElements": ["div", "em"] }
+#document
+| <b>
+|   <u>
+|     "Text"
+| <u>
+|   <b>
+|   "aftermore"
+
+#data
+<b><u><em><div>Text</b>after</div>more
+#config
+{ "replaceWithChildrenElements": ["div", "em"], "removeElements": ["u"] }
+#document
+| <b>
+
+#data
+<table><b><div>x</b><input type="hidden">
+#config
+{ "replaceWithChildrenElements": ["div"] }
+#document
+| <b>
+|   "x"
+| <b>
+| <input>
+|   type="hidden"
+| <table>

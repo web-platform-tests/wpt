@@ -77,6 +77,16 @@ TypeError
 |   <body>
 |     "x"
 
+#data
+x<p>y
+#config
+{ "replaceWithChildrenElements": ["head", "body"] }
+#document
+| <html>
+|   "x"
+|   <p>
+|     "y"
+
 </script>
 <script id="safe" type="html5lib-testcases">
 #data
@@ -292,6 +302,35 @@ a<template>x</template>b
 |   "x"
 |   <p>
 |     "y"
+
+#data
+<head></head><meta><body>x
+#config
+{ "replaceWithChildrenElements": ["head"] }
+#document
+| <html>
+|   <meta>
+|   <body>
+|     "x"
+
+#data
+<div></div><frameset>
+#config
+{ "replaceWithChildrenElements": ["body"] }
+#document
+| <html>
+|   <head>
+|   <div>
+|   <frameset>
+
+#data
+<div></div><frameset>
+#config
+{ "removeElements": ["body"] }
+#document
+| <html>
+|   <head>
+|   <frameset>
 
 </script>
 <script id="document" type="html5lib-testcases">

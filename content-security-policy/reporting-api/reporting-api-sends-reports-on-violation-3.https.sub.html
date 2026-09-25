@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<title>Verify that ReposerObserver sees reports, even when report-to is not specified.</title>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src="/common/get-host-info.sub.js"></script>
+<meta http-equiv="Content-Security-Policy" content="connect-src self">
+<script>
+  promise_test(async t => {
+    const first_csp_violation_promise = new Promise(resolve => {
+      const observer = new ReportingObserver(
+        reports => resolve(reports[0]), {types: ["csp-violation"]});
+      observer.observe();
+      t.add_cleanup(_ => observer.disconnect());
+    });
+    const blocked_url = `${get_host_info().HTTPS_OTHER_NOTSAMESITE_ORIGIN}/content-security-policy/support/fail.png`;
+    //7890123456789012345              // 16
+    // column -----^                   // 17
+    const result = fetch(blocked_url); // 18 <-- line number
+    await promise_rejects_js(t, TypeError, result);
+    const report = await first_csp_violation_promise;
+    const base_url = "{{location[scheme]}}://{{location[host]}}/content-security-policy/"
+    const document_url = `${base_url}reporting-api/reporting-api-sends-reports-on-violation-3.https.sub.html`;
+    assert_equals(report.type, "csp-violation");
+    assert_equals(report.url, document_url);
+    assert_equals(report.body.documentURL, document_url);
+    assert_equals(report.body.referrer, "");
+    assert_equals(report.body.blockedURL, blocked_url);
+    assert_equals(report.body.effectiveDirective, "connect-src");
+    assert_equals(report.body.originalPolicy, "connect-src self");
+    assert_equals(report.body.sourceFile, document_url);
+    assert_equals(report.body.sample, "");
+    assert_equals(report.body.disposition, "enforce");
+    assert_equals(report.body.lineNumber, 18);
+  }, "Report is observable to ReportingObserver, even without any endpoint specified.");
+</script>

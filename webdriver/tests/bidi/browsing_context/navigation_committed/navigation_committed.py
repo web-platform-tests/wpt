@@ -62,7 +62,7 @@ async def test_subscribe(
             "context": new_tab["context"],
             "navigation": result["navigation"],
             "url": url,
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {})
+            "userContext": new_tab["userContext"]
         },
     )
 
@@ -89,7 +89,7 @@ async def test_timestamp(
             "context": new_tab["context"],
             "navigation": result["navigation"],
             "timestamp": int_interval(time_start, time_end),
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {})
+            "userContext": new_tab["userContext"]
         },
     )
 
@@ -119,7 +119,7 @@ async def test_basic_auth(
             "context": top_context["context"],
             "navigation": result["navigation"],
             "url": url_with_auth,
-            **({"userContext": top_context["userContext"]} if "userContext" in event else {})
+            "userContext": top_context["userContext"]
         },
     )
 
@@ -159,7 +159,7 @@ async def test_iframe(
             "context": top_context["context"],
             "navigation": result["navigation"],
             "url": test_page_same_origin_frame,
-            **({"userContext": top_context["userContext"]} if "userContext" in events[0] else {})
+            "userContext": top_context["userContext"]
         },
     )
 
@@ -168,7 +168,7 @@ async def test_iframe(
         {
             "context": children_info[0]["context"],
             "url": test_page,
-            **({"userContext": children_info[0]["userContext"]} if "userContext" in events[1] else {})
+            "userContext": children_info[0]["userContext"]
         },
     )
     assert events[1]["navigation"] is not None
@@ -219,7 +219,7 @@ async def test_nested_iframes(
             "context": root_info["context"],
             "navigation": result["navigation"],
             "url": test_page_nested_frames,
-            **({"userContext": root_info["userContext"]} if "userContext" in events[0] else {})
+            "userContext": root_info["userContext"]
         },
     )
 
@@ -228,7 +228,7 @@ async def test_nested_iframes(
         {
             "context": child1_info["context"],
             "url": test_page_same_origin_frame,
-            **({"userContext": child1_info["userContext"]} if "userContext" in events[1] else {})
+            "userContext": child1_info["userContext"]
         },
     )
     assert events[1]["navigation"] is not None
@@ -239,7 +239,7 @@ async def test_nested_iframes(
         {
             "context": child2_info["context"],
             "url": test_page,
-            **({"userContext": child2_info["userContext"]} if "userContext" in events[2] else {})
+            "userContext": child2_info["userContext"]
         },
     )
     assert events[2]["navigation"] is not None
@@ -320,7 +320,7 @@ async def test_base_element(
             "context": new_tab["context"],
             "navigation": result["navigation"],
             "url": url,
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {})
+            "userContext": new_tab["userContext"]
         },
     )
 
@@ -359,7 +359,7 @@ async def test_redirect_http_equiv(
         {
             "context": top_context["context"],
             "url": http_equiv_url,
-            **({"userContext": top_context["userContext"]} if "userContext" in events[0] else {})
+            "userContext": top_context["userContext"]
         },
     )
     assert_navigation_info(
@@ -367,7 +367,7 @@ async def test_redirect_http_equiv(
         {
             "context": top_context["context"],
             "url": redirected_url,
-            **({"userContext": top_context["userContext"]} if "userContext" in events[1] else {})
+            "userContext": top_context["userContext"]
         },
     )
 
@@ -406,7 +406,7 @@ async def test_redirect_navigation(
         {
             "context": top_context["context"],
             "url": html_url,
-            **({"userContext": top_context["userContext"]} if "userContext" in events[0] else {})
+            "userContext": top_context["userContext"]
         })
 
     remove_listener()
@@ -488,7 +488,7 @@ async def test_navigate_to_about_blank(
             "context": new_tab["context"],
             "navigation": result["navigation"],
             "url": url,
-            **({"userContext": new_tab["userContext"]} if "userContext" in event else {})
+            "userContext": new_tab["userContext"]
         },
     )
 
@@ -548,6 +548,6 @@ async def test_window_open_with_url(
         {
             "context": result[1]["context"],
             "url": url,
-            **({"userContext": result[1]["userContext"]} if "userContext" in event else {})
+            "userContext": result[1]["userContext"]
         },
     )

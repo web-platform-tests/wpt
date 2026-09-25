@@ -34,10 +34,14 @@ def assert_base_entry(
             assert call_frames[index] == stacktrace[index]
 
     source = entry["source"]
+    # The context and userContext fields of a script.Source are either both
+    # present, when the realm is associated with a navigable, or both omitted.
+    assert ("context" in source) == ("userContext" in source)
     if context is not None:
         assert "context" in source
         assert source["context"] == context
-    if user_context is not None and "userContext" in source:
+    if user_context is not None:
+        assert "userContext" in source
         assert source["userContext"] == user_context
 
 

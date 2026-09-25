@@ -42,6 +42,18 @@ promise_test(async t => {
     resolveToolActivated();
   }, { once: true });
 
+  const modelContextEvents = [];
+  const {
+    promise: modelContextToolActivatedPromise,
+    resolve: resolveModelContextToolActivated
+  } = Promise.withResolvers();
+  const modelContextHandler = e => {
+    modelContextEvents.push(e);
+    resolveModelContextToolActivated();
+  };
+  document.modelContext.addEventListener('toolactivated', modelContextHandler);
+  t.add_cleanup(() => document.modelContext.removeEventListener('toolactivated', modelContextHandler));
+
   const { promise: toolStartedPromise, resolve: resolveToolStarted } = Promise.withResolvers();
   const { promise: signalAbortPromise, resolve: resolveSignalAbort } = Promise.withResolvers();
   let targetSignalAbortReason = null;
@@ -74,6 +86,14 @@ promise_test(async t => {
 
   await toolStartedPromise;
   await toolActivatedPromise;
+  await modelContextToolActivatedPromise;
+
+  assert_equals(modelContextEvents.length, 1);
+  const modelContextEvent = modelContextEvents[0];
+  assert_true(modelContextEvent instanceof ToolActivatedEvent,
+      'toolactivated dispatched at the ModelContext is a ToolActivatedEvent');
+  assert_equals(modelContextEvent.toolName, 'abort_propagate_tool');
+  assert_equals(modelContextEvent.target, document.modelContext);
 
   controller.abort('custom cancellation reason');
 
@@ -85,6 +105,7 @@ promise_test(async t => {
   ]);
 
   assert_array_equals(events, ['tool started', 'toolactivated', 'execution_rejected', 'signal_aborted', 'toolcancel']);
+  assert_array_equals(modelContextEvents, [modelContextEvent], 'toolactivated is dispatched once per execution');
   assert_equals(executionRejectionValue, 'custom cancellation reason');
   assert_true(targetSignalAbortReason instanceof DOMException);
   assert_equals(targetSignalAbortReason.name, 'AbortError');

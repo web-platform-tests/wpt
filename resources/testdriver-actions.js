@@ -313,6 +313,11 @@
     /**
      * Create a pointerDown event for the current default pointer source
      *
+     * Note:
+     * This method also accepts extended pointer properties such as width,
+     * height, pressure, tilt, twist, altitudeAngle, and azimuthAngle.
+     * These follow the WebDriver pointer parameters specification.
+     * 
      * @param {String} button - Button to press
      * @param {String?} sourceName - Named pointer source to use or null for the default
      *                               pointer source
@@ -344,6 +349,11 @@
     /**
      * Create a move event for the current default pointer source
      *
+     * Note:
+     * pointerMove also accepts optional pointer properties including pressure,
+     * tangentialPressure, tiltX, tiltY, twist, altitudeAngle, and azimuthAngle.
+     * These properties are forwarded to WebDriver's pointer action protocol.
+     * 
      * @param {Number} x - Destination x coordinate
      * @param {Number} y - Destination y coordinate
      * @param {String|Element} origin - Origin of the coordinate system.
@@ -361,6 +371,26 @@
       source.pointerMove(this, x, y, duration, origin, width, height, pressure,
                          tangentialPressure, tiltX, tiltY, twist, altitudeAngle,
                          azimuthAngle);
+      return this;
+    },
+
+    /**
+     * Convenience helper to perform a pointer click.
+     *
+     * Moves the pointer (if needed) then performs pointerDown followed by pointerUp.
+     *
+     * @param {Number} x - Destination x coordinate
+     * @param {Number} y - Destination y coordinate
+     * @param {Object} [options]
+     * @param {String|Element} [options.origin="viewport"]
+     * @param {String?} [options.sourceName=null]
+     * @param {String} [options.button=this.ButtonType.LEFT]
+     * @returns {Actions}
+     */
+    click: function(x, y, {origin="viewport", sourceName=null, button=this.ButtonType.LEFT}={}) {
+      this.pointerMove(x, y, {origin, sourceName});
+      this.pointerDown({button, sourceName});
+      this.pointerUp({button, sourceName});
       return this;
     },
 

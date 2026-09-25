@@ -53,7 +53,7 @@ test(() => {
   const boundary = boundaryOf(new Response(new FormData()));
   assert_greater_than(boundary.length, 26, "boundary is longer than 26 bytes");
   assert_less_than(boundary.length, 71, "boundary is shorter than 71 bytes");
-  assert_regexp_match(boundary, /^[0-9A-Za-z'\-_]+$/, "boundary bytes");
+  assert_regexp_match(boundary, /^[0-9A-Za-z-]+$/, "boundary bytes");
 }, "multipart/form-data boundary is well-formed");
 
 test(() => {
@@ -178,6 +178,52 @@ promise_test(async () => {
   assert_equals(await isomorphicText(response),
                 onePart(boundary, { name: "a", value: "1" }).join("\r\n"));
 }, "Serializing a FormData object takes a snapshot of its entry list");
+
+promise_test(async () => {
+  const formData = new FormData();
+  formData.append("a", "1");
+  formData.append("b", new File(["contents of b"], "b.txt", { type: "text/plain" }));
+  formData.append("c", new File(["contents of c"], "c.txt", { type: "text/plain" }));
+  formData.append("d", "2");
+  const response = new Response(formData);
+  const boundary = boundaryOf(response);
+  const reader = response.body.getReader();
+  // Keep many reads pending at once, rather than waiting for each one.
+  const bytes = [];
+  let done = false;
+  while (!done) {
+    const results = await Promise.all(Array.from({ length: 12 }, () => reader.read()));
+    for (const result of results) {
+      if (result.done) {
+        done = true;
+      } else {
+        bytes.push(...result.value);
+      }
+    }
+  }
+  assert_equals(String.fromCharCode(...bytes), [
+    `--${boundary}`,
+    `Content-Disposition: form-data; name="a"`,
+    "",
+    "1",
+    `--${boundary}`,
+    `Content-Disposition: form-data; name="b"; filename="b.txt"`,
+    "Content-Type: text/plain",
+    "",
+    "contents of b",
+    `--${boundary}`,
+    `Content-Disposition: form-data; name="c"; filename="c.txt"`,
+    "Content-Type: text/plain",
+    "",
+    "contents of c",
+    `--${boundary}`,
+    `Content-Disposition: form-data; name="d"`,
+    "",
+    "2",
+    `--${boundary}--`,
+    "",
+  ].join("\r\n"));
+}, "Serializing a FormData object with File entries, read with concurrent reads");
 
 promise_test(async () => {
   const formData = new FormData();

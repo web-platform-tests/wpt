@@ -1,0 +1,88 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: a blob: worker inherits its creator's origin</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// A CrossOriginStorageManager is keyed to its relevant settings object's
+// origin. For a worker created from a blob: URL that origin is the creating
+// context's, not something derived from the blob: URL itself, so such a
+// worker shares one COS view with the page that created it: what it writes
+// the page can read, and what the page wrote it can read.
+//
+// This is worth pinning down because the plausible wrong answers are not
+// obviously wrong. An implementation that keyed the manager off the worker's
+// script URL, or that treated blob: as opaque the way data: is, would still
+// look correct to a worker that only ever reads back its own writes.
+// https://wicg.github.io/cross-origin-storage/#the-crossoriginstoragemanager-interface
+
+const WORKER_SOURCE = `
+  self.onmessage = async ({data}) => {
+    const {op, hash, content} = data;
+    try {
+      if (op === 'store') {
+        const handle = await navigator.crossOriginStorage.requestFileHandle(
+          hash, {create: true});
+        const writable = await handle.createWritable();
+        await writable.write(new Blob([content]));
+        await writable.close();
+        self.postMessage({ok: true});
+        return;
+      }
+      const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+      const file = await handle.getFile();
+      self.postMessage({ok: true, text: await file.text()});
+    } catch (e) {
+      self.postMessage({ok: false, name: e.name, message: e.message});
+    }
+  };
+`;
+
+// The blob: URL is revoked immediately: it only has to survive until the
+// worker's script has been fetched, and revoking proves the worker is not
+// still resolving anything against that URL later on.
+function blobWorker(t) {
+  const url = URL.createObjectURL(
+    new Blob([WORKER_SOURCE], {type: 'text/javascript'}));
+  const worker = new Worker(url);
+  URL.revokeObjectURL(url);
+  t.add_cleanup(() => worker.terminate());
+  return worker;
+}
+
+function ask(worker, message) {
+  return new Promise((resolve, reject) => {
+    worker.onmessage = ({data}) => resolve(data);
+    worker.onerror = () => reject(new Error('the blob: worker failed to load'));
+    worker.postMessage(message);
+  });
+}
+
+promise_test(async t => {
+  const content = cosUniqueContent('blob-worker-write-is-its-creators');
+  const hash = cosHash(await cosSha256Hex(content));
+
+  const stored = await ask(blobWorker(t), {op: 'store', hash, content});
+  assert_true(stored.ok,
+    `the blob: worker's write should have succeeded, got ${stored.name}: ${stored.message}`);
+
+  assert_equals(await cosReadText(hash), content,
+    "the creating page must be able to read back what its blob: worker stored");
+}, "a blob: worker's write is keyed to its creator's origin, not to the blob: URL");
+
+promise_test(async t => {
+  const {hash, content} = await cosStore(
+    cosUniqueContent('page-write-visible-to-blob-worker'));
+
+  const read = await ask(blobWorker(t), {op: 'read', hash});
+  assert_true(read.ok,
+    `the blob: worker's read should have succeeded, got ${read.name}: ${read.message}`);
+  assert_equals(read.text, content,
+    'a blob: worker must read back what the page that created it stored');
+}, "a blob: worker reads the entries of the origin that created it");
+</script>
+</body>

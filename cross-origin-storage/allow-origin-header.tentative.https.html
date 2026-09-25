@@ -1,0 +1,139 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: the Cross-Origin-Storage-Allow-Origin header bounds list-scoped writes</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#allow-origin-header
+//
+// A non-same-site `origins` declaration is only honored for the origins the
+// writing document's `Cross-Origin-Storage-Allow-Origin` response header
+// authorizes: the declared list is intersected with that ceiling, dropping
+// any origin the ceiling does not name. An origin dropped this way (and thus
+// not on the entry's origins list, and cross-site with the storer) is
+// deterministically NotFound -- unlike an authorized-but-GREASE'd read, this
+// is not tolerated, which is what gives these assertions teeth.
+//
+// The writes here are performed inside a RemoteContext whose response carries
+// the ceiling header via `pipeHeader`, because the top-level test document has
+// no way to set that header on its own response. The "*" grant is exercised
+// too, to confirm it needs no header at all.
+
+const {HTTPS_ORIGIN} = get_host_info();
+
+// Opens a writer context at this document's own origin (same-origin, so the
+// default "self" Permissions Policy allowlist admits it) whose response
+// declares `ceiling` as its Cross-Origin-Storage-Allow-Origin header. Pass
+// ceiling: null for a writer with no header at all.
+async function openWriter(ceiling) {
+  const opts = {};
+  if (ceiling !== null) {
+    opts.pipeHeader = cosAllowOriginPipe(ceiling);
+  }
+  return cosOpenRemoteContext(HTTPS_ORIGIN, opts);
+}
+
+promise_test(async t => {
+  // An origin the ceiling names is authorized: a list write from a document
+  // whose header lists it is honored, and the listed origin can read it back
+  // (subject only to GREASE'ing / the probe budget, as any list-tier read is).
+  const originAllowed = cosNextCrossSiteOrigin();
+  const {ctx: writer} = await openWriter(originAllowed);
+  const content = cosUniqueContent('ceiling-authorizes-listed-origin');
+  const hash = cosHash(await cosSha256Hex(content));
+  const stored = await cosRemoteStore(writer, hash, content, {origins: [originAllowed]});
+  assert_true(stored.ok, `the ceiling-authorized list write must succeed, got ${stored.name}: ${stored.message}`);
+
+  const {ctx: reader} = await cosOpenRemoteContext(originAllowed);
+  const result = await cosRemoteRead(reader, hash);
+  cosAssertDisclosableOrGreased(result, content,
+    'an origin named by both the origins list and the ceiling header');
+}, 'ceiling: an origin named by the Cross-Origin-Storage-Allow-Origin header is authorized when also listed');
+
+promise_test(async t => {
+  // An origin the ceiling does NOT name is dropped from the list. With the
+  // dropped list left empty, the entry falls back to the same-site tier, so a
+  // cross-site origin that was "listed" but not in the ceiling is refused
+  // deterministically -- the header, not GREASE'ing, is what withholds it.
+  const originInCeiling = cosNextCrossSiteOrigin();
+  const originDropped = cosNextCrossSiteOrigin();
+  const {ctx: writer} = await openWriter(originInCeiling); // ceiling names a DIFFERENT origin
+  const content = cosUniqueContent('ceiling-drops-unlisted-origin');
+  const hash = cosHash(await cosSha256Hex(content));
+  const stored = await cosRemoteStore(writer, hash, content, {origins: [originDropped]});
+  assert_true(stored.ok,
+    `the write still succeeds; only the unauthorized disclosure is withheld, got ${stored.name}: ${stored.message}`);
+
+  const {ctx: reader} = await cosOpenRemoteContext(originDropped);
+  const result = await cosRemoteRead(reader, hash);
+  cosAssertNotDisclosed(result,
+    'a cross-site origin listed in the write but absent from the ceiling header');
+}, 'ceiling: an origin absent from the Cross-Origin-Storage-Allow-Origin header is dropped from the list, deterministically');
+
+promise_test(async t => {
+  // With no Cross-Origin-Storage-Allow-Origin header at all, every non-same-site
+  // origin is dropped -- this is the injected-script case the header defends
+  // against: script that never controls a response header cannot disclose the
+  // origin's data to a cross-site recipient.
+  const originListed = cosNextCrossSiteOrigin();
+  const {ctx: writer} = await openWriter(null); // no ceiling header
+  const content = cosUniqueContent('no-header-drops-cross-site-origin');
+  const hash = cosHash(await cosSha256Hex(content));
+  const stored = await cosRemoteStore(writer, hash, content, {origins: [originListed]});
+  assert_true(stored.ok, `the write succeeds; the cross-site grant is silently dropped, got ${stored.name}: ${stored.message}`);
+
+  const {ctx: reader} = await cosOpenRemoteContext(originListed);
+  const result = await cosRemoteRead(reader, hash);
+  cosAssertNotDisclosed(result,
+    'a cross-site origin listed by a writer whose response carried no ceiling header');
+}, 'ceiling: a list-scoped write from a document with no Cross-Origin-Storage-Allow-Origin header discloses to no cross-site origin');
+
+promise_test(async t => {
+  // Even when the ceiling authorizes it, an origin that was not itself listed
+  // in a given write is out of scope for that entry: the ceiling is a bound on
+  // what may be listed, not a grant on its own.
+  const originInCeiling = cosNextCrossSiteOrigin();
+  const originOther = cosNextCrossSiteOrigin();
+  const {ctx: writer} = await openWriter([originInCeiling, originOther]); // ceiling names both
+  const content = cosUniqueContent('ceiling-is-a-bound-not-a-grant');
+  const hash = cosHash(await cosSha256Hex(content));
+  // ...but the write lists only one of them.
+  const stored = await cosRemoteStore(writer, hash, content, {origins: [originInCeiling]});
+  assert_true(stored.ok, `write must succeed, got ${stored.name}: ${stored.message}`);
+
+  const {ctx: reader} = await cosOpenRemoteContext(originOther);
+  const result = await cosRemoteRead(reader, hash);
+  cosAssertNotDisclosed(result,
+    'an origin in the ceiling but not in this entry\'s origins list');
+}, 'ceiling: being named by the header does not grant access on its own -- the origin must still be listed on the entry');
+
+promise_test(async t => {
+  // The "*" grant is governed at the read path by the Public Hash List, not by
+  // this header, so a global write needs no Cross-Origin-Storage-Allow-Origin
+  // header. A non-storer's read then depends on implementation-defined PHL /
+  // GREASE'ing, exactly as in the origins-scoping wildcard tests.
+  const {ctx: writer} = await openWriter(null); // no ceiling header
+  const content = cosUniqueContent('wildcard-needs-no-ceiling-header');
+  const hash = cosHash(await cosSha256Hex(content));
+  const stored = await cosRemoteStore(writer, hash, content, {origins: '*'});
+  assert_true(stored.ok, `a "*" write needs no ceiling header, got ${stored.name}: ${stored.message}`);
+
+  const {ctx: reader} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
+  const result = await cosRemoteRead(reader, hash);
+  cosAssertDisclosableOrGreased(result, content,
+    'a non-storer reading a "*"-scoped entry written with no ceiling header');
+}, 'ceiling: a "*"-scoped write requires no Cross-Origin-Storage-Allow-Origin header');
+
+promise_test(async t => {
+  cosAssertSomeDisclosureObserved();
+}, 'meta: at least one authorized cross-origin read in this file was actually disclosed');
+</script>
+</body>

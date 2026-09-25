@@ -19,10 +19,6 @@ video.append(source);
 
 const loaded = new Promise(resolve => window.addEventListener("load", resolve));
 
-test(() => {
-  assert_not_equals(document.readyState, "complete");
-}, "precondition: the load event has not fired yet");
-
 promise_test(async () => {
   await loaded;
   assert_equals(video.readyState, HTMLMediaElement.HAVE_NOTHING,

@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>AVIF: a layered image item with spatially scaled layers and alpha renders its final layer</title>
+<link rel="help" href="https://aomediacodec.github.io/av1-avif/#layered-image-item">
+<link rel="match" href="layered-scaled-layers-alpha-ref.html">
+<!-- As layered-scaled-layers.html, but the alpha auxiliary item is layered and
+     scaled to match, so layer N of the colour item pairs with layer N of the
+     alpha item. Both layers are 50% alpha, so the finished image is green at
+     50% alpha over the white background. -->
+<img src="resources/layers-scaled-alpha.avif">

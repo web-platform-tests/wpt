@@ -531,12 +531,21 @@ function create_ref_canvas(style, width, height, mode = 'fill') {
   const canvas = document.createElement('canvas');
   canvas.width = width + padding * 2;
   canvas.height = height + padding * 2;
-  const ctx = canvas.getContext('2d');
+
+  const ctx = canvas.getContext('2d',
+    { colorSpace: "srgb", desynchronized: false, willReadFrequently: false });
+  ctx.imageSmoothingEnabled = false;
+  ctx.resetTransform();
+
+  ctx.save();
+
   ctx.translate(padding, padding);
   canvas.style.position = 'absolute';
   canvas.style.top = '0';
   canvas.style.left = '0';
   render(style, ctx, width, height, mode);
+
+  ctx.restore();
   return canvas;
 }
 

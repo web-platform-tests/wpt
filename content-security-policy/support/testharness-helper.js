@@ -1,6 +1,8 @@
-function assert_no_csp_event_for_url(test, url) {
+function assert_no_csp_event_for_url(test, url, effectiveDirective) {
   self.addEventListener("securitypolicyviolation", test.step_func(e => {
     if (e.blockedURI !== url)
+      return;
+    if (effectiveDirective && e.effectiveDirective != effectiveDirective)
       return;
     assert_unreached("SecurityPolicyViolation event fired for " + url);
   }));
@@ -10,17 +12,18 @@ function assert_no_event(test, obj, name) {
   obj.addEventListener(name, test.unreached_func("The '" + name + "' event should not have fired."));
 }
 
-function waitUntilCSPEventForURLOrLine(test, url, line) {
+function waitUntilCSPEventForURLOrLine(test, url, line, effectiveDirective) {
   return new Promise((resolve, reject) => {
     self.addEventListener("securitypolicyviolation", test.step_func(e => {
-      if (e.blockedURI == url && (!line || line == e.lineNumber))
+      if (e.blockedURI == url && (!line || line == e.lineNumber) &&
+          (!effectiveDirective || effectiveDirective == e.effectiveDirective))
         resolve(e);
     }));
   });
 }
 
-function waitUntilCSPEventForURL(test, url) {
-  return waitUntilCSPEventForURLOrLine(test, url);
+function waitUntilCSPEventForURL(test, url, directive) {
+  return waitUntilCSPEventForURLOrLine(test, url, undefined, directive);
 }
 
 function waitUntilCSPEventForEval(test, line) {

@@ -10,6 +10,10 @@
 .small-line {
   font: 20px/2 Ahem;
   text-box: trim-start text;
+  /* The test's containing block has font: 40px/2, so the strut provides a 28px
+     descent on the first line (half-leading 20px + font descent 8px), which is
+     14px larger than small-line's 14px descent (half-leading 10px + font descent 4px). */
+  margin-bottom: 14px;
 }
 .big-line {
   font: 40px/2 Ahem;

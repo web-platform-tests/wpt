@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-scroll-anchoring-1/#suppression-triggers">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  body {
+    margin: 0;
+    height: 3000px;
+  }
+
+  #changer {
+    height: 200px;
+    background-color: cyan;
+  }
+
+  #suppressor {
+    width: 100px;
+    height: 100px;
+    background-color: orange;
+    position: static;
+  }
+
+  .anchor {
+    height: 200px;
+    background-color: green;
+  }
+
+  #sentinel {
+    height: 1px;
+    background-color: orange;
+  }
+</style>
+<body>
+<div id="changer"></div>
+<div id="suppressor"></div>
+<div class="anchor"></div>
+<div id="metrics">&nbsp;</div>
+
+<script>
+async function waitForNextFrame(t)
+{
+  await new Promise((resolve) => requestAnimationFrame(() => {
+    t.step_timeout(resolve, 0);
+  }));
+}
+
+async function reset(t)
+{
+  const changer = document.getElementById('changer');
+  const suppressor = document.getElementById('suppressor');
+
+  changer.removeAttribute('style');
+  suppressor.removeAttribute('style');
+  window.scrollTo(0, 250);
+
+  await waitForNextFrame(t);
+}
+
+promise_test(async t => {
+  await reset(t);
+  assert_equals(window.scrollY, 250);
+
+  const changer = document.getElementById('changer');
+  const suppressor = document.getElementById('suppressor');
+
+  window.scrollTo(0, 250);
+  changer.style.height = '220px';
+  assert_equals(window.scrollY, 270, "Anchoring is unsuppressed");
+
+  await waitForNextFrame(t);
+  assert_equals(window.scrollY, 270);
+
+  suppressor.style.position = 'absolute';
+  changer.style.height = '240px';
+  assert_equals(window.scrollY, 270, "Anchoring is suppressed");
+
+}, "Scroll anchoring is suppressed with synchronous position and height change");
+
+promise_test(async t => {
+  await reset(t);
+  assert_equals(window.scrollY, 250);
+
+  const changer = document.getElementById('changer');
+  const suppressor = document.getElementById('suppressor');
+
+  suppressor.style.position = 'absolute';
+  await new Promise(resolve => t.step_timeout(resolve, 1)); /* 1ms to get past an internal 0ms timer in WebKit */
+  changer.style.height = '240px';
+  assert_equals(window.scrollY, 250, "Anchoring is suppressed");
+
+}, "Scroll anchoring is suppressed with position change and delayed height change");
+
+promise_test(async t => {
+  await reset(t);
+  assert_equals(window.scrollY, 250);
+
+  const changer = document.getElementById('changer');
+  const suppressor = document.getElementById('suppressor');
+
+  suppressor.style.position = 'absolute';
+  await new Promise(resolve => t.step_timeout(resolve, 1)); /* 1ms to get past an internal 0ms timer in WebKit */
+
+  await waitForNextFrame(t);
+
+  changer.style.height = '240px';
+  assert_equals(window.scrollY, 290, "Anchoring is not suppressed");
+
+}, "Suppression window ends at the end of the current iteration of the HTML Processing Model event loop");
+
+promise_test(async t => {
+  await reset(t);
+  assert_equals(window.scrollY, 250);
+
+  const changer = document.getElementById('changer');
+  const suppressor = document.getElementById('suppressor');
+
+  suppressor.style.position = 'absolute';
+  await new Promise(resolve => t.step_timeout(resolve, 1)); /* 1ms to get past an internal 0ms timer in WebKit */
+  let unused = suppressor.getBoundingClientRect().width;
+
+  changer.style.height = '240px';
+  assert_equals(window.scrollY, 290, "Anchoring is not suppressed");
+
+}, "getBoundingClientRect closes the suppression window");
+
+promise_test(async t => {
+  await reset(t);
+  assert_equals(window.scrollY, 250);
+
+  const changer = document.getElementById('changer');
+  const suppressor = document.getElementById('suppressor');
+
+  suppressor.style.position = 'absolute';
+  await new Promise(resolve => t.step_timeout(resolve, 1)); /* 1ms to get past an internal 0ms timer in WebKit */
+  let unused = document.getElementById('metrics').clientWidth;
+
+  changer.style.height = '240px';
+  assert_equals(window.scrollY, 250, "Anchoring is suppressed");
+
+}, "clientWidth does not close the suppression window");
+
+promise_test(async t => {
+  await reset(t);
+  assert_equals(window.scrollY, 250);
+
+  const changer = document.getElementById('changer');
+  const suppressor = document.getElementById('suppressor');
+
+  suppressor.style.position = 'absolute';
+  await new Promise(resolve => t.step_timeout(resolve, 1)); /* 1ms to get past an internal 0ms timer in WebKit */
+  let unused = window.scrollY;
+
+  changer.style.height = '240px';
+  assert_equals(window.scrollY, 290, "Anchoring is not suppressed");
+
+}, "scrollY closes the suppression window");
+
+</script>
+</body>

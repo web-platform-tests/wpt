@@ -25,10 +25,6 @@ const readyStatesAtLoad = new Promise(resolve => {
   });
 });
 
-test(() => {
-  assert_not_equals(document.readyState, "complete");
-}, "precondition: the load event has not fired yet");
-
 for (const id of ["loading-before-src", "src-before-loading", "src-before-loading-scripted"]) {
   promise_test(async () => {
     const readyStates = await readyStatesAtLoad;

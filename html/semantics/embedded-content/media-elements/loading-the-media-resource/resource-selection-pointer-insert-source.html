@@ -19,26 +19,39 @@ var x4 = 0;
  ></video
 >
 <script>
-async_test(function(t) {
+promise_test(async function(t) {
   var video = document.querySelector('video');
+  var sourceB = video.querySelector('[onerror="b++"]');
+  var loaded = new Promise(function(resolve) { window.addEventListener('load', resolve); });
+
+  // currentSrc is set in the "process candidate" step, after the pointer has
+  // advanced and before the resource fetch algorithm runs, so waiting for it is
+  // how we observe that the pointer is (b | c) with b pending. Polling rather
+  // than mutating from a parse-time script keeps this robust whether the UA runs
+  // the synchronous section at a microtask checkpoint (as specified) or in a task.
+  await t.step_wait(function() { return video.currentSrc == sourceB.src; },
+                    'source b selected as candidate', 3000, 5);
+  assert_equals(b, 0, 'source b is still pending when the pointer is updated');
+
   // add source elements
   var source1 = document.createElement('source'); source1.onerror = function() { x1++; };
   var source2 = document.createElement('source'); source2.onerror = function() { x2++; };
   var source3 = document.createElement('source'); source3.onerror = function() { x3++; };
   var source4 = document.createElement('source'); source4.onerror = function() { x4++; };
   video.insertBefore(source1, video.querySelector('[onerror="a++"]'));
-  video.insertBefore(source2, video.querySelector('[onerror="b++"]'));
+  video.insertBefore(source2, sourceB);
   video.insertBefore(source3, video.querySelector('[onerror="c++"]'));
   video.appendChild(source4);
-  window.onload = t.step_func(function() {
-    assert_equals(a, 1, 'error events on a');
-    assert_equals(b, 1, 'error events on b');
-    assert_equals(c, 1, 'error events on c');
-    assert_equals(x1, 0, 'error events on x1');
-    assert_equals(x2, 0, 'error events on x2');
-    assert_equals(x3, 1, 'error events on x3');
-    assert_equals(x4, 1, 'error events on x4');
-    t.done();
-  });
+
+  await loaded;
+  assert_equals(a, 1, 'error events on a');
+  assert_equals(b, 1, 'error events on b');
+  assert_equals(c, 1, 'error events on c');
+  // source1 and source2 are inserted before the pointer, so they are never processed
+  assert_equals(x1, 0, 'error events on x1');
+  assert_equals(x2, 0, 'error events on x2');
+  // source3 is inserted at the pointer and source4 after it, so both are processed
+  assert_equals(x3, 1, 'error events on x3');
+  assert_equals(x4, 1, 'error events on x4');
 });
 </script>

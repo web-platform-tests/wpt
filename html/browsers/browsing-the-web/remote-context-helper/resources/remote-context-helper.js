@@ -119,15 +119,19 @@
      *     document content will be written to the initial empty document using
      *     `document.open()`, `document.write()`, and `document.close()`. If not
      *     supplied, the default is 'origin'.
+     * @param {string} [options.page] If supplied, the executor will serve the
+     *     given static page (a path relative to the WPT root, e.g.
+     *     '/common/blank.html') with executor scripts injected into it.
      */
     constructor(
-        {origin, scripts = [], headers = [], startOn, status, urlType} = {}) {
+        {origin, scripts = [], headers = [], startOn, status, urlType, page} = {}) {
       this.origin = origin;
       this.scripts = scripts;
       this.headers = headers;
       this.startOn = startOn;
       this.status = status;
       this.urlType = urlType;
+      this.page = page;
     }
 
     /**
@@ -168,10 +172,14 @@
       if (extraConfig.urlType) {
         urlType = extraConfig.urlType;
       }
+      let page = this.page;
+      if (extraConfig.page) {
+        page = extraConfig.page;
+      }
       const headers = this.headers.concat(extraConfig.headers);
       const scripts = this.scripts.concat(extraConfig.scripts);
       return new RemoteContextConfig(
-          {origin, headers, scripts, startOn, status, urlType});
+          {origin, headers, scripts, startOn, status, urlType, page});
     }
 
     /**
@@ -188,6 +196,10 @@
 
       // UUID is needed for executor.
       url.searchParams.append('uuid', uuid);
+
+      if (this.page && !isWorker) {
+        url.searchParams.append('page', this.page);
+      }
 
       if (this.headers) {
         addHeaders(url, this.headers);
@@ -599,6 +611,22 @@
     navigateTo(url) {
       return this.navigate(url => {
         location.href = url;
+      }, [url.toString()]);
+    }
+
+    /**
+     * Navigates by inserting and clicking a link. Unlike location.href,
+     * a link click is treated as a push navigation even when the load
+     * event has not yet fired.
+     * @param {string|URL} url The URL to navigate to.
+     * @returns {Promise<undefined>}
+     */
+    clickTo(url) {
+      return this.navigate(url => {
+        const a = document.createElement('a');
+        a.href = url;
+        document.body.appendChild(a);
+        a.click();
       }, [url.toString()]);
     }
 

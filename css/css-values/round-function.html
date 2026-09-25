@@ -220,6 +220,7 @@ test_nan("round(infinity, -infinity)");
 test_nan("round(-infinity, infinity)");
 test_nan("round(-infinity, -infinity)");
 // NaN is infectious.
+// https://drafts.csswg.org/css-values-4/#calc-ieee
 test_nan("round(NaN, 5)");
 test_nan("round(NaN, -5)");
 test_nan("round(NaN, 0)");

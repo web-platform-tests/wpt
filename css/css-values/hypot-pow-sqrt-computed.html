@@ -110,6 +110,8 @@ test_plus_zero('pow(2, -infinity)');
 
 // NaN is infectious, including pow(NaN, 0) and pow(1, NaN)
 // where JS `Math.pow` would return 1.
+// https://drafts.csswg.org/css-values-4/#exponent-infinities
+// https://drafts.csswg.org/css-values-4/#calc-ieee
 test_nan('pow(NaN, 0)');
 test_nan('pow(1, NaN)');
 test_nan('pow(NaN, NaN)');
@@ -119,6 +121,7 @@ test_minus_zero('sqrt(-0)');
 test_plus_infinity('sqrt(infinity)');
 test_nan('sqrt(-1)');
 test_nan('sqrt(NaN)');
+test_nan('sqrt(-infinity)');
 
 // hypot()
 test_math_used('hypot(3, 4)', '5', {type: 'number'});
@@ -127,6 +130,8 @@ test_plus_infinity('hypot(5, infinity)');
 test_plus_infinity('hypot(-infinity, 5)');
 // NaN is infectious, so hypot(infinity, NaN) is NaN
 // even though JS `Math.hypot(Infinity, NaN)` returns Infinity.
+// https://drafts.csswg.org/css-values-4/#exponent-infinities
+// https://drafts.csswg.org/css-values-4/#calc-ieee
 test_nan('hypot(NaN, 5)');
 test_nan('hypot(5, NaN)');
 test_nan('hypot(infinity, NaN)');

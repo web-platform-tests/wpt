@@ -1358,6 +1358,54 @@
         },
 
         /**
+         * Force a spelling or grammar text marker onto a range of an
+         * element's text.
+         *
+         * ``start`` and ``end`` are UTF-16 code unit offsets into the
+         * element's rendered text (not its ``textContent``). For text
+         * controls they index the control's value. Offsets count text in
+         * DOM order and do not enter shadow trees; elements inside a shadow
+         * tree cannot currently be targeted.
+         *
+         * This method is tentative: tests calling it must have
+         * ``.tentative`` in their filename or ``/tentative/`` in their path.
+         *
+         * @param {Element} element - element containing the text to mark
+         * @param {String} type - "spelling" or "grammar"
+         * @param {Number} start - start offset, inclusive
+         * @param {Number} end - end offset, exclusive
+         * @returns {Promise} fulfilled after the text marker is set, or
+         *                    rejected in the cases the WebDriver command
+         *                    errors
+         */
+        set_text_marker: async function(element, type, start, end) {
+            assertTestIsTentative();
+            let res = await window.test_driver_internal.set_text_marker(element, type, start, end);
+            return res;
+        },
+
+        /**
+         * Clear all text markers set by ``set_text_marker`` in the top-level
+         * browsing context containing ``context``, including markers in
+         * other frames.
+         *
+         * This method is tentative: tests calling it must have
+         * ``.tentative`` in their filename or ``/tentative/`` in their path.
+         *
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         * @returns {Promise} fulfilled after the text markers are cleared,
+         *                    or rejected in the cases the WebDriver command
+         *                    errors
+         */
+        clear_text_markers: async function(context=null) {
+            assertTestIsTentative();
+            let res = await window.test_driver_internal.clear_text_markers(context);
+            return res;
+        },
+
+        /**
          * Send keys to an element.
          *
          * If ``element`` isn't inside the
@@ -2633,6 +2681,14 @@
 
         async get_accessibility_properties_for_accessibility_node(accId) {
             throw new Error("get_accessibility_properties_for_accessibility_node is a testdriver.js function which cannot be run in this context.");
+        },
+
+        async set_text_marker(element, type, start, end) {
+            throw new Error("set_text_marker() is not implemented by testdriver-vendor.js");
+        },
+
+        async clear_text_markers(context=null) {
+            throw new Error("clear_text_markers() is not implemented by testdriver-vendor.js");
         },
 
         async send_keys(element, keys) {

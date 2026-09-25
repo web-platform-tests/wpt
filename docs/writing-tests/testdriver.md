@@ -147,6 +147,12 @@ the global scope.
 
 ```
 
+### Text Markers ###
+```eval_rst
+.. js:autofunction:: test_driver.set_text_marker
+.. js:autofunction:: test_driver.clear_text_markers
+```
+
 ### Secure Payment Confirmation ###
 ```eval_rst
 .. js:autofunction:: test_driver.set_spc_transaction_mode

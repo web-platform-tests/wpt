@@ -538,6 +538,16 @@
         return create_context_action("get_accessibility_properties_for_accessibility_node", context, { accId });
     };
 
+    window.test_driver_internal.set_text_marker = function(element, type, start, end) {
+        const selector = get_selector(element);
+        const context = get_context(element);
+        return create_context_action("set_text_marker", context, {selector, type, start, end});
+    };
+
+    window.test_driver_internal.clear_text_markers = function(context=null) {
+        return create_context_action("clear_text_markers", context, {});
+    };
+
     window.test_driver_internal.get_named_cookie = function(name, context=null) {
         return create_context_action("get_named_cookie", context, {name});
     };

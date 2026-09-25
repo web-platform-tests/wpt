@@ -1353,3 +1353,25 @@ class DisplayFeaturesProtocolPart(ProtocolPart):
     @abstractmethod
     def clear_display_features(self):
         pass
+
+
+class TextMarkerProtocolPart(ProtocolPart):
+    """Protocol part for forcing spelling and grammar text markers"""
+    __metaclass__ = ABCMeta
+
+    name = "text_markers"
+
+    @abstractmethod
+    def set_text_marker(self, element, type, start, end):
+        """Force a spelling or grammar text marker onto a range of an element's text.
+
+        :param element: A protocol-specific handle to an element.
+        :param str type: The marker type, "spelling" or "grammar".
+        :param int start: Start offset, inclusive, in UTF-16 code units of the element's rendered text.
+        :param int end: End offset, exclusive, in UTF-16 code units of the element's rendered text."""
+        pass
+
+    @abstractmethod
+    def clear_text_markers(self):
+        """Clear the text markers set by set_text_marker."""
+        pass

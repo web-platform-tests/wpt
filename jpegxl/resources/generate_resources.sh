@@ -86,9 +86,6 @@ convert 3x3a.png \
 -fill "rgba(0,0,0,0.5)" -draw "point 2,2" \
 3x3a.png
 
-# Generate initial image with alpha values
-generate_image 3x3a.png
-
 # Generate a version without alpha channel
 convert 3x3a.png -alpha off 3x3.png
 
@@ -101,6 +98,10 @@ for color_space in "${color_spaces[@]}"; do
   convert_and_compress 3x3.png "3x3" "$color_space"
   convert_and_compress 3x3a.png "3x3a" "$color_space"
 done
+
+# lossy modular
+cjxl 3x3.png 3x3_modular_lossy.jxl -m 1 -d 1
+djxl 3x3_modular_lossy.jxl 3x3_modular_lossy.png
 
 convert 3x3.png -quality 70 3x3.jpg
 # lossless recompression

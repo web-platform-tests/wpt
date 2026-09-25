@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Bytes modules: UTF-8 decoding</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script type="module" onerror="unreachable()">
+  import mod from "../serve-with-content-type.py?fn=bytes-module/utf-8.json&ct=text/json%3Bcharset=utf-8" with { type: "bytes" };
+  test(() => {
+    assert_true(mod instanceof Uint8Array);
+    assert_array_equals(Array.from(mod), [
+      239, 187, 191, 123, 32, 34, 100, 97, 116, 97, 34,
+      58, 32, 34, 104, 101, 108, 108, 111, 34, 32, 125,
+    ]);
+  }, "Bytes should be loaded as is, even when charset=utf8 is specified");
+</script>
+<script type="module" onerror="unreachable()">
+  import mod from "../serve-with-content-type.py?fn=bytes-module/utf-8.json&ct=text/json%3Bcharset=shift-jis" with { type: "bytes" };
+  test(() => {
+    assert_true(mod instanceof Uint8Array);
+    assert_array_equals(Array.from(mod), [
+      239, 187, 191, 123, 32, 34, 100, 97, 116, 97, 34,
+      58, 32, 34, 104, 101, 108, 108, 111, 34, 32, 125,
+    ]);
+  }, "Bytes should be loaded as is, even when charset=shift-jis is specified");
+</script>
+<script type="module" onerror="unreachable()">
+  import mod from "../serve-with-content-type.py?fn=bytes-module/utf-8.json&ct=text/json%3Bcharset=windows-1252" with { type: "bytes" };
+  test(() => {
+  assert_true(mod instanceof Uint8Array);
+    assert_array_equals(Array.from(mod), [
+      239, 187, 191, 123, 32, 34, 100, 97, 116, 97, 34,
+      58, 32, 34, 104, 101, 108, 108, 111, 34, 32, 125,
+    ]);
+  }, "Bytes should be loaded as is, even when charset=windows-1252 is specified");
+</script>
+<script type="module" onerror="unreachable()">
+  import mod from "../serve-with-content-type.py?fn=bytes-module/utf-8.json&ct=text/json%3Bcharset=utf-7" with { type: "bytes" };;
+  test(() => {
+        assert_true(mod instanceof Uint8Array);
+    assert_array_equals(Array.from(mod), [
+      239, 187, 191, 123, 32, 34, 100, 97, 116, 97, 34,
+      58, 32, 34, 104, 101, 108, 108, 111, 34, 32, 125,
+    ]);
+  }, "Bytes should be loaded as is, even when charset=utf-7 is specified");
+</script>
+<script type="module" onerror="unreachable()">
+  import mod from "../serve-with-content-type.py?fn=bytes-module/windows-1250.json&ct=text/json%3Bcharset=windows-1250" with { type: "bytes" };
+  test(() => {
+    assert_true(mod instanceof Uint8Array);
+    assert_array_equals(Array.from(mod), [
+      123, 32, 34, 100, 97, 116, 97, 34, 58, 32, 34, 239, 191,
+      189, 230, 185, 191, 239, 191, 189, 34, 32, 125, 10,
+    ]);
+  }, "Bytes should be loaded as is, even when encoded in windows-1250 and served with a windows-1250 charset response header");
+</script>

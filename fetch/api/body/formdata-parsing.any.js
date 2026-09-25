@@ -492,6 +492,34 @@ const parsingCases = [
     expected: [["a", "😀"]]
   },
   {
+    // A part without a filename is always UTF-8 decoded, whatever its
+    // Content-Type says.
+    description: "charset parameter in the Content-Type of a string part is ignored",
+    body: payload(
+      "--boundary",
+      "Content-Disposition: form-data; name=\"a\"",
+      "Content-Type: text/plain; charset=windows-1252",
+      "",
+      "é",
+      "--boundary--",
+      ""
+    ),
+    expected: [["a", "é"]]
+  },
+  {
+    // UTF-8 decode without BOM keeps a leading byte order mark.
+    description: "UTF-8 BOM at the start of a value is kept",
+    body: payload(
+      "--boundary",
+      "Content-Disposition: form-data; name=\"a\"",
+      "",
+      "\uFEFFvalue",
+      "--boundary--",
+      ""
+    ),
+    expected: [["a", "\uFEFFvalue"]]
+  },
+  {
     // Only CR and LF terminate a header line and only NUL makes a header
     // invalid, so other controls are part of the value.
     description: "other control characters in a name",
@@ -516,6 +544,22 @@ const parsingCases = [
       ""
     ),
     expected: [["_charset_", "windows-1252"]]
+  },
+  {
+    description: "_charset_ does not change how other parts are decoded",
+    body: payload(
+      "--boundary",
+      "Content-Disposition: form-data; name=\"_charset_\"",
+      "",
+      "windows-1252",
+      "--boundary",
+      "Content-Disposition: form-data; name=\"a\"",
+      "",
+      "é",
+      "--boundary--",
+      ""
+    ),
+    expected: [["_charset_", "windows-1252"], ["a", "é"]]
   },
 ];
 
@@ -788,6 +832,18 @@ promise_test(async t => {
   ]);
   await assertEntries(await parse(body), [["a", "b\uFFFD"]]);
 }, "Parse invalid UTF-8 in a value");
+
+promise_test(async t => {
+  // A UTF-16LE byte order mark followed by "a" encoded as UTF-16LE. The byte
+  // order mark does not switch decoding to UTF-16: both of its bytes are
+  // invalid UTF-8 and the 0x00 byte is decoded as U+0000.
+  const body = new Uint8Array([
+    ...utf8(`--boundary\r\nContent-Disposition: form-data; name="a"\r\n\r\n`),
+    0xFF, 0xFE, 0x61, 0x00,
+    ...utf8("\r\n--boundary--\r\n"),
+  ]);
+  await assertEntries(await parse(body), [["a", "\uFFFD\uFFFDa\u0000"]]);
+}, "Parse a UTF-16 BOM at the start of a value");
 
 promise_test(async t => {
   // The contents of a file part are used as-is, including bytes that are not

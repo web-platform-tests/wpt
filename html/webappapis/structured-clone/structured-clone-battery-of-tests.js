@@ -1,6 +1,6 @@
 /* This file is mostly a remix of @zcorpan’s web worker test suite */
 
-structuredCloneBatteryOfTests = [];
+const structuredCloneBatteryOfTests = [];
 
 function check(description, input, callback, requiresDocument = false) {
   structuredCloneBatteryOfTests.push({

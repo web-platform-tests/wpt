@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>WebMCP executeTool input validation (tentative)</title>
+<link rel="author" href="mailto:arnab@example.com">
+<link rel="help" href="https://webmachinelearning.github.io/webmcp/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+"use strict";
+
+// Missing required → DataError with path "/field", reason "required"
+promise_test(async t => {
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+  const tool = {
+    name: "mcp-missing-required",
+    description: "test tool",
+    inputSchema: {
+      type: "object",
+      properties: { field: { type: "string" } },
+      required: ["field"]
+    },
+    execute: t.unreached_func("execute must not be called on validation failure")
+  };
+  await document.modelContext.registerTool(tool, { signal: controller.signal });
+  const [registered] = (await document.modelContext.getTools()).filter(x => x.name === tool.name);
+  assert_true(!!registered, "tool registered");
+
+  let err;
+  try {
+    await document.modelContext.executeTool(registered, {});
+    assert_unreached("should have rejected");
+  } catch (e) {
+    err = e;
+  }
+  assert_equals(err.name, "DataError");
+  const m = JSON.parse(err.message);
+  assert_equals(m.path, "/field");
+  assert_equals(m.reason, "required");
+  assert_equals(m.schemaPath, "/required");
+}, "missing required field rejects with DataError");
+
+// Enum mismatch → DataError, execute not called; valid enum succeeds in same file as second test
+promise_test(async t => {
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+  const tool = {
+    name: "mcp-enum",
+    description: "test tool",
+    inputSchema: {
+      type: "object",
+      properties: { color: { type: "string", enum: ["red", "green"] } },
+      required: ["color"]
+    },
+    execute: t.unreached_func("execute must not be called on enum mismatch")
+  };
+  await document.modelContext.registerTool(tool, { signal: controller.signal });
+  const [registered] = (await document.modelContext.getTools()).filter(x => x.name === tool.name);
+
+  let err;
+  try {
+    await document.modelContext.executeTool(registered, { color: "blue" });
+    assert_unreached("should have rejected");
+  } catch (e) {
+    err = e;
+  }
+  assert_equals(err.name, "DataError");
+  const m = JSON.parse(err.message);
+  assert_equals(m.path, "/color");
+  assert_equals(m.reason, "enum");
+  assert_equals(m.schemaPath, "/enum");
+}, "enum mismatch rejects with DataError");
+
+promise_test(async t => {
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+  const tool = {
+    name: "mcp-enum-valid",
+    description: "test tool",
+    inputSchema: {
+      type: "object",
+      properties: { color: { type: "string", enum: ["red", "green"] } }
+    },
+    execute: async ({ color }) => JSON.stringify({ ok: color })
+  };
+  await document.modelContext.registerTool(tool, { signal: controller.signal });
+  const [registered] = (await document.modelContext.getTools()).filter(x => x.name === tool.name);
+  const result = await document.modelContext.executeTool(registered, { color: "red" });
+  assert_equals(result, JSON.stringify({ ok: "red" }));
+}, "valid enum value succeeds");
+
+// Pattern mismatch → DataError
+promise_test(async t => {
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+  const tool = {
+    name: "mcp-pattern",
+    description: "test tool",
+    inputSchema: {
+      type: "object",
+      properties: { code: { type: "string", pattern: "^[a-z]+$" } },
+      required: ["code"]
+    },
+    execute: t.unreached_func("execute must not be called on pattern mismatch")
+  };
+  await document.modelContext.registerTool(tool, { signal: controller.signal });
+  const [registered] = (await document.modelContext.getTools()).filter(x => x.name === tool.name);
+
+  let err;
+  try {
+    await document.modelContext.executeTool(registered, { code: "ABC123" });
+    assert_unreached("should have rejected");
+  } catch (e) {
+    err = e;
+  }
+  assert_equals(err.name, "DataError");
+  const m = JSON.parse(err.message);
+  assert_equals(m.path, "/code");
+  assert_equals(m.reason, "pattern");
+  assert_equals(m.schemaPath, "/pattern");
+}, "pattern mismatch rejects with DataError");
+
+// Valid complex schema (prefixItems/items + additionalProperties:false)
+promise_test(async t => {
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+  let executed = false;
+  const tool = {
+    name: "mcp-valid-complex",
+    description: "complex valid",
+    inputSchema: {
+      type: "object",
+      properties: {
+        count: { type: "integer", minimum: 1, maximum: 10 },
+        name: { type: "string", minLength: 1, maxLength: 20 },
+        tags: { type: "array", prefixItems: [{ type: "string" }], items: { type: "string" } },
+        mode: { type: "string", enum: ["a", "b"] }
+      },
+      required: ["count", "name", "tags"],
+      additionalProperties: false
+    },
+    execute: async (input) => {
+      executed = true;
+      return JSON.stringify(input);
+    }
+  };
+  await document.modelContext.registerTool(tool, { signal: controller.signal });
+  const [registered] = (await document.modelContext.getTools()).filter(x => x.name === tool.name);
+  const result = await document.modelContext.executeTool(registered, { count: 5, name: "hello", tags: ["x", "y"], mode: "a" });
+  assert_true(executed, "execute called");
+  const parsed = JSON.parse(result);
+  assert_equals(parsed.count, 5);
+  assert_equals(parsed.name, "hello");
+}, "valid complex schema succeeds");
+
+// Retry / self-correction: invalid → DataError → retry succeeds, execute not called on first attempt
+promise_test(async t => {
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+  let callCount = 0;
+  const tool = {
+    name: "mcp-retry",
+    description: "retry test",
+    inputSchema: {
+      type: "object",
+      properties: { age: { type: "integer", minimum: 0, maximum: 120 } },
+      required: ["age"]
+    },
+    execute: async ({ age }) => {
+      callCount++;
+      return JSON.stringify({ age });
+    }
+  };
+  await document.modelContext.registerTool(tool, { signal: controller.signal });
+  const [registered] = (await document.modelContext.getTools()).filter(x => x.name === tool.name);
+
+  let err;
+  try {
+    await document.modelContext.executeTool(registered, { age: "old" });
+    assert_unreached("should have rejected");
+  } catch (e) {
+    err = e;
+  }
+  assert_equals(err.name, "DataError");
+  const m = JSON.parse(err.message);
+  assert_equals(m.path, "/age");
+  assert_equals(m.reason, "type");
+  assert_equals(callCount, 0, "execute not called on validation failure");
+
+  const result = await document.modelContext.executeTool(registered, { age: 30 });
+  assert_equals(JSON.parse(result).age, 30);
+  assert_equals(callCount, 1, "execute called after correction");
+}, "invalid → DataError → retry with corrected input succeeds");
+</script>

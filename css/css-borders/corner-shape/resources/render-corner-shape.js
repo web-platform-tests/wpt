@@ -396,10 +396,10 @@ function draw_contoured_path(ctx, style, borderEdge, inset, mode = 'fill') {
 
   if (mode === 'stroke') {
     ctx.strokeStyle = 'blue';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 4;
   } else if (mode === 'stroke-clip') {
     ctx.strokeStyle = 'green';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 4;
     ctx.stroke(targetRectPath);
   }
 
@@ -543,8 +543,8 @@ function create_ref_canvas(style, width, height, mode = 'fill') {
 function create_ref(style, width, height) {
   const article = document.createElement('article');
   article.style.position = 'relative';
-  const stroke_canvas = create_ref_canvas(style, width, height, 'stroke');
   const fill_canvas = create_ref_canvas(style, width, height, 'fill');
+  const stroke_canvas = create_ref_canvas(style, width, height, 'stroke');
   article.appendChild(fill_canvas);
   article.appendChild(stroke_canvas);
   return article;

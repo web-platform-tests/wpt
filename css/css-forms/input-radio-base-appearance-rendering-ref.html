@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<div></div>
+<div unchecked></div>
+
+<style>
+body {
+  font-family: monospace;
+  background-color: black;
+  color: green;
+}
+
+div {
+  box-sizing: border-box;
+  background-color: transparent;
+
+  border: 1px solid green;
+
+  block-size: 1em;
+  inline-size: 1em;
+  font-size: 24px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+}
+
+::after {
+  content: '';
+  background-color: green;
+  display: inline-block;
+  border-radius: inherit;
+  height: 100%;
+  width: 100%;
+}
+
+[unchecked]::after {
+  visibility: hidden;
+}
+</style>

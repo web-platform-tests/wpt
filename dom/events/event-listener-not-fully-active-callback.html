@@ -84,4 +84,22 @@ promise_test(async t => {
   target.dispatchEvent(new Event("x"));
   assert_equals(count, 1);
 }, "Listener added from a removed iframe, with a fully active target and callback");
+
+promise_test(async t => {
+  const frame = await addFrame(t, `<script>
+    parent.setHandler = (element, callback) => { element.onclick = callback; };
+  <\/script>`);
+  const { setHandler } = window;
+
+  // As above, but for an event handler. The event listener HTML creates in
+  // "activate an event handler" is created from the iframe, and HTML does not
+  // say which realm its callback belongs to.
+  const element = document.createElement("div");
+  let count = 0;
+  setHandler(element, () => count++);
+  frame.remove();
+
+  element.dispatchEvent(new Event("click"));
+  assert_equals(count, 1);
+}, "Event handler set from a removed iframe, with a fully active target and callback");
 </script>

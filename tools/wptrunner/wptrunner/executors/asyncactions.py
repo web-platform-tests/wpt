@@ -382,5 +382,5 @@ async_actions = [
     BidiPermissionsSetPermissionAction,
     BidiSessionSubscribeAction,
     BidiSessionUnsubscribeAction,
-    BidiPermissionsSetPermissionAction,
-    BidiDigitalCredentialsSetVirtualWalletBehaviorAction]
+    BidiDigitalCredentialsSetVirtualWalletBehaviorAction,
+]

@@ -1,0 +1,87 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>lostpointercapture handler cancellation attempt fails; gotpointercapture fires</title>
+<link rel="help" href="https://w3c.github.io/pointerevents/#process-pending-pointer-capture">
+<link rel="help" href="https://w3c.github.io/pointerevents/#the-gotpointercapture-event">
+<link rel="help" href="https://w3c.github.io/pointerevents/#the-lostpointercapture-event">
+<link rel="help" href="https://w3c.github.io/pointerevents/#releasing-pointer-capture">
+<meta name="viewport" content="width=device-width">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<div id="target">target</div>
+<div id="a">a</div>
+<div id="b">b</div>
+<script>
+"use strict";
+
+promise_test(async () => {
+  const target = document.getElementById("target");
+  const a = document.getElementById("a");
+  const b = document.getElementById("b");
+  const event_log = [];
+
+  function logEvent(event) {
+    event_log.push(event.type + "@" + event.target.id);
+  }
+
+  target.addEventListener("pointerdown", event => {
+    logEvent(event);
+    a.setPointerCapture(event.pointerId);
+  });
+  a.addEventListener("gotpointercapture", event => {
+    logEvent(event);
+    a.addEventListener("pointermove", event => {
+      logEvent(event);
+      // Initiate transfer a->b.
+      a.releasePointerCapture(event.pointerId);
+      b.setPointerCapture(event.pointerId);
+    }, {once: true});
+  }, {once: true});
+
+  // The lostpointercapture@a handler attempts to cancel the a->b transfer by
+  // releasing b. Browsers read pending once at algorithm entry, so step 2
+  // still sees pending=b and fires gotpointercapture@b despite the release.
+  a.addEventListener("lostpointercapture", event => {
+    logEvent(event);
+    b.releasePointerCapture(event.pointerId);
+  });
+
+  for (const el of [a, b]) {
+    el.addEventListener("pointerover", logEvent);
+    el.addEventListener("pointerout", logEvent);
+    el.addEventListener("pointerup", logEvent);
+  }
+  b.addEventListener("gotpointercapture", logEvent);
+  b.addEventListener("lostpointercapture", logEvent);
+  b.addEventListener("pointermove", logEvent);
+
+  await new test_driver.Actions()
+    .pointerMove(0, 0, {origin: target})
+    .pointerDown()
+    // Move 1: a gets capture; pointermove handler initiates transfer
+    .pointerMove(1, 1, {origin: target})
+    // Move 2: override=a, pending=b; handler release ignored
+    .pointerMove(2, 2, {origin: target})
+    .pointerUp()
+    .send();
+
+  assert_array_equals(event_log, [
+    "pointerdown@target",
+    // Move 1
+    "pointerover@a",
+    "gotpointercapture@a",
+    "pointermove@a",
+    // Move 2
+    "lostpointercapture@a",
+    "pointerout@a",
+    "pointerover@b",
+    "gotpointercapture@b",
+    "pointermove@b",
+    "lostpointercapture@b",
+    "pointerout@b",
+  ]);
+}, "gotpointercapture@b fires even when lostpointercapture@a handler cancels the transfer");
+</script>

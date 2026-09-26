@@ -16,7 +16,8 @@ promise_test(async t => {
   // Wait for after the load event so that the navigation doesn't get converted
   // into a replace navigation.
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
-  assert_equals(window.scrollY, 0);
+  const result = window.scrollY;
+  assert_equals(result, 0);
   await navigation.navigate("#frag").finished;
   // Scroll down 10px from #frag
   window.scrollBy(0, 10);
@@ -38,10 +39,11 @@ promise_test(async t => {
   let scrollY_after_buffer_remove = window.scrollY;
   assert_equals(scrollY_after_buffer_remove, scrollY_frag_plus_10);
 
-  // Finishing should scroll to #frag, which is 10px up from the current location
+  // Finishing should not scroll at all, since `reload` does not result in
+  // #save-persisted-state being called.
   intercept_resolve();
   await reload_promises.finished;
-  assert_equals(window.scrollY, scrollY_after_buffer_remove - 1000 - 10);
+  assert_equals(window.scrollY, result);
 }, "scroll: after-transition should work on a reload navigation");
 </script>
 </body>

@@ -67,19 +67,8 @@ promise_test(async t => {
   const form = document.querySelector('#populate_form');
   const input = form.querySelector('input');
 
-  let toolactivatedFired = false;
-  let inputValueAtToolactivated = '';
   const modelContextEvents = [];
   const inputValuesAtModelContextToolactivated = [];
-
-  const handler = e => {
-    if (e.toolName === 'populate_tool') {
-      toolactivatedFired = true;
-      inputValueAtToolactivated = input.value;
-    }
-  };
-  window.addEventListener('toolactivated', handler);
-  t.add_cleanup(() => window.removeEventListener('toolactivated', handler));
 
   const modelContextHandler = e => {
     if (e.toolName === 'populate_tool') {
@@ -97,9 +86,6 @@ promise_test(async t => {
 
   const tool = await waitForTool('populate_tool');
   await document.modelContext.executeTool(tool, { query: 'testing' });
-
-  assert_true(toolactivatedFired, 'toolactivated event should have fired on the window');
-  assert_equals(inputValueAtToolactivated, 'testing', 'Form controls should be populated when toolactivated fires');
 
   assert_equals(modelContextEvents.length, 1, 'toolactivated event should have fired at document.modelContext');
   assert_true(modelContextEvents[0] instanceof ToolActivatedEvent);

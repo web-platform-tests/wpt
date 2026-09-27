@@ -35,19 +35,14 @@ promise_test(async t => {
 
   const events = [];
 
-  const { promise: toolActivatedPromise, resolve: resolveToolActivated } = Promise.withResolvers();
-  window.addEventListener('toolactivated', e => {
-    assert_equals(e.toolName, 'abort_propagate_tool');
-    events.push('toolactivated');
-    resolveToolActivated();
-  }, { once: true });
-
   const modelContextEvents = [];
   const {
     promise: modelContextToolActivatedPromise,
     resolve: resolveModelContextToolActivated
   } = Promise.withResolvers();
   const modelContextHandler = e => {
+    assert_equals(e.toolName, 'abort_propagate_tool');
+    events.push('toolactivated');
     modelContextEvents.push(e);
     resolveModelContextToolActivated();
   };
@@ -77,19 +72,14 @@ promise_test(async t => {
   const controller = new AbortController();
   const executionPromise = document.modelContext.executeTool(tool, {}, { signal: controller.signal });
 
-  const { promise: toolCancelPromise, resolve: resolveToolCancel } = Promise.withResolvers();
-  window.addEventListener('toolcancel', e => {
-    assert_equals(e.toolName, 'abort_propagate_tool');
-    events.push('toolcancel');
-    resolveToolCancel();
-  }, { once: true });
-
   const modelContextCancelEvents = [];
   const {
     promise: modelContextToolCancelPromise,
     resolve: resolveModelContextToolCancel
   } = Promise.withResolvers();
   const modelContextCancelHandler = e => {
+    assert_equals(e.toolName, 'abort_propagate_tool');
+    events.push('toolcancel');
     modelContextCancelEvents.push(e);
     resolveModelContextToolCancel();
   };
@@ -97,7 +87,6 @@ promise_test(async t => {
   t.add_cleanup(() => document.modelContext.removeEventListener('toolcancel', modelContextCancelHandler));
 
   await toolStartedPromise;
-  await toolActivatedPromise;
   await modelContextToolActivatedPromise;
 
   assert_equals(modelContextEvents.length, 1);
@@ -113,7 +102,6 @@ promise_test(async t => {
   await Promise.all([
     executionPromise.catch(e => { events.push('execution_rejected'); executionRejectionValue = e; }),
     signalAbortPromise,
-    toolCancelPromise,
     modelContextToolCancelPromise,
   ]);
 

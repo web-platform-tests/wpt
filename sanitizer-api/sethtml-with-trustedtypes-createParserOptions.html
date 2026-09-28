@@ -264,6 +264,32 @@
         assert_true(window.did_run, "runScripts true is respected in TrustedHTMLParserOptions");
       }, "TrustedHTMLParserOptions applies runScripts option without exposing public members");
 
+      for (const value of [0, 123, true, false, "string"]) {
+        test((t) => {
+          const policy = trustedTypes.createPolicy(`non-object-cpo-${String(value)}`, {
+            createParserOptions: () => value,
+          });
+          assert_throws_js(TypeError, () => {
+            policy.createParserOptions({});
+          });
+        }, `TrustedTypePolicy.createParserOptions returning something other than an object (${typeof value}: ${JSON.stringify(value)}) throws a TypeError`);
+
+        test((t) => {
+          t.add_cleanup(() => {
+            createParserOptions = (options) => ({
+              sanitizer: { removeElements: ["div"] },
+            });
+            createHTML = (html) => html;
+          });
+          createParserOptions = () => value;
+          createHTML = (html) => html;
+          const node = createTarget("Element", t);
+          assert_throws_js(TypeError, () => {
+            node.setHTMLUnsafe("<div id='allowed'></div>");
+          });
+        }, `Element.setHTMLUnsafe: default policy createParserOptions returning something other than an object (${typeof value}: ${JSON.stringify(value)}) throws a TypeError`);
+      }
+
       test((t) => {
         t.add_cleanup(() => {
           createParserOptions = (options) => ({

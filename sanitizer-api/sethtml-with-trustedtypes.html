@@ -212,7 +212,7 @@
             }, `${target}.${method}: createParserOptions returning ${JSON.stringify(value)} succeeds and skips sanitization`);
           }
 
-          for (const value of [0, 123, "foo"]) {
+          for (const value of [0, 123, "foo", true, false]) {
             test((t) => {
               const node = createTarget(target, t);
               createParserOptions = (options) => value;

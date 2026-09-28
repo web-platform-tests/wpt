@@ -45,7 +45,7 @@ test(t => {
   // Linear from the underlying 100px to 200px.
   for (const [time, expected] of [[0, 100], [250, 125], [500, 150], [750, 175]]) {
     anim.currentTime = time;
-    assert_approx_equals(parseFloat(getComputedStyle(target).width), expected, 0.02,
+    assert_equals(getComputedStyle(target).width, `${expected}px`,
         `width at ${time}ms should be ${expected}px, interpolated linearly, ` +
         `because the easing on the keyframe with no width is discarded`);
   }
@@ -65,7 +65,7 @@ test(t => {
 
   for (const [time, expected] of [[0, 150], [250, 150], [499, 150], [500, 200]]) {
     anim.currentTime = time;
-    assert_approx_equals(parseFloat(getComputedStyle(target).width), expected, 0.02,
+    assert_equals(getComputedStyle(target).width, `${expected}px`,
         `width at ${time}ms should be ${expected}px, because the easing sits on ` +
         `a keyframe that does specify width and so survives`);
   }

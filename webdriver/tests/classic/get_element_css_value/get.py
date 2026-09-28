@@ -105,3 +105,10 @@ def test_property_name_not_existent(session, inline):
 
     result = get_element_css_value(session, element.id, "foo")
     assert_success(result, "")
+
+def test_consistent_color_serialization(session):
+    session.url = inline("""<div style="background-color: red">""")
+    element = session.find.css("div", all=False)
+
+    result = get_element_css_value(session, element.id, "background-color")
+    assert_success(result, "rgba(255, 0, 0, 1)")

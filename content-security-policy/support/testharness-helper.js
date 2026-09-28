@@ -2,8 +2,8 @@ function assert_no_csp_event_for_url(test, url, effectiveDirective) {
   self.addEventListener("securitypolicyviolation", test.step_func(e => {
     if (e.blockedURI !== url)
       return;
-    if (effectiveDirective && e.effectiveDirective != effectiveDirective)
-      return;
+    if (effectiveDirective)
+      assert_equals(e.effectiveDirective, effectiveDirective);
     assert_unreached("SecurityPolicyViolation event fired for " + url);
   }));
 }

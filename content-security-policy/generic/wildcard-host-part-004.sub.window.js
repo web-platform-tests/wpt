@@ -9,19 +9,19 @@ setup(_ => {
 });
 
 promise_test(async t => {
-  const url = "http://{{domains[www1]}}/images/green-100x100.png";
+  const url = "http://{{domains[www1]}}/content-security-policy/support/resource.py";
   assert_no_csp_event_for_url(t, url, "connect-src");
   await promise_rejects_js(t, TypeError, fetch(url));
 }, "Host wildcard allows arbitrary hosts (www1).");
 
 promise_test(async t => {
-  const url = "http://{{domains[www2]}}/images/green-100x100.png";
+  const url = "http://{{domains[www2]}}/content-security-policy/support/resource.py";
   assert_no_csp_event_for_url(t, url, "connect-src");
   await promise_rejects_js(t, TypeError, fetch(url));
 }, "Host wildcard allows arbitrary hosts (www2).");
 
 promise_test(async t => {
-  const url = "http://{{domains[www1]}}:{{ports[http][0]}}/images/green-100x100.png";
+  const url = "http://{{domains[www1]}}:{{ports[http][0]}}/content-security-policy/support/resource.py";
   await Promise.all([
     waitUntilCSPEventForURL(t, url, "connect-src"),
     promise_rejects_js(t, TypeError, fetch(url)),

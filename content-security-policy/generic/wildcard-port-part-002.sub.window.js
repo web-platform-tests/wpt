@@ -8,19 +8,19 @@ setup(_ => {
 });
 
 promise_test(async t => {
-  const url = "http://{{host}}:{{ports[http][0]}}/images/green-100x100.png";
+  const url = "http://{{host}}:{{ports[http][0]}}/content-security-policy/support/resource.py";
   assert_no_csp_event_for_url(t, url, "connect-src");
   await fetch(url);
 }, "Port wildcard allows arbitrary port {{ports[http][0]}}.");
 
 promise_test(async t => {
-  const url = "http://{{host}}:{{ports[http][1]}}/images/green-100x100.png";
+  const url = "http://{{host}}:{{ports[http][1]}}/content-security-policy/support/resource.py";
   assert_no_csp_event_for_url(t, url, "connect-src");
-  await promise_rejects_js(t, TypeError, fetch(url));
+  await fetch(url);
 }, "Port wildcard allows arbitrary port {{ports[http][1]}}.");
 
 promise_test(async t => {
-  const url = "http://{{domains[www2]}}:{{ports[http][0]}}/images/green-100x100.png";
+  const url = "http://{{domains[www2]}}:{{ports[http][0]}}/content-security-policy/support/resource.py";
   await Promise.all([
     waitUntilCSPEventForURL(t, url, "connect-src"),
     promise_rejects_js(t, TypeError, fetch(url)),
@@ -28,7 +28,7 @@ promise_test(async t => {
 }, "Port wildcard does not affect host matching.");
 
 promise_test(async t => {
-  const url = "http://{{host}}:{{ports[http][0]}}/images/green-256x256.png";
+  const url = "http://{{host}}:{{ports[http][0]}}/images/";
   assert_no_csp_event_for_url(t, url, "connect-src");
   await fetch(url);
 }, "Path matching does not apply for empty path-part.");

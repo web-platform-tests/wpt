@@ -179,3 +179,27 @@ test(() => {
     'select.value should be unchanged.');
 }, 'Removing the selected attribute from a dirty option does not change selectedness.');
 </script>
+
+<select id=select8 multiple>
+  <option id=option8a selected>L</option>
+  <option id=option8b selected>M</option>
+</select>
+
+<script>
+// Once the select is no longer multiple only one option can stay selected, and
+// it is the first one in tree order.
+test(() => {
+  const select = document.getElementById('select8');
+  const optionA = document.getElementById('option8a');
+  const optionB = document.getElementById('option8b');
+
+  select.removeAttribute('multiple');
+
+  assert_true(optionA.selected,
+    'The first selected option should stay selected.');
+  assert_false(optionB.selected,
+    'The other selected option should be deselected.');
+  assert_equals(select.value, 'L',
+    'select.value should reflect the first selected option.');
+}, 'Removing a select\'s multiple attribute keeps the first selected option.');
+</script>

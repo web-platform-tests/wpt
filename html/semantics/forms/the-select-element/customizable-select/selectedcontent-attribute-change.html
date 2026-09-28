@@ -151,3 +151,28 @@ test(t => {
     'A size change that does not change selectedness should not mutate selectedcontent.');
 }, 'An attribute change that does not change selectedness does not update selectedcontent.');
 </script>
+
+<select id=select7 multiple>
+  <button>
+    <selectedcontent></selectedcontent>
+  </button>
+  <option id=option7a>H</option>
+  <option id=option7b selected>I</option>
+</select>
+
+<script>
+// selectedcontent is not kept up to date while the multiple attribute is
+// present, so removing it has to update selectedcontent even when no option's
+// selectedness changes.
+test(() => {
+  const select = document.getElementById('select7');
+  const selectedcontent = select.querySelector('selectedcontent');
+
+  select.removeAttribute('multiple');
+
+  assert_equals(select.value, 'I',
+    'The selected option should be unchanged.');
+  assert_equals(selectedcontent.innerHTML, 'I',
+    'selectedcontent should be updated when removing the multiple attribute.');
+}, 'Removing a select\'s multiple attribute updates selectedcontent when selectedness does not change.');
+</script>

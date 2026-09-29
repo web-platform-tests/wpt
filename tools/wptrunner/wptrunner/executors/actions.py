@@ -153,6 +153,17 @@ class GetWindowRectAction:
     def __call__(self, payload):
         return self.protocol.window.get_rect()
 
+class CreateWindowAction:
+    name = "create_window"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        type = payload.get("type")
+        return self.protocol.window.create(type)
+
 class ActionSequenceAction:
     name = "action_sequence"
 
@@ -324,6 +335,25 @@ class SetUserVerifiedAction:
         self.logger.debug(
             "Setting user verified flag on authenticator %s to %s" % (authenticator_id, uv["isUserVerified"]))
         return self.protocol.virtual_authenticator.set_user_verified(authenticator_id, uv)
+
+class SetCredentialPropertiesAction:
+    name = "set_credential_properties"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        authenticator_id = payload["authenticator_id"]
+        credential_id = payload["credential_id"]
+        props = payload["props"]
+        self.logger.debug(
+            "Setting credential properties on authenticator %s, credential %s"
+            % (authenticator_id, credential_id)
+        )
+        return self.protocol.virtual_authenticator.set_credential_properties(
+            authenticator_id, credential_id, props
+        )
 
 class SetSPCTransactionModeAction:
     name = "set_spc_transaction_mode"
@@ -633,6 +663,7 @@ actions = [ClickAction,
            MinimizeWindowAction,
            SetWindowRectAction,
            GetWindowRectAction,
+           CreateWindowAction,
            ActionSequenceAction,
            GenerateTestReportAction,
            SetPermissionAction,
@@ -643,6 +674,7 @@ actions = [ClickAction,
            RemoveCredentialAction,
            RemoveAllCredentialsAction,
            SetUserVerifiedAction,
+           SetCredentialPropertiesAction,
            SetSPCTransactionModeAction,
            SetRPHRegistrationModeAction,
            CancelFedCMDialogAction,

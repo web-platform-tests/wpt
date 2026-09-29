@@ -542,6 +542,10 @@
         return create_context_action("get_named_cookie", context, {name});
     };
 
+    window.test_driver_internal.create_window = function(type=null, context=null) {
+        return create_context_action("create_window", context, {type});
+    };
+
     window.test_driver_internal.minimize_window = function(context=null) {
         return create_context_action("minimize_window", context, {});
     };
@@ -613,6 +617,10 @@
 
     window.test_driver_internal.set_user_verified = function(authenticator_id, uv, context=null) {
         return create_context_action("set_user_verified", context, {authenticator_id, uv});
+    };
+
+    window.test_driver_internal.set_credential_properties = function(authenticator_id, credential_id, props, context=null) {
+        return create_context_action("set_credential_properties", context, {authenticator_id, credential_id, props});
     };
 
     window.test_driver_internal.set_spc_transaction_mode = function(mode, context = null) {

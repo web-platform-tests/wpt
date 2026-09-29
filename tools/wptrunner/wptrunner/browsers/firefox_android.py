@@ -177,6 +177,11 @@ class ProfileCreator(FirefoxProfileCreator):
         }
 
     def _get_default_prefs(self):
+        """Preferences that are applied to the profile of a test run.
+
+        See the note on the base class implementation: these are not visible to
+        "run_info_extras", so a run info flag does not reflect them.
+        """
         prefs = self.default_prefs()
         prefs.update(
             {
@@ -215,7 +220,8 @@ class ProfileCreator(FirefoxProfileCreator):
                 }
             )
         else:
-            # Except for wdspec dispatch wheel scroll as widget event by default.
+            # Dispatch wheel scroll as widget event by default. It stays
+            # disabled for wdspec until it can be enabled for all input sources.
             prefs["remote.events.async.wheel.enabled"] = True
 
         return prefs
@@ -307,13 +313,17 @@ class FirefoxAndroidBrowser(Browser):
         self.leak_report_file = None
 
         args = self.binary_args[:] if self.binary_args else []
-        args += [cmd_arg("marionette"),
-                 cmd_arg("remote-allow-system-access"), "about:blank"]
+        args += [cmd_arg("marionette"), "about:blank"]
 
         debug_args, cmd = browser_command(
             self.package_name, args, self.debug_info)
 
         env = get_environ(self.chaos_mode_flags, self.env_extras)
+        # Allow Marionette to execute commands in the chrome scope of the
+        # application. Not set in get_environ() because for wdspec tests the
+        # environment is forwarded to geckodriver via capabilities, which
+        # rejects this variable.
+        env["MOZ_REMOTE_ALLOW_SYSTEM_ACCESS"] = "1"
 
         self.runner = FennecEmulatorRunner(app=self.package_name,
                                            profile=self.profile,
@@ -356,7 +366,10 @@ class FirefoxAndroidBrowser(Browser):
                     self.logger.warning("Failed to remove forwarded or reversed ports: %s" % e)
             # We assume that stopping the runner prompts the
             # browser to shut down.
-            self.runner.cleanup()
+            try:
+                self.runner.cleanup()
+            except Exception as e:
+                self.logger.warning(f"Failed to cleanup runner: {e}")
         self.logger.debug("stopped")
 
     @property

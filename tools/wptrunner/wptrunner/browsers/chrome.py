@@ -120,6 +120,8 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     chrome_options["args"].append("--use-fake-ui-for-media-stream")
     # Use a fake UI for FedCM to allow testing it.
     chrome_options["args"].append("--use-fake-ui-for-fedcm")
+    # Auto-grant permission for Email Verification Protocol to bypass user gesture.
+    chrome_options["args"].append("--auto-grant-email-verification-permission-for-testing")
     # This is needed until https://github.com/web-platform-tests/wpt/pull/40709
     # is merged.
     chrome_options["args"].append("--enable-features=FedCmWithoutWellKnownEnforcement")
@@ -340,7 +342,7 @@ class ChromeBrowser(WebDriverBrowser):
         self._is_extension_test = (
             (test.testdriver_features is not None and
              "extensions" in test.testdriver_features) or
-            (test.path is not None and "web-extensions/" in test.path))
+            (test.url is not None and "web-extensions/" in test.url))
         self._require_webdriver_bidi = (
             (test.testdriver_features is not None and
              ("bidi" in test.testdriver_features or

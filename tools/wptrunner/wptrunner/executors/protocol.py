@@ -750,6 +750,15 @@ class WindowProtocolPart(ProtocolPart):
     name = "window"
 
     @abstractmethod
+    def create(self, type_hint=None):
+        """Create a new top-level browsing context without switching to it.
+
+        :param type_hint: Optional hint, either "tab" or "window", for the
+                          type of top-level browsing context to create.
+        :returns: A handle string identifying the new top-level browsing context."""
+        pass
+
+    @abstractmethod
     def set_rect(self, rect):
         """Restores the window to the given rect."""
         pass
@@ -1063,6 +1072,15 @@ class VirtualAuthenticatorProtocolPart(ProtocolPart):
 
         :param str authenticator_id: The ID of the authenticator
         :param bool uv: the user verified flag"""
+        pass
+
+    @abstractmethod
+    def set_credential_properties(self, authenticator_id, credential_id, props):
+        """Sets credential properties on an authenticator
+
+        :param str authenticator_id: The ID of the authenticator
+        :param str credential_id: The ID of the credential
+        :param props: The credential properties to set"""
         pass
 
 

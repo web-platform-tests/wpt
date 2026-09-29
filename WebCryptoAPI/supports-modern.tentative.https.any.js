@@ -33,6 +33,24 @@ const modernAlgorithms = {
       'decapsulateKey', 'decapsulateBits', 'getPublicKey'
     ],
   },
+  'MLKEM768-P256': {
+    operations: [
+      'generateKey', 'importKey', 'encapsulateKey', 'encapsulateBits',
+      'decapsulateKey', 'decapsulateBits', 'getPublicKey'
+    ],
+  },
+  'MLKEM768-X25519': {
+    operations: [
+      'generateKey', 'importKey', 'encapsulateKey', 'encapsulateBits',
+      'decapsulateKey', 'decapsulateBits', 'getPublicKey'
+    ],
+  },
+  'MLKEM1024-P384': {
+    operations: [
+      'generateKey', 'importKey', 'encapsulateKey', 'encapsulateBits',
+      'decapsulateKey', 'decapsulateBits', 'getPublicKey'
+    ],
+  },
 
   // Symmetric algorithms
   'ChaCha20-Poly1305': {
@@ -64,6 +82,70 @@ testSupportsMethod();
 
 // Test standard WebCrypto algorithms for requested operations
 runSupportsTests(modernAlgorithms, operations);
+
+['ML-DSA-44', 'ML-DSA-65', 'ML-DSA-87'].forEach(name => {
+  ['sign', 'verify'].forEach(operation => {
+    test(() => {
+      assert_true(
+        SubtleCrypto.supports(operation, {
+          name,
+          context: new Uint8Array(255),
+        }),
+        `${name} ${operation} supports a 255-byte context`
+      );
+      assert_false(
+        SubtleCrypto.supports(operation, {
+          name,
+          context: new Uint8Array(256),
+        }),
+        `${name} ${operation} rejects a 256-byte context`
+      );
+    }, `supports validates ${name} ${operation} context length`);
+  });
+});
+
+const mlKemImportedKeyCases = [
+  {
+    description: 'a matching HMAC length',
+    additionalAlgorithm: {name: 'HMAC', hash: 'SHA-256', length: 256},
+    expected: true,
+  },
+  {
+    description: 'an algorithm without raw-secret import',
+    additionalAlgorithm: 'Ed25519',
+    expected: false,
+  },
+  {
+    description: 'an HMAC length shorter than the shared secret',
+    additionalAlgorithm: {name: 'HMAC', hash: 'SHA-256', length: 128},
+    expected: false,
+  },
+  {
+    description: 'an HMAC length longer than the shared secret',
+    additionalAlgorithm: {name: 'HMAC', hash: 'SHA-256', length: 512},
+    expected: false,
+  },
+];
+
+['encapsulateKey', 'decapsulateKey'].forEach(operation => {
+  mlKemImportedKeyCases.forEach(({
+    description,
+    additionalAlgorithm,
+    expected,
+  }) => {
+    test(() => {
+      assert_equals(
+        SubtleCrypto.supports(
+          operation,
+          'ML-KEM-768',
+          additionalAlgorithm
+        ),
+        expected,
+        `ML-KEM-768 ${operation} with ${description}`
+      );
+    }, `supports ${operation} with ${description}`);
+  });
+});
 
 // Test some algorithm objects with valid parameters
 test(() => {

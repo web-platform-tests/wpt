@@ -289,6 +289,42 @@
           );
           assert_not_equals(node.querySelector("#allowed"), null);
         }, `${target}.setHTMLUnsafe: TrustedHTML runs scripts when caller requests runScripts and default policy allows it`);
+
+        for (const method of [
+          "innerHTML",
+          "outerHTML",
+          "afterbegin",
+          "beforeend",
+          "beforebegin",
+          "afterend",
+        ]) {
+          if (target === "ShadowRoot" && method !== "innerHTML") {
+            continue;
+          }
+          test((t) => {
+            const node = createTarget(target, t);
+            window.trusted_script_ran = false;
+            t.add_cleanup(() => {
+              window.trusted_script_ran = false;
+            });
+            let receivedRunScripts = null;
+            createParserOptions = (options) => {
+              receivedRunScripts = options.runScripts;
+              return { runScripts: true };
+            };
+            const trustedHTML = testPolicy.createHTML(
+              "<div id='allowed'><script>window.trusted_script_ran = true;</" +
+                "script></div>",
+            );
+            run_method(node, method, trustedHTML);
+            assert_false(receivedRunScripts, "Initial runScripts option should be false");
+            assert_true(
+              window.trusted_script_ran,
+              `Default policy returning {runScripts: true} enables script execution for ${method}`,
+            );
+            assert_not_equals(node.querySelector("#allowed"), null);
+          }, `${target}.${method}: default policy createParserOptions returning {runScripts: true} enables script execution with TrustedHTML`);
+        }
       }
 
       // createContextualFragment runScripts tests with TrustedHTML
@@ -394,17 +430,19 @@
       }, "Document.parseHTMLUnsafe: caller-provided TrustedHTMLParserOptions sanitizer is applied with TrustedHTML while default policy is bypassed");
 
       // XML document tests with TrustedHTML:
-      // In XML documents, documentType is "xml" so createParserOptions with sanitizer does not bypass
-      // get trusted type compliant string. However, passing TrustedHTML satisfies get trusted type
-      // compliant string without calling createHTML, so it never throws even if createHTML throws/is absent.
+      // In XML documents, documentType is "xml" so createParserOptions does not run at all for legacy XML sinks
+      // (innerHTML, outerHTML, insertAdjacentHTML, createContextualFragment). Passing TrustedHTML satisfies
+      // get trusted type compliant string without calling createHTML or createParserOptions.
       test((t) => {
         t.add_cleanup(() => {
           createParserOptions = (options) => options;
           createHTML = (html) => html;
         });
-        createParserOptions = (options) => ({
-          sanitizer: { removeElements: ["div"] },
-        });
+        let createParserOptionsCalled = false;
+        createParserOptions = (options) => {
+          createParserOptionsCalled = true;
+          return { sanitizer: { removeElements: ["span"] } };
+        };
         createHTML = () => {
           throw new Error("createHTML should not be called for TrustedHTML in XML document");
         };
@@ -415,21 +453,27 @@
 
         const trustedHTML = testPolicy.createHTML("<span id='xml-span'></span>");
         elem.innerHTML = trustedHTML;
+        assert_false(
+          createParserOptionsCalled,
+          "createParserOptions must not be called for innerHTML on XML document",
+        );
         assert_not_equals(
           elem.querySelector("#xml-span"),
           null,
           "innerHTML on XML document does not throw and inserts TrustedHTML",
         );
-      }, "innerHTML on XML document does not throw TypeError when TrustedHTML is passed even if default policy provides a sanitizer");
+      }, "innerHTML on XML document does not call createParserOptions or throw TypeError when TrustedHTML is passed");
 
       test((t) => {
         t.add_cleanup(() => {
           createParserOptions = (options) => options;
           createHTML = (html) => html;
         });
-        createParserOptions = (options) => ({
-          sanitizer: { removeElements: ["div"] },
-        });
+        let createParserOptionsCalled = false;
+        createParserOptions = (options) => {
+          createParserOptionsCalled = true;
+          return { sanitizer: { removeElements: ["span"] } };
+        };
         createHTML = () => {
           throw new Error("createHTML should not be called for TrustedHTML in XML document");
         };
@@ -440,21 +484,27 @@
 
         const trustedHTML = testPolicy.createHTML("<span id='xml-span'></span>");
         elem.outerHTML = trustedHTML;
+        assert_false(
+          createParserOptionsCalled,
+          "createParserOptions must not be called for outerHTML on XML document",
+        );
         assert_not_equals(
           doc.querySelector("#xml-span"),
           null,
           "outerHTML on XML document does not throw and inserts TrustedHTML",
         );
-      }, "outerHTML on XML document does not throw TypeError when TrustedHTML is passed even if default policy provides a sanitizer");
+      }, "outerHTML on XML document does not call createParserOptions or throw TypeError when TrustedHTML is passed");
 
       test((t) => {
         t.add_cleanup(() => {
           createParserOptions = (options) => options;
           createHTML = (html) => html;
         });
-        createParserOptions = (options) => ({
-          sanitizer: { removeElements: ["div"] },
-        });
+        let createParserOptionsCalled = false;
+        createParserOptions = (options) => {
+          createParserOptionsCalled = true;
+          return { sanitizer: { removeElements: ["span"] } };
+        };
         createHTML = () => {
           throw new Error("createHTML should not be called for TrustedHTML in XML document");
         };
@@ -465,21 +515,27 @@
 
         const trustedHTML = testPolicy.createHTML("<span id='xml-span'></span>");
         elem.insertAdjacentHTML("beforeend", trustedHTML);
+        assert_false(
+          createParserOptionsCalled,
+          "createParserOptions must not be called for insertAdjacentHTML on XML document",
+        );
         assert_not_equals(
           elem.querySelector("#xml-span"),
           null,
           "insertAdjacentHTML on XML document does not throw and inserts TrustedHTML",
         );
-      }, "insertAdjacentHTML on XML document does not throw TypeError when TrustedHTML is passed even if default policy provides a sanitizer");
+      }, "insertAdjacentHTML on XML document does not call createParserOptions or throw TypeError when TrustedHTML is passed");
 
       test((t) => {
         t.add_cleanup(() => {
           createParserOptions = (options) => options;
           createHTML = (html) => html;
         });
-        createParserOptions = (options) => ({
-          sanitizer: { removeElements: ["div"] },
-        });
+        let createParserOptionsCalled = false;
+        createParserOptions = (options) => {
+          createParserOptionsCalled = true;
+          return { sanitizer: { removeElements: ["span"] } };
+        };
         createHTML = () => {
           throw new Error("createHTML should not be called for TrustedHTML in XML document");
         };
@@ -490,12 +546,44 @@
 
         const trustedHTML = testPolicy.createHTML("<span id='xml-span'></span>");
         const fragment = range.createContextualFragment(trustedHTML);
+        assert_false(
+          createParserOptionsCalled,
+          "createParserOptions must not be called for createContextualFragment on XML document",
+        );
         assert_not_equals(
           fragment.querySelector("#xml-span"),
           null,
           "createContextualFragment on XML document does not throw and returns fragment for TrustedHTML",
         );
-      }, "createContextualFragment on XML document does not throw TypeError when TrustedHTML is passed even if default policy provides a sanitizer");
+      }, "createContextualFragment on XML document does not call createParserOptions or throw TypeError when TrustedHTML is passed");
+
+      test((t) => {
+        t.add_cleanup(() => {
+          createParserOptions = (options) => options;
+          createHTML = (html) => html;
+        });
+        let createParserOptionsCalled = false;
+        createParserOptions = (options) => {
+          createParserOptionsCalled = true;
+          return { sanitizer: { removeElements: ["span"] } };
+        };
+        createHTML = () => {
+          throw new Error("createHTML should not be called for TrustedHTML in XML document");
+        };
+
+        const doc = document.implementation.createDocument("application/xml", "xml");
+        const elem = doc.createElement("div");
+        doc.documentElement.appendChild(elem);
+
+        const trustedHTML = testPolicy.createHTML("<div id='allowed'><span id='forbidden'></span></div>");
+        elem.setHTMLUnsafe(trustedHTML);
+        assert_true(
+          createParserOptionsCalled,
+          "createParserOptions must be called for setHTMLUnsafe even on XML document",
+        );
+        assert_not_equals(elem.querySelector("#allowed"), null);
+        assert_equals(elem.querySelector("#forbidden"), null);
+      }, "setHTMLUnsafe on XML document calls createParserOptions and applies sanitizer when TrustedHTML is passed");
     </script>
   </body>
 </html>

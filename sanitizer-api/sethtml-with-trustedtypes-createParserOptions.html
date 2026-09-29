@@ -44,6 +44,8 @@
         });
 
         const target = document.createElement("div");
+        container.append(target);
+        t.add_cleanup(() => target.remove());
         switch (target_type) {
           case "Element":
             return target;

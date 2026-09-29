@@ -265,6 +265,43 @@
           assert_not_equals(node.querySelector("#allowed"), null);
         }, `${target}: createParserOptions can override runScripts from false to true`);
 
+        for (const method of [
+          "innerHTML",
+          "outerHTML",
+          "afterbegin",
+          "beforeend",
+          "beforebegin",
+          "afterend",
+        ]) {
+          if (target === "ShadowRoot" && method !== "innerHTML") {
+            continue;
+          }
+          test((t) => {
+            const node = createTarget(target, t);
+            window.did_run = false;
+            t.add_cleanup(() => {
+              window.did_run = false;
+            });
+            let receivedRunScripts = null;
+            createParserOptions = (options) => {
+              receivedRunScripts = options.runScripts;
+              return { runScripts: true };
+            };
+            run_method(
+              node,
+              method,
+              "<div id=allowed><script>window.did_run = true;<" +
+                "/script></div>",
+            );
+            assert_false(receivedRunScripts, "Initial runScripts option should be false");
+            assert_true(
+              window.did_run,
+              `Default policy returning {runScripts: true} enables script execution for ${method}`,
+            );
+            assert_not_equals(node.querySelector("#allowed"), null);
+          }, `${target}.${method}: createParserOptions returning {runScripts: true} enables script execution`);
+        }
+
         if (target === "Element") {
           test((t) => {
             const node = createTarget(target, t);

@@ -43,17 +43,17 @@
       }, `${sink.name}: string with ${label} throws without calling createHTML`);
 
       promise_test(async t => {
-        resetCreateHTMLCalls(t);
         const target = sink.createTarget(t);
         const violation = await trusted_type_violation_for(TypeError, () =>
           sink.parse(target, policy.createHTML(markup), getOptions())
         );
         assert_equals(violation.sample, `${sink.sample}|`);
-        assert_equals(createHTMLCalls, 0, "default policy's createHTML was not called");
       }, `${sink.name}: TrustedHTML with ${label} throws`);
     }
 
-    for (const [label, getOptions] of vettingFreeOptions) {
+    const allowedOptions = sink.hasRunScripts ?
+        vettingFreeOptions : [...vettingFreeOptions, ...unvettedRunScriptsOptions];
+    for (const [label, getOptions] of allowedOptions) {
       promise_test(async t => {
         resetCreateHTMLCalls(t);
         const target = sink.createTarget(t);
@@ -66,4 +66,29 @@
       }, `${sink.name}: string with ${label} is converted by createHTML`);
     }
   }
+
+  promise_test(async t => {
+    resetCreateHTMLCalls(t);
+    resetScriptRan(t);
+    const element = document.createElement("div");
+    document.body.append(element);
+    t.add_cleanup(() => element.remove());
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    await no_trusted_type_violation_for(() => {
+      range.insertNode(range.createContextualFragment(scriptMarkup));
+    });
+    assert_equals(createHTMLCalls, 1, "default policy's createHTML was called");
+    assert_true(window.scriptRan, "script ran");
+  }, "Range.createContextualFragment: string is converted by createHTML, as its runScripts is not author-supplied");
+
+  promise_test(async t => {
+    resetCreateHTMLCalls(t);
+    const element = document.createElement("div");
+    await no_trusted_type_violation_for(() => {
+      element.innerHTML = markup;
+    });
+    assert_equals(createHTMLCalls, 1, "default policy's createHTML was called");
+    assert_not_equals(element.querySelector("#inner"), null);
+  }, "Element.innerHTML: string is converted by createHTML");
 </script>

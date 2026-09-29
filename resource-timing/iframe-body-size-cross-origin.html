@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Verify that iframe encodedBodySize and decodedBodySize are not exposed across origins</title>
+<link rel="help" href="https://w3c.github.io/resource-timing/#dom-performanceresourcetiming-encodedbodysize">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/observe-entry.js"></script>
+</head>
+<body>
+<script>
+const {ORIGIN, REMOTE_ORIGIN} = get_host_info();
+
+promise_test(async t => {
+  const iframe = document.createElement('iframe');
+  t.add_cleanup(() => iframe.remove());
+  const url = `${ORIGIN}/resource-timing/resources/green.html?uid=${token()}`;
+  iframe.src = url;
+  document.body.appendChild(iframe);
+  const entry = await observe_entry(url);
+  assert_greater_than(entry.encodedBodySize, 0, "encodedBodySize should be > 0");
+  assert_greater_than(entry.decodedBodySize, 0, "decodedBodySize should be > 0");
+  assert_greater_than(entry.transferSize, 0, "transferSize should be > 0");
+}, "Same-origin iframe exposes body size");
+
+promise_test(async t => {
+  const iframe = document.createElement('iframe');
+  t.add_cleanup(() => iframe.remove());
+  const url = `${REMOTE_ORIGIN}/resource-timing/resources/green.html?uid=${token()}`;
+  iframe.src = url;
+  document.body.appendChild(iframe);
+  const entry = await observe_entry(url);
+  assert_equals(entry.encodedBodySize, 0, "encodedBodySize should be 0");
+  assert_equals(entry.decodedBodySize, 0, "decodedBodySize should be 0");
+  assert_equals(entry.transferSize, 0, "transferSize should be 0");
+}, "Cross-origin iframe without Timing-Allow-Origin does not expose body size");
+
+promise_test(async t => {
+  const iframe = document.createElement('iframe');
+  t.add_cleanup(() => iframe.remove());
+  const url = `${REMOTE_ORIGIN}/resource-timing/resources/green.html?pipe=header(Timing-Allow-Origin,*)&uid=${token()}`;
+  iframe.src = url;
+  document.body.appendChild(iframe);
+  const entry = await observe_entry(url);
+  assert_equals(entry.encodedBodySize, 0, "encodedBodySize should not be exposed even with TAO");
+  assert_equals(entry.decodedBodySize, 0, "decodedBodySize should not be exposed even with TAO");
+  assert_greater_than(entry.transferSize, 0, "transferSize should be exposed with TAO");
+}, "Cross-origin iframe with Timing-Allow-Origin does not expose body size");
+
+promise_test(async t => {
+  const iframe = document.createElement('iframe');
+  t.add_cleanup(() => iframe.remove());
+  const destUrl = encodeURIComponent(`${ORIGIN}/resource-timing/resources/green.html?uid=${token()}`);
+  const url = `${ORIGIN}/common/redirect.py?location=${destUrl}`;
+  iframe.src = url;
+  document.body.appendChild(iframe);
+  const entry = await observe_entry(url);
+  assert_greater_than(entry.encodedBodySize, 0, "encodedBodySize should be > 0");
+  assert_greater_than(entry.decodedBodySize, 0, "decodedBodySize should be > 0");
+  assert_greater_than(entry.transferSize, 0, "transferSize should be > 0");
+}, "Same-origin iframe with same-origin redirect exposes body size");
+
+promise_test(async t => {
+  const iframe = document.createElement('iframe');
+  t.add_cleanup(() => iframe.remove());
+  const destUrl = encodeURIComponent(`${ORIGIN}/resource-timing/resources/green.html?uid=${token()}`);
+  const url = `${REMOTE_ORIGIN}/common/redirect.py?location=${destUrl}`;
+  iframe.src = url;
+  document.body.appendChild(iframe);
+  const entry = await observe_entry(url);
+  assert_equals(entry.encodedBodySize, 0, "encodedBodySize should be 0");
+  assert_equals(entry.decodedBodySize, 0, "decodedBodySize should be 0");
+  assert_equals(entry.transferSize, 0, "transferSize should be 0");
+}, "Same-origin iframe with cross-origin redirect does not expose body size");
+</script>
+</body>
+</html>

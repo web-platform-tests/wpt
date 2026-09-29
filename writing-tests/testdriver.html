@@ -294,6 +294,27 @@ and the returned WebDriver window handle is its only identifier.</p>
 </dl>
 </dd></dl>
 
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.navigate">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">navigate</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.navigate" title="Link to this definition">¶</a></dt>
+<dd><p>Navigates the top-level browsing context to the given absolute URL.</p>
+<p>Matches the behaviour of the <a class="reference external" href="https://www.w3.org/TR/webdriver/#navigate-to">Navigate To</a>
+WebDriver command.</p>
+<p>Navigating the browsing context in which the
+test is running will unload the test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<em>String</em>) – The URL to navigate to. This must be absolute.</p></li>
+<li><p><strong>context</strong> (<em>String|WindowProxy</em>) – Browsing context in which to run the call: a <code class="docutils literal notranslate"><span class="pre">WindowProxy</span></code>, a WebDriver window handle as returned by <a class="reference internal" href="#test_driver.create_window" title="test_driver.create_window"><code class="xref js js-func docutils literal notranslate"><span class="pre">create_window()</span></code></a>, or null to use the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled when the WebDriver command returns, which depends on the session’s page load strategy, or rejected if the WebDriver command errors.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="window-state">
 <h3>Window State<a class="headerlink" href="#window-state" title="Link to this heading">¶</a></h3>

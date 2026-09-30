@@ -11,7 +11,7 @@
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-cast
 // https://www.w3.org/TR/webnn/#casting
 // A float32 -> float16 -> float32 composition must retain the narrowing cast.
-// All expected values below are binary16 values exactly representable in
+// Narrowed expected values are binary16 values exactly representable in
 // binary32, so widening adds no rounding error.
 const castRoundingVectors = [
   {
@@ -132,13 +132,16 @@ for (const constant of [false, true]) {
 
 // An idempotent second cast pair must also preserve the first pair's result.
 // Exposing each logical output distinguishes narrowing from later transport.
+const successiveCastInput = castRoundingVectors.flatMap(vector => vector.input);
+const successiveCastExpected =
+    castRoundingVectors.flatMap(vector => vector.expected);
 castRoundingTests.push({
   name: 'successive float16 cast boundaries preserve each logical output',
   graph: {
     inputs: {
       input: {
-        data: [1.0003, -1.0003, 2 ** -24, -(2 ** -24), -(2 ** -25), 65520],
-        descriptor: {shape: [6], dataType: 'float32'}
+        data: successiveCastInput,
+        descriptor: {shape: [successiveCastInput.length], dataType: 'float32'}
       }
     },
     operators: [
@@ -165,20 +168,48 @@ castRoundingTests.push({
     ],
     expectedOutputs: {
       firstNarrowed: {
-        data: [1, -1, 2 ** -24, -(2 ** -24), -0, Infinity],
-        descriptor: {shape: [6], dataType: 'float16'}
+        data: successiveCastExpected,
+        descriptor: {shape: [successiveCastInput.length], dataType: 'float16'}
       },
       firstWidened: {
-        data: [1, -1, 2 ** -24, -(2 ** -24), -0, Infinity],
-        descriptor: {shape: [6], dataType: 'float32'}
+        data: successiveCastExpected,
+        descriptor: {shape: [successiveCastInput.length], dataType: 'float32'}
       },
       secondNarrowed: {
-        data: [1, -1, 2 ** -24, -(2 ** -24), -0, Infinity],
-        descriptor: {shape: [6], dataType: 'float16'}
+        data: successiveCastExpected,
+        descriptor: {shape: [successiveCastInput.length], dataType: 'float16'}
       },
       secondWidened: {
-        data: [1, -1, 2 ** -24, -(2 ** -24), -0, Infinity],
-        descriptor: {shape: [6], dataType: 'float32'}
+        data: successiveCastExpected,
+        descriptor: {shape: [successiveCastInput.length], dataType: 'float32'}
+      }
+    }
+  }
+});
+
+// A same-type cast must not introduce an implicit float16 conversion.
+const sameTypeFloat32Input = [
+  2, -4, 7, 1.0003, -1.0003, 1.0007, -1.0007,
+  2 ** -24, -(2 ** -24), 0, -0, Infinity, -Infinity, NaN
+];
+castRoundingTests.push({
+  name: 'cast float32 -> float32 preserves values without float16 rounding',
+  graph: {
+    inputs: {
+      input: {
+        data: sameTypeFloat32Input,
+        descriptor: {shape: [sameTypeFloat32Input.length], dataType: 'float32'}
+      }
+    },
+    operators: [{
+      name: 'cast',
+      arguments: [{input: 'input'}, {type: 'float32'}],
+      outputs: 'result'
+    }],
+    expectedOutputs: {
+      result: {
+        data: sameTypeFloat32Input.map(Math.fround),
+        descriptor: {shape: [sameTypeFloat32Input.length], dataType: 'float32'}
       }
     }
   }
@@ -209,4 +240,3 @@ const buildAndCheckCastRounding = async (context, builder, graphResources) => {
 
 webnn_conformance_test(
     castRoundingTests, buildAndCheckCastRounding, getZeroULPTolerance);
-

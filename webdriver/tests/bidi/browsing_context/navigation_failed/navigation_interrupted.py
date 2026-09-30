@@ -1,3 +1,7 @@
+# META: timeout=long
+
+# The first run on a cold browser can exceed the default timeout while the two navigations settle.
+
 import asyncio
 import pytest
 

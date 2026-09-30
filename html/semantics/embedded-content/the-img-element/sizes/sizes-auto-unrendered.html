@@ -1,0 +1,270 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>sizes=auto: retaining last rendered width when unrendered</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#parsing-a-sizes-attribute">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#relevant-mutations">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#allows-auto-sizes">
+<link rel="help" href="https://github.com/whatwg/html/pull/13004">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<div id="container"></div>
+<script>
+"use strict";
+
+const dpr = window.devicePixelRatio || 1;
+const smallW = Math.max(1, Math.round(50 * dpr));
+const largeW = Math.max(2, Math.round(500 * dpr));
+const xlargeW = Math.max(3, Math.round(1200 * dpr));
+
+function makeSrcset(token) {
+  return `/images/green-1x1.png?small-${token} ${smallW}w, ` +
+         `/images/green-16x16.png?large-${token} ${largeW}w, ` +
+         `/images/green-256x256.png?xlarge-${token} ${xlargeW}w`;
+}
+
+function nextLoad(img) {
+  return new Promise((resolve, reject) => {
+    img.addEventListener('load', resolve, {once: true});
+    img.addEventListener('error', () => reject(new Error('Image failed to load: ' + img.currentSrc)), {once: true});
+  });
+}
+
+async function createAutoSizedImage(sizes, width, token, parent = document.body) {
+  const image = document.createElement('img');
+  image.loading = 'lazy';
+  image.sizes = sizes;
+  image.style.cssText = `width: ${width}px; height: 10px;`;
+  const loadPromise = nextLoad(image);
+  image.srcset = makeSrcset(token);
+  parent.append(image);
+  await loadPromise;
+  assert_true(image.currentSrc.includes(`small-${token}`),
+              `Initial source should be small candidate (got: ${image.currentSrc})`);
+  return image;
+}
+
+async function waitForPossibleReselection() {
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  await new Promise(resolve => step_timeout(resolve, 50));
+}
+
+// 1. Stopping being rendered must not trigger source reselection.
+promise_test(async () => {
+  const image = await createAutoSizedImage('auto', 50, 'detach-auto');
+  image.remove();
+  await waitForPossibleReselection();
+  assert_true(image.currentSrc.includes('small-detach-auto'),
+              'Detached image must not reselect source to fallback');
+}, 'A detached sizes=auto image does not reselect its source');
+
+promise_test(async () => {
+  const image = await createAutoSizedImage('auto, 500px', 50, 'detach-explicit');
+  image.remove();
+  await waitForPossibleReselection();
+  assert_true(image.currentSrc.includes('small-detach-explicit'),
+              'Detached image must not reselect source to explicit fallback');
+}, 'A detached sizes=auto image with explicit fallback does not reselect its source');
+
+promise_test(async () => {
+  const image = await createAutoSizedImage('auto', 50, 'hidden-auto');
+  image.style.display = 'none';
+  await waitForPossibleReselection();
+  assert_true(image.currentSrc.includes('small-hidden-auto'),
+              'display:none image must not reselect source to fallback');
+}, 'A display:none sizes=auto image does not reselect its source');
+
+promise_test(async () => {
+  const image = await createAutoSizedImage('auto, 500px', 50, 'hidden-explicit');
+  image.style.display = 'none';
+  await waitForPossibleReselection();
+  assert_true(image.currentSrc.includes('small-hidden-explicit'),
+              'display:none image must not reselect source to explicit fallback');
+}, 'A display:none sizes=auto image with explicit fallback does not reselect its source');
+
+promise_test(async () => {
+  const container = document.createElement('div');
+  document.body.append(container);
+  const image = await createAutoSizedImage('auto', 50, 'hidden-ancestor', container);
+  container.style.display = 'none';
+  await waitForPossibleReselection();
+  assert_true(image.currentSrc.includes('small-hidden-ancestor'),
+              'Image inside hidden ancestor must not reselect source to fallback');
+  container.remove();
+}, 'An image inside an ancestor that stops being rendered does not reselect its source');
+
+// 2. Retaining last auto-sizes width during subsequent mutations while unrendered.
+promise_test(async () => {
+  const image = await createAutoSizedImage('auto', 50, 'retained-hidden');
+  image.style.display = 'none';
+
+  const loadPromise = nextLoad(image);
+  image.srcset = makeSrcset('retained-hidden-new');
+  await loadPromise;
+
+  assert_true(image.currentSrc.includes('small-retained-hidden-new'),
+              `Subsequent source selection while display:none must use retained last auto-sizes width (got: ${image.currentSrc})`);
+}, 'A display:none sizes=auto image uses retained last auto-sizes width on subsequent mutation');
+
+promise_test(async () => {
+  const image = await createAutoSizedImage('auto', 50, 'retained-sizes-change');
+  image.style.display = 'none';
+
+  // Changing sizes while display:none. The sizes value still allows auto-sizes.
+  const loadPromise = nextLoad(image);
+  image.sizes = 'auto, 500px';
+  image.srcset = makeSrcset('retained-sizes-change-new');
+  await loadPromise;
+
+  assert_true(image.currentSrc.includes('small-retained-sizes-change-new'),
+              `Retained width must still be used when sizes attribute is updated while unrendered (got: ${image.currentSrc})`);
+}, 'Updating sizes attribute while unrendered still uses retained last auto-sizes width');
+
+promise_test(async () => {
+  const image = await createAutoSizedImage('auto', 50, 'detach-mutation');
+  image.remove();
+
+  // If disconnection resets the last auto-sizes width slot, subsequent mutations
+  // while detached fall back to viewport (100vw).
+  const loadPromise = nextLoad(image);
+  image.srcset = makeSrcset('detach-mutation-new');
+  await loadPromise;
+
+  assert_true(image.currentSrc.includes('xlarge-detach-mutation-new'),
+              `Subsequent source selection while detached falls back to 100vw (got: ${image.currentSrc})`);
+}, 'A detached sizes=auto image resets retained width on disconnection and falls back on mutation');
+
+promise_test(async () => {
+  const image = await createAutoSizedImage('auto, 500px', 50, 'detach-explicit-mutation');
+  image.remove();
+
+  // If disconnection resets the last auto-sizes width slot, subsequent mutations
+  // while detached fall back to the explicit fallback.
+  const loadPromise = nextLoad(image);
+  image.srcset = makeSrcset('detach-explicit-mutation-new');
+  await loadPromise;
+
+  assert_true(image.currentSrc.includes('large-detach-explicit-mutation-new'),
+              `Subsequent source selection while detached uses explicit fallback (got: ${image.currentSrc})`);
+}, 'A detached sizes=auto image with explicit fallback uses fallback on mutation while detached');
+
+// 3. Images that were never rendered have no last auto-sizes width and use fallback.
+promise_test(async () => {
+  const image = document.createElement('img');
+  image.loading = 'lazy';
+  image.sizes = 'auto, 500px';
+  image.srcset = makeSrcset('never-rendered-hidden');
+  await new Promise(r => step_timeout(r, 50));
+  // If source selection ran on detached lazy image, it should have picked large (500px fallback)
+  if (image.currentSrc) {
+    assert_true(image.currentSrc.includes('large-never-rendered-hidden'),
+                `An image never rendered should use fallback size (got: ${image.currentSrc})`);
+  }
+}, 'An unrendered image without a prior rendered width uses the fallback size');
+
+// 4. Starting being rendered again updates last auto-sizes width.
+promise_test(async () => {
+  const image = await createAutoSizedImage('auto', 50, 'reattach');
+  image.remove();
+  await waitForPossibleReselection();
+  assert_true(image.currentSrc.includes('small-reattach'), 'Still small after removal');
+
+  // Change style width and reattach.
+  image.style.width = '1200px';
+  const loadPromise = nextLoad(image);
+  document.body.append(image);
+  await loadPromise;
+
+  assert_true(image.currentSrc.includes('xlarge-reattach'),
+              'Starting being rendered with new size must update source selection and retained width');
+
+  // Verify the new retained width is preserved if removed again.
+  image.remove();
+  const nextLoadPromise = nextLoad(image);
+  image.srcset = makeSrcset('reattach-new');
+  await nextLoadPromise;
+
+  assert_true(image.currentSrc.includes('xlarge-reattach-new'),
+              'Last auto-sizes width should have been updated to 1200px');
+}, 'A reattached sizes=auto image updates its rendered size and retained last auto-sizes width');
+
+// 5. Losing allows auto-sizes prevents using the retained width.
+promise_test(async () => {
+  const image = await createAutoSizedImage('auto, 500px', 50, 'losing-auto');
+  image.style.display = 'none';
+
+  // Changing loading to eager means the element no longer allows auto-sizes.
+  image.loading = 'eager';
+  const loadPromise = nextLoad(image);
+  image.srcset = makeSrcset('losing-auto-new');
+  await loadPromise;
+
+  assert_true(image.currentSrc.includes('large-losing-auto-new'),
+              'When allows auto-sizes is false, auto is ignored and fallback is used');
+}, 'Removing lazy loading causes unrendered image to ignore retained width and use fallback');
+
+// 6. <picture> with <source sizes="auto"> interaction.
+promise_test(async () => {
+  const picture = document.createElement('picture');
+  const source = document.createElement('source');
+  source.setAttribute('sizes', 'auto');
+  source.srcset = makeSrcset('picture-initial');
+  const image = document.createElement('img');
+  image.loading = 'lazy';
+  image.sizes = 'auto';
+  image.style.cssText = 'width: 50px; height: 10px;';
+  picture.append(source);
+  picture.append(image);
+
+  const loadPromise = nextLoad(image);
+  document.body.append(picture);
+  await loadPromise;
+
+  assert_true(image.currentSrc.includes('small-picture-initial'),
+              'Initial picture source selection should use rendered img width');
+
+  picture.style.display = 'none';
+  await waitForPossibleReselection();
+  assert_true(image.currentSrc.includes('small-picture-initial'),
+              'Hiding picture must not reselect source');
+
+  const nextLoadPromise = nextLoad(image);
+  source.srcset = makeSrcset('picture-new');
+  await nextLoadPromise;
+
+  assert_true(image.currentSrc.includes('small-picture-new'),
+              'Subsequent source selection while picture is display:none must use img retained width');
+  picture.remove();
+}, 'A <picture> element retains the img last auto-sizes width when unrendered');
+
+// 7. moveBefore preserves last auto-sizes width.
+promise_test(async () => {
+  assert_implements(document.body.moveBefore, 'moveBefore is supported');
+
+  const hiddenContainer = document.createElement('div');
+  hiddenContainer.style.display = 'none';
+  document.body.append(hiddenContainer);
+
+  const image = await createAutoSizedImage('auto', 50, 'move-before');
+
+  // Move the image into the hidden container using moveBefore.
+  // The image stays connected to the document, so its last auto-sizes width is not reset.
+  hiddenContainer.moveBefore(image, null);
+
+  await waitForPossibleReselection();
+  assert_true(image.currentSrc.includes('small-move-before'),
+              'moveBefore into display:none container must not trigger source reselection');
+
+  // A subsequent mutation while hidden should still use the retained last auto-sizes width.
+  const loadPromise = nextLoad(image);
+  image.srcset = makeSrcset('move-before-new');
+  await loadPromise;
+
+  assert_true(image.currentSrc.includes('small-move-before-new'),
+              `Subsequent source selection after moveBefore into display:none must use retained last auto-sizes width (got: ${image.currentSrc})`);
+
+  hiddenContainer.remove();
+}, 'moveBefore does not reset last auto-sizes width');
+</script>
+</body>

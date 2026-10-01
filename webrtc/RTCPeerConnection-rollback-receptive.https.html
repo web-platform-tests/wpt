@@ -1,0 +1,132 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name="variant" content="?remote">
+<meta name="variant" content="?local">
+<meta name="timeout" content="long">
+<title>RTCPeerConnection rollback restores receptiveness</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+function eventFiresWithin(t, target, type, timeout = 5000) {
+  return new Promise(resolve => {
+    const onEvent = () => resolve(true);
+    target.addEventListener(type, onEvent, {once: true});
+    t.step_timeout(() => {
+      target.removeEventListener(type, onEvent);
+      resolve(false);
+    }, timeout);
+  });
+}
+
+async function createReceivingPeerConnection(t) {
+  const senderPc = new RTCPeerConnection();
+  const receiverPc = new RTCPeerConnection();
+  t.add_cleanup(() => senderPc.close());
+  t.add_cleanup(() => receiverPc.close());
+
+  const stream = await getNoiseStream({audio: true});
+  const [sourceTrack] = stream.getTracks();
+  t.add_cleanup(() => sourceTrack.stop());
+
+  const sender = senderPc.addTrack(sourceTrack, stream);
+  exchangeIceCandidates(senderPc, receiverPc);
+  await exchangeOfferAnswer(senderPc, receiverPc);
+
+  const [receiverTransceiver] = receiverPc.getTransceivers();
+  const receiverTrack = receiverTransceiver.receiver.track;
+  if (receiverTrack.muted) {
+    assert_true(await eventFiresWithin(t, receiverTrack, 'unmute'),
+      'The receiver track becomes unmuted once RTP flows');
+  }
+
+  assert_equals(receiverTransceiver.currentDirection, 'recvonly');
+  assert_false(receiverTrack.muted, 'The receiver track starts unmuted');
+
+  return {
+    senderPc,
+    receiverPc,
+    sender,
+    sourceTrack,
+    receiverTransceiver,
+    receiverTrack,
+  };
+}
+
+async function remoteOfferRollbackRestoresReceptive(t) {
+  const {
+    senderPc,
+    receiverPc,
+    receiverTransceiver,
+    receiverTrack,
+  } = await createReceivingPeerConnection(t);
+
+  senderPc.getTransceivers()[0].direction = 'inactive';
+  await senderPc.setLocalDescription();
+
+  const mutePromise = eventFiresWithin(t, receiverTrack, 'mute');
+  await receiverPc.setRemoteDescription(senderPc.localDescription);
+  assert_true(await mutePromise,
+    'The pending inactive remote offer fires mute');
+  assert_true(receiverTrack.muted,
+    'The receiver track is muted by the pending inactive remote offer');
+
+  const unmutePromise = eventFiresWithin(t, receiverTrack, 'unmute');
+  await receiverPc.setRemoteDescription({type: 'rollback'});
+  assert_equals(receiverTransceiver.currentDirection, 'recvonly');
+  assert_true(await unmutePromise,
+    'Receiving RTP after remote rollback fires unmute');
+  assert_false(receiverTrack.muted,
+    'Receiving RTP unmutes the track after rolling back the remote offer');
+}
+
+async function localOfferRollbackRestoresReceptive(t) {
+  const {
+    senderPc,
+    receiverPc,
+    sender,
+    sourceTrack,
+    receiverTransceiver,
+    receiverTrack,
+  } = await createReceivingPeerConnection(t);
+
+  await sender.replaceTrack(null);
+  const [senderTransceiver] = senderPc.getTransceivers();
+  senderTransceiver.direction = 'inactive';
+
+  const mutePromise = eventFiresWithin(t, receiverTrack, 'mute');
+  await exchangeOfferAnswer(senderPc, receiverPc);
+  assert_true(await mutePromise,
+    'Negotiating an inactive direction fires mute');
+  assert_true(receiverTrack.muted,
+    'The inactive negotiation mutes the receiver track');
+
+  senderTransceiver.direction = 'sendrecv';
+  await exchangeOfferAnswer(senderPc, receiverPc);
+  assert_equals(receiverTransceiver.currentDirection, 'recvonly');
+  assert_true(receiverTrack.muted,
+    'The receiver track stays muted while no RTP flows');
+
+  receiverTransceiver.direction = 'inactive';
+  await receiverPc.setLocalDescription();
+  await receiverPc.setLocalDescription({type: 'rollback'});
+  assert_equals(receiverTransceiver.currentDirection, 'recvonly');
+
+  const unmutePromise = eventFiresWithin(t, receiverTrack, 'unmute');
+  await sender.replaceTrack(sourceTrack);
+  assert_true(await unmutePromise,
+    'Receiving RTP after local rollback fires unmute');
+  assert_false(receiverTrack.muted,
+    'Receiving RTP unmutes the track after rolling back the local offer');
+}
+
+if (location.search === '?remote') {
+  promise_test(remoteOfferRollbackRestoresReceptive,
+    'Remote offer rollback restores the transceiver\'s receptive state');
+} else {
+  promise_test(localOfferRollbackRestoresReceptive,
+    'Local offer rollback restores the transceiver\'s receptive state');
+}
+</script>

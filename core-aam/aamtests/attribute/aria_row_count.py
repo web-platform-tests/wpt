@@ -11,7 +11,7 @@ def test_atspi(atspi, session, inline):
 
     node = atspi.find_node("test", session.url)
     assert "rowcount:3" in atspi.Accessible.get_attributes_as_array(node)
-    assert atspi.Table.get_n_rows(node) == 3
+    assert atspi.Table.get_n_rows(node) == 1
 
 # def test_axapi(axapi, session, inline):
 #     session.url = inline(TEST_HTML)

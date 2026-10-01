@@ -53,7 +53,7 @@ function createScroller(test) {
   return scroller;
 }
 
-function createScrollerWithStartAndEnd(test, orientationClass = 'vertical') {
+function createScrollerWithStartAndEnd(test, axisClass = 'vertical') {
   var scroller = createDiv(test);
   scroller.innerHTML =
     `<div class='contents'>
@@ -61,7 +61,7 @@ function createScrollerWithStartAndEnd(test, orientationClass = 'vertical') {
         <div id='end'></div>
       </div>`;
   scroller.classList.add('scroller');
-  scroller.classList.add(orientationClass);
+  scroller.classList.add(axisClass);
 
   return scroller;
 }

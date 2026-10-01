@@ -9,6 +9,73 @@
 // Largest integer uniquely representable as a float32.
 const MAX_FLOAT32_INTEGER = 2 ** 24;
 
+test(() => {
+  [
+    [1.00048828125, 0x3c00],
+    [1.00146484375, 0x3c02],
+    [-1.00048828125, 0xbc00],
+    [-1.00146484375, 0xbc02],
+    [0, 0x0000],
+    [-0, 0x8000],
+  ].forEach(([value, bits]) => {
+    assert_equals(toHalf(value), bits, `binary16 encoding of ${value}`);
+  });
+}, 'float16 conversion rounds normal midpoints to even and preserves zero sign');
+
+test(() => {
+  [
+    [1.5 * 2 ** -24, 0x0002],
+    [2.5 * 2 ** -24, 0x0002],
+    [-1.5 * 2 ** -24, 0x8002],
+    [-2.5 * 2 ** -24, 0x8002],
+    [1023.5 * 2 ** -24, 0x0400],
+    [-1023.5 * 2 ** -24, 0x8400],
+  ].forEach(([value, bits]) => {
+    assert_equals(toHalf(value), bits, `binary16 encoding of ${value}`);
+  });
+}, 'float16 conversion rounds subnormal and normal-boundary midpoints to even');
+
+test(() => {
+  [
+    [2 ** -25, 0x0000],
+    [2 ** -25 * (1 + 2 ** -20), 0x0001],
+    [2 ** -25 * (1 - 2 ** -20), 0x0000],
+    [-(2 ** -25), 0x8000],
+    [-(2 ** -25) * (1 + 2 ** -20), 0x8001],
+    [-(2 ** -25) * (1 - 2 ** -20), 0x8000],
+  ].forEach(([value, bits]) => {
+    assert_equals(toHalf(value), bits, `binary16 encoding of ${value}`);
+  });
+}, 'float16 conversion distinguishes values around the underflow midpoint');
+
+test(() => {
+  [
+    [65520, 0x7c00],
+    [65520 - 2 ** -20, 0x7bff],
+    [-65520, 0xfc00],
+    [-65520 + 2 ** -20, 0xfbff],
+    [Infinity, 0x7c00],
+    [-Infinity, 0xfc00],
+  ].forEach(([value, bits]) => {
+    assert_equals(toHalf(value), bits, `binary16 encoding of ${value}`);
+  });
+  const nan = toHalf(NaN);
+  assert_equals(nan & 0x7c00, 0x7c00, 'NaN exponent');
+  assert_not_equals(nan & 0x03ff, 0, 'NaN fraction');
+}, 'float16 conversion distinguishes overflow from the largest finite value');
+
+test(() => {
+  const midpoint = 1.00048828125;
+  const data = [midpoint - 2 ** -40, midpoint + 2 ** -40,
+                -midpoint + 2 ** -40, -midpoint - 2 ** -40];
+  const bits = [0x3c00, 0x3c01, 0xbc00, 0xbc01];
+  data.forEach((value, index) => {
+    assert_equals(toHalf(value), bits[index], `binary16 encoding of ${value}`);
+  });
+  assert_array_equals(getTypedArrayData('float16', data.length, data), bits);
+  assert_array_equals(getTypedArrayData('float16', 2, midpoint), [0x3c00, 0x3c00]);
+}, 'float16 conversion does not double-round binary64 inputs through float32');
+
 test(t => {
   const dataType = 'float32';
   [[0.0, 0.0, 0n],

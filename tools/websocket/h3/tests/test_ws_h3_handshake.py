@@ -1,10 +1,13 @@
 # mypy: allow-untyped-defs
 
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
 from pywebsocket3 import common
+from pywebsocket3 import dispatch
+from pywebsocket3.handshake.base import AbortedByUserException
 from pywebsocket3.handshake.base import HandshakeException
 
 from ..headers import H3Headers
@@ -108,3 +111,17 @@ def test_send_handshake_formats_extensions():
     assert request.headers_out[
         'sec-websocket-extensions'] == (
             'permessage-deflate; server_no_context_takeover')
+
+
+def test_basic_auth_handler_sets_h3_response_headers():
+    handlers = Path(__file__).resolve().parents[4] / 'websockets' / 'handlers'
+    dispatcher = dispatch.Dispatcher(str(handlers), None, False)
+    request = _make_request()
+    request.protocol = 'HTTP/3'
+    request.uri = '/basic_auth'
+
+    with pytest.raises(AbortedByUserException):
+        WsH3Handshaker(request, dispatcher).do_handshake()
+
+    assert request.status == 401
+    assert request.headers_out['www-authenticate'] == 'Basic realm="camelot"'

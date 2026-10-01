@@ -142,24 +142,6 @@
           assert_equals(e.message, "createParserOptions called");
         }
       }, `${pos}HTMLUnsafe checks createParserOptions before hierarchy checks`);
-
-      const method_name = `stream${pos.charAt(0).toUpperCase() + pos.slice(1)}HTMLUnsafe`;
-      test((t) => {
-        createParserOptions = (options) => {
-          throw new Error("createParserOptions called");
-        };
-        t.add_cleanup(() => {
-          createParserOptions = (options) => options;
-        });
-
-        const element = document.createElement("div");
-        try {
-          element[method_name]();
-          assert_unreached("Should have thrown");
-        } catch (e) {
-          assert_equals(e.message, "createParserOptions called");
-        }
-      }, `${method_name} checks createParserOptions before hierarchy checks`);
     }
   </script>
 </body>

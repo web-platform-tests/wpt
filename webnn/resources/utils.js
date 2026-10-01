@@ -391,7 +391,7 @@ const assert_array_approx_equals_ulp = (actual, expected, nulp, dataType, descri
       actual.length, expected.length,
       `assert_array_approx_equals_ulp: ${description} lengths differ`);
   for (let i = 0; i < actual.length; i++) {
-    if (actual[i] === expected[i]) {
+    if (dataType !== 'float16' && actual[i] === expected[i]) {
       continue;
     } else {
       let distance = ulpDistance(actual[i], expected[i], dataType);
@@ -426,17 +426,12 @@ const ulpDistance = (a, b, dataType) => {
     aBitwise = getBitwise(a, dataType);
     bBitwise = getBitwise(b, dataType);
   } else if (dataType === 'float16') {
-    aBitwise = a;
-    // convert b data of Float16 to Uint16
-    bBitwise = toHalf(b);
-
-    // Workaround to use mask to check returned special float16 value -0.0 which
-    // is 32768 (1000 0000 0000 0000) of uint16
-    const signExclusionMask = 0x00007FFF;
-    if ((aBitwise & signExclusionMask) === 0 &&
-        (bBitwise & signExclusionMask) === 0) {
-      return 0;
-    }
+    // Actual values are Uint16 storage encodings; expected values are numbers.
+    // Order signed magnitudes numerically, with both zero encodings at zero.
+    const orderedBits = bits =>
+        (bits & 0x8000) ? 0 - (bits & 0x7FFF) : bits;
+    aBitwise = orderedBits(a);
+    bBitwise = orderedBits(toHalf(b));
   } else if (dataType === 'int64' || dataType === 'uint64') {
     aBitwise = BigInt(a);
     bBitwise = BigInt(b);

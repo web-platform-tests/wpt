@@ -244,54 +244,36 @@ const assertDescriptorsEquals = (outputOperand, expected) => {
       'actual output shape should be equal to expected output shape');
 };
 
-// ref:
-// http://stackoverflow.com/questions/32633585/how-do-you-convert-to-half-floats-in-javascript
+// Convert a JavaScript Number directly to binary16, rounding ties to even.
+// Narrowing through float32 first can double-round values near a midpoint.
 const toHalf = (value) => {
-  let floatView = new Float32Array(1);
-  let int32View = new Int32Array(floatView.buffer);
-
-  /* This method is faster than the OpenEXR implementation (very often
-   * used, eg. in Ogre), with the additional benefit of rounding, inspired
-   * by James Tursa's half-precision code. */
-
-  floatView[0] = value;
-  let x = int32View[0];
-
-  let bits = (x >> 16) & 0x8000; /* Get the sign */
-  let m = (x >> 12) & 0x07ff;    /* Keep one extra bit for rounding */
-  let e = (x >> 23) & 0xff;      /* Using int is faster here */
-
-  /* If zero, or denormal, or exponent underflows too much for a denormal
-   * half, return signed zero. */
-  if (e < 103) {
-    return bits;
+  const sign = value < 0 || Object.is(value, -0) ? 0x8000 : 0;
+  const magnitude = Math.abs(value);
+  if (Number.isNaN(magnitude)) {
+    return 0x7e00;
   }
-
-  /* If NaN, return NaN. If Inf or exponent overflow, return Inf. */
-  if (e > 142) {
-    bits |= 0x7c00;
-    /* If exponent was 0xff and one mantissa bit was set, it means NaN,
-     * not Inf, so make sure we set one mantissa bit too. */
-    if (e == 255 && (x & 0x007fffff)) {
-      bits |= 1;
-    }
-    return bits;
+  if (magnitude >= 65520) {
+    return sign | 0x7c00;
   }
-
-  /* If exponent underflows but not too much, return a denormal */
-  if (e < 113) {
-    m |= 0x0800;
-    /* Extra rounding may overflow and set mantissa to 0 and exponent
-     * to 1, which is OK. */
-    bits |= (m >> (114 - e)) + ((m >> (113 - e)) & 1);
-    return bits;
+  const roundToEven = (units) => {
+    const lower = Math.floor(units);
+    const fraction = units - lower;
+    return lower + (fraction > 0.5 || (fraction === 0.5 && lower % 2 !== 0));
+  };
+  if (magnitude < 2 ** -14) {
+    return sign | roundToEven(magnitude * 2 ** 24);
   }
-
-  bits |= ((e - 112) << 10) | (m >> 1);
-  /* Extra rounding. An overflow will set mantissa to 0 and increment
-   * the exponent, which is OK. */
-  bits += m & 1;
-  return bits;
+  let exponent = Math.floor(Math.log2(magnitude));
+  // Math.log2 may round up just below a power of two.
+  if (magnitude < 2 ** exponent) {
+    --exponent;
+  }
+  let units = roundToEven(magnitude / 2 ** (exponent - 10));
+  if (units === 2048) {
+    ++exponent;
+    units = 1024;
+  }
+  return sign | ((exponent + 15) << 10) | (units - 1024);
 };
 
 const getTypedArrayData = (type, size, data) => {

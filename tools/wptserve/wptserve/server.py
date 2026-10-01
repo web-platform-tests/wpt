@@ -324,9 +324,13 @@ class WebTestServer(http.server.ThreadingHTTPServer):
 class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
     """RequestHandler for WebTestHttpd"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, request, client_address, server):
         self.logger = get_logger()
-        super().__init__(*args, **kwargs)
+        # The scheme of requests on this connection. This starts out as the
+        # server's scheme, and changes to https once a CONNECT request has
+        # switched the connection to TLS.
+        self.scheme = server.scheme
+        super().__init__(request, client_address, server)
 
     def finish_handling_h1(self, request_line_is_valid):
 
@@ -399,8 +403,6 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
         if not self.close_connection:
             # Ensure that the whole request has been read from the socket
             request.raw_input.read()
-        else:
-            self.connection.shutdown(socket.SHUT_RDWR)
 
     def handle_connect(self, response):
         self.logger.debug("Got CONNECT")
@@ -413,8 +415,29 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
             self.request = ssl_context.wrap_socket(self.connection,
                                                    server_side=True)
             self.setup()
+            self.scheme = "https"
+            # parse_request() decided whether to keep the connection open
+            # based on the CONNECT request itself, e.g. an HTTP/1.0 CONNECT
+            # closes it by default. The tunnel needs to stay open for the
+            # requests that follow over TLS, so override that decision.
             self.close_connection = False
         return
+
+    def finish(self):
+        super().finish()
+        # socketserver only shuts down and closes the socket it accepted,
+        # which wrap_socket() in handle_connect() has detached, so close the
+        # TLS socket here. Without this, the client never sees the end of a
+        # response that is delimited by closing the connection. Send a TLS
+        # close_notify first so that the client sees a clean close, but don't
+        # wait long for the client's reply.
+        if isinstance(self.request, ssl.SSLSocket) and self.server.encrypt_after_connect:
+            try:
+                self.request.settimeout(1)
+                self.request.unwrap()
+            except (OSError, ValueError):
+                pass
+            self.request.close()
 
     def log_request(self, code="-", size="-"):
         if isinstance(code, http.HTTPStatus):
@@ -815,6 +838,7 @@ class H2HandlerCopy:
         self.path = self.headers['path']
         self.h2_stream_id = req_frame.stream_id
         self.server = handler.server
+        self.scheme = handler.scheme
         self.protocol_version = handler.protocol_version
         self.client_address = handler.client_address
         self.raw_requestline = ''

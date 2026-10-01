@@ -23,6 +23,8 @@ if TYPE_CHECKING:
 
 _logger: logging.Logger = logging.getLogger(__name__)
 
+DEFAULT_MAX_UNREAD_WEBSOCKET_BYTES = 16 * 1024 * 1024
+
 
 _HeaderName = Union[str, bytes]
 _HeaderValue = Union[str, bytes]
@@ -31,14 +33,18 @@ _HeaderValue = Union[str, bytes]
 class _WebSocketH3Input:
     """Bounded, blocking reader for the synchronous pywebsocket handler."""
 
-    def __init__(self) -> None:
+    def __init__(
+        self, max_unread_websocket_bytes: int = DEFAULT_MAX_UNREAD_WEBSOCKET_BYTES
+    ) -> None:
         self._condition = threading.Condition()
         self._buffer = bytearray()
         self._closed = False
+        self._max_unread_websocket_bytes = max_unread_websocket_bytes
 
     def feed_data(self, data: bytes) -> bool:
         with self._condition:
-            if self._closed or len(self._buffer) + len(data) > 16 * 1024 * 1024:
+            if (self._closed or len(self._buffer) + len(data) >
+                    self._max_unread_websocket_bytes):
                 return False
             self._buffer.extend(data)
             self._condition.notify()
@@ -171,6 +177,7 @@ class _WebSocketH3Session:
         dispatcher: dispatch.Dispatcher,
         loop: asyncio.AbstractEventLoop,
         logger: Optional[logging.Logger] = None,
+        max_unread_websocket_bytes: int = DEFAULT_MAX_UNREAD_WEBSOCKET_BYTES,
     ) -> None:
         self.stream_id = stream_id
         self._protocol = protocol
@@ -178,7 +185,7 @@ class _WebSocketH3Session:
         self._loop = loop
         self._logger = logger if logger is not None else _logger
         self._handler_thread: Optional[threading.Thread] = None
-        self._rfile = _WebSocketH3Input()
+        self._rfile = _WebSocketH3Input(max_unread_websocket_bytes)
         connection = _WebSocketH3Connection(
             protocol, stream_id, self._rfile, loop)
         self._request = _WebSocketH3Request(headers, connection)

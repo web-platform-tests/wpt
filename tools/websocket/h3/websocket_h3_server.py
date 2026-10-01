@@ -49,6 +49,7 @@ from .h3_wptserve_adapter import (
 )
 from .headers import H3Headers
 from .websocket_h3_session import (
+    DEFAULT_MAX_UNREAD_WEBSOCKET_BYTES,
     _WebSocketH3Request,
     _WebSocketH3Session,
 )
@@ -56,6 +57,8 @@ from .ws_h3_handshake import WsH3Handshaker
 
 
 SERVER_NAME = "websocket-h3-server"
+DEFAULT_MAX_PENDING_HANDSHAKES = 16
+DEFAULT_MAX_ACTIVE_REQUESTS = 16
 
 _logger: logging.Logger = logging.getLogger(__name__)
 
@@ -91,6 +94,9 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
         h3_request_cls: Any = None,
         h3_response_cls: Any = None,
         logger: Optional[logging.Logger] = None,
+        max_pending_handshakes: int = DEFAULT_MAX_PENDING_HANDSHAKES,
+        max_active_requests: int = DEFAULT_MAX_ACTIVE_REQUESTS,
+        max_unread_websocket_bytes: int = DEFAULT_MAX_UNREAD_WEBSOCKET_BYTES,
         **kwargs: Any,
     ) -> None:
         """Stores the state needed while handling one QUIC connection."""
@@ -100,6 +106,9 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
         self._active_requests = 0
         self._pending_handshakes = 0
         self._workers: set = set()
+        self._max_pending_handshakes = max_pending_handshakes
+        self._max_active_requests = max_active_requests
+        self._max_unread_websocket_bytes = max_unread_websocket_bytes
         self._ws_doc_root = ws_doc_root
         self._router = router
         self._h3_server_adapter = h3_server_adapter
@@ -157,7 +166,7 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
         """
         assert self._http is not None
         stream_id = event.stream_id
-        if self._pending_handshakes >= 16 or len(self._sessions) >= 64:
+        if self._pending_handshakes >= self._max_pending_handshakes:
             self._send_error(stream_id, 503)
             return
         h3_headers = H3Headers(event.headers)
@@ -167,7 +176,8 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
 
         loop = asyncio.get_running_loop()
         session = _WebSocketH3Session(
-            self, stream_id, h3_headers, ws_dispatcher, loop, self._logger)
+            self, stream_id, h3_headers, ws_dispatcher, loop, self._logger,
+            max_unread_websocket_bytes=self._max_unread_websocket_bytes)
         self._pending_handshakes += 1
         self._sessions[stream_id] = session
         self._track_worker(self._finish_websocket_connect(
@@ -259,7 +269,7 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
         if self._router is None or self._h3_server_adapter is None:
             self._send_error(event.stream_id, 404)
             return
-        if self._active_requests >= 16:
+        if self._active_requests >= self._max_active_requests:
             self._send_error(event.stream_id, 503)
             return
         self._active_requests += 1
@@ -434,6 +444,12 @@ class WebSocketH3Server:
     :param rewrites: wptserve rewrite rules applied before routing.
     :param config: wptserve config used by requests and template substitution.
     :param logger: Logger object for this server.
+    :param max_pending_handshakes: Maximum concurrent handshakes per QUIC
+        connection; additional CONNECT streams receive 503.
+    :param max_active_requests: Maximum concurrent resource handlers per QUIC
+        connection; additional requests receive 503.
+    :param max_unread_websocket_bytes: Maximum bytes waiting to be read by
+        the WebSocket handler per stream; exceeding this resets that stream.
     """
 
     def __init__(
@@ -448,7 +464,17 @@ class WebSocketH3Server:
         rewrites: Any = None,
         config: Any = None,
         logger: Optional[logging.Logger] = None,
+        max_pending_handshakes: int = DEFAULT_MAX_PENDING_HANDSHAKES,
+        max_active_requests: int = DEFAULT_MAX_ACTIVE_REQUESTS,
+        max_unread_websocket_bytes: int = DEFAULT_MAX_UNREAD_WEBSOCKET_BYTES,
     ) -> None:
+        for name, value in (
+            ("max_pending_handshakes", max_pending_handshakes),
+            ("max_active_requests", max_active_requests),
+            ("max_unread_websocket_bytes", max_unread_websocket_bytes),
+        ):
+            if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
+                raise ValueError(f"{name} must be a positive integer")
         self.host = host
         self.port = port
         self.ws_doc_root = ws_doc_root
@@ -458,6 +484,9 @@ class WebSocketH3Server:
         self.routes = routes
         self.rewrites = rewrites
         self.config = config
+        self.max_pending_handshakes = max_pending_handshakes
+        self.max_active_requests = max_active_requests
+        self.max_unread_websocket_bytes = max_unread_websocket_bytes
         self._logger = logger if logger is not None else _logger
         self._router: Any = None
         self._h3_server_adapter: Optional[_H3ServerAdapter] = None
@@ -583,6 +612,9 @@ class WebSocketH3Server:
             h3_request_cls=self._h3_request_cls,
             h3_response_cls=self._h3_response_cls,
             logger=self._logger,
+            max_pending_handshakes=self.max_pending_handshakes,
+            max_active_requests=self.max_active_requests,
+            max_unread_websocket_bytes=self.max_unread_websocket_bytes,
             **kwargs)
 
     def stop(self) -> None:

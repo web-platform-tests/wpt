@@ -12,9 +12,6 @@
         "afterHTML",
         "beforeHTML",
         "replaceWithHTML",
-        "streamAfterHTML",
-        "streamBeforeHTML",
-        "streamReplaceWithHTML",
       ]) {
         const method_name = `${method}${safe ? "" : "Unsafe"}`;
         test(() => {
@@ -22,11 +19,7 @@
           const child = document.createElement("div");
           template.appendChild(child);
           assert_throws_dom("HierarchyRequestError", () => {
-            if (method.startsWith("stream")) {
-              child[method_name]();
-            } else {
-              child[method_name]('<span></span>');
-            }
+            child[method_name]('<span></span>');
           });
         }, `${method_name} on a direct child of a template element throws HierarchyRequestError`);
       }

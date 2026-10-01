@@ -86,11 +86,18 @@
         }, `${method_name} throws HierarchyRequestError if parent is a Document (Comment node)`);
 
         test(() => {
+          assert_own_property(Element.prototype, method_name);
+          assert_own_property(CharacterData.prototype, method_name);
+          assert_false(method_name in Node.prototype, "Node.prototype");
+          assert_false(method_name in DocumentType.prototype, "DocumentType.prototype");
+        }, `${method_name} is exposed via the NonDocumentTypeChildNode mixin`);
+
+        test(() => {
           const doc = document.implementation.createHTMLDocument();
-          assert_throws_dom("HierarchyRequestError", () => {
-            doc.doctype[method_name]("<span>fails</span>");
-          });
-        }, `${method_name} throws HierarchyRequestError if parent is a Document (DocumentType node)`);
+          assert_equals(doc.doctype[method_name], undefined);
+          const doctype = document.implementation.createDocumentType("html", "", "");
+          assert_equals(doctype[method_name], undefined);
+        }, `${method_name} is not available on DocumentType nodes`);
 
         test(() => {
           const fragment = document.createDocumentFragment();
@@ -120,11 +127,17 @@
           const pi = document.createProcessingInstruction("target", "data");
           assert_equals(pi[method_name]("<span>fails</span>"), undefined);
         }, `${method_name} on disconnected ProcessingInstruction returns undefined and does not throw`);
+      }
 
+      for (const method of ["appendHTML", "prependHTML"]) {
+        const method_name = `${method}${safe ? "" : "Unsafe"}`;
         test(() => {
-          const doctype = document.implementation.createDocumentType("html", "", "");
-          assert_equals(doctype[method_name]("<span>fails</span>"), undefined);
-        }, `${method_name} on disconnected DocumentType returns undefined and does not throw`);
+          assert_own_property(Element.prototype, method_name);
+          assert_own_property(ShadowRoot.prototype, method_name);
+          assert_false(method_name in Node.prototype, "Node.prototype");
+          assert_false(method_name in Document.prototype, "Document.prototype");
+          assert_false(method_name in DocumentFragment.prototype, "DocumentFragment.prototype");
+        }, `${method_name} is exposed on Element and ShadowRoot only`);
       }
     }
   </script>

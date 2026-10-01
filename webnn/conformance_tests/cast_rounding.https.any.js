@@ -215,6 +215,38 @@ castRoundingTests.push({
   }
 });
 
+// Widening is exact for every binary16 value, independently of the tensor's
+// rank or native physical layout. Cover singleton and non-aligned dimensions.
+const wideningPattern = [
+  0, -0, 2 ** -24, -(2 ** -24), 1023 * 2 ** -24,
+  -1023 * 2 ** -24, 2 ** -14, -(2 ** -14), 1, -1,
+  1.0009765625, -1.0009765625, 65504, -65504, Infinity, NaN
+];
+for (const shape of [[16, 1, 1], [1, 16, 1, 1], [1, 16, 4, 1], [1, 4, 17]]) {
+  const count = shape.reduce((product, dimension) => product * dimension, 1);
+  const data = Array.from(
+      {length: count}, (_, index) => wideningPattern[index % wideningPattern.length]);
+  for (const constant of [false, true]) {
+    castRoundingTests.push({
+      name: 'cast float16 -> float32 exact widening shape [' + shape + '] ' +
+          (constant ? 'constant' : 'input'),
+      graph: {
+        inputs: {
+          input: {data, descriptor: {shape, dataType: 'float16'}, constant}
+        },
+        operators: [{
+          name: 'cast',
+          arguments: [{input: 'input'}, {type: 'float32'}],
+          outputs: 'result'
+        }],
+        expectedOutputs: {
+          result: {data, descriptor: {shape, dataType: 'float32'}}
+        }
+      }
+    });
+  }
+}
+
 // The usual ULP comparison treats +0 and -0 as equal. Check the cast's exact
 // semantics first, including zero sign and NaN classification (not its payload).
 const buildAndCheckCastRounding = async (context, builder, graphResources) => {

@@ -119,9 +119,23 @@ components:
         dest: build/
         extract: true
 
-  browser-webkitgtk_minibrowser: {}
+  browser-webkitgtk_minibrowser:
+    depends-on:
+      - download-webkitgtk_minibrowser-${vars.channel}
+    download-artifacts:
+      - task: download-webkitgtk_minibrowser-${vars.channel}
+        glob: public/browser/webkitgtk_minibrowser-${vars.channel}.*
+        dest: build/webkitgtk_minibrowser/
+        extract: true
 
-  browser-wpewebkit_minibrowser: {}
+  browser-wpewebkit_minibrowser:
+    depends-on:
+      - download-wpewebkit_minibrowser-${vars.channel}
+    download-artifacts:
+      - task: download-wpewebkit_minibrowser-${vars.channel}
+        glob: public/browser/wpewebkit_minibrowser-${vars.channel}.*
+        dest: build/wpewebkit_minibrowser/
+        extract: true
 
   browser-chrome: {}
 
@@ -579,6 +593,35 @@ tasks:
           use:
             - wpt-base
           command: "./wpt install --download-only --destination /home/test/artifacts/ --channel=${vars.channel}  --rename=firefox-${vars.channel} firefox browser"
+
+  - $map:
+      for:
+        - vars:
+            browser: webkitgtk_minibrowser
+        - vars:
+            browser: wpewebkit_minibrowser
+      do:
+        $map:
+          for:
+            - vars:
+                channel: nightly
+            - vars:
+                channel: beta
+            - vars:
+                channel: stable
+          do:
+            - download-${vars.browser}-${vars.channel}:
+                use:
+                  - wpt-base
+                artifacts:
+                  public/browser:
+                    path: /home/test/browser
+                    type: directory
+                    expires-after: "7 days"
+                command: >-
+                  ./wpt install --download-only --destination /home/test/browser/
+                  --channel=${vars.channel} --rename=${vars.browser}-${vars.channel}
+                  ${vars.browser} browser
 
   - lint:
       use:

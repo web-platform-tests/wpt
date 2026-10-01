@@ -4,10 +4,24 @@ import logging
 import os
 import platform
 import sys
+from unittest import mock
 
 import pytest
 
-from tools.wpt import browser, wpt
+from tools.wpt import browser, install, wpt
+
+
+@pytest.mark.parametrize("browser_cls", [browser.WebKitGTKMiniBrowser, browser.WPEWebKitMiniBrowser])
+@pytest.mark.parametrize("channel", ["nightly", "beta", "stable"])
+def test_download_minibrowser(tmp_path, browser_cls, channel):
+    product = browser_cls.product
+    arguments = install.get_parser().parse_args([
+        "--download-only", "--destination", str(tmp_path), "--channel", channel,
+        "--rename", f"{product}-{channel}", product, "browser",
+    ])
+    with mock.patch.object(browser_cls, "download", return_value=None) as download:
+        install.run(None, **vars(arguments))
+    download.assert_called_once_with(dest=str(tmp_path), channel=channel, rename=f"{product}-{channel}")
 
 
 @pytest.mark.slow

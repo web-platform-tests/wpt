@@ -97,6 +97,9 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
         super().__init__(*args, **kwargs)
         self._http: Optional[H3ConnectionForWebSocket] = None
         self._sessions: Dict[int, _WebSocketH3Session] = {}
+        self._active_requests = 0
+        self._pending_handshakes = 0
+        self._workers: set = set()
         self._ws_doc_root = ws_doc_root
         self._router = router
         self._h3_server_adapter = h3_server_adapter
@@ -118,7 +121,7 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
         elif isinstance(event, StreamReset):
             session = self._sessions.pop(event.stream_id, None)
             if session is not None:
-                session.close()
+                session.abort()
 
     def _h3_event_received(self, event: H3Event) -> None:
         """Routes HTTP/3 events to the matching headers or data handler."""
@@ -135,6 +138,9 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
 
         if method == b"CONNECT" and protocol == b"websocket":
             self._handle_websocket_connect(event)
+            if getattr(event, "stream_ended", False):
+                self._handle_data(DataReceived(
+                    data=b"", stream_id=event.stream_id, stream_ended=True))
         elif method == b"CONNECT":
             self._send_error(event.stream_id, 501)
         elif method in (b"GET", b"HEAD"):
@@ -151,48 +157,93 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
         """
         assert self._http is not None
         stream_id = event.stream_id
+        if self._pending_handshakes >= 16 or len(self._sessions) >= 64:
+            self._send_error(stream_id, 503)
+            return
         h3_headers = H3Headers(event.headers)
         path = h3_headers.get("path", "/")
         ws_dispatcher = dispatch.Dispatcher(  # type: ignore
             self._ws_doc_root, None, False)
 
-        if not ws_dispatcher.get_handler_suite(path):  # type: ignore
-            self._logger.warning("No WebSocket handler found for %s", path)
-            self._send_error(stream_id, 404)
-            return
-
         loop = asyncio.get_running_loop()
         session = _WebSocketH3Session(
             self, stream_id, h3_headers, ws_dispatcher, loop, self._logger)
+        self._pending_handshakes += 1
+        self._sessions[stream_id] = session
+        self._track_worker(self._finish_websocket_connect(
+            session, path, ws_dispatcher))
+
+    def _track_worker(self, work: Any) -> None:
+        task = asyncio.create_task(work)
+        self._workers.add(task)
+        task.add_done_callback(self._workers.discard)
+
+    async def _finish_websocket_connect(
+        self, session: _WebSocketH3Session, path: str,
+        ws_dispatcher: dispatch.Dispatcher,
+    ) -> None:
+        try:
+            await self._do_websocket_connect(session, path, ws_dispatcher)
+        finally:
+            self._pending_handshakes -= 1
+
+    async def _do_websocket_connect(
+        self, session: _WebSocketH3Session, path: str,
+        ws_dispatcher: dispatch.Dispatcher,
+    ) -> None:
+        stream_id = session.stream_id
         request = session.request
 
         try:
-            handshaker = WsH3Handshaker(request, ws_dispatcher)
-            handshaker.do_handshake()
+            def handshake() -> bool:
+                if not ws_dispatcher.get_handler_suite(path):  # type: ignore
+                    return False
+                WsH3Handshaker(request, ws_dispatcher).do_handshake()
+                return True
+
+            if not await asyncio.to_thread(handshake):
+                if self._sessions.get(stream_id) is not session:
+                    session.abort()
+                    return
+                self._logger.warning("No WebSocket handler found for %s", path)
+                session.abort()
+                self._sessions.pop(stream_id, None)
+                self._send_error(stream_id, 404)
+                return
+        except asyncio.CancelledError:
+            session.abort()
+            self._sessions.pop(stream_id, None)
+            raise
         except HandshakeException as error:
             status = error.status if error.status else 400
             self._logger.info(
                 "WebSocket/H3 handshake failed for stream %d: %s",
                 stream_id, error)
-            session.close()
+            session.abort()
+            self._sessions.pop(stream_id, None)
             self._send_error(stream_id, status)
             return
         except AbortedByUserException:
             self._logger.info("WebSocket/H3 handshake aborted for stream %d",
                               stream_id)
             self._send_websocket_response(stream_id, request, end_stream=True)
-            session.close()
+            session.abort()
+            self._sessions.pop(stream_id, None)
             return
         except Exception:
             self._logger.exception("WebSocket/H3 handshake failed for stream %d",
                                    stream_id)
-            session.close()
+            session.abort()
+            self._sessions.pop(stream_id, None)
             self._send_error(stream_id, 500)
             return
 
+        if self._sessions.get(stream_id) is not session:
+            session.abort()
+            return
         request._dispatcher = ws_dispatcher
         self._send_websocket_response(stream_id, request, end_stream=False)
-        self._sessions[stream_id] = session
+        request.connection.finish_handshake()
         session.start()
 
     def _handle_request(self, event: HeadersReceived) -> None:
@@ -208,7 +259,19 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
         if self._router is None or self._h3_server_adapter is None:
             self._send_error(event.stream_id, 404)
             return
+        if self._active_requests >= 16:
+            self._send_error(event.stream_id, 503)
+            return
+        self._active_requests += 1
+        self._track_worker(self._serve_request(event))
 
+    async def _serve_request(self, event: HeadersReceived) -> None:
+        try:
+            await asyncio.to_thread(self._serve_request_sync, event)
+        finally:
+            self._active_requests -= 1
+
+    def _serve_request_sync(self, event: HeadersReceived) -> None:
         h3_headers = H3Headers(event.headers)
         authority = h3_headers.get("authority")
         if authority and "Host" not in h3_headers:
@@ -255,11 +318,24 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
                                    event.stream_id)
             if self._http is not None:
                 try:
-                    self._send_error(event.stream_id, 500)
+                    self._call_on_loop(
+                        self._send_error, event.stream_id, 500)
                 except Exception:
                     self._logger.exception(
                         "Failed to send HTTP/3 error response for stream %d",
                         event.stream_id)
+
+    def _call_on_loop(self, callback: Any, *args: Any) -> Any:
+        async def call() -> Any:
+            return callback(*args)
+
+        action = call()
+        try:
+            future = asyncio.run_coroutine_threadsafe(action, self._loop)
+        except RuntimeError:
+            action.close()
+            raise
+        return future.result(timeout=30)
 
     def _handle_data(self, event: DataReceived) -> None:
         """Forwards H3 DATA frames to the matching WebSocket session."""
@@ -268,12 +344,16 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
             return
 
         if event.data:
-            session.feed_data(event.data)
+            if session.feed_data(event.data) is False:
+                self._sessions.pop(event.stream_id, None)
+                session.abort()
+                self._quic.stop_stream(event.stream_id, 0x101)
+                self._quic.reset_stream(event.stream_id, 0x101)
+                self.transmit()
+                return
 
         if event.stream_ended:
-            session = self._sessions.pop(event.stream_id, None)
-            if session is not None:
-                session.close()
+            session.close()
 
     def _send_error(self, stream_id: int, status_code: int) -> None:
         """Sends a simple H3 error response and closes the stream."""
@@ -319,7 +399,7 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
     def _close_all_sessions(self) -> None:
         """Closes all WebSocket sessions active on this QUIC connection."""
         for session in list(self._sessions.values()):
-            session.close()
+            session.abort()
         self._sessions.clear()
 
 
@@ -386,6 +466,7 @@ class WebSocketH3Server:
         self.started = False
         self.loop: Optional[asyncio.AbstractEventLoop] = None
         self.server_thread: Optional[threading.Thread] = None
+        self._server: Any = None
         self._startup_complete = threading.Event()
         self._startup_error: Optional[BaseException] = None
 
@@ -459,7 +540,7 @@ class WebSocketH3Server:
             self.loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.loop)
 
-            self.loop.run_until_complete(
+            self._server = self.loop.run_until_complete(
                 serve(
                     self.host,
                     self.port,
@@ -475,6 +556,21 @@ class WebSocketH3Server:
             self._startup_complete.set()
             self._logger.exception("WebSocket/H3 server thread failed")
         finally:
+            if self.loop is not None:
+                if self._server is not None:
+                    for protocol in set(getattr(
+                            self._server, "_protocols", {}).values()):
+                        protocol._close_all_sessions()
+                    self._server.close()
+                    self.loop.run_until_complete(asyncio.sleep(0))
+                    self._server = None
+                pending = asyncio.all_tasks(self.loop)
+                for task in pending:
+                    task.cancel()
+                if pending:
+                    self.loop.run_until_complete(
+                        asyncio.gather(*pending, return_exceptions=True))
+                self.loop.close()
             if secrets_log_file is not None:
                 secrets_log_file.close()
 
@@ -492,8 +588,8 @@ class WebSocketH3Server:
     def stop(self) -> None:
         """Stop the server."""
         if self.started and self.loop is not None:
-            asyncio.run_coroutine_threadsafe(
-                self._stop_on_server_thread(), self.loop)
+            self.loop.call_soon_threadsafe(
+                lambda: asyncio.create_task(self._stop_on_server_thread()))
             if self.server_thread is not None:
                 self.server_thread.join()
             self._logger.info("Stopped %s on %s:%d",
@@ -502,7 +598,24 @@ class WebSocketH3Server:
 
     async def _stop_on_server_thread(self) -> None:
         assert self.loop is not None
-        self.loop.stop()
+        try:
+            if self._server is not None:
+                # Stop accepting peers before draining work on existing connections.
+                self._server._transport.close()
+                protocols = set(getattr(self._server, "_protocols", {}).values())
+                workers = [task for protocol in protocols
+                           for task in protocol._workers]
+                if workers:
+                    _, pending = await asyncio.wait(workers, timeout=10)
+                    if pending:
+                        self._logger.warning(
+                            "Timed out waiting for %d WebSocket/H3 requests",
+                            len(pending))
+                self._server.close()
+                for protocol in protocols:
+                    protocol._close_all_sessions()
+        finally:
+            self.loop.call_soon(self.loop.stop)
 
 
 def server_is_running(host: str, port: int, timeout: float) -> bool:

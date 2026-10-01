@@ -15,6 +15,8 @@ and writes wptserve responses back as HTTP/3 HEADERS and DATA frames.
 import logging
 from typing import Any, BinaryIO, Iterable, List, Optional, Tuple, Union
 
+from wptserve.utils import isomorphic_encode
+
 from .headers import H3Headers
 
 
@@ -100,6 +102,18 @@ class H3ResponseWriter:
             return data
         return data.encode(self._response.encoding)
 
+    def _send(self, method: str, **kwargs: Any) -> None:
+        def send() -> None:
+            h3 = self._protocol._http
+            if h3 is not None:
+                getattr(h3, method)(**kwargs)
+                self._protocol.transmit()
+
+        if hasattr(self._protocol, "_call_on_loop"):
+            self._protocol._call_on_loop(send)
+        else:
+            send()
+
     def write_headers(
         self,
         headers: _HeaderList,
@@ -109,8 +123,7 @@ class H3ResponseWriter:
         last: bool = False,
     ) -> None:
         stream_id = self._stream_id if stream_id is None else stream_id
-        h3 = self._protocol._http
-        if h3 is None:
+        if self._protocol._http is None:
             return
 
         end_stream = last or self.request.method == "HEAD"
@@ -119,16 +132,15 @@ class H3ResponseWriter:
         ]
         for key, value in headers:
             header_name = key.decode("ascii") if isinstance(key, bytes) else key
-            header_value = (value.decode("latin-1")
-                            if isinstance(value, bytes) else str(value))
+            header_value = (value if isinstance(value, bytes)
+                            else isomorphic_encode(str(value)))
             header_name = header_name.lower()
             if header_name in _H3_FORBIDDEN_RESPONSE_HEADERS:
                 continue
-            formatted_headers.append((header_name.encode(), header_value.encode()))
+            formatted_headers.append((header_name.encode(), header_value))
 
-        h3.send_headers(stream_id=stream_id, headers=formatted_headers,
-                        end_stream=end_stream)
-        self._protocol.transmit()
+        self._send("send_headers", stream_id=stream_id, headers=formatted_headers,
+                   end_stream=end_stream)
         self.content_written = True
         self.stream_ended = end_stream
 
@@ -139,8 +151,7 @@ class H3ResponseWriter:
         stream_id: Optional[int] = None,
     ) -> None:
         stream_id = self._stream_id if stream_id is None else stream_id
-        h3 = self._protocol._http
-        if h3 is None:
+        if self._protocol._http is None:
             return
 
         data = self.encode(item) if isinstance(item, (str, bytes)) else item.read()
@@ -149,8 +160,8 @@ class H3ResponseWriter:
 
         chunk_size = 65536
         if len(data) == 0:
-            h3.send_data(stream_id=stream_id, data=b"", end_stream=last)
-            self._protocol.transmit()
+            self._send("send_data", stream_id=stream_id, data=b"",
+                       end_stream=last)
             self.content_written = True
             self.stream_ended = last
             return
@@ -160,8 +171,8 @@ class H3ResponseWriter:
             chunk = data[offset:offset + chunk_size]
             offset += chunk_size
             end_stream = last and offset >= len(data)
-            h3.send_data(stream_id=stream_id, data=chunk, end_stream=end_stream)
-            self._protocol.transmit()
+            self._send("send_data", stream_id=stream_id, data=chunk,
+                       end_stream=end_stream)
 
         self.content_written = True
         self.stream_ended = last
@@ -169,11 +180,10 @@ class H3ResponseWriter:
     def end_stream(self) -> None:
         if self.stream_ended:
             return
-        h3 = self._protocol._http
-        if h3 is None:
+        if self._protocol._http is None:
             return
-        h3.send_data(stream_id=self._stream_id, data=b"", end_stream=True)
-        self._protocol.transmit()
+        self._send("send_data", stream_id=self._stream_id, data=b"",
+                   end_stream=True)
         self.stream_ended = True
 
 

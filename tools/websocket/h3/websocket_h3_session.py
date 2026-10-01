@@ -10,9 +10,8 @@ two APIs.
 
 import asyncio
 import logging
-import os
 import threading
-from typing import BinaryIO, Dict, Optional, TYPE_CHECKING, Union
+from typing import Dict, Optional, TYPE_CHECKING, Union
 
 from pywebsocket3 import dispatch
 
@@ -29,6 +28,39 @@ _HeaderName = Union[str, bytes]
 _HeaderValue = Union[str, bytes]
 
 
+class _WebSocketH3Input:
+    """Bounded, blocking reader for the synchronous pywebsocket handler."""
+
+    def __init__(self) -> None:
+        self._condition = threading.Condition()
+        self._buffer = bytearray()
+        self._closed = False
+
+    def feed_data(self, data: bytes) -> bool:
+        with self._condition:
+            if self._closed or len(self._buffer) + len(data) > 16 * 1024 * 1024:
+                return False
+            self._buffer.extend(data)
+            self._condition.notify()
+            return True
+
+    def read(self, length: int) -> bytes:
+        with self._condition:
+            while len(self._buffer) < length and not self._closed:
+                self._condition.wait()
+            count = min(length, len(self._buffer))
+            data = bytes(self._buffer[:count])
+            del self._buffer[:count]
+            return data
+
+    def close(self, discard: bool = False) -> None:
+        with self._condition:
+            self._closed = True
+            if discard:
+                self._buffer.clear()
+            self._condition.notify_all()
+
+
 class _WebSocketH3Connection:
     """Connection object passed to pywebsocket3.
 
@@ -41,7 +73,7 @@ class _WebSocketH3Connection:
         self,
         protocol: "WebSocketH3Protocol",
         stream_id: int,
-        rfile: BinaryIO,
+        rfile: _WebSocketH3Input,
         loop: asyncio.AbstractEventLoop,
     ) -> None:
         self._protocol = protocol
@@ -49,14 +81,35 @@ class _WebSocketH3Connection:
         self._rfile = rfile
         self._loop = loop
         self.remote_addr = ("unknown", 0)
+        self._handshake_data = []
+        self._handshake_size = 0
 
     def read(self, length: int) -> bytes:
         return self._rfile.read(length)
 
     def write(self, data: bytes) -> None:
-        future = asyncio.run_coroutine_threadsafe(
-            self._async_write(data), self._loop)
+        if self._handshake_data is not None:
+            if self._handshake_size + len(data) > 1024 * 1024:
+                raise OSError("WebSocket handshake output exceeds 1 MiB")
+            self._handshake_data.append(data)
+            self._handshake_size += len(data)
+            return
+        write = self._async_write(data)
+        try:
+            future = asyncio.run_coroutine_threadsafe(write, self._loop)
+        except RuntimeError:
+            write.close()
+            raise
         future.result(timeout=30)
+
+    def finish_handshake(self) -> None:
+        data = self._handshake_data
+        self._handshake_data = None
+        for chunk in data:
+            self._protocol._http.send_data(
+                stream_id=self._stream_id, data=chunk, end_stream=False)
+        if data:
+            self._protocol.transmit()
 
     async def _async_write(self, data: bytes) -> None:
         if self._protocol._http is None:
@@ -125,10 +178,7 @@ class _WebSocketH3Session:
         self._loop = loop
         self._logger = logger if logger is not None else _logger
         self._handler_thread: Optional[threading.Thread] = None
-
-        rfd, wfd = os.pipe()
-        self._rfile = os.fdopen(rfd, "rb")
-        self._wfile = os.fdopen(wfd, "wb", 0)
+        self._rfile = _WebSocketH3Input()
         connection = _WebSocketH3Connection(
             protocol, stream_id, self._rfile, loop)
         self._request = _WebSocketH3Request(headers, connection)
@@ -144,30 +194,14 @@ class _WebSocketH3Session:
             daemon=True)
         self._handler_thread.start()
 
-    def feed_data(self, data: bytes) -> None:
-        try:
-            self._wfile.write(data)
-        except (OSError, ValueError):
-            self._logger.debug("WebSocket/H3 stream %d pipe is closed",
-                               self.stream_id)
+    def feed_data(self, data: bytes) -> bool:
+        return self._rfile.feed_data(data)
 
     def close(self) -> None:
-        self._close_files()
+        self._rfile.close()
 
-        if (self._handler_thread is not None and
-                self._handler_thread is not threading.current_thread()):
-            self._handler_thread.join(timeout=5)
-
-    def _close_files(self) -> None:
-        try:
-            self._wfile.close()
-        except (OSError, ValueError):
-            pass
-
-        try:
-            self._rfile.close()
-        except (OSError, ValueError):
-            pass
+    def abort(self) -> None:
+        self._rfile.close(discard=True)
 
     def _run_handler(self) -> None:
         try:
@@ -177,15 +211,24 @@ class _WebSocketH3Session:
                 "WebSocket/H3 handler failed for stream %d", self.stream_id)
 
         try:
-            future = asyncio.run_coroutine_threadsafe(
-                self._async_end_stream(), self._loop)
+            end_stream = self._async_end_stream()
+            try:
+                future = asyncio.run_coroutine_threadsafe(
+                    end_stream, self._loop)
+            except RuntimeError:
+                end_stream.close()
+                raise
             future.result(timeout=5)
         except Exception:
             self._logger.debug("WebSocket/H3 stream %d was already closed",
                                self.stream_id)
         finally:
-            self._close_files()
-            self._loop.call_soon_threadsafe(self._remove_from_protocol)
+            self.close()
+            self._rfile.close()
+            try:
+                self._loop.call_soon_threadsafe(self._remove_from_protocol)
+            except RuntimeError:
+                pass
 
     async def _async_end_stream(self) -> None:
         if self._protocol._http is None:

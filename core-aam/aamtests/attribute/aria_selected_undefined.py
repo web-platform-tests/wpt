@@ -9,8 +9,8 @@ def test_atspi(atspi, session, inline):
     # Not mapped
 
     node = atspi.find_node("test", session.url)
-    assert 'STATE_SELECTABLE' in atspi.get_state_list_helper(node)
-    assert 'STATE_SELECTED' in atspi.get_state_list_helper(node)
+    assert 'STATE_SELECTABLE' not in atspi.get_state_list_helper(node)
+    assert 'STATE_SELECTED' not in atspi.get_state_list_helper(node)
 
 # def test_axapi(axapi, session, inline):
 #     session.url = inline(TEST_HTML)

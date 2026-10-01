@@ -1,6 +1,6 @@
 # Testing: https://w3c.github.io/core-aam/#ariaRoleDescriptionEmptyString
 
-TEST_HTML = "<div role='group' id='test' aria-roledescription=' '>content</div>"
+TEST_HTML = "<div role='group' id='test' aria-roledescription=''>content</div>"
 
 def test_atspi(atspi, session, inline):
     session.url = inline(TEST_HTML)

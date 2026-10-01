@@ -15,7 +15,6 @@ def test_atspi(atspi, session, inline):
     assert "STATE_READ_ONLY" in atspi.get_state_list_helper(node)
     assert "STATE_EDITABLE" not in atspi.get_state_list_helper(node)
     assert "STATE_CHECKABLE" not in atspi.get_state_list_helper(node)
-    assert "STATE_CHECKABLE" not in atspi.get_state_list_helper(node)
 
 # def test_axapi(axapi, session, inline):
 #     session.url = inline(TEST_HTML)

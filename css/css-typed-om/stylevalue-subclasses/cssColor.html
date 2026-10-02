@@ -1,0 +1,41 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSSColor tests</title>
+<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#csscolor">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/testhelper.js"></script>
+<script>
+'use strict';
+
+test(() => {
+  assert_equals(typeof CSSColor, "undefined", "CSSColor should not be defined in this browser");
+}, "CSSColor is not implemented in this browser");
+
+test(() => {
+  const value = new CSSRGB(CSS.number(10), CSS.number(20), CSS.number(30));
+  const color = new CSSColor(value);
+  assert_true(color instanceof CSSColor, 'Should be instance of CSSColor');
+  assert_equals(color.color, value, 'color property should match input');
+}, 'Constructing CSSColor with a CSSColorValue works.');
+
+test(() => {
+  assert_throws_js(TypeError, () => new CSSColor(null));
+  assert_throws_js(TypeError, () => new CSSColor(undefined));
+  assert_throws_js(TypeError, () => new CSSColor(123));
+}, 'Constructing CSSColor with invalid input throws TypeError.');
+
+test(() => {
+  const value = new CSSRGB(CSS.number(1), CSS.number(2), CSS.number(3));
+  const color = new CSSColor(value);
+  assert_equals(color.toString(), value.toString(), 'toString should delegate to value');
+}, 'CSSColor.toString delegates to CSSColorValue.toString.');
+
+test(() => {
+  assert_throws_js(TypeError, () => new CSSColor());
+  assert_throws_js(TypeError, () => new CSSColor("srgb"));
+  assert_throws_js(TypeError, () => new CSSColor("srgb", null));
+  assert_throws_js(TypeError, () => new CSSColor("srgb", "not-an-array"));
+}, 'CSSColor throws TypeError for invalid constructor arguments.');
+
+</script>

@@ -87,7 +87,7 @@ class _WebSocketH3Connection:
         self._rfile = rfile
         self._loop = loop
         self.remote_addr = ("unknown", 0)
-        self._handshake_data = []
+        self._handshake_data: Optional[list[bytes]] = []
         self._handshake_size = 0
 
     def read(self, length: int) -> bytes:
@@ -110,7 +110,9 @@ class _WebSocketH3Connection:
 
     def finish_handshake(self) -> None:
         data = self._handshake_data
+        assert data is not None
         self._handshake_data = None
+        assert self._protocol._http is not None
         for chunk in data:
             self._protocol._http.send_data(
                 stream_id=self._stream_id, data=chunk, end_stream=False)

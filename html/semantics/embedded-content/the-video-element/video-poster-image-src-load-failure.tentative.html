@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body></body>
+
+<script>
+  promise_test(async function (t) {
+    assert_implements(
+      'currentPoster' in HTMLVideoElement.prototype,
+      'HTMLVideoElement.currentPoster is not supported'
+    );
+    const video = document.createElement('video');
+    video.src = '/media/A4.webm';
+    video.posterFromImg = true;
+    video.poster = '/media/poster.png';
+
+    const img = document.createElement('img');
+    img.src = '/media/does-not-exist.png?posterImageSrc=failure';
+    video.appendChild(img);
+
+    document.body.appendChild(video);
+
+    await new Promise((resolve) => {
+      img.addEventListener('error', resolve, { once: true });
+    });
+
+    // currentSrc is set as part of source selection, before the fetch
+    // resolves, so it remains set even though the fetch failed. The poster
+    // frame algorithm's early-return is keyed on currentSrc being non-empty,
+    // not on fetch success, so it should still win over the poster attribute.
+    assert_not_equals(img.currentSrc, '');
+    assert_equals(video.currentPoster, img.currentSrc);
+    assert_not_equals(
+      video.currentPoster,
+      video.poster,
+      'A failed poster image source should not fall back to the poster attribute'
+    );
+  }, 'HTMLVideoElement.currentPoster keeps the poster image source currentSrc even after it fails to load');
+</script>

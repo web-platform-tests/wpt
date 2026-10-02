@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+  <script>
+    test(function () {
+      assert_own_property(HTMLVideoElement.prototype, 'currentPoster');
+    }, 'HTMLVideoElement interface should have a currentPoster property');
+    test(function () {
+      assert_implements(
+        'currentPoster' in HTMLVideoElement.prototype,
+        'HTMLVideoElement.currentPoster is not supported'
+      );
+      assert_readonly(HTMLVideoElement.prototype, 'currentPoster');
+    }, 'HTMLVideoElement.currentPoster is readonly');
+    test(function () {
+      assert_own_property(HTMLVideoElement.prototype, 'posterFromImg');
+    }, 'HTMLVideoElement interface should have a posterFromImg property');
+    test(function () {
+      assert_implements(
+        'currentPoster' in HTMLVideoElement.prototype,
+        'HTMLVideoElement.currentPoster is not supported'
+      );
+      const video = document.createElement('video');
+      assert_equals(typeof video.currentPoster, 'string');
+      assert_equals(video.currentPoster, '');
+    }, 'HTMLVideoElement.currentPoster is a string and defaults to the empty string');
+    test(function () {
+      assert_implements(
+        'posterFromImg' in HTMLVideoElement.prototype,
+        'HTMLVideoElement.posterFromImg is not supported'
+      );
+      const video = document.createElement('video');
+      assert_false(video.posterFromImg);
+      assert_false(video.hasAttribute('posterfromimg'));
+
+      video.posterFromImg = true;
+      assert_true(video.hasAttribute('posterfromimg'));
+
+      video.posterFromImg = false;
+      assert_false(video.hasAttribute('posterfromimg'));
+    }, 'HTMLVideoElement.posterFromImg reflects the posterfromimg content attribute');
+    test(function () {
+      assert_implements(
+        'posterFromImg' in HTMLVideoElement.prototype,
+        'HTMLVideoElement.posterFromImg is not supported'
+      );
+      const video = document.createElement('video');
+
+      video.setAttribute('posterfromimg', '');
+      assert_true(video.posterFromImg, 'empty string value maps to true');
+
+      video.setAttribute('posterfromimg', 'posterfromimg');
+      assert_true(video.posterFromImg, 'canonical value maps to true');
+
+      video.setAttribute('posterfromimg', 'false');
+      assert_true(
+        video.posterFromImg,
+        'boolean attributes are true for any value, including "false"'
+      );
+
+      video.removeAttribute('posterfromimg');
+      assert_false(video.posterFromImg, 'removing the attribute maps to false');
+    }, 'posterfromimg content attribute reflects as a boolean attribute regardless of its value');
+    test(function () {
+      assert_implements(
+        'posterFromImg' in HTMLVideoElement.prototype,
+        'HTMLVideoElement.posterFromImg is not supported'
+      );
+      const video = document.createElement('video');
+
+      video.posterFromImg = true;
+      assert_equals(
+        video.getAttribute('posterfromimg'),
+        '',
+        'setting the IDL attribute to true sets the empty-string value'
+      );
+
+      video.posterFromImg = 'a truthy string';
+      assert_true(video.posterFromImg, 'assigned values are coerced to boolean');
+
+      video.posterFromImg = 0;
+      assert_false(
+        video.hasAttribute('posterfromimg'),
+        'assigning a falsy value removes the content attribute'
+      );
+    }, 'HTMLVideoElement.posterFromImg coerces assigned values to boolean');
+  </script>
+</body>

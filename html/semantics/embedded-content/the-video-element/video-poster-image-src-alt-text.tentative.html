@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body></body>
+
+<script>
+  const altText = 'A theater with rows of empty seats';
+  const video = document.createElement('video');
+  const img = document.createElement('img');
+  video.src = '/media/A4.webm';
+  video.controls = true;
+  video.muted = true;
+  video.posterFromImg = true;
+  img.src = '/media/poster.png';
+  img.alt = altText;
+  video.appendChild(img);
+
+  document.body.appendChild(video);
+
+  test(function () {
+    assert_implements(
+      'currentPoster' in HTMLVideoElement.prototype,
+      'HTMLVideoElement.currentPoster is not supported'
+    );
+    assert_equals(img.alt, altText);
+    assert_false(img.hidden);
+  }, 'Poster image source element keeps its alt text and is not hidden while the poster is shown');
+
+  promise_test(async function (t) {
+    assert_implements(
+      'currentPoster' in HTMLVideoElement.prototype,
+      'HTMLVideoElement.currentPoster is not supported'
+    );
+    const eventWatcher = new EventWatcher(t, video, ['playing']);
+    const playPromise = video.play();
+    if (playPromise) {
+      playPromise.catch(t.unreached_func('play rejected'));
+    }
+    await eventWatcher.wait_for(['playing']);
+
+    assert_true(img.hidden);
+  }, 'When video plays, poster image source element should be hidden, removing it from the accessibility tree');
+</script>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  .below-viewport {
+    margin-top: 1000vh;
+  }
+</style>
+<body>
+  <script>
+    promise_test(async function (t) {
+      assert_implements(
+        'currentPoster' in HTMLVideoElement.prototype,
+        'HTMLVideoElement.currentPoster is not supported'
+      );
+
+      const video = document.createElement('video');
+      video.loading = 'lazy';
+      video.src = '/media/A4.webm';
+      video.posterFromImg = true;
+      video.className = 'below-viewport';
+
+      const img = document.createElement('img');
+      img.src = '/media/poster.png?lazyPosterImageSrcVisible=true&t=' + Date.now();
+      video.appendChild(img);
+
+      const imgUrl = new URL(img.src, location.href).href;
+
+      const posterEntries = [];
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.name === imgUrl) {
+            posterEntries.push(entry);
+          }
+        }
+      });
+      observer.observe({ entryTypes: ['resource'] });
+
+      document.body.appendChild(video);
+
+      // The poster image source <img> is never itself rendered, so this only
+      // passes if the lazy-load decision is keyed off the video's layout box.
+      const start = performance.now();
+      await t.step_wait(
+        () => posterEntries.length > 0 || performance.now() - start > 300,
+        'Wait for initial poster fetch opportunity while offscreen'
+      );
+      assert_equals(
+        posterEntries.length,
+        0,
+        'Poster image should not be fetched while the video is not visible'
+      );
+
+      const entriesBeforeScroll = posterEntries.length;
+      video.scrollIntoView();
+
+      await t.step_wait(
+        () => posterEntries.length > entriesBeforeScroll,
+        'Poster image should be fetched after the video scrolls into view',
+        3000,
+        50
+      );
+      observer.disconnect();
+    }, "Video with loading=lazy and a poster image source does not fetch the poster image while off-screen, then fetches once the video scrolls into view");
+  </script>
+</body>

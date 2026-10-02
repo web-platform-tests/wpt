@@ -17,7 +17,7 @@ import sys
 import threading
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, cast
+from typing import Any, Dict, List, Optional, Set, Tuple, cast
 
 from aioquic.asyncio import QuicConnectionProtocol, serve
 from aioquic.asyncio.client import connect
@@ -105,7 +105,7 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
         self._sessions: Dict[int, _WebSocketH3Session] = {}
         self._active_requests = 0
         self._pending_handshakes = 0
-        self._workers: set = set()
+        self._workers: Set[asyncio.Task[Any]] = set()
         self._max_pending_handshakes = max_pending_handshakes
         self._max_active_requests = max_active_requests
         self._max_unread_websocket_bytes = max_unread_websocket_bytes
@@ -282,6 +282,7 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
             self._active_requests -= 1
 
     def _serve_request_sync(self, event: HeadersReceived) -> None:
+        assert self._h3_server_adapter is not None
         h3_headers = H3Headers(event.headers)
         authority = h3_headers.get("authority")
         if authority and "Host" not in h3_headers:

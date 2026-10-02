@@ -39,7 +39,10 @@
     {
       content: "This text must be vertical, with letters upright.";
       text-orientation: upright;
-      /* 'text-orientation: upright' has no effect with 'sideways-lr', but does with 'vertical-lr' */
+       /* Pseudo-elements inherit from <html>'s COMPUTED value.
+         Body→root propagation changes only the root's USED value.
+         Therefore html::after inherits 'sideways-lr' from <html> (computed),
+         so 'text-orientation: upright' has NO effect in this test.  */
       margin-top: 8px;
     }
 

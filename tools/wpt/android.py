@@ -41,7 +41,6 @@ def do_delayed_imports(paths):
     android_device.TOOLTOOL_PATH = os.path.join(os.path.dirname(__file__),
                                                 os.pardir,
                                                 "third_party",
-                                                "tooltool",
                                                 "tooltool.py")
     android_device.EMULATOR_HOME_DIR = paths["emulator_home"]
     for avd_info in android_device.AVD_DICT.values():

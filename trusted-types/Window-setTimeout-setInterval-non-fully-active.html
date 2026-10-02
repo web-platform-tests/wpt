@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Timers on a Window whose document isn't fully active don't run the default policy</title>
+<link rel="help" href="https://html.spec.whatwg.org/#timer-initialisation-steps">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+  window.log = [];
+  const srcdoc = `<!DOCTYPE html>
+<meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script'">
+<script>
+  const log = parent.log;
+  trustedTypes.createPolicy("default", {
+    createScript: s => { log.push(\`createScript \${s}\`); return s; }
+  });
+<\/script>`;
+
+  function loadIframe(t) {
+    return new Promise(resolve => {
+      const iframe = document.createElement("iframe");
+      iframe.onload = () => resolve(iframe);
+      iframe.srcdoc = srcdoc;
+      document.body.append(iframe);
+      t.add_cleanup(() => iframe.remove());
+    });
+  }
+
+  async function detachedWindowMethod(t, method) {
+    const iframe = await loadIframe(t);
+    const win = iframe.contentWindow;
+    iframe.remove();
+    return (...args) => win[method](...args);
+  }
+
+  async function navigatedAwayWindowMethod(t, method) {
+    const iframe = await loadIframe(t);
+    const win = iframe.contentWindow;
+    const oldMethod = win[method];
+    const oldDocument = win.document;
+    const documentGetter = Object.getOwnPropertyDescriptor(win, "document").get;
+    await new Promise(resolve => {
+      iframe.onload = resolve;
+      iframe.removeAttribute("srcdoc");
+      iframe.src = "/common/blank.html";
+    });
+    assert_equals(documentGetter.call(undefined), oldDocument,
+      "precondition: an undefined this value resolves to the old Window");
+    return (...args) => oldMethod(...args);
+  }
+
+  for (const [caseName, getMethod] of [["detached iframe", detachedWindowMethod],
+                                       ["navigated-away iframe", navigatedAwayWindowMethod]]) {
+    for (const method of ["setTimeout", "setInterval"]) {
+      promise_test(async t => {
+        const call = await getMethod(t, method);
+        log.length = 0;
+        assert_equals(call("void 0", 0), 0);
+        assert_array_equals(log, []);
+      }, `${method}() with a string handler on the Window of a ${caseName} returns 0 without running the default policy`);
+    }
+  }
+</script>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>selectionchange does not fire when selection is not modified</title>
+<link rel="help" href="https://w3c.github.io/selection-api/#selectionchange-event">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<div id="container">text</div>
+<script>
+
+for (const offset of [0, 2, container.firstChild.length]) {
+  promise_test(async t => {
+    let selectionChangeCount = 0;
+    const handler = () => ++selectionChangeCount;
+    document.addEventListener("selectionchange", handler);
+    t.add_cleanup(() => document.removeEventListener("selectionchange", handler));
+
+    getSelection().setPosition(container.firstChild, offset);
+    // selectionchange is queued as a task, not fired synchronously.
+    await new Promise(r => step_timeout(r, 0));
+    // Reset after setup — only count events triggered by the call under test.
+    selectionChangeCount = 0;
+
+    getSelection().setPosition(container.firstChild, offset);
+    await new Promise(r => step_timeout(r, 0));
+    assert_equals(selectionChangeCount, 0);
+  }, `selectionchange does not fire when setPosition is called with the same position (offset ${offset})`);
+}
+
+promise_test(async t => {
+  let selectionChangeCount = 0;
+  const handler = () => ++selectionChangeCount;
+  document.addEventListener("selectionchange", handler);
+  t.add_cleanup(() => document.removeEventListener("selectionchange", handler));
+
+  getSelection().setPosition(container, 0);
+  getSelection().removeAllRanges();
+  await new Promise(r => step_timeout(r, 0));
+  // Reset after setup — only count events triggered by the call under test.
+  selectionChangeCount = 0;
+
+  getSelection().removeAllRanges();
+  await new Promise(r => step_timeout(r, 0));
+  assert_equals(selectionChangeCount, 0);
+}, "selectionchange does not fire when removeAllRanges is called on an already-empty selection");
+
+</script>

@@ -391,6 +391,15 @@ const assert_array_approx_equals_ulp = (actual, expected, nulp, dataType, descri
       actual.length, expected.length,
       `assert_array_approx_equals_ulp: ${description} lengths differ`);
   for (let i = 0; i < actual.length; i++) {
+    const actualValue = dataType === 'float16' ?
+        float16AsUint16ToNumber(actual[i]) : actual[i];
+    if (Number.isNaN(actualValue) || Number.isNaN(expected[i])) {
+      // NaN payloads are not numerical values and have no ULP distance.
+      assert_equals(Number.isNaN(actualValue), Number.isNaN(expected[i]),
+          `assert_array_approx_equals_ulp: ${description} NaN classification ` +
+              `differs at index ${i}`);
+      continue;
+    }
     if (actual[i] === expected[i]) {
       continue;
     } else {

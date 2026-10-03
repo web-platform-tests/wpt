@@ -1,0 +1,38 @@
+<!doctype html>
+<html class="reftest-wait">
+  <meta charset="utf-8" />
+  <title>
+    AVIF: a streaming layered image item scales a sub-resolution layer up to the
+    image size
+  </title>
+  <link
+    rel="help"
+    href="https://aomediacodec.github.io/av1-avif/#layered-image-item"
+  />
+  <link rel="match" href="progressive-blue-ref.html" />
+  <meta name="fuzzy" content="maxDifference=0-2; totalPixels=0-10000" />
+  <!-- resources/layers-scaled.avif uses AV1 spatial scalability: layer 0 is a
+     25x25 blue frame and layer 1 is the 100x100 green image, against an ispe
+     of 100x100. A layer coded smaller than the image carries the image's
+     dimensions in its frame header's render size, which is how the format
+     asks for that layer to be scaled up to the image.
+
+     The trickle pipe delivers the first 350 bytes -- the container plus the
+     whole of layer 0, per the 51-byte layer 0 size in a1lx and the mdat
+     payload offset of 299 -- then holds the response open for 30s. A decoder
+     showing layer 0 during the stall has to scale it up to the image size
+     rather than paint a 25x25 image or reject it as a frame size change.
+
+     The layer is solid blue, so upscaling it by any filter gives blue; the
+     fuzziness absorbs the filter's behavior at the edges. Whatever the
+     decoder does with the opaque X channel while scaling, the result must
+     still be a fully opaque blue image. -->
+  <body>
+    <script src="resources/streaming-image-reftest.js"></script>
+    <script>
+      streamingImageReftest(
+        "resources/layers-scaled.avif?pipe=trickle(350:d30)",
+      );
+    </script>
+  </body>
+</html>

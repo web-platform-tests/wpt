@@ -18,6 +18,12 @@
       assert_equals(actual, expected, "img src should resolve correctly");
     }
 
+    function assert_unresolvable_url(doc) {
+      var img = doc.createElement("img");
+      img.src = "foo";
+      assert_equals(img.src, "foo", "img src should not resolve");
+    }
+
     var t1 = async_test("The document base URL of a document containing one or more base elements with href attributes is the frozen base URL of the first base element in the document that has an href attribute, in tree order.");
 
     function on_load() {
@@ -61,8 +67,8 @@
         var doc = iframe.contentDocument;
         var base = doc.body.appendChild(doc.createElement("base"));
         base.href = "sub/";
-        assert_resolve_url(doc, location.href.replace("/document-base-url.html", "/sub"));
-        assert_equals(doc.baseURI, document.baseURI.replace("/document-base-url.html", "/sub/"));
+        assert_unresolvable_url(doc);
+        assert_equals(doc.baseURI, "about:blank");
       });
       iframe.setAttribute("src", "about:blank");
       document.body.appendChild(iframe);
@@ -82,8 +88,8 @@
       var iframe = document.createElement("iframe");
       iframe.onload = this.step_func_done(function () {
         var doc = iframe.contentDocument;
-        assert_resolve_url(doc, location.href.replace("/document-base-url.html", "/sub"));
-        assert_equals(doc.baseURI, document.baseURI.replace("/document-base-url.html", "/sub/"),
+        assert_unresolvable_url(doc);
+        assert_equals(doc.baseURI, "about:srcdoc",
                       "The srcdoc document's base URL should be set by the <base> tag.");
       });
       iframe.setAttribute("srcdoc", "<base href='sub/'><p>foobar</p>");

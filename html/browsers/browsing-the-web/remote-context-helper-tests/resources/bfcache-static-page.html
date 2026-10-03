@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>Static page with in-flight image</title></head>
+<body>
+<img src="/html/browsers/browsing-the-web/remote-context-helper-tests/resources/slow-image.py?delay=10">
+<script>
+window.addEventListener('pageshow', (event) => {
+  window.pageshowEvent = event;
+});
+
+window.addEventListener('load', () => {
+  window.loadFired = true;
+});
+</script>
+</body>
+</html>

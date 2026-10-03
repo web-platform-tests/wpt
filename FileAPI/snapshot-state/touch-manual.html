@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<ol>
+  <li><label>Select a file first: <input type="file" id="fileInput"></label></li>
+  <li>
+    Update the file timestamp.
+    <ul>
+      <li>On Linux: <code>touch -t 202201010000 foo.txt</code></li>
+      <li>On Windows (PowerShell): <code>(gci foo.txt).lastWriteTime = "2022-01-01"</code></li>
+    </ul>
+  </li>
+  <li><button id="readyButton">Then click this</button></li>
+</ol>
+<script type="module">
+  import { ready, testFileAttributes, promisifiedFileReader } from "./utils.js";
+
+  setup({ explicit_timeout: true });
+
+  testFileAttributes("File attributes should not change when the native timestamp changes");
+
+  for (const method of ["text", "arrayBuffer"]) {
+    promise_test(async t => {
+      await ready;
+      await promise_rejects_dom(t, "NotReadableError", fileInput.files[0][method]());
+    }, `File#${method}() should fail if file.lastModified and the actual native timestamp is different`);
+  }
+
+  promise_test(async t => {
+    await ready;
+    await promise_rejects_dom(t, "NotReadableError", fileInput.files[0].stream().pipeTo(new WritableStream()));
+  }, `File#stream() should fail if file.lastModified and the actual native timestamp is different`);
+
+  for (const method of ["readAsArrayBuffer", "readAsBinaryString", "readAsDataURL", "readAsText"]) {
+    promise_test(async t => {
+      await ready;
+      await promise_rejects_dom(t, "NotReadableError", promisifiedFileReader(fileInput.files[0], method));
+    }, `FileReader#${method}() should fail if file.lastModified and the actual native timestamp is different`);
+  }
+</script>

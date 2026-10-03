@@ -19,3 +19,39 @@ For historical reasons, parts of HTML have their own directories:
 * [/workers](/workers)
 * [/worklets](/worklets)
 * [/x-frame-options](/x-frame-options)
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tap Game</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial;
+      margin-top: 80px;
+    }
+
+    button {
+      font-size: 25px;
+      padding: 20px 40px;
+      border-radius: 15px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🎮 Tap Game</h1>
+  <h2>Score: <span id="score">0</span></h2>
+
+  <button onclick="tap()">TAP ME!</button>
+
+  <script>
+    let score = 0;
+
+    function tap() {
+      score++;
+      document.getElementById("score").textContent = score;
+    }
+  </script>
+</body>
+</html>

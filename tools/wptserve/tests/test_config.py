@@ -1,6 +1,7 @@
 import json
 import logging
 import pickle
+import socket
 from logging import handlers
 from shutil import which
 
@@ -158,6 +159,40 @@ def test_ports_auto_mutate():
         assert set(new_ports.keys()) == {"http"}
         assert len(new_ports["http"]) == 1
         assert isinstance(new_ports["http"][0], int)
+
+
+def test_reserved_ports_cannot_be_claimed():
+    with config.ConfigBuilder(logger, ports={"http": ["auto", "auto"]},
+                              reserve_ports=True) as c:
+        assert len(set(c.ports["http"])) == 2
+        for port in c.ports["http"]:
+            with socket.socket() as competitor:
+                with pytest.raises(OSError):
+                    competitor.bind(("127.0.0.1", port))
+        assert json.loads(json.dumps(c.as_dict()))["ports"] == c.ports
+        assert pickle.loads(pickle.dumps(c)).ports == c.ports
+        ports = c.ports["http"]
+
+    for port in ports:
+        with socket.socket() as competitor:
+            competitor.bind(("127.0.0.1", port))
+
+
+def test_reserved_ports_released_on_config_error(monkeypatch):
+    ports = []
+
+    def fail(data):
+        ports.extend(data["ports"]["http"])
+        raise ValueError("invalid configuration")
+
+    builder = config.ConfigBuilder(logger, ports={"http": ["auto"]}, reserve_ports=True)
+    monkeypatch.setattr(builder, "_get_domains", fail)
+    with pytest.raises(ValueError, match="invalid configuration"):
+        with builder:
+            pass
+    assert len(ports) == 1
+    with socket.socket() as competitor:
+        competitor.bind(("127.0.0.1", ports[0]))
 
 
 def test_ports_explicit():

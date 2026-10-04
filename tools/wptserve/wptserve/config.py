@@ -2,11 +2,12 @@
 
 import copy
 import os
+import sys
 from collections import defaultdict
 from typing import Any, Mapping
 
 from . import sslutils
-from .utils import get_port
+from .utils import get_port, reserve_tcp_port
 
 
 _renamed_props = {
@@ -68,7 +69,11 @@ class Config(Mapping[str, Any]):
         return len([item for item in self])
 
     def as_dict(self):
-        return json_types(self.__dict__, skip={"_logger"})
+        return json_types(self.__dict__, skip={"_logger", "_port_sockets"})
+
+    def __getstate__(self):
+        # Only the intended server process receives each listening socket.
+        return {key: value for key, value in self.__dict__.items() if key != "_port_sockets"}
 
 
 def json_types(obj, skip=None):
@@ -99,6 +104,10 @@ class ConfigBuilder:
     containing immutable configuration that may be shared between
     threads and processes. In general the configuration is only valid
     for the context used to obtain it.
+
+    Server runners can enable `reserve_ports` to keep automatically allocated TCP
+    sockets bound until `serve.start()` transfers them to their server processes.
+    Configuration-only callers leave this disabled so no listeners are opened.
 
     with ConfigBuilder() as config:
         # Use the configuration
@@ -179,11 +188,14 @@ class ConfigBuilder:
                  subdomains=set(),
                  not_subdomains=set(),
                  config_cls=None,
+                 reserve_ports=False,
                  **kwargs):
 
         self._logger = logger
         self._data = self._default.copy()
         self._ssl_env = None
+        self._reserve_ports = reserve_ports
+        self._port_sockets = {}
 
         self._config_cls = config_cls or self.default_config_cls
 
@@ -252,13 +264,27 @@ class ConfigBuilder:
             raise ValueError("Tried to re-enter configuration")
         data = self._data.copy()
         prefix = "_get_"
-        for key in self.computed_properties:
-            data[key] = getattr(self, prefix + key)(data)
-        return self._config_cls(data)
+        try:
+            for key in self.computed_properties:
+                data[key] = getattr(self, prefix + key)(data)
+            result = self._config_cls(data)
+            if self._reserve_ports:
+                result.__dict__["_port_sockets"] = self._port_sockets
+            return result
+        except BaseException:
+            self.__exit__(*sys.exc_info())
+            raise
 
     def __exit__(self, *args):
-        self._ssl_env.__exit__(*args)
-        self._ssl_env = None
+        try:
+            if self._ssl_env is not None:
+                self._ssl_env.__exit__(*args)
+        finally:
+            self._ssl_env = None
+            for sockets in self._port_sockets.values():
+                for sock in sockets:
+                    sock.close()
+            self._port_sockets.clear()
 
     def _get_logging(self, data):
         logging = data["logging"]
@@ -273,11 +299,18 @@ class ConfigBuilder:
 
     def _get_ports(self, data):
         new_ports = defaultdict(list)
+        explicit_ports = {port for ports in data["ports"].values() for port in ports if isinstance(port, int)}
+        host = data["server_host"] if data["bind_address"] else ""
         for scheme, ports in data["ports"].items():
             if scheme in ["wss", "https"] and not sslutils.get_cls(data["ssl"]["type"]).ssl_enabled:
                 continue
             for i, port in enumerate(ports):
-                real_port = get_port("") if port == "auto" else port
+                if port == "auto" and self._reserve_ports and scheme not in {"dns", "webtransport-h3"}:
+                    sockets = reserve_tcp_port(host, explicit_ports, multiple_addresses=scheme in {"ws", "wss"})
+                    self._port_sockets[scheme, i] = sockets
+                    real_port = sockets[0].getsockname()[1]
+                else:
+                    real_port = get_port("") if port == "auto" else port
                 new_ports[scheme].append(real_port)
         return new_ports
 

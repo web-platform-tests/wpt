@@ -192,7 +192,7 @@ class TestEnvironment:
     def build_config(self):
         override_path = os.path.join(serve_path(self.test_paths), "config.json")
 
-        config = serve.ConfigBuilder(self.server_logger, ws_extra=self.ws_extra)
+        config = serve.ConfigBuilder(self.server_logger, ws_extra=self.ws_extra, reserve_ports=True)
 
         ports = {
             "http": [8000, 8001],

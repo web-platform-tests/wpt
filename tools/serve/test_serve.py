@@ -2,14 +2,19 @@
 
 import builtins
 import io
+import json
 import logging
+import multiprocessing
 import os
 import pickle
 import platform
+import socket
+import ssl
 from unittest.mock import MagicMock, patch
 from typing import Generator, Tuple
 
 import pytest
+import httpx
 
 import localpaths  # type: ignore
 from . import serve
@@ -26,6 +31,85 @@ from .serve import (
 
 
 logger = logging.getLogger()
+
+
+def test_serve_reserves_auto_ports(monkeypatch, tmp_path):
+    config_path = tmp_path / "config.json"
+    ports = {scheme: [None] for scheme in ConfigBuilder._default["ports"]}
+    ports["http"] = ["auto", None]
+    ports["https"] = [None, None]
+    config_path.write_text(json.dumps({
+        "browser_host": "localhost",
+        "check_subdomains": False,
+        "ports": ports,
+        "ssl": {"type": "none"},
+    }))
+
+    def start(logger, config, *args, **kwargs):
+        with socket.socket() as competitor:
+            with pytest.raises(OSError):
+                competitor.bind(("127.0.0.1", config.ports["http"][0]))
+        return {}
+
+    monkeypatch.setattr(serve, "start", start)
+    assert serve.run(config_path=str(config_path), exit_after_start=True) == 0
+
+
+def test_disabled_server_releases_reserved_port():
+    builder = ConfigBuilder(logger, browser_host="localhost", reserve_ports=True)
+    builder.ports = {"h2": ["auto"]}
+    with builder as config:
+        servers = serve.start(logger, config, [], multiprocessing.get_context("spawn"), [], h2=False)
+        assert not servers
+        with socket.socket() as competitor:
+            competitor.bind(("127.0.0.1", config.ports["h2"][0]))
+
+
+@pytest.mark.parametrize("bind_address", [True, False])
+@pytest.mark.parametrize("scheme", ["http", "https", "h2", "ws", "wss"])
+def test_reserved_port_handoff(scheme, bind_address, tmp_path):
+    from websockets.sync.client import connect
+
+    (tmp_path / "echo_wsh.py").write_text(
+        "def web_socket_do_extra_handshake(request):\n"
+        "    pass\n"
+        "def web_socket_transfer_data(request):\n"
+        "    request.ws_stream.send_message(request.ws_stream.receive_message())\n"
+    )
+    builder = ConfigBuilder(logger, browser_host="localhost", reserve_ports=True,
+                            bind_address=bind_address, ws_doc_root=str(tmp_path))
+    builder.ports = {scheme: ["auto", None] if scheme in {"http", "https"} else ["auto"]}
+    with builder as config:
+        port = config.ports[scheme][0]
+        with socket.socket() as competitor:
+            with pytest.raises(OSError):
+                competitor.bind(("127.0.0.1", port))
+
+        servers = serve.start(logger, config, [], multiprocessing.get_context("spawn"), [])
+        server = servers[scheme][0][1]
+        try:
+            if scheme in {"ws", "wss"}:
+                kwargs = {"ssl_context": ssl._create_unverified_context()} if scheme == "wss" else {}
+                with connect(f"{scheme}://localhost:{port}/echo", open_timeout=10, **kwargs) as connection:
+                    connection.send("reserved port")
+                    assert connection.recv(timeout=10) == "reserved port"
+            else:
+                protocol = "http" if scheme == "http" else "https"
+                with httpx.Client(verify=False, http2=scheme == "h2", timeout=10, trust_env=False) as client:
+                    response = client.get(f"{protocol}://localhost:{port}/")
+                    assert response.status_code == 404
+                    assert response.http_version == ("HTTP/2" if scheme == "h2" else "HTTP/1.1")
+        finally:
+            server.request_shutdown()
+            server.wait(timeout=10)
+            if server.is_alive():
+                server.proc.terminate()
+                server.wait()
+        assert server.proc.exitcode == 0
+
+    with socket.socket() as competitor:
+        competitor.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        competitor.bind(("127.0.0.1", port))
 
 @pytest.mark.skipif(platform.uname()[0] == "Windows",
                     reason="Expected contents are platform-dependent")

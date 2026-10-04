@@ -1,5 +1,5 @@
 import socket
-from typing import AnyStr, Dict, List, TypeVar
+from typing import AnyStr, Dict, List, Set, TypeVar
 
 from .logger import get_logger
 
@@ -168,6 +168,54 @@ def get_port(host: str = '') -> int:
         if not is_bad_port(port):
             break
     return port
+
+
+def reserve_tcp_port(host: str, excluded_ports: Set[int], multiple_addresses: bool = False) -> List[socket.socket]:
+    """Keep an automatically selected port bound until its server takes ownership.
+
+    WebSocket servers can listen on multiple addresses. HTTP servers use IPv4,
+    matching the address family of `WebTestServer`.
+    """
+    if multiple_addresses:
+        addresses = socket.getaddrinfo(host or None, 0, socket.AF_UNSPEC,
+                                      socket.SOCK_STREAM, 0, socket.AI_PASSIVE)
+    else:
+        addresses = socket.getaddrinfo(host or None, 0, socket.AF_INET,
+                                      socket.SOCK_STREAM, 0, socket.AI_PASSIVE)
+    while True:
+        sockets = []
+        port = 0
+        try:
+            for family, socktype, proto, _, address in addresses:
+                try:
+                    sock = socket.socket(family, socktype, proto)
+                except OSError:
+                    if not multiple_addresses:
+                        raise
+                    continue
+                try:
+                    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                    if family == socket.AF_INET6:
+                        sock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 1)
+                    sock.bind((address[0], port, *address[2:]))
+                    sock.listen(5)
+                except OSError:
+                    sock.close()
+                    if not multiple_addresses:
+                        raise
+                    continue
+                sockets.append(sock)
+                port = sock.getsockname()[1]
+            if not sockets:
+                raise OSError(f"Could not reserve a TCP port on {host!r}")
+            if not is_bad_port(port) and port not in excluded_ports:
+                return sockets
+        except BaseException:
+            for sock in sockets:
+                sock.close()
+            raise
+        for sock in sockets:
+            sock.close()
 
 def http2_compatible() -> bool:
     # The HTTP/2 server requires OpenSSL 1.0.2+.

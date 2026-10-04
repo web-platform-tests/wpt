@@ -9,6 +9,7 @@ import logging
 import multiprocessing
 import os
 import platform
+import ssl
 import subprocess
 import sys
 import threading
@@ -31,7 +32,7 @@ from wptserve import stash
 from wptserve import config
 from wptserve.handlers import filesystem_path, wrap_pipeline
 from wptserve.response import ResponseHeaders
-from wptserve.utils import get_port, HTTPException, http2_compatible
+from wptserve.utils import reserve_tcp_port, HTTPException, http2_compatible
 from pywebsocket3 import standalone as pywebsocket
 
 
@@ -1082,12 +1083,17 @@ def check_subdomains(logger, config, routes, mp_context, log_handlers):
     bind_address = config.bind_address
 
     host = config.server_host
-    port = get_port()
+    sockets = reserve_tcp_port(host if bind_address else "", set())
+    port = sockets[0].getsockname()[1]
     logger.debug("Going to use port %d to check subdomains" % port)
 
     wrapper = ServerProc(mp_context)
-    wrapper.start(start_http_server, host, port, paths, routes,
-                  bind_address, config, log_handlers)
+    try:
+        wrapper.start(start_http_server, host, port, paths, routes,
+                      bind_address, config, log_handlers, server_sockets=sockets)
+    finally:
+        for sock in sockets:
+            sock.close()
 
     url = f"http://{host}:{port}/"
     connected = False
@@ -1172,7 +1178,7 @@ def start_servers(logger, host, ports, paths, routes, bind_address, config,
             logging.info("DNS server disabled")
             continue
 
-        for port in ports:
+        for index, port in enumerate(ports):
             if port is None:
                 continue
 
@@ -1191,9 +1197,21 @@ def start_servers(logger, host, ports, paths, routes, bind_address, config,
             }[scheme]
 
             server_proc = ServerProc(mp_context, scheme=scheme)
-            server_proc.start(init_func, host, port, paths, routes, bind_address,
-                              config, log_handlers, **kwargs)
+            sockets = getattr(config, "_port_sockets", {}).pop((scheme, index), [])
+            try:
+                server_proc.start(init_func, host, port, paths, routes, bind_address,
+                                  config, log_handlers, server_sockets=sockets, **kwargs)
+            finally:
+                for sock in sockets:
+                    sock.close()
             servers[scheme].append((port, server_proc))
+
+    # Disabled servers do not need to retain their reservations.
+    reservations = getattr(config, "_port_sockets", {})
+    for sockets in reservations.values():
+        for sock in sockets:
+            sock.close()
+    reservations.clear()
 
     return servers
 
@@ -1203,7 +1221,7 @@ def startup_failed(logger):
     sys.exit(1)
 
 
-def start_http_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
+def start_http_server(logger, host, port, paths, routes, bind_address, config, server_sockets=(), **kwargs):
     try:
         return wptserve.WebTestHttpd(host=host,
                                      port=port,
@@ -1215,13 +1233,14 @@ def start_http_server(logger, host, port, paths, routes, bind_address, config, *
                                      use_ssl=False,
                                      key_file=None,
                                      certificate=None,
+                                     server_socket=server_sockets[0] if server_sockets else None,
                                      latency=kwargs.get("latency"))
     except Exception as error:
         logger.critical(f"start_http_server: Caught exception from wptserve.WebTestHttpd: {error}")
         startup_failed(logger)
 
 
-def start_https_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
+def start_https_server(logger, host, port, paths, routes, bind_address, config, server_sockets=(), **kwargs):
     try:
         return wptserve.WebTestHttpd(host=host,
                                      port=port,
@@ -1234,13 +1253,14 @@ def start_https_server(logger, host, port, paths, routes, bind_address, config, 
                                      key_file=config.ssl_config["key_path"],
                                      certificate=config.ssl_config["cert_path"],
                                      encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
+                                     server_socket=server_sockets[0] if server_sockets else None,
                                      latency=kwargs.get("latency"))
     except Exception as error:
         logger.critical(f"start_https_server: Caught exception from wptserve.WebTestHttpd: {error}")
         startup_failed(logger)
 
 
-def start_http2_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
+def start_http2_server(logger, host, port, paths, routes, bind_address, config, server_sockets=(), **kwargs):
     try:
         return wptserve.WebTestHttpd(host=host,
                                      port=port,
@@ -1256,15 +1276,40 @@ def start_http2_server(logger, host, port, paths, routes, bind_address, config, 
                                      certificate=config.ssl_config["cert_path"],
                                      encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
                                      latency=kwargs.get("latency"),
+                                     server_socket=server_sockets[0] if server_sockets else None,
                                      http2=True)
     except Exception as error:
         logger.critical(f"start_http2_server: Caught exception from wptserve.WebTestHttpd: {error}")
         startup_failed(logger)
 
 
+class ReservedWebSocketServer(pywebsocket.WebSocketServer):
+    """Adapt pywebsocket's socket setup to accept already-bound listeners."""
+
+    def __init__(self, options, sockets):
+        self.reserved_sockets = sockets
+        super().__init__(options)
+
+    def _create_sockets(self):
+        self.server_name, self.server_port = self.server_address
+        self._sockets = []
+        options = self.websocket_server_options
+        for sock in self.reserved_sockets:
+            addrinfo = (sock.family, sock.type, sock.proto, "", sock.getsockname())
+            if options.use_tls:
+                context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+                context.load_cert_chain(keyfile=options.private_key, certfile=options.certificate)
+                sock = context.wrap_socket(sock, server_side=True)
+            self._sockets.append((sock, addrinfo))
+
+    def server_bind(self):
+        # These sockets have remained bound since configuration was built.
+        pass
+
+
 class WebSocketDaemon:
     def __init__(self, host, port, doc_root, handlers_root, bind_address, ssl_config,
-                 extra_handler_paths=None):
+                 extra_handler_paths=None, server_sockets=()):
         logger = logging.getLogger()
         self.host = host
         cmd_args = ["-p", port,
@@ -1281,7 +1326,8 @@ class WebSocketDaemon:
         opts, args = pywebsocket._parse_args_and_config(cmd_args)
         opts.cgi_directories = []
         opts.is_executable_method = None
-        self.server = pywebsocket.WebSocketServer(opts)
+        self.server = (ReservedWebSocketServer(opts, server_sockets) if server_sockets else
+                       pywebsocket.WebSocketServer(opts))
         if extra_handler_paths:
             for path in extra_handler_paths:
                 self.server.websocket_server_options.dispatcher._source_handler_files_in_dir(path, path, False, None)
@@ -1321,7 +1367,7 @@ class WebSocketDaemon:
         self.server = None
 
 
-def start_ws_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
+def start_ws_server(logger, host, port, paths, routes, bind_address, config, server_sockets=(), **kwargs):
     try:
         return WebSocketDaemon(host,
                                str(port),
@@ -1329,13 +1375,14 @@ def start_ws_server(logger, host, port, paths, routes, bind_address, config, **k
                                config.paths["ws_doc_root"],
                                bind_address,
                                ssl_config=None,
+                               server_sockets=server_sockets,
                                extra_handler_paths=config.paths["ws_extra"])
     except Exception as error:
         logger.critical(f"start_ws_server: Caught exception from WebSocketDomain: {error}")
         startup_failed(logger)
 
 
-def start_wss_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
+def start_wss_server(logger, host, port, paths, routes, bind_address, config, server_sockets=(), **kwargs):
     try:
         return WebSocketDaemon(host,
                                str(port),
@@ -1343,6 +1390,7 @@ def start_wss_server(logger, host, port, paths, routes, bind_address, config, **
                                config.paths["ws_doc_root"],
                                bind_address,
                                config.ssl_config,
+                               server_sockets=server_sockets,
                                extra_handler_paths=config.paths["ws_extra"])
     except Exception as error:
         logger.critical(f"start_wss_server: Caught exception from WebSocketDomain: {error}")
@@ -1482,14 +1530,8 @@ class ConfigBuilder(config.ConfigBuilder):
             *args,
             **kwargs
         )
-        with self as c:
-            browser_host = c.get("browser_host")
-            alternate_host = c.get("alternate_hosts", {}).get("alt")
-
-            if not domains_are_distinct(browser_host, alternate_host):
-                raise ValueError(
-                    "Alternate host must be distinct from browser host"
-                )
+        if not domains_are_distinct(self.browser_host, self.alternate_hosts.get("alt")):
+            raise ValueError("Alternate host must be distinct from browser host")
 
     def _get_ws_doc_root(self, data):
         if data["ws_doc_root"] is not None:
@@ -1504,8 +1546,8 @@ class ConfigBuilder(config.ConfigBuilder):
         return rv
 
 
-def build_config(logger, override_path=None, config_cls=ConfigBuilder, **kwargs):
-    rv = config_cls(logger)
+def build_config(logger, override_path=None, config_cls=ConfigBuilder, reserve_ports=False, **kwargs):
+    rv = config_cls(logger, reserve_ports=reserve_ports)
 
     if override_path and os.path.exists(override_path):
         with open(override_path) as f:
@@ -1615,6 +1657,7 @@ def run(venv=None, config_cls=ConfigBuilder, route_builder=None,
     with build_config(logger,
                       os.path.join(repo_root, "config.json"),
                       config_cls=config_cls,
+                      reserve_ports=True,
                       **kwargs) as config:
         # This sets the right log level
         logger = get_logger(config.logging["level"], log_handlers)
@@ -1639,8 +1682,7 @@ def run(venv=None, config_cls=ConfigBuilder, route_builder=None,
 
         stash_address = None
         if bind_address:
-            stash_address = (config.server_host, get_port(""))
-            logger.debug("Going to use port %d for stash" % stash_address[1])
+            stash_address = (config.server_host, 0)
 
         with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
             servers = start(logger, config, routes, mp_context, log_handlers, **kwargs)

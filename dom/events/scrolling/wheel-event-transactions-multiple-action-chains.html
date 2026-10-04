@@ -64,11 +64,20 @@ promise_test(async (t) => {
   // The first action chain should target the initial element
   await new test_driver.Actions()
     .addWheel("wheel1")
+    .scroll(40, 2, 0, 10, {origin: "viewport"})
+    .pause(1)
     .scroll(40, 2, 0, 30, {origin: "viewport"})
     .send();
 
   // Start logging event targets in the second transaction
   isFirstGroup = false;
+
+  // Ensure at least one tick occurs between wheel scrolls
+  await new Promise(resolve => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(resolve)
+    })
+  });
 
   // The second chain should target the second element and the prior wheel event
   // group should have no impact on this action chain.

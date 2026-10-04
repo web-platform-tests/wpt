@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<title>position:sticky elements should work correctly with flex-direction</title>
+
+<style>
+.grid {
+  display: grid;
+  gap: 30px;
+  grid-template-columns: repeat(2, 200px);
+  padding: 30px;
+}
+
+.list {
+  max-height: 200px;
+  overflow: auto;
+  list-style: none;
+  padding: 0;
+  border: 1px solid black;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+}
+
+.list-reverse {
+  flex-direction: column-reverse;
+}
+
+.list-item {
+  padding: 3px 5px;
+  background: #c3c3c3;
+  min-height: 20px;
+}
+
+.sticky-item {
+  background: lightgreen;
+}
+</style>
+
+<p>You should see two green list items. There should be no red list item.</p>
+
+<div class="grid">
+  <ul class="list">
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item sticky-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+  </ul>
+
+  <ul class="list list-reverse">
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item sticky-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+  </ul>
+
+</div>

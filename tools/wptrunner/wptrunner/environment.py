@@ -158,7 +158,8 @@ class TestEnvironment:
                                    mp_context=mpcontext.get_context(),
                                    log_handlers=[server_log_handler],
                                    webtransport_h3=self.enable_webtransport,
-                                   dns=self.enable_dns)
+                                   dns=self.enable_dns,
+                                   port_reservations=self.port_reservations)
 
         if self.options.get("supports_debugger") and self.debug_info and self.debug_info.interactive:
             self._stack.enter_context(self.ignore_interrupts())
@@ -192,7 +193,9 @@ class TestEnvironment:
     def build_config(self):
         override_path = os.path.join(serve_path(self.test_paths), "config.json")
 
-        config = serve.ConfigBuilder(self.server_logger, ws_extra=self.ws_extra)
+        self.port_reservations = {}
+        config = serve.ConfigBuilder(self.server_logger, ws_extra=self.ws_extra,
+                                     port_reservations=self.port_reservations)
 
         ports = {
             "http": [8000, 8001],

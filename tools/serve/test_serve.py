@@ -2,6 +2,7 @@
 
 import builtins
 import io
+import json
 import logging
 import multiprocessing
 import multiprocessing.managers
@@ -9,10 +10,12 @@ import os
 import pickle
 import platform
 import socket
+from contextlib import contextmanager
 from unittest.mock import MagicMock, patch
 from typing import Generator, Tuple
 
 import pytest
+import httpx
 
 import localpaths  # type: ignore
 from . import serve
@@ -29,6 +32,148 @@ from .serve import (
 
 
 logger = logging.getLogger()
+
+server_initializers = {
+    "http": serve.start_http_server,
+    "https": serve.start_https_server,
+    "h2": serve.start_http2_server,
+}
+
+
+def notifying_server(*args, initialized, test_scheme, **kwargs):
+    server = server_initializers[test_scheme](*args, **kwargs)
+    initialized.set()
+    return server
+
+
+def gated_http_server(*args, entered, proceed, **kwargs):
+    entered.set()
+    if not proceed.wait(10):
+        raise RuntimeError("Timed out waiting to initialize the test HTTP server")
+    return serve.start_http_server(*args, **kwargs)
+
+
+@contextmanager
+def running_servers(config, reservations, context, **kwargs):
+    servers = serve.start(logger, config, [], context, [], port_reservations=reservations, **kwargs)
+    try:
+        yield servers
+    finally:
+        for server in serve.iter_servers(servers):
+            server.request_shutdown()
+        for server in serve.iter_servers(servers):
+            server.wait(timeout=10)
+            if server.is_alive():
+                server.proc.terminate()
+                server.wait()
+            assert server.proc.exitcode == 0
+
+
+@pytest.mark.parametrize("bind_address", [True, False])
+@pytest.mark.parametrize("scheme", ["http", "https", "h2", "http-local", "https-public"])
+def test_reserved_port_handoff(scheme, bind_address, monkeypatch):
+    context = multiprocessing.get_context("spawn")
+    initialized = context.Event()
+    test_scheme = scheme.split("-")[0]
+    factory_name = "start_http2_server" if scheme == "h2" else f"start_{test_scheme}_server"
+    monkeypatch.setattr(serve, factory_name, notifying_server)
+    reservations = {}
+    builder = ConfigBuilder(logger, browser_host="localhost", bind_address=bind_address,
+                            port_reservations=reservations)
+    builder.ports = {scheme: ["auto", None] if scheme in {"http", "https"} else ["auto"]}
+    with builder as config:
+        port = config.ports[scheme][0]
+        with running_servers(config, reservations, context, initialized=initialized, test_scheme=test_scheme):
+            assert initialized.wait(10)
+            assert not reservations
+            protocol = "http" if test_scheme == "http" else "https"
+            with httpx.Client(verify=False, http2=scheme == "h2", timeout=10, trust_env=False) as client:
+                response = client.get(f"{protocol}://localhost:{port}/")
+                assert response.status_code == 404
+                assert response.http_version == ("HTTP/2" if scheme == "h2" else "HTTP/1.1")
+
+
+def test_reserved_port_does_not_listen_before_initialization(monkeypatch):
+    context = multiprocessing.get_context("spawn")
+    entered, proceed = context.Event(), context.Event()
+    monkeypatch.setattr(serve, "start_http_server", gated_http_server)
+    reservations = {}
+    builder = ConfigBuilder(logger, browser_host="localhost", port_reservations=reservations)
+    builder.ports = {"http": ["auto", None]}
+    with builder as config:
+        port = config.ports["http"][0]
+        with running_servers(config, reservations, context, entered=entered, proceed=proceed):
+            try:
+                assert entered.wait(10)
+                with socket.socket() as client:
+                    client.settimeout(1)
+                    assert client.connect_ex(("127.0.0.1", port)) != 0
+                with socket.socket() as competitor:
+                    with pytest.raises(OSError):
+                        competitor.bind(("127.0.0.1", port))
+            finally:
+                proceed.set()
+
+
+@pytest.mark.parametrize("start_method", multiprocessing.get_all_start_methods())
+def test_disabled_port_not_inherited(start_method, monkeypatch):
+    context = multiprocessing.get_context(start_method)
+    initialized = context.Event()
+    monkeypatch.setattr(serve, "start_http_server", notifying_server)
+    reservations = {}
+    builder = ConfigBuilder(logger, browser_host="localhost", port_reservations=reservations)
+    builder.ports = {"http": ["auto", None], "h2": ["auto"]}
+    monkeypatch.delenv("WPT_STASH_CONFIG", raising=False)
+    with builder as config:
+        disabled_port = config.ports["h2"][0]
+        with serve.stash.StashServer(("localhost", 0), authkey="test", mp_context=context):
+            with running_servers(config, reservations, context, h2=False,
+                                 initialized=initialized, test_scheme="http"):
+                assert initialized.wait(10)
+                with socket.socket() as competitor:
+                    competitor.bind(("127.0.0.1", disabled_port))
+
+
+def test_failed_process_start_releases_ports(monkeypatch):
+    reservations = {}
+    builder = ConfigBuilder(logger, browser_host="localhost", port_reservations=reservations)
+    builder.ports = {"http": ["auto", "auto"]}
+
+    def fail(*args, **kwargs):
+        raise RuntimeError("Process start failed")
+
+    monkeypatch.setattr(serve.ServerProc, "start", fail)
+    with pytest.raises(RuntimeError, match="Process start failed"):
+        with builder as config:
+            ports = config.ports["http"]
+            serve.start(logger, config, [], multiprocessing.get_context("spawn"), [],
+                        port_reservations=reservations)
+    for port in ports:
+        with socket.socket() as competitor:
+            competitor.bind(("127.0.0.1", port))
+
+
+def test_serve_reserves_auto_ports(monkeypatch, tmp_path):
+    config_path = tmp_path / "config.json"
+    ports = {scheme: [None] for scheme in ConfigBuilder._default["ports"]}
+    ports["http"] = ["auto", None]
+    ports["https"] = [None, None]
+    config_path.write_text(json.dumps({
+        "browser_host": "localhost",
+        "check_subdomains": False,
+        "ports": ports,
+        "ssl": {"type": "none"},
+    }))
+    monkeypatch.delenv("WPT_STASH_CONFIG", raising=False)
+
+    def start(logger, config, *args, **kwargs):
+        with socket.socket() as competitor:
+            with pytest.raises(OSError):
+                competitor.bind(("127.0.0.1", config.ports["http"][0]))
+        return {}
+
+    monkeypatch.setattr(serve, "start", start)
+    assert serve.run(config_path=str(config_path), exit_after_start=True) == 0
 
 
 @pytest.mark.skipif("fork" not in multiprocessing.get_all_start_methods(),

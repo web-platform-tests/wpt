@@ -2,11 +2,13 @@
 
 import copy
 import os
+import sys
 from collections import defaultdict
+from multiprocessing.util import register_after_fork
 from typing import Any, Mapping
 
 from . import sslutils
-from .utils import get_port
+from .utils import get_port, reserve_tcp_port
 
 
 _renamed_props = {
@@ -124,6 +126,10 @@ class ConfigBuilder:
                              the configuration.
     :param config_cls: - A class to use for the configuration. Defaults
                          to default_config_cls
+    :param port_reservations: - Optional dictionary for bound HTTP-family sockets,
+                               keyed by (scheme, index). The runner transfers these
+                               separately from the configuration; context exit
+                               closes any sockets that have not been transferred.
     """
 
     _default = {
@@ -179,11 +185,15 @@ class ConfigBuilder:
                  subdomains=set(),
                  not_subdomains=set(),
                  config_cls=None,
+                 port_reservations=None,
                  **kwargs):
 
         self._logger = logger
         self._data = self._default.copy()
         self._ssl_env = None
+        self._port_reservations = port_reservations
+        if port_reservations is not None:
+            register_after_fork(self, ConfigBuilder._close_port_reservations)
 
         self._config_cls = config_cls or self.default_config_cls
 
@@ -252,13 +262,29 @@ class ConfigBuilder:
             raise ValueError("Tried to re-enter configuration")
         data = self._data.copy()
         prefix = "_get_"
-        for key in self.computed_properties:
-            data[key] = getattr(self, prefix + key)(data)
-        return self._config_cls(data)
+        try:
+            for key in self.computed_properties:
+                data[key] = getattr(self, prefix + key)(data)
+            return self._config_cls(data)
+        except BaseException:
+            self.__exit__(*sys.exc_info())
+            raise
 
     def __exit__(self, *args):
-        self._ssl_env.__exit__(*args)
-        self._ssl_env = None
+        try:
+            if self._ssl_env is not None:
+                self._ssl_env.__exit__(*args)
+        finally:
+            self._ssl_env = None
+            self._close_port_reservations()
+
+    def _close_port_reservations(self):
+        # A forked child must not keep other servers' ports reserved. Its own
+        # socket is removed from this dictionary before the process starts.
+        if self._port_reservations is not None:
+            for sock in self._port_reservations.values():
+                sock.close()
+            self._port_reservations.clear()
 
     def _get_logging(self, data):
         logging = data["logging"]
@@ -273,11 +299,19 @@ class ConfigBuilder:
 
     def _get_ports(self, data):
         new_ports = defaultdict(list)
+        explicit_ports = {port for ports in data["ports"].values() for port in ports if isinstance(port, int)}
+        host = data["server_host"] if data["bind_address"] else ""
         for scheme, ports in data["ports"].items():
             if scheme in ["wss", "https"] and not sslutils.get_cls(data["ssl"]["type"]).ssl_enabled:
                 continue
             for i, port in enumerate(ports):
-                real_port = get_port("") if port == "auto" else port
+                if (port == "auto" and self._port_reservations is not None and
+                    scheme in {"http", "http-local", "http-public", "https", "https-local", "https-public", "h2"}):
+                    sock = reserve_tcp_port(host, explicit_ports)
+                    self._port_reservations[scheme, i] = sock
+                    real_port = sock.getsockname()[1]
+                else:
+                    real_port = get_port("") if port == "auto" else port
                 new_ports[scheme].append(real_port)
         return new_ports
 

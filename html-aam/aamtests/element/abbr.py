@@ -7,7 +7,6 @@ def test_atspi(atspi, session, inline):
 
     # Spec:
     # Role: ATK_ROLE_STATIC
-    # Object attributes: "abbr" attribute on the containing td if a single child, text content used as a value
 
     node = atspi.find_node("target", session.url)
     assert atspi.Accessible.get_role(node) == atspi.Role.STATIC

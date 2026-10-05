@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="help"
+      href="https://html.spec.whatwg.org/multipage/embedded-content-other.html#the-model-element"
+    />
+    <title>Test for the functionality of the inert attribute</title>
+  </head>
+
+  <body>
+    <model id="inert-model" inert width="200" height="200">
+      <source src="../../resources/chromeball.usdz" type="model/vnd.usdz+zip" />
+      <source src="../../resources/chromeball.glb" type="model/gltf-binary" />
+    </model>
+
+    <model id="active-model" width="200" height="200">
+      <source src="chromeball.usdz" type="model/vnd.usdz+zip" />
+      <source src="chromeball.glb" type="model/gltf-binary" />
+    </model>
+  </body>
+
+  <!-- Include the test harness -->
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script>
+    promise_test(async (t) => {
+      const inertModel = document.getElementById("inert-model");
+      const activeModel = document.getElementById("active-model");
+
+      const result = await Promise.race([
+        test_driver.click(inertModel),
+        test_driver.click(activeModel),
+      ]);
+      assert_true(
+        result == activeModel,
+        "only the active model receives a click"
+      );
+    }, "model responds correctly to the inert attribute");
+  </script>
+</html>

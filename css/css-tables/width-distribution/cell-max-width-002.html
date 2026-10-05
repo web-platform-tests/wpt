@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<title>Cell max-width and table excess width distribution</title>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src='/resources/check-layout-th.js'></script>
+<link rel="author" title="David Grogan" href="mailto:dgrogan@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-tables-3/#outer-max-content">
+<link rel="help" href="https://drafts.csswg.org/css-tables-3/#max-content-width-of-a-column-based-on-cells-of-span-up-to-1">
+<link rel="help" href="https://drafts.csswg.org/css-tables-3/#max-content-sizing-guess">
+<link rel="help" href="https://drafts.csswg.org/css-tables-3/#distributing-excess-width-to-columns" title="#2 in the <ol>">
+<meta name="flags" content="" />
+<meta name="assert" content="When distributing excess table width to non-constrained columns that have originating cells with intrinsic percentage width of 0% and zero max-content width, cells' max-width is ignored." />
+
+<style>
+main table {
+  background: green;
+  height: 100px;
+  width: 100px;
+}
+
+#first-cell {
+  background: orange;
+}
+#second-cell {
+  max-width: 0px;
+  background: blue;
+}
+
+</style>
+
+<main>
+  <p>The orange and blue cells below should be equal width.</p>
+  <table cellpadding=0 cellspacing=0>
+    <tr>
+      <td data-expected-width=50 id=first-cell></td>
+      <td data-expected-width=50 id=second-cell></td>
+    </tr>
+  </table>
+</main>
+
+<script>
+checkLayout('table');
+</script>

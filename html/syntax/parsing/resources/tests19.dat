@@ -630,6 +630,19 @@
 |     "�"
 
 #data
+<!doctype html>&#0;<frameset><frame>
+#errors
+(1,19): null-character-reference
+(1,29): unexpected-start-tag
+(1,36): unexpected-start-tag-ignored
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     "�"
+
+#data
 <!doctype html><svg>&#xFFFD;</svg><frameset><frame>
 #errors
 (1,44): unexpected-start-tag

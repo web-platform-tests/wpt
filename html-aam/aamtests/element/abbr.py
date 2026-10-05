@@ -24,7 +24,6 @@ def test_atspi(atspi, session, inline):
 #
 #     # Spec:
 #     # Roles: ROLE_SYSTEM_TEXT; IA2_ROLE_TEXT_FRAME
-#     # Object attributes: "abbr" attribute on the containing td if a single child, text content used as a value
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

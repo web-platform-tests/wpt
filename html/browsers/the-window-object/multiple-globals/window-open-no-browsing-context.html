@@ -1,0 +1,73 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>window.open() when the entry, incumbent, or relevant global has no browsing context</title>
+<link rel=help href="https://html.spec.whatwg.org/#window-open-steps">
+<link rel=help href="https://github.com/whatwg/html/issues/11797">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<body>
+<script>
+function addIframe(t, name) {
+  const iframe = document.createElement('iframe');
+  if (name) {
+    iframe.name = name;
+  }
+  document.body.append(iframe);
+  t.add_cleanup(() => iframe.remove());
+  return iframe;
+}
+
+// Calls relevantWindow.open() with the entry realm being that of a listener
+// from the entry iframe, and the incumbent realm being that of the incumbent
+// iframe, after removing the iframe for the realm given by `detached`.
+function openWithDetached(t, detached, target) {
+  const iframes = {
+    entry: addIframe(t),
+    incumbent: addIframe(t),
+    relevant: addIframe(t),
+  };
+  const relevantWindow = iframes.relevant.contentWindow;
+  const callOpen = iframes.incumbent.contentWindow.eval(
+      '(w, target) => w.open("/common/blank.html", target)');
+  let ran = false;
+  let result;
+  let error;
+  const listener = iframes.entry.contentWindow.eval('f => () => f()')(() => {
+    ran = true;
+    try {
+      result = callOpen(relevantWindow, target);
+    } catch (e) {
+      error = e;
+    }
+  });
+  iframes[detached].remove();
+  const eventTarget = new EventTarget();
+  eventTarget.addEventListener('x', listener);
+  eventTarget.dispatchEvent(new Event('x'));
+  assert_true(ran, 'listener ran');
+  if (error) {
+    throw error;
+  }
+  return result;
+}
+
+for (const targetType of ['_blank', 'named']) {
+  for (const [detached, expectNull] of [['entry', true], ['incumbent', false], ['relevant', true]]) {
+    test(t => {
+      const name = `target-${detached}`;
+      const targetIframe = targetType === 'named' ? addIframe(t, name) : null;
+      const result = openWithDetached(t, detached, targetType === 'named' ? name : '_blank');
+      if (result && !targetIframe) {
+        t.add_cleanup(() => result.close());
+      }
+      if (expectNull) {
+        assert_equals(result, null);
+      } else if (targetIframe) {
+        assert_equals(result, targetIframe.contentWindow);
+      } else {
+        assert_not_equals(result, null);
+      }
+    }, `window.open() with ${targetType} target when the ${detached} iframe is removed`);
+  }
+}
+</script>

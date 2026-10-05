@@ -17,33 +17,59 @@ function addIframe(t, name) {
   return iframe;
 }
 
-// Calls relevantWindow.open() with the entry realm being that of a listener
-// from the entry iframe, and the incumbent realm being that of the incumbent
-// iframe, after removing the iframe for the realm given by `detached`.
-function openWithDetached(t, detached, target) {
-  const iframes = {
-    entry: addIframe(t),
-    incumbent: addIframe(t),
-    relevant: addIframe(t),
-  };
+// Calls relevantWindow.open(url, target), after removing the iframe for the
+// realm given by `removed`, if any, where:
+// - The entry realm is that of the entry iframe, since the listener is from
+//   that realm and is invoked from a task, with no other script on the stack.
+// - The incumbent realm is that of the incumbent iframe, since the function
+//   calling open() is from that realm.
+// - The relevant realm is that of the relevant iframe, since its Window is the
+//   this value.
+// Each iframe's base URL is blank.html with the realm's name as the query.
+async function openWithRemoved(t, removed, url, target) {
+  const iframes = {};
+  for (const realm of ['entry', 'incumbent', 'relevant']) {
+    const iframe = addIframe(t);
+    const base = iframe.contentDocument.createElement('base');
+    base.href = `${location.origin}/common/blank.html?${realm}`;
+    iframe.contentDocument.head.append(base);
+    iframes[realm] = iframe;
+  }
   const relevantWindow = iframes.relevant.contentWindow;
   const callOpen = iframes.incumbent.contentWindow.eval(
-      '(w, target) => w.open("/common/blank.html", target)');
+      '(w, url, target) => w.open(url, target)');
+  const token = `open-${Math.random()}`;
   let ran = false;
   let result;
   let error;
-  const listener = iframes.entry.contentWindow.eval('f => () => f()')(() => {
+  const listener = iframes.entry.contentWindow.eval('f => e => f(e)')(e => {
+    if (e.data !== token) {
+      return;
+    }
     ran = true;
     try {
-      result = callOpen(relevantWindow, target);
+      result = callOpen(relevantWindow, url, target);
     } catch (e) {
       error = e;
     }
   });
-  iframes[detached].remove();
-  const eventTarget = new EventTarget();
-  eventTarget.addEventListener('x', listener);
-  eventTarget.dispatchEvent(new Event('x'));
+  if (removed) {
+    iframes[removed].remove();
+  }
+  await new Promise(resolve => {
+    const done = e => {
+      if (e.data === token) {
+        resolve();
+      }
+    };
+    window.addEventListener('message', listener);
+    window.addEventListener('message', done);
+    t.add_cleanup(() => {
+      window.removeEventListener('message', listener);
+      window.removeEventListener('message', done);
+    });
+    window.postMessage(token, '*');
+  });
   assert_true(ran, 'listener ran');
   if (error) {
     throw error;
@@ -51,12 +77,22 @@ function openWithDetached(t, detached, target) {
   return result;
 }
 
+promise_test(async t => {
+  const targetIframe = addIframe(t, 'target-control');
+  const loaded = new Promise(resolve => targetIframe.onload = resolve);
+  const result = await openWithRemoved(t, null, '#opened', 'target-control');
+  assert_equals(result, targetIframe.contentWindow);
+  await loaded;
+  assert_equals(targetIframe.contentWindow.location.search, '?entry',
+      'URL is parsed relative to the entry iframe');
+}, 'window.open() with no iframe removed');
+
 for (const targetType of ['_blank', 'named']) {
-  for (const [detached, expectNull] of [['entry', true], ['incumbent', false], ['relevant', true]]) {
-    test(t => {
-      const name = `target-${detached}`;
+  for (const [removed, expectNull] of [['entry', true], ['incumbent', false], ['relevant', true]]) {
+    promise_test(async t => {
+      const name = `target-${targetType}-${removed}`;
       const targetIframe = targetType === 'named' ? addIframe(t, name) : null;
-      const result = openWithDetached(t, detached, targetType === 'named' ? name : '_blank');
+      const result = await openWithRemoved(t, removed, '#opened', targetIframe ? name : '_blank');
       if (result && !targetIframe) {
         t.add_cleanup(() => result.close());
       }
@@ -67,7 +103,7 @@ for (const targetType of ['_blank', 'named']) {
       } else {
         assert_not_equals(result, null);
       }
-    }, `window.open() with ${targetType} target when the ${detached} iframe is removed`);
+    }, `window.open() with ${targetType} target when the ${removed} iframe is removed`);
   }
 }
 </script>

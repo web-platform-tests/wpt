@@ -147,3 +147,65 @@ promise_test(async () => {
     "valueOf call 2",
   ]);
 }, "multiple return values from js to wasm");
+
+promise_test(async () => {
+  const builder = new WasmModuleBuilder();
+
+  const fnIndex = builder.addImport("module", "fn", type_if_fi);
+  builder
+    .addFunction("callfn", kSig_i_v)
+    .addBody([
+        ...wasmF64Const(4.2),
+        ...wasmI32Const(7),
+        kExprCallFunction, fnIndex,
+        kExprDrop,
+        kExprReturn,
+    ])
+    .exportFunc();
+
+  const buffer = builder.toBuffer();
+
+  const imports = {
+    "module": {
+      fn(f32, i32) {
+        assert_equals(f32, 4.2);
+        assert_equals(i32, 7);
+        return [2];
+      },
+    }
+  };
+
+  const { instance } = await WebAssembly.instantiate(buffer, imports);
+  assert_throws(new TypeError(), () => instance.exports.callfn());
+}, "Too few results returned from js to wasm");
+
+promise_test(async () => {
+  const builder = new WasmModuleBuilder();
+
+  const fnIndex = builder.addImport("module", "fn", type_if_fi);
+  builder
+    .addFunction("callfn", kSig_i_v)
+    .addBody([
+        ...wasmF64Const(4.2),
+        ...wasmI32Const(7),
+        kExprCallFunction, fnIndex,
+        kExprDrop,
+        kExprReturn,
+    ])
+    .exportFunc();
+
+  const buffer = builder.toBuffer();
+
+  const imports = {
+    "module": {
+      fn(f32, i32) {
+        assert_equals(f32, 4.2);
+        assert_equals(i32, 7);
+        return [2, 4.2, undefined];
+      },
+    }
+  };
+
+  const { instance } = await WebAssembly.instantiate(buffer, imports);
+  assert_throws(new TypeError(), () => instance.exports.callfn());
+}, "Too many results returned from js to wasm");

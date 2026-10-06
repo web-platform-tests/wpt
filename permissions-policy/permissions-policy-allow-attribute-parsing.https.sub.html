@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!-- Tests parsing of the iframe allow attribute against different whitespace, tokens, and combinations. -->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const cross_origin = 'https://{{domains[www]}}:{{ports[https][0]}}';
+const helper = '/permissions-policy/resources/report-fullscreen-enabled.html';
+
+function test_allow(value, expected, same_origin = false) {
+  promise_test(t => {
+    return new Promise(resolve => {
+      const iframe = document.createElement('iframe');
+      const handler = function(e) {
+        if (e.source === iframe.contentWindow && e.data.type === 'fullscreen-enabled') {
+          window.removeEventListener('message', handler);
+          t.step(() => assert_equals(e.data.enabled, expected));
+          resolve();
+        }
+      };
+      window.addEventListener('message', handler);
+      t.add_cleanup(() => {
+        iframe.remove();
+        window.removeEventListener('message', handler);
+      });
+      if (value !== null) {
+        iframe.setAttribute('allow', value);
+      }
+      iframe.src = same_origin ? helper : cross_origin + helper;
+      document.body.appendChild(iframe);
+    });
+  }, `${value === null ? 'no allow attribute' : `allow="${value.replace(/\t/g, '\\t').replace(/\n/g, '\\n')}"`} expects ${expected}${same_origin ? ' (same-origin frame)' : ''}`);
+}
+
+test_allow(null, false);
+test_allow('fullscreen', true);
+
+test_allow('; fullscreen', true);
+test_allow('fullscreen;', true);
+
+test_allow('fullscreen\t\n\'src\'', true);
+test_allow('fullscreen  ', true);
+
+test_allow('unrecognized-feature *; fullscreen', true);
+
+test_allow('fullscreen * https://example.com', true);
+test_allow('fullscreen https://example.com *', true);
+
+test_allow('fullscreen \'none\' *', true);
+test_allow('fullscreen * \'none\'', true);
+test_allow('fullscreen \'none\' ' + cross_origin, true);
+test_allow('fullscreen ' + cross_origin + ' \'none\'', true);
+
+test_allow('fullscreen \'SELF\'', true, true);
+test_allow('fullscreen \'sRc\'', true);
+
+test_allow('fullscreen !@#$', false);
+test_allow('fullscreen !@#$ ' + cross_origin, true);
+
+test_allow('fullscreen https://example.com', false);
+</script>
+</body>

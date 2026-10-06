@@ -3,7 +3,7 @@ from tests.support.classic.asserts import assert_error, assert_success
 
 def consume_user_activation(session):
     return session.transport.send(
-        "POST", "session/{session_id}/window/consume-user-activation".format(
+        "POST", "session/{session_id}/consume-user-activation".format(
             **vars(session)))
 
 

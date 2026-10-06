@@ -990,7 +990,7 @@ class WebDriverConsumeUserActivationProtocolPart(ConsumeUserActivationProtocolPa
         self.webdriver = self.parent.webdriver
 
     def consume_user_activation(self):
-        return self.webdriver.window.consume_user_activation()
+        return self.webdriver.consume_user_activation()
 
 
 class WebDriverBidiDigitalCredentialsProtocolPart(DigitalCredentialsProtocolPart):

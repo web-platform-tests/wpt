@@ -407,9 +407,6 @@ class BrowserWindow:
     def fullscreen(self):
         return self.session.send_session_command("POST", "window/fullscreen")
 
-    def consume_user_activation(self):
-        return self.session.send_session_command("POST", "window/consume-user-activation")
-
 
 class Find:
     def __init__(self, session):
@@ -812,6 +809,9 @@ class Session:
             if value is not None:
                 body[prop] = value
         return self.send_session_command("POST", "print", body)
+
+    def consume_user_activation(self):
+        return self.send_session_command("POST", "consume-user-activation")
 
 
 class ShadowRoot:

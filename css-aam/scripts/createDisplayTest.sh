@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This excludes "none" and "block" on purpose.
-knownvalues=("contents" "flow-root" "inline" "inline-block" "run-in" "list-item" "inline list-item" "flex" "inline-flex" "grid" "inline-grid" "ruby" "block ruby" "table" "inline-table")
+knownvalues=("flow-root" "inline" "inline-block" "run-in" "flex" "inline-flex" "grid" "inline-grid" "ruby" "block ruby")
 
 if [ $# -eq 0 ]
 then

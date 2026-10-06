@@ -9,8 +9,6 @@
   <script src="/resources/testdriver-actions.js"></script>
   <script src="/css-aam/scripts/css-aam-utils.js"></script>
 </head>
-<!-- THIS IS A GENERATED FILE.
-     EDITS ARE OVERWRITTEN. -->
 <body>
 
 <p>Tests that an element's computed role doesn't change when <code>display: contents</code> is applied to it.<p>
@@ -19,12 +17,12 @@
 
 <a href="#" data-testnamebase="el-a" data-expectedrole="link" class="ex">x</a>
 <a data-testnamebase="el-a-no-href" class="ex-generic">x</a>
-<!-- todo: abbr -->
+<abbr data-testnamebase="el-abbr" class="ex-generic" title="x">x</abbr>
 <address data-testnamebase="el-address" data-expectedrole="group" class="ex">x</address>
 <!-- area -> ./fragile/area-role.html -->
 <article data-testnamebase="el-article" data-expectedrole="article" class="ex">x</article>
 <!-- aside -> ./roles-contextual.html -->
-<!-- todo: audio -->
+<audio data-testnamebase="el-audio" class="ex-generic" src="x.mp3" type="audio/mpeg" controls>
 <!-- todo: autonomous custom element -->
 <!-- base (not mapped) -->
 <b data-testnamebase="el-b" class="ex-generic">x</b>
@@ -32,7 +30,7 @@
 <bdo data-testnamebase="el-bdo" class="ex-generic">x</bdo>
 <blockquote data-testnamebase="el-blockquote" data-expectedrole="blockquote" class="ex">x</blockquote>
 <!-- todo: body -->
-<!-- br (not mapped) -->
+<br data-testnamebase="el-br" class="ex-generic">
 <button data-testnamebase="el-button" data-expectedrole="button" class="ex">x</button>
 <!-- todo: canvas -->
 <!-- caption -> ./table-roles.html -->
@@ -57,20 +55,25 @@
 <!-- todo: dialog(modal) -> needs to be tested in a separate file so background inertness won't break the other tests  -->
 <dialog open data-testnamebase="el-dialog-non-modal" data-expectedrole="dialog" class="ex">x</dialog>
 <!-- dir -> ./dir-role.tentative.html -->
-<!-- div -> ./roles-generic.html -->
-<!-- todo: dl -->
+<div data-testnamebase="el-div" class="ex-generic"></div>
+<dl data-testnamebase="el-dl" class="ex-generic">
+  <dt>x</dt>
+  <dd>x</dd>
+</dl>
 
 <!-- el-dt -->
 <dl>
-<!-- dt/dd pending listitemkey and listitemvalue roles: https://github.com/w3c/aria/issues/1662 -->
-<dt data-testnamebase="el-dt" data-expectedrole="term" class="ex">x</dt>
-<dd>x</dd>
+  <!-- dt/dd pending listitemkey and listitemvalue roles: https://github.com/w3c/aria/issues/1662 -->
+  <dt data-testnamebase="el-dt" data-expectedrole="term" class="ex">x</dt>
+  <dd>x</dd>
 </dl>
 
 <em data-testnamebase="el-em" data-expectedrole="emphasis" class="ex">x</em>
 <!-- todo: embed -->
 <fieldset data-testnamebase="el-fieldset" data-expectedrole="group" class="ex"><legend>x</legend><input></fieldset>
-<!-- todo: figcaption -->
+<figure>
+  <figcaption data-testnamebase="el-figcaption" class="ex-generic">x</figcaption>
+</figure>
 <figure data-testnamebase="el-figure" data-expectedrole="figure" class="ex"><img alt="x" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="><figcaption>x</figcaption></figure>
 <!-- footer -> ./roles-contextual.html -->
 <form aria-label="form" data-testnamebase="el-form" data-expectedrole="form" class="ex"><input></form>

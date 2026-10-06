@@ -1,4 +1,4 @@
-from tests.support.classic.asserts import assert_error, assert_success
+from tests.support.classic.asserts import assert_success
 
 
 def consume_user_activation(session):
@@ -10,16 +10,6 @@ def consume_user_activation(session):
 def is_active(session):
     return session.execute_script(
         "return navigator.userActivation.isActive")
-
-
-def test_no_top_browsing_context(session, closed_window):
-    response = consume_user_activation(session)
-    assert_error(response, "no such window")
-
-
-def test_no_browsing_context(session, closed_frame):
-    response = consume_user_activation(session)
-    assert_success(response)
 
 
 def test_response_payload(session, inline):

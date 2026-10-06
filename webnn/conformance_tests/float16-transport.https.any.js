@@ -149,3 +149,58 @@ const transportTests = [
 ];
 
 webnn_conformance_test(transportTests, buildAndExecuteGraph, getZeroULPTolerance);
+
+// Feed the native output tensor directly into the next dispatch, without
+// re-uploading state from the host. Read both tensors afterward to check that the
+// dispatch preserved the input as well as producing the correct next state.
+const stateBits = [
+  0x0000, 0x8000, 0x0001, 0x8001, 0x0003, 0x8003,
+  0x03ff, 0x83ff, 0x0400, 0x8400
+];
+for (const op of ['identity', 'cast']) {
+  for (const shape of [[10], [1, 2, 1, 5]]) {
+    promise_test(async t => {
+      assert_implements(navigator.ml, 'WebNN must be implemented');
+      const context = await getContext();
+      t.add_cleanup(() => context.destroy());
+      const limits = context.opSupportLimits();
+      const supported = operand =>
+          operand.dataTypes.includes('float16') &&
+          operand.rankRange.min <= shape.length &&
+          shape.length <= operand.rankRange.max;
+      assert_true(supported(limits[op].input),
+          `${op} must support the required float16 input rank`);
+      assert_true(supported(limits[op].output),
+          `${op} must support the required float16 output rank`);
+      assert_implements_optional(
+          supported(limits.input) && supported(limits.output),
+          'The exact float16 input/output tensor ranks must be supported');
+      const builder = new MLGraphBuilder(context);
+      const descriptor = {dataType: 'float16', shape};
+      const input = builder.input('input', descriptor);
+      const result = op === 'identity' ? builder.identity(input) :
+                                       builder.cast(input, 'float16');
+      const graph = await builder.build({result});
+      t.add_cleanup(() => graph.destroy());
+      const first = await context.createTensor(
+          {...descriptor, readable: true, writable: true});
+      const second = await context.createTensor(
+          {...descriptor, readable: true, writable: true});
+      for (const bits of [stateBits, stateBits.toReversed()]) {
+        context.writeTensor(first, new Uint16Array(bits));
+        let current = first;
+        let next = second;
+        for (let step = 0; step < 8; ++step) {
+          context.dispatch(graph, {input: current}, {result: next});
+          assert_array_equals(
+              new Uint16Array(await context.readTensor(next)), bits,
+              `step ${step} preserves the next state's exact bits`);
+          assert_array_equals(
+              new Uint16Array(await context.readTensor(current)), bits,
+              `step ${step} does not modify the input state`);
+          [current, next] = [next, current];
+        }
+      }
+    }, `${op} float16 signed/subnormal state ping-pong, shape [${shape}]`);
+  }
+}

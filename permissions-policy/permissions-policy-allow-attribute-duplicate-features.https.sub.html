@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>Permissions Policy: the first allow attribute entry for a feature wins</title>
+<link rel="help" href="https://w3c.github.io/webappsec-permissions-policy/#algo-parse-policy-directive">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const cross_origin = 'https://{{domains[www]}}:{{ports[https][0]}}';
+const helper = '/permissions-policy/resources/report-fullscreen-enabled.html';
+
+function test_allow(allow_val, expected, description) {
+  promise_test(t => {
+    return new Promise(resolve => {
+      const iframe = document.createElement('iframe');
+      t.add_cleanup(() => iframe.remove());
+      iframe.setAttribute('allow', allow_val);
+      iframe.src = cross_origin + helper;
+      window.addEventListener('message', function handler(e) {
+        if (e.source === iframe.contentWindow && e.data.type === 'fullscreen-enabled') {
+          window.removeEventListener('message', handler);
+          t.step(() => assert_equals(e.data.enabled, expected));
+          resolve();
+        }
+      });
+      document.body.appendChild(iframe);
+    });
+  }, description);
+}
+
+test_allow('fullscreen; fullscreen \'self\'', true, 'allow="fullscreen; fullscreen \'self\'" yields true');
+test_allow('fullscreen \'self\'; fullscreen', false, 'allow="fullscreen \'self\'; fullscreen" yields false');
+</script>
+</body>

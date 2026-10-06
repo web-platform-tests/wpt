@@ -38,16 +38,21 @@
     }
 
     function equal_coords(left, right) {
-        return left.latitude === right.latitude &&
-            left.longitude === right.longitude &&
-            left.accuracy === right.accuracy &&
-            left.altitude === right.altitude &&
-            left.altitudeAccuracy === right.altitudeAccuracy &&
-            left.heading === right.heading &&
-            left.speed === right.speed;
+        for (const key of ["latitude", "longitude", "accuracy", "altitude",
+                           "altitudeAccuracy", "heading", "speed"]) {
+          if (left[key] !== right[key]) { return false; }
+        }
+        return true;
     }
 
-    function coarsened(coords) {
+    function assert_equal_coords(actual, expected, description) {
+        for (const key of ["latitude", "longitude", "accuracy", "altitude",
+                           "altitudeAccuracy", "heading", "speed"]) {
+            assert_equals(actual[key], expected[key], `${description}: ${key}`);
+        }
+    }
+
+    function expected_approximate_coords(coords) {
         return {
             latitude: coords.latitude,
             longitude: coords.longitude,
@@ -104,13 +109,11 @@
         await override_geolocation(t, override);
 
         const watch = start_watch(t, {accuracyMode: "approximate"});
-        assert_true(equal_coords(await watch.next(), coarsened(override)),
-                    "first watched position");
+        assert_equal_coords(await watch.next(), expected_approximate_coords(override), "first watched position");
 
         const position = await get_current_position(
             {accuracyMode: "precise", enableHighAccuracy: true});
-        assert_true(equal_coords(position, override),
-                    "getCurrentPosition position");
+        assert_equal_coords(position, override, "getCurrentPosition position");
 
         await override_geolocation(t, override2);
 
@@ -119,9 +122,8 @@
         let nextWatchedPosition;
         do {
             nextWatchedPosition = await watch.next();
-        } while (equal_coords(nextWatchedPosition, coarsened(override)));
-        assert_true(equal_coords(nextWatchedPosition, coarsened(override2)),
-                    "second watched position");
+        } while (equal_coords(nextWatchedPosition, expected_approximate_coords(override)));
+        assert_equal_coords(nextWatchedPosition, expected_approximate_coords(override2), "second watched position");
     }, 'getCurrentPosition with accuracyMode: "precise" while watching with accuracyMode: "approximate"');
 
     promise_test(async (t) => {
@@ -129,13 +131,11 @@
 
         const watch = start_watch(
             t, {accuracyMode: "precise", enableHighAccuracy: true});
-        assert_true(equal_coords(await watch.next(), override),
-                    "first watched position");
+        assert_equal_coords(await watch.next(), override, "first watched position");
 
         const position =
             await get_current_position({accuracyMode: "approximate"});
-        assert_true(equal_coords(position, coarsened(override)),
-                    "getCurrentPosition position");
+        assert_equal_coords(position, expected_approximate_coords(override), "getCurrentPosition position");
 
         await override_geolocation(t, override2);
 
@@ -145,8 +145,7 @@
         do {
             nextWatchedPosition = await watch.next();
         } while (equal_coords(nextWatchedPosition, override));
-        assert_true(equal_coords(nextWatchedPosition, override2),
-                    "second watched position");
+        assert_equal_coords(nextWatchedPosition, override2, "second watched position");
     }, 'getCurrentPosition with accuracyMode: "approximate" while watching with accuracyMode: "precise"');
 
     promise_test(async (t) => {
@@ -156,10 +155,8 @@
         const preciseWatch = start_watch(
             t, {accuracyMode: "precise", enableHighAccuracy: true});
 
-        assert_true(equal_coords(await approximateWatch.next(), coarsened(override)),
-            "first position of the approximate watch");
-        assert_true(equal_coords(await preciseWatch.next(), override),
-            "first position of the precise watch");
+        assert_equal_coords(await approximateWatch.next(), expected_approximate_coords(override), "first position of the approximate watch");
+        assert_equal_coords(await preciseWatch.next(), override, "first position of the precise watch");
 
         await override_geolocation(t, override2);
 
@@ -168,26 +165,22 @@
         do {
             nextPreciseWatchedPosition = await preciseWatch.next();
         } while (equal_coords(nextPreciseWatchedPosition, override));
-        assert_true(equal_coords(nextPreciseWatchedPosition, override2),
-                    "second precise watched position");
+        assert_equal_coords(nextPreciseWatchedPosition, override2, "second precise watched position");
         let nextApproximateWatchedPosition;
         do {
             nextApproximateWatchedPosition = await approximateWatch.next();
-        } while (equal_coords(nextApproximateWatchedPosition, coarsened(override)));
-        assert_true(equal_coords(nextApproximateWatchedPosition, coarsened(override2)),
-                    "second approximate watched position");
+        } while (equal_coords(nextApproximateWatchedPosition, expected_approximate_coords(override)));
+        assert_equal_coords(nextApproximateWatchedPosition, expected_approximate_coords(override2), "second approximate watched position");
 
         await override_geolocation(t, override);
 
         do {
             nextPreciseWatchedPosition = await preciseWatch.next();
         } while (equal_coords(nextPreciseWatchedPosition, override2));
-        assert_true(equal_coords(nextPreciseWatchedPosition, override),
-                    "third precise watched position");
+        assert_equal_coords(nextPreciseWatchedPosition, override, "third precise watched position");
         do {
             nextApproximateWatchedPosition = await approximateWatch.next();
-        } while (equal_coords(nextApproximateWatchedPosition, coarsened(override2)));
-        assert_true(equal_coords(nextApproximateWatchedPosition, coarsened(override)),
-                    "third approximate watched position");
+        } while (equal_coords(nextApproximateWatchedPosition, expected_approximate_coords(override2)));
+        assert_equal_coords(nextApproximateWatchedPosition, expected_approximate_coords(override), "third approximate watched position");
     }, 'Concurrent watchPosition with accuracyMode: "approximate" and accuracyMode: "precise"');
 </script>

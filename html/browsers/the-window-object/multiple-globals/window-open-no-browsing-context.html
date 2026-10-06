@@ -70,6 +70,11 @@ async function openWithRemoved(t, removed, url, target) {
     });
     window.postMessage(token, '*');
   });
+  if (removed === 'entry' && !ran) {
+    // A listener from a realm that isn't fully active might not be invoked:
+    // https://github.com/whatwg/webidl/issues/993
+    return null;
+  }
   assert_true(ran, 'listener ran');
   if (error) {
     throw error;

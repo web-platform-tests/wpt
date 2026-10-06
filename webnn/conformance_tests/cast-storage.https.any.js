@@ -50,6 +50,36 @@ const storageCases = [
               0x3c00, 0xbc00]}
 ];
 
+// Do not add compatible widening casts: these tests inspect the exact native
+// storage path. Optional global tensor limits may make that path unavailable,
+// but missing required operator support must not turn into a skipped test.
+const assertExactStorageSupported = (context, fixture, shape, constant) => {
+  const limits = context.opSupportLimits();
+  const supported = (operand, dataType) =>
+      operand.dataTypes.includes(dataType) &&
+      operand.rankRange.min <= shape.length &&
+      shape.length <= operand.rankRange.max;
+  for (const [name, dataType] of [
+    ['input', fixture.inputType], ['output', fixture.outputType]
+  ]) {
+    const available = supported(limits[fixture.op][name], dataType);
+    const required = checkMinimum(
+        {dataType, shape}, requiredDataTypesAndRanks[fixture.op][name]);
+    const message = `${fixture.op} ${name} must support ${dataType} rank ${shape.length}`;
+    if (required) {
+      assert_true(available, message);
+    } else {
+      assert_implements_optional(available, message);
+    }
+  }
+  assert_implements_optional(
+      supported(constant ? limits.constant : limits.input, fixture.inputType) &&
+          supported(limits.output, fixture.outputType),
+      'The exact input/constant and output tensor types and ranks must be supported');
+};
+
+promise_setup(getRequiredDataTypesAndRanks);
+
 for (const fixture of storageCases) {
   const shapes = fixture.expected.length === 16 ? [[16], [1, 2, 2, 4]] : [[12]];
   for (const shape of shapes) {
@@ -58,12 +88,7 @@ for (const fixture of storageCases) {
         assert_implements(navigator.ml, 'WebNN must be implemented');
         const context = await getContext();
         t.add_cleanup(() => context.destroy());
-        const limits = context.opSupportLimits();
-        const sourceLimits = constant ? limits.constant : limits.input;
-        assert_implements_optional(
-            sourceLimits.dataTypes.includes(fixture.inputType) &&
-                limits.output.dataTypes.includes(fixture.outputType),
-            'Required tensor types must be supported');
+        assertExactStorageSupported(context, fixture, shape, constant);
         const builder = new MLGraphBuilder(context);
         const descriptor = {dataType: fixture.inputType, shape};
         const input = constant ? builder.constant(descriptor, fixture.data) :

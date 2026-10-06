@@ -80,6 +80,8 @@ for (var data of elemData) {
   test(function() {
     var el = data.factory();
     this.add_cleanup(() => el.remove());
+    assert_equals(el.selectionStart, 0, "selectionStart before setting defaultValue");
+    assert_equals(el.selectionEnd, 0, "selectionEnd before setting defaultValue");
     el.defaultValue = sometext;
     assert_true(sometext.length > 8,
                 "sometext too short, test won't work right");

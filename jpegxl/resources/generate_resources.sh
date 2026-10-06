@@ -124,13 +124,11 @@ JXL_RS_TESTDATA="${JXL_RS_TESTDATA:-$HOME/jxl-rs/jxl/resources/test}"
 JXL_RS_CONF="$JXL_RS_TESTDATA/conformance_test_images"
 
 for f in \
-  basic.jxl \
   8x8_noise.jxl \
   with_icc.jxl \
   orientation1_identity.jxl \
   orientation6_rotate_90_cw.jxl \
   orientation8_rotate_90_ccw.jxl \
-  green_queen_modular_e3.jxl \
   green_queen_vardct_e3.jxl \
   has_permutation.jxl \
   progressive_ac.jxl \
@@ -158,9 +156,6 @@ copy_if_exists "$JXL_RS_CONF/patches.jxl" \
 
 # PNG references used by reftests.
 decode_png_ref_if_exists \
-  "$SCRIPT_DIR/green_queen_modular_e3.jxl" \
-  "$SCRIPT_DIR/green_queen_modular_e3.png"
-decode_png_ref_if_exists \
   "$SCRIPT_DIR/conformance_cmyk_layers.jxl" \
   "$SCRIPT_DIR/conformance_cmyk_layers.png"
 decode_png_ref_if_exists \
@@ -178,9 +173,6 @@ decode_png_ref_if_exists \
 decode_png_ref_if_exists \
   "$SCRIPT_DIR/has_permutation.jxl" \
   "$SCRIPT_DIR/has_permutation.png"
-decode_png_ref_if_exists \
-  "$SCRIPT_DIR/basic.jxl" \
-  "$SCRIPT_DIR/basic.png"
 decode_png_ref_if_exists \
   "$SCRIPT_DIR/orientation1_identity.jxl" \
   "$SCRIPT_DIR/orientation1_identity.png"

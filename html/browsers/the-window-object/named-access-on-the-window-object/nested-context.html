@@ -27,4 +27,29 @@ test(() => {
   assert_equals(window.bar, iframe);
 }, "A named property that matches an element that contains a nested " +
   "browsing context must return the element if using id");
+
+// https://bugzilla.mozilla.org/show_bug.cgi?id=1281604
+// window.foo should equal document.getElementById("foo") when the iframe uses id, not name
+test(() => {
+  const iframe = document.createElement("iframe");
+  iframe.setAttribute("id", "iframe-id-access");
+  document.body.appendChild(iframe);
+
+  assert_equals(window["iframe-id-access"], document.getElementById("iframe-id-access"));
+  assert_not_equals(window["iframe-id-access"], iframe.contentWindow);
+}, "window[id] on an iframe returns the element itself, not its contentWindow");
+
+test(() => {
+  const iframe = document.createElement("iframe");
+  iframe.setAttribute("id", "only-id");
+  document.body.appendChild(iframe);
+
+  // id gives back the element
+  assert_equals(window["only-id"], iframe);
+
+  // swap to name and now we get the contentWindow
+  iframe.removeAttribute("id");
+  iframe.setAttribute("name", "only-id");
+  assert_equals(window["only-id"], iframe.contentWindow);
+}, "switching an iframe from id to name changes what named access returns");
 </script>

@@ -18,6 +18,8 @@ class H3Headers(Dict[str, str]):
         for raw_key, raw_value in headers:
             key = isomorphic_decode(raw_key)
             value = isomorphic_decode(raw_value)
+            if key == "cookie" and key in self.raw_headers:
+                value = self.raw_headers[key] + "; " + value
             self.raw_headers[key] = value
             dict.__setitem__(self, key, value)
 

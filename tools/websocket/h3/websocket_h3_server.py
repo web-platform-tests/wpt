@@ -106,8 +106,9 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
         self._active_requests = 0
         self._pending_handshakes = 0
         self._workers: Set[asyncio.Task[Any]] = set()
-        self._max_pending_handshakes = max_pending_handshakes
-        self._max_active_requests = max_active_requests
+        self._queued_workers: Dict[int, asyncio.Task[Any]] = {}
+        self._handshake_slots = asyncio.Semaphore(max_pending_handshakes)
+        self._request_slots = asyncio.Semaphore(max_active_requests)
         self._max_unread_websocket_bytes = max_unread_websocket_bytes
         self._ws_doc_root = ws_doc_root
         self._router = router
@@ -128,6 +129,9 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
         if isinstance(event, ConnectionTerminated):
             self._close_all_sessions()
         elif isinstance(event, StreamReset):
+            queued = self._queued_workers.pop(event.stream_id, None)
+            if queued is not None:
+                queued.cancel()
             session = self._sessions.pop(event.stream_id, None)
             if session is not None:
                 session.abort()
@@ -166,9 +170,6 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
         """
         assert self._http is not None
         stream_id = event.stream_id
-        if self._pending_handshakes >= self._max_pending_handshakes:
-            self._send_error(stream_id, 503)
-            return
         h3_headers = H3Headers(event.headers)
         path = h3_headers.get("path", "/")
         ws_dispatcher = dispatch.Dispatcher(  # type: ignore
@@ -178,24 +179,37 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
         session = _WebSocketH3Session(
             self, stream_id, h3_headers, ws_dispatcher, loop, self._logger,
             max_unread_websocket_bytes=self._max_unread_websocket_bytes)
-        self._pending_handshakes += 1
         self._sessions[stream_id] = session
         self._track_worker(self._finish_websocket_connect(
-            session, path, ws_dispatcher))
+            session, path, ws_dispatcher), stream_id)
 
-    def _track_worker(self, work: Any) -> None:
+    def _track_worker(self, work: Any, stream_id: int) -> None:
         task = asyncio.create_task(work)
         self._workers.add(task)
+        self._queued_workers[stream_id] = task
         task.add_done_callback(self._workers.discard)
+        task.add_done_callback(
+            lambda finished: self._queued_workers.pop(stream_id, None))
 
     async def _finish_websocket_connect(
         self, session: _WebSocketH3Session, path: str,
         ws_dispatcher: dispatch.Dispatcher,
     ) -> None:
         try:
-            await self._do_websocket_connect(session, path, ws_dispatcher)
-        finally:
-            self._pending_handshakes -= 1
+            async with self._handshake_slots:
+                self._queued_workers.pop(session.stream_id, None)
+                if self._sessions.get(session.stream_id) is not session:
+                    return
+                self._pending_handshakes += 1
+                try:
+                    await self._do_websocket_connect(session, path, ws_dispatcher)
+                finally:
+                    self._pending_handshakes -= 1
+        except asyncio.CancelledError:
+            session.abort()
+            if self._sessions.get(session.stream_id) is session:
+                self._sessions.pop(session.stream_id)
+            raise
 
     async def _do_websocket_connect(
         self, session: _WebSocketH3Session, path: str,
@@ -269,17 +283,16 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
         if self._router is None or self._h3_server_adapter is None:
             self._send_error(event.stream_id, 404)
             return
-        if self._active_requests >= self._max_active_requests:
-            self._send_error(event.stream_id, 503)
-            return
-        self._active_requests += 1
-        self._track_worker(self._serve_request(event))
+        self._track_worker(self._serve_request(event), event.stream_id)
 
     async def _serve_request(self, event: HeadersReceived) -> None:
-        try:
-            await asyncio.to_thread(self._serve_request_sync, event)
-        finally:
-            self._active_requests -= 1
+        async with self._request_slots:
+            self._queued_workers.pop(event.stream_id, None)
+            self._active_requests += 1
+            try:
+                await asyncio.to_thread(self._serve_request_sync, event)
+            finally:
+                self._active_requests -= 1
 
     def _serve_request_sync(self, event: HeadersReceived) -> None:
         assert self._h3_server_adapter is not None
@@ -409,6 +422,9 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
 
     def _close_all_sessions(self) -> None:
         """Closes all WebSocket sessions active on this QUIC connection."""
+        for task in self._queued_workers.values():
+            task.cancel()
+        self._queued_workers.clear()
         for session in list(self._sessions.values()):
             session.abort()
         self._sessions.clear()
@@ -446,9 +462,9 @@ class WebSocketH3Server:
     :param config: wptserve config used by requests and template substitution.
     :param logger: Logger object for this server.
     :param max_pending_handshakes: Maximum concurrent handshakes per QUIC
-        connection; additional CONNECT streams receive 503.
+        connection; additional CONNECT streams wait for a slot.
     :param max_active_requests: Maximum concurrent resource handlers per QUIC
-        connection; additional requests receive 503.
+        connection; additional requests wait for a slot.
     :param max_unread_websocket_bytes: Maximum bytes waiting to be read by
         the WebSocket handler per stream; exceeding this resets that stream.
     """

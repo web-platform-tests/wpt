@@ -56,9 +56,9 @@ def _make_headers_event(stream_id, method, protocol=None, stream_ended=False):
                            stream_ended=stream_ended)
 
 
-def _make_websocket_connect_event():
+def _make_websocket_connect_event(stream_id=7):
     return SimpleNamespace(
-        stream_id=7,
+        stream_id=stream_id,
         stream_ended=False,
         headers=[
             (b':method', b'CONNECT'),
@@ -78,10 +78,11 @@ def _make_protocol_for_websocket_connect():
     protocol._http = _FakeH3()
     protocol._sessions = {}
     protocol._workers = set()
+    protocol._queued_workers = {}
     protocol._pending_handshakes = 0
-    protocol._max_pending_handshakes = (
+    protocol._handshake_slots = asyncio.Semaphore(
         websocket_h3_server.DEFAULT_MAX_PENDING_HANDSHAKES)
-    protocol._max_active_requests = (
+    protocol._request_slots = asyncio.Semaphore(
         websocket_h3_server.DEFAULT_MAX_ACTIVE_REQUESTS)
     protocol._max_unread_websocket_bytes = (
         websocket_h3_session.DEFAULT_MAX_UNREAD_WEBSOCKET_BYTES)
@@ -153,7 +154,6 @@ class WebSocketH3ServerTest(unittest.TestCase):
     @pytest.mark.skipif(not has_aioquic, reason='not having aioquic')
     def test_websocket_connect_sends_handshake_response(self):
         """A WebSocket CONNECT request sends the handshake response and starts."""
-        protocol = _make_protocol_for_websocket_connect()
         dispatcher = SimpleNamespace(get_handler_suite=lambda path: object())
 
         class FakeHandshaker:
@@ -166,10 +166,12 @@ class WebSocketH3ServerTest(unittest.TestCase):
                 self.request.connection.write(b'early-data')
 
         async def run():
+            protocol = _make_protocol_for_websocket_connect()
             websocket_h3_server.WebSocketH3Protocol._handle_websocket_connect(
                 protocol, _make_websocket_connect_event())
             await asyncio.gather(*(task for task in asyncio.all_tasks()
                                    if task is not asyncio.current_task()))
+            return protocol
 
         with mock.patch.object(websocket_h3_server.dispatch, 'Dispatcher',
                                return_value=dispatcher), \
@@ -177,7 +179,7 @@ class WebSocketH3ServerTest(unittest.TestCase):
                                FakeHandshaker), \
              mock.patch.object(
                  websocket_h3_session._WebSocketH3Session, 'start') as start:
-            asyncio.run(run())
+            protocol = asyncio.run(run())
 
         self.assertEqual(protocol._http.headers, [(
             7,
@@ -267,18 +269,19 @@ class WebSocketH3ServerTest(unittest.TestCase):
     @pytest.mark.skipif(not has_aioquic, reason='not having aioquic')
     def test_websocket_connect_without_handler_returns_404(self):
         """A WebSocket CONNECT request without a handler returns 404."""
-        protocol = _make_protocol_for_websocket_connect()
         dispatcher = SimpleNamespace(get_handler_suite=lambda path: None)
 
         async def run():
+            protocol = _make_protocol_for_websocket_connect()
             websocket_h3_server.WebSocketH3Protocol._handle_websocket_connect(
                 protocol, _make_websocket_connect_event())
             await asyncio.gather(*(task for task in asyncio.all_tasks()
                                    if task is not asyncio.current_task()))
+            return protocol
 
         with mock.patch.object(websocket_h3_server.dispatch, 'Dispatcher',
                                return_value=dispatcher):
-            asyncio.run(run())
+            protocol = asyncio.run(run())
 
         self.assertEqual(protocol._http.headers, [(
             7,
@@ -291,48 +294,174 @@ class WebSocketH3ServerTest(unittest.TestCase):
         protocol.transmit.assert_called_once_with()
 
     @pytest.mark.skipif(not has_aioquic, reason='not having aioquic')
-    def test_pending_handshakes_are_limited(self):
-        protocol = _make_protocol_for_websocket_connect()
-        protocol._max_pending_handshakes = 2
-        protocol._pending_handshakes = 2
-        websocket_h3_server.WebSocketH3Protocol._handle_websocket_connect(
-            protocol, _make_websocket_connect_event())
-        self.assertEqual(protocol._http.headers[0],
-                         (7, [(b':status', b'503'),
-                              (b'server', b'websocket-h3-server')], True))
-        self.assertEqual(protocol._sessions, {})
+    def test_excess_handshakes_wait_for_a_slot(self):
+        async def run():
+            protocol = _make_protocol_for_websocket_connect()
+            protocol._handshake_slots = asyncio.Semaphore(1)
+            started = asyncio.Event()
+            release = asyncio.Event()
+            handled = []
+
+            async def handshake(session, path, dispatcher):
+                handled.append(session.stream_id)
+                started.set()
+                await release.wait()
+
+            protocol._do_websocket_connect = handshake
+            with mock.patch.object(websocket_h3_server.dispatch, 'Dispatcher'):
+                protocol._handle_websocket_connect(
+                    _make_websocket_connect_event())
+                await started.wait()
+                protocol._handle_websocket_connect(
+                    _make_websocket_connect_event(11))
+                await asyncio.sleep(0)
+                self.assertEqual(handled, [7])
+                self.assertEqual(protocol._pending_handshakes, 1)
+                self.assertIn(11, protocol._queued_workers)
+                self.assertEqual(protocol._http.headers, [])
+                release.set()
+                await asyncio.gather(*protocol._workers)
+
+            self.assertEqual(handled, [7, 11])
+            self.assertEqual(protocol._pending_handshakes, 0)
+            protocol._close_all_sessions()
+
+        asyncio.run(run())
+
+    @pytest.mark.skipif(not has_aioquic, reason='not having aioquic')
+    def test_reset_queued_handshake_does_not_run(self):
+        async def run():
+            protocol = _make_protocol_for_websocket_connect()
+            protocol._handshake_slots = asyncio.Semaphore(1)
+            protocol._http.handle_event = mock.Mock(return_value=[])
+            started = asyncio.Event()
+            release = asyncio.Event()
+            handled = []
+
+            async def handshake(session, path, dispatcher):
+                handled.append(session.stream_id)
+                started.set()
+                await release.wait()
+
+            protocol._do_websocket_connect = handshake
+            with mock.patch.object(websocket_h3_server.dispatch, 'Dispatcher'):
+                protocol._handle_websocket_connect(
+                    _make_websocket_connect_event())
+                await started.wait()
+                active = next(iter(protocol._workers))
+                protocol._handle_websocket_connect(
+                    _make_websocket_connect_event(11))
+                await asyncio.sleep(0)
+                queued = protocol._queued_workers[11]
+                protocol.quic_event_received(
+                    StreamReset(error_code=0, stream_id=11))
+                release.set()
+                await active
+                with self.assertRaises(asyncio.CancelledError):
+                    await queued
+
+            self.assertEqual(handled, [7])
+            self.assertNotIn(11, protocol._sessions)
+            self.assertEqual(protocol._pending_handshakes, 0)
+            protocol._close_all_sessions()
+
+        asyncio.run(run())
 
     @pytest.mark.skipif(not has_aioquic, reason='not having aioquic')
     def test_many_active_websocket_sessions_do_not_reject_new_connect(self):
-        protocol = _make_protocol_for_websocket_connect()
-        protocol._sessions = {stream_id: object()
-                              for stream_id in range(100, 164)}
         dispatcher = SimpleNamespace(get_handler_suite=lambda path: None)
 
         async def run():
+            protocol = _make_protocol_for_websocket_connect()
+            protocol._sessions = {stream_id: object()
+                                  for stream_id in range(100, 164)}
             websocket_h3_server.WebSocketH3Protocol._handle_websocket_connect(
                 protocol, _make_websocket_connect_event())
             self.assertEqual(len(protocol._sessions), 65)
+            await asyncio.sleep(0)
             self.assertEqual(protocol._pending_handshakes, 1)
             self.assertEqual(protocol._http.headers, [])
             await asyncio.gather(*protocol._workers)
+            return protocol
 
         with mock.patch.object(websocket_h3_server.dispatch, 'Dispatcher',
                                return_value=dispatcher):
-            asyncio.run(run())
+            protocol = asyncio.run(run())
         self.assertEqual(protocol._http.headers[0][1][0], (b':status', b'404'))
 
     @pytest.mark.skipif(not has_aioquic, reason='not having aioquic')
-    def test_active_request_limit_is_configurable(self):
-        protocol = _make_protocol_for_websocket_connect()
-        protocol._router = object()
-        protocol._h3_server_adapter = object()
-        protocol._max_active_requests = 2
-        protocol._active_requests = 2
-        websocket_h3_server.WebSocketH3Protocol._handle_request(
-            protocol, _make_headers_event(3, b'GET'))
-        self.assertEqual(protocol._http.headers[0][1][0],
-                         (b':status', b'503'))
+    def test_excess_resource_requests_wait_for_a_slot(self):
+        async def run():
+            protocol = _make_protocol_for_websocket_connect()
+            protocol._router = object()
+            protocol._h3_server_adapter = object()
+            protocol._request_slots = asyncio.Semaphore(1)
+            protocol._active_requests = 0
+            started = threading.Event()
+            release = threading.Event()
+            handled = []
+
+            def serve(event):
+                handled.append(event.stream_id)
+                started.set()
+                self.assertTrue(release.wait(3))
+
+            protocol._serve_request_sync = serve
+            protocol._handle_request(_make_headers_event(3, b'GET'))
+            try:
+                self.assertTrue(await asyncio.to_thread(started.wait, 2))
+                protocol._handle_request(_make_headers_event(7, b'GET'))
+                await asyncio.sleep(0)
+                self.assertEqual(handled, [3])
+                self.assertEqual(protocol._active_requests, 1)
+                self.assertIn(7, protocol._queued_workers)
+                self.assertEqual(protocol._http.headers, [])
+            finally:
+                release.set()
+            await asyncio.gather(*protocol._workers)
+            self.assertEqual(handled, [3, 7])
+            self.assertEqual(protocol._active_requests, 0)
+
+        asyncio.run(run())
+
+    @pytest.mark.skipif(not has_aioquic, reason='not having aioquic')
+    def test_reset_queued_resource_request_does_not_run(self):
+        async def run():
+            protocol = _make_protocol_for_websocket_connect()
+            protocol._router = object()
+            protocol._h3_server_adapter = object()
+            protocol._request_slots = asyncio.Semaphore(1)
+            protocol._active_requests = 0
+            protocol._http.handle_event = mock.Mock(return_value=[])
+            started = threading.Event()
+            release = threading.Event()
+            handled = []
+
+            def serve(event):
+                handled.append(event.stream_id)
+                started.set()
+                self.assertTrue(release.wait(3))
+
+            protocol._serve_request_sync = serve
+            protocol._handle_request(_make_headers_event(3, b'GET'))
+            try:
+                self.assertTrue(await asyncio.to_thread(started.wait, 2))
+                active = next(iter(protocol._workers))
+                protocol._handle_request(_make_headers_event(7, b'GET'))
+                await asyncio.sleep(0)
+                queued = protocol._queued_workers[7]
+                protocol.quic_event_received(
+                    StreamReset(error_code=0, stream_id=7))
+            finally:
+                release.set()
+            await active
+            with self.assertRaises(asyncio.CancelledError):
+                await queued
+            self.assertEqual(handled, [3])
+            self.assertEqual(protocol._active_requests, 0)
+            self.assertEqual(protocol._queued_workers, {})
+
+        asyncio.run(run())
 
     @pytest.mark.skipif(not has_aioquic, reason='not having aioquic')
     def test_server_passes_resource_limits_to_protocol(self):
@@ -398,6 +527,8 @@ class WebSocketH3ServerTest(unittest.TestCase):
             3: first_remaining_session,
             5: second_remaining_session,
         }
+        queued = mock.Mock()
+        protocol._queued_workers = {7: queued}
 
         websocket_h3_server.WebSocketH3Protocol.quic_event_received(
             protocol, StreamReset(error_code=0, stream_id=1))
@@ -418,6 +549,8 @@ class WebSocketH3ServerTest(unittest.TestCase):
         first_remaining_session.abort.assert_called_once_with()
         second_remaining_session.abort.assert_called_once_with()
         self.assertEqual(protocol._sessions, {})
+        queued.cancel.assert_called_once_with()
+        self.assertEqual(protocol._queued_workers, {})
 
     @pytest.mark.skipif(not has_aioquic, reason='not having aioquic')
     def test_multiple_websocket_streams_are_tracked_independently(self):
@@ -509,7 +642,8 @@ class WebSocketH3ServerTest(unittest.TestCase):
 
     @pytest.mark.skipif(not has_aioquic, reason='not having aioquic')
     def test_input_overflow_resets_only_affected_stream(self):
-        protocol = _make_protocol_for_websocket_connect()
+        protocol = _make_websocket_h3_protocol()
+        protocol.transmit = mock.Mock()
         protocol._quic = SimpleNamespace(
             stop_stream=mock.Mock(), reset_stream=mock.Mock())
         overloaded = SimpleNamespace(feed_data=lambda data: False,

@@ -183,6 +183,65 @@
           assert_equals(violation.disposition, "report");
           assert_not_equals(doc.querySelector("#report-span"), null);
         }, `Document.parseHTMLUnsafe: default createParserOptions returning ${JSON.stringify(value)} with TrustedHTML does not throw in report-only mode and reports violation`);
+
+        for (const htmlValue of [null, undefined]) {
+          promise_test(async (t) => {
+            const node = createTarget("Element", t);
+            createParserOptions = () => value;
+            createHTML = () => htmlValue;
+
+            const { violations, exception } = await trusted_type_violations_and_exception_for(() => {
+              node.setHTMLUnsafe("<span id='report-span'></span>");
+            });
+            assert_equals(exception, null, "no exception thrown");
+            assert_equals(violations.length, 2, "two violations reported (one for createParserOptions, one for createHTML)");
+            assert_equals(violations[0].effectiveDirective, "require-trusted-types-for");
+            assert_equals(violations[0].disposition, "report");
+            assert_equals(violations[0].sample, "Element setHTMLUnsafe|");
+            assert_equals(violations[1].effectiveDirective, "require-trusted-types-for");
+            assert_equals(violations[1].disposition, "report");
+            assert_equals(violations[1].sample, "Element setHTMLUnsafe|<span id='report-span'></span>");
+            assert_not_equals(node.querySelector("#report-span"), null);
+          }, `Element.setHTMLUnsafe: default createParserOptions returning ${JSON.stringify(value)} and createHTML returning ${JSON.stringify(htmlValue)} reports two violations in report-only mode`);
+
+          promise_test(async (t) => {
+            const node = createTarget("Element", t);
+            createParserOptions = () => value;
+            createHTML = () => htmlValue;
+
+            const { violations, exception } = await trusted_type_violations_and_exception_for(() => {
+              node.innerHTML = "<span id='report-span'></span>";
+            });
+            assert_equals(exception, null, "no exception thrown");
+            assert_equals(violations.length, 2, "two violations reported (one for createParserOptions, one for createHTML)");
+            assert_equals(violations[0].effectiveDirective, "require-trusted-types-for");
+            assert_equals(violations[0].disposition, "report");
+            assert_equals(violations[0].sample, "Element innerHTML|");
+            assert_equals(violations[1].effectiveDirective, "require-trusted-types-for");
+            assert_equals(violations[1].disposition, "report");
+            assert_equals(violations[1].sample, "Element innerHTML|<span id='report-span'></span>");
+            assert_not_equals(node.querySelector("#report-span"), null);
+          }, `Element.innerHTML: default createParserOptions returning ${JSON.stringify(value)} and createHTML returning ${JSON.stringify(htmlValue)} reports two violations in report-only mode`);
+
+          promise_test(async (t) => {
+            createParserOptions = () => value;
+            createHTML = () => htmlValue;
+
+            let doc;
+            const { violations, exception } = await trusted_type_violations_and_exception_for(() => {
+              doc = Document.parseHTMLUnsafe("<span id='report-span'></span>");
+            });
+            assert_equals(exception, null, "no exception thrown");
+            assert_equals(violations.length, 2, "two violations reported (one for createParserOptions, one for createHTML)");
+            assert_equals(violations[0].effectiveDirective, "require-trusted-types-for");
+            assert_equals(violations[0].disposition, "report");
+            assert_equals(violations[0].sample, "Document parseHTMLUnsafe|");
+            assert_equals(violations[1].effectiveDirective, "require-trusted-types-for");
+            assert_equals(violations[1].disposition, "report");
+            assert_equals(violations[1].sample, "Document parseHTMLUnsafe|<span id='report-span'></span>");
+            assert_not_equals(doc.querySelector("#report-span"), null);
+          }, `Document.parseHTMLUnsafe: default createParserOptions returning ${JSON.stringify(value)} and createHTML returning ${JSON.stringify(htmlValue)} reports two violations in report-only mode`);
+        }
       }
 
       // Script exceptions inside createParserOptions are still rethrown even in report-only mode

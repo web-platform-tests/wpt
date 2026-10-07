@@ -44,5 +44,24 @@
         sink.parse(target, policy.createHTML(markup), { sanitizer: {} });
       });
     }, `${sink.name}: TrustedHTML with an empty sanitizer config is not reported`);
+
+    promise_test(async t => {
+      const target = sink.createTarget(t);
+      let root;
+      const { violations, exception } = await trusted_type_violations_and_exception_for(() => {
+        root = sink.parse(target, markup,
+            { sanitizer: { replaceWithChildrenElements: ["div"] } });
+      });
+      assert_equals(exception, null, "no exception thrown");
+      assert_equals(violations.length, 2, "two violations reported (one for parser options, one for string)");
+      assert_equals(violations[0].blockedURI, "trusted-types-sink");
+      assert_equals(violations[0].sample, `${sink.sample}|`);
+      assert_equals(violations[0].disposition, "report");
+      assert_equals(violations[1].blockedURI, "trusted-types-sink");
+      assert_equals(violations[1].sample, `${sink.sample}|${clipSampleIfNeeded(markup)}`);
+      assert_equals(violations[1].disposition, "report");
+      assert_equals(root.querySelector("#wrapper"), null, "sanitizer was applied");
+      assert_not_equals(root.querySelector("#inner"), null);
+    }, `${sink.name}: string with a sanitizer config is reported twice and allowed`);
   }
 </script>

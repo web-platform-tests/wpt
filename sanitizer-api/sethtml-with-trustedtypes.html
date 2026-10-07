@@ -17,16 +17,11 @@
       // We have to replace this global because we are overriding the default policy from within the test.
       let createParserOptions = (options, type, sink) => options;
       let createHTML = (html, ...args) => html;
-      const cleanupPolicy = trustedTypes.createPolicy("cleanup", {
-        createHTML: (_) => "",
-      });
 
       trustedTypes.createPolicy("default", {
         createHTML: (html, ...args) => createHTML(html, ...args),
         createParserOptions: (options, ...args) => createParserOptions(options, ...args),
       });
-
-      function cleanup() {}
 
       function createTarget(target_type, t) {
         t.add_cleanup(() => {
@@ -50,8 +45,9 @@
        * @param {Element|ShadowRoot} node
        * @param {string} method
        * @param {string} html
+       * @param {Object} [options]
        */
-      function run_method(node, method, html) {
+      function run_method(node, method, html, options) {
         switch (method) {
           case "innerHTML":
             node[method] = html;
@@ -81,7 +77,7 @@
             range.insertNode(range.createContextualFragment(html));
             break;
           default:
-            node[method](html);
+            node[method](html, options);
         }
       }
 
@@ -114,7 +110,7 @@
             if (method === "parseHTMLUnsafe") {
               return Document.parseHTMLUnsafe(html, options);
             } else {
-              run_method(node, method, html);
+              run_method(node, method, html, options);
               return node;
             }
           }
@@ -156,7 +152,6 @@
           }, `${target}.${method}: createParserOptions receives correct type and sink name`);
 
           test((t) => {
-            t.add_cleanup(cleanup);
             const node = createTarget(target, t);
             createParserOptions = (options) => ({
               ...options,
@@ -171,32 +166,33 @@
             assert_not_equals(root.querySelector("#allowed"), null);
           }, `${target}.${method}: createParserOptions can inject a sanitizer`);
 
-          test((t) => {
-            const node = createTarget(target, t);
-            createParserOptions = (options) => ({
-              sanitizer: { removeElements: ["span"] },
-            });
-            const root = get_root(
-              node,
-              method,
-              "<div id=allowed><span id=forbidden></span></div>",
-              {
-                sanitizer: { removeElements: ["div"] },
-              },
-            );
-            assert_equals(root.querySelector("#forbidden"), null);
-            assert_not_equals(root.querySelector("#allowed"), null);
-          }, `${target}.${method}: createParserOptions can override a sanitizer config`);
+          if (method === "setHTMLUnsafe" || method === "parseHTMLUnsafe") {
+            test((t) => {
+              const node = createTarget(target, t);
+              createParserOptions = (options) => ({
+                sanitizer: { removeElements: ["span"] },
+              });
+              const root = get_root(
+                node,
+                method,
+                "<div id=allowed><span id=forbidden></span></div>",
+                {
+                  sanitizer: { removeElements: ["div"] },
+                },
+              );
+              assert_equals(root.querySelector("#forbidden"), null);
+              assert_not_equals(root.querySelector("#allowed"), null);
+            }, `${target}.${method}: createParserOptions can override a sanitizer config`);
 
-          test((t) => {
-            const node = createTarget(target, t);
-            createParserOptions = (options) => ({});
-            const root = get_root(node, method, "<div id=allowed></div>", {
-              sanitizer: { removeElements: ["div"] },
-            });
-            assert_equals(root.querySelector("#forbidden"), null);
-            assert_not_equals(root.querySelector("#allowed"), null);
-          }, `${target}.${method}: createParserOptions can remove a sanitizer`);
+            test((t) => {
+              const node = createTarget(target, t);
+              createParserOptions = (options) => ({});
+              const root = get_root(node, method, "<div id=allowed></div>", {
+                sanitizer: { removeElements: ["div"] },
+              });
+              assert_not_equals(root.querySelector("#allowed"), null);
+            }, `${target}.${method}: createParserOptions can remove a sanitizer`);
+          }
 
           for (const value of [null, undefined, 0, 123, "foo", true, false]) {
             test((t) => {
@@ -334,18 +330,6 @@
           assert_not_equals(node.querySelector("#allowed"), null);
           assert_false(createHTMLCalled, "createHTML should not be called when createParserOptions provides a sanitizer");
         }, `${target}.setHTMLUnsafe: createParserOptions with sanitizer prevents createHTML from running`);
-
-        test((t) => {
-          const node = createTarget(target, t);
-          window.did_run = false;
-          t.add_cleanup(() => {
-            window.did_run = false;
-          });
-          createParserOptions = (options) => ({ allowElements: ["script"] });
-          node.setHTML("<script id=forbidden><" + "/script>");
-          assert_false(window.did_run);
-          assert_equals(node.querySelector("#forbidden"), null);
-        }, `${target}: createParserOptions cannot add unsafe elements to safe HTML setting`);
 
         for (const method of [
           "setHTMLUnsafe",

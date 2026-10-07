@@ -17,13 +17,20 @@
     let createParserOptions = (options) => options;
     trustedTypes.createPolicy("default", {
       createHTML: (html) => html,
-      createParserOptions: (options) => createParserOptions(options),
+      createParserOptions: (options, type, sink) =>
+        createParserOptions(options, type, sink),
     });
 
     for (const pos of ["Before", "After", "ReplaceWith", "Append", "Prepend"]) {
       const method_name = `stream${pos}HTMLUnsafe`;
+      const expected_iface =
+        pos === "Append" || pos === "Prepend" ? "Element" : "Node";
       test((t) => {
-        createParserOptions = (options) => {
+        let recorded_type = null;
+        let recorded_sink = null;
+        createParserOptions = (options, type, sink) => {
+          recorded_type = type;
+          recorded_sink = sink;
           throw new Error("createParserOptions called");
         };
         t.add_cleanup(() => {
@@ -36,6 +43,8 @@
           assert_unreached("Should have thrown");
         } catch (e) {
           assert_equals(e.message, "createParserOptions called");
+          assert_equals(recorded_type, "TrustedHTMLParserOptions");
+          assert_equals(recorded_sink, `${expected_iface} ${method_name}`);
         }
       }, `${method_name} checks createParserOptions before hierarchy checks`);
     }

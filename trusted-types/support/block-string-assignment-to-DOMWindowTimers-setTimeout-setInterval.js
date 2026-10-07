@@ -52,7 +52,7 @@ const kTimeoutTestString = "timeoutTestString";
 const kIntervalTestString = "intervalTestString";
 
 let policy = globalThis.trustedTypes.createPolicy("default", { createScript: (x, _, sink) => {
-   // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timer-initialisation-steps,
+   // https://html.spec.whatwg.org/#timer-initialisation-steps,
   // step 9.6.1.1.
   const expectedSink = globalThisStr.includes("Window") ? "Window" : "WorkerGlobalScope";
   if (x === kTimeoutTestString) {

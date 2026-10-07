@@ -476,7 +476,7 @@ cases:
   # These tests are served over HTTPS so the induced requests will be both
   # same-origin with the document [1] and a potentially-trustworthy URL [2].
   #
-  # [1] https://html.spec.whatwg.org/multipage/origin.html#same-origin
+  # [1] https://html.spec.whatwg.org/#same-origin
   # [2] https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url
   - common_axis:
       - headerName: sec-fetch-mode
@@ -484,7 +484,7 @@ cases:
         origins: []
     template_axes:
       audioworklet.https.sub.html:
-        # https://html.spec.whatwg.org/multipage/webappapis.html#fetch-a-single-module-script
+        # https://html.spec.whatwg.org/#fetch-a-single-module-script
         - expected: cors
       css-images.sub.html:
         - expected: no-cors
@@ -494,12 +494,12 @@ cases:
           filename_flags: [tentative]
       element-a.sub.html:
         - expected: navigate
-        # https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks
+        # https://html.spec.whatwg.org/#downloading-hyperlinks
         - elementAttrs: {download: ''}
           expected: no-cors
       element-area.sub.html:
         - expected: navigate
-        # https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks
+        # https://html.spec.whatwg.org/#downloading-hyperlinks
         - elementAttrs: {download: ''}
           expected: no-cors
       element-audio.sub.html:
@@ -673,12 +673,12 @@ cases:
           filename_flags: [tentative]
       element-a.sub.html:
         - expected: document
-        # https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks
+        # https://html.spec.whatwg.org/#downloading-hyperlinks
         - elementAttrs: {download: ''}
           expected: empty
       element-area.sub.html:
         - expected: document
-        # https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks
+        # https://html.spec.whatwg.org/#downloading-hyperlinks
         - elementAttrs: {download: ''}
           expected: empty
       element-audio.sub.html:

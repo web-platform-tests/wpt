@@ -32,7 +32,7 @@ onload = t.step_func(function() {
   // children changed steps (executing the concatenated Text node children,
   // i.e. "inline script #2" and "end inline script #2"), and only then runs
   // the post-connection steps for the inner script ("inline script #3"). See
-  // https://html.spec.whatwg.org/multipage/scripting.html#script-processing-model
+  // https://html.spec.whatwg.org/#script-processing-model
   assert_array_equals(eventOrder, ["inline script #1", "inline script #2", "end inline script #2", "inline script #3", "end inline script #1"]);
   t.done();
 });

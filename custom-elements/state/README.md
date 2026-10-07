@@ -1,2 +1,2 @@
 Tests for [Custom State Pseudo
-Class](https://html.spec.whatwg.org/multipage/custom-elements.html#custom-state-pseudo-class)
+Class](https://html.spec.whatwg.org/#custom-state-pseudo-class)

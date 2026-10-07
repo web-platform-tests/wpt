@@ -196,7 +196,7 @@ promise_test(async t => {
 
   // Confirm expected error and states resulting from the "dedicated media
   // source failure steps":
-  // https://html.spec.whatwg.org/multipage/media.html#dedicated-media-source-failure-steps
+  // https://html.spec.whatwg.org/#dedicated-media-source-failure-steps
   let e = video.error;
   assert_true(e instanceof MediaError);
   assert_equals(e.code, MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED);
@@ -251,7 +251,7 @@ promise_test(async t => {
           'error', t.step_func(e => {
             // Confirm expected error and states resulting from the "dedicated
             // media source failure steps":
-            // https://html.spec.whatwg.org/multipage/media.html#dedicated-media-source-failure-steps
+            // https://html.spec.whatwg.org/#dedicated-media-source-failure-steps
             let err = v.error;
             assert_true(err instanceof MediaError);
             assert_equals(err.code, MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED);

@@ -3,7 +3,7 @@
    xmlns="http://www.w3.org/1999/xhtml"
    width="100%" height="100%" viewBox="0 0 800 600">
 <svg:title>XML parser should use "create an element for a token"</svg:title>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/xhtml.html#parsing-xhtml-documents:create-an-element-for-the-token"/>
+<link rel="help" href="https://html.spec.whatwg.org/#parsing-xhtml-documents:create-an-element-for-the-token"/>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script><![CDATA[

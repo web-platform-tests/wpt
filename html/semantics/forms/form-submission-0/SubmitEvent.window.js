@@ -1,4 +1,4 @@
-// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#the-submitevent-interface
+// https://html.spec.whatwg.org/#the-submitevent-interface
 
 test(() => {
   assert_throws_js(TypeError, () => SubmitEvent(""), "Calling SubmitEvent constructor without 'new' must throw");

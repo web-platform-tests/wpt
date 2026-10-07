@@ -1,5 +1,5 @@
 // https://tc39.es/proposal-error-stack-accessor/
-// https://html.spec.whatwg.org/multipage/structured-data.html#structuredserializeinternal
+// https://html.spec.whatwg.org/#structuredserializeinternal
 //
 // The [[Stack]] internal slot is now normatively serialized and deserialized
 // as part of the structured clone algorithm for Error objects.

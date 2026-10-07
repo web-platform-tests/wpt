@@ -159,7 +159,7 @@ async def test_beforeunload(
     else:
         # If the beforeunload prompt was dismissed, the navigation is canceled.
         # Step 22.2 of the html spec 7.4.2.2 Beginning navigation.
-        # https://html.spec.whatwg.org/multipage/browsing-the-web.html#beginning-navigation
+        # https://html.spec.whatwg.org/#beginning-navigation
         with pytest.raises(error.UnknownErrorException):
             await wait_for_future_safe(navigated_future)
 

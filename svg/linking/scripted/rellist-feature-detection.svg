@@ -9,7 +9,7 @@
   <h:script src="/resources/testharnessreport.js"/>
   <script><![CDATA[
     let link_support_table = {};
-    // https://html.spec.whatwg.org/multipage/links.html#linkTypes
+    // https://html.spec.whatwg.org/#linkTypes
     link_support_table['a'] =  {
     supported : ['noreferrer', 'noopener', 'opener'],
     unsupported : ['author', 'bookmark', 'external', 'help', 'license',

@@ -1,5 +1,5 @@
 const globalThisStr = getGlobalThisStr();
-// https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timer-initialisation-steps,
+// https://html.spec.whatwg.org/#timer-initialisation-steps,
 // step 9.6.1.1.
 const expectedSinkPrefix = globalThisStr.includes("Window") ? "Window" : "WorkerGlobalScope";
 

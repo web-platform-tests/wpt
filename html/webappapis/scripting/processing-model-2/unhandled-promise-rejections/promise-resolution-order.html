@@ -3,11 +3,11 @@
 <title>Promise rejection ordering</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#perform-a-microtask-checkpoint">
+<link rel="help" href="https://html.spec.whatwg.org/#perform-a-microtask-checkpoint">
 <body>
 <p>A microtask checkpoint should notify about rejected promises. After
 <a
-href="https://html.spec.whatwg.org/multipage/webappapis.html#clean-up-after-running-script">cleaning
+href="https://html.spec.whatwg.org/#clean-up-after-running-script">cleaning
 up after running script</a> involves running a microtask checkpoint. So the order of unhandledrejection
 should occur before error2.
 </p>

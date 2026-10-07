@@ -13,7 +13,7 @@
 // Note: The sandboxed iframe (3) tries to navigate the popup window (2) to
 // a new mode=iframenavigated URL. But this must be blocked because (3) is not
 // the 'one permitted sandboxed navigator'.
-// https://html.spec.whatwg.org/multipage/origin.html#one-permitted-sandboxed-navigator
+// https://html.spec.whatwg.org/#one-permitted-sandboxed-navigator
 (() => {
   const mode = '{{GET[mode]}}';
   if (mode == 'popup') {

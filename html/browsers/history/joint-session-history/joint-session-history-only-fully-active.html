@@ -14,7 +14,7 @@
     function poll() {
       if (child.getAttribute("data-child-loaded")) {
         // Check to see how many entries have been added to the session history.
-        // The spec https://html.spec.whatwg.org/multipage/#joint-session-history
+        // The spec https://html.spec.whatwg.org/#joint-session-history
         // says that only fully active documents are included in the joint session history.
         // If only fully active documents count, then the only fully active document
         // is the child, with session length 1, so the joint session length change will be 1.

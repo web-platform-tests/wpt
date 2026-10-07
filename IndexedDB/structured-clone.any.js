@@ -11,7 +11,7 @@
 'use strict';
 
 // Tests Indexed DB coverage of HTML's Safe "passing of structured data"
-// https://html.spec.whatwg.org/multipage/structured-data.html
+// https://html.spec.whatwg.org/#safe-passing-of-structured-data
 
 function describe(value) {
   let type, str;

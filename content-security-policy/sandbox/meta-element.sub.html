@@ -7,7 +7,7 @@
 <iframe id="iframe"></iframe>
 <script>
 // According to
-// https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-content-security-policy
+// https://html.spec.whatwg.org/#attr-meta-http-equiv-content-security-policy
 // `sandbox` directives must be ignored when delivered via `<meta>`.
 test(() => {
   assert_equals(location.origin, "{{location[scheme]}}://{{location[host]}}");

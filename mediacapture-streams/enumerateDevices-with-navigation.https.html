@@ -56,11 +56,11 @@ promise_test(async t => {
   // persisted) would occur through a queued task, which would run after
   // the pagehide event is dispatched and so after the associated
   // microtask that runs the following assert.
-  // https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-for-spec-authors
+  // https://html.spec.whatwg.org/#event-loop-for-spec-authors
   assert_equals(promise_state, 'pending', 'Promise state while inactive');
   // If the first document is restored, then that will occur immediately after
   // pagehide (and associated microtasks), before the next global task is run.
-  // https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta
+  // https://html.spec.whatwg.org/#traverse-the-history-by-a-delta
   await promise_new_task(t);
   if (proxy.navigator.mediaDevices == devices) {
     // The first document was persisted and restored.

@@ -1,4 +1,4 @@
-// https://html.spec.whatwg.org/multipage/custom-elements.html#html-element-constructors
+// https://html.spec.whatwg.org/#html-element-constructors
 // https://dom.spec.whatwg.org/#concept-create-element
 
 function createShadowForTest(t, customElementRegistry) {

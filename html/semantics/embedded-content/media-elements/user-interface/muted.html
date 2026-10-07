@@ -244,7 +244,7 @@ async_test(function(t) {
 // The muted content attribute is a live fallback while the muted state is
 // "default", independent of whether the element is inserted in a document; the
 // spec's "muted" concept has no connectedness condition.
-// https://html.spec.whatwg.org/multipage/media.html#concept-media-muted
+// https://html.spec.whatwg.org/#concept-media-muted
 ['audio', 'video'].forEach(function(tagName) {
   function attach(t) {
     var m = document.createElement(tagName);

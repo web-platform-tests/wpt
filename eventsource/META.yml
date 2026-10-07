@@ -1,4 +1,4 @@
-spec: https://html.spec.whatwg.org/multipage/server-sent-events.html
+spec: https://html.spec.whatwg.org/#server-sent-events
 suggested_reviewers:
   - odinho
   - Yaffle

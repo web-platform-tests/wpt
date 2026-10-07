@@ -1,4 +1,4 @@
-spec: https://html.spec.whatwg.org/multipage/canvas.html#the-offscreencanvas-interface
+spec: https://html.spec.whatwg.org/#the-offscreencanvas-interface
 suggested_reviewers:
   - AmeliaBR
   - annevk

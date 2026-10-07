@@ -37,7 +37,7 @@ promise_test(async function() {
 
 // Create and append a new video and immediately check the ratio.
 // This is not racy because the spec requires the user agent to queue a task:
-// https://html.spec.whatwg.org/multipage/media.html#concept-media-load-algorithm
+// https://html.spec.whatwg.org/#concept-media-load-algorithm
 promise_test(async function() {
   let video = document.createElement("video");
   video.setAttribute("width", "250");

@@ -54,7 +54,7 @@
         // `testdriver.js` precedes test scripts in the markup, this "message"
         // listener should be registered and run first [0].
         //
-        // [0]: https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-attributes
+        // [0]: https://html.spec.whatwg.org/#event-handler-attributes
         event.stopImmediatePropagation();
     });
 

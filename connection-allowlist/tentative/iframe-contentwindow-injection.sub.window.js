@@ -112,7 +112,7 @@ iframe_injection_test(async (t) => {
 
 // --- javascript: iframe (inherits parent's policy) ---
 // Per
-// https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-to-a-javascript:-url,
+// https://html.spec.whatwg.org/#navigate-to-a-javascript:-url,
 // this navigation never performs a network fetch, so it must not itself be
 // blocked by Connection-Allowlist.
 iframe_injection_test(async (t) => {

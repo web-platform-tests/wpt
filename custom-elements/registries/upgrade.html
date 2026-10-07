@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>customElements.upgrade()</title>
 <link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-customelementregistry-upgrade">
+<link rel="help" href="https://html.spec.whatwg.org/#dom-customelementregistry-upgrade">
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -146,7 +146,7 @@ test(() => {
   customElements.upgrade(template.content);
 
   // Template contents owner documents don't have a browsing context, so
-  // https://html.spec.whatwg.org/multipage/custom-elements.html#look-up-a-custom-element-definition does not find any
+  // https://html.spec.whatwg.org/#look-up-a-custom-element-definition does not find any
   // custom element definition.
   assert_false(el1 instanceof Element1, "element 1 must still not be upgraded after upgrading the template contents");
   assert_false(el2 instanceof Element2, "element 2 must still not be upgraded after upgrading the template contents");

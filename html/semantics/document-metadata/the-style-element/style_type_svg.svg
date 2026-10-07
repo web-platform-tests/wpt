@@ -4,7 +4,7 @@
      width="800px" height="8000px">
   <title>&lt;style&gt; type="" edge cases</title>
   <metadata>
-    <h:link rel="help" href="https://html.spec.whatwg.org/multipage/semantics.html#update-a-style-block"/>
+    <h:link rel="help" href="https://html.spec.whatwg.org/#update-a-style-block"/>
   </metadata>
   <h:script src="/resources/testharness.js"/>
   <h:script src="/resources/testharnessreport.js"/>

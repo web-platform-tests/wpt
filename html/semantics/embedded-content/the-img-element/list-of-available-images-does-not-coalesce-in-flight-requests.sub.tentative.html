@@ -2,7 +2,7 @@
 <html>
 <title>List of available images does not coalesce in-flight requests</title>
 <link rel="author" title="Dom Farolino" href="mailto:dom@chromium.org">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/#the-list-of-available-images">
+<link rel="help" href="https://html.spec.whatwg.org/#the-list-of-available-images">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -29,7 +29,7 @@ promise_test(async t => {
   // letting in-flight requests into the list of available images, then we
   // should changes the expectations of this test.
   //
-  // [1]: https://html.spec.whatwg.org/multipage/images.html#updating-the-image-data
+  // [1]: https://html.spec.whatwg.org/#updating-the-image-data
   let second_image_promise = new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = resolve;

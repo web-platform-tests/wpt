@@ -71,7 +71,7 @@ promise_test(async (t) => {
   assert_equals(xhr.responseXML.URL, target.href, 'responseXML.URL');
 
   // The document's base URL falls back to the document URL:
-  // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#document-base-url
+  // https://html.spec.whatwg.org/#document-base-url
   assert_equals(xhr.responseXML.baseURI, target.href, 'responseXML.baseURI');
 }, 'XHR Document should use the response URL');
 
@@ -91,7 +91,7 @@ promise_test(async (t) => {
   assert_equals(xhr.responseXML.URL, url, 'responseXML.URL');
 
   // The document's base URL falls back to the document URL:
-  // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#document-base-url
+  // https://html.spec.whatwg.org/#document-base-url
   assert_equals(xhr.responseXML.baseURI, url, 'responseXML.baseURI');
 }, 'XHR Document should use the response URL (generated response)');
 

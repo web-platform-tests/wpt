@@ -15,7 +15,7 @@
 promise_test(async t => {
   const type = video.getAttribute('type');
   const canPlay = video.canPlayType(type);
-  // https://html.spec.whatwg.org/multipage/media.html#dom-navigator-canplaytype
+  // https://html.spec.whatwg.org/#dom-navigator-canplaytype
   // must return "probably" if the user agent is confident that the type
   // represents a media resource that it can render if used in with this audio
   // or video element;

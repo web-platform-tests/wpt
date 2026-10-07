@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>requestAnimationFrame/cancelAnimationFrame: must not interfere with timers, or vice-versa</title>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-window-requestanimationframe">
+<link rel="help" href="https://html.spec.whatwg.org/#dom-window-requestanimationframe">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -9,11 +9,11 @@
 "use strict";
 
 test(t => {
-  // https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#animation-frames
+  // https://html.spec.whatwg.org/#animation-frames
   // requires incrementing animation frame callback identifiers by 1 each time, and starting at 1.
   // We can thus test that pretty rigorously.
   //
-  // However https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers
+  // However https://html.spec.whatwg.org/#timers
   // only requires "a user-agent-defined integer that is greater than zero" for timers, so we can't
   // test much there.
   //

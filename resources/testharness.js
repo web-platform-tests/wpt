@@ -330,7 +330,7 @@
 
     /*
      * Dedicated web workers.
-     * https://html.spec.whatwg.org/multipage/workers.html#dedicatedworkerglobalscope
+     * https://html.spec.whatwg.org/#dedicatedworkerglobalscope
      *
      * This class is used as the test_environment when testharness is running
      * inside a dedicated worker.
@@ -353,7 +353,7 @@
 
     /*
      * Shared web workers.
-     * https://html.spec.whatwg.org/multipage/workers.html#sharedworkerglobalscope
+     * https://html.spec.whatwg.org/#sharedworkerglobalscope
      *
      * This class is used as the test_environment when testharness is running
      * inside a shared web worker.

@@ -2,7 +2,7 @@
 <meta charset=utf-8>
 <title>Input element's type attribute changes state</title>
 <link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
-<link rel=help href="https://html.spec.whatwg.org/multipage/#the-input-element">
+<link rel=help href="https://html.spec.whatwg.org/#the-input-element">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -92,7 +92,7 @@
   // Obtain selectionDirection after setting it to "none".
   // Some platforms don't support "none" direction, and "forward" is returned
   // in such platforms.
-  // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#set-the-selection-direction
+  // https://html.spec.whatwg.org/#set-the-selection-direction
   function testNoneDirection() {
     const input = document.createElement("input");
     input.selectionDirection = "none";

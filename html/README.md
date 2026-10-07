@@ -1,10 +1,10 @@
 # HTML
 
-This directory contains tests for [HTML](https://html.spec.whatwg.org/multipage/).
+This directory contains tests for [HTML](https://html.spec.whatwg.org/).
 
 Sub-directory names should be based on the URL of the corresponding part of the
 multipage-version specification. For example, the URL of
-"8.3 Base64 utility methods" is [https://html.spec.whatwg.org/multipage/webappapis.html#atob](https://html.spec.whatwg.org/multipage/webappapis.html#atob). So the directory in WPT is [webappapis/atob/](/html/webappapis/atob).
+"8.3 Base64 utility methods" is [https://html.spec.whatwg.org/#atob](https://html.spec.whatwg.org/#atob). So the directory in WPT is [webappapis/atob/](/html/webappapis/atob).
 
 For historical reasons, parts of HTML have their own directories:
 

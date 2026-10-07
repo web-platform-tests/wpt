@@ -47,7 +47,7 @@
       }
 
       // Parse a "lastModified" value and convert it to a Date.
-      // See https://html.spec.whatwg.org/multipage/dom.html#dom-document-lastmodified
+      // See https://html.spec.whatwg.org/#dom-document-lastmodified
       function parseLastModified(value) {
         const [undefined, month, day, year, hours, minutes, seconds] =
           /^(\d\d)\/(\d\d)\/(\d+) (\d\d):(\d\d):(\d\d)$/.exec(value);

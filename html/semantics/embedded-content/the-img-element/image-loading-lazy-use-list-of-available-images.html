@@ -2,7 +2,7 @@
 <html>
 <title>Lazyload images can load immediately from the list of available images</title>
 <link rel="author" title="Dom Farolino" href="mailto:dom@chromium.org">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#updating-the-image-data">
+<link rel="help" href="https://html.spec.whatwg.org/#updating-the-image-data">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -37,7 +37,7 @@ promise_test(async t => {
   // images (in addition to non-lazyload ones) to coalesce with these in-flight
   // entries in the list of available images too. In that case we'd need to test
   // for this here.
-  // [1]: https://html.spec.whatwg.org/multipage/images.html#updating-the-image-data
+  // [1]: https://html.spec.whatwg.org/#updating-the-image-data
   const lazyload_image_promise = new Promise((resolve, reject) => {
     const img = new Image();
     img.loading = 'lazy';

@@ -48,7 +48,7 @@ window.addEventListener("message", msg => {
     // The referrer of the initial document in an about:blank iframe is set to
     // its creating document's URL, unredacted by a referrer policy, as per step
     // 13 of:
-    // https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context.
+    // https://html.spec.whatwg.org/#creating-a-new-browsing-context.
     testDocumentReferrer.step_func_done(() => {
       assert_equals(referrer, location.href);
     })();

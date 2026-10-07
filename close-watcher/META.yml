@@ -1,3 +1,3 @@
-spec: https://html.spec.whatwg.org/multipage/#close-requests-and-close-watchers
+spec: https://html.spec.whatwg.org/#close-requests-and-close-watchers
 suggested_reviewers:
   - natechapin

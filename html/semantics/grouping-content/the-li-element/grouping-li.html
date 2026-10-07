@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>li element</title>
     <link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
-    <link rel="help" href="https://html.spec.whatwg.org/multipage/#the-li-element">
+    <link rel="help" href="https://html.spec.whatwg.org/#the-li-element">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -116,7 +116,7 @@
     <script>
         "use strict";
 
-        // "The [value] attribute has no default value" so, per https://html.spec.whatwg.org/multipage/#reflect,
+        // "The [value] attribute has no default value" so, per https://html.spec.whatwg.org/#reflect,
         // the default when unspecified is 0
         test(function() {
             var testList = document.querySelectorAll("#unordered li, #basic li");
@@ -127,7 +127,7 @@
 
         // "If the value attribute is present, user agents must parse it as an integer, in order to determine the attribute's value.
         //  If the attribute's value cannot be converted to a number, the attribute must be treated as if it was absent."
-        // Per https://html.spec.whatwg.org/multipage/#collect-a-sequence-of-characters,
+        // Per https://html.spec.whatwg.org/#collect-a-sequence-of-characters,
         //    an integer is parsed by collecting as many digits as possible and then aborting at the first
         //    non-digit character after the first digit (otherwise, with no beginning digit, it's just an error)
         // and:  "The value IDL attribute must reflect the value of the value content attribute."

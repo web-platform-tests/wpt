@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta name="author" title="Ryosuke Niwa" href="mailto:rniwa@webkit.org">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/dom.html#the-directionality">
+<link rel="help" href="https://html.spec.whatwg.org/#the-directionality">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
@@ -62,7 +62,7 @@ test(() => {
 
     assert_true(input.matches(':dir(ltr)'));
     assert_false(input.matches(':dir(rtl)'));
-    // Per https://html.spec.whatwg.org/multipage/rendering.html#bidi-rendering:
+    // Per https://html.spec.whatwg.org/#bidi-rendering:
     assert_equals(getComputedStyle(input).direction, 'ltr');
 
     // Changing to a different type causes the special type=tel rule to no longer apply.

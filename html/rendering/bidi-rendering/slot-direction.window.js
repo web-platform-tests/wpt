@@ -1,4 +1,4 @@
-// https://html.spec.whatwg.org/multipage/rendering.html#bidi-rendering
+// https://html.spec.whatwg.org/#bidi-rendering
 // https://github.com/whatwg/html/pull/9796
 // https://github.com/whatwg/html/pull/9880
 

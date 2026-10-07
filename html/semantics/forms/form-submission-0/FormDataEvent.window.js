@@ -1,4 +1,4 @@
-// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#the-formdataevent-interface
+// https://html.spec.whatwg.org/#the-formdataevent-interface
 
 test(() => {
   let fd = new FormData();

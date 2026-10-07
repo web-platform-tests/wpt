@@ -23,8 +23,8 @@ template = Template("""<!DOCTYPE html>
     </style>
     <link rel="help" href="http://www.w3.org/TR/CSS2/visudet.html#inline-replaced-width">
     <link rel="help" href="http://www.w3.org/TR/CSS2/visudet.html#inline-replaced-height">
-    <link rel="help" href="https://html.spec.whatwg.org/multipage/#replaced-elements">
-    <link rel="help" href="https://html.spec.whatwg.org/multipage/#attr-dim-width">
+    <link rel="help" href="https://html.spec.whatwg.org/#replaced-elements">
+    <link rel="help" href="https://html.spec.whatwg.org/#attr-dim-width">
     <link rel="help" href="http://www.w3.org/TR/SVG/coords.html#ViewportSpace">
   </head>
   <body>

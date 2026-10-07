@@ -1155,7 +1155,7 @@
          * a provided function.
          *
          * See `Tracking user activation
-         * <https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation>`_.
+         * <https://html.spec.whatwg.org/#tracking-user-activation>`_.
          *
          * @example
          * var mediaElement = document.createElement('video');
@@ -1878,12 +1878,12 @@
          * Sets the current registration automation mode for Register Protocol Handlers.
          *
          * This function places `Register Protocol Handlers
-         * <https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers>`_ into
+         * <https://html.spec.whatwg.org/#custom-handlers>`_ into
          * an automated 'autoAccept' or 'autoReject' mode, to allow testing
          * without user interaction with the transaction UX prompt.
          *
          * Matches the `Set Register Protocol Handler Mode
-         * <https://html.spec.whatwg.org/multipage/system-state.html#set-rph-registration-mode>`_
+         * <https://html.spec.whatwg.org/#set-rph-registration-mode>`_
          * WebDriver command.
          *
          * @example
@@ -1895,7 +1895,7 @@
          * navigator.registerProtocolHandler('web+soup', 'soup?url=%s');
          *
          * @param {String} mode - The `registration mode
-         *                        <https://html.spec.whatwg.org/multipage/system-state.html#registerprotocolhandler()-automation-mode>`_
+         *                        <https://html.spec.whatwg.org/#registerprotocolhandler()-automation-mode>`_
          *                        to set. Must be one of "``none``",
          *                        "``autoAccept``", or
          *                        "``autoReject``".

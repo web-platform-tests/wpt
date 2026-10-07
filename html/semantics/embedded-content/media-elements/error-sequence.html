@@ -193,7 +193,7 @@ promise_test(async t => {
   // The resource selection algorithm describes the dedicated media source
   // failure steps as queued and the event named "error" as fired
   // synchronously from those steps.
-  // https://html.spec.whatwg.org/multipage/media.html#concept-media-load-algorithm
+  // https://html.spec.whatwg.org/#concept-media-load-algorithm
   // That is not what browsers do, but, as described, the error event would
   // arrive before the pending play promise rejection.
   audio.source.endOfStream("decode");
@@ -239,7 +239,7 @@ promise_test(async t => {
   assert_equals(audio.error, null, 'error attribute');
   // Trigger "If the media data is corrupted" in the media data processing
   // steps list.
-  // https://html.spec.whatwg.org/multipage/media.html#media-data-processing-steps-list
+  // https://html.spec.whatwg.org/#media-data-processing-steps-list
   audio.source.endOfStream("decode");
   // The error event is described as firing synchronously during endOfStream(),
   // but no browsers do this.  https://github.com/whatwg/html/issues/11155

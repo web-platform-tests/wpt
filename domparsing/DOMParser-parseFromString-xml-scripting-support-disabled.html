@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>DOMParser: script already started</title>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#dom-domparser-parsefromstring">
+<link rel="help" href="https://html.spec.whatwg.org/#dom-domparser-parsefromstring">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -13,7 +13,7 @@
 // parseFromString-parsed script elements are inactive ("already started").
 //
 // See:
-//   https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#dom-domparser-parsefromstring
+//   https://html.spec.whatwg.org/#dom-domparser-parsefromstring
 //   step 3, "Otherwise: [...] "with XML scripting support disabled."
 test(_ => {
   window.mark = 0;

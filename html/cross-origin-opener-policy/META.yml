@@ -1,4 +1,4 @@
-spec: https://html.spec.whatwg.org/multipage/origin.html#cross-origin-opener-policies
+spec: https://html.spec.whatwg.org/#cross-origin-opener-policies
 suggested_reviewers:
   - mikewest
   - arturjanc

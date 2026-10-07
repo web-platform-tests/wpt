@@ -1,4 +1,4 @@
-spec: https://html.spec.whatwg.org/multipage/canvas.html#the-imagebitmap-rendering-context
+spec: https://html.spec.whatwg.org/#the-imagebitmap-rendering-context
 suggested_reviewers:
   - AmeliaBR
   - annevk

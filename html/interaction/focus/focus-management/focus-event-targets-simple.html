@@ -20,7 +20,7 @@ var newFocusChainReversedNotQuite = [];
 var pushTarget = function (e) {
   newFocusChainReversedNotQuite.push(e.target);
 };
-// Window is the root node for event dispatch per https://html.spec.whatwg.org/multipage/webappapis.html#events-and-the-window-object
+// Window is the root node for event dispatch per https://html.spec.whatwg.org/#events-and-the-window-object
 window.addEventListener('focus', pushTarget, true);// Use event capturing since focus event doesn't bubble
 var input = document.getElementById('a');
 input.focus();

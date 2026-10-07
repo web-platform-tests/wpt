@@ -1,8 +1,8 @@
 // META: title=Documents created by the parsing APIs inherit the creating document's origin
 
-// https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#dom-domparser-parsefromstring
-// https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#dom-parsehtml
-// https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#dom-parsehtmlunsafe
+// https://html.spec.whatwg.org/#dom-domparser-parsefromstring
+// https://html.spec.whatwg.org/#dom-parsehtml
+// https://html.spec.whatwg.org/#dom-parsehtmlunsafe
 // https://dom.spec.whatwg.org/#dom-domimplementation-createdocument
 // https://dom.spec.whatwg.org/#dom-domimplementation-createhtmldocument
 

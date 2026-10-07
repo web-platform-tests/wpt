@@ -85,7 +85,7 @@ function runAnimationEventTests(eventDetails) {
     // onwebkitanimationend creates a listener for the event type
     // 'webkitAnimationEnd'.
     //
-    // [0]: https://html.spec.whatwg.org/multipage/webappapis.html#event-handlers-on-elements,-document-objects,-and-window-objects
+    // [0]: https://html.spec.whatwg.org/#event-handlers-on-elements,-document-objects,-and-window-objects
     div.dispatchEvent(new AnimationEvent(prefixedType));
     assert_equals(receivedEventCount, 2,
                 'prefixed listener and handler received event');

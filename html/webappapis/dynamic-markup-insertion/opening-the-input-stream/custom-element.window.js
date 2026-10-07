@@ -7,7 +7,7 @@
 // parser creates a custom element, not when createElement is called. Test for
 // this.
 //
-// See: https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#document-open-steps
+// See: https://html.spec.whatwg.org/#document-open-steps
 
 const noError = Symbol("no error");
 let err = noError;

@@ -48,7 +48,7 @@ async function runNavigateAncestorTest(test_type, ancestor_type) {
       // When the iframe tries to navigate its ancestor frame, it should not
       // navigate *this* frame, because the sandboxed navigation browsing
       // context flag must be set in fenced frame trees. See:
-      // https://html.spec.whatwg.org/multipage/origin.html#sandboxed-navigation-browsing-context-flag
+      // https://html.spec.whatwg.org/#sandboxed-navigation-browsing-context-flag
       await fenced_frame.execute(async (url, ancestor_type) => {
         const inner_iframe = await attachIFrameContext();
         await inner_iframe.execute((url, ancestor_type) => {

@@ -1,4 +1,4 @@
-// https://html.spec.whatwg.org/multipage/images.html#updating-the-image-data
+// https://html.spec.whatwg.org/#updating-the-image-data
 // Under Step 27, after fetch, step 3: Add the image to the list of available
 // images using the key key, with the ignore higher-layer caching flag set.
 //

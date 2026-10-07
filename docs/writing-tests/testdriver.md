@@ -53,7 +53,7 @@ To use WebDriver BiDi, enable the `bidi` feature in `testdriver.js` by adding th
 ### Context ###
 
 A WebDriver BiDi "browsing context" is equivalent to an
-[HTML navigable](https://html.spec.whatwg.org/multipage/document-sequences.html#navigable).
+[HTML navigable](https://html.spec.whatwg.org/#navigable).
 In WebDriver BiDi, you can interact with any browsing context, regardless of whether
 it's currently active. You can target a specific browsing context using either its
 unique string ID or its `WindowProxy` object.

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>CDATA sections in fragment parsing depend only on the adjusted current node's namespace</title>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#tree-construction">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#adjusted-current-node">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#markup-declaration-open-state">
+<link rel="help" href="https://html.spec.whatwg.org/#tree-construction">
+<link rel="help" href="https://html.spec.whatwg.org/#adjusted-current-node">
+<link rel="help" href="https://html.spec.whatwg.org/#markup-declaration-open-state">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
@@ -12,7 +12,7 @@
 // allowed whenever there is an adjusted current node and it is not an element in
 // the HTML namespace. Integration points are NOT a consideration: the only thing
 // that matters is the adjusted current node's namespace.
-// https://html.spec.whatwg.org/multipage/parsing.html#markup-declaration-open-state
+// https://html.spec.whatwg.org/#markup-declaration-open-state
 //
 // When fragment-parsing with only the root DocumentFragment on the open elements
 // stack, the adjusted current node is the context element (not the

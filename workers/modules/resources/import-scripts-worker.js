@@ -19,7 +19,7 @@ try {
   // cancelable attribute initialized to true, the message, filename, lineno,
   // and colno attributes initialized appropriately, and the error attribute
   // initialized to null."
-  // https://html.spec.whatwg.org/multipage/workers.html#runtime-script-errors-2
+  // https://html.spec.whatwg.org/#runtime-script-errors-2
   if ('DedicatedWorkerGlobalScope' in self &&
       self instanceof DedicatedWorkerGlobalScope) {
     postMessage(e.name);

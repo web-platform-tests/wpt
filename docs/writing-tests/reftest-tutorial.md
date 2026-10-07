@@ -56,7 +56,7 @@ one. Generally speaking, [test files should be placed in directories
 corresponding to the specification text they are
 verifying](../test-suite-design). `<bdo>` is defined in [the "text-level
 semantics" chapter of the HTML
-specification](https://html.spec.whatwg.org/multipage/text-level-semantics.html),
+specification](https://html.spec.whatwg.org/#text-level-semantics),
 so we'll want to create our new test in the directory
 `html/semantics/text-level-semantics/the-bdo-element/`. Create a file named
 `rtl.html` and open it in your text editor.

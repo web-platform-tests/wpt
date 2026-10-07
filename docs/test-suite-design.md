@@ -29,7 +29,7 @@ the part of a specification being tested according to its location in
 the filesystem, and is preferred for larger specifications.
 
 For example, tests in HTML for ["The History
-interface"](https://html.spec.whatwg.org/multipage/history.html#the-history-interface)
+interface"](https://html.spec.whatwg.org/#the-history-interface)
 are located in `html/browsers/history/the-history-interface/`.
 
 Many directories also include files named `META.yml` and/or `WEB_FEATURES.yml`.

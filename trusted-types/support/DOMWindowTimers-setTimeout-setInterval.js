@@ -15,7 +15,7 @@ async_test(t => {
 }, `${globalThisStr}.setInterval assigned via policy (successful Script transformation).`);
 
 globalThis.trustedTypes.createPolicy("default", {createScript: (s, _, sink) => {
-  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timer-initialisation-steps,
+  // https://html.spec.whatwg.org/#timer-initialisation-steps,
   // step 9.6.1.1.
   const expectedSink = globalThisStr.includes("Window") ? "Window" : "WorkerGlobalScope";
 

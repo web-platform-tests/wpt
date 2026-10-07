@@ -4,7 +4,7 @@
     <title>SVG Test: focus - resetting an explicitly set tabindex</title>
     <metadata>
         <h:link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/interact.html#Focus"/>
-        <h:link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#attr-tabindex"/>
+        <h:link rel="help" href="https://html.spec.whatwg.org/#attr-tabindex"/>
         <h:meta name="assert" content="Verify that an explicitly set tabIndex is reset to the default value when the tabindex attribute is changed to a value that is not a valid integer, or removed"/>
     </metadata>
     <a id="anchor" href="#"></a>

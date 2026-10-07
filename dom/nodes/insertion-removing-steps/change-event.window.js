@@ -1,4 +1,4 @@
-// META: spec=https://html.spec.whatwg.org/multipage/infrastructure.html#dom-trees:concept-node-remove-ext
+// META: spec=https://html.spec.whatwg.org/#dom-trees:concept-node-remove-ext
 // META: script=/resources/testdriver.js
 // META: script=/resources/testdriver-vendor.js
 // META: script=/resources/testdriver-actions.js

@@ -1,6 +1,6 @@
 <!doctype html>
 <title>muted reflects an extreme playbackRate</title>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/media.html#concept-media-muted">
+<link rel="help" href="https://html.spec.whatwg.org/#concept-media-muted">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>video, audio { display: none; }</style>
@@ -10,7 +10,7 @@
 // A media element is muted when its playbackRate is so low or so high that the
 // user agent cannot play audio usefully. The muted getter returns true when the
 // element is muted, and the :muted pseudo-class matches it.
-// https://html.spec.whatwg.org/multipage/media.html#concept-media-muted
+// https://html.spec.whatwg.org/#concept-media-muted
 //
 // Tentative: the exact playbackRate range that mutes audio is user-agent
 // defined, and not every engine surfaces this condition through the muted

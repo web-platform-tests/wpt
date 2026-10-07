@@ -10,7 +10,7 @@
     // Check that the onenter event is called for the right cue when seeking on the video element.
     // Based on the spec step 4 [1], after a seek happens, the missed cues should be empty,
     // so any cues before the target time should not receive enter event.
-    // [1] https://html.spec.whatwg.org/multipage/media.html#time-marches-on
+    // [1] https://html.spec.whatwg.org/#time-marches-on
     async_test(function(t) {
         var video = document.querySelector("video");
         var testTrack = document.querySelector("track");

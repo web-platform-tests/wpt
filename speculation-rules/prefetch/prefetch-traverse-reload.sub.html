@@ -40,7 +40,7 @@ promise_test(async t => {
   await agent.navigate(nextUrl);
 
   await agent.forceSinglePrefetch(previousUrl);
-  // In https://html.spec.whatwg.org/multipage/nav-history-apis.html#delta-traverse,
+  // In https://html.spec.whatwg.org/#delta-traverse,
   // `sourceDocument` is `History`'s relevant global object's associated
   // Document. In this case, it's `iframe.contentDocument`, and thus the
   // prefetch from `win`'s Document (iframe's parent Document) isn't used.

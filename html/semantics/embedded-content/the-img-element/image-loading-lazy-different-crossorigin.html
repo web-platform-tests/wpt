@@ -3,8 +3,8 @@
 <title>Lazyload images cannot load immediately from the list of available images if their tuple doesn't match other images in that list</title>
 <link rel="author" title="Dom Farolino" href="mailto:dom@chromium.org">
 <link rel="author" title="Przemyslaw Gorszkowski" href="mailto:pgorszkowski@igalia.com">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#updating-the-image-data">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/urls-and-fetching.html#cors-settings-attribute">
+<link rel="help" href="https://html.spec.whatwg.org/#updating-the-image-data">
+<link rel="help" href="https://html.spec.whatwg.org/#cors-settings-attribute">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -35,8 +35,8 @@ promise_test(async t => {
   // settings attribute matching [2]). The image from "img-container" does not
   // have "crossorigin" attribute and the lazyload image has crossorigin="anonymous".
   // This means that lazyload image cannot be loaded eagerly from the list of available images.
-  // [1]: https://html.spec.whatwg.org/multipage/images.html#updating-the-image-data
-  // [2]: https://html.spec.whatwg.org/multipage/urls-and-fetching.html#cors-settings-attribute
+  // [1]: https://html.spec.whatwg.org/#updating-the-image-data
+  // [2]: https://html.spec.whatwg.org/#cors-settings-attribute
   const lazyload_image_promise = new Promise((resolve, reject) => {
     const img = new Image();
     img.loading = 'lazy';

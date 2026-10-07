@@ -73,7 +73,7 @@ Notifications standard](https://notifications.spec.whatwg.org/#constructors):
 > The Notification(title, options) constructor, when invoked, must run these steps:
 >
 > 1. If the [current global
->    object](https://html.spec.whatwg.org/multipage/webappapis.html#current-global-object)
+>    object](https://html.spec.whatwg.org/#current-global-object)
 >    is a
 >    [ServiceWorkerGlobalScope](https://w3c.github.io/ServiceWorker/#serviceworkerglobalscope)
 >    object, then [throw](https://webidl.spec.whatwg.org/#dfn-throw) a
@@ -157,7 +157,7 @@ necessarily inherent to the correctness of the algorithm:
 
 *Example:* The following text is an abbreviated excerpt of the algorithm that
 runs during drag operations (from [the HTML
-specification](https://html.spec.whatwg.org/multipage/dnd.html#dnd)):
+specification](https://html.spec.whatwg.org/#dnd)):
 
 > [...]
 > 4. Otherwise, if the user ended the drag-and-drop operation (e.g. by
@@ -165,21 +165,21 @@ specification](https://html.spec.whatwg.org/multipage/dnd.html#dnd)):
 >    if the `drag` event was canceled, then this will be the last iteration.
 >    Run the following steps, then stop the drag-and-drop operation:
 >    1. If the [current drag
->       operation](https://html.spec.whatwg.org/multipage/dnd.html#current-drag-operation)
+>       operation](https://html.spec.whatwg.org/#current-drag-operation)
 >       is "`none`" (no drag operation) [...] Otherwise, the drag operation
 >       might be a success; run these substeps:
 >       1. Let *dropped* be true.
 >       2. If the [current target
->          element](https://html.spec.whatwg.org/multipage/dnd.html#current-target-element)
+>          element](https://html.spec.whatwg.org/#current-target-element)
 >          is a DOM element, [fire a DND
->          event](https://html.spec.whatwg.org/multipage/dnd.html#fire-a-dnd-event)
+>          event](https://html.spec.whatwg.org/#fire-a-dnd-event)
 >          named `drop` at it; otherwise, use platform-specific conventions for
 >          indicating a drop.
 >       3. [...]
 >    2. [Fire a DND
->       event](https://html.spec.whatwg.org/multipage/dnd.html#fire-a-dnd-event)
+>       event](https://html.spec.whatwg.org/#fire-a-dnd-event)
 >       named `dragend` at the [source
->       node](https://html.spec.whatwg.org/multipage/dnd.html#source-node).
+>       node](https://html.spec.whatwg.org/#source-node).
 >    3. [...]
 
 A thorough test suite will verify that the `drop` event is fired as specified,

@@ -17,7 +17,7 @@
 //
 // While this test expects <link rel=preload> error events only for network errors
 // as specified in
-// https://html.spec.whatwg.org/multipage/links.html#link-type-preload:fetch-and-process-the-linked-resource
+// https://html.spec.whatwg.org/#link-type-preload:fetch-and-process-the-linked-resource
 // https://github.com/whatwg/html/pull/7799
 // the actual browsers' behavior is different, and the feasibility of changing
 // the behavior has not yet been investigated.
@@ -137,14 +137,14 @@ const tests = {
     url: '/preload/resources/dummy.css',
     as: 'style',
 
-    // https://html.spec.whatwg.org/multipage/semantics.html#default-fetch-and-process-the-linked-resource
+    // https://html.spec.whatwg.org/#default-fetch-and-process-the-linked-resource
     mainLoadWillFailIf404Returned: true
   },
   'script': {
     url: '/preload/resources/dummy.js',
     as: 'script',
 
-    // https://html.spec.whatwg.org/multipage/webappapis.html#fetch-a-classic-script
+    // https://html.spec.whatwg.org/#fetch-a-classic-script
     mainLoadWillFailIf404Returned: true
   },
   'xhr': {
@@ -191,7 +191,7 @@ for (const api in tests) {
 
 // Successful response with corrupted image data.
 // Not a network error, but can fire error events for images:
-// https://html.spec.whatwg.org/multipage/images.html#update-the-image-data
+// https://html.spec.whatwg.org/#update-the-image-data
 runTest('image', 'image', 'Decode-error', true, false,
     '/preload/resources/dummy.css?pipe=header(Content-Type,image/png)');
 runTest('style', 'style', 'Decode-error', true, true,
@@ -207,7 +207,7 @@ runTest('image', 'image', 'MIME-error', true, true,
 runTest('script', 'script', 'MIME-error', true, true,
     '/preload/resources/dummy.css?pipe=header(Content-Type,text/notjavascript)');
 // But they fire error events for <link rel=stylesheet>s.
-// https://html.spec.whatwg.org/multipage/links.html#link-type-stylesheet:process-the-linked-resource
+// https://html.spec.whatwg.org/#link-type-stylesheet:process-the-linked-resource
 runTest('style', 'style', 'MIME-error', true, false,
     '/preload/resources/dummy.js?pipe=header(Content-Type,not/css)');
 

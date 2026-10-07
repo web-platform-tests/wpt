@@ -36,7 +36,7 @@ function test_computed_style(width, height, expected) {
 // We append a random query to the URL(s) to avoid matching something in the 'list
 // of available images' (step 6 of the algorithm below) and thus have the actual
 // load run in a microtask.
-// https://html.spec.whatwg.org/multipage/images.html#updating-the-image-data
+// https://html.spec.whatwg.org/#updating-the-image-data
 test(function() {
   // This img will be tested again after loaded. In order to locate it correctly, body should append it first.
   var img = new Image();

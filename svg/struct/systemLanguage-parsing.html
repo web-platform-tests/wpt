@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <title>systemLanguage attribute is parsed as comma-separated tokens</title>
 <link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/struct.html#ConditionalProcessingSystemLanguageAttribute">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#set-of-comma-separated-tokens">
+<link rel="help" href="https://html.spec.whatwg.org/#set-of-comma-separated-tokens">
 <meta name="assert" content="The systemLanguage attribute value is a set of comma-separated tokens per SVG2. Each token is trimmed of surrounding ASCII whitespace.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -59,7 +59,7 @@ parsesAs("en-US, zh-Hans, pt-BR", ["en-US", "zh-Hans", "pt-BR"],
 
 // Double comma — per the HTML comma-separated token spec, the empty
 // string between consecutive commas is a valid token.
-// https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#set-of-comma-separated-tokens
+// https://html.spec.whatwg.org/#set-of-comma-separated-tokens
 // Example from spec: " a ,b,,d d " → ["a", "b", "", "d d"]
 parsesAs("en,,fr", ["en", "", "fr"],
     "Double comma produces an empty token between the two commas");

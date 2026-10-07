@@ -3,27 +3,27 @@
 
 /*
 * help:
-*   https://html.spec.whatwg.org/multipage/#the-link-element
-*   https://html.spec.whatwg.org/multipage/#styling
-*   https://html.spec.whatwg.org/multipage/#prepare-a-script
-*   https://html.spec.whatwg.org/multipage/#concept-media-load-algorithm
-*   https://html.spec.whatwg.org/multipage/#track-url
-*   https://html.spec.whatwg.org/multipage/#concept-form-submit
-*   https://html.spec.whatwg.org/multipage/#set-the-frozen-base-url
+*   https://html.spec.whatwg.org/#the-link-element
+*   https://html.spec.whatwg.org/#styling
+*   https://html.spec.whatwg.org/#prepare-a-script
+*   https://html.spec.whatwg.org/#concept-media-load-algorithm
+*   https://html.spec.whatwg.org/#track-url
+*   https://html.spec.whatwg.org/#concept-form-submit
+*   https://html.spec.whatwg.org/#set-the-frozen-base-url
 *   https://dom.spec.whatwg.org/#dom-node-baseuri
-*   https://html.spec.whatwg.org/multipage/#the-a-element
-*   https://html.spec.whatwg.org/multipage/#dom-worker
-*   https://html.spec.whatwg.org/multipage/#dom-sharedworker
-*   https://html.spec.whatwg.org/multipage/#dom-eventsource
-*   https://html.spec.whatwg.org/multipage/#dom-xmldocument-load
-*   https://html.spec.whatwg.org/multipage/#dom-open
+*   https://html.spec.whatwg.org/#the-a-element
+*   https://html.spec.whatwg.org/#dom-worker
+*   https://html.spec.whatwg.org/#dom-sharedworker
+*   https://html.spec.whatwg.org/#dom-eventsource
+*   https://html.spec.whatwg.org/#dom-xmldocument-load
+*   https://html.spec.whatwg.org/#dom-open
 *   http://url.spec.whatwg.org/#dom-url-search
 *   https://www.w3.org/Bugs/Public/show_bug.cgi?id=24148
 *   https://xhr.spec.whatwg.org/#the-open()-method
-*   https://html.spec.whatwg.org/multipage/#set-up-a-worker-script-settings-object
-*   https://html.spec.whatwg.org/multipage/#dom-workerglobalscope-importscripts
-*   https://html.spec.whatwg.org/multipage/#parse-a-websocket-url's-components
-*   https://html.spec.whatwg.org/multipage/#dom-websocket-url
+*   https://html.spec.whatwg.org/#set-up-a-worker-script-settings-object
+*   https://html.spec.whatwg.org/#dom-workerglobalscope-importscripts
+*   https://html.spec.whatwg.org/#parse-a-websocket-url's-components
+*   https://html.spec.whatwg.org/#dom-websocket-url
 *   https://www.w3.org/Bugs/Public/show_bug.cgi?id=23968
 *   http://dev.w3.org/csswg/cssom/#requirements-on-user-agents-implementing-the-xml-stylesheet-processing-instruction
 *   http://url.spec.whatwg.org/#dom-url
@@ -95,10 +95,10 @@ onload = function() {
   }
 
   spec_url_load_nested_browsing_context = {
-    frame:'https://html.spec.whatwg.org/multipage/#process-the-frame-attributes',
-    iframe:'https://html.spec.whatwg.org/multipage/#process-the-iframe-attributes',
-    object:'https://html.spec.whatwg.org/multipage/#the-object-element',
-    embed:'https://html.spec.whatwg.org/multipage/#the-embed-element-setup-steps'
+    frame:'https://html.spec.whatwg.org/#process-the-frame-attributes',
+    iframe:'https://html.spec.whatwg.org/#process-the-iframe-attributes',
+    object:'https://html.spec.whatwg.org/#the-object-element',
+    embed:'https://html.spec.whatwg.org/#the-embed-element-setup-steps'
   };
 
   'frame src, iframe src, object data, embed src'.split(', ').forEach(function(str) {
@@ -180,11 +180,11 @@ onload = function() {
   })();
 
   var spec_url_load_image = {
-    img:'https://html.spec.whatwg.org/multipage/#update-the-image-data',
-    embed:'https://html.spec.whatwg.org/multipage/#the-embed-element-setup-steps',
-    object:'https://html.spec.whatwg.org/multipage/#the-object-element',
-    input:'https://html.spec.whatwg.org/multipage/#image-button-state-(type=image)',
-    video:'https://html.spec.whatwg.org/multipage/#poster-frame'
+    img:'https://html.spec.whatwg.org/#update-the-image-data',
+    embed:'https://html.spec.whatwg.org/#the-embed-element-setup-steps',
+    object:'https://html.spec.whatwg.org/#the-object-element',
+    input:'https://html.spec.whatwg.org/#image-button-state-(type=image)',
+    video:'https://html.spec.whatwg.org/#poster-frame'
   };
 
   'img src, embed src, object data, input src, video poster'.split(', ').forEach(function(str) {
@@ -417,7 +417,7 @@ onload = function() {
       iframe.onload = this.step_func_done(function() {
         // this should resolve against the iframe's URL
         // "Parse url, relative to the relevant settings object of history."
-        // https://html.spec.whatwg.org/multipage/nav-history-apis.html#shared-history-push%2Freplace-state-steps
+        // https://html.spec.whatwg.org/#shared-history-push%2Freplace-state-steps
         iframe.contentWindow.history[prop](null, null, url);
         var got = iframe.contentWindow.location.href;
         assert_true(got.indexOf(expected_current) > -1, msg(expected_current, got));

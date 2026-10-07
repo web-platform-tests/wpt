@@ -460,7 +460,7 @@ tentative_tests = [
     ),
     (
       # This breaks out of foreign content, so the script is an HTML script
-      # https://html.spec.whatwg.org/multipage/#parsing-main-inforeign
+      # https://html.spec.whatwg.org/#parsing-main-inforeign
       u'math-font-face-script-src',
       u'utf-8',
       u'<math><font face><script src="{}"></script></font></math>',

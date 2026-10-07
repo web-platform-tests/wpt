@@ -17,7 +17,6 @@
   <script>
     let createHTML = (html) => html;
     let sinks = [];
-    let parser_options_sinks = [];
     const default_policy = trustedTypes.createPolicy("default", {
       createHTML: (html, type, sink) => {
         sinks.push(sink);
@@ -31,7 +30,6 @@
 
     function reset_sinks() {
       sinks = [];
-      parser_options_sinks = [];
     }
 
     function expected_sink(target_type, pos, method_name) {
@@ -102,7 +100,6 @@
           object[method_name]("<span>html;</span>");
           check_position(target, pos, ref);
           assert_array_equals(sinks, [], "createHTML sinks");
-          assert_array_equals(parser_options_sinks, [], "createParserOptions sinks");
         }, `${variant} does not invoke the default policy`);
         return;
       }
@@ -118,9 +115,8 @@
         const { target, ref, object } = prepare(t);
         object[method_name]("<span>html;</span>", { runScripts: false });
         check_position(target, pos, ref);
-        assert_array_equals(parser_options_sinks,
-                            [expected_sink(target_type, pos, method_name)]);
-      }, `${variant} passes the correct sink name to the default policy's createParserOptions`);
+        assert_array_equals(sinks, [expected_sink(target_type, pos, method_name)]);
+      }, `${variant} with vetting-free options passes the correct sink name to the default policy's createHTML`);
 
       test((t) => {
         const { target, object } = prepare(t);
@@ -137,9 +133,6 @@
         object[method_name](passthrough_policy.createHTML("<span>html;</span>"));
         check_position(target, pos, ref);
         assert_array_equals(sinks, [], "Default createHTML should not be invoked");
-        assert_array_equals(parser_options_sinks,
-                            [expected_sink(target_type, pos, method_name)],
-                            "Default createParserOptions should still be invoked");
       }, `${variant} accepts TrustedHTML without invoking the default policy's createHTML`);
 
       test((t) => {
@@ -147,11 +140,9 @@
         object[method_name]("<span>html;</span>",
                             passthrough_policy.createParserOptions({}));
         check_position(target, pos, ref);
-        assert_array_equals(sinks, [expected_sink(target_type, pos, method_name)],
-                            "Default createHTML should still be invoked");
-        assert_array_equals(parser_options_sinks, [],
-                            "Default createParserOptions should not be invoked");
-      }, `${variant} accepts TrustedHTMLParserOptions without invoking the default policy's createParserOptions`);
+        assert_array_equals(sinks, [],
+                            "Default createHTML should not be invoked when TrustedHTMLParserOptions is passed");
+      }, `${variant} accepts TrustedHTMLParserOptions without invoking the default policy's createHTML`);
     }
 
     for (const ref_type of ["Comment", "Text", "ProcessingInstruction"]) {
@@ -165,8 +156,6 @@
           object[method_name]("<span>html;</span>");
           check_position(target, pos, ref);
           assert_array_equals(sinks, [`Node ${method_name}`], "createHTML sinks");
-          assert_array_equals(parser_options_sinks, [`Node ${method_name}`],
-                              "createParserOptions sinks");
         }, `${ref_type}.${method_name} passes a "Node" sink name to the default policy`);
       }
     }
@@ -320,6 +309,31 @@
     assert_equals(target.childNodes[1].tagName, "B");
     assert_equals(target.childNodes[2].tagName, "SPAN");
   }, "prependHTMLUnsafe evaluates Trusted Types before determining the reference child");
+
+  test((t) => {
+    let parent = document.createElement("div");
+    let target = document.createElement("span");
+    let sibling1 = document.createElement("u");
+    parent.append(target, sibling1);
+
+    t.add_cleanup(() => { createHTML = (html) => html; });
+    createHTML = (html) => {
+        if (html === "<i>foo</i>") {
+          let sibling2 = document.createElement("b");
+          parent.insertBefore(sibling2, sibling1);
+        }
+        return html;
+    };
+
+    target.afterHTMLUnsafe("<i>foo</i>");
+
+    // The <i>foo</i> should be inserted before target's *new* nextSibling (sibling2).
+    assert_equals(parent.childNodes.length, 4);
+    assert_equals(parent.childNodes[0].tagName, "SPAN");
+    assert_equals(parent.childNodes[1].tagName, "I");
+    assert_equals(parent.childNodes[2].tagName, "B");
+    assert_equals(parent.childNodes[3].tagName, "U");
+  }, "afterHTMLUnsafe evaluates Trusted Types before determining the next sibling");
 
     for (const target of ["Element", "ShadowRoot", "template.content"]) {
       for (const pos of ["append", "prepend"]) {

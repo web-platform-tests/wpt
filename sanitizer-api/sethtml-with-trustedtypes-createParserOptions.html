@@ -19,9 +19,6 @@
         sanitizer: { removeElements: ["div"] },
       });
       let createHTML = (html) => html;
-      const cleanupPolicy = trustedTypes.createPolicy("cleanup", {
-        createHTML: (_) => "",
-      });
 
       trustedTypes.createPolicy("default", {
         createHTML: (html) => createHTML(html),
@@ -32,8 +29,6 @@
         createHTML: (html) => createHTML(html),
         createParserOptions: (options) => options,
       });
-
-      function cleanup() {}
 
       function createTarget(target_type, t) {
         t.add_cleanup(() => {

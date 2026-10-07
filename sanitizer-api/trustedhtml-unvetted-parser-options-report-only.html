@@ -58,7 +58,7 @@
       assert_equals(violations[0].sample, `${sink.sample}|`);
       assert_equals(violations[0].disposition, "report");
       assert_equals(violations[1].blockedURI, "trusted-types-sink");
-      assert_equals(violations[1].sample, clipSampleIfNeeded(`${sink.sample}|${markup}`));
+      assert_equals(violations[1].sample, `${sink.sample}|${clipSampleIfNeeded(markup)}`);
       assert_equals(violations[1].disposition, "report");
       assert_equals(root.querySelector("#wrapper"), null, "sanitizer was applied");
       assert_not_equals(root.querySelector("#inner"), null);

@@ -346,7 +346,7 @@
         };
 
         const parser = new DOMParser();
-        const doc = parser.parseFromString("<xml></xml>", "application/xml");
+        const doc = parser.parseFromString(testPolicy.createHTML("<xml></xml>"), "application/xml");
         const elem = createXmlElem(doc);
 
         elem.innerHTML = "<span id='xml-span'></span>";

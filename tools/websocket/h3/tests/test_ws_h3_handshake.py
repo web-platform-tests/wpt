@@ -1,13 +1,10 @@
 # mypy: allow-untyped-defs
 
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
 from pywebsocket3 import common
-from pywebsocket3 import dispatch
-from pywebsocket3.handshake.base import AbortedByUserException
 from pywebsocket3.handshake.base import HandshakeException
 
 from ..headers import H3Headers
@@ -53,7 +50,11 @@ def test_do_handshake_prepares_h3_response_headers():
     ])
     dispatcher = _FakeDispatcher(
         protocol='chat',
-        extra_headers=[('x-extra', 'value')],
+        extra_headers=[
+            ('x-extra', 'value'),
+            ('Set-Cookie', 'first=one'),
+            ('Set-Cookie', 'second=two'),
+        ],
     )
 
     WsH3Handshaker(request, dispatcher).do_handshake()
@@ -63,7 +64,13 @@ def test_do_handshake_prepares_h3_response_headers():
     assert request.headers_out['upgrade'] == common.WEBSOCKET_UPGRADE_TYPE
     assert request.headers_out['connection'] == common.UPGRADE_CONNECTION_TYPE
     assert request.headers_out['sec-websocket-protocol'] == 'chat'
-    assert request.headers_out['x-extra'] == 'value'
+    assert request.extra_headers == [
+        ('x-extra', 'value'),
+        ('Set-Cookie', 'first=one'),
+        ('Set-Cookie', 'second=two'),
+    ]
+    assert 'x-extra' not in request.headers_out
+    assert 'Set-Cookie' not in request.headers_out
     assert 'sec-websocket-accept' not in request.headers_out
     assert request.ws_resource == '/echo'
     assert request.ws_version == common.VERSION_HYBI_LATEST
@@ -111,17 +118,3 @@ def test_send_handshake_formats_extensions():
     assert request.headers_out[
         'sec-websocket-extensions'] == (
             'permessage-deflate; server_no_context_takeover')
-
-
-def test_basic_auth_handler_sets_h3_response_headers():
-    handlers = Path(__file__).resolve().parents[4] / 'websockets' / 'handlers'
-    dispatcher = dispatch.Dispatcher(str(handlers), None, False)
-    request = _make_request()
-    request.protocol = 'HTTP/3'
-    request.uri = '/basic_auth'
-
-    with pytest.raises(AbortedByUserException):
-        WsH3Handshaker(request, dispatcher).do_handshake()
-
-    assert request.status == 401
-    assert request.headers_out['www-authenticate'] == 'Basic realm="camelot"'

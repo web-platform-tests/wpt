@@ -405,7 +405,9 @@ class WebSocketH3Protocol(QuicConnectionProtocol):
             (b":status", str(status).encode()),
             (b"server", SERVER_NAME.encode()),
         ]
-        for name, value in request.headers_out.items():
+        headers_out = list(request.headers_out.items())
+        headers_out.extend(request.extra_headers)
+        for name, value in headers_out:
             header_name = (name.decode("ascii")
                            if isinstance(name, bytes) else str(name)).lower()
             if header_name in _H3_FORBIDDEN_RESPONSE_HEADERS:

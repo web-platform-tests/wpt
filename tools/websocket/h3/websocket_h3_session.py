@@ -11,7 +11,7 @@ two APIs.
 import asyncio
 import logging
 import threading
-from typing import Dict, Optional, TYPE_CHECKING, Union
+from typing import Dict, List, Optional, Tuple, TYPE_CHECKING, Union
 
 from pywebsocket3 import dispatch
 
@@ -153,6 +153,7 @@ class _WebSocketH3Request:
         self.method = headers.get("method", "")
         self.headers_in = headers
         self.headers_out = _WebSocketH3ResponseHeaders()
+        self.extra_headers: List[Tuple[_HeaderName, _HeaderValue]] = []
         self._dispatcher: Optional[dispatch.Dispatcher] = None
         self._status = 0
 

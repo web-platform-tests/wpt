@@ -63,6 +63,3 @@ class WsH3Handshaker(HandshakerBase):
             self._request.headers_out[
                 'sec-websocket-extensions'] = common.format_extensions(
                     self._request.ws_extensions)
-
-        for name, value in self._request.extra_headers:
-            self._request.headers_out[name] = value

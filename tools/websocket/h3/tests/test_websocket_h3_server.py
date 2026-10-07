@@ -11,6 +11,7 @@ from types import SimpleNamespace
 from unittest import mock
 
 import pytest
+from pywebsocket3.handshake.base import AbortedByUserException
 
 
 if importlib.util.find_spec('aioquic'):
@@ -163,6 +164,7 @@ class WebSocketH3ServerTest(unittest.TestCase):
             def do_handshake(self):
                 self.request.status = 200
                 self.request.headers_out['sec-websocket-protocol'] = 'chat'
+                self.request.extra_headers.append(('x-extra', 'value'))
                 self.request.connection.write(b'early-data')
 
         async def run():
@@ -187,6 +189,7 @@ class WebSocketH3ServerTest(unittest.TestCase):
                 (b':status', b'200'),
                 (b'server', b'websocket-h3-server'),
                 (b'sec-websocket-protocol', b'chat'),
+                (b'x-extra', b'value'),
             ],
             False,
         )])
@@ -194,6 +197,69 @@ class WebSocketH3ServerTest(unittest.TestCase):
         self.assertEqual(protocol._http.data, [(7, b'early-data', False)])
         start.assert_called_once_with()
         protocol._sessions[7].abort()
+
+    @pytest.mark.skipif(not has_aioquic, reason='not having aioquic')
+    def test_websocket_response_preserves_multiple_set_cookie_headers(self):
+        protocol = _FakeProtocol()
+        request = SimpleNamespace(
+            status=200,
+            headers_out={'sec-websocket-protocol': 'chat'},
+            extra_headers=[
+                ('Set-Cookie', 'first=one; Path=/'),
+                (b'Set-Cookie', b'second=two; Path=/'),
+                ('x-extra', 'value'),
+            ],
+        )
+
+        websocket_h3_server.WebSocketH3Protocol._send_websocket_response(
+            protocol, 7, request, end_stream=False)
+
+        self.assertEqual(protocol._http.headers, [(
+            7,
+            [
+                (b':status', b'200'),
+                (b'server', b'websocket-h3-server'),
+                (b'sec-websocket-protocol', b'chat'),
+                (b'set-cookie', b'first=one; Path=/'),
+                (b'set-cookie', b'second=two; Path=/'),
+                (b'x-extra', b'value'),
+            ],
+            False,
+        )])
+
+    @pytest.mark.skipif(not has_aioquic, reason='not having aioquic')
+    def test_aborted_handshake_sends_authentication_response(self):
+        class AbortingHandshaker:
+            def __init__(self, request, dispatcher):
+                self.request = request
+
+            def do_handshake(self):
+                self.request.status = 401
+                self.request.headers_out['www-authenticate'] = (
+                    'Basic realm="camelot"')
+                raise AbortedByUserException()
+
+        async def run():
+            protocol = _make_protocol_for_websocket_connect()
+            protocol._handle_websocket_connect(_make_websocket_connect_event())
+            await asyncio.gather(*protocol._workers)
+            return protocol
+
+        with mock.patch.object(websocket_h3_server.dispatch, 'Dispatcher'), \
+             mock.patch.object(websocket_h3_server, 'WsH3Handshaker',
+                               AbortingHandshaker):
+            protocol = asyncio.run(run())
+
+        self.assertEqual(protocol._http.headers, [(
+            7,
+            [
+                (b':status', b'401'),
+                (b'server', b'websocket-h3-server'),
+                (b'www-authenticate', b'Basic realm="camelot"'),
+            ],
+            True,
+        )])
+        self.assertNotIn(7, protocol._sessions)
 
     @pytest.mark.skipif(not has_aioquic, reason='not having aioquic')
     def test_slow_http_handler_and_response_writer_do_not_block_loop(self):

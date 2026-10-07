@@ -118,7 +118,8 @@ def get_properties(properties_file=None, extra_properties=None, config=None, pro
 
 def update_expected(test_paths, log_file_names,
                     update_properties, full_update=False, disable_intermittent=None,
-                    update_intermittent=False, remove_intermittent=False, **kwargs):
+                    update_intermittent=False, remove_intermittent=False,
+                    include=None, exclude=None, include_manifest=None, **kwargs):
     """Update the metadata files for web-platform-tests based on
     the results obtained in a previous run or runs
 
@@ -134,7 +135,9 @@ def update_expected(test_paths, log_file_names,
 
     do_delayed_imports()
 
-    id_test_map = load_test_data(test_paths)
+    manifest_loader = testloader.ManifestLoader(logger, test_paths, force_manifest_update=False)
+    manifests = manifest_loader.load()
+    id_test_map, excluded_ids = load_test_data(manifests, include, exclude, include_manifest)
 
     msg = f"Updating metadata using properties: {','.join(update_properties[0])}"
     if update_properties[1]:
@@ -149,7 +152,8 @@ def update_expected(test_paths, log_file_names,
                                                        update_intermittent,
                                                        remove_intermittent,
                                                        full_update,
-                                                       *log_file_names):
+                                                       *log_file_names,
+                                                       excluded_ids=excluded_ids):
 
         write_new_expected(metadata_path, updated_ini)
         if disable_intermittent:
@@ -283,21 +287,40 @@ def unpack_result(data):
     return ((results[0],), tuple(results[1:]))
 
 
-def load_test_data(test_paths):
-    manifest_loader = testloader.ManifestLoader(logger, test_paths, False)
-    manifests = manifest_loader.load()
+def load_test_data(manifests, include=None, exclude=None, include_manifest=None):
+    """Get a map of test_id to TestFileData for the tests selected by include,
+    exclude and include_manifest, and the set of IDs of the tests filtered out"""
+    manifest_filters = []
+    if include or exclude or include_manifest:
+        manifest_filters.append(testloader.TestFilter(manifests,
+                                                      include=include,
+                                                      exclude=exclude,
+                                                      manifest_path=include_manifest))
 
     id_test_map = {}
     for test_manifest, paths in manifests.items():
         id_test_map.update(create_test_tree(paths["metadata_path"],
-                                            test_manifest))
-    return id_test_map
+                                            test_manifest,
+                                            manifest_filters))
+
+    excluded_ids = get_excluded_ids(manifests, id_test_map) if manifest_filters else frozenset()
+    return id_test_map, excluded_ids
+
+
+def get_excluded_ids(manifests, id_test_map):
+    """Get the IDs of the tests in the manifests that were filtered out of id_test_map"""
+    test_types = get_test_types()
+    all_ids = {test.id
+               for test_manifest in manifests
+               for _, _, tests in test_manifest.itertypes(*test_types)
+               for test in tests}
+    return all_ids - id_test_map.keys()
 
 
 def update_from_logs(id_test_map, update_properties, disable_intermittent, update_intermittent,
-                     remove_intermittent, full_update, *log_filenames):
+                     remove_intermittent, full_update, *log_filenames, excluded_ids=frozenset()):
 
-    updater = ExpectedUpdater(id_test_map)
+    updater = ExpectedUpdater(id_test_map, excluded_ids=excluded_ids)
 
     for i, log_filename in enumerate(log_filenames):
         logger.info("Processing log %d/%d" % (i + 1, len(log_filenames)))
@@ -370,8 +393,9 @@ def write_new_expected(metadata_path, expected):
 
 
 class ExpectedUpdater:
-    def __init__(self, id_test_map):
+    def __init__(self, id_test_map, excluded_ids=frozenset()):
         self.id_test_map = id_test_map
+        self.excluded_ids = excluded_ids
         self.base_run_info = None
         self.run_info_by_subsuite = {}
         self.action_map = {"suite_start": self.suite_start,
@@ -488,10 +512,11 @@ class ExpectedUpdater:
 
     def test_start(self, data):
         test_id = intern(data["test"])
-        try:
-            self.id_test_map[test_id]
-        except KeyError:
-            logger.warning("Test not found %s, skipping" % test_id)
+
+        if test_id not in self.id_test_map:
+            # Tests filtered out by include/exclude are skipped silently
+            if test_id not in self.excluded_ids:
+                logger.warning("Test not found %s, skipping" % test_id)
             return
 
         self.tests_visited[test_id] = set()
@@ -547,7 +572,8 @@ class ExpectedUpdater:
         if dir_id.startswith("/"):
             dir_id = dir_id[1:]
         test_data = self.id_test_map.get(dir_id)
-        if test_data is None:
+        if test_data is None and not self.excluded_ids:
+            # Nothing was filtered out, so this directory should have been in the manifest
             logger.warning("Directory not found %s, skipping" % dir_id)
         return dir_id, test_data
 
@@ -590,16 +616,22 @@ class ExpectedUpdater:
                 test_data.set_requires_update()
 
 
-def create_test_tree(metadata_path, test_manifest):
-    """Create a map of test_id to TestFileData for that test.
-    """
+def get_test_types():
+    """Get the manifest item types that can have metadata."""
     do_delayed_imports()
-    id_test_map = {}
     exclude_types = frozenset(["manual", "support", "conformancechecker"])
     all_types = set(manifestitem.item_types.keys())
     assert all_types > exclude_types
-    include_types = all_types - exclude_types
-    for item_type, test_path, tests in test_manifest.itertypes(*include_types):
+    return all_types - exclude_types
+
+
+def create_test_tree(metadata_path, test_manifest, manifest_filters=None):
+    """Create a map of test_id to TestFileData for that test.
+    """
+    id_test_map = {}
+    manifest_iter = testloader.iterfilter(manifest_filters or [],
+                                          test_manifest.itertypes(*get_test_types()))
+    for item_type, test_path, tests in manifest_iter:
         test_file_data = TestFileData(intern(test_manifest.url_base),
                                       intern(item_type),
                                       metadata_path,

@@ -36,7 +36,7 @@ async function cosOpenRemoteContext(origin, {allow = 'cross-origin-storage', pip
   return {ctx, iframe};
 }
 
-// Runs `navigator.crossOriginStorage.requestFileHandle(hash)` inside a
+// Runs `navigator.crossOriginStorage.getFileHandle(hash)` inside a
 // RemoteContext and returns a plain, serializable descriptor instead of
 // letting a DOMException cross the postMessage-like boundary (where only
 // TypeError survives with its name intact; everything else becomes a
@@ -45,7 +45,7 @@ async function cosOpenRemoteContext(origin, {allow = 'cross-origin-storage', pip
 async function cosRemoteRead(ctx, hash) {
   return ctx.execute_script(async (hash) => {
     try {
-      const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+      const handle = await navigator.crossOriginStorage.getFileHandle(hash);
       const file = await handle.getFile();
       return {ok: true, text: await file.text()};
     } catch (e) {
@@ -61,7 +61,7 @@ async function cosRemoteRead(ctx, hash) {
 async function cosRemoteReadDigest(ctx, hash) {
   return ctx.execute_script(async (hash) => {
     try {
-      const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+      const handle = await navigator.crossOriginStorage.getFileHandle(hash);
       const file = await handle.getFile();
       const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
       return {
@@ -202,12 +202,12 @@ function cosAssertNotDisclosed(result, description) {
 // write is attributed to the remote context's origin (and governed by that
 // context's response headers, e.g. a `Cross-Origin-Storage-Allow-Origin`
 // ceiling applied via `pipeHeader`). `options` is passed through to
-// requestFileHandle() with `create` forced to true. Shaped as {ok: true} or
+// getFileHandle() with `create` forced to true. Shaped as {ok: true} or
 // {ok: false, name, message}.
 async function cosRemoteStore(ctx, hash, content, options = {}) {
   return ctx.execute_script(async (hash, content, options) => {
     try {
-      const handle = await navigator.crossOriginStorage.requestFileHandle(
+      const handle = await navigator.crossOriginStorage.getFileHandle(
         hash, {...options, create: true});
       const writable = await handle.createWritable();
       await writable.write(new Blob([content]));

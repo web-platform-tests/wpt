@@ -56,7 +56,7 @@ async function storeBytes(bytes, options) {
   const value = Array.from(new Uint8Array(digest))
     .map((b) => b.toString(16).padStart(2, '0')).join('');
   const hash = cosHash(value);
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {...options, create: true});
   const writable = await handle.createWritable();
   await writable.write(new Blob([bytes]));
@@ -129,7 +129,7 @@ promise_test(async t => {
   // what keeps the list from becoming a precondition for using the API at all.
   const unlistedBytes = new TextEncoder().encode(cosUniqueContent('phl-storer'));
   const hash = await storeBytes(unlistedBytes, {origins: '*'});
-  const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash);
   const file = await handle.getFile();
   assert_equals(await cosSha256Hex(new Uint8Array(await file.arrayBuffer())),
     await cosSha256Hex(unlistedBytes));

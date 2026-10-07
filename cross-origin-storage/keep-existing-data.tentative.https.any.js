@@ -39,7 +39,7 @@ promise_test(async t => {
   const content = cosUniqueContent('keep-existing-data');
   const {hash} = await cosStore(content);
 
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   const writable = await handle.createWritable({keepExistingData: true});
 
@@ -54,7 +54,7 @@ promise_test(async t => {
   const content = cosUniqueContent('keep-existing-data-roundtrip');
   const {hash} = await cosStore(content);
 
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   const writable = await handle.createWritable({keepExistingData: true});
   await writable.write(new Blob([content]));

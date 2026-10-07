@@ -20,7 +20,7 @@
 // for the rest of the run, with no way to restore it.
 //
 // The budget is charged on every surface that reaches the registry, not only
-// requestFileHandle(): the three declarative integrations and the
+// getFileHandle(): the three declarative integrations and the
 // crossOriginStorage option on fetch() all resolve a hash the same way and
 // all yield the same single bit. The last two tests here cover the fetch
 // surface, which is the one a page can drive in a loop as easily as an
@@ -56,7 +56,7 @@ promise_test(async t => {
   const names = [];
   for (let i = 0; i < REPEATS; ++i) {
     try {
-      await navigator.crossOriginStorage.requestFileHandle(hash);
+      await navigator.crossOriginStorage.getFileHandle(hash);
       assert_unreached(`read ${i + 1} of a never-stored hash must not resolve`);
     } catch (e) {
       names.push(e.name);
@@ -72,7 +72,7 @@ promise_test(async t => {
   // keep working regardless of how much read budget has been spent.
   for (let i = 0; i < DISTINCT; ++i) {
     await promise_rejects_dom(t, 'NotFoundError',
-      navigator.crossOriginStorage.requestFileHandle(cosMissingHash()));
+      navigator.crossOriginStorage.getFileHandle(cosMissingHash()));
   }
 
   const content = cosUniqueContent('budget-create-uncharged');
@@ -89,7 +89,7 @@ promise_test(async t => {
   const names = new Set();
   for (let i = 0; i < DISTINCT; ++i) {
     try {
-      await navigator.crossOriginStorage.requestFileHandle(cosMissingHash());
+      await navigator.crossOriginStorage.getFileHandle(cosMissingHash());
       assert_unreached('a read of a never-stored hash must not resolve');
     } catch (e) {
       names.add(e.name);
@@ -109,10 +109,10 @@ promise_test(async t => {
   for (let i = 0; i < DISTINCT; ++i) {
     const content = cosUniqueContent(`budget-in-flight-${i}`);
     const hash = cosHash(await cosSha256Hex(content));
-    const handle = await navigator.crossOriginStorage.requestFileHandle(
+    const handle = await navigator.crossOriginStorage.getFileHandle(
       hash, {create: true});
     await promise_rejects_dom(t, 'NotFoundError',
-      navigator.crossOriginStorage.requestFileHandle(hash),
+      navigator.crossOriginStorage.getFileHandle(hash),
       'a hash with only an in-flight write must read as a plain miss');
 
     // Finish the write, so this leaves behind an entry rather than nothing.
@@ -131,7 +131,7 @@ function cosBrokenUrl() {
 
 promise_test(async t => {
   // The storing-origin exemption is a property of the lookup algorithm, not
-  // of requestFileHandle(), so it must hold for an integration lookup too.
+  // of getFileHandle(), so it must hold for an integration lookup too.
   // If the fetch integration reached the registry by some other route it
   // would either be charged when it should not be, or -- worse -- not be
   // charged when it should.

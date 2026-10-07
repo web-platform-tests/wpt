@@ -12,7 +12,7 @@
 // https://wicg.github.io/cross-origin-storage/#transferring-handles
 //
 // A FileSystemFileHandle is serializable, so postMessage() is a second way to
-// obtain a handle for a COS entry alongside requestFileHandle(). Every
+// obtain a handle for a COS entry alongside getFileHandle(). Every
 // disclosure control in the specification -- `origins`, the Public Hash List,
 // GREASE'ing -- is evaluated on the read path for the origin that asks, so
 // transferring is constrained too: same-origin only, with the handle's
@@ -68,7 +68,7 @@ function transferToWorker(t, message) {
 promise_test(async t => {
   const content = cosUniqueContent('transfer-to-worker');
   const {hash} = await cosStore(content);
-  const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash);
 
   const result = await transferToWorker(t, {handle});
   assert_equals(result.event, 'message', 'a same-origin transfer must succeed');
@@ -82,7 +82,7 @@ promise_test(async t => {
 promise_test(async t => {
   const content = cosUniqueContent('transfer-to-same-origin-frame');
   const {hash} = await cosStore(content);
-  const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash);
 
   const result = await transferToFrame(t, HTTPS_ORIGIN, {handle});
   assert_equals(result.event, 'message', 'a same-origin transfer must succeed');
@@ -104,7 +104,7 @@ promise_test(async t => {
   // in it should fail the COS suite too, not just the fs suite.
   const content = cosUniqueContent('transfer-cross-origin');
   const {hash} = await cosStore(content, {origins: '*'});
-  const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash);
 
   const result = await transferToFrame(t, HTTPS_NOTSAMESITE_ORIGIN, {handle});
   assert_equals(result.event, 'messageerror',
@@ -117,7 +117,7 @@ promise_test(async t => {
   // not launder it into a readable one.
   const content = cosUniqueContent('transfer-unwritten-create-handle');
   const hash = cosHash(await cosSha256Hex(content));
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
 
   const result = await transferToWorker(t, {handle});
@@ -139,7 +139,7 @@ promise_test(async t => {
   // let a caller re-roll GREASE'ing by transferring one handle repeatedly.
   const content = cosUniqueContent('transfer-captures-readability');
   const hash = cosHash(await cosSha256Hex(content));
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
 
   const transferred = transferToWorker(t, {handle});

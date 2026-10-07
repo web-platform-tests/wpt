@@ -17,7 +17,7 @@
 //
 // The `origins`-style value an entry is stored with decides which origins may
 // later retrieve it, and the fetch integration is bound by exactly the same
-// scoping as requestFileHandle(). What differs is how a refusal surfaces: the
+// scoping as getFileHandle(). What differs is how a refusal surfaces: the
 // imperative API rejects with NotFoundError, whereas a refused lookup here
 // simply falls through to the network, so the caller sees whatever the
 // network did -- for these tests, an integrity-checked 404, which is an

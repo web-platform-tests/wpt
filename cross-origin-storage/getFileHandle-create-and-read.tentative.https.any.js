@@ -9,26 +9,26 @@
 
 promise_test(async t => {
   await promise_rejects_dom(t, 'NotFoundError',
-    navigator.crossOriginStorage.requestFileHandle(cosMissingHash()));
-}, 'requestFileHandle() without create rejects with NotFoundError for a hash that was never stored');
+    navigator.crossOriginStorage.getFileHandle(cosMissingHash()));
+}, 'getFileHandle() without create rejects with NotFoundError for a hash that was never stored');
 
 promise_test(async t => {
   const content = cosUniqueContent('roundtrip');
   const {hash} = await cosStore(content);
   const text = await cosReadText(hash);
   assert_equals(text, content, 'read-back content must match exactly what was written');
-}, 'requestFileHandle({create:true}) write, then requestFileHandle() read, roundtrips exact content');
+}, 'getFileHandle({create:true}) write, then getFileHandle() read, roundtrips exact content');
 
 promise_test(async t => {
   // create defaults to false: a bare options object without create must
   // behave like a read, not a create.
   await promise_rejects_dom(t, 'NotFoundError',
-    navigator.crossOriginStorage.requestFileHandle(cosMissingHash(), {}));
+    navigator.crossOriginStorage.getFileHandle(cosMissingHash(), {}));
 }, 'options.create defaults to false');
 
 promise_test(async t => {
   const value = await cosSha256Hex(cosUniqueContent('get-file-before-write'));
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     cosHash(value), {create: true});
   await promise_rejects_dom(t, 'NotAllowedError', handle.getFile());
 }, 'getFile() on a freshly-created, not-yet-written handle rejects with NotAllowedError');
@@ -39,7 +39,7 @@ promise_test(async t => {
   // verified them against the hash:
   // https://wicg.github.io/cross-origin-storage/#creating-and-writing-files
   //
-  // A concurrent requestFileHandle() read for the same hash therefore finds no
+  // A concurrent getFileHandle() read for the same hash therefore finds no
   // entry and rejects with an ordinary NotFoundError, indistinguishable from a
   // read of a hash nothing has ever written. An in-progress write must not be
   // observable by anyone, including the writer's own origin: a distinguishable
@@ -49,10 +49,10 @@ promise_test(async t => {
   // https://wicg.github.io/cross-origin-storage/#in-progress-writes
   const content = cosUniqueContent('in-flight-write');
   const hash = cosHash(await cosSha256Hex(content));
-  const createHandle = await navigator.crossOriginStorage.requestFileHandle(
+  const createHandle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   await promise_rejects_dom(t, 'NotFoundError',
-    navigator.crossOriginStorage.requestFileHandle(hash));
+    navigator.crossOriginStorage.getFileHandle(hash));
 
   // The same hash becomes readable once, and only once, the write completes.
   const writable = await createHandle.createWritable();
@@ -65,7 +65,7 @@ promise_test(async t => {
   const content = cosUniqueContent('hash-mismatch');
   const value = await cosSha256Hex(content);
   const hash = cosHash(value);
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   const writable = await handle.createWritable();
   await writable.write(new Blob(['these are not the bytes that hash to the requested value']));
@@ -83,13 +83,13 @@ promise_test(async t => {
   const content = cosUniqueContent('hash-mismatch-cleaned-up');
   const value = await cosSha256Hex(content);
   const hash = cosHash(value);
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   const writable = await handle.createWritable();
   await writable.write(new Blob(['wrong bytes entirely']));
   await promise_rejects_dom(t, 'DataError', writable.close());
   await promise_rejects_dom(t, 'NotFoundError',
-    navigator.crossOriginStorage.requestFileHandle(hash));
+    navigator.crossOriginStorage.getFileHandle(hash));
 }, 'a hash-mismatched write leaves no entry behind: a subsequent plain read rejects with NotFoundError');
 
 promise_test(async t => {
@@ -100,13 +100,13 @@ promise_test(async t => {
   const value = await cosSha256Hex(content);
   const hash = cosHash(value);
 
-  const badHandle = await navigator.crossOriginStorage.requestFileHandle(
+  const badHandle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   const badWritable = await badHandle.createWritable();
   await badWritable.write(new Blob(['wrong bytes entirely']));
   await promise_rejects_dom(t, 'DataError', badWritable.close());
 
-  const goodHandle = await navigator.crossOriginStorage.requestFileHandle(
+  const goodHandle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   const goodWritable = await goodHandle.createWritable();
   await goodWritable.write(new Blob([content]));
@@ -125,9 +125,9 @@ promise_test(async t => {
   const value = await cosSha256Hex(content);
   const hash = cosHash(value);
 
-  const handleA = await navigator.crossOriginStorage.requestFileHandle(
+  const handleA = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
-  const handleB = await navigator.crossOriginStorage.requestFileHandle(
+  const handleB = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   const writableA = await handleA.createWritable();
   const writableB = await handleB.createWritable();
@@ -150,7 +150,7 @@ promise_test(async t => {
   // hash a second time must succeed (not error as "already exists").
   const content = cosUniqueContent('idempotent-rewrite');
   const {hash} = await cosStore(content);
-  const handle2 = await navigator.crossOriginStorage.requestFileHandle(
+  const handle2 = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   const writable2 = await handle2.createWritable();
   await writable2.write(new Blob([content]));
@@ -165,19 +165,19 @@ promise_test(async t => {
   // still has to supply bytes through it.
   const content = cosUniqueContent('create-on-existing');
   const {hash} = await cosStore(content);
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   assert_true(handle instanceof FileSystemFileHandle);
-}, 'requestFileHandle({create:true}) returns a handle even when the entry already exists and is written');
+}, 'getFileHandle({create:true}) returns a handle even when the entry already exists and is written');
 
 promise_test(async t => {
   const content = cosUniqueContent('getFile-returns-File');
   const {hash} = await cosStore(content);
-  const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash);
   const file = await handle.getFile();
   assert_true(file instanceof File);
   assert_equals(await file.text(), content);
-}, 'requestFileHandle() read returns a handle whose getFile() resolves to a File with the stored bytes');
+}, 'getFileHandle() read returns a handle whose getFile() resolves to a File with the stored bytes');
 
 promise_test(async t => {
   // A create()'d handle that is never written through -- createWritable()
@@ -192,18 +192,18 @@ promise_test(async t => {
   const hash = cosHash(value);
 
   // Create a handle and abandon it: never call createWritable() on it.
-  const abandonedHandle = await navigator.crossOriginStorage.requestFileHandle(
+  const abandonedHandle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   assert_true(abandonedHandle instanceof FileSystemFileHandle);
 
   // The abandoned handle must leave the hash reading as a plain miss.
   await promise_rejects_dom(t, 'NotFoundError',
-    navigator.crossOriginStorage.requestFileHandle(hash));
+    navigator.crossOriginStorage.getFileHandle(hash));
 
   // A second, independent create request for the same hash must still
   // succeed and be writable normally, unaffected by the first (abandoned)
   // handle never being written through.
-  const handle2 = await navigator.crossOriginStorage.requestFileHandle(
+  const handle2 = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   const writable2 = await handle2.createWritable();
   await writable2.write(new Blob([content]));

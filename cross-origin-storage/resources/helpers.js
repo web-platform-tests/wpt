@@ -26,7 +26,7 @@ function cosHash(value, algorithm = 'SHA-256') {
 // "sha256-abc...") for `content`, as used by the `integrity` attribute /
 // `integrity()` CSS modifier / import-attribute `integrity` key -- the
 // declarative and import-attribute integrations' hash format, distinct from
-// requestFileHandle()'s lowercase-hex format (both identify the same
+// getFileHandle()'s lowercase-hex format (both identify the same
 // underlying bytes).
 async function cosSha256Integrity(content) {
   const bytes = typeof content === 'string' ? new TextEncoder().encode(content) : content;
@@ -53,11 +53,11 @@ function cosMissingHash() {
 
 // Stores `content` (a string) under its own SHA-256 hash and returns
 // {hash, content, handle}. `options` is passed through to
-// requestFileHandle() with `create` forced to true.
+// getFileHandle() with `create` forced to true.
 async function cosStore(content, options = {}) {
   const value = await cosSha256Hex(content);
   const hash = cosHash(value);
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {...options, create: true});
   const writable = await handle.createWritable();
   await writable.write(new Blob([content], {type: 'text/plain'}));
@@ -65,10 +65,10 @@ async function cosStore(content, options = {}) {
   return {hash, content, handle};
 }
 
-// Reads back a resource previously stored via requestFileHandle() and
+// Reads back a resource previously stored via getFileHandle() and
 // returns its text content.
 async function cosReadText(hash) {
-  const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash);
   const file = await handle.getFile();
   return file.text();
 }

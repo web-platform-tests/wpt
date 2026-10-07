@@ -24,7 +24,7 @@
 async function storedHandle(label) {
   const content = cosUniqueContent(label);
   const {hash} = await cosStore(content);
-  const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash);
   return {handle, hash, content};
 }
 
@@ -53,8 +53,8 @@ promise_test(async t => {
   // operations below, which have nothing to act on.
   // https://wicg.github.io/cross-origin-storage/#cos-file-system
   const {hash} = await storedHandle('same-entry');
-  const a = await navigator.crossOriginStorage.requestFileHandle(hash);
-  const b = await navigator.crossOriginStorage.requestFileHandle(hash);
+  const a = await navigator.crossOriginStorage.getFileHandle(hash);
+  const b = await navigator.crossOriginStorage.getFileHandle(hash);
   assert_true(await a.isSameEntry(b),
     'two handles for one hash address the same entry');
   assert_true(await a.isSameEntry(a), 'a handle is the same entry as itself');
@@ -87,7 +87,7 @@ promise_test(async t => {
 
   // Load-bearing: prove the entry actually survived, rather than trusting the
   // rejection. A rejected promise and a deleted file are not the same thing.
-  const after = await navigator.crossOriginStorage.requestFileHandle(hash);
+  const after = await navigator.crossOriginStorage.getFileHandle(hash);
   assert_equals(await (await after.getFile()).text(), content,
     'the entry must still be readable after a refused remove()');
 }, 'remove() rejects and leaves the entry intact');

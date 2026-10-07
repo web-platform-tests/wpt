@@ -29,7 +29,7 @@ promise_test(async t => {
   const content = cosUniqueContent('quota-free-repeated-identical-write');
   const hash = cosHash(await cosSha256Hex(content));
   for (let i = 0; i < 25; i++) {
-    const handle = await navigator.crossOriginStorage.requestFileHandle(
+    const handle = await navigator.crossOriginStorage.getFileHandle(
       hash, {create: true});
     const writable = await handle.createWritable();
     await writable.write(new Blob([content]));
@@ -52,14 +52,14 @@ promise_test(async t => {
   const value = await cosSha256Hex(content);
   const hash = cosHash(value);
 
-  const initialHandle = await navigator.crossOriginStorage.requestFileHandle(
+  const initialHandle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   const initialWritable = await initialHandle.createWritable();
   await initialWritable.write(new Blob([content]));
   await initialWritable.close();
 
   for (let i = 0; i < 20; i++) {
-    const handle = await navigator.crossOriginStorage.requestFileHandle(
+    const handle = await navigator.crossOriginStorage.getFileHandle(
       hash, {create: true, origins: [`https://cos-quota-growth-${i}.example`]});
     const writable = await handle.createWritable();
     await writable.write(new Blob([content]));

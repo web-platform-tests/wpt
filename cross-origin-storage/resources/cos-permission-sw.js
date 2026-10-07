@@ -12,7 +12,7 @@ self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
 self.addEventListener('message', async (e) => {
   const {port, hash} = e.data;
   try {
-    const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+    const handle = await navigator.crossOriginStorage.getFileHandle(hash);
     await handle.getFile();
     port.postMessage({ok: true});
   } catch (err) {

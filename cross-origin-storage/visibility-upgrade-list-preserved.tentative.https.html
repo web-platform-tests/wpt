@@ -102,7 +102,7 @@ promise_test(async t => {
   const content = cosUniqueContent('same-site-survives-wildcard-upgrade');
   const {hash} = await cosStore(content); // same-site; this document is the storer
 
-  const handle = await navigator.crossOriginStorage.requestFileHandle(hash, {create: true, origins: '*'});
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash, {create: true, origins: '*'});
   const writable = await handle.createWritable();
   await writable.write(new Blob([content]));
   await writable.close();
@@ -121,7 +121,7 @@ promise_test(async t => {
   const content = cosUniqueContent('storer-keeps-access-across-upgrade');
   const {hash} = await cosStore(content);
 
-  const handle = await navigator.crossOriginStorage.requestFileHandle(hash, {create: true, origins: '*'});
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash, {create: true, origins: '*'});
   const writable = await handle.createWritable();
   await writable.write(new Blob([content]));
   await writable.close();

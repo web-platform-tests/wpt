@@ -13,7 +13,7 @@
 //
 // Section 8 states that the HTML/CSS forms, the JS import
 // attribute, and the fetch() request option are all expected to consult, and
-// store into, the *same* underlying COS registry that requestFileHandle()
+// store into, the *same* underlying COS registry that getFileHandle()
 // uses -- not four independently-caching mechanisms that merely share a
 // name. None of the other files in this suite check this directly: each of
 // html/, css/, import-attribute/, and fetch/ only
@@ -42,13 +42,13 @@ function brokenUrl(extension) {
 }
 
 promise_test(async t => {
-  // Store: imperative requestFileHandle({create: true}).
+  // Store: imperative getFileHandle({create: true}).
   // Read: HTML <link crossoriginstorage>.
   const cssText = await fetch(REAL_CSS_URL).then(r => r.text());
   const value = await cosSha256Hex(cssText);
   const integrity = await cosSha256Integrity(cssText);
 
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     cosHash(value), {create: true});
   const writable = await handle.createWritable();
   await writable.write(new Blob([cssText], {type: 'text/css'}));
@@ -71,11 +71,11 @@ promise_test(async t => {
   assert_equals(markerColor(), 'rgb(1, 2, 3)',
     'a <link> pointed at a URL that never resolves can only have loaded via COS, proving the ' +
     'HTML integration reads from the same registry the imperative API wrote to');
-}, 'cross-mechanism interop: an entry written via requestFileHandle({create:true}) is served by HTML crossoriginstorage');
+}, 'cross-mechanism interop: an entry written via getFileHandle({create:true}) is served by HTML crossoriginstorage');
 
 promise_test(async t => {
   // Store: CSS cross-origin-storage() in @font-face src.
-  // Read: imperative requestFileHandle().
+  // Read: imperative getFileHandle().
   const REAL_FONT_URL = new URL('/fonts/Ahem.ttf', location.href).href;
   const fontBytes = await fetch(REAL_FONT_URL).then(r => r.arrayBuffer());
   const value = await cosSha256Hex(fontBytes);
@@ -95,19 +95,19 @@ promise_test(async t => {
   assert_true(document.fonts.check(`16px "${family}"`),
     'the real font loads and stores into COS via the CSS integration');
 
-  const handle = await navigator.crossOriginStorage.requestFileHandle(cosHash(value));
+  const handle = await navigator.crossOriginStorage.getFileHandle(cosHash(value));
   const file = await handle.getFile();
   const readBack = new Uint8Array(await file.arrayBuffer());
   const original = new Uint8Array(fontBytes);
   assert_equals(readBack.length, original.length,
     'imperative read-back byte length must match the original font file');
   assert_array_equals(Array.from(readBack), Array.from(original),
-    'imperative requestFileHandle() must read back the exact bytes stored by the CSS integration');
-}, 'cross-mechanism interop: an entry written by CSS cross-origin-storage() is readable via imperative requestFileHandle()');
+    'imperative getFileHandle() must read back the exact bytes stored by the CSS integration');
+}, 'cross-mechanism interop: an entry written by CSS cross-origin-storage() is readable via imperative getFileHandle()');
 
 promise_test(async t => {
   // Store: JS import attribute (crossOriginStorage on a dynamic import()).
-  // Read: imperative requestFileHandle().
+  // Read: imperative getFileHandle().
   const moduleText = await fetch(REAL_MODULE_URL).then(r => r.text());
   const value = await cosSha256Hex(moduleText);
   const integrity = await cosSha256Integrity(moduleText);
@@ -117,14 +117,14 @@ promise_test(async t => {
   });
   assert_equals(mod.default, EXPECTED_MODULE_VALUE);
 
-  const handle = await navigator.crossOriginStorage.requestFileHandle(cosHash(value));
+  const handle = await navigator.crossOriginStorage.getFileHandle(cosHash(value));
   const file = await handle.getFile();
   assert_equals(await file.text(), moduleText,
-    'imperative requestFileHandle() must read back the exact source text stored by the JS import attribute integration');
-}, 'cross-mechanism interop: an entry written by the JS import attribute integration is readable via imperative requestFileHandle()');
+    'imperative getFileHandle() must read back the exact source text stored by the JS import attribute integration');
+}, 'cross-mechanism interop: an entry written by the JS import attribute integration is readable via imperative getFileHandle()');
 
 promise_test(async t => {
-  // Store: imperative requestFileHandle({create: true, origins: '*'}).
+  // Store: imperative getFileHandle({create: true, origins: '*'}).
   // Read: HTML <script crossoriginstorage="*">, same document.
   //
   // As the original storer, this document's disclosure is unconditional
@@ -136,7 +136,7 @@ promise_test(async t => {
   const value = await cosSha256Hex(jsText);
   const integrity = await cosSha256Integrity(jsText);
 
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     cosHash(value), {create: true, origins: '*'});
   const writable = await handle.createWritable();
   await writable.write(new Blob([jsText], {type: 'text/javascript'}));
@@ -161,7 +161,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   // Store: fetch() with crossOriginStorage.
-  // Read: imperative requestFileHandle().
+  // Read: imperative getFileHandle().
   //
   // Deliberately not one of the marker fixtures: the wildcard test above
   // stores marker-script.js imperatively, so reading that hash back here
@@ -177,15 +177,15 @@ promise_test(async t => {
   assert_true(response.ok, 'the storing fetch itself succeeded');
   assert_equals(await response.text(), content);
 
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     cosHash(await cosSha256Hex(content)));
   const file = await handle.getFile();
   assert_equals(await file.text(), content,
-    'imperative requestFileHandle() must read back the exact bytes stored by the fetch integration');
-}, 'cross-mechanism interop: an entry written by the fetch() integration is readable via imperative requestFileHandle()');
+    'imperative getFileHandle() must read back the exact bytes stored by the fetch integration');
+}, 'cross-mechanism interop: an entry written by the fetch() integration is readable via imperative getFileHandle()');
 
 promise_test(async t => {
-  // Store: imperative requestFileHandle({create: true}).
+  // Store: imperative getFileHandle({create: true}).
   // Read: fetch() with crossOriginStorage, from a URL that never resolves.
   const content = cosUniqueContent('interop-imperative-to-fetch');
   await cosStore(content);
@@ -196,14 +196,14 @@ promise_test(async t => {
     'a fetch of a URL that never resolves can only have succeeded via COS, proving the fetch ' +
     'integration reads from the same registry the imperative API wrote to');
   assert_equals(await response.text(), content);
-}, 'cross-mechanism interop: an entry written via requestFileHandle({create:true}) is served by the fetch() integration');
+}, 'cross-mechanism interop: an entry written via getFileHandle({create:true}) is served by the fetch() integration');
 
 promise_test(async t => {
   // Store: fetch() with crossOriginStorage.
   // Read: HTML <script crossoriginstorage>, from a broken src.
   //
   // Neither side of this crossing involves the imperative API at all, so it
-  // is the one test here that would still pass if requestFileHandle() and the
+  // is the one test here that would still pass if getFileHandle() and the
   // host integrations shared nothing but a name. It uses a fixture no other
   // test stores, so a pass cannot be explained by some other test's entry.
   window.__cosFetchScriptRunCount = 0;

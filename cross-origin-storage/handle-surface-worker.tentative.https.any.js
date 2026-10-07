@@ -10,7 +10,7 @@
 promise_test(async t => {
   const content = cosUniqueContent('sync-access-handle');
   const {hash} = await cosStore(content);
-  const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash);
 
   assert_equals(typeof handle.createSyncAccessHandle, 'function',
     'the method is exposed on FileSystemFileHandle in a dedicated worker');
@@ -31,7 +31,7 @@ promise_test(async t => {
 
   // As with remove(), prove the entry is untouched rather than trusting the
   // rejection alone.
-  const after = await navigator.crossOriginStorage.requestFileHandle(hash);
+  const after = await navigator.crossOriginStorage.getFileHandle(hash);
   assert_equals(await (await after.getFile()).text(), content,
     'the entry must be unchanged after a refused createSyncAccessHandle()');
 }, 'createSyncAccessHandle() rejects: it would allow mutating verified bytes');

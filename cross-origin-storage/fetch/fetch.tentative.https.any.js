@@ -13,7 +13,7 @@
 //
 // The member's *presence* is the opt-in and its *value* is the scope, which
 // is why same-site is spelled "" rather than an omitted member: unlike
-// requestFileHandle(), fetch() has no `create: true` to carry the opt-in
+// getFileHandle(), fetch() has no `create: true` to carry the opt-in
 // separately. "" is same-site, "*" is global, and an array restricts the
 // entry to those origins. The list form is a sequence here, not the
 // space-separated string the HTML and import-attribute forms use, matching
@@ -23,7 +23,7 @@
 // each scope spelling:
 //
 //   miss -> store: fetch a real URL whose bytes are unique to this run, then
-//     read the same hash back through requestFileHandle(). Only the
+//     read the same hash back through getFileHandle(). Only the
 //     integration's store-on-miss step can have put it there.
 //   hit -> serve: store bytes imperatively, then fetch a URL that 404s while
 //     declaring their hash. Without COS an integrity-checked 404 is a network
@@ -58,7 +58,7 @@ const COS_WRONG_INTEGRITY =
 async function assertNotInCOS(t, content, description) {
   const hash = cosHash(await cosSha256Hex(content));
   await promise_rejects_dom(t, 'NotFoundError',
-    navigator.crossOriginStorage.requestFileHandle(hash), description);
+    navigator.crossOriginStorage.getFileHandle(hash), description);
 }
 
 // Both directions, once per string-valued scope spelling. The array form is
@@ -157,7 +157,7 @@ promise_test(async t => {
   const declared = Array.from(atob(COS_WRONG_INTEGRITY.slice('sha256-'.length)),
     c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
   await promise_rejects_dom(t, 'NotFoundError',
-    navigator.crossOriginStorage.requestFileHandle(cosHash(declared)),
+    navigator.crossOriginStorage.getFileHandle(cosHash(declared)),
     'nothing was stored under the declared (mismatching) hash');
   await assertNotInCOS(t, content,
     'nothing was stored under the hash of the bytes that arrived either');

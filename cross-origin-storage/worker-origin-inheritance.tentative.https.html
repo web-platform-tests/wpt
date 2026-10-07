@@ -25,7 +25,7 @@ const WORKER_SOURCE = `
     const {op, hash, content} = data;
     try {
       if (op === 'store') {
-        const handle = await navigator.crossOriginStorage.requestFileHandle(
+        const handle = await navigator.crossOriginStorage.getFileHandle(
           hash, {create: true});
         const writable = await handle.createWritable();
         await writable.write(new Blob([content]));
@@ -33,7 +33,7 @@ const WORKER_SOURCE = `
         self.postMessage({ok: true});
         return;
       }
-      const handle = await navigator.crossOriginStorage.requestFileHandle(hash);
+      const handle = await navigator.crossOriginStorage.getFileHandle(hash);
       const file = await handle.getFile();
       self.postMessage({ok: true, text: await file.text()});
     } catch (e) {

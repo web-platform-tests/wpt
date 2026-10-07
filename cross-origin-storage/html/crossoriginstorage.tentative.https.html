@@ -13,7 +13,7 @@
 //
 // A `crossoriginstorage` attribute on a `<link>`/`<script>` that already
 // carries `integrity` opts the resource into COS, keyed off the same
-// `origins`-style value space as requestFileHandle(): omitted (same-site),
+// `origins`-style value space as getFileHandle(): omitted (same-site),
 // a space-separated origin list, or "*" (global). Processing flow: try a
 // COS lookup by the integrity hash first; only fetch from the network (and
 // then store into COS) on a miss.

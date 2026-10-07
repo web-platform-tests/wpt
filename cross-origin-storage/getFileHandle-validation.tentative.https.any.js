@@ -10,58 +10,58 @@
 promise_test(async t => {
   const hash = cosHash('a'.repeat(64), 'md5');
   await promise_rejects_js(t, TypeError,
-    navigator.crossOriginStorage.requestFileHandle(hash));
-}, 'requestFileHandle() rejects with TypeError for an algorithm not recognized by the Web Crypto API');
+    navigator.crossOriginStorage.getFileHandle(hash));
+}, 'getFileHandle() rejects with TypeError for an algorithm not recognized by the Web Crypto API');
 
 promise_test(async t => {
   const hash = cosHash('a'.repeat(64), 'not-a-real-algorithm');
   await promise_rejects_js(t, TypeError,
-    navigator.crossOriginStorage.requestFileHandle(hash, {create: true}));
-}, 'requestFileHandle({create:true}) rejects with TypeError for an unrecognized algorithm');
+    navigator.crossOriginStorage.getFileHandle(hash, {create: true}));
+}, 'getFileHandle({create:true}) rejects with TypeError for an unrecognized algorithm');
 
 promise_test(async t => {
   // Too short.
   await promise_rejects_js(t, TypeError,
-    navigator.crossOriginStorage.requestFileHandle(cosHash('a'.repeat(63))));
-}, 'requestFileHandle() rejects with TypeError for a SHA-256 value shorter than 64 hex digits');
+    navigator.crossOriginStorage.getFileHandle(cosHash('a'.repeat(63))));
+}, 'getFileHandle() rejects with TypeError for a SHA-256 value shorter than 64 hex digits');
 
 promise_test(async t => {
   // Too long.
   await promise_rejects_js(t, TypeError,
-    navigator.crossOriginStorage.requestFileHandle(cosHash('a'.repeat(65))));
-}, 'requestFileHandle() rejects with TypeError for a SHA-256 value longer than 64 hex digits');
+    navigator.crossOriginStorage.getFileHandle(cosHash('a'.repeat(65))));
+}, 'getFileHandle() rejects with TypeError for a SHA-256 value longer than 64 hex digits');
 
 promise_test(async t => {
   // Uppercase is not accepted; the value must be lowercase hex.
   await promise_rejects_js(t, TypeError,
-    navigator.crossOriginStorage.requestFileHandle(cosHash('A'.repeat(64))));
-}, 'requestFileHandle() rejects with TypeError for an uppercase hash value');
+    navigator.crossOriginStorage.getFileHandle(cosHash('A'.repeat(64))));
+}, 'getFileHandle() rejects with TypeError for an uppercase hash value');
 
 promise_test(async t => {
   await promise_rejects_js(t, TypeError,
-    navigator.crossOriginStorage.requestFileHandle(cosHash('not-hexadecimal-'.repeat(4))));
-}, 'requestFileHandle() rejects with TypeError for a non-hexadecimal hash value');
-
-promise_test(async t => {
-  const hash = cosMissingHash();
-  await promise_rejects_js(t, TypeError,
-    navigator.crossOriginStorage.requestFileHandle(hash, {create: true, origins: 'not a url'}));
-}, 'requestFileHandle({create:true}) rejects with TypeError when origins is a single string that does not parse as a URL');
+    navigator.crossOriginStorage.getFileHandle(cosHash('not-hexadecimal-'.repeat(4))));
+}, 'getFileHandle() rejects with TypeError for a non-hexadecimal hash value');
 
 promise_test(async t => {
   const hash = cosMissingHash();
   await promise_rejects_js(t, TypeError,
-    navigator.crossOriginStorage.requestFileHandle(
+    navigator.crossOriginStorage.getFileHandle(hash, {create: true, origins: 'not a url'}));
+}, 'getFileHandle({create:true}) rejects with TypeError when origins is a single string that does not parse as a URL');
+
+promise_test(async t => {
+  const hash = cosMissingHash();
+  await promise_rejects_js(t, TypeError,
+    navigator.crossOriginStorage.getFileHandle(
       hash, {create: true, origins: ['https://valid.example', 'not a url']}));
-}, 'requestFileHandle({create:true}) rejects with TypeError when any entry in an origins list does not parse as a URL');
+}, 'getFileHandle({create:true}) rejects with TypeError when any entry in an origins list does not parse as a URL');
 
 promise_test(async t => {
   const hash = cosMissingHash();
   // data: URLs parse to an opaque origin.
   await promise_rejects_js(t, TypeError,
-    navigator.crossOriginStorage.requestFileHandle(
+    navigator.crossOriginStorage.getFileHandle(
       hash, {create: true, origins: ['data:text/plain,hi']}));
-}, 'requestFileHandle({create:true}) rejects with TypeError when an origins entry parses to an opaque origin');
+}, 'getFileHandle({create:true}) rejects with TypeError when an origins entry parses to an opaque origin');
 
 promise_test(async t => {
   const hash = cosMissingHash();
@@ -70,8 +70,8 @@ promise_test(async t => {
   // implementation-defined "maximum origins list length".
   const origins = Array.from({length: 1000}, (_, i) => `https://origin-${i}.example`);
   await promise_rejects_js(t, TypeError,
-    navigator.crossOriginStorage.requestFileHandle(hash, {create: true, origins}));
-}, 'requestFileHandle({create:true}) rejects with TypeError when the origins list exceeds the implementation-defined maximum length');
+    navigator.crossOriginStorage.getFileHandle(hash, {create: true, origins}));
+}, 'getFileHandle({create:true}) rejects with TypeError when the origins list exceeds the implementation-defined maximum length');
 
 promise_test(async t => {
   // A validation failure must not create a registry entry: a subsequent read
@@ -80,9 +80,9 @@ promise_test(async t => {
   // same reason a well-formed but unfinished create request leaves no trace.
   const hash = cosMissingHash();
   await promise_rejects_js(t, TypeError,
-    navigator.crossOriginStorage.requestFileHandle(hash, {create: true, origins: 'not a url'}));
+    navigator.crossOriginStorage.getFileHandle(hash, {create: true, origins: 'not a url'}));
   await promise_rejects_dom(t, 'NotFoundError',
-    navigator.crossOriginStorage.requestFileHandle(hash));
+    navigator.crossOriginStorage.getFileHandle(hash));
 }, 'A validation failure on a create request does not create a registry entry');
 
 promise_test(async t => {
@@ -90,11 +90,11 @@ promise_test(async t => {
   // accepted (case-insensitive match against "SHA-256").
   const content = cosUniqueContent('validation-case-insensitive-algorithm');
   const value = await cosSha256Hex(content);
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     cosHash(value, 'sha-256'), {create: true});
   const writable = await handle.createWritable();
   await writable.write(new Blob([content]));
   await writable.close();
   const text = await cosReadText(cosHash(value, 'SHA-256'));
   assert_equals(text, content);
-}, 'requestFileHandle() accepts an algorithm name that differs only in case from "SHA-256"');
+}, 'getFileHandle() accepts an algorithm name that differs only in case from "SHA-256"');

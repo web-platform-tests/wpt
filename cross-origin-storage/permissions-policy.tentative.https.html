@@ -61,14 +61,14 @@ promise_test(async t => {
   // The policy check happens before hash validation: a policy-blocked
   // context gets NotAllowedError even for a request whose hash/options
   // would otherwise be rejected with TypeError.
-  // https://wicg.github.io/cross-origin-storage/#requestfilehandle
+  // https://wicg.github.io/cross-origin-storage/#getfilehandle
   const {ctx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {
     allow: null,
     pipeHeader: 'header(Permissions-Policy,cross-origin-storage=\\(\\))',
   });
   const result = await ctx.execute_script(async () => {
     try {
-      await navigator.crossOriginStorage.requestFileHandle({algorithm: 'not-an-algorithm', value: 'not-hex'});
+      await navigator.crossOriginStorage.getFileHandle({algorithm: 'not-an-algorithm', value: 'not-hex'});
       return {ok: true};
     } catch (e) {
       return {ok: false, name: e.name, message: e.message};

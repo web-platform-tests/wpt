@@ -124,7 +124,7 @@ promise_test(async t => {
   // Re-write the identical bytes, widening the origins list to include the
   // reader's own origin -- read back from the context rather than named
   // literally, since the origin comes from a rotating pool.
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true, origins: [cosNextSameSiteOrigin(), readerOrigin]});
   const writable = await handle.createWritable();
   await writable.write(new Blob([content]));
@@ -142,7 +142,7 @@ promise_test(async t => {
   const content = cosUniqueContent('upgrade-list-to-wildcard');
   const {hash} = await cosStore(content, {origins: [cosNextSameSiteOrigin()]});
 
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true, origins: '*'});
   const writable = await handle.createWritable();
   await writable.write(new Blob([content]));
@@ -166,7 +166,7 @@ promise_test(async t => {
   const {hash} = await cosStore(content, {origins: '*'});
 
   // Attempt to "restrict" back to same-site by omitting origins.
-  const handle = await navigator.crossOriginStorage.requestFileHandle(hash, {create: true});
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash, {create: true});
   const writable = await handle.createWritable();
   await writable.write(new Blob([content]));
   await writable.close();
@@ -203,7 +203,7 @@ promise_test(async t => {
   cosAssertNotDisclosed(beforeWiden, 'before a non-storer widens the entry, an unrelated origin (C)');
 
   const widened = await ctxB.execute_script(async (hashArg, contentArg, originCArg) => {
-    const handle = await navigator.crossOriginStorage.requestFileHandle(
+    const handle = await navigator.crossOriginStorage.getFileHandle(
       hashArg, {create: true, origins: [originCArg]});
     const writable = await handle.createWritable();
     await writable.write(new Blob([contentArg]));
@@ -235,7 +235,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   // "validate a COS request" explicitly treats a single string as a list
-  // of one. requestFileHandle-validation.tentative.https.any.js only
+  // of one. getFileHandle-validation.tentative.https.any.js only
   // exercises this convenience form on a rejecting path (a malformed
   // single string); this confirms it is equally honored on a successful
   // create-then-read roundtrip, equivalent to passing a one-element array.
@@ -261,7 +261,7 @@ promise_test(async t => {
 
   const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
   const wroteOwnCopy = await ctx.execute_script(async (hashArg, contentArg) => {
-    const handle = await navigator.crossOriginStorage.requestFileHandle(
+    const handle = await navigator.crossOriginStorage.getFileHandle(
       hashArg, {create: true, origins: '*'});
     const writable = await handle.createWritable();
     await writable.write(new Blob([contentArg]));
@@ -295,7 +295,7 @@ promise_test(async t => {
   const hash = cosHash(await cosSha256Hex(content));
 
   // Open a globally-scoped write and deliberately leave it unfinished.
-  await navigator.crossOriginStorage.requestFileHandle(
+  await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true, origins: '*'});
 
   const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());

@@ -15,7 +15,7 @@ promise_test(async t => {
   const finalContent = 'AAAAABBBBB';
   const value = await cosSha256Hex(finalContent);
   const hash = cosHash(value);
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   const writable = await handle.createWritable();
   await writable.write('AAAAAXXXXX');
@@ -31,7 +31,7 @@ promise_test(async t => {
   const finalContent = 'kept-bytes';
   const value = await cosSha256Hex(finalContent);
   const hash = cosHash(value);
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   const writable = await handle.createWritable();
   await writable.write(finalContent + '-discarded-tail');
@@ -47,7 +47,7 @@ promise_test(async t => {
   const content = cosUniqueContent('piped-close');
   const value = await cosSha256Hex(content);
   const hash = cosHash(value);
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   const writable = await handle.createWritable();
   const readable = new Blob([content]).stream();
@@ -59,7 +59,7 @@ promise_test(async t => {
   // A piped stream whose final bytes don't hash to the requested value must
   // surface the same DataError as an explicit mismatched write().
   const hash = cosMissingHash();
-  const handle = await navigator.crossOriginStorage.requestFileHandle(
+  const handle = await navigator.crossOriginStorage.getFileHandle(
     hash, {create: true});
   const writable = await handle.createWritable();
   const readable = new Blob(['definitely not the right bytes']).stream();

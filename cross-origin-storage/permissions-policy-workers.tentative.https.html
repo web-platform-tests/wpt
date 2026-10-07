@@ -34,7 +34,7 @@ async function blobWorkerRead(ctx, hash) {
     const source = `
       self.onmessage = async ({data}) => {
         try {
-          const handle = await navigator.crossOriginStorage.requestFileHandle(data.hash);
+          const handle = await navigator.crossOriginStorage.getFileHandle(data.hash);
           await handle.getFile();
           self.postMessage({ok: true});
         } catch (e) {
@@ -91,7 +91,7 @@ promise_test(async t => {
     const source = `
       self.onmessage = async () => {
         try {
-          await navigator.crossOriginStorage.requestFileHandle(
+          await navigator.crossOriginStorage.getFileHandle(
             {algorithm: 'not-an-algorithm', value: 'not-hex'});
           self.postMessage({ok: true});
         } catch (e) {

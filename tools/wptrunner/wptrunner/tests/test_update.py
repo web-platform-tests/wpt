@@ -1573,6 +1573,20 @@ def test_update_lsan_0(logger):
     assert new_manifest.get("lsan-allowed") == ["foo"]
 
 
+@pytest.mark.parametrize("action,data", [
+    ("lsan_leak", {"frames": ["foo"]}),
+    ("mozleak_object", {"process": "default", "name": "Foo", "bytes": 100, "allowed": False}),
+    ("mozleak_total", {"process": "default", "bytes": 100, "threshold": 0, "objects": []}),
+])
+def test_update_leak_unknown_directory(logger, action, data):
+    tests = [("path/to/test.htm", [test_id], "testharness", b"")]
+
+    log_0 = suite_log([(action, {"scope": "other/dir/", **data})])
+
+    updated = update(tests, log_0)
+    assert not updated
+
+
 def test_update_lsan_1(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b""),
              ("path/to/__dir__", [dir_id], None, b"""

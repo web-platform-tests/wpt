@@ -546,13 +546,18 @@ class ExpectedUpdater:
         dir_id = intern(os.path.join(dir_path, "__dir__").replace(os.path.sep, "/"))
         if dir_id.startswith("/"):
             dir_id = dir_id[1:]
-        return dir_id, self.id_test_map[dir_id]
+        test_data = self.id_test_map.get(dir_id)
+        if test_data is None:
+            logger.warning("Directory not found %s, skipping" % dir_id)
+        return dir_id, test_data
 
     def lsan_leak(self, data):
         if data["scope"] == "/":
             logger.warning("Not updating lsan annotations for root scope")
             return
         dir_id, test_data = self.test_for_scope(data)
+        if test_data is None:
+            return
         test_data.set(dir_id, None, "lsan",
                       self.run_info_by_subsuite[data.get("subsuite", "")], (data["frames"], data.get("allowed_match")))
         if not data.get("allowed_match"):
@@ -563,6 +568,8 @@ class ExpectedUpdater:
             logger.warning("Not updating mozleak annotations for root scope")
             return
         dir_id, test_data = self.test_for_scope(data)
+        if test_data is None:
+            return
         test_data.set(dir_id, None, "leak-object",
                       self.run_info_by_subsuite[data.get("subsuite", "")], ("%s:%s", (data["process"], data["name"]),
                                       data.get("allowed")))
@@ -575,6 +582,8 @@ class ExpectedUpdater:
             return
         if data["bytes"]:
             dir_id, test_data = self.test_for_scope(data)
+            if test_data is None:
+                return
             test_data.set(dir_id, None, "leak-threshold",
                           self.run_info_by_subsuite[data.get("subsuite", "")], (data["process"], data["bytes"], data["threshold"]))
             if data["bytes"] > data["threshold"] or data["bytes"] < 0:

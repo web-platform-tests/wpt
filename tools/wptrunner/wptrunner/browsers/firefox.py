@@ -277,6 +277,7 @@ def run_info_extras(logger, default_prefs=None, **kwargs):
           "remoteAsyncWheelEvents": bool_pref("remote.events.async.wheel.enabled"),
           "incOriginInit": os.environ.get("MOZ_ENABLE_INC_ORIGIN_INIT") == "1",
           "openh264": prefers_openh264(),
+          "isolated_process": kwargs.get("isolated_process"),
           }
     rv.update(run_info_browser_version(**kwargs))
 
@@ -437,10 +438,14 @@ class FirefoxInstanceManager:
         env = get_environ(self.logger, self.binary, self.debug_info,
                           self.headless, self.gmp_path, self.chaos_mode_flags,
                           self.e10s)
+        # Allow Marionette to execute commands in the chrome scope of the
+        # application. Not set in get_environ() because for wdspec tests the
+        # environment is forwarded to geckodriver via capabilities, which
+        # rejects this variable.
+        env["MOZ_REMOTE_ALLOW_SYSTEM_ACCESS"] = "1"
 
         args = self.binary_args[:] if self.binary_args else []
-        args += [cmd_arg("marionette"),
-                 cmd_arg("remote-allow-system-access"), "about:blank"]
+        args += [cmd_arg("marionette"), "about:blank"]
 
         debug_args, cmd = browser_command(self.binary,
                                           args,
@@ -1012,7 +1017,7 @@ class FirefoxPytestBrowser(WebDriverBrowser):
                  disable_fission=False, stackfix_dir=None, leak_check=False,
                  asan=False, chaos_mode_flags=None, config=None, browser_channel="nightly",
                  headless=None, debug_test=False, profile_creator_cls=ProfileCreator,
-                 allow_list_paths=None, gmp_path=None, **kwargs):
+                 allow_list_paths=None, gmp_path=None, isolated_process=False, **kwargs):
 
         super().__init__(logger, binary, webdriver_binary, webdriver_args, **kwargs)
         self.binary = binary
@@ -1027,7 +1032,7 @@ class FirefoxPytestBrowser(WebDriverBrowser):
         self.leak_check = leak_check
         self.leak_report_file = None
 
-        self.env = self.get_env(binary, debug_info, headless, gmp_path, chaos_mode_flags, e10s)
+        self.env = self.get_env(binary, debug_info, headless, gmp_path, chaos_mode_flags, e10s, isolated_process)
 
         # Todo: need test type to use "aam" test in profile_creator_cls
         profile_creator = profile_creator_cls(logger,
@@ -1047,7 +1052,7 @@ class FirefoxPytestBrowser(WebDriverBrowser):
         self.profile = profile_creator.create()
         self.marionette_port = None
 
-    def get_env(self, binary, debug_info, headless, gmp_path, chaos_mode_flags, e10s):
+    def get_env(self, binary, debug_info, headless, gmp_path, chaos_mode_flags, e10s, isolated_process):
         env = get_environ(self.logger,
                           binary,
                           debug_info,

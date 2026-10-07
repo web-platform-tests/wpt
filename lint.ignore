@@ -173,6 +173,8 @@ SET TIMEOUT: apng/animated-png-timeout.html
 SET TIMEOUT: cross-origin-storage/resources/phl-listed-resource.js
 SET TIMEOUT: avif/animated-avif-timeout.html
 SET TIMEOUT: jpegxl/animated-img-timeout.html
+SET TIMEOUT: clear-site-data/no-cors-fetch-iframe.https.sub.html
+SET TIMEOUT: clear-site-data/no-cors-fetch-window.https.sub.html
 SET TIMEOUT: cookies/resources/testharness-helpers.js
 SET TIMEOUT: common/reftest-wait.js
 SET TIMEOUT: compute-pressure/resources/support-iframe.html
@@ -226,7 +228,9 @@ SET TIMEOUT: html/canvas/resources/draw-element-image-utils.js
 SET TIMEOUT: html/canvas/element/manual/draw-element-image/intersection-observer-visibility.tentative.html
 SET TIMEOUT: html/canvas/element/manual/draw-element-image/onpaint.tentative.html
 SET TIMEOUT: html/canvas/element/manual/draw-element-image/onpaint-css-animation.tentative.html
+SET TIMEOUT: html/canvas/element/manual/draw-element-image/onpaint-display-none.tentative.html
 SET TIMEOUT: html/canvas/element/manual/draw-element-image/onpaint-iframe-nested-invalidation.tentative.html
+SET TIMEOUT: html/canvas/element/manual/draw-element-image/onpaint-post-tree-order-shadow-dom.tentative.html
 SET TIMEOUT: html/canvas/element/manual/draw-element-image/onpaint-post-tree-order.tentative.html
 SET TIMEOUT: html/canvas/element/manual/draw-element-image/requestPaint.tentative.html
 SET TIMEOUT: html/cross-origin-opener-policy/resources/fully-loaded.js

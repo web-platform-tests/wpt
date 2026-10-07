@@ -606,6 +606,56 @@
 |       "a"
 
 #data
+<!doctype html>�<frameset><frame>
+#errors
+(1,26): unexpected-start-tag
+(1,33): unexpected-start-tag-ignored
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     "�"
+
+#data
+<!doctype html>&#xFFFD;<frameset><frame>
+#errors
+(1,33): unexpected-start-tag
+(1,40): unexpected-start-tag-ignored
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     "�"
+
+#data
+<!doctype html>&#0;<frameset><frame>
+#errors
+(1,19): null-character-reference
+(1,29): unexpected-start-tag
+(1,36): unexpected-start-tag-ignored
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     "�"
+
+#data
+<!doctype html><svg>&#xFFFD;</svg><frameset><frame>
+#errors
+(1,44): unexpected-start-tag
+(1,51): unexpected-start-tag-ignored
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       "�"
+
+#data
 <!doctype html><p> <frameset><frame>
 #errors
 (1,29): unexpected-start-tag

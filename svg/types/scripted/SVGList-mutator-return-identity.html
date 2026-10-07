@@ -1,20 +1,18 @@
 <!DOCTYPE HTML>
 <meta charset="utf-8">
-<title>SVG list interfaces: a mutating method returns the element it placed in the list (tentative)</title>
+<title>SVG list interfaces: a mutating method returns the element it placed in the list</title>
 <link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/types.html#__svg__SVGNameList__initialize">
 <link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/types.html#__svg__SVGNameList__insertItemBefore">
 <link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/types.html#__svg__SVGNameList__replaceItem">
 <link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/types.html#__svg__SVGNameList__appendItem">
+<link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/types.html#ListItemIdentity">
 <link rel="help" href="https://github.com/w3c/svgwg/issues/1169">
 <!--
-  TENTATIVE, and for a narrower reason than the getItem identity file.
-
-  initialize, insertItemBefore, replaceItem and appendItem each end with the normative
-  step "Return newItem", after newItem has been attached and placed in the list. So the
-  value returned IS the element at that position, and getItem for that index has to return
-  the same object. The step is normative; what is unstated is that item identity is
-  observable at all, which is what this test relies on. So it stays .tentative alongside
-  w3c/svgwg#1169.
+  initialize, insertItemBefore, replaceItem and appendItem each end with the step "Return
+  newItem", after newItem has been attached and placed in the list, and the List
+  interfaces preamble (#ListItemIdentity, added for w3c/svgwg#1169) states that these
+  methods return the element object itself. So the value returned IS the element at that
+  position, and getItem for that index has to return the same object.
 
   ONE SUBTLETY THAT WOULD OTHERWISE MAKE THIS TEST WRONG. Each of these methods begins:
   "If newItem is an object type, and newItem is not a detached object, then set newItem to

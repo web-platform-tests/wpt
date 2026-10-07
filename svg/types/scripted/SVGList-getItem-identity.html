@@ -1,19 +1,15 @@
 <!DOCTYPE HTML>
 <meta charset="utf-8">
-<title>SVG list interfaces: getItem returns the same object for the same index (tentative)</title>
+<title>SVG list interfaces: getItem returns the same object for the same index</title>
 <link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/types.html#__svg__SVGNameList__getItem">
 <link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/types.html#ListInterfaces">
+<link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/types.html#ListItemIdentity">
 <link rel="help" href="https://github.com/w3c/svgwg/issues/1169">
 <!--
-  TENTATIVE. SVG 2 does not state this requirement in one sentence; it follows from the
-  getItem algorithm's step 2 ("Return the element in the list at position index") together
-  with the note immediately after it ("if the list's element type is an object type, such
-  as SVGLength, then a reference to that object and not a copy of it is returned"). One
-  element sits at a given position, and a reference to it is returned each time, so two
-  getItem calls for the same index on an unmodified list return the same object.
-
-  Raised as w3c/svgwg#1169, which asks for the requirement to be stated outright. This
-  file stays .tentative until it is.
+  SVG 2 states this in the List interfaces preamble (#ListItemIdentity, added for
+  w3c/svgwg#1169): when the element type is an object type, getItem and the indexed
+  property getter return the element itself, "Two accesses of the same index therefore
+  return the same object, for as long as that object is the element at that index."
 
   SVGStringList is deliberately in scope with the OPPOSITE expectation. Its element type
   is DOMString, so getItem returns a string and comparison is by value. Asserting that is

@@ -1,12 +1,14 @@
 <!DOCTYPE HTML>
 <meta charset="utf-8">
-<title>SVG list interfaces: a held item survives an attribute change that keeps the item count (tentative)</title>
+<title>SVG list interfaces: a held item survives an attribute change that keeps the item count</title>
 <link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/types.html#TermSynchronizeList">
 <link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/types.html#TermDetach">
+<link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/types.html#ListItemIdentity">
 <link rel="help" href="https://github.com/w3c/svgwg/issues/1169">
 <!--
-  TENTATIVE, for the same reason as the sibling identity file: the requirement follows from
-  the algorithm rather than from a sentence, so w3c/svgwg#1169 asks for it to be stated.
+  The List interfaces preamble (#ListItemIdentity, added for w3c/svgwg#1169) states that
+  getItem returns the element object itself, and leaves whether an object is still the
+  element at an index after the content attribute changes to the synchronize steps.
 
   Synchronizing a list interface object runs whenever the reflected content attribute's
   base value changes. For an object element type, step 4.1 detaches items ONLY when the new

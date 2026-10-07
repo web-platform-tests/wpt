@@ -490,6 +490,17 @@ class WebPlatformTestRegexp(Regexp):
     """
 
 
+class HTMLMultipageRegexp(Regexp):
+    pattern = br"html\.spec\.whatwg\.org/multipage"
+    name = "HTML MULTIPAGE"
+    description = "Link to the multipage version of the HTML Standard"
+    to_fix = """
+        link to the single-page version instead, e.g. replace
+        `https://html.spec.whatwg.org/multipage/dom.html#elements` with
+        `https://html.spec.whatwg.org/#elements`
+    """
+
+
 class Webidl2Regexp(Regexp):
     pattern = br"webidl2\.js"
     name = "WEBIDL2.JS"

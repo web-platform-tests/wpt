@@ -1,9 +1,9 @@
 <!doctype html>
 <meta charset="utf-8" />
 <title>
-  HTML partial updates - {append|prepend|before|after|replaceWith}HTML{Unafe}
+  HTML partial updates - {append|prepend|before|after|replaceWith}HTML{Unsafe}
 </title>
-<link rel="help" href="https://github.com/WICG/declarative-partial-updates" />
+<link rel="help" href="https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#html-parsing-methods" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/util.js"></script>
@@ -138,6 +138,52 @@
           assert_false(method_name in Document.prototype, "Document.prototype");
           assert_false(method_name in DocumentFragment.prototype, "DocumentFragment.prototype");
         }, `${method_name} is exposed on Element and ShadowRoot only`);
+      }
+
+      for (const pos of ["append", "prepend", "before", "after", "replaceWith"]) {
+        const method_name = `${pos}HTML${safe ? "" : "Unsafe"}`;
+        test(() => {
+          const xml_doc = document.implementation.createDocument(
+            "http://www.w3.org/1999/xhtml",
+            "html",
+            null,
+          );
+          const container = xml_doc.createElement("div");
+          xml_doc.documentElement.appendChild(container);
+          const ref = xml_doc.createElement("b");
+          ref.textContent = "ref";
+          container.appendChild(ref);
+
+          const receiver =
+            pos === "append" || pos === "prepend" ? container : ref;
+          // Pass ill-formed XML ("<span id=s>unclosed<p id=p>dropped") and a
+          // sanitizer config to verify that the HTML parser and sanitizer are
+          // used even in an XML document.
+          receiver[method_name]("<span id=s>unclosed<p id=p>dropped", {
+            sanitizer: { removeElements: ["p"] },
+          });
+
+          assert_not_equals(container.querySelector("#s"), null);
+          assert_equals(container.querySelector("#p"), null);
+          if (pos === "replaceWith") {
+            assert_equals(ref.parentNode, null);
+          } else {
+            assert_equals(ref.parentNode, container);
+          }
+        }, `${method_name} in an XML document uses the HTML parser and supports sanitization`);
+
+        test((t) => {
+          const { target, object } =
+            prepare_html_partial_update("Element", "Element", pos, t);
+          object[method_name](
+            "<div id='dsd-host'><template shadowrootmode='open'><span id='dsd-inner'>shadow</span></template></div>",
+            safe ? { sanitizer: {} } : undefined,
+          );
+          const host = target.querySelector("#dsd-host");
+          assert_not_equals(host, null, "host element should be inserted");
+          assert_not_equals(host.shadowRoot, null, "declarative shadow root should be attached");
+          assert_not_equals(host.shadowRoot.querySelector("#dsd-inner"), null);
+        }, `${method_name} supports declarative shadow roots`);
       }
     }
   </script>

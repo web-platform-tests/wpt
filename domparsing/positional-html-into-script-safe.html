@@ -147,7 +147,7 @@
 
           let child;
           if (child_type === "Text") {
-            child = document.createTextNode("text;");
+            child = document.createTextNode("/* text */");
           } else if (child_type === "Comment") {
             child = document.createComment("comment;");
           } else {
@@ -235,7 +235,7 @@
           }
 
           const child = child_type === "Text"
-            ? document.createTextNode("text;")
+            ? document.createTextNode("/* text */")
             : document.createElementNS("http://www.w3.org/2000/svg", "tspan");
           script.appendChild(child);
 

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" class="reftest-wait">
+<meta charset="UTF-8">
+<title>CSS Pseudo-Elements Test: highlighting of a forced grammar error (basic)</title>
+<link rel="author" title="Stalgia Grigg" href="mailto:stalgiag@igalia.com">
+<link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
+<link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-styling">
+<link rel="help" href="https://github.com/web-platform-tests/wpt/issues/30863">
+<link rel="match" href="grammar-error-forced-001-ref.html">
+<meta name="assert" content="A grammar marker on 'thing' is styled by ::grammar-error.">
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<style>
+div {
+  font-size: 300%;
+}
+
+div::grammar-error {
+  color: maroon;
+  text-decoration: underline dotted fuchsia;
+}
+</style>
+
+<p>Test passes if each glyph of "thing" is maroon and if "thing" is underlined with a fuchsia dotted line.
+
+<div id="target">Many thing can happen.</div>
+
+<script>
+test_driver.set_text_marker(document.getElementById("target"), "grammar", 5, 10)
+  .finally(() => document.documentElement.classList.remove("reftest-wait"));
+</script>

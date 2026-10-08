@@ -300,5 +300,14 @@
       assert_equals(pi.getAttribute("href"), "style3.css");
       assert_array_equals(pi.getAttributeNames(), ["type", "href"]);
     }, "Processing instruction attributes with xml-stylesheet from " + source);
+
+    test(() => {
+      const pi = createProcessingInstruction("t", 'a="b"');
+      const mutation_observer = new MutationObserver((records) => {});
+      mutation_observer.observe(pi, { characterData: true, attributes: true });
+      pi.removeAttribute("x");
+      const records = mutation_observer.takeRecords();
+      assert_equals(records.length, 0);
+    }, "Removing a non-existent PI attribute doesn't create a mutation record");
   }
 </script>

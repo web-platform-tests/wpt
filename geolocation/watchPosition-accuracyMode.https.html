@@ -6,13 +6,15 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <script>
-    const latitude = 51.478;
-    const longitude = -0.166;
-    const accuracy = 100;
-    const altitude = 53;
-    const altitudeAccuracy = 30;
-    const heading = 10.4;
-    const speed = 20.7;
+    const mockedPosition = {
+        latitude: 51.478,
+        longitude: -0.166,
+        accuracy: 100,
+        altitude: 53,
+        altitudeAccuracy: 30,
+        heading: 10.4,
+        speed: 20.7,
+    };
 
     async function override_geolocation(t) {
         t.add_cleanup(async () => {
@@ -21,22 +23,23 @@
         });
 
         await test_driver.bidi.emulation.set_geolocation_override({
-            coordinates: {latitude, longitude, accuracy, altitude,
-                          altitudeAccuracy, heading, speed}
+            coordinates: mockedPosition
         });
     }
 
     // Returns the coordinates of the first position reported by watchPosition()
     // with the given `options`, and stops watching afterwards.
     function watch_first_position(t, options) {
-        return new Promise((resolve, reject) => {
-            const watchId = window.navigator.geolocation.watchPosition(
-                position => resolve(position.coords.toJSON()),
-                reject,
-                options
-            );
-            t.add_cleanup(() => window.navigator.geolocation.clearWatch(watchId));
-        });
+        const {promise, resolve, reject} = Promise.withResolvers();
+        const watchId = navigator.geolocation.watchPosition(({coords}) => {
+            navigator.geolocation.clearWatch(watchId);
+            resolve(coords);
+        }, error => {
+            navigator.geolocation.clearWatch(watchId);
+            reject(error);
+        }, options);
+        t.add_cleanup(() => navigator.geolocation.clearWatch(watchId));
+        return promise;
     }
 
     promise_setup(async () => {
@@ -53,13 +56,9 @@
         const position = await watch_first_position(
             t, {accuracyMode: "approximate"});
 
-        // The coordinates are not compared to the emulated values: an approximate position is "coarsened
-        // to a larger area", and "What constitutes a coarsened area is left to the underlying system,
-        // which in turn can vary per jurisdiction", so an implementation that coarsens cannot be
-        // required to return them unchanged. They must still be present.
-        assert_equals(typeof position.latitude, "number", "latitude must be a number");
-        assert_equals(typeof position.longitude, "number", "longitude must be a number");
-        assert_equals(typeof position.accuracy, "number", "accuracy must be a number");
+        assert_equals(position.latitude, mockedPosition.latitude);
+        assert_equals(position.longitude, mockedPosition.longitude);
+        assert_equals(position.accuracy, mockedPosition.accuracy);
         assert_equals(position.altitude, null);
         assert_equals(position.altitudeAccuracy, null);
         assert_equals(position.heading, null);
@@ -72,12 +71,12 @@
         const position = await watch_first_position(
             t, {accuracyMode: "precise", enableHighAccuracy: true});
 
-        assert_equals(position.latitude, latitude);
-        assert_equals(position.longitude, longitude);
-        assert_equals(position.accuracy, accuracy);
-        assert_equals(position.altitude, altitude);
-        assert_equals(position.altitudeAccuracy, altitudeAccuracy);
-        assert_equals(position.heading, heading);
-        assert_equals(position.speed, speed);
+        assert_equals(position.latitude, mockedPosition.latitude);
+        assert_equals(position.longitude, mockedPosition.longitude);
+        assert_equals(position.accuracy, mockedPosition.accuracy);
+        assert_equals(position.altitude, mockedPosition.altitude);
+        assert_equals(position.altitudeAccuracy, mockedPosition.altitudeAccuracy);
+        assert_equals(position.heading, mockedPosition.heading);
+        assert_equals(position.speed, mockedPosition.speed);
     }, 'watchPosition with accuracyMode: "precise"');
 </script>

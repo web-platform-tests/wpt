@@ -918,8 +918,6 @@ fetch/range/data.any.js @web-platform-tests/interop
 fetch/range/general.any.js @web-platform-tests/interop
 fetch/range/general.window.js @web-platform-tests/interop
 fetch/range/non-matching-range-response.html @web-platform-tests/interop
-fetch/range/sw-416.https.window.js @web-platform-tests/interop
-fetch/range/sw.https.window.js @web-platform-tests/interop
 html/dom/render-blocking/blocking-idl-attr.html @web-platform-tests/interop
 html/dom/render-blocking/element-render-blocking-001.html @web-platform-tests/interop
 html/dom/render-blocking/element-render-blocking-002.html @web-platform-tests/interop

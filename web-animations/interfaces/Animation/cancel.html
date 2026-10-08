@@ -86,11 +86,12 @@ promise_test(async t => {
 
     assert_false(isThenGet, "then property shouldn't be accessed yet");
 
-    // Resolve finished promise with `anim`, that gets `then`, and
-    // calls in the thenable job.
+    // Resolve finished promise with `anim`. Depending on the promise
+    // resolution algorithm (see whatwg/webidl#1645), `then` is either
+    // gotten synchronously here or in a deferred job, but it is always
+    // called in a later job.
     anim.finish();
 
-    assert_true(isThenGet, "then property should be accessed");
     assert_false(isThenCalled, "then property shouldn't be called yet");
 
     // Reject finished promise.
@@ -100,6 +101,7 @@ promise_test(async t => {
     // Wait for the thenable job.
     await thenCalledPromise;
 
+    assert_true(isThenGet, "then property should be accessed");
     assert_true(isThenCalled, "then property should be called");
 
     const dummyPromise = new Promise(resolve => {

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<title>Density-corrected natural size with EXIF resolution and a w descriptor</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#density-corrected-intrinsic-width-and-height">
+<link rel="help" href="https://github.com/whatwg/html/issues/3981">
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./third_party/piexif/piexif.js"></script>
+<script src="./resources/exify.js"></script>
+<script>
+    function loadImage(input, srcsetDescriptor, sizes) {
+        const image = new Image()
+        image.sizes = sizes
+        image.srcset = `${createImageDataURLWithMetadata(input)} ${srcsetDescriptor}`
+        return new Promise((resolve, reject) => {
+            image.onload = () => resolve(image)
+            image.onerror = reject
+        })
+    }
+
+    const uniform = {width: 10, height: 20, preferredWidth: 20, preferredHeight: 40, resolutionX: 36, resolutionY: 36, resolutionUnit: 2}
+    const nonUniform = {width: 10, height: 20, preferredWidth: 20, preferredHeight: 10, resolutionX: 36, resolutionY: 144, resolutionUnit: 2}
+
+    for (const [input, descriptor, sizes, expectedWidth, expectedHeight] of [
+        [uniform, '20w', '20px', 20, 40],
+        [uniform, '40w', '10px', 10, 20],
+        [uniform, '5w', '10px', 10, 20],
+        [nonUniform, '40w', '10px', 10, 5],
+        [nonUniform, '20w', '40px', 40, 20],
+    ]) {
+        promise_test(async () => {
+            const image = await loadImage(input, descriptor, sizes)
+            assert_equals(image.naturalWidth, expectedWidth, 'naturalWidth')
+            assert_equals(image.naturalHeight, expectedHeight, 'naturalHeight')
+        }, `${JSON.stringify(input)} ${descriptor} sizes=${sizes}`)
+    }
+</script>
+</body>

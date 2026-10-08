@@ -6,46 +6,63 @@
 <script src="support/relevant-mutations.js"></script>
 <div id=log></div>
 
-<img src="/images/green-2x2.png?initial"> <!-- block the window load event -->
+<img src="/images/green-2x2.png"> <!-- block the window load event -->
 
 <!-- should invoke update the image data, but omit events for layout changes -->
 <!-- but also see https://github.com/whatwg/html/issues/8492 -->
 
-<img srcset="/images/green-2x2.png?width-attr 2w" sizes="auto" width="2" loading="lazy" data-desc="width attribute changes">
+<img srcset="/images/green-2x2.png 2w" sizes="auto" width="2" loading="lazy" data-desc="width attribute changes">
 
-<img srcset="/images/green-2x2.png?width-prop 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="width property changes">
+<img srcset="/images/green-2x2.png 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="width property changes">
+
+<!-- Ensure that a different URL also correctly is loaded lazily -->
+<img srcset="/images/green-2x2.png?uncached 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="uncached width property changes">
 
 <div style="width: 2px">
-  <img srcset="/images/green-2x2.png?width-percent 2w" sizes="auto" style="width: 100%" loading="lazy" data-desc="percentage width, CB width changes">
+  <img srcset="/images/green-2x2.png 2w" sizes="auto" style="width: 100%" loading="lazy" data-desc="percentage width, CB width changes">
 </div>
 
-<img srcset="/images/green-2x2.png?aspect-height 2w" sizes="auto" style="height: 2px; aspect-ratio: 2 / 2" loading="lazy" data-desc="height property changes (with aspect-ratio)">
+<img srcset="/images/green-2x2.png 2w" sizes="auto" style="height: 2px; aspect-ratio: 2 / 2" loading="lazy" data-desc="height property changes (with aspect-ratio)">
 
-<img srcset="/images/green-2x2.png?rendered 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="being rendered changes">
+<img srcset="/images/green-2x2.png 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="being rendered changes">
 
 <!-- should not invoke update the image data -->
 
-<img srcset="/images/green-2x2.png?loading-attr 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="loading attribute state changes">
+<img srcset="/images/green-2x2.png 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="loading attribute state changes">
 
-<img srcset="/images/green-2x2.png?display 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="display property changes to inline-block">
+<img srcset="/images/green-2x2.png 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="display property changes to inline-block">
 
-<img srcset="/images/green-2x2.png?loading-lazy 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="loading attribute changes to LAZY">
+<img srcset="/images/green-2x2.png 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="loading attribute changes to LAZY">
 
 <script>
 const rAF = () => new Promise(resolve => requestAnimationFrame(resolve));
 
-onload = async function() {
+const images = document.querySelectorAll('img');
+let remainingLoads = images.length;
 
+for (const image of images) {
+  image.onload = () => {
+    remainingLoads--;
+
+    if (remainingLoads === 0) {
+      runTests();
+    }
+  };
+}
+
+async function runTests() {
   await rAF();
   await rAF();
-
-  // lazy-loaded images should have fired their first 'load' event at this point.
 
   t('width attribute changes', function(img) {
     img.width = '4';
   }, 'timeout');
 
   t('width property changes', function(img) {
+    img.style.width = '4px';
+  }, 'timeout');
+
+  t('uncached width property changes', function(img) {
     img.style.width = '4px';
   }, 'timeout');
 

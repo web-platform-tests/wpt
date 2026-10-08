@@ -29,7 +29,7 @@ promise_test(async t => {
   let pushURL = "about:blank#foo";
   openedWindow.history.pushState({}, "title", pushURL);
   assert_equals(openedWindow.location.href, pushURL);
-  assert_equals(history.length, 1,
+  assert_equals(openedWindow.history.length, 1,
     "history.length must not change after history.pushState() on the initial empty document");
 
   // Navigate away from the initial empty document through setting location.href.
@@ -48,7 +48,7 @@ promise_test(async t => {
   let replaceURL = "about:blank#foo";
   openedWindow.history.replaceState({}, "title", replaceURL);
   assert_equals(openedWindow.location.href, replaceURL);
-  assert_equals(history.length, 1,
+  assert_equals(openedWindow.history.length, 1,
     "history.length must not change after history.replaceState() on the initial empty document");
 
   // Navigate away from the initial empty document through location.assign().

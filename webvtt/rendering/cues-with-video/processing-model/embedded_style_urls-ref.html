@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
 <title>Reference for Embedded Style: URLs, only allow data URLs</title>
+<link rel="stylesheet" href="/fonts/ahem.css">
 <style>
 ::cue(v[voice=Voice1])
 {
@@ -13,6 +14,9 @@
 ::cue(i)
 {
     background: url("support/invalid.png")
+}
+::cue {
+    font-family: Ahem, sans-serif;
 }
 </style>
 <script src="/common/reftest-wait.js"></script>

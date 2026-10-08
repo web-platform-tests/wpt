@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
 <title>Reference for Embedded Style: Invalid Format</title>
+<link rel="stylesheet" href="/fonts/ahem.css">
 <style>
 ::cue {
     color: green;
@@ -8,6 +9,9 @@
 ::cue(v[voice=Voice1])
 {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==)
+}
+::cue {
+    font-family: Ahem, sans-serif;
 }
 </style>
 <script src="/common/reftest-wait.js"></script>

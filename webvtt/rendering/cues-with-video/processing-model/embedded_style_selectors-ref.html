@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
 <title>Reference for Embedded Style: Selectors</title>
+<link rel="stylesheet" href="/fonts/ahem.css">
 <style>
 ::cue {
     font-size: 11px;
@@ -13,6 +14,9 @@
 ::cue(i) {
     background: green;
     color: green;
+}
+::cue {
+    font-family: Ahem, sans-serif;
 }
 </style>
 <script src="/common/reftest-wait.js"></script>

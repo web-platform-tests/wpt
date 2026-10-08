@@ -1,3 +1,5 @@
+#description
+search start tag closes an open p element
 #data
 <!doctype html><p>foo<search>bar<p>baz
 #errors
@@ -81,6 +83,8 @@
 |         <a>
 |           "z"
 
+#description
+search is in the special category, so an li start tag does not close the li outside it
 #data
 <!doctype html><li>a<search><li>b
 #errors
@@ -96,6 +100,8 @@
 |         <li>
 |           "b"
 
+#description
+search is in the special category, so a dt start tag does not close the dd outside it
 #data
 <!doctype html><dd>a<search><dt>b
 #errors

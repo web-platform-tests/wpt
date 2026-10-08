@@ -9,7 +9,7 @@
 'use strict';
 (() =>  {
   // Element definition
-  // https://html.spec.whatwg.org/multipage/scripting.html#element-definition
+  // https://html.spec.whatwg.org/multipage/custom-elements.html#element-definition
 
   // Use window from iframe to isolate the test.
   const iframe = document.getElementById("iframe");
@@ -61,7 +61,7 @@
   // then throw a SyntaxError and abort these steps.
   let validCustomElementNames = [
     // [a-z] (PCENChar)* '-' (PCENChar)*
-    // https://html.spec.whatwg.org/multipage/scripting.html#valid-custom-element-name
+    // https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name
     'a-',
     'a-a',
     'aa-',

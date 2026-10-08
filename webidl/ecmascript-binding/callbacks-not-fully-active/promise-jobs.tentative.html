@@ -1,0 +1,72 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Promise jobs from a realm that isn't fully active</title>
+<link rel=help href="https://html.spec.whatwg.org/#hostenqueuepromisejob">
+<link rel=help href="https://github.com/whatwg/webidl/issues/993">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=resources/helper.js></script>
+<body>
+<script>
+function waitForTask(t) {
+  return new Promise(resolve => t.step_timeout(resolve, 0));
+}
+
+// Unlike Web IDL callbacks, promise jobs run when the iframe is removed.
+function assert_called_unless_navigated(state, callback) {
+  if (state === 'navigated') {
+    assert_false(callback.called, 'callback is not called');
+  } else {
+    assert_true(callback.called, 'callback is called');
+  }
+}
+
+for (const state of STATES) {
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback();
+    await realm.setState(state);
+    Promise.resolve().then(callback.value);
+    await waitForTask(t);
+    assert_called_unless_navigated(state, callback);
+  }, `then() on a promise from this window: ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback('mark => () => Promise.resolve().then(() => mark())');
+    await realm.setState(state);
+    callback.value();
+    await waitForTask(t);
+    assert_called_unless_navigated(state, callback);
+  }, `then() on a promise from the iframe: ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback('mark => async () => { await null; mark(); }');
+    await realm.setState(state);
+    callback.value();
+    await waitForTask(t);
+    assert_called_unless_navigated(state, callback);
+  }, `await in an async function from the iframe: ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback('mark => ({ then(resolve) { mark(); resolve(); } })');
+    await realm.setState(state);
+    Promise.resolve(callback.value);
+    await waitForTask(t);
+    assert_called_unless_navigated(state, callback);
+  }, `Thenable from the iframe: ${state}`);
+}
+
+promise_test(async t => {
+  const realm = await createRealm(t);
+  const callback = realm.callback();
+  let resolve;
+  new Promise(r => resolve = r).then(callback.value);
+  await realm.setState('removed');
+  resolve();
+  await waitForTask(t);
+  assert_true(callback.called, 'callback is called');
+}, 'then() before removal, resolved after removal');
+</script>

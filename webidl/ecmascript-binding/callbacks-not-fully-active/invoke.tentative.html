@@ -1,0 +1,120 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Invoking a callback function from a realm that isn't fully active</title>
+<link rel=help href="https://webidl.spec.whatwg.org/#invoke-a-callback-function">
+<link rel=help href="https://github.com/whatwg/webidl/issues/993">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=resources/helper.js></script>
+<body>
+<script>
+for (const state of STATES) {
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback();
+    await realm.setState(state);
+    setTimeout(callback.value, 0);
+    await new Promise(resolve => t.step_timeout(resolve, 0));
+    assert_called_iff_fully_active(state, callback);
+  }, `setTimeout(): ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback();
+    await realm.setState(state);
+    queueMicrotask(callback.value);
+    await new Promise(resolve => queueMicrotask(resolve));
+    assert_called_iff_fully_active(state, callback);
+  }, `queueMicrotask(): ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback();
+    await realm.setState(state);
+    requestAnimationFrame(callback.value);
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    assert_called_iff_fully_active(state, callback);
+  }, `requestAnimationFrame(): ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback();
+    await realm.setState(state);
+    const div = document.createElement('div');
+    new MutationObserver(callback.value).observe(div, {attributes: true});
+    div.id = 'x';
+    await new Promise(resolve => queueMicrotask(resolve));
+    assert_called_iff_fully_active(state, callback);
+  }, `MutationObserver: ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback();
+    await realm.setState(state);
+    const div = document.createElement('div');
+    div.onclick = callback.value;
+    div.click();
+    assert_called_iff_fully_active(state, callback);
+  }, `Event handler IDL attribute: ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback();
+    await realm.setState(state);
+    const name = `x-connected-${state.replace(' ', '-')}`;
+    const constructor = class extends HTMLElement {};
+    constructor.prototype.connectedCallback = callback.value;
+    customElements.define(name, constructor);
+    document.body.append(document.createElement(name));
+    assert_called_iff_fully_active(state, callback);
+  }, `Custom element connectedCallback: ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback();
+    await realm.setState(state);
+    ignoreExceptions(() => new ReadableStream({start: callback.value}));
+    assert_called_iff_fully_active(state, callback);
+  }, `ReadableStream start(): ${state}`);
+}
+
+// Callbacks scheduled before the iframe is removed.
+
+promise_test(async t => {
+  const realm = await createRealm(t);
+  const callback = realm.callback();
+  setTimeout(callback.value, 0);
+  await realm.setState('removed');
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  assert_false(callback.called, 'callback is not called');
+}, 'setTimeout(), scheduled before removal');
+
+promise_test(async t => {
+  const realm = await createRealm(t);
+  const callback = realm.callback();
+  queueMicrotask(callback.value);
+  await realm.setState('removed');
+  await new Promise(resolve => queueMicrotask(resolve));
+  assert_false(callback.called, 'callback is not called');
+}, 'queueMicrotask(), queued before removal');
+
+promise_test(async t => {
+  const realm = await createRealm(t);
+  const callback = realm.callback();
+  requestAnimationFrame(callback.value);
+  await realm.setState('removed');
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  assert_false(callback.called, 'callback is not called');
+}, 'requestAnimationFrame(), requested before removal');
+
+promise_test(async t => {
+  const realm = await createRealm(t);
+  const callback = realm.callback();
+  const div = document.createElement('div');
+  new MutationObserver(callback.value).observe(div, {attributes: true});
+  div.id = 'x';
+  await realm.setState('removed');
+  await new Promise(resolve => queueMicrotask(resolve));
+  assert_false(callback.called, 'callback is not called');
+}, 'MutationObserver, mutation before removal');
+</script>

@@ -64,7 +64,6 @@
       <poster></poster>
     </video>`);
     const video = doc.getElementById('v');
-    await settledUrl(video.poster);
 
     assert_equals(video.currentPoster, '');
   }, 'A parser-created empty poster element suppresses the poster attribute');

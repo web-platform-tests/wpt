@@ -547,6 +547,15 @@ tentative_tests = [
       u'true',
       u'true'
     ),
+    (
+      # A poster element child means the poster attribute is never used
+      u'video-poster-attribute-with-poster-element',
+      u'utf-8',
+      u'<video poster="{}"><poster><img src="/media/poster.png"></poster></video>',
+      None,
+      u'false',
+      u'true'
+    ),
 ]
 
 tests = [

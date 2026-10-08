@@ -28,10 +28,7 @@
       img.addEventListener('error', resolve, { once: true });
     });
 
-    // currentSrc is set as part of source selection, before the fetch
-    // resolves, so it remains set even though the fetch failed. The poster
-    // frame algorithm's early-return is keyed on currentSrc being non-empty,
-    // not on fetch success, so it should still win over the poster attribute.
+    // currentSrc is set during source selection, so it survives the failed fetch.
     assert_not_equals(img.currentSrc, '');
     assert_equals(video.currentPoster, img.currentSrc);
     assert_not_equals(

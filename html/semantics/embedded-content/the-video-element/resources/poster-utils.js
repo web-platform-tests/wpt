@@ -10,8 +10,7 @@ const createPoster = (...children) => {
   return poster;
 };
 
-// currentPoster is only meaningful once the poster image has been fetched, so
-// tests wait for the image (or the poster attribute's request) to settle.
+// Resolves once the image has loaded or failed.
 const settled = (img) =>
   new Promise((resolve) => {
     if (img.complete && img.currentSrc !== '') {
@@ -22,9 +21,12 @@ const settled = (img) =>
     img.addEventListener('error', resolve, { once: true });
   });
 
-const settledUrl = (url) =>
-  new Promise((resolve) => {
-    const img = new Image();
-    img.onload = img.onerror = resolve;
-    img.src = url;
-  });
+const uniquePosterUrl = (id) =>
+  `/media/poster.png?${id}&t=${Date.now()}&r=${Math.random()}`;
+
+const absoluteUrl = (url) => new URL(url, location.href).href;
+
+const settleFrames = () =>
+  new Promise((resolve) =>
+    requestAnimationFrame(() => requestAnimationFrame(resolve))
+  );

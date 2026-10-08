@@ -29,31 +29,28 @@
       assert_equals(video.currentPoster, '');
     }, 'HTMLVideoElement.currentPoster is empty if no poster attribute or poster element is present');
 
-    promise_test(async function () {
+    test(function () {
       assertCurrentPosterSupported();
       const video = createVideo();
       video.poster = POSTER_ATTRIBUTE;
-      await settledUrl(video.poster);
 
       assert_equals(video.currentPoster, video.poster);
     }, 'HTMLVideoElement.currentPoster is HTMLVideoElement.poster if no poster element is present');
 
-    promise_test(async function () {
+    test(function () {
       assertCurrentPosterSupported();
       const video = createVideo();
       video.poster = POSTER_ATTRIBUTE;
       video.appendChild(createPoster());
-      await settledUrl(video.poster);
 
       assert_equals(video.currentPoster, '');
     }, 'HTMLVideoElement.currentPoster is empty, not the poster attribute, if the poster element is empty');
 
-    promise_test(async function () {
+    test(function () {
       assertCurrentPosterSupported();
       const video = createVideo();
       video.poster = POSTER_ATTRIBUTE;
       video.appendChild(createPoster(document.createElement('picture')));
-      await settledUrl(video.poster);
 
       assert_equals(video.currentPoster, '');
     }, 'HTMLVideoElement.currentPoster is empty, not the poster attribute, if the poster element contains a picture without an img');
@@ -65,6 +62,22 @@
 
       assert_equals(video.currentPoster, '');
     }, 'HTMLVideoElement.currentPoster is empty if the poster element is empty and there is no poster attribute');
+
+    test(function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      video.setAttribute('poster', 'http://');
+
+      assert_equals(video.currentPoster, '');
+    }, 'HTMLVideoElement.currentPoster is empty if the poster attribute is not a valid URL');
+
+    test(function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      video.setAttribute('poster', '');
+
+      assert_equals(video.currentPoster, '');
+    }, 'HTMLVideoElement.currentPoster is empty if the poster attribute is the empty string');
 
     promise_test(async function () {
       assertCurrentPosterSupported();
@@ -79,7 +92,7 @@
       assert_not_equals(video.currentPoster, video.poster);
     }, 'HTMLVideoElement.currentPoster picks HTMLImageElement.currentSrc over HTMLVideoElement.poster');
 
-    promise_test(async function () {
+    test(function () {
       assertCurrentPosterSupported();
       const video = createVideo();
       video.poster = POSTER_ATTRIBUTE;
@@ -88,12 +101,11 @@
       const a = document.createElement('a');
       a.appendChild(img);
       video.appendChild(createPoster(a));
-      await settledUrl(video.poster);
 
       assert_equals(video.currentPoster, '');
     }, 'HTMLVideoElement.currentPoster is empty when the img is incorrectly nested inside a non-picture element in the poster element');
 
-    promise_test(async function () {
+    test(function () {
       assertCurrentPosterSupported();
       const video = createVideo();
       video.poster = POSTER_ATTRIBUTE;
@@ -102,23 +114,21 @@
       const div = document.createElement('div');
       div.appendChild(createPoster(img));
       video.appendChild(div);
-      await settledUrl(video.poster);
 
       assert_equals(video.currentPoster, video.poster);
     }, 'HTMLVideoElement.currentPoster ignores a poster element that is not a child of the video');
 
-    promise_test(async function () {
+    test(function () {
       assertCurrentPosterSupported();
       const video = createVideo();
       video.poster = POSTER_ATTRIBUTE;
 
       document.body.appendChild(createPoster(createPosterImg()));
-      await settledUrl(video.poster);
 
       assert_equals(video.currentPoster, video.poster);
     }, 'HTMLVideoElement.currentPoster ignores a poster element that is a sibling of the video');
 
-    promise_test(async function () {
+    test(function () {
       assertCurrentPosterSupported();
       const video = createVideo();
       video.poster = POSTER_ATTRIBUTE;
@@ -126,12 +136,11 @@
       const source = document.createElement('source');
       source.src = '/media/poster.png?posterImageSrc=true';
       video.appendChild(source);
-      await settledUrl(video.poster);
 
       assert_equals(video.currentPoster, video.poster);
     }, 'HTMLVideoElement.currentPoster does not use images in a source element');
 
-    promise_test(async function () {
+    test(function () {
       assertCurrentPosterSupported();
       const video = createVideo();
       video.poster = POSTER_ATTRIBUTE;
@@ -139,7 +148,6 @@
       const track = document.createElement('track');
       track.src = '/media/poster.png?posterImageSrc=true';
       video.appendChild(track);
-      await settledUrl(video.poster);
 
       assert_equals(video.currentPoster, video.poster);
     }, 'HTMLVideoElement.currentPoster does not use images in a track element');
@@ -154,20 +162,18 @@
       assert_equals(video.currentPoster, img.currentSrc);
 
       video.poster = POSTER_ATTRIBUTE;
-      await settledUrl(video.poster);
 
       assert_equals(video.currentPoster, img.currentSrc);
       assert_not_equals(video.currentPoster, video.poster);
     }, 'Setting HTMLVideoElement.poster while a poster element is present should not update HTMLVideoElement.currentPoster');
 
-    promise_test(async function () {
+    test(function () {
       assertCurrentPosterSupported();
       const video = createVideo();
       video.poster = POSTER_ATTRIBUTE;
 
       const img = createPosterImg();
       video.appendChild(img);
-      await settledUrl(video.poster);
 
       assert_equals(video.currentPoster, video.poster);
       assert_not_equals(video.currentPoster, img.currentSrc);
@@ -199,7 +205,6 @@
 
       const img = createPosterImg();
       video.appendChild(img);
-      await settledUrl(video.poster);
       assert_equals(video.currentPoster, video.poster);
 
       video.removeChild(img);
@@ -222,7 +227,6 @@
       assert_equals(video.currentPoster, img.currentSrc);
 
       poster.remove();
-      await settledUrl(video.poster);
 
       assert_equals(video.currentPoster, video.poster);
     }, 'Removing the poster element from a video should update HTMLVideoElement.currentPoster to HTMLVideoElement.poster');
@@ -238,7 +242,6 @@
       assert_equals(video.currentPoster, img.currentSrc);
 
       img.remove();
-      await settledUrl(video.poster);
 
       assert_equals(
         video.currentPoster,
@@ -258,7 +261,6 @@
       assert_equals(video.currentPoster, img.currentSrc);
 
       video.appendChild(img);
-      await settledUrl(video.poster);
 
       assert_equals(video.currentPoster, '');
     }, 'Moving the img out of the poster element should make HTMLVideoElement.currentPoster empty');

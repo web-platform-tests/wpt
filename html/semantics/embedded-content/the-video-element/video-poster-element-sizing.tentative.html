@@ -4,18 +4,11 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
+<script src="resources/poster-utils.js"></script>
+
 <body></body>
 
 <script>
-  const assertCurrentPosterSupported = () =>
-    assert_implements(
-      'currentPoster' in HTMLVideoElement.prototype,
-      'HTMLVideoElement.currentPoster is not supported'
-    );
-
-  const waitForEvent = (target, event) =>
-    new Promise((resolve) => target.addEventListener(event, resolve, { once: true }));
-
   const sizeOf = (video) => [video.offsetWidth, video.offsetHeight];
 
   promise_test(async function (t) {
@@ -35,7 +28,7 @@
     video.appendChild(poster);
     document.body.appendChild(video);
 
-    await waitForEvent(img, 'load');
+    await settled(img);
     // Let layout pick up the loaded poster frames.
     await new Promise((resolve) => t.step_timeout(resolve, 100));
 
@@ -84,7 +77,7 @@
 
     const oneX = createSized({ src: '/media/poster.png?density=1x' });
     const twoX = createSized({ srcset: '/media/poster.png?density=2x 2x' });
-    await Promise.all([waitForEvent(oneX.img, 'load'), waitForEvent(twoX.img, 'load')]);
+    await Promise.all([settled(oneX.img), settled(twoX.img)]);
     await new Promise((resolve) => t.step_timeout(resolve, 100));
 
     assert_equals(twoX.img.naturalWidth * 2, oneX.img.naturalWidth);

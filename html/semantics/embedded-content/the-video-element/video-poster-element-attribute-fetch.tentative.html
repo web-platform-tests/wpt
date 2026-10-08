@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/poster-utils.js"></script>
+<script src="resources/poster-lazy-load-utils.js"></script>
+
+<body>
+  <script>
+    const createVideo = () => {
+      const video = document.createElement('video');
+      video.src = '/media/A4.webm';
+      return video;
+    };
+
+    promise_test(async (t) => {
+      assertCurrentPosterSupported();
+      const attributeUrl = uniquePosterUrl('attributeBeforePoster');
+      const attributeEntries = observePosterFetches(t, absoluteUrl(attributeUrl));
+
+      const video = createVideo();
+      video.poster = attributeUrl;
+      const img = document.createElement('img');
+      img.src = uniquePosterUrl('elementAfterAttribute');
+      video.appendChild(createPoster(img));
+      t.add_cleanup(() => video.remove());
+      document.body.appendChild(video);
+
+      await settled(img);
+      await waitForEagerPosterFetch(t);
+      assert_equals(attributeEntries.length, 0);
+    }, 'The poster attribute URL is never fetched when a poster element is present before the video is connected');
+
+    promise_test(async (t) => {
+      assertCurrentPosterSupported();
+      const attributeUrl = uniquePosterUrl('attributeAfterPoster');
+      const attributeEntries = observePosterFetches(t, absoluteUrl(attributeUrl));
+
+      const video = createVideo();
+      const img = document.createElement('img');
+      img.src = uniquePosterUrl('elementBeforeAttribute');
+      video.appendChild(createPoster(img));
+      t.add_cleanup(() => video.remove());
+      document.body.appendChild(video);
+      video.poster = attributeUrl;
+
+      await settled(img);
+      await waitForEagerPosterFetch(t);
+      assert_equals(attributeEntries.length, 0);
+    }, 'The poster attribute URL is never fetched when it is set after a poster element is present');
+
+    promise_test(async (t) => {
+      assertCurrentPosterSupported();
+      const attributeUrl = uniquePosterUrl('noPosterElement');
+      const attributeEntries = observePosterFetches(t, absoluteUrl(attributeUrl));
+
+      const video = createVideo();
+      video.poster = attributeUrl;
+      t.add_cleanup(() => video.remove());
+      document.body.appendChild(video);
+
+      await t.step_wait(() => attributeEntries.length > 0);
+    }, 'The poster attribute URL is fetched when there is no poster element');
+
+    promise_test(async (t) => {
+      assertCurrentPosterSupported();
+      const attributeUrl = absoluteUrl(uniquePosterUrl('parserScriptBeforePoster'));
+      const imgUrl = absoluteUrl(uniquePosterUrl('parserScriptBeforePosterImg'));
+
+      const iframe = document.createElement('iframe');
+      iframe.srcdoc = `<video id="v" poster="${attributeUrl}">
+        <script>
+          window.attributeEntriesBeforePoster =
+            performance.getEntriesByName('${attributeUrl}').length;
+        <\/script>
+        <poster><img id="i" src="${imgUrl}"></poster>
+      </video>`;
+      const loaded = new Promise((resolve) =>
+        iframe.addEventListener('load', resolve, { once: true })
+      );
+      t.add_cleanup(() => iframe.remove());
+      document.body.appendChild(iframe);
+      await loaded;
+
+      const win = iframe.contentWindow;
+      await settled(win.document.getElementById('i'));
+      await settleFrames();
+
+      assert_equals(win.attributeEntriesBeforePoster, 0);
+      assert_equals(win.performance.getEntriesByName(attributeUrl).length, 0);
+    }, 'The poster attribute URL is not fetched by the parser when a poster element follows a script in the video');
+
+    promise_test(async (t) => {
+      assertCurrentPosterSupported();
+      const attributeUrl = absoluteUrl(uniquePosterUrl('parserNoPoster'));
+
+      const iframe = document.createElement('iframe');
+      iframe.srcdoc = `<video id="v" poster="${attributeUrl}"></video>`;
+      t.add_cleanup(() => iframe.remove());
+      document.body.appendChild(iframe);
+      await new Promise((resolve) =>
+        iframe.addEventListener('load', resolve, { once: true })
+      );
+
+      const win = iframe.contentWindow;
+      await t.step_wait(() => win.performance.getEntriesByName(attributeUrl).length > 0);
+    }, 'The poster attribute URL is fetched by the parser when there is no poster element');
+  </script>
+</body>

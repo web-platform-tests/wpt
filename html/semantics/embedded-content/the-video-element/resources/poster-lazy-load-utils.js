@@ -50,7 +50,5 @@ const waitForEagerPosterFetch = async (t) => {
   });
   document.body.appendChild(video);
   await t.step_wait(() => entries.length > 0, 'Wait for the control poster fetch');
-  await new Promise((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(resolve))
-  );
+  await settleFrames();
 };

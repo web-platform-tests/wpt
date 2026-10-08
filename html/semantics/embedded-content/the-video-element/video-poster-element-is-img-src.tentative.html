@@ -4,8 +4,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<body></body>
-
 <script src="resources/poster-utils.js"></script>
 
 <body></body>
@@ -50,7 +48,6 @@
     assertCurrentPosterSupported();
     const video = createVideo();
     video.poster = '/media/poster.png';
-    await settledUrl(video.poster);
     assert_equals(video.currentPoster, video.poster);
 
     const img = createPosterImg();
@@ -73,7 +70,6 @@
     assert_equals(video.currentPoster, img.currentSrc);
 
     poster.remove();
-    await settledUrl(video.poster);
 
     assert_equals(video.currentPoster, video.poster);
   }, 'Removing a poster element from a video should update HTMLVideoElement.currentPoster');
@@ -105,7 +101,6 @@
     assert_equals(video.currentPoster, img.currentSrc);
 
     picture.remove();
-    await settledUrl(video.poster);
 
     assert_equals(
       video.currentPoster,
@@ -120,7 +115,6 @@
     video.poster = '/media/poster.png';
     const poster = createPoster();
     video.appendChild(poster);
-    await settledUrl(video.poster);
     assert_equals(video.currentPoster, '');
 
     const img = createPosterImg();
@@ -140,7 +134,6 @@
     assert_equals(video.currentPoster, img.currentSrc);
 
     img.remove();
-    await settledUrl(video.poster);
 
     assert_equals(video.currentPoster, '');
   }, 'Removing the img from a poster element should make HTMLVideoElement.currentPoster empty');
@@ -152,7 +145,6 @@
     const img = createPosterImg();
     const poster = createPoster(img);
     document.body.appendChild(poster);
-    await settledUrl(video.poster);
     assert_equals(video.currentPoster, video.poster);
 
     video.appendChild(poster);
@@ -172,12 +164,10 @@
 
     videoA.appendChild(poster);
     await settled(img);
-    await settledUrl(videoB.poster);
     assert_equals(videoA.currentPoster, img.currentSrc);
     assert_equals(videoB.currentPoster, videoB.poster);
 
     videoB.appendChild(poster);
-    await settledUrl(videoA.poster);
 
     assert_equals(videoA.currentPoster, videoA.poster);
     assert_equals(videoB.currentPoster, img.currentSrc);

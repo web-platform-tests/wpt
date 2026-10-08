@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Largest Contentful Paint: nested browsing contexts report only their own LCP</title>
+<link rel="author" title="Shubham Gupta" href="mailto:shubhamg13.work@gmail.com">
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+setup({"hide_test_state": true});
+
+promise_test(async t => {
+  assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
+
+  // Negative half: this document must not observe content from the nested
+  // contexts. Register the observer before adding the iframes.
+  let parentObservedEntry = false;
+  const parentObserver = new PerformanceObserver(() => {
+    parentObservedEntry = true;
+  });
+  parentObserver.observe({type: 'largest-contentful-paint', buffered: true});
+
+  // Positive half: the same-origin nested browsing context observes its own LCP
+  // and posts the result to this document.
+  // `resources/nested-context-eligibility-iframe.html` paints an image of its
+  // own and reports its own LCP entries. The cross-origin frame's result is
+  // collected (and logged) separately, since cross-origin paint-timing
+  // eligibility is user-agent defined.
+  let sameOriginData = null;
+  let crossOriginData = null;
+  const sameOriginObserved = new Promise(resolve => {
+    window.addEventListener('message', e => {
+      if (e.origin === location.origin) {
+        sameOriginData = e.data;
+        resolve();
+      } else {
+        crossOriginData = e.data;
+      }
+    });
+  });
+
+  const sameOriginFrame = document.createElement('iframe');
+  sameOriginFrame.src = 'resources/nested-context-eligibility-iframe.html';
+  document.body.appendChild(sameOriginFrame);
+
+  const crossOriginFrame = document.createElement('iframe');
+  crossOriginFrame.src =
+    'http://{{domains[www]}}:{{ports[http][1]}}/largest-contentful-paint/resources/nested-context-eligibility-iframe.html';
+  document.body.appendChild(crossOriginFrame);
+
+  await sameOriginObserved;
+  assert_greater_than(sameOriginData.count, 0,
+    'Same-origin nested browsing context observed an LCP entry of its own.');
+  assert_true(sameOriginData.size > 0,
+    'Same-origin nested browsing context LCP entry reported a non-zero size.');
+
+  // Give the parent observer a chance to (incorrectly) observe the children's
+  // content before checking that it did not.
+  await new Promise(resolve => t.step_timeout(resolve, 100));
+  assert_false(parentObservedEntry,
+    'Parent must not observe LCP for content painted in a nested context.');
+
+  // Log (do not assert) whether the cross-origin frame observed an LCP entry,
+  // as paint-timing eligibility for cross-origin nested contexts is
+  // user-agent defined.
+  assert_true(true,
+    `Cross-origin nested browsing context observed ${
+      crossOriginData ? crossOriginData.count : 0} LCP entries.`);
+}, 'Nested browsing contexts report only their own LCP.');
+</script>
+</body>
+</html>

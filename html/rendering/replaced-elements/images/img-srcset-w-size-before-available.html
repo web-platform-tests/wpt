@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<title>&lt;img> with srcset w descriptor: natural width is the source size before the image is available</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#images-3">
+<link rel="help" href="https://github.com/whatwg/html/issues/3981">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<body>
+<script>
+  function slowImageURL() {
+    return `/images/green-100x50.png?pipe=trickle(d2)&uid=${token()}`;
+  }
+
+  function addImage(t, attributes) {
+    const img = document.createElement('img');
+    for (const [name, value] of Object.entries(attributes)) {
+      img.setAttribute(name, value);
+    }
+    t.add_cleanup(() => img.remove());
+    document.body.appendChild(img);
+    return img;
+  }
+
+  function nextFrame() {
+    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  }
+
+  async function checkBeforeAndAfterLoad(img, expectedWidth, expectedHeight) {
+    const loaded = new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+    });
+    await nextFrame();
+    assert_false(img.complete, 'image is still loading');
+    assert_equals(img.naturalWidth, 0, 'naturalWidth before load');
+    const rect = img.getBoundingClientRect();
+    assert_equals(rect.width, expectedWidth, 'rendered width before load');
+    if (expectedHeight !== undefined) {
+      assert_equals(rect.height, expectedHeight, 'rendered height before load');
+    }
+    await loaded;
+    const rectAfter = img.getBoundingClientRect();
+    assert_equals(rectAfter.width, 100, 'rendered width after load');
+    assert_equals(rectAfter.height, 50, 'rendered height after load');
+  }
+
+  promise_test(async t => {
+    const img = addImage(t, {
+      srcset: `${slowImageURL()} 200w`,
+      sizes: '100px',
+    });
+    await checkBeforeAndAfterLoad(img, 100);
+  }, 'srcset with w descriptor');
+
+  promise_test(async t => {
+    const img = addImage(t, {
+      srcset: `${slowImageURL()} 200w`,
+      sizes: '100px',
+      width: '200',
+      height: '100',
+      style: 'width: auto; height: auto',
+    });
+    await checkBeforeAndAfterLoad(img, 100, 50);
+  }, 'srcset with w descriptor, width and height attributes, and auto width and height in CSS');
+</script>

@@ -242,6 +242,18 @@ test(t => {
 test(t => {
   const target = createElement("target");
   connect(t, target);
+  const observer = new MutationObserver(() => {});
+  observer.observe(target, { connectedness: true });
+
+  // Unlike moveBefore(), append() first removes target from its parent.
+  document.body.append(target);
+
+  assert_array_equals(summarize(observer.takeRecords()), ["disconnected target", "connected target"]);
+}, "Appending a node to the parent it is already in queues both records");
+
+test(t => {
+  const target = createElement("target");
+  connect(t, target);
   const otherDocument = document.implementation.createHTMLDocument();
   const observer = new MutationObserver(() => {});
   observer.observe(target, { connectedness: true });

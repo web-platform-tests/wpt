@@ -412,7 +412,7 @@ Here's an example that uses `window.open`.
 ```
 
 The `testharness.js` script can be used from within [dedicated workers, shared
-workers](https://html.spec.whatwg.org/multipage/workers.html) and [service
+workers](https://html.spec.whatwg.org/multipage/workers.html#workers) and [service
 workers](https://w3c.github.io/ServiceWorker/).
 
 Testing from a worker script is different from testing from an HTML document in

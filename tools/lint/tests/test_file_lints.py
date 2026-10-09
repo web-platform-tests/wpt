@@ -100,6 +100,28 @@ def test_w3c_test_org():
             expected.append(("PARSE-FAILED", "Unable to parse file", filename, None))
         assert errors == expected
 
+def test_html_multipage_no_fragment():
+    error_map = check_with_files(b"""import('https://html.spec.whatwg.org/multipage/dom.html#dom')
+import('https://html.spec.whatwg.org/multipage/#dom')
+import('https://html.spec.whatwg.org/multipage/')
+import('https://html.spec.whatwg.org/#dom')
+import('https://html.spec.whatwg.org/multipage/dom.html')
+import('https://html.spec.whatwg.org/multipage/dom')""")
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        description = "Link to a page of the multipage HTML Standard without a fragment"
+        expected = [
+            ("HTML MULTIPAGE NO FRAGMENT", description, filename, 5),
+            ("HTML MULTIPAGE NO FRAGMENT", description, filename, 6),
+        ]
+        if kind == "python":
+            expected.append(("PARSE-FAILED", "Unable to parse file", filename, 1))
+        elif kind == "web-strict":
+            expected.append(("PARSE-FAILED", "Unable to parse file", filename, None))
+        assert errors == expected
+
 def test_web_platform_test():
     error_map = check_with_files(b"import('http://web-platform.test/')")
 

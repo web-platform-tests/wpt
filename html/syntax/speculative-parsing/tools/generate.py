@@ -556,6 +556,15 @@ tentative_tests = [
       u'false',
       u'true'
     ),
+    (
+      # The poster img inherits loading=lazy from the video element
+      u'video-loading-lazy-poster-element-img-src',
+      u'utf-8',
+      u'<video loading=lazy><poster><img src="{}"></poster></video>',
+      None,
+      u'false',
+      u'false'
+    ),
 ]
 
 tests = [

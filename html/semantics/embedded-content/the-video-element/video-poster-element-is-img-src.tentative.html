@@ -172,4 +172,30 @@
     assert_equals(videoA.currentPoster, videoA.poster);
     assert_equals(videoB.currentPoster, img.currentSrc);
   }, 'Moving a poster element between videos should update HTMLVideoElement.currentPoster on both');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+    const videoA = createVideo();
+    const videoB = createVideo();
+    videoA.poster = '/media/poster.png?video=a';
+    videoB.poster = '/media/poster.png?video=b';
+    const img = createPosterImg();
+    const posterA = createPoster(img);
+    const posterB = createPoster();
+
+    videoA.appendChild(posterA);
+    videoB.appendChild(posterB);
+    await settled(img);
+    assert_equals(videoA.currentPoster, img.currentSrc);
+    assert_equals(videoB.currentPoster, '');
+
+    posterB.appendChild(img);
+
+    assert_equals(
+      videoA.currentPoster,
+      '',
+      'The poster element is still present, so it has no img and the poster attribute stays unused'
+    );
+    assert_equals(videoB.currentPoster, img.currentSrc);
+  }, "Moving a poster element's img to another video's poster element should update HTMLVideoElement.currentPoster on both");
 </script>

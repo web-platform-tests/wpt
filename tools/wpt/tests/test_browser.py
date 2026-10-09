@@ -215,7 +215,7 @@ def test_safari_version_errors(mocked_check_output):
         if p.name.endswith(".html")
     ),
 )
-@mock.patch("tools.wpt.browser.get")
+@mock.patch("tools.wpt.browser.get_retry")
 def test_safari_find_downloads_stp(mocked_get, page_path):
     safari = browser.Safari(logger)
 
@@ -240,7 +240,7 @@ def test_safari_find_downloads_stp(mocked_get, page_path):
         assert len(downloads) == 2
 
 
-@mock.patch("tools.wpt.browser.get")
+@mock.patch("tools.wpt.browser.get_retry")
 def test_safari_find_downloads_stp_20180517(mocked_get):
     safari = browser.Safari(logger)
     page_path = os.path.join(os.path.dirname(__file__), "safari-downloads", "2018-05-17.html")
@@ -270,7 +270,7 @@ def test_safari_find_downloads_stp_20180517(mocked_get):
     assert "10.13" not in downloads[1][0]
 
 
-@mock.patch("tools.wpt.browser.get")
+@mock.patch("tools.wpt.browser.get_retry")
 def test_safari_find_downloads_stp_20220529(mocked_get):
     safari = browser.Safari(logger)
     page_path = os.path.join(os.path.dirname(__file__), "safari-downloads", "2022-05-29.html")
@@ -301,7 +301,7 @@ def test_safari_find_downloads_stp_20220529(mocked_get):
     assert "12.0" not in downloads[1][0]
 
 
-@mock.patch("tools.wpt.browser.get")
+@mock.patch("tools.wpt.browser.get_retry")
 def test_safari_find_downloads_stp_20220707(mocked_get):
     safari = browser.Safari(logger)
     page_path = os.path.join(os.path.dirname(__file__), "safari-downloads", "2022-07-07.html")

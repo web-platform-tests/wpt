@@ -10,7 +10,8 @@ import sys
 import tarfile
 import zipfile
 from io import BytesIO
-from typing import Optional, IO
+from pathlib import Path
+from typing import IO, Optional, Union
 
 logger = logging.getLogger(__name__)
 
@@ -135,3 +136,11 @@ def load_source(modname, filename):
     sys.modules[module.__name__] = module
     loader.exec_module(module)
     return module
+
+
+def get_ext(filename: Union[str, Path]) -> str:
+    """Get the extension from a filename with special handling for .tar.foo"""
+    name, ext = os.path.splitext(filename)
+    if name.endswith(".tar"):
+        ext = ".tar%s" % ext
+    return ext

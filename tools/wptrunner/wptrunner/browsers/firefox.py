@@ -271,6 +271,8 @@ def run_info_extras(logger, default_prefs=None, **kwargs):
           "sessionHistoryInParent": True,
           "swgl": bool_pref("gfx.webrender.software"),
           "useDrawSnapshot": bool_pref("reftest.use-draw-snapshot"),
+          "nativePrinter": any(key == "remote.print.printer_name" and value
+                               for key, value in extra_prefs + default_prefs),
           "privateBrowsing": bool_pref("browser.privatebrowsing.autostart"),
           "remoteAsyncMouseEvents": bool_pref("remote.events.async.mouse.enabled"),
           "remoteAsyncTouchEvents": bool_pref("remote.events.async.touch.enabled"),

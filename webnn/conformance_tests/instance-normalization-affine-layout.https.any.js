@@ -12,6 +12,14 @@
 // denominator is exactly 3. Affine parameters are runtime operands unless
 // explicitly marked constant in the computed-parameter case.
 const affineLayoutTests = [];
+const affineLayoutExpected = {
+  both: [-2.75, -5.5, -0.75, -1.5, 1.25, 2.5, 3.25, 6.5],
+  scale: [-3, -6, -1, -2, 1, 2, 3, 6],
+  bias: [
+    -0.75, -0.5, -0.08333333333333331, 0.16666666666666669,
+    0.5833333333333333, 0.8333333333333333, 1.25, 1.5
+  ]
+};
 for (const dataType of ['float32', 'float16']) {
   for (const parameter of ['both', 'scale', 'bias']) {
     const scale = parameter !== 'bias';
@@ -31,9 +39,6 @@ for (const dataType of ['float32', 'float16']) {
       inputs.bias = {data: [0.25, 0.5], descriptor: {shape: [2], dataType}};
       options.bias = 'bias';
     }
-    const expected = [-1, -1, -1 / 3, -1 / 3, 1 / 3, 1 / 3, 1, 1].map(
-        (value, index) => value * (scale ? [3, 6][index % 2] : 1) +
-            (bias ? [0.25, 0.5][index % 2] : 0));
     const graph = {
       inputs,
       operators: [{
@@ -42,7 +47,10 @@ for (const dataType of ['float32', 'float16']) {
         outputs: 'result'
       }],
       expectedOutputs: {
-        result: {data: expected, descriptor: {shape: [1, 2, 2, 2], dataType}}
+        result: {
+          data: affineLayoutExpected[parameter],
+          descriptor: {shape: [1, 2, 2, 2], dataType}
+        }
       }
     };
     affineLayoutTests.push({

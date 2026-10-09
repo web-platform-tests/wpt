@@ -258,7 +258,8 @@ const toHalf = (value) => {
   const roundToEven = (units) => {
     const lower = Math.floor(units);
     const fraction = units - lower;
-    return lower + (fraction > 0.5 || (fraction === 0.5 && lower % 2 !== 0));
+    const roundUp = fraction > 0.5 || (fraction === 0.5 && lower % 2 !== 0);
+    return roundUp ? lower + 1 : lower;
   };
   if (magnitude < 2 ** -14) {
     return sign | roundToEven(magnitude * 2 ** 24);

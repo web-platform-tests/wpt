@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<title>position:overconstrained sticky elements with vertical-lr rtl direction</title>
+<link rel="help" href="https://www.w3.org/TR/css-position-3/#sticky-pos" />
+<meta name="assert" content="This test checks that the top is adjusted when the sticky element is overconstrained and the writing-mode and direction of the containing block is vertical-lr and rtl" />
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+
+.scroller {
+  width: fit-content;
+  height: 100px;
+  overflow: auto;
+  position: relative;
+}
+.container {
+  display: flex;
+  position: relative;
+  height: 600px;
+  writing-mode: vertical-lr;
+  direction: rtl;
+}
+.padding {
+  width: 100px;
+  height: 200px;
+  flex: none;
+}
+.sticky {
+  position: sticky;
+  background: green;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  height: 200px;
+  flex: none;
+  direction: ltr;
+}
+</style>
+
+<body>
+  <div class="scroller">
+    <div class="container">
+      <div class="padding"></div>
+      <div class="sticky"></div>
+      <div class="padding"></div>
+    </div>
+  </div>
+</body>
+
+<script>
+test(() => {
+  const scroller = document.querySelector('.scroller');
+  const element = document.querySelector('.sticky');
+  scroller.scrollTop = 0;
+  assert_equals(element.offsetTop, 0);
+}, 'start of scroll container');
+
+test(() => {
+    const scroller = document.querySelector('.scroller');
+    const element = document.querySelector('.sticky');
+    scroller.scrollTop = 180;
+    assert_equals(element.offsetTop, 80);
+}, 'right before the in-flow position of the sticky box');
+
+test(() => {
+    const scroller = document.querySelector('.scroller');
+    const element = document.querySelector('.sticky');
+    scroller.scrollTop = 220;
+    assert_equals(element.offsetTop, 120);
+}, 'right after the in-flow position the sticky box');
+
+test(() => {
+  const scroller = document.querySelector('.scroller');
+  const element = document.querySelector('.sticky');
+  scroller.scrollTop = 500;
+  assert_equals(element.offsetTop, 400);
+}, 'end of scroll container');
+</script>

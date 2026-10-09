@@ -124,8 +124,14 @@ function runSignatureTests(options) {
     promise_test(async function () {
       const key = await publicKey(vector);
       const signature = copyBuffer(vector.signature);
+      let transferred = false;
       const duringCallAlgorithm = algorithmWithNameGetter(vector, function () {
-        signature.buffer.transfer();
+        // Algorithm normalization can read name more than once.
+        if (!transferred) {
+          signature.buffer.transfer();
+          assert_equals(signature.buffer.byteLength, 0, 'Signature buffer is detached');
+          transferred = true;
+        }
         return algorithmName(vector);
       });
       const isVerified = await subtle.verify(
@@ -173,8 +179,13 @@ function runSignatureTests(options) {
     promise_test(async function () {
       const key = await publicKey(vector);
       const data = copyBuffer(vector.data);
+      let transferred = false;
       const duringCallAlgorithm = algorithmWithNameGetter(vector, function () {
-        data.buffer.transfer();
+        if (!transferred) {
+          data.buffer.transfer();
+          assert_equals(data.buffer.byteLength, 0, 'Data buffer is detached');
+          transferred = true;
+        }
         return algorithmName(vector);
       });
       const isVerified = await subtle.verify(

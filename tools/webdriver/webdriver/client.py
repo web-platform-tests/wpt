@@ -810,6 +810,9 @@ class Session:
                 body[prop] = value
         return self.send_session_command("POST", "print", body)
 
+    def consume_user_activation(self):
+        return self.send_session_command("POST", "consume-user-activation")
+
 
 class ShadowRoot:
     identifier = "shadow-6066-11e4-a52e-4f735466cecf"

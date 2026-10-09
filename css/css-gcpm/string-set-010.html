@@ -5,10 +5,12 @@
 <title>CSS Test: GCPM string-set on element with display: none</title>
 <link rel="author" title="Dave Cramer" href="mailto:dauwhe@gmail.com">
 <link rel="help" href="http://www.w3.org/TR/css-gcpm-3/#setting-named-strings-the-string-set-pro">
+<link rel="match" href="reference/string-set-010-ref.html"/>
 <!--WD of this spec is out of date; referencing the ED--><meta name="flags" content="paged">
 <meta name="assert" content="Test checks that a string can be set to the value of an element even if display is set to none">
 <style>
   @page {
+   margin: 72px;
    @top-center {
    content: string(title);
    }

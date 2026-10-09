@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Digital Credential API: Protocol Validation (org-iso-mdoc)</title>
+<link rel="help" href="https://w3c-fedid.github.io/digital-credentials/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body></body>
+<script type="module">
+  import { makeGetOptions } from "./support/helper.js";
+  import { cborBytes, cborText, cborArray, cborMap, cborTag, cborBool, concat, toBase64Url } from "./support/cbor.js";
+
+  const CANONICAL_ENCRYPTION_INFO = "gmVkY2FwaaJlbm9uY2VQuTBR9ybYyMxHk586vsBGt3JyZWNpcGllbnRQdWJsaWNLZXmkAQIgASFYIGDjOSOFBB9RQDBR8kFVMctW3T-ZnHFocBOqxnaLyBh-Ilgg5Y3rj9vpB_fdU2gkVVGjR5b30iFcRAwzm7D3tnvszfo";
+  const CANONICAL_DEVICE_REQUEST_STR = "omd2ZXJzaW9uYzEuMGtkb2NSZXF1ZXN0c4GhbGl0ZW1zUmVxdWVzdNgYWFyiZ2RvY1R5cGV1b3JnLmlzby4xODAxMy41LjEubURMam5hbWVTcGFjZXOhcW9yZy5pc28uMTgwMTMuNS4xomtmYW1pbHlfbmFtZfRvZG9jdW1lbnRfbnVtYmVy9A";
+
+  const buildNamespaces = (namespacesMapPairs) => {
+    return cborMap([
+      [cborText("docType"), cborText("org.iso.18013.5.1.mDL")],
+      [cborText("nameSpaces"), cborMap(namespacesMapPairs)]
+    ]);
+  };
+
+  const buildItemsRequest = (itemsMapBytes) => cborTag(24, cborBytes(itemsMapBytes));
+
+  const buildDocRequest = (itemsRequestBytes) => cborMap([[cborText("itemsRequest"), itemsRequestBytes]]);
+
+  const buildDeviceRequest = (docRequestsArray) => {
+    return cborMap([
+      [cborText("version"), cborText("1.0")],
+      [cborText("docRequests"), cborArray(docRequestsArray)]
+    ]);
+  };
+
+  const canonIsoNs = cborMap([
+    [cborText("family_name"), cborBool(false)],
+    [cborText("document_number"), cborBool(false)]
+  ]);
+  const canonNsMapPairs = [[cborText("org.iso.18013.5.1"), canonIsoNs]];
+  const canonReqBytes = buildDeviceRequest([buildDocRequest(buildItemsRequest(buildNamespaces(canonNsMapPairs)))]);
+
+  if (toBase64Url(canonReqBytes) !== CANONICAL_DEVICE_REQUEST_STR) {
+    throw new Error("support/cbor.js no longer reproduces the canonical request");
+  }
+
+  async function checkRequest(t, data, expectedError) {
+    const abortController = new AbortController();
+    const options = makeGetOptions({
+      protocol: "org-iso-mdoc",
+      data,
+      signal: abortController.signal
+    });
+
+    await test_driver.bless("user activation");
+    const promise = navigator.credentials.get(options);
+    abortController.abort();
+
+    if (expectedError === "AbortError") {
+      await promise_rejects_dom(t, "AbortError", promise, "Valid request should pass validation and reject with AbortError");
+    } else {
+      await promise_rejects_js(t, expectedError, promise, "Invalid request should reject with the expected error");
+    }
+  }
+
+  promise_test(async (t) => {
+    await checkRequest(t, { deviceRequest: CANONICAL_DEVICE_REQUEST_STR, encryptionInfo: CANONICAL_ENCRYPTION_INFO }, "AbortError");
+  }, "the canonical request");
+
+  promise_test(async (t) => {
+    const req = toBase64Url(buildDeviceRequest([buildDocRequest(buildItemsRequest(buildNamespaces([
+      [cborText("org.iso.18013.5.1"), cborMap([[cborText("oidc_info"), cborBool(false)]])]
+    ])))]));
+    await checkRequest(t, { deviceRequest: req, encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'requesting "oidc_info" in the "org.iso.18013.5.1" namespace (intent to retain false)');
+
+  promise_test(async (t) => {
+    const req = toBase64Url(buildDeviceRequest([buildDocRequest(buildItemsRequest(buildNamespaces([
+      [cborText("org.iso.18013.5.1"), cborMap([[cborText("oidc_info"), cborBool(true)]])]
+    ])))]));
+    await checkRequest(t, { deviceRequest: req, encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'requesting "oidc_info" in the "org.iso.18013.5.1" namespace (intent to retain true)');
+
+  promise_test(async (t) => {
+    const req = toBase64Url(buildDeviceRequest([buildDocRequest(buildItemsRequest(buildNamespaces([
+      [cborText("org.iso.18013.5.1"), cborMap([[cborText("webapi_info"), cborBool(false)]])]
+    ])))]));
+    await checkRequest(t, { deviceRequest: req, encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'requesting "webapi_info" in the "org.iso.18013.5.1" namespace');
+
+  promise_test(async (t) => {
+    const req = toBase64Url(buildDeviceRequest([buildDocRequest(buildItemsRequest(buildNamespaces([
+      [cborText("org.iso.18013.5.1"), cborMap([
+        [cborText("family_name"), cborBool(false)],
+        [cborText("oidc_info"), cborBool(false)]
+      ])]
+    ])))]));
+    await checkRequest(t, { deviceRequest: req, encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'requesting "oidc_info" alongside ordinary elements such as "family_name"');
+
+  promise_test(async (t) => {
+    const req = toBase64Url(buildDeviceRequest([buildDocRequest(buildItemsRequest(buildNamespaces([
+      [cborText("org.iso.18013.5.1"), cborMap([
+        [cborText("family_name"), cborBool(false)],
+        [cborText("webapi_info"), cborBool(false)]
+      ])]
+    ])))]));
+    await checkRequest(t, { deviceRequest: req, encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'requesting "webapi_info" alongside ordinary elements such as "family_name"');
+
+  promise_test(async (t) => {
+    const req1 = buildDocRequest(buildItemsRequest(buildNamespaces([[cborText("org.iso.18013.5.1"), cborMap([[cborText("family_name"), cborBool(false)]])]])));
+    const req2 = buildDocRequest(buildItemsRequest(buildNamespaces([[cborText("org.iso.18013.5.1"), cborMap([[cborText("webapi_info"), cborBool(false)]])]])));
+    const req = toBase64Url(buildDeviceRequest([req1, req2]));
+    await checkRequest(t, { deviceRequest: req, encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'a request with two document requests where only the second asks for "webapi_info"');
+
+  promise_test(async (t) => {
+    let padded = CANONICAL_DEVICE_REQUEST_STR;
+    while (padded.length % 4 !== 0) padded += "=";
+    await checkRequest(t, { deviceRequest: padded, encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'deviceRequest with base64url padding ("=")');
+
+  promise_test(async (t) => {
+    await checkRequest(t, { deviceRequest: "A", encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'deviceRequest "A": only allowed characters, but a length that base64url cannot decode');
+
+  promise_test(async (t) => {
+    await checkRequest(t, { deviceRequest: CANONICAL_DEVICE_REQUEST_STR + " \n", encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'deviceRequest containing whitespace');
+
+  promise_test(async (t) => {
+    const extraMap = cborMap([
+      [cborText("version"), cborText("1.0")],
+      [cborText("docRequests"), cborArray([buildDocRequest(buildItemsRequest(buildNamespaces(canonNsMapPairs)))])],
+      [cborText("unknown_entry"), cborBytes(new Uint8Array([0xfb, 0xff, 0xbf]))]
+    ]);
+    const validBase64Url = toBase64Url(extraMap);
+    assert_true(validBase64Url.includes("-") || validBase64Url.includes("_"), "Base64url string must contain '-' or '_' for this test to be valid");
+    const badBase64 = validBase64Url.replace(/-/g, "+").replace(/_/g, "/");
+    await checkRequest(t, { deviceRequest: badBase64, encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'deviceRequest using the standard base64 alphabet ("+" or "/")');
+
+  promise_test(async (t) => {
+    await checkRequest(t, { deviceRequest: {}, encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'deviceRequest that is not a string');
+
+  promise_test(async (t) => {
+    await checkRequest(t, { encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'a missing deviceRequest');
+
+  promise_test(async (t) => {
+    await checkRequest(t, { deviceRequest: CANONICAL_DEVICE_REQUEST_STR }, TypeError);
+  }, 'encryptionInfo missing');
+
+  promise_test(async (t) => {
+    await checkRequest(t, { deviceRequest: CANONICAL_DEVICE_REQUEST_STR, encryptionInfo: 123 }, TypeError);
+  }, 'encryptionInfo that is not a string');
+
+  promise_test(async (t) => {
+    await checkRequest(t, { deviceRequest: toBase64Url(new Uint8Array([0xff])), encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'bytes that are not CBOR');
+
+  promise_test(async (t) => {
+    const badTextBytes = new Uint8Array([0x62, 0xc3, 0x28]);
+    const badMap = cborMap([
+      [cborText("version"), badTextBytes],
+      [cborText("docRequests"), cborArray([buildDocRequest(buildItemsRequest(buildNamespaces(canonNsMapPairs)))])]
+    ]);
+    await checkRequest(t, { deviceRequest: toBase64Url(badMap), encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'a text string in the request that is not valid UTF-8');
+
+  promise_test(async (t) => {
+    const badBytes = concat([canonReqBytes, new Uint8Array([0x00])]);
+    await checkRequest(t, { deviceRequest: toBase64Url(badBytes), encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'CBOR followed by extra trailing bytes');
+
+  promise_test(async (t) => {
+    const badMap = cborArray([cborText("version"), cborText("1.0")]);
+    await checkRequest(t, { deviceRequest: toBase64Url(badMap), encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'a top-level CBOR value that is an array instead of a map');
+
+  promise_test(async (t) => {
+    const badMap = cborMap([
+      [cborText("version"), cborText("1.0")],
+      [cborText("version"), cborText("2.0")],
+      [cborText("docRequests"), cborArray([buildDocRequest(buildItemsRequest(buildNamespaces(canonNsMapPairs)))])]
+    ]);
+    await checkRequest(t, { deviceRequest: toBase64Url(badMap), encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'a top-level map with a duplicate key');
+
+  promise_test(async (t) => {
+    const badNs = cborMap([
+      [cborText("org.iso.18013.5.1"), canonIsoNs],
+      [cborText("org.iso.18013.5.1"), canonIsoNs]
+    ]);
+    const req = toBase64Url(buildDeviceRequest([buildDocRequest(buildItemsRequest(cborMap([
+      [cborText("docType"), cborText("org.iso.18013.5.1.mDL")],
+      [cborText("nameSpaces"), badNs]
+    ])))]));
+    await checkRequest(t, { deviceRequest: req, encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'an inner nameSpaces map with a duplicate "org.iso.18013.5.1" key');
+
+  promise_test(async (t) => {
+    const badMap = cborMap([[cborText("version"), cborText("1.0")]]);
+    await checkRequest(t, { deviceRequest: toBase64Url(badMap), encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'a map without "docRequests"');
+
+  promise_test(async (t) => {
+    const badMap = cborMap([
+      [cborText("version"), cborText("1.0")],
+      [cborText("docRequests"), cborText("not an array")]
+    ]);
+    await checkRequest(t, { deviceRequest: toBase64Url(badMap), encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, '"docRequests" that is not an array');
+
+  promise_test(async (t) => {
+    const req = toBase64Url(buildDeviceRequest([cborText("not a map")]));
+    await checkRequest(t, { deviceRequest: req, encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'a document request that is a CBOR text string instead of a map');
+
+  promise_test(async (t) => {
+    const docReqNoTag = cborMap([[cborText("itemsRequest"), cborBytes(buildNamespaces(canonNsMapPairs))]]);
+    await checkRequest(t, { deviceRequest: toBase64Url(buildDeviceRequest([docReqNoTag])), encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'an "itemsRequest" byte string without tag 24');
+
+  promise_test(async (t) => {
+    const doubleTag = cborTag(400, cborTag(24, cborBytes(buildNamespaces(canonNsMapPairs))));
+    const docReqDoubleTag = cborMap([[cborText("itemsRequest"), doubleTag]]);
+    await checkRequest(t, { deviceRequest: toBase64Url(buildDeviceRequest([docReqDoubleTag])), encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'an "itemsRequest" with tag 24 wrapped in a second tag');
+
+  promise_test(async (t) => {
+    const badTagContent = cborTag(24, cborBytes(new Uint8Array([0xff])));
+    const docReq = cborMap([[cborText("itemsRequest"), badTagContent]]);
+    await checkRequest(t, { deviceRequest: toBase64Url(buildDeviceRequest([docReq])), encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'tag-24 content that is not valid CBOR');
+
+  promise_test(async (t) => {
+    const badItemsReq = buildDocRequest(cborTag(24, cborBytes(cborArray([cborText("not a map")]))));
+    await checkRequest(t, { deviceRequest: toBase64Url(buildDeviceRequest([badItemsReq])), encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'an "itemsRequest" whose tag-24 byte string decodes to an array instead of a map');
+
+  promise_test(async (t) => {
+    const badNsReq = buildDocRequest(buildItemsRequest(cborMap([
+      [cborText("docType"), cborText("org.iso.18013.5.1.mDL")],
+      [cborText("nameSpaces"), cborText("not a map")]
+    ])));
+    await checkRequest(t, { deviceRequest: toBase64Url(buildDeviceRequest([badNsReq])), encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'an itemsRequest whose "nameSpaces" is not a map');
+
+  promise_test(async (t) => {
+    const badEntryReq = buildDocRequest(buildItemsRequest(cborMap([
+      [cborText("docType"), cborText("org.iso.18013.5.1.mDL")],
+      [cborText("nameSpaces"), cborMap([[cborText("org.iso.18013.5.1"), cborText("not a map")]])]
+    ])));
+    await checkRequest(t, { deviceRequest: toBase64Url(buildDeviceRequest([badEntryReq])), encryptionInfo: CANONICAL_ENCRYPTION_INFO }, TypeError);
+  }, 'an "org.iso.18013.5.1" entry that is not a map');
+
+  promise_test(async (t) => {
+    const req = toBase64Url(buildDeviceRequest([buildDocRequest(buildItemsRequest(cborMap([
+      [cborText("docType"), cborText("org.iso.18013.5.1.mDL")],
+      [cborText("nameSpaces"), cborMap([
+        [cborText("other.namespace"), cborMap([
+          [cborText("oidc_info"), cborBool(false)],
+          [cborText("webapi_info"), cborBool(false)]
+        ])]
+      ])]
+    ])))]));
+    await checkRequest(t, { deviceRequest: req, encryptionInfo: CANONICAL_ENCRYPTION_INFO }, "AbortError");
+  }, 'a request asking for "oidc_info" or "webapi_info" in a namespace other than "org.iso.18013.5.1"');
+
+  promise_test(async (t) => {
+    const req = toBase64Url(buildDeviceRequest([buildDocRequest(buildItemsRequest(buildNamespaces([
+      [cborText("org.iso.18013.5.1"), cborMap([[cborBytes(new TextEncoder().encode("oidc_info")), cborBool(false)]])]
+    ])))]));
+    await checkRequest(t, { deviceRequest: req, encryptionInfo: CANONICAL_ENCRYPTION_INFO }, "AbortError");
+  }, 'a request in the "org.iso.18013.5.1" namespace whose element key is "oidc_info" written as a CBOR byte string instead of a text string');
+
+  promise_test(async (t) => {
+    const extraTopLevelMap = cborMap([
+      [cborText("version"), cborText("1.0")],
+      [cborText("docRequests"), cborArray([buildDocRequest(buildItemsRequest(buildNamespaces(canonNsMapPairs)))])],
+      [cborText("unknown_entry"), cborText("some_value")]
+    ]);
+    await checkRequest(t, { deviceRequest: toBase64Url(extraTopLevelMap), encryptionInfo: CANONICAL_ENCRYPTION_INFO }, "AbortError");
+  }, 'a request with extra, unknown top-level entries');
+</script>

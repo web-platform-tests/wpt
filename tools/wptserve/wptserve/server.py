@@ -145,7 +145,7 @@ class WebTestServer(http.server.ThreadingHTTPServer):
     def __init__(self, server_address, request_handler_cls,
                  router, rewriter, bind_address, ws_doc_root=None,
                  config=None, use_ssl=False, key_file=None, certificate=None,
-                 encrypt_after_connect=False, latency=None, http2=False, **kwargs):
+                 encrypt_after_connect=False, latency=None, http2=False, server_socket=None, **kwargs):
         """Server for HTTP(s) Requests
 
         :param server_address: tuple of (server_name, port)
@@ -181,6 +181,8 @@ class WebTestServer(http.server.ThreadingHTTPServer):
                             server_address parameter, but not to the address.
         :param latency: Delay in ms to wait before serving each response, or
                         callable that returns a delay in ms
+        :param server_socket: An already-bound socket to adopt instead of binding
+                              a new one. The server takes ownership of the socket.
         """
         self._shutdown_event = threading.Event()
         self._shutdown_write_sock = None
@@ -192,6 +194,7 @@ class WebTestServer(http.server.ThreadingHTTPServer):
         self.logger = get_logger()
 
         self.latency = latency
+        self._server_socket = server_socket
 
         if bind_address:
             hostname_port = server_address
@@ -234,23 +237,25 @@ class WebTestServer(http.server.ThreadingHTTPServer):
                                                       server_side=True)
 
     def server_bind(self):
-        if platform.system() != "Darwin":
-            super().server_bind()
+        if self._server_socket is not None:
+            self.socket.close()
+            self.socket = self._server_socket
+            self._server_socket = None
+            self.server_address = self.socket.getsockname()
         else:
-            # We override this on macOS to workaround gethostbyaddr triggering the local
-            # network alert even when passed "localhost" (rdar://153097791); this should
-            # be the same as the superclass implementation except for the addition of
-            # our check.
             socketserver.TCPServer.server_bind(self)
-            host, port = self.server_address[:2]
-            if (
-                ipaddress.ip_address(host).is_loopback and
-                ipaddress.ip_address(socket.gethostbyname("localhost")).is_loopback
-            ):
-                self.server_name = "localhost"
-            else:
-                self.server_name = socket.getfqdn(host)
-            self.server_port = port
+        host, port = self.server_address[:2]
+        # On macOS, avoid gethostbyaddr triggering the local network alert even
+        # when passed "localhost" (rdar://153097791).
+        if (
+            platform.system() == "Darwin" and
+            ipaddress.ip_address(host).is_loopback and
+            ipaddress.ip_address(socket.gethostbyname("localhost")).is_loopback
+        ):
+            self.server_name = "localhost"
+        else:
+            self.server_name = socket.getfqdn(host)
+        self.server_port = port
 
     def serve_forever(self, poll_interval=0.5):
         """Handle one request at a time until shutdown.
@@ -925,7 +930,7 @@ class WebTestHttpd:
                  use_ssl=False, key_file=None, certificate=None, encrypt_after_connect=False,
                  router_cls=Router, doc_root=os.curdir, ws_doc_root=None, routes=None,
                  rewriter_cls=RequestRewriter, bind_address=True, rewrites=None,
-                 latency=None, config=None, http2=False):
+                 latency=None, config=None, http2=False, server_socket=None):
 
         if routes is None:
             routes = default_routes.routes
@@ -961,7 +966,8 @@ class WebTestHttpd:
                                     certificate=certificate,
                                     encrypt_after_connect=encrypt_after_connect,
                                     latency=latency,
-                                    http2=http2)
+                                    http2=http2,
+                                    server_socket=server_socket)
             self.started = False
 
             _host, self.port = self.httpd.socket.getsockname()

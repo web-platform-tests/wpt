@@ -2,10 +2,14 @@
 <html lang="en" class="reftest-wait">
 <title>position:fixed on non-standard ::-webkit-media-text-track-display should not affect</title>
 <link rel="match" href="non-standard-pseudo-elements-ref.html">
+<link rel="stylesheet" href="/fonts/ahem.css">
 <style>
 video { width:560px; height:320px; }
 video::-webkit-media-text-track-display {
   position: fixed !important;
+}
+::cue {
+    font-family: Ahem, sans-serif;
 }
 </style>
 <video>

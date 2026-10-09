@@ -189,7 +189,8 @@
     };
 
     // document.documentElement's parent is Document.
-    // beforeHTMLUnsafe("text") on it would throw HierarchyRequestError, but TT should throw first.
+    // beforeHTMLUnsafe("text") on it would throw HierarchyRequestError from
+    // parent for HTML insertion, but TT should throw first.
     assert_throws_exactly(tt_error, () => {
       document.documentElement.beforeHTMLUnsafe("text");
     });
@@ -199,7 +200,7 @@
     assert_throws_exactly(tt_error, () => {
       document.documentElement.replaceWithHTMLUnsafe("text");
     });
-  }, "NonDocumentTypeChildNode unsafe methods evaluate Trusted Types before pre-insertion validity checks");
+  }, "NonDocumentTypeChildNode unsafe methods evaluate Trusted Types before parent for HTML insertion checks");
 
   test((t) => {
     let target = document.createElement("div");
@@ -274,8 +275,7 @@
   }, "replaceWithHTMLUnsafe evaluates Trusted Types before determining the parent");
 
   test((t) => {
-    // pre-insertion validity failure throws HierarchyRequestError
-    // just normal call with safe string
+    // A Document parent is rejected by parent for HTML insertion with HierarchyRequestError.
     assert_throws_dom("HierarchyRequestError", () => {
       document.documentElement.beforeHTMLUnsafe("text");
     });
@@ -285,7 +285,54 @@
     assert_throws_dom("HierarchyRequestError", () => {
       document.documentElement.replaceWithHTMLUnsafe("text");
     });
-  }, "NonDocumentTypeChildNode unsafe methods throw HierarchyRequestError on pre-insertion validity failure");
+  }, "NonDocumentTypeChildNode unsafe methods throw HierarchyRequestError when parent is a Document");
+
+  test((t) => {
+    let tt_error = new Error("TT Error");
+    t.add_cleanup(() => { createHTML = (html) => html; });
+    createHTML = (html) => {
+      if (html === "text") throw tt_error;
+      return html;
+    };
+
+    // document.body's parent is document.documentElement (<html>).
+    // Calling positional methods on document.body or append/prepend on
+    // document.documentElement throws HierarchyRequestError, but TT should
+    // throw first.
+    assert_throws_exactly(tt_error, () => {
+      document.body.beforeHTMLUnsafe("text");
+    });
+    assert_throws_exactly(tt_error, () => {
+      document.body.afterHTMLUnsafe("text");
+    });
+    assert_throws_exactly(tt_error, () => {
+      document.body.replaceWithHTMLUnsafe("text");
+    });
+    assert_throws_exactly(tt_error, () => {
+      document.documentElement.appendHTMLUnsafe("text");
+    });
+    assert_throws_exactly(tt_error, () => {
+      document.documentElement.prependHTMLUnsafe("text");
+    });
+  }, "Unsafe positional methods evaluate Trusted Types before html element HierarchyRequestError checks");
+
+  test(() => {
+    assert_throws_dom("HierarchyRequestError", () => {
+      document.body.beforeHTMLUnsafe("<p>text</p>");
+    });
+    assert_throws_dom("HierarchyRequestError", () => {
+      document.body.afterHTMLUnsafe("<p>text</p>");
+    });
+    assert_throws_dom("HierarchyRequestError", () => {
+      document.body.replaceWithHTMLUnsafe("<p>text</p>");
+    });
+    assert_throws_dom("HierarchyRequestError", () => {
+      document.documentElement.appendHTMLUnsafe("<p>text</p>");
+    });
+    assert_throws_dom("HierarchyRequestError", () => {
+      document.documentElement.prependHTMLUnsafe("<p>text</p>");
+    });
+  }, "Unsafe positional methods throw HierarchyRequestError when parent or target is an html element");
 
   test((t) => {
     let target = document.createElement("div");

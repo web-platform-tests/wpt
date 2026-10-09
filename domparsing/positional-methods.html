@@ -109,6 +109,25 @@
         }, `${method_name} throws HierarchyRequestError if parent is a DocumentFragment`);
 
         test(() => {
+          const doc = document.implementation.createHTMLDocument();
+          assert_throws_dom("HierarchyRequestError", () => {
+            doc.body[method_name]("<p>fails</p>");
+          });
+          assert_throws_dom("HierarchyRequestError", () => {
+            doc.head[method_name]("<p>fails</p>");
+          });
+        }, `${method_name} throws HierarchyRequestError if parent is an html element`);
+
+        test(() => {
+          const html = document.createElement("html");
+          const child = document.createElement("body");
+          html.appendChild(child);
+          assert_throws_dom("HierarchyRequestError", () => {
+            child[method_name]("<p>fails</p>");
+          });
+        }, `${method_name} throws HierarchyRequestError if parent is a disconnected html element`);
+
+        test(() => {
           const element = document.createElement("div");
           assert_equals(element[method_name]("<span>fails</span>"), undefined);
         }, `${method_name} on Element without a parent returns undefined and does not throw`);
@@ -138,7 +157,30 @@
           assert_false(method_name in Document.prototype, "Document.prototype");
           assert_false(method_name in DocumentFragment.prototype, "DocumentFragment.prototype");
         }, `${method_name} is exposed on Element and ShadowRoot only`);
+
+        test(() => {
+          const doc = document.implementation.createHTMLDocument();
+          assert_throws_dom("HierarchyRequestError", () => {
+            doc.documentElement[method_name]("<p>fails</p>");
+          });
+        }, `${method_name} on an html element throws HierarchyRequestError`);
+
+        test(() => {
+          const html = document.createElement("html");
+          assert_throws_dom("HierarchyRequestError", () => {
+            html[method_name]("<p>fails</p>");
+          });
+        }, `${method_name} on a disconnected html element throws HierarchyRequestError`);
       }
+
+      test(() => {
+        const set_method = `setHTML${safe ? "" : "Unsafe"}`;
+        const doc = document.implementation.createHTMLDocument();
+        doc.documentElement[set_method]("<head><title>t</title></head><body><p>ok</p></body>");
+        assert_equals(doc.querySelectorAll("head").length, 1);
+        assert_equals(doc.querySelectorAll("body").length, 1);
+        assert_equals(doc.body.querySelector("p").textContent, "ok");
+      }, `setHTML${safe ? "" : "Unsafe"} on an html element succeeds`);
 
       for (const pos of ["append", "prepend", "before", "after", "replaceWith"]) {
         const method_name = `${pos}HTML${safe ? "" : "Unsafe"}`;

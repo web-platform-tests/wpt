@@ -155,23 +155,15 @@ promise_test(async t => {
 }, "A subtree removed from a removed subtree is no longer observed after mutation observers are notified");
 
 promise_test(async t => {
-  const container = document.body.appendChild(document.createElement("div"));
-  t.add_cleanup(() => container.remove());
-  container.append(document.createElement("span"));
+  const { parent, child } = createTree();
   const order = [];
-  window.transientRegisteredObserversOrder = order;
-  t.add_cleanup(() => {
-    delete window.transientRegisteredObserversOrder;
-  });
   const observer = new MutationObserver(() => order.push("observer"));
-  // As observer does not observe childList mutations, removing the span queues no record for it.
-  observer.observe(container, { attributes: true, subtree: true });
+  observer.observe(parent, { attributes: true, subtree: true });
 
-  const script = document.createElement("script");
-  script.textContent = "Promise.resolve().then(() => window.transientRegisteredObserversOrder.push('promise'));";
-  // This removes the span and then inserts and runs the script.
-  container.replaceChildren(script);
-  script.setAttribute("data-test", "");
+  // This queues no record, as observer does not observe childList mutations.
+  child.remove();
+  Promise.resolve().then(() => order.push("promise"));
+  child.setAttribute("data-test", "");
   await nextTask(t);
 
   assert_array_equals(order, ["observer", "promise"]);

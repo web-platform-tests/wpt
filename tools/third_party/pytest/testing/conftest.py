@@ -1,10 +1,14 @@
+# mypy: allow-untyped-defs
+import dataclasses
 import re
 import sys
+from typing import Generator
 from typing import List
 
+from _pytest.monkeypatch import MonkeyPatch
+from _pytest.pytester import Pytester
 import pytest
-from _pytest.pytester import RunResult
-from _pytest.pytester import Testdir
+
 
 if sys.gettrace():
 
@@ -20,11 +24,31 @@ if sys.gettrace():
             sys.settrace(orig_trace)
 
 
-@pytest.hookimpl(hookwrapper=True, tryfirst=True)
-def pytest_collection_modifyitems(items):
+@pytest.fixture(autouse=True)
+def set_column_width(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    Force terminal width to 80: some tests check the formatting of --help, which is sensible
+    to terminal width.
+    """
+    monkeypatch.setenv("COLUMNS", "80")
+
+
+@pytest.fixture(autouse=True)
+def reset_colors(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    Reset all color-related variables to prevent them from affecting internal pytest output
+    in tests that depend on it.
+    """
+    monkeypatch.delenv("PY_COLORS", raising=False)
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.delenv("FORCE_COLOR", raising=False)
+
+
+@pytest.hookimpl(wrapper=True, tryfirst=True)
+def pytest_collection_modifyitems(items) -> Generator[None, None, None]:
     """Prefer faster tests.
 
-    Use a hookwrapper to do this in the beginning, so e.g. --ff still works
+    Use a hook wrapper to do this in the beginning, so e.g. --ff still works
     correctly.
     """
     fast_items = []
@@ -42,7 +66,7 @@ def pytest_collection_modifyitems(items):
             # (https://github.com/pytest-dev/pytest/issues/5070)
             neutral_items.append(item)
         else:
-            if "testdir" in fixtures:
+            if "pytester" in fixtures:
                 co_names = item.function.__code__.co_names
                 if spawn_names.intersection(co_names):
                     item.add_marker(pytest.mark.uses_pexpect)
@@ -61,7 +85,7 @@ def pytest_collection_modifyitems(items):
 
     items[:] = fast_items + neutral_items + slow_items + slowest_items
 
-    yield
+    return (yield)
 
 
 @pytest.fixture
@@ -104,36 +128,36 @@ def tw_mock():
 
 
 @pytest.fixture
-def dummy_yaml_custom_test(testdir):
+def dummy_yaml_custom_test(pytester: Pytester) -> None:
     """Writes a conftest file that collects and executes a dummy yaml test.
 
     Taken from the docs, but stripped down to the bare minimum, useful for
     tests which needs custom items collected.
     """
-    testdir.makeconftest(
+    pytester.makeconftest(
         """
         import pytest
 
-        def pytest_collect_file(parent, path):
-            if path.ext == ".yaml" and path.basename.startswith("test"):
-                return YamlFile.from_parent(fspath=path, parent=parent)
+        def pytest_collect_file(parent, file_path):
+            if file_path.suffix == ".yaml" and file_path.name.startswith("test"):
+                return YamlFile.from_parent(path=file_path, parent=parent)
 
         class YamlFile(pytest.File):
             def collect(self):
-                yield YamlItem.from_parent(name=self.fspath.basename, parent=self)
+                yield YamlItem.from_parent(name=self.path.name, parent=self)
 
         class YamlItem(pytest.Item):
             def runtest(self):
                 pass
     """
     )
-    testdir.makefile(".yaml", test1="")
+    pytester.makefile(".yaml", test1="")
 
 
 @pytest.fixture
-def testdir(testdir: Testdir) -> Testdir:
-    testdir.monkeypatch.setenv("PYTEST_DISABLE_PLUGIN_AUTOLOAD", "1")
-    return testdir
+def pytester(pytester: Pytester, monkeypatch: MonkeyPatch) -> Pytester:
+    monkeypatch.setenv("PYTEST_DISABLE_PLUGIN_AUTOLOAD", "1")
+    return pytester
 
 
 @pytest.fixture(scope="session")
@@ -149,6 +173,9 @@ def color_mapping():
             "red": "\x1b[31m",
             "green": "\x1b[32m",
             "yellow": "\x1b[33m",
+            "light-gray": "\x1b[90m",
+            "light-red": "\x1b[91m",
+            "light-green": "\x1b[92m",
             "bold": "\x1b[1m",
             "reset": "\x1b[0m",
             "kw": "\x1b[94m",
@@ -157,8 +184,10 @@ def color_mapping():
             "number": "\x1b[94m",
             "str": "\x1b[33m",
             "print": "\x1b[96m",
+            "endline": "\x1b[90m\x1b[39;49;00m",
         }
         RE_COLORS = {k: re.escape(v) for k, v in COLORS.items()}
+        NO_COLORS = {k: "" for k in COLORS.keys()}
 
         @classmethod
         def format(cls, lines: List[str]) -> List[str]:
@@ -176,31 +205,15 @@ def color_mapping():
             return [line.format(**cls.RE_COLORS) for line in lines]
 
         @classmethod
-        def requires_ordered_markup(cls, result: RunResult):
-            """Should be called if a test expects markup to appear in the output
-            in the order they were passed, for example:
-
-                tw.write(line, bold=True, red=True)
-
-            In Python 3.5 there's no guarantee that the generated markup will appear
-            in the order called, so we do some limited color testing and skip the rest of
-            the test.
-            """
-            if sys.version_info < (3, 6):
-                # terminal writer.write accepts keyword arguments, so
-                # py36+ is required so the markup appears in the expected order
-                output = result.stdout.str()
-                assert "test session starts" in output
-                assert "\x1b[1m" in output
-                pytest.skip(
-                    "doing limited testing because lacking ordered markup on py35"
-                )
+        def strip_colors(cls, lines: List[str]) -> List[str]:
+            """Entirely remove every color code"""
+            return [line.format(**cls.NO_COLORS) for line in lines]
 
     return ColorMapping
 
 
 @pytest.fixture
-def mock_timing(monkeypatch):
+def mock_timing(monkeypatch: MonkeyPatch):
     """Mocks _pytest.timing with a known object that can be used to control timing in tests
     deterministically.
 
@@ -212,20 +225,18 @@ def mock_timing(monkeypatch):
     Time is static, and only advances through `sleep` calls, thus tests might sleep over large
     numbers and obtain accurate time() calls at the end, making tests reliable and instant.
     """
-    import attr
 
-    @attr.s
+    @dataclasses.dataclass
     class MockTiming:
+        _current_time: float = 1590150050.0
 
-        _current_time = attr.ib(default=1590150050.0)
-
-        def sleep(self, seconds):
+        def sleep(self, seconds: float) -> None:
             self._current_time += seconds
 
-        def time(self):
+        def time(self) -> float:
             return self._current_time
 
-        def patch(self):
+        def patch(self) -> None:
             from _pytest import timing
 
             monkeypatch.setattr(timing, "sleep", self.sleep)

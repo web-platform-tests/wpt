@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 """
 Provides interface to deal with pytest.
 
@@ -24,7 +26,7 @@ def do_delayed_imports():
     import pytest
 
 
-def run(path, server_config, session_config, timeout=0, environ=None):
+def run(path, server_config, session_config, timeout=0):
     """
     Run Python test at ``path`` in pytest.  The provided ``session``
     is exposed as a fixture available in the scope of the test functions.
@@ -44,42 +46,50 @@ def run(path, server_config, session_config, timeout=0, environ=None):
     old_environ = os.environ.copy()
     try:
         with TemporaryDirectory() as cache:
-            os.environ["WD_HOST"] = session_config["host"]
-            os.environ["WD_PORT"] = str(session_config["port"])
-            os.environ["WD_CAPABILITIES"] = json.dumps(session_config["capabilities"])
+            config_path = os.path.join(cache, "wd_config.json")
+            os.environ["WDSPEC_CONFIG_FILE"] = config_path
 
-            config_path = os.path.join(cache, "wd_server_config.json")
-            os.environ["WD_SERVER_CONFIG_FILE"] = config_path
+            config = session_config.copy()
+            config["wptserve"] = server_config.as_dict()
+            config["timeout"] = timeout
+
             with open(config_path, "w") as f:
-                json.dump(server_config.as_dict(), f)
-
-            if environ:
-                os.environ.update(environ)
+                json.dump(config, f)
 
             harness = HarnessResultRecorder()
             subtests = SubtestResultRecorder()
 
             try:
-                pytest.main(["--strict",  # turn warnings into errors
-                             "-vv",  # show each individual subtest and full failure logs
-                             "--capture", "no",  # enable stdout/stderr from tests
-                             "--basetemp", cache,  # temporary directory
-                             "--showlocals",  # display contents of variables in local scope
-                             "-p", "no:mozlog",  # use the WPT result recorder
-                             "-p", "no:cacheprovider",  # disable state preservation across invocations
-                             "-o=console_output_style=classic",  # disable test progress bar
-                             path],
-                            plugins=[harness, subtests])
+                basetemp = os.path.join(cache, "pytest")
+                pytest.main(
+                    [
+                        "--strict-markers",  # turn function marker warnings into errors
+                        "-vv",  # show each individual subtest and full failure logs
+                        "--capture",
+                        "no",  # enable stdout/stderr from tests
+                        "--basetemp",
+                        basetemp,  # temporary directory
+                        "--showlocals",  # display contents of variables in local scope
+                        "-p",
+                        "no:mozlog",  # use the WPT result recorder
+                        "-p",
+                        "no:cacheprovider",  # disable state preservation across invocations
+                        "-o=console_output_style=classic",  # disable test progress bar
+                        path,
+                    ],
+                    plugins=[harness, subtests],
+                )
             except Exception as e:
                 harness.outcome = ("INTERNAL-ERROR", str(e))
 
     finally:
         os.environ = old_environ
 
-    return (harness.outcome, subtests.results)
+    subtests_results = [(key,) + value for (key, value) in subtests.results.items()]
+    return (harness.outcome, subtests_results)
 
 
-class HarnessResultRecorder(object):
+class HarnessResultRecorder:
     outcomes = {
         "failed": "ERROR",
         "passed": "OK",
@@ -95,9 +105,9 @@ class HarnessResultRecorder(object):
         self.outcome = (harness_result, None)
 
 
-class SubtestResultRecorder(object):
+class SubtestResultRecorder:
     def __init__(self):
-        self.results = []
+        self.results = {}
 
     def pytest_runtest_logreport(self, report):
         if report.passed and report.when == "call":
@@ -130,24 +140,39 @@ class SubtestResultRecorder(object):
 
     def record_error(self, report, message):
         # error in setup/teardown
-        message = "{} error: {}".format(report.when, message)
+        message = f"{report.when} error: {message}"
         self.record(report.nodeid, "ERROR", message, report.longrepr)
 
     def record_skip(self, report):
-        self.record(report.nodeid, "ERROR",
-                    "In-test skip decorators are disallowed, "
-                    "please use WPT metadata to ignore tests.")
+        # Do not record a not applicable subtest, used
+        # for an `aamtest` subtest that is not applicable
+        # to the current platform.
+        if "NOT_APPLICABLE" in report.longrepr[2]:
+            return
+        self.record(
+            report.nodeid,
+            "ERROR",
+            "In-test skip decorators are disallowed, "
+            "please use WPT metadata to ignore tests.",
+        )
 
     def record(self, test, status, message=None, stack=None):
         if stack is not None:
             stack = str(stack)
-        new_result = (test.split("::")[-1], status, message, stack)
-        self.results.append(new_result)
+        # Ensure we get a single result per subtest; pytest will sometimes
+        # call pytest_runtest_logreport more than once per test e.g. if
+        # it fails and then there's an error during teardown.
+        subtest_id = test.split("::")[-1]
+        if subtest_id in self.results and status == "PASS":
+            # This shouldn't happen, but never overwrite an existing result with PASS
+            return
+        new_result = (status, message, stack)
+        self.results[subtest_id] = new_result
 
 
-class TemporaryDirectory(object):
+class TemporaryDirectory:
     def __enter__(self):
-        self.path = tempfile.mkdtemp(prefix="pytest-")
+        self.path = tempfile.mkdtemp(prefix="wdspec-")
         return self.path
 
     def __exit__(self, *args):

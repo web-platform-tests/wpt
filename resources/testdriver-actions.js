@@ -2,9 +2,38 @@
   let sourceNameIdx = 0;
 
   /**
+   * @class
    * Builder for creating a sequence of actions
-   * The default tick duration is set to 16ms, which is one frame time based on
-   * 60Hz display.
+   *
+   *
+   * The actions are dispatched once
+   * :js:func:`test_driver.Actions.send` is called. This returns a
+   * promise which resolves once the actions are complete.
+   *
+   * The other methods on :js:class:`test_driver.Actions` object are
+   * used to build the sequence of actions that will be sent. These
+   * return the `Actions` object itself, so the actions sequence can
+   * be constructed by chaining method calls.
+   *
+   * Internally :js:func:`test_driver.Actions.send` invokes
+   * :js:func:`test_driver.action_sequence`.
+   *
+   * @example
+   * let text_box = document.getElementById("text");
+   *
+   * let actions = new test_driver.Actions()
+   *    .pointerMove(0, 0, {origin: text_box})
+   *    .pointerDown()
+   *    .pointerUp()
+   *    .addTick()
+   *    .keyDown("p")
+   *    .keyUp("p");
+   *
+   * await actions.send();
+   *
+   * @param {number} [defaultTickDuration] - The default duration of a
+   * tick. Be default this is set ot 16ms, which is one frame time
+   * based on 60Hz display.
    */
   function Actions(defaultTickDuration=16) {
     this.sourceTypes = new Map([["key", KeySource],
@@ -223,7 +252,7 @@
      */
     addTick: function(duration) {
       this.tickIdx += 1;
-      if (duration) {
+      if (duration !== undefined && duration !== null) {
         this.pause(duration);
       }
       return this;
@@ -250,6 +279,10 @@
     /**
      * Create a keyDown event for the current default key source
      *
+     * To send special keys, send the respective key's codepoint,
+     * as defined by `WebDriver
+     * <https://w3c.github.io/webdriver/#keyboard-actions>`_.
+     *
      * @param {String} key - Key to press
      * @param {String?} sourceName - Named key source to use or null for the default key source
      * @returns {Actions}
@@ -261,7 +294,11 @@
     },
 
     /**
-     * Create a keyDown event for the current default key source
+     * Create a keyUp event for the current default key source
+     *
+     * To send special keys, send the respective key's codepoint,
+     * as defined by `WebDriver
+     * <https://w3c.github.io/webdriver/#keyboard-actions>`_.
      *
      * @param {String} key - Key to release
      * @param {String?} sourceName - Named key source to use or null for the default key source
@@ -507,7 +544,7 @@
         tick = actions.addTick().tickIdx;
       }
       let moveAction = {type: "pointerMove", x, y, origin};
-      if (duration) {
+      if (duration !== undefined && duration !== null) {
         moveAction.duration = duration;
       }
       let actionProperties = setPointerProperties(moveAction, width, height, pressure,
@@ -552,7 +589,7 @@
         tick = actions.addTick().tickIdx;
       }
       this.actions.set(tick, {type: "scroll", x, y, deltaX, deltaY, origin});
-      if (duration) {
+      if (duration !== undefined && duration !== null) {
         this.actions.get(tick).duration = duration;
       }
     },

@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
-from __future__ import print_function
-
 import argparse
-import collections
 import copy
 import json
 import os
@@ -323,7 +320,7 @@ def generate_test_source_files(spec_directory, test_helper_filenames,
     # Choose a debug/release template depending on the target.
     html_template = "test.%s.html.template" % target
 
-    artifact_order = test_expansion_schema.keys()
+    artifact_order = list(test_expansion_schema.keys())
     artifact_order.remove('expansion')
 
     excluded_selection_pattern = ''
@@ -446,7 +443,7 @@ def main():
     # Load the default spec JSON file, ...
     default_spec_filename = os.path.join(util.script_directory,
                                          'spec.src.json')
-    spec_json = collections.OrderedDict()
+    spec_json = {}
     if os.path.exists(default_spec_filename):
         spec_json = util.load_spec_json(default_spec_filename)
 

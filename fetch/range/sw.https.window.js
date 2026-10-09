@@ -23,13 +23,15 @@ async function setupRegistration(t, scope) {
   return reg;
 }
 
-function awaitMessage(obj, id) {
-  return new Promise(resolve => {
+function awaitMessage(test, obj, id, maxTimeout) {
+  return new Promise((resolve, reject) => {
     obj.addEventListener('message', function listener(event) {
       if (event.data.id !== id) return;
       obj.removeEventListener('message', listener);
       resolve(event.data);
     });
+    if (maxTimeout)
+      test.step_timeout(() => reject("awaiting message timed out"), maxTimeout);
   });
 }
 
@@ -71,7 +73,7 @@ promise_test(async t => {
   const iframe = await with_iframe(scope);
   const w = iframe.contentWindow;
   const id = Math.random() + '';
-  const storedRangeResponse = awaitMessage(w.navigator.serviceWorker, id);
+  const storedRangeResponse = awaitMessage(t, w.navigator.serviceWorker, id);
 
   // Trigger a cross-origin range request using media
   const url = new URL('partial-script.py', w.location);
@@ -92,8 +94,6 @@ promise_test(async t => {
   const loadScriptPromise = loadScript('?action=use-stored-ranged-response', { doc: w.document });
   await promise_rejects_js(t, Error, loadScriptPromise);
 
-  await loadScriptPromise.catch(() => {});
-
   assert_false(!!w.scriptExecuted, `Partial response shouldn't be executed`);
 }, `Ranged response not allowed following no-cors ranged request`);
 
@@ -103,7 +103,7 @@ promise_test(async t => {
   const iframe = await with_iframe(scope);
   const w = iframe.contentWindow;
   const id = Math.random() + '';
-  const storedRangeResponse = awaitMessage(w.navigator.serviceWorker, id);
+  const storedRangeResponse = awaitMessage(t, w.navigator.serviceWorker, id);
 
   // Trigger a range request using media
   const url = new URL('partial-script.py', w.location);
@@ -130,9 +130,9 @@ promise_test(async t => {
   const iframe = await with_iframe(scope);
   const w = iframe.contentWindow;
   const fetchId = Math.random() + '';
-  const fetchBroadcast = awaitMessage(w.navigator.serviceWorker, fetchId);
+  const fetchBroadcast = awaitMessage(t, w.navigator.serviceWorker, fetchId);
   const audioId = Math.random() + '';
-  const audioBroadcast = awaitMessage(w.navigator.serviceWorker, audioId);
+  const audioBroadcast = awaitMessage(t, w.navigator.serviceWorker, audioId);
 
   const url = new URL('long-wav.py', w.location);
   url.searchParams.set('action', 'broadcast-accept-encoding');

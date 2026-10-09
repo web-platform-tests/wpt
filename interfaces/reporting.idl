@@ -1,19 +1,15 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: Reporting API 1 (https://w3c.github.io/reporting/)
+// Source: Reporting API (https://w3c.github.io/reporting/)
 
-[Exposed=(Window,Worker)]
-interface ReportBody {
-  [Default] object toJSON();
+dictionary ReportBody {
 };
 
-[Exposed=(Window,Worker)]
-interface Report {
-  [Default] object toJSON();
-  readonly attribute DOMString type;
-  readonly attribute DOMString url;
-  readonly attribute ReportBody? body;
+dictionary Report {
+  DOMString type;
+  DOMString url;
+  ReportBody? body;
 };
 
 [Exposed=(Window,Worker)]

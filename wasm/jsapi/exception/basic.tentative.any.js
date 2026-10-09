@@ -4,21 +4,25 @@
 function assert_throws_wasm(fn, message) {
   try {
     fn();
-    assert_not_reached(`expected to throw with ${message}`);
+    assert_unreached(`expected to throw with ${message}`);
   } catch (e) {
     assert_true(e instanceof WebAssembly.Exception, `Error should be a WebAssembly.Exception with ${message}`);
+    // According to the spec discussion, the current `WebAssembly.Exception` does not have `[[ErrorData]]` semantically.
+    // - https://github.com/WebAssembly/spec/issues/1914
+    // - https://webassembly.github.io/spec/js-api/#exceptions
+    // - https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-properties-of-error-instances
+    assert_false(Error.isError(e), `Error.isError(WebAssembly.Exception) should be false due to lacking [[ErrorData]]`);
   }
 }
 
 promise_test(async () => {
-  const kWasmAnyRef = 0x6f;
-  const kSig_v_r = makeSig([kWasmAnyRef], []);
+  const kSig_v_r = makeSig([kWasmExternRef], []);
   const builder = new WasmModuleBuilder();
-  const except = builder.addException(kSig_v_r);
+  const tagIndex = builder.addTag(kSig_v_r);
   builder.addFunction("throw_param", kSig_v_r)
     .addBody([
       kExprLocalGet, 0,
-      kExprThrow, except,
+      kExprThrow, tagIndex,
     ])
     .exportFunc();
   const buffer = builder.toBuffer();
@@ -45,11 +49,11 @@ promise_test(async () => {
 
 promise_test(async () => {
   const builder = new WasmModuleBuilder();
-  const except = builder.addException(kSig_v_a);
+  const tagIndex = builder.addTag(kSig_v_a);
   builder.addFunction("throw_null", kSig_v_v)
     .addBody([
-      kExprRefNull, kWasmAnyFunc,
-      kExprThrow, except,
+      kExprRefNull, kAnyFuncCode,
+      kExprThrow, tagIndex,
     ])
     .exportFunc();
   const buffer = builder.toBuffer();
@@ -59,11 +63,11 @@ promise_test(async () => {
 
 promise_test(async () => {
   const builder = new WasmModuleBuilder();
-  const except = builder.addException(kSig_v_i);
+  const tagIndex = builder.addTag(kSig_v_i);
   builder.addFunction("throw_int", kSig_v_v)
     .addBody([
       ...wasmI32Const(7),
-      kExprThrow, except,
+      kExprThrow, tagIndex,
     ])
     .exportFunc();
   const buffer = builder.toBuffer();
@@ -74,15 +78,15 @@ promise_test(async () => {
 promise_test(async () => {
   const builder = new WasmModuleBuilder();
   const fnIndex = builder.addImport("module", "fn", kSig_v_v);
-  const except = builder.addException(kSig_v_r);
+  const tagIndex= builder.addTag(kSig_v_r);
   builder.addFunction("catch_exception", kSig_r_v)
     .addBody([
       kExprTry, kWasmStmt,
         kExprCallFunction, fnIndex,
-      kExprCatch, except,
+      kExprCatch, tagIndex,
         kExprReturn,
       kExprEnd,
-      kExprRefNull, kWasmAnyRef,
+      kExprRefNull, kExternRefCode,
     ])
     .exportFunc();
 
@@ -106,7 +110,7 @@ promise_test(async () => {
       kExprCatchAll,
         kExprRethrow, 0x00,
       kExprEnd,
-      kExprRefNull, kWasmAnyRef,
+      kExprRefNull, kExternRefCode,
     ])
     .exportFunc();
 

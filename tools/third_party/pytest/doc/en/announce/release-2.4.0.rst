@@ -23,14 +23,13 @@ a full list of details.  A few feature highlights:
   called if the corresponding setup method succeeded.
 
 - integrate tab-completion on command line options if you
-  have `argcomplete <https://pypi.org/project/argcomplete/>`_
-  configured.
+  have :pypi:`argcomplete` configured.
 
 - allow boolean expression directly with skipif/xfail
   if a "reason" is also specified.
 
 - a new hook ``pytest_load_initial_conftests`` allows plugins like
-  `pytest-django <https://pypi.org/project/pytest-django/>`_ to
+  :pypi:`pytest-django` to
   influence the environment before conftest files import ``django``.
 
 - reporting: color the last line red or green depending if
@@ -182,7 +181,7 @@ Bug fixes:
   partially failed (finalizers would not always be called before)
 
 - fix issue320 - fix class scope for fixtures when mixed with
-  module-level functions.  Thanks Anatloy Bubenkoff.
+  module-level functions.  Thanks Anatoly Bubenkoff.
 
 - you can specify "-q" or "-qq" to get different levels of "quieter"
   reporting (thanks Katarzyna Jachim)

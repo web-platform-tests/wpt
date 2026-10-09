@@ -280,14 +280,15 @@ var browserTests = [
     "foo<dfn>b<span style=\"font-style:normal\">[a]</span>r</dfn>baz",
     [true,true],
     {"stylewithcss":[false,true,"",false,false,""],"italic":[false,true,"",false,false,""]}],
+// Should not replace existing <em> when partially removing the italic style.
 ["foo<em>b[a]r</em>baz",
     [["stylewithcss","true"],["italic",""]],
-    "foo<span style=\"font-style:italic\">b</span>[a]<span style=\"font-style:italic\">r</span>baz",
+    "foo<em>b</em>a<em>r</em>baz",
     [true,true],
     {"stylewithcss":[false,false,"",false,true,""],"italic":[false,true,"",false,false,""]}],
 ["foo<em>b[a]r</em>baz",
     [["stylewithcss","false"],["italic",""]],
-    "foo<i>b</i>[a]<i>r</i>baz",
+    "foo<em>b</em>a<em>r</em>baz",
     [true,true],
     {"stylewithcss":[false,true,"",false,false,""],"italic":[false,true,"",false,false,""]}],
 ["foo<i>b[a]r</i>baz",
@@ -340,6 +341,7 @@ var browserTests = [
     "fo<i>[o<dfn>bar</dfn>b]</i>az",
     [true,true],
     {"stylewithcss":[false,true,"",false,false,""],"italic":[true,false,"",false,true,""]}],
+// Replace <em> with <i> or <span> when whole of it is wrapped in a new element.
 ["fo[o<em>bar</em>b]az",
     [["stylewithcss","true"],["italic",""]],
     "fo<span style=\"font-style:italic\">[obarb]</span>az",
@@ -674,5 +676,13 @@ var browserTests = [
     [["stylewithcss","false"],["italic",""]],
     "<i>fo</i>[o<address><span style=\"font-style:normal\">b]</span>ar</address>",
     [true,true],
-    {"stylewithcss":[false,true,"",false,false,""],"italic":[false,true,"",false,false,""]}]
+    {"stylewithcss":[false,true,"",false,false,""],"italic":[false,true,"",false,false,""]}],
+
+// Should not change the style of the non-editable nodes so that only the
+// visible and editable nodes are wrapped into the <i> elements.
+['{ <span contenteditable="false">A</span> ; <span contenteditable="false">B</span> ; <span contenteditable="false">C</span> }',
+    [["stylewithcss","false"],["italic",""]],
+    ' <span contenteditable="false">A</span><i> ; </i><span contenteditable="false">B</span><i> ; </i><span contenteditable="false">C</span> ',
+    [true,true],
+    {}],
 ]

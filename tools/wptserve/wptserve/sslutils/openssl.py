@@ -1,10 +1,13 @@
+# mypy: allow-untyped-defs
+
 import functools
 import os
 import random
 import shutil
 import subprocess
 import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 
 # Amount of time beyond the present to consider certificates "expired." This
 # allows certificates to be proactively re-generated in the "buffer" period
@@ -12,7 +15,7 @@ from datetime import datetime, timedelta
 CERT_EXPIRY_BUFFER = dict(hours=6)
 
 
-class OpenSSL(object):
+class OpenSSL:
     def __init__(self, logger, binary, base_path, conf_path, hosts, duration,
                  base_conf_path=None):
         """Context manager for interacting with OpenSSL.
@@ -214,7 +217,7 @@ keyUsage = keyCertSign
 
     return rv
 
-class OpenSSLEnvironment(object):
+class OpenSSLEnvironment:
     ssl_enabled = True
 
     def __init__(self, logger, openssl_binary="openssl", base_path=None,
@@ -308,13 +311,10 @@ class OpenSSLEnvironment(object):
                                    "-noout",
                                    "-enddate",
                                    "-in", cert_path).decode("utf8").split("=", 1)[1].strip()
-            # Not sure if this works in other locales
-            end_date = datetime.strptime(end_date_str, "%b %d %H:%M:%S %Y %Z")
+            # openssl outputs an RFC 822 date
+            end_date = parsedate_to_datetime(end_date_str)
             time_buffer = timedelta(**CERT_EXPIRY_BUFFER)
-            # Because `strptime` does not account for time zone offsets, it is
-            # always in terms of UTC, so the current time should be calculated
-            # accordingly.
-            if end_date < datetime.utcnow() + time_buffer:
+            if end_date < datetime.now(timezone.utc) + time_buffer:
                 return False
 
         #TODO: check the key actually signed the cert.

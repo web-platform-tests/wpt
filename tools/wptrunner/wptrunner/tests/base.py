@@ -1,35 +1,32 @@
-import os
-import sys
+# mypy: allow-untyped-defs
 
-from os.path import dirname, join
+import os
+
 
 import pytest
 
-sys.path.insert(0, join(dirname(__file__), "..", ".."))
-
-from .. import browsers
+from ..products import get_all_products
 
 
-_products = browsers.product_list
+_products = set(get_all_products())
 _active_products = set()
 
 if "CURRENT_TOX_ENV" in os.environ:
-    current_tox_env_split = os.environ["CURRENT_TOX_ENV"].split("-")
+    current_tox_env_split = set(os.environ["CURRENT_TOX_ENV"].split("-"))
 
     tox_env_extra_browsers = {
         "chrome": {"chrome_android"},
-        "edge": {"edge_webdriver"},
-        "servo": {"servodriver"},
+        "servo": {"servo_legacy"},
     }
 
-    _active_products = set(_products) & set(current_tox_env_split)
+    _active_products = _products & set(current_tox_env_split)
     for product in frozenset(_active_products):
         _active_products |= tox_env_extra_browsers.get(product, set())
 else:
-    _active_products = set(_products)
+    _active_products = _products
 
 
-class all_products(object):
+class all_products:
     def __init__(self, arg, marks={}):
         self.arg = arg
         self.marks = marks
@@ -44,7 +41,7 @@ class all_products(object):
         return pytest.mark.parametrize(self.arg, params)(f)
 
 
-class active_products(object):
+class active_products:
     def __init__(self, arg, marks={}):
         self.arg = arg
         self.marks = marks

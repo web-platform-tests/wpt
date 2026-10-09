@@ -22,7 +22,7 @@ drive two animations">
   }
 
   #scroller {
-    overflow: auto;
+    overflow: hidden;
     height: 100px;
     width: 100px;
     will-change: transform; /* force compositing */
@@ -61,7 +61,7 @@ drive two animations">
 
   const scroller = document.getElementById('scroller');
   const timeline = new ScrollTimeline(
-      { scrollSource: scroller, orientation: 'block' });
+      { source: scroller, orientation: 'block' });
   const transform_animation = new Animation(transform_effect, timeline);
   transform_animation.play();
   const opacity_animation = new Animation(opacity_effect, timeline);

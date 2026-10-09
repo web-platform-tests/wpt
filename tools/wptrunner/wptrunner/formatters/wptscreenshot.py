@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import requests
 from mozlog.structured.formatters.base import BaseFormatter
 
@@ -36,7 +38,7 @@ class WptscreenshotFormatter(BaseFormatter):  # type: ignore
             return
         output = ""
         for item in data["extra"]["reftest_screenshots"]:
-            if type(item) != dict:
+            if not isinstance(item, dict):
                 # Skip the relation string.
                 continue
             checksum = "sha1:" + item["hash"]

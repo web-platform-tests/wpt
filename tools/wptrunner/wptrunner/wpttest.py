@@ -1,17 +1,21 @@
+# mypy: allow-untyped-defs
 import os
 import subprocess
 import sys
+from abc import ABC
 from collections import defaultdict
-from typing import Any, ClassVar, Dict, Type
+from typing import Any, ClassVar, Dict, MutableMapping, Optional, Set, Type
 from urllib.parse import urljoin
 
 from .wptmanifest.parser import atoms
 
 atom_reset = atoms["Reset"]
-enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest"}
+enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest", "test262", "aamtest"}
 
+class Result(ABC):
+    default_expected: ClassVar[str]
+    statuses: Set[str]
 
-class Result(object):
     def __init__(self,
                  status,
                  message,
@@ -23,16 +27,16 @@ class Result(object):
             raise ValueError("Unrecognised status %s" % status)
         self.status = status
         self.message = message
-        self.expected = expected
+        self.expected = expected if expected is not None else self.default_expected
         self.known_intermittent = known_intermittent if known_intermittent is not None else []
         self.extra = extra if extra is not None else {}
         self.stack = stack
 
     def __repr__(self):
-        return "<%s.%s %s>" % (self.__module__, self.__class__.__name__, self.status)
+        return f"<{self.__module__}.{self.__class__.__name__} {self.status}>"
 
 
-class SubtestResult(object):
+class SubtestResult(ABC):
     def __init__(self, name, status, message, stack=None, expected=None, known_intermittent=None):
         self.name = name
         if status not in self.statuses:
@@ -44,7 +48,7 @@ class SubtestResult(object):
         self.known_intermittent = known_intermittent if known_intermittent is not None else []
 
     def __repr__(self):
-        return "<%s.%s %s %s>" % (self.__module__, self.__class__.__name__, self.name, self.status)
+        return f"<{self.__module__}.{self.__class__.__name__} {self.name} {self.status}>"
 
 
 class TestharnessResult(Result):
@@ -70,7 +74,17 @@ class WdspecResult(Result):
 
 class WdspecSubtestResult(SubtestResult):
     default_expected = "PASS"
-    statuses = {"PASS", "FAIL", "ERROR"}
+    statuses = {"PASS", "FAIL", "ERROR", "PRECONDITION_FAILED"}
+
+
+class AamSpecResult(Result):
+    default_expected = "OK"
+    statuses = {"OK", "ERROR", "INTERNAL-ERROR", "TIMEOUT", "EXTERNAL-TIMEOUT", "CRASH"}
+
+
+class AamSpecSubtestResult(SubtestResult):
+    default_expected = "PASS"
+    statuses = {"PASS", "FAIL", "ERROR", "PRECONDITION_FAILED"}
 
 
 class CrashtestResult(Result):
@@ -84,12 +98,13 @@ def get_run_info(metadata_root, product, **kwargs):
 
 
 class RunInfo(Dict[str, Any]):
-    def __init__(self, metadata_root, product, debug,
+    def __init__(self, metadata_root, product_name, debug,
                  browser_version=None,
                  browser_channel=None,
                  verify=None,
                  extras=None,
-                 enable_webrender=False):
+                 device_serials=None,
+                 adb_binary=None):
         import mozinfo
         self._update_mozinfo(metadata_root)
         self.update(mozinfo.info)
@@ -104,7 +119,7 @@ class RunInfo(Dict[str, Any]):
             self["revision"] = rev.decode("utf-8")
 
         self["python_version"] = sys.version_info.major
-        self["product"] = product
+        self["product"] = product_name
         if debug is not None:
             self["debug"] = debug
         elif "debug" not in self:
@@ -120,9 +135,67 @@ class RunInfo(Dict[str, Any]):
             self["wasm"] = False
         if extras is not None:
             self.update(extras)
+        if "headless" not in self:
+            self["headless"] = False
 
-        self["headless"] = extras.get("headless", False)
-        self["webrender"] = enable_webrender
+        if adb_binary:
+            self["adb_binary"] = adb_binary
+
+        if device_serials:
+            # Assume all emulators are identical, so query an arbitrary one.
+            self._update_with_emulator_info(device_serials[0])
+            self.pop("linux_distro", None)
+
+    def _adb_run(self, device_serial, args, **kwargs):
+        adb_binary = self.get("adb_binary", os.environ.get("ADB_PATH", "adb"))
+        cmd = [adb_binary, "-s", device_serial, *args]
+        return subprocess.check_output(cmd, **kwargs)
+
+    def _adb_get_property(self, device_serial, prop, **kwargs):
+        args = ["shell", "getprop", prop]
+        value = self._adb_run(device_serial, args, **kwargs)
+        return value.strip()
+
+    def _update_with_emulator_info(self, device_serial):
+        """Override system info taken from the host if using an Android
+        emulator."""
+        try:
+            self._adb_run(device_serial, ["wait-for-device"])
+            emulator_info = {
+                "os": "android",
+                "os_version": self._adb_get_property(
+                    device_serial,
+                    "ro.build.version.release",
+                    encoding="utf-8",
+                ),
+                "android_version": self._adb_get_property(
+                    device_serial,
+                    "ro.build.version.sdk",
+                    encoding="utf-8",
+                )
+            }
+            emulator_info["version"] = emulator_info["os_version"]
+
+            # Detect CPU info (https://developer.android.com/ndk/guides/abis#sa)
+            abi64, *_ = self._adb_get_property(
+                device_serial,
+                "ro.product.cpu.abilist64",
+                encoding="utf-8",
+            ).split(',')
+            if abi64:
+                emulator_info["processor"] = abi64
+                emulator_info["bits"] = 64
+            else:
+                emulator_info["processor"], *_ = self._adb_get_property(
+                    device_serial,
+                    "ro.product.cpu.abilist32",
+                    encoding="utf-8",
+                ).split(',')
+                emulator_info["bits"] = 32
+
+            self.update(emulator_info)
+        except (OSError, subprocess.CalledProcessError):
+            pass
 
     def _update_mozinfo(self, metadata_root):
         """Add extra build information from a mozinfo.json file in a parent
@@ -148,17 +221,18 @@ def server_protocol(manifest_item):
     return "http"
 
 
-class Test(object):
-
-    result_cls = None  # type: ClassVar[Type[Result]]
-    subtest_result_cls = None  # type: ClassVar[Type[SubtestResult]]
-    test_type = None  # type: ClassVar[str]
+class Test(ABC):
+    result_cls: ClassVar[Type[Result]]
+    subtest_result_cls: ClassVar[Optional[Type[SubtestResult]]] = None
+    test_type: ClassVar[str]
+    pac = None
 
     default_timeout = 10  # seconds
     long_timeout = 60  # seconds
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
-                 timeout=None, path=None, protocol="http", subdomain=False):
+          timeout=None, path=None, protocol="http", subdomain=False, pac=None,
+          testdriver_features=None):
         self.url_base = url_base
         self.tests_root = tests_root
         self.url = url
@@ -166,10 +240,14 @@ class Test(object):
         self._test_metadata = test_metadata
         self.timeout = timeout if timeout is not None else self.default_timeout
         self.path = path
+        self.testdriver_features = testdriver_features
         self.subdomain = subdomain
         self.environment = {"url_base": url_base,
                             "protocol": protocol,
                             "prefs": self.prefs}
+
+        if pac is not None:
+            self.environment["pac"] = urljoin(self.url, pac)
 
     def __eq__(self, other):
         if not isinstance(other, Test):
@@ -180,10 +258,27 @@ class Test(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def update_metadata(self, metadata=None):
-        if metadata is None:
-            metadata = {}
-        return metadata
+    def make_result(self,
+                    status,
+                    message,
+                    expected=None,
+                    extra=None,
+                    stack=None,
+                    known_intermittent=None):
+        if expected is None:
+            expected = self.expected()
+            known_intermittent = self.known_intermittent()
+        return self.result_cls(status, message, expected, extra, stack, known_intermittent)
+
+    def make_subtest_result(self, name, status, message, stack=None, expected=None,
+                            known_intermittent=None):
+        if expected is None:
+            expected = self.expected(name)
+            known_intermittent = self.known_intermittent(name)
+        return self.subtest_result_cls(name, status, message, stack, expected, known_intermittent)
+
+    def update_metadata(self, metadata: MutableMapping[str, Any]) -> None:
+        pass
 
     @classmethod
     def from_manifest(cls, manifest_file, manifest_item, inherit_metadata, test_metadata):
@@ -223,8 +318,7 @@ class Test(object):
                 if subtest_meta is not None:
                     yield subtest_meta
             yield self._get_metadata()
-        for metadata in reversed(self._inherit_metadata):
-            yield metadata
+        yield from reversed(self._inherit_metadata)
 
     def disabled(self, subtest=None):
         for meta in self.itermeta(subtest):
@@ -335,6 +429,19 @@ class Test(object):
             prefs.update(meta_prefs)
         return prefs
 
+    def expected_fail_message(self, subtest):
+        if subtest is None:
+            return None
+
+        metadata = self._get_metadata(subtest)
+        if metadata is None:
+            return None
+
+        try:
+            return metadata.get("expected-fail-message")
+        except KeyError:
+            return None
+
     def expected(self, subtest=None):
         if subtest is None:
             default = self.result_cls.default_expected
@@ -379,19 +486,8 @@ class Test(object):
         except KeyError:
             return []
 
-    def expect_any_subtest_status(self):
-        metadata = self._get_metadata()
-        if metadata is None:
-            return False
-        try:
-            # This key is used by the Blink CI to ignore subtest statuses
-            metadata.get("blink_expect_any_subtest_status")
-            return True
-        except KeyError:
-            return False
-
     def __repr__(self):
-        return "<%s.%s %s>" % (self.__module__, self.__class__.__name__, self.id)
+        return f"<{self.__module__}.{self.__class__.__name__} {self.id}>"
 
 
 class TestharnessTest(Test):
@@ -401,9 +497,10 @@ class TestharnessTest(Test):
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
                  timeout=None, path=None, protocol="http", testdriver=False,
-                 jsshell=False, scripts=None, subdomain=False):
+                 jsshell=False, scripts=None, subdomain=False, pac=None,
+                 testdriver_features=None):
         Test.__init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, timeout,
-                      path, protocol, subdomain)
+                      path, protocol, subdomain, pac, testdriver_features)
 
         self.testdriver = testdriver
         self.jsshell = jsshell
@@ -412,6 +509,8 @@ class TestharnessTest(Test):
     @classmethod
     def from_manifest(cls, manifest_file, manifest_item, inherit_metadata, test_metadata):
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
+        pac = manifest_item.pac
+        testdriver_features = manifest_item.testdriver_features
         testdriver = manifest_item.testdriver if hasattr(manifest_item, "testdriver") else False
         jsshell = manifest_item.jsshell if hasattr(manifest_item, "jsshell") else False
         script_metadata = manifest_item.script_metadata or []
@@ -423,6 +522,8 @@ class TestharnessTest(Test):
                    inherit_metadata,
                    test_metadata,
                    timeout=timeout,
+                   pac=pac,
+                   testdriver_features=testdriver_features,
                    path=os.path.join(manifest_file.tests_root, manifest_item.path),
                    protocol=server_protocol(manifest_item),
                    testdriver=testdriver,
@@ -435,12 +536,8 @@ class TestharnessTest(Test):
         return self.url
 
 
-class ManualTest(Test):
-    test_type = "manual"
-
-    @property
-    def id(self):
-        return self.url
+class Test262Test(TestharnessTest):
+    test_type = "test262"
 
 
 class ReftestTest(Test):
@@ -460,7 +557,7 @@ class ReftestTest(Test):
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, references,
                  timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None,
-                 protocol="http", subdomain=False):
+                 protocol="http", subdomain=False, testdriver=False):
         Test.__init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, timeout,
                       path, protocol, subdomain)
 
@@ -471,6 +568,7 @@ class ReftestTest(Test):
         self.references = references
         self.viewport_size = self.get_viewport_size(viewport_size)
         self.dpi = dpi
+        self.testdriver = testdriver
         self._fuzzy = fuzzy or {}
 
     @classmethod
@@ -478,7 +576,8 @@ class ReftestTest(Test):
         return {"viewport_size": manifest_test.viewport_size,
                 "dpi": manifest_test.dpi,
                 "protocol": server_protocol(manifest_test),
-                "fuzzy": manifest_test.fuzzy}
+                "fuzzy": manifest_test.fuzzy,
+                "testdriver": bool(getattr(manifest_test, "testdriver", False))}
 
     @classmethod
     def from_manifest(cls,
@@ -559,7 +658,7 @@ class ReftestTest(Test):
 
         return node
 
-    def update_metadata(self, metadata):
+    def update_metadata(self, metadata: MutableMapping[str, Any]) -> None:
         if "url_count" not in metadata:
             metadata["url_count"] = defaultdict(int)
         for reference, _ in self.references:
@@ -568,7 +667,6 @@ class ReftestTest(Test):
             # for each possible match
             metadata["url_count"][(self.environment["protocol"], reference.url)] += 1
             reference.update_metadata(metadata)
-        return metadata
 
     def get_viewport_size(self, override):
         return override
@@ -617,15 +715,15 @@ class PrintReftestTest(ReftestTest):
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, references,
                  timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None,
-                 page_ranges=None, protocol="http", subdomain=False):
-        super(PrintReftestTest, self).__init__(url_base, tests_root, url, inherit_metadata, test_metadata,
-                                               references, timeout, path, viewport_size, dpi,
-                                               fuzzy, protocol, subdomain=subdomain)
+                 page_ranges=None, protocol="http", subdomain=False, testdriver=False):
+        super().__init__(url_base, tests_root, url, inherit_metadata, test_metadata,
+                         references, timeout, path, viewport_size, dpi,
+                         fuzzy, protocol, subdomain=subdomain, testdriver=testdriver)
         self._page_ranges = page_ranges
 
     @classmethod
     def cls_kwargs(cls, manifest_test):
-        rv = super(PrintReftestTest, cls).cls_kwargs(manifest_test)
+        rv = super().cls_kwargs(manifest_test)
         rv["page_ranges"] = manifest_test.page_ranges
         return rv
 
@@ -647,17 +745,47 @@ class WdspecTest(Test):
     long_timeout = 180  # 3 minutes
 
 
+class AamSpecTest(Test):
+    result_cls = AamSpecResult
+    subtest_result_cls = AamSpecSubtestResult
+    test_type = "aamtest"
+
+    default_timeout = 25
+    long_timeout = 180  # 3 minutes
+
+
 class CrashTest(Test):
     result_cls = CrashtestResult
     test_type = "crashtest"
+
+    def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
+                 timeout=None, path=None, protocol="http", subdomain=False, testdriver=False):
+        super().__init__(url_base, tests_root, url, inherit_metadata, test_metadata,
+                         timeout, path, protocol, subdomain=subdomain)
+        self.testdriver = testdriver
+
+    @classmethod
+    def from_manifest(cls, manifest_file, manifest_item, inherit_metadata, test_metadata):
+        timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
+        return cls(manifest_file.url_base,
+                   manifest_file.tests_root,
+                   manifest_item.url,
+                   inherit_metadata,
+                   test_metadata,
+                   timeout=timeout,
+                   path=os.path.join(manifest_file.tests_root, manifest_item.path),
+                   protocol=server_protocol(manifest_item),
+                   subdomain=manifest_item.subdomain,
+                   testdriver=bool(getattr(manifest_item, "testdriver", False)))
 
 
 manifest_test_cls = {"reftest": ReftestTest,
                      "print-reftest": PrintReftestTest,
                      "testharness": TestharnessTest,
-                     "manual": ManualTest,
                      "wdspec": WdspecTest,
-                     "crashtest": CrashTest}
+                     "aamtest": AamSpecTest,
+                     "crashtest": CrashTest,
+                     "test262": Test262Test}
 
 
 def from_manifest(manifest_file, manifest_test, inherit_metadata, test_metadata):

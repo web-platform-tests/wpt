@@ -7,6 +7,8 @@
     <meta name="timeout" content="long">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
     <script src="/cookies/resources/cookie-test.js"></script>
   </head>
   <body>
@@ -52,7 +54,12 @@
           cookie: "test=8;       Secure     ;",
           expected: "test=8",
           name: "Set cookie for space Secure with ;",
-        }
+        },
+        {
+          cookie: ["testa9a=x; secure; ", "; secure", "testa9b=y; secure;"],
+          expected: "testa9a=x; testa9b=y",
+          name: "Ignore name- and value-less `Set-Cookie: ; secure`",
+        },
       ];
 
       for (const test of secureTests) {

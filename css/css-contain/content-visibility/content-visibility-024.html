@@ -6,12 +6,14 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain/#content-visibility">
 <link rel="match" href="content-visibility-024-ref.html">
 <meta name="assert" content="content-visibility hidden img element paints when hidden is removed">
+<meta name="fuzzy" content="maxDifference=0-5; totalPixels=0-100">
 
 <script src="/common/reftest-wait.js"></script>
 
 <style>
 div {
   background: blue;
+  color: white;
 }
 img {
   width: 400px;
@@ -24,10 +26,10 @@ img {
 }
 </style>
 
-<div>lorem ipsum</div>
-<img id="img1" class=hidden src="resources/dice.png"></img>
-<img id="img2" class=hidden src="resources/circles.svg"></img>
-<div>consectetur adipiscing elit</div>
+<div>Test passes if there are two pictures below: one of colored dices over a checkered background, and one of a bunch of circles.</div>
+<img id="img1" class=hidden src="resources/dice.png">
+<img id="img2" class=hidden src="resources/circles.svg">
+<div>Lorem ipsum consectetur adipiscing elit</div>
 
 <script>
 async function runTest() {

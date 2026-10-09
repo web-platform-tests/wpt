@@ -34,7 +34,9 @@ const properties = [
   "-moz-animation-name",
   "-moz-animation-play-state",
   "-moz-animation-timing-function",
-  "-moz-appearance",
+  // -moz-appearance may be disabled from CSSStyleProperties.
+  // See also https://bugzilla.mozilla.org/show_bug.cgi?id=1977489
+  // "-moz-appearance",
   "-moz-backface-visibility",
   "-moz-binding",
   "-moz-border-bottom-colors",
@@ -85,8 +87,9 @@ const properties = [
   "-moz-tab-size",
   "-moz-text-align-last",
   "-moz-text-size-adjust",
-  "-moz-transform",
-  "-moz-transform-origin",
+  // No -moz-transform/origin here, because it might intentionally break the
+  // expectations of this test for compat reasons, see:
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=1865332
   "-moz-transform-style",
   "-moz-transition",
   "-moz-transition-delay",
@@ -94,7 +97,6 @@ const properties = [
   "-moz-transition-property",
   "-moz-transition-timing-function",
   "-moz-user-focus",
-  "-moz-user-input",
   "-moz-user-modify",
   "-moz-user-select",
   "-moz-window-dragging",

@@ -12,28 +12,46 @@
 <body>
 <script>
 
-promise_test(async t => {
+document.body.onload = async () => {
   // First, the test sets a SameSite=None;Partitioned; cookie.
-  const attributes = 'Secure;Path=/;SameSite=None;Partitioned';
-  const httpCookieName = '__Host-pchttp';
+  const attributes = "Secure;Path=/;SameSite=None;Partitioned";
+  const httpCookieName = "__Host-pchttp";
   await credFetch(
       `${self.origin}/cookies/resources/set.py?${httpCookieName}=foobar;${
           attributes}`);
 
   // Set another partitioned cookie using document.cookie.
-  const domCookieName = '__Host-pcdom';
+  const domCookieName = "__Host-pcdom";
   document.cookie = `${domCookieName}=foobar;${attributes}`;
+
+  // Set another partitioned cookie using the CookieStore API, if supported.
+  if (window.cookieStore) {
+    const cookieStoreCookieName = "__Host-pccookiestore";
+    await cookieStore.set({
+      name: cookieStoreCookieName,
+      value: "foobar",
+      path: "/",
+      sameSite: "none",
+      partitioned: true,
+    });
+  }
+
+  const cookieNames = getCookieNames();
 
   // Verify that the cookies are sent in requests from this top-level site.
   testHttpPartitionedCookies({
     origin: self.origin,
-    cookieNames: [httpCookieName, domCookieName],
+    cookieNames,
     expectsCookie: true,
   });
 
   // Verify that the cookies are exposed to the DOM on this top-level site.
   testDomPartitionedCookies({
-    cookieNames: [httpCookieName, domCookieName],
+    cookieNames,
+    expectsCookie: true,
+  });
+  testCookieStorePartitionedCookies({
+    cookieNames,
     expectsCookie: true,
   });
 
@@ -47,8 +65,12 @@ promise_test(async t => {
           encodeURIComponent(self.origin)}`,
       get_host_info().HTTPS_NOTSAMESITE_ORIGIN + self.location.pathname);
   const popup = window.open(crossSiteUrl);
-  fetch_tests_from_window(popup);
-}, 'Test partitioned cookies');
+  await fetch_tests_from_window(popup);
+
+  for (const cookieName of cookieNames) {
+    erase_cookie_from_js(cookieName, "Secure; Path=/; SameSite=None; Partitioned");
+  }
+};
 
 </script>
 </body>

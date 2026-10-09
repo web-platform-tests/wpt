@@ -3,10 +3,24 @@
 <meta charset=utf-8>
 <link rel="help" href="https://wicg.github.io/scroll-to-text-fragment/#find-a-range-from-a-text-directive">
 <meta name="timeout" content="long">
+<meta name="variant" content="?1-4">
+<meta name="variant" content="?5-8">
+<meta name="variant" content="?9-12">
+<meta name="variant" content="?13-16">
+<meta name="variant" content="?17-20">
+<meta name="variant" content="?21-24">
+<meta name="variant" content="?25-28">
+<meta name="variant" content="?29-32">
+<meta name="variant" content="?33-36">
+<meta name="variant" content="?37-40">
+<meta name="variant" content="?41-44">
+<meta name="variant" content="?45-48">
+<meta name="variant" content="?49-last">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/subset-tests.js"></script>
 <script src="/common/utils.js"></script>
 <script src="stash.js"></script>
 <!--
@@ -130,6 +144,11 @@ let test_cases = [
     description: 'match doesn\'t immediately follow first prefix instance'
   },
   {
+    fragment: '#:~:text=search-,Two,flatten',
+    expect_to_scroll: true,
+    description: 'Generated content matching prefix does not prevent a later match'
+  },
+  {
     // Step 2.3.1
     fragment: '#:~:text=jum,over',
     expect_to_scroll: false,
@@ -178,99 +197,160 @@ let test_cases = [
     description: 'overlapping one letter exact matches with suffix'
   },
   {
-    // Step 2.4.1
+    // Step 2.5.1
     fragment: '#:~:text=brown,fox',
     expect_to_scroll: true,
     description: 'matching range search'
   },
   {
-    // Step 2.4.1
+    // Step 2.4
     fragment: '#:~:text=brown,quick',
     expect_to_scroll: false,
     description: 'inverted range search'
   },
   {
-    // Step 2.4.2
+    // Step 2.5.1.1
     fragment: '#:~:text=quick,bro',
     expect_to_scroll: false,
     description: 'no suffix forces |end| to be end bounded'
   },
   {
-    // Step 2.4.2
+    // Step 2.5.1.1
     fragment: '#:~:text=quick,bro,-wn',
     expect_to_scroll: true,
     description: 'suffix means |end| need not be end bounded'
   },
   {
-    // Step 2.4.3
+    // Step 2.5.1.2
     fragment: '#:~:text=quick,ro,-wn',
     expect_to_scroll: false,
     description: '|end| must be start bounded'
   },
   {
-    // Step 2.4.3
+    // Step 2.5.1.2
     fragment: '#:~:text=bro,wn',
     expect_to_scroll: false,
     description: '|end| must be start bounded even if full range is word bounded'
   },
   {
-    // Step 2.4.4
+    // Step 2.5.1.3
     fragment: '#:~:text=quick,null',
     expect_to_scroll: false,
     description: 'non-existent |end|'
   },
   {
-    // Step 2.4.5
+    // Step 2.5.1.4
     fragment: '#:~:text=quick,jumped,-fox',
     expect_to_scroll: false,
     description: 'Range with preceeding suffix'
   },
   {
-    // Step 2.6
+    // Step 2.5.3
     fragment: '#:~:text=The-,quick,brown',
     expect_to_scroll: true,
     description: 'Match with no suffix'
   },
   {
-    // Step 2.7
+    // Step 2.5.4
     fragment: '#:~:text=The-,quick,fox,-brown',
     expect_to_scroll: false,
     description: 'Suffix comes before |end|'
   },
   {
-    // Step 2.8
+    // Step 2.5.5
     fragment: '#:~:text=Lorem-,Ipsum,Whitespace,-Dipsum',
     expect_to_scroll: true,
     description: 'Search invisible content between |end| and suffix'
   },
   {
-    // Step 2.9
+    // Step 2.5.6
     fragment: '#:~:text=quick,-bro',
     expect_to_scroll: false,
     description: 'Suffix must be end bounded'
   },
   {
-    // Step 2.9
+    // Step 2.5.6
     fragment: '#:~:text=qu,-ick',
     expect_to_scroll: true,
     description: 'Suffix need not be start bounded'
   },
   {
-    // Step 2.10
+    // Step 2.5.7
     fragment: '#:~:text=quick,-null',
     expect_to_scroll: false,
     description: 'Non-existent suffix'
   },
   {
-    // Step 2.11
+    // Step 2.5.8
     fragment: '#:~:text=quick,-fox',
     expect_to_scroll: false,
     description: 'Content appears between match and suffix'
-  }
+  },
+  {
+    // Step 2.5.9
+    fragment: '#:~:text=match,-suffix2',
+    expect_to_scroll: true,
+    description: 'Non-matching suffix in first potential match'
+  },
+  {
+    // Step 2.5.9
+    fragment: '#:~:text=prefix-,match,-suffix3',
+    expect_to_scroll: true,
+    description: 'Non-matching suffix search continues to prefix match'
+  },
+  {
+    // Step 2.5.10
+    fragment: '#:~:text=prefix-,match,matchEnd,-suffix5',
+    expect_to_scroll: true,
+    description: 'Range end matches correct suffix'
+  },
+  {
+    fragment: '#:~:text=Text%20with%20display:%20none',
+    expect_to_scroll: true,
+    description: '`start` element contains search-invisible text (display: none)'
+  },
+  {
+    fragment: '#:~:text=Text%20with%20visibility:%20hidden%20as%20block%20boundary',
+    expect_to_scroll: false,
+    description: '`start` element contains hidden text, which is a block boundary'
+  },
+  {
+    fragment: '#:~:text=Text%20with%20visibility:%20hidden%20as%20inline',
+    expect_to_scroll: true,
+    description: '`start` element contains hidden text which is not a block boundary'
+  },
+  {
+    fragment: '#:~:text=Text%20with%20Iframe',
+    expect_to_scroll: true,
+    description: '`start` element contains search-invisible text (iframe)'
+  },
+  {
+    fragment: '#:~:text=Text%20with%20image',
+    expect_to_scroll: true,
+    description: '`start` element contains search-invisible text (image)'
+  },
+  {
+    fragment: '#:~:text=caught,and%20a',
+    expect_to_scroll: true,
+    // "and a" first matches "h[and a]nd a net" but is rejected because of word boundary.
+    // The next match is the "hand [and a]" which should succeed despite overlapping the
+    // initial, rejected, match.
+    description: '|end| can match after an overlapping rejected candidate'
+  },
+  {
+    fragment: '#:~:text=z',
+    expect_to_scroll: false,
+    description: 'Inline node boundary is not a word boundary'
+  },
+  {
+    fragment: '#:~:text=what%20had',
+    expect_to_scroll: true,
+    description: 'Match across broken image'
+  },
 ];
 
 for (const test_case of test_cases) {
-  promise_test(t => new Promise((resolve, reject) => {
+  subsetTest(promise_test, t => new Promise((resolve, reject) => {
     let key = token();
 
     test_driver.bless('Open a URL with a text fragment directive', () => {

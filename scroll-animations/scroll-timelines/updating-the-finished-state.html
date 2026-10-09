@@ -34,7 +34,7 @@
 // Did seek = true
 promise_test(async t => {
   const anim = createScrollLinkedAnimation(t);
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
@@ -54,7 +54,7 @@ promise_test(async t => {
 // Did seek = false
 promise_test(async t => {
   const anim = createScrollLinkedAnimation(t);
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   // Wait for new animation frame which allows the timeline to compute new
@@ -73,7 +73,7 @@ promise_test(async t => {
 // Did seek = true
 promise_test(async t => {
   const anim = createScrollLinkedAnimation(t);
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   // Wait for new animation frame which allows the timeline to compute new
@@ -96,7 +96,7 @@ promise_test(async t => {
 // Did seek = false
 promise_test(async t => {
   const anim = createScrollLinkedAnimation(t);
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   // Wait for new animation frame which allows the timeline to compute new
@@ -119,7 +119,7 @@ promise_test(async t => {
 // Did seek = true
 promise_test(async t => {
   const anim = createScrollLinkedAnimation(t);
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   // Wait for new animation frame which allows the timeline to compute new
@@ -141,7 +141,7 @@ promise_test(async t => {
 // Did seek = false
 promise_test(async t => {
   const anim = createScrollLinkedAnimation(t);
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   // Wait for new animation frame which allows the timeline to compute new
@@ -162,7 +162,7 @@ promise_test(async t => {
 // Did seek = true
 promise_test(async t => {
   const anim = createScrollLinkedAnimation(t);
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   // Wait for new animation frame which allows the timeline to compute new
@@ -189,7 +189,7 @@ promise_test(async t => {
 // Did seek = true; playback rate > 0
 promise_test(async t => {
   const anim = createScrollLinkedAnimation(t);
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   // Wait for new animation frame which allows the timeline to compute new
@@ -231,7 +231,7 @@ promise_test(async t => {
 // Did seek = true; playback rate < 0
 promise_test(async t => {
   const anim = createScrollLinkedAnimation(t);
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   // Wait for new animation frame which allows the timeline to compute new
@@ -258,7 +258,7 @@ promise_test(async t => {
 // current time < 0
 promise_test(async t => {
   const anim = createScrollLinkedAnimation(t);
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   // Wait for new animation frame which allows the timeline to compute new
@@ -281,7 +281,7 @@ promise_test(async t => {
 // current time < target end
 promise_test(async t => {
   const anim = createScrollLinkedAnimation(t);
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   // Wait for new animation frame which allows the timeline to compute new
@@ -304,7 +304,7 @@ promise_test(async t => {
 // current time > target end
 promise_test(async t => {
   const anim = createScrollLinkedAnimation(t);
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   // Wait for new animation frame which allows the timeline to compute new
@@ -382,7 +382,7 @@ function waitForFinishEventAndPromise(animation) {
 
 promise_test(t => {
   const animation = createScrollLinkedAnimation(t);
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   animation.play();
   animation.onfinish =
@@ -400,7 +400,7 @@ promise_test(t => {
 
 promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   animation.play();
   await animation.ready;
@@ -411,7 +411,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   animation.effect.target = null;
 
@@ -448,7 +448,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   animation.play();
@@ -462,7 +462,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   animation.play();
@@ -480,18 +480,22 @@ promise_test(async t => {
 
 async_test(t => {
   const animation = createScrollLinkedAnimation(t);
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   animation.play();
 
-  animation.onfinish = event => {
+  animation.onfinish = async event => {
     scroller.scrollTop = 0;
-    window.requestAnimationFrame(function() {
-      window.requestAnimationFrame(function() {
-        scroller.scrollTop = maxScroll;
-      });
-    });
+
+    // Wait for two animation frames - this is because the onfinish callback
+    // is executing within step 3 of the update animations and send events
+    // procedure: "perform a microtask checkpoint" so only waiting one frame
+    // would not have run the "update animations and send events" procedure
+    // with scrollTop set to 0.
+    await waitForAnimationFrames(2);
+
+    scroller.scrollTop = maxScroll;
     animation.onfinish = event => {
       t.done();
     };
@@ -501,27 +505,33 @@ async_test(t => {
 
 async_test(t => {
   const animation = createScrollLinkedAnimation(t);
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   animation.play();
 
-  animation.onfinish = event => {
+  animation.onfinish = async event => {
     scroller.scrollTop = 0;
-    window.requestAnimationFrame(function() {
-      animation.play();
-      scroller.scrollTop = maxScroll;
-      animation.onfinish = event => {
-        t.done();
-      };
-    });
+
+    // Wait for two animation frames - this is because the onfinish callback
+    // is executing within step 3 of the update animations and send events
+    // procedure: "perform a microtask checkpoint" so only waiting one frame
+    // would not have run the "update animations and send events" procedure
+    // with scrollTop set to 0.
+    await waitForAnimationFrames(2);
+
+    animation.play();
+    scroller.scrollTop = maxScroll;
+    animation.onfinish = event => {
+      t.done();
+    };
   };
   scroller.scrollTop = maxScroll;
 }, 'Animation finish event is fired again after replaying from start');
 
 async_test(t => {
   const anim = createScrollLinkedAnimation(t);
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   anim.effect.updateTiming({ duration: 800,  endDelay: 200});
@@ -541,7 +551,7 @@ async_test(t => {
 
 async_test(t => {
   const anim = createScrollLinkedAnimation(t);
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   anim.effect.updateTiming({ duration: 800,  endDelay: 100});

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<title>Tests that error conditions cause exceptions</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="author" href="mailto:chrishtr@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/canvas/resources/wait-for-canvas-paint.js"></script>
+
+<style>
+#child {
+  width: 100px;
+  height: 100px;
+  background: green;
+}
+#canvas {
+  background: grey;
+}
+</style>
+
+<canvas id=canvas width="200" height="200" content=drawable>
+  <div id=child drawable>
+    <div id=grandchild></div>
+  </div>
+</canvas>
+<canvas id=canvaswithoutlayout content=drawable>
+  <div id=child2 drawable></div>
+</div>
+
+</canvas>
+
+<script>
+promise_test(async () => {
+  await waitForCanvasPaint(canvas);
+
+  assert_throws_dom("InvalidStateError",
+    () => canvas.getContext("2d").drawElementImage(grandchild, 20, 30),
+    "Can't draw non-drawable descendants.");
+
+  canvas.removeAttribute("content"); // Remove attribute.
+  assert_throws_dom("InvalidStateError",
+    () => canvas.getContext("2d").drawElementImage(child, 20, 30),
+    "Can't draw canvas children if content=drawable is not specified.");
+  assert_throws_dom("InvalidStateError",
+    () => canvas.captureElementImage(child),
+    "Can't capture element image if content=drawable is not specified.");
+  assert_throws_dom("InvalidStateError",
+    () => canvas.getElementImageDefaultSize(child),
+    "Can't get element image default size if content=drawable is not specified.");
+  assert_throws_dom("InvalidStateError",
+    () => canvas.getElementTransform(child, new DOMMatrix()),
+    "Can't get element transform if content=drawable is not specified.");
+
+  canvas.setAttribute("content", "drawable"); // Add attribute.
+  await waitForCanvasPaint(canvas);
+  // Should not throw an exception.
+  canvas.getContext("2d").drawElementImage(child, 20, 30);
+  let img = canvas.captureElementImage(child);
+  canvas.getElementImageDefaultSize(child);
+  canvas.getElementImageDefaultSize(img);
+  canvas.getElementTransform(child, new DOMMatrix());
+
+  canvaswithoutlayout.removeAttribute("content");
+  assert_throws_dom("InvalidStateError",
+    () => canvaswithoutlayout.getContext("2d").drawElementImage(
+      child2, 20, 30),
+    "Can't draw canvas children if content=drawable is not specified.");
+  assert_throws_dom("InvalidStateError",
+    () => canvaswithoutlayout.captureElementImage(child2),
+    "Can't capture element image if content=drawable is not specified.");
+  assert_throws_dom("InvalidStateError",
+    () => canvaswithoutlayout.getElementImageDefaultSize(child2),
+    "Can't get element image default size if content=drawable is not specified.");
+  assert_throws_dom("InvalidStateError",
+    () => canvaswithoutlayout.getElementTransform(child2, new DOMMatrix()),
+    "Can't get element transform if content=drawable is not specified.");
+
+  // Also test non-drawable descendants exceptions
+  assert_throws_dom("InvalidStateError",
+    () => canvas.captureElementImage(grandchild),
+    "Can't capture non-drawable descendants.");
+  assert_throws_dom("InvalidStateError",
+    () => canvas.getElementImageDefaultSize(grandchild),
+    "Can't get default size for non-drawable descendants.");
+  assert_throws_dom("InvalidStateError",
+    () => canvas.getElementTransform(grandchild, new DOMMatrix()),
+    "Can't get transform for non-drawable descendants.");
+});
+</script>
+</html>

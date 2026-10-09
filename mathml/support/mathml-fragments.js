@@ -1,4 +1,5 @@
 var MathMLFragments = {
+    "a": "<a class='element mathml-container'></a>",
     "annotation": "\
 <semantics>\
   <mrow></mrow>\
@@ -156,7 +157,7 @@ var FragmentHelper = {
             return element.appendChild(el);
         }
         if (element.classList.contains("mathml-container") || allowInvalid) {
-            var el = this.createElement("mi");
+            var el = this.createElement("mtext");
             el.textContent = "a";
             return element.appendChild(el);
         }

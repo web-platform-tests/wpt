@@ -1,7 +1,9 @@
+# mypy: allow-untyped-defs
+
 import copy
 import os
 from collections import defaultdict
-from collections.abc import Mapping
+from typing import Any, Mapping
 
 from . import sslutils
 from .utils import get_port
@@ -26,7 +28,7 @@ def _merge_dict(base_dict, override_dict):
     return rv
 
 
-class Config(Mapping):
+class Config(Mapping[str, Any]):
     """wptserve configuration data
 
     Immutable configuration that's safe to be passed between processes.
@@ -85,7 +87,7 @@ def json_types(obj, skip=None):
     raise ValueError
 
 
-class ConfigBuilder(object):
+class ConfigBuilder:
     """Builder object for setting the wptserve config.
 
     Configuration can be passed in as a dictionary to the constructor, or
@@ -131,7 +133,6 @@ class ConfigBuilder(object):
         "server_host": None,
         "ports": {"http": [8000]},
         "check_subdomains": True,
-        "log_level": "debug",
         "bind_address": True,
         "ssl": {
             "type": "none",
@@ -150,14 +151,18 @@ class ConfigBuilder(object):
                 "host_cert_path": None,
             },
         },
-        "aliases": []
+        "aliases": [],
+        "logging": {
+            "level": "debug",
+            "suppress_handler_traceback": False,
+        }
     }
     default_config_cls = Config
 
     # Configuration properties that are computed. Each corresponds to a method
     # _get_foo, which is called with the current data dictionary. The properties
     # are computed in the order specified in the list.
-    computed_properties = ["log_level",
+    computed_properties = ["logging",
                            "paths",
                            "server_host",
                            "ports",
@@ -207,6 +212,12 @@ class ConfigBuilder(object):
         else:
             self.__dict__[key] = value
 
+    def __getattr__(self, key):
+        try:
+            return self._data[key]
+        except KeyError as e:
+            raise AttributeError from e
+
     def update(self, override):
         """Load an overrides dict to override config values"""
         override = override.copy()
@@ -249,8 +260,10 @@ class ConfigBuilder(object):
         self._ssl_env.__exit__(*args)
         self._ssl_env = None
 
-    def _get_log_level(self, data):
-        return data["log_level"].upper()
+    def _get_logging(self, data):
+        logging = data["logging"]
+        logging["level"] = logging["level"].upper()
+        return logging
 
     def _get_paths(self, data):
         return {"doc_root": data["doc_root"]}
@@ -275,7 +288,7 @@ class ConfigBuilder(object):
 
         rv = {}
         for name, host in hosts.items():
-            rv[name] = {subdomain: (subdomain.encode("idna").decode("ascii") + u"." + host)
+            rv[name] = {subdomain: (subdomain.encode("idna").decode("ascii") + "." + host)
                         for subdomain in data["subdomains"]}
             rv[name][""] = host
         return rv
@@ -287,7 +300,7 @@ class ConfigBuilder(object):
 
         rv = {}
         for name, host in hosts.items():
-            rv[name] = {subdomain: (subdomain.encode("idna").decode("ascii") + u"." + host)
+            rv[name] = {subdomain: (subdomain.encode("idna").decode("ascii") + "." + host)
                         for subdomain in data["not_subdomains"]}
         return rv
 

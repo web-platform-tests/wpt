@@ -12,6 +12,7 @@ interface Headers {
   undefined append(ByteString name, ByteString value);
   undefined delete(ByteString name);
   ByteString? get(ByteString name);
+  sequence<ByteString> getSetCookie();
   boolean has(ByteString name);
   undefined set(ByteString name, ByteString value);
   iterable<ByteString, ByteString>;
@@ -25,9 +26,11 @@ interface mixin Body {
   readonly attribute boolean bodyUsed;
   [NewObject] Promise<ArrayBuffer> arrayBuffer();
   [NewObject] Promise<Blob> blob();
+  [NewObject] Promise<Uint8Array> bytes();
   [NewObject] Promise<FormData> formData();
   [NewObject] Promise<any> json();
   [NewObject] Promise<USVString> text();
+  [NewObject] ReadableStream textStream();
 };
 typedef (Request or USVString) RequestInfo;
 
@@ -51,6 +54,7 @@ interface Request {
   readonly attribute boolean isReloadNavigation;
   readonly attribute boolean isHistoryNavigation;
   readonly attribute AbortSignal signal;
+  readonly attribute RequestDuplex duplex;
 
   [NewObject] Request clone();
 };
@@ -69,20 +73,26 @@ dictionary RequestInit {
   DOMString integrity;
   boolean keepalive;
   AbortSignal? signal;
+  RequestDuplex duplex;
+  RequestPriority priority;
   any window; // can only be set to null
 };
 
-enum RequestDestination { "", "audio", "audioworklet", "document", "embed", "font", "frame", "iframe", "image", "manifest", "object", "paintworklet", "report", "script", "sharedworker", "style",  "track", "video", "worker", "xslt" };
+enum RequestDestination { "", "audio", "audioworklet", "document", "embed", "font", "frame", "iframe", "image", "json", "manifest", "object", "paintworklet", "report", "script", "sharedworker", "style", "text", "track", "video", "worker", "xslt" };
 enum RequestMode { "navigate", "same-origin", "no-cors", "cors" };
 enum RequestCredentials { "omit", "same-origin", "include" };
 enum RequestCache { "default", "no-store", "reload", "no-cache", "force-cache", "only-if-cached" };
 enum RequestRedirect { "follow", "error", "manual" };
+enum RequestDuplex { "half" };
+enum RequestPriority { "high", "low", "auto" };
 
-[Exposed=(Window,Worker)]interface Response {
+[Exposed=(Window,Worker)]
+interface Response {
   constructor(optional BodyInit? body = null, optional ResponseInit init = {});
 
   [NewObject] static Response error();
   [NewObject] static Response redirect(USVString url, optional unsigned short status = 302);
+  [NewObject] static Response json(any data, optional ResponseInit init = {});
 
   readonly attribute ResponseType type;
 
@@ -107,4 +117,17 @@ enum ResponseType { "basic", "cors", "default", "error", "opaque", "opaqueredire
 
 partial interface mixin WindowOrWorkerGlobalScope {
   [NewObject] Promise<Response> fetch(RequestInfo input, optional RequestInit init = {});
+};
+
+dictionary DeferredRequestInit : RequestInit {
+  DOMHighResTimeStamp activateAfter;
+};
+
+[Exposed=Window]
+interface FetchLaterResult {
+  readonly attribute boolean activated;
+};
+
+partial interface Window {
+  [NewObject, SecureContext] FetchLaterResult fetchLater(RequestInfo input, optional DeferredRequestInit init = {});
 };

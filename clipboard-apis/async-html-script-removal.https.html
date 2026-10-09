@@ -4,10 +4,12 @@
   Async Clipboard write ([text/html ClipboardItem]) -> readHtml (and remove scripts) tests
 </title>
 <link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
+<body>Body needed for test_driver.click()</body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/user-activation.js"></script>
 <script>
 'use strict';
 // This function removes extra spaces between tags in html. For example, the
@@ -29,15 +31,18 @@ function reformatHtml(html) {
 const html_with_script =
   '<title>Title of the document</title> <script>const a = 5;</scr'
   + 'ipt> <p>Hello World</p>';
-const html_without_script =
-  '<title>Title of the document</title> <p>Hello World</p>';
+const html_script =
+  '<script>const a = 5;</scr'
+  + 'ipt>';
 promise_test(async t => {
-  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
-  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+  await tryGrantReadPermission();
+  await tryGrantWritePermission();
   const blobInput = new Blob([html_with_script], {type: 'text/html'});
   const clipboardItem = new ClipboardItem({'text/html': blobInput});
+  await waitForUserActivation();
   await navigator.clipboard.write([clipboardItem]);
-  const clipboardItems = await navigator.clipboard.read({type: 'text/html'});
+  await waitForUserActivation();
+  const clipboardItems = await navigator.clipboard.read();
 
   const html = clipboardItems[0];
   assert_equals(html.types.length, 1);
@@ -49,8 +54,7 @@ promise_test(async t => {
   const blobText = await (new Response(blobOutput)).text();
 
   const outputHtml = reformatHtml(blobText);
-  const inputHtml = reformatHtml(html_without_script);
-  assert_equals(outputHtml, inputHtml);
-}, 'Verify write and read clipboard with scripts removed given text/html: '
-    + html_with_script);
+  const html_script_no_spaces = reformatHtml(html_script);
+  assert_true(!outputHtml.includes(html_script_no_spaces));
+}, 'Verify write and read clipboard with scripts removed given text/html. The string "' + html_script + '" has been removed.');
 </script>

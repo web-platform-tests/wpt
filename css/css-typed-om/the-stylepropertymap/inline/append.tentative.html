@@ -19,6 +19,7 @@ const gInvalidTestCases = [
   { property: 'transition-duration', values: [CSS.s(1), '10px', CSS.px(10)], desc: 'a mix of valid and invalid values' },
   { property: 'transition-duration', values: [new CSSUnparsedValue([])], desc: 'a CSSUnparsedValue' },
   { property: 'transition-duration', values: ['var(--A)'], desc: 'a var ref' },
+  { property: 'background-size', values: [document.getElementsByTagName('title')[0].computedStyleMap().get('mask-position')], desc: 'a CSSVariableReferenceValue property' },
 ];
 
 for (const {property, values, desc} of gInvalidTestCases) {
@@ -55,5 +56,11 @@ test(t => {
   const result = styleMap.getAll('transition-duration');
   assert_style_value_array_equals(result, [CSS.s(5), CSS.s(10), CSS.s(1), CSS.s(2)]);
 }, 'StylePropertyMap.append is case-insensitive');
+
+// https://crbug.com/1417176
+test(t => {
+  let styleMap = createInlineStyleMap(t, 'transition-duration: inherit');
+  assert_throws_js(TypeError, () => styleMap.append('transition-duration', '1s'));
+}, 'StylePropertyMap.append rejects appending to CSS-wide keywords');
 
 </script>

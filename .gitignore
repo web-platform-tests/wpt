@@ -17,6 +17,9 @@ node_modules/
 /MANIFEST.json
 /_certs
 /config.json
+# The default manifest location when running infrastructure tests locally with
+# `--metadata=infrastructure/metadata`.
+/infrastructure/metadata/MANIFEST.json
 
 # Files generated when regenerating pre-generated certs
 /tools/certs/0*.pem
@@ -45,8 +48,8 @@ scratch
 /css/build-temp
 /css/dist
 /css/dist_last
-/css/tools/cache
+/url/tools/IdnaTestV2.txt
 /webaudio/idl/*
 
 # w3c-test.org PR-branch mirroring
-submissions/
+/submissions/

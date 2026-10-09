@@ -4,8 +4,6 @@
 Parametrizing tests
 =================================================
 
-.. currentmodule:: _pytest.python
-
 ``pytest`` allows to easily parametrize test functions.
 For basic docs, see :ref:`parametrize-basics`.
 
@@ -97,9 +95,9 @@ the argument name:
 
     # content of test_time.py
 
-    import pytest
-
     from datetime import datetime, timedelta
+
+    import pytest
 
     testdata = [
         (datetime(2001, 12, 12), datetime(2001, 12, 11), timedelta(1)),
@@ -160,22 +158,22 @@ objects, they are still using the default pytest representation:
 
     $ pytest test_time.py --collect-only
     =========================== test session starts ============================
-    platform linux -- Python 3.x.y, pytest-6.x.y, py-1.x.y, pluggy-0.x.y
-    cachedir: $PYTHON_PREFIX/.pytest_cache
-    rootdir: $REGENDOC_TMPDIR
+    platform linux -- Python 3.x.y, pytest-8.x.y, pluggy-1.x.y
+    rootdir: /home/sweet/project
     collected 8 items
 
-    <Module test_time.py>
-      <Function test_timedistance_v0[a0-b0-expected0]>
-      <Function test_timedistance_v0[a1-b1-expected1]>
-      <Function test_timedistance_v1[forward]>
-      <Function test_timedistance_v1[backward]>
-      <Function test_timedistance_v2[20011212-20011211-expected0]>
-      <Function test_timedistance_v2[20011211-20011212-expected1]>
-      <Function test_timedistance_v3[forward]>
-      <Function test_timedistance_v3[backward]>
+    <Dir parametrize.rst-199>
+      <Module test_time.py>
+        <Function test_timedistance_v0[a0-b0-expected0]>
+        <Function test_timedistance_v0[a1-b1-expected1]>
+        <Function test_timedistance_v1[forward]>
+        <Function test_timedistance_v1[backward]>
+        <Function test_timedistance_v2[20011212-20011211-expected0]>
+        <Function test_timedistance_v2[20011211-20011212-expected1]>
+        <Function test_timedistance_v3[forward]>
+        <Function test_timedistance_v3[backward]>
 
-    ========================== no tests ran in 0.12s ===========================
+    ======================== 8 tests collected in 0.12s ========================
 
 In ``test_timedistance_v3``, we used ``pytest.param`` to specify the test IDs
 together with the actual data, instead of listing them separately.
@@ -183,12 +181,10 @@ together with the actual data, instead of listing them separately.
 A quick port of "testscenarios"
 ------------------------------------
 
-.. _`test scenarios`: https://pypi.org/project/testscenarios/
-
-Here is a quick port to run tests configured with `test scenarios`_,
+Here is a quick port to run tests configured with :pypi:`testscenarios`,
 an add-on from Robert Collins for the standard unittest framework. We
 only have to work a bit to construct the correct arguments for pytest's
-:py:func:`Metafunc.parametrize`:
+:py:func:`Metafunc.parametrize <pytest.Metafunc.parametrize>`:
 
 .. code-block:: python
 
@@ -225,9 +221,8 @@ this is a fully self-contained example which you can run with:
 
     $ pytest test_scenarios.py
     =========================== test session starts ============================
-    platform linux -- Python 3.x.y, pytest-6.x.y, py-1.x.y, pluggy-0.x.y
-    cachedir: $PYTHON_PREFIX/.pytest_cache
-    rootdir: $REGENDOC_TMPDIR
+    platform linux -- Python 3.x.y, pytest-8.x.y, pluggy-1.x.y
+    rootdir: /home/sweet/project
     collected 4 items
 
     test_scenarios.py ....                                               [100%]
@@ -240,19 +235,19 @@ If you just collect tests you'll also nicely see 'advanced' and 'basic' as varia
 
     $ pytest --collect-only test_scenarios.py
     =========================== test session starts ============================
-    platform linux -- Python 3.x.y, pytest-6.x.y, py-1.x.y, pluggy-0.x.y
-    cachedir: $PYTHON_PREFIX/.pytest_cache
-    rootdir: $REGENDOC_TMPDIR
+    platform linux -- Python 3.x.y, pytest-8.x.y, pluggy-1.x.y
+    rootdir: /home/sweet/project
     collected 4 items
 
-    <Module test_scenarios.py>
-      <Class TestSampleWithScenarios>
+    <Dir parametrize.rst-199>
+      <Module test_scenarios.py>
+        <Class TestSampleWithScenarios>
           <Function test_demo1[basic]>
           <Function test_demo2[basic]>
           <Function test_demo1[advanced]>
           <Function test_demo2[advanced]>
 
-    ========================== no tests ran in 0.12s ===========================
+    ======================== 4 tests collected in 0.12s ========================
 
 Note that we told ``metafunc.parametrize()`` that your scenario values
 should be considered class-scoped.  With pytest-2.3 this leads to a
@@ -319,16 +314,16 @@ Let's first see how it looks like at collection time:
 
     $ pytest test_backends.py --collect-only
     =========================== test session starts ============================
-    platform linux -- Python 3.x.y, pytest-6.x.y, py-1.x.y, pluggy-0.x.y
-    cachedir: $PYTHON_PREFIX/.pytest_cache
-    rootdir: $REGENDOC_TMPDIR
+    platform linux -- Python 3.x.y, pytest-8.x.y, pluggy-1.x.y
+    rootdir: /home/sweet/project
     collected 2 items
 
-    <Module test_backends.py>
-      <Function test_db_initialized[d1]>
-      <Function test_db_initialized[d2]>
+    <Dir parametrize.rst-199>
+      <Module test_backends.py>
+        <Function test_db_initialized[d1]>
+        <Function test_db_initialized[d2]>
 
-    ========================== no tests ran in 0.12s ===========================
+    ======================== 2 tests collected in 0.12s ========================
 
 And then when we run the test:
 
@@ -339,7 +334,7 @@ And then when we run the test:
     ================================= FAILURES =================================
     _________________________ test_db_initialized[d2] __________________________
 
-    db = <conftest.DB2 object at 0xdeadbeef>
+    db = <conftest.DB2 object at 0xdeadbeef0001>
 
         def test_db_initialized(db):
             # a dummy test
@@ -418,9 +413,9 @@ The result of this test will be successful:
 
     $ pytest -v test_indirect_list.py
     =========================== test session starts ============================
-    platform linux -- Python 3.x.y, pytest-6.x.y, py-1.x.y, pluggy-0.x.y -- $PYTHON_PREFIX/bin/python
-    cachedir: $PYTHON_PREFIX/.pytest_cache
-    rootdir: $REGENDOC_TMPDIR
+    platform linux -- Python 3.x.y, pytest-8.x.y, pluggy-1.x.y -- $PYTHON_PREFIX/bin/python
+    cachedir: .pytest_cache
+    rootdir: /home/sweet/project
     collecting ... collected 1 item
 
     test_indirect_list.py::test_indirect[a-b] PASSED                     [100%]
@@ -478,7 +473,7 @@ argument sets to use for each test function.  Let's run it:
     ================================= FAILURES =================================
     ________________________ TestClass.test_equals[1-2] ________________________
 
-    self = <test_parametrize.TestClass object at 0xdeadbeef>, a = 1, b = 2
+    self = <test_parametrize.TestClass object at 0xdeadbeef0002>, a = 1, b = 2
 
         def test_equals(self, a, b):
     >       assert a == b
@@ -489,8 +484,8 @@ argument sets to use for each test function.  Let's run it:
     FAILED test_parametrize.py::TestClass::test_equals[1-2] - assert 1 == 2
     1 failed, 2 passed in 0.12s
 
-Indirect parametrization with multiple fixtures
---------------------------------------------------------------
+Parametrization with multiple fixtures
+--------------------------------------
 
 Here is a stripped down real-life example of using parametrized
 testing for testing serialization of objects between different python
@@ -510,12 +505,12 @@ Running it results in some skips if we don't have all the python interpreters in
    . $ pytest -rs -q multipython.py
    ssssssssssss...ssssssssssss                                          [100%]
    ========================= short test summary info ==========================
-   SKIPPED [12] multipython.py:29: 'python3.5' not found
-   SKIPPED [12] multipython.py:29: 'python3.7' not found
+   SKIPPED [12] multipython.py:65: 'python3.9' not found
+   SKIPPED [12] multipython.py:65: 'python3.11' not found
    3 passed, 24 skipped in 0.12s
 
-Indirect parametrization of optional implementations/imports
---------------------------------------------------------------------
+Parametrization of optional implementations/imports
+---------------------------------------------------
 
 If you want to compare the outcomes of several implementations of a given
 API, you can write test functions that receive the already imported implementations
@@ -572,15 +567,14 @@ If you run this with reporting for skips enabled:
 
     $ pytest -rs test_module.py
     =========================== test session starts ============================
-    platform linux -- Python 3.x.y, pytest-6.x.y, py-1.x.y, pluggy-0.x.y
-    cachedir: $PYTHON_PREFIX/.pytest_cache
-    rootdir: $REGENDOC_TMPDIR
+    platform linux -- Python 3.x.y, pytest-8.x.y, pluggy-1.x.y
+    rootdir: /home/sweet/project
     collected 2 items
 
     test_module.py .s                                                    [100%]
 
     ========================= short test summary info ==========================
-    SKIPPED [1] conftest.py:12: could not import 'opt2': No module named 'opt2'
+    SKIPPED [1] test_module.py:3: could not import 'opt2': No module named 'opt2'
     ======================= 1 passed, 1 skipped in 0.12s =======================
 
 You'll see that we don't have an ``opt2`` module and thus the second test run
@@ -634,16 +628,16 @@ Then run ``pytest`` with verbose mode and with only the ``basic`` marker:
 
     $ pytest -v -m basic
     =========================== test session starts ============================
-    platform linux -- Python 3.x.y, pytest-6.x.y, py-1.x.y, pluggy-0.x.y -- $PYTHON_PREFIX/bin/python
-    cachedir: $PYTHON_PREFIX/.pytest_cache
-    rootdir: $REGENDOC_TMPDIR
-    collecting ... collected 14 items / 11 deselected / 3 selected
+    platform linux -- Python 3.x.y, pytest-8.x.y, pluggy-1.x.y -- $PYTHON_PREFIX/bin/python
+    cachedir: .pytest_cache
+    rootdir: /home/sweet/project
+    collecting ... collected 24 items / 21 deselected / 3 selected
 
     test_pytest_param_example.py::test_eval[1+7-8] PASSED                [ 33%]
     test_pytest_param_example.py::test_eval[basic_2+4] PASSED            [ 66%]
     test_pytest_param_example.py::test_eval[basic_6*9] XFAIL             [100%]
 
-    =============== 2 passed, 11 deselected, 1 xfailed in 0.12s ================
+    =============== 2 passed, 21 deselected, 1 xfailed in 0.12s ================
 
 As the result:
 
@@ -663,52 +657,34 @@ Use :func:`pytest.raises` with the
 :ref:`pytest.mark.parametrize ref` decorator to write parametrized tests
 in which some tests raise exceptions and others do not.
 
-It is helpful to define a no-op context manager ``does_not_raise`` to serve
-as a complement to ``raises``. For example:
+``contextlib.nullcontext`` can be used to test cases that are not expected to
+raise exceptions but that should result in some value. The value is given as the
+``enter_result`` parameter, which will be available as the ``with`` statement’s
+target (``e`` in the example below).
+
+For example:
 
 .. code-block:: python
 
-    from contextlib import contextmanager
+    from contextlib import nullcontext
+
     import pytest
-
-
-    @contextmanager
-    def does_not_raise():
-        yield
 
 
     @pytest.mark.parametrize(
         "example_input,expectation",
         [
-            (3, does_not_raise()),
-            (2, does_not_raise()),
-            (1, does_not_raise()),
+            (3, nullcontext(2)),
+            (2, nullcontext(3)),
+            (1, nullcontext(6)),
             (0, pytest.raises(ZeroDivisionError)),
         ],
     )
     def test_division(example_input, expectation):
         """Test how much I know division."""
-        with expectation:
-            assert (6 / example_input) is not None
+        with expectation as e:
+            assert (6 / example_input) == e
 
-In the example above, the first three test cases should run unexceptionally,
-while the fourth should raise ``ZeroDivisionError``.
-
-If you're only supporting Python 3.7+, you can simply use ``nullcontext``
-to define ``does_not_raise``:
-
-.. code-block:: python
-
-    from contextlib import nullcontext as does_not_raise
-
-Or, if you're supporting Python 3.3+ you can use:
-
-.. code-block:: python
-
-    from contextlib import ExitStack as does_not_raise
-
-Or, if desired, you can ``pip install contextlib2`` and use:
-
-.. code-block:: python
-
-    from contextlib2 import nullcontext as does_not_raise
+In the example above, the first three test cases should run without any
+exceptions, while the fourth should raise a``ZeroDivisionError`` exception,
+which is expected by pytest.

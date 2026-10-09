@@ -3,12 +3,12 @@
 // (https://github.com/w3c/webref)
 // Source: Identity for WebRTC 1.0 (https://w3c.github.io/webrtc-identity/)
 
-[Global, Exposed=RTCIdentityProviderGlobalScope]
+[Global=(Worker,RTCIdentityProvider), Exposed=RTCIdentityProvider]
 interface RTCIdentityProviderGlobalScope : WorkerGlobalScope {
     readonly        attribute RTCIdentityProviderRegistrar rtcIdentityProvider;
 };
 
-[Exposed=RTCIdentityProviderGlobalScope]
+[Exposed=RTCIdentityProvider]
 interface RTCIdentityProviderRegistrar {
     undefined register (RTCIdentityProvider idp);
 };
@@ -19,7 +19,7 @@ dictionary RTCIdentityProvider {
 };
 
 callback GenerateAssertionCallback = Promise<RTCIdentityAssertionResult>
-(DOMString contents, DOMString origin, RTCIdentityProviderOptions options);
+(DOMString contents, DOMString origin, optional RTCIdentityProviderOptions options = {});
 
 callback ValidateAssertionCallback = Promise<RTCIdentityValidationResult>
 (DOMString assertion, DOMString origin);

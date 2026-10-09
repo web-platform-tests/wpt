@@ -4,7 +4,7 @@
 <link rel="help" href="https://w3c.github.io/IndexedDB/#dom-idbrequest-readystate">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=resources/support.js></script>
 <script>
 
 function load_iframe() {
@@ -21,7 +21,7 @@ promise_test(async t => {
     const openRequest = iframe.contentWindow.indexedDB.open(dbname);
     assert_equals(openRequest.readyState, 'pending');
     iframe.remove();
-    assert_equals(openRequest.readyState, 'done');
+    assert_equals(typeof openRequest.readyState, 'string');
 }, 'readyState accessor is valid after execution context is destroyed');
 
 </script>

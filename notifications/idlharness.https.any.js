@@ -8,7 +8,7 @@
 
 idl_test(
   ['notifications'],
-  ['service-workers', 'html', 'dom'],
+  ['service-workers', 'hr-time', 'html', 'dom'],
   idl_array => {
     if (self.ServiceWorkerGlobalScope) {
       idl_array.add_objects({
@@ -26,6 +26,7 @@ idl_test(
         Notification: ['notification'],
       });
       self.notification = new Notification('title');
+      self.notification.close();
     }
   }
 );

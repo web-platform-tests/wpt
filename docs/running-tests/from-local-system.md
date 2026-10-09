@@ -2,24 +2,32 @@
 
 The tests are designed to be run from your local computer.
 
+# Install WPT
+
+If you haven't already, clone the web-platform-tests repository:
+
+```bash
+git clone https://github.com/web-platform-tests/wpt.git
+cd wpt
+```
+
 ## System Setup
 
-Running the tests requires `python`, `pip` and `virtualenv`, as well as updating
-the system `hosts` file.
+Running the tests requires `python` as well as updating the
+system `hosts` file.
 
-WPT requires Python 3.6 or higher.
+WPT requires Python 3.9 or higher.
 
 The required setup is different depending on your operating system.
 
 ### Linux Setup
 
-If not already present, use the system package manager to install `python`,
-`pip` and `virtualenv`.
+If not already present, use the system package manager to install `python`.
 
-On Debian or Ubuntu:
+On Ubuntu:
 
 ```bash
-sudo apt-get install python python-pip virtualenv
+sudo apt-get install python3 python3-venv
 ```
 
 It is important to have a package that provides a `python` binary. On Fedora,
@@ -28,13 +36,12 @@ Ubuntu Focal and later, the package is called `python-is-python3`.
 
 ### macOS Setup
 
-The system-provided Python can be used, while `pip` and `virtualenv` can be
+The system-provided Python can be used, while `pip` can be
 installed for the user only:
 
 ```bash
 python -m ensurepip --user
-export PATH="$PATH:$HOME/Library/Python/2.7/bin"
-pip install --user virtualenv
+export PATH="$PATH:$( python3 -m site --user-base )/bin"
 ```
 
 To make the `PATH` change persistent, add it to your `~/.bash_profile` file or
@@ -49,12 +56,6 @@ installer includes `pip` by default.
 
 Add `C:\Python39` and `C:\Python39\Scripts` to your `%Path%`
 [environment variable](http://www.computerhope.com/issues/ch000549.htm).
-
-Finally, install `virtualenv`:
-
-```bash
-pip install virtualenv
-```
 
 The standard Windows shell requires that all `wpt` commands are prefixed
 by the Python binary i.e. assuming `python` is on your path the server is
@@ -171,6 +172,7 @@ here](command-line-arguments.html#run).
   android_webview
   safari
   webkitgtk_minibrowser
+  wpewebkit_minibrowser
 ```
 
 ### Running in parallel
@@ -187,7 +189,9 @@ a single process (the default), so there may be more noise in the test results.
 ### Output formats
 
 By default, `./wpt run` outputs test results and a summary in a human readable
-format. For debugging, `--log-mach` can give more verbose output. For example:
+format. For debugging, `--log-mach` can give more verbose output. (In particular,
+it will show the console output from the browser and driver;
+by default, those are not shown) For example:
 
     ./wpt run --log-mach=- --log-mach-level=info firefox dom/
 
@@ -207,3 +211,9 @@ tracking is required, the command-line interface supports storing and loading
 the expected result of each test in a test run. See [Expectations
 Data](../../tools/wptrunner/docs/expectation) for more information on creating
 and maintaining these files.
+
+## Testing polyfills
+
+Polyfill scripts can be tested using the `--inject-script` argument to either
+`wpt run` or `wpt serve`. See [Testing Polyfills](testing-polyfills) for
+details.

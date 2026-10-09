@@ -6,6 +6,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="../resources/user-activation.js"></script>
 <iframe id="iframe"></iframe>
 <script>
 'use strict';
@@ -14,13 +15,14 @@ promise_test(async t => {
   // This tests proper behavior on a detaching iframe. text/plain is chosen for
   // simplicity, and the test should fail the same way no matter what the input
   // type is.
-  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
-  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+  await tryGrantReadPermission();
+  await tryGrantWritePermission();
 
   const iframe = document.getElementById('iframe');
   const iframeClipboard = iframe.contentWindow.navigator.clipboard;
   const blobInput = new Blob(['test string'], {type: 'text/plain'});
   const clipboardItemInput = new ClipboardItem({'text/plain': blobInput});
+  await waitForUserActivation();
   // Clipboard API must only be available in focused documents.
   // reference: https://www.w3.org/TR/clipboard-apis/#privacy-async
   iframe.focus();

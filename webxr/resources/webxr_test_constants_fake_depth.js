@@ -3,7 +3,7 @@
 // This file introduces constants used to mock depth data for depth sensing API.
 
 const convertDepthBufferToArrayBuffer = function (data, desiredFormat) {
-  if(desiredFormat == "luminance-alpha") {
+  if(desiredFormat == "luminance-alpha" || desiredFormat == "unsigned-short") {
     const result = new ArrayBuffer(data.length * 2);  // each entry has 2 bytes
     const view = new Uint16Array(result);
 
@@ -52,6 +52,7 @@ const createDepthSensingData = function() {
 
   return {
     depthData: convertDepthBufferToArrayBuffer(depthSensingBuffer, "luminance-alpha"),
+    depthFormat: "luminance-alpha",
     width: depthSensingBufferWidth,
     height: depthSensingBufferHeight,
     normDepthBufferFromNormView: depthSensingBufferFromViewerTransform,
@@ -61,18 +62,27 @@ const createDepthSensingData = function() {
 
 const DEPTH_SENSING_DATA = createDepthSensingData();
 
+const OFFSET_DEPTH_SENSING_DATA = {
+  ...DEPTH_SENSING_DATA,
+  projectionMatrix: VALID_DEPTH_PROJECTION_MATRIX,
+  viewOffset: DEPTH_OFFSET,
+};
+
 // Returns expected depth value at |column|, |row| coordinates, expressed
 // in depth buffer's coordinate system.
 const getExpectedValueAt = function(column, row) {
   return Math.pow(column+1, row) * RAW_VALUE_TO_METERS;
 };
 
+const DEPTH_CONFIG_ALL_FORMATS = ['luminance-alpha', 'float32', 'unsigned-short'];
+const DEPTH_CONFIG_ALL_USAGES= ['gpu-optimized', 'cpu-optimized'];
+
 const VALID_DEPTH_CONFIG_CPU_USAGE = {
   usagePreference: ['cpu-optimized'],
-  dataFormatPreference: ['luminance-alpha', 'float32'],
+  dataFormatPreference: ['luminance-alpha', 'float32', 'unsigned-short'],
 };
 
 const VALID_DEPTH_CONFIG_GPU_USAGE = {
   usagePreference: ['gpu-optimized'],
-  dataFormatPreference: ['luminance-alpha', 'float32'],
+  dataFormatPreference: ['luminance-alpha', 'float32', 'unsigned-short'],
 };

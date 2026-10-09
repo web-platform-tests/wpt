@@ -54,48 +54,6 @@ function isValidCrossOriginAttribute(crossorigin) {
          (lower_crossorigin  === 'use-credentials');
 }
 
-function addLinkAndWaitForLoad(url, resources, crossorigin) {
-  return new Promise((resolve, reject) => {
-    if (!isValidCrossOriginAttribute(crossorigin)) {
-      reject('invalid crossorigin attribute: ' + crossorigin);
-      return;
-    }
-    const link = document.createElement("link");
-    link.rel = "webbundle";
-    link.href = url;
-    if (crossorigin) {
-      link.crossOrigin = crossorigin;
-    }
-    for (const resource of resources) {
-      link.resources.add(resource);
-    }
-    link.onload = () => resolve(link);
-    link.onerror = () => reject(link);
-    document.body.appendChild(link);
-  });
-}
-
-function addLinkAndWaitForError(url, resources, crossorigin) {
-  return new Promise((resolve, reject) => {
-    if (!isValidCrossOriginAttribute(crossorigin)) {
-      reject('invalid crossorigin attribute: ' + crossorigin);
-      return;
-    }
-    const link = document.createElement("link");
-    link.rel = "webbundle";
-    link.href = url;
-    if (crossorigin) {
-      link.crossOrigin = crossorigin;
-    }
-    for (const resource of resources) {
-      link.resources.add(resource);
-    }
-    link.onload = () => reject(link);
-    link.onerror = () => resolve(link);
-    document.body.appendChild(link);
-  });
-}
-
 function addScriptAndWaitForError(url) {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
@@ -119,43 +77,7 @@ function addScriptAndWaitForExecution(url) {
   });
 }
 
-// Currnetly Chrome supports two element types for Subresource Web Bundles
-// feature, <link rel=webbundle> and <script type=webbundle>.
-// In order to use the same test js file for the two types, we use
-// window.TEST_WEB_BUNDLE_ELEMENT_TYPE. When 'link' is set,
-// createWebBundleElement() will create a <link rel=webbundle> element, and when
-// 'script' is set, createWebBundleElement() will create a <script
-// rel=webbundle> element.
-function isTestBundleElementTypeSet() {
-  return (window.TEST_WEB_BUNDLE_ELEMENT_TYPE == 'link') ||
-         (window.TEST_WEB_BUNDLE_ELEMENT_TYPE == 'script');
-}
-
 function createWebBundleElement(url, resources, options) {
-  if (!isTestBundleElementTypeSet()) {
-    throw new Error(
-        'window.TEST_WEB_BUNDLE_ELEMENT_TYPE is not correctly set: ' +
-        window.TEST_WEB_BUNDLE_ELEMENT_TYPE);
-  }
-  if (window.TEST_WEB_BUNDLE_ELEMENT_TYPE == 'link') {
-    const link = document.createElement("link");
-    link.rel = "webbundle";
-    link.href = url;
-    if (options) {
-      if (options.crossOrigin) {
-        link.crossOrigin = options.crossOrigin;
-      }
-      if (options.scopes) {
-        for (const scope of options.scopes) {
-          link.scopes.add(scope);
-        }
-      }
-    }
-    for (const resource of resources) {
-      link.resources.add(resource);
-    }
-    return link;
-  }
   const script = document.createElement("script");
   script.type = "webbundle";
   const json_rule  = {"source": url, "resources": resources};
@@ -179,41 +101,22 @@ function addWebBundleElementAndWaitForError(url, resources, options) {
   return addElementAndWaitForError(element);
 }
 
-function changeWebBundleUrl(element, new_url) {
-  if (window.TEST_WEB_BUNDLE_ELEMENT_TYPE != 'link') {
-    // TODO(crbug.com/1245166): Support changing the web bundle url for <script
-    // type=webbundle>.
-    throw new Error(
-        'Changing the URL of web bundle is not supported for : ' +
-        window.TEST_WEB_BUNDLE_ELEMENT_TYPE);
-  }
-  element.href= new_url;
-}
+// This function creates a new WebBundle element that has a rule
+// constructed in accordance with a JSON object |new_rule|:
+// 1. Copy over WebBundle rules from an existing element that are
+// not present in |new_rule|: source, resources, scopes and credentials.
+// 2. Then create a new WebBundle element from |new_rule| (that now
+// has full information required after 1.) and return it.
+function createNewWebBundleElementWithUpdatedRule(element, new_rule) {
+  const rule = JSON.parse(element.textContent);
+  if (rule.resources && !new_rule.resources)
+    new_rule.resources = rule.resources;
+  if (rule.scopes && !new_rule.scopes)
+    new_rule.scopes = rule.scopes;
+  if (rule.credentials && !new_rule.credentials)
+    new_rule.credentials = rule.credentials;
+  if (!new_rule.url)
+    new_rule.url = rule.source;
 
-function changeWebBundleScopes(element, scopes) {
-  if (window.TEST_WEB_BUNDLE_ELEMENT_TYPE != 'link') {
-    // TODO(crbug.com/1245166): Support changing the web bundle scopes for
-    // <script type=webbundle>.
-    throw new Error(
-        'Changing the scopes of web bundle is not supported for : ' +
-        window.TEST_WEB_BUNDLE_ELEMENT_TYPE);
-  }
-  element.scopes = '';
-  for (const scope of scopes) {
-    element.scopes.add(scope);
-  }
-}
-
-function changeWebBundleResources(element, resources) {
-  if (window.TEST_WEB_BUNDLE_ELEMENT_TYPE != 'link') {
-    // TODO(crbug.com/1245166): Support changing the web bundle resources for
-    // <script type=webbundle>.
-    throw new Error(
-        'Changing the resources of web bundle is not supported for : ' +
-        window.TEST_WEB_BUNDLE_ELEMENT_TYPE);
-  }
-  element.resources = '';
-  for (const url of resources) {
-    element.resources.add(url);
-  }
+  return createWebBundleElement(new_rule.url, new_rule.resources, new_rule);
 }

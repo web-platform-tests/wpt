@@ -7,7 +7,7 @@ tasks:
     run_task:
       $if: 'tasks_for == "github-push"'
       then:
-        $if: 'event.ref in ["refs/heads/master", "refs/heads/epochs/daily", "refs/heads/epochs/weekly", "refs/heads/triggers/chrome_stable", "refs/heads/triggers/chrome_beta", "refs/heads/triggers/chrome_dev", "refs/heads/triggers/chrome_nightly", "refs/heads/triggers/firefox_stable", "refs/heads/triggers/firefox_beta", "refs/heads/triggers/firefox_nightly", "refs/heads/triggers/webkitgtk_minibrowser_stable", "refs/heads/triggers/webkitgtk_minibrowser_beta", "refs/heads/triggers/webkitgtk_minibrowser_nightly", "refs/heads/triggers/servo_nightly"]'
+        $if: 'event.ref in ["refs/heads/master", "refs/heads/epochs/daily", "refs/heads/epochs/weekly", "refs/heads/triggers/chrome_stable", "refs/heads/triggers/chrome_beta", "refs/heads/triggers/chrome_canary", "refs/heads/triggers/chrome_dev", "refs/heads/triggers/chrome_nightly", "refs/heads/triggers/firefox_stable", "refs/heads/triggers/firefox_beta", "refs/heads/triggers/firefox_nightly", "refs/heads/triggers/firefox_android_stable", "refs/heads/triggers/firefox_android_nightly", "refs/heads/triggers/webkitgtk_minibrowser_stable", "refs/heads/triggers/webkitgtk_minibrowser_beta", "refs/heads/triggers/webkitgtk_minibrowser_nightly", "refs/heads/triggers/wpewebkit_minibrowser_stable", "refs/heads/triggers/wpewebkit_minibrowser_beta", "refs/heads/triggers/wpewebkit_minibrowser_nightly", "refs/heads/triggers/servo_nightly"]'
         then: true
         else: false
       else:
@@ -50,14 +50,14 @@ tasks:
           created: {$fromNow: ''}
           deadline: {$fromNow: '24 hours'}
           provisionerId: proj-wpt
-          workerType: ci
+          workerType: ci-gw
           metadata:
             name: "wpt-decision-task"
             description: "The task that creates all of the other tasks in the task graph"
             owner: ${owner}
             source: ${event.repository.clone_url}
           payload:
-            image: webplatformtests/wpt:0.48
+            image: ghcr.io/web-platform-tests/wpt:3
             maxRunTime: 7200
             artifacts:
               public/results:
@@ -79,4 +79,3 @@ tasks:
             - ${scopes}
           extra:
             github_event: "${event_str}"
-

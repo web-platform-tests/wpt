@@ -13,6 +13,7 @@ body { margin: 0; }
    width: 350px;
    height: 100px;
    font-family: Ahem;
+   line-height: 1;
 }
 .block > :nth-child(1) { font-size:24px; }
 .block > :nth-child(2) { font-size:32px; }
@@ -26,9 +27,8 @@ body { margin: 0; }
 }
 .extraBottomPadding { padding-bottom: 30px; }
 .item { display: inline-block; }
-.top { vertical-align: top; }
 </style>
 
 <p>4x1 with parallel items.</p>
-<div class="block directionRTL"><div class="item top verticalRL">É</div><div class="item top verticalRL">É</div><div class="item top verticalRL">É</div><div class="item top verticalRL">É</div></div>
-<div class="block directionRTL"><div class="item top verticalRL extraBottomPadding">É</div><div class="item top verticalRL">É</div><div class="item top verticalRL">É</div><div class="item top verticalRL">É</div></div>
+<div class="block directionRTL"><div class="item verticalRL">É</div><div class="item verticalRL">É</div><div class="item verticalRL">É</div><div class="item verticalRL">É</div></div>
+<div class="block directionRTL"><div class="item verticalRL extraBottomPadding">É</div><div class="item verticalRL">É</div><div class="item verticalRL">É</div><div class="item verticalRL">É</div></div>

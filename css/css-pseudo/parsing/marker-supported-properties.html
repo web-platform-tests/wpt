@@ -51,6 +51,9 @@ test_pseudo_computed_value("::marker", "direction", "rtl");
 // ::marker supports `content`
 test_pseudo_computed_value("::marker", "content", "\"foo\"");
 
+// ::marker supports `quotes`.
+test_pseudo_computed_value("::marker", "quotes", '"«" "»"');
+
 // ::marker supports animation properties.
 test_pseudo_computed_value("::marker", "animation", "1s linear 2s infinite alternate forwards paused anim");
 test_pseudo_computed_value("::marker", "animation-delay", "1s");
@@ -61,6 +64,12 @@ test_pseudo_computed_value("::marker", "animation-iteration-count", "infinite");
 test_pseudo_computed_value("::marker", "animation-name", "anim");
 test_pseudo_computed_value("::marker", "animation-play-state", "paused");
 test_pseudo_computed_value("::marker", "animation-timing-function", "linear");
+test_pseudo_computed_value("::marker", "animation-composition", "add");
+
+test_pseudo_computed_value("::marker", "animation-range", "contain 10px cover 20px");
+test_pseudo_computed_value("::marker", "animation-range-start", "contain 10px");
+test_pseudo_computed_value("::marker", "animation-range-end", "cover 20px");
+test_pseudo_computed_value("::marker", "animation-timeline", "scroll()");
 
 // ::marker supports transition properties.
 test_pseudo_computed_value("::marker", "transition", "display 1s linear 2s");
@@ -86,6 +95,9 @@ test_pseudo_computed_value("::marker", "text-emphasis-color", "rgb(0, 255, 0)");
 test_pseudo_computed_value("::marker", "text-emphasis-position", "under left");
 test_pseudo_computed_value("::marker", "text-emphasis-style", "dot");
 test_pseudo_computed_value("::marker", "text-shadow", "rgb(0, 255, 0) 1px 2px 3px");
+
+// ::marker supports `cursor`.
+test_pseudo_computed_value("::marker", "cursor", "move");
 
 // ::marker does NOT support layout properties
 test_pseudo_computed_value("::marker", "display", "none", ["block", "inline", "inline-block"]);

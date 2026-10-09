@@ -50,6 +50,8 @@ Fix bugs
 --------
 
 Look through the `GitHub issues for bugs <https://github.com/pytest-dev/pytest/labels/type:%20bug>`_.
+See also the `"good first issue" issues <https://github.com/pytest-dev/pytest/labels/good%20first%20issue>`_
+that are friendly to new contributors.
 
 :ref:`Talk <contact>` to developers to find out how you can fix specific bugs. To indicate that you are going
 to work on a particular issue, add a comment to that effect on the specific issue.
@@ -160,7 +162,7 @@ the following:
 
 - an issue tracker for bug reports and enhancement requests.
 
-- a `changelog <http://keepachangelog.com/>`_.
+- a `changelog <https://keepachangelog.com/>`_.
 
 If no contributor strongly objects and two agree, the repository can then be
 transferred to the ``pytest-dev`` organisation.
@@ -195,11 +197,12 @@ Short version
 ~~~~~~~~~~~~~
 
 #. Fork the repository.
+#. Fetch tags from upstream if necessary (if you cloned only main `git fetch --tags https://github.com/pytest-dev/pytest`).
 #. Enable and install `pre-commit <https://pre-commit.com>`_ to ensure style-guides and code checks are followed.
-#. Follow **PEP-8** for naming and `black <https://github.com/psf/black>`_ for formatting.
+#. Follow `PEP-8 <https://www.python.org/dev/peps/pep-0008/>`_ for naming.
 #. Tests are run using ``tox``::
 
-    tox -e linting,py37
+    tox -e linting,py39
 
    The test environments above are usually enough to cover most cases locally.
 
@@ -221,7 +224,7 @@ changes you want to review and merge.  Pull requests are stored on
 Once you send a pull request, we can discuss its potential modifications and
 even add more commits to it later on. There's an excellent tutorial on how Pull
 Requests work in the
-`GitHub Help Center <https://help.github.com/articles/using-pull-requests/>`_.
+`GitHub Help Center <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>`_.
 
 Here is a simple overview, with pytest-specific bits:
 
@@ -234,13 +237,19 @@ Here is a simple overview, with pytest-specific bits:
 
     $ git clone git@github.com:YOUR_GITHUB_USERNAME/pytest.git
     $ cd pytest
-    # now, create your own branch off "master":
+    $ git fetch --tags https://github.com/pytest-dev/pytest
+    # now, create your own branch off "main":
 
-        $ git checkout -b your-bugfix-branch-name master
+        $ git checkout -b your-bugfix-branch-name main
 
    Given we have "major.minor.micro" version numbers, bug fixes will usually
    be released in micro releases whereas features will be released in
    minor releases and incompatible changes in major releases.
+
+   You will need the tags to test locally, so be sure you have the tags from the main repository. If you suspect you don't, set the main repository as upstream and fetch the tags::
+
+     $ git remote add upstream https://github.com/pytest-dev/pytest
+     $ git fetch upstream --tags
 
    If you need some help with Git, follow this quick start
    guide: https://git.wiki.kernel.org/index.php/QuickStart
@@ -259,51 +268,45 @@ Here is a simple overview, with pytest-specific bits:
 
    Tox is used to run all the tests and will automatically setup virtualenvs
    to run the tests in.
-   (will implicitly use http://www.virtualenv.org/en/latest/)::
+   (will implicitly use https://virtualenv.pypa.io/en/latest/)::
 
     $ pip install tox
 
 #. Run all the tests
 
-   You need to have Python 3.7 available in your system.  Now
+   You need to have Python 3.8 or later available in your system.  Now
    running tests is as simple as issuing this command::
 
-    $ tox -e linting,py37
+    $ tox -e linting,py39
 
-   This command will run tests via the "tox" tool against Python 3.7
+   This command will run tests via the "tox" tool against Python 3.9
    and also perform "lint" coding-style checks.
 
-#. You can now edit your local working copy and run the tests again as necessary. Please follow PEP-8 for naming.
+#. You can now edit your local working copy and run the tests again as necessary. Please follow `PEP-8 <https://www.python.org/dev/peps/pep-0008/>`_ for naming.
 
-   You can pass different options to ``tox``. For example, to run tests on Python 3.7 and pass options to pytest
+   You can pass different options to ``tox``. For example, to run tests on Python 3.9 and pass options to pytest
    (e.g. enter pdb on failure) to pytest you can do::
 
-    $ tox -e py37 -- --pdb
+    $ tox -e py39 -- --pdb
 
-   Or to only run tests in a particular test module on Python 3.7::
+   Or to only run tests in a particular test module on Python 3.9::
 
-    $ tox -e py37 -- testing/test_config.py
+    $ tox -e py39 -- testing/test_config.py
 
 
    When committing, ``pre-commit`` will re-format the files if necessary.
 
 #. If instead of using ``tox`` you prefer to run the tests directly, then we suggest to create a virtual environment and use
-   an editable install with the ``testing`` extra::
+   an editable install with the ``dev`` extra::
 
        $ python3 -m venv .venv
        $ source .venv/bin/activate  # Linux
        $ .venv/Scripts/activate.bat  # Windows
-       $ pip install -e ".[testing]"
+       $ pip install -e ".[dev]"
 
    Afterwards, you can edit the files and run pytest normally::
 
        $ pytest testing/test_config.py
-
-
-#. Commit and push once your tests pass and you are happy with your change(s)::
-
-    $ git commit -a -m "<commit message>"
-    $ git push -u
 
 #. Create a new changelog entry in ``changelog``. The file should be named ``<issueid>.<type>.rst``,
    where *issueid* is the number of the issue related to the change and *type* is one of
@@ -313,32 +316,37 @@ Here is a simple overview, with pytest-specific bits:
 
 #. Add yourself to ``AUTHORS`` file if not there yet, in alphabetical order.
 
+#. Commit and push once your tests pass and you are happy with your change(s)::
+
+    $ git commit -a -m "<commit message>"
+    $ git push -u
+
 #. Finally, submit a pull request through the GitHub website using this data::
 
     head-fork: YOUR_GITHUB_USERNAME/pytest
     compare: your-branch-name
 
     base-fork: pytest-dev/pytest
-    base: master
+    base: main
 
 
 Writing Tests
 ~~~~~~~~~~~~~
 
-Writing tests for plugins or for pytest itself is often done using the `testdir fixture <https://docs.pytest.org/en/stable/reference.html#testdir>`_, as a "black-box" test.
+Writing tests for plugins or for pytest itself is often done using the `pytester fixture <https://docs.pytest.org/en/stable/reference/reference.html#pytester>`_, as a "black-box" test.
 
 For example, to ensure a simple test passes you can write:
 
 .. code-block:: python
 
-    def test_true_assertion(testdir):
-        testdir.makepyfile(
+    def test_true_assertion(pytester):
+        pytester.makepyfile(
             """
             def test_foo():
                 assert True
         """
         )
-        result = testdir.runpytest()
+        result = pytester.runpytest()
         result.assert_outcomes(failed=0, passed=1)
 
 
@@ -347,14 +355,14 @@ Alternatively, it is possible to make checks based on the actual output of the t
 
 .. code-block:: python
 
-    def test_true_assertion(testdir):
-        testdir.makepyfile(
+    def test_true_assertion(pytester):
+        pytester.makepyfile(
             """
             def test_foo():
                 assert False
         """
         )
-        result = testdir.runpytest()
+        result = pytester.runpytest()
         result.stdout.fnmatch_lines(["*assert False*", "*1 failed*"])
 
 When choosing a file where to write a new test, take a look at the existing files and see if there's
@@ -379,7 +387,7 @@ them.
 Backporting bug fixes for the next patch release
 ------------------------------------------------
 
-Pytest makes feature release every few weeks or months. In between, patch releases
+Pytest makes a feature release every few weeks or months. In between, patch releases
 are made to the previous feature release, containing bug fixes only. The bug fixes
 usually fix regressions, but may be any change that should reach users before the
 next feature release.
@@ -388,15 +396,22 @@ Suppose for example that the latest release was 1.2.3, and you want to include
 a bug fix in 1.2.4 (check https://github.com/pytest-dev/pytest/releases for the
 actual latest release). The procedure for this is:
 
-#. First, make sure the bug is fixed the ``master`` branch, with a regular pull
+#. First, make sure the bug is fixed in the ``main`` branch, with a regular pull
    request, as described above. An exception to this is if the bug fix is not
-   applicable to ``master`` anymore.
+   applicable to ``main`` anymore.
 
-#. ``git checkout origin/1.2.x -b backport-XXXX`` # use the master PR number here
+Automatic method:
+
+Add a ``backport 1.2.x`` label to the PR you want to backport. This will create
+a backport PR against the ``1.2.x`` branch.
+
+Manual method:
+
+#. ``git checkout origin/1.2.x -b backport-XXXX`` # use the main PR number here
 
 #. Locate the merge commit on the PR, in the *merged* message, for example:
 
-    nicoddemus merged commit 0f8b462 into pytest-dev:master
+    nicoddemus merged commit 0f8b462 into pytest-dev:main
 
 #. ``git cherry-pick -x -m1 REVISION`` # use the revision you found above (``0f8b462``).
 
@@ -409,8 +424,8 @@ actual latest release). The procedure for this is:
 Who does the backporting
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-As mentioned above, bugs should first be fixed on ``master`` (except in rare occasions
-that a bug only happens in a previous release). So who should do the backport procedure described
+As mentioned above, bugs should first be fixed on ``main`` (except in rare occasions
+that a bug only happens in a previous release). So, who should do the backport procedure described
 above?
 
 1. If the bug was fixed by a core developer, it is the main responsibility of that core developer
@@ -418,8 +433,8 @@ above?
 2. However, often the merge is done by another maintainer, in which case it is nice of them to
    do the backport procedure if they have the time.
 3. For bugs submitted by non-maintainers, it is expected that a core developer will to do
-   the backport, normally the one that merged the PR on ``master``.
-4. If a non-maintainers notices a bug which is fixed on ``master`` but has not been backported
+   the backport, normally the one that merged the PR on ``main``.
+4. If a non-maintainers notices a bug which is fixed on ``main`` but has not been backported
    (due to maintainers forgetting to apply the *needs backport* label, or just plain missing it),
    they are also welcome to open a PR with the backport. The procedure is simple and really
    helps with the maintenance of the project.
@@ -448,7 +463,7 @@ can always reopen the issue/pull request in their own time later if it makes sen
 When to close
 ~~~~~~~~~~~~~
 
-Here are a few general rules the maintainers use to decide when to close issues/PRs because
+Here are a few general rules the maintainers use deciding when to close issues/PRs because
 of lack of inactivity:
 
 * Issues labeled ``question`` or ``needs information``: closed after 14 days inactive.
@@ -460,15 +475,15 @@ The above are **not hard rules**, but merely **guidelines**, and can be (and oft
 Closing pull requests
 ~~~~~~~~~~~~~~~~~~~~~
 
-When closing a Pull Request, it needs to be acknowledge the time, effort, and interest demonstrated by the person which submitted it. As mentioned previously, it is not the intent of the team to dismiss stalled pull request entirely but to merely to clear up our queue, so a message like the one below is warranted when closing a pull request that went stale:
+When closing a Pull Request, it needs to be acknowledging the time, effort, and interest demonstrated by the person which submitted it. As mentioned previously, it is not the intent of the team to dismiss a stalled pull request entirely but to merely to clear up our queue, so a message like the one below is warranted when closing a pull request that went stale:
 
     Hi <contributor>,
 
-    First of all we would like to thank you for your time and effort on working on this, the pytest team deeply appreciates it.
+    First of all, we would like to thank you for your time and effort on working on this, the pytest team deeply appreciates it.
 
     We noticed it has been awhile since you have updated this PR, however. pytest is a high activity project, with many issues/PRs being opened daily, so it is hard for us maintainers to track which PRs are ready for merging, for review, or need more attention.
 
-    So for those reasons we think it is best to close the PR for now, but with the only intention to cleanup our queue, it is by no means a rejection of your changes. We still encourage you to re-open this PR (it is just a click of a button away) when you are ready to get back to it.
+    So for those reasons we, think it is best to close the PR for now, but with the only intention to clean up our queue, it is by no means a rejection of your changes. We still encourage you to re-open this PR (it is just a click of a button away) when you are ready to get back to it.
 
     Again we appreciate your time for working on this, and hope you might get back to this at a later time!
 

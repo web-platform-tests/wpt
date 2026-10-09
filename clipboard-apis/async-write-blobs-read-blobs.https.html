@@ -4,10 +4,12 @@
   Async Clipboard write blobs -> read blobs tests
 </title>
 <link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
+<body>Body needed for test_driver.click()</body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/user-activation.js"></script>
 
 <script>
 async function loadBlob(fileName) {
@@ -16,8 +18,8 @@ async function loadBlob(fileName) {
 }
 
 promise_test(async t => {
-  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
-  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+  await tryGrantReadPermission();
+  await tryGrantWritePermission();
 
   const blobText = new Blob(['test text'], {type: 'text/plain'});
   const blobImage = await loadBlob('resources/greenbox.png');
@@ -28,7 +30,9 @@ promise_test(async t => {
   const clipboardItemInput = new ClipboardItem(
         {'text/plain' : blobText, 'image/png' : blobImage});
 
+  await waitForUserActivation();
   await navigator.clipboard.write([clipboardItemInput]);
+  await waitForUserActivation();
   const clipboardItems = await navigator.clipboard.read();
 
   assert_equals(clipboardItems.length, 1);
@@ -41,4 +45,18 @@ promise_test(async t => {
   assert_equals(blobTextOutput.type, 'text/plain');
   assert_equals(blobImageOutput.type, 'image/png');
 }, 'Verify write and read clipboard (multiple types)');
+
+promise_test(async () => {
+  await tryGrantReadPermission();
+  await tryGrantWritePermission();
+  const text_blob = new Blob(['hello'], {type: 'text/plain'});
+  const html_blob = new Blob(undefined, {type: 'text/html'});
+  const item = new ClipboardItem({'text/plain': text_blob, 'text/html': html_blob});
+
+  await waitForUserActivation();
+  await navigator.clipboard.write([item]);
+  await waitForUserActivation();
+  const [clipboardItem] = await navigator.clipboard.read();
+}, 'navigator.clipboard.read() does not crash if clipboard data has null values');
+
 </script>

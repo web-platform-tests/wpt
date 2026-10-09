@@ -2,10 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="variant" content="">
-  <meta name="variant" content="?keep-promise">
   <title>idlharness: namespace operation</title>
-  <script src="../../../../variants.js"></script>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/resources/WebIDLParser.js"></script>
@@ -70,7 +67,12 @@ namespace bar {
 namespace baz {
   DOMString LongStory(any hero, DOMString... details);
   DOMString ShortStory(DOMString... details);
-};`);
+};
+[Exposed=Worker]
+namespace Absent {
+  undefined Lies();
+};
+`);
 idlArray.test();
 </script>
 <script type="text/json" id="expected">
@@ -233,6 +235,12 @@ idlArray.test();
     },
     {
       "name": "baz namespace: operation ShortStory(DOMString...)",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Absent namespace: existence and properties of namespace object",
       "status_string": "PASS",
       "properties": {},
       "message": null

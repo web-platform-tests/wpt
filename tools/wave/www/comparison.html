@@ -8,6 +8,7 @@
     <script src="lib/utils.js"></script>
     <script src="lib/wave-service.js"></script>
     <script src="lib/ui.js"></script>
+    <script src="lib/hbbtv.js"></script>
     <style>
       body {
         margin: 0;
@@ -65,7 +66,7 @@
         tokens = tokens ? tokens.split(",") : [];
         const refTokens = reftokens ? reftokens.split(",") : [];
         if (tokens) {
-          WaveService.readResultsConfig(function(config) {
+          WaveService.readStatus(function(config) {
             comparisonUi.state.reportsEnabled = config.reportsEnabled;
             comparisonUi.render();
           });

@@ -1,10 +1,12 @@
+# mypy: allow-untyped-defs
+
 import array
+import gzip
 import os
 from collections import defaultdict, namedtuple
 from typing import Dict, List, Tuple
 
-from mozlog import structuredlog
-from six import ensure_str, ensure_text
+from mozlog.structuredlog import StructuredLogger
 from sys import intern
 
 from . import manifestupdate
@@ -12,11 +14,10 @@ from . import testloader
 from . import wptmanifest
 from . import wpttest
 from .expected import expected_path
-from .vcs import git
 manifest = None  # Module that will be imported relative to test_root
 manifestitem = None
 
-logger = structuredlog.StructuredLogger("web-platform-tests")
+logger = StructuredLogger("web-platform-tests")
 
 try:
     import ujson as json
@@ -24,7 +25,7 @@ except ImportError:
     import json  # type: ignore
 
 
-class RunInfo(object):
+class RunInfo:
     """A wrapper around RunInfo dicts so that they can be hashed by identity"""
 
     def __init__(self, dict_value):
@@ -44,17 +45,80 @@ class RunInfo(object):
         return self.canonical_repr == other.canonical_repr
 
     def iteritems(self):
-        for key, value in self.data.items():
-            yield key, value
+        yield from self.data.items()
 
     def items(self):
         return list(self.items())
 
 
-def update_expected(test_paths, serve_root, log_file_names,
-                    update_properties, rev_old=None, rev_new="HEAD",
-                    full_update=False, sync_root=None, disable_intermittent=None,
-                    update_intermittent=False, remove_intermittent=False):
+def get_properties(properties_file=None, extra_properties=None, config=None, product=None):
+    """Read the list of properties to use for updating metadata.
+
+    :param properties_file: Path to a JSON file containing properties.
+    :param extra_properties: List of extra properties to use
+    :param config: (deprecated, unused) wptrunner config
+    :param Product: (deprecated) product name
+    """
+    properties = []
+    dependents = {}
+
+    if config is not None:
+        logger.warning("Got `config` in metadata.get_properties; this is ignored")
+
+    if properties_file is not None:
+        logger.debug(f"Reading update properties from {properties_file}")
+        try:
+            with open(properties_file) as f:
+                data = json.load(f)
+                msg = None
+                if "properties" not in data:
+                    msg = "Properties file missing 'properties' key"
+                elif not isinstance(data["properties"], list):
+                    msg = "Properties file 'properties' value must be a list"
+                elif not all(isinstance(item, str) for item in data["properties"]):
+                    msg = "Properties file 'properties' value must be a list of strings"
+                elif "dependents" in data:
+                    dependents = data["dependents"]
+                    if not isinstance(dependents, dict):
+                        msg = "Properties file 'dependent_properties' value must be an object"
+                    elif (not all(isinstance(dependents[item], list) and
+                                  all(isinstance(item_value, str)
+                                      for item_value in dependents[item])
+                                  for item in dependents)):
+                        msg = ("Properties file 'dependent_properties' values must be lists of" +
+                               " strings")
+                if msg is not None:
+                    logger.error(msg)
+                    raise ValueError(msg)
+
+                properties = data["properties"]
+        except OSError:
+            logger.critical(f"Error opening properties file {properties_file}")
+            raise
+        except ValueError:
+            logger.critical(f"Error parsing properties file {properties_file}")
+            raise
+    elif product is not None:
+        logger.warning("Falling back to getting metadata update properties from wptrunner browser "
+                       "product file, this will be removed")
+
+        properties, dependents = product.update_properties
+
+    if extra_properties is not None:
+        properties.extend(extra_properties)
+
+    properties_set = set(properties)
+    if any(item not in properties_set for item in dependents.keys()):
+        msg = "All 'dependent' keys must be in 'properties'"
+        logger.critical(msg)
+        raise ValueError(msg)
+
+    return properties, dependents
+
+
+def update_expected(test_paths, log_file_names,
+                    update_properties, full_update=False, disable_intermittent=None,
+                    update_intermittent=False, remove_intermittent=False, **kwargs):
     """Update the metadata files for web-platform-tests based on
     the results obtained in a previous run or runs
 
@@ -68,9 +132,16 @@ def update_expected(test_paths, serve_root, log_file_names,
     intermittent statuses which are not present in the current run will be removed from the
     metadata, else they are left in."""
 
-    do_delayed_imports(serve_root)
+    do_delayed_imports()
 
     id_test_map = load_test_data(test_paths)
+
+    msg = f"Updating metadata using properties: {','.join(update_properties[0])}"
+    if update_properties[1]:
+        dependent_strs = [f"{item}: {','.join(values)}"
+                          for item, values in update_properties[1].items()]
+        msg += f", and dependent properties: {' '.join(dependent_strs)}"
+    logger.info(msg)
 
     for metadata_path, updated_ini in update_from_logs(id_test_map,
                                                        update_properties,
@@ -85,57 +156,15 @@ def update_expected(test_paths, serve_root, log_file_names,
             for test in updated_ini.iterchildren():
                 for subtest in test.iterchildren():
                     if subtest.new_disabled:
-                        print("disabled: %s" % os.path.dirname(subtest.root.test_path) + "/" + subtest.name)
+                        logger.info("disabled: %s" % os.path.dirname(subtest.root.test_path) + "/" + subtest.name)
                     if test.new_disabled:
-                        print("disabled: %s" % test.root.test_path)
+                        logger.info("disabled: %s" % test.root.test_path)
 
 
-def do_delayed_imports(serve_root=None):
+def do_delayed_imports():
     global manifest, manifestitem
     from manifest import manifest, item as manifestitem  # type: ignore
 
-
-def files_in_repo(repo_root):
-    return git("ls-tree", "-r", "--name-only", "HEAD").split("\n")
-
-
-def rev_range(rev_old, rev_new, symmetric=False):
-    joiner = ".." if not symmetric else "..."
-    return "".join([rev_old, joiner, rev_new])
-
-
-def paths_changed(rev_old, rev_new, repo):
-    data = git("diff", "--name-status", rev_range(rev_old, rev_new), repo=repo)
-    lines = [tuple(item.strip() for item in line.strip().split("\t", 1))
-             for line in data.split("\n") if line.strip()]
-    output = set(lines)
-    return output
-
-
-def load_change_data(rev_old, rev_new, repo):
-    changes = paths_changed(rev_old, rev_new, repo)
-    rv = {}
-    status_keys = {"M": "modified",
-                   "A": "new",
-                   "D": "deleted"}
-    # TODO: deal with renames
-    for item in changes:
-        rv[item[1]] = status_keys[item[0]]
-    return rv
-
-
-def unexpected_changes(manifests, change_data, files_changed):
-    files_changed = set(files_changed)
-
-    root_manifest = None
-    for manifest, paths in manifests.items():
-        if paths["url_base"] == "/":
-            root_manifest = manifest
-            break
-    else:
-        return []
-
-    return [fn for _, fn, _ in root_manifest if fn in files_changed and change_data.get(fn) != "M"]
 
 # For each testrun
 # Load all files and scan for the suite_start entry
@@ -153,7 +182,7 @@ def unexpected_changes(manifests, change_data, files_changed):
 #   Check if all the RHS values are the same; if so collapse the conditionals
 
 
-class InternedData(object):
+class InternedData:
     """Class for interning data of any (hashable) type.
 
     This class is intended for building a mapping of int <=> value, such
@@ -213,7 +242,7 @@ class RunInfoInterned(InternedData):
 
 
 prop_intern = InternedData(4)
-run_info_intern = InternedData(8)
+run_info_intern = InternedData(16)
 status_intern = InternedData(4)
 
 
@@ -255,7 +284,7 @@ def unpack_result(data):
 
 
 def load_test_data(test_paths):
-    manifest_loader = testloader.ManifestLoader(test_paths, False)
+    manifest_loader = testloader.ManifestLoader(logger, test_paths, False)
     manifests = manifest_loader.load()
 
     id_test_map = {}
@@ -271,14 +300,14 @@ def update_from_logs(id_test_map, update_properties, disable_intermittent, updat
     updater = ExpectedUpdater(id_test_map)
 
     for i, log_filename in enumerate(log_filenames):
-        print("Processing log %d/%d" % (i + 1, len(log_filenames)))
-        with open(log_filename) as f:
+        logger.info("Processing log %d/%d" % (i + 1, len(log_filenames)))
+        opener = gzip.open if log_filename.endswith(".gz") else open
+        with opener(log_filename, "rt") as f:
             updater.update_from_log(f)
 
-    for item in update_results(id_test_map, update_properties, full_update,
-                               disable_intermittent, update_intermittent=update_intermittent,
-                               remove_intermittent=remove_intermittent):
-        yield item
+    yield from update_results(id_test_map, update_properties, full_update,
+                              disable_intermittent, update_intermittent=update_intermittent,
+                              remove_intermittent=remove_intermittent)
 
 
 def update_results(id_test_map,
@@ -340,11 +369,13 @@ def write_new_expected(metadata_path, expected):
             pass
 
 
-class ExpectedUpdater(object):
+class ExpectedUpdater:
     def __init__(self, id_test_map):
         self.id_test_map = id_test_map
-        self.run_info = None
+        self.base_run_info = None
+        self.run_info_by_subsuite = {}
         self.action_map = {"suite_start": self.suite_start,
+                           "add_subsuite": self.add_subsuite,
                            "test_start": self.test_start,
                            "test_status": self.test_status,
                            "test_end": self.test_end,
@@ -361,7 +392,8 @@ class ExpectedUpdater(object):
         # * raw log format
 
         # Try reading a single json object in wptreport format
-        self.run_info = None
+        self.base_run_info = None
+        self.run_info_by_subsuite = {}
         success = self.get_wptreport_data(log_file.read())
 
         if success:
@@ -406,21 +438,27 @@ class ExpectedUpdater(object):
     def update_from_wptreport_log(self, data):
         action_map = self.action_map
         action_map["suite_start"]({"run_info": data["run_info"]})
+        for subsuite, run_info in data.get("subsuites", {}).items():
+            action_map["add_subsuite"]({"name": subsuite, "run_info": run_info})
         for test in data["results"]:
-            action_map["test_start"]({"test": test["test"]})
+            action_map["test_start"]({"test": test["test"],
+                                      "subsuite": test.get("subsuite", "")})
             for subtest in test["subtests"]:
                 action_map["test_status"]({"test": test["test"],
+                                           "subsuite": test.get("subsuite", ""),
                                            "subtest": subtest["name"],
                                            "status": subtest["status"],
                                            "expected": subtest.get("expected"),
                                            "known_intermittent": subtest.get("known_intermittent", [])})
             action_map["test_end"]({"test": test["test"],
+                                    "subsuite": test.get("subsuite", ""),
                                     "status": test["status"],
                                     "expected": test.get("expected"),
                                     "known_intermittent": test.get("known_intermittent", [])})
             if "asserts" in test:
                 asserts = test["asserts"]
                 action_map["assertion_count"]({"test": test["test"],
+                                               "subsuite": data.get("subsuite", ""),
                                                "count": asserts["count"],
                                                "min_expected": asserts["min"],
                                                "max_expected": asserts["max"]})
@@ -437,21 +475,30 @@ class ExpectedUpdater(object):
                     action_map[action](item_data)
 
     def suite_start(self, data):
-        self.run_info = run_info_intern.store(RunInfo(data["run_info"]))
+        self.base_run_info = data["run_info"]
+        run_info = RunInfo(data["run_info"])
+        self.run_info_by_subsuite[""] = run_info_intern.store(run_info)
+
+    def add_subsuite(self, data):
+        run_info_data = self.base_run_info.copy()
+        run_info_data.update(data["run_info"])
+        run_info = RunInfo(run_info_data)
+        name = data["name"]
+        self.run_info_by_subsuite[name] = run_info_intern.store(run_info)
 
     def test_start(self, data):
-        test_id = intern(ensure_str(data["test"]))
+        test_id = intern(data["test"])
         try:
             self.id_test_map[test_id]
         except KeyError:
-            print("Test not found %s, skipping" % test_id)
+            logger.warning("Test not found %s, skipping" % test_id)
             return
 
         self.tests_visited[test_id] = set()
 
     def test_status(self, data):
-        test_id = intern(ensure_str(data["test"]))
-        subtest = intern(ensure_str(data["subtest"]))
+        test_id = intern(data["test"])
+        subtest = intern(data["subtest"])
         test_data = self.id_test_map.get(test_id)
         if test_data is None:
             return
@@ -460,39 +507,43 @@ class ExpectedUpdater(object):
 
         result = pack_result(data)
 
-        test_data.set(test_id, subtest, "status", self.run_info, result)
-        if data.get("expected") and data["expected"] != data["status"]:
+        test_data.set(test_id, subtest, "status", self.run_info_by_subsuite[data.get("subsuite", "")], result)
+        status = data["status"]
+        expected = data.get("expected")
+        if expected and expected != status and status not in data.get("known_intermittent", []):
             test_data.set_requires_update()
 
     def test_end(self, data):
         if data["status"] == "SKIP":
             return
 
-        test_id = intern(ensure_str(data["test"]))
+        test_id = intern(data["test"])
         test_data = self.id_test_map.get(test_id)
         if test_data is None:
             return
 
         result = pack_result(data)
 
-        test_data.set(test_id, None, "status", self.run_info, result)
-        if data.get("expected") and data["expected"] != data["status"]:
+        test_data.set(test_id, None, "status", self.run_info_by_subsuite[data.get("subsuite", "")], result)
+        status = data["status"]
+        expected = data.get("expected")
+        if expected and expected != status and status not in data.get("known_intermittent", []):
             test_data.set_requires_update()
         del self.tests_visited[test_id]
 
     def assertion_count(self, data):
-        test_id = intern(ensure_str(data["test"]))
+        test_id = intern(data["test"])
         test_data = self.id_test_map.get(test_id)
         if test_data is None:
             return
 
-        test_data.set(test_id, None, "asserts", self.run_info, data["count"])
+        test_data.set(test_id, None, "asserts", self.run_info_by_subsuite[data.get("subsuite", "")], data["count"])
         if data["count"] < data["min_expected"] or data["count"] > data["max_expected"]:
             test_data.set_requires_update()
 
     def test_for_scope(self, data):
         dir_path = data.get("scope", "/")
-        dir_id = intern(ensure_str(os.path.join(dir_path, "__dir__").replace(os.path.sep, "/")))
+        dir_id = intern(os.path.join(dir_path, "__dir__").replace(os.path.sep, "/"))
         if dir_id.startswith("/"):
             dir_id = dir_id[1:]
         return dir_id, self.id_test_map[dir_id]
@@ -503,7 +554,7 @@ class ExpectedUpdater(object):
             return
         dir_id, test_data = self.test_for_scope(data)
         test_data.set(dir_id, None, "lsan",
-                      self.run_info, (data["frames"], data.get("allowed_match")))
+                      self.run_info_by_subsuite[data.get("subsuite", "")], (data["frames"], data.get("allowed_match")))
         if not data.get("allowed_match"):
             test_data.set_requires_update()
 
@@ -513,7 +564,7 @@ class ExpectedUpdater(object):
             return
         dir_id, test_data = self.test_for_scope(data)
         test_data.set(dir_id, None, "leak-object",
-                      self.run_info, ("%s:%s", (data["process"], data["name"]),
+                      self.run_info_by_subsuite[data.get("subsuite", "")], ("%s:%s", (data["process"], data["name"]),
                                       data.get("allowed")))
         if not data.get("allowed"):
             test_data.set_requires_update()
@@ -525,7 +576,7 @@ class ExpectedUpdater(object):
         if data["bytes"]:
             dir_id, test_data = self.test_for_scope(data)
             test_data.set(dir_id, None, "leak-threshold",
-                          self.run_info, (data["process"], data["bytes"], data["threshold"]))
+                          self.run_info_by_subsuite[data.get("subsuite", "")], (data["process"], data["bytes"], data["threshold"]))
             if data["bytes"] > data["threshold"] or data["bytes"] < 0:
                 test_data.set_requires_update()
 
@@ -540,13 +591,13 @@ def create_test_tree(metadata_path, test_manifest):
     assert all_types > exclude_types
     include_types = all_types - exclude_types
     for item_type, test_path, tests in test_manifest.itertypes(*include_types):
-        test_file_data = TestFileData(intern(ensure_str(test_manifest.url_base)),
-                                      intern(ensure_str(item_type)),
+        test_file_data = TestFileData(intern(test_manifest.url_base),
+                                      intern(item_type),
                                       metadata_path,
                                       test_path,
                                       tests)
         for test in tests:
-            id_test_map[intern(ensure_str(test.id))] = test_file_data
+            id_test_map[intern(test.id)] = test_file_data
 
         dir_path = os.path.dirname(test_path)
         while True:
@@ -555,7 +606,7 @@ def create_test_tree(metadata_path, test_manifest):
             if dir_id in id_test_map:
                 break
 
-            test_file_data = TestFileData(intern(ensure_str(test_manifest.url_base)),
+            test_file_data = TestFileData(intern(test_manifest.url_base),
                                           None,
                                           metadata_path,
                                           dir_meta_path,
@@ -568,13 +619,14 @@ def create_test_tree(metadata_path, test_manifest):
     return id_test_map
 
 
-class PackedResultList(object):
+class PackedResultList:
     """Class for storing test results.
 
-    Results are stored as an array of 2-byte integers for compactness.
-    The first 4 bits represent the property name, the second 4 bits
+    Results are stored as an array of 4-byte integers for compactness
+    with the first 8 bits reserved. In the remaining 24 bits,
+    the first 4 bits represent the property name, the second 4 bits
     represent the test status (if it's a result with a status code), and
-    the final 8 bits represent the run_info. If the result doesn't have a
+    the final 16 bits represent the run_info. If the result doesn't have a
     simple status code but instead a richer type, we place that richer type
     in a dictionary and set the status part of the result type to 0.
 
@@ -583,14 +635,14 @@ class PackedResultList(object):
     and corresponding Python objects."""
 
     def __init__(self):
-        self.data = array.array("H")
+        self.data = array.array("L")
 
     __slots__ = ("data", "raw_data")
 
     def append(self, prop, run_info, value):
-        out_val = (prop << 12) + run_info
+        out_val = (prop << 20) + run_info
         if prop == prop_intern.store("status") and isinstance(value, int):
-            out_val += value << 8
+            out_val += value << 16
         else:
             if not hasattr(self, "raw_data"):
                 self.raw_data = {}
@@ -598,15 +650,15 @@ class PackedResultList(object):
         self.data.append(out_val)
 
     def unpack(self, idx, packed):
-        prop = prop_intern.get((packed & 0xF000) >> 12)
+        prop = prop_intern.get((packed & 0xF00000) >> 20)
 
-        value_idx = (packed & 0x0F00) >> 8
+        value_idx = (packed & 0x0F0000) >> 16
         if value_idx == 0:
             value = self.raw_data[idx]
         else:
             value = status_intern.get(value_idx)
 
-        run_info = run_info_intern.get(packed & 0x00FF)
+        run_info = run_info_intern.get(packed & 0x00FFFF)
 
         return prop, run_info, value
 
@@ -615,7 +667,7 @@ class PackedResultList(object):
             yield self.unpack(i, item)
 
 
-class TestFileData(object):
+class TestFileData:
     __slots__ = ("url_base", "item_type", "test_path", "metadata_path", "tests",
                  "_requires_update", "data")
 
@@ -624,7 +676,7 @@ class TestFileData(object):
         self.item_type = item_type
         self.test_path = test_path
         self.metadata_path = metadata_path
-        self.tests = {intern(ensure_str(item.id)) for item in tests}
+        self.tests = {intern(item.id) for item in tests}
         self._requires_update = False
         self.data = defaultdict(lambda: defaultdict(PackedResultList))
 
@@ -666,10 +718,10 @@ class TestFileData(object):
         rv = []
 
         for test_id, subtests in self.data.items():
-            test = expected.get_test(ensure_text(test_id))
+            test = expected.get_test(test_id)
             if not test:
                 continue
-            seen_subtests = set(ensure_text(item) for item in subtests.keys() if item is not None)
+            seen_subtests = {item for item in subtests.keys() if item is not None}
             missing_subtests = set(test.subtests.keys()) - seen_subtests
             for item in missing_subtests:
                 expected_subtest = test.get_subtest(item)
@@ -714,6 +766,8 @@ class TestFileData(object):
         if not self.requires_update and not full_update:
             return
 
+        logger.debug("Updating %s", self.metadata_path)
+
         expected = self.expected(update_properties,
                                  update_intermittent=update_intermittent,
                                  remove_intermittent=remove_intermittent)
@@ -739,7 +793,6 @@ class TestFileData(object):
             expected_by_test[test_id] = test_expected
 
         for test_id, test_data in self.data.items():
-            test_id = ensure_str(test_id)
             for subtest_id, results_list in test_data.items():
                 for prop, run_info, value in results_list:
                     # Special case directory metadata
@@ -756,7 +809,6 @@ class TestFileData(object):
                     if subtest_id is None:
                         item_expected = test_expected
                     else:
-                        subtest_id = ensure_text(subtest_id)
                         item_expected = test_expected.get_subtest(subtest_id)
 
                     if prop == "status":

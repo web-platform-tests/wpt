@@ -14,6 +14,9 @@ const setupIframe = (t, attrs) => {
   return {iframe, watcher};
 };
 
+// This test is outdated, see
+// https://github.com/whatwg/html/issues/3267#issuecomment-2788132131
+
 promise_test(async t => {
   const {iframe, watcher} = setupIframe(t, {});
 
@@ -28,7 +31,7 @@ promise_test(async t => {
 
   assert_true(iframe.contentWindow.didLoadFrame);
   // The <iframe>'s session history has only one Document, and that Document is
-  // the initial:blank Document. The Window object should be reused per
+  // the initial about:blank Document. The Window object should be reused per
   // https://whatwg.org/c/iframe-embed-object.html#process-the-iframe-attributes.
   assert_equals(iframe.contentWindow.persistedString, 'Hello world!');
 }, 'synchronously navigate iframe with no initial src.');
@@ -46,7 +49,7 @@ promise_test(async t => {
 
   assert_true(iframe.contentWindow.didLoadFrame);
   // The <iframe>'s session history has only one Document, and that Document is
-  // the initial:blank Document. The Window object should be reused per
+  // the initial about:blank Document. The Window object should be reused per
   // https://whatwg.org/c/iframe-embed-object.html#process-the-iframe-attributes.
   assert_equals(iframe.contentWindow.persistedString, 'Hello world!');
 }, 'after the first iframe load event, navigate iframe with no initial src.');
@@ -73,7 +76,7 @@ promise_test(async t => {
   assert_true(iframe.contentWindow.didLoadFrame);
   // The navigation attempt to "about:blank" was cancelled, so the <iframe>'s
   // session history has only one Document, and that Document is the
-  // initial:blank Document. The Window object should be reused per
+  // initial about:blank Document. The Window object should be reused per
   // https://whatwg.org/c/iframe-embed-object.html#process-the-iframe-attributes.
   assert_equals(iframe.contentWindow.persistedString, 'Hello world!');
 }, 'synchronously navigate iframe with initial src == "".');
@@ -115,7 +118,7 @@ promise_test(async t => {
   assert_true(iframe.contentWindow.didLoadFrame);
   // The navigation attempt to "about:blank" was cancelled, so the <iframe>'s
   // session history has only one Document, and that Document is the
-  // initial:blank Document. The Window object should be reused per
+  // initial about:blank Document. The Window object should be reused per
   // https://whatwg.org/c/iframe-embed-object.html#process-the-iframe-attributes.
   assert_equals(iframe.contentWindow.persistedString, 'Hello world!');
 }, 'synchronously navigate iframe with initial src == "about:blank".');
@@ -151,7 +154,7 @@ promise_test(async t => {
 
   assert_true(iframe.contentWindow.didLoadFrame);
   // The <iframe>'s session history has only one Document, and that Document is
-  // the initial:blank Document. The Window object should be reused per
+  // the initial about:blank Document. The Window object should be reused per
   // https://whatwg.org/c/iframe-embed-object.html#process-the-iframe-attributes.
   assert_equals(iframe.contentWindow.persistedString, 'Hello world!');
 }, 'iframe with initial src == same-origin resource.');

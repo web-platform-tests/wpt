@@ -168,24 +168,150 @@ function test_never_resolve(testFunc, testName) {
   }, testName);
 }
 
-// Helper function to exchange ice candidates between
-// two local peer connections
-function exchangeIceCandidates(pc1, pc2) {
-  // private function
-  function doExchange(localPc, remotePc) {
-    localPc.addEventListener('icecandidate', event => {
-      const { candidate } = event;
+// Helper function to trickle ice candidates from one PeerConnection to another.
+//
+// Returns a handle for observing and synchronizing with the exchange, which
+// callers that only want candidates to flow can safely ignore:
+//
+//   gathered()
+//     The candidates `pcFrom` has produced so far, end-of-candidates excluded.
+//
+//   delivered()
+//     The candidates `pcTo` has actually been handed so far. Only differs from
+//     gathered() while candidates are being held back (see hold() below).
+//
+//   addIceCandidatePromises()
+//     Every addIceCandidate() issued so far. Waiting for gathering to finish
+//     does not mean the other end has taken the last candidate, so a test that
+//     reads the far side's state needs
+//     `await Promise.all(exchange.addIceCandidatePromises())` as well.
+//     Promises from previous ICE generations have long since settled, so there
+//     is no need to track which generation they belong to. Note that
+//     addIceCandidate() is not guaranteed to settle at all -- closing a
+//     connection while one is queued leaves it pending forever -- so a test
+//     that arranges for that should race this against a timeout.
+//
+//   nextEndOfCandidates()
+//     The next end-of-candidates for `pcFrom`. This will throw if called during
+//     gathering, to highlight usage that might lead to non-deterministic
+//     behavior and intermittent failures.
+//
+//   complete()
+//     Resolves once `pcFrom` has finished gathering and `pcTo` has taken every
+//     candidate delivered so far (note: held candidates don't count as
+//     "delivered", so this does not wait on those). Like
+//     nextEndOfCandidates(), call it before gathering starts.
+//
+//   hold() / release()
+//     hold() keeps candidates back instead of delivering them, so `pcTo` can
+//     only reach `pcFrom` through peer-reflexive candidates; call it before
+//     gathering starts if nothing may slip through. release() stops holding,
+//     delivers everything held so far in order, and resolves once `pcTo` has
+//     taken it all.
+function trickleIceCandidates(pcFrom, pcTo) {
+  const _gathered = [];
+  const _delivered = [];
+  const _held = [];
+  const _addIceCandidatePromises = [];
+  let _holding = false;
 
-      // Guard against already closed peerconnection to
-      // avoid unrelated exceptions.
-      if (remotePc.signalingState !== 'closed') {
-        remotePc.addIceCandidate(candidate);
-      }
-    });
+  function deliver(candidate) {
+    if (candidate?.candidate) {
+      _delivered.push(candidate);
+    }
+    // Failures are absorbed; this is a fire-and-forget exchange, and a
+    // rejection here (a closed connection, a stale generation) is routine.
+    // A test that cares calls addIceCandidate() itself.
+    // TODO: It might be nice to resolve these with the candidate. It might
+    // also be nice to reset this list when gathering starts again.
+    const promise = pcTo.addIceCandidate(candidate).catch(() => {});
+    _addIceCandidatePromises.push(promise);
+    return promise;
   }
 
-  doExchange(pc1, pc2);
-  doExchange(pc2, pc1);
+  function nextEndOfCandidates() {
+    // Asking while gathering is in flight would work, but could be
+    // non-deterministic; if this call is late, it is possible that it could
+    // have been even later, after gathering finished, leading to an
+    // intermittent timeout.
+    if (pcFrom.iceGatheringState === 'gathering') {
+      throw new Error('nextEndOfCandidates() while gathering is already in ' +
+                      'progress; call this before starting gathering');
+    }
+
+    return new Promise(r => pcFrom.addEventListener("icecandidate", event => {
+      if (!event.candidate) { r(); }
+    }));
+  }
+
+  async function complete() {
+    await nextEndOfCandidates();
+    await Promise.all(_addIceCandidatePromises);
+  }
+
+  function hold() {
+    _holding = true;
+  }
+
+  function release() {
+    _holding = false;
+    return Promise.all(_held.splice(0).map(deliver));
+  }
+
+  pcFrom.addEventListener('icecandidate', ({candidate}) => {
+    // Guard against already closed peerconnection to avoid unrelated
+    // exceptions.
+    if (pcTo.signalingState === 'closed') {
+      return;
+    }
+    if (candidate?.candidate) {
+      _gathered.push(candidate);
+    }
+    if (_holding) {
+      _held.push(candidate);
+    } else {
+      deliver(candidate);
+    }
+  });
+
+  return {
+    gathered: () => _gathered,
+    delivered: () => _delivered,
+    addIceCandidatePromises: () => _addIceCandidatePromises,
+    nextEndOfCandidates,
+    complete,
+    hold,
+    release,
+  };
+}
+
+// Trickles candidates in both directions. Returns a handle:
+//
+//   from(pc) / to(pc)
+//     The trickleIceCandidates() handle for the direction leaving / arriving
+//     at `pc`, so `to(pc).delivered()` is what `pc` was told,
+//     `from(pc).gathered()` is what it produced, and `from(pc).hold()` keeps
+//     its candidates from the other side.
+//
+//   complete()
+//     Both directions' complete(); see trickleIceCandidates().
+function exchangeIceCandidates(pc1, pc2) {
+  const forward = trickleIceCandidates(pc1, pc2);
+  const backward = trickleIceCandidates(pc2, pc1);
+  const pick = (pc, ifPc1, ifPc2) => {
+    if (pc === pc1) {
+      return ifPc1;
+    }
+    if (pc === pc2) {
+      return ifPc2;
+    }
+    throw new Error('not one of the connections exchanging candidates');
+  };
+  return {
+    from: pc => pick(pc, forward, backward),
+    to: pc => pick(pc, backward, forward),
+    complete: () => Promise.all([forward.complete(), backward.complete()]),
+  };
 }
 
 // Returns a promise that resolves when a |name| event is fired.
@@ -230,10 +356,29 @@ async function waitForConnectionStateChange(pc, wantedStates) {
   }
 }
 
+function waitForConnectionStateChangeWithTimeout(t, pc, wantedStates, timeout) {
+  return new Promise((resolve, reject) => {
+    if (wantedStates.includes(pc.connectionState)) {
+      resolve();
+      return;
+    }
+    pc.addEventListener('connectionstatechange', () => {
+      if (wantedStates.includes(pc.connectionState))
+        resolve();
+    });
+    t.step_timeout(reject, timeout);
+  });
+}
+
 async function waitForIceGatheringState(pc, wantedStates) {
   while (!wantedStates.includes(pc.iceGatheringState)) {
     await waitUntilEvent(pc, 'icegatheringstatechange');
   }
+}
+
+async function waitForTrackUnmuted(track) {
+  if (track.muted === false) return true;
+  return waitUntilEvent(track, 'unmute');
 }
 
 // Resolves when RTP packets have been received.
@@ -252,19 +397,19 @@ async function listenForSSRCs(t, receiver) {
 // It does the heavy lifting of performing signaling handshake,
 // ICE candidate exchange, and waiting for data channel at two
 // end points to open. Can do both negotiated and non-negotiated setup.
-async function createDataChannelPair(t, options,
+async function createDataChannelPairWithLabel(t, label, options,
                                      pc1 = createPeerConnectionWithCleanup(t),
                                      pc2 = createPeerConnectionWithCleanup(t)) {
   let pair = [], bothOpen;
   try {
     if (options.negotiated) {
-      pair = [pc1, pc2].map(pc => pc.createDataChannel('', options));
+      pair = [pc1, pc2].map(pc => pc.createDataChannel(label, options));
       bothOpen = Promise.all(pair.map(dc => new Promise((r, e) => {
         dc.onopen = r;
         dc.onerror = ({error}) => e(error);
       })));
     } else {
-      pair = [pc1.createDataChannel('', options)];
+      pair = [pc1.createDataChannel(label, options)];
       bothOpen = Promise.all([
         new Promise((r, e) => {
           pair[0].onopen = r;
@@ -286,6 +431,10 @@ async function createDataChannelPair(t, options,
        dc.onopen = dc.onerror = null;
     }
   }
+}
+
+async function createDataChannelPair(t, options, pc1, pc2) {
+  return createDataChannelPairWithLabel(t, '', options, pc1, pc2);
 }
 
 // Wait for RTP and RTCP stats to arrive
@@ -412,10 +561,10 @@ const trackFactories = {
       ctx.fillStyle = `rgb(${contrast%255}, ${contrast*contrast%255}, ${contrast%255})`;
       const xpos = count % (width - 20);
       const ypos = count % (height - 20);
-      ctx.fillRect(xpos, ypos, xpos + 20, ypos + 20);
+      ctx.fillRect(xpos, ypos, 20, 20);
       const xpos2 = (count + width / 2) % (width - 20);
       const ypos2 = (count + height / 2) % (height - 20);
-      ctx.fillRect(xpos2, ypos2, xpos2 + 20, ypos2 + 20);
+      ctx.fillRect(xpos2, ypos2, 20, 20);
       // If signal is set (0-255), add a constant-color box of that luminance to
       // the video frame at coordinates 20 to 60 in both X and Y direction.
       // (big enough to avoid color bleed from surrounding video in some codecs,
@@ -627,6 +776,22 @@ function createPeerConnectionWithCleanup(t) {
   return pc;
 }
 
+// Two connections that are closed when the test ends. `media` seeds the first
+// one: a string adds a transceiver of that kind, a MediaStreamTrack is added
+// with addTrack().
+function createPeerConnectionPairWithCleanup(t, media = []) {
+  const pc1 = createPeerConnectionWithCleanup(t);
+  const pc2 = createPeerConnectionWithCleanup(t);
+  for (const m of media) {
+    if (typeof m == 'string') {
+      pc1.addTransceiver(m);
+    } else {
+      pc1.addTrack(m);
+    }
+  }
+  return [pc1, pc2];
+}
+
 async function createTrackAndStreamWithCleanup(t, kind = 'audio') {
   let constraints = {};
   constraints[kind] = true;
@@ -646,7 +811,7 @@ function findTransceiverForSender(pc, sender) {
 }
 
 function preferCodec(transceiver, mimeType, sdpFmtpLine) {
-  const {codecs} = RTCRtpSender.getCapabilities(transceiver.receiver.track.kind);
+  const {codecs} = RTCRtpReceiver.getCapabilities(transceiver.receiver.track.kind);
   // sdpFmtpLine is optional, pick the first partial match if not given.
   const selectedCodecIndex = codecs.findIndex(c => {
     return c.mimeType === mimeType && (c.sdpFmtpLine === sdpFmtpLine || !sdpFmtpLine);
@@ -655,6 +820,13 @@ function preferCodec(transceiver, mimeType, sdpFmtpLine) {
   codecs.slice(selectedCodecIndex, 1);
   codecs.unshift(selectedCodec);
   return transceiver.setCodecPreferences(codecs);
+}
+
+function findSendCodecCapability(mimeType, sdpFmtpLine) {
+  return RTCRtpSender.getCapabilities(mimeType.split('/')[0])
+    .codecs
+    .filter(c => c.mimeType.localeCompare(name, undefined, { sensitivity: 'base' }) === 0
+      && (c.sdpFmtpLine === sdpFmtpLine || !sdpFmtpLine))[0];
 }
 
 // Contains a set of values and will yell at you if you try to add a value twice.
@@ -689,6 +861,7 @@ const iceGatheringStateTransitions = async (pc, ...states) => {
       }, {once: true});
     });
   }
+  return states;
 };
 
 const initialOfferAnswerWithIceGatheringStateTransitions =
@@ -706,6 +879,14 @@ const initialOfferAnswerWithIceGatheringStateTransitions =
       await pc2Transitions;
     };
 
+const expectNoMoreIceConnectionStateChanges = async (t, pc) => {
+  pc.oniceconnectionstatechange =
+      t.step_func(() => {
+        assert_unreached(
+            'Should not get an iceconnectionstatechange right now!');
+      });
+};
+
 const expectNoMoreGatheringStateChanges = async (t, pc) => {
   pc.onicegatheringstatechange =
       t.step_func(() => {
@@ -713,3 +894,136 @@ const expectNoMoreGatheringStateChanges = async (t, pc) => {
             'Should not get an icegatheringstatechange right now!');
       });
 };
+
+function gatheringStateReached(object, state) {
+  if (object instanceof RTCIceTransport) {
+    return new Promise(r =>
+      object.addEventListener("gatheringstatechange", function listener() {
+        if (object.gatheringState == state) {
+          object.removeEventListener("gatheringstatechange", listener);
+          r(state);
+        }
+      })
+    );
+  } else if (object instanceof RTCPeerConnection) {
+    return new Promise(r =>
+      object.addEventListener("icegatheringstatechange", function listener() {
+        if (object.iceGatheringState == state) {
+          object.removeEventListener("icegatheringstatechange", listener);
+          r(state);
+        }
+      })
+    );
+  } else {
+    throw "First parameter is neither an RTCIceTransport nor an RTCPeerConnection";
+  }
+}
+
+function nextGatheringState(object) {
+  if (object instanceof RTCIceTransport) {
+    return new Promise(resolve =>
+      object.addEventListener(
+        "gatheringstatechange",
+        () => resolve(object.gatheringState),
+        { once: true }
+      )
+    );
+  } else if (object instanceof RTCPeerConnection) {
+    return new Promise(resolve =>
+      object.addEventListener(
+        "icegatheringstatechange",
+        () => resolve(object.iceGatheringState),
+        { once: true }
+      )
+    );
+  } else {
+    throw "First parameter is neither an RTCIceTransport nor an RTCPeerConnection";
+  }
+}
+
+function emptyCandidate(pc) {
+  return new Promise(r =>
+    pc.addEventListener("icecandidate", function listener(e) {
+      if (e.candidate && e.candidate.candidate == "") {
+        pc.removeEventListener("icecandidate", listener);
+        r(e);
+      }
+    })
+  );
+}
+
+function nullCandidate(pc) {
+  return new Promise(r =>
+    pc.addEventListener("icecandidate", function listener(e) {
+      if (!e.candidate) {
+        pc.removeEventListener("icecandidate", listener);
+        r(e);
+      }
+    })
+  );
+}
+
+function connectionStateReached(object, state) {
+  if (object instanceof RTCIceTransport || object instanceof RTCDtlsTransport) {
+    return new Promise(resolve =>
+      object.addEventListener("statechange", function listener() {
+        if (object.state == state) {
+          object.removeEventListener("statechange", listener);
+          resolve(state);
+        }
+      })
+    );
+  } else if (object instanceof RTCPeerConnection) {
+    return new Promise(resolve =>
+      object.addEventListener("connectionstatechange", function listener() {
+        if (object.connectionState == state) {
+          object.removeEventListener("connectionstatechange", listener);
+          resolve(state);
+        }
+      })
+    );
+  } else {
+    throw "First parameter is neither an RTCIceTransport, an RTCDtlsTransport, nor an RTCPeerConnection";
+  }
+}
+
+function nextConnectionState(object) {
+  if (object instanceof RTCIceTransport || object instanceof RTCDtlsTransport) {
+    return new Promise(resolve =>
+      object.addEventListener("statechange", () => resolve(object.state), {
+        once: true,
+      })
+    );
+  } else if (object instanceof RTCPeerConnection) {
+    return new Promise(resolve =>
+      object.addEventListener(
+        "connectionstatechange",
+        () => resolve(object.connectionState),
+        { once: true }
+      )
+    );
+  } else {
+    throw "First parameter is neither an RTCIceTransport, an RTCDtlsTransport, nor an RTCPeerConnection";
+  }
+}
+
+function nextIceConnectionState(pc) {
+  if (pc instanceof RTCPeerConnection) {
+    return new Promise(resolve =>
+      pc.addEventListener(
+        "iceconnectionstatechange",
+        () => resolve(pc.iceConnectionState),
+        { once: true }
+      )
+    );
+  } else {
+    throw "First parameter is not an RTCPeerConnection";
+  }
+}
+
+async function queueAWebrtcTask() {
+  const pc = new RTCPeerConnection();
+  pc.addTransceiver('audio');
+  await new Promise(r => pc.onnegotiationneeded = r);
+}
+

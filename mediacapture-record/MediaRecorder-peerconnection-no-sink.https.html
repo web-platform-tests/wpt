@@ -8,6 +8,9 @@
         href="https://w3c.github.io/mediacapture-record/MediaRecorder.html#dom-mediarecorder-mimeType">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="../mediacapture-streams/permission-helper.js"></script>
   <script src="utils/peerconnection.js"></script>
 </head>
 
@@ -30,8 +33,12 @@ promise_setup(async () => {
       let combinedSize = 0;
       // Wait for a small amount of data to appear. Kept small for mobile tests
       while (combinedSize < 2000) {
-        const {data} = await new Promise(r => recorder.ondataavailable = r);
-        combinedSize += data.size;
+        const event = await Promise.race([
+          new Promise(r => recorder.ondataavailable = r),
+          new Promise(r => t.step_timeout(r, 5000))
+        ]);
+        assert_not_equals(event, undefined, 'ondataavailable should have fired');
+        combinedSize += event.data.size;
       }
       recorder.stop();
     }, `MediaRecorder records from PeerConnection without sinks, ${tag}`);

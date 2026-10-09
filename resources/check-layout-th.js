@@ -20,13 +20,17 @@ function checkAttribute(output, node, attribute)
 
 function assert_tolerance(actual, expected, message)
 {
-    if (isNaN(expected) || Math.abs(actual - expected) >= 1) {
+    if (isNaN(expected) || isNaN(actual) || Math.abs(actual - expected) >= 1) {
         assert_equals(actual, Number(expected), message);
     }
 }
 
 function checkDataKeys(node) {
+  // The purpose of this list of data-* attributes is simply to ensure typos
+  // in tests are caught. It is therefore "ok" to add to this list for
+  // specific tests.
     var validData = new Set([
+        "data-anchor-polyfill",
         "data-expected-width",
         "data-expected-height",
         "data-offset-x",
@@ -214,6 +218,7 @@ window.checkLayout = function(selectorList, callDone = true)
     nodes = Array.prototype.slice.call(nodes);
     var checkedLayout = false;
     Array.prototype.forEach.call(nodes, function(node) {
+        const title = node.title ? `: ${node.title}` : '';
         test(function(t) {
             var container = node.parentNode.className == 'container' ? node.parentNode : node;
             var prefix =
@@ -236,7 +241,7 @@ window.checkLayout = function(selectorList, callDone = true)
               }
                 checkedLayout |= !passed;
             }
-        }, selectorList + ' ' + String(++testNumber));
+        }, `${selectorList} ${++testNumber}${title}`);
     });
     if (!checkedLayout) {
         console.error("No valid data-* attributes found in selector list : " + selectorList);

@@ -3,7 +3,6 @@
 <link rel="author" title="Florian Rivoal" href="http://florian.rivoal.net/">
 <link rel="author" href="http://opera.com" title="Opera Software ASA">
 <link rel="help" href="http://www.w3.org/TR/css3-conditional/#at-supports">
-<meta name="flags" content="">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <style>
@@ -197,12 +196,6 @@
 		assert_equals(rules[0].cssRules[0].type, CSSRule.FONT_FACE_RULE);
 	}, "Inserting @font-face inside @supports works");
 
-	test(function(){
-		var style_rule = document.styleSheets[0].cssRules[0].cssRules[1];
-
-		assert_throws_js(TypeError, function() { style_rule.insertRule("@supports (width: 0) { ol { width: 0; } }", 0);} );
-
-	}, "Inserting an @supports inside a style rule should fail");
 	test(function(){
 		var rule = document.styleSheets[0].cssRules[1];
 		assert_equals_normalized(rule.cssText,

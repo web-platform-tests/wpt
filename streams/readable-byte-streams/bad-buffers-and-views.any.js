@@ -1,4 +1,4 @@
-// META: global=window,worker,jsshell
+// META: global=window,worker
 'use strict';
 
 promise_test(() => {
@@ -123,8 +123,7 @@ promise_test(t => {
 async_test(t => {
   const stream = new ReadableStream({
     pull: t.step_func_done(c => {
-      // Detach it by reading into it
-      reader.read(c.byobRequest.view);
+      c.byobRequest.view.buffer.transfer();
 
       assert_throws_js(TypeError, () => c.byobRequest.respond(1),
         'respond() must throw if the corresponding view has become detached');
@@ -141,9 +140,7 @@ async_test(t => {
   const stream = new ReadableStream({
     pull: t.step_func_done(c => {
       c.close();
-
-      // Detach it by reading into it
-      reader.read(c.byobRequest.view);
+      c.byobRequest.view.buffer.transfer();
 
       assert_throws_js(TypeError, () => c.byobRequest.respond(0),
         'respond() must throw if the corresponding view has become detached');
@@ -159,9 +156,8 @@ async_test(t => {
 async_test(t => {
   const stream = new ReadableStream({
     pull: t.step_func_done(c => {
-      // Detach it by reading into it
       const view = new Uint8Array([1, 2, 3]);
-      reader.read(view);
+      view.buffer.transfer();
 
       assert_throws_js(TypeError, () => c.byobRequest.respondWithNewView(view));
     }),
@@ -206,6 +202,38 @@ async_test(t => {
 async_test(t => {
   const stream = new ReadableStream({
     pull: t.step_func_done(c => {
+      const view = c.byobRequest.view.subarray(1, 2);
+
+      assert_throws_js(RangeError, () => c.byobRequest.respondWithNewView(view));
+    }),
+    type: 'bytes'
+  });
+  const reader = stream.getReader({ mode: 'byob' });
+
+  reader.read(new Uint8Array([4, 5, 6]));
+}, 'ReadableStream with byte source: respondWithNewView() throws if the supplied view has a different offset ' +
+   '(in the readable state)');
+
+async_test(t => {
+  const stream = new ReadableStream({
+    pull: t.step_func_done(c => {
+      c.close();
+
+      const view = c.byobRequest.view.subarray(1, 1);
+
+      assert_throws_js(RangeError, () => c.byobRequest.respondWithNewView(view));
+    }),
+    type: 'bytes'
+  });
+  const reader = stream.getReader({ mode: 'byob' });
+
+  reader.read(new Uint8Array([4, 5, 6]));
+}, 'ReadableStream with byte source: respondWithNewView() throws if the supplied view has a different offset ' +
+   '(in the closed state)');
+
+async_test(t => {
+  const stream = new ReadableStream({
+    pull: t.step_func_done(c => {
       const view = new Uint8Array(new ArrayBuffer(10), 0, 3);
 
       assert_throws_js(RangeError, () => c.byobRequest.respondWithNewView(view));
@@ -217,6 +245,23 @@ async_test(t => {
   reader.read(new Uint8Array([4, 5, 6]));
 }, 'ReadableStream with byte source: respondWithNewView() throws if the supplied view\'s buffer has a ' +
    'different length (in the readable state)');
+
+async_test(t => {
+  // Tests https://github.com/nodejs/node/issues/41886
+  const stream = new ReadableStream({
+    pull: t.step_func_done(c => {
+      const view = new Uint8Array(new ArrayBuffer(11), 0, 3);
+
+      assert_throws_js(RangeError, () => c.byobRequest.respondWithNewView(view));
+    }),
+    type: 'bytes',
+    autoAllocateChunkSize: 10
+  });
+  const reader = stream.getReader();
+
+  reader.read();
+}, 'ReadableStream with byte source: respondWithNewView() throws if the supplied view\'s buffer has a ' +
+   'different length (autoAllocateChunkSize)');
 
 async_test(t => {
   const stream = new ReadableStream({
@@ -315,8 +360,7 @@ async_test(t => {
 async_test(t => {
   const stream = new ReadableStream({
     pull: t.step_func_done(c => {
-      // Detach it by reading into it
-      reader.read(c.byobRequest.view);
+      c.byobRequest.view.buffer.transfer();
 
       assert_throws_js(TypeError, () => c.enqueue(new Uint8Array([1])),
         'enqueue() must throw if the BYOB request\'s buffer has become detached');
@@ -333,9 +377,7 @@ async_test(t => {
   const stream = new ReadableStream({
     pull: t.step_func_done(c => {
       c.close();
-
-      // Detach it by reading into it
-      reader.read(c.byobRequest.view);
+      c.byobRequest.view.buffer.transfer();
 
       assert_throws_js(TypeError, () => c.enqueue(new Uint8Array([1])),
         'enqueue() must throw if the BYOB request\'s buffer has become detached');

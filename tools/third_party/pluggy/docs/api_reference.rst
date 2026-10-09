@@ -1,19 +1,61 @@
 :orphan:
 
-Api Reference
+.. _`api-reference`:
+
+API Reference
 =============
 
-.. automodule:: pluggy
+.. autoclass:: pluggy.PluginManager
     :members:
-    :undoc-members:
+
+.. autoclass:: pluggy.PluginValidationError
+    :show-inheritance:
+    :members:
+
+.. autodecorator:: pluggy.HookspecMarker
+
+.. autodecorator:: pluggy.HookimplMarker
+
+.. autoclass:: pluggy.HookRelay()
+    :members:
+
+    .. data:: <hook name>
+
+        :type: HookCaller
+
+        The caller for the hook with the given name.
+
+.. autoclass:: pluggy.HookCaller()
+    :members:
+    :special-members: __call__
+
+.. autoclass:: pluggy.HookCallError()
+    :show-inheritance:
+    :members:
+
+.. autoclass:: pluggy.Result()
+    :show-inheritance:
+    :members:
+
+.. autoclass:: pluggy.HookImpl()
+    :members:
+
+.. autoclass:: pluggy.HookspecOpts()
+    :show-inheritance:
+    :members:
+
+.. autoclass:: pluggy.HookimplOpts()
+    :show-inheritance:
+    :members:
+
+
+Warnings
+--------
+
+Custom warnings generated in some situations such as improper usage or deprecated features.
+
+.. autoclass:: pluggy.PluggyWarning()
     :show-inheritance:
 
-.. autoclass:: pluggy.callers._Result
-.. automethod:: pluggy.callers._Result.get_result
-.. automethod:: pluggy.callers._Result.force_result
-
-.. autoclass:: pluggy.hooks._HookCaller
-.. automethod:: pluggy.hooks._HookCaller.call_extra
-.. automethod:: pluggy.hooks._HookCaller.call_historic
-
-.. autoclass:: pluggy.hooks._HookRelay
+.. autoclass:: pluggy.PluggyTeardownRaisedWarning()
+    :show-inheritance:

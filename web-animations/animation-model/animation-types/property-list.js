@@ -1,22 +1,52 @@
 'use strict';
 
 const gCSSProperties1 = {
+  'alignment-baseline': {
+    // https://drafts.csswg.org/css-inline/#propdef-alignment-baseline
+    types: [
+      { type: 'discrete', options: [ [ 'baseline', 'middle' ] ] }
+    ]
+  },
   'align-content': {
     // https://drafts.csswg.org/css-align/#propdef-align-content
     types: [
-      { type: 'discrete' , options: [ [ 'flex-start', 'flex-end' ] ] }
+      { type: 'discrete' , options: [
+        [ 'flex-start', 'flex-end', 'flow-start', 'flow-end' ]
+      ] }
     ]
   },
   'align-items': {
     // https://drafts.csswg.org/css-align/#propdef-align-items
     types: [
-      { type: 'discrete', options: [ [ 'flex-start', 'flex-end' ] ] }
+      { type: 'discrete', options: [
+        [ 'flex-start', 'flex-end', 'flow-start', 'flow-end' ]
+      ] }
     ]
   },
   'align-self': {
     // https://drafts.csswg.org/css-align/#propdef-align-self
     types: [
-      { type: 'discrete', options: [ [ 'flex-start', 'flex-end' ] ] }
+      { type: 'discrete', options: [
+        [ 'flex-start', 'flex-end', 'flow-start', 'flow-end' ]
+      ] }
+    ]
+  },
+  'anchor-name': {
+    // https://drafts.csswg.org/css-anchor-position-1/#name
+    types: [
+      { type: 'discrete', options: [ [ 'none', '--anchor' ] ] }
+    ]
+  },
+  'anchor-scope': {
+    // https://drafts.csswg.org/css-anchor-position-1/#anchor-scope
+    types: [
+      { type: 'discrete', options: [ [ 'none', 'all' ] ] }
+    ]
+  },
+  'appearance': {
+    // https://drafts.csswg.org/css-ui/#appearance-switching
+    types: [
+      { type: 'discrete' , options: [ [ 'auto', 'none' ] ] }
     ]
   },
   'backface-visibility': {
@@ -91,6 +121,28 @@ const gCSSProperties1 = {
     // https://drafts.csswg.org/css-logical-props/#propdef-block-size
     types: [
     ]
+  },
+  'block-step-align': {
+    // https://drafts.csswg.org/css-rhythm/#block-step-align
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'center'], ['end', 'start'], ['start', 'center'] ] }
+    ]
+  },
+  'block-step-insert': {
+    // https://drafts.csswg.org/css-rhythm/#block-step-insert
+    types: [
+      { type: 'discrete', options: [ [ 'margin-box', 'padding-box'], ['margin-box', 'content-box'], ['padding-box', 'content-box'] ] }
+    ]
+  },
+  'block-step-round': {
+    // https://drafts.csswg.org/css-rhythm/#block-step-round
+    types: [
+      { type: 'discrete', options: [ [ 'up', 'down'], ['down', 'nearest'], ['nearest', 'up'] ] }
+    ]
+  },
+  'block-step-size': {
+    // https://drafts.csswg.org/css-rhythm/#block-step-size
+    types: [ 'length' ]
   },
   'border-block-end-color': {
     // https://drafts.csswg.org/css-logical-props/#propdef-border-block-end-color
@@ -308,6 +360,12 @@ const gCSSProperties1 = {
       { type: 'discrete', options: [ [ 'content-box', 'border-box' ] ] }
     ]
   },
+  'buffered-rendering': {
+    // https://www.w3.org/TR/SVGTiny12/painting.html#BufferedRenderingProperty
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'dynamic' ] ] }
+    ]
+  },
   'caption-side': {
     // https://drafts.csswg.org/css-tables/#propdef-caption-side
     types: [
@@ -356,7 +414,7 @@ const gCSSProperties1 = {
     ]
   },
   'color-interpolation': {
-    // https://svgwg.org/svg2-draft/painting.html#ColorInterpolationProperty
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#ColorInterpolationProperty
     types: [
       { type: 'discrete', options: [ [ 'linearrgb', 'auto' ] ] }
     ]
@@ -366,6 +424,10 @@ const gCSSProperties1 = {
     types: [
       { type: 'discrete', options: [ [ 'srgb', 'linearrgb' ] ] }
     ]
+  },
+  'columns': {
+    // https://drafts.csswg.org/css-multicol/#propdef-columns
+    types: [ 'positiveInteger', 'length' ]
   },
   'column-count': {
     // https://drafts.csswg.org/css-multicol/#propdef-column-count
@@ -389,6 +451,12 @@ const gCSSProperties1 = {
       { type: 'discrete', options: [ [ 'auto', 'balance' ] ] }
     ]
   },
+  'column-wrap': {
+    // https://drafts.csswg.org/css-multicol-2/#cwr
+    types: [
+      { type: 'discrete', options: [ [ 'nowrap', 'wrap' ] ] }
+    ]
+  },
   'column-rule-style': {
     // https://drafts.csswg.org/css-multicol/#propdef-column-rule-style
     types: [
@@ -406,6 +474,12 @@ const gCSSProperties1 = {
   },
   'column-width': {
     // https://drafts.csswg.org/css-multicol/#propdef-column-width
+    types: [ 'length',
+      { type: 'discrete', options: [ [ 'auto', '1px' ] ] }
+    ]
+  },
+  'column-height': {
+    // https://drafts.csswg.org/css-multicol-2/#ch
     types: [ 'length',
       { type: 'discrete', options: [ [ 'auto', '1px' ] ] }
     ]
@@ -440,17 +514,23 @@ const gCSSProperties1 = {
       { type: 'discrete', options: [ [ 'show', 'hide' ] ] }
     ]
   },
+  'field-sizing': {
+    // https://drafts.csswg.org/css-ui/#field-sizing
+    types: [
+      { type: 'discrete', options: [ [ 'fixed', 'content' ] ] }
+    ]
+  },
   'fill': {
-    // https://svgwg.org/svg2-draft/painting.html#FillProperty
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#FillProperty
     types: [
     ]
   },
   'fill-opacity': {
-    // https://svgwg.org/svg2-draft/painting.html#FillOpacityProperty
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#FillOpacityProperty
     types: [ 'opacity' ]
   },
   'fill-rule': {
-    // https://svgwg.org/svg2-draft/painting.html#FillRuleProperty
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#FillRuleProperty
     types: [
       { type: 'discrete', options: [ [ 'evenodd', 'nonzero' ] ] }
     ]
@@ -470,6 +550,12 @@ const gCSSProperties1 = {
     // https://drafts.csswg.org/css-flexbox/#propdef-flex-direction
     types: [
       { type: 'discrete', options: [ [ 'row', 'row-reverse' ] ] }
+    ]
+  },
+  'flex-flow': {
+    // https://drafts.csswg.org/css-flexbox/#propdef-flex-flow
+    types: [
+      { type: 'discrete', options: [ [ 'row', 'row-reverse wrap' ] ] }
     ]
   },
   'flex-grow': {
@@ -513,6 +599,10 @@ const gCSSProperties1 = {
     types: [
       { type: 'discrete', options: [ [ 'italic', 'oblique' ] ] }
     ]
+  },
+  'font-width': {
+    // https://drafts.csswg.org/css-fonts-4/#propdef-font-width
+    types: [ 'percentage' ]
   },
   'float': {
     // https://drafts.csswg.org/css-page-floats/#propdef-float
@@ -575,6 +665,12 @@ const gCSSProperties1 = {
       { type: 'discrete', options: [ [ 'full-width', 'proportional-width' ] ] }
     ]
   },
+  'font-variant-emoji': {
+    // https://drafts.csswg.org/css-fonts/#propdef-font-variant-emoji
+    types: [
+      { type: 'discrete', options: [ [ 'text', 'emoji' ] ] }
+    ]
+  },
   'font-variant-ligatures': {
     // https://drafts.csswg.org/css-fonts-3/#propdef-font-variant-ligatures
     types: [
@@ -609,6 +705,18 @@ const gCSSProperties1 = {
     types: [
     ]
   },
+  'gap': {
+    // https://drafts.csswg.org/css-align/#propdef-gap
+    types: [ 'length',
+            {  type: 'discrete', options: [ [ 'normal', '200px' ] ] }
+    ]
+  },
+  'grid-area': {
+    // https://drafts.csswg.org/css-grid/#propdef-grid-area
+    types: [
+      { type: 'discrete', options: [ [ '1', '5' ] ] }
+    ]
+  },
   'grid-auto-columns': {
     // https://drafts.csswg.org/css-grid/#propdef-grid-auto-columns
     types: [
@@ -627,6 +735,12 @@ const gCSSProperties1 = {
       { type: 'discrete', options: [ [ '1px', '5px' ] ] }
     ]
   },
+  'grid-column': {
+    // https://drafts.csswg.org/css-grid/#propdef-grid-column
+    types: [
+      { type: 'discrete', options: [ [ '1', '5' ] ] }
+    ]
+  },
   'grid-column-end': {
     // https://drafts.csswg.org/css-grid/#propdef-grid-column-end
     types: [
@@ -640,6 +754,12 @@ const gCSSProperties1 = {
   },
   'grid-column-start': {
     // https://drafts.csswg.org/css-grid/#propdef-grid-column-start
+    types: [
+      { type: 'discrete', options: [ [ '1', '5' ] ] }
+    ]
+  },
+  'grid-row': {
+    // https://drafts.csswg.org/css-grid/#propdef-grid-row
     types: [
       { type: 'discrete', options: [ [ '1', '5' ] ] }
     ]
@@ -661,15 +781,27 @@ const gCSSProperties1 = {
       { type: 'discrete', options: [ [ '1', '5' ] ] }
     ]
   },
-  'grid-template-areas': {
-    // https://drafts.csswg.org/css-template/#grid-template-areas
+  'grid-template': {
+    // https://drafts.csswg.org/css-grid/#propdef-grid-template
     types: [
-      { type: 'discrete', options: [ [ '". . a b" ". .a b"', 'none' ] ] }
+      { type: 'discrete', options: [ [ '". . a b" ". . a b"', 'none' ] ] }
+    ]
+  },
+  'grid-template-areas': {
+    // https://drafts.csswg.org/css-grid/#propdef-grid-template-areas
+    types: [
+      { type: 'discrete', options: [ [ '". . a b" ". . a b"', 'none' ] ] }
     ]
   },
   'height': {
     // https://drafts.csswg.org/css21/visudet.html#propdef-height
     types: [
+    ]
+  },
+  'hanging-punctuation': {
+    // https://drafts.csswg.org/css-text/#hanging-punctuation-property
+    types: [
+      { type: 'discrete', options: [ [ 'none', 'first last'] ] }
     ]
   },
   'hyphens': {
@@ -706,319 +838,290 @@ const gCSSProperties1 = {
 const gCSSProperties2 = {
   'inline-size': {
     // https://drafts.csswg.org/css-logical-props/#propdef-inline-size
-    types: [
-    ]
+    types: []
   },
   'isolation': {
     // https://drafts.fxtf.org/compositing-1/#propdef-isolation
-    types: [
-      { type: 'discrete', options: [ [ 'auto', 'isolate' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['auto', 'isolate']]}]
   },
   'justify-content': {
     // https://drafts.csswg.org/css-align/#propdef-justify-content
-    types: [
-      { type: 'discrete', options: [ [ 'start', 'end' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['start', 'end']]}]
   },
   'justify-items': {
     // https://drafts.csswg.org/css-align/#propdef-justify-items
-    types: [
-      { type: 'discrete', options: [ [ 'start', 'end' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['start', 'end']]}]
   },
   'justify-self': {
     // https://drafts.csswg.org/css-align/#propdef-justify-self
-    types: [
-      { type: 'discrete', options: [ [ 'start', 'end' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['start', 'end']]}]
   },
   'left': {
     // https://drafts.csswg.org/css-position/#propdef-left
-    types: [
-    ]
+    types: []
   },
   'letter-spacing': {
     // https://drafts.csswg.org/css-text-3/#propdef-letter-spacing
-    types: [ 'length' ]
+    types: ['lengthPercentageOrCalc']
   },
   'lighting-color': {
     // https://drafts.fxtf.org/filters/#LightingColorProperty
-    types: [ 'color' ]
+    types: ['color']
   },
   'line-height': {
-    // https://drafts.csswg.org/css21/visudet.html#propdef-line-height
+    // https://drafts.csswg.org/css-inline/#line-height-property
+    types: [{
+      type: 'discrete',
+      options: [['normal', '10px'], ['normal', '10', 'normal', '100px']]
+    }]
+  },
+  'list-style': {
+    // https://drafts.csswg.org/css-lists-3/#propdef-list-style
     types: [
+      {
+        type: 'discrete',
+        options: [[
+          'inside url("http://localhost/test-1") circle',
+          'outside url("http://localhost/test-2") square'
+        ]]
+      },
     ]
   },
   'list-style-image': {
     // https://drafts.csswg.org/css-lists-3/#propdef-list-style-image
-    types: [
-      { type: 'discrete',
-        options: [ [ 'url("http://localhost/test-1")',
-                     'url("http://localhost/test-2")' ] ] }
-    ]
+    types: [{
+      type: 'discrete',
+      options:
+          [['url("http://localhost/test-1")', 'url("http://localhost/test-2")']]
+    }]
   },
   'list-style-position': {
     // https://drafts.csswg.org/css-lists-3/#propdef-list-style-position
-    types: [
-      { type: 'discrete', options: [ [ 'inside', 'outside' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['inside', 'outside']]}]
   },
   'list-style-type': {
     // https://drafts.csswg.org/css-lists-3/#propdef-list-style-type
+    types: [{type: 'discrete', options: [['circle', 'square']]}]
+  },
+  'math-depth': {
+    // https://w3c.github.io/mathml-core/#propdef-math-depth
+    types: ['integer'],
+  },
+  'math-shift': {
+    // https://w3c.github.io/mathml-core/#propdef-math-shift
     types: [
-      { type: 'discrete', options: [ [ 'circle', 'square' ] ] }
-    ]
+      {type: 'discrete', options: [['normal', 'compact']]},
+    ],
+  },
+  'math-style': {
+    // https://w3c.github.io/mathml-core/#propdef-math-style
+    types: [
+      {type: 'discrete', options: [['normal', 'compact']]},
+    ],
   },
   'margin-block-end': {
     // https://drafts.csswg.org/css-logical-props/#propdef-margin-block-end
-    types: [
-    ]
+    types: []
   },
   'margin-block-start': {
     // https://drafts.csswg.org/css-logical-props/#propdef-margin-block-start
-    types: [
-    ]
+    types: []
   },
   'margin-bottom': {
     // https://drafts.csswg.org/css-box/#propdef-margin-bottom
-    types: [
-    ]
+    types: []
   },
   'margin-inline-end': {
     // https://drafts.csswg.org/css-logical-props/#propdef-margin-inline-end
-    types: [
-    ]
+    types: []
   },
   'margin-inline-start': {
     // https://drafts.csswg.org/css-logical-props/#propdef-margin-inline-start
-    types: [
-    ]
+    types: []
   },
   'margin-left': {
     // https://drafts.csswg.org/css-box/#propdef-margin-left
-    types: [
-    ]
+    types: []
   },
   'margin-right': {
     // https://drafts.csswg.org/css-box/#propdef-margin-right
-    types: [
-    ]
+    types: []
   },
   'margin-top': {
     // https://drafts.csswg.org/css-box/#propdef-margin-top
-    types: [
-    ]
+    types: []
   },
   'marker-end': {
-    // https://svgwg.org/specs/markers/#MarkerEndProperty
-    types: [
-      { type: 'discrete',
-        options: [ [ 'url("http://localhost/test-1")',
-                     'url("http://localhost/test-2")' ] ] }
-    ]
+    // https://w3c.github.io/svgwg/specs/markers/#MarkerEndProperty
+    types: [{
+      type: 'discrete',
+      options:
+          [['url("http://localhost/test-1")', 'url("http://localhost/test-2")']]
+    }]
   },
   'marker-mid': {
-    // https://svgwg.org/specs/markers/#MarkerMidProperty
-    types: [
-      { type: 'discrete',
-        options: [ [ 'url("http://localhost/test-1")',
-                     'url("http://localhost/test-2")' ] ] }
-    ]
+    // https://w3c.github.io/svgwg/specs/markers/#MarkerMidProperty
+    types: [{
+      type: 'discrete',
+      options:
+          [['url("http://localhost/test-1")', 'url("http://localhost/test-2")']]
+    }]
   },
   'marker-start': {
-    // https://svgwg.org/specs/markers/#MarkerStartProperty
-    types: [
-      { type: 'discrete',
-        options: [ [ 'url("http://localhost/test-1")',
-                     'url("http://localhost/test-2")' ] ] }
-    ]
+    // https://w3c.github.io/svgwg/specs/markers/#MarkerStartProperty
+    types: [{
+      type: 'discrete',
+      options:
+          [['url("http://localhost/test-1")', 'url("http://localhost/test-2")']]
+    }]
   },
   'mask': {
     // https://drafts.fxtf.org/css-masking-1/#the-mask
-    types: [
-      { type: 'discrete',
-        options: [ [ 'url("http://localhost/test-1")',
-                     'url("http://localhost/test-2")' ] ] }
-    ]
+    types: [{
+      type: 'discrete',
+      options:
+          [['url("http://localhost/test-1")', 'url("http://localhost/test-2")']]
+    }]
   },
   'mask-clip': {
     // https://drafts.fxtf.org/css-masking-1/#propdef-mask-clip
-    types: [
-      { type: 'discrete', options: [ [ 'content-box', 'border-box' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['content-box', 'border-box']]}]
   },
   'mask-composite': {
     // https://drafts.fxtf.org/css-masking-1/#propdef-mask-composite
-    types: [
-      { type: 'discrete', options: [ [ 'add', 'subtract' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['add', 'subtract']]}]
   },
   'mask-image': {
     // https://drafts.fxtf.org/css-masking-1/#propdef-mask-image
-    types: [
-      { type: 'discrete',
-        options: [ [ 'url("http://localhost/test-1")',
-                     'url("http://localhost/test-2")' ] ] }
-    ]
+    types: [{
+      type: 'discrete',
+      options:
+          [['url("http://localhost/test-1")', 'url("http://localhost/test-2")']]
+    }]
   },
   'mask-mode': {
     // https://drafts.fxtf.org/css-masking-1/#propdef-mask-mode
-    types: [
-      { type: 'discrete', options: [ [ 'alpha', 'luminance' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['alpha', 'luminance']]}]
   },
   'mask-origin': {
     // https://drafts.fxtf.org/css-masking-1/#propdef-mask-origin
-    types: [
-      { type: 'discrete', options: [ [ 'content-box', 'border-box' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['content-box', 'border-box']]}]
   },
   'mask-position': {
     // https://drafts.fxtf.org/css-masking-1/#propdef-mask-position
-    types: [
-    ]
+    types: []
   },
   'mask-position-x': {
     // https://lists.w3.org/Archives/Public/www-style/2014Jun/0166.html
-    types: [
-    ]
+    types: []
   },
   'mask-position-y': {
     // https://lists.w3.org/Archives/Public/www-style/2014Jun/0166.html
-    types: [
-    ]
+    types: []
   },
   'mask-repeat': {
     // https://drafts.fxtf.org/css-masking-1/#propdef-mask-repeat
-    types: [
-      { type: 'discrete', options: [ [ 'space', 'round' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['space', 'round']]}]
   },
   'mask-size': {
     // https://drafts.fxtf.org/css-masking-1/#propdef-mask-size
-    types: [
-    ]
+    types: []
   },
   'mask-type': {
     // https://drafts.fxtf.org/css-masking-1/#propdef-mask-type
-    types: [
-      { type: 'discrete', options: [ [ 'alpha', 'luminance' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['alpha', 'luminance']]}]
   },
   'max-block-size': {
     // https://drafts.csswg.org/css-logical-props/#propdef-max-block-size
-    types: [
-    ]
+    types: []
   },
   'max-height': {
     // https://drafts.csswg.org/css21/visudet.html#propdef-max-height
-    types: [
-    ]
+    types: []
   },
   'max-inline-size': {
     // https://drafts.csswg.org/css-logical-props/#propdef-max-inline-size
-    types: [
-    ]
+    types: []
   },
   'max-width': {
     // https://drafts.csswg.org/css21/visudet.html#propdef-max-width
-    types: [
-    ]
+    types: []
   },
   'min-block-size': {
     // https://drafts.csswg.org/css-logical-props/#propdef-min-block-size
-    types: [
-    ]
+    types: []
   },
   'min-height': {
     // https://drafts.csswg.org/css21/visudet.html#propdef-min-height
-    types: [
-    ]
+    types: []
   },
   'min-inline-size': {
     // https://drafts.csswg.org/css-logical-props/#propdef-min-inline-size
-    types: [
-    ]
+    types: []
   },
   'min-width': {
     // https://drafts.csswg.org/css21/visudet.html#propdef-min-width
-    types: [
-    ]
+    types: []
   },
   'mix-blend-mode': {
     // https://drafts.fxtf.org/compositing-1/#propdef-mix-blend-mode
-    types: [
-      { type: 'discrete', options: [ [ 'multiply', 'screen' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['multiply', 'screen']]}]
   },
   'object-fit': {
     // https://drafts.csswg.org/css-images-3/#propdef-object-fit
-    types: [
-      { type: 'discrete', options: [ [ 'fill', 'contain' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['fill', 'contain']]}]
   },
   'object-position': {
     // https://drafts.csswg.org/css-images-3/#propdef-object-position
-    types: [
-    ]
+    types: []
   },
   'inset-block-end': {
     // https://drafts.csswg.org/css-logical-props/#propdef-inset-block-end
-    types: [
-    ]
+    types: []
   },
   'inset-block-start': {
     // https://drafts.csswg.org/css-logical-props/#propdef-inset-block-start
-    types: [
-    ]
+    types: []
   },
   'inset-inline-end': {
     // https://drafts.csswg.org/css-logical-props/#propdef-inset-inline-end
-    types: [
-    ]
+    types: []
   },
   'inset-inline-start': {
     // https://drafts.csswg.org/css-logical-props/#propdef-inset-inline-start
-    types: [
-    ]
+    types: []
   },
   'offset-distance': {
     // https://drafts.fxtf.org/motion-1/#offset-distance-property
-    types: [ 'lengthPercentageOrCalc' ]
+    types: ['lengthPercentageOrCalc']
   },
   'offset-path': {
     // https://drafts.fxtf.org/motion-1/#offset-path-property
-    types: [
-    ]
+    types: []
   },
   'opacity': {
     // https://drafts.csswg.org/css-color/#propdef-opacity
-    types: [
-    ]
+    types: []
   },
   'order': {
     // https://drafts.csswg.org/css-flexbox/#propdef-order
-    types: [ 'integer' ]
+    types: ['integer']
   },
   'outline-color': {
     // https://drafts.csswg.org/css-ui-3/#propdef-outline-color
-    types: [ 'color' ]
+    types: ['color']
   },
   'outline-offset': {
     // https://drafts.csswg.org/css-ui-3/#propdef-outline-offset
-    types: [ 'length' ]
+    types: ['length']
   },
   'outline-style': {
     // https://drafts.csswg.org/css-ui/#propdef-outline-style
-    types: [
-      { type: 'discrete', options: [ [ 'none', 'dotted' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['none', 'dotted']]}]
   },
   'outline-width': {
     // https://drafts.csswg.org/css-ui-3/#propdef-outline-width
-    types: [ 'length' ],
+    types: ['length'],
     setup: t => {
       const element = createElement(t);
       element.style.outlineStyle = 'solid';
@@ -1027,343 +1130,372 @@ const gCSSProperties2 = {
   },
   'overflow': {
     // https://drafts.csswg.org/css-overflow/#propdef-overflow
-    types: [
-    ]
+    types: [{type: 'discrete', options: [['visible', 'hidden']]}]
   },
   'overflow-wrap': {
     // https://drafts.csswg.org/css-text-3/#propdef-overflow-wrap
-    types: [
-      { type: 'discrete', options: [ [ 'normal', 'break-word' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['normal', 'break-word']]}]
   },
   'overflow-x': {
     // https://drafts.csswg.org/css-overflow-3/#propdef-overflow-x
-    types: [
-      { type: 'discrete', options: [ [ 'visible', 'hidden' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['visible', 'hidden']]}]
   },
   'overflow-y': {
     // https://drafts.csswg.org/css-overflow-3/#propdef-overflow-y
-    types: [
-      { type: 'discrete', options: [ [ 'visible', 'hidden' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['visible', 'hidden']]}]
   },
   'padding-block-end': {
     // https://drafts.csswg.org/css-logical-props/#propdef-padding-block-end
-    types: [
-    ]
+    types: []
   },
   'padding-block-start': {
     // https://drafts.csswg.org/css-logical-props/#propdef-padding-block-start
-    types: [
-    ]
+    types: []
   },
   'padding-bottom': {
     // https://drafts.csswg.org/css-box/#propdef-padding-bottom
-    types: [
-    ]
+    types: []
   },
   'padding-inline-end': {
     // https://drafts.csswg.org/css-logical-props/#propdef-padding-inline-end
-    types: [
-    ]
+    types: []
   },
   'padding-inline-start': {
     // https://drafts.csswg.org/css-logical-props/#propdef-padding-inline-start
-    types: [
-    ]
+    types: []
   },
   'padding-left': {
     // https://drafts.csswg.org/css-box/#propdef-padding-left
-    types: [
-    ]
+    types: []
   },
   'padding-right': {
     // https://drafts.csswg.org/css-box/#propdef-padding-right
-    types: [
-    ]
+    types: []
   },
   'padding-top': {
     // https://drafts.csswg.org/css-box/#propdef-padding-top
-    types: [
-    ]
+    types: []
   },
   'page-break-after': {
     // https://drafts.csswg.org/css-break-3/#propdef-break-after
-    types: [
-      { type: 'discrete', options: [ [ 'always', 'auto' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['always', 'auto']]}]
   },
   'page-break-before': {
     // https://drafts.csswg.org/css-break-3/#propdef-break-before
-    types: [
-      { type: 'discrete', options: [ [ 'always', 'auto' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['always', 'auto']]}]
   },
   'page-break-inside': {
     // https://drafts.csswg.org/css-break-3/#propdef-break-inside
-    types: [
-      { type: 'discrete', options: [ [ 'auto', 'avoid' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['auto', 'avoid']]}]
   },
   'paint-order': {
-    // https://svgwg.org/svg2-draft/painting.html#PaintOrderProperty
-    types: [
-      { type: 'discrete', options: [ [ 'fill', 'stroke' ] ] }
-    ]
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#PaintOrderProperty
+    types: [{type: 'discrete', options: [['fill', 'stroke']]}]
+  },
+  'path-length': {
+    // https://w3c.github.io/svgwg/svg2-draft/paths.html#PathLengthAttribute
+    types: ['length'],
+    setup: t => {
+      return createElement(t, 'path');
+    }
   },
   'perspective': {
     // https://drafts.csswg.org/css-transforms-1/#propdef-perspective
-    types: [ 'length' ]
+    types: ['length']
   },
   'perspective-origin': {
     // https://drafts.csswg.org/css-transforms-1/#propdef-perspective-origin
-    types: [ 'position' ]
+    types: ['position']
+  },
+  'place-content': {
+    // https://drafts.csswg.org/css-align/#propdef-place-content
+    types: [{type: 'discrete', options: [['start', 'end']]}]
+  },
+  'place-items': {
+    // https://drafts.csswg.org/css-align/#propdef-place-items
+    types: [{type: 'discrete', options: [['start', 'end']]}]
+  },
+  'place-self': {
+    // https://drafts.csswg.org/css-align/#propdef-place-self
+    types: [{type: 'discrete', options: [['start', 'end']]}]
   },
   'pointer-events': {
-    // https://svgwg.org/svg2-draft/interact.html#PointerEventsProperty
-    types: [
-      { type: 'discrete', options: [ [ 'fill', 'none' ] ] }
-    ]
+    // https://w3c.github.io/svgwg/svg2-draft/interact.html#PointerEventsProperty
+    types: [{type: 'discrete', options: [['fill', 'none']]}]
   },
   'position': {
     // https://drafts.csswg.org/css-position/#propdef-position
-    types: [
-      { type: 'discrete', options: [ [ 'absolute', 'fixed' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['absolute', 'fixed']]}]
+  },
+  'position-anchor': {
+    // https://drafts.csswg.org/css-anchor-position-1/#position-anchor
+    types: [{type: 'discrete', options: [['auto', '--anchor']]}]
+  },
+  'position-visibility': {
+    // https://drafts.csswg.org/css-anchor-position-1/#position-visibility
+    types: [{type: 'discrete', options: [['always', 'anchor-valid']]}]
+  },
+  'position-try-fallbacks': {
+    // https://drafts.csswg.org/css-anchor-position-1/#position-try-fallbacks
+    types: [{type: 'discrete', options: [['none', 'flip-block']]}]
+  },
+  'position-try-order': {
+    // https://drafts.csswg.org/css-anchor-position-1/#position-try-order-property
+    types: [{type: 'discrete', options: [['normal', 'most-width']]}]
   },
   'quotes': {
     // https://drafts.csswg.org/css-content-3/#propdef-quotes
-    types: [
-      { type: 'discrete', options: [ [ '"“" "”" "‘" "’"', '"‘" "’" "“" "”"' ] ] }
-    ]
+    types:
+        [{type: 'discrete', options: [['"“" "”" "‘" "’"', '"‘" "’" "“" "”"']]}]
   },
   'resize': {
     // https://drafts.csswg.org/css-ui/#propdef-resize
-    types: [
-      { type: 'discrete', options: [ [ 'both', 'horizontal' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['both', 'horizontal']]}]
   },
   'right': {
     // https://drafts.csswg.org/css-position/#propdef-right
-    types: [
-    ]
+    types: []
   },
   'ruby-align': {
     // https://drafts.csswg.org/css-ruby-1/#propdef-ruby-align
-    types: [
-      { type: 'discrete', options: [ [ 'start', 'center' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['start', 'center']]}]
   },
   'ruby-position': {
     // https://drafts.csswg.org/css-ruby-1/#propdef-ruby-position
-    types: [
-      { type: 'discrete', options: [ [ 'under', 'over' ] ] }
-    ],
+    types: [{type: 'discrete', options: [['under', 'over']]}],
     setup: t => {
       return createElement(t, 'ruby');
     }
   },
   'scroll-behavior': {
     // https://drafts.csswg.org/cssom-view/#propdef-scroll-behavior
-    types: [
-      { type: 'discrete', options: [ [ 'auto', 'smooth' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['auto', 'smooth']]}]
+  },
+  'scroll-snap-align': {
+    // https://drafts.csswg.org/css-scroll-snap/#propdef-scroll-snap-align
+    types: [{type: 'discrete', options: [['none', 'start']]}]
+  },
+  'scroll-snap-stop': {
+    // https://drafts.csswg.org/css-scroll-snap/#propdef-scroll-snap-stop
+    types: [{type: 'discrete', options: [['normal', 'always']]}]
+  },
+  'scroll-snap-type': {
+    // https://drafts.csswg.org/css-scroll-snap/#propdef-scroll-snap-type
+    types: [{type: 'discrete', options: [['none', 'x mandatory']]}]
+  },
+  'scrollbar-color': {
+    // https://drafts.csswg.org/css-scrollbars/#propdef-scrollbar-color
+    types: ['colorPair']
+  },
+  'scrollbar-gutter': {
+    // https://drafts.csswg.org/css-overflow/#propdef-scrollbar-gutter
+    types: [{
+      type: 'discrete',
+      options: [
+        ['auto', 'stable'], ['auto', 'stable both-edges'],
+        ['stable', 'stable both-edges']
+      ]
+    }]
+  },
+  'scrollbar-width': {
+    // https://drafts.csswg.org/css-scrollbars/#propdef-scrollbar-width
+    types: [{
+      type: 'discrete',
+      options: [['auto', 'thin'], ['auto', 'none'], ['thin', 'none']]
+    }]
   },
   'shape-outside': {
     // http://dev.w3.org/csswg/css-shapes/#propdef-shape-outside
-    types: [
-      { type: 'discrete',
-        options: [ [ 'url("http://localhost/test-1")',
-                     'url("http://localhost/test-2")' ] ] }
-    ]
+    types: [{
+      type: 'discrete',
+      options:
+          [['url("http://localhost/test-1")', 'url("http://localhost/test-2")']]
+    }]
   },
   'shape-rendering': {
-    // https://svgwg.org/svg2-draft/painting.html#ShapeRenderingProperty
-    types: [
-      { type: 'discrete', options: [ [ 'optimizeSpeed', 'crispEdges' ] ] }
-    ]
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#ShapeRenderingProperty
+    types: [{type: 'discrete', options: [['optimizeSpeed', 'crispEdges']]}]
   },
   'stop-color': {
-    // https://svgwg.org/svg2-draft/pservers.html#StopColorProperty
-    types: [ 'color' ]
+    // https://w3c.github.io/svgwg/svg2-draft/pservers.html#StopColorProperty
+    types: ['color']
   },
   'stop-opacity': {
-    // https://svgwg.org/svg2-draft/pservers.html#StopOpacityProperty
-    types: [ 'opacity' ]
+    // https://w3c.github.io/svgwg/svg2-draft/pservers.html#StopOpacityProperty
+    types: ['opacity']
   },
   'stroke': {
-    // https://svgwg.org/svg2-draft/painting.html#StrokeProperty
-    types: [
-    ]
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#StrokeProperty
+    types: []
+  },
+  'stroke-color': {
+    // https://drafts.fxtf.org/fill-stroke-3/#propdef-stroke-color
+    types: ['color']
   },
   'stroke-dasharray': {
-    // https://svgwg.org/svg2-draft/painting.html#StrokeDasharrayProperty
-    types: [
-      'dasharray',
-      { type: 'discrete', options: [ [ 'none', '10px, 20px' ] ] }
-    ]
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#StrokeDasharrayProperty
+    types: ['dasharray', {type: 'discrete', options: [['none', '10px, 20px']]}]
   },
   'stroke-dashoffset': {
-    // https://svgwg.org/svg2-draft/painting.html#StrokeDashoffsetProperty
-    types: [
-    ]
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#StrokeDashoffsetProperty
+    types: []
   },
   'stroke-linecap': {
-    // https://svgwg.org/svg2-draft/painting.html#StrokeLinecapProperty
-    types: [
-      { type: 'discrete', options: [ [ 'round', 'square' ] ] }
-    ]
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#StrokeLinecapProperty
+    types: [{type: 'discrete', options: [['round', 'square']]}]
   },
   'stroke-linejoin': {
-    // https://svgwg.org/svg2-draft/painting.html#StrokeLinejoinProperty
-    types: [
-      { type: 'discrete', options: [ [ 'round', 'miter' ] ] }
-    ],
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#StrokeLinejoinProperty
+    types: [{type: 'discrete', options: [['round', 'miter']]}],
     setup: t => {
       return createElement(t, 'rect');
     }
   },
   'stroke-miterlimit': {
-    // https://svgwg.org/svg2-draft/painting.html#StrokeMiterlimitProperty
-    types: [ 'positiveNumber' ]
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#StrokeMiterlimitProperty
+    types: ['positiveNumber']
   },
   'stroke-opacity': {
-    // https://svgwg.org/svg2-draft/painting.html#StrokeOpacityProperty
-    types: [ 'opacity' ]
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#StrokeOpacityProperty
+    types: ['opacity']
   },
   'stroke-width': {
-    // https://svgwg.org/svg2-draft/painting.html#StrokeWidthProperty
-    types: [
-    ]
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#StrokeWidthProperty
+    types: []
   },
   'table-layout': {
     // https://drafts.csswg.org/css-tables/#propdef-table-layout
-    types: [
-      { type: 'discrete', options: [ [ 'auto', 'fixed' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['auto', 'fixed']]}]
   },
   'text-align': {
     // https://drafts.csswg.org/css-text-3/#propdef-text-align
-    types: [
-      { type: 'discrete', options: [ [ 'start', 'end' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['start', 'end']]}]
   },
   'text-align-last': {
     // https://drafts.csswg.org/css-text-3/#propdef-text-align-last
-    types: [
-      { type: 'discrete', options: [ [ 'start', 'end' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['start', 'end']]}]
   },
   'text-anchor': {
-    // https://svgwg.org/svg2-draft/text.html#TextAnchorProperty
-    types: [
-      { type: 'discrete', options: [ [ 'middle', 'end' ] ] }
-    ]
+    // https://w3c.github.io/svgwg/svg2-draft/text.html#TextAnchorProperty
+    types: [{type: 'discrete', options: [['middle', 'end']]}]
+  },
+  'text-autospace': {
+    // https://drafts.csswg.org/css-text-4/#text-autospace-property
+    types: [{type: 'discrete', options: [['normal', 'no-autospace']]}]
+  },
+  'text-box-edge': {
+    // https://drafts.csswg.org/css-inline-3/#text-edges
+    types: [{type: 'discrete', options: [['auto', 'text']]}]
+  },
+  'text-box-trim': {
+    // https://drafts.csswg.org/css-inline-3/#propdef-text-box-trim
+    types: [{type: 'discrete', options: [['none', 'trim-start']]}]
+  },
+  'text-decoration': {
+    // https://drafts.csswg.org/css-text-decor-3/#propdef-text-decoration
+    types: [{type: 'discrete', options: [['underline', 'overline']]}]
   },
   'text-decoration-color': {
     // https://drafts.csswg.org/css-text-decor-3/#propdef-text-decoration-color
-    types: [ 'color' ]
+    types: ['color']
   },
   'text-decoration-line': {
     // https://drafts.csswg.org/css-text-decor-3/#propdef-text-decoration-line
-    types: [
-      { type: 'discrete', options: [ [ 'underline', 'overline' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['underline', 'overline']]}]
+  },
+  'text-decoration-skip': {
+    // https://drafts.csswg.org/css-text-decor-4/#propdef-text-decoration-skip
+    types: [{type: 'discrete', options: [['auto', 'none']]}]
+  },
+  'text-decoration-skip-ink': {
+    // https://drafts.csswg.org/css-text-decor-4/#propdef-text-decoration-skip-ink
+    types: [{type: 'discrete', options: [['auto', 'none']]}]
   },
   'text-decoration-style': {
     // http://dev.w3.org/csswg/css-text-decor-3/#propdef-text-decoration-style
-    types: [
-      { type: 'discrete', options: [ [ 'solid', 'dotted' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['solid', 'dotted']]}]
   },
   'text-emphasis-color': {
     // https://drafts.csswg.org/css-text-decor-3/#propdef-text-emphasis-color
-    types: [ 'color' ]
+    types: ['color']
   },
   'text-emphasis-position': {
     // http://dev.w3.org/csswg/css-text-decor-3/#propdef-text-emphasis-position
-    types: [
-      { type: 'discrete', options: [ [ 'over right', 'under left' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['over', 'under left']]}]
   },
   'text-emphasis-style': {
     // http://dev.w3.org/csswg/css-text-decor-3/#propdef-text-emphasis-style
-    types: [
-      { type: 'discrete', options: [ [ 'circle', 'open dot' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['circle', 'open dot']]}]
+  },
+  'text-group-align': {
+    // https://drafts.csswg.org/css-text-4/#propdef-text-group-align
+    types: [{type: 'discrete', options: [['none', 'center']]}]
   },
   'text-indent': {
     // https://drafts.csswg.org/css-text-3/#propdef-text-indent
-    types: [
-    ]
+    types: []
   },
   'text-overflow': {
     // https://drafts.csswg.org/css-ui/#propdef-text-overflow
-    types: [
-      { type: 'discrete', options: [ [ 'clip', 'ellipsis' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['clip', 'ellipsis']]}]
   },
   'text-rendering': {
-    // https://svgwg.org/svg2-draft/painting.html#TextRenderingProperty
-    types: [
-      { type: 'discrete', options: [ [ 'optimizeSpeed', 'optimizeLegibility' ] ] }
-    ]
+    // https://w3c.github.io/svgwg/svg2-draft/painting.html#TextRenderingProperty
+    types:
+        [{type: 'discrete', options: [['optimizeSpeed', 'optimizeLegibility']]}]
   },
   'text-shadow': {
     // https://drafts.csswg.org/css-text-decor-3/#propdef-text-shadow
-    types: [ 'textShadowList' ],
+    types: ['textShadowList'],
     setup: t => {
       const element = createElement(t);
       element.style.color = 'green';
       return element;
     }
   },
+  'text-spacing-trim': {
+    // https://drafts.csswg.org/css-text-4/#text-spacing-trim-property
+    types: [{type: 'discrete', options: [['normal', 'space-all']]}]
+  },
   'text-transform': {
     // https://drafts.csswg.org/css-text-3/#propdef-text-transform
-    types: [
-      { type: 'discrete', options: [ [ 'capitalize', 'uppercase' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['capitalize', 'uppercase']]}]
+  },
+  'text-wrap': {
+    // https://drafts.csswg.org/css-text-4/#propdef-text-wrap
+    types: [{type: 'discrete', options: [['wrap', 'nowrap']]}]
   },
   'touch-action': {
     // https://w3c.github.io/pointerevents/#the-touch-action-css-property
-    types: [
-      { type: 'discrete', options: [ [ 'auto', 'none' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['auto', 'none']]}]
   },
   'top': {
     // https://drafts.csswg.org/css-position/#propdef-top
-    types: [
-    ]
+    types: []
   },
   'transform': {
     // https://drafts.csswg.org/css-transforms/#propdef-transform
-    types: [ 'transformList' ]
+    types: ['transformList']
   },
   'transform-box': {
     // https://drafts.csswg.org/css-transforms/#propdef-transform-box
-    types: [
-      { type: 'discrete', options: [ [ 'fill-box', 'border-box' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['fill-box', 'border-box']]}]
   },
   'transform-origin': {
     // https://drafts.csswg.org/css-transforms/#propdef-transform-origin
-    types: [
-    ]
+    types: []
   },
   'transform-style': {
     // https://drafts.csswg.org/css-transforms/#propdef-transform-style
-    types: [
-      { type: 'discrete', options: [ [ 'flat', 'preserve-3d' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['flat', 'preserve-3d']]}]
   },
   'rotate': {
     // https://drafts.csswg.org/css-transforms-2/#individual-transforms
-    types: [ 'rotateList' ]
+    types: ['rotateList']
   },
   'translate': {
     // https://drafts.csswg.org/css-transforms-2/#individual-transforms
-    types: [ 'translateList' ],
+    types: ['translateList'],
     setup: t => {
       // We need to set a width/height for resolving percentages against.
       const element = createElement(t);
@@ -1374,48 +1506,57 @@ const gCSSProperties2 = {
   },
   'scale': {
     // https://drafts.csswg.org/css-transforms-2/#individual-transforms
-    types: [ 'scaleList' ]
+    types: ['scaleList']
   },
   'vector-effect': {
-    // https://svgwg.org/svg2-draft/coords.html#VectorEffectProperty
+    // https://w3c.github.io/svgwg/svg2-draft/coords.html#VectorEffectProperty
     types: [
-      { type: 'discrete', options: [ [ 'none', 'non-scaling-stroke' ] ] },
+      {type: 'discrete', options: [['none', 'non-scaling-stroke']]},
     ]
   },
   'vertical-align': {
     // https://drafts.csswg.org/css21/visudet.html#propdef-vertical-align
+    types: []
+  },
+  'view-transition-class': {
+    // https://drafts.csswg.org/css-view-transitions/#propdef-view-transition-name
     types: [
+      {type: 'discrete', options: [['none', 'card scale-animation']]},
+    ]
+  },
+  'view-transition-name': {
+    // https://drafts.csswg.org/css-view-transitions/#propdef-view-transition-name
+    types: [
+      {type: 'discrete', options: [['none', 'header']]},
     ]
   },
   'visibility': {
     // https://drafts.csswg.org/css2/visufx.html#propdef-visibility
-    types: [ 'visibility' ]
+    types: ['visibility']
   },
   'white-space': {
     // https://drafts.csswg.org/css-text-4/#propdef-white-space
-    types: [
-      { type: 'discrete', options: [ [ 'pre', 'nowrap' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['pre', 'nowrap']]}]
+  },
+  'white-space-collapse': {
+    // https://drafts.csswg.org/css-text-4/#propdef-white-space-collapse
+    types: [{type: 'discrete', options: [['collapse', 'preserve']]}]
   },
   'width': {
     // https://drafts.csswg.org/css21/visudet.html#propdef-width
-    types: [
-    ]
+    types: []
   },
   'word-break': {
     // https://drafts.csswg.org/css-text-3/#propdef-word-break
-    types: [
-      { type: 'discrete', options: [ [ 'keep-all', 'break-all' ] ] }
-    ]
+    types: [{type: 'discrete', options: [['keep-all', 'break-all']]}]
   },
   'word-spacing': {
     // https://drafts.csswg.org/css-text-3/#propdef-word-spacing
-    types: [ 'lengthPercentageOrCalc' ]
+    types: ['lengthPercentageOrCalc']
   },
   'z-index': {
     // https://drafts.csswg.org/css-position/#propdef-z-index
-    types: [
-    ]
+    types: []
   },
 };
 
@@ -1424,7 +1565,7 @@ function testAnimationSamples(animation, idlName, testSamples) {
   const target = animation.effect.target;
   for (const testSample of testSamples) {
     animation.currentTime = testSample.time;
-    assert_equals(getComputedStyle(target, pseudoType)[idlName],
+    assert_equals(getComputedStyle(target, pseudoType)[idlName].toLowerCase(),
                   testSample.expected,
                   `The value should be ${testSample.expected}` +
                   ` at ${testSample.time}ms`);

@@ -1,8 +1,6 @@
 # This tool creates .html test files for the WPT harness from corresponding .test
 # files that it finds in the tree for this test collection.
 
-from __future__ import print_function
-
 import re
 import time
 import json
@@ -40,7 +38,7 @@ for curdir, subdirList, fileList in os.walk(DEFDIR, topdown=True):
     except ValueError as e:
       print("parse of " + theFile + " failed: " + e[0])
     else:
-      theFile = re.sub("\.\./", "", theFile)
+      theFile = re.sub(r"\.\./", "", theFile)
       defList.append(theFile)
 
 if (len(defList)):
@@ -77,7 +75,7 @@ for curdir, subdirList, fileList in os.walk(TESTTREE, topdown=True):
         templateFile = autoTemplate
         suffix = ".html"
 
-      rfile = re.sub("\.\./", "", file)
+      rfile = re.sub(r"\.\./", "", file)
       # interesting pattern is {{TESTFILE}}
       tcopy = re.sub("{{TESTFILE}}", rfile, templateFile)
 
@@ -90,7 +88,7 @@ for curdir, subdirList, fileList in os.walk(TESTTREE, topdown=True):
       tcopy = re.sub("{{TESTTITLE}}", title, tcopy)
 
       # target file is basename of theFile + '-manual.html'
-      target = re.sub("\.test",suffix, theFile)
+      target = re.sub(r"\.test",suffix, theFile)
 
       try:
         out = open(target, "w")

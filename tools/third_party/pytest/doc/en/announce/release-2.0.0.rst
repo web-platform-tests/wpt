@@ -36,12 +36,12 @@ New Features
 
     import pytest ; pytest.main(arglist, pluginlist)
 
-  see http://pytest.org/en/stable/usage.html for details.
+  see http://pytest.org/en/stable/how-to/usage.html for details.
 
 - new and better reporting information in assert expressions
   if comparing lists, sequences or strings.
 
-  see http://pytest.org/en/stable/assert.html#newreport
+  see http://pytest.org/en/stable/how-to/assert.html#newreport
 
 - new configuration through ini-files (setup.cfg or tox.ini recognized),
   for example::
@@ -50,7 +50,7 @@ New Features
     norecursedirs = .hg data*  # don't ever recurse in such dirs
     addopts = -x --pyargs      # add these command line options by default
 
-  see http://pytest.org/en/stable/customize.html
+  see http://pytest.org/en/stable/reference/customize.html
 
 - improved standard unittest support.  In general py.test should now
   better be able to run custom unittest.TestCases like twisted trial
@@ -62,7 +62,7 @@ New Features
 - new "-q" option which decreases verbosity and prints a more
   nose/unittest-style "dot" output.
 
-- many many more detailed improvements details
+- many, many, more detailed improvements details
 
 Fixes
 -----------------------
@@ -109,7 +109,7 @@ Important Notes
     in conftest.py files.  They will cause nothing special.
   - removed support for calling the pre-1.0 collection API of "run()" and "join"
   - removed reading option values from conftest.py files or env variables.
-    This can now be done much much better and easier through the ini-file
+    This can now be done much, much, better and easier through the ini-file
     mechanism and the "addopts" entry in particular.
   - removed the "disabled" attribute in test classes.  Use the skipping
     and pytestmark mechanism to skip or xfail a test class.

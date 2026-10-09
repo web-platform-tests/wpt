@@ -1,3 +1,4 @@
+// META: global=window,dedicatedworker
 // META: title=Encoding API: TextDecoder ignoreBOM option
 
 var cases = [

@@ -1,7 +1,9 @@
 docs/
 tools/ci/
+tools/ci/github/
 tools/docker/
 tools/lint/
 tools/manifest/
 tools/serve/
+tools/web_features/
 tools/wpt/

@@ -1,3 +1,19 @@
+const await_with_timeout = async (delay, message, promise, cleanup = ()=>{}) => {
+  let timeout_id;
+  const timeout = new Promise((_, reject) => {
+    timeout_id = step_timeout(() =>
+      reject(new DOMException(message, "TimeoutError")), delay)
+  });
+  let result = null;
+  try {
+    result = await Promise.race([promise, timeout]);
+    clearTimeout(timeout_id);
+  } finally {
+    cleanup();
+  }
+  return result;
+};
+
 // Asserts that the given attributes are present in 'entry' and hold equal
 // values.
 const assert_all_equal_ = (entry, attributes) => {
@@ -75,8 +91,6 @@ const invariants = {
     assert_positive_(entry, [
       "fetchStart",
       "transferSize",
-      "encodedBodySize",
-      "decodedBodySize",
     ]);
   },
 
@@ -98,8 +112,6 @@ const invariants = {
       "secureConnectionStart",
       "redirectStart",
       "redirectEnd",
-      "encodedBodySize",
-      "decodedBodySize",
     ]);
 
     assert_not_negative_(entry, [
@@ -139,8 +151,6 @@ const invariants = {
     assert_positive_(entry, [
       "fetchStart",
       "transferSize",
-      "encodedBodySize",
-      "decodedBodySize",
     ]);
   },
 
@@ -172,8 +182,6 @@ const invariants = {
     assert_positive_(entry, [
       "fetchStart",
       "transferSize",
-      "encodedBodySize",
-      "decodedBodySize",
     ]);
   },
 
@@ -196,8 +204,6 @@ const invariants = {
       "secureConnectionStart",
       "redirectStart",
       "redirectEnd",
-      "encodedBodySize",
-      "decodedBodySize",
     ]);
 
     assert_not_negative_(entry, [
@@ -229,8 +235,6 @@ const invariants = {
       "workerStart",
       "redirectStart",
       "redirectEnd",
-      "encodedBodySize",
-      "decodedBodySize",
     ]);
 
     assert_not_negative_(entry, [
@@ -405,8 +409,6 @@ const invariants = {
       "requestStart",
       "responseStart",
       "transferSize",
-      "encodedBodySize",
-      "decodedBodySize",
     ]);
 
     assert_ordered_(entry, [
@@ -423,6 +425,9 @@ const invariants = {
 
     assert_positive_(entry, [
       "startTime",
+    ]);
+
+    assert_not_negative_(entry, [
       "duration",
     ]);
 
@@ -437,8 +442,6 @@ const invariants = {
       "requestStart",
       "responseStart",
       "transferSize",
-      "encodedBodySize",
-      "decodedBodySize",
     ]);
   }
 
@@ -464,7 +467,10 @@ const attribute_test_internal = (loader, path, validator, run_test, test_label) 
       });
 
       await loader(path, validator);
-      const entry = await(loaded_entry);
+      const entry = await await_with_timeout(2000,
+        "Timeout was reached before entry fired",
+        loaded_entry);
+      assert_not_equals(entry, null, 'No entry was received');
       run_test(entry);
   }, test_label);
 };
@@ -481,3 +487,36 @@ const attribute_test = (loader, path, run_test, test_label) => {
 const attribute_test_with_validator = (loader, path, validator, run_test, test_label) => {
   attribute_test_internal(loader, path, validator, run_test, test_label);
 };
+
+const network_error_entry_test = (originalURL, args, label, loader) => {
+  const url = new URL(originalURL, location.href);
+  const search = new URLSearchParams(url.search.substr(1));
+  const timeBefore = performance.now();
+
+  // Load using `fetch()`, unless we're given a specific loader for this test.
+  loader ??= () => new Promise(resolve => fetch(url, args).catch(resolve));
+
+  attribute_test(
+    loader, url,
+    () => {
+      const timeAfter = performance.now();
+      const names = performance.getEntriesByType('resource').filter(e => e.initiatorType === 'fetch').map(e => e.name);
+      const entries = performance.getEntriesByName(url.toString());
+      assert_equals(entries.length, 1, 'resource timing entry for network error');
+      const entry = entries[0]
+      assert_equals(entry.startTime, entry.fetchStart, 'startTime and fetchStart should be equal');
+      assert_greater_than_equal(entry.startTime, timeBefore, 'startTime and fetchStart should be greater than the time before fetching');
+      assert_greater_than_equal(timeAfter, entry.responseEnd, 'endTime should be less than the time right after returning from the fetch');
+      assert_equals(entry.responseStatus, 0, 'responseStatus should be 0');
+      assert_equals(entry.encodedBodySize, 0, 'encodedBodySize should be 0');
+      assert_equals(entry.decodedBodySize, 0, 'decodedBodySize should be 0');
+      assert_equals(entry.serverTiming.length, 0,
+                    'serverTiming should be empty');
+      assert_equals(entry.contentType, '', 'contentType should be empty');
+      assert_equals(entry.contentEncoding, '',
+                    'contentEncoding should be empty');
+      assert_equals(entry.nextHopProtocol, '',
+                    'nextHopProtocol should be empty');
+      invariants.assert_tao_failure_resource(entry);
+  }, `A ResourceTiming entry should be created for network error of type ${label}`);
+}

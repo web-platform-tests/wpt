@@ -26,6 +26,11 @@ function runUAStyleTests(props) {
       ) {
       continue;
      }
+     if (testEl.localName === 'select' &&
+         (prop === 'overflow' || prop === 'overflow-clip-margin')) {
+      // TODO: https://github.com/whatwg/html/issues/10031
+      continue;
+     }
      test(() => {
        assert_equals(testStyle.getPropertyValue(prop), refStyle.getPropertyValue(prop));
      }, `${testNameContext(testEl)} - ${prop}`);

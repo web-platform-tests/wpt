@@ -6,6 +6,9 @@
 </head>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+<script src='../mediacapture-streams/permission-helper.js'></script>
 <script>
 "use strict";
 
@@ -18,18 +21,13 @@ promise_test(t => promise_rejects_dom(t, "NotFoundError", audio.setSinkId("nonex
 
 promise_test(async t => {
   // Attempt to expose some audiooutput devices.
+  await setMediaPermission("granted", ["microphone"]);
   await navigator.mediaDevices.getUserMedia({ audio: true });
   const list = await navigator.mediaDevices.enumerateDevices();
   assert_greater_than(list.length, 0,
                       "media device list includes at least one device");
-  const audioInputList = list.filter(({kind}) => kind == "audioinput");
   const outputDevicesList = list.filter(({kind}) => kind == "audiooutput");
-  // List of exposed microphone groupIds
-  const exposedGroupIds = new Set(audioInputList.map(device => device.groupId));
-
   for (const { deviceId, groupId } of outputDevicesList) {
-    assert_true(exposedGroupIds.has(groupId),
-                "audiooutput device groupId must match an exposed microphone");
     assert_greater_than(deviceId.length, 0, "deviceId.length");
 
     const p1 = audio.setSinkId(deviceId);

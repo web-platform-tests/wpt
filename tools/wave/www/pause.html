@@ -9,6 +9,7 @@
     <script src="lib/davidshimjs/qrcode.js"></script>
     <script src="lib/keycodes.js"></script>
     <script src="lib/wave-service.js"></script>
+    <script src="lib/hbbtv.js"></script>
   </head>
   <body>
     <section class="section">
@@ -122,8 +123,7 @@
         });
       }
 
-      WaveService.connectHttpPolling(TOKEN);
-      WaveService.onMessage(function(message) {
+      WaveService.addSessionEventListener(TOKEN, function(message) {
         if (message.type !== "status") return;
         if (message.data !== "running") return;
         WaveService.readNextTest(TOKEN, function(url) {

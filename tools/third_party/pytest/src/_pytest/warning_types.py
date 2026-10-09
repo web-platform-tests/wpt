@@ -1,14 +1,12 @@
+import dataclasses
+import inspect
+from types import FunctionType
 from typing import Any
+from typing import final
 from typing import Generic
+from typing import Type
 from typing import TypeVar
-
-import attr
-
-from _pytest.compat import final
-from _pytest.compat import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from typing import Type  # noqa: F401 (used in type string)
+import warnings
 
 
 class PytestWarning(UserWarning):
@@ -45,9 +43,20 @@ class PytestCollectionWarning(PytestWarning):
     __module__ = "pytest"
 
 
-@final
 class PytestDeprecationWarning(PytestWarning, DeprecationWarning):
     """Warning class for features that will be removed in a future version."""
+
+    __module__ = "pytest"
+
+
+class PytestRemovedIn9Warning(PytestDeprecationWarning):
+    """Warning class for features that will be removed in pytest 9."""
+
+    __module__ = "pytest"
+
+
+class PytestReturnNotNoneWarning(PytestWarning):
+    """Warning emitted when a test function is returning value other than None."""
 
     __module__ = "pytest"
 
@@ -64,15 +73,11 @@ class PytestExperimentalApiWarning(PytestWarning, FutureWarning):
 
     @classmethod
     def simple(cls, apiname: str) -> "PytestExperimentalApiWarning":
-        return cls(
-            "{apiname} is an experimental api that may change over time".format(
-                apiname=apiname
-            )
-        )
+        return cls(f"{apiname} is an experimental api that may change over time")
 
 
 @final
-class PytestUnhandledCoroutineWarning(PytestWarning):
+class PytestUnhandledCoroutineWarning(PytestReturnNotNoneWarning):
     """Warning emitted for an unhandled coroutine.
 
     A coroutine was encountered when collecting test functions, but was not
@@ -93,11 +98,33 @@ class PytestUnknownMarkWarning(PytestWarning):
     __module__ = "pytest"
 
 
+@final
+class PytestUnraisableExceptionWarning(PytestWarning):
+    """An unraisable exception was reported.
+
+    Unraisable exceptions are exceptions raised in :meth:`__del__ <object.__del__>`
+    implementations and similar situations when the exception cannot be raised
+    as normal.
+    """
+
+    __module__ = "pytest"
+
+
+@final
+class PytestUnhandledThreadExceptionWarning(PytestWarning):
+    """An unhandled exception occurred in a :class:`~threading.Thread`.
+
+    Such exceptions don't propagate normally.
+    """
+
+    __module__ = "pytest"
+
+
 _W = TypeVar("_W", bound=PytestWarning)
 
 
 @final
-@attr.s
+@dataclasses.dataclass
 class UnformattedWarning(Generic[_W]):
     """A warning meant to be formatted during runtime.
 
@@ -105,12 +132,34 @@ class UnformattedWarning(Generic[_W]):
     as opposed to a direct message.
     """
 
-    category = attr.ib(type="Type[_W]")
-    template = attr.ib(type=str)
+    category: Type["_W"]
+    template: str
 
     def format(self, **kwargs: Any) -> _W:
         """Return an instance of the warning category, formatted with given kwargs."""
         return self.category(self.template.format(**kwargs))
 
 
-PYTESTER_COPY_EXAMPLE = PytestExperimentalApiWarning.simple("testdir.copy_example")
+def warn_explicit_for(method: FunctionType, message: PytestWarning) -> None:
+    """
+    Issue the warning :param:`message` for the definition of the given :param:`method`
+
+    this helps to log warnings for functions defined prior to finding an issue with them
+    (like hook wrappers being marked in a legacy mechanism)
+    """
+    lineno = method.__code__.co_firstlineno
+    filename = inspect.getfile(method)
+    module = method.__module__
+    mod_globals = method.__globals__
+    try:
+        warnings.warn_explicit(
+            message,
+            type(message),
+            filename=filename,
+            module=module,
+            registry=mod_globals.setdefault("__warningregistry__", {}),
+            lineno=lineno,
+        )
+    except Warning as w:
+        # If warnings are errors (e.g. -Werror), location information gets lost, so we add it to the message.
+        raise type(w)(f"{w}\n at {filename}:{lineno}") from None

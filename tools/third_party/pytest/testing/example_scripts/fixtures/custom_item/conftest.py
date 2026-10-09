@@ -1,3 +1,4 @@
+# mypy: allow-untyped-defs
 import pytest
 
 
@@ -11,5 +12,5 @@ class CustomFile(pytest.File):
         yield CustomItem.from_parent(name="foo", parent=self)
 
 
-def pytest_collect_file(path, parent):
-    return CustomFile.from_parent(fspath=path, parent=parent)
+def pytest_collect_file(file_path, parent):
+    return CustomFile.from_parent(path=file_path, parent=parent)

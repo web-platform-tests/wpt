@@ -6,36 +6,18 @@
 importScripts("/resources/testharness.js");
 importScripts("/html/canvas/resources/canvas-tests.js");
 
-var t = async_test("Pattern fill() draws pixels not covered by the source object as (0,0,0,0), and does not leave the pixels unchanged.");
-var t_pass = t.done.bind(t);
-var t_fail = t.step_func(function(reason) {
-    throw reason;
-});
-t.step(function() {
+promise_test(async t => {
+  var canvas = new OffscreenCanvas(100, 50);
+  var ctx = canvas.getContext('2d');
 
-var offscreenCanvas = new OffscreenCanvas(100, 50);
-var ctx = offscreenCanvas.getContext('2d');
-
-
-ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
-ctx.fillRect(0, 0, 100, 50);
-ctx.globalCompositeOperation = 'copy';
-var promise = new Promise(function(resolve, reject) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", '/images/yellow.png');
-    xhr.responseType = 'blob';
-    xhr.send();
-    xhr.onload = function() {
-        resolve(xhr.response);
-    };
-});
-promise.then(function(response) {
-    createImageBitmap(response).then(bitmap => {
-        ctx.fillStyle = ctx.createPattern(bitmap, 'no-repeat');
-        ctx.fillRect(0, 50, 100, 50);
-        _assertPixelApprox(offscreenCanvas, 50,25, 0,0,0,0, "50,25", "0,0,0,0", 5);
-    }, t_fail);
-}).then(t_pass, t_fail);
-
-});
+  ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
+  ctx.fillRect(0, 0, 100, 50);
+  ctx.globalCompositeOperation = 'copy';
+  const response = await fetch('/images/yellow.png')
+  const blob = await response.blob();
+  const bitmap = await createImageBitmap(blob);
+  ctx.fillStyle = ctx.createPattern(bitmap, 'no-repeat');
+  ctx.fillRect(0, 50, 100, 50);
+  _assertPixelApprox(canvas, 50,25, 0,0,0,0, 5);
+}, "Pattern fill() draws pixels not covered by the source object as (0,0,0,0), and does not leave the pixels unchanged.");
 done();

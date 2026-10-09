@@ -1,5 +1,6 @@
+// META: timeout=long
 // META: script=constants.sub.js
-// META: variant=
+// META: variant=?default
 // META: variant=?wss
 // META: variant=?wpt_flags=h2
 
@@ -11,6 +12,7 @@ async_test(t => {
 // list of bad ports according to
 // https://fetch.spec.whatwg.org/#port-blocking
 [
+  0,
   1,    // tcpmux
   7,    // echo
   9,    // discard
@@ -49,6 +51,7 @@ async_test(t => {
   137,  // netbios-ns
   139,  // netbios-ssn
   143,  // imap2
+  161,  // snmp
   179,  // bgp
   389,  // ldap
   427,  // afp (alternate)
@@ -79,6 +82,9 @@ async_test(t => {
   2049, // nfs
   3659, // apple-sasl
   4045, // lockd
+  4190, // sieve
+  5060, // sip
+  5061, // sips
   6000, // x11
   6566, // sane-port
   6665, // irc (alternate)
@@ -86,6 +92,7 @@ async_test(t => {
   6667, // irc (default)
   6668, // irc (alternate)
   6669, // irc (alternate)
+  6679, // osaut
   6697, // irc+tls
   10080, // amanda
 ].forEach(blockedPort => {

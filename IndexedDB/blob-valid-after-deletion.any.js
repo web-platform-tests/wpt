@@ -1,5 +1,6 @@
 // META: title=Blob Valid After Deletion
-// META: script=support.js
+// META: script=resources/support.js
+'use strict';
 
 let key = "key";
 
@@ -12,15 +13,14 @@ indexeddb_test(
     const blobBContent = "Blob B content";
     const blobA = new Blob([blobAContent], {"type" : "text/plain"});
     const blobB = new Blob([blobBContent], {"type" : "text/plain"});
-    value = { a0: blobA, a1: blobA, b0: blobB };
+    const value = { a0: blobA, a1: blobA, b0: blobB };
 
     const tx = db.transaction('store', 'readwrite');
     var store = tx.objectStore('store');
 
     store.put(value, key);
-    value = null;
 
-    const trans = db.transaction('store');
+    const trans = db.transaction('store', 'readonly');
     store = trans.objectStore('store');
     const request = store.get(key);
 

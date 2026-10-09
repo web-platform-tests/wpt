@@ -11,22 +11,33 @@
     <title>CSS Reftest Reference</title>
     <link rel="author" title="Brad Werth" href="mailto:bwerth@mozilla.com"/>
     <style>
-      .container {
-        display: flex;
+      .container,
+      .containerEndAlign {
         border: 1px dashed blue;
         font: 14px sans-serif;
         height: 50px;
       }
 
-      .ortho  { writing-mode: vertical-rl;
-                width: 17px;
-                height: 40px;
-                float: left; }
-      .offset { margin-top: 10px;
-                margin-bottom: 3px; }
+      .container > div,
+      .wrapper > div{
+        display: inline-block;
+      }
 
-      .start  { align-self: flex-start; }
-      .end    { align-self: flex-end; }
+      .containerEndAlign {
+        display: flex;
+        align-items: end;
+      }
+      .wrapper {
+        /* This accounts for the 'margin-bottom: 3px' on the 'offset' element
+           in the last-baseline-aligned part of the testcase: */
+        margin-bottom: 3px;
+      }
+
+      .ortho  {
+        writing-mode: vertical-rl;
+        width: 17px;
+        height: 40px;
+      }
 
       .lime   { background: lime;   }
       .yellow { background: yellow; }
@@ -36,16 +47,26 @@
   </head>
   <body>
     <div class="container">
-      <div class="lime ortho start">ortho</div
-      ><div class="yellow offset start">one line</div
-      ><div class="orange offset start">two<br/>lines</div
-      ><div class="pink offset start">offset</div>
+      <div class="lime ortho">ortho</div
+      ><div class="yellow">one line</div
+      ><div class="orange" style="display: inline-flex;">two<br/>lines</div
+      ><div class="pink">offset</div>
     </div>
-    <div class="container">
-      <div class="lime ortho end">ortho</div
-      ><div class="yellow offset end">one line</div
-      ><div class="orange offset end">two<br/>lines</div
-      ><div class="pink offset end">offset</div>
+
+    <!-- Note: in the testcase, there's a flex container here, whose flex items
+         are 'last baseline'-aligned and collectively snapped to the end
+         (bottom) edge.  To mock that up, we use a simple flex container with a
+         single end-aligned 'display:block' flex item; and that item has
+         inline-block children, which are mockups of the testcase's flex items.
+         (These inline-blocks get automatically 'last-baseline' aligned to each
+         other, as part of regular inline-block layout behavior.) -->
+    <div class="containerEndAlign">
+      <div class="wrapper">
+        <div class="lime ortho">ortho</div
+        ><div class="yellow">one line</div
+        ><div class="orange">two<br/>lines</div
+        ><div class="pink">offset</div>
+      </div>
     </div>
   </body>
 </html>

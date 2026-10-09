@@ -186,7 +186,7 @@ class FakeDevice {
   open() {
     assert_false(this.opened_);
     this.opened_ = true;
-    return Promise.resolve({error: mojom.UsbOpenDeviceError.OK});
+    return Promise.resolve({result: {success: mojom.UsbOpenDeviceSuccess.OK}});
   }
 
   close() {
@@ -386,6 +386,10 @@ class FakeWebUsbService {
       this.client_.onDeviceAdded(fakeDeviceInitToDeviceInfo(device.guid, info));
   }
 
+  async forgetDevice(guid) {
+    // Permissions are currently untestable through WPT.
+  }
+
   removeDevice(fakeDevice) {
     let device = this.devices_.get(fakeDevice);
     if (!device)
@@ -436,11 +440,11 @@ class FakeWebUsbService {
     }
   }
 
-  getPermission(deviceFilters) {
+  getPermission(options) {
     return new Promise(resolve => {
       if (navigator.usb.test.onrequestdevice) {
         navigator.usb.test.onrequestdevice(
-            new USBDeviceRequestEvent(deviceFilters, resolve));
+            new USBDeviceRequestEvent(options, resolve));
       } else {
         resolve({ result: null });
       }
@@ -453,8 +457,9 @@ class FakeWebUsbService {
 }
 
 class USBDeviceRequestEvent {
-  constructor(deviceFilters, resolve) {
-    this.filters = convertMojoDeviceFilters(deviceFilters);
+  constructor(options, resolve) {
+    this.filters = convertMojoDeviceFilters(options.filters);
+    this.exclusionFilters = convertMojoDeviceFilters(options.exclusionFilters);
     this.resolveFunc_ = resolve;
   }
 

@@ -1,4 +1,4 @@
-// META: global=window,worker,jsshell
+// META: global=window,worker
 // META: script=../resources/test-utils.js
 // META: script=../resources/recording-streams.js
 'use strict';
@@ -1384,8 +1384,10 @@ test(t => {
 
   assert_true(ctrl.signal instanceof AbortSignal);
   assert_false(ctrl.signal.aborted);
+  assert_equals(ctrl.signal.reason, undefined, 'signal.reason before abort');
   ws.abort(e);
   assert_true(ctrl.signal.aborted);
+  assert_equals(ctrl.signal.reason, e);
 }, 'WritableStreamDefaultController.signal');
 
 promise_test(async t => {
@@ -1403,8 +1405,11 @@ promise_test(async t => {
   await called;
 
   assert_false(ctrl.signal.aborted);
+  assert_equals(ctrl.signal.reason, undefined, 'signal.reason before abort');
   writer.abort();
   assert_true(ctrl.signal.aborted);
+  assert_true(ctrl.signal.reason instanceof DOMException, 'signal.reason is a DOMException');
+  assert_equals(ctrl.signal.reason.name, 'AbortError', 'signal.reason is an AbortError');
 }, 'the abort signal is signalled synchronously - write');
 
 promise_test(async t => {
@@ -1467,6 +1472,8 @@ promise_test(async t => {
 
 promise_test(async t => {
   let ctrl;
+  let abortPromise;
+  let abortPromiseFromSignal;
   const e1 = SyntaxError();
   const e2 = TypeError();
   const ws = new WritableStream({
@@ -1474,9 +1481,87 @@ promise_test(async t => {
   });
 
   const writer = ws.getWriter();
-  ctrl.signal.addEventListener('abort', () => writer.abort(e2));
-  writer.abort(e1);
+  ctrl.signal.addEventListener('abort', () => {
+    abortPromiseFromSignal = writer.abort(e2);
+  });
+  abortPromise = writer.abort(e1);
   assert_true(ctrl.signal.aborted);
 
-  await promise_rejects_exactly(t, e2, writer.closed, 'closed');
-}, 'recursive abort() call');
+  await Promise.all([
+    abortPromise,
+    abortPromiseFromSignal,
+    promise_rejects_exactly(t, e2, writer.closed, 'closed')
+  ]);
+}, 'recursive abort() call from abort() aborting signal (not started)');
+
+promise_test(async t => {
+  let ctrl;
+  let abortPromise;
+  let abortPromiseFromSignal;
+  const e1 = SyntaxError();
+  const e2 = TypeError();
+  const ws = new WritableStream({
+    start(c) { ctrl = c; },
+  });
+  await flushAsyncEvents(); // ensure stream is started
+
+  const writer = ws.getWriter();
+  ctrl.signal.addEventListener('abort', () => {
+    abortPromiseFromSignal = writer.abort(e2);
+  });
+  abortPromise = writer.abort(e1);
+  assert_true(ctrl.signal.aborted);
+
+  await Promise.all([
+    abortPromise,
+    abortPromiseFromSignal,
+    promise_rejects_exactly(t, e2, writer.closed, 'closed')
+  ]);
+}, 'recursive abort() call from abort() aborting signal');
+
+promise_test(async t => {
+  let ctrl;
+  let abortPromise;
+  let closePromiseFromSignal;
+  const theError = SyntaxError();
+  const ws = new WritableStream({
+    start(c) { ctrl = c; },
+  });
+
+  const writer = ws.getWriter();
+  ctrl.signal.addEventListener('abort', () => {
+    closePromiseFromSignal = writer.close();
+  });
+  abortPromise = writer.abort(theError);
+  assert_true(ctrl.signal.aborted);
+
+  await Promise.all([
+    abortPromise,
+    promise_rejects_exactly(t, theError, closePromiseFromSignal, 'closed'),
+    promise_rejects_exactly(t, theError, writer.closed, 'closed')
+  ]);
+}, 'recursive close() call from abort() aborting signal (not started)');
+
+promise_test(async t => {
+  let ctrl;
+  let abortPromise;
+  let closePromiseFromSignal;
+  const theError = SyntaxError();
+  const ws = new WritableStream({
+    start(c) { ctrl = c; },
+  });
+  await flushAsyncEvents(); // ensure stream is started
+
+  const writer = ws.getWriter();
+  ctrl.signal.addEventListener('abort', () => {
+    closePromiseFromSignal = writer.close();
+  });
+  abortPromise = writer.abort(theError);
+  assert_true(ctrl.signal.aborted);
+
+  await Promise.all([
+    abortPromise,
+    closePromiseFromSignal,
+    writer.closed
+  ]);
+}, 'recursive close() call from abort() aborting signal');

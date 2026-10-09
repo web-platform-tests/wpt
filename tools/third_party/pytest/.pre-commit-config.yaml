@@ -1,16 +1,12 @@
 repos:
--   repo: https://github.com/psf/black
-    rev: 19.10b0
-    hooks:
-    -   id: black
-        args: [--safe, --quiet]
--   repo: https://github.com/asottile/blacken-docs
-    rev: v1.7.0
-    hooks:
-    -   id: blacken-docs
-        additional_dependencies: [black==19.10b0]
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: "v0.4.1"
+  hooks:
+    - id: ruff
+      args: ["--fix"]
+    - id: ruff-format
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.1.0
+    rev: v4.6.0
     hooks:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
@@ -20,38 +16,47 @@ repos:
     -   id: debug-statements
         exclude: _pytest/(debugging|hookspec).py
         language_version: python3
--   repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.2
+-   repo: https://github.com/adamchainz/blacken-docs
+    rev: 1.16.0
     hooks:
-    -   id: flake8
-        language_version: python3
-        additional_dependencies:
-          - flake8-typing-imports==1.9.0
-          - flake8-docstrings==1.5.0
--   repo: https://github.com/asottile/reorder_python_imports
-    rev: v2.3.0
+    -   id: blacken-docs
+        additional_dependencies: [black==24.1.1]
+-   repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
     hooks:
-    -   id: reorder-python-imports
-        args: ['--application-directories=.:src', --py3-plus]
--   repo: https://github.com/asottile/pyupgrade
-    rev: v2.4.4
-    hooks:
-    -   id: pyupgrade
-        args: [--py3-plus]
--   repo: https://github.com/asottile/setup-cfg-fmt
+    -   id: python-use-type-annotations
+-   repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.9.0
     hooks:
-    -   id: setup-cfg-fmt
-        # TODO: when upgrading setup-cfg-fmt this can be removed
-        args: [--max-py-version=3.9]
--   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.780  # NOTE: keep this in sync with setup.cfg.
-    hooks:
     -   id: mypy
-        files: ^(src/|testing/)
+        files: ^(src/|testing/|scripts/)
         args: []
+        additional_dependencies:
+          - iniconfig>=1.1.0
+          - attrs>=19.2.0
+          - pluggy>=1.5.0
+          - packaging
+          - tomli
+          - types-pkg_resources
+          - types-tabulate
+            # for mypy running on python>=3.11 since exceptiongroup is only a dependency
+            # on <3.11
+          - exceptiongroup>=1.0.0rc8
+- repo: https://github.com/tox-dev/pyproject-fmt
+  rev: "1.8.0"
+  hooks:
+    - id: pyproject-fmt
+      # https://pyproject-fmt.readthedocs.io/en/latest/#calculating-max-supported-python-version
+      additional_dependencies: ["tox>=4.9"]
 -   repo: local
     hooks:
+    - id: pylint
+      name: pylint
+      entry: pylint
+      language: system
+      types: [python]
+      args: ["-rn", "-sn", "--fail-on=I"]
+      stages: [manual]
     -   id: rst
         name: rst
         entry: rst-lint --encoding utf-8
@@ -79,4 +84,10 @@ repos:
                 error\.|
                 xml\.
             )
+        types: [python]
+    -   id: py-path-deprecated
+        name: py.path usage is deprecated
+        exclude: docs|src/_pytest/deprecated.py|testing/deprecated_test.py|src/_pytest/legacypath.py
+        language: pygrep
+        entry: \bpy\.path\.local
         types: [python]

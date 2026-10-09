@@ -26,8 +26,8 @@ let testBaseLayer = function(session, fakeDeviceController, t, sessionObjects) {
           assert_not_equals(session, tempSession);
           assert_throws_dom('InvalidStateError', () => session.updateRenderState({ baseLayer : new XRWebGLLayer(tempSession, sessionObjects.gl), }));
         });
+        resolve();
       });
-      resolve();
     });
   });
 };
@@ -52,28 +52,37 @@ let testNoParams = function(session, fakeDeviceController, t) {
   });
 };
 
-let testParams = function(session, fakeDeviceController, t, sessionObjects) {
+let testMinMaxClippingPlanes = function(session, fakeDeviceController, t, sessionObjects) {
   return new Promise((resolve, reject) => {
     let gl = sessionObjects.gl;
-    try {
-      gl.makeXRCompatible().then(() => {
-        t.step(() => {
-          let fov = Math.PI;
-          let near = 0.2;
-          let far = 0.8;
-          let layer = new XRWebGLLayer(session, gl);
-          session.updateRenderState({ inlineVerticalFieldOfView: fov, depthNear: near, depthFar: far, baseLayer: layer });
-          // The update can only happen between frame boundaries, updateRenderState only queues changes.
-          assert_not_equals(session.renderState.inlineVerticalFieldOfView, fov);
-          assert_not_equals(session.renderState.depthNear, near);
-          assert_not_equals(session.renderState.depthFar, far);
-          assert_not_equals(session.renderState.baseLayer, layer);
+    gl.makeXRCompatible().then(() => {
+      t.step(() => {
+        let near = 0.2;
+        let far = 0.8;
+        let layer = new XRWebGLLayer(session, gl);
+        session.updateRenderState({ depthNear: near, depthFar: far, baseLayer: layer });
+        assert_not_equals(session.renderState.depthNear, near);
+        assert_not_equals(session.renderState.depthFar, far);
+        assert_not_equals(session.renderState.baseLayer, layer);
+        session.requestAnimationFrame((time, xrFrame) => {
+          t.step(() => {
+            assert_equals(session.renderState.depthNear, near);
+            assert_equals(session.renderState.depthFar, far);
+            // Clamp negative values
+            near = -20.3;
+            far = -1.5;
+            session.updateRenderState({ depthNear: near, depthFar: far });
+            session.requestAnimationFrame((time, xrFrame) => {
+              t.step(() => {
+                assert_equals(session.renderState.depthNear, 0.0);
+                assert_equals(session.renderState.depthFar, 0.0);
+                resolve();
+              });
+            });
+          });
         });
       });
-    } catch (err) {
-      assert_unreached("updateRenderState should not fail when all params are specified");
-    }
-    resolve();
+    });
   });
 };
 
@@ -89,7 +98,7 @@ xr_session_promise_test(testName, testFieldOfView, fakeDeviceInitParams, 'immers
 testName = "updateRenderState handles appropriately XRRenderStateInit with no params";
 xr_session_promise_test(testName, testNoParams, fakeDeviceInitParams, 'immersive-vr');
 
-testName = "updateRenderState handles appropriately XRRenderStateInit params";
-xr_session_promise_test(testName, testParams, fakeDeviceInitParams, 'inline');
+testName = "updateRenderState clamps appropriately near/far clipping planes";
+xr_session_promise_test(testName, testMinMaxClippingPlanes, fakeDeviceInitParams, 'immersive-vr');
 
 </script>

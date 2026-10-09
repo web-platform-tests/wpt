@@ -1,31 +1,39 @@
-import os
+# mypy: allow-untyped-defs
 
-import moznetwork
-from mozrunner import FennecEmulatorRunner
+import os
+import re
+import subprocess
+import traceback
+
+from mozrunner import FennecEmulatorRunner, get_app_context
 
 from .base import (get_free_port,
                    cmd_arg,
                    browser_command)
 from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # noqa: F401
-                                            MarionetteRefTestExecutor,  # noqa: F401
+                                            MarionetteRefTestExecutorAndroid,  # noqa: F401
                                             MarionetteCrashtestExecutor,  # noqa: F401
-                                            MarionetteWdspecExecutor)  # noqa: F401
+                                            MarionettePytestExecutor)  # noqa: F401
 from .base import (Browser,
                    ExecutorBrowser)
 from .firefox import (get_timeout_multiplier,  # noqa: F401
+                      run_info_browser_version,
                       run_info_extras as fx_run_info_extras,
                       update_properties,  # noqa: F401
                       executor_kwargs as fx_executor_kwargs,  # noqa: F401
+                      FirefoxPytestBrowser,
                       ProfileCreator as FirefoxProfileCreator)
 
 
 __wptrunner__ = {"product": "firefox_android",
                  "check_args": "check_args",
-                 "browser": "FirefoxAndroidBrowser",
+                 "browser": {None: "FirefoxAndroidBrowser",
+                             "wdspec": "FirefoxAndroidWdSpecBrowser"},
                  "executor": {"testharness": "MarionetteTestharnessExecutor",
-                              "reftest": "MarionetteRefTestExecutor",
+                              "reftest": "MarionetteRefTestExecutorAndroid",
                               "crashtest": "MarionetteCrashtestExecutor",
-                              "wdspec": "MarionetteWdspecExecutor"},
+                              "wdspec": "MarionettePytestExecutor",
+                              "test262": "MarionetteTestharnessExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
@@ -40,32 +48,44 @@ def check_args(**kwargs):
 
 
 def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
-    return {"adb_binary": kwargs["adb_binary"],
-            "package_name": kwargs["package_name"],
-            "device_serial": kwargs["device_serial"],
-            "prefs_root": kwargs["prefs_root"],
-            "extra_prefs": kwargs["extra_prefs"],
-            "test_type": test_type,
-            "debug_info": kwargs["debug_info"],
-            "symbols_path": kwargs["symbols_path"],
-            "stackwalk_binary": kwargs["stackwalk_binary"],
-            "certutil_binary": kwargs["certutil_binary"],
-            "ca_certificate_path": config.ssl_config["ca_cert_path"],
-            "enable_webrender": kwargs["enable_webrender"],
-            "stackfix_dir": kwargs["stackfix_dir"],
-            "binary_args": kwargs["binary_args"],
-            "timeout_multiplier": get_timeout_multiplier(test_type,
-                                                         run_info_data,
-                                                         **kwargs),
-            "e10s": run_info_data["e10s"],
-            # desktop only
-            "leak_check": False,
-            "stylo_threads": kwargs["stylo_threads"],
-            "chaos_mode_flags": kwargs["chaos_mode_flags"],
-            "config": config,
-            "install_fonts": kwargs["install_fonts"],
-            "tests_root": config.doc_root,
-            "specialpowers_path": kwargs["specialpowers_path"]}
+    browser_kwargs = {"adb_binary": kwargs["adb_binary"],
+                      "package_name": kwargs["package_name"],
+                      "device_serial": kwargs["device_serial"],
+                      "prefs_root": kwargs["prefs_root"],
+                      "extra_prefs": kwargs["extra_prefs"].copy(),
+                      "debug_info": kwargs["debug_info"],
+                      "symbols_path": kwargs["symbols_path"],
+                      "stackwalk_binary": kwargs["stackwalk_binary"],
+                      "certutil_binary": kwargs["certutil_binary"],
+                      "ca_certificate_path": config.ssl_config["ca_cert_path"],
+                      "stackfix_dir": kwargs["stackfix_dir"],
+                      "disable_fission": kwargs["disable_fission"],
+                      # desktop only
+                      "leak_check": False,
+                      "chaos_mode_flags": kwargs["chaos_mode_flags"],
+                      "config": config,
+                      "debug_test": kwargs["debug_test"],
+                      # android only
+                      "isolated_process": kwargs["isolated_process"],
+                      }
+
+    if test_type == "wdspec":
+        browser_kwargs["webdriver_binary"] = kwargs["webdriver_binary"]
+        browser_kwargs["webdriver_args"] = kwargs["webdriver_args"].copy()
+        browser_kwargs["binary"] = None
+
+    else:
+        browser_kwargs["test_type"] = test_type
+        browser_kwargs["binary_args"] = kwargs["binary_args"].copy()
+        browser_kwargs["timeout_multiplier"] = get_timeout_multiplier(test_type,
+                                                                      run_info_data,
+                                                                      **kwargs)
+        browser_kwargs["install_fonts"] = kwargs["install_fonts"]
+        browser_kwargs["tests_root"] = config.doc_root
+        browser_kwargs["specialpowers_path"] = kwargs["specialpowers_path"]
+        browser_kwargs["env_extras"] = dict([x.split('=') for x in kwargs.get("env", [])])
+
+    return browser_kwargs
 
 
 def executor_kwargs(logger, test_type, test_environment, run_info_data,
@@ -81,85 +101,164 @@ def env_extras(**kwargs):
     return []
 
 
-def run_info_extras(**kwargs):
-    rv = fx_run_info_extras(**kwargs)
-    package = kwargs["package_name"]
-    rv.update({"e10s": True if package is not None and "geckoview" in package else False,
-               "headless": False})
+def run_info_extras(logger, **kwargs):
+    rv = fx_run_info_extras(logger, default_prefs=ProfileCreator.default_prefs(), **kwargs)
+    rv.update({"headless": False})
+
+    if kwargs["browser_version"] is None:
+        rv.update(run_info_browser_version(**kwargs))
+
+        if rv.get("browser_version") is None:
+            # If we didn't get the browser version from the apk, try to get it from adb dumpsys
+            rv["browser_version"] = get_package_browser_version(logger,
+                                                                kwargs["adb_binary"],
+                                                                kwargs["package_name"])
+
     return rv
 
 
+def get_package_browser_version(logger, adb_binary, package_name):
+    if adb_binary is None:
+        logger.warning("Couldn't run adb to get Firefox Android version number")
+        return None
+    try:
+        completed = subprocess.run([adb_binary, "shell", "dumpsys", "package", package_name],
+                                   check=True,
+                                   capture_output=True,
+                                   encoding="utf8")
+    except subprocess.CalledProcessError as e:
+        logger.warning(f"adb failed with return code {e.returncode}\nCaptured stderr:\n{e.stderr}")
+        return None
+
+    version_name_re = re.compile(r"^\s+versionName=(.*)")
+    for line in completed.stdout.splitlines():
+        m = version_name_re.match(line)
+        if m is not None:
+            return m.group(1)
+    logger.warning("Failed to find versionName property in dumpsys output")
+
+
 def env_options():
-    # The server host is set to public localhost IP so that resources can be accessed
-    # from Android emulator
-    return {"server_host": moznetwork.get_ip(),
-            "bind_address": False,
+    return {"server_host": "127.0.0.1",
             "supports_debugger": True}
+
+
+def get_environ(chaos_mode_flags, isolated_process=False, env_extras=None):
+    env = {}
+    if env_extras is not None:
+        env.update(env_extras)
+    if os.environ.get("MINIDUMP_SAVE_PATH"):
+        env["MINIDUMP_SAVE_PATH"] = os.environ["MINIDUMP_SAVE_PATH"]
+    env["MOZ_CRASHREPORTER"] = "1"
+    env["MOZ_CRASHREPORTER_SHUTDOWN"] = "1"
+    env["MOZ_DISABLE_NONLOCAL_CONNECTIONS"] = "1"
+    if chaos_mode_flags is not None:
+        env["MOZ_CHAOSMODE"] = hex(chaos_mode_flags)
+    if isolated_process:
+        env["MOZ_ANDROID_CONTENT_SERVICE_ISOLATED_PROCESS"] = "1"
+    return env
 
 
 class ProfileCreator(FirefoxProfileCreator):
     def __init__(self, logger, prefs_root, config, test_type, extra_prefs,
-                 enable_fission, browser_channel, certutil_binary, ca_certificate_path):
-        super(ProfileCreator, self).__init__(logger, prefs_root, config, test_type, extra_prefs,
-                                             True, enable_fission, browser_channel, None,
-                                             certutil_binary, ca_certificate_path)
+                 disable_fission, debug_test, browser_channel, binary,
+                 package_name, certutil_binary, ca_certificate_path,
+                 allow_list_paths=None):
 
-    def _set_required_prefs(self, profile):
-        profile.set_preferences({
+        super().__init__(logger, prefs_root, config, test_type, extra_prefs,
+                         disable_fission, debug_test, browser_channel, None,
+                         package_name, certutil_binary, ca_certificate_path,
+                         allow_list_paths)
+
+    @staticmethod
+    def default_prefs():
+        return {}
+
+    def _get_required_prefs(self):
+        return {
+            "fission.autostart": not self.disable_fission,
             "network.dns.localDomains": ",".join(self.config.domains_set),
-            "dom.disable_open_during_load": False,
-            "places.history.enabled": False,
-            "dom.send_after_paint_to_content": True,
-            "network.preload": True,
-            "browser.tabs.remote.autostart": True,
-        })
+        }
+
+    def _get_default_prefs(self):
+        """Preferences that are applied to the profile of a test run.
+
+        See the note on the base class implementation: these are not visible to
+        "run_info_extras", so a run info flag does not reflect them.
+        """
+        prefs = self.default_prefs()
+        prefs.update(
+            {
+                "dom.disable_open_during_load": False,
+                "dom.send_after_paint_to_content": True,
+                "places.history.enabled": False,
+            }
+        )
+
+        if self.package_name == "org.mozilla.geckoview.test_runner":
+            # Bug 1879324: The TestRunner doesn't support "beforeunload" prompts yet
+            prefs.update({"dom.disable_beforeunload": True})
 
         if self.test_type == "reftest":
             self.logger.info("Setting android reftest preferences")
-            profile.set_preferences({
-                "browser.viewport.desktopWidth": 800,
-                # Disable high DPI
-                "layout.css.devPixelsPerPx": "1.0",
-                # Ensure that the full browser element
-                # appears in the screenshot
-                "apz.allow_zooming": False,
-                "android.widget_paints_background": False,
-                # Ensure that scrollbars are always painted
-                "layout.testing.overlay-scrollbars.always-visible": True,
-            })
+            prefs.update(
+                {
+                    "android.widget_paints_background": False,
+                    # Ensure that the full browser element
+                    # appears in the screenshot
+                    "apz.allow_zooming": False,
+                    "browser.viewport.desktopWidth": 800,
+                    # Disable high DPI
+                    "layout.css.devPixelsPerPx": "1.0",
+                    # Ensure that scrollbars are always painted
+                    "layout.testing.overlay-scrollbars.always-visible": True,
+                }
+            )
+
+        if self.test_type == "wdspec":
+            prefs.update(
+                {
+                    "remote.prefs.recommended": True,
+                    "geo.provider.network.url":
+                        "https://web-platform.test:8444/webdriver/tests/support/http_handlers/geolocation_override.py",
+                }
+            )
+        else:
+            # Dispatch wheel scroll as widget event by default. It stays
+            # disabled for wdspec until it can be enabled for all input sources.
+            prefs["remote.events.async.wheel.enabled"] = True
+
+        return prefs
 
 
 class FirefoxAndroidBrowser(Browser):
     init_timeout = 300
     shutdown_timeout = 60
 
-    def __init__(self, logger, prefs_root, test_type, package_name="org.mozilla.geckoview.test",
-                 device_serial="emulator-5444", extra_prefs=None, debug_info=None,
+    def __init__(self, logger, prefs_root, test_type, package_name="org.mozilla.geckoview.test_runner",
+                 device_serial=None, extra_prefs=None, debug_info=None,
                  symbols_path=None, stackwalk_binary=None, certutil_binary=None,
-                 ca_certificate_path=None, e10s=False, enable_webrender=False, stackfix_dir=None,
+                 ca_certificate_path=None, stackfix_dir=None,
                  binary_args=None, timeout_multiplier=None, leak_check=False, asan=False,
-                 stylo_threads=1, chaos_mode_flags=None, config=None, browser_channel="nightly",
+                 chaos_mode_flags=None, config=None, browser_channel="nightly",
                  install_fonts=False, tests_root=None, specialpowers_path=None, adb_binary=None,
-                 **kwargs):
+                 debug_test=False, disable_fission=False, env_extras=None, isolated_process=False, **kwargs):
 
-        super(FirefoxAndroidBrowser, self).__init__(logger)
+        super().__init__(logger, **kwargs)
         self.prefs_root = prefs_root
         self.test_type = test_type
         self.package_name = package_name
-        self.device_serial = device_serial
+        self.device_serial = device_serial[self.manager_number]
         self.debug_info = debug_info
         self.symbols_path = symbols_path
         self.stackwalk_binary = stackwalk_binary
         self.certutil_binary = certutil_binary
         self.ca_certificate_path = ca_certificate_path
-        self.e10s = True
-        self.enable_webrender = enable_webrender
         self.stackfix_dir = stackfix_dir
         self.binary_args = binary_args
         self.timeout_multiplier = timeout_multiplier
         self.leak_check = leak_check
         self.asan = asan
-        self.stylo_threads = stylo_threads
         self.chaos_mode_flags = chaos_mode_flags
         self.config = config
         self.browser_channel = browser_channel
@@ -167,20 +266,26 @@ class FirefoxAndroidBrowser(Browser):
         self.tests_root = tests_root
         self.specialpowers_path = specialpowers_path
         self.adb_binary = adb_binary
+        self.disable_fission = disable_fission
+        self.isolated_process = isolated_process
 
         self.profile_creator = ProfileCreator(logger,
                                               prefs_root,
                                               config,
                                               test_type,
                                               extra_prefs,
-                                              False,
+                                              disable_fission,
+                                              debug_test,
                                               browser_channel,
+                                              None,
+                                              package_name,
                                               certutil_binary,
                                               ca_certificate_path)
 
         self.marionette_port = None
         self.profile = None
         self.runner = None
+        self.env_extras = env_extras
         self._settings = {}
 
     def settings(self, test):
@@ -189,7 +294,8 @@ class FirefoxAndroidBrowser(Browser):
                           "lsan_max_stack_depth": test.lsan_max_stack_depth,
                           "mozleak_allowed": self.leak_check and test.mozleak_allowed,
                           "mozleak_thresholds": self.leak_check and test.mozleak_threshold,
-                          "special_powers": self.specialpowers_path and test.url_base == "/_mozilla/"}
+                          "special_powers": self.specialpowers_path and test.url_base == "/_mozilla/",
+                          "testdriver": test.test_type == "testharness"}
         return self._settings
 
     def start(self, **kwargs):
@@ -211,22 +317,18 @@ class FirefoxAndroidBrowser(Browser):
 
         self.leak_report_file = None
 
-        debug_args, cmd = browser_command(self.package_name,
-                                          self.binary_args if self.binary_args else [] +
-                                          [cmd_arg("marionette"), "about:blank"],
-                                          self.debug_info)
+        args = self.binary_args[:] if self.binary_args else []
+        args += [cmd_arg("marionette"), "about:blank"]
 
-        env = {}
-        env["MOZ_CRASHREPORTER"] = "1"
-        env["MOZ_CRASHREPORTER_SHUTDOWN"] = "1"
-        env["MOZ_DISABLE_NONLOCAL_CONNECTIONS"] = "1"
-        env["STYLO_THREADS"] = str(self.stylo_threads)
-        if self.chaos_mode_flags is not None:
-            env["MOZ_CHAOSMODE"] = str(self.chaos_mode_flags)
-        if self.enable_webrender:
-            env["MOZ_WEBRENDER"] = "1"
-        else:
-            env["MOZ_WEBRENDER"] = "0"
+        debug_args, cmd = browser_command(
+            self.package_name, args, self.debug_info)
+
+        env = get_environ(self.chaos_mode_flags, self.isolated_process, self.env_extras)
+        # Allow Marionette to execute commands in the chrome scope of the
+        # application. Not set in get_environ() because for wdspec tests the
+        # environment is forwarded to geckodriver via capabilities, which
+        # rejects this variable.
+        env["MOZ_REMOTE_ALLOW_SYSTEM_ACCESS"] = "1"
 
         self.runner = FennecEmulatorRunner(app=self.package_name,
                                            profile=self.profile,
@@ -248,14 +350,14 @@ class FirefoxAndroidBrowser(Browser):
                           interactive=self.debug_info and self.debug_info.interactive)
 
         self.runner.device.device.forward(
-            local="tcp:{}".format(self.marionette_port),
-            remote="tcp:{}".format(self.marionette_port))
+            local=f"tcp:{self.marionette_port}",
+            remote=f"tcp:{self.marionette_port}")
 
         for ports in self.config.ports.values():
             for port in ports:
                 self.runner.device.device.reverse(
-                    local="tcp:{}".format(port),
-                    remote="tcp:{}".format(port))
+                    local=f"tcp:{port}",
+                    remote=f"tcp:{port}")
 
         self.logger.debug("%s Started" % self.package_name)
 
@@ -269,9 +371,13 @@ class FirefoxAndroidBrowser(Browser):
                     self.logger.warning("Failed to remove forwarded or reversed ports: %s" % e)
             # We assume that stopping the runner prompts the
             # browser to shut down.
-            self.runner.cleanup()
+            try:
+                self.runner.cleanup()
+            except Exception as e:
+                self.logger.warning(f"Failed to cleanup runner: {e}")
         self.logger.debug("stopped")
 
+    @property
     def pid(self):
         if self.runner.process_handler is None:
             return None
@@ -293,9 +399,61 @@ class FirefoxAndroidBrowser(Browser):
         return ExecutorBrowser, {"marionette_port": self.marionette_port,
                                  # We never want marionette to install extensions because
                                  # that doesn't work on Android; instead they are in the profile
-                                 "extensions": []}
+                                 "extensions": [],
+                                 "supports_devtools": False,
+                                 "supports_window_resize": False,
+                                 "testdriver": self._settings["testdriver"]}
 
     def check_crash(self, process, test):
         if not os.environ.get("MINIDUMP_STACKWALK", "") and self.stackwalk_binary:
             os.environ["MINIDUMP_STACKWALK"] = self.stackwalk_binary
-        return bool(self.runner.check_for_crashes(test_name=test))
+        try:
+            return bool(self.runner.check_for_crashes(test_name=test))
+        except Exception:
+            # We sometimes see failures trying to copy the minidump files
+            self.logger.warning(f"""Failed to complete crash check, assuming no crash:
+{traceback.format_exc()}""")
+            return False
+
+
+class FirefoxAndroidWdSpecBrowser(FirefoxPytestBrowser):
+    def __init__(self, logger, config=None, device_serial=None, adb_binary=None, **kwargs):
+
+        if "profile_creator_cls" not in kwargs:
+            kwargs["profile_creator_cls"] = ProfileCreator
+
+        super().__init__(logger, config=config, **kwargs)
+
+        self.config = config
+        self.device_serial = device_serial[self.manager_number]
+        # This is just to support the same adb lookup as for other test types
+        context = get_app_context("fennec")(adb_path=adb_binary, device_serial=self.device_serial)
+        self.device = context.get_device(context.adb, self.device_serial)
+
+    def start(self, group_metadata, **kwargs):
+        for ports in self.config.ports.values():
+            for port in ports:
+                self.device.reverse(
+                    local=f"tcp:{port}",
+                    remote=f"tcp:{port}")
+        super().start(group_metadata, **kwargs)
+
+    def stop(self, force=False):
+        try:
+            self.device.remove_reverses()
+        except Exception as e:
+            self.logger.warning("Failed to remove forwarded or reversed ports: %s" % e)
+        super().stop(force=force)
+
+    def get_env(self, binary, debug_info, headless, gmp_path, chaos_mode_flags, e10s, isolated_process):
+        env = get_environ(chaos_mode_flags, isolated_process)
+        env["RUST_BACKTRACE"] = "1"
+        return env
+
+    def executor_browser(self):
+        cls, args = super().executor_browser()
+        args["androidPackage"] = self.package_name
+        args["androidDeviceSerial"] = self.device_serial
+        args["env"] = self.env
+        args["supports_devtools"] = False
+        return cls, args

@@ -1,33 +1,63 @@
+# mypy: allow-untyped-defs
+
 import logging
+from collections.abc import Iterable, Mapping, MutableMapping, Callable
 from threading import Thread
+from types import TracebackType
+from typing import Any, Optional, Type
 
 from mozlog import commandline, stdadapter, set_default_logger
 from mozlog.structuredlog import StructuredLogger, log_levels
 
 
+class LoggerManager:
+    def __init__(self,
+                 args: MutableMapping[str, Any],
+                 defaults: Mapping[str, Any],
+                 formatter_defaults: Optional[Mapping[str, Any]] = None):
+        self._logger: Optional[StructuredLogger] = None
+        self._owns_logger = False
+        self._args = args
+        self._defaults = defaults
+        self._formatter_defaults = formatter_defaults
+
+    def __enter__(self) -> StructuredLogger:
+        self._logger = self._args.pop('log', None)
+        if self._logger is not None:
+            set_default_logger(self._logger)
+            StructuredLogger._logger_states["web-platform-tests"] = self._logger._state
+        else:
+            self._logger = commandline.setup_logging("web-platform-tests", self._args, self._defaults,
+                                                     formatter_defaults=self._formatter_defaults)
+            self._owns_logger = True
+        setup_stdlib_logger()
+
+        for name in list(self._args.keys()):
+            if name.startswith("log_"):
+                self._args.pop(name)
+
+        return self._logger
+
+    def __exit__(self, *args: Any, **kwargs: Any) -> None:
+        if self._logger is None:
+            return
+
+        if self._owns_logger:
+            self._logger.shutdown()
+        self._logger = None
+
+
 def setup(args, defaults, formatter_defaults=None):
-    logger = args.pop('log', None)
-    if logger:
-        set_default_logger(logger)
-        StructuredLogger._logger_states["web-platform-tests"] = logger._state
-    else:
-        logger = commandline.setup_logging("web-platform-tests", args, defaults,
-                                           formatter_defaults=formatter_defaults)
-    setup_stdlib_logger()
-
-    for name in list(args.keys()):
-        if name.startswith("log_"):
-            args.pop(name)
-
-    return logger
+    # Legacy entry point
+    return LoggerManager(args, defaults, formatter_defaults).__enter__()
 
 
-def setup_stdlib_logger():
+def setup_stdlib_logger() -> None:
     logging.root.handlers = []
     logging.root = stdadapter.std_logging_adapter(logging.root)
 
 
-class LogLevelRewriter(object):
+class LogLevelRewriter:
     """Filter that replaces log messages at specified levels with messages
     at a different level.
 
@@ -38,19 +68,22 @@ class LogLevelRewriter(object):
     :param from_levels: List of levels which should be affected
     :param to_level: Log level to set for the affected messages
     """
-    def __init__(self, inner, from_levels, to_level):
+    def __init__(self,
+                 inner: Callable[[dict[str, Any]], Any],
+                 from_levels: Iterable[str],
+                 to_level: str):
         self.inner = inner
         self.from_levels = [item.upper() for item in from_levels]
         self.to_level = to_level.upper()
 
-    def __call__(self, data):
+    def __call__(self, data: dict[str, Any]) -> Any:
         if data["action"] == "log" and data["level"].upper() in self.from_levels:
             data = data.copy()
             data["level"] = self.to_level
         return self.inner(data)
 
 
-class LoggedAboveLevelHandler(object):
+class LoggedAboveLevelHandler:
     """Filter that records whether any log message above a certain level has been
     seen.
 
@@ -75,7 +108,7 @@ class QueueHandler(logging.Handler):
 
     def createLock(self):
         # The queue provides its own locking
-        self.lock = None
+        self.lock = NullRLock()
 
     def emit(self, record):
         msg = self.format(record)
@@ -86,6 +119,25 @@ class QueueHandler(logging.Handler):
                 "source": self.name,
                 "message": msg}
         self.queue.put(data)
+
+
+
+class NullRLock:
+    """Implementation of the threading.RLock API that doesn't actually acquire a lock,
+    for use in cases where there is another mechanism to provide the required
+    invariants."""
+
+    def acquire(self, blocking: bool = True, timeout: float = -1) -> bool:
+        return True
+
+    def release(self) -> None:
+        return None
+
+    def __enter__(self) -> bool:
+        return True
+
+    def __exit__(self, t: Optional[Type[BaseException]], v: Optional[BaseException], tb: Optional[TracebackType]) -> None:
+        return None
 
 
 class LogQueueThread(Thread):
@@ -99,7 +151,7 @@ class LogQueueThread(Thread):
         while True:
             try:
                 data = self.queue.get()
-            except (EOFError, IOError):
+            except (EOFError, OSError):
                 break
             if data is None:
                 # A None message is used to shut down the logging thread

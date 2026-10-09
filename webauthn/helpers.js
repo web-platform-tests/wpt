@@ -19,7 +19,6 @@ var createCredentialDefaultArgs = {
             // Relying Party:
             rp: {
                 name: "Acme",
-                icon: "https://www.w3.org/StyleSheets/TR/2016/logos/W3C"
             },
 
             // User:
@@ -27,7 +26,6 @@ var createCredentialDefaultArgs = {
                 id: new Uint8Array(16), // Won't survive the copy, must be rebuilt
                 name: "john.p.smith@example.com",
                 displayName: "John P. Smith",
-                icon: "https://pics.acme.com/00/p/aBjjjpqPb.png"
             },
 
             pubKeyCredParams: [{
@@ -73,6 +71,15 @@ function createCredential(opts) {
 
     // create the credential, return the Promise
     return navigator.credentials.create(createArgs.options);
+}
+
+function assertCredential(credential) {
+    var options = cloneObject(getCredentialDefaultArgs);
+    let challengeBytes = new Uint8Array(16);
+    window.crypto.getRandomValues(challengeBytes);
+    options.challenge = challengeBytes;
+    options.allowCredentials = [{type: 'public-key', id: credential.rawId}];
+    return navigator.credentials.get({publicKey: options});
 }
 
 function createRandomString(len) {
@@ -343,7 +350,7 @@ function cloneObject(o) {
 
 function extendObject(dst, src) {
     Object.keys(src).forEach(function(key) {
-        if (isSimpleObject(src[key])) {
+        if (isSimpleObject(src[key]) && !isAbortSignal(src[key])) {
             dst[key] ||= {};
             extendObject(dst[key], src[key]);
         } else {
@@ -355,7 +362,12 @@ function extendObject(dst, src) {
 function isSimpleObject(o) {
     return (typeof o === "object" &&
         !Array.isArray(o) &&
-        !(o instanceof ArrayBuffer));
+        !(o instanceof ArrayBuffer) &&
+        !(o instanceof Uint8Array));
+}
+
+function isAbortSignal(o) {
+    return (o instanceof AbortSignal);
 }
 
 /**
@@ -494,6 +506,15 @@ class GetCredentialsTest extends TestCase {
 }
 
 /**
+ * converts a uint8array to base64 url-safe encoding
+ * based on similar function in resources/utils.js
+ */
+function base64urlEncode(array) {
+  let string = String.fromCharCode.apply(null, array);
+  let result = btoa(string);
+  return result.replace(/=+$/g, '').replace(/\+/g, "-").replace(/\//g, "_");
+}
+/**
  * runs assertions against a PublicKeyCredential object to ensure it is properly formatted
  */
 function validatePublicKeyCredential(cred) {
@@ -505,6 +526,8 @@ function validatePublicKeyCredential(cred) {
     // rawId
     assert_idl_attribute(cred, "rawId", "should return PublicKeyCredential with rawId attribute");
     assert_readonly(cred, "rawId", "should return PublicKeyCredential with readonly rawId attribute");
+    assert_equals(cred.id, base64urlEncode(new Uint8Array(cred.rawId)), "should return PublicKeyCredential with id attribute set to base64 encoding of rawId attribute");
+
     // type
     assert_idl_attribute(cred, "type", "should return PublicKeyCredential with type attribute");
     assert_equals(cred.type, "public-key", "should return PublicKeyCredential with type 'public-key'");
@@ -591,8 +614,9 @@ function virtualAuthenticatorPromiseTest(
     testCb, options = {}, name = 'Virtual Authenticator Test') {
   let authenticatorArgs = Object.assign(defaultAuthenticatorArgs(), options);
   promise_test(async t => {
+    let authenticator;
     try {
-      let authenticator =
+      authenticator =
           await window.test_driver.add_virtual_authenticator(authenticatorArgs);
       t.add_cleanup(
           () => window.test_driver.remove_virtual_authenticator(authenticator));
@@ -601,6 +625,55 @@ function virtualAuthenticatorPromiseTest(
         throw error;
       }
     }
-    return testCb(t);
+    return testCb(t, authenticator);
   }, name);
+}
+
+function bytesEqual(a, b) {
+  if (a instanceof ArrayBuffer) {
+    a = new Uint8Array(a);
+  }
+  if (b instanceof ArrayBuffer) {
+    b = new Uint8Array(b);
+  }
+  if (a.byteLength != b.byteLength) {
+    return false;
+  }
+  for (let i = 0; i < a.byteLength; i++) {
+    if (a[i] != b[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Compares two PublicKeyCredentialUserEntity objects.
+function userEntityEquals(a, b) {
+  return bytesEqual(a.id, b.id) && a.name == b.name && a.displayName == b.displayName;
+}
+
+// Asserts that `actual` and `expected`, which are both JSON types, are equal.
+// The object key order is ignored for comparison.
+function assertJsonEquals(actual, expected, optMsg) {
+  // Returns a copy of `jsonObj`, which must be a JSON type, with object keys
+  // recursively sorted in lexicographic order; or simply `jsonObj` if it is not
+  // an instance of Object.
+  function deepSortKeys(jsonObj) {
+    if (jsonObj instanceof Array) {
+      return Array.from(jsonObj, (x) => { return deepSortKeys(x); })
+    }
+    if (typeof jsonObj !== 'object' || jsonObj === null ||
+      jsonObj.__proto__.constructor !== Object ||
+      Object.keys(jsonObj).length === 0) {
+      return jsonObj;
+    }
+    return Object.keys(jsonObj).sort().reduce((acc, key) => {
+      acc[key] = deepSortKeys(jsonObj[key]);
+      return acc;
+    }, {});
+  }
+
+  assert_equals(
+    JSON.stringify(deepSortKeys(actual)),
+    JSON.stringify(deepSortKeys(expected)), optMsg);
 }

@@ -1,4 +1,5 @@
 <!doctype html>
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="./resources/resizeTestHelper.js"></script>
@@ -345,10 +346,10 @@ function test11() {
         observer.observe(view);
       },
       notify: (entries, observer) => {
-        assert_unreached("no entries should be observed on <view> Element");
-      },
-      timeout: () => {
-        // expected
+        assert_equals(entries.length, 1);
+        assert_equals(entries[0].target, view);
+        assert_equals(entries[0].contentRect.width, 0);
+        assert_equals(entries[0].contentRect.height, 0);
       }
     },
     {
@@ -356,10 +357,10 @@ function test11() {
         observer.observe(stop);
       },
       notify: (entries, observer) => {
-        assert_unreached("no entries should be observed on <stop> Element");
-      },
-      timeout: () => {
-        // expected
+        assert_equals(entries.length, 1);
+        assert_equals(entries[0].target, stop);
+        assert_equals(entries[0].contentRect.width, 0);
+        assert_equals(entries[0].contentRect.height, 0);
       }
     },
   ]);
@@ -596,7 +597,8 @@ test(_ => {
   guard = async_test('guard');
 }, "ResizeObserver implemented")
 
-test0()
+document.fonts.ready
+  .then(() => { return test0(); })
   .then(() => { return test1(); })
   .then(() => { return test2(); })
   .then(() => { return test3(); })

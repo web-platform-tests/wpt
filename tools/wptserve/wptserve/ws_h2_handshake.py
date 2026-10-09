@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 """This file provides the opening handshake processor for the Bootstrapping
 WebSockets with HTTP/2 protocol (RFC 8441).
 
@@ -5,16 +7,16 @@ Specification:
 https://tools.ietf.org/html/rfc8441
 """
 
-from mod_pywebsocket import common
+from pywebsocket3 import common
 
-from mod_pywebsocket.handshake.base import get_mandatory_header
-from mod_pywebsocket.handshake.base import HandshakeException
-from mod_pywebsocket.handshake.base import validate_mandatory_header
-from mod_pywebsocket.handshake.base import HandshakerBase
+from pywebsocket3.handshake.base import get_mandatory_header
+from pywebsocket3.handshake.base import HandshakeException
+from pywebsocket3.handshake.base import validate_mandatory_header
+from pywebsocket3.handshake.base import HandshakerBase
 
 
 def check_connect_method(request):
-    if request.method != u'CONNECT':
+    if request.method != 'CONNECT':
         raise HandshakeException('Method is not CONNECT: %r' % request.method)
 
 
@@ -29,7 +31,7 @@ class WsH2Handshaker(HandshakerBase):
         WsH2Handshaker will add attributes such as ws_resource during handshake.
         """
 
-        super(WsH2Handshaker, self).__init__(request, dispatcher)
+        super().__init__(request, dispatcher)
 
     def _transform_header(self, header):
         return header.lower()

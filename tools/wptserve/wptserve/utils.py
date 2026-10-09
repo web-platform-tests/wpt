@@ -1,10 +1,13 @@
 import socket
-
+from typing import AnyStr, Dict, List, TypeVar
 
 from .logger import get_logger
 
+KT = TypeVar('KT')
+VT = TypeVar('VT')
 
-def isomorphic_decode(s):
+
+def isomorphic_decode(s: AnyStr) -> str:
     """Decodes a binary string into a text string using iso-8859-1.
 
     Returns `str`. The function is a no-op if the argument already has a text
@@ -24,7 +27,7 @@ def isomorphic_decode(s):
     raise TypeError("Unexpected value (expecting string-like): %r" % s)
 
 
-def isomorphic_encode(s):
+def isomorphic_encode(s: AnyStr) -> bytes:
     """Encodes a text-type string into binary data using iso-8859-1.
 
     Returns `bytes`. The function is a no-op if the argument already has a
@@ -39,7 +42,7 @@ def isomorphic_encode(s):
     raise TypeError("Unexpected value (expecting string-like): %r" % s)
 
 
-def invert_dict(dict):
+def invert_dict(dict: Dict[KT, List[VT]]) -> Dict[VT, KT]:
     rv = {}
     for key, values in dict.items():
         for value in values:
@@ -50,12 +53,12 @@ def invert_dict(dict):
 
 
 class HTTPException(Exception):
-    def __init__(self, code, message=""):
+    def __init__(self, code: int, message: str = ""):
         self.code = code
         self.message = message
 
 
-def _open_socket(host, port):
+def _open_socket(host: str, port: int) -> socket.socket:
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     if port != 0:
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -64,11 +67,12 @@ def _open_socket(host, port):
     return sock
 
 
-def is_bad_port(port):
+def is_bad_port(port: int) -> bool:
     """
     Bad port as per https://fetch.spec.whatwg.org/#port-blocking
     """
     return port in [
+        0,
         1,     # tcpmux
         7,     # echo
         9,     # discard
@@ -138,6 +142,7 @@ def is_bad_port(port):
         2049,  # nfs
         3659,  # apple-sasl
         4045,  # lockd
+        4190,  # sieve
         5060,  # sip
         5061,  # sips
         6000,  # x11
@@ -147,12 +152,13 @@ def is_bad_port(port):
         6667,  # irc (default)
         6668,  # irc (alternate)
         6669,  # irc (alternate)
+        6679,  # osaut
         6697,  # irc+tls
         10080,  # amanda
     ]
 
 
-def get_port(host=''):
+def get_port(host: str = '') -> int:
     host = host or '127.0.0.1'
     port = 0
     while True:
@@ -163,8 +169,8 @@ def get_port(host=''):
             break
     return port
 
-def http2_compatible():
-    # The HTTP/2.0 server requires OpenSSL 1.0.2+.
+def http2_compatible() -> bool:
+    # The HTTP/2 server requires OpenSSL 1.0.2+.
     #
     # For systems using other SSL libraries (e.g. LibreSSL), we assume they
     # have the necessary support.
@@ -172,9 +178,30 @@ def http2_compatible():
     if not ssl.OPENSSL_VERSION.startswith("OpenSSL"):
         logger = get_logger()
         logger.warning(
-            'Skipping HTTP/2.0 compatibility check as system is not using '
+            'Skipping HTTP/2 compatibility check as system is not using '
             'OpenSSL (found: %s)' % ssl.OPENSSL_VERSION)
         return True
 
+    # Note that OpenSSL's versioning scheme differs between 1.1.1 and
+    # earlier and 3.0.0. ssl.OPENSSL_VERSION_INFO returns a
+    #     (major, minor, 0, patch, 0)
+    # tuple with OpenSSL 3.0.0 and later, and a
+    #     (major, minor, fix, patch, status)
+    # tuple for older releases.
+    # Semantically, "patch" in 3.0.0+ is similar to "fix" in previous versions.
+    #
+    # What we do in the check below is allow OpenSSL 3.x.y+, 1.1.x+ and 1.0.2+.
     ssl_v = ssl.OPENSSL_VERSION_INFO
-    return ssl_v[0] == 1 and (ssl_v[1] == 1 or (ssl_v[1] == 0 and ssl_v[2] >= 2))
+    return (ssl_v[0] > 1 or
+            (ssl_v[0] == 1 and
+             (ssl_v[1] == 1 or
+              (ssl_v[1] == 0 and ssl_v[2] >= 2))))
+
+
+def get_error_cause(exc: BaseException) -> BaseException:
+    """Get the parent cause/context from an exception"""
+    if exc.__cause__ is not None:
+        return exc.__cause__
+    if exc.__context__ is not None:
+        return exc.__context__
+    return exc

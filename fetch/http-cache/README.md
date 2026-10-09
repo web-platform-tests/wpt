@@ -1,28 +1,29 @@
 ## HTTP Caching Tests
 
 These tests cover HTTP-specified behaviours for caches, primarily from
-[RFC7234](http://httpwg.org/specs/rfc7234.html), but as seen through the
+[RFC9111](https://www.rfc-editor.org/rfc/rfc9111.html), but as seen through the
 lens of Fetch.
 
 A few notes:
 
-* By its nature, caching is optional; some tests expecting a response to be
+* By its nature, [caching is entirely optional](
+  https://www.rfc-editor.org/rfc/rfc9111.html#section-2-2);
+  some tests expecting a response to be
   cached might fail because the client chose not to cache it, or chose to
   race the cache with a network request.
 
 * Likewise, some tests might fail because there is a separate document-level
-  cache that's ill-defined; see [this
+  cache that's not well defined; see [this
   issue](https://github.com/whatwg/fetch/issues/354).
 
-* [Partial content tests](partial.html) (a.k.a. Range requests) are not specified
+* [Partial content tests](partial.any.js) (a.k.a. Range requests) are not specified
   in Fetch; tests are included here for interest only.
 
 * Some browser caches will behave differently when reloading /
   shift-reloading, despite the `cache mode` staying the same.
 
-* At the moment, Edge doesn't appear to using HTTP caching in conjunction
-  with Fetch at all.
-
+* [cache-tests.fyi](https://cache-tests.fyi/) is another test suite of HTTP caching
+  which also caters to server/CDN implementations.
 
 ## Test Format
 
@@ -61,6 +62,7 @@ Possible members of a request object:
 - expected_response_headers - An array of `[header_name_string, header_value_string]` representing
                               headers to check the response for. See also response_headers.
 - expected_response_text - A string to check the response body against. If not present, `response_body` will be checked if present and non-null; otherwise the response body will be checked for the test uuid (unless the status code disallows a body). Set to `null` to disable all response body checking.
+- url_params - A string of url parameters that will be appended to the end of the url, separated by "&" and without leading "&".
 
 Some headers in `response_headers` are treated specially:
 
@@ -68,4 +70,3 @@ Some headers in `response_headers` are treated specially:
 * For URL-carrying headers, the value will be appended as a query parameter for `target`.
 
 See the source for exact details.
-

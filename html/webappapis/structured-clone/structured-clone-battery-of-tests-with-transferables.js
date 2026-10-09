@@ -19,7 +19,29 @@ structuredCloneBatteryOfTests.push({
   }
 });
 
-// TODO: ImageBitmap
+structuredCloneBatteryOfTests.push({
+  description: 'ImageBitmap',
+  async f(runner) {
+    const canvas = new OffscreenCanvas(10, 10);
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "red";
+    ctx.fillRect(0, 0, 10, 10);
+    const bitmap = await createImageBitmap(canvas);
+    const copy = await runner.structuredClone(bitmap, [bitmap]);
+    assert_equals(copy.width, 10);
+    assert_equals(copy.height, 10);
+  }
+});
+
+structuredCloneBatteryOfTests.push({
+  description: 'OffscreenCanvas',
+  async f(runner) {
+    const canvas = new OffscreenCanvas(10, 10);
+    const copy = await runner.structuredClone(canvas, [canvas]);
+    assert_equals(copy.width, 10);
+    assert_equals(copy.height, 10);
+  }
+});
 
 structuredCloneBatteryOfTests.push({
   description: 'A detached ArrayBuffer cannot be transferred',
@@ -95,5 +117,75 @@ structuredCloneBatteryOfTests.push({
     const original = new ReadableStreamSubclass();
     const transfer = await runner.structuredClone(original, [original]);
     assert_equals(Object.getPrototypeOf(transfer), ReadableStream.prototype);
+  }
+});
+
+structuredCloneBatteryOfTests.push({
+  description: 'Resizable ArrayBuffer is transferable',
+  async f(runner) {
+    const buffer = new ArrayBuffer(16, { maxByteLength: 1024 });
+    const copy = await runner.structuredClone(buffer, [buffer]);
+    assert_equals(buffer.byteLength, 0);
+    assert_equals(copy.byteLength, 16);
+    assert_equals(copy.maxByteLength, 1024);
+    assert_true(copy.resizable);
+  }
+});
+
+structuredCloneBatteryOfTests.push({
+  description: 'Length-tracking TypedArray is transferable',
+  async f(runner) {
+    const ab = new ArrayBuffer(16, { maxByteLength: 1024 });
+    const ta = new Uint8Array(ab);
+    const copy = await runner.structuredClone(ta, [ab]);
+    assert_equals(ab.byteLength, 0);
+    assert_equals(copy.buffer.byteLength, 16);
+    assert_equals(copy.buffer.maxByteLength, 1024);
+    assert_true(copy.buffer.resizable);
+    copy.buffer.resize(32);
+    assert_equals(copy.byteLength, 32);
+  }
+});
+
+structuredCloneBatteryOfTests.push({
+  description: 'Length-tracking DataView is transferable',
+  async f(runner) {
+    const ab = new ArrayBuffer(16, { maxByteLength: 1024 });
+    const dv = new DataView(ab);
+    const copy = await runner.structuredClone(dv, [ab]);
+    assert_equals(ab.byteLength, 0);
+    assert_equals(copy.buffer.byteLength, 16);
+    assert_equals(copy.buffer.maxByteLength, 1024);
+    assert_true(copy.buffer.resizable);
+    copy.buffer.resize(32);
+    assert_equals(copy.byteLength, 32);
+  }
+});
+
+structuredCloneBatteryOfTests.push({
+  description: 'Transferring OOB TypedArray throws',
+  async f(runner, t) {
+    const ab = new ArrayBuffer(16, { maxByteLength: 1024 });
+    const ta = new Uint8Array(ab, 8);
+    ab.resize(0);
+    await promise_rejects_dom(
+      t,
+      "DataCloneError",
+      runner.structuredClone(ta, [ab])
+    );
+  }
+});
+
+structuredCloneBatteryOfTests.push({
+  description: 'Transferring OOB DataView throws',
+  async f(runner, t) {
+    const ab = new ArrayBuffer(16, { maxByteLength: 1024 });
+    const dv = new DataView(ab, 8);
+    ab.resize(0);
+    await promise_rejects_dom(
+      t,
+      "DataCloneError",
+      runner.structuredClone(dv, [ab])
+    );
   }
 });

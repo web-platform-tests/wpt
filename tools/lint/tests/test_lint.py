@@ -1,7 +1,11 @@
+# mypy: allow-untyped-defs
+
 import io
 import os
 import sys
 from unittest import mock
+
+import pytest
 
 from ...localpaths import repo_root
 from .. import lint as lint_mod
@@ -275,126 +279,6 @@ def test_lint_passing_and_failing(caplog):
     assert "okay.html" not in caplog.text
 
 
-def test_check_css_globally_unique_identical_test(caplog):
-    with _mock_lint("check_path") as mocked_check_path:
-        with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["css/css-unique/match/a.html", "css/css-unique/a.html"], "normal")
-            assert rv == 0
-            assert mocked_check_path.call_count == 2
-            assert mocked_check_file_contents.call_count == 2
-    assert caplog.text == ""
-
-
-def test_check_css_globally_unique_different_test(caplog):
-    with _mock_lint("check_path") as mocked_check_path:
-        with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["css/css-unique/not-match/a.html", "css/css-unique/a.html"], "normal")
-            assert rv == 2
-            assert mocked_check_path.call_count == 2
-            assert mocked_check_file_contents.call_count == 2
-    assert "CSS-COLLIDING-TEST-NAME" in caplog.text
-
-
-def test_check_css_globally_unique_different_spec_test(caplog):
-    with _mock_lint("check_path") as mocked_check_path:
-        with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["css/css-unique/selectors/a.html", "css/css-unique/a.html"], "normal")
-            assert rv == 0
-            assert mocked_check_path.call_count == 2
-            assert mocked_check_file_contents.call_count == 2
-    assert caplog.text == ""
-
-
-def test_check_css_globally_unique_support_ignored(caplog):
-    with _mock_lint("check_path") as mocked_check_path:
-        with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["css/css-unique/support/a.html", "css/css-unique/support/tools/a.html"], "normal")
-            assert rv == 0
-            assert mocked_check_path.call_count == 2
-            assert mocked_check_file_contents.call_count == 2
-    assert caplog.text == ""
-
-
-def test_check_css_globally_unique_support_identical(caplog):
-    with _mock_lint("check_path") as mocked_check_path:
-        with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["css/css-unique/support/a.html", "css/css-unique/match/support/a.html"], "normal")
-            assert rv == 0
-            assert mocked_check_path.call_count == 2
-            assert mocked_check_file_contents.call_count == 2
-    assert caplog.text == ""
-
-
-def test_check_css_globally_unique_support_different(caplog):
-    with _mock_lint("check_path") as mocked_check_path:
-        with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["css/css-unique/not-match/support/a.html", "css/css-unique/support/a.html"], "normal")
-            assert rv == 2
-            assert mocked_check_path.call_count == 2
-            assert mocked_check_file_contents.call_count == 2
-    assert "CSS-COLLIDING-SUPPORT-NAME" in caplog.text
-
-
-def test_check_css_globally_unique_test_support(caplog):
-    with _mock_lint("check_path") as mocked_check_path:
-        with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["css/css-unique/support/a.html", "css/css-unique/a.html"], "normal")
-            assert rv == 0
-            assert mocked_check_path.call_count == 2
-            assert mocked_check_file_contents.call_count == 2
-    assert caplog.text == ""
-
-
-def test_check_css_globally_unique_ref_identical(caplog):
-    with _mock_lint("check_path") as mocked_check_path:
-        with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["css/css-unique/a-ref.html", "css/css-unique/match/a-ref.html"], "normal")
-            assert rv == 0
-            assert mocked_check_path.call_count == 2
-            assert mocked_check_file_contents.call_count == 2
-    assert caplog.text == ""
-
-
-def test_check_css_globally_unique_ref_different(caplog):
-    with _mock_lint("check_path") as mocked_check_path:
-        with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["css/css-unique/not-match/a-ref.html", "css/css-unique/a-ref.html"], "normal")
-            assert rv == 2
-            assert mocked_check_path.call_count == 2
-            assert mocked_check_file_contents.call_count == 2
-    assert "CSS-COLLIDING-REF-NAME" in caplog.text
-
-
-def test_check_css_globally_unique_test_ref(caplog):
-    with _mock_lint("check_path") as mocked_check_path:
-        with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["css/css-unique/a-ref.html", "css/css-unique/a.html"], "normal")
-            assert rv == 0
-            assert mocked_check_path.call_count == 2
-            assert mocked_check_file_contents.call_count == 2
-    assert caplog.text == ""
-
-
-def test_check_css_globally_unique_ignored(caplog):
-    with _mock_lint("check_path") as mocked_check_path:
-        with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["css/css-unique/tools/a.html", "css/css-unique/not-match/tools/a.html"], "normal")
-            assert rv == 0
-            assert mocked_check_path.call_count == 2
-            assert mocked_check_file_contents.call_count == 2
-    assert caplog.text == ""
-
-
-def test_check_css_globally_unique_ignored_dir(caplog):
-    with _mock_lint("check_path") as mocked_check_path:
-        with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["css/css-unique/support/a.html"], "normal")
-            assert rv == 0
-            assert mocked_check_path.call_count == 1
-            assert mocked_check_file_contents.call_count == 1
-    assert caplog.text == ""
-
-
 def test_check_unique_testharness_basename_same_basename(caplog):
     # Precondition: There are testharness files with conflicting basename paths.
     assert os.path.exists(os.path.join(_dummy_repo, 'tests', 'dir1', 'a.html'))
@@ -556,3 +440,69 @@ def test_main_all():
                 m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal", None, None, 0)
     finally:
         sys.argv = orig_argv
+
+
+def test_main_returns_zero_on_clean():
+    orig_argv = sys.argv
+    try:
+        sys.argv = ['./lint']
+        with _mock_lint('lint', return_value=0):
+            with _mock_lint('changed_files', return_value=['foo', 'bar']):
+                rv = lint_mod.main(**vars(create_parser().parse_args()))
+                assert rv == 0
+    finally:
+        sys.argv = orig_argv
+
+
+def test_main_returns_one_on_errors():
+    orig_argv = sys.argv
+    try:
+        sys.argv = ['./lint']
+        with _mock_lint('lint', return_value=5):
+            with _mock_lint('changed_files', return_value=['foo', 'bar']):
+                rv = lint_mod.main(**vars(create_parser().parse_args()))
+                assert rv == 1
+    finally:
+        sys.argv = orig_argv
+
+
+def test_main_json_markdown_exits_2():
+    orig_argv = sys.argv
+    try:
+        sys.argv = ['./lint', '--json', '--markdown']
+        with pytest.raises(SystemExit) as excinfo:
+            lint_mod.main(**vars(create_parser().parse_args()))
+        assert excinfo.value.code == 2
+    finally:
+        sys.argv = orig_argv
+
+
+def test_run_main_no_errors_exits_0():
+    with mock.patch.object(lint_mod, 'main', return_value=0):
+        with pytest.raises(SystemExit) as exc_info:
+            lint_mod._run_main(['--all'])
+    assert exc_info.value.code == 0
+
+
+def test_run_main_errors_exits_1():
+    with mock.patch.object(lint_mod, 'main', return_value=1):
+        with pytest.raises(SystemExit) as exc_info:
+            lint_mod._run_main(['--all'])
+    assert exc_info.value.code == 1
+
+
+def test_run_main_argument_error_exits_2():
+    with pytest.raises(SystemExit) as exc_info:
+        lint_mod._run_main(['--json', '--markdown'])
+    assert exc_info.value.code == 2
+
+
+def test_run_main_exception_exits_ex_software(capsys):
+    with mock.patch.object(lint_mod, 'main', side_effect=RuntimeError('simulated crash')):
+        with pytest.raises(SystemExit) as exc_info:
+            lint_mod._run_main(['--all'])
+    assert exc_info.value.code == getattr(os, "EX_SOFTWARE", 70)
+
+    captured = capsys.readouterr()
+    assert 'Traceback (most recent call last):' in captured.err
+    assert 'RuntimeError: simulated crash' in captured.err

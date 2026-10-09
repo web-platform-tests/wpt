@@ -66,7 +66,7 @@ for(const scheme of ["https", "wpt++"]) {
       ["trailing", "test" + (scheme === "https" ? cpString : encodeURIComponent(cpString)), "test" + String.fromCodePoint(i)]
     ]) {
       test(() => {
-        const expected = i === 0x00 ? "host" : stripped ? "test" : expectedPart;
+        const expected = i === 0x00 || (scheme === "https" && i === 0x1F) ? "host" : stripped ? "test" : expectedPart;
         const url = urlRecord(scheme);
         url.host = input;
         assert_equals(url.host, expected + ":8000", "property");
@@ -74,7 +74,7 @@ for(const scheme of ["https", "wpt++"]) {
       }, `Setting host with ${type} ${cpReference} (${scheme}:)`);
 
       test(() => {
-        const expected = i === 0x00 ? "host" : stripped ? "test" : expectedPart;
+        const expected = i === 0x00 || (scheme === "https" && i === 0x1F) ? "host" : stripped ? "test" : expectedPart;
         const url = urlRecord(scheme);
         url.hostname = input;
         assert_equals(url.hostname, expected, "property");
@@ -119,6 +119,27 @@ for(const scheme of ["https", "wpt++"]) {
           assert_equals(url[property], separator + expected, "property");
           assert_equals(url.href, urlString({ scheme, [property]: expected }), "href");
         }, `Setting ${property} with ${type} ${cpReference} (${scheme}:)`);
+      }
+    }
+
+    // searchParams has to reflect the resulting query, also when it was obtained before setting
+    // search
+    for (const [type, input] of [
+      ["leading", String.fromCodePoint(i) + "test"],
+      ["middle", "te" + String.fromCodePoint(i) + "st"],
+      ["trailing", "test" + String.fromCodePoint(i)]
+    ]) {
+      for (const searchParamsFirst of [false, true]) {
+        test(() => {
+          const expected = stripped ? "test" : input;
+          const url = urlRecord(scheme);
+          if (searchParamsFirst) {
+            url.searchParams;
+          }
+          url.search = input;
+          assert_array_equals([...url.searchParams.keys()], [expected], "keys");
+          assert_array_equals([...url.searchParams.values()], [""], "values");
+        }, `Setting search with ${type} ${cpReference} updates ${searchParamsFirst ? "previously obtained " : ""}searchParams (${scheme}:)`);
       }
     }
   }

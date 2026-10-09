@@ -1,52 +1,24 @@
+# mypy: allow-untyped-defs
+
 import re
 from threading import Timer
+import functools
 
 from .event_dispatcher import TEST_COMPLETED_EVENT
 
 from ..data.exceptions.not_found_exception import NotFoundException
 from ..data.session import COMPLETED, ABORTED
 
-# Helper class used to adapt a specific compare function to a Python 3
-# key function.
-class CmpWrapper:
-    def __init__(self, test_manager, compare_function, obj):
-        self.obj = obj
-        self.test_manager = test_manager
-        self.compare_function = compare_function
 
-    def __lt__(self, other):
-        return self.compare_function(self.test_manager, self.obj, other.obj) < 0
-
-    def __gt__(self, other):
-        return self.compare_function(self.test_manager, self.obj, other.obj) > 0
-
-    def __eq__(self, other):
-        return self.compare_function(self.test_manager, self.obj, other.obj) == 0
-
-    def __le__(self, other):
-        return self.compare_function(self.test_manager, self.obj, other.obj) <= 0
-
-    def __ge__(self, other):
-        return self.compare_function(self.test_manager, self.obj, other.obj) >= 0
-
-    def __ne__(self, other):
-        return self.compare_function(self.test_manager, self.obj, other.obj) != 0
-
-
-class TestsManager(object):
-    def initialize(
-        self,
-        test_loader,
-        sessions_manager,
-        results_manager,
-        event_dispatcher
-    ):
+class TestsManager:
+    def initialize(self, test_loader, sessions_manager, results_manager, event_dispatcher):
         self._test_loader = test_loader
         self._sessions_manager = sessions_manager
         self._results_manager = results_manager
         self._event_dispatcher = event_dispatcher
 
         self._timeouts = []
+        self._logs = {}
 
     def next_test(self, session):
         if session.status == COMPLETED or session.status == ABORTED:
@@ -77,10 +49,7 @@ class TestsManager(object):
             self._on_test_timeout(token, test)
 
         timer = Timer(test_timeout, handler, [self, token, test])
-        self._timeouts.append({
-            "test": test,
-            "timeout": timer
-        })
+        self._timeouts.append({"test": test, "timeout": timer})
 
         session.pending_tests = pending_tests
         session.running_tests = running_tests
@@ -115,6 +84,8 @@ class TestsManager(object):
                 if potential_result["test"] == test:
                     result = potential_result
                     break
+            if result is None:
+                break
 
             if result["status"] == "ERROR":
                 if len(tests["fail"]) < count:
@@ -132,8 +103,7 @@ class TestsManager(object):
                 tests["pass"].append(result["test"])
             if not passes and len(tests["fail"]) < count:
                 tests["fail"].append(result["test"])
-            if len(tests["pass"]) == count and len(tests["fail"]) == count \
-               and len(tests["timeout"]) == count:
+            if len(tests["pass"]) == count and len(tests["fail"]) == count and len(tests["timeout"]) == count:
                 return tests
         return tests
 
@@ -166,7 +136,8 @@ class TestsManager(object):
                 return -1
             return 1
 
-        return sorted(sorted_tests, key=lambda x:CmpWrapper(self, compare, x))
+        sorted_tests.sort(key=functools.cmp_to_key(lambda test_a, test_b: compare(self, test_a, test_b)))
+        return sorted_tests
 
     def _get_next_test_from_list(self, tests):
         test = None
@@ -240,10 +211,8 @@ class TestsManager(object):
         remaining_tests_by_api = {}
         current_api = "___"
         for test in remaining_tests:
-            if not test.startswith("/" + current_api) and \
-               not test.startswith(current_api):
-                current_api = next((p for p in test.split("/") if p != ""),
-                                   None)
+            if not test.startswith("/" + current_api) and not test.startswith(current_api):
+                current_api = next((p for p in test.split("/") if p != ""), None)
                 if current_api not in remaining_tests_by_api:
                     remaining_tests_by_api[current_api] = []
             remaining_tests_by_api[current_api].append(test)
@@ -299,16 +268,15 @@ class TestsManager(object):
         return test_timeout
 
     def _on_test_timeout(self, token, test):
+        logs = []
+        if token in self._logs:
+            logs = self._logs[token]
         data = {
             "test": test,
             "status": "TIMEOUT",
             "message": None,
-            "subtests": [
-                {
-                    "status": "TIMEOUT",
-                    "xstatus": "SERVERTIMEOUT"
-                }
-            ]
+            "subtests": [{"status": "TIMEOUT", "xstatus": "SERVERTIMEOUT"}],
+            "logs": logs,
         }
 
         self._results_manager.create_result(token, data)
@@ -326,23 +294,11 @@ class TestsManager(object):
         timeout["timeout"].cancel()
         self._timeouts.remove(timeout)
 
-        self.update_tests(
-            running_tests=running_tests,
-            session=session
-        )
+        self.update_tests(running_tests=running_tests, session=session)
 
-        self._event_dispatcher.dispatch_event(
-            token=session.token,
-            event_type=TEST_COMPLETED_EVENT,
-            data=test
-        )
+        self._event_dispatcher.dispatch_event(dispatcher_token=session.token, event_type=TEST_COMPLETED_EVENT, data=test)
 
-    def update_tests(
-        self,
-        pending_tests=None,
-        running_tests=None,
-        session=None
-    ):
+    def update_tests(self, pending_tests=None, running_tests=None, session=None):
         if pending_tests is not None:
             session.pending_tests = pending_tests
 
@@ -377,10 +333,10 @@ class TestsManager(object):
 
     def load_tests(self, session):
         pending_tests = self._test_loader.get_tests(
-            session.types,
+            session.test_types,
             include_list=session.tests["include"],
             exclude_list=session.tests["exclude"],
-            reference_tokens=session.reference_tokens
+            reference_tokens=session.reference_tokens,
         )
 
         last_completed_test = session.last_completed_test
@@ -388,3 +344,13 @@ class TestsManager(object):
             pending_tests = self.skip_to(pending_tests, last_completed_test)
 
         return pending_tests
+
+    def add_logs(self, token, logs):
+        if token not in self._logs:
+            self._logs[token] = []
+        self._logs[token] = self._logs[token] + logs
+
+    def get_logs(self, token):
+        if token not in self._logs:
+            return []
+        return self._logs[token]

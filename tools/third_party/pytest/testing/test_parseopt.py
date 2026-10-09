@@ -1,24 +1,27 @@
+# mypy: allow-untyped-defs
 import argparse
+import locale
 import os
+from pathlib import Path
 import shlex
 import subprocess
 import sys
 
-import py
-
-import pytest
 from _pytest.config import argparsing as parseopt
 from _pytest.config.exceptions import UsageError
+from _pytest.monkeypatch import MonkeyPatch
+from _pytest.pytester import Pytester
+import pytest
 
 
 @pytest.fixture
 def parser() -> parseopt.Parser:
-    return parseopt.Parser()
+    return parseopt.Parser(_ispytest=True)
 
 
 class TestParser:
     def test_no_help_by_default(self) -> None:
-        parser = parseopt.Parser(usage="xyz")
+        parser = parseopt.Parser(usage="xyz", _ispytest=True)
         pytest.raises(UsageError, lambda: parser.parse(["-h"]))
 
     def test_custom_prog(self, parser: parseopt.Parser) -> None:
@@ -52,9 +55,6 @@ class TestParser:
         assert argument.type is str
         argument = parseopt.Argument("-t", dest="abc", type=float)
         assert argument.type is float
-        with pytest.warns(DeprecationWarning):
-            with pytest.raises(KeyError):
-                argument = parseopt.Argument("-t", dest="abc", type="choice")
         argument = parseopt.Argument(
             "-t", dest="abc", type=str, choices=["red", "blue"]
         )
@@ -89,13 +89,13 @@ class TestParser:
         assert groups_names == list("132")
 
     def test_group_addoption(self) -> None:
-        group = parseopt.OptionGroup("hello")
+        group = parseopt.OptionGroup("hello", _ispytest=True)
         group.addoption("--option1", action="store_true")
         assert len(group.options) == 1
         assert isinstance(group.options[0], parseopt.Argument)
 
     def test_group_addoption_conflict(self) -> None:
-        group = parseopt.OptionGroup("hello again")
+        group = parseopt.OptionGroup("hello again", _ispytest=True)
         group.addoption("--option1", "--option-1", action="store_true")
         with pytest.raises(ValueError) as err:
             group.addoption("--option1", "--option-one", action="store_true")
@@ -122,11 +122,22 @@ class TestParser:
         assert not getattr(args, parseopt.FILE_OR_DIR)
 
     def test_parse2(self, parser: parseopt.Parser) -> None:
-        args = parser.parse([py.path.local()])
-        assert getattr(args, parseopt.FILE_OR_DIR)[0] == py.path.local()
+        args = parser.parse([Path(".")])
+        assert getattr(args, parseopt.FILE_OR_DIR)[0] == "."
+
+    # Warning ignore because of:
+    # https://github.com/python/cpython/issues/85308
+    # Can be removed once Python<3.12 support is dropped.
+    @pytest.mark.filterwarnings("ignore:'encoding' argument not specified")
+    def test_parse_from_file(self, parser: parseopt.Parser, tmp_path: Path) -> None:
+        tests = [".", "some.py::Test::test_method[param0]", "other/test_file.py"]
+        args_file = tmp_path / "tests.txt"
+        args_file.write_text("\n".join(tests), encoding="utf-8")
+        args = parser.parse([f"@{args_file.absolute()}"])
+        assert getattr(args, parseopt.FILE_OR_DIR) == tests
 
     def test_parse_known_args(self, parser: parseopt.Parser) -> None:
-        parser.parse_known_args([py.path.local()])
+        parser.parse_known_args([Path(".")])
         parser.addoption("--hello", action="store_true")
         ns = parser.parse_known_args(["x", "--y", "--hello", "this"])
         assert ns.hello
@@ -187,7 +198,7 @@ class TestParser:
             elif option.type is str:
                 option.default = "world"
 
-        parser = parseopt.Parser(processopt=defaultget)
+        parser = parseopt.Parser(processopt=defaultget, _ispytest=True)
         parser.addoption("--this", dest="this", type=int, action="store")
         parser.addoption("--hello", dest="hello", type=str, action="store")
         parser.addoption("--no", dest="no", action="store_true")
@@ -287,14 +298,20 @@ class TestParser:
         assert "--preferences=value1 value2 value3" in help
 
 
-def test_argcomplete(testdir, monkeypatch) -> None:
+def test_argcomplete(pytester: Pytester, monkeypatch: MonkeyPatch) -> None:
+    if sys.version_info >= (3, 11):
+        # New in Python 3.11, ignores utf-8 mode
+        encoding = locale.getencoding()
+    else:
+        encoding = locale.getpreferredencoding(False)
     try:
         bash_version = subprocess.run(
             ["bash", "--version"],
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
             check=True,
-            universal_newlines=True,
+            text=True,
+            encoding=encoding,
         ).stdout
     except (OSError, subprocess.CalledProcessError):
         pytest.skip("bash is not available")
@@ -302,18 +319,16 @@ def test_argcomplete(testdir, monkeypatch) -> None:
         # See #7518.
         pytest.skip("not a real bash")
 
-    script = str(testdir.tmpdir.join("test_argcomplete"))
+    script = str(pytester.path.joinpath("test_argcomplete"))
 
-    with open(str(script), "w") as fp:
+    with open(str(script), "w", encoding="utf-8") as fp:
         # redirect output from argcomplete to stdin and stderr is not trivial
         # http://stackoverflow.com/q/12589419/1307905
         # so we use bash
         fp.write(
-            'COMP_WORDBREAKS="$COMP_WORDBREAKS" {} -m pytest 8>&1 9>&2'.format(
-                shlex.quote(sys.executable)
-            )
+            f'COMP_WORDBREAKS="$COMP_WORDBREAKS" {shlex.quote(sys.executable)} -m pytest 8>&1 9>&2'
         )
-    # alternative would be extended Testdir.{run(),_run(),popen()} to be able
+    # alternative would be extended Pytester.{run(),_run(),popen()} to be able
     # to handle a keyword argument env that replaces os.environ in popen or
     # extends the copy, advantage: could not forget to restore
     monkeypatch.setenv("_ARGCOMPLETE", "1")
@@ -323,15 +338,13 @@ def test_argcomplete(testdir, monkeypatch) -> None:
     arg = "--fu"
     monkeypatch.setenv("COMP_LINE", "pytest " + arg)
     monkeypatch.setenv("COMP_POINT", str(len("pytest " + arg)))
-    result = testdir.run("bash", str(script), arg)
+    result = pytester.run("bash", str(script), arg)
     if result.ret == 255:
         # argcomplete not found
         pytest.skip("argcomplete not available")
     elif not result.stdout.str():
         pytest.skip(
-            "bash provided no output on stdout, argcomplete not available? (stderr={!r})".format(
-                result.stderr.str()
-            )
+            f"bash provided no output on stdout, argcomplete not available? (stderr={result.stderr.str()!r})"
         )
     else:
         result.stdout.fnmatch_lines(["--funcargs", "--fulltrace"])
@@ -339,5 +352,5 @@ def test_argcomplete(testdir, monkeypatch) -> None:
     arg = "test_argc"
     monkeypatch.setenv("COMP_LINE", "pytest " + arg)
     monkeypatch.setenv("COMP_POINT", str(len("pytest " + arg)))
-    result = testdir.run("bash", str(script), arg)
+    result = pytester.run("bash", str(script), arg)
     result.stdout.fnmatch_lines(["test_argcomplete", "test_argcomplete.d/"])

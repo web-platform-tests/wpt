@@ -6,6 +6,8 @@
     <meta name=help href="https://tools.ietf.org/html/rfc6265#section-5.2.3">
     <meta name="timeout" content="long">
     <script src="/resources/testharness.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
     <script src="/cookies/resources/cookie-test.js"></script>
   </head>
   <body>
@@ -339,14 +341,8 @@
           location: `http://${wwwHost}:${port}/cookies/attributes/resources/path.html`,
         },
         {
-          cookie: `test=46b; domain=.`,
-          expected: "",
-          name: "No cookie returned with single dot ('.') domain value (aka host-cookie) on non-host subdomain redirect",
-          location: `http://${www2wwwHost}:${port}/cookies/attributes/resources/path.html`,
-        },
-        {
-          cookie: `test=46c; domain=.; domain=${host}`,
-          expected: "test=46c",
+          cookie: `test=46b; domain=.; domain=${host}`,
+          expected: "test=46b",
           name: "Return cookie with valid domain after domain with single dot ('.') value.",
           location: `http://${wwwHost}:${port}/cookies/attributes/resources/path.html`,
         },

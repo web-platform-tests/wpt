@@ -1,3 +1,6 @@
+// META: variant=?exclude=(RTCSessionDescription|RTCPeerConnectionIceErrorEvent|RTCRtpReceiver|RTCDtlsTransport|RTCIceTransport|RTCDTMFToneChangeEvent|RTCError|RTCErrorEvent)
+// META: variant=?include=(RTCSessionDescription|RTCPeerConnectionIceErrorEvent|RTCRtpReceiver|RTCDtlsTransport|RTCIceTransport|RTCDTMFToneChangeEvent|RTCError|RTCErrorEvent)
+// META: script=/common/subset-tests-by-key.js
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 // META: script=./RTCPeerConnection-helper.js
@@ -25,6 +28,16 @@ function initTrackEvent() {
   });
 }
 
+// Helper function to create an RTCErrorEvent object
+function initRTCErrorEvent() {
+  // errorDetail is required
+  const errorInit = { errorDetail: 'data-channel-failure' };
+  const error = new RTCError(errorInit);
+  // error is required
+  const errorEventInit = { error };
+  return new RTCErrorEvent('whoops', errorEventInit);
+}
+
 // List of async test driver functions
 const asyncInitTasks = [
   asyncInitCertificate,
@@ -47,32 +60,37 @@ function asyncInitCertificate() {
 // Asynchronously generate instances of
 // RTCSctpTransport, RTCDtlsTransport,
 // and RTCIceTransport
-function asyncInitTransports() {
-  const pc = new RTCPeerConnection();
-  pc.createDataChannel('test');
+async function asyncInitTransports() {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  pc1.createDataChannel('test');
+  exchangeIceCandidates(pc1, pc2);
+  await exchangeOfferAnswer(pc1, pc2);
+  const sctpTransport = pc1.sctp;
+  assert_true(sctpTransport instanceof RTCSctpTransport,
+     'Expect pc1.sctp to be instance of RTCSctpTransport');
+  idlTestObjects.sctpTransport = sctpTransport;
 
-  // setting answer description initializes pc.sctp
-  return pc.createOffer()
-  .then(offer =>
-    pc.setLocalDescription(offer)
-    .then(() => generateAnswer(offer)))
-  .then(answer => pc.setRemoteDescription(answer))
-  .then(() => {
-    const sctpTransport = pc.sctp;
-    assert_true(sctpTransport instanceof RTCSctpTransport,
-      'Expect pc.sctp to be instance of RTCSctpTransport');
-    idlTestObjects.sctpTransport = sctpTransport;
+  const dtlsTransport = sctpTransport.transport;
+  assert_true(dtlsTransport instanceof RTCDtlsTransport,
+     'Expect dtlsTransport.transport to be instance of RTCDtlsTransport');
+  idlTestObjects.dtlsTransport = dtlsTransport;
 
-    const dtlsTransport = sctpTransport.transport;
-    assert_true(dtlsTransport instanceof RTCDtlsTransport,
-      'Expect sctpTransport.transport to be instance of RTCDtlsTransport');
-    idlTestObjects.dtlsTransport = dtlsTransport;
+  const iceTransport = dtlsTransport.iceTransport;
+  assert_true(iceTransport instanceof RTCIceTransport,
+    'Expect iceTransport.transport to be instance of RTCIceTransport');
+  idlTestObjects.iceTransport = iceTransport;
+  await waitForIceStateChange(pc1, ['connected']);
 
-    const iceTransport = dtlsTransport.iceTransport;
-    assert_true(iceTransport instanceof RTCIceTransport,
-      'Expect sctpTransport.transport to be instance of RTCDtlsTransport');
-    idlTestObjects.iceTransport = iceTransport;
-  });
+  assert_not_equals(iceTransport.state, "new", 'Expect iceTransport.state to be not new');
+  assert_not_equals(iceTransport.state, "closed", 'Expect iceTransport.state to be not closed');
+
+  const iceCandidatePair = iceTransport.getSelectedCandidatePair();
+
+  assert_not_equals(iceCandidatePair, null, 'Expect iceTransport selected pair to be not null');
+  assert_true(iceCandidatePair instanceof RTCIceCandidatePair,
+    'Expect iceTransport.getSelectedCandidatePair() to be instance of RTCIceTransport');
+  idlTestObjects.iceCandidatePair = iceCandidatePair;
 }
 
 // Asynchoronously generate MediaStreamTrack from getUserMedia
@@ -103,7 +121,7 @@ function asyncInit() {
 
 idl_test(
   ['webrtc'],
-  ['webidl', 'mediacapture-streams', 'dom', 'html'],
+  ['webidl', 'mediacapture-streams', 'hr-time', 'dom', 'html', 'websockets'],
   async idlArray => {
     idlArray.add_objects({
       RTCPeerConnection: [`new RTCPeerConnection()`],
@@ -118,7 +136,7 @@ idl_test(
         `new RTCPeerConnectionIceErrorEvent('ice-error', { port: 0, errorCode: 701 });`
       ],
       RTCTrackEvent: [`initTrackEvent()`],
-      RTCErrorEvent: [`new RTCErrorEvent('error')`],
+      RTCErrorEvent: [`initRTCErrorEvent()`],
       RTCDataChannelEvent: [
         `new RTCDataChannelEvent('channel', {
           channel: new RTCPeerConnection().createDataChannel('')
@@ -129,6 +147,7 @@ idl_test(
       RTCSctpTransport: ['idlTestObjects.sctpTransport'],
       RTCDtlsTransport: ['idlTestObjects.dtlsTransport'],
       RTCIceTransport: ['idlTestObjects.iceTransport'],
+      RTCIceCandidatePair: ['idlTestObjects.iceCandidatePair'],
       MediaStreamTrack: ['idlTestObjects.mediaStreamTrack'],
     });
     /*

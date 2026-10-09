@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="overflow: auto">
+<html lang="en" style="overflow: auto;">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,6 +10,7 @@
     <script src="lib/utils.js"></script>
     <script src="lib/wave-service.js"></script>
     <script src="lib/ui.js"></script>
+    <script src="lib/hbbtv.js"></script>
     <style>
       .site-logo {
         max-width: 300px;
@@ -38,12 +39,12 @@
           referenceSessions: [],
           lastCompletedTests: [],
           malfunctioningTests: [],
-          addLabelVisible: false
+          addLabelVisible: false,
         },
-        refreshData: toUpdate => {
-          WaveService.readResultsConfig(function(config) {
-                  resultUi.state.reportsEnabled = config.reportsEnabled;
-                  resultUi.renderApiResults();
+        refreshData: (toUpdate) => {
+          WaveService.readStatus(function (config) {
+            resultUi.state.reportsEnabled = config.reportsEnabled;
+            resultUi.renderApiResults();
           });
           switch (toUpdate) {
             case "test_completed":
@@ -88,16 +89,19 @@
           }
         },
         refreshSessionConfiguration(callback = () => {}) {
-          WaveService.readSession(token, configuration => {
+          WaveService.readSession(token, (configuration) => {
             resultUi.state.configuration = configuration;
             callback(configuration);
           });
         },
         refreshSessionStatus(callback = () => {}) {
-          WaveService.readSessionStatus(token, status => {
+          WaveService.readSessionStatus(token, (status) => {
             resultUi.state.status = status;
             if (status.status !== "completed" && status.status !== "aborted")
-              resultUi.connectWebSocket();
+              WaveService.addSessionEventListener(
+                token,
+                resultUi.handleSessionEvent
+              );
             callback(status);
           });
         },
@@ -106,38 +110,33 @@
           if (!configuration) return;
           const { referenceTokens } = configuration;
           if (!referenceTokens) return;
-          WaveService.readMultipleSessions(referenceTokens, configuration => {
+          WaveService.readMultipleSessions(referenceTokens, (configuration) => {
             resultUi.state.referenceSessions = configuration;
             resultUi.renderReferenceSessions();
             callback(configuration);
           });
         },
         refreshSessionResults(callback = () => {}) {
-          WaveService.readResultsCompact(token, results => {
+          WaveService.readResultsCompact(token, (results) => {
             resultUi.state.results = results;
             callback(results);
           });
         },
         refreshLastCompletedTests(callback = () => {}) {
           if (resultUi.state.configuration.isPublic) return;
-          WaveService.readLastCompletedTests(token, ["timeout"], tests => {
+          WaveService.readLastCompletedTests(token, ["timeout"], (tests) => {
             resultUi.state.lastCompletedTests = tests;
             callback();
           });
         },
         refreshMalfunctioningTests(callback = () => {}) {
-          WaveService.readMalfunctioningTests(token, tests => {
+          WaveService.readMalfunctioningTests(token, (tests) => {
             resultUi.state.malfunctioningTests = tests;
             callback();
           });
         },
-        connectWebSocket() {
-          if (!WaveService.isConnected()) {
-            WaveService.connectHttpPolling(token);
-            WaveService.onMessage(message => {
-              resultUi.refreshData(message.type);
-            });
-          }
+        handleSessionEvent(message) {
+          resultUi.refreshData(message.type);
         },
         openResultsOverview() {
           location.href = WEB_ROOT + "overview.html";
@@ -168,7 +167,7 @@
         openHtmlReport(api) {
           const { results } = resultUi.state;
           if (results[api].complete != results[api].total) return;
-          WaveService.readReportUri(token, api, function(uri) {
+          WaveService.readReportUri(token, api, function (uri) {
             window.open(uri, "_blank");
           });
         },
@@ -260,9 +259,9 @@
                           {
                             element: "img",
                             src: "res/wavelogo_2016.jpg",
-                            className: "site-logo"
-                          }
-                        ]
+                            className: "site-logo",
+                          },
+                        ],
                       },
                       {
                         className: "column is-narrow",
@@ -276,18 +275,18 @@
                               children: [
                                 {
                                   element: "i",
-                                  className: "fas fa-arrow-left"
-                                }
-                              ]
+                                  className: "fas fa-arrow-left",
+                                },
+                              ],
                             },
                             {
                               text: "Results Overview",
-                              element: "span"
-                            }
-                          ]
-                        }
-                      }
-                    ]
+                              element: "span",
+                            },
+                          ],
+                        },
+                      },
+                    ],
                   },
                   {
                     className: "container",
@@ -296,48 +295,48 @@
                       children: [
                         {
                           className: "column",
-                          children: { className: "title", text: "Result" }
+                          children: { className: "title", text: "Result" },
                         },
                         {
                           className: "column is-narrow",
-                          children: { id: "controls" }
-                        }
-                      ]
-                    }
-                  }
-                ]
+                          children: { id: "controls" },
+                        },
+                      ],
+                    },
+                  },
+                ],
               },
               {
                 id: "session-details",
                 className: "container",
-                style: "margin-bottom: 2em"
+                style: "margin-bottom: 2em",
               },
               {
                 id: "last-completed-tests",
                 className: "container",
-                style: "margin-bottom: 2em"
+                style: "margin-bottom: 2em",
               },
               {
                 id: "api-results",
                 className: "container",
-                style: "margin-bottom: 2em"
+                style: "margin-bottom: 2em",
               },
               {
                 id: "timeout-files",
                 className: "container",
-                style: "margin-bottom: 2em"
+                style: "margin-bottom: 2em",
               },
               {
                 id: "export",
                 className: "container",
-                style: "margin-bottom: 2em"
+                style: "margin-bottom: 2em",
               },
               {
                 id: "malfunctioning-tests",
                 className: "container",
-                style: "margin-bottom: 2em"
-              }
-            ]
+                style: "margin-bottom: 2em",
+              },
+            ],
           });
           const root = UI.getRoot();
           root.innerHTML = "";
@@ -353,7 +352,7 @@
           const { status } = state.status;
           const { isPublic } = state.configuration;
           const controlsView = UI.createElement({
-            className: "field is-grouped is-grouped-multiline"
+            className: "field is-grouped is-grouped-multiline",
           });
           if (
             status &&
@@ -364,7 +363,7 @@
             const pauseResumeButton = UI.createElement({
               id: "pause-resume-button",
               className: "control button is-dark is-outlined",
-              onclick: function() {
+              onclick: function () {
                 if (status === "running") {
                   WaveService.pauseSession(token, resultUi.refreshData);
                 } else {
@@ -379,15 +378,15 @@
                     {
                       element: "i",
                       className:
-                        status === "running" ? "fas fa-pause" : "fas fa-play"
-                    }
-                  ]
+                        status === "running" ? "fas fa-pause" : "fas fa-play",
+                    },
+                  ],
                 },
                 {
                   text: status === "running" ? "Pause" : "Resume",
-                  element: "span"
-                }
-              ]
+                  element: "span",
+                },
+              ],
             });
             controlsView.appendChild(pauseResumeButton);
           }
@@ -404,15 +403,15 @@
                   children: [
                     {
                       element: "i",
-                      className: "fas fa-square"
-                    }
-                  ]
+                      className: "fas fa-square",
+                    },
+                  ],
                 },
                 {
                   text: "Stop",
-                  element: "span"
-                }
-              ]
+                  element: "span",
+                },
+              ],
             });
             controlsView.appendChild(stopButton);
           }
@@ -428,15 +427,15 @@
                   children: [
                     {
                       element: "i",
-                      className: "fas fa-trash-alt"
-                    }
-                  ]
+                      className: "fas fa-trash-alt",
+                    },
+                  ],
                 },
                 {
                   text: "Delete",
-                  element: "span"
-                }
-              ]
+                  element: "span",
+                },
+              ],
             });
             controlsView.appendChild(deleteButton);
           }
@@ -447,7 +446,7 @@
             children: [
               {
                 className: "modal-background",
-                onclick: resultUi.hideDeleteModal
+                onclick: resultUi.hideDeleteModal,
               },
               {
                 className: "modal-card",
@@ -458,19 +457,19 @@
                       {
                         element: "p",
                         className: "modal-card-title",
-                        text: "Delete Session"
-                      }
-                    ]
+                        text: "Delete Session",
+                      },
+                    ],
                   },
                   {
                     className: "modal-card-body",
                     children: [
                       {
                         element: "p",
-                        text: "Are you sure you want to delete this session?"
+                        text: "Are you sure you want to delete this session?",
                       },
-                      { element: "p", text: "This action cannot be undone." }
-                    ]
+                      { element: "p", text: "This action cannot be undone." },
+                    ],
                   },
                   {
                     className: "modal-card-foot",
@@ -478,18 +477,18 @@
                       {
                         className: "button is-danger",
                         text: "Delete Session",
-                        onclick: resultUi.deleteSession
+                        onclick: resultUi.deleteSession,
                       },
                       {
                         className: "button",
                         text: "Cancel",
-                        onclick: resultUi.hideDeleteModal
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+                        onclick: resultUi.hideDeleteModal,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           });
           controlsView.appendChild(deleteModal);
 
@@ -502,16 +501,16 @@
           const { configuration, status, results } = state;
           if (!configuration || !status) return;
           const sessionDetailsView = UI.createElement({
-            style: "margin-bottom: 20px"
+            style: "margin-bottom: 20px",
           });
 
           const heading = UI.createElement({
             text: "Session details",
-            className: "title is-4"
+            className: "title is-4",
           });
           sessionDetailsView.appendChild(heading);
 
-          const getTagStyle = status => {
+          const getTagStyle = (status) => {
             switch (status) {
               case "completed":
                 return "is-success";
@@ -531,7 +530,7 @@
             if (!state.durationInterval)
               state.durationInterval = setInterval(() => {
                 UI.getElement("duration").innerHTML = utils.millisToTimeString(
-                  Date.now() - parseInt(status.dateStarted)
+                  Date.now() - status.dateStarted.getTime()
                 );
               }, 1000);
           }
@@ -544,7 +543,7 @@
             children: [
               {
                 className: "field-label",
-                children: { className: "label", text: "Token" }
+                children: { className: "label", text: "Token" },
               },
               {
                 className: "field-body",
@@ -552,11 +551,11 @@
                   className: "field",
                   children: {
                     className: "control",
-                    text: configuration.token
-                  }
-                }
-              }
-            ]
+                    text: configuration.token,
+                  },
+                },
+              },
+            ],
           });
           sessionDetailsView.appendChild(tokenField);
 
@@ -565,7 +564,7 @@
             children: [
               {
                 className: "field-label",
-                children: { className: "label", text: "User Agent" }
+                children: { className: "label", text: "User Agent" },
               },
               {
                 className: "field-body",
@@ -573,11 +572,11 @@
                   className: "field",
                   children: {
                     className: "control",
-                    text: configuration.userAgent || ""
-                  }
-                }
-              }
-            ]
+                    text: configuration.userAgent || "",
+                  },
+                },
+              },
+            ],
           });
           sessionDetailsView.appendChild(userAgentField);
 
@@ -586,7 +585,7 @@
             children: [
               {
                 className: "field-label",
-                children: { className: "label", text: "Test Paths" }
+                children: { className: "label", text: "Test Paths" },
               },
               {
                 className: "field-body",
@@ -596,11 +595,11 @@
                     className: "control",
                     text: configuration.tests.include
                       .reduce((text, test) => text + test + ", ", "")
-                      .slice(0, -2)
-                  }
-                }
-              }
-            ]
+                      .slice(0, -2),
+                  },
+                },
+              },
+            ],
           });
           sessionDetailsView.appendChild(testPathsField);
 
@@ -609,7 +608,7 @@
             children: [
               {
                 className: "field-label",
-                children: { className: "label", text: "Excluded Test Paths" }
+                children: { className: "label", text: "Excluded Test Paths" },
               },
               {
                 className: "field-body",
@@ -620,7 +619,7 @@
                     children: [
                       {
                         element: "span",
-                        text: configuration.tests.exclude.length
+                        text: configuration.tests.exclude.length,
                       },
                       {
                         element: "span",
@@ -629,22 +628,24 @@
                         text: showExcluded ? "hide" : "show",
                         onClick: showExcluded
                           ? resultUi.hideExcluded
-                          : resultUi.showExcluded
+                          : resultUi.showExcluded,
                       },
                       showExcluded
                         ? {
                             style:
                               "max-height: 250px; overflow: auto; margin-bottom: 10px",
-                            children: configuration.tests.exclude.map(test => ({
-                              text: test
-                            }))
+                            children: configuration.tests.exclude.map(
+                              (test) => ({
+                                text: test,
+                              })
+                            ),
                           }
-                        : null
-                    ]
-                  }
-                }
-              }
-            ]
+                        : null,
+                    ],
+                  },
+                },
+              },
+            ],
           });
           sessionDetailsView.appendChild(excludedTestsField);
 
@@ -655,7 +656,7 @@
             children: [
               {
                 className: "field-label",
-                children: { className: "label", text: "Reference Sessions" }
+                children: { className: "label", text: "Reference Sessions" },
               },
               {
                 className: "field-body",
@@ -663,11 +664,11 @@
                   className: "field",
                   children: {
                     className: "control",
-                    children: { id: "reference-sessions" }
-                  }
-                }
-              }
-            ]
+                    children: { id: "reference-sessions" },
+                  },
+                },
+              },
+            ],
           });
           sessionDetailsView.appendChild(referenceSessionField);
 
@@ -676,7 +677,7 @@
             children: [
               {
                 className: "field-label",
-                children: { className: "label", text: "Total Test Files" }
+                children: { className: "label", text: "Total Test Files" },
               },
               {
                 className: "field-body",
@@ -687,11 +688,11 @@
                     text: Object.keys(results).reduce(
                       (sum, api) => (sum += results[api].total),
                       0
-                    )
-                  }
-                }
-              }
-            ]
+                    ),
+                  },
+                },
+              },
+            ],
           });
           sessionDetailsView.appendChild(totalTestFilesField);
 
@@ -700,7 +701,7 @@
             children: [
               {
                 className: "field-label",
-                children: { className: "label", text: "Status" }
+                children: { className: "label", text: "Status" },
               },
               {
                 className: "field-body",
@@ -708,11 +709,11 @@
                   className: "field",
                   children: {
                     className: `control tag ${getTagStyle(status.status)}`,
-                    text: status.status
-                  }
-                }
-              }
-            ]
+                    text: status.status,
+                  },
+                },
+              },
+            ],
           });
           sessionDetailsView.appendChild(statusField);
 
@@ -721,7 +722,7 @@
             children: [
               {
                 className: "field-label",
-                children: { className: "label", text: "Test Timeouts" }
+                children: { className: "label", text: "Test Timeouts" },
               },
               {
                 className: "field-body",
@@ -731,14 +732,15 @@
                     className: `control`,
                     text: Object.keys(configuration.timeouts).reduce(
                       (text, timeout) =>
-                        `${text}${timeout}: ${configuration.timeouts[timeout] /
-                          1000}s\n`,
+                        `${text}${timeout}: ${
+                          configuration.timeouts[timeout] / 1000
+                        }s\n`,
                       ""
-                    )
-                  }
-                }
-              }
-            ]
+                    ),
+                  },
+                },
+              },
+            ],
           });
           sessionDetailsView.appendChild(timeoutsField);
 
@@ -748,7 +750,7 @@
               children: [
                 {
                   className: "field-label",
-                  children: { className: "label", text: "Date Started" }
+                  children: { className: "label", text: "Date Started" },
                 },
                 {
                   className: "field-body",
@@ -756,11 +758,11 @@
                     className: "field",
                     children: {
                       className: `control`,
-                      text: new Date(status.dateStarted).toLocaleString()
-                    }
-                  }
-                }
-              ]
+                      text: new Date(status.dateStarted).toLocaleString(),
+                    },
+                  },
+                },
+              ],
             });
             sessionDetailsView.appendChild(startedField);
           }
@@ -771,7 +773,7 @@
               children: [
                 {
                   className: "field-label",
-                  children: { className: "label", text: "Date Finished" }
+                  children: { className: "label", text: "Date Finished" },
                 },
                 {
                   className: "field-body",
@@ -779,11 +781,11 @@
                     className: "field",
                     children: {
                       className: `control`,
-                      text: new Date(status.dateFinished).toLocaleString()
-                    }
-                  }
-                }
-              ]
+                      text: new Date(status.dateFinished).toLocaleString(),
+                    },
+                  },
+                },
+              ],
             });
             sessionDetailsView.appendChild(finishedField);
           }
@@ -794,7 +796,7 @@
               children: [
                 {
                   className: "field-label",
-                  children: { className: "label", text: "Duration" }
+                  children: { className: "label", text: "Duration" },
                 },
                 {
                   className: "field-body",
@@ -805,14 +807,14 @@
                       id: "duration",
                       text: utils.millisToTimeString(
                         status.dateFinished
-                          ? parseInt(status.dateFinished) -
-                              parseInt(status.dateStarted)
-                          : Date.now() - parseInt(status.dateStarted)
-                      )
-                    }
-                  }
-                }
-              ]
+                          ? status.dateFinished.getTime() -
+                              status.dateStarted.getTime()
+                          : Date.now() - status.dateStarted.getTime()
+                      ),
+                    },
+                  },
+                },
+              ],
             });
             sessionDetailsView.appendChild(durationField);
           }
@@ -822,7 +824,7 @@
             children: [
               {
                 className: "field-label",
-                children: { className: "label", text: "Labels" }
+                children: { className: "label", text: "Labels" },
               },
               {
                 className: "field-body",
@@ -837,15 +839,15 @@
                           {
                             element: "span",
                             className: "tag is-info",
-                            text: label
+                            text: label,
                           },
                           {
                             element: "a",
                             className: "tag is-delete",
-                            onClick: () => resultUi.removeLabel(index)
-                          }
-                        ]
-                      }
+                            onClick: () => resultUi.removeLabel(index),
+                          },
+                        ],
+                      },
                     }))
                     .concat(
                       resultUi.state.configuration.isPublic
@@ -861,37 +863,37 @@
                                   style: "width: 10rem",
                                   id: "session-label-input",
                                   type: "text",
-                                  onKeyUp: event =>
+                                  onKeyUp: (event) =>
                                     event.keyCode === 13
                                       ? resultUi.addLabel()
-                                      : null
+                                      : null,
                                 },
                                 {
                                   className:
                                     "button is-dark is-outlined is-small is-rounded control",
                                   text: "save",
-                                  onClick: resultUi.addLabel
+                                  onClick: resultUi.addLabel,
                                 },
                                 {
                                   className:
                                     "button is-dark is-outlined is-small is-rounded control",
                                   text: "cancel",
-                                  onClick: resultUi.hideAddLabel
-                                }
-                              ]
-                            }
+                                  onClick: resultUi.hideAddLabel,
+                                },
+                              ],
+                            },
                           ]
                         : [
                             {
                               className: "button is-rounded is-small",
                               text: "Add",
-                              onClick: resultUi.showAddLabel
-                            }
+                              onClick: resultUi.showAddLabel,
+                            },
                           ]
-                    )
-                }
-              }
-            ]
+                    ),
+                },
+              },
+            ],
           });
           sessionDetailsView.appendChild(labelsField);
 
@@ -904,9 +906,9 @@
           const { referenceSessions } = resultUi.state;
           if (!referenceSessions || referenceSessions.length === 0) return;
           const referenceSessionsList = UI.createElement({
-            className: "field is-grouped is-grouped-multiline"
+            className: "field is-grouped is-grouped-multiline",
           });
-          const getBrowserIcon = browser => {
+          const getBrowserIcon = (browser) => {
             switch (browser.toLowerCase()) {
               case "firefox":
                 return "fab fa-firefox";
@@ -920,7 +922,7 @@
                 return "fab fa-safari";
             }
           };
-          referenceSessions.forEach(session => {
+          referenceSessions.forEach((session) => {
             const { token, browser } = session;
             const referenceSessionItem = UI.createElement({
               className:
@@ -932,14 +934,14 @@
                   className: "icon",
                   children: {
                     element: "i",
-                    className: getBrowserIcon(browser.name)
-                  }
+                    className: getBrowserIcon(browser.name),
+                  },
                 },
                 {
                   element: "span",
-                  text: token.split("-").shift()
-                }
-              ]
+                  text: token.split("-").shift(),
+                },
+              ],
             });
             referenceSessionsList.appendChild(referenceSessionItem);
           });
@@ -960,9 +962,9 @@
               {
                 element: "span",
                 className: "title is-7",
-                text: " (most recent first)"
-              }
-            ]
+                text: " (most recent first)",
+              },
+            ],
           });
           lastCompletedTestsView.appendChild(heading);
 
@@ -979,10 +981,10 @@
                     element: "tr",
                     children: [
                       { element: "td", text: "Test File" },
-                      { element: "td", text: "Malfunctioning List" }
-                    ]
-                  }
-                ]
+                      { element: "td", text: "Malfunctioning List" },
+                    ],
+                  },
+                ],
               },
               {
                 element: "tbody",
@@ -1009,18 +1011,18 @@
                                     path
                                   )
                                     ? "fas fa-check"
-                                    : "fas fa-plus"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }))
-              }
-            ]
+                                    : "fas fa-plus",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                })),
+              },
+            ],
           });
           if (lastCompletedTests.length > 0) {
             lastCompletedTestsView.appendChild(
@@ -1028,13 +1030,13 @@
                 className: "container",
                 style: "overflow-x: auto;",
                 id: "last-completed-overflow",
-                children: testsTable
+                children: testsTable,
               })
             );
           } else {
             const noTestsLabel = UI.createElement({
               text: "- No Timed-Out Tests -",
-              style: "text-align: center"
+              style: "text-align: center",
             });
             lastCompletedTestsView.appendChild(noTestsLabel);
           }
@@ -1053,12 +1055,12 @@
           const { results, status } = resultUi.state;
 
           const apiResultsView = UI.createElement({
-            style: "margin-bottom: 20px"
+            style: "margin-bottom: 20px",
           });
 
           const heading = UI.createElement({
             text: "API Results",
-            className: "title is-4"
+            className: "title is-4",
           });
           apiResultsView.appendChild(heading);
 
@@ -1071,14 +1073,14 @@
                 children: [
                   {
                     element: "i",
-                    className: "fas fa-spinner fa-pulse"
+                    className: "fas fa-spinner fa-pulse",
                   },
                   {
                     style: "margin-left: 0.4em;",
-                    text: "Loading results ..."
-                  }
-                ]
-              }
+                    text: "Loading results ...",
+                  },
+                ],
+              },
             });
             apiResultsView.appendChild(loadingIndicator);
 
@@ -1101,29 +1103,29 @@
                   {
                     element: "th",
                     text: "Timeout",
-                    style: `min-width: ${width}`
+                    style: `min-width: ${width}`,
                   },
                   {
                     element: "th",
                     text: "Not Run",
-                    style: `min-width: ${width}`
+                    style: `min-width: ${width}`,
                   },
                   {
                     element: "th",
                     text: "Test Files Run",
-                    style: `min-width: ${width}`
+                    style: `min-width: ${width}`,
                   },
-                  { element: "th", text: "Export" }
-                ]
-              }
-            ]
+                  { element: "th", text: "Export" },
+                ],
+              },
+            ],
           });
 
           const apis = Object.keys(results).sort((apiA, apiB) =>
             apiA.toLowerCase() > apiB.toLowerCase() ? 1 : -1
           );
 
-          const rows = apis.map(api => {
+          const rows = apis.map((api) => {
             const {
               complete = 0,
               pass = 0,
@@ -1131,9 +1133,9 @@
               timeout = 0,
               timeoutfiles = [],
               not_run: notRun = 0,
-              total
+              total,
             } = results[api];
-						isDone = results[api].complete == results[api].total;
+            isDone = results[api].complete == results[api].total;
             const totalTestResults = pass + fail + timeout + notRun;
             return UI.createElement({
               element: "tr",
@@ -1144,31 +1146,37 @@
                   element: "td",
                   children: {
                     style: `color: hsl(141, 71%, 38%); overflow: visible; white-space: nowrap; width: ${width}`,
-                    text: `${pass} (${utils.percent(pass, totalTestResults)}%)`
-                  }
+                    text: `${pass} (${utils.percent(pass, totalTestResults)}%)`,
+                  },
                 },
                 {
                   element: "td",
                   children: {
                     className: "has-text-danger",
                     style: `overflow: visible; white-space: nowrap; width: ${width}`,
-                    text: `${fail} (${utils.percent(fail, totalTestResults)}%)`
-                  }
+                    text: `${fail} (${utils.percent(fail, totalTestResults)}%)`,
+                  },
                 },
                 {
                   element: "td",
                   children: {
                     style: `color: hsl(48, 100%, 40%); overflow: visible; white-space: nowrap; width: ${width}`,
-                    text: `${timeout} (${utils.percent(timeout, totalTestResults)}%)`
-                  }
+                    text: `${timeout} (${utils.percent(
+                      timeout,
+                      totalTestResults
+                    )}%)`,
+                  },
                 },
                 {
                   element: "td",
                   children: {
                     className: "has-text-info",
                     style: `overflow: visible; white-space: nowrap; width: ${width}`,
-                    text: `${notRun} (${utils.percent(notRun, totalTestResults)}%)`
-                  }
+                    text: `${notRun} (${utils.percent(
+                      notRun,
+                      totalTestResults
+                    )}%)`,
+                  },
                 },
                 {
                   element: "td",
@@ -1177,8 +1185,8 @@
                     text: `${complete}/${total} (${utils.percent(
                       complete,
                       total
-                    )}%)`
-                  }
+                    )}%)`,
+                  },
                 },
                 {
                   element: "td",
@@ -1191,31 +1199,32 @@
                           className: "button is-dark is-outlined is-small",
                           onclick: () => resultUi.downloadApiResultJson(api),
                           text: "json",
-                          title: `Download results of ${api} API as JSON file.`
-                        }
+                          title: `Download results of ${api} API as JSON file.`,
+                        },
                       },
-                      resultUi.state.reportsEnabled ?
-                      {
-                        className: "control",
-                        children: {
-                          className: "button is-dark is-outlined is-small",
-                          disabled: !isDone,
-                          onclick: () => resultUi.openHtmlReport(api),
-                          text: "report",
-                          title: `Show results of ${api} API in WPT Report format.`
-                        }
-                      } : null
-                    ]
-                  }
-                }
-              ]
+                      resultUi.state.reportsEnabled
+                        ? {
+                            className: "control",
+                            children: {
+                              className: "button is-dark is-outlined is-small",
+                              disabled: !isDone,
+                              onclick: () => resultUi.openHtmlReport(api),
+                              text: "report",
+                              title: `Show results of ${api} API in WPT Report format.`,
+                            },
+                          }
+                        : null,
+                    ],
+                  },
+                },
+              ],
             });
           });
 
           const { pass, fail, timeout, not_run, complete, total } = apis.reduce(
             (sum, api) => {
               Object.keys(sum).forEach(
-                key => (sum[key] += results[api][key] ? results[api][key] : 0)
+                (key) => (sum[key] += results[api][key] ? results[api][key] : 0)
               );
               return sum;
             },
@@ -1234,31 +1243,43 @@
                     element: "th",
                     children: {
                       style: `color: hsl(141, 71%, 38%); overflow: visible; white-space: nowrap; width: ${width}`,
-                      text: `${pass} (${utils.percent(pass, totalTestResults)}%)`
-                    }
+                      text: `${pass} (${utils.percent(
+                        pass,
+                        totalTestResults
+                      )}%)`,
+                    },
                   },
                   {
                     element: "th",
                     children: {
                       style: `overflow: visible; white-space: nowrap; width: ${width}`,
                       className: "has-text-danger",
-                      text: `${fail} (${utils.percent(fail, totalTestResults)}%)`
-                    }
+                      text: `${fail} (${utils.percent(
+                        fail,
+                        totalTestResults
+                      )}%)`,
+                    },
                   },
                   {
                     element: "th",
                     children: {
                       style: `color: hsl(48, 100%, 40%); overflow: visible; white-space: nowrap; width: ${width}`,
-                      text: `${timeout} (${utils.percent(timeout, totalTestResults)}%)`
-                    }
+                      text: `${timeout} (${utils.percent(
+                        timeout,
+                        totalTestResults
+                      )}%)`,
+                    },
                   },
                   {
                     element: "th",
                     children: {
                       style: `overflow: visible; white-space: nowrap; width: ${width}`,
                       className: "has-text-info",
-                      text: `${not_run} (${utils.percent(not_run, totalTestResults)}%)`
-                    }
+                      text: `${not_run} (${utils.percent(
+                        not_run,
+                        totalTestResults
+                      )}%)`,
+                    },
                   },
                   {
                     element: "th",
@@ -1267,13 +1288,13 @@
                       text: `${complete}/${total} (${utils.percent(
                         complete,
                         total
-                      )}%)`
-                    }
+                      )}%)`,
+                    },
                   },
-                  { element: "th" }
-                ]
-              }
-            ]
+                  { element: "th" },
+                ],
+              },
+            ],
           });
 
           const resultsTable = UI.createElement({
@@ -1286,8 +1307,8 @@
               id: "results-table",
               style:
                 "width: 100%; min-width: 30em; border-radius: 3px; border: 2px solid hsl(0, 0%, 86%);",
-              children: [header, { element: "tbody", children: rows }, footer]
-            }
+              children: [header, { element: "tbody", children: rows }, footer],
+            },
           });
           apiResultsView.appendChild(resultsTable);
 
@@ -1308,7 +1329,7 @@
 
           const heading = UI.createElement({
             className: "title is-4",
-            text: "Export"
+            text: "Export",
           });
           exportElement.appendChild(heading);
 
@@ -1317,7 +1338,7 @@
             children: [
               {
                 className: "field-label",
-                children: { className: "label", text: "Results" }
+                children: { className: "label", text: "Results" },
               },
               {
                 className: "field-body",
@@ -1328,7 +1349,7 @@
                     {
                       className: "column is-9",
                       text:
-                        "Download results for import into other WMAS Test Suite instances."
+                        "Download results for import into other WMAS Test Suite instances.",
                     },
                     {
                       className: "column is-3",
@@ -1343,17 +1364,17 @@
                             className: "icon",
                             children: {
                               element: "i",
-                              className: "fas fa-file-archive"
-                            }
+                              className: "fas fa-file-archive",
+                            },
                           },
-                          { element: "span", text: "Download Zip" }
-                        ]
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+                          { element: "span", text: "Download Zip" },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
           });
           exportElement.appendChild(resultsField);
 
@@ -1364,8 +1385,8 @@
                 className: "field-label",
                 children: {
                   className: "label",
-                  text: "All JSON Files"
-                }
+                  text: "All JSON Files",
+                },
               },
               {
                 className: "field-body",
@@ -1376,7 +1397,7 @@
                     {
                       className: "column is-9",
                       text:
-                        "Download JSON files containing results of completed test files."
+                        "Download JSON files containing results of completed test files.",
                     },
                     {
                       className: "column is-3",
@@ -1390,17 +1411,17 @@
                             className: "icon",
                             children: {
                               element: "i",
-                              className: "fas fa-file-archive"
-                            }
+                              className: "fas fa-file-archive",
+                            },
                           },
-                          { element: "span", text: "Download Zip" }
-                        ]
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+                          { element: "span", text: "Download Zip" },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
           });
           exportElement.appendChild(jsonField);
 
@@ -1411,8 +1432,8 @@
                 className: "field-label",
                 children: {
                   className: "label",
-                  text: "Session result HTML"
-                }
+                  text: "Session result HTML",
+                },
               },
               {
                 className: "field-body",
@@ -1423,7 +1444,7 @@
                     {
                       className: "column is-9",
                       text:
-                        "Download this sessions result as standalone HTML page, similar to this page."
+                        "Download this sessions result as standalone HTML page, similar to this page.",
                     },
                     {
                       className: "column is-3",
@@ -1437,17 +1458,17 @@
                             className: "icon",
                             children: {
                               element: "i",
-                              className: "fas fa-code"
-                            }
+                              className: "fas fa-code",
+                            },
                           },
-                          { element: "span", text: "Download HTML" }
-                        ]
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+                          { element: "span", text: "Download HTML" },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
           });
           exportElement.appendChild(htmlField);
         },
@@ -1455,7 +1476,7 @@
           const malfunctioningTestsView = UI.createElement({});
           const heading = UI.createElement({
             className: "title is-4",
-            text: "Malfunctioning Tests"
+            text: "Malfunctioning Tests",
           });
           malfunctioningTestsView.appendChild(heading);
 
@@ -1472,14 +1493,14 @@
                     element: "tr",
                     children: [
                       { element: "td", text: "Test File" },
-                      { element: "td", text: "" }
-                    ]
-                  }
-                ]
+                      { element: "td", text: "" },
+                    ],
+                  },
+                ],
               },
               {
                 element: "tbody",
-                children: malfunctioningTests.map(path => ({
+                children: malfunctioningTests.map((path) => ({
                   element: "tr",
                   children: [
                     { element: "td", text: path },
@@ -1500,17 +1521,17 @@
                                 children: [
                                   {
                                     element: "i",
-                                    className: "fas fa-trash-alt"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                    }
-                  ]
-                }))
-              }
-            ]
+                                    className: "fas fa-trash-alt",
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                    },
+                  ],
+                })),
+              },
+            ],
           });
           if (malfunctioningTests.length > 0) {
             malfunctioningTestsView.appendChild(
@@ -1518,13 +1539,13 @@
                 className: "container",
                 style: "overflow-x: auto",
                 id: "malfunctioning-overflow",
-                children: testsTable
+                children: testsTable,
               })
             );
           } else {
             const noTestsLabel = UI.createElement({
               text: "- No Tests Available -",
-              style: "text-align: center"
+              style: "text-align: center",
             });
             malfunctioningTestsView.appendChild(noTestsLabel);
           }
@@ -1538,7 +1559,7 @@
           malfunctioningTestsElement.appendChild(malfunctioningTestsView);
 
           UI.loadScrollPosition("malfunctioning-overflow");
-        }
+        },
       };
     </script>
   </body>

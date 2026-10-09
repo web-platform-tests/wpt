@@ -1,10 +1,11 @@
 import pluggy
 
+
 hookspec = pluggy.HookspecMarker("myproject")
 hookimpl = pluggy.HookimplMarker("myproject")
 
 
-class MySpec(object):
+class MySpec:
     """A hook specification namespace."""
 
     @hookspec
@@ -12,7 +13,7 @@ class MySpec(object):
         """My special little hook that you can customize."""
 
 
-class Plugin_1(object):
+class Plugin_1:
     """A hook implementation namespace."""
 
     @hookimpl
@@ -21,7 +22,7 @@ class Plugin_1(object):
         return arg1 + arg2
 
 
-class Plugin_2(object):
+class Plugin_2:
     """A 2nd hook implementation namespace."""
 
     @hookimpl

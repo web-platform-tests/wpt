@@ -1,4 +1,5 @@
-// META: script=support.js
+// META: script=resources/support.js
+'use strict';
 
 indexeddb_test(
   (t, db) => {

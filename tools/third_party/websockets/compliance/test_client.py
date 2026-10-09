@@ -45,5 +45,4 @@ async def run_tests(server, agent):
     await update_reports(server, agent)
 
 
-main = run_tests(SERVER, urllib.parse.quote(AGENT))
-asyncio.get_event_loop().run_until_complete(main)
+asyncio.run(run_tests(SERVER, urllib.parse.quote(AGENT)))

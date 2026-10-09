@@ -1,41 +1,37 @@
+# mypy: allow-untyped-defs
 """Python version compatibility code."""
+
+from __future__ import annotations
+
+import dataclasses
 import enum
 import functools
 import inspect
-import os
-import re
-import sys
-from contextlib import contextmanager
 from inspect import Parameter
 from inspect import signature
+import os
+from pathlib import Path
+import sys
 from typing import Any
 from typing import Callable
-from typing import Generic
-from typing import Optional
-from typing import overload as overload
-from typing import Tuple
-from typing import TypeVar
-from typing import Union
+from typing import Final
+from typing import NoReturn
 
-import attr
-
-from _pytest.outcomes import fail
-from _pytest.outcomes import TEST_OUTCOME
-
-if sys.version_info < (3, 5, 2):
-    TYPE_CHECKING = False  # type: bool
-else:
-    from typing import TYPE_CHECKING
+import py
 
 
-if TYPE_CHECKING:
-    from typing import NoReturn
-    from typing import Type
-    from typing_extensions import Final
+#: constant to prepare valuing pylib path replacements/lazy proxies later on
+#  intended for removal in pytest 8.0 or 9.0
+
+# fmt: off
+# intentional space to create a fake difference for the verification
+LEGACY_PATH = py.path. local
+# fmt: on
 
 
-_T = TypeVar("_T")
-_S = TypeVar("_S")
+def legacy_path(path: str | os.PathLike[str]) -> LEGACY_PATH:
+    """Internal wrapper to prepare lazy proxies for legacy_path instances"""
+    return LEGACY_PATH(path)
 
 
 # fmt: off
@@ -43,38 +39,8 @@ _S = TypeVar("_S")
 # https://www.python.org/dev/peps/pep-0484/#support-for-singleton-types-in-unions
 class NotSetType(enum.Enum):
     token = 0
-NOTSET = NotSetType.token  # type: Final # noqa: E305
+NOTSET: Final = NotSetType.token
 # fmt: on
-
-MODULE_NOT_FOUND_ERROR = (
-    "ModuleNotFoundError" if sys.version_info[:2] >= (3, 6) else "ImportError"
-)
-
-
-if sys.version_info >= (3, 8):
-    from importlib import metadata as importlib_metadata
-else:
-    import importlib_metadata  # noqa: F401
-
-
-def _format_args(func: Callable[..., Any]) -> str:
-    return str(signature(func))
-
-
-# The type of re.compile objects is not exposed in Python.
-REGEX_TYPE = type(re.compile(""))
-
-
-if sys.version_info < (3, 6):
-
-    def fspath(p):
-        """os.fspath replacement, useful to point out when we should replace it by the
-        real function once we drop py35."""
-        return str(p)
-
-
-else:
-    fspath = os.fspath
 
 
 def is_generator(func: object) -> bool:
@@ -87,7 +53,7 @@ def iscoroutinefunction(func: object) -> bool:
     def syntax, and doesn't contain yield), or a function decorated with
     @asyncio.coroutine.
 
-    Note: copied and modified from Python 3.5's builtin couroutines.py to avoid
+    Note: copied and modified from Python 3.5's builtin coroutines.py to avoid
     importing asyncio directly, which in turns also initializes the "logging"
     module as a side-effect (see issue #8).
     """
@@ -97,14 +63,10 @@ def iscoroutinefunction(func: object) -> bool:
 def is_async_function(func: object) -> bool:
     """Return True if the given function seems to be an async function or
     an async generator."""
-    return iscoroutinefunction(func) or (
-        sys.version_info >= (3, 6) and inspect.isasyncgenfunction(func)
-    )
+    return iscoroutinefunction(func) or inspect.isasyncgenfunction(func)
 
 
-def getlocation(function, curdir: Optional[str] = None) -> str:
-    from _pytest.pathlib import Path
-
+def getlocation(function, curdir: str | os.PathLike[str] | None = None) -> str:
     function = get_real_func(function)
     fn = Path(inspect.getfile(function))
     lineno = function.__code__.co_firstlineno
@@ -138,12 +100,11 @@ def num_mock_patch_args(function) -> int:
 
 
 def getfuncargnames(
-    function: Callable[..., Any],
+    function: Callable[..., object],
     *,
     name: str = "",
-    is_method: bool = False,
-    cls: Optional[type] = None
-) -> Tuple[str, ...]:
+    cls: type | None = None,
+) -> tuple[str, ...]:
     """Return the names of a function's mandatory arguments.
 
     Should return the names of all function arguments that:
@@ -152,9 +113,8 @@ def getfuncargnames(
     * Aren't bound with functools.partial.
     * Aren't replaced with mocks.
 
-    The is_method and cls arguments indicate that the function should
-    be treated as a bound method even though it's not unless, only in
-    the case of cls, the function is a static method.
+    The cls arguments indicate that the function should be treated as a bound
+    method even though it's not unless the function is a static method.
 
     The name parameter should be the original name in which the function was collected.
     """
@@ -170,8 +130,10 @@ def getfuncargnames(
     try:
         parameters = signature(function).parameters
     except (ValueError, TypeError) as e:
+        from _pytest.outcomes import fail
+
         fail(
-            "Could not determine arguments of {!r}: {}".format(function, e),
+            f"Could not determine arguments of {function!r}: {e}",
             pytrace=False,
         )
 
@@ -179,9 +141,8 @@ def getfuncargnames(
         p.name
         for p in parameters.values()
         if (
-            # TODO: Remove type ignore after https://github.com/python/typeshed/pull/4383
-            p.kind is Parameter.POSITIONAL_OR_KEYWORD  # type: ignore[unreachable]
-            or p.kind is Parameter.KEYWORD_ONLY  # type: ignore[unreachable]
+            p.kind is Parameter.POSITIONAL_OR_KEYWORD
+            or p.kind is Parameter.KEYWORD_ONLY
         )
         and p.default is Parameter.empty
     )
@@ -191,8 +152,13 @@ def getfuncargnames(
     # If this function should be treated as a bound method even though
     # it's passed as an unbound method or function, remove the first
     # parameter name.
-    if is_method or (
-        cls and not isinstance(cls.__dict__.get(name, None), staticmethod)
+    if (
+        # Not using `getattr` because we don't want to resolve the staticmethod.
+        # Not using `cls.__dict__` because we want to check the entire MRO.
+        cls
+        and not isinstance(
+            inspect.getattr_static(cls, name, default=None), staticmethod
+        )
     ):
         arg_names = arg_names[1:]
     # Remove any names that will be replaced with mocks.
@@ -201,18 +167,7 @@ def getfuncargnames(
     return arg_names
 
 
-if sys.version_info < (3, 7):
-
-    @contextmanager
-    def nullcontext():
-        yield
-
-
-else:
-    from contextlib import nullcontext as nullcontext  # noqa: F401
-
-
-def get_default_arg_names(function: Callable[..., Any]) -> Tuple[str, ...]:
+def get_default_arg_names(function: Callable[..., Any]) -> tuple[str, ...]:
     # Note: this code intentionally mirrors the code at the beginning of
     # getfuncargnames, to get the arguments which were excluded from its result
     # because they had default values.
@@ -225,32 +180,20 @@ def get_default_arg_names(function: Callable[..., Any]) -> Tuple[str, ...]:
 
 
 _non_printable_ascii_translate_table = {
-    i: "\\x{:02x}".format(i) for i in range(128) if i not in range(32, 127)
+    i: f"\\x{i:02x}" for i in range(128) if i not in range(32, 127)
 }
 _non_printable_ascii_translate_table.update(
     {ord("\t"): "\\t", ord("\r"): "\\r", ord("\n"): "\\n"}
 )
 
 
-def _translate_non_printable(s: str) -> str:
-    return s.translate(_non_printable_ascii_translate_table)
-
-
-STRING_TYPES = bytes, str
-
-
-def _bytes_to_ascii(val: bytes) -> str:
-    return val.decode("ascii", "backslashreplace")
-
-
-def ascii_escaped(val: Union[bytes, str]) -> str:
+def ascii_escaped(val: bytes | str) -> str:
     r"""If val is pure ASCII, return it as an str, otherwise, escape
     bytes objects into a sequence of escaped bytes:
 
     b'\xc3\xb4\xc5\xd6' -> r'\xc3\xb4\xc5\xd6'
 
-    and escapes unicode objects into a sequence of escaped unicode
-    ids, e.g.:
+    and escapes strings into a sequence of escaped unicode ids, e.g.:
 
     r'4\nV\U00043efa\x0eMXWB\x1e\u3028\u15fd\xcd\U0007d944'
 
@@ -261,13 +204,13 @@ def ascii_escaped(val: Union[bytes, str]) -> str:
        a UTF-8 string.
     """
     if isinstance(val, bytes):
-        ret = _bytes_to_ascii(val)
+        ret = val.decode("ascii", "backslashreplace")
     else:
         ret = val.encode("unicode_escape").decode("ascii")
-    return _translate_non_printable(ret)
+    return ret.translate(_non_printable_ascii_translate_table)
 
 
-@attr.s
+@dataclasses.dataclass
 class _PytestWrapper:
     """Dummy wrapper around a function object for internal use only.
 
@@ -276,7 +219,7 @@ class _PytestWrapper:
     decorator to issue warnings when the fixture function is called directly.
     """
 
-    obj = attr.ib()
+    obj: Any
 
 
 def get_real_func(obj):
@@ -299,9 +242,7 @@ def get_real_func(obj):
         from _pytest._io.saferepr import saferepr
 
         raise ValueError(
-            ("could not find real function of {start}\nstopped at {current}").format(
-                start=saferepr(start_obj), current=saferepr(obj)
-            )
+            f"could not find real function of {saferepr(start_obj)}\nstopped at {saferepr(obj)}"
         )
     if isinstance(obj, functools.partial):
         obj = obj.func
@@ -338,6 +279,8 @@ def safe_getattr(object: Any, name: str, default: Any) -> Any:
     are derived from BaseException instead of Exception (for more details
     check #2707).
     """
+    from _pytest.outcomes import TEST_OUTCOME
+
     try:
         return getattr(object, name, default)
     except TEST_OUTCOME:
@@ -352,71 +295,25 @@ def safe_isclass(obj: object) -> bool:
         return False
 
 
-if sys.version_info < (3, 5, 2):
+def get_user_id() -> int | None:
+    """Return the current process's real user id or None if it could not be
+    determined.
 
-    def overload(f):  # noqa: F811
-        return f
-
-
-if TYPE_CHECKING:
-    if sys.version_info >= (3, 8):
-        from typing import final as final
+    :return: The user id or None if it could not be determined.
+    """
+    # mypy follows the version and platform checking expectation of PEP 484:
+    # https://mypy.readthedocs.io/en/stable/common_issues.html?highlight=platform#python-version-and-system-platform-checks
+    # Containment checks are too complex for mypy v1.5.0 and cause failure.
+    if sys.platform == "win32" or sys.platform == "emscripten":
+        # win32 does not have a getuid() function.
+        # Emscripten has a return 0 stub.
+        return None
     else:
-        from typing_extensions import final as final
-elif sys.version_info >= (3, 8):
-    from typing import final as final
-else:
-
-    def final(f):  # noqa: F811
-        return f
-
-
-if getattr(attr, "__version_info__", ()) >= (19, 2):
-    ATTRS_EQ_FIELD = "eq"
-else:
-    ATTRS_EQ_FIELD = "cmp"
-
-
-if sys.version_info >= (3, 8):
-    from functools import cached_property as cached_property
-else:
-
-    class cached_property(Generic[_S, _T]):
-        __slots__ = ("func", "__doc__")
-
-        def __init__(self, func: Callable[[_S], _T]) -> None:
-            self.func = func
-            self.__doc__ = func.__doc__
-
-        @overload
-        def __get__(
-            self, instance: None, owner: Optional["Type[_S]"] = ...
-        ) -> "cached_property[_S, _T]":
-            ...
-
-        @overload  # noqa: F811
-        def __get__(  # noqa: F811
-            self, instance: _S, owner: Optional["Type[_S]"] = ...
-        ) -> _T:
-            ...
-
-        def __get__(self, instance, owner=None):  # noqa: F811
-            if instance is None:
-                return self
-            value = instance.__dict__[self.func.__name__] = self.func(instance)
-            return value
-
-
-# Sometimes an algorithm needs a dict which yields items in the order in which
-# they were inserted when iterated. Since Python 3.7, `dict` preserves
-# insertion order. Since `dict` is faster and uses less memory than
-# `OrderedDict`, prefer to use it if possible.
-if sys.version_info >= (3, 7):
-    order_preserving_dict = dict
-else:
-    from collections import OrderedDict
-
-    order_preserving_dict = OrderedDict
+        # On other platforms, a return value of -1 is assumed to indicate that
+        # the current process's real user id could not be determined.
+        ERROR = -1
+        uid = os.getuid()
+        return uid if uid != ERROR else None
 
 
 # Perform exhaustiveness checking.
@@ -450,5 +347,5 @@ else:
 # previously.
 #
 # This also work for Enums (if you use `is` to compare) and Literals.
-def assert_never(value: "NoReturn") -> "NoReturn":
-    assert False, "Unhandled value: {} ({})".format(value, type(value).__name__)
+def assert_never(value: NoReturn) -> NoReturn:
+    assert False, f"Unhandled value: {value} ({type(value).__name__})"

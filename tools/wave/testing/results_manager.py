@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import os
 import shutil
 import re
@@ -17,22 +19,24 @@ from .wpt_report import generate_report, generate_multi_report
 from ..data.session import COMPLETED
 
 WAVE_SRC_DIR = "./tools/wave"
+RESULTS_FILE_REGEX = r"^\w\w\d\d\d?\.json$"
+RESULTS_FILE_PATTERN = re.compile(RESULTS_FILE_REGEX)
 
 
-class ResultsManager(object):
+class ResultsManager:
     def initialize(
         self,
         results_directory_path,
         sessions_manager,
         tests_manager,
-        import_enabled,
+        import_results_enabled,
         reports_enabled,
         persisting_interval
     ):
         self._results_directory_path = results_directory_path
         self._sessions_manager = sessions_manager
         self._tests_manager = tests_manager
-        self._import_enabled = import_enabled
+        self._import_results_enabled = import_results_enabled
         self._reports_enabled = reports_enabled
         self._results = {}
         self._persisting_interval = persisting_interval
@@ -214,7 +218,7 @@ class ResultsManager(object):
         api_directory = os.path.join(self._results_directory_path, token, api)
         if not os.path.isdir(api_directory):
             return None
-        return "/results/{}/{}/all.html".format(token, api)
+        return f"/results/{token}/{api}/all.html"
 
     def read_results_wpt_multi_report_uri(self, tokens, api):
         comparison_directory_name = self.get_comparison_identifier(tokens)
@@ -230,7 +234,7 @@ class ResultsManager(object):
         if not os.path.isdir(api_directory_path):
             self.generate_multi_report(tokens, api)
 
-        return "/results/{}/all.html".format(relative_api_directory_path)
+        return f"/results/{relative_api_directory_path}/all.html"
 
     def delete_results(self, token):
         results_directory = os.path.join(self._results_directory_path, token)
@@ -543,7 +547,7 @@ class ResultsManager(object):
     def export_results_overview(self, token):
         session = self._sessions_manager.read_session(token)
         if session is None:
-            raise NotFoundException("Could not find session {}".format(token))
+            raise NotFoundException(f"Could not find session {token}")
 
         tmp_file_name = str(time.time()) + ".zip"
         zip = zipfile.ZipFile(tmp_file_name, "w")
@@ -575,8 +579,8 @@ class ResultsManager(object):
 
             return blob
 
-    def is_import_enabled(self):
-        return self._import_enabled
+    def is_import_results_enabled(self):
+        return self._import_results_enabled
 
     def are_reports_enabled(self):
         return self._reports_enabled
@@ -592,9 +596,9 @@ class ResultsManager(object):
             return deserialize_session(info)
 
     def import_results(self, blob):
-        if not self.is_import_enabled:
+        if not self.is_import_results_enabled:
             raise PermissionDeniedException()
-        tmp_file_name = "{}.zip".format(str(time.time()))
+        tmp_file_name = f"{str(time.time())}.zip"
 
         with open(tmp_file_name, "w") as file:
             file.write(blob)
@@ -616,6 +620,32 @@ class ResultsManager(object):
         self.remove_tmp_files()
         self.load_results()
         return token
+
+    def import_results_api_json(self, token, api, blob):
+        if not self.is_import_results_enabled:
+            raise PermissionDeniedException()
+        destination_path = os.path.join(self._results_directory_path, token, api)
+        files = os.listdir(destination_path)
+        file_name = ""
+        for file in files:
+            if RESULTS_FILE_PATTERN.match(file):
+                file_name = file
+                break
+        destination_file_path = os.path.join(destination_path, file_name)
+        with open(destination_file_path, "wb") as file:
+            file.write(blob)
+
+        self.generate_report(token, api)
+
+        session = self._sessions_manager.read_session(token)
+        if session is None:
+            raise NotFoundException()
+
+        results = self.load_results(token)
+        test_state = self.parse_test_state(results)
+        session.test_state = test_state
+
+        self._sessions_manager.update_session(session)
 
     def remove_tmp_files(self):
         files = os.listdir(".")

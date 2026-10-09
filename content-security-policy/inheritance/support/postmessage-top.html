@@ -1,4 +1,7 @@
 <!DOCTYPE html>
 <script>
-  top.postMessage("ready", "*");
+window.onload = () => {
+  const params = new URLSearchParams(window.location.search);
+  top.postMessage({msg: "ready", token: params.get("token")}, "*");
+}
 </script>

@@ -184,6 +184,14 @@ const interpolationTests = [
     midPoint: "\"bar\"",
   },
 
+  // ::marker supports `quotes`.
+  {
+    property: "quotes",
+    from: '"[" "]"',
+    to: '"«" "»"',
+    midPoint: '"«" "»"',
+  },
+
   // ::marker supports text properties.
   {
     property: "hyphens",
@@ -261,8 +269,8 @@ const interpolationTests = [
   },
   {
     property: "text-emphasis-style",
-    from: "dot",
-    to: "triangle",
+    from: "filled dot",
+    to: "filled triangle",
     midPoint: "triangle",
   },
   {
@@ -270,6 +278,14 @@ const interpolationTests = [
     from: "rgb(0, 200, 0) 1px 2px 3px",
     to: "rgb(100, 0, 200) 3px 2px 1px",
     midPoint: "rgb(50, 100, 100) 2px 2px 2px",
+  },
+
+  // ::marker supports `cursor`.
+  {
+    property: "cursor",
+    from: "auto",
+    to: "move",
+    midPoint: "move",
   },
 
   // ::marker does NOT support layout properties

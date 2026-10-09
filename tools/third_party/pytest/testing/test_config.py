@@ -1,19 +1,20 @@
+# mypy: allow-untyped-defs
+import dataclasses
+import importlib.metadata
 import os
+from pathlib import Path
 import re
 import sys
 import textwrap
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Sequence
 from typing import Tuple
-
-import attr
-import py.path
+from typing import Type
+from typing import Union
 
 import _pytest._code
-import pytest
-from _pytest.compat import importlib_metadata
-from _pytest.compat import TYPE_CHECKING
 from _pytest.config import _get_plugin_specs_as_list
 from _pytest.config import _iter_rewritable_modules
 from _pytest.config import _strtobool
@@ -21,16 +22,16 @@ from _pytest.config import Config
 from _pytest.config import ConftestImportFailure
 from _pytest.config import ExitCode
 from _pytest.config import parse_warning_filter
+from _pytest.config.argparsing import get_ini_default_for_type
+from _pytest.config.argparsing import Parser
 from _pytest.config.exceptions import UsageError
 from _pytest.config.findpaths import determine_setup
 from _pytest.config.findpaths import get_common_ancestor
 from _pytest.config.findpaths import locate_config
 from _pytest.monkeypatch import MonkeyPatch
-from _pytest.pathlib import Path
-from _pytest.pytester import Testdir
-
-if TYPE_CHECKING:
-    from typing import Type
+from _pytest.pathlib import absolutepath
+from _pytest.pytester import Pytester
+import pytest
 
 
 class TestParseIni:
@@ -39,7 +40,7 @@ class TestParseIni:
     )
     def test_getcfg_and_config(
         self,
-        testdir: Testdir,
+        pytester: Pytester,
         tmp_path: Path,
         section: str,
         filename: str,
@@ -50,23 +51,21 @@ class TestParseIni:
         monkeypatch.chdir(sub)
         (tmp_path / filename).write_text(
             textwrap.dedent(
-                """\
+                f"""\
                 [{section}]
                 name = value
-                """.format(
-                    section=section
-                )
+                """
             ),
             encoding="utf-8",
         )
-        _, _, cfg = locate_config([sub])
+        _, _, cfg = locate_config(Path.cwd(), [sub])
         assert cfg["name"] == "value"
-        config = testdir.parseconfigure(str(sub))
+        config = pytester.parseconfigure(str(sub))
         assert config.inicfg["name"] == "value"
 
-    def test_setupcfg_uses_toolpytest_with_pytest(self, testdir):
-        p1 = testdir.makepyfile("def test(): pass")
-        testdir.makefile(
+    def test_setupcfg_uses_toolpytest_with_pytest(self, pytester: Pytester) -> None:
+        p1 = pytester.makepyfile("def test(): pass")
+        pytester.makefile(
             ".cfg",
             setup="""
                 [tool:pytest]
@@ -74,37 +73,40 @@ class TestParseIni:
                 [pytest]
                 testpaths=ignored
         """
-            % p1.basename,
+            % p1.name,
         )
-        result = testdir.runpytest()
-        result.stdout.fnmatch_lines(["*, configfile: setup.cfg, *", "* 1 passed in *"])
+        result = pytester.runpytest()
+        result.stdout.fnmatch_lines(["configfile: setup.cfg", "* 1 passed in *"])
         assert result.ret == 0
 
-    def test_append_parse_args(self, testdir, tmpdir, monkeypatch):
+    def test_append_parse_args(
+        self, pytester: Pytester, tmp_path: Path, monkeypatch: MonkeyPatch
+    ) -> None:
         monkeypatch.setenv("PYTEST_ADDOPTS", '--color no -rs --tb="short"')
-        tmpdir.join("pytest.ini").write(
+        tmp_path.joinpath("pytest.ini").write_text(
             textwrap.dedent(
                 """\
                 [pytest]
                 addopts = --verbose
                 """
-            )
+            ),
+            encoding="utf-8",
         )
-        config = testdir.parseconfig(tmpdir)
+        config = pytester.parseconfig(tmp_path)
         assert config.option.color == "no"
         assert config.option.reportchars == "s"
         assert config.option.tbstyle == "short"
         assert config.option.verbose
 
-    def test_tox_ini_wrong_version(self, testdir):
-        testdir.makefile(
+    def test_tox_ini_wrong_version(self, pytester: Pytester) -> None:
+        pytester.makefile(
             ".ini",
             tox="""
             [pytest]
             minversion=999.0
         """,
         )
-        result = testdir.runpytest()
+        result = pytester.runpytest()
         assert result.ret != 0
         result.stderr.fnmatch_lines(
             ["*tox.ini: 'minversion' requires pytest-999.0, actual pytest-*"]
@@ -112,70 +114,135 @@ class TestParseIni:
 
     @pytest.mark.parametrize(
         "section, name",
-        [("tool:pytest", "setup.cfg"), ("pytest", "tox.ini"), ("pytest", "pytest.ini")],
+        [
+            ("tool:pytest", "setup.cfg"),
+            ("pytest", "tox.ini"),
+            ("pytest", "pytest.ini"),
+            ("pytest", ".pytest.ini"),
+        ],
     )
-    def test_ini_names(self, testdir, name, section):
-        testdir.tmpdir.join(name).write(
+    def test_ini_names(self, pytester: Pytester, name, section) -> None:
+        pytester.path.joinpath(name).write_text(
             textwrap.dedent(
-                """
+                f"""
             [{section}]
-            minversion = 1.0
-        """.format(
-                    section=section
-                )
-            )
+            minversion = 3.36
+        """
+            ),
+            encoding="utf-8",
         )
-        config = testdir.parseconfig()
-        assert config.getini("minversion") == "1.0"
+        config = pytester.parseconfig()
+        assert config.getini("minversion") == "3.36"
 
-    def test_pyproject_toml(self, testdir):
-        testdir.makepyprojecttoml(
+    def test_pyproject_toml(self, pytester: Pytester) -> None:
+        pyproject_toml = pytester.makepyprojecttoml(
             """
             [tool.pytest.ini_options]
             minversion = "1.0"
         """
         )
-        config = testdir.parseconfig()
+        config = pytester.parseconfig()
+        assert config.inipath == pyproject_toml
         assert config.getini("minversion") == "1.0"
 
-    def test_toxini_before_lower_pytestini(self, testdir):
-        sub = testdir.tmpdir.mkdir("sub")
-        sub.join("tox.ini").write(
+    def test_empty_pyproject_toml(self, pytester: Pytester) -> None:
+        """An empty pyproject.toml is considered as config if no other option is found."""
+        pyproject_toml = pytester.makepyprojecttoml("")
+        config = pytester.parseconfig()
+        assert config.inipath == pyproject_toml
+
+    def test_empty_pyproject_toml_found_many(self, pytester: Pytester) -> None:
+        """
+        In case we find multiple pyproject.toml files in our search, without a [tool.pytest.ini_options]
+        table and without finding other candidates, the closest to where we started wins.
+        """
+        pytester.makefile(
+            ".toml",
+            **{
+                "pyproject": "",
+                "foo/pyproject": "",
+                "foo/bar/pyproject": "",
+            },
+        )
+        config = pytester.parseconfig(pytester.path / "foo/bar")
+        assert config.inipath == pytester.path / "foo/bar/pyproject.toml"
+
+    def test_pytest_ini_trumps_pyproject_toml(self, pytester: Pytester) -> None:
+        """A pytest.ini always take precedence over a pyproject.toml file."""
+        pytester.makepyprojecttoml("[tool.pytest.ini_options]")
+        pytest_ini = pytester.makefile(".ini", pytest="")
+        config = pytester.parseconfig()
+        assert config.inipath == pytest_ini
+
+    def test_toxini_before_lower_pytestini(self, pytester: Pytester) -> None:
+        sub = pytester.mkdir("sub")
+        sub.joinpath("tox.ini").write_text(
             textwrap.dedent(
                 """
             [pytest]
             minversion = 2.0
         """
-            )
+            ),
+            encoding="utf-8",
         )
-        testdir.tmpdir.join("pytest.ini").write(
+        pytester.path.joinpath("pytest.ini").write_text(
             textwrap.dedent(
                 """
             [pytest]
             minversion = 1.5
         """
-            )
+            ),
+            encoding="utf-8",
         )
-        config = testdir.parseconfigure(sub)
+        config = pytester.parseconfigure(sub)
         assert config.getini("minversion") == "2.0"
 
-    def test_ini_parse_error(self, testdir):
-        testdir.tmpdir.join("pytest.ini").write("addopts = -x")
-        result = testdir.runpytest()
+    def test_ini_parse_error(self, pytester: Pytester) -> None:
+        pytester.path.joinpath("pytest.ini").write_text(
+            "addopts = -x", encoding="utf-8"
+        )
+        result = pytester.runpytest()
         assert result.ret != 0
-        result.stderr.fnmatch_lines(["ERROR: *pytest.ini:1: no section header defined"])
+        result.stderr.fnmatch_lines("ERROR: *pytest.ini:1: no section header defined")
+
+    def test_toml_parse_error(self, pytester: Pytester) -> None:
+        pytester.makepyprojecttoml(
+            """
+            \\"
+            """
+        )
+        result = pytester.runpytest()
+        assert result.ret != 0
+        result.stderr.fnmatch_lines("ERROR: *pyproject.toml: Invalid statement*")
+
+    def test_confcutdir_default_without_configfile(self, pytester: Pytester) -> None:
+        # If --confcutdir is not specified, and there is no configfile, default
+        # to the rootpath.
+        sub = pytester.mkdir("sub")
+        os.chdir(sub)
+        config = pytester.parseconfigure()
+        assert config.pluginmanager._confcutdir == sub
+
+    def test_confcutdir_default_with_configfile(self, pytester: Pytester) -> None:
+        # If --confcutdir is not specified, and there is a configfile, default
+        # to the configfile's directory.
+        pytester.makeini("[pytest]")
+        sub = pytester.mkdir("sub")
+        os.chdir(sub)
+        config = pytester.parseconfigure()
+        assert config.pluginmanager._confcutdir == pytester.path
 
     @pytest.mark.xfail(reason="probably not needed")
-    def test_confcutdir(self, testdir):
-        sub = testdir.mkdir("sub")
-        sub.chdir()
-        testdir.makeini(
+    def test_confcutdir(self, pytester: Pytester) -> None:
+        sub = pytester.mkdir("sub")
+        os.chdir(sub)
+        pytester.makeini(
             """
             [pytest]
             addopts = --qwe
         """
         )
-        result = testdir.inline_run("--confcutdir=.")
+        result = pytester.inline_run("--confcutdir=.")
         assert result.ret == 0
 
     @pytest.mark.parametrize(
@@ -246,24 +313,29 @@ class TestParseIni:
     )
     @pytest.mark.filterwarnings("default")
     def test_invalid_config_options(
-        self, testdir, ini_file_text, invalid_keys, warning_output, exception_text
-    ):
-        testdir.makeconftest(
+        self,
+        pytester: Pytester,
+        ini_file_text,
+        invalid_keys,
+        warning_output,
+        exception_text,
+    ) -> None:
+        pytester.makeconftest(
             """
             def pytest_addoption(parser):
                 parser.addini("conftest_ini_key", "")
             """
         )
-        testdir.makepyfile("def test(): pass")
-        testdir.makeini(ini_file_text)
+        pytester.makepyfile("def test(): pass")
+        pytester.makeini(ini_file_text)
 
-        config = testdir.parseconfig()
+        config = pytester.parseconfig()
         assert sorted(config._get_unknown_ini_keys()) == sorted(invalid_keys)
 
-        result = testdir.runpytest()
+        result = pytester.runpytest()
         result.stdout.fnmatch_lines(warning_output)
 
-        result = testdir.runpytest("--strict-config")
+        result = pytester.runpytest("--strict-config")
         if exception_text:
             result.stderr.fnmatch_lines("ERROR: " + exception_text)
             assert result.ret == pytest.ExitCode.USAGE_ERROR
@@ -272,9 +344,9 @@ class TestParseIni:
             assert result.ret == pytest.ExitCode.OK
 
     @pytest.mark.filterwarnings("default")
-    def test_silence_unknown_key_warning(self, testdir: Testdir) -> None:
+    def test_silence_unknown_key_warning(self, pytester: Pytester) -> None:
         """Unknown config key warnings can be silenced using filterwarnings (#7620)"""
-        testdir.makeini(
+        pytester.makeini(
             """
             [pytest]
             filterwarnings =
@@ -282,15 +354,15 @@ class TestParseIni:
             foobar=1
         """
         )
-        result = testdir.runpytest()
+        result = pytester.runpytest()
         result.stdout.no_fnmatch_line("*PytestConfigWarning*")
 
-    @pytest.mark.filterwarnings("default")
+    @pytest.mark.filterwarnings("default::pytest.PytestConfigWarning")
     def test_disable_warnings_plugin_disables_config_warnings(
-        self, testdir: Testdir
+        self, pytester: Pytester
     ) -> None:
         """Disabling 'warnings' plugin also disables config time warnings"""
-        testdir.makeconftest(
+        pytester.makeconftest(
             """
             import pytest
             def pytest_configure(config):
@@ -300,17 +372,18 @@ class TestParseIni:
                 )
         """
         )
-        result = testdir.runpytest("-pno:warnings")
+        result = pytester.runpytest("-pno:warnings")
         result.stdout.no_fnmatch_line("*PytestConfigWarning*")
 
     @pytest.mark.parametrize(
-        "ini_file_text, exception_text",
+        "ini_file_text, plugin_version, exception_text",
         [
             pytest.param(
                 """
                 [pytest]
                 required_plugins = a z
                 """,
+                "1.5",
                 "Missing required plugins: a, z",
                 id="2-missing",
             ),
@@ -319,6 +392,7 @@ class TestParseIni:
                 [pytest]
                 required_plugins = a z myplugin
                 """,
+                "1.5",
                 "Missing required plugins: a, z",
                 id="2-missing-1-ok",
             ),
@@ -327,6 +401,7 @@ class TestParseIni:
                 [pytest]
                 required_plugins = myplugin
                 """,
+                "1.5",
                 None,
                 id="1-ok",
             ),
@@ -335,6 +410,7 @@ class TestParseIni:
                 [pytest]
                 required_plugins = myplugin==1.5
                 """,
+                "1.5",
                 None,
                 id="1-ok-pin-exact",
             ),
@@ -343,49 +419,67 @@ class TestParseIni:
                 [pytest]
                 required_plugins = myplugin>1.0,<2.0
                 """,
+                "1.5",
                 None,
                 id="1-ok-pin-loose",
             ),
             pytest.param(
                 """
                 [pytest]
-                required_plugins = pyplugin==1.6
+                required_plugins = myplugin
                 """,
-                "Missing required plugins: pyplugin==1.6",
+                "1.5a1",
+                None,
+                id="1-ok-prerelease",
+            ),
+            pytest.param(
+                """
+                [pytest]
+                required_plugins = myplugin==1.6
+                """,
+                "1.5",
+                "Missing required plugins: myplugin==1.6",
                 id="missing-version",
             ),
             pytest.param(
                 """
                 [pytest]
-                required_plugins = pyplugin==1.6 other==1.0
+                required_plugins = myplugin==1.6 other==1.0
                 """,
-                "Missing required plugins: other==1.0, pyplugin==1.6",
+                "1.5",
+                "Missing required plugins: myplugin==1.6, other==1.0",
                 id="missing-versions",
             ),
             pytest.param(
                 """
                 [some_other_header]
-                required_plugins = wont be triggered
+                required_plugins = won't be triggered
                 [pytest]
                 """,
+                "1.5",
                 None,
                 id="invalid-header",
             ),
         ],
     )
     def test_missing_required_plugins(
-        self, testdir, monkeypatch, ini_file_text, exception_text
-    ):
+        self,
+        pytester: Pytester,
+        monkeypatch: MonkeyPatch,
+        ini_file_text: str,
+        plugin_version: str,
+        exception_text: str,
+    ) -> None:
         """Check 'required_plugins' option with various settings.
 
         This test installs a mock "myplugin-1.5" which is used in the parametrized test cases.
         """
 
-        @attr.s
+        @dataclasses.dataclass
         class DummyEntryPoint:
-            name = attr.ib()
-            module = attr.ib()
-            group = "pytest11"
+            name: str
+            module: str
+            group: str = "pytest11"
 
             def load(self):
                 __import__(self.module)
@@ -395,11 +489,11 @@ class TestParseIni:
             DummyEntryPoint("myplugin1", "myplugin1_module"),
         ]
 
-        @attr.s
+        @dataclasses.dataclass
         class DummyDist:
-            entry_points = attr.ib()
-            files = ()
-            version = "1.5"
+            entry_points: object
+            files: object = ()
+            version: str = plugin_version
 
             @property
             def metadata(self):
@@ -408,26 +502,28 @@ class TestParseIni:
         def my_dists():
             return [DummyDist(entry_points)]
 
-        testdir.makepyfile(myplugin1_module="# my plugin module")
-        testdir.syspathinsert()
+        pytester.makepyfile(myplugin1_module="# my plugin module")
+        pytester.syspathinsert()
 
-        monkeypatch.setattr(importlib_metadata, "distributions", my_dists)
-        testdir.monkeypatch.delenv("PYTEST_DISABLE_PLUGIN_AUTOLOAD", raising=False)
+        monkeypatch.setattr(importlib.metadata, "distributions", my_dists)
+        monkeypatch.delenv("PYTEST_DISABLE_PLUGIN_AUTOLOAD", raising=False)
 
-        testdir.makeini(ini_file_text)
+        pytester.makeini(ini_file_text)
 
         if exception_text:
             with pytest.raises(pytest.UsageError, match=exception_text):
-                testdir.parseconfig()
+                pytester.parseconfig()
         else:
-            testdir.parseconfig()
+            pytester.parseconfig()
 
-    def test_early_config_cmdline(self, testdir, monkeypatch):
+    def test_early_config_cmdline(
+        self, pytester: Pytester, monkeypatch: MonkeyPatch
+    ) -> None:
         """early_config contains options registered by third-party plugins.
 
         This is a regression involving pytest-cov (and possibly others) introduced in #7700.
         """
-        testdir.makepyfile(
+        pytester.makepyfile(
             myplugin="""
             def pytest_addoption(parser):
                 parser.addoption('--foo', default=None, dest='foo')
@@ -437,50 +533,74 @@ class TestParseIni:
             """
         )
         monkeypatch.setenv("PYTEST_PLUGINS", "myplugin")
-        testdir.syspathinsert()
-        result = testdir.runpytest("--foo=1")
+        pytester.syspathinsert()
+        result = pytester.runpytest("--foo=1")
         result.stdout.fnmatch_lines("* no tests ran in *")
+
+    def test_args_source_args(self, pytester: Pytester):
+        config = pytester.parseconfig("--", "test_filename.py")
+        assert config.args_source == Config.ArgsSource.ARGS
+
+    def test_args_source_invocation_dir(self, pytester: Pytester):
+        config = pytester.parseconfig()
+        assert config.args_source == Config.ArgsSource.INVOCATION_DIR
+
+    def test_args_source_testpaths(self, pytester: Pytester):
+        pytester.makeini(
+            """
+            [pytest]
+            testpaths=*
+        """
+        )
+        config = pytester.parseconfig()
+        assert config.args_source == Config.ArgsSource.TESTPATHS
 
 
 class TestConfigCmdlineParsing:
-    def test_parsing_again_fails(self, testdir):
-        config = testdir.parseconfig()
+    def test_parsing_again_fails(self, pytester: Pytester) -> None:
+        config = pytester.parseconfig()
         pytest.raises(AssertionError, lambda: config.parse([]))
 
-    def test_explicitly_specified_config_file_is_loaded(self, testdir):
-        testdir.makeconftest(
+    def test_explicitly_specified_config_file_is_loaded(
+        self, pytester: Pytester
+    ) -> None:
+        pytester.makeconftest(
             """
             def pytest_addoption(parser):
                 parser.addini("custom", "")
         """
         )
-        testdir.makeini(
+        pytester.makeini(
             """
             [pytest]
             custom = 0
         """
         )
-        testdir.makefile(
+        pytester.makefile(
             ".ini",
             custom="""
             [pytest]
             custom = 1
         """,
         )
-        config = testdir.parseconfig("-c", "custom.ini")
+        config = pytester.parseconfig("-c", "custom.ini")
+        assert config.getini("custom") == "1"
+        config = pytester.parseconfig("--config-file", "custom.ini")
         assert config.getini("custom") == "1"
 
-        testdir.makefile(
+        pytester.makefile(
             ".cfg",
             custom_tool_pytest_section="""
             [tool:pytest]
             custom = 1
         """,
         )
-        config = testdir.parseconfig("-c", "custom_tool_pytest_section.cfg")
+        config = pytester.parseconfig("-c", "custom_tool_pytest_section.cfg")
+        assert config.getini("custom") == "1"
+        config = pytester.parseconfig("--config-file", "custom_tool_pytest_section.cfg")
         assert config.getini("custom") == "1"
 
-        testdir.makefile(
+        pytester.makefile(
             ".toml",
             custom="""
                 [tool.pytest.ini_options]
@@ -489,11 +609,13 @@ class TestConfigCmdlineParsing:
                 ]  # this is here on purpose, as it makes this an invalid '.ini' file
             """,
         )
-        config = testdir.parseconfig("-c", "custom.toml")
+        config = pytester.parseconfig("-c", "custom.toml")
+        assert config.getini("custom") == "1"
+        config = pytester.parseconfig("--config-file", "custom.toml")
         assert config.getini("custom") == "1"
 
-    def test_absolute_win32_path(self, testdir):
-        temp_ini_file = testdir.makefile(
+    def test_absolute_win32_path(self, pytester: Pytester) -> None:
+        temp_ini_file = pytester.makefile(
             ".ini",
             custom="""
             [pytest]
@@ -502,134 +624,134 @@ class TestConfigCmdlineParsing:
         )
         from os.path import normpath
 
-        temp_ini_file = normpath(str(temp_ini_file))
-        ret = pytest.main(["-c", temp_ini_file])
+        temp_ini_file_norm = normpath(str(temp_ini_file))
+        ret = pytest.main(["-c", temp_ini_file_norm])
+        assert ret == ExitCode.OK
+        ret = pytest.main(["--config-file", temp_ini_file_norm])
         assert ret == ExitCode.OK
 
 
 class TestConfigAPI:
-    def test_config_trace(self, testdir) -> None:
-        config = testdir.parseconfig()
-        values = []  # type: List[str]
+    def test_config_trace(self, pytester: Pytester) -> None:
+        config = pytester.parseconfig()
+        values: List[str] = []
         config.trace.root.setwriter(values.append)
         config.trace("hello")
         assert len(values) == 1
         assert values[0] == "hello [config]\n"
 
-    def test_config_getoption(self, testdir):
-        testdir.makeconftest(
+    def test_config_getoption(self, pytester: Pytester) -> None:
+        pytester.makeconftest(
             """
             def pytest_addoption(parser):
                 parser.addoption("--hello", "-X", dest="hello")
         """
         )
-        config = testdir.parseconfig("--hello=this")
+        config = pytester.parseconfig("--hello=this")
         for x in ("hello", "--hello", "-X"):
             assert config.getoption(x) == "this"
         pytest.raises(ValueError, config.getoption, "qweqwe")
 
-    def test_config_getoption_unicode(self, testdir):
-        testdir.makeconftest(
+    def test_config_getoption_unicode(self, pytester: Pytester) -> None:
+        pytester.makeconftest(
             """
             def pytest_addoption(parser):
                 parser.addoption('--hello', type=str)
         """
         )
-        config = testdir.parseconfig("--hello=this")
+        config = pytester.parseconfig("--hello=this")
         assert config.getoption("hello") == "this"
 
-    def test_config_getvalueorskip(self, testdir):
-        config = testdir.parseconfig()
+    def test_config_getvalueorskip(self, pytester: Pytester) -> None:
+        config = pytester.parseconfig()
         pytest.raises(pytest.skip.Exception, config.getvalueorskip, "hello")
         verbose = config.getvalueorskip("verbose")
         assert verbose == config.option.verbose
 
-    def test_config_getvalueorskip_None(self, testdir):
-        testdir.makeconftest(
+    def test_config_getvalueorskip_None(self, pytester: Pytester) -> None:
+        pytester.makeconftest(
             """
             def pytest_addoption(parser):
                 parser.addoption("--hello")
         """
         )
-        config = testdir.parseconfig()
+        config = pytester.parseconfig()
         with pytest.raises(pytest.skip.Exception):
             config.getvalueorskip("hello")
 
-    def test_getoption(self, testdir):
-        config = testdir.parseconfig()
+    def test_getoption(self, pytester: Pytester) -> None:
+        config = pytester.parseconfig()
         with pytest.raises(ValueError):
             config.getvalue("x")
         assert config.getoption("x", 1) == 1
 
-    def test_getconftest_pathlist(self, testdir, tmpdir):
-        somepath = tmpdir.join("x", "y", "z")
-        p = tmpdir.join("conftest.py")
-        p.write("pathlist = ['.', %r]" % str(somepath))
-        config = testdir.parseconfigure(p)
-        assert config._getconftest_pathlist("notexist", path=tmpdir) is None
-        pl = config._getconftest_pathlist("pathlist", path=tmpdir)
-        print(pl)
-        assert len(pl) == 2
-        assert pl[0] == tmpdir
-        assert pl[1] == somepath
+    def test_getconftest_pathlist(self, pytester: Pytester, tmp_path: Path) -> None:
+        somepath = tmp_path.joinpath("x", "y", "z")
+        p = tmp_path.joinpath("conftest.py")
+        p.write_text(f"mylist = {['.', str(somepath)]}", encoding="utf-8")
+        config = pytester.parseconfigure(p)
+        assert config._getconftest_pathlist("notexist", path=tmp_path) is None
+        assert config._getconftest_pathlist("mylist", path=tmp_path) == [
+            tmp_path,
+            somepath,
+        ]
 
-    def test_addini(self, testdir):
-        testdir.makeconftest(
-            """
+    @pytest.mark.parametrize("maybe_type", ["not passed", "None", '"string"'])
+    def test_addini(self, pytester: Pytester, maybe_type: str) -> None:
+        if maybe_type == "not passed":
+            type_string = ""
+        else:
+            type_string = f", {maybe_type}"
+
+        pytester.makeconftest(
+            f"""
             def pytest_addoption(parser):
-                parser.addini("myname", "my new ini value")
+                parser.addini("myname", "my new ini value"{type_string})
         """
         )
-        testdir.makeini(
+        pytester.makeini(
             """
             [pytest]
             myname=hello
         """
         )
-        config = testdir.parseconfig()
+        config = pytester.parseconfig()
         val = config.getini("myname")
         assert val == "hello"
         pytest.raises(ValueError, config.getini, "other")
 
-    def make_conftest_for_pathlist(self, testdir):
-        testdir.makeconftest(
+    @pytest.mark.parametrize("config_type", ["ini", "pyproject"])
+    def test_addini_paths(self, pytester: Pytester, config_type: str) -> None:
+        pytester.makeconftest(
             """
             def pytest_addoption(parser):
-                parser.addini("paths", "my new ini value", type="pathlist")
+                parser.addini("paths", "my new ini value", type="paths")
                 parser.addini("abc", "abc value")
         """
         )
-
-    def test_addini_pathlist_ini_files(self, testdir):
-        self.make_conftest_for_pathlist(testdir)
-        p = testdir.makeini(
+        if config_type == "ini":
+            inipath = pytester.makeini(
+                """
+                [pytest]
+                paths=hello world/sub.py
             """
-            [pytest]
-            paths=hello world/sub.py
-        """
-        )
-        self.check_config_pathlist(testdir, p)
-
-    def test_addini_pathlist_pyproject_toml(self, testdir):
-        self.make_conftest_for_pathlist(testdir)
-        p = testdir.makepyprojecttoml(
+            )
+        elif config_type == "pyproject":
+            inipath = pytester.makepyprojecttoml(
+                """
+                [tool.pytest.ini_options]
+                paths=["hello", "world/sub.py"]
             """
-            [tool.pytest.ini_options]
-            paths=["hello", "world/sub.py"]
-        """
-        )
-        self.check_config_pathlist(testdir, p)
-
-    def check_config_pathlist(self, testdir, config_path):
-        config = testdir.parseconfig()
+            )
+        config = pytester.parseconfig()
         values = config.getini("paths")
         assert len(values) == 2
-        assert values[0] == config_path.dirpath("hello")
-        assert values[1] == config_path.dirpath("world/sub.py")
+        assert values[0] == inipath.parent.joinpath("hello")
+        assert values[1] == inipath.parent.joinpath("world/sub.py")
         pytest.raises(ValueError, config.getini, "other")
 
-    def make_conftest_for_args(self, testdir):
-        testdir.makeconftest(
+    def make_conftest_for_args(self, pytester: Pytester) -> None:
+        pytester.makeconftest(
             """
             def pytest_addoption(parser):
                 parser.addini("args", "new args", type="args")
@@ -637,35 +759,35 @@ class TestConfigAPI:
         """
         )
 
-    def test_addini_args_ini_files(self, testdir):
-        self.make_conftest_for_args(testdir)
-        testdir.makeini(
+    def test_addini_args_ini_files(self, pytester: Pytester) -> None:
+        self.make_conftest_for_args(pytester)
+        pytester.makeini(
             """
             [pytest]
             args=123 "123 hello" "this"
             """
         )
-        self.check_config_args(testdir)
+        self.check_config_args(pytester)
 
-    def test_addini_args_pyproject_toml(self, testdir):
-        self.make_conftest_for_args(testdir)
-        testdir.makepyprojecttoml(
+    def test_addini_args_pyproject_toml(self, pytester: Pytester) -> None:
+        self.make_conftest_for_args(pytester)
+        pytester.makepyprojecttoml(
             """
             [tool.pytest.ini_options]
             args = ["123", "123 hello", "this"]
             """
         )
-        self.check_config_args(testdir)
+        self.check_config_args(pytester)
 
-    def check_config_args(self, testdir):
-        config = testdir.parseconfig()
+    def check_config_args(self, pytester: Pytester) -> None:
+        config = pytester.parseconfig()
         values = config.getini("args")
         assert values == ["123", "123 hello", "this"]
         values = config.getini("a2")
         assert values == list("123")
 
-    def make_conftest_for_linelist(self, testdir):
-        testdir.makeconftest(
+    def make_conftest_for_linelist(self, pytester: Pytester) -> None:
+        pytester.makeconftest(
             """
             def pytest_addoption(parser):
                 parser.addini("xy", "", type="linelist")
@@ -673,29 +795,29 @@ class TestConfigAPI:
         """
         )
 
-    def test_addini_linelist_ini_files(self, testdir):
-        self.make_conftest_for_linelist(testdir)
-        testdir.makeini(
+    def test_addini_linelist_ini_files(self, pytester: Pytester) -> None:
+        self.make_conftest_for_linelist(pytester)
+        pytester.makeini(
             """
             [pytest]
             xy= 123 345
                 second line
         """
         )
-        self.check_config_linelist(testdir)
+        self.check_config_linelist(pytester)
 
-    def test_addini_linelist_pprojecttoml(self, testdir):
-        self.make_conftest_for_linelist(testdir)
-        testdir.makepyprojecttoml(
+    def test_addini_linelist_pprojecttoml(self, pytester: Pytester) -> None:
+        self.make_conftest_for_linelist(pytester)
+        pytester.makepyprojecttoml(
             """
             [tool.pytest.ini_options]
             xy = ["123 345", "second line"]
         """
         )
-        self.check_config_linelist(testdir)
+        self.check_config_linelist(pytester)
 
-    def check_config_linelist(self, testdir):
-        config = testdir.parseconfig()
+    def check_config_linelist(self, pytester: Pytester) -> None:
+        config = pytester.parseconfig()
         values = config.getini("xy")
         assert len(values) == 2
         assert values == ["123 345", "second line"]
@@ -705,38 +827,40 @@ class TestConfigAPI:
     @pytest.mark.parametrize(
         "str_val, bool_val", [("True", True), ("no", False), ("no-ini", True)]
     )
-    def test_addini_bool(self, testdir, str_val, bool_val):
-        testdir.makeconftest(
+    def test_addini_bool(
+        self, pytester: Pytester, str_val: str, bool_val: bool
+    ) -> None:
+        pytester.makeconftest(
             """
             def pytest_addoption(parser):
                 parser.addini("strip", "", type="bool", default=True)
         """
         )
         if str_val != "no-ini":
-            testdir.makeini(
+            pytester.makeini(
                 """
                 [pytest]
                 strip=%s
             """
                 % str_val
             )
-        config = testdir.parseconfig()
+        config = pytester.parseconfig()
         assert config.getini("strip") is bool_val
 
-    def test_addinivalue_line_existing(self, testdir):
-        testdir.makeconftest(
+    def test_addinivalue_line_existing(self, pytester: Pytester) -> None:
+        pytester.makeconftest(
             """
             def pytest_addoption(parser):
                 parser.addini("xy", "", type="linelist")
         """
         )
-        testdir.makeini(
+        pytester.makeini(
             """
             [pytest]
             xy= 123
         """
         )
-        config = testdir.parseconfig()
+        config = pytester.parseconfig()
         values = config.getini("xy")
         assert len(values) == 1
         assert values == ["123"]
@@ -745,14 +869,14 @@ class TestConfigAPI:
         assert len(values) == 2
         assert values == ["123", "456"]
 
-    def test_addinivalue_line_new(self, testdir):
-        testdir.makeconftest(
+    def test_addinivalue_line_new(self, pytester: Pytester) -> None:
+        pytester.makeconftest(
             """
             def pytest_addoption(parser):
                 parser.addini("xy", "", type="linelist")
         """
         )
-        config = testdir.parseconfig()
+        config = pytester.parseconfig()
         assert not config.getini("xy")
         config.addinivalue_line("xy", "456")
         values = config.getini("xy")
@@ -763,19 +887,78 @@ class TestConfigAPI:
         assert len(values) == 2
         assert values == ["456", "123"]
 
-    def test_confcutdir_check_isdir(self, testdir):
+    def test_addini_default_values(self, pytester: Pytester) -> None:
+        """Tests the default values for configuration based on
+        config type
+        """
+        pytester.makeconftest(
+            """
+            def pytest_addoption(parser):
+                parser.addini("linelist1", "", type="linelist")
+                parser.addini("paths1", "", type="paths")
+                parser.addini("pathlist1", "", type="pathlist")
+                parser.addini("args1", "", type="args")
+                parser.addini("bool1", "", type="bool")
+                parser.addini("string1", "", type="string")
+                parser.addini("none_1", "", type="linelist", default=None)
+                parser.addini("none_2", "", default=None)
+                parser.addini("no_type", "")
+        """
+        )
+
+        config = pytester.parseconfig()
+        # default for linelist, paths, pathlist and args is []
+        value = config.getini("linelist1")
+        assert value == []
+        value = config.getini("paths1")
+        assert value == []
+        value = config.getini("pathlist1")
+        assert value == []
+        value = config.getini("args1")
+        assert value == []
+        # default for bool is False
+        value = config.getini("bool1")
+        assert value is False
+        # default for string is ""
+        value = config.getini("string1")
+        assert value == ""
+        # should return None if None is explicity set as default value
+        # irrespective of the type argument
+        value = config.getini("none_1")
+        assert value is None
+        value = config.getini("none_2")
+        assert value is None
+        # in case no type is provided and no default set
+        # treat it as string and default value will be ""
+        value = config.getini("no_type")
+        assert value == ""
+
+    @pytest.mark.parametrize(
+        "type, expected",
+        [
+            pytest.param(None, "", id="None"),
+            pytest.param("string", "", id="string"),
+            pytest.param("paths", [], id="paths"),
+            pytest.param("pathlist", [], id="pathlist"),
+            pytest.param("args", [], id="args"),
+            pytest.param("linelist", [], id="linelist"),
+            pytest.param("bool", False, id="bool"),
+        ],
+    )
+    def test_get_ini_default_for_type(self, type: Any, expected: Any) -> None:
+        assert get_ini_default_for_type(type) == expected
+
+    def test_confcutdir_check_isdir(self, pytester: Pytester) -> None:
         """Give an error if --confcutdir is not a valid directory (#2078)"""
         exp_match = r"^--confcutdir must be a directory, given: "
         with pytest.raises(pytest.UsageError, match=exp_match):
-            testdir.parseconfig(
-                "--confcutdir", testdir.tmpdir.join("file").ensure(file=1)
-            )
+            pytester.parseconfig("--confcutdir", pytester.path.joinpath("file"))
         with pytest.raises(pytest.UsageError, match=exp_match):
-            testdir.parseconfig("--confcutdir", testdir.tmpdir.join("inexistant"))
-        config = testdir.parseconfig(
-            "--confcutdir", testdir.tmpdir.join("dir").ensure(dir=1)
-        )
-        assert config.getoption("confcutdir") == str(testdir.tmpdir.join("dir"))
+            pytester.parseconfig("--confcutdir", pytester.path.joinpath("nonexistent"))
+
+        p = pytester.mkdir("dir")
+        config = pytester.parseconfig("--confcutdir", p)
+        assert config.getoption("confcutdir") == str(p)
 
     @pytest.mark.parametrize(
         "names, expected",
@@ -791,14 +974,17 @@ class TestConfigAPI:
             (["src/bar/__init__.py"], ["bar"]),
             (["src/bar/__init__.py", "setup.py"], ["bar"]),
             (["source/python/bar/__init__.py", "setup.py"], ["bar"]),
+            # editable installation finder modules
+            (["__editable___xyz_finder.py"], []),
+            (["bar/__init__.py", "__editable___xyz_finder.py"], ["bar"]),
         ],
     )
-    def test_iter_rewritable_modules(self, names, expected):
+    def test_iter_rewritable_modules(self, names, expected) -> None:
         assert list(_iter_rewritable_modules(names)) == expected
 
 
 class TestConfigFromdictargs:
-    def test_basic_behavior(self, _sys_snapshot):
+    def test_basic_behavior(self, _sys_snapshot) -> None:
         option_dict = {"verbose": 444, "foo": "bar", "capture": "no"}
         args = ["a", "b"]
 
@@ -812,7 +998,7 @@ class TestConfigFromdictargs:
 
     def test_invocation_params_args(self, _sys_snapshot) -> None:
         """Show that fromdictargs can handle args in their "orig" format"""
-        option_dict = {}  # type: Dict[str, object]
+        option_dict: Dict[str, object] = {}
         args = ["-vvvv", "-s", "a", "b"]
 
         config = Config.fromdictargs(option_dict, args)
@@ -821,55 +1007,67 @@ class TestConfigFromdictargs:
         assert config.option.verbose == 4
         assert config.option.capture == "no"
 
-    def test_inifilename(self, tmpdir):
-        tmpdir.join("foo/bar.ini").ensure().write(
+    def test_inifilename(self, tmp_path: Path) -> None:
+        d1 = tmp_path.joinpath("foo")
+        d1.mkdir()
+        p1 = d1.joinpath("bar.ini")
+        p1.touch()
+        p1.write_text(
             textwrap.dedent(
                 """\
                 [pytest]
                 name = value
                 """
-            )
+            ),
+            encoding="utf-8",
         )
 
-        inifile = "../../foo/bar.ini"
-        option_dict = {"inifilename": inifile, "capture": "no"}
+        inifilename = "../../foo/bar.ini"
+        option_dict = {"inifilename": inifilename, "capture": "no"}
 
-        cwd = tmpdir.join("a/b")
-        cwd.join("pytest.ini").ensure().write(
+        cwd = tmp_path.joinpath("a/b")
+        cwd.mkdir(parents=True)
+        p2 = cwd.joinpath("pytest.ini")
+        p2.touch()
+        p2.write_text(
             textwrap.dedent(
                 """\
                 [pytest]
                 name = wrong-value
                 should_not_be_set = true
                 """
-            )
+            ),
+            encoding="utf-8",
         )
-        with cwd.ensure(dir=True).as_cwd():
+        with MonkeyPatch.context() as mp:
+            mp.chdir(cwd)
             config = Config.fromdictargs(option_dict, ())
-            inipath = py.path.local(inifile)
+            inipath = absolutepath(inifilename)
 
         assert config.args == [str(cwd)]
-        assert config.option.inifilename == inifile
+        assert config.option.inifilename == inifilename
         assert config.option.capture == "no"
 
         # this indicates this is the file used for getting configuration values
-        assert config.inifile == inipath
+        assert config.inipath == inipath
         assert config.inicfg.get("name") == "value"
         assert config.inicfg.get("should_not_be_set") is None
 
 
-def test_options_on_small_file_do_not_blow_up(testdir) -> None:
+def test_options_on_small_file_do_not_blow_up(pytester: Pytester) -> None:
     def runfiletest(opts: Sequence[str]) -> None:
-        reprec = testdir.inline_run(*opts)
+        reprec = pytester.inline_run(*opts)
         passed, skipped, failed = reprec.countoutcomes()
         assert failed == 2
         assert skipped == passed == 0
 
-    path = testdir.makepyfile(
-        """
+    path = str(
+        pytester.makepyfile(
+            """
         def test_f1(): assert 0
         def test_f2(): assert 0
     """
+        )
     )
 
     runfiletest([path])
@@ -884,7 +1082,9 @@ def test_options_on_small_file_do_not_blow_up(testdir) -> None:
     runfiletest(["-v", "-v", path])
 
 
-def test_preparse_ordering_with_setuptools(testdir, monkeypatch):
+def test_preparse_ordering_with_setuptools(
+    pytester: Pytester, monkeypatch: MonkeyPatch
+) -> None:
     monkeypatch.delenv("PYTEST_DISABLE_PLUGIN_AUTOLOAD", raising=False)
 
     class EntryPoint:
@@ -905,19 +1105,21 @@ def test_preparse_ordering_with_setuptools(testdir, monkeypatch):
     def my_dists():
         return (Dist,)
 
-    monkeypatch.setattr(importlib_metadata, "distributions", my_dists)
-    testdir.makeconftest(
+    monkeypatch.setattr(importlib.metadata, "distributions", my_dists)
+    pytester.makeconftest(
         """
         pytest_plugins = "mytestplugin",
     """
     )
     monkeypatch.setenv("PYTEST_PLUGINS", "mytestplugin")
-    config = testdir.parseconfig()
+    config = pytester.parseconfig()
     plugin = config.pluginmanager.getplugin("mytestplugin")
     assert plugin.x == 42
 
 
-def test_setuptools_importerror_issue1479(testdir, monkeypatch):
+def test_setuptools_importerror_issue1479(
+    pytester: Pytester, monkeypatch: MonkeyPatch
+) -> None:
     monkeypatch.delenv("PYTEST_DISABLE_PLUGIN_AUTOLOAD", raising=False)
 
     class DummyEntryPoint:
@@ -936,12 +1138,14 @@ def test_setuptools_importerror_issue1479(testdir, monkeypatch):
     def distributions():
         return (Distribution(),)
 
-    monkeypatch.setattr(importlib_metadata, "distributions", distributions)
+    monkeypatch.setattr(importlib.metadata, "distributions", distributions)
     with pytest.raises(ImportError):
-        testdir.parseconfig()
+        pytester.parseconfig()
 
 
-def test_importlib_metadata_broken_distribution(testdir, monkeypatch):
+def test_importlib_metadata_broken_distribution(
+    pytester: Pytester, monkeypatch: MonkeyPatch
+) -> None:
     """Integration test for broken distributions with 'files' metadata being None (#5389)"""
     monkeypatch.delenv("PYTEST_DISABLE_PLUGIN_AUTOLOAD", raising=False)
 
@@ -961,12 +1165,14 @@ def test_importlib_metadata_broken_distribution(testdir, monkeypatch):
     def distributions():
         return (Distribution(),)
 
-    monkeypatch.setattr(importlib_metadata, "distributions", distributions)
-    testdir.parseconfig()
+    monkeypatch.setattr(importlib.metadata, "distributions", distributions)
+    pytester.parseconfig()
 
 
 @pytest.mark.parametrize("block_it", [True, False])
-def test_plugin_preparse_prevents_setuptools_loading(testdir, monkeypatch, block_it):
+def test_plugin_preparse_prevents_setuptools_loading(
+    pytester: Pytester, monkeypatch: MonkeyPatch, block_it: bool
+) -> None:
     monkeypatch.delenv("PYTEST_DISABLE_PLUGIN_AUTOLOAD", raising=False)
 
     plugin_module_placeholder = object()
@@ -987,9 +1193,9 @@ def test_plugin_preparse_prevents_setuptools_loading(testdir, monkeypatch, block
     def distributions():
         return (Distribution(),)
 
-    monkeypatch.setattr(importlib_metadata, "distributions", distributions)
+    monkeypatch.setattr(importlib.metadata, "distributions", distributions)
     args = ("-p", "no:mytestplugin") if block_it else ()
-    config = testdir.parseconfig(*args)
+    config = pytester.parseconfig(*args)
     config.pluginmanager.import_plugin("mytestplugin")
     if block_it:
         assert "mytestplugin" not in sys.modules
@@ -1003,7 +1209,12 @@ def test_plugin_preparse_prevents_setuptools_loading(testdir, monkeypatch, block
 @pytest.mark.parametrize(
     "parse_args,should_load", [(("-p", "mytestplugin"), True), ((), False)]
 )
-def test_disable_plugin_autoload(testdir, monkeypatch, parse_args, should_load):
+def test_disable_plugin_autoload(
+    pytester: Pytester,
+    monkeypatch: MonkeyPatch,
+    parse_args: Union[Tuple[str, str], Tuple[()]],
+    should_load: bool,
+) -> None:
     class DummyEntryPoint:
         project_name = name = "mytestplugin"
         group = "pytest11"
@@ -1031,9 +1242,9 @@ def test_disable_plugin_autoload(testdir, monkeypatch, parse_args, should_load):
         return (Distribution(),)
 
     monkeypatch.setenv("PYTEST_DISABLE_PLUGIN_AUTOLOAD", "1")
-    monkeypatch.setattr(importlib_metadata, "distributions", distributions)
+    monkeypatch.setattr(importlib.metadata, "distributions", distributions)
     monkeypatch.setitem(sys.modules, "mytestplugin", PseudoPlugin())
-    config = testdir.parseconfig(*parse_args)
+    config = pytester.parseconfig(*parse_args)
     has_loaded = config.pluginmanager.get_plugin("mytestplugin") is not None
     assert has_loaded == should_load
     if should_load:
@@ -1042,16 +1253,15 @@ def test_disable_plugin_autoload(testdir, monkeypatch, parse_args, should_load):
         assert PseudoPlugin.attrs_used == []
 
 
-def test_plugin_loading_order(testdir):
+def test_plugin_loading_order(pytester: Pytester) -> None:
     """Test order of plugin loading with `-p`."""
-    p1 = testdir.makepyfile(
+    p1 = pytester.makepyfile(
         """
         def test_terminal_plugin(request):
             import myplugin
             assert myplugin.terminal_plugin == [False, True]
         """,
-        **{
-            "myplugin": """
+        myplugin="""
             terminal_plugin = []
 
             def pytest_configure(config):
@@ -1060,40 +1270,28 @@ def test_plugin_loading_order(testdir):
             def pytest_sessionstart(session):
                 config = session.config
                 terminal_plugin.append(bool(config.pluginmanager.get_plugin("terminalreporter")))
-            """
-        },
+            """,
     )
-    testdir.syspathinsert()
-    result = testdir.runpytest("-p", "myplugin", str(p1))
+    pytester.syspathinsert()
+    result = pytester.runpytest("-p", "myplugin", str(p1))
     assert result.ret == 0
 
 
-def test_cmdline_processargs_simple(testdir):
-    testdir.makeconftest(
-        """
-        def pytest_cmdline_preparse(args):
-            args.append("-h")
-    """
-    )
-    result = testdir.runpytest()
-    result.stdout.fnmatch_lines(["*pytest*", "*-h*"])
-
-
-def test_invalid_options_show_extra_information(testdir):
+def test_invalid_options_show_extra_information(pytester: Pytester) -> None:
     """Display extra information when pytest exits due to unrecognized
     options in the command-line."""
-    testdir.makeini(
+    pytester.makeini(
         """
         [pytest]
         addopts = --invalid-option
     """
     )
-    result = testdir.runpytest()
+    result = pytester.runpytest()
     result.stderr.fnmatch_lines(
         [
             "*error: unrecognized arguments: --invalid-option*",
-            "*  inifile: %s*" % testdir.tmpdir.join("tox.ini"),
-            "*  rootdir: %s*" % testdir.tmpdir,
+            "*  inifile: %s*" % pytester.path.joinpath("tox.ini"),
+            "*  rootdir: %s*" % pytester.path,
         ]
     )
 
@@ -1107,42 +1305,49 @@ def test_invalid_options_show_extra_information(testdir):
         ["-v", "dir2", "dir1"],
     ],
 )
-def test_consider_args_after_options_for_rootdir(testdir, args):
+def test_consider_args_after_options_for_rootdir(
+    pytester: Pytester, args: List[str]
+) -> None:
     """
     Consider all arguments in the command-line for rootdir
     discovery, even if they happen to occur after an option. #949
     """
     # replace "dir1" and "dir2" from "args" into their real directory
-    root = testdir.tmpdir.mkdir("myroot")
-    d1 = root.mkdir("dir1")
-    d2 = root.mkdir("dir2")
+    root = pytester.mkdir("myroot")
+    d1 = root.joinpath("dir1")
+    d1.mkdir()
+    d2 = root.joinpath("dir2")
+    d2.mkdir()
     for i, arg in enumerate(args):
         if arg == "dir1":
-            args[i] = d1
+            args[i] = str(d1)
         elif arg == "dir2":
-            args[i] = d2
-    with root.as_cwd():
-        result = testdir.runpytest(*args)
+            args[i] = str(d2)
+    with MonkeyPatch.context() as mp:
+        mp.chdir(root)
+        result = pytester.runpytest(*args)
     result.stdout.fnmatch_lines(["*rootdir: *myroot"])
 
 
-def test_toolongargs_issue224(testdir):
-    result = testdir.runpytest("-m", "hello" * 500)
+def test_toolongargs_issue224(pytester: Pytester) -> None:
+    result = pytester.runpytest("-m", "hello" * 500)
     assert result.ret == ExitCode.NO_TESTS_COLLECTED
 
 
-def test_config_in_subdirectory_colon_command_line_issue2148(testdir):
+def test_config_in_subdirectory_colon_command_line_issue2148(
+    pytester: Pytester,
+) -> None:
     conftest_source = """
         def pytest_addoption(parser):
             parser.addini('foo', 'foo')
     """
 
-    testdir.makefile(
+    pytester.makefile(
         ".ini",
         **{"pytest": "[pytest]\nfoo = root", "subdir/pytest": "[pytest]\nfoo = subdir"},
     )
 
-    testdir.makepyfile(
+    pytester.makepyfile(
         **{
             "conftest": conftest_source,
             "subdir/conftest": conftest_source,
@@ -1153,12 +1358,12 @@ def test_config_in_subdirectory_colon_command_line_issue2148(testdir):
         }
     )
 
-    result = testdir.runpytest("subdir/test_foo.py::test_foo")
+    result = pytester.runpytest("subdir/test_foo.py::test_foo")
     assert result.ret == 0
 
 
-def test_notify_exception(testdir, capfd):
-    config = testdir.parseconfig()
+def test_notify_exception(pytester: Pytester, capfd) -> None:
+    config = pytester.parseconfig()
     with pytest.raises(ValueError) as excinfo:
         raise ValueError(1)
     config.notify_exception(excinfo, config.option)
@@ -1174,7 +1379,7 @@ def test_notify_exception(testdir, capfd):
     _, err = capfd.readouterr()
     assert not err
 
-    config = testdir.parseconfig("-p", "no:terminal")
+    config = pytester.parseconfig("-p", "no:terminal")
     with pytest.raises(ValueError) as excinfo:
         raise ValueError(1)
     config.notify_exception(excinfo, config.option)
@@ -1182,9 +1387,9 @@ def test_notify_exception(testdir, capfd):
     assert "ValueError" in err
 
 
-def test_no_terminal_discovery_error(testdir):
-    testdir.makepyfile("raise TypeError('oops!')")
-    result = testdir.runpytest("-p", "no:terminal", "--collect-only")
+def test_no_terminal_discovery_error(pytester: Pytester) -> None:
+    pytester.makepyfile("raise TypeError('oops!')")
+    result = pytester.runpytest("-p", "no:terminal", "--collect-only")
     assert result.ret == ExitCode.INTERRUPTED
 
 
@@ -1198,9 +1403,21 @@ def test_load_initial_conftest_last_ordering(_config_for_test):
     m = My()
     pm.register(m)
     hc = pm.hook.pytest_load_initial_conftests
-    values = hc._nonwrappers + hc._wrappers
-    expected = ["_pytest.config", m.__module__, "_pytest.capture", "_pytest.warnings"]
-    assert [x.function.__module__ for x in values] == expected
+    hookimpls = [
+        (
+            hookimpl.function.__module__,
+            "wrapper" if (hookimpl.wrapper or hookimpl.hookwrapper) else "nonwrapper",
+        )
+        for hookimpl in hc.get_hookimpls()
+    ]
+    assert hookimpls == [
+        ("_pytest.config", "nonwrapper"),
+        (m.__module__, "nonwrapper"),
+        ("_pytest.legacypath", "nonwrapper"),
+        ("_pytest.python_path", "nonwrapper"),
+        ("_pytest.capture", "wrapper"),
+        ("_pytest.warnings", "wrapper"),
+    ]
 
 
 def test_get_plugin_specs_as_list() -> None:
@@ -1223,10 +1440,10 @@ def test_get_plugin_specs_as_list() -> None:
     assert _get_plugin_specs_as_list(("foo", "bar")) == ["foo", "bar"]
 
 
-def test_collect_pytest_prefix_bug_integration(testdir):
+def test_collect_pytest_prefix_bug_integration(pytester: Pytester) -> None:
     """Integration test for issue #3775"""
-    p = testdir.copy_example("config/collect_pytest_prefix")
-    result = testdir.runpytest(p)
+    p = pytester.copy_example("config/collect_pytest_prefix")
+    result = pytester.runpytest(p)
     result.stdout.fnmatch_lines(["* 1 passed *"])
 
 
@@ -1243,16 +1460,16 @@ def test_collect_pytest_prefix_bug(pytestconfig):
 
 class TestRootdir:
     def test_simple_noini(self, tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
-        assert get_common_ancestor([tmp_path]) == tmp_path
+        assert get_common_ancestor(Path.cwd(), [tmp_path]) == tmp_path
         a = tmp_path / "a"
         a.mkdir()
-        assert get_common_ancestor([a, tmp_path]) == tmp_path
-        assert get_common_ancestor([tmp_path, a]) == tmp_path
+        assert get_common_ancestor(Path.cwd(), [a, tmp_path]) == tmp_path
+        assert get_common_ancestor(Path.cwd(), [tmp_path, a]) == tmp_path
         monkeypatch.chdir(tmp_path)
-        assert get_common_ancestor([]) == tmp_path
+        assert get_common_ancestor(Path.cwd(), []) == tmp_path
         no_path = tmp_path / "does-not-exist"
-        assert get_common_ancestor([no_path]) == tmp_path
-        assert get_common_ancestor([no_path / "a"]) == tmp_path
+        assert get_common_ancestor(Path.cwd(), [no_path]) == tmp_path
+        assert get_common_ancestor(Path.cwd(), [no_path / "a"]) == tmp_path
 
     @pytest.mark.parametrize(
         "name, contents",
@@ -1267,17 +1484,27 @@ class TestRootdir:
     )
     def test_with_ini(self, tmp_path: Path, name: str, contents: str) -> None:
         inipath = tmp_path / name
-        inipath.write_text(contents, "utf-8")
+        inipath.write_text(contents, encoding="utf-8")
 
         a = tmp_path / "a"
         a.mkdir()
         b = a / "b"
         b.mkdir()
         for args in ([str(tmp_path)], [str(a)], [str(b)]):
-            rootpath, parsed_inipath, _ = determine_setup(None, args)
+            rootpath, parsed_inipath, _ = determine_setup(
+                inifile=None,
+                args=args,
+                rootdir_cmd_arg=None,
+                invocation_dir=Path.cwd(),
+            )
             assert rootpath == tmp_path
             assert parsed_inipath == inipath
-        rootpath, parsed_inipath, ini_config = determine_setup(None, [str(b), str(a)])
+        rootpath, parsed_inipath, ini_config = determine_setup(
+            inifile=None,
+            args=[str(b), str(a)],
+            rootdir_cmd_arg=None,
+            invocation_dir=Path.cwd(),
+        )
         assert rootpath == tmp_path
         assert parsed_inipath == inipath
         assert ini_config == {"x": "10"}
@@ -1289,7 +1516,12 @@ class TestRootdir:
         a = tmp_path / "a"
         a.mkdir()
         (a / name).touch()
-        rootpath, parsed_inipath, _ = determine_setup(None, [str(a)])
+        rootpath, parsed_inipath, _ = determine_setup(
+            inifile=None,
+            args=[str(a)],
+            rootdir_cmd_arg=None,
+            invocation_dir=Path.cwd(),
+        )
         assert rootpath == tmp_path
         assert parsed_inipath == inipath
 
@@ -1298,14 +1530,24 @@ class TestRootdir:
         a.mkdir()
         (a / "setup.cfg").touch()
         (tmp_path / "setup.py").touch()
-        rootpath, inipath, inicfg = determine_setup(None, [str(a)])
+        rootpath, inipath, inicfg = determine_setup(
+            inifile=None,
+            args=[str(a)],
+            rootdir_cmd_arg=None,
+            invocation_dir=Path.cwd(),
+        )
         assert rootpath == tmp_path
         assert inipath is None
         assert inicfg == {}
 
     def test_nothing(self, tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
         monkeypatch.chdir(tmp_path)
-        rootpath, inipath, inicfg = determine_setup(None, [str(tmp_path)])
+        rootpath, inipath, inicfg = determine_setup(
+            inifile=None,
+            args=[str(tmp_path)],
+            rootdir_cmd_arg=None,
+            invocation_dir=Path.cwd(),
+        )
         assert rootpath == tmp_path
         assert inipath is None
         assert inicfg == {}
@@ -1326,11 +1568,46 @@ class TestRootdir:
     ) -> None:
         p = tmp_path / name
         p.touch()
-        p.write_text(contents, "utf-8")
-        rootpath, inipath, ini_config = determine_setup(str(p), [str(tmp_path)])
+        p.write_text(contents, encoding="utf-8")
+        rootpath, inipath, ini_config = determine_setup(
+            inifile=str(p),
+            args=[str(tmp_path)],
+            rootdir_cmd_arg=None,
+            invocation_dir=Path.cwd(),
+        )
         assert rootpath == tmp_path
         assert inipath == p
         assert ini_config == {"x": "10"}
+
+    def test_explicit_config_file_sets_rootdir(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        tests_dir = tmp_path / "tests"
+        tests_dir.mkdir()
+
+        monkeypatch.chdir(tmp_path)
+
+        # No config file is explicitly given: rootdir is determined to be cwd.
+        rootpath, found_inipath, *_ = determine_setup(
+            inifile=None,
+            args=[str(tests_dir)],
+            rootdir_cmd_arg=None,
+            invocation_dir=Path.cwd(),
+        )
+        assert rootpath == tmp_path
+        assert found_inipath is None
+
+        # Config file is explicitly given: rootdir is determined to be inifile's directory.
+        inipath = tmp_path / "pytest.ini"
+        inipath.touch()
+        rootpath, found_inipath, *_ = determine_setup(
+            inifile=str(inipath),
+            args=[str(tests_dir)],
+            rootdir_cmd_arg=None,
+            invocation_dir=Path.cwd(),
+        )
+        assert rootpath == tmp_path
+        assert found_inipath == inipath
 
     def test_with_arg_outside_cwd_without_inifile(
         self, tmp_path: Path, monkeypatch: MonkeyPatch
@@ -1340,7 +1617,12 @@ class TestRootdir:
         a.mkdir()
         b = tmp_path / "b"
         b.mkdir()
-        rootpath, inifile, _ = determine_setup(None, [str(a), str(b)])
+        rootpath, inifile, _ = determine_setup(
+            inifile=None,
+            args=[str(a), str(b)],
+            rootdir_cmd_arg=None,
+            invocation_dir=Path.cwd(),
+        )
         assert rootpath == tmp_path
         assert inifile is None
 
@@ -1351,7 +1633,12 @@ class TestRootdir:
         b.mkdir()
         inipath = a / "pytest.ini"
         inipath.touch()
-        rootpath, parsed_inipath, _ = determine_setup(None, [str(a), str(b)])
+        rootpath, parsed_inipath, _ = determine_setup(
+            inifile=None,
+            args=[str(a), str(b)],
+            rootdir_cmd_arg=None,
+            invocation_dir=Path.cwd(),
+        )
         assert rootpath == a
         assert inipath == parsed_inipath
 
@@ -1360,7 +1647,12 @@ class TestRootdir:
         self, dirs: Sequence[str], tmp_path: Path, monkeypatch: MonkeyPatch
     ) -> None:
         monkeypatch.chdir(tmp_path)
-        rootpath, inipath, _ = determine_setup(None, dirs)
+        rootpath, inipath, _ = determine_setup(
+            inifile=None,
+            args=dirs,
+            rootdir_cmd_arg=None,
+            invocation_dir=Path.cwd(),
+        )
         assert rootpath == tmp_path
         assert inipath is None
 
@@ -1371,7 +1663,12 @@ class TestRootdir:
         a.mkdir()
         (a / "exists").touch()
         monkeypatch.chdir(tmp_path)
-        rootpath, inipath, _ = determine_setup(None, ["a/exist"])
+        rootpath, inipath, _ = determine_setup(
+            inifile=None,
+            args=["a/exist"],
+            rootdir_cmd_arg=None,
+            invocation_dir=Path.cwd(),
+        )
         assert rootpath == tmp_path
         assert inipath is None
 
@@ -1385,7 +1682,12 @@ class TestRootdir:
         (tmp_path / "myproject" / "tests").mkdir()
         monkeypatch.chdir(tmp_path / "myproject")
 
-        rootpath, inipath, _ = determine_setup(None, ["tests/"])
+        rootpath, inipath, _ = determine_setup(
+            inifile=None,
+            args=["tests/"],
+            rootdir_cmd_arg=None,
+            invocation_dir=Path.cwd(),
+        )
 
         assert rootpath == tmp_path / "myproject"
         assert inipath == tmp_path / "myproject" / "setup.cfg"
@@ -1393,66 +1695,65 @@ class TestRootdir:
 
 class TestOverrideIniArgs:
     @pytest.mark.parametrize("name", "setup.cfg tox.ini pytest.ini".split())
-    def test_override_ini_names(self, testdir, name):
+    def test_override_ini_names(self, pytester: Pytester, name: str) -> None:
         section = "[pytest]" if name != "setup.cfg" else "[tool:pytest]"
-        testdir.tmpdir.join(name).write(
+        pytester.path.joinpath(name).write_text(
             textwrap.dedent(
-                """
+                f"""
             {section}
-            custom = 1.0""".format(
-                    section=section
-                )
-            )
+            custom = 1.0"""
+            ),
+            encoding="utf-8",
         )
-        testdir.makeconftest(
+        pytester.makeconftest(
             """
             def pytest_addoption(parser):
                 parser.addini("custom", "")"""
         )
-        testdir.makepyfile(
+        pytester.makepyfile(
             """
             def test_pass(pytestconfig):
                 ini_val = pytestconfig.getini("custom")
                 print('\\ncustom_option:%s\\n' % ini_val)"""
         )
 
-        result = testdir.runpytest("--override-ini", "custom=2.0", "-s")
+        result = pytester.runpytest("--override-ini", "custom=2.0", "-s")
         assert result.ret == 0
         result.stdout.fnmatch_lines(["custom_option:2.0"])
 
-        result = testdir.runpytest(
+        result = pytester.runpytest(
             "--override-ini", "custom=2.0", "--override-ini=custom=3.0", "-s"
         )
         assert result.ret == 0
         result.stdout.fnmatch_lines(["custom_option:3.0"])
 
-    def test_override_ini_pathlist(self, testdir):
-        testdir.makeconftest(
+    def test_override_ini_paths(self, pytester: Pytester) -> None:
+        pytester.makeconftest(
             """
             def pytest_addoption(parser):
-                parser.addini("paths", "my new ini value", type="pathlist")"""
+                parser.addini("paths", "my new ini value", type="paths")"""
         )
-        testdir.makeini(
+        pytester.makeini(
             """
             [pytest]
             paths=blah.py"""
         )
-        testdir.makepyfile(
-            """
-            import py.path
-            def test_pathlist(pytestconfig):
+        pytester.makepyfile(
+            r"""
+            def test_overridden(pytestconfig):
                 config_paths = pytestconfig.getini("paths")
                 print(config_paths)
                 for cpf in config_paths:
-                    print('\\nuser_path:%s' % cpf.basename)"""
+                    print('\nuser_path:%s' % cpf.name)
+            """
         )
-        result = testdir.runpytest(
+        result = pytester.runpytest(
             "--override-ini", "paths=foo/bar1.py foo/bar2.py", "-s"
         )
         result.stdout.fnmatch_lines(["user_path:bar1.py", "user_path:bar2.py"])
 
-    def test_override_multiple_and_default(self, testdir):
-        testdir.makeconftest(
+    def test_override_multiple_and_default(self, pytester: Pytester) -> None:
+        pytester.makeconftest(
             """
             def pytest_addoption(parser):
                 addini = parser.addini
@@ -1461,14 +1762,14 @@ class TestOverrideIniArgs:
                 addini("custom_option_3", "", default=False, type="bool")
                 addini("custom_option_4", "", default=True, type="bool")"""
         )
-        testdir.makeini(
+        pytester.makeini(
             """
             [pytest]
             custom_option_1=custom_option_1
             custom_option_2=custom_option_2
         """
         )
-        testdir.makepyfile(
+        pytester.makepyfile(
             """
             def test_multiple_options(pytestconfig):
                 prefix = "custom_option"
@@ -1477,7 +1778,7 @@ class TestOverrideIniArgs:
                     print('\\nini%d:%s' % (x, ini_value))
         """
         )
-        result = testdir.runpytest(
+        result = pytester.runpytest(
             "--override-ini",
             "custom_option_1=fulldir=/tmp/user1",
             "-o",
@@ -1497,14 +1798,14 @@ class TestOverrideIniArgs:
             ]
         )
 
-    def test_override_ini_usage_error_bad_style(self, testdir):
-        testdir.makeini(
+    def test_override_ini_usage_error_bad_style(self, pytester: Pytester) -> None:
+        pytester.makeini(
             """
             [pytest]
             xdist_strict=False
         """
         )
-        result = testdir.runpytest("--override-ini", "xdist_strict", "True")
+        result = pytester.runpytest("--override-ini", "xdist_strict", "True")
         result.stderr.fnmatch_lines(
             [
                 "ERROR: -o/--override-ini expects option=value style (got: 'xdist_strict').",
@@ -1512,32 +1813,38 @@ class TestOverrideIniArgs:
         )
 
     @pytest.mark.parametrize("with_ini", [True, False])
-    def test_override_ini_handled_asap(self, testdir, with_ini):
+    def test_override_ini_handled_asap(
+        self, pytester: Pytester, with_ini: bool
+    ) -> None:
         """-o should be handled as soon as possible and always override what's in ini files (#2238)"""
         if with_ini:
-            testdir.makeini(
+            pytester.makeini(
                 """
                 [pytest]
                 python_files=test_*.py
             """
             )
-        testdir.makepyfile(
+        pytester.makepyfile(
             unittest_ini_handle="""
             def test():
                 pass
         """
         )
-        result = testdir.runpytest("--override-ini", "python_files=unittest_*.py")
+        result = pytester.runpytest("--override-ini", "python_files=unittest_*.py")
         result.stdout.fnmatch_lines(["*1 passed in*"])
 
-    def test_addopts_before_initini(self, monkeypatch, _config_for_test, _sys_snapshot):
+    def test_addopts_before_initini(
+        self, monkeypatch: MonkeyPatch, _config_for_test, _sys_snapshot
+    ) -> None:
         cache_dir = ".custom_cache"
         monkeypatch.setenv("PYTEST_ADDOPTS", "-o cache_dir=%s" % cache_dir)
         config = _config_for_test
         config._preparse([], addopts=True)
         assert config._override_ini == ["cache_dir=%s" % cache_dir]
 
-    def test_addopts_from_env_not_concatenated(self, monkeypatch, _config_for_test):
+    def test_addopts_from_env_not_concatenated(
+        self, monkeypatch: MonkeyPatch, _config_for_test
+    ) -> None:
         """PYTEST_ADDOPTS should not take values from normal args (#4265)."""
         monkeypatch.setenv("PYTEST_ADDOPTS", "-o")
         config = _config_for_test
@@ -1548,32 +1855,34 @@ class TestOverrideIniArgs:
             in excinfo.value.args[0]
         )
 
-    def test_addopts_from_ini_not_concatenated(self, testdir):
+    def test_addopts_from_ini_not_concatenated(self, pytester: Pytester) -> None:
         """`addopts` from ini should not take values from normal args (#4265)."""
-        testdir.makeini(
+        pytester.makeini(
             """
             [pytest]
             addopts=-o
         """
         )
-        result = testdir.runpytest("cache_dir=ignored")
+        result = pytester.runpytest("cache_dir=ignored")
         result.stderr.fnmatch_lines(
             [
-                "%s: error: argument -o/--override-ini: expected one argument (via addopts config)"
-                % (testdir.request.config._parser.optparser.prog,)
+                f"{pytester._request.config._parser.optparser.prog}: error: "
+                f"argument -o/--override-ini: expected one argument (via addopts config)"
             ]
         )
         assert result.ret == _pytest.config.ExitCode.USAGE_ERROR
 
-    def test_override_ini_does_not_contain_paths(self, _config_for_test, _sys_snapshot):
+    def test_override_ini_does_not_contain_paths(
+        self, _config_for_test, _sys_snapshot
+    ) -> None:
         """Check that -o no longer swallows all options after it (#3103)"""
         config = _config_for_test
         config._preparse(["-o", "cache_dir=/cache", "/some/test/path"])
         assert config._override_ini == ["cache_dir=/cache"]
 
-    def test_multiple_override_ini_options(self, testdir):
+    def test_multiple_override_ini_options(self, pytester: Pytester) -> None:
         """Ensure a file path following a '-o' option does not generate an error (#3103)"""
-        testdir.makepyfile(
+        pytester.makepyfile(
             **{
                 "conftest.py": """
                 def pytest_addoption(parser):
@@ -1591,19 +1900,31 @@ class TestOverrideIniArgs:
             """,
             }
         )
-        result = testdir.runpytest("-o", "foo=1", "-o", "bar=0", "test_foo.py")
+        result = pytester.runpytest("-o", "foo=1", "-o", "bar=0", "test_foo.py")
         assert "ERROR:" not in result.stderr.str()
         result.stdout.fnmatch_lines(["collected 1 item", "*= 1 passed in *="])
 
+    def test_override_ini_without_config_file(self, pytester: Pytester) -> None:
+        pytester.makepyfile(**{"src/override_ini_without_config_file.py": ""})
+        pytester.makepyfile(
+            **{
+                "tests/test_override_ini_without_config_file.py": (
+                    "import override_ini_without_config_file\ndef test(): pass"
+                ),
+            }
+        )
+        result = pytester.runpytest("--override-ini", "pythonpath=src")
+        assert result.parseoutcomes() == {"passed": 1}
 
-def test_help_via_addopts(testdir):
-    testdir.makeini(
+
+def test_help_via_addopts(pytester: Pytester) -> None:
+    pytester.makeini(
         """
         [pytest]
         addopts = --unknown-option-should-allow-for-help --help
     """
     )
-    result = testdir.runpytest()
+    result = pytester.runpytest()
     assert result.ret == 0
     result.stdout.fnmatch_lines(
         [
@@ -1615,8 +1936,8 @@ def test_help_via_addopts(testdir):
     )
 
 
-def test_help_and_version_after_argument_error(testdir):
-    testdir.makeconftest(
+def test_help_and_version_after_argument_error(pytester: Pytester) -> None:
+    pytester.makeconftest(
         """
         def validate(arg):
             raise argparse.ArgumentTypeError("argerror")
@@ -1629,13 +1950,13 @@ def test_help_and_version_after_argument_error(testdir):
             )
         """
     )
-    testdir.makeini(
+    pytester.makeini(
         """
         [pytest]
         addopts = --invalid-option-should-allow-for-help
     """
     )
-    result = testdir.runpytest("--help")
+    result = pytester.runpytest("--help")
     result.stdout.fnmatch_lines(
         [
             "usage: *",
@@ -1646,20 +1967,20 @@ def test_help_and_version_after_argument_error(testdir):
     result.stderr.fnmatch_lines(
         [
             "ERROR: usage: *",
-            "%s: error: argument --invalid-option-should-allow-for-help: expected one argument"
-            % (testdir.request.config._parser.optparser.prog,),
+            f"{pytester._request.config._parser.optparser.prog}: error: "
+            f"argument --invalid-option-should-allow-for-help: expected one argument",
         ]
     )
     # Does not display full/default help.
     assert "to see available markers type: pytest --markers" not in result.stdout.lines
     assert result.ret == ExitCode.USAGE_ERROR
 
-    result = testdir.runpytest("--version")
-    result.stderr.fnmatch_lines(["pytest {}".format(pytest.__version__)])
+    result = pytester.runpytest("--version")
+    result.stdout.fnmatch_lines([f"pytest {pytest.__version__}"])
     assert result.ret == ExitCode.USAGE_ERROR
 
 
-def test_help_formatter_uses_py_get_terminal_width(monkeypatch):
+def test_help_formatter_uses_py_get_terminal_width(monkeypatch: MonkeyPatch) -> None:
     from _pytest.config.argparsing import DropShorterLongHelpFormatter
 
     monkeypatch.setenv("COLUMNS", "90")
@@ -1674,39 +1995,43 @@ def test_help_formatter_uses_py_get_terminal_width(monkeypatch):
     assert formatter._width == 42
 
 
-def test_config_does_not_load_blocked_plugin_from_args(testdir):
+def test_config_does_not_load_blocked_plugin_from_args(pytester: Pytester) -> None:
     """This tests that pytest's config setup handles "-p no:X"."""
-    p = testdir.makepyfile("def test(capfd): pass")
-    result = testdir.runpytest(str(p), "-pno:capture")
+    p = pytester.makepyfile("def test(capfd): pass")
+    result = pytester.runpytest(str(p), "-pno:capture")
     result.stdout.fnmatch_lines(["E       fixture 'capfd' not found"])
     assert result.ret == ExitCode.TESTS_FAILED
 
-    result = testdir.runpytest(str(p), "-pno:capture", "-s")
+    result = pytester.runpytest(str(p), "-pno:capture", "-s")
+    result.stderr.fnmatch_lines(["*: error: unrecognized arguments: -s"])
+    assert result.ret == ExitCode.USAGE_ERROR
+
+    result = pytester.runpytest(str(p), "-p no:capture", "-s")
     result.stderr.fnmatch_lines(["*: error: unrecognized arguments: -s"])
     assert result.ret == ExitCode.USAGE_ERROR
 
 
-def test_invocation_args(testdir):
+def test_invocation_args(pytester: Pytester) -> None:
     """Ensure that Config.invocation_* arguments are correctly defined"""
 
     class DummyPlugin:
         pass
 
-    p = testdir.makepyfile("def test(): pass")
+    p = pytester.makepyfile("def test(): pass")
     plugin = DummyPlugin()
-    rec = testdir.inline_run(p, "-v", plugins=[plugin])
+    rec = pytester.inline_run(p, "-v", plugins=[plugin])
     calls = rec.getcalls("pytest_runtest_protocol")
     assert len(calls) == 1
     call = calls[0]
     config = call.item.config
 
-    assert config.invocation_params.args == (p, "-v")
-    assert config.invocation_params.dir == Path(str(testdir.tmpdir))
+    assert config.invocation_params.args == (str(p), "-v")
+    assert config.invocation_params.dir == pytester.path
 
     plugins = config.invocation_params.plugins
     assert len(plugins) == 2
     assert plugins[0] is plugin
-    assert type(plugins[1]).__name__ == "Collect"  # installed by testdir.inline_run()
+    assert type(plugins[1]).__name__ == "Collect"  # installed by pytester.inline_run()
 
     # args cannot be None
     with pytest.raises(TypeError):
@@ -1721,26 +2046,16 @@ def test_invocation_args(testdir):
         if x not in _pytest.config.essential_plugins
     ],
 )
-def test_config_blocked_default_plugins(testdir, plugin):
-    if plugin == "debugging":
-        # Fixed in xdist master (after 1.27.0).
-        # https://github.com/pytest-dev/pytest-xdist/pull/422
-        try:
-            import xdist  # noqa: F401
-        except ImportError:
-            pass
-        else:
-            pytest.skip("does not work with xdist currently")
-
-    p = testdir.makepyfile("def test(): pass")
-    result = testdir.runpytest(str(p), "-pno:%s" % plugin)
+def test_config_blocked_default_plugins(pytester: Pytester, plugin: str) -> None:
+    p = pytester.makepyfile("def test(): pass")
+    result = pytester.runpytest(str(p), "-pno:%s" % plugin)
 
     if plugin == "python":
         assert result.ret == ExitCode.USAGE_ERROR
         result.stderr.fnmatch_lines(
             [
                 "ERROR: not found: */test_config_blocked_default_plugins.py",
-                "(no name '*/test_config_blocked_default_plugins.py' in any of [])",
+                "(no match in any of *<Dir *>*",
             ]
         )
         return
@@ -1749,8 +2064,8 @@ def test_config_blocked_default_plugins(testdir, plugin):
     if plugin != "terminal":
         result.stdout.fnmatch_lines(["* 1 passed in *"])
 
-    p = testdir.makepyfile("def test(): assert 0")
-    result = testdir.runpytest(str(p), "-pno:%s" % plugin)
+    p = pytester.makepyfile("def test(): assert 0")
+    result = pytester.runpytest(str(p), "-pno:%s" % plugin)
     assert result.ret == ExitCode.TESTS_FAILED
     if plugin != "terminal":
         result.stdout.fnmatch_lines(["* 1 failed in *"])
@@ -1759,8 +2074,8 @@ def test_config_blocked_default_plugins(testdir, plugin):
 
 
 class TestSetupCfg:
-    def test_pytest_setup_cfg_unsupported(self, testdir):
-        testdir.makefile(
+    def test_pytest_setup_cfg_unsupported(self, pytester: Pytester) -> None:
+        pytester.makefile(
             ".cfg",
             setup="""
             [pytest]
@@ -1768,10 +2083,10 @@ class TestSetupCfg:
         """,
         )
         with pytest.raises(pytest.fail.Exception):
-            testdir.runpytest()
+            pytester.runpytest()
 
-    def test_pytest_custom_cfg_unsupported(self, testdir):
-        testdir.makefile(
+    def test_pytest_custom_cfg_unsupported(self, pytester: Pytester) -> None:
+        pytester.makefile(
             ".cfg",
             custom="""
             [pytest]
@@ -1779,40 +2094,39 @@ class TestSetupCfg:
         """,
         )
         with pytest.raises(pytest.fail.Exception):
-            testdir.runpytest("-c", "custom.cfg")
+            pytester.runpytest("-c", "custom.cfg")
+
+        with pytest.raises(pytest.fail.Exception):
+            pytester.runpytest("--config-file", "custom.cfg")
 
 
 class TestPytestPluginsVariable:
-    def test_pytest_plugins_in_non_top_level_conftest_unsupported(self, testdir):
-        testdir.makepyfile(
+    def test_pytest_plugins_in_non_top_level_conftest_unsupported(
+        self, pytester: Pytester
+    ) -> None:
+        pytester.makepyfile(
             **{
                 "subdirectory/conftest.py": """
             pytest_plugins=['capture']
         """
             }
         )
-        testdir.makepyfile(
+        pytester.makepyfile(
             """
             def test_func():
                 pass
         """
         )
-        res = testdir.runpytest()
+        res = pytester.runpytest()
         assert res.ret == 2
         msg = "Defining 'pytest_plugins' in a non-top-level conftest is no longer supported"
-        res.stdout.fnmatch_lines(
-            [
-                "*{msg}*".format(msg=msg),
-                "*subdirectory{sep}conftest.py*".format(sep=os.sep),
-            ]
-        )
+        res.stdout.fnmatch_lines([f"*{msg}*", f"*subdirectory{os.sep}conftest.py*"])
 
     @pytest.mark.parametrize("use_pyargs", [True, False])
     def test_pytest_plugins_in_non_top_level_conftest_unsupported_pyargs(
-        self, testdir, use_pyargs
-    ):
+        self, pytester: Pytester, use_pyargs: bool
+    ) -> None:
         """When using --pyargs, do not emit the warning about non-top-level conftest warnings (#4039, #4044)"""
-
         files = {
             "src/pkg/__init__.py": "",
             "src/pkg/conftest.py": "",
@@ -1821,53 +2135,48 @@ class TestPytestPluginsVariable:
             "src/pkg/sub/conftest.py": "pytest_plugins=['capture']",
             "src/pkg/sub/test_bar.py": "def test(): pass",
         }
-        testdir.makepyfile(**files)
-        testdir.syspathinsert(testdir.tmpdir.join("src"))
+        pytester.makepyfile(**files)
+        pytester.syspathinsert(pytester.path.joinpath("src"))
 
         args = ("--pyargs", "pkg") if use_pyargs else ()
-        res = testdir.runpytest(*args)
+        res = pytester.runpytest(*args)
         assert res.ret == (0 if use_pyargs else 2)
-        msg = (
-            msg
-        ) = "Defining 'pytest_plugins' in a non-top-level conftest is no longer supported"
+        msg = "Defining 'pytest_plugins' in a non-top-level conftest is no longer supported"
         if use_pyargs:
             assert msg not in res.stdout.str()
         else:
-            res.stdout.fnmatch_lines(["*{msg}*".format(msg=msg)])
+            res.stdout.fnmatch_lines([f"*{msg}*"])
 
     def test_pytest_plugins_in_non_top_level_conftest_unsupported_no_top_level_conftest(
-        self, testdir
-    ):
-        subdirectory = testdir.tmpdir.join("subdirectory")
+        self, pytester: Pytester
+    ) -> None:
+        subdirectory = pytester.path.joinpath("subdirectory")
         subdirectory.mkdir()
-        testdir.makeconftest(
+        pytester.makeconftest(
             """
             pytest_plugins=['capture']
         """
         )
-        testdir.tmpdir.join("conftest.py").move(subdirectory.join("conftest.py"))
+        pytester.path.joinpath("conftest.py").rename(
+            subdirectory.joinpath("conftest.py")
+        )
 
-        testdir.makepyfile(
+        pytester.makepyfile(
             """
             def test_func():
                 pass
         """
         )
 
-        res = testdir.runpytest_subprocess()
+        res = pytester.runpytest_subprocess()
         assert res.ret == 2
         msg = "Defining 'pytest_plugins' in a non-top-level conftest is no longer supported"
-        res.stdout.fnmatch_lines(
-            [
-                "*{msg}*".format(msg=msg),
-                "*subdirectory{sep}conftest.py*".format(sep=os.sep),
-            ]
-        )
+        res.stdout.fnmatch_lines([f"*{msg}*", f"*subdirectory{os.sep}conftest.py*"])
 
     def test_pytest_plugins_in_non_top_level_conftest_unsupported_no_false_positives(
-        self, testdir
-    ):
-        testdir.makepyfile(
+        self, pytester: Pytester
+    ) -> None:
+        pytester.makepyfile(
             "def test_func(): pass",
             **{
                 "subdirectory/conftest": "pass",
@@ -1878,29 +2187,27 @@ class TestPytestPluginsVariable:
                     """,
             },
         )
-        res = testdir.runpytest_subprocess()
+        res = pytester.runpytest_subprocess()
         assert res.ret == 0
         msg = "Defining 'pytest_plugins' in a non-top-level conftest is no longer supported"
         assert msg not in res.stdout.str()
 
 
-def test_conftest_import_error_repr(tmpdir):
+def test_conftest_import_error_repr(tmp_path: Path) -> None:
     """`ConftestImportFailure` should use a short error message and readable
     path to the failed conftest.py file."""
-    path = tmpdir.join("foo/conftest.py")
+    path = tmp_path.joinpath("foo/conftest.py")
     with pytest.raises(
         ConftestImportFailure,
-        match=re.escape("RuntimeError: some error (from {})".format(path)),
+        match=re.escape(f"RuntimeError: some error (from {path})"),
     ):
         try:
             raise RuntimeError("some error")
         except Exception as exc:
-            assert exc.__traceback__ is not None
-            exc_info = (type(exc), exc, exc.__traceback__)
-            raise ConftestImportFailure(path, exc_info) from exc
+            raise ConftestImportFailure(path, cause=exc) from exc
 
 
-def test_strtobool():
+def test_strtobool() -> None:
     assert _strtobool("YES")
     assert not _strtobool("NO")
     with pytest.raises(ValueError):
@@ -1936,14 +2243,153 @@ def test_strtobool():
     ],
 )
 def test_parse_warning_filter(
-    arg: str, escape: bool, expected: "Tuple[str, str, Type[Warning], str, int]"
+    arg: str, escape: bool, expected: Tuple[str, str, Type[Warning], str, int]
 ) -> None:
     assert parse_warning_filter(arg, escape=escape) == expected
 
 
-@pytest.mark.parametrize("arg", [":" * 5, "::::-1", "::::not-a-number"])
+@pytest.mark.parametrize(
+    "arg",
+    [
+        # Too much parts.
+        ":" * 5,
+        # Invalid action.
+        "FOO::",
+        # ImportError when importing the warning class.
+        "::test_parse_warning_filter_failure.NonExistentClass::",
+        # Class is not a Warning subclass.
+        "::list::",
+        # Negative line number.
+        "::::-1",
+        # Not a line number.
+        "::::not-a-number",
+    ],
+)
 def test_parse_warning_filter_failure(arg: str) -> None:
-    import warnings
-
-    with pytest.raises(warnings._OptionError):
+    with pytest.raises(pytest.UsageError):
         parse_warning_filter(arg, escape=True)
+
+
+class TestDebugOptions:
+    def test_without_debug_does_not_write_log(self, pytester: Pytester) -> None:
+        result = pytester.runpytest()
+        result.stderr.no_fnmatch_line(
+            "*writing pytest debug information to*pytestdebug.log"
+        )
+        result.stderr.no_fnmatch_line(
+            "*wrote pytest debug information to*pytestdebug.log"
+        )
+        assert not [f.name for f in pytester.path.glob("**/*.log")]
+
+    def test_with_only_debug_writes_pytestdebug_log(self, pytester: Pytester) -> None:
+        result = pytester.runpytest("--debug")
+        result.stderr.fnmatch_lines(
+            [
+                "*writing pytest debug information to*pytestdebug.log",
+                "*wrote pytest debug information to*pytestdebug.log",
+            ]
+        )
+        assert "pytestdebug.log" in [f.name for f in pytester.path.glob("**/*.log")]
+
+    def test_multiple_custom_debug_logs(self, pytester: Pytester) -> None:
+        result = pytester.runpytest("--debug", "bar.log")
+        result.stderr.fnmatch_lines(
+            [
+                "*writing pytest debug information to*bar.log",
+                "*wrote pytest debug information to*bar.log",
+            ]
+        )
+        result = pytester.runpytest("--debug", "foo.log")
+        result.stderr.fnmatch_lines(
+            [
+                "*writing pytest debug information to*foo.log",
+                "*wrote pytest debug information to*foo.log",
+            ]
+        )
+
+        assert {"bar.log", "foo.log"} == {
+            f.name for f in pytester.path.glob("**/*.log")
+        }
+
+    def test_debug_help(self, pytester: Pytester) -> None:
+        result = pytester.runpytest("-h")
+        result.stdout.fnmatch_lines(
+            [
+                "*Store internal tracing debug information in this log*",
+                "*file. This file is opened with 'w' and truncated as a*",
+                "*Default: pytestdebug.log.",
+            ]
+        )
+
+
+class TestVerbosity:
+    SOME_OUTPUT_TYPE = Config.VERBOSITY_ASSERTIONS
+    SOME_OUTPUT_VERBOSITY_LEVEL = 5
+
+    class VerbosityIni:
+        def pytest_addoption(self, parser: Parser) -> None:
+            Config._add_verbosity_ini(
+                parser, TestVerbosity.SOME_OUTPUT_TYPE, help="some help text"
+            )
+
+    def test_level_matches_verbose_when_not_specified(
+        self, pytester: Pytester, tmp_path: Path
+    ) -> None:
+        tmp_path.joinpath("pytest.ini").write_text(
+            textwrap.dedent(
+                """\
+                [pytest]
+                addopts = --verbose
+                """
+            ),
+            encoding="utf-8",
+        )
+        pytester.plugins = [TestVerbosity.VerbosityIni()]
+
+        config = pytester.parseconfig(tmp_path)
+
+        assert (
+            config.get_verbosity(TestVerbosity.SOME_OUTPUT_TYPE)
+            == config.option.verbose
+        )
+
+    def test_level_matches_verbose_when_not_known_type(
+        self, pytester: Pytester, tmp_path: Path
+    ) -> None:
+        tmp_path.joinpath("pytest.ini").write_text(
+            textwrap.dedent(
+                """\
+                [pytest]
+                addopts = --verbose
+                """
+            ),
+            encoding="utf-8",
+        )
+        pytester.plugins = [TestVerbosity.VerbosityIni()]
+
+        config = pytester.parseconfig(tmp_path)
+
+        assert config.get_verbosity("some fake verbosity type") == config.option.verbose
+
+    def test_level_matches_specified_override(
+        self, pytester: Pytester, tmp_path: Path
+    ) -> None:
+        setting_name = f"verbosity_{TestVerbosity.SOME_OUTPUT_TYPE}"
+        tmp_path.joinpath("pytest.ini").write_text(
+            textwrap.dedent(
+                f"""\
+                [pytest]
+                addopts = --verbose
+                {setting_name} = {TestVerbosity.SOME_OUTPUT_VERBOSITY_LEVEL}
+                """
+            ),
+            encoding="utf-8",
+        )
+        pytester.plugins = [TestVerbosity.VerbosityIni()]
+
+        config = pytester.parseconfig(tmp_path)
+
+        assert (
+            config.get_verbosity(TestVerbosity.SOME_OUTPUT_TYPE)
+            == TestVerbosity.SOME_OUTPUT_VERBOSITY_LEVEL
+        )

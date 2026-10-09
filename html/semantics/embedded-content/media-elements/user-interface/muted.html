@@ -21,8 +21,8 @@ function test_setting(e, muted, hasAttribute) {
 }
 </script>
 
-<!-- These tests are inside <audio>/<video> so that the steps for updating the
-     muted IDL attribute cannot be delayed until the end tag is parsed. -->
+<!-- These tests are inside <audio>/<video> so that the parser-created
+     elements are available for testing before the closing tag. -->
 
 <audio id=a1>
 <script>
@@ -80,8 +80,8 @@ test(function() {
 </script>
 </video>
 
-<!-- Negative test to ensure that the load algorithm does not update the
-     muted IDL attribute to match the content attribute. -->
+<!-- Negative test to ensure that the load algorithm does not reset the
+     muted state. -->
 
 <video id=v3 muted></video>
 <script>
@@ -112,25 +112,22 @@ async_test(function(t) {
   test(function() {
     var m = document.createElement(tagName);
     m.setAttribute('muted', '');
-    assert_false(m.muted);
+    assert_true(m.muted);
   }, 'getting ' + tagName + '.muted with muted="" (script-created)');
 
   test(function() {
     var m = document.createElement(tagName);
     m.setAttribute('muted', '');
-    test_setting(m, false, true);
+    test_setting(m, true, true);
   }, 'setting ' + tagName + '.muted with muted="" (script-created)');
 
-  // Spec bug: https://www.w3.org/Bugs/Public/show_bug.cgi?id=25153
-  /*
   test(function() {
     var m = document.createElement(tagName);
     m.setAttribute('muted', '');
     m = m.cloneNode(false);
     assert_true(m.hasAttribute('muted'));
-    assert_false(m.muted);
+    assert_true(m.muted);
   }, 'getting ' + tagName + '.muted with muted="" (cloneNode-created)');
-  */
 
   test(function() {
     var div = document.createElement('div');
@@ -165,5 +162,134 @@ async_test(function(t) {
     var c = m.cloneNode(true);
     assert_true(c.muted);
   }, 'cloning ' + tagName + ' propagates muted (innerHTML-created)');
+
+  test(function() {
+    var m = document.createElement(tagName);
+    assert_false(m.muted);
+    m.setAttribute('muted', '');
+    assert_true(m.muted);
+    m.removeAttribute('muted');
+    assert_false(m.muted);
+  }, 'adding/removing muted attribute dynamically affects ' + tagName + '.muted');
+
+  test(function() {
+    var m = document.createElement(tagName);
+    m.muted = false;
+    m.setAttribute('muted', '');
+    assert_false(m.muted);
+  }, 'adding muted attribute has no effect on ' + tagName + '.muted after setter');
+
+  test(function() {
+    var m = document.createElement(tagName);
+    m.setAttribute('muted', '');
+    m.muted = true;
+    m.removeAttribute('muted');
+    assert_true(m.muted);
+  }, 'removing muted attribute has no effect on ' + tagName + '.muted after setter');
+
+  // defaultMuted reflects the muted content attribute, so toggling it has the
+  // same effect on muted as adding/removing the attribute while the state is
+  // default.
+  test(function() {
+    var m = document.createElement(tagName);
+    m.defaultMuted = true;
+    assert_true(m.hasAttribute('muted'));
+    assert_true(m.muted);
+    m.defaultMuted = false;
+    assert_false(m.hasAttribute('muted'));
+    assert_false(m.muted);
+  }, 'toggling ' + tagName + '.defaultMuted affects muted (script-created)');
+
+  // A muted attribute added via markup (not script) is reflected by both
+  // defaultMuted and muted while the state is default.
+  test(function() {
+    var div = document.createElement('div');
+    div.innerHTML = '<' + tagName + ' muted>';
+    var m = div.firstChild;
+    assert_true(m.defaultMuted);
+    assert_true(m.muted);
+  }, tagName + '.defaultMuted reflects a muted attribute added via markup');
+
+  // defaultMuted keeps reflecting the attribute as muted is toggled by the
+  // setter, while muted follows the latched state instead of the attribute.
+  test(function() {
+    var m = document.createElement(tagName);
+    m.setAttribute('muted', '');
+    assert_true(m.defaultMuted);
+    m.muted = false;
+    assert_false(m.muted);
+    assert_true(m.defaultMuted);
+    m.muted = true;
+    assert_true(m.muted);
+    assert_true(m.defaultMuted);
+  }, 'toggling ' + tagName + '.muted does not change defaultMuted');
+
+  // After the setter latches the muted state, changing defaultMuted (adding or
+  // removing the attribute) no longer affects muted, in either direction.
+  test(function() {
+    var muteFirst = document.createElement(tagName);
+    muteFirst.muted = false;
+    muteFirst.defaultMuted = true;
+    assert_true(muteFirst.defaultMuted);
+    assert_false(muteFirst.muted);
+
+    var unmuteFirst = document.createElement(tagName);
+    unmuteFirst.muted = true;
+    unmuteFirst.defaultMuted = false;
+    assert_false(unmuteFirst.defaultMuted);
+    assert_true(unmuteFirst.muted);
+  }, 'defaultMuted does not affect ' + tagName + '.muted after the setter');
+});
+
+// The muted content attribute is a live fallback while the muted state is
+// "default", independent of whether the element is inserted in a document; the
+// spec's "muted" concept has no connectedness condition.
+// https://html.spec.whatwg.org/multipage/media.html#concept-media-muted
+['audio', 'video'].forEach(function(tagName) {
+  function attach(t) {
+    var m = document.createElement(tagName);
+    document.body.appendChild(m);
+    t.add_cleanup(function() { m.remove(); });
+    return m;
+  }
+
+  test(function() {
+    var m = attach(this);
+    assert_false(m.muted);
+    m.setAttribute('muted', '');
+    assert_true(m.muted);
+  }, 'adding muted="" at runtime on a connected ' + tagName + ' affects muted');
+
+  test(function() {
+    var m = attach(this);
+    m.setAttribute('muted', '');
+    assert_true(m.muted);
+    m.removeAttribute('muted');
+    assert_false(m.muted);
+  }, 'adding/removing muted attribute at runtime on a connected ' + tagName + ' affects muted');
+
+  test(function() {
+    var m = document.createElement(tagName);
+    m.setAttribute('muted', '');
+    assert_true(m.muted);
+    document.body.appendChild(m);
+    this.add_cleanup(function() { m.remove(); });
+    assert_true(m.muted);
+  }, tagName + ' muted="" is honored regardless of connectedness');
+
+  test(function() {
+    var m = attach(this);
+    m.muted = false;
+    m.setAttribute('muted', '');
+    assert_false(m.muted);
+  }, 'adding muted attribute has no effect on a connected ' + tagName + ' after the setter');
+
+  test(function() {
+    var m = attach(this);
+    m.setAttribute('muted', '');
+    m.muted = true;
+    m.removeAttribute('muted');
+    assert_true(m.muted);
+  }, 'removing muted attribute has no effect on a connected ' + tagName + ' after the setter');
 });
 </script>

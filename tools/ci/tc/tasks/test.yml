@@ -1,10 +1,10 @@
 components:
   wpt-base:
     provisionerId: proj-wpt
-    workerType: ci
+    workerType: ci-gw
     schedulerId: taskcluster-github
     deadline: "24 hours"
-    image: webplatformtests/wpt:0.48
+    image: ghcr.io/web-platform-tests/wpt:3
     maxRunTime: 7200
     artifacts:
       public/results:
@@ -17,29 +17,46 @@ components:
 
   wpt-testharness:
     chunks: 16
-    maxRunTime: 10800
+    maxRunTime: 14400
     vars:
       test-type: testharness
+      extra_args: "--run-by-dir=3"
 
   wpt-reftest:
-    chunks: 5
+    chunks: 6
     vars:
       test-type: reftest
+      extra_args: "--run-by-dir=3"
 
   wpt-print-reftest:
     chunks: 1
     vars:
       test-type: print-reftest
+      extra_args: "--run-by-dir=3"
 
   wpt-wdspec:
     chunks: 2
     vars:
       test-type: wdspec
+      extra_args: ""
 
   wpt-crashtest:
     chunks: 1
     vars:
       test-type: crashtest
+      extra_args: "--run-by-dir=3"
+
+  wpt-test262:
+    chunks: 8
+    vars:
+      test-type: test262
+      extra_args: ""
+
+  wpt-aamtest:
+    chunks: 1
+    vars:
+      test-type: aamtest
+      extra_args: ""
 
   run-options:
     options:
@@ -54,6 +71,7 @@ components:
       browser:
         - ${vars.browser}
       channel: ${vars.channel}
+    commit-args-name: wpt-args
     command: >-
       ./tools/ci/taskcluster-run.py
       ${vars.browser}
@@ -66,6 +84,7 @@ components:
       --this-chunk=${chunks.id}
       --total-chunks=${chunks.total}
       --test-type=${vars.suite}
+      ${vars.extra_args}
 
   trigger-master:
     trigger:
@@ -102,24 +121,40 @@ components:
 
   browser-webkitgtk_minibrowser: {}
 
+  browser-wpewebkit_minibrowser: {}
+
   browser-chrome: {}
+
+  browser-chromium: {}
 
   browser-servo: {}
 
-  tox-python3_6:
-    env:
-      TOXENV: py36
-      PY_COLORS: 0
+  browser-firefox_android:
+    privileged: true
+    scopes:
+      - "docker-worker:capability:privileged"
+    chunks-override:
+      testharness: 30
+      test262: 16
 
   tox-python3_9:
     env:
       TOXENV: py39
-      PY_COLORS: 0
+      PY_COLORS: "0"
     install:
       - python3.9
       - python3.9-distutils
       - python3.9-dev
+      - python3.9-venv
 
+  tox-python3_14:
+    env:
+      TOXENV: py314
+      PY_COLORS: "0"
+    install:
+      - python3.14
+      - python3.14-dev
+      - python3.14-venv
   tests-affected:
     options:
       browser:
@@ -139,11 +174,11 @@ tasks:
         - vars:
             suite: testharness
         - vars:
-            suite: reftest
-        - vars:
             suite: wdspec
         - vars:
             suite: crashtest
+        - vars:
+            suite: test262
       do:
         $map:
           for:
@@ -157,7 +192,7 @@ tasks:
                 browser: firefox
                 channel: beta
               use:
-                - trigger-weekly
+                - trigger-daily
                 - trigger-push
             - vars:
                 browser: firefox
@@ -167,16 +202,22 @@ tasks:
                 - trigger-push
             - vars:
                 # Chromium ToT
-                browser: chrome
+                browser: chromium
                 channel: nightly
               use:
                 - trigger-daily
                 - trigger-push
             - vars:
                 browser: chrome
-                channel: dev
+                channel: canary
               use:
                 - trigger-master
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: dev
+              use:
+                - trigger-weekly
                 - trigger-push
             - vars:
                 browser: chrome
@@ -204,6 +245,149 @@ tasks:
                 - trigger-push
             - vars:
                 browser: webkitgtk_minibrowser
+                channel: beta
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: wpewebkit_minibrowser
+                channel: nightly
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                browser: wpewebkit_minibrowser
+                channel: stable
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: wpewebkit_minibrowser
+                channel: beta
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: servo
+                channel: nightly
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                browser: firefox_android
+                channel: nightly
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                browser: firefox_android
+                channel: stable
+              use:
+                - trigger-daily
+                - trigger-push
+          do:
+            - ${vars.browser}-${vars.channel}-${vars.suite}:
+                use:
+                  - wpt-base
+                  - run-options
+                  - wpt-run
+                  - browser-${vars.browser}
+                  - wpt-${vars.suite}
+                description: >-
+                  A subset of WPT's "${vars.suite}" tests (chunk number ${chunks.id}
+                  of ${chunks.total}), run in the ${vars.channel} release of
+                  ${vars.browser}.
+
+  # Reftests are currently broken on firefox_android; this should otherwise be identical
+  # to the section above
+  - $map:
+      for:
+        - vars:
+            suite: reftest
+      do:
+        $map:
+          for:
+            - vars:
+                browser: firefox
+                channel: nightly
+              use:
+                - trigger-master
+                - trigger-push
+            - vars:
+                browser: firefox
+                channel: beta
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                browser: firefox
+                channel: stable
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                # Chromium ToT
+                browser: chromium
+                channel: nightly
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: canary
+              use:
+                - trigger-master
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: dev
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: beta
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: stable
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                browser: webkitgtk_minibrowser
+                channel: nightly
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                browser: webkitgtk_minibrowser
+                channel: stable
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: webkitgtk_minibrowser
+                channel: beta
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: wpewebkit_minibrowser
+                channel: nightly
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                browser: wpewebkit_minibrowser
+                channel: stable
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: wpewebkit_minibrowser
                 channel: beta
               use:
                 - trigger-weekly
@@ -227,11 +411,13 @@ tasks:
                   of ${chunks.total}), run in the ${vars.channel} release of
                   ${vars.browser}.
 
-  # print-reftest are currently only supported by Chrome and Firefox.
+  # print-reftest amd aamtest are currently only supported by Chrome and Firefox.
   - $map:
       for:
         - vars:
             suite: print-reftest
+        - vars:
+            suite: aamtest
       do:
         $map:
           for:
@@ -245,7 +431,7 @@ tasks:
                 browser: firefox
                 channel: beta
               use:
-                - trigger-weekly
+                - trigger-daily
                 - trigger-push
             - vars:
                 browser: firefox
@@ -255,16 +441,22 @@ tasks:
                 - trigger-push
             - vars:
                 # Chromium ToT
-                browser: chrome
+                browser: chromium
                 channel: nightly
               use:
                 - trigger-daily
                 - trigger-push
             - vars:
                 browser: chrome
-                channel: dev
+                channel: canary
               use:
                 - trigger-master
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: dev
+              use:
+                - trigger-weekly
                 - trigger-push
             - vars:
                 browser: chrome
@@ -296,9 +488,15 @@ tasks:
         - vars:
             browser: firefox
             channel: nightly
+            stability-exclude-users:
+              - moz-wptsync-bot
+            required: true
         - vars:
             browser: chrome
             channel: dev
+            stability-exclude-users:
+              - chromium-wpt-export-bot
+            required: false
       do:
         - wpt-${vars.browser}-${vars.channel}-stability:
             use:
@@ -322,6 +520,8 @@ tasks:
               --verify-repeat-loop=0
               --verify-repeat-restart=10
               --github-checks-text-file="/home/test/artifacts/checkrun.md"
+            exclude-users: ${vars.stability-exclude-users}
+            required: ${vars.required}
 
         - wpt-${vars.browser}-${vars.channel}-results:
             use:
@@ -398,23 +598,6 @@ tasks:
           - update_built
       command: "./tools/ci/ci_built_diff.sh"
 
-  - tools/ unittests (Python 3.6):
-      description: >-
-        Unit tests for tools running under Python 3.6, excluding wptrunner
-      use:
-        - wpt-base
-        - trigger-pr
-        - tox-python3_6
-      command: ./tools/ci/ci_tools_unittest.sh
-      install:
-        - python3.6
-        - python3.6-dev
-      env:
-        HYPOTHESIS_PROFILE: ci
-      schedule-if:
-        run-job:
-          - tools_unittest
-
   - tools/ unittests (Python 3.9):
       description: >-
         Unit tests for tools running under Python 3.9, excluding wptrunner
@@ -429,29 +612,19 @@ tasks:
         run-job:
           - tools_unittest
 
-  - tools/ integration tests (Python 3.6):
+  - tools/ unittests (Python 3.14):
       description: >-
-        Integration tests for tools running under Python 3.6
+        Unit tests for tools running under Python 3.14, excluding wptrunner
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_6
-      command: ./tools/ci/ci_tools_integration_test.sh
-      install:
-        - libnss3-tools
-        - python3.6
-        - python3.6-dev
-      options:
-        oom-killer: true
-        browser:
-          - firefox
-          - chrome
-        channel: experimental
-        xvfb: true
-        hosts: true
+        - tox-python3_14
+      command: ./tools/ci/ci_tools_unittest.sh
+      env:
+        HYPOTHESIS_PROFILE: ci
       schedule-if:
         run-job:
-          - wpt_integration
+          - tools_unittest
 
   - tools/ integration tests (Python 3.9):
       description: >-
@@ -475,26 +648,27 @@ tasks:
         run-job:
           - wpt_integration
 
-  - resources/ tests (Python 3.6):
+  - tools/ integration tests (Python 3.14):
       description: >-
-        Tests for testharness.js and other files in resources/ under Python 3.6
+        Integration tests for tools running under Python 3.14
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_6
-      command: ./tools/ci/ci_resources_unittest.sh
+        - tox-python3_14
+      command: ./tools/ci/ci_tools_integration_test.sh
       install:
         - libnss3-tools
-        - python3.6
-        - python3.6-dev
       options:
+        oom-killer: true
         browser:
           - firefox
+          - chrome
+        channel: experimental
         xvfb: true
         hosts: true
       schedule-if:
         run-job:
-          - resources_unittest
+          - wpt_integration
 
   - resources/ tests (Python 3.9):
       description: >-
@@ -515,32 +689,60 @@ tasks:
         run-job:
           - resources_unittest
 
-  - infrastructure/ tests:
+  - resources/ tests (Python 3.14):
       description: >-
-        Smoketests for wptrunner
-      vars:
-        channel: nightly
+        Tests for testharness.js and other files in resources/ under Python 3.14
       use:
         - wpt-base
         - trigger-pr
-        - browser-firefox
-      command: ./tools/ci/ci_wptrunner_infrastructure.sh
+        - tox-python3_14
+      command: ./tools/ci/ci_resources_unittest.sh
       install:
-        - python3-pip
         - libnss3-tools
-        - libappindicator1
-        - fonts-liberation
       options:
-        oom-killer: true
         browser:
           - firefox
-          - chrome
-        channel: experimental
         xvfb: true
-        hosts: false
+        hosts: true
       schedule-if:
         run-job:
-          - wptrunner_infrastructure
+          - resources_unittest
+
+  - $map:
+      for:
+        - vars:
+            browser: firefox
+            channel: nightly
+        - vars:
+            browser: chrome
+            channel: dev
+        - vars:
+            browser: firefox_android
+            channel: nightly
+      do:
+        - infrastructure/ tests (${vars.browser}):
+            description: >-
+              Smoketests for wptrunner in ${vars.browser}.
+            use:
+              - wpt-base
+              - trigger-pr
+              - browser-${vars.browser}
+            command: ./tools/ci/ci_wptrunner_infrastructure.sh ${vars.browser} ${vars.channel}
+            install:
+              - python3-pip
+              - libnss3-tools
+              - libappindicator1
+              - fonts-liberation
+            options:
+              oom-killer: true
+              browser:
+                - ${vars.browser}
+              channel: ${vars.channel}
+              xvfb: true
+              hosts: false
+            schedule-if:
+              run-job:
+                - wptrunner_infrastructure
 
   # Note: even though sink-task does not have `depends-on`, it depends on all
   # other tasks (dynamically added by tools/ci/tc/decision.py).

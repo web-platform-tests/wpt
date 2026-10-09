@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: Scalable Vector Graphics (SVG) 2 (https://svgwg.org/svg2-draft/)
+// Source: Scalable Vector Graphics (SVG) 2 (https://w3c.github.io/svgwg/svg2-draft/)
 
 [Exposed=Window]
 interface SVGElement : Element {
@@ -13,9 +13,7 @@ interface SVGElement : Element {
 };
 
 SVGElement includes GlobalEventHandlers;
-SVGElement includes DocumentAndElementEventHandlers;
-SVGElement includes SVGElementInstance;
-SVGElement includes HTMLOrSVGElement;
+SVGElement includes HTMLOrSVGOrMathMLElement;
 
 dictionary SVGBoundingBoxOptions {
   boolean fill = true;
@@ -28,9 +26,9 @@ dictionary SVGBoundingBoxOptions {
 interface SVGGraphicsElement : SVGElement {
   [SameObject] readonly attribute SVGAnimatedTransformList transform;
 
-  DOMRect getBBox(optional SVGBoundingBoxOptions options = {});
-  DOMMatrix? getCTM();
-  DOMMatrix? getScreenCTM();
+  SVGRect getBBox(optional SVGBoundingBoxOptions options = {});
+  SVGMatrix? getCTM();
+  SVGMatrix? getScreenCTM();
 };
 
 SVGGraphicsElement includes SVGTests;
@@ -42,7 +40,7 @@ interface SVGGeometryElement : SVGGraphicsElement {
   boolean isPointInFill(optional DOMPointInit point = {});
   boolean isPointInStroke(optional DOMPointInit point = {});
   float getTotalLength();
-  DOMPoint getPointAtLength(float distance);
+  SVGPoint getPointAtLength(float distance);
 };
 
 [Exposed=Window]
@@ -180,14 +178,14 @@ interface SVGAnimatedAngle {
 
 [Exposed=Window]
 interface SVGAnimatedString {
-           attribute DOMString baseVal;
+           attribute (DOMString or TrustedScriptURL) baseVal;
   readonly attribute DOMString animVal;
 };
 
 [Exposed=Window]
 interface SVGAnimatedRect {
-  [SameObject] readonly attribute DOMRect baseVal;
-  [SameObject] readonly attribute DOMRectReadOnly animVal;
+  [SameObject] readonly attribute SVGRect baseVal;
+  [SameObject] readonly attribute SVGRect animVal;
 };
 
 [Exposed=Window]
@@ -237,25 +235,25 @@ interface SVGSVGElement : SVGGraphicsElement {
   [SameObject] readonly attribute SVGAnimatedLength height;
 
   attribute float currentScale;
-  [SameObject] readonly attribute DOMPointReadOnly currentTranslate;
+  [SameObject] readonly attribute SVGPoint currentTranslate;
 
-  NodeList getIntersectionList(DOMRectReadOnly rect, SVGElement? referenceElement);
-  NodeList getEnclosureList(DOMRectReadOnly rect, SVGElement? referenceElement);
-  boolean checkIntersection(SVGElement element, DOMRectReadOnly rect);
-  boolean checkEnclosure(SVGElement element, DOMRectReadOnly rect);
+  NodeList getIntersectionList(SVGRect rect, SVGElement? referenceElement);
+  NodeList getEnclosureList(SVGRect rect, SVGElement? referenceElement);
+  boolean checkIntersection(SVGElement element, SVGRect rect);
+  boolean checkEnclosure(SVGElement element, SVGRect rect);
 
   undefined deselectAll();
 
-  SVGNumber createSVGNumber();
-  SVGLength createSVGLength();
-  SVGAngle createSVGAngle();
-  DOMPoint createSVGPoint();
-  DOMMatrix createSVGMatrix();
-  DOMRect createSVGRect();
-  SVGTransform createSVGTransform();
-  SVGTransform createSVGTransformFromMatrix(optional DOMMatrix2DInit matrix = {});
+  [NewObject] SVGNumber createSVGNumber();
+  [NewObject] SVGLength createSVGLength();
+  [NewObject] SVGAngle createSVGAngle();
+  [NewObject] SVGPoint createSVGPoint();
+  [NewObject] SVGMatrix createSVGMatrix();
+  [NewObject] SVGRect createSVGRect();
+  [NewObject] SVGTransform createSVGTransform();
+  [NewObject] SVGTransform createSVGTransformFromMatrix(optional DOMMatrix2DInit matrix = {});
 
-  Element getElementById(DOMString elementId);
+  Element? getElementById(DOMString elementId);
 
   // Deprecated methods that have no effect when called,
   // but which are kept for compatibility reasons.
@@ -300,19 +298,12 @@ interface SVGUseElement : SVGGraphicsElement {
   [SameObject] readonly attribute SVGAnimatedLength y;
   [SameObject] readonly attribute SVGAnimatedLength width;
   [SameObject] readonly attribute SVGAnimatedLength height;
-  [SameObject] readonly attribute SVGElement? instanceRoot;
-  [SameObject] readonly attribute SVGElement? animatedInstanceRoot;
 };
 
 SVGUseElement includes SVGURIReference;
 
 [Exposed=Window]
 interface SVGUseElementShadowRoot : ShadowRoot {
-};
-
-interface mixin SVGElementInstance {
-  [SameObject] readonly attribute SVGElement? correspondingElement;
-  [SameObject] readonly attribute SVGUseElement? correspondingUseElement;
 };
 
 [Exposed=Window]
@@ -331,9 +322,10 @@ interface mixin GetSVGDocument {
 
 [Exposed=Window]
 interface SVGStyleElement : SVGElement {
-  attribute DOMString type;
-  attribute DOMString media;
-  attribute DOMString title;
+  [Reflect] attribute DOMString type;
+  [Reflect] attribute DOMString media;
+  [Reflect] attribute DOMString title;
+  attribute boolean disabled;
 };
 
 SVGStyleElement includes LinkStyle;
@@ -351,7 +343,7 @@ interface SVGTransform {
   const unsigned short SVG_TRANSFORM_SKEWY = 6;
 
   readonly attribute unsigned short type;
-  [SameObject] readonly attribute DOMMatrix matrix;
+  [SameObject] readonly attribute SVGMatrix matrix;
   readonly attribute float angle;
 
   undefined setMatrix(optional DOMMatrix2DInit matrix = {});
@@ -420,10 +412,6 @@ interface SVGAnimatedPreserveAspectRatio {
 };
 
 [Exposed=Window]
-interface SVGPathElement : SVGGeometryElement {
-};
-
-[Exposed=Window]
 interface SVGRectElement : SVGGeometryElement {
   [SameObject] readonly attribute SVGAnimatedLength x;
   [SameObject] readonly attribute SVGAnimatedLength y;
@@ -468,13 +456,13 @@ interface SVGPointList {
   readonly attribute unsigned long numberOfItems;
 
   undefined clear();
-  DOMPoint initialize(DOMPoint newItem);
-  getter DOMPoint getItem(unsigned long index);
-  DOMPoint insertItemBefore(DOMPoint newItem, unsigned long index);
-  DOMPoint replaceItem(DOMPoint newItem, unsigned long index);
-  DOMPoint removeItem(unsigned long index);
-  DOMPoint appendItem(DOMPoint newItem);
-  setter undefined (unsigned long index, DOMPoint newItem);
+  SVGPoint initialize(SVGPoint newItem);
+  getter SVGPoint getItem(unsigned long index);
+  SVGPoint insertItemBefore(SVGPoint newItem, unsigned long index);
+  SVGPoint replaceItem(SVGPoint newItem, unsigned long index);
+  SVGPoint removeItem(unsigned long index);
+  SVGPoint appendItem(SVGPoint newItem);
+  setter undefined (unsigned long index, SVGPoint newItem);
 };
 
 [Exposed=Window]
@@ -503,9 +491,9 @@ interface SVGTextContentElement : SVGGraphicsElement {
   long getNumberOfChars();
   float getComputedTextLength();
   float getSubStringLength(unsigned long charnum, unsigned long nchars);
-  DOMPoint getStartPositionOfChar(unsigned long charnum);
-  DOMPoint getEndPositionOfChar(unsigned long charnum);
-  DOMRect getExtentOfChar(unsigned long charnum);
+  SVGPoint getStartPositionOfChar(unsigned long charnum);
+  SVGPoint getEndPositionOfChar(unsigned long charnum);
+  SVGRect getExtentOfChar(unsigned long charnum);
   float getRotationOfChar(unsigned long charnum);
   long getCharNumAtPosition(optional DOMPointInit point = {});
   undefined selectSubString(unsigned long charnum, unsigned long nchars);
@@ -580,6 +568,7 @@ interface SVGMarkerElement : SVGElement {
   const unsigned short SVG_MARKER_ORIENT_UNKNOWN = 0;
   const unsigned short SVG_MARKER_ORIENT_AUTO = 1;
   const unsigned short SVG_MARKER_ORIENT_ANGLE = 2;
+  const unsigned short SVG_MARKER_ORIENT_AUTO_START_REVERSE = 3;
 
   [SameObject] readonly attribute SVGAnimatedLength refX;
   [SameObject] readonly attribute SVGAnimatedLength refY;
@@ -651,7 +640,7 @@ SVGPatternElement includes SVGURIReference;
 
 [Exposed=Window]
 interface SVGScriptElement : SVGElement {
-  attribute DOMString type;
+  [Reflect] attribute DOMString type;
   attribute DOMString? crossOrigin;
 };
 
@@ -659,34 +648,17 @@ SVGScriptElement includes SVGURIReference;
 
 [Exposed=Window]
 interface SVGAElement : SVGGraphicsElement {
-  [SameObject] readonly attribute SVGAnimatedString target;
-  attribute DOMString download;
-  attribute USVString ping;
-  attribute DOMString rel;
-  [SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
-  attribute DOMString hreflang;
-  attribute DOMString type;
-
-  attribute DOMString text;
+  [Reflect, SameObject] readonly attribute SVGAnimatedString target;
+  [Reflect] attribute DOMString download;
+  [Reflect] attribute USVString ping;
+  [Reflect] attribute DOMString rel;
+  [Reflect="rel", SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
 
   attribute DOMString referrerPolicy;
 };
 
 SVGAElement includes SVGURIReference;
-
-// Inline HTMLHyperlinkElementUtils except href, which conflicts.
-partial interface SVGAElement {
-  readonly attribute USVString origin;
-  [CEReactions] attribute USVString protocol;
-  [CEReactions] attribute USVString username;
-  [CEReactions] attribute USVString password;
-  [CEReactions] attribute USVString host;
-  [CEReactions] attribute USVString hostname;
-  [CEReactions] attribute USVString port;
-  [CEReactions] attribute USVString pathname;
-  [CEReactions] attribute USVString search;
-  [CEReactions] attribute USVString hash;
-};
+SVGAElement includes HyperlinkElementUtils;
 
 [Exposed=Window]
 interface SVGViewElement : SVGElement {};

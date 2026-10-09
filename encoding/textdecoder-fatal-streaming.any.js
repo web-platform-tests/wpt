@@ -1,3 +1,4 @@
+// META: global=window,dedicatedworker
 // META: title=Encoding API: End-of-file
 
 test(function() {

@@ -23,6 +23,7 @@
 <div id="target8" style="color: green; color: var(--prop);"></div>
 <div id="target9" style="margin: var(--prop); margin-top: 10px"></div>
 <div id="target10"style="expando: var(--prop);"></div>
+<div id="target11"style="color: /* comment that must not be preserved */ var(--prop)  /* kept comment */ var(--prop); /* another stripped comment */ /* indeed */ "></div>
 
 <script type="text/javascript">
     "use strict";
@@ -31,13 +32,14 @@
         { element: "target1",   expectedCssText: "--var: var1;" },
         { element: "target2",   expectedCssText: "margin: var(--prop);" },
         { element: "target3",   expectedCssText: "background: var(--prop);" },
-        { element: "target4",   expectedCssText: "margin: var(--prop)  !important;" },
-        { element: "target5",   expectedCssText: "background: var(--prop)  !important;" },
+        { element: "target4",   expectedCssText: "margin: var(--prop) !important;" },
+        { element: "target5",   expectedCssText: "background: var(--prop) !important;" },
         { element: "target6",   expectedCssText: "background: green;" },
         { element: "target7",   expectedCssText: "background: var(--prop);" },
         { element: "target8",   expectedCssText: "color: var(--prop);" },
         { element: "target9",   expectedCssText: "margin-right: ; margin-bottom: ; margin-left: ; margin-top: 10px;" },
-        { element: "target10",  expectedCssText: "" }
+        { element: "target10",  expectedCssText: "" },
+        { element: "target11",  expectedCssText: "color: var(--prop)  /* kept comment */ var(--prop);" }
     ];
 
     testcases.forEach(function (testcase) {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<link rel="help" href="https://drafts.csswg.org/css-values-4/#comp-func">
+<link rel="help" href="https://drafts.csswg.org/css-values-4/#trig-funcs">
 <link rel="help" href="https://drafts.csswg.org/css-values-4/#angles">
 <link rel="help" href="https://drafts.csswg.org/css-values-4/#calc-type-checking">
 <link rel="author" title="Apple Inc">
@@ -67,9 +67,13 @@ test_invalid_angle('atan2(1deg / )');
 test_invalid_angle('atan2(1deg 2deg)');
 test_invalid_angle('atan2(1deg, , 2deg)');
 test_invalid_angle('atan2(90px)');
+test_invalid_angle('atan2(90px, 100%)');
+
 test_invalid_angle('atan2(30deg + 1.0471967rad, 0)');
 test_invalid_angle('atan2( 0 ,)');
 test_invalid_angle('atan2( () 30deg - 0.523599rad )');
 test_invalid_angle('atan2(45deg )');
 test_invalid_angle('atan2(30deg, + 0.261799rad)');
+test_invalid_angle('atan2(2, 1px)');
+test_invalid_angle('atan2(2, 1%)');
 </script>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>::first-letter on input / textarea</title>
+<link rel="match" href="input-textarea-ref.html">
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#first-letter-pseudo">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/13926">
+<style>
+.direct::first-letter {
+  font-size: 100px;
+}
+.container::first-letter {
+  font-size: 100px;
+}
+.container > input {
+  display: block;
+}
+</style>
+<input class="direct" value="Some text">
+<textarea class="direct">
+  Some more text
+</textarea>
+<div class="container"><input value="Some more text"></div>

@@ -89,7 +89,7 @@ test(() => {
 
 test(() => {
   const argument = { "element": "anyfunc", "initial": 0 };
-  const table = new WebAssembly.Table(argument, {});
+  const table = new WebAssembly.Table(argument, null, {});
   assert_Table(table, { "length": 0 });
 }, "Stray argument");
 
@@ -206,3 +206,8 @@ test(() => {
   assert_throws_js(TypeError, () => new WebAssembly.Table(argument, "cannot be used as a wasm function"));
   assert_throws_js(TypeError, () => new WebAssembly.Table(argument, 37));
 }, "initialize anyfunc table with a bad default value");
+
+test(() => {
+  assert_throws_js(RangeError, () =>
+    new WebAssembly.Table({ "element": "anyfunc", "initial": 3, "maximum": 2 }, 37));
+}, "initialize anyfunc table with a bad default value and a bad descriptor");

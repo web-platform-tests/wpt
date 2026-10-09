@@ -1,5 +1,6 @@
 // META: title=WebCryptoAPI: importKey() for RSA keys
 // META: timeout=long
+// META: script=../util/helpers.js
 
 // Test importKey and exportKey for RSA algorithms. Only "happy paths" are
 // currently tested - those where the operation should succeed.
@@ -77,7 +78,7 @@
                 [true, false].forEach(function(extractable) {
 
                     // Test public keys first
-                    allValidUsages(vector.publicUsages, []).forEach(function(usages) {
+                    allValidUsages(vector.publicUsages, true).forEach(function(usages) {
                         ['spki', 'jwk'].forEach(function(format) {
                             var algorithm = {name: vector.name, hash: hash};
                             var data = keyData[size];
@@ -91,13 +92,13 @@
                     });
 
                     // Next, test private keys
-                    allValidUsages(vector.privateUsages, []).forEach(function(usages) {
-                        ['pkcs8', 'jwk'].forEach(function(format) {
-                            var algorithm = {name: vector.name, hash: hash};
-                            var data = keyData[size];
-
+                    ['pkcs8', 'jwk'].forEach(function(format) {
+                        var algorithm = {name: vector.name, hash: hash};
+                        var data = keyData[size];
+                        allValidUsages(vector.privateUsages).forEach(function(usages) {
                             testFormat(format, algorithm, data, size, usages, extractable);
                         });
+                        testEmptyUsages(format, algorithm, data, size, extractable);
                     });
                 });
             });
@@ -113,6 +114,7 @@
             return subtle.importKey(format, keyData[format], algorithm, extractable, usages).
             then(function(key) {
                 assert_equals(key.constructor, CryptoKey, "Imported a CryptoKey object");
+                assert_goodCryptoKey(key, algorithm, extractable, usages, (format === 'pkcs8' || (format === 'jwk' && keyData[format].d)) ? 'private' : 'public');
                 if (!extractable) {
                     return;
                 }
@@ -133,47 +135,23 @@
         }, "Good parameters: " + keySize.toString() + " bits " + parameterString(format, keyData[format], algorithm, extractable, usages));
     }
 
+    // Test importKey with a given key format and other parameters but with empty usages.
+    // Should fail with SyntaxError
+    function testEmptyUsages(format, algorithm, keyData, keySize, extractable) {
+        const usages = [];
+        promise_test(function(test) {
+            return subtle.importKey(format, keyData[format], algorithm, extractable, usages).
+            then(function(key) {
+                assert_unreached("importKey succeeded but should have failed with SyntaxError");
+            }, function(err) {
+                assert_equals(err.name, "SyntaxError", "Should throw correct error, not " + err.name + ": " + err.message);
+            });
+        }, "Empty Usages: " + keySize.toString() + " bits " + parameterString(format, keyData, algorithm, extractable, usages));
+    }
+
 
 
     // Helper methods follow:
-
-    // Are two array buffers the same?
-    function equalBuffers(a, b) {
-        if (a.byteLength !== b.byteLength) {
-            return false;
-        }
-
-        var aBytes = new Uint8Array(a);
-        var bBytes = new Uint8Array(b);
-
-        for (var i=0; i<a.byteLength; i++) {
-            if (aBytes[i] !== bBytes[i]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    // Are two Jwk objects "the same"? That is, does the object returned include
-    // matching values for each property that was expected? It's okay if the
-    // returned object has extra methods; they aren't checked.
-    function equalJwk(expected, got) {
-        var fields = Object.keys(expected);
-        var fieldName;
-
-        for(var i=0; i<fields.length; i++) {
-            fieldName = fields[i];
-            if (!(fieldName in got)) {
-                return false;
-            }
-            if (expected[fieldName] !== got[fieldName]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     // Build minimal Jwk objects from raw key data and algorithm specifications
     function jwkData(keyData, algorithm) {
@@ -188,57 +166,6 @@
             result.alg = "HS" + algorithm.hash.substring(4);
         }
         return result;
-    }
-
-    // Jwk format wants Base 64 without the typical padding at the end.
-    function byteArrayToUnpaddedBase64(byteArray){
-        var binaryString = "";
-        for (var i=0; i<byteArray.byteLength; i++){
-            binaryString += String.fromCharCode(byteArray[i]);
-        }
-        var base64String = btoa(binaryString);
-
-        return base64String.replace(/=/g, "");
-    }
-
-    // Want to test every valid combination of usages. Start by creating a list
-    // of all non-empty subsets to possible usages.
-    function allNonemptySubsetsOf(arr) {
-        var results = [];
-        var firstElement;
-        var remainingElements;
-
-        for(var i=0; i<arr.length; i++) {
-            firstElement = arr[i];
-            remainingElements = arr.slice(i+1);
-            results.push([firstElement]);
-
-            if (remainingElements.length > 0) {
-                allNonemptySubsetsOf(remainingElements).forEach(function(combination) {
-                    combination.push(firstElement);
-                    results.push(combination);
-                });
-            }
-        }
-
-        return results;
-    }
-
-    // Return a list of all valid usage combinations, given the possible ones
-    // and the ones that are required for a particular operation.
-    function allValidUsages(possibleUsages, requiredUsages) {
-        var allUsages = [];
-
-        allNonemptySubsetsOf(possibleUsages).forEach(function(usage) {
-            for (var i=0; i<requiredUsages.length; i++) {
-                if (!usage.includes(requiredUsages[i])) {
-                    return;
-                }
-            }
-            allUsages.push(usage);
-        });
-
-        return allUsages;
     }
 
     // Convert method parameters to a string to uniquely name each test
@@ -257,39 +184,4 @@
                      ")";
 
         return result;
-    }
-
-    // Character representation of any object we may use as a parameter.
-    function objectToString(obj) {
-        var keyValuePairs = [];
-
-        if (Array.isArray(obj)) {
-            return "[" + obj.map(function(elem){return objectToString(elem);}).join(", ") + "]";
-        } else if (typeof obj === "object") {
-            Object.keys(obj).sort().forEach(function(keyName) {
-                keyValuePairs.push(keyName + ": " + objectToString(obj[keyName]));
-            });
-            return "{" + keyValuePairs.join(", ") + "}";
-        } else if (typeof obj === "undefined") {
-            return "undefined";
-        } else {
-            return obj.toString();
-        }
-
-        var keyValuePairs = [];
-
-        Object.keys(obj).sort().forEach(function(keyName) {
-            var value = obj[keyName];
-            if (typeof value === "object") {
-                value = objectToString(value);
-            } else if (typeof value === "array") {
-                value = "[" + value.map(function(elem){return objectToString(elem);}).join(", ") + "]";
-            } else {
-                value = value.toString();
-            }
-
-            keyValuePairs.push(keyName + ": " + value);
-        });
-
-        return "{" + keyValuePairs.join(", ") + "}";
     }

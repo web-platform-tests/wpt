@@ -10,10 +10,9 @@ Are you an enthusiastic pytest user, the local testing guru in your workplace? O
 
 We will pair experienced pytest users with open source projects, for a month's effort of getting new development teams started with pytest.
 
-In 2015 we are trying this for the first time. In February and March 2015 we will gather volunteers on both sides, in April we will do the work, and in May we will evaluate how it went. This effort is being coordinated by Brianna Laugher. If you have any questions or comments, you can raise them on the `@pytestdotorg twitter account <https://twitter.com/pytestdotorg>`_ the `issue tracker`_ or the `pytest-dev mailing list`_.
+In 2015 we are trying this for the first time. In February and March 2015 we will gather volunteers on both sides, in April we will do the work, and in May we will evaluate how it went. This effort is being coordinated by Brianna Laugher. If you have any questions or comments, you can raise them on the `@pytestdotorg twitter account <https://twitter.com/pytestdotorg>`_\, the :issue:`issue tracker <676>` or the `pytest-dev mailing list`_.
 
 
-.. _`issue tracker`: https://github.com/pytest-dev/pytest/issues/676
 .. _`pytest-dev mailing list`: https://mail.python.org/mailman/listinfo/pytest-dev
 
 
@@ -45,7 +44,7 @@ Partner projects, sign up here! (by 22 March)
 What does it mean to "adopt pytest"?
 -----------------------------------------
 
-There can be many different definitions of "success". Pytest can run many nose_ and unittest_ tests by default, so using pytest as your testrunner may be possible from day 1. Job done, right?
+There can be many different definitions of "success". Pytest can run many unittest_ tests by default, so using pytest as your testrunner may be possible from day 1. Job done, right?
 
 Progressive success might look like:
 
@@ -63,7 +62,6 @@ Progressive success might look like:
 
 It may be after the month is up, the partner project decides that pytest is not right for it. That's okay - hopefully the pytest team will also learn something about its weaknesses or deficiencies.
 
-.. _nose: nose.html
 .. _unittest: unittest.html
 .. _assert: assert.html
 .. _pycmd: https://bitbucket.org/hpk42/pycmd/overview

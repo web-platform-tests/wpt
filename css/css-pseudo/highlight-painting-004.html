@@ -11,6 +11,7 @@
 <meta name="assert" value="::selection overlay background and decorations are independent of those of the originating element, and originating element decorations lose their colour">
 <script src="support/selections.js"></script>
 <link rel="stylesheet" href="support/highlights.css">
+<meta name="fuzzy" content="0-50;0-320">
 <style>
     /*
         Topmost last:
@@ -24,8 +25,7 @@
         Decoration paints are ordered by text-decoration-line
         (underline, overline, text, line-through), then by highlight
         overlay (originating, ::grammar-error, ::spelling-error,
-        ::target-text, ::selection). See options (d, d, d) in
-        csswg-drafts#6022 for more details.
+        ::target-text, ::selection).
     */
     * {
         text-decoration-skip-ink: none;

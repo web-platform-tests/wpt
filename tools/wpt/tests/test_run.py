@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import tempfile
 import shutil
 import sys
@@ -7,7 +9,7 @@ import pytest
 
 from tools.wpt import run
 from tools import localpaths  # noqa: F401
-from wptrunner.browsers import product_list
+from wptrunner.products import get_all_products
 
 
 @pytest.fixture(scope="module")
@@ -31,7 +33,7 @@ def venv():
         def install(self, *requirements):
             return
 
-        def install_requirements(self, requirements_path):
+        def install_requirements(self, *requirements):
             return
 
     venv = Virtualenv()
@@ -42,7 +44,8 @@ def venv():
 
 @pytest.fixture(scope="module")
 def logger():
-    run.setup_logging({})
+    with run.GlobalLogger({}) as logger:
+        yield logger
 
 
 @pytest.mark.parametrize("platform", ["Windows", "Linux", "Darwin"])
@@ -58,7 +61,7 @@ def test_check_environ_fail(platform):
     assert "wpt make-hosts-file" in str(excinfo.value)
 
 
-@pytest.mark.parametrize("product", product_list)
+@pytest.mark.parametrize("product", list(get_all_products()))
 def test_setup_wptrunner(venv, logger, product):
     if product == "firefox_android":
         pytest.skip("Android emulator doesn't work on docker")

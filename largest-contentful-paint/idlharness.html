@@ -10,7 +10,7 @@
 
 idl_test(
   ['largest-contentful-paint'],
-  ['performance-timeline', 'dom', 'hr-time'],
+  ['performance-timeline', 'dom', 'hr-time', 'paint-timing'],
   async (idl_array, t) => {
     idl_array.add_objects({
       LargestContentfulPaint: ['lcp']
@@ -27,4 +27,4 @@ idl_test(
 );
 </script>
 <!-- a contentful element to observe -->
-<img src=/images/green-100x50.png>
+<img src=/images/lcp-100x50.png>

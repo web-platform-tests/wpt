@@ -1,25 +1,21 @@
 #!/bin/bash
 set -ex
 
-SCRIPT_DIR=$(cd $(dirname "$0") && pwd -P)
+REL_DIR_NAME=$(dirname "$0")
+SCRIPT_DIR=$(cd "$REL_DIR_NAME" && pwd -P)
 WPT_ROOT=$SCRIPT_DIR/../..
-cd $WPT_ROOT
+cd "$WPT_ROOT"
 
-test_infrastructure() {
-    TERM=dumb ./wpt run --log-mach - --yes --manifest ~/meta/MANIFEST.json --metadata infrastructure/metadata/ --install-fonts --install-webdriver $1 $PRODUCT infrastructure/
+BROWSER="$1"
+CHANNEL="$2"
+
+run_infra_test() {
+    echo "### Running Infrastructure Tests for $1 ###"
+    ./tools/ci/taskcluster-run.py "$1" "$2" -- --log-tbpl=- --log-wptreport=../artifacts/wpt_report.json --logcat-dir="../artifacts/" --metadata=infrastructure/metadata/ --include=infrastructure/
 }
 
 main() {
-    PRODUCTS=( "firefox" "chrome" )
-    ./wpt manifest --rebuild -p ~/meta/MANIFEST.json
-    for PRODUCT in "${PRODUCTS[@]}"; do
-        if [[ "$PRODUCT" == "chrome" ]]; then
-            # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
-            test_infrastructure "--binary=$(which google-chrome-unstable) --enable-swiftshader --channel dev" "$1"
-        else
-            test_infrastructure "--binary=~/build/firefox/firefox" "$1"
-        fi
-    done
+  run_infra_test "$BROWSER" "$CHANNEL"
 }
 
-main $1
+main

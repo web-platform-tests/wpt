@@ -1,8 +1,10 @@
-from collections import OrderedDict
-from datetime import datetime, timedelta
-from io import BytesIO
+# mypy: allow-untyped-defs
+
 import json
 import uuid
+import traceback
+from datetime import datetime, timedelta, timezone
+from io import BytesIO
 
 from hpack.struct import HeaderTuple
 from http.cookies import BaseCookie, Morsel
@@ -15,7 +17,7 @@ from .utils import isomorphic_decode, isomorphic_encode
 missing = object()
 
 
-class Response(object):
+class Response:
     """Object representing the response to a HTTP request
 
     :param handler: RequestHandler being used for this response
@@ -96,7 +98,8 @@ class Response(object):
             self._status = (int(value), None)
 
     def set_cookie(self, name, value, path="/", domain=None, max_age=None,
-                   expires=None, secure=False, httponly=False, comment=None):
+                   expires=None, samesite=None, secure=False, httponly=False,
+                   comment=None):
         """Set a cookie to be sent with a Set-Cookie header in the
         response
 
@@ -106,6 +109,8 @@ class Response(object):
                         until the cookie expires
         :param path: String path to which the cookie applies
         :param domain: String domain to which the cookie applies
+        :param samesit: String indicating whether the cookie should be
+                         restricted to same site context
         :param secure: Boolean indicating whether the cookie is marked as secure
         :param httponly: Boolean indicating whether the cookie is marked as
                          HTTP Only
@@ -129,7 +134,7 @@ class Response(object):
                                                     "oct", "nov", "dec"])}
 
         if isinstance(expires, timedelta):
-            expires = datetime.utcnow() + expires
+            expires = datetime.now(timezone.utc) + expires
 
         if expires is not None:
             expires_str = expires.strftime("%d %%s %Y %H:%M:%S GMT")
@@ -155,6 +160,7 @@ class Response(object):
         maybe_set("max-age", max_age)
         maybe_set("secure", secure)
         maybe_set("httponly", httponly)
+        maybe_set("samesite", samesite)
 
         self.headers.append("Set-Cookie", m.OutputString())
 
@@ -197,10 +203,14 @@ class Response(object):
         elif isinstance(self.content, str):
             yield self.content.encode(self.encoding)
         elif hasattr(self.content, "read"):
-            if read_file:
-                yield self.content.read()
-            else:
-                yield self.content
+            # Read the file in chunks rather than reading the whole file into
+            # memory at once. (See also ResponseWriter.file_chunk_size)
+            while True:
+                read = self.content.read(32 * 1024)
+                if len(read) == 0:
+                    break
+                yield read
+            self.content.close()
         else:
             for item in self.content:
                 if hasattr(item, "__call__"):
@@ -228,30 +238,49 @@ class Response(object):
         self.write_status_headers()
         self.write_content()
 
-    def set_error(self, code, message=u""):
+    def set_error(self, code, err=None):
         """Set the response status headers and return a JSON error object:
 
         {"error": {"code": code, "message": message}}
         code is an int (HTTP status code), and message is a text string.
         """
-        err = {"code": code,
-               "message": message}
-        data = json.dumps({"error": err})
+        if 500 <= code < 600:
+            message = self._format_server_error(err)
+            self.logger.warning(message)
+        else:
+            if err is None:
+                message = ""
+            else:
+                message = str(err)
+
+        data = json.dumps({"error": {
+            "code": code,
+            "message": message}
+        })
         self.status = code
         self.headers = [("Content-Type", "application/json"),
                         ("Content-Length", len(data))]
         self.content = data
-        if code == 500:
-            if isinstance(message, str) and message:
-                first_line = message.splitlines()[0]
-            else:
-                first_line = "<no message given>"
-            self.logger.error("Exception loading %s: %s" % (self.request.url,
-                                                            first_line))
-            self.logger.info(message)
+
+    def _format_server_error(self, err):
+        if err is None:
+            suffix = "<no traceback>"
+        elif isinstance(err, str):
+            suffix = err
+        elif self.request.server.config.logging["suppress_handler_traceback"]:
+            frame = traceback.extract_tb(err.__traceback__)[-1]
+            suffix = (f"""File "{frame.filename}", line {frame.lineno} """
+                      f"""in {frame.name} (traceback suppressed)""")
+        else:
+            tb = "\n".join(f"  {line}"
+                           for line in traceback.format_tb(err.__traceback__))
+            suffix = f"""Traceback (most recent call last):
+{tb}  {type(err).__name__}: {err}
+"""
+        return f"Internal server error loading {self.request.url}:\n  {suffix}"
 
 
-class MultipartContent(object):
+class MultipartContent:
     def __init__(self, boundary=None, default_content_type=None):
         self.items = []
         if boundary is None:
@@ -281,7 +310,7 @@ class MultipartContent(object):
         yield self
 
 
-class MultipartPart(object):
+class MultipartPart:
     def __init__(self, data, content_type=None, headers=None):
         assert isinstance(data, bytes), data
         self.headers = ResponseHeaders()
@@ -317,10 +346,10 @@ def _maybe_encode(s):
     return isomorphic_encode(s)
 
 
-class ResponseHeaders(object):
+class ResponseHeaders:
     """Dictionary-like object holding the headers for the response"""
     def __init__(self):
-        self.data = OrderedDict()
+        self.data = {}
 
     def set(self, key, value):
         """Set a header to a specific value, overwriting any previous header
@@ -394,7 +423,7 @@ class ResponseHeaders(object):
 class H2Response(Response):
 
     def __init__(self, handler, request):
-        super(H2Response, self).__init__(handler, request, response_writer_cls=H2ResponseWriter)
+        super().__init__(handler, request, response_writer_cls=H2ResponseWriter)
 
     def write_status_headers(self):
         self.writer.write_headers(self.headers, *self.status)
@@ -416,7 +445,7 @@ class H2Response(Response):
                     self.writer.write_data(item, last=True)
 
 
-class H2ResponseWriter(object):
+class H2ResponseWriter:
 
     def __init__(self, handler, response):
         self.socket = handler.request
@@ -654,7 +683,7 @@ class H2ResponseWriter(object):
             raise ValueError
 
 
-class ResponseWriter(object):
+class ResponseWriter:
     """Object providing an API to write out a HTTP response.
 
     :param handler: The RequestHandler being used.

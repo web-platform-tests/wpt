@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import json
 import logging
 import os
@@ -7,10 +9,13 @@ import tempfile
 
 import requests
 
+from pathlib import Path
+
+
 here = os.path.abspath(os.path.dirname(__file__))
 wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 
-if not(wpt_root in sys.path):
+if wpt_root not in sys.path:
     sys.path.append(wpt_root)
 
 from tools.wpt.testfiles import get_git_cmd
@@ -19,7 +24,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class Status(object):
+class Status:
     SUCCESS = 0
     FAIL = 1
 
@@ -35,6 +40,10 @@ def run(cmd, return_stdout=False, **kwargs):
 
 def create_manifest(path):
     run(["./wpt", "manifest", "-p", path])
+
+
+def create_web_feature_manifest(path):
+    run(["./wpt", "web-features-manifest", "-p", path])
 
 
 def compress_manifest(path):
@@ -70,7 +79,7 @@ def request(url, desc, method=None, data=None, json_data=None, params=None, head
         resp = method(url, **kwargs)
 
     except Exception as e:
-        logger.error("%s failed:\n%s" % (desc, e))
+        logger.error(f"{desc} failed:\n{e}")
         return None
 
     try:
@@ -106,9 +115,22 @@ def get_pr(owner, repo, sha):
     return pr["number"]
 
 
-def create_release(manifest_path, owner, repo, sha, tag, body):
-    logger.info("Creating a release for tag='%s', target_commitish='%s'" % (tag, sha))
-    create_url = "https://api.github.com/repos/%s/%s/releases" % (owner, repo)
+def get_file_upload_details(manifest_path, sha):
+    """
+    For a given file, generate details used to upload to GitHub.
+    """
+    path = Path(manifest_path)
+    stem = path.stem
+    extension = path.suffix
+    upload_filename_prefix = f"{stem}-{sha}{extension}"
+    upload_label_prefix = path.name
+    upload_desc = f"{stem.title()} upload"
+    return upload_filename_prefix, upload_label_prefix, upload_desc
+
+
+def create_release(manifest_file_paths, owner, repo, sha, tag, body):
+    logger.info(f"Creating a release for tag='{tag}', target_commitish='{sha}'")
+    create_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
     create_data = {"tag_name": tag,
                    "target_commitish": sha,
                    "name": tag,
@@ -122,23 +144,25 @@ def create_release(manifest_path, owner, repo, sha, tag, body):
     upload_url = create_resp["upload_url"].split("{", 1)[0]
 
     upload_exts = [".gz", ".bz2", ".zst"]
-    for upload_ext in upload_exts:
-        upload_filename = "MANIFEST-%s.json%s" % (sha, upload_ext)
-        params = {"name": upload_filename,
-                  "label": "MANIFEST.json%s" % upload_ext}
+    for manifest_path in manifest_file_paths:
+        upload_filename_prefix, upload_label_prefix, upload_desc = get_file_upload_details(manifest_path, sha)
+        for upload_ext in upload_exts:
+            upload_filename = f"{upload_filename_prefix}{upload_ext}"
+            params = {"name": upload_filename,
+                    "label": f"{upload_label_prefix}{upload_ext}"}
 
-        with open("%s%s" % (manifest_path, upload_ext), "rb") as f:
-            upload_data = f.read()
+            with open(f"{manifest_path}{upload_ext}", "rb") as f:
+                upload_data = f.read()
 
-        logger.info("Uploading %s bytes" % len(upload_data))
+            logger.info("Uploading %s bytes" % len(upload_data))
 
-        upload_resp = request(upload_url, "Manifest upload", data=upload_data, params=params,
-                              headers={'Content-Type': 'application/octet-stream'})
-        if not upload_resp:
-            return False
+            upload_resp = request(upload_url, upload_desc, data=upload_data, params=params,
+                                headers={'Content-Type': 'application/octet-stream'})
+            if not upload_resp:
+                return False
 
     release_id = create_resp["id"]
-    edit_url = "https://api.github.com/repos/%s/%s/releases/%s" % (owner, repo, release_id)
+    edit_url = f"https://api.github.com/repos/{owner}/{repo}/releases/{release_id}"
     edit_data = create_data.copy()
     edit_data["draft"] = False
     edit_resp = request(edit_url, "Release publishing", method=requests.patch, json_data=edit_data)
@@ -167,10 +191,13 @@ def main():
     dry_run = should_dry_run()
 
     manifest_path = os.path.join(tempfile.mkdtemp(), "MANIFEST.json")
+    web_features_manifest_path = os.path.join(tempfile.mkdtemp(), "WEB_FEATURES_MANIFEST.json")
 
     create_manifest(manifest_path)
+    create_web_feature_manifest(web_features_manifest_path)
 
     compress_manifest(manifest_path)
+    compress_manifest(web_features_manifest_path)
 
     owner, repo = os.environ["GITHUB_REPOSITORY"].split("/", 1)
 
@@ -186,7 +213,8 @@ def main():
         return Status.FAIL
     tag_name = "merge_pr_%s" % pr
 
-    if not create_release(manifest_path, owner, repo, head_rev, tag_name, body):
+    manifest_paths = [manifest_path, web_features_manifest_path]
+    if not create_release(manifest_paths, owner, repo, head_rev, tag_name, body):
         return Status.FAIL
 
     return Status.SUCCESS

@@ -1,11 +1,13 @@
+# mypy: allow-untyped-defs
 """Issue #7110"""
+
 import asyncio
 from typing import List
 
 import asynctest
 
 
-teardowns = []  # type: List[None]
+teardowns: List[None] = []
 
 
 class Test(asynctest.TestCase):

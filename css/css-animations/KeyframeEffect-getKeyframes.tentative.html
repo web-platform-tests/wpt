@@ -19,6 +19,11 @@
   to   { }
 }
 
+@keyframes anim-keyframe-timing-var {
+  from { color: rgb(0, 0, 0); animation-timing-function: var(--kf_ease); }
+  to   { color: rgb(255, 255, 255); }
+}
+
 @keyframes anim-only-non-animatable {
   from { animation-duration: 3s; }
   to   { animation-duration: 5s; }
@@ -37,12 +42,24 @@
 
 @keyframes anim-simple-timing {
   from { color: rgb(0, 0, 0); animation-timing-function: linear; }
-  50%  { color: rgb(0, 0, 255);  animation-timing-function: ease-in-out; }
+  50%  { color: rgb(0, 0, 255); animation-timing-function: ease-in-out; }
   to   { color: rgb(255, 255, 255); animation-timing-function: step-end; }
 }
 
 @keyframes anim-simple-timing-some {
   from { color: rgb(0, 0, 0); animation-timing-function: linear; }
+  50%  { color: rgb(0, 0, 255); }
+  to   { color: rgb(255, 255, 255); }
+}
+
+@keyframes anim-simple-composite {
+  from { color: rgb(0, 0, 0); animation-composition: replace; }
+  50%  { color: rgb(0, 0, 255); animation-composition: add; }
+  to   { color: rgb(255, 255, 255); animation-composition: accumulate; }
+}
+
+@keyframes anim-simple-composite-some {
+  from { color: rgb(0, 0, 0); animation-composition: add; }
   50%  { color: rgb(0, 0, 255); }
   to   { color: rgb(255, 255, 255); }
 }
@@ -113,6 +130,28 @@
   to   { margin-top: 20px; margin-right: 20px; margin-bottom: 20px; }
 }
 
+@keyframes anim-merge-offset-and-composite {
+  from { color: rgb(0, 0, 0); animation-composition: add; }
+  to   { color: rgb(255, 255, 255); }
+  from { margin-top: 8px; animation-composition: accumulate; }
+  to   { margin-top: 16px; }
+  from { font-size: 16px; animation-composition: add; }
+  to   { font-size: 32px; }
+  from { padding-left: 2px; animation-composition: accumulate; }
+  to   { padding-left: 4px; }
+}
+
+@keyframes anim-merge-offset-easing-and-composite {
+  from { color: rgb(0, 0, 0); animation-composition: add; }
+  to   { color: rgb(255, 255, 255); }
+  from { margin-top: 8px; animation-composition: accumulate; }
+  to   { margin-top: 16px; }
+  from { font-size: 16px; animation-composition: add; animation-timing-function: linear; }
+  to   { font-size: 32px; }
+  from { padding-left: 2px; animation-composition: accumulate; }
+  to   { padding-left: 4px; }
+}
+
 @keyframes anim-overriding {
   from          { padding-top: 50px }
   50%, from     { padding-top: 30px } /* wins: 0% */
@@ -156,6 +195,12 @@
   from { transform: translate(100px, 0) }
   to { --not-used: 200px }
 }
+
+@keyframes anim-only-timing-function-for-from-and-to {
+    from, to { animation-timing-function: linear }
+    50% { left: 10px }
+}
+
 </style>
 <body>
 <div id="log"></div>
@@ -182,6 +227,12 @@ const kTimingFunctionValues = [
   "cubic-bezier(0, 0.25, 0.75, 1)"
 ];
 
+const kCompositeValues = [
+  "replace",
+  "add",
+  "accumulate"
+];
+
 test(t => {
   const div = addDiv(t);
 
@@ -203,7 +254,7 @@ test(t => {
                 "number of frames when @keyframes only has frames with " +
                 "non-animatable properties");
 }, 'KeyframeEffect.getKeyframes() returns no frames for various kinds'
-   + ' of empty enimations');
+   + ' of empty animations');
 
 test(t => {
   const div = addDiv(t);
@@ -273,6 +324,78 @@ test(t => {
 
 test(t => {
   const div = addDiv(t);
+  div.style.setProperty('--kf_ease', 'steps(2, start)');
+
+  // Note: This test matches current interop behavior (Firefox/Safari/Chromium),
+  // not necessarily the spec-intended behavior for var() in keyframe easing.
+  div.style.animation = 'anim-keyframe-timing-var 100s linear';
+
+  const animation = div.getAnimations()[0];
+  assert_equals(animation.effect.getTiming().easing, 'linear',
+                "value of 'easing' on effect.getTiming()");
+
+  const frames = getKeyframes(div);
+  assert_equals(frames.length, 2, "number of frames");
+  assert_equals(frames[0].easing, "linear",
+                "value of 'easing' on ComputedKeyframe #0");
+  assert_equals(frames[1].easing, "linear",
+                "value of 'easing' on ComputedKeyframe #1");
+}, 'KeyframeEffect.getKeyframes() returns animation-wide easing for var() keyframe easing');
+
+test(t => {
+  for (const composite of kCompositeValues) {
+    const div = addDiv(t);
+
+    div.style.animation = 'anim-simple-three 100s';
+    div.style.animationComposition = composite;
+    const frames = getKeyframes(div);
+
+    assert_equals(frames.length, 3, "number of frames");
+
+    for (let i = 0; i < frames.length; i++) {
+      assert_equals(frames[i].composite, "auto",
+                    "value for 'composite' on ComputedKeyframe #" + i);
+    }
+  }
+}, 'KeyframeEffect.getKeyframes() returns frames with expected composite'
+   + ' values, when the composite is set on the effect using animation-composition on the'
+   + ' element');
+
+test(t => {
+  const div = addDiv(t);
+
+  div.style.animation = 'anim-simple-composite 100s';
+  const frames = getKeyframes(div);
+
+  assert_equals(frames.length, 3, "number of frames");
+  assert_equals(frames[0].composite, "replace",
+                "value of 'composite' on ComputedKeyframe #0");
+  assert_equals(frames[1].composite, "add",
+                "value of 'composite' on ComputedKeyframe #1");
+  assert_equals(frames[2].composite, "accumulate",
+                "value of 'composite' on ComputedKeyframe #2");
+}, 'KeyframeEffect.getKeyframes() returns frames with expected composite'
+   + ' values, when the composite is specified on each keyframe');
+
+test(t => {
+  const div = addDiv(t);
+
+  div.style.animation = 'anim-simple-composite-some 100s';
+  div.style.animationComposition = 'accumulate';
+  const frames = getKeyframes(div);
+
+  assert_equals(frames.length, 3, "number of frames");
+  assert_equals(frames[0].composite, "add",
+                "value of 'composite' on ComputedKeyframe #0");
+  assert_equals(frames[1].composite, "auto",
+                "value of 'composite' on ComputedKeyframe #1");
+  assert_equals(frames[2].composite, "auto",
+                "value of 'composite' on ComputedKeyframe #2");
+}, 'KeyframeEffect.getKeyframes() returns frames with expected composite'
+   + ' values, when the composite is specified on some keyframes');
+
+test(t => {
+  const div = addDiv(t);
   div.style.animation = 'anim-simple-shorthand 100s';
 
   const frames = getKeyframes(div);
@@ -296,10 +419,12 @@ test(t => {
 
   const frames = getKeyframes(div);
 
+  // Final keyframe should be replace as per sections 7 and 8 of
+  // https://drafts.csswg.org/css-animations-2/#keyframes
   const expected = [
     { offset: 0, computedOffset: 0, easing: "ease", composite: "auto",
       color: "rgb(0, 0, 255)" },
-    { offset: 1, computedOffset: 1, easing: "ease", composite: "auto",
+    { offset: 1, computedOffset: 1, easing: "ease", composite: "replace",
       color: "rgb(255, 255, 255)" },
   ];
   assert_frame_lists_equal(frames, expected);
@@ -313,8 +438,10 @@ test(t => {
 
   const frames = getKeyframes(div);
 
+  // Initial keyframe should be replace as per sections 7 and 8 of
+  // https://drafts.csswg.org/css-animations-2/#keyframes
   const expected = [
-    { offset: 0, computedOffset: 0, easing: "ease", composite: "auto",
+    { offset: 0, computedOffset: 0, easing: "ease", composite: "replace",
       color: "rgb(255, 255, 255)" },
     { offset: 1, computedOffset: 1, easing: "ease", composite: "auto",
       color: "rgb(0, 0, 255)" },
@@ -330,12 +457,14 @@ test(t => {
 
   const frames = getKeyframes(div);
 
+  // Initial and final keyframes should be replace as per sections 7 and 8 of
+  // https://drafts.csswg.org/css-animations-2/#keyframes
   const expected = [
-    { offset: 0,   computedOffset: 0,   easing: "ease", composite: "auto",
+    { offset: 0,   computedOffset: 0,   easing: "ease", composite: "replace",
       color: "rgb(255, 255, 255)" },
     { offset: 0.5, computedOffset: 0.5, easing: "ease", composite: "auto",
       color: "rgb(0, 0, 255)" },
-    { offset: 1,   computedOffset: 1,   easing: "ease", composite: "auto",
+    { offset: 1,   computedOffset: 1,   easing: "ease", composite: "replace",
       color: "rgb(255, 255, 255)" },
   ];
   assert_frame_lists_equal(frames, expected);
@@ -460,6 +589,48 @@ test(t => {
 
 test(t => {
   const div = addDiv(t);
+  div.style.animation = 'anim-merge-offset-and-composite 100s';
+
+  const frames = getKeyframes(div);
+
+  const expected = [
+    { offset: 0, computedOffset: 0, easing: "ease", composite: "add",
+      color: "rgb(0, 0, 0)", fontSize: "16px" },
+    { offset: 0, computedOffset: 0, easing: "ease", composite: "accumulate",
+      marginTop: "8px", paddingLeft: "2px" },
+    { offset: 1, computedOffset: 1, easing: "ease", composite: "auto",
+      color: "rgb(255, 255, 255)", fontSize: "32px", marginTop: "16px",
+      paddingLeft: "4px" },
+  ];
+  assert_frame_lists_equal(frames, expected);
+}, 'KeyframeEffect.getKeyframes() returns expected frames for an ' +
+   'animation with multiple keyframes for the same time and with ' +
+   'different composite operations');
+
+test(t => {
+  const div = addDiv(t);
+  div.style.animation = 'anim-merge-offset-easing-and-composite 100s';
+
+  const frames = getKeyframes(div);
+
+  const expected = [
+    { offset: 0, computedOffset: 0, easing: "ease", composite: "add",
+      color: "rgb(0, 0, 0)" },
+    { offset: 0, computedOffset: 0, easing: "ease", composite: "accumulate",
+      marginTop: "8px", paddingLeft: "2px" },
+    { offset: 0, computedOffset: 0, easing: "linear", composite: "add",
+      fontSize: "16px" },
+    { offset: 1, computedOffset: 1, easing: "ease", composite: "auto",
+      color: "rgb(255, 255, 255)", fontSize: "32px", marginTop: "16px",
+      paddingLeft: "4px" },
+  ];
+  assert_frame_lists_equal(frames, expected);
+}, 'KeyframeEffect.getKeyframes() returns expected frames for an ' +
+   'animation with multiple keyframes for the same time and with ' +
+   'different easing functions and composite operations');
+
+test(t => {
+  const div = addDiv(t);
   div.style.animation = 'anim-overriding 100s';
 
   const frames = getKeyframes(div);
@@ -491,8 +662,10 @@ test(t => {
 
   const frames = getKeyframes(div);
 
+  // Initial keyframe should be replace as per sections 7 and 8 of
+  // https://drafts.csswg.org/css-animations-2/#keyframes
   const expected = [
-    { offset: 0, computedOffset: 0, easing: "ease", composite: "auto",
+    { offset: 0, computedOffset: 0, easing: "ease", composite: "replace",
       filter: "none" },
     { offset: 1, computedOffset: 1, easing: "ease", composite: "auto",
       filter: "blur(5px) sepia(60%) saturate(30%)" },
@@ -530,8 +703,10 @@ test(t => {
 
   const frames = getKeyframes(div);
 
+  // Initial keyframe should be replace as per sections 7 and 8 of
+  // https://drafts.csswg.org/css-animations-2/#keyframes
   const expected = [
-    { offset: 0, computedOffset: 0, easing: "ease", composite: "auto",
+    { offset: 0, computedOffset: 0, easing: "ease", composite: "replace",
       textShadow: "rgb(0, 0, 0) 1px 1px 2px,"
                   + " rgb(0, 0, 255) 0px 0px 16px,"
                   + " rgb(0, 0, 255) 0px 0px 3.2px" },
@@ -554,11 +729,13 @@ test(t => {
 
   assert_equals(frames.length, 2, "number of frames");
 
+  // Initial keyframe should be replace as per sections 7 and 8 of
+  // https://drafts.csswg.org/css-animations-2/#keyframes
   const expected = [
-    { offset: 0, computedOffset: 0, easing: "ease", composite: "auto",
+    { offset: 0, computedOffset: 0, easing: "ease", composite: "replace",
       backgroundSize: "auto" },
     { offset: 1, computedOffset: 1, easing: "ease", composite: "auto",
-      backgroundSize: "50%, 6px, contain" },
+      backgroundSize: "50% auto, 6px auto, contain" },
   ];
 
   for (let i = 0; i < frames.length; i++) {
@@ -568,7 +745,7 @@ test(t => {
   // Test inheriting a background-size value
 
   expected[0].backgroundSize = div.style.backgroundSize =
-    "30px, 40%, auto";
+    "30px auto, 40% auto, auto";
   frames = getKeyframes(div);
 
   for (let i = 0; i < frames.length; i++) {
@@ -584,8 +761,10 @@ test(t => {
 
   const frames = getKeyframes(div);
 
+  // Initial keyframe should be replace as per sections 7 and 8 of
+  // https://drafts.csswg.org/css-animations-2/#keyframes
   const expected = [
-    { offset: 0, computedOffset: 0, easing: "ease", composite: "auto",
+    { offset: 0, computedOffset: 0, easing: "ease", composite: "replace",
       transform: "none" },
     { offset: 1, computedOffset: 1, easing: "ease", composite: "auto",
       transform: "translate(100px)" },
@@ -600,8 +779,10 @@ test(t => {
 
   const frames = getKeyframes(div);
 
+  // Initial keyframe should be replace as per sections 7 and 8 of
+  // https://drafts.csswg.org/css-animations-2/#keyframes
   const expected = [
-    { offset: 0, computedOffset: 0, easing: "ease", composite: "auto",
+    { offset: 0, computedOffset: 0, easing: "ease", composite: "replace",
       marginBottom: "0px",
       marginLeft: "0px",
       marginRight: "0px",
@@ -622,8 +803,10 @@ test(t => {
 
   const frames = getKeyframes(div);
 
+  // Initial keyframe should be replace as per sections 7 and 8 of
+  // https://drafts.csswg.org/css-animations-2/#keyframes
   const expected = [
-    { offset: 0, computedOffset: 0, easing: "steps(2, start)", composite: "auto",
+    { offset: 0, computedOffset: 0, easing: "steps(2, start)", composite: "replace",
       color: "rgb(0, 0, 0)" },
     { offset: 1, computedOffset: 1, easing: "steps(2, start)", composite: "auto",
       color: "rgb(0, 255, 0)" },
@@ -695,6 +878,26 @@ test(t => {
     'Keyframes reflects the updated @keyframes rule'
   );
 }, 'KeyframeEffect.getKeyframes() reflects changes to @keyframes rules');
+
+test(t => {
+  const div = addDiv(t);
+  div.style.animation = 'anim-only-timing-function-for-from-and-to 100s';
+
+  const frames = getKeyframes(div);
+
+  // Implicit initial and final keyframes should be replace as per sections
+  // 7 and 8 of https://drafts.csswg.org/css-animations-2/#keyframes
+  const expected = [
+    { offset: 0,   computedOffset: 0,   easing: "linear", composite: "auto" },
+    { offset: 0,   computedOffset: 0,   easing: "ease",   composite: "replace", left: "auto" },
+    { offset: 0.5, computedOffset: 0.5, easing: "ease",   composite: "auto", left: "10px" },
+    { offset: 1,   computedOffset: 1,   easing: "linear", composite: "auto" },
+    { offset: 1,   computedOffset: 1,   easing: "ease",   composite: "replace", left: "auto" }
+  ];
+  assert_frame_lists_equal(frames, expected);
+}, 'KeyframeEffect.getKeyframes() returns expected values for ' +
+   'animations with implicit values and a non-default timing' +
+   'function specified for 0% and 100%');
 
 </script>
 </body>

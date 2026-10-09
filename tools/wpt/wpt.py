@@ -1,9 +1,12 @@
+# mypy: allow-untyped-defs
+
 import argparse
 import json
 import logging
 import multiprocessing
 import os
 import sys
+import traceback
 
 from tools import localpaths  # noqa: F401
 
@@ -29,7 +32,7 @@ def load_conditional_requirements(props, base_dir):
                     os.path.join(base_dir, path) for path in requirements_paths]
         else:
             raise KeyError(
-                'Unsupported conditional requirement key: {}'.format(key))
+                f'Unsupported conditional requirement key: {key}')
 
     return {
         "commandline_flag": commandline_flag_requirements,
@@ -38,12 +41,12 @@ def load_conditional_requirements(props, base_dir):
 
 def load_commands():
     rv = {}
-    with open(os.path.join(here, "paths"), "r") as f:
+    with open(os.path.join(here, "paths")) as f:
         paths = [item.strip().replace("/", os.path.sep) for item in f if item.strip()]
     for path in paths:
         abs_path = os.path.join(wpt_root, path, "commands.json")
         base_dir = os.path.dirname(abs_path)
-        with open(abs_path, "r") as f:
+        with open(abs_path) as f:
             data = json.load(f)
             for command, props in data.items():
                 assert "path" in props
@@ -55,7 +58,6 @@ def load_commands():
                     "parse_known": props.get("parse_known", False),
                     "help": props.get("help"),
                     "virtualenv": props.get("virtualenv", True),
-                    "install": props.get("install", []),
                     "requirements": [os.path.join(base_dir, item)
                                      for item in props.get("requirements", [])]
                 }
@@ -63,21 +65,25 @@ def load_commands():
                 rv[command]["conditional_requirements"] = load_conditional_requirements(
                     props, base_dir)
 
-                if rv[command]["install"] or rv[command]["requirements"] or rv[command]["conditional_requirements"]:
+                if rv[command]["requirements"] or rv[command]["conditional_requirements"]:
                     assert rv[command]["virtualenv"]
     return rv
 
 
 def parse_args(argv, commands=load_commands()):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--venv", action="store", help="Path to an existing virtualenv to use")
+    parser.add_argument("--venv", help="Path to an existing virtualenv to use")
     parser.add_argument("--skip-venv-setup", action="store_true",
-                        dest="skip_venv_setup",
                         help="Whether to use the virtualenv as-is. Must set --venv as well")
-    parser.add_argument("--debug", action="store_true", help="Run the debugger in case of an exception")
+    parser.add_argument("--debug", action="store_true",
+                        help="Run the debugger in case of an exception")
     subparsers = parser.add_subparsers(dest="command")
     for command, props in commands.items():
         subparsers.add_parser(command, help=props["help"], add_help=False)
+
+    if not argv:
+        parser.print_help()
+        return None, None
 
     args, extra = parser.parse_known_args(argv)
 
@@ -101,7 +107,7 @@ def import_command(prog, command, props):
     script = getattr(mod, props["script"])
     if props["parser"] is not None:
         parser = getattr(mod, props["parser"])()
-        parser.prog = "%s %s" % (os.path.basename(prog), command)
+        parser.prog = f"{os.path.basename(prog)} {command}"
     else:
         parser = None
 
@@ -118,11 +124,23 @@ def create_complete_parser():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
+    # We should already be in a virtual environment from the top-level
+    # `wpt build-docs` command but we need to look up the environment to
+    # find out where it's located.
+    venv_path = os.environ["VIRTUAL_ENV"]
+    venv = virtualenv.Virtualenv(venv_path, True)
+
     for command in commands:
         props = commands[command]
 
-        if props["virtualenv"]:
-            setup_virtualenv(None, False, props)
+        try:
+            venv.install_requirements(*props.get("requirements", []))
+        except Exception:
+            logging.warning(
+                f"Unable to install requirements ({props['requirements']!r}) for command {command}"
+            )
+            continue
+
 
         subparser = import_command('wpt', command, props)[1]
         if not subparser:
@@ -137,7 +155,7 @@ def create_complete_parser():
 
 
 def venv_dir():
-    return "_venv" + str(sys.version_info[0])
+    return f"_venv{sys.version_info[0]}"
 
 
 def setup_virtualenv(path, skip_venv_setup, props):
@@ -149,18 +167,17 @@ def setup_virtualenv(path, skip_venv_setup, props):
     venv = virtualenv.Virtualenv(path, should_skip_setup)
     if not should_skip_setup:
         venv.start()
-        for name in props["install"]:
-            venv.install(name)
-        for path in props["requirements"]:
-            venv.install_requirements(path)
+        venv.install_requirements(*props.get("requirements", []))
     return venv
 
 
-def install_command_flag_requirements(venv, kwargs, requirements):
+def install_command_flag_requirements(venv, props, kwargs):
+    requirements = props["conditional_requirements"].get("commandline_flag", {})
+    install_paths = []
     for command_flag_name, requirement_paths in requirements.items():
         if command_flag_name in kwargs:
-            for path in requirement_paths:
-                venv.install_requirements(path)
+            install_paths.extend(requirement_paths)
+    venv.install_requirements(*install_paths)
 
 
 def main(prog=None, argv=None):
@@ -184,6 +201,9 @@ def main(prog=None, argv=None):
 
     main_args, command_args = parse_args(argv, commands)
 
+    if not main_args:
+        return
+
     command = main_args.command
     props = commands[command]
     venv = None
@@ -203,9 +223,8 @@ def main(prog=None, argv=None):
         kwargs = {}
 
     if venv is not None:
-        requirements = props["conditional_requirements"].get("commandline_flag")
-        if requirements is not None and not main_args.skip_venv_setup:
-            install_command_flag_requirements(venv, kwargs, requirements)
+        if not main_args.skip_venv_setup:
+            install_command_flag_requirements(venv, props, kwargs)
         args = (venv,) + extras
     else:
         args = extras
@@ -220,7 +239,8 @@ def main(prog=None, argv=None):
                 import pdb
                 pdb.post_mortem()
             else:
-                raise
+                traceback.print_exc()
+                sys.exit(getattr(os, "EX_SOFTWARE", 70))
     sys.exit(0)
 
 

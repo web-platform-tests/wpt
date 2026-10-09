@@ -1,12 +1,16 @@
+# mypy: allow-untyped-defs
 """Discover and run doctests in modules and test files."""
+
 import bdb
+from contextlib import contextmanager
+import functools
 import inspect
+import os
+from pathlib import Path
 import platform
 import sys
 import traceback
 import types
-import warnings
-from contextlib import contextmanager
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -17,30 +21,34 @@ from typing import Optional
 from typing import Pattern
 from typing import Sequence
 from typing import Tuple
+from typing import Type
+from typing import TYPE_CHECKING
 from typing import Union
+import warnings
 
-import py.path
-
-import pytest
 from _pytest import outcomes
 from _pytest._code.code import ExceptionInfo
 from _pytest._code.code import ReprFileLocation
 from _pytest._code.code import TerminalRepr
 from _pytest._io import TerminalWriter
 from _pytest.compat import safe_getattr
-from _pytest.compat import TYPE_CHECKING
 from _pytest.config import Config
 from _pytest.config.argparsing import Parser
-from _pytest.fixtures import FixtureRequest
+from _pytest.fixtures import fixture
+from _pytest.fixtures import TopRequest
 from _pytest.nodes import Collector
+from _pytest.nodes import Item
 from _pytest.outcomes import OutcomeException
-from _pytest.pathlib import import_path
+from _pytest.outcomes import skip
+from _pytest.pathlib import fnmatch_ex
+from _pytest.python import Module
 from _pytest.python_api import approx
 from _pytest.warning_types import PytestWarning
 
+
 if TYPE_CHECKING:
     import doctest
-    from typing import Type
+    from typing import Self
 
 DOCTEST_REPORT_CHOICE_NONE = "none"
 DOCTEST_REPORT_CHOICE_CDIFF = "cdiff"
@@ -59,32 +67,32 @@ DOCTEST_REPORT_CHOICES = (
 # Lazy definition of runner class
 RUNNER_CLASS = None
 # Lazy definition of output checker class
-CHECKER_CLASS = None  # type: Optional[Type[doctest.OutputChecker]]
+CHECKER_CLASS: Optional[Type["doctest.OutputChecker"]] = None
 
 
 def pytest_addoption(parser: Parser) -> None:
     parser.addini(
         "doctest_optionflags",
-        "option flags for doctests",
+        "Option flags for doctests",
         type="args",
         default=["ELLIPSIS"],
     )
     parser.addini(
-        "doctest_encoding", "encoding used for doctest files", default="utf-8"
+        "doctest_encoding", "Encoding used for doctest files", default="utf-8"
     )
     group = parser.getgroup("collect")
     group.addoption(
         "--doctest-modules",
         action="store_true",
         default=False,
-        help="run doctests in all .py modules",
+        help="Run doctests in all .py modules",
         dest="doctestmodules",
     )
     group.addoption(
         "--doctest-report",
         type=str.lower,
         default="udiff",
-        help="choose another output format for diffs on doctest failure",
+        help="Choose another output format for diffs on doctest failure",
         choices=DOCTEST_REPORT_CHOICES,
         dest="doctestreport",
     )
@@ -93,21 +101,21 @@ def pytest_addoption(parser: Parser) -> None:
         action="append",
         default=[],
         metavar="pat",
-        help="doctests file matching pattern, default: test*.txt",
+        help="Doctests file matching pattern, default: test*.txt",
         dest="doctestglob",
     )
     group.addoption(
         "--doctest-ignore-import-errors",
         action="store_true",
         default=False,
-        help="ignore doctest ImportErrors",
+        help="Ignore doctest collection errors",
         dest="doctest_ignore_import_errors",
     )
     group.addoption(
         "--doctest-continue-on-failure",
         action="store_true",
         default=False,
-        help="for a given doctest, continue to run after the first failure",
+        help="For a given doctest, continue to run after the first failure",
         dest="doctest_continue_on_failure",
     )
 
@@ -119,34 +127,36 @@ def pytest_unconfigure() -> None:
 
 
 def pytest_collect_file(
-    path: py.path.local, parent: Collector,
+    file_path: Path,
+    parent: Collector,
 ) -> Optional[Union["DoctestModule", "DoctestTextfile"]]:
     config = parent.config
-    if path.ext == ".py":
-        if config.option.doctestmodules and not _is_setup_py(path):
-            mod = DoctestModule.from_parent(parent, fspath=path)  # type: DoctestModule
-            return mod
-    elif _is_doctest(config, path, parent):
-        txt = DoctestTextfile.from_parent(parent, fspath=path)  # type: DoctestTextfile
-        return txt
+    if file_path.suffix == ".py":
+        if config.option.doctestmodules and not any(
+            (_is_setup_py(file_path), _is_main_py(file_path))
+        ):
+            return DoctestModule.from_parent(parent, path=file_path)
+    elif _is_doctest(config, file_path, parent):
+        return DoctestTextfile.from_parent(parent, path=file_path)
     return None
 
 
-def _is_setup_py(path: py.path.local) -> bool:
-    if path.basename != "setup.py":
+def _is_setup_py(path: Path) -> bool:
+    if path.name != "setup.py":
         return False
-    contents = path.read_binary()
+    contents = path.read_bytes()
     return b"setuptools" in contents or b"distutils" in contents
 
 
-def _is_doctest(config: Config, path: py.path.local, parent) -> bool:
-    if path.ext in (".txt", ".rst") and parent.session.isinitpath(path):
+def _is_doctest(config: Config, path: Path, parent: Collector) -> bool:
+    if path.suffix in (".txt", ".rst") and parent.session.isinitpath(path):
         return True
     globs = config.getoption("doctestglob") or ["test*.txt"]
-    for glob in globs:
-        if path.check(fnmatch=glob):
-            return True
-    return False
+    return any(fnmatch_ex(glob, path) for glob in globs)
+
+
+def _is_main_py(path: Path) -> bool:
+    return path.name == "__main__.py"
 
 
 class ReprFailDoctest(TerminalRepr):
@@ -163,12 +173,12 @@ class ReprFailDoctest(TerminalRepr):
 
 
 class MultipleDoctestFailures(Exception):
-    def __init__(self, failures: "Sequence[doctest.DocTestFailure]") -> None:
+    def __init__(self, failures: Sequence["doctest.DocTestFailure"]) -> None:
         super().__init__()
         self.failures = failures
 
 
-def _init_runner_class() -> "Type[doctest.DocTestRunner]":
+def _init_runner_class() -> Type["doctest.DocTestRunner"]:
     import doctest
 
     class PytestDoctestRunner(doctest.DebugRunner):
@@ -180,18 +190,20 @@ def _init_runner_class() -> "Type[doctest.DocTestRunner]":
 
         def __init__(
             self,
-            checker: Optional[doctest.OutputChecker] = None,
+            checker: Optional["doctest.OutputChecker"] = None,
             verbose: Optional[bool] = None,
             optionflags: int = 0,
             continue_on_failure: bool = True,
         ) -> None:
-            doctest.DebugRunner.__init__(
-                self, checker=checker, verbose=verbose, optionflags=optionflags
-            )
+            super().__init__(checker=checker, verbose=verbose, optionflags=optionflags)
             self.continue_on_failure = continue_on_failure
 
         def report_failure(
-            self, out, test: "doctest.DocTest", example: "doctest.Example", got: str,
+            self,
+            out,
+            test: "doctest.DocTest",
+            example: "doctest.Example",
+            got: str,
         ) -> None:
             failure = doctest.DocTestFailure(test, example, got)
             if self.continue_on_failure:
@@ -204,7 +216,7 @@ def _init_runner_class() -> "Type[doctest.DocTestRunner]":
             out,
             test: "doctest.DocTest",
             example: "doctest.Example",
-            exc_info: "Tuple[Type[BaseException], BaseException, types.TracebackType]",
+            exc_info: Tuple[Type[BaseException], BaseException, types.TracebackType],
         ) -> None:
             if isinstance(exc_info[1], OutcomeException):
                 raise exc_info[1]
@@ -239,49 +251,54 @@ def _get_runner(
     )
 
 
-class DoctestItem(pytest.Item):
+class DoctestItem(Item):
     def __init__(
         self,
         name: str,
         parent: "Union[DoctestTextfile, DoctestModule]",
-        runner: Optional["doctest.DocTestRunner"] = None,
-        dtest: Optional["doctest.DocTest"] = None,
+        runner: "doctest.DocTestRunner",
+        dtest: "doctest.DocTest",
     ) -> None:
         super().__init__(name, parent)
         self.runner = runner
         self.dtest = dtest
+
+        # Stuff needed for fixture support.
         self.obj = None
-        self.fixture_request = None  # type: Optional[FixtureRequest]
+        fm = self.session._fixturemanager
+        fixtureinfo = fm.getfixtureinfo(node=self, func=None, cls=None)
+        self._fixtureinfo = fixtureinfo
+        self.fixturenames = fixtureinfo.names_closure
+        self._initrequest()
 
     @classmethod
-    def from_parent(  # type: ignore
+    def from_parent(  # type: ignore[override]
         cls,
         parent: "Union[DoctestTextfile, DoctestModule]",
         *,
         name: str,
         runner: "doctest.DocTestRunner",
-        dtest: "doctest.DocTest"
-    ):
-        # incompatible signature due to to imposed limits on sublcass
+        dtest: "doctest.DocTest",
+    ) -> "Self":
+        # incompatible signature due to imposed limits on subclass
         """The public named constructor."""
         return super().from_parent(name=name, parent=parent, runner=runner, dtest=dtest)
 
+    def _initrequest(self) -> None:
+        self.funcargs: Dict[str, object] = {}
+        self._request = TopRequest(self, _ispytest=True)  # type: ignore[arg-type]
+
     def setup(self) -> None:
-        if self.dtest is not None:
-            self.fixture_request = _setup_fixtures(self)
-            globs = dict(getfixture=self.fixture_request.getfixturevalue)
-            for name, value in self.fixture_request.getfixturevalue(
-                "doctest_namespace"
-            ).items():
-                globs[name] = value
-            self.dtest.globs.update(globs)
+        self._request._fillfixtures()
+        globs = dict(getfixture=self._request.getfixturevalue)
+        for name, value in self._request.getfixturevalue("doctest_namespace").items():
+            globs[name] = value
+        self.dtest.globs.update(globs)
 
     def runtest(self) -> None:
-        assert self.dtest is not None
-        assert self.runner is not None
         _check_all_skipped(self.dtest)
         self._disable_output_capturing_for_darwin()
-        failures = []  # type: List[doctest.DocTestFailure]
+        failures: List["doctest.DocTestFailure"] = []
         # Type ignored because we change the type of `out` from what
         # doctest expects.
         self.runner.run(self.dtest, out=failures)  # type: ignore[arg-type]
@@ -301,13 +318,14 @@ class DoctestItem(pytest.Item):
 
     # TODO: Type ignored -- breaks Liskov Substitution.
     def repr_failure(  # type: ignore[override]
-        self, excinfo: ExceptionInfo[BaseException],
+        self,
+        excinfo: ExceptionInfo[BaseException],
     ) -> Union[str, TerminalRepr]:
         import doctest
 
-        failures = (
-            None
-        )  # type: Optional[Sequence[Union[doctest.DocTestFailure, doctest.UnexpectedException]]]
+        failures: Optional[
+            Sequence[Union[doctest.DocTestFailure, doctest.UnexpectedException]]
+        ] = None
         if isinstance(
             excinfo.value, (doctest.DocTestFailure, doctest.UnexpectedException)
         ):
@@ -315,61 +333,56 @@ class DoctestItem(pytest.Item):
         elif isinstance(excinfo.value, MultipleDoctestFailures):
             failures = excinfo.value.failures
 
-        if failures is not None:
-            reprlocation_lines = []
-            for failure in failures:
-                example = failure.example
-                test = failure.test
-                filename = test.filename
-                if test.lineno is None:
-                    lineno = None
-                else:
-                    lineno = test.lineno + example.lineno + 1
-                message = type(failure).__name__
-                # TODO: ReprFileLocation doesn't expect a None lineno.
-                reprlocation = ReprFileLocation(filename, lineno, message)  # type: ignore[arg-type]
-                checker = _get_checker()
-                report_choice = _get_report_choice(
-                    self.config.getoption("doctestreport")
-                )
-                if lineno is not None:
-                    assert failure.test.docstring is not None
-                    lines = failure.test.docstring.splitlines(False)
-                    # add line numbers to the left of the error message
-                    assert test.lineno is not None
-                    lines = [
-                        "%03d %s" % (i + test.lineno + 1, x)
-                        for (i, x) in enumerate(lines)
-                    ]
-                    # trim docstring error lines to 10
-                    lines = lines[max(example.lineno - 9, 0) : example.lineno + 1]
-                else:
-                    lines = [
-                        "EXAMPLE LOCATION UNKNOWN, not showing all tests of that example"
-                    ]
-                    indent = ">>>"
-                    for line in example.source.splitlines():
-                        lines.append("??? {} {}".format(indent, line))
-                        indent = "..."
-                if isinstance(failure, doctest.DocTestFailure):
-                    lines += checker.output_difference(
-                        example, failure.got, report_choice
-                    ).split("\n")
-                else:
-                    inner_excinfo = ExceptionInfo(failure.exc_info)
-                    lines += ["UNEXPECTED EXCEPTION: %s" % repr(inner_excinfo.value)]
-                    lines += [
-                        x.strip("\n")
-                        for x in traceback.format_exception(*failure.exc_info)
-                    ]
-                reprlocation_lines.append((reprlocation, lines))
-            return ReprFailDoctest(reprlocation_lines)
-        else:
+        if failures is None:
             return super().repr_failure(excinfo)
 
-    def reportinfo(self):
-        assert self.dtest is not None
-        return self.fspath, self.dtest.lineno, "[doctest] %s" % self.name
+        reprlocation_lines = []
+        for failure in failures:
+            example = failure.example
+            test = failure.test
+            filename = test.filename
+            if test.lineno is None:
+                lineno = None
+            else:
+                lineno = test.lineno + example.lineno + 1
+            message = type(failure).__name__
+            # TODO: ReprFileLocation doesn't expect a None lineno.
+            reprlocation = ReprFileLocation(filename, lineno, message)  # type: ignore[arg-type]
+            checker = _get_checker()
+            report_choice = _get_report_choice(self.config.getoption("doctestreport"))
+            if lineno is not None:
+                assert failure.test.docstring is not None
+                lines = failure.test.docstring.splitlines(False)
+                # add line numbers to the left of the error message
+                assert test.lineno is not None
+                lines = [
+                    "%03d %s" % (i + test.lineno + 1, x) for (i, x) in enumerate(lines)
+                ]
+                # trim docstring error lines to 10
+                lines = lines[max(example.lineno - 9, 0) : example.lineno + 1]
+            else:
+                lines = [
+                    "EXAMPLE LOCATION UNKNOWN, not showing all tests of that example"
+                ]
+                indent = ">>>"
+                for line in example.source.splitlines():
+                    lines.append(f"??? {indent} {line}")
+                    indent = "..."
+            if isinstance(failure, doctest.DocTestFailure):
+                lines += checker.output_difference(
+                    example, failure.got, report_choice
+                ).split("\n")
+            else:
+                inner_excinfo = ExceptionInfo.from_exc_info(failure.exc_info)
+                lines += ["UNEXPECTED EXCEPTION: %s" % repr(inner_excinfo.value)]
+                lines += [
+                    x.strip("\n") for x in traceback.format_exception(*failure.exc_info)
+                ]
+            reprlocation_lines.append((reprlocation, lines))
+        return ReprFailDoctest(reprlocation_lines)
+
+    def reportinfo(self) -> Tuple[Union["os.PathLike[str]", str], Optional[int], str]:
+        return self.path, self.dtest.lineno, "[doctest] %s" % self.name
 
 
 def _get_flag_lookup() -> Dict[str, int]:
@@ -388,8 +401,8 @@ def _get_flag_lookup() -> Dict[str, int]:
     )
 
 
-def get_optionflags(parent):
-    optionflags_str = parent.config.getini("doctest_optionflags")
+def get_optionflags(config: Config) -> int:
+    optionflags_str = config.getini("doctest_optionflags")
     flag_lookup_table = _get_flag_lookup()
     flag_acc = 0
     for flag in optionflags_str:
@@ -397,8 +410,8 @@ def get_optionflags(parent):
     return flag_acc
 
 
-def _get_continue_on_failure(config):
-    continue_on_failure = config.getvalue("doctest_continue_on_failure")
+def _get_continue_on_failure(config: Config) -> bool:
+    continue_on_failure: bool = config.getvalue("doctest_continue_on_failure")
     if continue_on_failure:
         # We need to turn off this if we use pdb since we should stop at
         # the first failure.
@@ -407,7 +420,7 @@ def _get_continue_on_failure(config):
     return continue_on_failure
 
 
-class DoctestTextfile(pytest.Module):
+class DoctestTextfile(Module):
     obj = None
 
     def collect(self) -> Iterable[DoctestItem]:
@@ -416,12 +429,12 @@ class DoctestTextfile(pytest.Module):
         # Inspired by doctest.testfile; ideally we would use it directly,
         # but it doesn't support passing a custom checker.
         encoding = self.config.getini("doctest_encoding")
-        text = self.fspath.read_text(encoding)
-        filename = str(self.fspath)
-        name = self.fspath.basename
+        text = self.path.read_text(encoding)
+        filename = str(self.path)
+        name = self.path.name
         globs = {"__name__": "__main__"}
 
-        optionflags = get_optionflags(self)
+        optionflags = get_optionflags(self.config)
 
         runner = _get_runner(
             verbose=False,
@@ -445,7 +458,7 @@ def _check_all_skipped(test: "doctest.DocTest") -> None:
 
     all_skipped = all(x.options.get(doctest.SKIP, False) for x in test.examples)
     if all_skipped:
-        pytest.skip("all tests skipped by +SKIP option")
+        skip("all tests skipped by +SKIP option")
 
 
 def _is_mocked(obj: object) -> bool:
@@ -473,9 +486,9 @@ def _patch_unwrap_mock_aware() -> Generator[None, None, None]:
             return real_unwrap(func, stop=lambda obj: _is_mocked(obj) or _stop(func))
         except Exception as e:
             warnings.warn(
-                "Got %r when unwrapping %r.  This is usually caused "
+                f"Got {e!r} when unwrapping {func!r}.  This is usually caused "
                 "by a violation of Python's object protocol; see e.g. "
-                "https://github.com/pytest-dev/pytest/issues/5080" % (e, func),
+                "https://github.com/pytest-dev/pytest/issues/5080",
                 PytestWarning,
             )
             raise
@@ -487,7 +500,7 @@ def _patch_unwrap_mock_aware() -> Generator[None, None, None]:
         inspect.unwrap = real_unwrap
 
 
-class DoctestModule(pytest.Module):
+class DoctestModule(Module):
     def collect(self) -> Iterable[DoctestItem]:
         import doctest
 
@@ -500,15 +513,22 @@ class DoctestModule(pytest.Module):
 
             def _find_lineno(self, obj, source_lines):
                 """Doctest code does not take into account `@property`, this
-                is a hackish way to fix it.
+                is a hackish way to fix it. https://bugs.python.org/issue17446
 
-                https://bugs.python.org/issue17446
+                Wrapped Doctests will need to be unwrapped so the correct
+                line number is returned. This will be reported upstream. #8796
                 """
                 if isinstance(obj, property):
                     obj = getattr(obj, "fget", obj)
+
+                if hasattr(obj, "__wrapped__"):
+                    # Get the main obj in case of it being wrapped
+                    obj = inspect.unwrap(obj)
+
                 # Type ignored because this is a private function.
-                return doctest.DocTestFinder._find_lineno(  # type: ignore
-                    self, obj, source_lines,
+                return super()._find_lineno(  # type:ignore[misc]
+                    obj,
+                    source_lines,
                 )
 
             def _find(
@@ -517,27 +537,43 @@ class DoctestModule(pytest.Module):
                 if _is_mocked(obj):
                     return
                 with _patch_unwrap_mock_aware():
-
                     # Type ignored because this is a private function.
-                    doctest.DocTestFinder._find(  # type: ignore
-                        self, tests, obj, name, module, source_lines, globs, seen
+                    super()._find(  # type:ignore[misc]
+                        tests, obj, name, module, source_lines, globs, seen
                     )
 
-        if self.fspath.basename == "conftest.py":
-            module = self.config.pluginmanager._importconftest(
-                self.fspath, self.config.getoption("importmode")
-            )
-        else:
-            try:
-                module = import_path(self.fspath)
-            except ImportError:
-                if self.config.getvalue("doctest_ignore_import_errors"):
-                    pytest.skip("unable to import module %r" % self.fspath)
-                else:
-                    raise
+            if sys.version_info < (3, 13):
+
+                def _from_module(self, module, object):
+                    """`cached_property` objects are never considered a part
+                    of the 'current module'. As such they are skipped by doctest.
+                    Here we override `_from_module` to check the underlying
+                    function instead. https://github.com/python/cpython/issues/107995
+                    """
+                    if isinstance(object, functools.cached_property):
+                        object = object.func
+
+                    # Type ignored because this is a private function.
+                    return super()._from_module(module, object)  # type: ignore[misc]
+
+            else:  # pragma: no cover
+                pass
+
+        try:
+            module = self.obj
+        except Collector.CollectError:
+            if self.config.getvalue("doctest_ignore_import_errors"):
+                skip("unable to import module %r" % self.path)
+            else:
+                raise
+
+        # While doctests currently don't support fixtures directly, we still
+        # need to pick up autouse fixtures.
+        self.session._fixturemanager.parsefactories(self)
+
         # Uses internal doctest module parsing mechanism.
         finder = MockAwareDocTestFinder()
-        optionflags = get_optionflags(self)
+        optionflags = get_optionflags(self.config)
         runner = _get_runner(
             verbose=False,
             optionflags=optionflags,
@@ -552,23 +588,7 @@ class DoctestModule(pytest.Module):
                 )
 
 
-def _setup_fixtures(doctest_item: DoctestItem) -> FixtureRequest:
-    """Used by DoctestTextfile and DoctestItem to setup fixture information."""
-
-    def func() -> None:
-        pass
-
-    doctest_item.funcargs = {}  # type: ignore[attr-defined]
-    fm = doctest_item.session._fixturemanager
-    doctest_item._fixtureinfo = fm.getfixtureinfo(  # type: ignore[attr-defined]
-        node=doctest_item, func=func, cls=None, funcargs=False
-    )
-    fixture_request = FixtureRequest(doctest_item)
-    fixture_request._fillfixtures()
-    return fixture_request
-
-
-def _init_checker_class() -> "Type[doctest.OutputChecker]":
+def _init_checker_class() -> Type["doctest.OutputChecker"]:
     import doctest
     import re
 
@@ -603,7 +623,7 @@ def _init_checker_class() -> "Type[doctest.OutputChecker]":
         )
 
         def check_output(self, want: str, got: str, optionflags: int) -> bool:
-            if doctest.OutputChecker.check_output(self, want, got, optionflags):
+            if super().check_output(want, got, optionflags):
                 return True
 
             allow_unicode = optionflags & _get_allow_unicode_flag()
@@ -627,7 +647,7 @@ def _init_checker_class() -> "Type[doctest.OutputChecker]":
             if allow_number:
                 got = self._remove_unwanted_precision(want, got)
 
-            return doctest.OutputChecker.check_output(self, want, got, optionflags)
+            return super().check_output(want, got, optionflags)
 
         def _remove_unwanted_precision(self, want: str, got: str) -> str:
             wants = list(self._number_re.finditer(want))
@@ -636,17 +656,14 @@ def _init_checker_class() -> "Type[doctest.OutputChecker]":
                 return got
             offset = 0
             for w, g in zip(wants, gots):
-                fraction = w.group("fraction")  # type: Optional[str]
-                exponent = w.group("exponent1")  # type: Optional[str]
+                fraction: Optional[str] = w.group("fraction")
+                exponent: Optional[str] = w.group("exponent1")
                 if exponent is None:
                     exponent = w.group("exponent2")
-                if fraction is None:
-                    precision = 0
-                else:
-                    precision = len(fraction)
+                precision = 0 if fraction is None else len(fraction)
                 if exponent is not None:
                     precision -= int(exponent)
-                if float(w.group()) == approx(float(g.group()), abs=10 ** -precision):
+                if float(w.group()) == approx(float(g.group()), abs=10**-precision):
                     # They're close enough. Replace the text we actually
                     # got with the text we want, so that it will match when we
                     # check the string literally.
@@ -717,8 +734,19 @@ def _get_report_choice(key: str) -> int:
     }[key]
 
 
-@pytest.fixture(scope="session")
+@fixture(scope="session")
 def doctest_namespace() -> Dict[str, Any]:
     """Fixture that returns a :py:class:`dict` that will be injected into the
-    namespace of doctests."""
+    namespace of doctests.
+
+    Usually this fixture is used in conjunction with another ``autouse`` fixture:
+
+    .. code-block:: python
+
+        @pytest.fixture(autouse=True)
+        def add_np(doctest_namespace):
+            doctest_namespace["np"] = numpy
+
+    For more details: :ref:`doctest_namespace`.
+    """
     return dict()

@@ -9,6 +9,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/user-activation.js"></script>
+<body>Body needed for test_driver.click()
 <p>
   <p>The bottom image should display the same image as the top image.</p>
   <p>Original Image:</p>
@@ -40,14 +42,16 @@ async function loadBlob(fileName) {
 }
 
 promise_test(async t => {
-  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
-  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+  await tryGrantReadPermission();
+  await tryGrantWritePermission();
 
   const blobInput = await loadBlob('resources/greenbox.png');
 
   assert_equals(blobInput.type, 'image/png');
   const clipboardItemInput = new ClipboardItem({'image/png' : blobInput});
+  await waitForUserActivation();
   await navigator.clipboard.write([clipboardItemInput]);
+  await waitForUserActivation();
   const clipboardItems = await navigator.clipboard.read();
 
   assert_equals(clipboardItems.length, 1);
@@ -67,13 +71,15 @@ promise_test(async t => {
 }, 'Verify write and read clipboard [image/png Blob]');
 
 promise_test(async t => {
-  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
-  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+  await tryGrantReadPermission();
+  await tryGrantWritePermission();
 
   const invalidPngBlob = new Blob(['this text is not a valid png image'],
       {type: 'image/png'});
   const clipboardItemInput = new ClipboardItem({'image/png' : invalidPngBlob});
+  await waitForUserActivation();
   await promise_rejects_dom(t, 'DataError',
       navigator.clipboard.write([clipboardItemInput]));
 }, 'Verify write error on malformed data [image/png ClipboardItem]');
 </script>
+</body>

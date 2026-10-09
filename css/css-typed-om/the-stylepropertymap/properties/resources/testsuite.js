@@ -9,11 +9,32 @@ function assert_is_calc_sum(result) {
     'specified calc must be a CSSMathSum');
 }
 
-function assert_is_equal_with_range_handling(input, result) {
-  if (input instanceof CSSUnitValue && input.value < 0)
+// Compares a result against the expected input value, taking into account
+// that the value is associated with a property.
+//
+// During association, some engines simplify and canonicalize numeric values
+// (e.g. collapsing equivalent CSSMathSum entries), while others preserve the
+// original structure. The CSS Typed OM specification is still discussing the
+// exact requirements for simplification at this stage:
+// https://github.com/w3c/csswg-drafts/issues/9451
+//
+// This helper temporarily allows either the original input or an optional
+// simplified form to match, to avoid interop failures until the
+// specification is clarified and implementations are updated.
+function assert_is_equal_with_range_handling(input, result, alternateExpected) {
+  // Invalid (out-of-range) numeric values must be wrapped in a CSSMathSum.
+  if (input instanceof CSSUnitValue && input.value < 0) {
     assert_style_value_equals(result, new CSSMathSum(input));
-  else
-    assert_style_value_equals(result, input);
+  } else {
+    try {
+      assert_style_value_equals(result, input);
+    } catch(e) {
+      if (alternateExpected === undefined) {
+        throw e;
+      }
+      assert_style_value_equals(result, alternateExpected);
+    }
+  }
 }
 
 function assert_is_unsupported(result) {
@@ -27,11 +48,11 @@ const gCssWideKeywordsExamples = [
   },
   {
     description: 'inherit keyword',
-    input: new CSSKeywordValue('initial')
+    input: new CSSKeywordValue('inherit')
   },
   {
     description: 'unset keyword',
-    input: new CSSKeywordValue('initial')
+    input: new CSSKeywordValue('unset')
   },
   {
     description: 'revert keyword',
@@ -39,10 +60,24 @@ const gCssWideKeywordsExamples = [
   },
 ];
 
+// Leading whitespace before var() is not consistently handled across engines.
+// See https://github.com/w3c/csswg-drafts/issues/13792
+// Allow either the original or normalized form for now.
 const gVarReferenceExamples = [
   {
     description: 'a var() reference',
-    input: new CSSUnparsedValue([' ', new CSSVariableReferenceValue('--A')])
+    input: new CSSUnparsedValue([' ', new CSSVariableReferenceValue('--A')]),
+    specifiedAlternateExpected: new CSSUnparsedValue([new CSSVariableReferenceValue('--A')]),
+    defaultSpecified: (input, result, alternateExpected) => {
+      try {
+        assert_style_value_equals(result, input);
+      } catch(e) {
+        if (alternateExpected === undefined) {
+          throw e;
+        }
+        assert_style_value_equals(result, alternateExpected);
+      }
+    }
   },
 ];
 
@@ -71,7 +106,10 @@ const gTestSyntaxExamples = {
         input: new CSSMathSum(new CSSUnitValue(0, 'px'), new CSSUnitValue(0, 'em')),
         // Specified/computed calcs are usually simplified.
         // FIXME: Test this properly
-        defaultSpecified: (_, result) => assert_is_calc_sum(result),
+        defaultSpecified: (input, result) => {
+          assert_is_calc_sum(result);
+          assert_numeric_type_equals(result.type(), input.type());
+        },
         defaultComputed: (_, result) => assert_is_unit('px', result)
       }
     ],
@@ -94,9 +132,16 @@ const gTestSyntaxExamples = {
       {
         description: "a calc percent",
         input: new CSSMathSum(new CSSUnitValue(0, 'percent'), new CSSUnitValue(0, 'percent')),
+        // TODO: Consider merging specifiedAlternateExpected with
+        // specifiedExpected once all engines do simplification during
+        // association.
+        specifiedAlternateExpected: new CSSMathSum(new CSSUnitValue(0, 'percent')),
         // Specified/computed calcs are usually simplified.
         // FIXME: Test this properly
-        defaultSpecified: (_, result) => assert_is_calc_sum(result),
+        defaultSpecified: (input, result) => {
+          assert_is_calc_sum(result);
+          assert_numeric_type_equals(result.type(), input.type());
+        },
         defaultComputed: (_, result) => assert_is_unit('percent', result)
       }
     ],
@@ -121,36 +166,15 @@ const gTestSyntaxExamples = {
       {
         description: "a calc time",
         input: new CSSMathSum(new CSSUnitValue(0, 's'), new CSSUnitValue(0, 'ms')),
-        // Specified/computed calcs are usually simplified.
-        // FIXME: Test this properly
-        defaultSpecified: (_, result) => assert_is_calc_sum(result),
-        defaultComputed: (_, result) => assert_is_unit('s', result)
-      }
-    ],
-  },
-  '<time>': {
-    description: 'a time',
-    examples: [
-      {
-        description: "zero seconds",
-        input: new CSSUnitValue(0, 's')
-      },
-      {
-        description: "negative milliseconds",
-        input: new CSSUnitValue(-3.14, 'ms'),
-        // Computed values use canonical units
-        defaultComputed: (_, result) => assert_style_value_equals(result, new CSSUnitValue(-0.00314, 's'))
-      },
-      {
-        description: "positive seconds",
-        input: new CSSUnitValue(3.14, 's')
-      },
-      {
-        description: "a calc time",
-        input: new CSSMathSum(new CSSUnitValue(0, 's'), new CSSUnitValue(0, 'ms')),
-        // Specified/computed calcs are usually simplified.
-        // FIXME: Test this properly
-        defaultSpecified: (_, result) => assert_is_calc_sum(result),
+        specifiedExpected: new CSSMathSum(new CSSUnitValue(0, 's'), new CSSUnitValue(0, 's')),
+        // TODO: Consider merging specifiedAlternateExpected with
+        // specifiedExpected once all engines do simplification during
+        // association.
+        specifiedAlternateExpected: new CSSMathSum(new CSSUnitValue(0, 's')),
+        defaultSpecified: (input, result) => {
+          assert_is_calc_sum(result);
+          assert_numeric_type_equals(result.type(), input.type());
+        },
         defaultComputed: (_, result) => assert_is_unit('s', result)
       }
     ],
@@ -166,7 +190,7 @@ const gTestSyntaxExamples = {
         description: "positive radians",
         input: new CSSUnitValue(3.14, 'rad'),
         // Computed values use canonical units
-        defaultComputed: (_, result) => assert_style_value_equals(result, new CSSUnitValue(179.908752, 'deg'))
+        defaultComputed: (_, result) => assert_style_value_equals(result, new CSSUnitValue(179.908752, 'deg'), 1e-4)
       },
       {
         description: "negative degrees",
@@ -175,9 +199,16 @@ const gTestSyntaxExamples = {
       {
         description: "a calc angle",
         input: new CSSMathSum(new CSSUnitValue(0, 'rad'), new CSSUnitValue(0, 'deg')),
+        // TODO: Consider replacing specifiedAlternateExpected with
+        // specifiedExpected once all engines do simplification during
+        // association.
+        specifiedAlternateExpected: new CSSMathSum(new CSSUnitValue(0, 'deg')),
         // Specified/computed calcs are usually simplified.
         // FIXME: Test this properly
-        defaultSpecified: (_, result) => assert_is_calc_sum(result),
+        defaultSpecified: (input, result) => {
+          assert_is_calc_sum(result);
+          assert_numeric_type_equals(result.type(), input.type());
+        },
         defaultComputed: (_, result) => assert_is_unit('deg', result)
       }
     ],
@@ -191,14 +222,19 @@ const gTestSyntaxExamples = {
       },
       {
         description: "one fraction",
-        input: new CSSUnitValue(0, 'fr')
+        input: new CSSUnitValue(1, 'fr')
       },
+      // TODO(https://github.com/w3c/css-houdini-drafts/issues/734):
+      // Add calc tests involving 'fr' when that is spec'd in CSS.
+    ],
+  },
+  '<negative-flex>': {
+    description: 'a flexible length',
+    examples: [
       {
         description: "negative fraction",
         input: new CSSUnitValue(-3.14, 'fr')
       },
-      // TODO(https://github.com/w3c/css-houdini-drafts/issues/734):
-      // Add calc tests involving 'fr' when that is spec'd in CSS.
     ],
   },
   '<number>': {
@@ -219,19 +255,17 @@ const gTestSyntaxExamples = {
       {
         description: "a calc number",
         input: new CSSMathSum(new CSSUnitValue(2, 'number'), new CSSUnitValue(3, 'number')),
-        defaultSpecified: (_, result) => assert_is_calc_sum(result),
+        // TODO: Consider merging specifiedAlternateExpected with
+        // specifiedExpected once all engines do simplification during
+        // association.
+        specifiedAlternateExpected: new CSSMathSum(new CSSUnitValue(5, 'number')),
+        defaultSpecified: (input, result) => {
+          assert_is_calc_sum(result);
+          assert_numeric_type_equals(result.type(), input.type());
+        },
         defaultComputed: (_, result) => {
           assert_style_value_equals(result, new CSSUnitValue(5, 'number'));
         }
-      }
-    ],
-  },
-  '<position>': {
-    description: 'a position',
-    examples: [
-      {
-        decription: "origin position",
-        input: new CSSPositionValue(new CSSUnitValue(0, 'px'), new CSSUnitValue(0, 'px'))
       }
     ],
   },
@@ -301,10 +335,10 @@ const gTestSyntaxExamples = {
 // Test setting a value in a style map and then getting it from the inline and
 // computed styles.
 function testPropertyValid(propertyName, examples, specified, computed, description) {
-  test(t => {
-    let element = createDivWithStyle(t);
+  for (const example of examples) {
+    test(t => {
+      let element = createDivWithStyle(t);
 
-    for (const example of examples) {
       element.attributeStyleMap.set(propertyName, example.input);
 
       // specified style
@@ -315,10 +349,9 @@ function testPropertyValid(propertyName, examples, specified, computed, descript
         'Specified value must be a CSSStyleValue');
 
       if (specified || example.defaultSpecified) {
-        (specified || example.defaultSpecified)(example.input, specifiedResult);
+        (specified || example.defaultSpecified)(example.specifiedExpected || example.input, specifiedResult, example.specifiedAlternateExpected);
       } else {
-        assert_style_value_equals(specifiedResult, example.input,
-          `Setting ${example.description} and getting its specified value`);
+        assert_style_value_equals(specifiedResult, example.input);
       }
 
       // computed style
@@ -331,11 +364,10 @@ function testPropertyValid(propertyName, examples, specified, computed, descript
       if (computed || example.defaultComputed) {
         (computed || example.defaultComputed)(example.input, computedResult);
       } else {
-        assert_style_value_equals(computedResult, example.input,
-          `Setting ${example.description} and getting its computed value`);
+        assert_style_value_equals(computedResult, example.input);
       }
-    }
-  }, `Can set '${propertyName}' to ${description}`);
+    }, `Can set '${propertyName}' to ${description}: ${example.input}`);
+  }
 }
 
 // We have to special case CSSImageValue as they cannot be created with a
@@ -358,12 +390,12 @@ function testIsImageValidForProperty(propertyName) {
 
 // Test that styleMap.set throws for invalid values
 function testPropertyInvalid(propertyName, examples, description) {
-  test(t => {
-    let styleMap = createInlineStyleMap(t);
-    for (const example of examples) {
+  for (const example of examples) {
+    test(t => {
+      let styleMap = createInlineStyleMap(t);
       assert_throws_js(TypeError, () => styleMap.set(propertyName, example.input));
-    }
-  }, `Setting '${propertyName}' to ${description} throws TypeError`);
+    }, `Setting '${propertyName}' to ${description}: ${example.input} throws TypeError`);
+  }
 }
 
 // Test that styleMap.get/.set roundtrips correctly for unsupported values.
@@ -384,10 +416,8 @@ function testUnsupportedValue(propertyName, cssText) {
       'Unsupported value can be set on different element');
 
     const resultAll = element2.attributeStyleMap.getAll(propertyName);
-    assert_style_value_equals(resultAll[0], result,
-      `getAll() with single unsupported value returns single-item list ` +
-      `with same result as get()`);
-  }, `'${propertyName}' does not supported '${cssText}'`);
+    assert_style_value_equals(resultAll[0], result);
+  }, `'${propertyName}' does not support '${cssText}'`);
 }
 
 function createKeywordExample(keyword) {
@@ -486,5 +516,17 @@ function runListValuedPropertyTests(propertyName, testCases) {
 function runUnsupportedPropertyTests(propertyName, testExamples) {
   for (const cssText of testExamples) {
     testUnsupportedValue(propertyName, cssText);
+  }
+}
+
+// Check that |propertyName| rejects each keyword in |keywords|. Unlike the
+// values in runUnsupportedPropertyTests, these are not valid for the property
+// at all - they are identifiers its grammar excludes - so set() must throw a
+// TypeError rather than normalize them to the base CSSStyleValue.
+function runInvalidKeywordTests(propertyName, keywords) {
+  for (const keyword of keywords) {
+    const keywordExample = createKeywordExample(keyword);
+    testPropertyInvalid(propertyName, keywordExample.examples,
+                        keywordExample.description);
   }
 }

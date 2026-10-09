@@ -5,20 +5,23 @@
 
 partial interface CSSRule {
     const unsigned short SUPPORTS_RULE = 12;
+
 };
 
 [Exposed=Window]
 interface CSSConditionRule : CSSGroupingRule {
-    attribute CSSOMString conditionText;
+    readonly attribute CSSOMString conditionText;
 };
 
 [Exposed=Window]
 interface CSSMediaRule : CSSConditionRule {
     [SameObject, PutForwards=mediaText] readonly attribute MediaList media;
+    readonly attribute boolean matches;
 };
 
 [Exposed=Window]
 interface CSSSupportsRule : CSSConditionRule {
+  readonly attribute boolean matches;
 };
 
 partial namespace CSS {

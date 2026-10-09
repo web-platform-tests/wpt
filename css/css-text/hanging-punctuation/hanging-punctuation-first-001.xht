@@ -6,7 +6,6 @@
 		<link rel="author" title="Satoshi Umehara" href="mailto:umehara@est.co.jp" />
 		<link rel="help" title="CSS Text Level 3: 10.2. Hanging Punctuation: the ‘hanging-punctuation’ property" href="http://www.w3.org/TR/css-text-3/#hanging-punctuation" />
 		<link rel="match" href="reference/hanging-punctuation-first-001-ref.xht"/>
-		<meta name="flags" content="font" />
 		<meta name="assert" content="This property determines whether a punctuation mark, if one is present, may be placed outside the line box (or in the indent) at the start or at the end of a full line of text." />
 		<style type="text/css">
 			<![CDATA[
@@ -83,7 +82,7 @@
 				</div>
 				<br />
 				<div class="no-wrap">
-					<span class="hanging">“これは、満たすための</span><br />文字です。”
+					<span class="hanging hanging-iq">”これは、満たすための</span><br />文字です。”
 				</div>
 			</div>
 		</div>
@@ -97,7 +96,7 @@
 				</div>
 				<br />
 				<div class="no-wrap">
-					これは、“満たす文<br />字”です。
+					これは、”満たす文字”<br />です。
 				</div>
 			</div>
 		</div>
@@ -105,5 +104,21 @@
 			<span class="attention">* You will need a Japanese font.</span><br />
 			If you are unable to see font glyphs for certain characters using the browsers default font, install the <a href="http://ossipedia.ipa.go.jp/ipafont/">IPA Font(http://ossipedia.ipa.go.jp/ipafont/)</a> and reload this page.
 		</p>
+	<script type="text/javascript">
+	//<![CDATA[
+	(function() {
+		var probe = document.createElement('span');
+		probe.textContent = '\u201C';
+		probe.style.visibility = 'hidden';
+		probe.style.position = 'absolute';
+		document.body.appendChild(probe);
+		var w = probe.getBoundingClientRect().width;
+		document.body.removeChild(probe);
+		var spans = document.getElementsByClassName('hanging-iq');
+		for (var i = 0; i < spans.length; i++)
+			spans[i].style.left = '-' + w + 'px';
+	})();
+	//]]>
+	</script>
 	</body>
 </html>

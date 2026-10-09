@@ -8,6 +8,28 @@ function loadScript(url, { doc = document }={}) {
   })
 }
 
+function loadImage(url, { doc = document }={}) {
+  return new Promise((resolve, reject) => {
+    const img = doc.createElement('img');
+    img.onload = () => resolve();
+    img.onerror = () => reject(Error("Image load failed"));
+    img.src = url;
+    doc.body.appendChild(img);
+  })
+}
+
+function preloadImage(url, { doc = document }={}) {
+  return new Promise((resolve, reject) => {
+    const preload = doc.createElement('link');
+    preload.rel = 'preload';
+    preload.as = 'image';
+    preload.onload = () => resolve();
+    preload.onerror = () => resolve();
+    preload.href = url;
+    doc.body.appendChild(preload);
+  })
+}
+
 /**
  *
  * @param {Document} document

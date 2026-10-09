@@ -10,23 +10,52 @@ function createDocument(documentType, result, inlineOrExternal, type, hasBlockin
       "&type=" + type +
       "&hasBlockingStylesheet=" + hasBlockingStylesheet +
       "&cache=" + Math.random();
+
+    const onMessage = (event) => {
+      // Only resolve for this iframe's readiness signal.
+      if (event.source !== iframe.contentWindow || event.data !== "fox") {
+        return;
+      }
+
+      const postSource = iframe.contentWindow;
+      const postDocument = iframe.contentDocument;
+
+      const proceed = () => {
+        window.removeEventListener("message", onMessage);
+        if (documentType === "iframe") {
+          resolve([postSource, postDocument]);
+        } else if (documentType === "createHTMLDocument") {
+          resolve([
+              postSource,
+              postDocument.implementation.createHTMLDocument("")]);
+        } else {
+          reject(new Error("Invalid document type: " + documentType));
+        }
+      };
+
+      const needsStreamingElement = inlineOrExternal === "inline" ||
+                                    inlineOrExternal === "external" ||
+                                    inlineOrExternal === "empty-src";
+
+      if (needsStreamingElement && !postDocument.querySelector("streaming-element")) {
+        const observer = new MutationObserver(() => {
+          if (postDocument.querySelector("streaming-element")) {
+            observer.disconnect();
+            proceed();
+          }
+        });
+        observer.observe(postDocument, { childList: true, subtree: true });
+      } else {
+        proceed();
+      }
+    };
+    window.addEventListener("message", onMessage);
+
     // As blocking stylesheets delays Document load events, we use
-    // DOMContentLoaded here.
+    // postMessage from the iframe parser instead of load.
     // After that point, we expect iframe.contentDocument exists
     // while still waiting for blocking stylesheet loading.
     document.body.appendChild(iframe);
-
-    window.addEventListener('message', (event) => {
-      if (documentType === "iframe") {
-        resolve([iframe.contentWindow, iframe.contentDocument]);
-      } else if (documentType === "createHTMLDocument") {
-        resolve([
-            iframe.contentWindow,
-            iframe.contentDocument.implementation.createHTMLDocument("")]);
-      } else {
-        reject(new Error("Invalid document type: " + documentType));
-      }
-    }, {once: true});
   });
 }
 
@@ -104,13 +133,15 @@ async function runTest(timing, destType, result, inlineOrExternal, type) {
   const hasBlockingStylesheet =
       timing === "after-prepare" || timing === "move-back";
 
-  const [sourceWindow, sourceDocument] = await createDocument(
-      "iframe", result, inlineOrExternal, type, hasBlockingStylesheet);
-
+  // Create the destination first so "before-prepare" tests have maximal
+  // margin before the source parser reaches #prepare-a-script.
   // Due to https://crbug.com/1034176, Chromium needs
   // blocking stylesheets also in the destination Documents.
   const [destWindow, destDocument] = await createDocument(
       destType, null, null, null, hasBlockingStylesheet);
+
+  const [sourceWindow, sourceDocument] = await createDocument(
+      "iframe", result, inlineOrExternal, type, hasBlockingStylesheet);
 
   const scriptOnLoad =
     tScriptLoadEvent.unreached_func("Script load event fired unexpectedly");
@@ -119,7 +150,7 @@ async function runTest(timing, destType, result, inlineOrExternal, type) {
     // from <script>'s error event.
     event.stopPropagation();
 
-    tScriptErrorEvent.unreached_func("Script error evennt fired unexpectedly")();
+    tScriptErrorEvent.unreached_func("Script error event fired unexpectedly")();
   };
 
   sourceWindow.didExecute = false;

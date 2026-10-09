@@ -1,4 +1,6 @@
+# mypy: allow-untyped-defs
 """Interactive debugging with PDB, the Python Debugger."""
+
 import argparse
 import functools
 import sys
@@ -9,11 +11,13 @@ from typing import Generator
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
+from typing import TYPE_CHECKING
 from typing import Union
+import unittest
 
 from _pytest import outcomes
 from _pytest._code import ExceptionInfo
-from _pytest.compat import TYPE_CHECKING
 from _pytest.config import Config
 from _pytest.config import ConftestImportFailure
 from _pytest.config import hookimpl
@@ -23,9 +27,8 @@ from _pytest.config.exceptions import UsageError
 from _pytest.nodes import Node
 from _pytest.reports import BaseReport
 
-if TYPE_CHECKING:
-    from typing import Type
 
+if TYPE_CHECKING:
     from _pytest.capture import CaptureManager
     from _pytest.runner import CallInfo
 
@@ -36,7 +39,7 @@ def _validate_usepdb_cls(value: str) -> Tuple[str, str]:
         modname, classname = value.split(":")
     except ValueError as e:
         raise argparse.ArgumentTypeError(
-            "{!r} is not in the format 'modname:classname'".format(value)
+            f"{value!r} is not in the format 'modname:classname'"
         ) from e
     return (modname, classname)
 
@@ -47,21 +50,21 @@ def pytest_addoption(parser: Parser) -> None:
         "--pdb",
         dest="usepdb",
         action="store_true",
-        help="start the interactive Python debugger on errors or KeyboardInterrupt.",
+        help="Start the interactive Python debugger on errors or KeyboardInterrupt",
     )
     group._addoption(
         "--pdbcls",
         dest="usepdb_cls",
         metavar="modulename:classname",
         type=_validate_usepdb_cls,
-        help="start a custom interactive Python debugger on errors. "
+        help="Specify a custom interactive Python debugger for use with --pdb."
         "For example: --pdbcls=IPython.terminal.debugger:TerminalPdb",
     )
     group._addoption(
         "--trace",
         dest="trace",
         action="store_true",
-        help="Immediately break when running each test.",
+        help="Immediately break when running each test",
     )
 
 
@@ -89,19 +92,19 @@ def pytest_configure(config: Config) -> None:
             pytestPDB._config,
         ) = pytestPDB._saved.pop()
 
-    config._cleanup.append(fin)
+    config.add_cleanup(fin)
 
 
 class pytestPDB:
     """Pseudo PDB that defers to the real pdb."""
 
-    _pluginmanager = None  # type: Optional[PytestPluginManager]
-    _config = None  # type: Config
-    _saved = (
-        []
-    )  # type: List[Tuple[Callable[..., None], Optional[PytestPluginManager], Config]]
+    _pluginmanager: Optional[PytestPluginManager] = None
+    _config: Optional[Config] = None
+    _saved: List[
+        Tuple[Callable[..., None], Optional[PytestPluginManager], Optional[Config]]
+    ] = []
     _recursive_debug = 0
-    _wrapped_pdb_cls = None  # type: Optional[Tuple[Type[Any], Type[Any]]]
+    _wrapped_pdb_cls: Optional[Tuple[Type[Any], Type[Any]]] = None
 
     @classmethod
     def _is_capturing(cls, capman: Optional["CaptureManager"]) -> Union[str, bool]:
@@ -137,7 +140,7 @@ class pytestPDB:
             except Exception as exc:
                 value = ":".join((modname, classname))
                 raise UsageError(
-                    "--pdbcls: could not import {!r}: {}".format(value, exc)
+                    f"--pdbcls: could not import {value!r}: {exc}"
                 ) from exc
         else:
             import pdb
@@ -152,9 +155,7 @@ class pytestPDB:
     def _get_pdb_wrapper_class(cls, pdb_cls, capman: Optional["CaptureManager"]):
         import _pytest.config
 
-        # Type ignored because mypy doesn't support "dynamic"
-        # inheritance like this.
-        class PytestPdbWrapper(pdb_cls):  # type: ignore[valid-type,misc]
+        class PytestPdbWrapper(pdb_cls):
             _pytest_capman = capman
             _continued = False
 
@@ -167,6 +168,7 @@ class pytestPDB:
             def do_continue(self, arg):
                 ret = super().do_continue(arg)
                 if cls._recursive_debug == 0:
+                    assert cls._config is not None
                     tw = _pytest.config.create_terminal_writer(cls._config)
                     tw.line()
 
@@ -240,7 +242,7 @@ class pytestPDB:
         import _pytest.config
 
         if cls._pluginmanager is None:
-            capman = None  # type: Optional[CaptureManager]
+            capman: Optional[CaptureManager] = None
         else:
             capman = cls._pluginmanager.getplugin("capturemanager")
         if capman:
@@ -258,15 +260,14 @@ class pytestPDB:
                 else:
                     capturing = cls._is_capturing(capman)
                     if capturing == "global":
-                        tw.sep(">", "PDB {} (IO-capturing turned off)".format(method))
+                        tw.sep(">", f"PDB {method} (IO-capturing turned off)")
                     elif capturing:
                         tw.sep(
                             ">",
-                            "PDB %s (IO-capturing turned off for %s)"
-                            % (method, capturing),
+                            f"PDB {method} (IO-capturing turned off for {capturing})",
                         )
                     else:
-                        tw.sep(">", "PDB {}".format(method))
+                        tw.sep(">", f"PDB {method}")
 
         _pdb = cls._import_pdb_cls(capman)(**kwargs)
 
@@ -293,7 +294,9 @@ class PdbInvoke:
             sys.stdout.write(out)
             sys.stdout.write(err)
         assert call.excinfo is not None
-        _enter_pdb(node, call.excinfo, report)
+
+        if not isinstance(call.excinfo.value, unittest.SkipTest):
+            _enter_pdb(node, call.excinfo, report)
 
     def pytest_internalerror(self, excinfo: ExceptionInfo[BaseException]) -> None:
         tb = _postmortem_traceback(excinfo)
@@ -301,10 +304,10 @@ class PdbInvoke:
 
 
 class PdbTrace:
-    @hookimpl(hookwrapper=True)
-    def pytest_pyfunc_call(self, pyfuncitem) -> Generator[None, None, None]:
+    @hookimpl(wrapper=True)
+    def pytest_pyfunc_call(self, pyfuncitem) -> Generator[None, object, object]:
         wrap_pytest_function_for_tracing(pyfuncitem)
-        yield
+        return (yield)
 
 
 def wrap_pytest_function_for_tracing(pyfuncitem):
@@ -374,7 +377,8 @@ def _postmortem_traceback(excinfo: ExceptionInfo[BaseException]) -> types.Traceb
     elif isinstance(excinfo.value, ConftestImportFailure):
         # A config.ConftestImportFailure is not useful for post_mortem.
         # Use the underlying exception instead:
-        return excinfo.value.excinfo[2]
+        assert excinfo.value.cause.__traceback__ is not None
+        return excinfo.value.cause.__traceback__
     else:
         assert excinfo._excinfo is not None
         return excinfo._excinfo[2]

@@ -12,6 +12,7 @@ body { margin: 0; }
    text-orientation: sideways;
    height: 350px;
    font-family: Ahem;
+   line-height: 1;
 }
 .block > :nth-child(1) { font-size:24px; }
 .block > :nth-child(2) { font-size:32px; }
@@ -26,9 +27,9 @@ body { margin: 0; }
 .extraLeftPadding { padding-left: 30px; }
 .extraRightPadding { padding-right: 30px; }
 .item { display: inline-block; }
-.bottom { vertical-align: bottom; }
+.item.horizontalTB { margin-left: 0px; }
 </style>
 
 <p>1x4 with parallel and orthogonal items.</p>
-<div class="block verticalLR"><div class="item bottom horizontalTB">É</div><div class="item">É</div><div class="item bottom horizontalTB">É</div><div class="item">É</div></div>
-<div class="block verticalLR"><div class="item bottom horizontalTB extraLeftPadding">É</div><div class="item extraRightPadding">É</div><div class="item bottom horizontalTB">É</div><div class="item">É</div></div>
+<div class="block verticalLR"><div class="item horizontalTB">É</div><div class="item">É</div><div class="item horizontalTB">É</div><div class="item">É</div></div>
+<div class="block verticalLR"><div class="item horizontalTB extraLeftPadding">É</div><div class="item extraRightPadding">É</div><div class="item horizontalTB">É</div><div class="item">É</div></div>

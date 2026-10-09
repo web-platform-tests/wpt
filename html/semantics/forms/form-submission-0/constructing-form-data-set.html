@@ -77,6 +77,26 @@ test(() => {
   assert_true(didCallHandler);
 }, '"formdata" event bubbles in an orphan tree.');
 
+for (const enctype of ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]) {
+  test((t) => {
+    let form = populateForm('<input name=file type=file><input name=empty type=file>');
+    form.enctype = enctype;
+
+    const file = new File([], "filename");
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    form.querySelector('input[name=file]').files = dataTransfer.files;
+
+    form.addEventListener('formdata', t.step_func(e => {
+      assert_true(e.formData.has('file'));
+      assert_equals(e.formData.get('file'), file);
+      assert_true(e.formData.has('empty'));
+      assert_true(e.formData.get('empty') instanceof File);
+    }));
+    form.submit();
+  }, `Files in a ${enctype} form show up as File objects in the "formData" IDL attribute`);
+}
+
 test(() => {
   let listener1ok = false;
   let listeern2ok = false;
@@ -138,4 +158,19 @@ test(() => {
   assert_equals(formDataInEvent.get('n1'), 'v1');
   assert_false(formDataInEvent.has('n2'));
 }, 'The constructed FormData object should not contain an entry for the submit button that was used to submit the form.');
+
+test(() => {
+  let form = populateForm('<input name=n1 value=v1><input type=image name=n2>');
+  let formDataInEvent = null;
+  let submitter = form.querySelector('input[type=image]');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    formDataInEvent = new FormData(e.target);
+  });
+
+  submitter.click();
+  assert_equals(formDataInEvent.get('n1'), 'v1');
+  assert_false(formDataInEvent.has('n2.x'));
+  assert_false(formDataInEvent.has('n2.y'));
+}, 'The constructed FormData object should not contain an entry for the image submit button that was used to submit the form.');
 </script>

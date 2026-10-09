@@ -1,92 +1,94 @@
+# mypy: allow-untyped-defs
+
 import logging
 import os
+import platform
 import sys
 
 import pytest
 
-from tools.wpt import browser, utils, wpt
+from tools.wpt import browser, wpt
 
 
 @pytest.mark.slow
 @pytest.mark.remote_network
-def test_install_chromium():
-    dest = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "browsers", "nightly")
+def test_install_chromium(tmp_path):
+    channel = "nightly"
     if sys.platform == "win32":
-        chromium_path = os.path.join(dest, "chrome-win")
+        chromium_dir = "chrome-win"
     elif sys.platform == "darwin":
-        chromium_path = os.path.join(dest, "chrome-mac")
+        chromium_dir = "chrome-mac"
     else:
-        chromium_path = os.path.join(dest, "chrome-linux")
+        chromium_dir = "chrome-linux"
 
-    if os.path.exists(chromium_path):
-        utils.rmtree(chromium_path)
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["install", "chrome", "browser", "--channel=nightly"])
+        wpt.main(argv=["install", "-d", str(tmp_path), "chromium", "browser"])
     assert excinfo.value.code == 0
-    assert os.path.exists(chromium_path)
+    assert os.path.isdir(os.path.join(tmp_path, "browsers", channel, chromium_dir))
 
-    chrome = browser.Chrome(logging.getLogger("Chrome"))
-    binary = chrome.find_nightly_binary(dest)
+    chromium = browser.Chromium(logging.getLogger("Chromium"))
+    binary = chromium.find_binary(str(tmp_path), channel)
     assert binary is not None and os.path.exists(binary)
 
-    utils.rmtree(chromium_path)
+
+@pytest.mark.slow
+@pytest.mark.remote_network
+def test_install_chrome(tmp_path):
+    channel = "dev"
+    uname = platform.uname()
+    chrome_platform = {
+        "Linux": "linux",
+        "Windows": "win",
+        "Darwin": "mac",
+    }.get(uname[0])
+
+    if chrome_platform in ("linux", "win"):
+        bits = "64" if uname.machine == "x86_64" else "32"
+    elif chrome_platform == "mac":
+        bits = "-arm64" if uname.machine == "arm64" else "-x64"
+    else:
+        bits = ""
+
+    chrome_dir = f"chrome-{chrome_platform}{bits}"
+
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["install", "-d", str(tmp_path), "--channel", channel, "chrome", "browser"])
+    assert excinfo.value.code == 0
+    assert os.path.isdir(os.path.join(tmp_path, "browsers", channel, chrome_dir))
+
+    chrome = browser.Chrome(logging.getLogger("Chrome"))
+    binary = chrome.find_binary(tmp_path, channel)
+    assert binary is not None and os.path.exists(binary)
 
 
 @pytest.mark.slow
 @pytest.mark.remote_network
-def test_install_chromedriver_official():
+def test_install_chrome_chromedriver_by_version(tmp_path):
     # This is not technically an integration test as we do not want to require Chrome Stable to run it.
     chrome = browser.Chrome(logging.getLogger("Chrome"))
     if sys.platform == "win32":
-        dest = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "Scripts")
-        chromedriver_path = os.path.join(dest, "chromedriver.exe")
+        chromedriver_binary = "chromedriver.exe"
     else:
-        dest = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "bin")
-        chromedriver_path = os.path.join(dest, "chromedriver")
-    if os.path.exists(chromedriver_path):
-        os.unlink(chromedriver_path)
+        chromedriver_binary = "chromedriver"
     # This is a stable version.
-    binary_path = chrome.install_webdriver_by_version("84.0.4147.89", dest=dest)
-    assert binary_path == chromedriver_path
-    assert os.path.exists(chromedriver_path)
-    os.unlink(chromedriver_path)
-
-
-@pytest.mark.slow
-@pytest.mark.remote_network
-def test_install_chromedriver_nightly():
-    if sys.platform == "win32":
-        chromedriver_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "Scripts", "chromedriver.exe")
-    else:
-        chromedriver_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "bin", "chromedriver")
-    if os.path.exists(chromedriver_path):
-        os.unlink(chromedriver_path)
-    with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["install", "chrome", "webdriver"])
-    assert excinfo.value.code == 0
-    assert os.path.exists(chromedriver_path)
-    # FIXME: On Windows, this may sometimes fail (access denied), possibly
-    # because the file handler is not released immediately.
-    try:
-        os.unlink(chromedriver_path)
-    except OSError:
-        if sys.platform != "win32":
-            raise
+    binary_path = chrome.install_webdriver_by_version(
+        dest=str(tmp_path), version="115.0.5790.170", channel="stable")
+    assert os.path.samefile(
+        binary_path,
+        os.path.join(tmp_path, "chrome", chromedriver_binary),
+    )
 
 
 @pytest.mark.slow
 @pytest.mark.remote_network
 @pytest.mark.xfail(sys.platform == "win32",
                    reason="https://github.com/web-platform-tests/wpt/issues/17074")
-def test_install_firefox():
+def test_install_firefox(tmp_path):
     if sys.platform == "darwin":
-        fx_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "browsers", "nightly", "Firefox Nightly.app")
+        fx_binary = "Firefox Nightly.app"
     else:
-        fx_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "browsers", "nightly", "firefox")
-    if os.path.exists(fx_path):
-        utils.rmtree(fx_path)
+        fx_binary = "firefox"
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["install", "firefox", "browser", "--channel=nightly"])
+        wpt.main(argv=["install", "-d", str(tmp_path), "firefox", "browser", "--channel=nightly"])
     assert excinfo.value.code == 0
-    assert os.path.exists(fx_path)
-    utils.rmtree(fx_path)
+    assert os.path.exists(os.path.join(tmp_path, "browsers", "nightly", fx_binary))

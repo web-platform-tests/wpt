@@ -26,7 +26,7 @@
   function runTests() {
       var container = document.getElementById("container");
       for (tag in MathMLFragments) {
-          container.insertAdjacentHTML("beforeend", `<math>${MathMLFragments[tag]}</math>`);
+          container.insertAdjacentHTML("beforeend", `<math><mrow>${MathMLFragments[tag]}</mrow></math>`);
       }
       Array.from(document.getElementsByClassName("element")).forEach(element => {
           var tag = element.tagName;
@@ -36,11 +36,17 @@
               assert_equals(style.getPropertyValue("text-transform"),
                             tag === "mi" ? "math-auto" : "none",
                             "no attribute");
-              element.setAttribute("mathvariant", "fraktur");
-              assert_equals(style.getPropertyValue("text-transform"), "math-fraktur", "attribute specified");
-              element.setAttribute("mathvariant", "DoUbLe-StRuCk");
-              assert_equals(style.getPropertyValue("text-transform"), "math-double-struck", "case insensitive");
-          }, `mathvariant on the ${tag} element is mapped to CSS text-transform`)
+              element.parentNode.setAttribute("style", "text-transform: uppercase");
+              assert_equals(style.getPropertyValue("text-transform"),
+                            tag === "mi" ? "math-auto" : "uppercase",
+                            "text-transform on parent");
+              element.setAttribute("mathvariant", "normal");
+              assert_equals(style.getPropertyValue("text-transform"),
+                            tag === "mi" ? "none" : "uppercase", "attribute specified");
+              element.setAttribute("mathvariant", "NoRmAl");
+              assert_equals(style.getPropertyValue("text-transform"),
+                            tag === "mi" ? "none" : "uppercase", "case insensitive");
+          }, `mathvariant on the ${tag} element is ${tag === "mi" ? "" : "not"} mapped to CSS text-transform`)
 
           test(function() {
               // none and mprescripts appear as scripts
@@ -65,29 +71,17 @@
           }, `scriptlevel on the ${tag} element is mapped to math-depth(...)`);
 
           test(function() {
+              element.removeAttribute("scriptlevel");
               // none and mprescripts appear as scripts
-              let expected = 0;
-              element.setAttribute("scriptlevel", "" + expected);
-              assert_equals(style.getPropertyValue("math-depth"), "" + expected, "no attribute");
+              let expected = `${tag === "none" || tag === "mprescripts" ? "1" : "0"}`;
+              assert_equals(style.getPropertyValue("math-depth"), expected, "no attribute");
 
-              element.setAttribute("scriptlevel", " +1");
-              assert_equals(style.getPropertyValue("math-depth"), "" + expected, "invalid scriptlevel value");
-
-              element.setAttribute("scriptlevel", " + 1");
-              assert_equals(style.getPropertyValue("math-depth"), "" + expected, "invalid scriptlevel value");
-
-              element.setAttribute("scriptlevel", "2.0");
-              assert_equals(style.getPropertyValue("math-depth"), "" + expected, "invalid scriptlevel value");
-
-              element.setAttribute("scriptlevel", "-3\"");
-              assert_equals(style.getPropertyValue("math-depth"), "" + expected, "invalid scriptlevel value");
-
-              element.setAttribute("scriptlevel", "200px");
-              assert_equals(style.getPropertyValue("math-depth"), "" + expected, "invalid scriptlevel value");
-
-              element.setAttribute("scriptlevel", "add(2)");
-              assert_equals(style.getPropertyValue("math-depth"), "" + expected, "invalid scriptlevel value");
-
+              // FIXME: Should we test values " +1" and "+1 " here?
+              // See https://github.com/w3c/mathml/issues/122
+              ["+-1", "--1", "+z1", "+ 1", "2.0", "-3\"", "200px", "add(2)"].forEach(invalid_value => {
+                element.setAttribute("scriptlevel", invalid_value);
+                assert_equals(style.getPropertyValue("math-depth"), expected, `invalid scriptlevel value '${invalid_value}'`);
+              });
           }, `invalid scriptlevel values on the ${tag} element are not mapped to math-depth(...)`);
 
           test(function() {
@@ -106,7 +100,7 @@
 <body>
   <div id="log"></div>
   <div id="container">
-    <math class="element"></math>
+    <div><math class="element"></math></div>
   </div>
 </body>
 </html>

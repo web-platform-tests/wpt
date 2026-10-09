@@ -1,21 +1,33 @@
 :orphan:
 
-.. sidebar:: Next Open Trainings
+.. sidebar:: Next Open Trainings and Events
 
-   - `Professional testing with Python <https://www.python-academy.com/courses/specialtopics/python_course_testing.html>`_, via Python Academy, February 1-3 2021, Leipzig (Germany) and remote.
+   - `Professional Testing with Python <https://python-academy.com/courses/python_course_testing.html>`_, via `Python Academy <https://www.python-academy.com/>`_ (3 day in-depth training):
+      * **June 11th to 13th 2024**, Remote
+      * **March 4th to 6th 2025**, Leipzig, Germany / Remote
+   - `pytest development sprint <https://github.com/pytest-dev/sprint>`_, **June 17th -- 22nd 2024**
+   - pytest tips and tricks for a better testsuite, `Europython 2024 <https://ep2024.europython.eu/>`_, **July 8th -- 14th 2024** (3h), Prague
 
-   Also see `previous talks and blogposts <talks.html>`_.
+   Also see :doc:`previous talks and blogposts <talks>`.
 
 .. _features:
 
 pytest: helps you write better programs
 =======================================
 
+.. module:: pytest
 
-The ``pytest`` framework makes it easy to write small tests, yet
-scales to support complex functional testing for applications and libraries.
+The ``pytest`` framework makes it easy to write small, readable tests, and can
+scale to support complex functional testing for applications and libraries.
 
-An example of a simple test:
+
+``pytest`` requires: Python 3.8+ or PyPy3.
+
+**PyPI package name**: :pypi:`pytest`
+
+
+A quick example
+---------------
 
 .. code-block:: python
 
@@ -34,9 +46,8 @@ To execute it:
 
     $ pytest
     =========================== test session starts ============================
-    platform linux -- Python 3.x.y, pytest-6.x.y, py-1.x.y, pluggy-0.x.y
-    cachedir: $PYTHON_PREFIX/.pytest_cache
-    rootdir: $REGENDOC_TMPDIR
+    platform linux -- Python 3.x.y, pytest-8.x.y, pluggy-1.x.y
+    rootdir: /home/sweet/project
     collected 1 item
 
     test_sample.py F                                                     [100%]
@@ -55,7 +66,7 @@ To execute it:
     ============================ 1 failed in 0.12s =============================
 
 Due to ``pytest``'s detailed assertion introspection, only plain ``assert`` statements are used.
-See :ref:`Getting Started <getstarted>` for more examples.
+See :ref:`Get started <getstarted>` for a basic introduction to using pytest.
 
 
 Features
@@ -67,17 +78,20 @@ Features
 
 - :ref:`Modular fixtures <fixture>` for managing small or parametrized long-lived test resources
 
-- Can run :ref:`unittest <unittest>` (including trial) and :ref:`nose <noseintegration>` test suites out of the box
+- Can run :ref:`unittest <unittest>` (including trial) test suites out of the box
 
-- Python 3.5+ and PyPy 3
+- Python 3.8+ or PyPy 3
 
-- Rich plugin architecture, with over 315+ `external plugins <http://plugincompat.herokuapp.com>`_ and thriving community
+- Rich plugin architecture, with over 1300+ :ref:`external plugins <plugin-list>` and thriving community
 
 
 Documentation
 -------------
 
-Please see :ref:`Contents <toc>` for full documentation, including installation, tutorials and PDF documents.
+* :ref:`Get started <get-started>` - install pytest and grasp its basics in just twenty minutes
+* :ref:`How-to guides <how-to>` - step-by-step guides, covering a vast range of use-cases and needs
+* :ref:`Reference guides <reference>` - includes the complete pytest API reference, lists of plugins and more
+* :ref:`Explanation <explanation>` - background, discussion of key topics, answers to higher-level questions
 
 
 Bugs/Requests
@@ -86,16 +100,11 @@ Bugs/Requests
 Please use the `GitHub issue tracker <https://github.com/pytest-dev/pytest/issues>`_ to submit bugs or request features.
 
 
-Changelog
----------
-
-Consult the :ref:`Changelog <changelog>` page for fixes and enhancements of each version.
-
 Support pytest
 --------------
 
 `Open Collective`_ is an online funding platform for open and transparent communities.
-It provide tools to raise money and share your finances in full transparency.
+It provides tools to raise money and share your finances in full transparency.
 
 It is the platform of choice for individuals and companies that want to make one-time or
 monthly donations directly to the project.
@@ -118,18 +127,8 @@ Save time, reduce risk, and improve code health, while paying the maintainers of
 `Learn more. <https://tidelift.com/subscription/pkg/pypi-pytest?utm_source=pypi-pytest&utm_medium=referral&utm_campaign=enterprise&utm_term=repo>`_
 
 Security
-^^^^^^^^
+~~~~~~~~
 
 pytest has never been associated with a security vulnerability, but in any case, to report a
 security vulnerability please use the `Tidelift security contact <https://tidelift.com/security>`_.
 Tidelift will coordinate the fix and disclosure.
-
-
-License
--------
-
-Copyright Holger Krekel and others, 2004-2020.
-
-Distributed under the terms of the `MIT`_ license, pytest is free and open source software.
-
-.. _`MIT`: https://github.com/pytest-dev/pytest/blob/master/LICENSE

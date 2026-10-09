@@ -1,25 +1,28 @@
 """
 Release script.
 """
-import argparse
-import sys
-from subprocess import check_call
 
-from colorama import init, Fore
-from git import Repo, Remote
+import argparse
+from subprocess import check_call
+import sys
+
+from colorama import Fore
+from colorama import init
+from git import Remote
+from git import Repo
 
 
 def create_branch(version):
-    """Create a fresh branch from upstream/master"""
+    """Create a fresh branch from upstream/main"""
     repo = Repo.init(".")
     if repo.is_dirty(untracked_files=True):
-        raise RuntimeError(f"Repository is dirty, please commit/stash your changes.")
+        raise RuntimeError("Repository is dirty, please commit/stash your changes.")
 
     branch_name = f"release-{version}"
-    print(f"{Fore.CYAN}Create {branch_name} branch from upstream master")
+    print(f"{Fore.CYAN}Create {branch_name} branch from upstream main")
     upstream = get_upstream(repo)
     upstream.fetch()
-    release_branch = repo.create_head(branch_name, upstream.refs.master, force=True)
+    release_branch = repo.create_head(branch_name, upstream.refs.main, force=True)
     release_branch.checkout()
     return repo
 
@@ -50,7 +53,7 @@ def changelog(version, write_out=False):
     else:
         addopts = ["--draft"]
     print(f"{Fore.CYAN}Generating CHANGELOG")
-    check_call(["towncrier", "--yes", "--version", version] + addopts)
+    check_call(["towncrier", "build", "--yes", "--version", version] + addopts)
 
 
 def main():

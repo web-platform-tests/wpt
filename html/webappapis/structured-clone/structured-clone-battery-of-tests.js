@@ -254,6 +254,28 @@ check('Object RegExp object, RegExp empty', {'x':new RegExp('')}, compare_Object
 check('Object RegExp object, RegExp slash', {'x':new RegExp('/')}, compare_Object(enumerate_props(compare_RegExp('\\/'))));
 check('Object RegExp object, RegExp new line', {'x':new RegExp('\n')}, compare_Object(enumerate_props(compare_RegExp('\\n'))));
 
+function compare_Error(actual, input) {
+  assert_true(actual instanceof Error, "Checking instanceof");
+  assert_equals(actual.constructor, input.constructor, "Checking constructor");
+  assert_equals(actual.name, input.name, "Checking name");
+  assert_equals(actual.hasOwnProperty("message"), input.hasOwnProperty("message"), "Checking message existence");
+  assert_equals(actual.message, input.message, "Checking message");
+  assert_equals(actual.cause, input.cause, "Checking cause");
+  assert_equals(actual.foo, undefined, "Checking for absence of custom property");
+}
+
+check('Empty Error object', new Error, compare_Error);
+
+const errorConstructors = [Error, EvalError, RangeError, ReferenceError,
+                           SyntaxError, TypeError, URIError];
+for (const constructor of errorConstructors) {
+  check(`${constructor.name} object`, () => {
+    let error = new constructor("Error message here", { cause: "my cause" });
+    error.foo = "testing";
+    return error;
+  }, compare_Error);
+}
+
 async function compare_Blob(actual, input, expect_File) {
   if (typeof actual === 'string')
     assert_unreached(actual);
@@ -358,6 +380,14 @@ check('FileList empty', func_FileList_empty, compare_FileList, true);
 check('Array FileList object, FileList empty', () => ([func_FileList_empty()]), compare_Array(enumerate_props(compare_FileList)), true);
 check('Object FileList object, FileList empty', () => ({'x':func_FileList_empty()}), compare_Object(enumerate_props(compare_FileList)), true);
 
+function compare_ArrayBuffer(actual, input) {
+  assert_true(actual instanceof ArrayBuffer, 'instanceof ArrayBuffer');
+  assert_equals(actual.byteLength, input.byteLength, 'byteLength');
+  assert_equals(actual.maxByteLength, input.maxByteLength, 'maxByteLength');
+  assert_equals(actual.resizable, input.resizable, 'resizable');
+  assert_equals(actual.growable, input.growable, 'growable');
+}
+
 function compare_ArrayBufferView(view) {
   const Type = self[view];
   return function(actual, input) {
@@ -365,6 +395,8 @@ function compare_ArrayBufferView(view) {
       assert_unreached(actual);
     assert_true(actual instanceof Type, 'instanceof '+view);
     assert_equals(actual.length, input.length, 'length');
+    assert_equals(actual.byteLength, input.byteLength, 'byteLength');
+    assert_equals(actual.byteOffset, input.byteOffset, 'byteOffset');
     assert_not_equals(actual.buffer, input.buffer, 'buffer');
     for (let i = 0; i < actual.length; ++i) {
       assert_equals(actual[i], input[i], 'actual['+i+']');
@@ -480,6 +512,23 @@ check('Object with non-configurable property', function() {
   Object.defineProperty(rv, 'foo', {value:'bar', enumerable:true, writable:true, configurable:false});
   return rv;
 }, compare_Object(check_configurable_property('foo')));
+
+structuredCloneBatteryOfTests.push({
+  description: 'Object with a getter that throws',
+  async f(runner, t) {
+    const exception = new Error();
+    const testObject = {
+      get testProperty() {
+        throw exception;
+      }
+    };
+    await promise_rejects_exactly(
+      t,
+      exception,
+      runner.structuredClone(testObject)
+    );
+  }
+});
 
 /* The tests below are inspired by @zcorpan’s work but got some
 more substantial changed due to their previous async setup */
@@ -629,3 +678,77 @@ check(
     assert_equals(Object.getPrototypeOf(copy), File.prototype);
   }
 );
+
+check(
+  'Resizable ArrayBuffer',
+  () => {
+    const ab = new ArrayBuffer(16, { maxByteLength: 1024 });
+    assert_true(ab.resizable);
+    return ab;
+  },
+  compare_ArrayBuffer);
+
+structuredCloneBatteryOfTests.push({
+  description: 'Growable SharedArrayBuffer',
+  async f(runner) {
+    const sab = createBuffer('SharedArrayBuffer', 16, { maxByteLength: 1024 });
+    assert_true(sab.growable);
+    try {
+      const copy = await runner.structuredClone(sab);
+      compare_ArrayBuffer(sab, copy);
+    } catch (e) {
+      // If we're cross-origin isolated, cloning SABs should not fail.
+      if (e instanceof DOMException && e.code === DOMException.DATA_CLONE_ERR) {
+        assert_false(self.crossOriginIsolated);
+      } else {
+        throw e;
+      }
+    }
+  }
+});
+
+check(
+  'Length-tracking TypedArray',
+  () => {
+    const ab = new ArrayBuffer(16, { maxByteLength: 1024 });
+    assert_true(ab.resizable);
+    return new Uint8Array(ab);
+  },
+  compare_ArrayBufferView('Uint8Array'));
+
+check(
+  'Length-tracking DataView',
+  () => {
+    const ab = new ArrayBuffer(16, { maxByteLength: 1024 });
+    assert_true(ab.resizable);
+    return new DataView(ab);
+  },
+  compare_ArrayBufferView('DataView'));
+
+structuredCloneBatteryOfTests.push({
+  description: 'Serializing OOB TypedArray throws',
+  async f(runner, t) {
+    const ab = new ArrayBuffer(16, { maxByteLength: 1024 });
+    const ta = new Uint8Array(ab, 8);
+    ab.resize(0);
+    await promise_rejects_dom(
+      t,
+      "DataCloneError",
+      runner.structuredClone(ta)
+    );
+  }
+});
+
+structuredCloneBatteryOfTests.push({
+  description: 'Serializing OOB DataView throws',
+  async f(runner, t) {
+    const ab = new ArrayBuffer(16, { maxByteLength: 1024 });
+    const dv = new DataView(ab, 8);
+    ab.resize(0);
+    await promise_rejects_dom(
+      t,
+      "DataCloneError",
+      runner.structuredClone(dv)
+    );
+  }
+});

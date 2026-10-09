@@ -36,7 +36,7 @@ nfc_test(async t => {
 }, "Test that NDEFReader.scan rejects if signal is not an AbortSignal.");
 
 nfc_test(async t => {
-  await test_driver.set_permission({ name: 'nfc' }, 'denied', false);
+  await test_driver.set_permission({ name: 'nfc' }, 'denied');
   const ndef = new NDEFReader();
   await promise_rejects_dom(t, 'NotAllowedError', ndef.scan());
 }, "NDEFReader.scan should fail if user permission is not granted.");
@@ -122,6 +122,18 @@ nfc_test(async (t, mockNFC) => {
   await promise_rejects_dom(t, 'AbortError', promise);
 }, "Test that NDEFReader.scan rejects if NDEFScanOptions.signal aborts right after \
 the scan invocation.");
+
+nfc_test(async () => {
+  const ndef = new NDEFReader();
+
+  const controller1 = new AbortController();
+  await ndef.scan({signal: controller1.signal});
+
+  controller1.abort();
+
+  const controller2 = new AbortController();
+  await ndef.scan({signal: controller2.signal});
+}, "Test that NDEFReader.scan signals are independant.");
 
 nfc_test(async (t, mockNFC) => {
   const ndef = new NDEFReader();

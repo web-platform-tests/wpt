@@ -1,4 +1,4 @@
-/* eslint-env node */
+
 'use strict';
 
 // SDP helpers.
@@ -46,6 +46,10 @@ SDPUtils.matchPrefix = function(blob, prefix) {
     return line.indexOf(prefix) === 0;
   });
 };
+
+SDPUtils.matchPrefixAndTrim = function(blob, prefix) {
+  return SDPUtils.matchPrefix(blob, prefix).map(l => l.substr(prefix.length).trim());
+}
 
 // Parses an ICE candidate line. Sample input:
 // candidate:702786350 2 udp 41819902 8.8.8.8 60769 typ relay raddr 8.8.8.8
@@ -670,7 +674,7 @@ SDPUtils.writeSctpDescription = function(media, sctp) {
 // recommends using a cryptographically random +ve 64-bit value
 // but right now this should be acceptable and within the right range
 SDPUtils.generateSessionId = function() {
-  return Math.random().toString().substr(2, 21);
+  return Math.floor((Math.random() * 4294967296) + 1);
 };
 
 // Write boilder plate for start of SDP

@@ -5,7 +5,14 @@
 // META: variant=?mp3
 // META: variant=?opus
 // META: variant=?pcm_alaw
-// META: variant=?pcm_mulaw
+// META: variant=?pcm_ulaw
+// META: variant=?pcm_u8
+// META: variant=?pcm_s16
+// META: variant=?pcm_s24
+// META: variant=?pcm_s32
+// META: variant=?pcm_f32
+// META: variant=?flac
+// META: variant=?vorbis
 
 const ADTS_AAC_DATA = {
   src: 'sfx.adts',
@@ -79,40 +86,86 @@ const OPUS_DATA = {
     {offset: 2079, size: 289}, {offset: 2368, size: 286},
     {offset: 2654, size: 296}, {offset: 2950, size: 294}
   ],
+  duration: 20000,
+  discard_padding: 6500
+};
+
+const FLAC_DATA = {
+  src: 'sfx.flac',
+  config: {
+    codec: 'flac',
+    sampleRate: 48000,
+    numberOfChannels: 1,
+    description: { offset: 0, size: 8287 }
+  },
+  chunks: [
+    { offset: 8288, size: 2276 },
+    { offset: 10564, size: 2038 },
+    { offset: 12602, size: 521 },
+  ],
   duration: 20000
 };
 
-const PCM_ALAW_DATA = {
-  src: 'sfx-alaw.wav',
-  config: {
-    codec: 'alaw',
-    sampleRate: 48000,
-    numberOfChannels: 1,
-  },
-  // Any arbitrary grouping should work.
-  chunks: [
-    {offset: 0, size: 2048}, {offset: 2048, size: 2048},
-    {offset: 4096, size: 2048}, {offset: 6144, size: 2048},
-    {offset: 8192, size: 2048}, {offset: 10240, size: 92}
-  ],
-  duration: 35555
-};
+const PCM_PACKET_LENGTH = 1200;
 
-const PCM_MULAW_DATA = {
-  src: 'sfx-mulaw.wav',
-  config: {
-    codec: 'ulaw',
-    sampleRate: 48000,
-    numberOfChannels: 1,
-  },
+function pcm(codec, dataOffset, bytesPerSample = 1) {
+  return {
+    // clang-format off
+    // This seems to tickle some indentation bug in clang-format.
+    src: `sfx-${codec}.wav`,
+    config: {
+      codec: codec,
+      sampleRate: 48000,
+      numberOfChannels: 1,
+    },
 
-  // Any arbitrary grouping should work.
+    // Chunk are arbitrary and will be generated lazily.
+    chunks: [],
+
+    offset: dataOffset,
+    duration: 1000 * 1000 * PCM_PACKET_LENGTH / 48000 / bytesPerSample,
+    bytesPerSample: bytesPerSample,
+    // clang-format on
+  }
+}
+
+const PCM_ULAW_DATA = pcm("ulaw", 0x5c);
+const PCM_ALAW_DATA = pcm("alaw", 0x5c);
+const PCM_U8_DATA = pcm("pcm-u8", 0x4e);
+const PCM_S16_DATA = pcm('pcm-s16', 0x4e, 2);
+const PCM_S24_DATA = pcm('pcm-s24', 0x66, 3);
+const PCM_S32_DATA = pcm('pcm-s32', 0x66, 4);
+const PCM_F32_DATA = pcm('pcm-f32', 0x72, 4);
+
+// Per the Vorbis I spec (section 4.3.8), the first packet returns no audio and
+// only primes the decoder. Output starts at the center of its window, so the
+// first half of that window (128 samples of a 256-sample short block in this
+// file) is never output.
+const VORBIS_FIRST_CHUNK_DURATION_US = Math.round(1000 * 1000 * 128 / 48000);
+
+const VORBIS_DATA = {
+  src: 'sfx-vorbis.ogg',
+  config: {
+    codec: 'vorbis',
+    description: [
+      2, 30, 62, {offset: 28, size: 30}, {offset: 101, size: 62},
+      {offset: 163, size: 3771}
+    ],
+    numberOfChannels: 1,
+    sampleRate: 48000,
+  },
   chunks: [
-    {offset: 0, size: 2048}, {offset: 2048, size: 2048},
-    {offset: 4096, size: 2048}, {offset: 6144, size: 2048},
-    {offset: 8192, size: 2048}, {offset: 10240, size: 92}
+    {offset: 3968, size: 44, duration: VORBIS_FIRST_CHUNK_DURATION_US},
+    {offset: 4012, size: 21}, {offset: 4033, size: 57},
+    {offset: 4090, size: 37}, {offset: 4127, size: 37},
+    {offset: 4164, size: 107}, {offset: 4271, size: 172}
   ],
-  duration: 35555
+  duration: 21333,
+  // The first chunk is dropped, so the first output of a stream starting at a
+  // negative timestamp is shifted by the first chunk's duration.
+  discard_padding: VORBIS_FIRST_CHUNK_DURATION_US,
+  // Vorbis requires 2 packets before emitting the first audio frame.
+  packet_delay: 1
 };
 
 // Allows mutating `callbacks` after constructing the AudioDecoder, wraps calls
@@ -141,49 +194,99 @@ function view(buffer, {offset, size}) {
   return new Uint8Array(buffer, offset, size);
 }
 
+const CODEC_DATA = {
+  '?adts_aac': ADTS_AAC_DATA,
+  '?mp3': MP3_DATA,
+  '?mp4_aac': MP4_AAC_DATA,
+  '?opus': OPUS_DATA,
+  '?pcm_alaw': PCM_ALAW_DATA,
+  '?pcm_ulaw': PCM_ULAW_DATA,
+  '?pcm_u8': PCM_U8_DATA,
+  '?pcm_s16': PCM_S16_DATA,
+  '?pcm_s24': PCM_S24_DATA,
+  '?pcm_s32': PCM_S32_DATA,
+  '?pcm_f32': PCM_F32_DATA,
+  '?flac': FLAC_DATA,
+  '?vorbis': VORBIS_DATA,
+}[location.search];
+
 let CONFIG = null;
 let CHUNK_DATA = null;
 let CHUNKS = null;
 promise_setup(async () => {
-  const data = {
-    '?adts_aac': ADTS_AAC_DATA,
-    '?mp3': MP3_DATA,
-    '?mp4_aac': MP4_AAC_DATA,
-    '?opus': OPUS_DATA,
-    '?pcm_alaw': PCM_ALAW_DATA,
-    '?pcm_mulaw': PCM_MULAW_DATA,
-  }[location.search];
-
   // Don't run any tests if the codec is not supported.
+  assert_equals("function", typeof AudioDecoder.isConfigSupported);
   let supported = false;
   try {
     const support = await AudioDecoder.isConfigSupported({
-      codec: data.config.codec,
-      sampleRate: data.config.sampleRate,
-      numberOfChannels: data.config.numberOfChannels
+      codec: CODEC_DATA.config.codec,
+      sampleRate: CODEC_DATA.config.sampleRate,
+      numberOfChannels: CODEC_DATA.config.numberOfChannels
     });
     supported = support.supported;
   } catch (e) {
   }
-  assert_implements_optional(supported, data.config.codec + ' unsupported');
+  assert_implements_optional(supported,
+                             CODEC_DATA.config.codec + ' unsupported');
 
   // Fetch the media data and prepare buffers.
-  const response = await fetch(data.src);
+  const response = await fetch(CODEC_DATA.src);
   const buf = await response.arrayBuffer();
 
-  CONFIG = {...data.config};
-  if (data.config.description) {
-    CONFIG.description = view(buf, data.config.description);
+  CONFIG = {...CODEC_DATA.config};
+  if (CODEC_DATA.config.description) {
+    // The description for decoding vorbis is expected to be in Xiph extradata format.
+    // https://w3c.github.io/webcodecs/vorbis_codec_registration.html#audiodecoderconfig-description
+    if (Array.isArray(CODEC_DATA.config.description)) {
+      const length = CODEC_DATA.config.description.reduce(
+          (sum, value) => sum + ((typeof value === 'number') ? 1 : value.size),
+          0);
+      const description = new Uint8Array(length);
+
+      CODEC_DATA.config.description.reduce((offset, value) => {
+        if (typeof value === 'number') {
+          description[offset] = value;
+
+          return offset + 1;
+        }
+
+        description.set(view(buf, value), offset);
+
+        return offset + value.size;
+      }, 0);
+
+      CONFIG.description = description;
+    } else {
+      CONFIG.description = view(buf, CODEC_DATA.config.description);
+    }
   }
 
-  CHUNK_DATA = data.chunks.map((chunk, i) => view(buf, chunk));
+  CHUNK_DATA = [];
+  // For PCM, split in chunks of 1200 bytes and compute the rest
+  if (CODEC_DATA.chunks.length == 0) {
+    let offset = CODEC_DATA.offset;
+    // PCM_PACKET_LENGTH is divisible by 2 and 3 and is a plausible packet
+    // length for PCM: this means that there won't be samples split in two
+    // packet
+    let bytesPerSample = CODEC_DATA.bytesPerSample ?? 1;
+    while (offset < buf.byteLength) {
+      let size = Math.min(buf.byteLength - offset, PCM_PACKET_LENGTH);
+      assert_equals(size % bytesPerSample, 0);
+      CHUNK_DATA.push(view(buf, {offset, size}));
+      offset += size;
+    }
+  } else {
+    CHUNK_DATA = CODEC_DATA.chunks.map((chunk, i) => view(buf, chunk));
+  }
 
-  CHUNKS = CHUNK_DATA.map((encodedData, i) => new EncodedAudioChunk({
-                            type: 'key',
-                            timestamp: i * data.duration,
-                            duration: data.duration,
-                            data: encodedData
-                          }));
+  let timestamp = 0;
+  CHUNKS = CHUNK_DATA.map((encodedData, i) => {
+    const duration = CODEC_DATA.chunks[i]?.duration ?? CODEC_DATA.duration;
+    const chunk = new EncodedAudioChunk(
+        {type: 'key', timestamp, duration, data: encodedData});
+    timestamp += duration;
+    return chunk;
+  });
 });
 
 promise_test(t => {
@@ -256,7 +359,8 @@ promise_test(async t => {
   });
 
   await decoder.flush();
-  assert_equals(outputs, CHUNKS.length, 'outputs');
+  assert_equals(outputs, CHUNKS.length - (CODEC_DATA.packet_delay ?? 0),
+                'outputs');
 }, 'Test decoding');
 
 promise_test(async t => {
@@ -265,6 +369,9 @@ promise_test(async t => {
 
   let outputs = 0;
   callbacks.output = frame => {
+    if (outputs === 0) {
+      assert_equals(frame.timestamp, -42 + (CODEC_DATA.discard_padding ?? 0));
+    }
     outputs++;
     frame.close();
   };
@@ -272,10 +379,35 @@ promise_test(async t => {
   decoder.configure(CONFIG);
   decoder.decode(new EncodedAudioChunk(
       {type: 'key', timestamp: -42, data: CHUNK_DATA[0]}));
+  decoder.decode(new EncodedAudioChunk(
+      {type: 'key', timestamp: CHUNKS[0].duration - 42, data: CHUNK_DATA[1]}));
 
   await decoder.flush();
-  assert_equals(outputs, 1, 'outputs');
-}, 'Test decoding a with negative timestamp');
+  assert_equals(outputs, 2 - (CODEC_DATA.packet_delay ?? 0), 'outputs');
+}, 'Test decoding a with a negative timestamp');
+
+promise_test(async t => {
+  const callbacks = {};
+  const decoder = createAudioDecoder(t, callbacks);
+
+  let outputs = 0;
+  callbacks.output = frame => {
+    if (outputs === 0) {
+      assert_equals(frame.timestamp, 42);
+    }
+    outputs++;
+    frame.close();
+  };
+
+  decoder.configure(CONFIG);
+  decoder.decode(new EncodedAudioChunk(
+      {type: 'key', timestamp: 42, data: CHUNK_DATA[0]}));
+  decoder.decode(new EncodedAudioChunk(
+      {type: 'key', timestamp: CHUNKS[0].duration + 42, data: CHUNK_DATA[1]}));
+
+  await decoder.flush();
+  assert_equals(outputs, 2 - (CODEC_DATA.packet_delay ?? 0), 'outputs');
+}, 'Test decoding a with a positive timestamp');
 
 promise_test(async t => {
   const callbacks = {};
@@ -289,13 +421,19 @@ promise_test(async t => {
 
   decoder.configure(CONFIG);
   decoder.decode(CHUNKS[0]);
+  decoder.decode(CHUNKS[1]);
 
   await decoder.flush();
-  assert_equals(outputs, 1, 'outputs');
+  assert_equals(outputs, 2 - (CODEC_DATA.packet_delay ?? 0), 'outputs');
 
-  decoder.decode(CHUNKS[0]);
+  // Flushing resets the decoder, so codecs with a packet delay (e.g. Vorbis)
+  // need the first packet to be queued again to prime the decoder.
+  if (CODEC_DATA.packet_delay > 0) {
+    decoder.decode(CHUNKS[0]);
+  }
+  decoder.decode(CHUNKS[2]);
   await decoder.flush();
-  assert_equals(outputs, 2, 'outputs');
+  assert_equals(outputs, 3 - (CODEC_DATA.packet_delay ?? 0), 'outputs');
 }, 'Test decoding after flush');
 
 promise_test(async t => {
@@ -324,3 +462,47 @@ promise_test(async t => {
 
   assert_equals(outputs, 1, 'outputs');
 }, 'Test reset during flush');
+
+promise_test(async t => {
+  const callbacks = {};
+  const decoder = createAudioDecoder(t, callbacks);
+
+  // No decodes yet.
+  assert_equals(decoder.decodeQueueSize, 0);
+
+  decoder.configure(CONFIG);
+
+  // Still no decodes.
+  assert_equals(decoder.decodeQueueSize, 0);
+
+  let lastDequeueSize = Infinity;
+  decoder.ondequeue = () => {
+    assert_greater_than(lastDequeueSize, 0, "Dequeue event after queue empty");
+    assert_greater_than(lastDequeueSize, decoder.decodeQueueSize,
+                        "Dequeue event without decreased queue size");
+    lastDequeueSize = decoder.decodeQueueSize;
+  };
+
+  for (let chunk of CHUNKS)
+    decoder.decode(chunk);
+
+  assert_greater_than_equal(decoder.decodeQueueSize, 0);
+  assert_less_than_equal(decoder.decodeQueueSize, CHUNKS.length);
+
+  await decoder.flush();
+  // We can guarantee that all decodes are processed after a flush.
+  assert_equals(decoder.decodeQueueSize, 0);
+  // Last dequeue event should fire when the queue is empty.
+  assert_equals(lastDequeueSize, 0);
+
+  // Reset this to Infinity to track the decline of queue size for this next
+  // batch of decodes.
+  lastDequeueSize = Infinity;
+
+  for (let chunk of CHUNKS)
+    decoder.decode(chunk);
+
+  assert_greater_than_equal(decoder.decodeQueueSize, 0);
+  decoder.reset();
+  assert_equals(decoder.decodeQueueSize, 0);
+}, 'AudioDecoder decodeQueueSize test');

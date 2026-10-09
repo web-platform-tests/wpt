@@ -9,11 +9,10 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <body></body>
 <script type="module">
-  import { makeGetOptions } from "./support/helper.js";
+  import { makeGetOptions, makeCanonicalGetRequest } from "./support/helper.js";
   import { cborBytes, cborText, cborArray, cborMap, cborTag, cborBool, concat, toBase64Url } from "./support/cbor.js";
 
-  const CANONICAL_ENCRYPTION_INFO = "gmVkY2FwaaJlbm9uY2VQuTBR9ybYyMxHk586vsBGt3JyZWNpcGllbnRQdWJsaWNLZXmkAQIgASFYIGDjOSOFBB9RQDBR8kFVMctW3T-ZnHFocBOqxnaLyBh-Ilgg5Y3rj9vpB_fdU2gkVVGjR5b30iFcRAwzm7D3tnvszfo";
-  const CANONICAL_DEVICE_REQUEST_STR = "omd2ZXJzaW9uYzEuMGtkb2NSZXF1ZXN0c4GhbGl0ZW1zUmVxdWVzdNgYWFyiZ2RvY1R5cGV1b3JnLmlzby4xODAxMy41LjEubURMam5hbWVTcGFjZXOhcW9yZy5pc28uMTgwMTMuNS4xomtmYW1pbHlfbmFtZfRvZG9jdW1lbnRfbnVtYmVy9A";
+  const { deviceRequest: CANONICAL_DEVICE_REQUEST_STR, encryptionInfo: CANONICAL_ENCRYPTION_INFO } = makeCanonicalGetRequest("org-iso-mdoc").data;
 
   const buildNamespaces = (namespacesMapPairs) => {
     return cborMap([
@@ -152,6 +151,18 @@
   promise_test(async (t) => {
     await checkRequest(t, { deviceRequest: CANONICAL_DEVICE_REQUEST_STR }, TypeError);
   }, 'encryptionInfo missing');
+
+  promise_test(async (t) => {
+    const data = Object.create({ deviceRequest: CANONICAL_DEVICE_REQUEST_STR });
+    data.encryptionInfo = CANONICAL_ENCRYPTION_INFO;
+    await checkRequest(t, data, TypeError);
+  }, 'deviceRequest inherited from the prototype, not an own property');
+
+  promise_test(async (t) => {
+    const data = Object.create({ encryptionInfo: CANONICAL_ENCRYPTION_INFO });
+    data.deviceRequest = CANONICAL_DEVICE_REQUEST_STR;
+    await checkRequest(t, data, TypeError);
+  }, 'encryptionInfo inherited from the prototype, not an own property');
 
   promise_test(async (t) => {
     await checkRequest(t, { deviceRequest: CANONICAL_DEVICE_REQUEST_STR, encryptionInfo: 123 }, TypeError);

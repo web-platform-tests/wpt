@@ -160,7 +160,7 @@
           assert_equals(script.childNodes.length, 1, "Script should still have exactly 1 child");
           assert_equals(script.firstChild, child, "Child should remain intact");
           assert_equals(child.parentNode, script, "Child should still be in script");
-        }, `ChildNode.${method}() on ${child_type} child of ${connected ? "connected" : "disconnected"} HTML script element is a silent no-op`);
+        }, `NonDocumentTypeChildNode.${method}() on ${child_type} child of ${connected ? "connected" : "disconnected"} HTML script element is a silent no-op`);
       }
     }
 
@@ -179,7 +179,7 @@
       assert_equals(script.childNodes[0], before, "First sibling should remain unchanged");
       assert_equals(script.childNodes[1], target, "Target child should remain unchanged");
       assert_equals(script.childNodes[2], after, "Last sibling should remain unchanged");
-    }, `ChildNode.${method}() on child of HTML script element with siblings does not modify DOM order or structure`);
+    }, `NonDocumentTypeChildNode.${method}() on child of HTML script element with siblings does not modify DOM order or structure`);
 
     test((t) => {
       const script = document.createElement("script");
@@ -194,7 +194,7 @@
       assert_false(window.did_run, "Script inside markup should not execute");
       assert_equals(script.childNodes.length, 1, "Script child count should remain 1");
       assert_equals(script.firstChild, child, "Child should remain intact");
-    }, `ChildNode.${method}() on child of HTML script element does not execute scripts in markup`);
+    }, `NonDocumentTypeChildNode.${method}() on child of HTML script element does not execute scripts in markup`);
 
     test((t) => {
       const script = document.createElementNS("http://www.w3.org/1999/xhtml", "x:script");
@@ -206,7 +206,7 @@
       assert_equals(result, undefined, "Calling method should return undefined");
       assert_equals(script.childNodes.length, 1, "Script should still have 1 child");
       assert_equals(child.parentNode, script, "Child should still be in script");
-    }, `ChildNode.${method}() on child of HTML script element with prefix is a silent no-op`);
+    }, `NonDocumentTypeChildNode.${method}() on child of HTML script element with prefix is a silent no-op`);
 
     test((t) => {
       const script = document.createElement("script");
@@ -218,7 +218,7 @@
       assert_equals(result, undefined, "Calling method should return undefined");
       assert_equals(script.childNodes.length, 1, "Script should still have 1 child");
       assert_equals(child.parentNode, script, "Child should still be in script");
-    }, `ChildNode.${method}() on child of HTML script element with options is a silent no-op`);
+    }, `NonDocumentTypeChildNode.${method}() on child of HTML script element with options is a silent no-op`);
   }
 
   // 4. Positional methods relative to SVG <script> element (called on child nodes).
@@ -244,7 +244,7 @@
           assert_equals(script.childNodes.length, 1, "SVG script should still have exactly 1 child");
           assert_equals(script.firstChild, child, "Child should remain intact");
           assert_equals(child.parentNode, script, "Child should still be in SVG script");
-        }, `ChildNode.${method}() on ${child_type} child of ${connected ? "connected" : "disconnected"} SVG script element is a silent no-op`);
+        }, `NonDocumentTypeChildNode.${method}() on ${child_type} child of ${connected ? "connected" : "disconnected"} SVG script element is a silent no-op`);
       }
     }
 
@@ -262,7 +262,7 @@
       assert_equals(result, undefined, "Calling method should return undefined");
       assert_false(window.did_run, "Script inside markup should not execute");
       assert_equals(script.childNodes.length, 1, "SVG script child count should remain 1");
-    }, `ChildNode.${method}() on child of SVG script element does not execute scripts in markup`);
+    }, `NonDocumentTypeChildNode.${method}() on child of SVG script element does not execute scripts in markup`);
 
     test((t) => {
       const script = document.createElementNS("http://www.w3.org/2000/svg", "x:script");
@@ -274,7 +274,7 @@
       assert_equals(result, undefined, "Calling method should return undefined");
       assert_equals(script.childNodes.length, 1, "SVG script should still have 1 child");
       assert_equals(child.parentNode, script, "Child should still be in SVG script");
-    }, `ChildNode.${method}() on child of SVG script element with prefix is a silent no-op`);
+    }, `NonDocumentTypeChildNode.${method}() on child of SVG script element with prefix is a silent no-op`);
   }
 
   // 5. Contrast: calling positional methods ON <script> when <script> is a child of <div>.
@@ -295,7 +295,7 @@
         assert_equals(div.querySelectorAll("span").length, 1, "Span should have been inserted into div");
         assert_equals(script.parentNode, div, "Script element should still be in div");
       }
-    }, `ChildNode.${method}() on HTML script element inside div uses div as context and inserts markup`);
+    }, `NonDocumentTypeChildNode.${method}() on HTML script element inside div uses div as context and inserts markup`);
   }
 
   // 6. Contrast: Unsafe variants are NOT no-ops on or relative to script elements.
@@ -323,7 +323,7 @@
       } else {
         assert_equals(script.childNodes.length, 2, "Sibling should have been inserted");
       }
-    }, `ChildNode.${method}() on child of HTML script element is not a no-op`);
+    }, `NonDocumentTypeChildNode.${method}() on child of HTML script element is not a no-op`);
   }
 
   // 7. Contrast: Script element in non-HTML, non-SVG namespace does not no-op.

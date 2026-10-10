@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Test: inline content moved with running() remains inline</title>
+  <link rel="author" title="Mike Bremford" href="http://bfo.com"/>
+  <link rel="help" href="https://drafts.csswg.org/css-gcpm/#running-syntax"/>
+  <link rel="match" href="reference/running-001-ref.xht"/>
+  <meta name="flags" content="paged" />
+  <meta name="assert" content="Inline content can be moved with the running() function, and remains inline"/>
+  <style>
+  @page {
+      margin: 72px;
+      @top-center {
+          content: element(foo, last);
+      }
+  }
+  .set {
+      position: running(foo);
+  }
+  </style>
+ </head>
+ <body>
+  <div class="set">This should say pass: FAIL</div>
+  <span class="set">This should say pass: PASS</span>
+  <p>The above text should be centered in the middle of the page.</p>
+ </body>
+</html>

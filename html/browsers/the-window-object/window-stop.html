@@ -1,0 +1,211 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <title>window.stop()</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+/**
+ * > The stop() method on Window objects should, if there is an existing
+ * > attempt to navigate the browsing context and that attempt is not currently
+ * > running the unload a document algorithm, cancel that navigation; [...]
+ *
+ * Evaluation of `javascript:` URLs precedes document unloading [1], so the
+ * navigation should be cancelled.
+ *
+ * [1] https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate
+ */
+async_test(function(t) {
+  var iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+
+  window.cancelNav = {
+    firstNavigation: t.step_func(function() {
+      assert_unreached('Navigation was not cancelled.');
+    }),
+    secondNavigation: t.step_func(function() {
+      t.done();
+    })
+  };
+  iframe.contentWindow.location = 'javascript:' + [
+    'window.stop();',
+    'window.location = "javascript: parent.cancelNav.secondNavigation();";',
+    '"<script>parent.cancelNav.firstNavigation();<' + '/script>"'
+  ].join('');
+}, 'cancels navigation that is not unloading');
+
+/**
+ * > The stop() method on Window objects should, if there is an existing
+ * > attempt to navigate the browsing context and that attempt is not currently
+ * > running the unload a document algorithm, cancel that navigation; [...]
+ *
+ * From "unload a document":
+ *
+ * > 7. Unload event: If document's fired unload flag is false, then fire an
+ * >    event named unload at document's Window object, with legacy target
+ * >    override flag set.
+ */
+async_test(function(t) {
+  var iframe = document.createElement('iframe');
+  var unloadCount = 0;
+  document.body.appendChild(iframe);
+
+  iframe.addEventListener('load', t.step_func(function() {
+    assert_equals(unloadCount, 1);
+    t.done();
+  }));
+
+  iframe.src = '/common/blank.html';
+
+  iframe.contentWindow.addEventListener('unload', t.step_func(function() {
+    unloadCount += 1;
+    iframe.contentWindow.stop();
+  }));
+}, 'does not cancel navigation that is unloading');
+
+/**
+ * > [...] then, it must abort the active document of the browsing context of
+ * > the Window object on which it was invoked.
+ *
+ * From "Aborting a document load":
+ *
+ * > 2. Cancel any instances of the fetch algorithm in the context of document,
+ * >    discarding any tasks queued for them, and discarding any further data
+ * >    received from the network for them. [...]
+ *
+ * Because this does not use the "terminate" algorithm of the fetch
+ * specification [1], there is no direct signal that the cancellation has taken
+ * place. In order to safely (i.e. without creating race conditions)assert
+ * fetching has been cancelled , a second fetch is triggered immediately after
+ * the invocation of `stop`. The second operation uses the same task queues as
+ * the first, so cancellation can be verified when it completes.
+ */
+async_test(function(t) {
+  var iframe = document.createElement('iframe');
+  iframe.src = '/common/blank.html';
+  document.body.appendChild(iframe);
+
+  var link1 = iframe.contentDocument.createElement('link');
+  link1.rel = 'stylesheet';
+  link1.href = 'data:text/css,body{opacity: 0.23;}';
+  var link2 = iframe.contentDocument.createElement('link');
+  link2.rel = 'stylesheet';
+  link2.href = 'data:text/css,body{position: absolute; z-index: 45;}';
+
+  iframe.addEventListener('load', function() {
+    poll();
+
+    iframe.contentDocument.body.appendChild(link1);
+    iframe.contentWindow.stop();
+    iframe.contentDocument.body.appendChild(link2);
+  });
+
+  var poll = t.step_func(function() {
+    var style = getComputedStyle(iframe.contentDocument.body);
+
+    if (style.zIndex !== '45') {
+      t.step_timeout(poll, 100);
+      return;
+    }
+
+    assert_not_equals(style.opacity, '0.23');
+    t.done();
+  });
+}, 'aborts active fetches');
+
+/**
+ * > [...] then, it must abort the active document of the browsing context of
+ * > the Window object on which it was invoked.
+ *
+ * From "Aborting a document load":
+ *
+ * > 1. Abort the active documents of every child browsing context. [...]
+ *
+ * From "Aborting a document load":
+ *
+ * > 3. If document has an active parser, then abort that parser and set
+ * >    document's salvageable state to false.
+ */
+async_test(function(t) {
+  var iframe = document.createElement('iframe');
+
+  iframe.src = '/common/blank.html';
+  document.body.appendChild(iframe);
+
+  iframe.addEventListener('load', t.step_func(function() {
+    var child = iframe.contentDocument.createElement('iframe');
+    var firstCalls = 0;
+    var secondCalls = 0;
+
+    child.src = 'about:blank';
+    iframe.contentDocument.body.appendChild(child);
+
+    iframe.contentWindow.abortDesc = {
+      secondScript: function() {
+        secondCalls += 1;
+      },
+      firstScript: function() {
+        firstCalls += 1;
+      }
+    };
+
+    child.contentDocument.write([
+      '<script>',
+      'parent.stop();',
+      'parent.abortDesc.firstScript();',
+      '<' + '/script>',
+      '<script>',
+      'parent.abortDesc.secondScript();',
+      '<' + '/script>'
+    ].join('\n'));
+    child.contentDocument.close();
+
+    assert_equals(firstCalls, 1);
+    assert_equals(secondCalls, 0);
+    t.done();
+  }));
+}, 'aborts child browsing contexts');
+
+/**
+ * > [...] then, it must abort the active document of the browsing context of
+ * > the Window object on which it was invoked.
+ *
+ * From "Aborting a document load":
+ *
+ * > 3. If document has an active parser, then abort that parser and set
+ * >    document's salvageable state to false.
+ */
+test(function() {
+  var iframe = document.createElement('iframe');
+  var firstCalls = 0;
+  var secondCalls = 0;
+
+  iframe.src = 'about:blank';
+  document.body.appendChild(iframe);
+
+  window.abortParse = {
+    firstScript: function() {
+      firstCalls += 1;
+    },
+    secondScript: function() {
+      secondCalls += 1;
+    }
+  };
+  iframe.contentDocument.write([
+    '<script>',
+    'window.stop();',
+    'parent.abortParse.firstScript();',
+    '<' + '/script>',
+    '<script>',
+    'parent.abortParse.secondScript();',
+    '<' + '/script>'
+  ].join('\n'));
+  iframe.contentDocument.close();
+
+  assert_equals(firstCalls, 1);
+  assert_equals(secondCalls, 0);
+}, 'aborts parsing');
+</script>
+</body>

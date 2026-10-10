@@ -4,7 +4,7 @@
   HTML partial updates - {append|prepend|before|after|replaceWith}HTML{Unsafe}
   with trusted types
 </title>
-<link rel="help" href="https://github.com/WICG/declarative-partial-updates" />
+<link rel="help" href="https://html.spec.whatwg.org/#html-parsing-methods" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/util.js"></script>
@@ -16,9 +16,30 @@
 <body>
   <script>
     let createHTML = (html) => html;
+    let sinks = [];
     const default_policy = trustedTypes.createPolicy("default", {
-      createHTML: (html, type, sink) => createHTML(html, type, sink),
+      createHTML: (html, type, sink) => {
+        sinks.push(sink);
+        return createHTML(html, type, sink);
+      },
     });
+    const passthrough_policy = trustedTypes.createPolicy("passthrough", {
+      createHTML: (html) => html,
+      createParserOptions: (options) => options,
+    });
+
+    function reset_sinks() {
+      sinks = [];
+    }
+
+    function expected_sink(target_type, pos, method_name) {
+      if (["before", "after", "replaceWith"].includes(pos)) {
+        // These are defined on the NonDocumentTypeChildNode mixin, and use a
+        // "Node" sink name.
+        return `Node ${method_name}`;
+      }
+      return `${target_type === "ShadowRoot" ? "ShadowRoot" : "Element"} ${method_name}`;
+    }
 
     function expected_sink_name(target_type, pos, method_name) {
       if (pos === "append" || pos === "prepend") {
@@ -32,8 +53,10 @@
       const method_name = `${pos}HTML${safe ? "" : "Unsafe"}`;
       const variant = `${ref_type}.${method_name} (${target_type})`;
       const prepare = (t) => {
+        reset_sinks();
         t.add_cleanup(() => {
           createHTML = (html) => html;
+          reset_sinks();
         });
         return prepare_html_partial_update(target_type, ref_type, pos, t);
       };
@@ -69,6 +92,72 @@
         },
         `${variant} ${safe ? "does not go" : "goes"} via createHTML with expected sink name`,
       );
+
+      if (safe) {
+        test((t) => {
+          const { target, ref, object } = prepare(t);
+          createHTML = () => null;
+          object[method_name]("<span>html;</span>");
+          check_position(target, pos, ref);
+          assert_array_equals(sinks, [], "createHTML sinks");
+        }, `${variant} does not invoke the default policy`);
+        return;
+      }
+
+      test((t) => {
+        const { target, ref, object } = prepare(t);
+        object[method_name]("<span>html;</span>");
+        check_position(target, pos, ref);
+        assert_array_equals(sinks, [expected_sink(target_type, pos, method_name)]);
+      }, `${variant} passes the correct sink name to the default policy's createHTML`);
+
+      test((t) => {
+        const { target, ref, object } = prepare(t);
+        object[method_name]("<span>html;</span>", { runScripts: false });
+        check_position(target, pos, ref);
+        assert_array_equals(sinks, [expected_sink(target_type, pos, method_name)]);
+      }, `${variant} with vetting-free options passes the correct sink name to the default policy's createHTML`);
+
+      test((t) => {
+        const { target, object } = prepare(t);
+        const initial = target.innerHTML;
+        createHTML = () => null;
+        assert_throws_js(TypeError, () => {
+          object[method_name]("<span>html;</span>");
+        });
+        assert_equals(target.innerHTML, initial, "Tree should not be modified");
+      }, `${variant} throws TypeError when the default policy rejects the input`);
+
+      test((t) => {
+        const { target, ref, object } = prepare(t);
+        object[method_name](passthrough_policy.createHTML("<span>html;</span>"));
+        check_position(target, pos, ref);
+        assert_array_equals(sinks, [], "Default createHTML should not be invoked");
+      }, `${variant} accepts TrustedHTML without invoking the default policy's createHTML`);
+
+      test((t) => {
+        const { target, ref, object } = prepare(t);
+        object[method_name]("<span>html;</span>",
+                            passthrough_policy.createParserOptions({}));
+        check_position(target, pos, ref);
+        assert_array_equals(sinks, [],
+                            "Default createHTML should not be invoked when TrustedHTMLParserOptions is passed");
+      }, `${variant} accepts TrustedHTMLParserOptions without invoking the default policy's createHTML`);
+    }
+
+    for (const ref_type of ["Comment", "Text", "ProcessingInstruction"]) {
+      for (const pos of ["before", "after", "replaceWith"]) {
+        const method_name = `${pos}HTMLUnsafe`;
+        test((t) => {
+          reset_sinks();
+          t.add_cleanup(reset_sinks);
+          const { target, ref, object } =
+            prepare_html_partial_update("Element", ref_type, pos, t);
+          object[method_name]("<span>html;</span>");
+          check_position(target, pos, ref);
+          assert_array_equals(sinks, [`Node ${method_name}`], "createHTML sinks");
+        }, `${ref_type}.${method_name} passes a "Node" sink name to the default policy`);
+      }
     }
   test((t) => {
     let tt_error = new Error("TT Error");
@@ -100,7 +189,8 @@
     };
 
     // document.documentElement's parent is Document.
-    // beforeHTMLUnsafe("text") on it would throw HierarchyRequestError, but TT should throw first.
+    // beforeHTMLUnsafe("text") on it would throw HierarchyRequestError from
+    // parent for HTML insertion, but TT should throw first.
     assert_throws_exactly(tt_error, () => {
       document.documentElement.beforeHTMLUnsafe("text");
     });
@@ -110,7 +200,7 @@
     assert_throws_exactly(tt_error, () => {
       document.documentElement.replaceWithHTMLUnsafe("text");
     });
-  }, "NonDocumentTypeChildNode unsafe methods evaluate Trusted Types before pre-insertion validity checks");
+  }, "NonDocumentTypeChildNode unsafe methods evaluate Trusted Types before parent for HTML insertion checks");
 
   test((t) => {
     let target = document.createElement("div");
@@ -185,8 +275,7 @@
   }, "replaceWithHTMLUnsafe evaluates Trusted Types before determining the parent");
 
   test((t) => {
-    // pre-insertion validity failure throws HierarchyRequestError
-    // just normal call with safe string
+    // A Document parent is rejected by parent for HTML insertion with HierarchyRequestError.
     assert_throws_dom("HierarchyRequestError", () => {
       document.documentElement.beforeHTMLUnsafe("text");
     });
@@ -196,7 +285,54 @@
     assert_throws_dom("HierarchyRequestError", () => {
       document.documentElement.replaceWithHTMLUnsafe("text");
     });
-  }, "NonDocumentTypeChildNode unsafe methods throw HierarchyRequestError on pre-insertion validity failure");
+  }, "NonDocumentTypeChildNode unsafe methods throw HierarchyRequestError when parent is a Document");
+
+  test((t) => {
+    let tt_error = new Error("TT Error");
+    t.add_cleanup(() => { createHTML = (html) => html; });
+    createHTML = (html) => {
+      if (html === "text") throw tt_error;
+      return html;
+    };
+
+    // document.body's parent is document.documentElement (<html>).
+    // Calling positional methods on document.body or append/prepend on
+    // document.documentElement throws HierarchyRequestError, but TT should
+    // throw first.
+    assert_throws_exactly(tt_error, () => {
+      document.body.beforeHTMLUnsafe("text");
+    });
+    assert_throws_exactly(tt_error, () => {
+      document.body.afterHTMLUnsafe("text");
+    });
+    assert_throws_exactly(tt_error, () => {
+      document.body.replaceWithHTMLUnsafe("text");
+    });
+    assert_throws_exactly(tt_error, () => {
+      document.documentElement.appendHTMLUnsafe("text");
+    });
+    assert_throws_exactly(tt_error, () => {
+      document.documentElement.prependHTMLUnsafe("text");
+    });
+  }, "Unsafe positional methods evaluate Trusted Types before html element HierarchyRequestError checks");
+
+  test(() => {
+    assert_throws_dom("HierarchyRequestError", () => {
+      document.body.beforeHTMLUnsafe("<p>text</p>");
+    });
+    assert_throws_dom("HierarchyRequestError", () => {
+      document.body.afterHTMLUnsafe("<p>text</p>");
+    });
+    assert_throws_dom("HierarchyRequestError", () => {
+      document.body.replaceWithHTMLUnsafe("<p>text</p>");
+    });
+    assert_throws_dom("HierarchyRequestError", () => {
+      document.documentElement.appendHTMLUnsafe("<p>text</p>");
+    });
+    assert_throws_dom("HierarchyRequestError", () => {
+      document.documentElement.prependHTMLUnsafe("<p>text</p>");
+    });
+  }, "Unsafe positional methods throw HierarchyRequestError when parent or target is an html element");
 
   test((t) => {
     let target = document.createElement("div");
@@ -220,6 +356,31 @@
     assert_equals(target.childNodes[1].tagName, "B");
     assert_equals(target.childNodes[2].tagName, "SPAN");
   }, "prependHTMLUnsafe evaluates Trusted Types before determining the reference child");
+
+  test((t) => {
+    let parent = document.createElement("div");
+    let target = document.createElement("span");
+    let sibling1 = document.createElement("u");
+    parent.append(target, sibling1);
+
+    t.add_cleanup(() => { createHTML = (html) => html; });
+    createHTML = (html) => {
+        if (html === "<i>foo</i>") {
+          let sibling2 = document.createElement("b");
+          parent.insertBefore(sibling2, sibling1);
+        }
+        return html;
+    };
+
+    target.afterHTMLUnsafe("<i>foo</i>");
+
+    // The <i>foo</i> should be inserted before target's *new* nextSibling (sibling2).
+    assert_equals(parent.childNodes.length, 4);
+    assert_equals(parent.childNodes[0].tagName, "SPAN");
+    assert_equals(parent.childNodes[1].tagName, "I");
+    assert_equals(parent.childNodes[2].tagName, "B");
+    assert_equals(parent.childNodes[3].tagName, "U");
+  }, "afterHTMLUnsafe evaluates Trusted Types before determining the next sibling");
 
     for (const target of ["Element", "ShadowRoot", "template.content"]) {
       for (const pos of ["append", "prepend"]) {

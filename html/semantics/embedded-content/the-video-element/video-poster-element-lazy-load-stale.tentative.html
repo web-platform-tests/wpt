@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/poster-utils.js"></script>
+<script src="resources/poster-lazy-load-utils.js"></script>
+
+<body>
+  <script>
+    const createDeferredVideo = (t, { posterAttribute, imgUrl } = {}) => {
+      const video = document.createElement('video');
+      video.src = '/media/A4.webm';
+      video.loading = 'lazy';
+      video.style.marginTop = '1000vh';
+      if (posterAttribute) video.poster = posterAttribute;
+
+      let img = null;
+      if (imgUrl) {
+        img = document.createElement('img');
+        img.src = imgUrl;
+        video.appendChild(createPoster(img));
+      }
+      t.add_cleanup(() => video.remove());
+      document.body.appendChild(video);
+      return { video, img };
+    };
+
+    const observe = (t, url) => observePosterFetches(t, absoluteUrl(url));
+
+    promise_test(async (t) => {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+      const oldUrl = uniquePosterUrl('stalePosterImgOld');
+      const newUrl = uniquePosterUrl('stalePosterImgNew');
+      const oldEntries = observe(t, oldUrl);
+      const newEntries = observe(t, newUrl);
+      const { video, img } = createDeferredVideo(t, { imgUrl: oldUrl });
+
+      img.src = newUrl;
+      await waitForEagerPosterFetch(t);
+      assert_equals(oldEntries.length + newEntries.length, 0);
+
+      video.scrollIntoView();
+      await t.step_wait(() => newEntries.length > 0);
+      await settleFrames();
+      assert_equals(oldEntries.length, 0, 'The old poster image URL is never fetched');
+    }, 'Changing the poster image src while the lazy video is deferred fetches only the new URL once visible');
+
+    promise_test(async (t) => {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+      const oldUrl = uniquePosterUrl('stalePosterAttrOld');
+      const newUrl = uniquePosterUrl('stalePosterAttrNew');
+      const oldEntries = observe(t, oldUrl);
+      const newEntries = observe(t, newUrl);
+      const { video } = createDeferredVideo(t, { posterAttribute: oldUrl });
+
+      video.poster = newUrl;
+      await waitForEagerPosterFetch(t);
+      assert_equals(oldEntries.length + newEntries.length, 0);
+
+      video.scrollIntoView();
+      await t.step_wait(() => newEntries.length > 0);
+      await settleFrames();
+      assert_equals(oldEntries.length, 0, 'The old poster attribute URL is never fetched');
+    }, 'Changing the poster attribute while the lazy video is deferred fetches only the new URL once visible');
+
+    promise_test(async (t) => {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+      const oldUrl = uniquePosterUrl('stalePosterAttrEmptied');
+      const oldEntries = observe(t, oldUrl);
+      const { video } = createDeferredVideo(t, { posterAttribute: oldUrl });
+
+      video.poster = '';
+      await waitForEagerPosterFetch(t);
+
+      video.scrollIntoView();
+      await settleFrames();
+      await waitForEagerPosterFetch(t);
+      assert_equals(oldEntries.length, 0, 'Nothing is fetched for an emptied poster attribute');
+    }, 'Emptying the poster attribute while the lazy video is deferred fetches nothing once visible');
+
+    promise_test(async (t) => {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+      const attributeUrl = uniquePosterUrl('staleInsertPosterAttr');
+      const imgUrl = uniquePosterUrl('staleInsertPosterImg');
+      const attributeEntries = observe(t, attributeUrl);
+      const imgEntries = observe(t, imgUrl);
+      const { video } = createDeferredVideo(t, { posterAttribute: attributeUrl });
+
+      const img = document.createElement('img');
+      img.src = imgUrl;
+      video.appendChild(createPoster(img));
+      await waitForEagerPosterFetch(t);
+      assert_equals(attributeEntries.length + imgEntries.length, 0);
+
+      video.scrollIntoView();
+      await t.step_wait(() => imgEntries.length > 0);
+      await settleFrames();
+      assert_equals(attributeEntries.length, 0, 'The poster attribute URL is never fetched');
+    }, 'Inserting a poster element into a deferred lazy video with a poster attribute never fetches the attribute URL');
+
+    promise_test(async (t) => {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+      const attributeUrl = uniquePosterUrl('staleRemovePosterAttr');
+      const imgUrl = uniquePosterUrl('staleRemovePosterImg');
+      const attributeEntries = observe(t, attributeUrl);
+      const imgEntries = observe(t, imgUrl);
+      const { video, img } = createDeferredVideo(t, {
+        posterAttribute: attributeUrl,
+        imgUrl,
+      });
+
+      img.closest('poster').remove();
+      await waitForEagerPosterFetch(t);
+      assert_equals(attributeEntries.length + imgEntries.length, 0);
+
+      video.scrollIntoView();
+      await t.step_wait(() => attributeEntries.length > 0);
+      await settleFrames();
+      assert_equals(imgEntries.length, 0, 'The removed poster image URL is never fetched');
+    }, 'Removing the poster element from a deferred lazy video fetches only the poster attribute URL once visible');
+  </script>
+</body>

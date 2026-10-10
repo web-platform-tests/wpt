@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/poster-utils.js"></script>
+<script src="resources/poster-lazy-load-utils.js"></script>
+
+<body>
+  <script>
+    promise_test(async (t) => {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+
+      const { video, entries } = createPosterVideo(t, {
+        imgLoading: 'lazy',
+        offscreen: true,
+        id: 'imgLazyOnly',
+      });
+      document.body.appendChild(video);
+
+      await waitForEagerPosterFetch(t);
+      assert_equals(entries.length, 0);
+
+      video.scrollIntoView();
+      await t.step_wait(() => entries.length > 0);
+    }, 'Poster image loading=lazy defers the fetch when the video has no loading attribute');
+
+    promise_test(async (t) => {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+
+      const { video, entries } = createPosterVideo(t, {
+        videoLoading: 'lazy',
+        offscreen: true,
+        id: 'videoLazyToEager',
+      });
+      document.body.appendChild(video);
+
+      await waitForEagerPosterFetch(t);
+      assert_equals(entries.length, 0);
+
+      video.loading = 'eager';
+      await t.step_wait(() => entries.length > 0);
+    }, 'Changing video loading from lazy to eager fetches a deferred poster image');
+
+    promise_test(async (t) => {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+
+      const { video, img, entries } = createPosterVideo(t, {
+        videoLoading: 'lazy',
+        imgLoading: 'lazy',
+        offscreen: true,
+        id: 'imgLazyToEager',
+      });
+      document.body.appendChild(video);
+
+      await waitForEagerPosterFetch(t);
+      assert_equals(entries.length, 0);
+
+      img.loading = 'eager';
+      await t.step_wait(() => entries.length > 0);
+    }, 'Changing poster image loading from lazy to eager fetches a deferred poster image');
+
+    promise_test(async (t) => {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+
+      const video = document.createElement('video');
+      video.src = '/media/A4.webm';
+      video.loading = 'eager';
+      video.style.marginTop = '1000vh';
+      t.add_cleanup(() => video.remove());
+      document.body.appendChild(video);
+      video.loading = 'lazy';
+
+      const img = document.createElement('img');
+      img.src = `/media/poster.png?videoEagerToLazy&t=${Date.now()}&r=${Math.random()}`;
+      const entries = observePosterFetches(t, new URL(img.src, location.href).href);
+      video.appendChild(createPoster(img));
+
+      await waitForEagerPosterFetch(t);
+      assert_equals(entries.length, 0);
+
+      video.scrollIntoView();
+      await t.step_wait(() => entries.length > 0);
+    }, 'A poster image added after the video loading changed from eager to lazy is deferred');
+  </script>
+</body>

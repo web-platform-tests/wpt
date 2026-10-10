@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/poster-utils.js"></script>
+<script src="resources/poster-lazy-load-utils.js"></script>
+
+<body>
+  <script>
+    const createDisconnectedVideo = (videoLoading, id) => {
+      const video = document.createElement('video');
+      const img = document.createElement('img');
+      video.loading = videoLoading;
+      video.src = '/media/A4.webm';
+
+      const poster = document.createElement('poster');
+      poster.appendChild(img);
+      video.appendChild(poster);
+
+      img.src = `/media/poster.png?${id}&t=${Date.now()}&r=${Math.random()}`;
+      return { video, img };
+    };
+
+    promise_test(async function (t) {
+      assertPosterLazyLoadSupported();
+      const lazy = createDisconnectedVideo('lazy', 'disconnectedLazy');
+      const control = createDisconnectedVideo('eager', 'disconnectedEager');
+
+      let lazyLoaded = false;
+      lazy.img.addEventListener('load', () => { lazyLoaded = true; });
+
+      await new Promise((resolve, reject) => {
+        control.img.addEventListener('load', resolve, { once: true });
+        control.img.addEventListener('error', reject, { once: true });
+      });
+      await new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve))
+      );
+
+      assert_false(
+        lazyLoaded,
+        'Disconnected video with loading=lazy should not load the poster image'
+      );
+    }, 'Poster image should not load if a loading=lazy video is disconnected, while an eager one does');
+
+    promise_test(async function (t) {
+      assertPosterLazyLoadSupported();
+      const { video, img } = createDisconnectedVideo('lazy', 'disconnectedCurrentPoster');
+      const expected = new URL(img.getAttribute('src'), location.href).href;
+
+      await t.step_wait(() => img.currentSrc !== '');
+      assert_equals(img.currentSrc, expected);
+      assert_equals(video.currentPoster, expected);
+    }, 'Disconnected video has HTMLVideoElement.currentPoster set to the poster image source');
+  </script>
+</body>

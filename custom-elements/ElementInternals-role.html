@@ -66,9 +66,18 @@ function conditionally_register_element(role) {
     }
 }
 
+// Give lists and menus an item, so all browsers expose them with that role.
+const item_roles = {
+    list: 'listitem',
+    menu: 'menuitem',
+};
+
 function generate_role_element(role) {
     conditionally_register_element(role);
     const el = document.createElement(`${role}-element`);
+    if (item_roles[role]) {
+        generate_child_role_element(item_roles[role], el);
+    }
     document.body.append(el);
     return el;
 }

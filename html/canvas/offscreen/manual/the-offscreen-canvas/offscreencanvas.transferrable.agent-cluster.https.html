@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Transferring OffscreenCanvas objects to other agent clusters</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/canvas.html#the-offscreencanvas-interface">
+<link rel="help" href="https://github.com/whatwg/html/issues/11912">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<body>
+<script>
+"use strict";
+
+// An OffscreenCanvas object with a placeholder canvas element can only be transferred within its
+// agent cluster. In a different agent cluster, the receiving end gets a messageerror event instead
+// of a message event. An OffscreenCanvas object without a placeholder canvas element can be
+// transferred anywhere.
+//
+// Several of the other agent clusters below typically share a process with this document, so a
+// process boundary is not a substitute for checking the agent cluster.
+//
+// Each destination's send() resolves with the type of the event its receiving end got, or with a
+// description of what happened instead.
+//
+// The popup destination requires popups to be allowed when this test is run manually.
+
+function createPlaceholderCanvas(t) {
+  const canvas = document.createElement("canvas");
+  document.body.append(canvas);
+  t.add_cleanup(() => canvas.remove());
+  return canvas.transferControlToOffscreen();
+}
+
+function createCanvas() {
+  return new OffscreenCanvas(10, 10);
+}
+
+function post(postFunction, result) {
+  try {
+    postFunction();
+  } catch (e) {
+    return Promise.resolve(`postMessage() threw ${e.name}`);
+  }
+  return result;
+}
+
+function receiverURL(origin) {
+  return origin + new URL("resources/agent-cluster-receiver.html", location).pathname;
+}
+
+const receiverMarkup = `<script>
+onmessage = () => parent.postMessage("message", "*");
+onmessageerror = () => parent.postMessage("messageerror", "*");
+<\/script>`;
+
+async function sendToIframe(t, canvas, src, sandbox) {
+  const frame = document.createElement("iframe");
+  t.add_cleanup(() => frame.remove());
+  if (sandbox !== undefined) {
+    frame.sandbox = sandbox;
+  }
+  frame.src = src;
+  await new Promise(resolve => {
+    frame.onload = resolve;
+    document.body.append(frame);
+  });
+  const result = new Promise(resolve => {
+    window.addEventListener("message", e => {
+      if (e.source === frame.contentWindow) {
+        resolve(e.data);
+      }
+    });
+  });
+  return post(() => frame.contentWindow.postMessage(canvas, "*", [canvas]), result);
+}
+
+const destinations = [
+  {
+    name: "a dedicated worker",
+    sameAgentCluster: true,
+    async send(t, canvas) {
+      const worker = new Worker("resources/agent-cluster-receiver.js");
+      t.add_cleanup(() => worker.terminate());
+      const result = new Promise(resolve => worker.onmessage = e => resolve(e.data));
+      return post(() => worker.postMessage(canvas, [canvas]), result);
+    }
+  },
+  {
+    name: "a same-origin iframe",
+    sameAgentCluster: true,
+    send(t, canvas) {
+      return sendToIframe(t, canvas, receiverURL(location.origin));
+    }
+  },
+  {
+    name: "a cross-site iframe",
+    sameAgentCluster: false,
+    send(t, canvas) {
+      return sendToIframe(t, canvas, receiverURL(get_host_info().HTTPS_NOTSAMESITE_ORIGIN));
+    }
+  },
+  {
+    // Opaque origins get their own agent cluster.
+    name: "a sandboxed iframe",
+    sameAgentCluster: false,
+    send(t, canvas) {
+      return sendToIframe(t, canvas, receiverURL(location.origin), "allow-scripts");
+    }
+  },
+  {
+    name: "a data: URL iframe",
+    sameAgentCluster: false,
+    send(t, canvas) {
+      return sendToIframe(t, canvas, `data:text/html,${encodeURIComponent(receiverMarkup)}`);
+    }
+  },
+  {
+    // A same-site origin that requests an origin-keyed agent cluster.
+    name: "a same-site iframe with Origin-Agent-Cluster: ?1",
+    sameAgentCluster: false,
+    send(t, canvas) {
+      return sendToIframe(t, canvas, receiverURL(get_host_info().HTTPS_REMOTE_ORIGIN) +
+                                     "?pipe=header(Origin-Agent-Cluster,%3F1)");
+    }
+  },
+  {
+    // A popup opened with noopener is in a new browsing context group. It hands this document a
+    // MessagePort through a shared worker.
+    name: "a same-origin popup opened with noopener",
+    sameAgentCluster: false,
+    async send(t, canvas) {
+      const name = token();
+      const relay = new SharedWorker("resources/agent-cluster-relay-sharedworker.js", name);
+      const port = await new Promise(resolve => {
+        relay.port.onmessage = e => resolve(e.ports[0]);
+        relay.port.postMessage("opener");
+        window.open(`resources/agent-cluster-popup.html?name=${name}`, "_blank", "noopener");
+      });
+      t.add_cleanup(() => port.postMessage("close"));
+      const result = new Promise(resolve => port.onmessage = e => resolve(e.data));
+      return post(() => port.postMessage(canvas, [canvas]), result);
+    }
+  },
+  {
+    name: "a shared worker",
+    sameAgentCluster: false,
+    async send(t, canvas) {
+      const worker = new SharedWorker("resources/agent-cluster-receiver-sharedworker.js", token());
+      const result = new Promise(resolve => worker.port.onmessage = e => resolve(e.data));
+      return post(() => worker.port.postMessage(canvas, [canvas]), result);
+    }
+  },
+  {
+    name: "a dedicated worker created by a shared worker",
+    sameAgentCluster: false,
+    async send(t, canvas) {
+      const sharedWorker = new SharedWorker("resources/agent-cluster-spawner-sharedworker.js",
+                                            token());
+      const { port1, port2 } = new MessageChannel();
+      const status = await new Promise(resolve => {
+        sharedWorker.port.onmessage = e => resolve(e.data);
+        sharedWorker.port.postMessage(null, [port2]);
+      });
+      if (status !== "ready") {
+        return status;
+      }
+      const result = new Promise(resolve => port1.onmessage = e => resolve(e.data));
+      return post(() => port1.postMessage(canvas, [canvas]), result);
+    }
+  },
+  {
+    name: "a service worker",
+    sameAgentCluster: false,
+    async send(t, canvas) {
+      const scope = `resources/agent-cluster-scope-${token()}`;
+      const registration = await service_worker_unregister_and_register(
+          t, "resources/agent-cluster-receiver-serviceworker.js", scope);
+      t.add_cleanup(() => {
+        registration.unregister();
+      });
+      await wait_for_state(t, registration.installing, "activated");
+      const result = new Promise(resolve => {
+        navigator.serviceWorker.addEventListener("message", e => {
+          if (e.data.scope === registration.scope) {
+            resolve(e.data.type);
+          }
+        });
+      });
+      navigator.serviceWorker.startMessages();
+      return post(() => registration.active.postMessage(canvas, [canvas]), result);
+    }
+  }
+];
+
+function transferTest(createCanvas, destination, expected, description) {
+  async_test(t => {
+    destination.send(t, createCanvas(t)).then(
+      t.step_func_done(result => assert_equals(result, expected)),
+      t.step_func(e => assert_unreached(`Setting up the destination failed: ${e}`)));
+  }, description);
+}
+
+for (const destination of destinations) {
+  transferTest(createPlaceholderCanvas, destination,
+               destination.sameAgentCluster ? "message" : "messageerror",
+               `OffscreenCanvas with a placeholder canvas element transferred to ` +
+               `${destination.name}`);
+}
+
+for (const destination of destinations.filter(d => !d.sameAgentCluster)) {
+  transferTest(createCanvas, destination, "message",
+               `OffscreenCanvas without a placeholder canvas element transferred to ` +
+               `${destination.name}`);
+}
+</script>

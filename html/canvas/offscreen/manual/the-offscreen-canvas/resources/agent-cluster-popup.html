@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script>
+const relayName = new URL(location).searchParams.get("name");
+const relay = new SharedWorker("agent-cluster-relay-sharedworker.js", relayName);
+const { port1, port2 } = new MessageChannel();
+port1.onmessage = e => {
+  if (e.data === "close") {
+    close();
+    return;
+  }
+  port1.postMessage("message");
+};
+port1.onmessageerror = () => port1.postMessage("messageerror");
+relay.port.postMessage("popup", [port2]);
+</script>

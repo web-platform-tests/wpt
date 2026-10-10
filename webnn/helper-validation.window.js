@@ -220,3 +220,40 @@ test(t => {
         `ULP distance between ${b} and ${a} (commutative)`);
   });
 }, 'ULP Distance - uint4');
+
+test(() => {
+  for (const [a, b, expected] of [
+    [0, -0, 0], [2 ** -24, 0, 1], [-(2 ** -24), 0, 1],
+    [-(2 ** -24), 2 ** -24, 2], [-(2 ** -23), -(2 ** -24), 1],
+    [1, -1, 30720], [-1, -1.0009765625, 1],
+    [2 ** -14, 1023 * 2 ** -24, 1], [65504, Infinity, 1]
+  ]) {
+    assert_equals(ulpDistance(toHalf(a), b, 'float16'), expected,
+        'forward distance between ' + a + ' and ' + b);
+    assert_equals(ulpDistance(toHalf(b), a, 'float16'), expected,
+        'reverse distance between ' + a + ' and ' + b);
+    assert_equals(ulpDistance(toHalf(-a), -b, 'float16'), expected,
+        'negated distance between ' + a + ' and ' + b);
+  }
+}, 'ULP Distance - float16, including opposite signs and zero');
+
+test(() => {
+  assert_array_approx_equals_ulp([0x8001], [0], 1, 'float16',
+      'negative minimum subnormal is one ULP from zero');
+  assert_array_approx_equals_ulp([0x8001], [2 ** -24], 2, 'float16',
+      'opposite minimum subnormals are two ULPs apart');
+}, 'Float16 array comparison uses ordered numerical ULP distance');
+
+test(() => {
+  for (const [bits, expected] of [[1, 1], [2, 2], [3, 3]]) {
+    let error;
+    try {
+      assert_array_approx_equals_ulp([bits], [expected], 0, 'float16',
+          'storage encoding must not equal the expected numerical value');
+    } catch (caught) {
+      error = caught;
+    }
+    assert_true(error instanceof AssertionError,
+        'A subnormal storage encoding must not match the integer value');
+  }
+}, 'Float16 array comparison does not confuse raw bits with values');

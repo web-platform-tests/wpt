@@ -206,5 +206,133 @@
       assert_equals(circle.namespaceURI, "http://www.w3.org/2000/svg", "Inserted element has SVG namespace");
     }, `${method} targeting child in <svg> context`);
   }
+
+  // 6. C1: Chunk boundary is not EOF (elements and attributes split across chunks)
+  for (const method of ["streamHTML", "streamHTMLUnsafe", "streamAppendHTML", "streamAppendHTMLUnsafe"]) {
+    promise_test(async (t) => {
+      const div = document.createElement("div");
+      const writer = div[method]().getWriter();
+      await writer.write("<p>a");
+      await writer.write("b</p>");
+      await writer.write("<a hr");
+      await writer.write('ef="https://example.com/">link</a>');
+      await writer.close();
+
+      const ps = div.querySelectorAll("p");
+      assert_equals(ps.length, 1, "Only one <p> element should be created across chunks");
+      assert_equals(ps[0].textContent, "ab");
+      assert_equals(ps[0].childNodes.length, 1, "Text inside <p> across chunks is a single Text node");
+
+      const a = div.querySelector("a");
+      assert_not_equals(a, null);
+      assert_equals(a.getAttribute("href"), "https://example.com/");
+      assert_equals(a.textContent, "link");
+    }, `${method}: chunk boundary is not treated as EOF for elements or attributes`);
+  }
+
+  // 7. C2: Foster parenting across chunks
+  for (const method of ["streamHTML", "streamHTMLUnsafe", "streamAppendHTML", "streamAppendHTMLUnsafe"]) {
+    promise_test(async (t) => {
+      const div = document.createElement("div");
+      const writer = div[method]().getWriter();
+      await writer.write("<table><tr>");
+      await writer.write("x<td>y");
+      await writer.close();
+
+      assert_equals(div.innerHTML, "x<table><tbody><tr><td>y</td></tr></tbody></table>");
+    }, `${method}: foster parenting across chunk boundaries`);
+  }
+
+  // 8. C3: Text merges into an existing adjacent Text node
+  for (const method of ["streamAppendHTML", "streamAppendHTMLUnsafe"]) {
+    promise_test(async (t) => {
+      const div = document.createElement("div");
+      const existingText = document.createTextNode("x");
+      div.appendChild(existingText);
+
+      const writer = div[method]().getWriter();
+      await writer.write("y");
+      await writer.close();
+
+      assert_equals(div.childNodes.length, 1, "Streamed text merges into existing Text node");
+      assert_equals(div.firstChild, existingText);
+      assert_equals(existingText.data, "xy");
+    }, `${method}: streamed text merges into existing trailing Text node`);
+  }
+
+  for (const method of ["streamAfterHTML", "streamAfterHTMLUnsafe"]) {
+    promise_test(async (t) => {
+      const div = document.createElement("div");
+      const existingText = document.createTextNode("x");
+      div.appendChild(existingText);
+
+      const writer = existingText[method]().getWriter();
+      await writer.write("y");
+      await writer.close();
+
+      assert_equals(div.childNodes.length, 1, "Streamed text after Text node merges into it");
+      assert_equals(div.firstChild, existingText);
+      assert_equals(existingText.data, "xy");
+    }, `${method}: streamed text merges into preceding Text node`);
+  }
+
+  // 9. C5: Quirks-mode context document vs no-quirks context document
+  promise_test(async (t) => {
+    const quirksIframe = document.createElement("iframe");
+    t.add_cleanup(() => quirksIframe.remove());
+    document.body.appendChild(quirksIframe);
+    quirksIframe.contentDocument.open();
+    quirksIframe.contentDocument.write("<html><body><div></div></body></html>");
+    quirksIframe.contentDocument.close();
+    assert_equals(quirksIframe.contentDocument.compatMode, "BackCompat");
+
+    const quirksDiv = quirksIframe.contentDocument.querySelector("div");
+    const quirksWriter = quirksDiv.streamHTMLUnsafe().getWriter();
+    await quirksWriter.write("<p><table><tr><td>cell</td></tr></table>");
+    await quirksWriter.close();
+
+    assert_not_equals(
+      quirksDiv.querySelector("p > table"),
+      null,
+      "In quirks mode, <table> does not close an open <p>",
+    );
+
+    const noQuirksIframe = document.createElement("iframe");
+    t.add_cleanup(() => noQuirksIframe.remove());
+    noQuirksIframe.srcdoc = "<!doctype html><html><body><div></div></body></html>";
+    await new Promise(resolve => {
+      noQuirksIframe.addEventListener("load", resolve, { once: true });
+      document.body.appendChild(noQuirksIframe);
+    });
+    assert_equals(noQuirksIframe.contentDocument.compatMode, "CSS1Compat");
+
+    const noQuirksDiv = noQuirksIframe.contentDocument.querySelector("div");
+    const noQuirksWriter = noQuirksDiv.streamHTMLUnsafe().getWriter();
+    await noQuirksWriter.write("<p><table><tr><td>cell</td></tr></table>");
+    await noQuirksWriter.close();
+
+    assert_equals(
+      noQuirksDiv.querySelector("p > table"),
+      null,
+      "In no-quirks mode, <table> closes an open <p>",
+    );
+    assert_not_equals(noQuirksDiv.querySelector("p + table"), null);
+  }, "streamHTMLUnsafe respects quirks mode vs no-quirks mode of context document");
+
+  // 10. C6: Open elements are popped at close()
+  for (const method of ["streamHTML", "streamHTMLUnsafe", "streamAppendHTML", "streamAppendHTMLUnsafe"]) {
+    promise_test(async (t) => {
+      const div = document.createElement("div");
+      const options = method.includes("Unsafe") ? {} : { sanitizer: { elements: ["textarea"] } };
+      const writer = div[method](options).getWriter();
+      await writer.write("<textarea>abc");
+      await writer.close();
+
+      const textarea = div.querySelector("textarea");
+      assert_not_equals(textarea, null);
+      assert_equals(textarea.defaultValue, "abc");
+      assert_equals(textarea.value, "abc");
+    }, `${method}: unclosed <textarea> is popped on close() and has expected defaultValue`);
+  }
 </script>
 </body>

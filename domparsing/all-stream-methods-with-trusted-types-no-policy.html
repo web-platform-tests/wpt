@@ -41,6 +41,32 @@
           }
         }, `${method} with trusted types and no default policy ${safe ? "returns a WritableStream" : "throws"}.`);
       }
+
+      for (const method of [
+        "streamBeforeHTMLUnsafe",
+        "streamAfterHTMLUnsafe",
+        "streamReplaceWithHTMLUnsafe",
+      ]) {
+        test((t) => {
+          const detached = document.createElement("div");
+          assert_throws_js(
+            TypeError,
+            () => detached[method](),
+            "Trusted Types TypeError must be thrown before HierarchyRequestError on a detached node",
+          );
+        }, `${method} on a detached node with no default policy throws TypeError before HierarchyRequestError.`);
+
+        test((t) => {
+          const frag = document.createDocumentFragment();
+          const child = document.createElement("div");
+          frag.appendChild(child);
+          assert_throws_js(
+            TypeError,
+            () => child[method](),
+            "Trusted Types TypeError must be thrown before HierarchyRequestError on a DocumentFragment child",
+          );
+        }, `${method} on a DocumentFragment child with no default policy throws TypeError before HierarchyRequestError.`);
+      }
     </script>
   </body>
 </html>

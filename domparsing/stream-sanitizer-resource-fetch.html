@@ -62,6 +62,44 @@
       assert_not_equals(img, null, "<img> element is present in DOM");
       assert_equals(img.getAttribute("src"), null, "src attribute is removed");
     }, `${m.name} prevents server-observable resource fetch when src attribute is sanitized`);
+
+    promise_test(async (t) => {
+      const uuid = token();
+      const container = document.getElementById("container");
+      const { target, holder } = setupTarget(container, m.type, t);
+
+      const imageUrl = `${stashPath}?increment=${uuid}`;
+      const writer = target[m.name]({ sanitizer: { removeElements: ["img"] } }).getWriter();
+      await writer.write(`<img src="${imageUrl}">`);
+      await writer.close();
+
+      await new Promise(resolve => t.step_timeout(resolve, 200));
+
+      const response = await fetch(`${stashPath}?read=${uuid}`);
+      const requestCount = await response.text();
+
+      assert_equals(requestCount, "0", "Server should not observe any request when <img> element is removed by sanitizer");
+      assert_equals(holder.querySelector("img"), null);
+    }, `${m.name} prevents server-observable resource fetch when <img> is removed by sanitizer`);
+
+    promise_test(async (t) => {
+      const uuid = token();
+      const container = document.getElementById("container");
+      const { target, holder } = setupTarget(container, m.type, t);
+
+      const imageUrl = `${stashPath}?increment=${uuid}`;
+      const writer = target[m.name]({ sanitizer: { removeElements: ["div"] } }).getWriter();
+      await writer.write(`<div><img src="${imageUrl}"></div>`);
+      await writer.close();
+
+      await new Promise(resolve => t.step_timeout(resolve, 200));
+
+      const response = await fetch(`${stashPath}?read=${uuid}`);
+      const requestCount = await response.text();
+
+      assert_equals(requestCount, "0", "Server should not observe any request when ancestor of <img> is removed by sanitizer");
+      assert_equals(holder.querySelector("img"), null);
+    }, `${m.name} prevents server-observable resource fetch when <img> is inside a removed element`);
   }
 
   // 2. Control case: unsafe streaming without sanitizer makes the network request

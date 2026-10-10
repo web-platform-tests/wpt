@@ -168,5 +168,42 @@
       assert_equals(noscript.querySelector("b").textContent, "hello & world", "Char refs must be expanded in Data state");
     }, `${method} on <noscript> in sandboxed iframe initializes tokenizer in Data state`);
   }
+
+  // 7. <noscript> inside template contents: the fragment parser's scripting
+  // flag comes from the context element's node document (the template's
+  // host document), not from the inert template contents document.
+  // https://html.spec.whatwg.org/#html-fragment-parsing-algorithm
+  for (const method of ["streamHTMLUnsafe", "streamAppendHTMLUnsafe", "streamPrependHTMLUnsafe"]) {
+    promise_test(async (t) => {
+      const container = document.getElementById("container");
+      t.add_cleanup(() => container.replaceChildren());
+      const tpl = document.createElement("template");
+      container.appendChild(tpl);
+
+      const writer = tpl[method]().getWriter();
+      await writer.write("<noscript><p>hidden</p></noscript><p id=shown>shown</p>");
+      await writer.close();
+
+      const noscript = tpl.content.querySelector("noscript");
+      assert_not_equals(noscript, null);
+      assert_equals(noscript.querySelector("p"), null, "<noscript> content must be parsed as RAWTEXT when the host document has scripting enabled");
+      assert_equals(noscript.textContent, "<p>hidden</p>");
+      assert_not_equals(tpl.content.querySelector("#shown"), null);
+    }, `${method} into <template> content parses <noscript> with the host document's scripting flag`);
+  }
+
+  promise_test(async (t) => {
+    const doc = document.implementation.createHTMLDocument("");
+    const tpl = doc.createElement("template");
+    doc.body.appendChild(tpl);
+
+    const writer = tpl.streamHTMLUnsafe().getWriter();
+    await writer.write("<noscript><p>visible</p></noscript>");
+    await writer.close();
+
+    const noscript = tpl.content.querySelector("noscript");
+    assert_not_equals(noscript, null);
+    assert_not_equals(noscript.querySelector("p"), null, "<noscript> content must be parsed as markup when the host document has scripting disabled");
+  }, "streamHTMLUnsafe into <template> content in a scripting-disabled document parses <noscript> in Data state");
 </script>
 </body>

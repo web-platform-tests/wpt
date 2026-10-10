@@ -294,6 +294,97 @@ for (const method of [
   }, `${method} on ShadowRoot uses ShadowRoot's customElementRegistry`);
 }
 
+// 4. H1: Custom element callbacks run before the next inline script in the same chunk
+for (const method of [
+  "streamHTMLUnsafe", "streamAppendHTMLUnsafe", "streamPrependHTMLUnsafe",
+  "streamBeforeHTMLUnsafe", "streamAfterHTMLUnsafe", "streamReplaceWithHTMLUnsafe",
+]) {
+  promise_test(async (t) => {
+    const container = document.getElementById("container");
+    t.add_cleanup(() => container.replaceChildren());
+
+    const { name, log } = createCustomElementClass();
+    window.ce_script_log = log;
+    t.add_cleanup(() => { delete window.ce_script_log; });
+
+    const target = document.createElement("div");
+    container.appendChild(target);
+
+    const writer = target[method]({ runScripts: true }).getWriter();
+    await writer.write(`<${name}></${name}><script>window.ce_script_log.push("inline-script");<` + `/script>`);
+    await writer.close();
+
+    assert_array_equals(log, ["constructed", "connected", "inline-script"],
+      `CE reactions must run before the subsequent inline script in ${method}`);
+  }, `${method}: CE callbacks run before the next inline script in the same chunk`);
+}
+
+// 5. G1, G2, G4: ownerDocument and WritableStream realm
+promise_test(async (t) => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  iframe.srcdoc = "<!doctype html><body><div id='target'><span id='ref'></span></div></body>";
+  await new Promise(resolve => {
+    iframe.addEventListener("load", resolve, { once: true });
+    document.body.appendChild(iframe);
+  });
+
+  const iframeDoc = iframe.contentDocument;
+  const iframeWin = iframe.contentWindow;
+  const target = iframeDoc.getElementById("target");
+
+  // G4: Stream realm is the target's realm
+  const stream = target.streamHTMLUnsafe();
+  assert_true(
+    stream instanceof iframeWin.WritableStream,
+    "WritableStream created on iframe element must be in the iframe's realm",
+  );
+
+  // G1: ownerDocument of streamed nodes (including nested children) in an iframe document
+  const writer = stream.getWriter();
+  await writer.write("<section><p><span>nested</span></p></section>");
+  await writer.close();
+
+  const section = target.querySelector("section");
+  const p = target.querySelector("p");
+  const span = target.querySelector("span");
+  assert_equals(section.ownerDocument, iframeDoc);
+  assert_equals(p.ownerDocument, iframeDoc);
+  assert_equals(span.ownerDocument, iframeDoc);
+  assert_equals(span.firstChild.ownerDocument, iframeDoc);
+}, "Streamed nodes in an iframe have the iframe document as ownerDocument, and stream is in the iframe's realm");
+
+promise_test(async (t) => {
+  // G1: ownerDocument in a DOMParser document
+  const parsedDoc = new DOMParser().parseFromString("<!doctype html><body><div id='target'></div></body>", "text/html");
+  const target = parsedDoc.getElementById("target");
+
+  const writer = target.streamHTML().getWriter();
+  await writer.write("<div><p><b>text</b></p></div>");
+  await writer.close();
+
+  for (const node of target.querySelectorAll("*")) {
+    assert_equals(node.ownerDocument, parsedDoc, `${node.tagName} ownerDocument must be the DOMParser document`);
+  }
+  assert_equals(target.querySelector("b").firstChild.ownerDocument, parsedDoc);
+}, "Streamed nodes in a DOMParser document have the DOMParser document as ownerDocument");
+
+promise_test(async (t) => {
+  // G2: Template contents ownerDocument === tpl.content.ownerDocument
+  const tpl = document.createElement("template");
+  const writer = tpl.streamHTML().getWriter();
+  await writer.write("<div><span>inside template</span></div>");
+  await writer.close();
+
+  const div = tpl.content.querySelector("div");
+  const span = tpl.content.querySelector("span");
+  assert_not_equals(div, null);
+  assert_equals(div.ownerDocument, tpl.content.ownerDocument);
+  assert_equals(span.ownerDocument, tpl.content.ownerDocument);
+  assert_equals(span.firstChild.ownerDocument, tpl.content.ownerDocument);
+  assert_not_equals(div.ownerDocument, document, "Template content nodes belong to the template contents ownerDocument");
+}, "Streamed nodes into <template> have tpl.content.ownerDocument as their ownerDocument");
+
 for (const method of ["streamHTML", "streamHTMLUnsafe", "streamAppendHTML", "streamAppendHTMLUnsafe"]) {
   promise_test(async (t) => {
     const { name, cls, log } = createCustomElementClass();
@@ -312,5 +403,56 @@ for (const method of ["streamHTML", "streamHTMLUnsafe", "streamAppendHTML", "str
     }
   }, `${method} on <template> does not construct or upgrade top-level or nested custom elements`);
 }
+
+// 6. T3: Custom element reactions queued by the adoption agency algorithm run
+// before the next inline script. For <b><div><x-ce></x-ce></b>, the agency
+// moves the <div> under the common ancestor (disconnected, connected), takes
+// <x-ce> into a new <b> (disconnected), and appends the new <b> into the <div>
+// (connected). All of that must be observable before the script runs.
+const adoptionAgencyLog = ["constructed", "connected", "disconnected", "connected", "disconnected", "connected", "script"];
+for (const method of [
+  "streamHTMLUnsafe", "streamAppendHTMLUnsafe", "streamPrependHTMLUnsafe",
+  "streamBeforeHTMLUnsafe", "streamAfterHTMLUnsafe", "streamReplaceWithHTMLUnsafe",
+]) {
+  promise_test(async (t) => {
+    const container = document.getElementById("container");
+    t.add_cleanup(() => container.replaceChildren());
+
+    const { name, log } = createCustomElementClass();
+    window.aaa_log = log;
+    t.add_cleanup(() => { delete window.aaa_log; });
+
+    const target = document.createElement("div");
+    container.appendChild(target);
+
+    const writer = target[method]({ runScripts: true }).getWriter();
+    await writer.write(`<b><div><${name}></${name}></b><script>window.aaa_log.push("script");<` + `/script>`);
+    await writer.close();
+
+    assert_array_equals(log, adoptionAgencyLog);
+  }, `${method}: adoption agency reactions run before the next inline script`);
+}
+
+promise_test(async (t) => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  await new Promise(resolve => {
+    iframe.addEventListener("load", resolve, { once: true });
+    document.body.appendChild(iframe);
+  });
+  const doc = iframe.contentDocument;
+  const win = iframe.contentWindow;
+  const log = [];
+  win.aaa_log = log;
+  win.customElements.define("aaa-elem", class extends win.HTMLElement {
+    constructor() { super(); log.push("constructed"); }
+    connectedCallback() { log.push("connected"); }
+    disconnectedCallback() { log.push("disconnected"); }
+  });
+  doc.open();
+  doc.write(`<b><div><aaa-elem></aaa-elem></b><script>window.aaa_log.push("script");<` + `/script>`);
+  doc.close();
+  assert_array_equals(log, adoptionAgencyLog);
+}, "document.write(): adoption agency reactions run before the next inline script");
 </script>
 </body>

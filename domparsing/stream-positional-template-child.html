@@ -35,6 +35,7 @@
           assert_throws_dom("HierarchyRequestError", () => {
             child[method_name]();
           });
+          assert_equals(template.firstChild, child, `Direct child of <template> remains untouched when ${method_name} throws`);
         }, `${method_name} on a direct child of a template element throws HierarchyRequestError`);
       }
     }

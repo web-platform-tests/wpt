@@ -212,6 +212,20 @@
       ]) {
         const method_name = `${method}${safe ? "" : "Unsafe"}`;
         test(() => {
+          const detached = document.createElement("p");
+          assert_throws_dom("HierarchyRequestError", () => {
+            detached[method_name]();
+          });
+        }, `${method_name} throw if node has no parent`);
+
+        test(() => {
+          const detachedText = document.createTextNode("text");
+          assert_throws_dom("HierarchyRequestError", () => {
+            detachedText[method_name]();
+          });
+        }, `${method_name} on detached Text node throw if node has no parent`);
+
+        test(() => {
           const doc = document.implementation.createHTMLDocument();
           const comment = doc.appendChild(doc.createComment("ref"));
           assert_throws_dom("HierarchyRequestError", () => {

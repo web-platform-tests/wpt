@@ -1,0 +1,52 @@
+<!doctype html>
+<title>sizes=auto uses the concrete object width with object-fit</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#sizes-attributes">
+<link rel="help" href="https://drafts.csswg.org/css-images/#the-object-fit">
+<meta name="assert" content="sizes=auto uses the width of the concrete object size, including the effects of object-fit">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+img {
+  width: 200px;
+  height: 200px;
+}
+
+#cover {
+  object-fit: cover;
+}
+
+#contain {
+  object-fit: contain;
+}
+</style>
+
+<img id="cover" loading="lazy" sizes="auto"
+     srcset="support/wide-400x200.svg 400w"
+     width="800" height="400" alt="">
+<img id="contain" loading="lazy" sizes="auto"
+     srcset="support/tall-200x400.svg 200w"
+     width="400" height="800" alt="">
+
+<script>
+function loadPromise(img) {
+  if (img.complete) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
+    img.addEventListener("load", resolve, {once: true});
+    img.addEventListener("error", reject, {once: true});
+  });
+}
+
+promise_test(async () => {
+  await loadPromise(cover);
+  assert_equals(cover.naturalWidth, 400);
+}, "sizes=auto uses the 400px concrete object width for object-fit: cover");
+
+promise_test(async () => {
+  await loadPromise(contain);
+  assert_equals(contain.naturalWidth, 100);
+}, "sizes=auto uses the 100px concrete object width for object-fit: contain");
+</script>

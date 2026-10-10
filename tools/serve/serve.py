@@ -108,10 +108,21 @@ class WrapperHandler(metaclass=abc.ABCMeta):
         self.handler(request, response)
 
     def handle_request(self, request, response):
-        headers = self.headers + handlers.load_headers(
-            request, self._get_filesystem_path(request))
-        for header_name, header_value in headers:
+        for header_name, header_value in self.headers:
             response.headers.set(header_name, header_value)
+
+        # Headers from __dir__.headers and <file>.headers override the
+        # handler's defaults, but repeated headers within them must all be
+        # kept (as FileHandler does), so append after the first occurrence.
+        seen = set()
+        for header_name, header_value in handlers.load_headers(
+                request, self._get_filesystem_path(request)):
+            key = header_name.lower()
+            if key in seen:
+                response.headers.append(header_name, header_value)
+            else:
+                response.headers.set(header_name, header_value)
+                seen.add(key)
 
         self.check_exposure(request)
 

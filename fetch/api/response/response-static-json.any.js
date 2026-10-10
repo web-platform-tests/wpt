@@ -94,3 +94,22 @@ for (const [input, expected] of encodingChecks) {
     assert_array_equals(data, expected);
   }, `Check response returned by static json() with input ${input}`);
 }
+
+test(function () {
+  const headers = Response.json(null).headers;
+
+  headers.append("x-custom", "value");
+  assert_equals(headers.get("x-custom"), "value");
+
+  headers.set("x-custom", "value2");
+  assert_equals(headers.get("x-custom"), "value2");
+
+  headers.delete("x-custom");
+  assert_equals(headers.get("x-custom"), null);
+
+  assert_equals(headers.get("content-type"), APPLICATION_JSON);
+  headers.set("content-type", FOO_BAR);
+  assert_equals(headers.get("content-type"), FOO_BAR);
+  headers.delete("content-type");
+  assert_equals(headers.get("content-type"), null);
+}, "headers of Response.json() are mutable");

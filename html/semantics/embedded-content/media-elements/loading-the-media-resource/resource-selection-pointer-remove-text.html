@@ -15,19 +15,31 @@ var c = 0;
  >x</video
 >
 <script>
-async_test(function(t) {
+promise_test(async function(t) {
   var video = document.querySelector('video');
+  var sourceB = video.querySelector('[onerror="b++"]');
+  var loaded = new Promise(function(resolve) { window.addEventListener('load', resolve); });
+
+  // currentSrc is set in the "process candidate" step, after the pointer has
+  // advanced and before the resource fetch algorithm runs, so waiting for it is
+  // how we observe that the pointer is (b | text) with b pending. Polling rather
+  // than mutating from a parse-time script keeps this robust whether the UA runs
+  // the synchronous section at a microtask checkpoint (as specified) or in a task.
+  await t.step_wait(function() { return video.currentSrc == sourceB.src; },
+                    'source b selected as candidate', 3000, 5);
+  assert_equals(b, 0, 'source b is still pending when the pointer is updated');
+
   // remove the text nodes
-  [].forEach.call(video.childNodes, function(node) {
+  [].forEach.call([].slice.call(video.childNodes), function(node) {
     if (node.nodeType == node.TEXT_NODE) {
       video.removeChild(node);
     }
   });
-  window.onload = t.step_func(function() {
-    assert_equals(a, 1, 'error events on a');
-    assert_equals(b, 1, 'error events on b');
-    assert_equals(c, 1, 'error events on c');
-    t.done();
-  });
+  assert_equals(video.childNodes.length, 3, 'all text nodes removed');
+
+  await loaded;
+  assert_equals(a, 1, 'error events on a');
+  assert_equals(b, 1, 'error events on b');
+  assert_equals(c, 1, 'error events on c');
 });
 </script>

@@ -29,12 +29,15 @@
         "streamAppendHTMLUnsafe",
         "streamPrependHTMLUnsafe",
         "streamBeforeHTMLUnsafe",
-        "streamAfterHTMLUnsafe"
+        "streamAfterHTMLUnsafe",
+        "streamReplaceWithHTMLUnsafe"
       ];
 
       for (const method of methods) {
       promise_test(async (t) => {
         let d = document.createElement("div");
+        let child = document.createElement("span");
+        d.appendChild(child);
         document.querySelector("#container").appendChild(d);
         t.add_cleanup(() => d.remove());
         assert_throws_js(
@@ -42,6 +45,8 @@
           () => d[method]().getWriter(),
           "error in createParserOptions is rethrown",
         );
+        assert_equals(d.parentNode, container, "target remains connected if createParserOptions throws");
+        assert_equals(d.firstChild, child, "target children remain intact if createParserOptions throws");
       }, `error in createParserOptions is rethrown from default policy for ${method}`);
       }
 

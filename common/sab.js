@@ -1,4 +1,4 @@
-const createBuffer = (() => {
+globalThis.createBuffer = (() => {
   // See https://github.com/whatwg/html/issues/5380 for why not `new SharedArrayBuffer()`
   let sabConstructor;
   try {

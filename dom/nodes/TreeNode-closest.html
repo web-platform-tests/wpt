@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>TreeNode.closest</title>
+<link rel=help href="https://dom.spec.whatwg.org/#dom-treenode-closest">
+<link rel=help href="https://github.com/whatwg/dom/pull/883">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body id="body">
+  <div id="test8" class="div3" style="display:none">
+    <div id="test7" class="div2">
+      <div id="test6" class="div1">
+        <form id="test10" class="form2"><!--test10--></form>
+        <form id="test5" class="form1" name="form-a">
+          <!--test5-->
+          <input id="test1" class="input1" required>
+          <fieldset class="fieldset2" id="test2">
+            <select id="test3" class="select1" required>
+              <option default id="test4" value="">Test4</option>
+              <option selected id="test11">Test11</option>
+              <option id="test12">Test12<!--test12--></option>
+              <option id="test13">Test13<!--test13--></option>
+            </select>
+            <input id="test9" type="text" required>
+          </fieldset>
+        </form>
+        <div id="test14"></div>
+        <div id="test15"></div>
+      </div>
+    </div>
+  </div>
+  <div id=log></div>
+<script>
+"use strict";
+let test_num = 1; // to avoid duplicate test name
+
+test_closest(test12, "select", test3);
+test_closest(first_text_child(test12), "select", test3);
+test_closest(test13, "fieldset", test2);
+test_closest(first_text_child(test13), "fieldset", test2);
+test_closest(test13, "div", test6);
+test_closest(first_comment_child(test13), "div", test6);
+test_closest(test3, "body", body);
+
+test_closest(test4, "[default]", test4);
+test_closest(test4, "[selected]", null);
+test_closest(first_text_child(test4), "[selected]", null);
+test_closest(test11, "[selected]", test11);
+test_closest(first_text_child(test11), "[selected]", test11);
+test_closest(test12, "[name='form-a']", test5);
+test_closest(first_comment_child(test12), "[name='form-a']", test5);
+test_closest(test13, "form[name='form-a']", test5);
+test_closest(first_comment_child(test13), "form[name='form-a']", test5);
+test_closest(test9, "input[required]", test9);
+test_closest(test9, "select[required]", null);
+
+test_closest(test13, "div:not(.div1)", test7);
+test_closest(first_text_child(test13), "div:not(.div1)", test7);
+test_closest(test6, "div.div3", test8);
+test_closest(test1, "div#test7", test7);
+
+test_closest(test12, ".div3 > .div2", test7);
+test_closest(first_comment_child(test12), ".div3 > .div2", test7);
+test_closest(test12, ".div3 > .div1", null);
+test_closest(first_text_child(test12), ".div3 > .div1", null);
+test_closest(test9, "form > input[required]", null);
+test_closest(test12, "fieldset > select[required]", test3);
+test_closest(first_text_child(test12), "fieldset > select[required]", test3);
+
+test_closest(test6, "input + fieldset", null);
+test_closest(first_text_child(test6), "input + fieldset", null);
+test_closest(test3, "form + form", test5);
+test_closest(test5, "form + form", test5);
+test_closest(first_comment_child(test5), "form + form", test5);
+
+test_closest(test10, ":empty", test10);
+test_closest(first_comment_child(test10), ":empty", test10);
+test_closest(test11, ":invalid", test2);
+test_closest(first_text_child(test11), ":invalid", test2);
+test_closest(test11, ":last-child", test2);
+test_closest(first_text_child(test11), ":last-child", test2);
+test_closest(test12, ":first-child", test3);
+test_closest(first_comment_child(test12), ":first-child", test3);
+
+test_closest(test4, ":scope", test4);
+test_closest(test4, "select > :scope", test4);
+test_closest(first_text_child(test4), "select > :scope", test4);
+test_closest(test4, "div > :scope", null);
+test_closest(first_text_child(test4), "div > :scope", null);
+test_closest(test4, ":has(> :scope)", test3);
+test_closest(first_text_child(test4), ":has(> :scope)", test3);
+
+test_closest(document, "*", null);
+test_closest(document.doctype, ":root", null);
+test_closest(document.doctype, "html", null);
+
+// detached nodes
+
+const el = document.createElement("span");
+test_closest(el, "*", el);
+
+test_closest(new Text(), "*", null);
+test_closest(new Comment(), "*", null);
+test_closest(new Document(), "*", null);
+test_closest(new DocumentFragment(), "*", null);
+
+// shadow root
+
+test_closest(test14.attachShadow({mode: "open"}), "*", null);
+test_closest(test15.attachShadow({mode: "closed"}), "*", null);
+
+
+function test_closest(node, selector, expected) {
+  test(function() {
+    assert_equals(node.closest(selector), expected);
+  }, `${test_num++} TreeNode.closest with context ${format_value(node)} and selector "${selector}"`);
+}
+
+function first_text_child(parent) {
+  for (const child of parent.childNodes) {
+    if (child.nodeType === Node.TEXT_NODE) {
+      return child;
+    }
+  }
+}
+
+function first_comment_child(parent) {
+  for (const child of parent.childNodes) {
+    if (child.nodeType === Node.COMMENT_NODE) {
+      return child;
+    }
+  }
+}
+</script>

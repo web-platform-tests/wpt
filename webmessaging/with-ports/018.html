@@ -2,15 +2,19 @@
 <title>origin of the script that invoked the method, javascript:</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<iframe src="javascript:''"></iframe>
+<iframe src="javascript:'1'"></iframe>
 <div id=log></div>
 <script>
-async_test(function() {
-  window[0].postMessage('', '*', []);
-  window[0].onmessage = this.step_func(function(e) {
-    assert_equals(e.origin, location.protocol + '//' + location.host);
-    assert_array_equals(e.ports, []);
-    this.done();
+async_test(function(t) {
+  addEventListener("load", function() {
+    t.step(function() {
+      window[0].postMessage('', '*', []);
+      window[0].onmessage = this.step_func(function(e) {
+        assert_equals(e.origin, location.protocol + '//' + location.host);
+        assert_array_equals(e.ports, []);
+        t.done();
+      });
+    });
   });
 });
 </script>

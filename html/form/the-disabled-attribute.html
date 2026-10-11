@@ -1,0 +1,41 @@
+<!doctype html>
+<title>form disabled attribute</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-elements.html#attr-form-disabled">
+<link rel="help" href="https://github.com/whatwg/html/issues/3682">
+<link rel="author" href="mailto:cyril.auburtin@gmail.com" title="Cyril Auburtin">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<form>
+  <input name="foo">
+  <input name="sb" type="submit">
+</form>
+<form disabled>
+  <input name="foo">
+  <input name="sb" type="submit">
+</form>
+<script>
+  test(t => {
+    const [form1, form2] = document.forms;
+
+    form1.disabled = true;
+    assert_true(form1.disabled);
+
+    form2.focus();
+    assert_true(form2.disabled);
+    assert_equals(document.activeElement, document.body);
+
+    const submitHandler = t.unreached_func("forms should not be submitted if they are disabled");
+    form1.addEventListener("submit", submitHandler);
+    form2.addEventListener("submit", submitHandler);
+
+    const event = new MouseEvent("submit", {
+      view: window,
+      bubbles: true,
+      cancelable: true
+    });
+
+    form1.dispatchEvent(event);
+    form2.dispatchEvent(event);
+
+  }, "disabled works on form elements");
+</script>

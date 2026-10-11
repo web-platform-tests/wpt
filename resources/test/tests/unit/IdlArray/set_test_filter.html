@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8">
+<title>IdlArray.prototype.set_test_filter()</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/idlharness.js"></script>
+<script>
+"use strict";
+
+function collect_tests(idlArray) {
+    const tests = [];
+    for (const iface of Object.values(idlArray.members)) {
+        iface.test_self = () => tests.push(iface.name);
+        iface.test_member_operation = member =>
+            tests.push(`${iface.name}.${member.name}`);
+    }
+    idlArray.test();
+    return tests;
+}
+
+test(() => {
+    const idlArray = new IdlArray();
+    idlArray.add_idls(`
+        [Exposed=Window] interface A {
+            undefined keep();
+            undefined exclude();
+        };`);
+    idlArray.set_test_filter((name, member) => member !== "exclude");
+    assert_array_equals(collect_tests(idlArray), ["A", "A.keep"]);
+}, "Excluding one member preserves the interface and its other members");
+
+test(() => {
+    const idlArray = new IdlArray();
+    idlArray.add_idls(`
+        [Exposed=Window] interface B {
+            undefined keep();
+            undefined exclude();
+        };
+        [Exposed=Window] interface C {
+            undefined exclude();
+        };`);
+    idlArray.set_test_filter((name, member) => name === "B" && member === "keep");
+    assert_array_equals(collect_tests(idlArray), ["B.keep"]);
+}, "A member can be included without including its interface-level checks");
+
+test(() => {
+    const idlArray = new IdlArray();
+    idlArray.add_idls(`
+        [Exposed=Window] interface D { undefined keep(); };
+        partial interface D { undefined partialMember(); };
+        interface mixin M { undefined mixinMember(); };
+        D includes M;`);
+    idlArray.set_test_filter((name, member) =>
+        member !== "partialMember" && member !== "mixinMember");
+    assert_array_equals(collect_tests(idlArray), ["D", "D.keep"]);
+}, "Filtering applies to members added by partial interfaces and mixins");
+
+test(() => {
+    const idlArray = new IdlArray();
+    idlArray.add_untested_idls(`
+        [Exposed=Window] interface Parent { undefined parent(); };`);
+    idlArray.add_idls(`
+        [Exposed=Window] interface Child : Parent { undefined child(); };`);
+    idlArray.set_test_filter(() => true);
+    assert_array_equals(collect_tests(idlArray), ["Child", "Child.child"]);
+}, "Including all tests does not enable untested dependencies");
+</script>

@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="agent-cluster-draw.js"></script>
+<script>
+onmessage = e => parent.postMessage(drawToCanvas(e.data), "*");
+onmessageerror = () => parent.postMessage("messageerror", "*");
+</script>

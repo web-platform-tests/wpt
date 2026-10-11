@@ -1,0 +1,116 @@
+<!doctype html>
+<meta charset=utf8>
+<title>CSS element selector case-sensitivity</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<body>
+<script>
+const xhtmlns = "http://www.w3.org/1999/xhtml";
+const svgns = "http://www.w3.org/2000/svg";
+const fakens = "http://example.com/i.made.this.up";
+
+const xhtml_doc = document.implementation.createDocument(xhtmlns, "html", null);
+const svg_doc = document.implementation.createDocument(svgns, "svg", null);
+
+function pretty_print_name(ns, ln) {
+  if (ns === xhtmlns)
+    return "xhtml:" + ln;
+  if (ns === svgns)
+    return "svg:" + ln;
+  if (ns === fakens)
+    return "fakens:" + ln;
+
+  return ns + ":" + ln;
+}
+
+function format_element(el) {
+  return pretty_print_name(el.namespaceURI, el.localName);
+}
+
+function get_strings(s) {
+  switch(s) {
+  case "lower":
+    return ["a", "tspan", "madeupelement", "a\u0301"];
+  case "upper":
+    return ["A", "TSPAN", "MADEUPELEMENT", "A\u0301"];
+  case "lower-nonascii":
+    return ["\u00e5", "\u00e9"];
+  case "upper-nonascii":
+    return ["\u00c5", "\u00c9"];
+  }
+}
+
+function get_test_pair(local, selector) {
+  let locals = get_strings(local);
+  let selectors = get_strings(selector);
+
+  let rv = [];
+  for (let i = 0; i < locals.length; i++)
+    rv.push([locals[i], selectors[i]]);
+
+  return rv;
+}
+
+for (let [doc, isHTML] of [[document, true], [xhtml_doc, false], [svg_doc, false]]) {
+  let doc_name = format_element(doc.documentElement) + " (" + (isHTML ? "HTML" : "XML") + ")";
+
+  let tests = [
+    {
+      local: "lower",
+      selector: "lower",
+      matches: true,
+    },
+    {
+      local: "lower",
+      selector: "upper",
+      matches: false,
+      matchesHTML: true,
+    },
+    {
+      local: "upper",
+      selector: "lower",
+      matches: false,
+    },
+    {
+      local: "upper",
+      selector: "upper",
+      matches: true,
+      matchesHTML: false,
+    },
+    {
+      local: "lower-nonascii",
+      selector: "lower-nonascii",
+      matches: true,
+    },
+    {
+      local: "lower-nonascii",
+      selector: "upper-nonascii",
+      matches: false,
+    },
+    {
+      local: "upper-nonascii",
+      selector: "lower-nonascii",
+      matches: false,
+    },
+    {
+      local: "upper-nonascii",
+      selector: "upper-nonascii",
+      matches: true,
+    },
+  ];
+
+  for (let t of tests) {
+    for (let ns of [null, xhtmlns, svgns, fakens]) {
+      for (let [local, selector] of get_test_pair(t.local, t.selector)) {
+        test(function() {
+          let el = doc.createElementNS(ns, local);
+          doc.documentElement.appendChild(el);
+          this.add_cleanup(function() { el.remove(); });
+          let expect_match = (isHTML && ns === xhtmlns && "matchesHTML" in t ? t.matchesHTML : t.matches);
+          assert_equals(doc.querySelector(selector), expect_match ? el : null);
+        }, "match " + selector + " with " + pretty_print_name(ns, local) + " in " + doc_name);
+      }
+    }
+  }
+}
+</script>

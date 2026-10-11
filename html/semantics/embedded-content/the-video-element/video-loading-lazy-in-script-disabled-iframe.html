@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>loading=lazy is not honored for a video in a script-disabled iframe</title>
+<link rel="help" href="https://html.spec.whatwg.org/#will-lazy-load-element-steps">
+<link rel="help" href="https://html.spec.whatwg.org/#attr-media-loading">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<!-- No allow-scripts, so scripting is disabled in the iframe. -->
+<iframe sandbox="allow-same-origin"
+        src="resources/video-loading-lazy-below-viewport.html"></iframe>
+<script>
+promise_test(async () => {
+  await new Promise(resolve => window.addEventListener("load", resolve));
+  const video = document.querySelector("iframe").contentDocument.querySelector("video");
+  if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
+    await new Promise(resolve => video.addEventListener("loadedmetadata", resolve));
+  }
+  assert_greater_than_equal(video.readyState, HTMLMediaElement.HAVE_METADATA);
+}, "A below-viewport loading=lazy video in a script-disabled iframe loads eagerly");
+</script>

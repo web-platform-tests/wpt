@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<style>
+  input[type="image"] {
+    /* In case the image fails to load */
+    width: 100px;
+    height: 50px;
+  }
+</style>
+<form>
+  <input type="image" name="image" src="/images/green.png" />
+</form>
+
+<script>
+  "use strict";
+
+  if (window.location.search.startsWith("?image.x")) {
+    // The action pointed to ourself, so the form submitted something
+    window.parent.success(window.location.href);
+  }
+
+  // WebKit's testdriver implementation doesn't seem to support using it in
+  // other browsing contexts, so we perform the click in
+  // ../image-click-form-data.html
+</script>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<title>Fragmented grid items that span multiple rows should not extend into fragmentation-induced gaps between rows.</title>
+<link rel="author" title="Psychpsyo" href="mailto:psychpsyo@gmail.com">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/12801#issuecomment-4791494295">
+<link rel="help" href="https://drafts.csswg.org/css-break-4/#box-splitting">
+<link rel="match" href="../../reference/ref-filled-green-100px-square.xht">
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div style="columns:2; width:100px; gap:0; column-fill:auto; height:100px; background:green; position: relative;">
+  <div style="width:50px; height:40px; position:absolute; background:green;"></div>
+  <div style="width:75px; height:100px; position:absolute; background:green; left:25px; top:0px"></div>
+  <div style="display:grid; grid-template-rows: 40px 100px">
+    <div style="background:red; grid-row: 1/-1"></div>
+  </table>
+</div>

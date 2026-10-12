@@ -271,6 +271,24 @@
     test_distinct_attribute_name("abC", "abc");
     test_distinct_attribute_name("x123A", "x123a");
 
+    test(() => {
+      // This data would be normalized to `a="b" c="d"` if it went through
+      // "update data from attributes".
+      const data = `a='b'   c = "d"`;
+      const pi = createProcessingInstruction("t", data);
+      assert_equals(pi.data, data);
+      assert_array_equals(pi.getAttributeNames(), ["a", "c"]);
+      const mutation_observer = new MutationObserver((records) => {});
+      mutation_observer.observe(pi, { characterData: true, attributes: true });
+      pi.removeAttribute("x");
+      assert_equals(pi.data, data, "removeAttribute() doesn't change data");
+      pi.toggleAttribute("x", false);
+      assert_equals(pi.data, data, "toggleAttribute(name, false) doesn't change data");
+      assert_array_equals(pi.getAttributeNames(), ["a", "c"]);
+      assert_equals(mutation_observer.takeRecords().length, 0,
+                    "no mutation records");
+    }, "Removing a non-existent PI attribute doesn't normalize data from " + source);
+
     // HTML parser ignores xml-stylesheet
     if (source == "html-parser")
       continue;
@@ -300,14 +318,5 @@
       assert_equals(pi.getAttribute("href"), "style3.css");
       assert_array_equals(pi.getAttributeNames(), ["type", "href"]);
     }, "Processing instruction attributes with xml-stylesheet from " + source);
-
-    test(() => {
-      const pi = createProcessingInstruction("t", 'a="b"');
-      const mutation_observer = new MutationObserver((records) => {});
-      mutation_observer.observe(pi, { characterData: true, attributes: true });
-      pi.removeAttribute("x");
-      const records = mutation_observer.takeRecords();
-      assert_equals(records.length, 0);
-    }, "Removing a non-existent PI attribute doesn't create a mutation record");
   }
 </script>

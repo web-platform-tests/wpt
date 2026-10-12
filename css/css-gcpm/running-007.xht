@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Test: content moved with running() may float float</title>
+  <link rel="author" title="Mike Bremford" href="http://bfo.com"/>
+  <link rel="help" href="https://drafts.csswg.org/css-gcpm/#running-syntax"/>
+  <link rel="match" href="reference/running-007-ref.xht"/>
+  <meta name="flags" content="paged" />
+  <meta name="assert" content="Content moved with the running() function may float"/>
+  <style>
+  @page {
+      margin: 72px;
+      @top-center {
+          content: element(foo, last);
+      }
+  }
+  .set {
+      position: running(foo);
+      float: right;
+  }
+  </style>
+ </head>
+ <body>
+  <div class="set">This should say pass: PASS</div>
+  <p>The above text should be on the right side of the page.</p>
+ </body>
+</html>

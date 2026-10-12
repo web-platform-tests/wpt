@@ -20,17 +20,17 @@
       const attributeEntries = observePosterFetches(t, absoluteUrl(attributeUrl));
 
       const video = createVideo();
-      video.poster = attributeUrl;
       const img = document.createElement('img');
-      img.src = uniquePosterUrl('elementAfterAttribute');
+      img.src = uniquePosterUrl('elementBeforeConnect');
       video.appendChild(createPoster(img));
+      video.poster = attributeUrl;
       t.add_cleanup(() => video.remove());
       document.body.appendChild(video);
 
       await settled(img);
       await waitForEagerPosterFetch(t);
       assert_equals(attributeEntries.length, 0);
-    }, 'The poster attribute URL is never fetched when a poster element is present before the video is connected');
+    }, 'The poster attribute URL is never fetched when it is set on a disconnected video that already has a poster element');
 
     promise_test(async (t) => {
       assertCurrentPosterSupported();

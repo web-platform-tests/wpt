@@ -16,7 +16,7 @@ const observePosterFetches = (t, url) => {
       if (entry.name === url) entries.push(entry);
     }
   });
-  observer.observe({ entryTypes: ['resource'] });
+  observer.observe({ type: 'resource', buffered: true });
   t.add_cleanup(() => observer.disconnect());
   return entries;
 };

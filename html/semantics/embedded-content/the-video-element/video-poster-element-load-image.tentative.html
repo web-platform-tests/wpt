@@ -3,58 +3,36 @@
 <link rel="help" href="https://github.com/whatwg/html/pull/12585">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/poster-utils.js"></script>
+<script src="resources/poster-lazy-load-utils.js"></script>
+
 <body>
   <script>
     promise_test(async function (t) {
-      assert_implements(
-        'currentPoster' in HTMLVideoElement.prototype,
-        'HTMLVideoElement.currentPoster is not supported'
-      );
+      assertCurrentPosterSupported();
 
-      let loadedFromImgSrc = false;
-      let loadedFromPoster = false;
+      const attributeUrl = uniquePosterUrl('loadImageAttribute');
+      const imgUrl = uniquePosterUrl('loadImageElement');
+      const attributeEntries = observePosterFetches(t, absoluteUrl(attributeUrl));
+      const imgEntries = observePosterFetches(t, absoluteUrl(imgUrl));
+
       const video = document.createElement('video');
-      const img = document.createElement('img');
-      const poster = '/media/poster.png';
-      const imgPoster = '/media/poster.png?posterImageSrc=true';
-
       video.src = '/media/A4.webm';
-      video.poster = poster;
-      img.src = imgPoster;
-      const posterElement = document.createElement('poster');
-      posterElement.appendChild(img);
-      video.appendChild(posterElement);
-
-      // Resolve both URLs up front; img.currentSrc may still be empty when
-      // the observer callback runs.
-      const posterUrl = new URL(poster, location.href).href;
-      const imgPosterUrl = new URL(imgPoster, location.href).href;
-
-      const observer = new PerformanceObserver((list) => {
-        for (const entry of list.getEntries()) {
-          if (entry.name === posterUrl) {
-            loadedFromPoster = true;
-          }
-          if (entry.name === imgPosterUrl) {
-            loadedFromImgSrc = true;
-          }
-        }
-      });
-
-      observer.observe({ entryTypes: ['resource'] });
-      t.add_cleanup(() => {
-        observer.disconnect();
-        video.remove();
-      });
-
+      const img = document.createElement('img');
+      img.src = imgUrl;
+      video.appendChild(createPoster(img));
+      video.poster = attributeUrl;
+      t.add_cleanup(() => video.remove());
       document.body.appendChild(video);
 
-      await t.step_wait(() => loadedFromImgSrc);
+      await t.step_wait(() => imgEntries.length > 0);
+      await settleFrames();
 
-      assert_false(
-        loadedFromPoster,
-        'Poster attribute should not be fetched when a poster image source is present'
+      assert_equals(
+        attributeEntries.length,
+        0,
+        'Poster attribute should not be fetched when a poster element is present'
       );
-    }, 'Only the poster image source should load');
+    }, 'Only the poster element image should load');
   </script>
 </body>

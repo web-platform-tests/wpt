@@ -14,6 +14,23 @@
   promise_test(async function (t) {
     assertCurrentPosterSupported();
 
+    const video = document.createElement('video');
+    const img = document.createElement('img');
+    img.src = uniquePosterUrl('intrinsicSize');
+    video.appendChild(createPoster(img));
+    t.add_cleanup(() => video.remove());
+    document.body.appendChild(video);
+
+    await settled(img);
+    await t.step_wait(() => video.offsetWidth === img.naturalWidth);
+
+    assert_not_equals(img.naturalWidth, 0);
+    assert_array_equals(sizeOf(video), [img.naturalWidth, img.naturalHeight]);
+  }, 'A video with no dimensions or media resource is sized by the natural size of the poster image');
+
+  promise_test(async function (t) {
+    assertCurrentPosterSupported();
+
     const reference = document.createElement('video');
     reference.poster = '/media/poster.png?sizing=reference';
     document.body.appendChild(reference);

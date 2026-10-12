@@ -1,0 +1,65 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Releasing capture in gotpointercapture routes current event to hit-test target</title>
+<link rel="help" href="https://w3c.github.io/pointerevents/#process-pending-pointer-capture">
+<link rel="help" href="https://w3c.github.io/pointerevents/#the-gotpointercapture-event">
+<link rel="help" href="https://w3c.github.io/pointerevents/#releasing-pointer-capture">
+<meta name="viewport" content="width=device-width">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<div id="listener">listener</div>
+<div id="target">target</div>
+<script>
+"use strict";
+
+promise_test(async () => {
+  const target = document.getElementById("target");
+  const listener = document.getElementById("listener");
+  const event_log = [];
+
+  function logEvent(event) {
+    event_log.push(event.type + "@" + event.target.id);
+  }
+
+  target.addEventListener("pointerdown", event => {
+    logEvent(event);
+    listener.setPointerCapture(event.pointerId);
+  });
+  // Capture is released inside gotpointercapture. Per spec, step 3 re-reads
+  // pending and sees it cleared, so override stays not set and the main event
+  // routes to hit-test target.
+  //
+  // lostpointercapture@listener fires per the spec's MUST constraint, but its
+  // position relative to boundary events is unspecified.
+  listener.addEventListener("gotpointercapture", event => {
+    logEvent(event);
+    listener.releasePointerCapture(event.pointerId);
+  });
+  listener.addEventListener("lostpointercapture", logEvent);
+  listener.addEventListener("pointerover", logEvent);
+  listener.addEventListener("pointerout", logEvent);
+  listener.addEventListener("pointermove", logEvent);
+
+  await new test_driver.Actions()
+    .pointerMove(0, 0, {origin: target})
+    .pointerDown()
+    // Move 1: pending=listener, handler releases
+    .pointerMove(1, 1, {origin: target})
+    .pointerUp()
+    .send();
+
+  // lostpointercapture@listener position relative to boundary events is
+  // unspecified; allow all valid orderings.
+  const valid_sequences = [
+    ["pointerdown@target", "gotpointercapture@listener", "lostpointercapture@listener", "pointerout@listener", "pointermove@target"],
+    ["pointerdown@target", "gotpointercapture@listener", "pointerout@listener", "lostpointercapture@listener", "pointermove@target"],
+    ["pointerdown@target", "gotpointercapture@listener", "pointerout@listener", "pointermove@target", "lostpointercapture@listener"],
+  ];
+
+  assert_in_array(event_log.join(","), valid_sequences.map(s => s.join(",")),
+    "event sequence must have gotpointercapture@listener, then pointerout@listener and pointermove@target (lostpointercapture@listener position unspecified)");
+}, "Releasing capture in gotpointercapture routes current event to hit-test target");
+</script>

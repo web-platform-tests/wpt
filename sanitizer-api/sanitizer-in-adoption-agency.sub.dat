@@ -522,3 +522,113 @@
 | <input>
 |   type="hidden"
 | <table>
+
+#data
+<article><b><i><section><div><div><div><div><div><div><div><div>x</b>y</article>z
+#document
+| <article>
+|   <b>
+|     <i>
+|   <i>
+|     <section>
+|       <b>
+|       <div>
+|         <b>
+|         <div>
+|           <b>
+|           <div>
+|             <b>
+|             <div>
+|               <b>
+|               <div>
+|                 <b>
+|                 <div>
+|                   <b>
+|                   <div>
+|                     <b>
+|                       <div>
+|                         "xy"
+| <i>
+|   <b>
+|     "z"
+
+#data
+<article><b><i><section><div><div><div><div><div><div><div><div>x</b>y</article>z
+#config
+{ "replaceWithChildrenElements": ["section"] }
+#document
+| <article>
+|   <b>
+|     <i>
+|   <i>
+|     <b>
+|     <div>
+|       <b>
+|       <div>
+|         <b>
+|         <div>
+|           <b>
+|           <div>
+|             <b>
+|             <div>
+|               <b>
+|               <div>
+|                 <b>
+|                 <div>
+|                   <b>
+|                     <div>
+|                       "xy"
+| <i>
+|   <b>
+|     "z"
+
+#data
+<b><div><div><div><div><div><div><div><div>x</b>y
+#document
+| <b>
+| <div>
+|   <b>
+|   <div>
+|     <b>
+|     <div>
+|       <b>
+|       <div>
+|         <b>
+|         <div>
+|           <b>
+|           <div>
+|             <b>
+|             <div>
+|               <b>
+|               <div>
+|                 <b>
+|                   "xy"
+
+#data
+<b><div><div><div><div><div><div><div><div>x</b>y
+#config
+{ "replaceWithChildrenElements": ["b"] }
+#document
+| <div>
+|   <div>
+|     <div>
+|       <div>
+|         <div>
+|           <div>
+|             <div>
+|               <div>
+|                 "xy"
+
+#data
+<b><u>1<p>foo</b><i>bar</i>baz
+#config
+{ "replaceWithChildrenElements": ["u"] }
+#document
+| <b>
+|   "1"
+| <p>
+|   <b>
+|     "foo"
+|   <i>
+|     "bar"
+|   "baz"

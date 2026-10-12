@@ -940,13 +940,12 @@ a<table>b<tr><td>c</table>d
 |   content
 |     <!-- x -->
 
-#document-fragment
-tr
-
 #data
 <td>a</td><div>b</div>
 #config
 { "replaceWithChildrenElements": ["td"] }
+#document-fragment
+tr
 #document
 | "a"
 | <div>

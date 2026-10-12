@@ -19,10 +19,15 @@
         supportedNetworks: ["visa"],
       },
     });
-    const validMethod = Object.freeze({
-      supportedMethods: "basic-card",
+    const wptPay1 = Object.freeze({
+      supportedMethods:
+        window.location.origin + "/payment-request/resources/wpt-pay-1.json",
     });
-    const validMethods = Object.freeze([validMethod, applePay]);
+    const wptPay2 = Object.freeze({
+      supportedMethods:
+        window.location.origin + "/payment-request/resources/wpt-pay-2.json",
+    });
+    const validMethods = Object.freeze([wptPay1, wptPay2, applePay]);
 
     const validDetails = Object.freeze({
       total: {

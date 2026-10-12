@@ -48,6 +48,7 @@ scratch
 /css/build-temp
 /css/dist
 /css/dist_last
+/css-aam/scripts/*.sh
 /url/tools/IdnaTestV2.txt
 /webaudio/idl/*
 

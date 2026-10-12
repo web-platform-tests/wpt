@@ -41,14 +41,6 @@
       return `${target_type === "ShadowRoot" ? "ShadowRoot" : "Element"} ${method_name}`;
     }
 
-    function expected_sink_name(target_type, pos, method_name) {
-      if (pos === "append" || pos === "prepend") {
-        const iface = target_type === "ShadowRoot" ? "ShadowRoot" : "Element";
-        return `${iface} ${method_name}`;
-      }
-      return `Node ${method_name}`;
-    }
-
     function create_tests(target_type, pos, ref_type, safe) {
       const method_name = `${pos}HTML${safe ? "" : "Unsafe"}`;
       const variant = `${ref_type}.${method_name} (${target_type})`;
@@ -86,7 +78,7 @@
             assert_equals(recorded_type, "TrustedHTML");
             assert_equals(
               recorded_sink,
-              expected_sink_name(target_type, pos, method_name),
+              expected_sink(target_type, pos, method_name),
             );
           }
         },

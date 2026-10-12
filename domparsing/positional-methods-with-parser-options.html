@@ -169,7 +169,7 @@
           target.querySelector("script")?.remove();
           check_position(target, pos, ref);
           assert_equals(target.querySelector("p"), null);
-          assert_equals(window.did_run, !safe && target_type !== "template.content");
+          assert_equals(window.did_run, target_type !== "template.content");
           assert_false(
             createParserOptionsCalled,
             "default createParserOptions should not be called when TrustedHTMLParserOptions is passed",

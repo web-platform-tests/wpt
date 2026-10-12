@@ -45,6 +45,39 @@
       );
     }, "template with shadowrootmode should be processed as a normal template when the shadowRootMode attribute is forbidden");
 
+    test((t) => {
+      const element = document.createElement("div");
+      element.setHTMLUnsafe(
+        "<div><template shadowrootmode='open'>s</template>x</div>",
+        { sanitizer: { replaceWithChildrenElements: ["template"] } },
+      );
+      assert_equals(element.firstElementChild.shadowRoot, null);
+      assert_equals(element.firstElementChild.firstElementChild, null);
+      assert_equals(element.firstElementChild.textContent, "x");
+    }, "template with shadowrootmode replaced with its children has no children in the tree");
+
+    test((t) => {
+      const element = document.createElement("div");
+      element.setHTMLUnsafe(
+        "<div><template shadowrootmode='open'>s</template>x</div>",
+        { sanitizer: { replaceWithChildrenElements: ["div"] } },
+      );
+      assert_equals(element.shadowRoot, null);
+      assert_equals(element.childNodes.length, 1);
+      assert_equals(element.firstChild.nodeType, Node.TEXT_NODE);
+      assert_equals(element.firstChild.data, "x");
+    }, "declarative shadow root on a host replaced with its children is not attached to the parent");
+
+    test((t) => {
+      const element = document.createElement("div");
+      element.setHTMLUnsafe(
+        "<div><template shadowrootmode='open'>s</template>x</div>",
+        { sanitizer: { removeElements: ["div"] } },
+      );
+      assert_equals(element.shadowRoot, null);
+      assert_equals(element.childNodes.length, 0);
+    }, "declarative shadow root on a removed host is dropped with it");
+
     for (const [attribute, value, property, expectedValue] of [
       ["shadowrootdelegatesfocus", "", "delegatesFocus", false],
       ["shadowrootserializable", "", "serializable", false],

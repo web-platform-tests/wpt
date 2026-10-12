@@ -61,7 +61,8 @@ function assert_removed(method, sanitizer, scoped = false) {
 for (const method of ["setHTML", "setHTMLUnsafe"]) {
   for (const config of [
     { name: "removeElements", options: { removeElements: ["disallowed-element"] }, scopedOptions: { removeElements: ["disallowed-element-scoped"] } },
-    { name: "allowElements", options: { elements: ["div"] }, scopedOptions: { elements: ["div"] } }
+    { name: "allowElements", options: { elements: ["div"] }, scopedOptions: { elements: ["div"] } },
+    { name: "replaceWithChildrenElements", options: { replaceWithChildrenElements: ["disallowed-element"] }, scopedOptions: { replaceWithChildrenElements: ["disallowed-element-scoped"] } }
   ]) {
     test(t => {
       assert_removed(method, config.options, false);

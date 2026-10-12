@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Fieldset readonly - formReadonlyCallback on form-associated custom elements</title>
+<link rel="author" title="Teo Eterovic" href="https://github.com/teoeter">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#attr-fieldset-readonly">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+customElements.define('x-face', class extends HTMLElement {
+  static formAssociated = true;
+  constructor() {
+    super();
+    this._internals = this.attachInternals();
+    this.readonlyCalls = [];
+  }
+  formReadonlyCallback(isReadOnly) {
+    this.readonlyCalls.push(isReadOnly);
+  }
+});
+
+// Wait for any pending custom-element reaction queue to flush. A microtask
+// is sufficient: form-associated callbacks are dispatched via the custom
+// element reactions algorithm, which runs at microtask boundaries.
+function flush() {
+  return Promise.resolve();
+}
+</script>
+<form>
+  <fieldset id=fs1>
+    <x-face id=face1></x-face>
+  </fieldset>
+
+  <fieldset id=fs2 readonly>
+    <legend><x-face id=face_in_legend></x-face></legend>
+    <x-face id=face_outside_legend></x-face>
+  </fieldset>
+</form>
+<script>
+  promise_test(async function () {
+    const fs = document.getElementById('fs1');
+    const face = document.getElementById('face1');
+
+    // Initially fs1 has no readonly attribute.
+    await flush();
+    assert_equals(face.readonlyCalls.length, 0, "no calls before any change");
+
+    fs.setAttribute('readonly', '');
+    await flush();
+    assert_equals(face.readonlyCalls.length, 1, "callback fired once on becoming readonly");
+    assert_true(face.readonlyCalls[0], "argument is true when becoming readonly");
+
+    fs.removeAttribute('readonly');
+    await flush();
+    assert_equals(face.readonlyCalls.length, 2, "callback fired again on becoming non-readonly");
+    assert_false(face.readonlyCalls[1], "argument is false when no longer readonly");
+  }, "formReadonlyCallback fires when fieldset readonly attribute is added/removed");
+
+  promise_test(async function () {
+    const faceOutside = document.getElementById('face_outside_legend');
+    const faceInLegend = document.getElementById('face_in_legend');
+
+    await flush();
+    // The FACE outside the legend should have been told it's readonly.
+    assert_true(faceOutside.readonlyCalls.includes(true),
+      "FACE outside legend received formReadonlyCallback(true)");
+    // The FACE inside the first legend child must NOT have been made readonly.
+    assert_false(faceInLegend.readonlyCalls.includes(true),
+      "FACE in first legend child did not receive formReadonlyCallback(true)");
+  }, "formReadonlyCallback respects the first-legend-child exemption");
+
+  promise_test(async function () {
+    // Toggling the attribute on a fieldset whose only FACE is inside the
+    // first legend child should not trigger the callback on that FACE.
+    const fs = document.getElementById('fs2');
+    const faceInLegend = document.getElementById('face_in_legend');
+    const before = faceInLegend.readonlyCalls.length;
+
+    fs.removeAttribute('readonly');
+    await flush();
+    fs.setAttribute('readonly', '');
+    await flush();
+
+    assert_equals(faceInLegend.readonlyCalls.length, before,
+      "FACE in legend gets no callback on readonly toggle");
+  }, "Toggling readonly does not call formReadonlyCallback on FACE inside first legend");
+</script>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Console format specifiers are not recursively processed</title>
+<link rel="help" href="https://console.spec.whatwg.org/#formatter">
+<meta name="assert" content="Console formatting processes only format specifiers present in the initial target">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/console/helper.js"></script>
+
+<script>
+promise_test(async (t) => {
+  const unsubscribe = await test_driver.bidi.log.entry_added.subscribe({ contexts: [window] });
+  t.add_cleanup(async () => await unsubscribe());
+
+  const cases = [
+    {
+      marker: "marker-a",
+      args: ["marker-a %s", "hello %s world", 1],
+      expected: "marker-a hello %s world 1",
+      description: "a substituted string does not introduce a format specifier",
+    },
+    {
+      marker: "marker-b",
+      args: ["marker-b %s%s", "wat%s", "wat"],
+      expected: "marker-b wat%swat",
+      description: "an original format specifier after a substitution is still processed",
+    },
+    {
+      marker: "marker-c",
+      args: [123, "marker-c %s"],
+      expected: "123 marker-c %s",
+      description: "a non-string initial target leaves all arguments unformatted",
+    },
+  ];
+
+  const entries = new Map();
+  const removeListener = test_driver.bidi.log.entry_added.on(entry => {
+    if (entry.type !== "console" || !Array.isArray(entry.args)) return;
+
+    for (const arg of entry.args) {
+      if (!arg || arg.type !== "string" || typeof arg.value !== "string") continue;
+
+      const testCase = cases.find(testCase =>
+        arg.value.startsWith(`${testCase.marker} `));
+      if (testCase && !entries.has(testCase.marker)) {
+        entries.set(testCase.marker, entry);
+      }
+    }
+  });
+  t.add_cleanup(removeListener);
+
+  // Sentinels let the test finish if a preceding console call does not emit an event.
+  const sentinelPrefix = "wpt-formatter-sentinel-";
+  const sentinelsPromise = waitForConsoleEntries(t, {
+    count: cases.length,
+    accept: (entry) => {
+      if (!Array.isArray(entry.args)) return false;
+
+      return entry.args.some(arg =>
+        arg && arg.type === "string" &&
+        typeof arg.value === "string" && arg.value.startsWith(sentinelPrefix));
+    },
+  });
+
+  for (let i = 0; i < cases.length; ++i) {
+    const testCase = cases[i];
+    console.log(...testCase.args);
+    console.log(`${sentinelPrefix}${i}`);
+  }
+
+  await sentinelsPromise;
+  for (const testCase of cases) {
+    assert_true(entries.has(testCase.marker),
+      `A log entry was emitted for ${testCase.description}`);
+    assert_equals(entries.get(testCase.marker).text,
+      testCase.expected, testCase.description);
+  }
+}, "Console formatting does not process specifiers introduced by substitutions");
+</script>

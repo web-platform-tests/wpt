@@ -418,6 +418,80 @@
           assert_not_equals(tpl, null, "DSD template inside replaced element remains a plain <template>");
         }
       }, `element.${method}: replaceWithChildrenElements preserves ownerDocument and does not attach inner declarative shadow root`);
+
+      promise_test(async (t) => {
+        const parent = document.createElement("div");
+        const placeholder = document.createElement("div");
+        parent.appendChild(placeholder);
+        const writer = placeholder[method]({
+          sanitizer: { comments: false },
+        }).getWriter();
+        await writer.write("<!--one--><p>A</p><!-- spl");
+        await writer.write("it --><span>B</span><!--");
+        await writer.write("three-->");
+        await writer.close();
+        assert_html_equals(parent, placeholder, "<p>A</p><span>B</span>");
+      }, `element.${method} with sanitizer {comments: false} drops comments, including ones split across chunks`);
+
+      promise_test(async (t) => {
+        const parent = document.createElement("div");
+        const placeholder = document.createElement("div");
+        parent.appendChild(placeholder);
+        const writer = placeholder[method]({
+          sanitizer: { comments: true },
+        }).getWriter();
+        await writer.write("<!--one--><p>A</p><!-- spl");
+        await writer.write("it --><span>B</span>");
+        await writer.close();
+        assert_html_equals(parent, placeholder, "<!--one--><p>A</p><!-- split --><span>B</span>");
+      }, `element.${method} with sanitizer {comments: true} keeps comments, including ones split across chunks`);
+
+      promise_test(async (t) => {
+        const parent = document.createElement("div");
+        const placeholder = document.createElement("div");
+        parent.appendChild(placeholder);
+        const writer = placeholder[method]({
+          sanitizer: { removeElements: ["span"] },
+        }).getWriter();
+        await writer.write("<form id='f'><input id='kept'></form>");
+        await writer.close();
+        const form = parent.querySelector("#f");
+        const input = parent.querySelector("#kept");
+        assert_not_equals(form, null);
+        assert_equals(input.form, form, "sanity check: the form element pointer sets the form owner when <form> is kept");
+      }, `element.${method}: a kept <form> is the form owner of parsed form-associated elements`);
+
+      promise_test(async (t) => {
+        const parent = document.createElement("div");
+        const placeholder = document.createElement("div");
+        parent.appendChild(placeholder);
+        const writer = placeholder[method]({
+          sanitizer: { replaceWithChildrenElements: ["form"] },
+        }).getWriter();
+        await writer.write("<form id='f'><input id='unwrapped'></form><input id='outside'>");
+        await writer.close();
+        assert_equals(parent.querySelector("form"), null, "the <form> is replaced with its children");
+        const input = parent.querySelector("#unwrapped");
+        assert_not_equals(input, null);
+        assert_equals(input.form, null, "a <form> replaced with its children must not become the form owner");
+        assert_equals(parent.querySelector("#outside").form, null);
+      }, `element.${method}: a <form> in replaceWithChildrenElements does not become the form owner`);
+
+      promise_test(async (t) => {
+        const parent = document.createElement("div");
+        const placeholder = document.createElement("div");
+        parent.appendChild(placeholder);
+        const writer = placeholder[method]({
+          sanitizer: { removeElements: ["form"] },
+        }).getWriter();
+        await writer.write("<form id='f'><input id='removed'></form><input id='outside'>");
+        await writer.close();
+        assert_equals(parent.querySelector("form"), null);
+        assert_equals(parent.querySelector("#removed"), null, "descendants of a removed <form> are removed");
+        const outside = parent.querySelector("#outside");
+        assert_not_equals(outside, null);
+        assert_equals(outside.form, null, "a removed <form> must not become the form owner");
+      }, `element.${method}: a <form> in removeElements is removed along with its descendants and does not become the form owner`);
     }
   }
 </script>

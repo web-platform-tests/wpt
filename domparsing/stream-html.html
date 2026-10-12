@@ -99,6 +99,19 @@
 
   promise_test(async (t) => {
     const placeholder = document.createElement("div");
+    const writer = placeholder.streamHTML().getWriter();
+    // Chunks are converted to DOMString; a Uint8Array is stringified to a
+    // comma-separated list of numbers rather than decoded as bytes.
+    await writer.write(new Uint8Array([60, 112, 62]));
+    await writer.close();
+    assert_equals(placeholder.textContent, "60,112,62");
+    assert_equals(placeholder.childNodes.length, 1);
+    assert_equals(placeholder.firstChild.nodeType, Node.TEXT_NODE);
+    assert_equals(placeholder.querySelector("p"), null);
+  }, "writing a Uint8Array to streamHTML() stringifies it instead of decoding bytes");
+
+  promise_test(async (t) => {
+    const placeholder = document.createElement("div");
     placeholder.innerHTML = "start ";
     const writable = placeholder.streamHTML();
     assert_true(

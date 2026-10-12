@@ -42,6 +42,8 @@
       await window.immediate_2_resolver.promise;
       assert_array_equals(window.events, ["immediate", "async", "immediate-2"]);
       await writer.close();
+      assert_array_equals(window.events, ["immediate", "async", "immediate-2"],
+        "the close promise does not wait for defer/module scripts");
       await Promise.all([window.defer_resolver.promise, window.module_resolver.promise]);
       assert_array_equals(window.events, [
         "immediate",

@@ -111,4 +111,30 @@
       "streamHTMLUnsafe must not enable declarative shadow roots for subsequent document.write()",
     );
   }, "streamHTMLUnsafe does not enable declarative shadow roots for subsequent innerHTML or document.write()");
+
+  // A <template shadowrootmode> streamed directly into the target has the
+  // fragment parser's root html element as its would-be host, so it is
+  // inserted as a plain <template>: no shadow root is attached to the target
+  // (or to the parent, for the positional methods).
+  for (const baseMethod of ["", "Append", "Prepend", "Before", "After", "ReplaceWith"]) {
+    for (const safe of [true, false]) {
+      const method = `stream${baseMethod}HTML${safe ? "" : "Unsafe"}`;
+      promise_test(async (t) => {
+        const parent = document.createElement("div");
+        const placeholder = parent.appendChild(document.createElement("div"));
+        const writer = placeholder[method]().getWriter();
+        await writer.write('<template shadowrootmode="open"><p>top-level</p></template><span>after</span>');
+        await writer.close();
+        assert_equals(parent.shadowRoot, null, "no shadow root is attached to the parent");
+        assert_equals(placeholder.shadowRoot, null, "no shadow root is attached to the target");
+        assert_not_equals(parent.querySelector("span"), null);
+        if (!safe) {
+          const template = parent.querySelector("template");
+          assert_not_equals(template, null, "the template is inserted as a plain <template>");
+          assert_equals(template.getAttribute("shadowrootmode"), "open");
+          assert_equals(template.content.textContent, "top-level");
+        }
+      }, `${method}: a top-level <template shadowrootmode> is inserted as a plain template`);
+    }
+  }
 </script>

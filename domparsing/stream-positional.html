@@ -243,6 +243,32 @@
         }, `${method_name} throw if parent is a DocumentFragment`);
 
         test(() => {
+          const invalid = { sanitizer: { elements: ["div"], removeElements: ["div"] } };
+          const parented = document.createElement("div").appendChild(document.createElement("p"));
+          assert_throws_js(TypeError, () => {
+            parented[method_name](invalid);
+          }, "sanity check: the sanitizer config is invalid");
+          assert_equals(parented.parentNode.childNodes.length, 1, "the node is not removed");
+
+          const detached = document.createElement("p");
+          assert_throws_dom("HierarchyRequestError", () => {
+            detached[method_name](invalid);
+          }, "no parent");
+
+          const doc = document.implementation.createHTMLDocument();
+          const comment = doc.appendChild(doc.createComment("ref"));
+          assert_throws_dom("HierarchyRequestError", () => {
+            comment[method_name](invalid);
+          }, "Document parent");
+
+          const fragment = document.createDocumentFragment();
+          const span = fragment.appendChild(document.createElement("span"));
+          assert_throws_dom("HierarchyRequestError", () => {
+            span[method_name](invalid);
+          }, "DocumentFragment parent");
+        }, `${method_name} throws HierarchyRequestError before validating the sanitizer config`);
+
+        test(() => {
           const doctype = document.implementation.createDocumentType("html", "", "");
           assert_false(method_name in doctype);
           assert_equals(doctype[method_name], undefined);

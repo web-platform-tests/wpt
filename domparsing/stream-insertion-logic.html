@@ -336,5 +336,105 @@
         assert_false(window.script_after_remove_ran, "Scripts must not run after target is disconnected");
       }, `${method}: disconnecting target mid-stream continues inserting nodes into target without running scripts`);
     }
+
+    // referenceChild is captured when the method is called. If there is none
+    // (empty target for prepend, last child for after), the streamed content
+    // is appended, so children added later by other means end up before it.
+    for (const safe of [true, false]) {
+      const suffix = safe ? "" : "Unsafe";
+
+      promise_test(async (t) => {
+        const parent = document.createElement("div");
+        const writer = parent[`streamPrependHTML${suffix}`]().getWriter();
+        const later = parent.appendChild(document.createElement("span"));
+        later.id = "later";
+        await writer.write("<p>A</p>");
+        await writer.close();
+        assert_equals(parent.innerHTML, '<span id="later"></span><p>A</p>');
+      }, `streamPrependHTML${suffix} on an empty target appends after children added later by other means`);
+
+      promise_test(async (t) => {
+        const parent = document.createElement("div");
+        const first = parent.appendChild(document.createElement("b"));
+        const writer = parent[`streamPrependHTML${suffix}`]().getWriter();
+        parent.insertBefore(document.createElement("i"), first);
+        await writer.write("<p>A</p>");
+        await writer.close();
+        assert_equals(parent.innerHTML, '<i></i><p>A</p><b></b>', "streamed content is inserted before the first child at call time");
+      }, `streamPrependHTML${suffix} inserts before the first child at call time, not the current first child`);
+
+      promise_test(async (t) => {
+        const parent = document.createElement("div");
+        const ref_node = parent.appendChild(document.createElement("b"));
+        const writer = ref_node[`streamAfterHTML${suffix}`]().getWriter();
+        parent.appendChild(document.createElement("i"));
+        await writer.write("<p>A</p>");
+        await writer.close();
+        assert_equals(parent.innerHTML, '<b></b><i></i><p>A</p>');
+      }, `streamAfterHTML${suffix} on a last child appends after children added later by other means`);
+
+      promise_test(async (t) => {
+        const parent = document.createElement("div");
+        const ref_node = parent.appendChild(document.createElement("b"));
+        const writer = ref_node[`streamReplaceWithHTML${suffix}`]().getWriter();
+        assert_equals(ref_node.parentNode, null, "the node is removed when the method is called");
+        parent.appendChild(document.createElement("i"));
+        await writer.write("<p>A</p>");
+        await writer.close();
+        assert_equals(parent.innerHTML, '<i></i><p>A</p>');
+      }, `streamReplaceWithHTML${suffix} on a last child appends after children added later by other means`);
+    }
+
+    // The target is adopted into another document mid-stream: nodes keep being
+    // inserted into the target (and are created in its new node document), but
+    // streamed scripts no longer execute because their intended document is
+    // not their node document.
+    function load_iframe(t) {
+      return new Promise((resolve) => {
+        const iframe = document.createElement("iframe");
+        iframe.srcdoc = "<!doctype html><body></body>";
+        iframe.onload = () => resolve(iframe);
+        t.add_cleanup(() => iframe.remove());
+        document.body.appendChild(iframe);
+      });
+    }
+
+    for (const method of ["streamHTMLUnsafe", "streamAppendHTMLUnsafe", "streamPrependHTMLUnsafe"]) {
+      promise_test(async (t) => {
+        const iframe = await load_iframe(t);
+        const otherDocument = iframe.contentDocument;
+        const target = document.createElement("div");
+        document.body.appendChild(target);
+        t.add_cleanup(() => target.remove());
+
+        window.adopt_target = () => otherDocument.body.appendChild(target);
+        window.script_after_adopt_ran = false;
+        iframe.contentWindow.script_after_adopt_ran = false;
+        t.add_cleanup(() => {
+          delete window.adopt_target;
+          delete window.script_after_adopt_ran;
+        });
+
+        const writer = target[method]({ runScripts: true }).getWriter();
+        await writer.write(
+          "<p id='before-adopt'>before</p>" +
+          "<script>window.adopt_target();</" + "script>" +
+          "<p id='after-adopt'>after</p>" +
+          "<script>window.script_after_adopt_ran = true;</" + "script>"
+        );
+        await writer.write("<em id='second-write'>more</em>");
+        await writer.close();
+
+        assert_equals(target.ownerDocument, otherDocument);
+        assert_true(target.isConnected, "the target is connected in the other document");
+        assert_equals(target.querySelector("#before-adopt").ownerDocument, otherDocument, "earlier nodes were adopted along with the target");
+        assert_not_equals(target.querySelector("#after-adopt"), null, "the rest of the chunk is inserted into the target");
+        assert_equals(target.querySelector("#after-adopt").ownerDocument, otherDocument, "nodes are created in the target's new node document");
+        assert_not_equals(target.querySelector("#second-write"), null);
+        assert_equals(target.querySelector("#second-write").ownerDocument, otherDocument);
+        assert_false(window.script_after_adopt_ran, "streamed scripts must not run in the original document after the target was adopted");
+        assert_false(iframe.contentWindow.script_after_adopt_ran, "streamed scripts must not run in the new document either");
+      }, `${method}: adopting the target into another document mid-stream continues inserting nodes without running scripts`);
+    }
   </script>
 </body>

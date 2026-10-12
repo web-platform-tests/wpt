@@ -66,6 +66,36 @@
             "Trusted Types TypeError must be thrown before HierarchyRequestError on a DocumentFragment child",
           );
         }, `${method} on a DocumentFragment child with no default policy throws TypeError before HierarchyRequestError.`);
+
+        test((t) => {
+          assert_throws_js(
+            TypeError,
+            () => document.head[method](),
+            "Trusted Types TypeError must be thrown before HierarchyRequestError when the parent is the html element",
+          );
+        }, `${method} on head (parent is the html element) with no default policy throws TypeError before HierarchyRequestError.`);
+      }
+
+      for (const method of ["streamAppendHTMLUnsafe", "streamPrependHTMLUnsafe"]) {
+        test((t) => {
+          assert_throws_js(
+            TypeError,
+            () => document.documentElement[method](),
+            "Trusted Types TypeError must be thrown before HierarchyRequestError on the html element",
+          );
+        }, `${method} on the html element with no default policy throws TypeError before HierarchyRequestError.`);
+      }
+
+      for (const method of ["streamHTMLUnsafe", "streamAppendHTMLUnsafe", "streamPrependHTMLUnsafe"]) {
+        test((t) => {
+          const script = document.createElement("script");
+          document.querySelector("#container").appendChild(script);
+          assert_throws_js(
+            TypeError,
+            () => script[method](),
+            "Trusted Types TypeError must be thrown before NotSupportedError on a <script> target",
+          );
+        }, `${method} on a <script> with no default policy throws TypeError before NotSupportedError.`);
       }
     </script>
   </body>

@@ -91,5 +91,36 @@ promise_test(async t => {
   assert_equals(tool.name, "duplicate_same_desc", "Tool name matches form attribute");
   assert_equals(tool.description, "Same tool description");
 }, "Test that duplicate declarative tools with identical descriptions do not crash and only the first is registered");
+
+promise_test(async t => {
+  const f1 = document.createElement('form');
+  f1.setAttribute('toolname', 'duplicate_removed_first');
+  f1.setAttribute('tooldescription', 'First tool description');
+
+  const f2 = document.createElement('form');
+  f2.setAttribute('toolname', 'duplicate_removed_first');
+  f2.setAttribute('tooldescription', 'Second tool description');
+
+  t.add_cleanup(() => {
+    f1.remove();
+    f2.remove();
+  });
+
+  const registered = new Promise(resolve => {
+    document.modelContext.addEventListener('toolchange', resolve, {once: true});
+  });
+  document.body.append(f1);
+  document.body.append(f2);
+  await registered;
+
+  // Removing the *rejected* duplicate must not unregister the first form's
+  // tool, even though they share a name. Unregistration on removal happens
+  // synchronously, so no barrier is needed before checking.
+  f2.remove();
+
+  const tools = await document.modelContext.getTools();
+  assert_equals(tools.length, 1, "The first form's tool should remain registered");
+  assert_equals(tools[0].description, "First tool description");
+}, "Test that removing a rejected duplicate declarative tool does not unregister the registered tool sharing its name");
 </script>
 </body>

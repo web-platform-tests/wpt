@@ -52,7 +52,7 @@ async function sampleCenterPixelWithWebGPU(image) {
   const texture = device.createTexture({
     size: {width, height, depthOrArrayLayers: 1},
     format: 'rgba8unorm',
-    usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC,
+    usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT,
   });
 
   device.queue.copyExternalImageToTexture(

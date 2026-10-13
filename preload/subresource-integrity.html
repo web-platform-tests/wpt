@@ -375,6 +375,53 @@
         {integrity: "sha256-sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"},
       )
 
+      // Only the strongest metadata is used to check integrity, so a preload
+      // is re-used if the strongest metadata of the preload and the
+      // subresource are equal, regardless of order.
+      SRIPreloadTest(
+        true,
+        true,
+        `Same-origin ${destination} with matching digests re-uses preload with the same digests in a different order.`,
+        1,
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: `${sha384} sha384-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef`},
+        {integrity: `sha384-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef ${sha384}`}
+      )
+
+      SRIPreloadTest(
+        true,
+        true,
+        `Same-origin ${destination} with an additional weaker digest re-uses preload with matching strongest digest.`,
+        1,
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: sha384},
+        {integrity: `${sha256} ${sha384}`}
+      )
+
+      SRIPreloadTest(
+        true,
+        true,
+        `Same-origin ${destination} with matching strongest digest re-uses preload with an additional weaker digest.`,
+        1,
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: `${sha256} ${sha384}`},
+        {integrity: sha384}
+      )
+
+      SRIPreloadTest(
+        true,
+        true,
+        `Same-origin ${destination} with unknown algorithm only re-uses preload with matching digest.`,
+        1,
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: sha256},
+        {integrity: "foo666-8aBiAJl3ukQwSJ6eTs5wl6hGjnOtyXjcTRdAf89uIfY="}
+      )
+
     } // if.
 
   } // for-of.

@@ -29,6 +29,8 @@ T = TypeVar("T")
 class GetRetry(ABC, Generic[T]):
     """Base class for implementing retryable get logic"""
 
+    stream: bool = True
+
     def before_retry(self) -> None:
         """Lifecycle method called before starting a get() attempt"""
         ...
@@ -60,7 +62,7 @@ class GetRetry(ABC, Generic[T]):
                     "Downloading %s Try %d/%d" % (url, current_retry, max_retries)
                 )
                 self.before_retry()
-                resp = requests.get(url, stream=True)
+                resp = requests.get(url, stream=self.stream)
                 resp.raise_for_status()
                 return self.handle_resp(resp)
             except (
@@ -115,7 +117,12 @@ def get_download_filename(resp: requests.Response, default: str) -> str:
 
 
 def get(url: str) -> requests.Response:
-    """Issue GET request to a given URL and return the response."""
+    """Issue GET request to a given URL and return the response.
+
+    Note that this is configured to not stream the response. For larger bodies
+    where streaming is helpful, consider using `get_download_to_descriptor` or
+    `get_download_to_file` instead.
+    """
 
     logger.debug("GET %s" % url)
     resp = requests.get(url, stream=True)
@@ -138,6 +145,8 @@ def check_status(url: str) -> bool:
 
 
 class GetToResp(GetRetry[requests.Response]):
+    stream = False
+
     def handle_resp(self, resp: requests.Response) -> requests.Response:
         return resp
 
@@ -151,6 +160,7 @@ class GetToFile(GetRetry[pathlib.Path]):
     def __init__(
         self, dest: pathlib.Path, default_filename: str, rename: Optional[str] = None
     ):
+        super().__init__()
         self.dest = dest
         self.default_filename = default_filename
         self.rename = rename
@@ -201,6 +211,7 @@ def get_download_to_file(
 
 class GetToDescriptor(GetRetry[None]):
     def __init__(self, fd: IO[bytes]):
+        super().__init__()
         self.fd = fd
 
     def before_retry(self) -> None:

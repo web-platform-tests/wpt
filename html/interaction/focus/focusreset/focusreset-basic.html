@@ -96,6 +96,33 @@ promise_test(async t => {
 
 promise_test(async t => {
   await settle(t);
+  const windowBubbleEvents = [];
+  const windowCaptureEvents = [];
+  const bubbleListener = e => windowBubbleEvents.push(e);
+  const captureListener = e => windowCaptureEvents.push(e);
+  window.addEventListener("focusreset", bubbleListener);
+  window.addEventListener("focusreset", captureListener, true);
+  t.add_cleanup(() => {
+    window.removeEventListener("focusreset", bubbleListener);
+    window.removeEventListener("focusreset", captureListener, true);
+  });
+  const events = recordFocusResets(t);
+  const button = createFocusable(t);
+  button.focus();
+  button.remove();
+
+  await afterNextRenderingUpdate();
+  assert_equals(events.length, 1, "focusreset fired at the document");
+  assert_equals(windowCaptureEvents.length, 1,
+                "a capturing listener on the window sees the event");
+  assert_equals(windowCaptureEvents[0].target, document,
+                "the target is still the document");
+  assert_equals(windowBubbleEvents.length, 0,
+                "the event doesn't bubble to the window");
+}, "focusreset's event path includes the Window, but it doesn't bubble");
+
+promise_test(async t => {
+  await settle(t);
   const events = recordFocusResets(t);
   const button = createFocusable(t);
   button.focus();

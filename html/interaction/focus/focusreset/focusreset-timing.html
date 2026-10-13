@@ -95,6 +95,91 @@ promise_test(async t => {
 promise_test(async t => {
   await settle(t);
   const order = [];
+  const button = createFocusable(t);
+  const div = createFocusable(t, "div");
+  const host = createFocusable(t, "div");
+  const root = host.attachShadow({ mode: "open" });
+  const slot = document.createElement("slot");
+  root.append(slot);
+  button.focus();
+
+  const mo = new MutationObserver(() => order.push("mutationobserver"));
+  mo.observe(div, { childList: true });
+  t.add_cleanup(() => mo.disconnect());
+  slot.addEventListener("slotchange", () => order.push("slotchange"),
+                        { once: true });
+  document.addEventListener("focusreset", () => order.push("focusreset"),
+                            { once: true });
+
+  // The focus reset is signalled first, but focusreset is still fired after
+  // the MutationObserver callbacks and slotchange events that are queued
+  // later in the same task.
+  button.remove();
+  div.append("x");
+  host.append(document.createElement("span"));
+  await nextTask(t);
+  assert_array_equals(order, ["mutationobserver", "slotchange", "focusreset"]);
+}, "focusreset is fired after MutationObserver callbacks and slotchange events queued after the removal");
+
+promise_test(async t => {
+  await settle(t);
+  const order = [];
+  const button = createFocusable(t);
+  const div = createFocusable(t, "div");
+  button.focus();
+  document.addEventListener("focusreset", () => order.push("focusreset"),
+                            { once: true });
+
+  const mo = new MutationObserver(() => {
+    order.push("mutationobserver");
+    button.remove();
+    queueMicrotask(() => order.push("microtask queued from the callback"));
+  });
+  mo.observe(div, { childList: true });
+  t.add_cleanup(() => mo.disconnect());
+  div.append("x");
+
+  await nextTask(t);
+  // The pending focus resets are collected after the MutationObserver
+  // callbacks have been invoked, so the reset from the callback is picked up
+  // by the same "notify mutation observers" run.
+  assert_array_equals(order, [
+    "mutationobserver",
+    "focusreset",
+    "microtask queued from the callback",
+  ]);
+}, "Removal from a MutationObserver callback fires focusreset at the end of the same mutation observer microtask");
+
+promise_test(async t => {
+  await settle(t);
+  const order = [];
+  const button = createFocusable(t);
+  const host = createFocusable(t, "div");
+  const root = host.attachShadow({ mode: "open" });
+  const slot = document.createElement("slot");
+  root.append(slot);
+  button.focus();
+  document.addEventListener("focusreset", () => order.push("focusreset"),
+                            { once: true });
+
+  slot.addEventListener("slotchange", () => {
+    order.push("slotchange");
+    button.remove();
+    queueMicrotask(() => order.push("microtask queued from the handler"));
+  }, { once: true });
+  host.append(document.createElement("span"));
+
+  await nextTask(t);
+  assert_array_equals(order, [
+    "slotchange",
+    "focusreset",
+    "microtask queued from the handler",
+  ]);
+}, "Removal from a slotchange handler fires focusreset at the end of the same mutation observer microtask");
+
+promise_test(async t => {
+  await settle(t);
+  const order = [];
   document.addEventListener("focusreset", () => order.push("focusreset"),
                             { once: true });
   const button = createFocusable(t);

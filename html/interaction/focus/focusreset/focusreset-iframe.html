@@ -10,12 +10,12 @@
 <script>
 "use strict";
 
-function createIframe(t) {
+function createIframe(t, parent = document.body) {
   return new Promise(resolve => {
     const iframe = document.createElement("iframe");
     iframe.srcdoc = "<!DOCTYPE html><button id=b>b</button><button id=c>c</button>";
     iframe.onload = () => resolve(iframe);
-    document.body.append(iframe);
+    parent.append(iframe);
     t.add_cleanup(() => iframe.remove());
   });
 }
@@ -184,4 +184,176 @@ promise_test(async t => {
   assert_equals(parentEvents.length, 1, "focusreset in the parent");
   assert_equals(childEvents.length, 0, "no focusreset in the child");
 }, "Removing the focused element in the parent doesn't fire focusreset at unrelated iframes");
+
+promise_test(async t => {
+  await settle(t);
+  const iframe = await createIframe(t);
+  const childDocument = iframe.contentDocument;
+  const parentEvents = recordFocusResets(t, document);
+  const childEvents = recordFocusResets(t, childDocument);
+
+  const button = childDocument.getElementById("b");
+  button.focus();
+  button.remove();
+  assert_equals(document.activeElement, iframe,
+                "sanity: iframe is still the parent's active element");
+
+  // Blurring the iframe runs the focus update steps with an old chain that
+  // contains the iframe (and the child document) and a new chain that only
+  // contains the parent's viewport. Since blur events are fired for the old
+  // chain, focusreset is cancelled.
+  iframe.blur();
+  assert_equals(document.activeElement, document.body,
+                "focus moved out of the iframe");
+  assert_false(childDocument.hasFocus(), "child document lost focus");
+
+  await afterNextRenderingUpdateInBoth(t, iframe);
+  assert_equals(childEvents.length, 0, "no focusreset in the child");
+  assert_equals(parentEvents.length, 0, "no focusreset in the parent");
+}, "Blurring the iframe after a removal in it cancels focusreset");
+
+promise_test(async t => {
+  await settle(t);
+  const iframeA = await createIframe(t);
+  const iframeB = await createIframe(t);
+  const documentA = iframeA.contentDocument;
+  const documentB = iframeB.contentDocument;
+  const parentEvents = recordFocusResets(t, document);
+  const eventsA = recordFocusResets(t, documentA);
+  const eventsB = recordFocusResets(t, documentB);
+
+  const buttonA = documentA.getElementById("b");
+  buttonA.focus();
+  buttonA.remove();
+  assert_equals(document.activeElement, iframeA, "sanity: iframeA is active");
+  documentB.getElementById("b").focus();
+  assert_equals(document.activeElement, iframeB, "focus moved to iframeB");
+
+  await afterNextRenderingUpdateInBoth(t, iframeA);
+  await afterNextRenderingUpdateInBoth(t, iframeB);
+  assert_equals(eventsA.length, 0, "no focusreset in the first iframe");
+  assert_equals(eventsB.length, 0, "no focusreset in the second iframe");
+  assert_equals(parentEvents.length, 0, "no focusreset in the parent");
+}, "Focusing an element in a sibling iframe after a removal cancels focusreset");
+
+promise_test(async t => {
+  await settle(t);
+  const iframe = await createIframe(t);
+  const childDocument = iframe.contentDocument;
+  const parentEvents = recordFocusResets(t, document);
+  const childEvents = recordFocusResets(t, childDocument);
+  const parentButton = createFocusable(t);
+
+  const button = childDocument.getElementById("b");
+  button.focus();
+  parentButton.focus();
+  assert_equals(document.activeElement, parentButton,
+                "sanity: parent button is focused");
+  assert_false(childDocument.hasFocus(),
+               "sanity: child document doesn't have focus");
+
+  // |button| already received blur when focus left the iframe. Regardless of
+  // whether it is still the child document's focused area, removing it isn't a
+  // focus reset of a document that has focus, so no focusreset is fired.
+  button.remove();
+  await afterNextRenderingUpdateInBoth(t, iframe);
+  assert_equals(childEvents.length, 0, "no focusreset in the child");
+  assert_equals(parentEvents.length, 0, "no focusreset in the parent");
+  assert_equals(document.activeElement, parentButton,
+                "parent focus is unaffected");
+}, "Removing the focused element of an iframe that doesn't have focus doesn't fire focusreset");
+
+promise_test(async t => {
+  await settle(t);
+  const iframe = await createIframe(t);
+  const childDocument = iframe.contentDocument;
+  const parentEvents = recordFocusResets(t, document);
+  const childEvents = recordFocusResets(t, childDocument);
+
+  const button = childDocument.getElementById("b");
+  button.focus();
+  button.remove();
+  // The child document has a pending focus reset at this point. Removing the
+  // iframe makes it lose focus (and destroys it) before the focusreset
+  // microtask runs.
+  iframe.remove();
+  assert_equals(document.activeElement, document.body,
+                "parent focus is reset synchronously");
+
+  await afterNextRenderingUpdateAndTask(t);
+  assert_equals(parentEvents.length, 1,
+                "focusreset fired at the parent, whose focused iframe was removed");
+  assert_equals(childEvents.length, 0,
+                "no focusreset at the child document, which no longer has focus");
+}, "Removing the iframe after a removal in it fires focusreset only at the parent document");
+
+promise_test(async t => {
+  await settle(t);
+  const iframe = await createIframe(t);
+  const childDocument = iframe.contentDocument;
+  const button = childDocument.getElementById("b");
+  button.focus();
+  const parentEvents = recordFocusResets(t, document);
+  const childEvents = recordFocusResets(t, childDocument);
+
+  iframe.remove();
+  await afterNextRenderingUpdateAndTask(t);
+  assert_equals(parentEvents.length, 1,
+                "sanity: focusreset in the parent for the iframe removal");
+
+  // The child document no longer has a navigable, so it can't have focus.
+  assert_false(childDocument.hasFocus(),
+               "a document without a navigable doesn't have focus");
+  button.remove();
+  assert_equals(button.parentNode, null, "sanity: button was removed");
+  await afterNextRenderingUpdateAndTask(t);
+  assert_equals(childEvents.length, 0, "no focusreset in the detached document");
+  assert_equals(parentEvents.length, 1, "no additional focusreset in the parent");
+}, "Removing the focused element of a detached iframe document doesn't fire focusreset");
+
+promise_test(async t => {
+  await settle(t);
+  const from = createFocusable(t, "div");
+  const to = createFocusable(t, "div");
+  const iframe = await createIframe(t, from);
+  const childDocument = iframe.contentDocument;
+  const parentEvents = recordFocusResets(t, document);
+  const childEvents = recordFocusResets(t, childDocument);
+
+  const button = childDocument.getElementById("b");
+  button.focus();
+  button.remove();
+  to.moveBefore(iframe, null);
+  assert_equals(iframe.contentDocument, childDocument,
+                "sanity: moveBefore() preserved the iframe's document");
+  assert_equals(document.activeElement, iframe,
+                "moveBefore() preserves focus");
+  assert_true(childDocument.hasFocus(), "child document still has focus");
+
+  await afterNextRenderingUpdateInBoth(t, iframe);
+  assert_equals(childEvents.length, 1, "focusreset fired at the child document");
+  assert_equals(childEvents[0].target, childDocument);
+  assert_equals(parentEvents.length, 0, "no focusreset in the parent");
+}, "moveBefore() of the iframe after a removal in it doesn't cancel focusreset");
+
+promise_test(async t => {
+  await settle(t);
+  const iframe = await createIframe(t);
+  const childDocument = iframe.contentDocument;
+  const order = [];
+  const div = createFocusable(t, "div");
+  const mo = new MutationObserver(() => order.push("parent mutationobserver"));
+  mo.observe(div, { childList: true });
+  t.add_cleanup(() => mo.disconnect());
+  childDocument.addEventListener("focusreset",
+                                 () => order.push("child focusreset"),
+                                 { once: true });
+
+  const button = childDocument.getElementById("b");
+  button.focus();
+  button.remove();
+  div.append("x");
+  await nextTask(t);
+  assert_array_equals(order, ["parent mutationobserver", "child focusreset"]);
+}, "focusreset in an iframe is fired after MutationObserver callbacks in its same-origin parent");
 </script>

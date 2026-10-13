@@ -3,10 +3,11 @@
 <script src="/resources/testharnessreport.js"></script>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#handler-onreadystatechange">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#handler-onvisibilitychange">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#handler-onfocusreset">
 <script>
   var handlerExecuted = false;
   ["div", "body", "frameset"].forEach(elementName => {
-    ["readystatechange", "visibilitychange"].forEach(eventName => {
+    ["readystatechange", "visibilitychange", "focusreset"].forEach(eventName => {
       let attributeName = `on${eventName}`;
       test(t => {
         t.add_cleanup(_ => { handlerExecuted = false });

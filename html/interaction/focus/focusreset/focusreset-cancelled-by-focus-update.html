@@ -150,6 +150,73 @@ promise_test(async t => {
   assert_equals(events.length, 0, "no focusreset");
 }, "Focusing another element from a MutationObserver callback cancels focusreset");
 
+// Only an explicit focus update that actually runs the focus update steps
+// (and thus fires blur/focus) cancels focusreset. focus()/blur() calls that end
+// up being no-ops don't.
+
+promise_test(async t => {
+  await settle(t);
+  const events = recordFocusResets(t);
+  const button = createFocusable(t);
+  const other = createFocusable(t);
+  button.focus();
+  button.remove();
+  // Nothing is focused, so these are no-ops that don't fire blur.
+  document.body.blur();
+  other.blur();
+  button.blur();
+  assert_equals(document.activeElement, document.body,
+                "sanity: body is still active");
+  await afterNextRenderingUpdate();
+  assert_equals(events.length, 1, "focusreset was fired");
+}, "Calling blur() when nothing is focused after the removal doesn't cancel focusreset");
+
+promise_test(async t => {
+  await settle(t);
+  const events = recordFocusResets(t);
+  const button = createFocusable(t);
+  const nonFocusable = createFocusable(t, "div");
+  const hiddenButton = createFocusable(t);
+  hiddenButton.hidden = true;
+  const inertButton = createFocusable(t);
+  inertButton.inert = true;
+  const disabledButton = createFocusable(t);
+  disabledButton.disabled = true;
+  button.focus();
+  button.remove();
+
+  // None of these are focusable areas, so the focusing steps return early
+  // without running the focus update steps.
+  nonFocusable.focus();
+  hiddenButton.focus();
+  inertButton.focus();
+  disabledButton.focus();
+  assert_equals(document.activeElement, document.body,
+                "sanity: none of the focus() calls moved focus");
+  await afterNextRenderingUpdate();
+  assert_equals(events.length, 1, "focusreset was fired");
+}, "focus() calls that don't move focus after the removal don't cancel focusreset");
+
+promise_test(async t => {
+  await settle(t);
+  const events = recordFocusResets(t);
+  const button = createFocusable(t);
+  const other = createFocusable(t);
+  button.focus();
+  button.remove();
+  other.focus();
+  assert_equals(document.activeElement, other, "sanity: other is focused");
+  // The reset was cancelled by focusing |other|. Removing |other| is a new
+  // focus reset, which is signalled on its own.
+  other.remove();
+  assert_equals(document.activeElement, document.body);
+  await afterNextRenderingUpdate();
+  assert_equals(events.length, 1,
+                "one focusreset, for the second removal");
+  await afterNextRenderingUpdateAndTask(t);
+  assert_equals(events.length, 1, "no additional focusreset");
+}, "Removing the element that was focused after a cancelled focus reset fires focusreset once");
+
 // Non-removal focus fixups don't involve focusreset: those run the focusing
 // steps for the viewport, which fire blur and are themselves an explicit focus
 // update.

@@ -29,6 +29,7 @@ promise_test(async function(t) {
   await t.step_wait(function() { return video.currentSrc == sourceB.src; },
                     'source-b selected as candidate', 3000, 5);
   assert_equals(b, 0, 'source-b is still pending when the pointer is moved');
+  assert_equals(video.networkState, video.NETWORK_LOADING, 'networkState');
 
   // Move a later source to the pointer position: b | c.
   video.moveBefore(document.getElementById('source-x'), document.getElementById('source-c'));

@@ -28,14 +28,16 @@ promise_test(async function(t) {
   await t.step_wait(function() { return video.currentSrc == sourceB.src; },
                     'source-b selected as candidate', 3000, 5);
   assert_equals(b, 0, 'source-b is still pending when the pointer is moved');
+  assert_equals(video.networkState, video.NETWORK_LOADING, 'networkState');
 
   // Move the current candidate, which is pointerBefore, out while it is pending.
+  // It doesn't get an error event.
   document.getElementById('holder').moveBefore(sourceB, null);
 
   await loaded;
   assert_equals(a, 1, 'error events on a');
-  assert_equals(b, 1, 'error events on b');
+  assert_equals(b, 0, 'error events on b');
   assert_equals(c, 1, 'error events on c');
-  assert_array_equals(events, ['a', 'b', 'c'], 'processed source order');
+  assert_array_equals(events, ['a', 'c'], 'processed source order');
 });
 </script>

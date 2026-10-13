@@ -31,16 +31,18 @@ promise_test(async function(t) {
   await t.step_wait(function() { return video.currentSrc == sourceB.src; },
                     'source-b selected as candidate', 3000, 5);
   assert_equals(b, 0, 'source-b is still pending when the pointer is moved');
+  assert_equals(video.networkState, video.NETWORK_LOADING, 'networkState');
 
   // Move the current candidate out so the video has no children while b is pending.
+  // b doesn't get an error event.
   holder.moveBefore(sourceB, null);
 
   // Move an existing source from another parent into the empty video.
   video.moveBefore(sourceX, null);
 
   await loaded;
-  assert_equals(b, 1, 'error events on b');
+  assert_equals(b, 0, 'error events on b');
   assert_equals(x, 1, 'error events on x');
-  assert_array_equals(events, ['b', 'x'], 'processed source order');
+  assert_array_equals(events, ['x'], 'processed source order');
 });
 </script>

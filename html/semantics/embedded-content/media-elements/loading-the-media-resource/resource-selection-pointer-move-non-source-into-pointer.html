@@ -39,7 +39,9 @@ promise_test(async function(t) {
                 'text test: source b selected as candidate', 3000, 5),
   ]);
   assert_equals(b1, 0, 'br test: source b is still pending when the pointer is moved');
+  assert_equals(videoBr.networkState, videoBr.NETWORK_LOADING, 'br test: networkState');
   assert_equals(b2, 0, 'text test: source b is still pending when the pointer is moved');
+  assert_equals(videoText.networkState, videoText.NETWORK_LOADING, 'text test: networkState');
 
   videoBr.moveBefore(document.getElementById('br-node'), document.getElementById('br-c'));
   videoText.moveBefore(document.getElementById('text-holder').firstChild, document.getElementById('text-c'));

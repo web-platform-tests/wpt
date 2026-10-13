@@ -22,7 +22,7 @@ promise_test(() => {
 // and rejecting in `video.play()` if the media is not "allowed to play". [2]
 // Browsers which don't implement this will pass this test spuriously.
 //
-// [1] https://html.spec.whatwg.org/multipage/origin.html#attr-iframe-sandbox-allow-top-navigation-by-user-activation
+// [1] https://html.spec.whatwg.org/multipage/browsers.html#attr-iframe-sandbox-allow-top-navigation-by-user-activation
 // [2] https://html.spec.whatwg.org/multipage/media.html#allowed-to-play
 promise_test(t => {
   const video = document.createElement('video');

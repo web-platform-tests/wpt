@@ -20,10 +20,10 @@
 *   http://url.spec.whatwg.org/#dom-url-search
 *   https://www.w3.org/Bugs/Public/show_bug.cgi?id=24148
 *   https://xhr.spec.whatwg.org/#the-open()-method
-*   https://html.spec.whatwg.org/multipage/#set-up-a-worker-script-settings-object
+*   https://html.spec.whatwg.org/multipage/#set-up-a-worker-environment-settings-object
 *   https://html.spec.whatwg.org/multipage/#dom-workerglobalscope-importscripts
-*   https://html.spec.whatwg.org/multipage/#parse-a-websocket-url's-components
-*   https://html.spec.whatwg.org/multipage/#dom-websocket-url
+*   https://websockets.spec.whatwg.org/#dom-websocket-websocket
+*   https://websockets.spec.whatwg.org/#dom-websocket-url
 *   https://www.w3.org/Bugs/Public/show_bug.cgi?id=23968
 *   http://dev.w3.org/csswg/cssom/#requirements-on-user-agents-implementing-the-xml-stylesheet-processing-instruction
 *   http://url.spec.whatwg.org/#dom-url

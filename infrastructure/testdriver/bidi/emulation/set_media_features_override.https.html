@@ -12,6 +12,9 @@
         const isInitialDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         const targetScheme = isInitialDark ? "light" : "dark";
 
+        // Assert target scheme does not match initially.
+        assert_false(window.matchMedia(`(prefers-color-scheme: ${targetScheme})`).matches);
+
         // Override prefers-color-scheme.
         await test_driver.bidi.emulation.set_media_features_override({
             features: {

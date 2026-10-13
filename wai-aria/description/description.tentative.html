@@ -1,0 +1,16 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/wai-aria/scripts/aria-utils.js"></script>
+
+<div data-testname="button with missing aria-description" role="button" data-expectedproperties='{ "description": "" }' class="ex-props"></div>
+<div data-testname="button with aria-description" role="button" aria-description="test aria-description" data-expectedproperties='{ "description": "test aria-description" }' class="ex-props"></div>
+<div id="simpleDescribedBy">simpleDescribedBy</div>
+<div data-testname="button with aria-describedby" role="button" aria-describedby="simpleDescribedBy" data-expectedproperties='{ "description": "simpleDescribedBy" }' class="ex-props"></div>
+
+<script>
+AriaUtils.verifyPropertiesBySelector(".ex-props");
+</script>

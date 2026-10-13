@@ -1,0 +1,38 @@
+<!doctype html>
+<title>img current pixel density: source size determines the natural width when the w descriptor is wrong</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#density-corrected-intrinsic-width-and-height">
+<link rel="help" href="https://github.com/whatwg/html/issues/3981">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<!-- green-100x50.png is 100x50 -->
+<img srcset="/images/green-100x50.png 100w" sizes="100px" data-expect="100 50">
+<img srcset="/images/green-100x50.png 200w" sizes="100px" data-expect="100 50">
+<img srcset="/images/green-100x50.png 50w" sizes="100px" data-expect="100 50">
+<img srcset="/images/green-100x50.png 200w" sizes="40px" data-expect="40 20">
+<img srcset="/images/green-100x50.png 200w" sizes="0px" data-expect="0 0">
+<picture>
+  <source srcset="/images/green-100x50.png 200w" sizes="100px">
+  <img data-expect="100 50">
+</picture>
+<!-- SVG -->
+<img srcset="data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20width='100'%20height='50'></svg> 200w" sizes="100px" data-expect="100 50">
+<img srcset="data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%2050'%20width='100'></svg> 200w" sizes="100px" data-expect="100 50">
+<img srcset="data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%2050'%20height='50'></svg> 200w" sizes="100px" data-expect="100 50">
+<img srcset="data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%2050'></svg> 200w" sizes="100px" data-expect="100 50">
+<img srcset="data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'></svg> 200w" sizes="100px" data-expect="100 150">
+<script>
+setup({explicit_done:true});
+onload = function() {
+  [].forEach.call(document.images, function(img) {
+    test(function() {
+      var [expectedWidth, expectedHeight] = img.dataset.expect.split(' ').map(parseFloat);
+      assert_equals(img.naturalWidth, expectedWidth, 'naturalWidth');
+      assert_equals(img.naturalHeight, expectedHeight, 'naturalHeight');
+      assert_equals(img.width, expectedWidth, 'width');
+      assert_equals(img.height, expectedHeight, 'height');
+    }, (img.parentNode.localName === 'picture' ? img.parentNode : img).outerHTML);
+  });
+  done();
+};
+</script>

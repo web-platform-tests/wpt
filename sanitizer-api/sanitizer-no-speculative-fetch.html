@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>No speculative fetches while sanitizing</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#create-an-element-for-the-token">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<body>
+<script>
+// "Create an element for the token" optionally creates a speculative mock
+// element, which can start a speculative fetch. This must not happen when the
+// parser has a sanitizer configuration, since the element (or one of its
+// ancestors) might be removed by the sanitizer.
+
+function resource_url(path) {
+  return new URL(`${path}?uuid=${token()}`, location.href).href;
+}
+
+async function assert_not_fetched(t, url) {
+  // Give any speculative fetch a chance to start and complete.
+  await new Promise(resolve => t.step_timeout(resolve, 500));
+  assert_array_equals(
+    performance.getEntriesByName(url).map(entry => entry.name), [],
+    `${url} should not be fetched`);
+}
+
+const cases = [
+  {
+    name: "img inside a removed element",
+    markup: url => `<div><img src="${url}"></div>`,
+    path: "/images/green.png",
+    sanitizer: { removeElements: ["div"] },
+  },
+  {
+    name: "removed img",
+    markup: url => `<img src="${url}">`,
+    path: "/images/green.png",
+    sanitizer: { removeElements: ["img"] },
+  },
+  {
+    name: "img with a removed src attribute",
+    markup: url => `<img src="${url}">`,
+    path: "/images/green.png",
+    sanitizer: { removeAttributes: ["src"] },
+  },
+  {
+    name: "img inside an element that is replaced with its children, " +
+          "in a removed element",
+    markup: url => `<section><span><img src="${url}"></span></section>`,
+    path: "/images/green.png",
+    sanitizer: { replaceWithChildrenElements: ["span"],
+                 removeElements: ["section"] },
+  },
+];
+
+const unsafeCases = [
+  {
+    name: "script inside a removed element",
+    markup: url => `<div><script src="${url}"></` + `script></div>`,
+    path: "/common/utils.js",
+    sanitizer: { removeElements: ["div"] },
+  },
+  {
+    name: "link rel=preload inside a removed element",
+    markup: url => `<div><link rel="preload" as="image" href="${url}"></div>`,
+    path: "/images/green.png",
+    sanitizer: { removeElements: ["div"] },
+  },
+  {
+    name: "link rel=stylesheet inside a removed element",
+    markup: url => `<div><link rel="stylesheet" href="${url}"></div>`,
+    path: "/common/empty.css",
+    sanitizer: { removeElements: ["div"] },
+  },
+];
+
+for (const c of cases) {
+  promise_test(async t => {
+    const url = resource_url(c.path);
+    const target = document.createElement("div");
+    document.body.append(target);
+    t.add_cleanup(() => target.remove());
+    target.setHTML(c.markup(url), { sanitizer: c.sanitizer });
+    await assert_not_fetched(t, url);
+  }, `setHTML(): no speculative fetch for ${c.name}`);
+}
+
+for (const c of [...cases, ...unsafeCases]) {
+  promise_test(async t => {
+    const url = resource_url(c.path);
+    const target = document.createElement("div");
+    document.body.append(target);
+    t.add_cleanup(() => target.remove());
+    target.setHTMLUnsafe(c.markup(url), { sanitizer: c.sanitizer });
+    await assert_not_fetched(t, url);
+  }, `setHTMLUnsafe(): no speculative fetch for ${c.name}`);
+
+  promise_test(async t => {
+    const url = resource_url(c.path);
+    Document.parseHTMLUnsafe(c.markup(url), { sanitizer: c.sanitizer });
+    await assert_not_fetched(t, url);
+  }, `parseHTMLUnsafe(): no speculative fetch for ${c.name}`);
+}
+</script>
+</body>

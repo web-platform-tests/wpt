@@ -38,3 +38,23 @@ invalidRedirectStatus.forEach(function(invalidStatus) {
         "Expect RangeError exception");
   }, "Check error returned when giving invalid status to redirect(), status = " + invalidStatus);
 });
+
+test(function() {
+  const response = Response.redirect(url);
+  const headers = response.headers;
+
+  headers.append("x-custom", "value");
+  assert_equals(headers.get("x-custom"), "value");
+
+  headers.set("x-custom", "value2");
+  assert_equals(headers.get("x-custom"), "value2");
+
+  headers.delete("x-custom");
+  assert_equals(headers.get("x-custom"), null);
+
+  assert_equals(headers.get("Location"), url);
+  headers.set("Location", "http://other.url/");
+  assert_equals(headers.get("Location"), "http://other.url/");
+  headers.delete("Location");
+  assert_equals(headers.get("Location"), null);
+}, "headers of Response.redirect() are mutable");

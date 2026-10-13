@@ -402,10 +402,8 @@ const safe = parse_html5lib_testcases(
     document.getElementById("safe").textContent);
 const unsafe = parse_html5lib_testcases(
     document.getElementById("unsafe").textContent);
-all.forEach(test_safe);
-all.forEach(test_unsafe);
-safe.forEach(test_safe);
-unsafe.forEach(test_unsafe);
+all.concat(safe).forEach(test_safe);
+all.concat(unsafe).forEach(test_unsafe);
 
 // Without an options argument there is no sanitizer, so nothing is removed.
 test(_ => {

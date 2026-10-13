@@ -2,11 +2,15 @@
 <html class="reftest-wait">
 <title>WebVTT rendering, class object, ::cue(c), white-space: pre-line (cue that wraps)</title>
 <link rel="match" href="class_white-space_pre-line_wrapped-ref.html">
+<link rel="stylesheet" href="/fonts/ahem.css">
 <style>
 html { overflow:hidden }
 body { margin:0 }
 ::cue(c) {
     white-space: pre-line
+}
+::cue {
+    font-family: Ahem, sans-serif;
 }
 </style>
 <script src="/common/reftest-wait.js"></script>

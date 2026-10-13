@@ -1,30 +1,13 @@
 <!DOCTYPE html>
 <title>Reference for WebVTT rendering, underline object transition with timestamp, ::cue(u:past) selector</title>
+<link rel="stylesheet" href="/fonts/ahem.css">
+<link rel="stylesheet" href="../../../support/webvtt-ref.css">
 <style>
-html { overflow:hidden }
-body { margin:0 }
-.video {
-    display: inline-block;
-    width: 320px;
-    height: 180px;
-    position: relative;
-    font-size: 9px;
-}
-.cue {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    text-align: center
-}
-.cue > span {
-    font-family: sans-serif;
-    background: rgba(0,0,0,0.8);
-    color: white;
-}
-.green {
-    color: #00ff00;
+.blue {
+    color: #0000ff;
     text-decoration: underline;
 }
 </style>
-<div class="video"><span class="cue"><span><span class="green">This is a test subtitle</span></span></span></div>
+<div class="video">
+    <div class="cue"><span class="cue-background"><span class="blue">This is a test subtitle</span></span></div>
+</div>

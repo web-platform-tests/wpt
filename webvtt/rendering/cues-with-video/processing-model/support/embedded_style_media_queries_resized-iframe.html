@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <title>Embedded Style: Media Queries Resize Frame</title>
+<link rel="stylesheet" href="/fonts/ahem.css">
 <style>
 video {
   outline: solid;
   width: 320px;
   height: 240px;
+}
+::cue {
+    font-family: Ahem, sans-serif;
 }
 </style>
 <video autoplay onplaying="this.onplaying = null; this.pause();">

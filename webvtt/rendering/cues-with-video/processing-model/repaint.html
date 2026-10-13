@@ -2,6 +2,7 @@
 <html class="reftest-wait">
 <title>WebVTT rendering, cue should repaint after hiding a covering abspos box</title>
 <link rel="match" href="repaint-ref.html">
+<link rel="stylesheet" href="/fonts/ahem.css">
 <style>
 #wrapper {
   position: relative;
@@ -21,6 +22,9 @@ video {
 ::cue {
   font-size: 50px;
   color: green;
+}
+::cue {
+    font-family: Ahem, sans-serif;
 }
 </style>
 <p>You should see the word 'PASS' below.</p>

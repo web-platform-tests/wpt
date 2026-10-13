@@ -6,6 +6,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-cascade-5/#cascade-sort">
 <link rel="author" href="mailto:xiaochengh@chromium.org">
 <script src="/common/reftest-wait.js"></script>
+<link rel="stylesheet" href="/fonts/ahem.css">
 <style>
 /* Embedded important style should take precedence over author important style
    regardless of layers, so the cue color should be green. */
@@ -13,6 +14,9 @@
   ::cue {
     color: red !important;
   }
+}
+::cue {
+    font-family: Ahem, sans-serif;
 }
 </style>
 <video width="320" height="180" autoplay onplaying="this.onplaying = null; this.pause(); takeScreenshot();">

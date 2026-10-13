@@ -33,6 +33,32 @@ body { margin: 0 }
     background: rgba(0,0,0,0.8);
 }
 
+/*
+ * Vertical cues. Add one of these to an element that already has class "cue".
+ * Per "apply WebVTT cue settings", writing-mode is vertical-rl for "vertical
+ * growing left" and vertical-lr for "vertical growing right", width is auto and
+ * height is the cue's size (100% unless the test sets a size). The box starts at
+ * left: 0 and top: 0, as for a horizontal cue; override left/right inline to place
+ * the cue against the other side of the video.
+ */
+.vertical-rl,
+.vertical-lr {
+    width: auto;
+    height: 100%;
+    top: 0;
+    bottom: auto;
+    left: 0;
+    right: auto;
+}
+
+.vertical-rl {
+    writing-mode: vertical-rl;
+}
+
+.vertical-lr {
+    writing-mode: vertical-lr;
+}
+
 .i {
     font-style: italic;
 }

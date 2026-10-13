@@ -170,6 +170,11 @@ cloneObjectTest(new Uint8Array([0, 1, 254, 255]).buffer, (orig, clone) => {
   assert_array_equals(new Uint8Array(orig), new Uint8Array(clone));
 });
 
+// immutable ArrayBuffer
+cloneObjectTest(new Uint8Array([0, 1, 254, 255]).buffer.transferToImmutable(), (orig, clone) => {
+  assert_array_equals(new Uint8Array(orig), new Uint8Array(clone));
+});
+
 // TODO SharedArrayBuffer
 
 // Array Buffer Views

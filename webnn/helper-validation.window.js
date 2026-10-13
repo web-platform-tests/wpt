@@ -39,6 +39,41 @@ test(t => {
 
 // TODO: Add test cases for 'float16' data type.
 
+test(() => {
+  for (const bits of [0x7c01, 0x7e00, 0x7fff, 0xfc01, 0xfe00, 0xffff]) {
+    assert_array_approx_equals_ulp(
+        [bits], [NaN], 0, 'float16', 'NaN payload ' + bits);
+  }
+  const values = new Float32Array(
+      new Uint32Array([0x7fc00001, 0x7fffffff, 0xffc00001]).buffer);
+  for (const value of values) {
+    assert_array_approx_equals_ulp(
+        [value], [NaN], 0, 'float32', 'float32 NaN payload');
+  }
+}, 'ULP comparison accepts NaN independently of sign and payload');
+
+test(() => {
+  for (const [actual, expected, dataType] of [
+    [0x7c01, Infinity, 'float16'],
+    [0x7c00, NaN, 'float16'],
+    [0xfc00, NaN, 'float16'],
+    [0, NaN, 'float16'],
+    [NaN, Infinity, 'float32'],
+    [Infinity, NaN, 'float32'],
+    [0, NaN, 'float32']
+  ]) {
+    let error;
+    try {
+      assert_array_approx_equals_ulp(
+          [actual], [expected], 1, dataType, 'mismatched NaN classification');
+    } catch (caught) {
+      error = caught;
+    }
+    assert_true(error instanceof AssertionError,
+        'Mismatched NaN classification must fail the comparison');
+  }
+}, 'ULP comparison rejects NaN versus a non-NaN even within tolerance');
+
 test(t => {
   const dataType = 'int64';
   [[0n, 0n, 0n],

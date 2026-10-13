@@ -2,6 +2,10 @@ setup({explicit_done:true});
 
 function check(img) {
   var name = format_value(img.getAttribute('srcset'));
+  if (img.parentElement?.localName === 'picture') {
+    var sources = img.parentElement?.querySelectorAll('source')
+    name += Array.from(sources).map(source => ' source[srcset=' + format_value(source.getAttribute('srcset')) + ']');
+  }
   if (img.hasAttribute('sizes')) {
     name += ' sizes=' + format_value(img.getAttribute('sizes'));
   }

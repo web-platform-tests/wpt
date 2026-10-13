@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>State Code Mismatch Autofill Test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/autofill-bidi-helpers.js"></script>
+<style>
+  div { margin: 10px 0; }
+  label { display: inline-block; width: 100px; }
+</style>
+</head>
+<body>
+<form id="test_form">
+  <h2>Delivery Address</h2>
+  <div>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="shipping-name" autocomplete="shipping name">
+  </div>
+  <div>
+    <label for="state">Province/State:</label>
+    <select id="state" name="shipping-state" autocomplete="shipping address-level1">
+      <option value="QC">Quebec</option>
+      <option value="ON">Ontario</option>
+      <option value="BC">British Columbia</option>
+    </select>
+  </div>
+</form>
+<script>
+  /**
+   * This test checks that the select element for state/province is autofilled
+   * correctly when the autofill value uses the full state name but the select
+   * options use abbreviations.
+   *
+   * This is common when a user's saved address contains "British Columbia"
+   * but the form uses "BC" as the option value.
+   */
+  promise_test(async t => {
+    const nameField = document.getElementById('name');
+
+    await triggerAutofill(nameField, {
+      'name': 'Santa Claus',
+      'address-level1': 'British Columbia'  // Full name, not code
+    });
+
+    assertElementHasValue('name', 'Santa Claus');
+    // Assert that state was autofilled with the correct value (British Columbia -> BC)
+    assertElementHasValue('state', 'BC');
+  }, 'Autofill matches full state name to select option value');
+</script>
+</body>
+</html>
+

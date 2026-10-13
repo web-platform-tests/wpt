@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>TestDriver set_text_marker and clear_text_markers methods</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<p id="text">The quick brown fox</p>
+<input id="control" value="jumps over the lazy dog">
+
+<script>
+const text = document.getElementById("text");
+const control = document.getElementById("control");
+
+promise_test(async t => {
+  await test_driver.set_text_marker(text, "spelling", 4, 9);
+}, "Spelling marker on a range resolves");
+
+promise_test(async t => {
+  await test_driver.set_text_marker(text, "grammar", 10, 15);
+}, "Grammar marker on a range resolves");
+
+promise_test(async t => {
+  await test_driver.set_text_marker(control, "spelling", 0, 5);
+}, "Marker in a text control resolves");
+
+promise_test(async t => {
+  await test_driver.set_text_marker(text, "spelling", 9, 4)
+    .then(t.unreached_func("reversed range should reject"),
+          e => assert_false(String(e).includes("not implemented"), e));
+}, "Reversed range rejects");
+
+promise_test(async t => {
+  await test_driver.set_text_marker(text, "spelling", 0, 100)
+    .then(t.unreached_func("range beyond the text should reject"),
+          e => assert_false(String(e).includes("not implemented"), e));
+}, "Range beyond the text rejects");
+
+promise_test(async t => {
+  await test_driver.clear_text_markers();
+}, "clear_text_markers resolves");
+</script>

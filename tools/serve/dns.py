@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import ipaddress
 import logging
 import threading
 from copy import copy
 from itertools import product
 from typing import TYPE_CHECKING
 
-from dnslib import QTYPE, RCODE, RR, A
+from dnslib import QTYPE, RCODE, RR, A, AAAA
 from dnslib.label import DNSLabel
 from dnslib.server import BaseResolver, DNSLogger, DNSServer
 
@@ -31,13 +32,22 @@ class Resolver(BaseResolver):  # type: ignore[misc]
         super().__init__()
         self.unknown_labels = unknown_labels
 
+        _is_ipv6 = isinstance(ipaddress.ip_address(destination), ipaddress.IPv6Address)
+
+        if _is_ipv6:
+            rtype = QTYPE.AAAA
+            rdata_class = AAAA
+        else:
+            rtype = QTYPE.A
+            rdata_class = A
+
         self.zone = [
             (rr.rname, QTYPE[rr.rtype], rr)
             for rr in (
                 RR(
                     host if host.endswith(".") else host + ".",
-                    rtype=QTYPE.A,
-                    rdata=A(destination),
+                    rtype=rtype,
+                    rdata=rdata_class(destination),
                     ttl=ttl,
                 )
                 for host in allowed_hosts

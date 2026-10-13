@@ -264,15 +264,27 @@ def check_unique_testharness_basenames(repo_root: Text, paths: List[Text]) -> Li
 
 
 def check_unique_case_insensitive_paths(repo_root: Text, paths: List[Text]) -> List[rules.Error]:
-    seen: Dict[Text, Text] = {}
+    # A case-insensitive file system also merges directories. Of the spellings of
+    # a path, the one with the most files is taken to be correct.
+    spellings: Dict[Text, Dict[Text, int]] = defaultdict(dict)
+    split_paths = [path.split(os.path.sep) for path in paths]
+    for parts in split_paths:
+        for i in range(1, len(parts) + 1):
+            prefix = os.path.sep.join(parts[:i])
+            counts = spellings[prefix.lower()]
+            counts[prefix] = counts.get(prefix, 0) + 1
+
     errors = []
-    for path in paths:
-        lower_path = path.lower()
-        if lower_path in seen:
-            context = (seen[lower_path],)
-            errors.append(rules.DuplicatePathCaseInsensitive.error(path, context))
-        else:
-            seen[lower_path] = path
+    for path, parts in zip(paths, split_paths):
+        for i in range(1, len(parts) + 1):
+            prefix = os.path.sep.join(parts[:i])
+            counts = spellings[prefix.lower()]
+            if len(counts) == 1:
+                continue
+            expected = max(counts, key=counts.__getitem__)
+            if prefix != expected:
+                errors.append(rules.DuplicatePathCaseInsensitive.error(path, (expected,)))
+                break
     return errors
 
 

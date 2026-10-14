@@ -20,3 +20,4 @@ for (const args of gTestArguments) {
                   'value is same as given by constructor');
   }, `CSSKeywordValue can be constructed from ${args.description}`);
 }
+

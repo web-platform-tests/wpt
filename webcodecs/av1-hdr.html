@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebCodecs AV1 HDR decoding with colorSpace overrides</title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+// AV1 main profile, level 4.0, Main tier, 10-bit. The bitstream itself carries
+// BT.2020 primaries, SMPTE ST 2084 (PQ) transfer, BT.2020 NCL matrix, video range.
+const HDR_CODEC = "av01.0.04M.10";
+let av1Data;
+
+promise_test(async () => {
+    // Strip the 32-byte IVF file header + 12-byte frame header.
+    const response = await fetch("av1-hdr.bin");
+    const buffer = await response.arrayBuffer();
+    av1Data = new Uint8Array(buffer).slice(44);
+}, "Setup");
+
+async function decodeWithOverride(colorSpace, hardwareAcceleration) {
+    const frames = [];
+    const decoder = new VideoDecoder({
+        output: f => frames.push(f),
+        error: e => assert_unreached(`decode error: ${e.message}`),
+    });
+    const config = { codec: HDR_CODEC, codedWidth: 320, codedHeight: 240, hardwareAcceleration };
+    if (colorSpace)
+        config.colorSpace = colorSpace;
+    decoder.configure(config);
+    decoder.decode(new EncodedVideoChunk({ type: "key", timestamp: 0, data: av1Data }));
+    await decoder.flush();
+    assert_equals(frames.length, 1, "one frame decoded");
+    return frames[0];
+}
+
+// "prefer-hardware" routes through the GPU process VTB decoder
+// (WebRTCVideoDecoderVTBAV1); "prefer-software" routes through the in-process
+// libwebrtc/dav1d path (LibWebRTCVPXVideoDecoder). Run every check on both.
+for (const hardwareAcceleration of ["prefer-hardware", "prefer-software"]) {
+    const tag = `[${hardwareAcceleration}]`;
+
+    promise_test(async () => {
+        assert_implements(window.VideoDecoder, "VideoDecoder is supported");
+        const config = { codec: HDR_CODEC, codedWidth: 320, codedHeight: 240, hardwareAcceleration };
+        const support = await VideoDecoder.isConfigSupported(config);
+        assert_true(support.supported, "AV1 (10-bit) is supported");
+    }, `AV1 isConfigSupported ${tag}`);
+
+    promise_test(async (t) => {
+        const f = await decodeWithOverride(undefined, hardwareAcceleration);
+        t.add_cleanup(() => f.close());
+        assert_equals(f.colorSpace.primaries, "bt2020", "primaries from bitstream");
+        assert_equals(f.colorSpace.matrix, "bt2020-ncl", "matrix from bitstream");
+        assert_false(f.colorSpace.fullRange, "video range from bitstream");
+    }, `AV1 (no override) ${tag}: bitstream colorSpace surfaces`);
+
+    promise_test(async (t) => {
+        const f = await decodeWithOverride({ primaries: "bt709" }, hardwareAcceleration);
+        t.add_cleanup(() => f.close());
+        assert_equals(f.colorSpace.primaries, "bt709", "primaries overridden");
+        assert_equals(f.colorSpace.matrix, "bt2020-ncl", "matrix preserved from bitstream");
+    }, `AV1 colorSpace override ${tag}: primaries`);
+
+    promise_test(async (t) => {
+        const f = await decodeWithOverride({ matrix: "bt709" }, hardwareAcceleration);
+        t.add_cleanup(() => f.close());
+        assert_equals(f.colorSpace.primaries, "bt2020", "primaries preserved from bitstream");
+        assert_equals(f.colorSpace.matrix, "bt709", "matrix overridden");
+    }, `AV1 colorSpace override ${tag}: matrix`);
+
+    promise_test(async (t) => {
+        const f = await decodeWithOverride({ transfer: "pq" }, hardwareAcceleration);
+        t.add_cleanup(() => f.close());
+        assert_equals(f.colorSpace.primaries, "bt2020", "primaries preserved from bitstream");
+        assert_equals(f.colorSpace.matrix, "bt2020-ncl", "matrix preserved from bitstream");
+        assert_equals(f.colorSpace.transfer, "pq", "transfer overridden to PQ");
+
+        if (f.format !== "I420P10") {
+            assert_equals(f.format, null);
+            assert_true(!window.internals?.is10bitsVideoFrame || internals.is10bitsVideoFrame(f), "10 bits");
+            assert_true(!window.internals?.isInternalVideoFrameTransferCharacteristicsHDR || internals.isInternalVideoFrameTransferCharacteristicsHDR(f), "PQ transfer");
+        }
+    }, `AV1 colorSpace override ${tag}: transfer (pq)`);
+
+    promise_test(async (t) => {
+        const f = await decodeWithOverride({ fullRange: true }, hardwareAcceleration);
+        t.add_cleanup(() => f.close());
+        assert_equals(f.colorSpace.primaries, "bt2020", "primaries preserved from bitstream");
+        assert_equals(f.colorSpace.matrix, "bt2020-ncl", "matrix preserved from bitstream");
+        assert_true(f.colorSpace.fullRange, "range overridden to full");
+    }, `AV1 colorSpace override ${tag}: fullRange (true)`);
+
+    promise_test(async (t) => {
+        const f = await decodeWithOverride({ fullRange: false }, hardwareAcceleration);
+        t.add_cleanup(() => f.close());
+        assert_equals(f.colorSpace.primaries, "bt2020", "primaries preserved from bitstream");
+        assert_equals(f.colorSpace.matrix, "bt2020-ncl", "matrix preserved from bitstream");
+        assert_false(f.colorSpace.fullRange, "range overridden to video");
+    }, `AV1 colorSpace override ${tag}: fullRange (false)`);
+}
+</script>
+</body>
+</html>

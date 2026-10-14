@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<title>User activation propagation across a traversal to an entry that is not the one its document was last shown for</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#apply-the-history-step">
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<body>
+  <p>Non-zero-sized body to allow clicks.</p>
+</body>
+
+<script>
+  'use strict';
+
+  let uuid1 = token();
+  let uuid2 = token();
+
+  let opened = executorPath + uuid1;
+  let navigated_to = executorPath + uuid2;
+
+  const getUserActivationState = () =>
+    [navigator.userActivation.isActive, navigator.userActivation.hasBeenActive];
+
+  function assertUserActivationState(list,
+        expected_transient_bit, expected_sticky_bit, msg) {
+    assert_equals(list[0], expected_transient_bit, "Transient bit " + msg);
+    assert_equals(list[1], expected_sticky_bit, "Sticky bit " + msg);
+  }
+
+  promise_test(async test => {
+    // Open a new window, push a second entry for its document, and navigate
+    // away. Traversing past the pushed entry then lands on an entry that is not
+    // the one its document was last shown for, which is what the carry-over
+    // conditions have to be read from.
+    let w;
+    document.body.onclick = () => {
+      w = window.open(opened);
+    };
+
+    await test_driver.click(document.body);
+    assert_true(!!w, "A window is opened");
+    // Close the window at the end of the test, so that a later test in the same
+    // session cannot click a window this one left behind.
+    test.add_cleanup(() => w && w.close());
+
+    const first = new RemoteContext(uuid1);
+    await first.execute_script(waitForPageShow);
+
+    // Check that the new window does not have user activation initially.
+    {
+      const result = await first.execute_script(getUserActivationState);
+      assertUserActivationState(result, false, false, "after window opened");
+    }
+
+    // Push a second entry for the first document, and navigate the window to a
+    // second same-origin document.
+    await first.execute_script(() => {
+      history.pushState(null, "", location.href + "&pushed=1");
+    });
+    await first.execute_script(url => {
+      prepareNavigation(() => {
+        location.href = url;
+      });
+    }, [navigated_to]);
+
+    const second = new RemoteContext(uuid2);
+    await second.execute_script(waitForPageShow);
+
+    // Populate the second document: add an element to allow the following
+    // click.
+    await second.execute_script(() => {
+      // Not sure why the first click below fails w/o this line!
+      document.body.textContent = "";
+
+      let elem = document.createElement("div");
+      elem.textContent = "Dummy text to make it clickable";
+      document.body.appendChild(elem);
+    });
+
+    // Confirm that the second document gets user activation after a click.
+    await test_driver.click(w.document.body.firstElementChild);
+    {
+      const result = await second.execute_script(getUserActivationState);
+      assertUserActivationState(result, true, true, "after window clicked");
+    }
+
+    // Traverse past the pushed entry, back to the entry the first document was
+    // originally shown for.
+    await second.execute_script(() => {
+      prepareNavigation(() => {
+        history.go(-2);
+      });
+    });
+    await first.execute_script(waitForPageShow);
+
+    // Confirm that the first document got the sticky user activation carried
+    // over.
+    {
+      const url = await first.execute_script(() => location.href);
+      assert_false(url.includes("pushed=1"), "Traversed past the pushed entry");
+
+      const result = await first.execute_script(getUserActivationState);
+      assertUserActivationState(result, false, true, "after traversing back");
+    }
+}, "User activation propagation across a traversal to an entry that is not " +
+   "the one its document was last shown for");
+</script>

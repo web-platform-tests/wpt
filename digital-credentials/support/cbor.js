@@ -1,4 +1,7 @@
 export function encodeHead(majorType, val) {
+  if (!Number.isInteger(val) || val < 0 || val > 4294967295) {
+    throw new RangeError("Value must be an integer from 0 to 4294967295");
+  }
   if (val < 24) {
     return new Uint8Array([(majorType << 5) | val]);
   } else if (val < 256) {

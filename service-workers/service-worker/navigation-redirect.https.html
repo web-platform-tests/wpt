@@ -32,6 +32,9 @@ const OTHER_ORIGIN_SCOPE =
 const OTHER_ORIGIN_OUT_SCOPE =
       OTHER_BASE_URL + 'resources/navigation-redirect-out-scope.py?';
 
+const subresource_url = BASE_URL + 'resources/subresource';
+const other_origin_subresource_url = OTHER_BASE_URL + 'resources/subresource';
+
 let registrations;
 let workers;
 let other_origin_frame;
@@ -78,7 +81,9 @@ async function check_all_intercepted_urls(expected_urls) {
                                              {command: 'get_request_infos'});
   urls.push(request_infos.map(info => { return info.url; }));
 
-  assert_object_equals(urls, expected_urls, 'Intercepted URLs should match.');
+  for (let i = 0; i < 3; ++i) {
+    assert_array_equals(urls[i], expected_urls[i], 'Intercepted URLs[' + i + '] should match.');
+  }
 }
 
 // Checks |clients| returned from a worker. Only the client matching
@@ -181,7 +186,7 @@ function redirect_test(url,
     // Switch on variant.
     if (document.location.search == '?client') {
       return client_variant_test(url, expected_last_url, expected_request_infos,
-                                 expected_final_client_tag, test_name);
+                                 expected_final_client_tag, frame, test_name);
     }
 
     return default_variant_test(url, expected_last_url, expected_request_infos,
@@ -202,8 +207,8 @@ async function default_variant_test(url,
       return info.url;
     });
   });
-  await check_all_intercepted_urls(expected_intercepted_urls);
   const last_url = await send_to_iframe(frame, 'getLocation');
+  await check_all_intercepted_urls(expected_intercepted_urls);
   assert_equals(last_url, expected_last_url, 'Last URL should match.');
 }
 
@@ -212,7 +217,10 @@ async function client_variant_test(url,
                                    expected_last_url,
                                    expected_request_infos,
                                    expected_final_client_tag,
+                                   frame,
                                    test_name) {
+  const last_url = await send_to_iframe(frame, 'getLocation');
+
   // Request infos is an array like:
   // [
   //   [{url: url1, resultingClientIdTag: tag1}],
@@ -383,7 +391,7 @@ url = SCOPE1;
 redirect_test(
     OUT_SCOPE + 'url=' + encodeURIComponent(url),
     url,
-    [[{url, resultingClientIdTag: 'x'}], [], []],
+    [[{url, resultingClientIdTag: 'x'}, {url: subresource_url}], [], []],
     'x',
     'Normal redirect to same-origin scope.');
 
@@ -392,7 +400,7 @@ url = SCOPE1 + '#ref';
 redirect_test(
     OUT_SCOPE + 'url=' + encodeURIComponent(SCOPE1) + '#ref',
     url,
-    [[{url, resultingClientIdTag: 'x'}], [], []],
+    [[{url, resultingClientIdTag: 'x'}, {url: subresource_url}], [], []],
     'x',
     'Normal redirect to same-origin scope with a hash fragment.');
 
@@ -400,7 +408,7 @@ url = SCOPE1 + '#ref2';
 redirect_test(
     OUT_SCOPE + 'url=' + encodeURIComponent(url) + '#ref',
     url,
-    [[{url, resultingClientIdTag: 'x'}], [], []],
+    [[{url, resultingClientIdTag: 'x'}, {url: subresource_url}], [], []],
     'x',
     'Normal redirect to same-origin scope with different hash fragments.');
 
@@ -408,7 +416,7 @@ url = OTHER_ORIGIN_SCOPE;
 redirect_test(
     OUT_SCOPE + 'url=' + encodeURIComponent(url),
     url,
-    [[], [], [{url, resultingClientIdTag: 'x'}]],
+    [[], [], [{url, resultingClientIdTag: 'x'}, {url: other_origin_subresource_url}]],
     'x',
     'Normal redirect to other-origin scope.');
 
@@ -429,7 +437,8 @@ redirect_test(
     [
       [
         {url: url1, resultingClientIdTag: 'x'},
-        {url: url2, resultingClientIdTag: 'x'}
+        {url: url2, resultingClientIdTag: 'x'},
+        {url: subresource_url}
       ],
       [],
       []
@@ -445,7 +454,8 @@ redirect_test(
     [
       [
         {url: url1, resultingClientIdTag: 'x'},
-        {url: url2, resultingClientIdTag: 'x'}
+        {url: url2, resultingClientIdTag: 'x'},
+        {url: subresource_url}
       ],
       [],
       []
@@ -461,7 +471,8 @@ redirect_test(
     [
       [
         {url: url1, resultingClientIdTag: 'x'},
-        {url: url2, resultingClientIdTag: 'x'}
+        {url: url2, resultingClientIdTag: 'x'},
+        {url: subresource_url}
       ],
       [],
       []
@@ -477,7 +488,7 @@ redirect_test(
     url2,
     [
       [{url: url1, resultingClientIdTag: 'x'}],
-      [{url: url2, resultingClientIdTag: 'x'}],
+      [{url: url2, resultingClientIdTag: 'x'}, {url: subresource_url}],
       []
     ],
     'x',
@@ -500,7 +511,7 @@ redirect_test(
     [
       [{url: url1, resultingClientIdTag: 'a'}],
       [],
-      [{url: url2, resultingClientIdTag: 'x'}]
+      [{url: url2, resultingClientIdTag: 'x'}, {url: other_origin_subresource_url}]
     ],
     'x',
     'SW-fallbacked redirect to other-origin in-scope.');
@@ -515,7 +526,8 @@ redirect_test(
     [
       [
         {url: url1, resultingClientIdTag: 'a'},
-        {url: url3, resultingClientIdTag: 'x'}
+        {url: url3, resultingClientIdTag: 'x'},
+        {url: subresource_url}
       ],
       [],
       [{url: url2, resultingClientIdTag: 'b'}]
@@ -561,7 +573,8 @@ redirect_test(
     [
       [
         {url: url1, resultingClientIdTag: 'x'},
-        {url: url2, resultingClientIdTag: 'x'}
+        {url: url2, resultingClientIdTag: 'x'},
+        {url: subresource_url}
       ],
       [],
       []
@@ -576,7 +589,7 @@ redirect_test(
     url2,
     [
       [{url: url1, resultingClientIdTag: 'x'}],
-      [{url: url2, resultingClientIdTag: 'x'}],
+      [{url: url2, resultingClientIdTag: 'x'}, {url: subresource_url}],
       []
     ],
     'x',
@@ -599,7 +612,7 @@ redirect_test(
     [
       [{url: url1, resultingClientIdTag: 'a'}],
       [],
-      [{url: url2, resultingClientIdTag: 'x'}]
+      [{url: url2, resultingClientIdTag: 'x'}, {url: other_origin_subresource_url}]
     ],
     'x',
     'SW-generated redirect to other-origin in-scope.');
@@ -624,7 +637,8 @@ redirect_test(
     [
       [
         {url: url1, resultingClientIdTag: 'x'},
-        {url: url2, resultingClientIdTag: 'x'}
+        {url: url2, resultingClientIdTag: 'x'},
+        {url: subresource_url}
       ],
       [],
       []
@@ -639,7 +653,7 @@ redirect_test(
     url2,
     [
       [{url: url1, resultingClientIdTag: 'x'}],
-      [{url: url2, resultingClientIdTag: 'x'}],
+      [{url: url2, resultingClientIdTag: 'x'}, {url: subresource_url}],
       []
     ],
     'x',
@@ -662,7 +676,7 @@ redirect_test(
     [
       [{url: url1, resultingClientIdTag: 'a'}],
       [],
-      [{url: url2, resultingClientIdTag: 'x'}]
+      [{url: url2, resultingClientIdTag: 'x'}, {url: other_origin_subresource_url}]
     ],
     'x',
     'SW-fetched redirect to other-origin in-scope.');
@@ -677,7 +691,8 @@ redirect_test(
     url1,
     [
       [
-        {url: url1, resultingClientIdTag: 'x'}
+        {url: url1, resultingClientIdTag: 'x'},
+        {url: subresource_url}
       ],
       [],
       []
@@ -706,7 +721,8 @@ redirect_test(
     [
       [
         {url: url1, resultingClientIdTag: 'x'},
-        {url: url2, resultingClientIdTag: 'x'}
+        {url: url2, resultingClientIdTag: 'x'},
+        {url: subresource_url}
       ],
       [],
       []
@@ -721,7 +737,7 @@ redirect_test(
     url2,
     [
       [{url: url1, resultingClientIdTag: 'x'}],
-      [{url: url2, resultingClientIdTag: 'x'}],
+      [{url: url2, resultingClientIdTag: 'x'}, {url: subresource_url}],
       []
     ],
     'x',
@@ -744,14 +760,14 @@ redirect_test(
     [
       [{url: url1, resultingClientIdTag: 'a'}],
       [],
-      [{url: url2, resultingClientIdTag: 'x'}]
+      [{url: url2, resultingClientIdTag: 'x'}, {url: other_origin_subresource_url}]
     ],
     'x',
     'Redirect to other-origin in-scope with opaque redirect response.');
 
 url= SCOPE1 + 'sw=manual&noLocationRedirect';
 redirect_test(
-    url, url, [[{url, resultingClientIdTag: 'x'}], [], []],
+    url, url, [[{url, resultingClientIdTag: 'x'}, {url: subresource_url}], [], []],
     'x',
     'No location redirect response.');
 
@@ -776,7 +792,8 @@ redirect_test(
     [
       [
         {url: url1, resultingClientIdTag: 'x'},
-        {url: url2, resultingClientIdTag: 'x'}
+        {url: url2, resultingClientIdTag: 'x'},
+        {url: subresource_url}
       ],
       [],
       []
@@ -792,7 +809,7 @@ redirect_test(
     url2,
     [
       [{url: url1, resultingClientIdTag: 'x'}],
-      [{url: url2, resultingClientIdTag: 'x'}],
+      [{url: url2, resultingClientIdTag: 'x'}, {url: subresource_url}],
       []
     ],
     'x',
@@ -819,7 +836,7 @@ redirect_test(
     [
       [{url: url1, resultingClientIdTag: 'a'}],
       [],
-      [{url: url2, resultingClientIdTag: 'x'}],
+      [{url: url2, resultingClientIdTag: 'x'}, {url: other_origin_subresource_url}],
     ],
     'x',
     'Redirect to other-origin in-scope with opaque redirect response which ' +
@@ -829,7 +846,7 @@ url = SCOPE1 + 'sw=manualThroughCache&noLocationRedirect';
 redirect_test(
     url,
     url,
-    [[{url, resultingClientIdTag: 'x'}], [], []],
+    [[{url, resultingClientIdTag: 'x'}, {url: subresource_url}], [], []],
     'x',
     'No location redirect response via Cache.');
 

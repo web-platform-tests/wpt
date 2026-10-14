@@ -247,34 +247,7 @@ const assertDescriptorsEquals = (outputOperand, expected) => {
 // Convert a JavaScript Number directly to binary16, rounding ties to even.
 // Narrowing through float32 first can double-round values near a midpoint.
 const toHalf = (value) => {
-  const sign = value < 0 || Object.is(value, -0) ? 0x8000 : 0;
-  const magnitude = Math.abs(value);
-  if (Number.isNaN(magnitude)) {
-    return 0x7e00;
-  }
-  if (magnitude >= 65520) {
-    return sign | 0x7c00;
-  }
-  const roundToEven = (units) => {
-    const lower = Math.floor(units);
-    const fraction = units - lower;
-    const roundUp = fraction > 0.5 || (fraction === 0.5 && lower % 2 !== 0);
-    return roundUp ? lower + 1 : lower;
-  };
-  if (magnitude < 2 ** -14) {
-    return sign | roundToEven(magnitude * 2 ** 24);
-  }
-  let exponent = Math.floor(Math.log2(magnitude));
-  // Math.log2 may round up just below a power of two.
-  if (magnitude < 2 ** exponent) {
-    --exponent;
-  }
-  let units = roundToEven(magnitude / 2 ** (exponent - 10));
-  if (units === 2048) {
-    ++exponent;
-    units = 1024;
-  }
-  return sign | ((exponent + 15) << 10) | (units - 1024);
+  return new Uint16Array(Float16Array.of(value).buffer)[0];
 };
 
 const getTypedArrayData = (type, size, data) => {

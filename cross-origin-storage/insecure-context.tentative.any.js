@@ -16,3 +16,8 @@ test(() => {
   assert_false(isSecureContext);
   assert_false('crossOriginStorage' in navigator);
 }, '"crossOriginStorage" should not be present on navigator in an insecure context.');
+
+test(() => {
+  assert_false(isSecureContext);
+  assert_false('CrossOriginStorageManager' in self);
+}, 'the CrossOriginStorageManager interface should not be exposed in an insecure context.');

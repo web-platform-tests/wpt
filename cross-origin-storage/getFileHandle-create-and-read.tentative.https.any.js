@@ -184,8 +184,8 @@ promise_test(async t => {
   // never called on it at all -- registers nothing and pins nothing. Earlier
   // drafts counted it as an outstanding writer against a placeholder entry,
   // which let any origin suppress every other origin's reads of a hash of its
-  // choosing, for free and indefinitely. Abandoning a handle must instead be
-  // entirely inert.
+  // choosing, for free and indefinitely. Abandoning a handle must be entirely
+  // inert.
   // https://wicg.github.io/cross-origin-storage/#in-progress-writes
   const content = cosUniqueContent('abandoned-handle-does-not-block-others');
   const value = await cosSha256Hex(content);
@@ -211,3 +211,72 @@ promise_test(async t => {
 
   assert_equals(await cosReadText(hash), content);
 }, 'an abandoned create() handle (createWritable() never called) leaves no trace and does not block a later create request for the same hash');
+
+promise_test(async t => {
+  // `may read` belongs to each handle. Writing through one create handle makes
+  // that handle readable and leaves every other create handle for the same
+  // hash unreadable until it is written through itself.
+  // https://wicg.github.io/cross-origin-storage/#verify-and-store
+  const content = cosUniqueContent('may-read-is-per-handle');
+  const hash = cosHash(await cosSha256Hex(content));
+  const handleA = await navigator.crossOriginStorage.getFileHandle(hash, {create: true});
+  const handleB = await navigator.crossOriginStorage.getFileHandle(hash, {create: true});
+
+  const writable = await handleA.createWritable();
+  await writable.write(new Blob([content]));
+  await writable.close();
+
+  assert_equals(await (await handleA.getFile()).text(), content,
+    'the handle that was written through becomes readable');
+  await promise_rejects_dom(t, 'NotAllowedError', handleB.getFile(),
+    'another create handle for the same hash stays unreadable');
+}, 'getFile() on a second, unwritten create handle rejects with NotAllowedError after another handle wrote the entry');
+
+promise_test(async t => {
+  // A create request for a hash that already has an entry returns a handle on
+  // the same terms as for an absent hash, so `getFile()` through it must not
+  // disclose the stored bytes before this handle supplies them.
+  // https://wicg.github.io/cross-origin-storage/#cos-file-system
+  const content = cosUniqueContent('create-handle-on-existing-entry-unreadable');
+  const {hash} = await cosStore(content);
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash, {create: true});
+  await promise_rejects_dom(t, 'NotAllowedError', handle.getFile());
+}, 'getFile() on a create handle for an already-stored hash rejects with NotAllowedError until it is written through');
+
+promise_test(async t => {
+  // "verify and store" sets `may read` only once the bytes verify. A handle
+  // whose write failed verification stays unreadable.
+  const content = cosUniqueContent('may-read-after-data-error');
+  const hash = cosHash(await cosSha256Hex(content));
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash, {create: true});
+  const writable = await handle.createWritable();
+  await writable.write(new Blob(['wrong bytes entirely']));
+  await promise_rejects_dom(t, 'DataError', writable.close());
+  await promise_rejects_dom(t, 'NotAllowedError', handle.getFile());
+}, 'getFile() on a create handle whose write failed with DataError rejects with NotAllowedError');
+
+promise_test(async t => {
+  // The empty byte sequence is a valid entry when the requested hash is its
+  // digest: closing a writable without writing anything stores it.
+  const emptyHash = cosHash(await cosSha256Hex(''));
+  assert_equals(emptyHash.value,
+    'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+  const handle = await navigator.crossOriginStorage.getFileHandle(emptyHash, {create: true});
+  const writable = await handle.createWritable();
+  await writable.close();
+  const file = await (await navigator.crossOriginStorage.getFileHandle(emptyHash)).getFile();
+  assert_equals(file.size, 0);
+}, 'closing a writable with no writes stores the empty file when the hash is the digest of no bytes');
+
+promise_test(async t => {
+  // Only a create request yields a handle that can be written through.
+  // `createWritable()` on a handle from a read request rejects.
+  // https://wicg.github.io/cross-origin-storage/#cos-file-system
+  const content = cosUniqueContent('create-writable-on-read-handle');
+  const {hash} = await cosStore(content);
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash);
+  await promise_rejects_dom(t, 'NotAllowedError', handle.createWritable());
+  await promise_rejects_dom(t, 'NotAllowedError',
+    handle.createWritable({keepExistingData: true}));
+  assert_equals(await cosReadText(hash), content, 'the entry is unchanged');
+}, 'createWritable() on a handle obtained without create rejects with NotAllowedError');

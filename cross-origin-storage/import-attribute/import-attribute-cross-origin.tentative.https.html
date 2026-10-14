@@ -8,28 +8,44 @@
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="../resources/helpers.js"></script>
 <script src="../resources/cross-origin-helpers.js"></script>
+<script src="../resources/integration-helpers.js"></script>
 <body>
 <script>
 'use strict';
 
-const REAL_URL = new URL('../resources/marker-module.mjs', location.href).href;
+// https://github.com/WICG/cross-origin-storage#javascript-import-attribute-integration
+// https://wicg.github.io/cross-origin-storage/#storing-fetched-resources
+// https://wicg.github.io/cross-origin-storage/#availability-gating
+//
+// Cross-origin counterpart of import-attribute.tentative.https.html. Every
+// module here is unique to the run (served by cos-resource.py), so none is on
+// the Public Hash List and no earlier write of the same bytes can have widened
+// its scope. Every outcome below is therefore deterministic: the Public Hash
+// List gate and GREASE'ing apply only to a reader that qualifies through the
+// "*" grant alone, and such a reader is refused for an unlisted hash. A
+// list-scoped write is bounded by the `Cross-Origin-Storage-Allow-Origin`
+// header on the module's own response.
+
 const EXPECTED_VALUE = 'cos-module-marker-value';
 
-async function storeModuleHere(crossOriginStorage) {
-  const text = await fetch(REAL_URL).then(r => r.text());
+// Stores a unique module through a dynamic import() on this page. `allow`, if
+// given, is the module's `Cross-Origin-Storage-Allow-Origin` header. Returns
+// the module's text, integrity, and COS hash.
+async function storeModuleHere(label, crossOriginStorage, {allow} = {}) {
+  const text = cosUniqueModule(`import-xorigin-${label}`, EXPECTED_VALUE);
   const integrity = await cosSha256Integrity(text);
-  const mod = await import(REAL_URL + '?u=' + Math.random(), {
+  const mod = await import(cosResourceUrl(text, 'text/javascript', {allow}), {
     with: {integrity, crossOriginStorage},
   });
-  assert_equals(mod.default, EXPECTED_VALUE);
-  return integrity;
+  assert_equals(mod.default, EXPECTED_VALUE, 'the storing import() succeeded');
+  return {text, integrity, hash: cosHash(await cosSha256Hex(text))};
 }
 
 async function remoteImportProbe(ctx, integrity, crossOriginStorage) {
   return ctx.execute_script(async (integrity, crossOriginStorage) => {
     // A relative path resolved against the executor's own origin: a real,
-    // fast 404 (unlike a nonexistent TLD, which risks a slow/hanging DNS
-    // lookup in some network environments).
+    // fast 404 (a nonexistent TLD risks a slow or hanging DNS lookup in some
+    // network environments).
     const brokenUrl = './does-not-exist-' + Math.random() + '.mjs';
     try {
       const mod = await import(brokenUrl, {with: {integrity, crossOriginStorage}});
@@ -40,31 +56,63 @@ async function remoteImportProbe(ctx, integrity, crossOriginStorage) {
   }, [integrity, crossOriginStorage]);
 }
 
-promise_test(async t => {
-  const integrity = await storeModuleHere('*');
-  const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
-  const result = await remoteImportProbe(ctx, integrity, '*');
-  if (result.ok) {
-    assert_equals(result.value, EXPECTED_VALUE);
-  }
-  // Wildcard tier is PHL/GREASE-gated; a load failure is also compliant.
-}, 'JS import attribute, cross-origin: crossOriginStorage: "*" may serve a cross-site dynamic import() from COS');
+function assertServed(result, description) {
+  assert_true(result.ok, `${description}: expected the import() to be served from COS, got ${result.name}`);
+  assert_equals(result.value, EXPECTED_VALUE, `${description}: module value`);
+}
+
+function assertNotServed(result, description) {
+  assert_false(result.ok, `${description}: expected the import() to fail`);
+  assert_equals(result.name, 'TypeError', `${description}: an ordinary module fetch failure`);
+}
 
 promise_test(async t => {
-  const integrity = await storeModuleHere('');
+  const {integrity, hash} = await storeModuleHere('global', '*');
   const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
-  const result = await remoteImportProbe(ctx, integrity, '');
-  assert_false(result.ok,
-    'a same-site-scoped (crossOriginStorage: "") module must never be disclosed to a cross-site origin');
+  assertNotServed(await remoteImportProbe(ctx, integrity, '*'),
+    'a "*"-scoped module whose hash is not on the Public Hash List, imported cross-site');
+  cosAssertNotDisclosed(await cosRemoteRead(ctx, hash),
+    'a cross-site getFileHandle() of the same entry');
+}, 'JS import attribute, cross-origin: a "*"-scoped module that is not on the Public Hash List is never served cross-site');
+
+promise_test(async t => {
+  const {integrity} = await storeModuleHere('samesite', '');
+  const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
+  assertNotServed(await remoteImportProbe(ctx, integrity, ''),
+    'a same-site-scoped (crossOriginStorage: "") module imported cross-site');
 }, 'JS import attribute, cross-origin: crossOriginStorage: "" (same-site) is never served from COS to a cross-site origin');
 
 promise_test(async t => {
+  // The same-site baseline every entry carries applies ahead of the Public
+  // Hash List gate and GREASE'ing, so the read is asserted outright.
+  const {text, integrity, hash} = await storeModuleHere('samesite-baseline', '');
   const {ctx} = await cosOpenRemoteContext(cosNextSameSiteOrigin());
-  const listOrigin = await ctx.execute_script(() => location.origin, []);
-  const integrity = await storeModuleHere(listOrigin);
-  const result = await remoteImportProbe(ctx, integrity, listOrigin);
-  if (!result.ok) return; // Tolerate GREASE'ing; list tier has no PHL gate.
-  assert_equals(result.value, EXPECTED_VALUE);
-}, 'JS import attribute, cross-origin: crossOriginStorage: "<origin>" authorizes that explicitly-listed origin');
+  assertServed(await remoteImportProbe(ctx, integrity, ''),
+    'a same-site-scoped module imported from a same-site origin');
+  cosAssertDisclosed(await cosRemoteRead(ctx, hash), text,
+    'a same-site getFileHandle() of the same entry');
+}, 'JS import attribute, cross-origin: a same-site origin is always served a same-site-scoped module from COS');
+
+promise_test(async t => {
+  const origin = cosNextCrossSiteOrigin();
+  const {ctx} = await cosOpenRemoteContext(origin);
+  const {text, integrity, hash} = await storeModuleHere('list', origin, {allow: origin});
+  assertServed(await remoteImportProbe(ctx, integrity, origin),
+    'a list-scoped module imported from a listed cross-site origin the module\'s header names');
+  cosAssertDisclosed(await cosRemoteRead(ctx, hash), text,
+    'the listed origin reads the same entry through getFileHandle()');
+}, 'JS import attribute, cross-origin: crossOriginStorage: "<origin>" is served to a listed cross-site origin the resource\'s header authorizes');
+
+promise_test(async t => {
+  // Without the header on the module's response, the list is dropped and the
+  // entry falls back to the same-site default.
+  const origin = cosNextCrossSiteOrigin();
+  const {ctx} = await cosOpenRemoteContext(origin);
+  const {integrity, hash} = await storeModuleHere('list-no-header', origin);
+  assertNotServed(await remoteImportProbe(ctx, integrity, origin),
+    'a listed cross-site origin the module does not authorize');
+  cosAssertNotDisclosed(await cosRemoteRead(ctx, hash),
+    'nor can it read the entry through getFileHandle()');
+}, 'JS import attribute, cross-origin: crossOriginStorage: "<origin>" without the resource\'s header is not served to a listed cross-site origin');
 </script>
 </body>

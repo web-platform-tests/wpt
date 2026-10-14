@@ -15,40 +15,19 @@
 // https://wicg.github.io/cross-origin-storage/#public-hash-list
 // https://wicg.github.io/cross-origin-storage/#availability-gating
 //
-// origins-scoping.tentative.https.html covers the *negative* direction of this
-// gate only: it stores content it invented itself, which therefore cannot be on
-// the Public Hash List, and asserts the outcome either way because PHL
-// membership is implementation-defined. That leaves the gate's whole purpose
-// untested -- a user agent that disclosed nothing at all, or that ignored the
-// list and disclosed everything, would pass it unchanged.
+// A "*"-scoped entry is disclosed to an origin outside its storing origins
+// (and the origins same site with them) only if its hash is on the Public Hash
+// List ("determine COS disclosure"). A hash is admitted to the list only once
+// it clears a popularity bar, so content generated for this run is never on
+// it, and a cross-site non-storer is refused deterministically.
 //
-// Pinning down the positive direction needs a resource whose hash is genuinely
-// on the list, and you cannot construct bytes that hash to a chosen value, so
-// the bytes themselves have to be on hand. resources/phl-listed-resource.js is
-// jQuery 3.7.1's minified build, which the list carries in its core section --
-// admitted there precisely because it is served byte-identically by several
-// independent CDNs, which is also what makes it stable enough to pin a test to.
-// It is MIT-licensed, so it can be redistributed here.
-//
-// It must stay byte-identical to what those CDNs serve: a licence header added
-// to the vendored copy would change its hash and quietly turn this into a test
-// of an unlisted resource, which the digest assertion below exists to catch.
-//
-// The pair of assertions below is what makes this meaningful: the same
-// wildcard-scoped read, from the same cross-site origin, must come out
-// differently for a listed hash than for an unlisted one. Either half alone is
-// satisfiable by a degenerate implementation.
+// The positive direction, a listed hash being disclosed, depends on
+// implementation-defined list membership and lives in
+// public-hash-list.tentative.optional.https.html.
 const {HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
 
-const LISTED_RESOURCE = 'resources/phl-listed-resource.js';
-const LISTED_DIGEST =
-  'fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a';
-
-// GREASE'ing may suppress an otherwise-authorized disclosure, so "is this ever
-// disclosed?" cannot be answered by a single read. Whatever probability a user
-// agent picks has to leave the feature useful, so a disclosable entry read this
-// many times will realistically be disclosed at least once; an entry the PHL
-// gate rejects is never disclosed, no matter how many times it is read.
+// Every read below must be refused. Repeating it shows the refusal is not a
+// one-off answer that a later read could flip.
 const ATTEMPTS = 8;
 
 async function storeBytes(bytes, options) {
@@ -64,64 +43,24 @@ async function storeBytes(bytes, options) {
   return hash;
 }
 
-// Reads `hash` from `ctx` up to ATTEMPTS times, stopping at the first
-// disclosure. Returns {disclosed, digest, rejections}.
-async function readUntilDisclosed(ctx, hash) {
-  const rejections = [];
-  for (let i = 0; i < ATTEMPTS; ++i) {
-    const result = await cosRemoteReadDigest(ctx, hash);
-    if (result.ok)
-      return {disclosed: true, digest: result.digest, rejections};
-    rejections.push(result.name);
-  }
-  return {disclosed: false, rejections};
-}
-
 promise_test(async t => {
-  const response = await fetch(LISTED_RESOURCE);
-  assert_true(response.ok, `${LISTED_RESOURCE} must be fetchable`);
-  const bytes = new Uint8Array(await response.arrayBuffer());
-
-  // If this fails, the vendored file was changed and every assertion below
-  // would be meaningless rather than failing for the reason it appears to.
-  assert_equals(await cosSha256Hex(bytes), LISTED_DIGEST,
-    'the vendored resource must still be the hash this test is about');
-
-  const listedHash = await storeBytes(bytes, {origins: '*'});
-
   // Invented here, so it cannot be on any curated list of ubiquitous
-  // resources, yet it is stored at exactly the same disclosure scope.
+  // resources.
   const unlistedBytes = new TextEncoder().encode(cosUniqueContent('phl-unlisted'));
   const unlistedHash = await storeBytes(unlistedBytes, {origins: '*'});
 
   const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
-
-  // The listed hash is read first, deliberately. Both reads are charged
-  // against the remote origin's cross-origin probe budget
-  // (https://wicg.github.io/cross-origin-storage/#cross-site-identifiers), and
-  // a budget refusal is indistinguishable from a genuine miss -- which leaves
-  // the negative assertion below passing either way, but would turn the
-  // positive one into a spurious failure. Spending the budget on the
-  // load-bearing assertion first is the only ordering that is robust to it.
-  // Both readUntilDisclosed() loops repeat a *single* hash, so each costs one
-  // charge, not ATTEMPTS.
-  const listed = await readUntilDisclosed(ctx, listedHash);
-  assert_true(listed.disclosed,
-    `a "*"-scoped entry whose hash is on the PHL must be disclosable to a ` +
-    `cross-site origin; ${ATTEMPTS} reads were all rejected ` +
-    `(${listed.rejections.join(', ')}), which neither GREASE'ing nor an ` +
-    `exhausted cross-origin probe budget alone explains`);
-
-  const unlisted = await readUntilDisclosed(ctx, unlistedHash);
-  assert_false(unlisted.disclosed,
-    'a "*"-scoped entry whose hash is not on the PHL must never be disclosed ' +
-    'to an origin outside its storing origins');
-  assert_array_equals(
-    unlisted.rejections, new Array(ATTEMPTS).fill('NotFoundError'),
+  const names = [];
+  for (let i = 0; i < ATTEMPTS; ++i) {
+    const result = await cosRemoteReadDigest(ctx, unlistedHash);
+    assert_false(result.ok,
+      'a "*"-scoped entry whose hash is not on the PHL must never be disclosed ' +
+      'to an origin outside its storing origins');
+    names.push(result.name);
+  }
+  assert_array_equals(names, new Array(ATTEMPTS).fill('NotFoundError'),
     'every refusal must be indistinguishable from a genuine miss');
-  assert_equals(listed.digest, LISTED_DIGEST,
-    'a disclosed resource must be byte-for-byte what was stored');
-}, 'PHL gate: a listed hash is disclosable "*"-scoped cross-origin, an unlisted one never is');
+}, 'PHL gate: an unlisted "*"-scoped hash is never disclosed to a cross-site non-storer');
 
 promise_test(async t => {
   // The gate is only about disclosure to *other* origins. The origin that

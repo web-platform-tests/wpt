@@ -4,11 +4,13 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/helpers.js"></script>
+<script src="../resources/integration-helpers.js"></script>
 <body>
 <script>
 'use strict';
 
-// https://wicg.github.io/cross-origin-storage/README.md#css-integration
+// https://github.com/WICG/cross-origin-storage#css-integration
+// https://wicg.github.io/cross-origin-storage/#storing-fetched-resources
 //
 // cross-origin-storage() is a <request-url-modifier>, used alongside
 // integrity(), primarily in @font-face src. Same origins-style value space
@@ -45,8 +47,7 @@ function injectFontFace(family, url, modifierArgs) {
 async function assertFontLoads(t, family, url, modifierArgs, description) {
   const style = injectFontFace(family, url, modifierArgs);
   t.add_cleanup(() => style.remove());
-  await document.fonts.load(`16px "${family}"`);
-  assert_true(document.fonts.check(`16px "${family}"`), description);
+  assert_true(await cosFontLoaded(family), description);
 }
 
 promise_test(async t => {
@@ -73,25 +74,35 @@ promise_test(async t => {
   const family1 = uniqueFamily('list-real');
   await assertFontLoads(t, family1, REAL_FONT_URL, list, 'list-scoped real font loads');
   const family2 = uniqueFamily('list-broken');
+  // Ahem's response carries no Cross-Origin-Storage-Allow-Origin header, so
+  // the list falls back to the same-site default ("apply a COS scope
+  // ceiling"); the storing origin is served either way.
   await assertFontLoads(t, family2, BROKEN_FONT_URL, list,
     'a broken URL with a list naming this origin still loads, served from COS');
-}, 'CSS: cross-origin-storage("origin", ...) opts a @font-face into a list-scoped COS entry');
+}, 'CSS: cross-origin-storage("origin", ...) opts a @font-face into COS');
 
 promise_test(async t => {
+  // A font unique to this test, so that "nothing was stored" is observable:
+  // the store step runs only once the fetched bytes pass the integrity check.
+  const url = cosUniqueFontUrl('css-mismatch');
+  const {hash} = await cosIntegrityOfUrl(url);
   const family = uniqueFamily('hash-mismatch');
   const style = document.createElement('style');
   const wrongIntegrity = 'sha256-' + 'A'.repeat(43) + '=';
   style.textContent = `
     @font-face {
       font-family: "${family}";
-      src: url("${REAL_FONT_URL}" integrity("${wrongIntegrity}") cross-origin-storage());
+      src: url("${url}" integrity("${wrongIntegrity}") cross-origin-storage());
     }
   `;
   t.add_cleanup(() => style.remove());
   document.head.appendChild(style);
   await promise_rejects_dom(t, 'NetworkError', document.fonts.load(`16px "${family}"`));
-  assert_false(document.fonts.check(`16px "${family}"`));
-}, 'CSS: a cross-origin-storage() font whose bytes do not match integrity() fails to load');
+  assert_false(await cosFontLoaded(family));
+  await cosAssertNotStored(t, hash, 'nothing is stored under the hash of the bytes that arrived');
+  await cosAssertNotStored(t, cosHash('0'.repeat(64)),
+    'nothing is stored under the declared, mismatching hash');
+}, 'CSS: a cross-origin-storage() font whose bytes do not match integrity() fails to load and is not stored');
 
 promise_test(async t => {
   // Omitting cross-origin-storage() entirely, while keeping integrity(),
@@ -106,8 +117,7 @@ promise_test(async t => {
   `;
   t.add_cleanup(() => style1.remove());
   document.head.appendChild(style1);
-  await document.fonts.load(`16px "${family1}"`);
-  assert_true(document.fonts.check(`16px "${family1}"`));
+  assert_true(await cosFontLoaded(family1));
 
   const family2 = uniqueFamily('no-cos-broken');
   const style2 = document.createElement('style');
@@ -120,7 +130,7 @@ promise_test(async t => {
   t.add_cleanup(() => style2.remove());
   document.head.appendChild(style2);
   await promise_rejects_dom(t, 'NetworkError', document.fonts.load(`16px "${family2}"`));
-  assert_false(document.fonts.check(`16px "${family2}"`),
+  assert_false(await cosFontLoaded(family2),
     'without cross-origin-storage(), a broken-URL font must not be rescued from COS');
 }, 'CSS: omitting cross-origin-storage() preserves ordinary integrity() behavior with no COS participation');
 </script>

@@ -2,7 +2,7 @@
 // META: script=resources/helpers.js
 //
 // createWritable({keepExistingData: true}) on a COS entry, which is a
-// disclosure question rather than a convenience one.
+// disclosure question.
 // https://wicg.github.io/cross-origin-storage/#creating-and-writing-files
 //
 // The specification now requires this: a create-request writable starts empty
@@ -27,14 +27,14 @@ promise_test(async t => {
   // out of two operations that are each individually permitted.
   //
   // This test uses the same origin storing then re-creating, which is the
-  // benign case; it pins the mechanism rather than the attack, because a
-  // cross-origin version cannot be written without a second origin that has
-  // already stored the bytes. The mechanism is what must not exist.
+  // benign case; it pins the mechanism, since the attack itself needs a
+  // second origin that has already stored the bytes, which a cross-origin
+  // version cannot set up. The mechanism is what must not exist.
   //
   // The DataError below *is* specified -- closing a writable whose bytes do
   // not hash to the requested value rejects with it -- so what this test adds
-  // is that writing nothing must reach that path rather than succeeding. An
-  // implementation that instead reports an I/O-flavoured failure for the
+  // is that writing nothing must reach that path and fail with it. An
+  // implementation that reports an I/O-flavored failure for the
   // zero-write case is hiding a verification result behind a disk error.
   const content = cosUniqueContent('keep-existing-data');
   const {hash} = await cosStore(content);

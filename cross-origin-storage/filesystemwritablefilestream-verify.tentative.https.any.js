@@ -65,3 +65,19 @@ promise_test(async t => {
   const readable = new Blob(['definitely not the right bytes']).stream();
   await promise_rejects_dom(t, 'DataError', readable.pipeTo(writable));
 }, 'a piped stream with mismatched final bytes rejects the pipe with DataError');
+
+promise_test(async t => {
+  // "verify and store" runs when the stream is closed. An aborted stream is
+  // never closed, so even the correct bytes, written and then aborted, store
+  // nothing, and the handle stays unreadable.
+  const content = cosUniqueContent('aborted-writable');
+  const hash = cosHash(await cosSha256Hex(content));
+  const handle = await navigator.crossOriginStorage.getFileHandle(
+    hash, {create: true});
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([content]));
+  await writable.abort();
+  await promise_rejects_dom(t, 'NotFoundError',
+    navigator.crossOriginStorage.getFileHandle(hash));
+  await promise_rejects_dom(t, 'NotAllowedError', handle.getFile());
+}, 'aborting a writable after writing the correct bytes stores nothing');

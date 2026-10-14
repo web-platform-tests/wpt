@@ -29,8 +29,8 @@ promise_test(async t => {
   await promise_rejects_dom(t, 'InvalidStateError',
     handle.createSyncAccessHandle());
 
-  // As with remove(), prove the entry is untouched rather than trusting the
-  // rejection alone.
+  // As with remove(), prove the entry is untouched with a read; the
+  // rejection alone does not show it.
   const after = await navigator.crossOriginStorage.getFileHandle(hash);
   assert_equals(await (await after.getFile()).text(), content,
     'the entry must be unchanged after a refused createSyncAccessHandle()');

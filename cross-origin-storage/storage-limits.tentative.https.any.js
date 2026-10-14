@@ -48,6 +48,15 @@ promise_test(async t => {
   // widenings, each adding exactly one previously-unlisted origin, must
   // never themselves produce an error, regardless of where (or whether)
   // the implementation-defined cap is eventually crossed partway through.
+  //
+  // Each requested origin only reaches the entry if the writing global's
+  // `Cross-Origin-Storage-Allow-Origin` ceiling names it: "apply a COS scope
+  // ceiling" drops every other origin, and an emptied list adds nothing at
+  // all. storage-limits.tentative.https.any.js.headers therefore names all
+  // twenty origins below. The header is served on every generated wrapper of
+  // this file, which covers the worker variants too: a worker's ceiling is
+  // the intersection of its owning documents' ceilings.
+  // https://wicg.github.io/cross-origin-storage/#allow-origin-header
   const content = cosUniqueContent('cumulative-origins-growth-never-errors');
   const value = await cosSha256Hex(content);
   const hash = cosHash(value);

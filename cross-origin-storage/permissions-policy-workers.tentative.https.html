@@ -139,5 +139,82 @@ promise_test(async t => {
   assert_equals(result.name, 'NotAllowedError',
     'a ServiceWorkerGlobalScope has an empty owner set, so the permission check fails closed');
 }, 'a service worker cannot use crossOriginStorage (empty owner set fails closed)');
+
+// The owner-set resolution applies to every kind of worker, whatever its
+// script URL. `resources/cos-policy-worker.js` is loaded from its own
+// same-origin URL, as a dedicated worker, as a shared worker, or as a
+// dedicated worker nested in a dedicated worker, whose owner is a
+// WorkerGlobalScope that resolves to the document in turn.
+const POLICY_WORKER_URL =
+  new URL('resources/cos-policy-worker.js', location.href).href;
+const BLOCKED = 'header(Permissions-Policy,cross-origin-storage=\\(\\))';
+
+// Runs, inside the RemoteContext `ctx`, a worker of `kind` ("dedicated",
+// "shared", or "nested") from POLICY_WORKER_URL that attempts a COS read for
+// `hash`. A shared worker is kept alive on the context's global under `name`,
+// so that a later call with the same `name` reaches the same worker.
+async function urlWorkerRead(ctx, kind, hash, name = token()) {
+  return ctx.execute_script(async (url, kind, hash, name) => {
+    self.cosSharedWorkers = self.cosSharedWorkers || {};
+    let port;
+    if (kind === 'shared') {
+      if (!self.cosSharedWorkers[name]) {
+        self.cosSharedWorkers[name] = new SharedWorker(url, {name});
+      }
+      port = self.cosSharedWorkers[name].port;
+    } else {
+      port = new Worker(url);
+    }
+    return await new Promise((resolve, reject) => {
+      port.onmessage = ({data}) => resolve(data);
+      port.onerror = () => reject(new Error(`${kind} worker failed to load`));
+      port.postMessage({op: kind === 'nested' ? 'nested' : 'read', hash});
+    });
+  }, [POLICY_WORKER_URL, kind, hash, name]);
+}
+
+for (const kind of ['dedicated', 'shared', 'nested']) {
+  promise_test(async t => {
+    const {ctx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {allow: null});
+    const result = await urlWorkerRead(ctx, kind, cosMissingHash());
+    assert_false(result.ok);
+    assert_equals(result.name, 'NotFoundError',
+      `a ${kind} worker owned by an allowed document is not policy-blocked`);
+  }, `a ${kind} worker loaded from a URL in a policy-allowed document may use crossOriginStorage`);
+
+  promise_test(async t => {
+    const {ctx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {
+      allow: null,
+      pipeHeader: BLOCKED,
+    });
+    const result = await urlWorkerRead(ctx, kind, cosMissingHash());
+    assert_false(result.ok);
+    assert_equals(result.name, 'NotAllowedError',
+      `a ${kind} worker must not escape its owning document's cross-origin-storage=() policy`);
+  }, `a ${kind} worker loaded from a URL cannot escape a cross-origin-storage=() policy on its owning document`);
+}
+
+promise_test(async t => {
+  // Every owner must permit the feature, so a shared worker loses access as
+  // soon as a document that disallows it connects, including for requests
+  // that arrive through an allowed owner's port.
+  const name = token();
+  const {ctx: allowedCtx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {allow: null});
+  const before = await urlWorkerRead(allowedCtx, 'shared', cosMissingHash(), name);
+  assert_equals(before.name, 'NotFoundError',
+    'with only an allowed owner, the shared worker is not policy-blocked');
+
+  const {ctx: blockedCtx} = await cosOpenRemoteContext(HTTPS_ORIGIN, {
+    allow: null,
+    pipeHeader: BLOCKED,
+  });
+  const fromBlocked = await urlWorkerRead(blockedCtx, 'shared', cosMissingHash(), name);
+  assert_equals(fromBlocked.name, 'NotAllowedError',
+    'a request through the disallowing owner\'s port is blocked');
+
+  const after = await urlWorkerRead(allowedCtx, 'shared', cosMissingHash(), name);
+  assert_equals(after.name, 'NotAllowedError',
+    'once a disallowing document owns the shared worker, every request is blocked');
+}, 'a shared worker owned by both an allowed and a disallowing document is blocked');
 </script>
 </body>

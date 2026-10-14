@@ -4,20 +4,21 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/helpers.js"></script>
+<script src="../resources/integration-helpers.js"></script>
 <body>
 <script>
 'use strict';
 
-// https://wicg.github.io/cross-origin-storage/README.md#javascript-import-attribute-integration
+// https://github.com/WICG/cross-origin-storage#javascript-import-attribute-integration
+// https://wicg.github.io/cross-origin-storage/#storing-fetched-resources
 //
 // `import ... with { integrity, crossOriginStorage }` and
 // `import(url, { with: { integrity, crossOriginStorage } })` mirror the
-// HTML integration's model and origins-style value space: import attribute
-// values must be string literals, so unlike getFileHandle()'s `origins`
-// option, this can't take an array -- an empty string means same-site, "*"
-// means global, and a space-separated origin list restricts to a list --
-// all keyed off the same integrity hash used by the HTML/CSS
-// forms.
+// HTML integration's model and origins-style value space. Import attribute
+// values are strings, so a list is a space-separated string of origins: an
+// empty string means same-site, "*" means global, and a space-separated origin
+// list restricts to a list, all keyed off the same integrity hash used by the
+// HTML/CSS forms.
 //
 // As with the HTML integration tests, COS involvement is proven by
 // importing a second, broken-URL specifier carrying the same integrity
@@ -74,15 +75,47 @@ promise_test(async () => {
   const mod2 = await import(brokenUrl, {
     with: {integrity: moduleIntegrity, crossOriginStorage: location.origin},
   });
+  // The module's response carries no Cross-Origin-Storage-Allow-Origin
+  // header, so the list falls back to the same-site default ("apply a COS
+  // scope ceiling"); the storing origin is served either way.
   assert_equals(mod2.default, EXPECTED_VALUE);
-}, 'JS import attribute: crossOriginStorage: "<origins...>" (space-separated) opts a dynamic import() into a list-scoped COS entry');
+}, 'JS import attribute: crossOriginStorage: "<origins...>" (space-separated) opts a dynamic import() into COS');
 
 promise_test(async t => {
+  // A module unique to this test, so that "nothing was stored" is observable:
+  // the store step runs only once the fetched bytes pass the integrity check.
+  const text = cosUniqueModule('import-mismatch', EXPECTED_VALUE);
   const wrongIntegrity = 'sha256-' + 'A'.repeat(43) + '=';
-  await promise_rejects_js(t, TypeError, import(REAL_URL + uniqueQuery(), {
+  await promise_rejects_js(t, TypeError, import(cosResourceUrl(text, 'text/javascript'), {
     with: {integrity: wrongIntegrity, crossOriginStorage: ''},
   }));
-}, 'JS import attribute: dynamic import() with a mismatched integrity hash rejects, per existing integrity failure semantics');
+  await cosAssertNotStored(t, cosHash(await cosSha256Hex(text)),
+    'nothing is stored under the hash of the bytes that arrived');
+  await cosAssertNotStored(t, cosHash('0'.repeat(64)),
+    'nothing is stored under the declared, mismatching hash');
+}, 'JS import attribute: dynamic import() with a mismatched integrity hash rejects and stores nothing');
+
+for (const [label, value] of [
+  ['an http: origin that is not potentially trustworthy', 'http://example.test'],
+  ['a non-http(s) scheme', 'ftp://example.test'],
+]) {
+  promise_test(async t => {
+    // "store a fetched resource in Cross-Origin Storage" runs "validate a COS
+    // request" on the declared origins and stores nothing if it fails. How
+    // the import itself settles in that case is up to the integration.
+    const text = cosUniqueModule('import-invalid-origin', EXPECTED_VALUE);
+    const integrity = await cosSha256Integrity(text);
+    try {
+      await import(cosResourceUrl(text, 'text/javascript'), {
+        with: {integrity, crossOriginStorage: value},
+      });
+    } catch (e) {
+      // Either outcome of the import is acceptable; only the store is defined.
+    }
+    await cosAssertNotStored(t, cosHash(await cosSha256Hex(text)),
+      `a crossOriginStorage list naming ${label} stores nothing`);
+  }, `JS import attribute: crossOriginStorage naming ${label} never stores anything`);
+}
 
 promise_test(async t => {
   // Omitting crossOriginStorage while keeping integrity preserves ordinary

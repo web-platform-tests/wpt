@@ -16,9 +16,9 @@
 // disclosure control in the specification -- `origins`, the Public Hash List,
 // GREASE'ing -- is evaluated on the read path for the origin that asks, so
 // transferring is constrained too: same-origin only, with the handle's
-// readability travelling with it rather than being re-evaluated on arrival.
+// readability traveling with it, with no re-evaluation on arrival.
 
-const {HTTPS_ORIGIN, HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+const {HTTPS_ORIGIN, HTTPS_REMOTE_ORIGIN, HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
 const RECEIVER_PATH = '/cross-origin-storage/resources/transfer-receiver.html';
 
 // Loads `origin`'s copy of the receiver page, posts `message` to it, and
@@ -96,12 +96,12 @@ promise_test(async t => {
   // that asked. Handing a readable handle to another origin would give it the
   // bytes with none of them evaluated for it.
   //
-  // A COS handle is a FileSystemFileHandle, so what stops that is the existing
-  // same-origin restriction on transferring any file system handle, covered
+  // COS's deserialization steps throw a "DataCloneError" when the handle's
+  // COS origin is not same origin with the receiving realm, which surfaces as
+  // a `messageerror` event in the recipient.
+  // https://wicg.github.io/cross-origin-storage/#transferring-handles
+  // [FS] places the same restriction on every file system handle, covered
   // generically by /fs/script-tests/FileSystemBaseHandle-postMessage-Error.js.
-  // This subtest is here because COS depends on that restriction for a
-  // disclosure guarantee the fs tests are not concerned with, so a regression
-  // in it should fail the COS suite too, not just the fs suite.
   const content = cosUniqueContent('transfer-cross-origin');
   const {hash} = await cosStore(content, {origins: '*'});
   const handle = await navigator.crossOriginStorage.getFileHandle(hash);
@@ -158,5 +158,37 @@ promise_test(async t => {
   const file = await handle.getFile();
   assert_equals(await file.text(), content);
 }, 'readability is captured at transfer time, not re-evaluated on arrival');
+
+promise_test(async t => {
+  // The transfer check is same origin. A same-site origin may read the entry
+  // through its own `getFileHandle()` call, since every entry carries a
+  // same-site baseline. A handle the storing origin obtained still cannot be
+  // deserialized there.
+  const content = cosUniqueContent('transfer-same-site-cross-origin');
+  const {hash} = await cosStore(content);
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash);
+
+  const result = await transferToFrame(t, HTTPS_REMOTE_ORIGIN, {handle});
+  assert_equals(result.event, 'messageerror',
+    'a same-site but cross-origin recipient must not receive the handle');
+}, 'a handle transferred to a same-site, cross-origin frame is not delivered');
+
+promise_test(async t => {
+  // A create handle that has been written through has `may read` set to true,
+  // and that value travels with it.
+  const content = cosUniqueContent('transfer-written-create-handle');
+  const hash = cosHash(await cosSha256Hex(content));
+  const handle = await navigator.crossOriginStorage.getFileHandle(
+    hash, {create: true});
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([content]));
+  await writable.close();
+
+  const result = await transferToWorker(t, {handle});
+  assert_equals(result.event, 'message');
+  assert_equals(result.read, 'ok',
+    `the worker must be able to read it, got ${result.errorName}`);
+  assert_equals(result.text, content);
+}, 'a create handle transferred after being written through stays readable');
 </script>
 </body>

@@ -17,31 +17,34 @@
 //
 // The explicit origins list and the "*" (globally disclosable) grant are stored
 // independently, so a later "*" write ADDS the global grant on top of an
-// existing list rather than replacing it. This is a regression guard for the
-// bug where a "*" write overwrote the list: because availability gating (the
-// Public Hash List) applies to the "*" grant but NOT to an explicit list, an
-// origin that could read the entry off the list would, after such a write,
+// existing list and leaves the list in place. This is a regression guard for
+// the bug where a "*" write overwrote the list: because availability gating
+// (the Public Hash List) applies to the "*" grant and not to an explicit list,
+// an origin that could read the entry off the list would, after such a write,
 // start getting NotFoundError whenever the hash was not on the PHL.
 //
 // The content here is unique per run and so never on the PHL. Under the bug,
-// every post-"*"-write read below is therefore a hard, permanent NotFound
-// (the list is gone and the hash is not on the PHL); under the fix each is a
-// list-tier disclosure, subject only to GREASE'ing. Spreading the reads over
-// several distinct listed origins and requiring, via
-// cosAssertSomeDisclosureObserved(), that at least one was disclosed makes a
-// clobbering implementation fail this file loudly rather than pass vacuously.
+// every post-"*"-write read below is therefore a hard NotFound (the list is
+// gone and the hash is not on the PHL). With the grants kept apart, each is a
+// list-tier disclosure, which "determine COS disclosure" grants before it
+// reaches the PHL gate or GREASE'ing, so it is asserted strictly.
 //
 // List-scoped writes are performed from a RemoteContext whose response carries
 // a Cross-Origin-Storage-Allow-Origin ceiling naming the listed origin (via
 // pipeHeader); the top-level document cannot set that header on itself. The
 // "*" upgrade write needs no such header.
+//
+// Every "*" writer below is of this document's own site. A writer of the
+// listed origin's site would itself become a storing origin of that site, and
+// the listed origin would then read the entry through the same-site baseline
+// whether or not the list survived.
 
 const {HTTPS_ORIGIN} = get_host_info();
 
 // Writes `content` list-scoped to `listedOrigin` (authorized by a ceiling
 // header naming it), then re-writes the identical bytes as origins: "*".
-// Returns the hash. `upgradeCtx`, if given, performs the "*" write from a
-// different context than the original writer.
+// Returns the hash. With `upgradeFromOwnWriter` false, the "*" write comes
+// from a different origin, a same-site sibling of the original writer.
 async function storeListThenWildcard(listedOrigin, content, {upgradeFromOwnWriter = true} = {}) {
   const hash = cosHash(await cosSha256Hex(content));
 
@@ -51,33 +54,29 @@ async function storeListThenWildcard(listedOrigin, content, {upgradeFromOwnWrite
   assert_true(listed.ok, `the list-scoped write must succeed, got ${listed.name}: ${listed.message}`);
 
   // Re-write the identical bytes as "*". A "*" write needs no ceiling header.
-  const upgradeCtx = upgradeFromOwnWriter
-    ? writer
-    : (await cosOpenRemoteContext(HTTPS_ORIGIN)).ctx;
+  let upgradeCtx = writer;
+  if (!upgradeFromOwnWriter) {
+    upgradeCtx = (await cosOpenRemoteContext(cosNextSameSiteOrigin())).ctx;
+    const upgradeOrigin = await upgradeCtx.execute_script(() => location.origin, []);
+    assert_not_equals(upgradeOrigin, HTTPS_ORIGIN,
+      'the "*" write must come from an origin other than the original writer\'s');
+  }
   const upgraded = await cosRemoteStore(upgradeCtx, hash, content, {origins: '*'});
   assert_true(upgraded.ok, `the "*" upgrade write must succeed, got ${upgraded.name}: ${upgraded.message}`);
 
   return hash;
 }
 
-// A few distinct listed origins, so that GREASE'ing suppressing any single
-// post-upgrade read cannot make the whole file pass without observing the
-// list grant survive at least once.
-for (let i = 0; i < 4; i++) {
-  promise_test(async t => {
-    const listedOrigin = cosNextCrossSiteOrigin();
-    const content = cosUniqueContent(`list-survives-wildcard-upgrade-${i}`);
-    const hash = await storeListThenWildcard(listedOrigin, content);
+promise_test(async t => {
+  const listedOrigin = cosNextCrossSiteOrigin();
+  const content = cosUniqueContent('list-survives-wildcard-upgrade');
+  const hash = await storeListThenWildcard(listedOrigin, content);
 
-    const {ctx: reader} = await cosOpenRemoteContext(listedOrigin);
-    const result = await cosRemoteRead(reader, hash);
-    // Under the clobber bug this is a permanent NotFound (list gone, not on
-    // PHL); cosAssertDisclosableOrGreased tolerates the individual NotFound,
-    // but the file's meta assertion below fails if EVERY iteration is refused.
-    cosAssertDisclosableOrGreased(result, content,
-      'a listed origin reading an entry after it was also written "*"');
-  }, `a "*" write preserves a listed origin's PHL-independent access (iteration ${i})`);
-}
+  const {ctx: reader} = await cosOpenRemoteContext(listedOrigin);
+  const result = await cosRemoteRead(reader, hash);
+  cosAssertDisclosed(result, content,
+    'a listed origin reading an entry after it was also written "*"');
+}, 'a "*" write preserves a listed origin\'s PHL-independent access');
 
 promise_test(async t => {
   // The upgrade is additive even when a DIFFERENT origin performs the "*"
@@ -90,15 +89,16 @@ promise_test(async t => {
 
   const {ctx: reader} = await cosOpenRemoteContext(listedOrigin);
   const result = await cosRemoteRead(reader, hash);
-  cosAssertDisclosableOrGreased(result, content,
+  cosAssertDisclosed(result, content,
     'a listed origin after a *different* origin wrote the same bytes "*"');
 }, 'a "*" write by a different origin still preserves the originally-listed origin\'s access');
 
 promise_test(async t => {
-  // The same-site tier likewise survives a "*" write. An entry first written
-  // same-site (origins omitted) keeps origins == null, so the "*" write only
-  // sets the global flag; a same-site sibling therefore keeps reading it
-  // through the same-site tier, without the hash needing to be on the PHL.
+  // The same-site baseline likewise survives a "*" write. An entry first
+  // written same-site (origins omitted) keeps an empty origins list, so the
+  // "*" write only sets the global flag; a same-site sibling therefore keeps
+  // reading it through the same-site baseline, without the hash needing to be
+  // on the PHL.
   const content = cosUniqueContent('same-site-survives-wildcard-upgrade');
   const {hash} = await cosStore(content); // same-site; this document is the storer
 
@@ -109,9 +109,9 @@ promise_test(async t => {
 
   const {ctx: reader} = await cosOpenRemoteContext(cosNextSameSiteOrigin());
   const result = await cosRemoteRead(reader, hash);
-  cosAssertDisclosableOrGreased(result, content,
+  cosAssertDisclosed(result, content,
     'a same-site sibling reading an entry after it was also written "*"');
-}, 'a "*" write preserves the same-site tier of an entry first written same-site');
+}, 'a "*" write preserves the same-site baseline of an entry first written same-site');
 
 promise_test(async t => {
   // The storer always retains access across the upgrade, deterministically.
@@ -129,9 +129,5 @@ promise_test(async t => {
   assert_equals(await cosReadText(hash), content,
     'a storing origin reads its own entry back after a "*" upgrade, deterministically');
 }, 'a storing origin retains deterministic access across a "*" upgrade');
-
-promise_test(async t => {
-  cosAssertSomeDisclosureObserved();
-}, 'meta: at least one authorized cross-origin read in this file was actually disclosed');
 </script>
 </body>

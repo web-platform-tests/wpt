@@ -1,0 +1,88 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: a "*" write from a document with no Cross-Origin-Storage-Allow-Origin header is disclosed for a Public Hash List resource</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#allow-origin-header
+// https://wicg.github.io/cross-origin-storage/#availability-gating
+//
+// The Cross-Origin-Storage-Allow-Origin header applies only to the list form
+// of `origins`. The "*" form is gated at the read path by the Public Hash
+// List, so a "*" write from a document that sends no header at all still
+// makes the entry globally disclosable. allow-origin-header.tentative.https.html
+// can only show that such a write succeeds, because content it generates is
+// never on the PHL. Observing the disclosure needs a resource that is on the
+// list, resources/phl-listed-resource.js (see
+// public-hash-list.tentative.optional.https.html).
+//
+// This file is optional because PHL membership is implementation-defined: no
+// normative text requires that resource to be on any user agent's list.
+//
+// The global grant is a property of the entry and it persists, so once any
+// earlier run has written these bytes "*", the read below succeeds whatever
+// this run's writer sent. The test is therefore only conclusive against a
+// profile in which this resource was never stored with origins: "*".
+
+const {HTTPS_ORIGIN} = get_host_info();
+
+const LISTED_RESOURCE = '/cross-origin-storage/resources/phl-listed-resource.js';
+const LISTED_DIGEST =
+  'fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a';
+
+// The read qualifies through the global grant alone, which the user agent may
+// GREASE, so a single refusal is not conclusive. See public-hash-list.tentative.optional.https.html.
+const ATTEMPTS = 8;
+
+promise_test(async t => {
+  // The writer is a same-origin frame whose response carries no
+  // Cross-Origin-Storage-Allow-Origin header.
+  const {ctx: writer} = await cosOpenRemoteContext(HTTPS_ORIGIN);
+  const stored = await writer.execute_script(async (url) => {
+    try {
+      const bytes = new Uint8Array(await (await fetch(url)).arrayBuffer());
+      const digest = await crypto.subtle.digest('SHA-256', bytes);
+      const value = Array.from(new Uint8Array(digest))
+        .map((b) => b.toString(16).padStart(2, '0')).join('');
+      const handle = await navigator.crossOriginStorage.getFileHandle(
+        {algorithm: 'SHA-256', value}, {create: true, origins: '*'});
+      const writable = await handle.createWritable();
+      await writable.write(new Blob([bytes]));
+      await writable.close();
+      return {ok: true, value};
+    } catch (e) {
+      return {ok: false, name: e.name, message: e.message};
+    }
+  }, [LISTED_RESOURCE]);
+  assert_true(stored.ok, `a "*" write needs no ceiling header, got ${stored.name}: ${stored.message}`);
+  assert_equals(stored.value, LISTED_DIGEST,
+    'the vendored resource must still be the hash this test is about');
+
+  const {ctx: reader} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
+  const rejections = [];
+  for (let i = 0; i < ATTEMPTS; ++i) {
+    const result = await cosRemoteReadDigest(reader, cosHash(LISTED_DIGEST));
+    if (result.ok) {
+      assert_equals(result.digest, LISTED_DIGEST,
+        'a disclosed resource must be byte-for-byte what was stored');
+      return;
+    }
+    assert_equals(result.name, 'NotFoundError',
+      `a refused global-grant read must reject with NotFoundError, got ${result.name}: ${result.message}`);
+    rejections.push(result.name);
+  }
+  assert_unreached(
+    `a "*"-scoped entry whose hash is on the PHL must be disclosable to a cross-site origin, ` +
+    `whether or not its writer sent a ceiling header; ${ATTEMPTS} reads were all rejected ` +
+    `(${rejections.join(', ')})`);
+}, 'ceiling: a "*" write from a document with no Cross-Origin-Storage-Allow-Origin header is disclosed to a cross-site origin for a PHL resource');
+</script>
+</body>

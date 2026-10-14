@@ -4,24 +4,27 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/helpers.js"></script>
+<script src="../resources/integration-helpers.js"></script>
 <body>
 <span id="cos-html-marker">marker</span>
 <script>
 'use strict';
 
-// https://wicg.github.io/cross-origin-storage/README.md#html-integration
+// https://github.com/WICG/cross-origin-storage#html-integration
+// https://wicg.github.io/cross-origin-storage/#storing-fetched-resources
 //
 // A `crossoriginstorage` attribute on a `<link>`/`<script>` that already
 // carries `integrity` opts the resource into COS, keyed off the same
-// `origins`-style value space as getFileHandle(): omitted (same-site),
-// a space-separated origin list, or "*" (global). Processing flow: try a
+// `origins`-style value space as getFileHandle(): valueless or empty
+// (same-site), a space-separated origin list, or "*" (global). Omitting the
+// attribute keeps COS out of the load entirely. Processing flow: try a
 // COS lookup by the integrity hash first; only fetch from the network (and
 // then store into COS) on a miss.
 //
 // Each test below proves COS involvement the same way: load a first,
 // real-URL element to populate COS, then load a second element pointed at
 // a URL that does not exist, carrying the same integrity hash -- it can
-// only succeed if it was served from COS rather than the network.
+// only succeed if it was served from COS.
 
 const REAL_CSS_URL = '../resources/marker-style.css';
 const REAL_JS_URL = '../resources/marker-script.js';
@@ -120,18 +123,56 @@ promise_test(async t => {
     href: BROKEN_CSS_URL, integrity: cssIntegrity,
     crossoriginstorage: location.origin,
   });
+  // The stylesheet's response carries no Cross-Origin-Storage-Allow-Origin
+  // header, so the list falls back to the same-site default ("apply a COS
+  // scope ceiling"); the storing origin is served either way.
   assert_equals(markerColor(), 'rgb(1, 2, 3)',
-    'a list-scoped <link> naming the page\'s own origin served from COS on the second request');
-}, 'HTML: crossoriginstorage="<space-separated origins>" opts a <link> into a list-scoped entry');
+    'a <link> with a list naming the page\'s own origin served from COS on the second request');
+}, 'HTML: crossoriginstorage="<space-separated origins>" opts a <link> into COS');
 
 promise_test(async t => {
-  window.__cosHtmlScriptRunCount = 0;
+  // Bytes unique to this test, so that "nothing was stored" is observable:
+  // the store step runs only once the fetched bytes pass the integrity check.
+  window.__cosHtmlUniqueRunCount = 0;
+  const jsText = `window.__cosHtmlUniqueRunCount++;\n// ${cosUniqueContent('html-mismatch')}\n`;
   const wrongIntegrity = 'sha256-' + 'A'.repeat(43) + '=';
-  await promise_rejects_js(t, Error,
-    appendScript(t, {src: REAL_JS_URL, integrity: wrongIntegrity, crossoriginstorage: ''}));
-  assert_equals(window.__cosHtmlScriptRunCount, 0,
+  await promise_rejects_js(t, Error, appendScript(t, {
+    src: cosResourceUrl(jsText, 'text/javascript'),
+    integrity: wrongIntegrity,
+    crossoriginstorage: '',
+  }));
+  assert_equals(window.__cosHtmlUniqueRunCount, 0,
     'a hash-mismatched script must not execute, per existing integrity failure semantics');
-}, 'HTML: a crossoriginstorage script whose bytes do not match integrity does not execute');
+  await cosAssertNotStored(t, cosHash(await cosSha256Hex(jsText)),
+    'nothing is stored under the hash of the bytes that arrived');
+  await cosAssertNotStored(t, cosHash('0'.repeat(64)),
+    'nothing is stored under the declared, mismatching hash');
+}, 'HTML: a crossoriginstorage script whose bytes do not match integrity does not execute and is not stored');
+
+for (const [label, value] of [
+  ['an http: origin that is not potentially trustworthy', 'http://example.test'],
+  ['a non-http(s) scheme', 'ftp://example.test'],
+]) {
+  promise_test(async t => {
+    // "store a fetched resource in Cross-Origin Storage" runs "validate a COS
+    // request" on the declared origins and stores nothing if it fails. How
+    // the element itself loads in that case is up to the HTML integration.
+    window.__cosHtmlUniqueRunCount = 0;
+    const jsText = `window.__cosHtmlUniqueRunCount++;\n// ${cosUniqueContent('html-invalid-origin')}\n`;
+    const integrity = await cosSha256Integrity(jsText);
+    try {
+      await appendScript(t, {
+        src: cosResourceUrl(jsText, 'text/javascript'),
+        integrity,
+        crossoriginstorage: value,
+      });
+    } catch (e) {
+      // Either outcome of the load is acceptable; only the store is defined.
+    }
+    await cosAssertNotStored(t, cosHash(await cosSha256Hex(jsText)),
+      `a crossoriginstorage list naming ${label} stores nothing`);
+  }, `HTML: crossoriginstorage naming ${label} never stores anything`);
+}
 
 promise_test(async t => {
   // Omitting crossoriginstorage entirely, while keeping integrity, must NOT

@@ -4,6 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
 
 <!-- Like input-element-pseudo-open.optional.html but uses clicking to open
      pickers rather than showPicker(). -->
@@ -26,17 +27,31 @@
 </datalist>
 
 <script>
+// This function tries to click on the element's picker icon, which should be
+// located on the right side of the element.
+function click(element) {
+  const rect = element.getBoundingClientRect();
+  const x = rect.width - (rect.height / 2);
+  const y = rect.height / 2;
+
+  return (new test_driver.Actions()
+    .pointerMove(x, y, {origin: element})
+    .pointerDown()
+    .pointerUp())
+    .send();
+}
+
 document.querySelectorAll('.supported > input').forEach(input => {
   const inputType = input.getAttribute('type');
   promise_test(async () => {
     assert_false(input.matches(':open'),
       'Should not match :open at the start of the test.');
 
-    await test_driver.click(input);
+    await click(input);
     assert_true(input.matches(':open'),
       'Should match :open after opening the picker.');
 
-    await test_driver.click(document.querySelector('button'));
+    await click(document.querySelector('button'));
     assert_false(input.matches(':open'),
       'Should not match :open after closing the picker.');
   }, `CSS :open for <input type=${inputType}>`);
@@ -44,11 +59,11 @@ document.querySelectorAll('.supported > input').forEach(input => {
 
 promise_test(async () => {
   const input = document.querySelector('input[list]');
-  await test_driver.click(input);
+  await click(input);
   assert_true(input.matches(':open'),
     'Should match :open after opening the list.');
 
-  await test_driver.click(document.querySelector('button'));
+  await click(document.querySelector('button'));
   assert_false(input.matches(':open'),
     'Should not match :open after closing the list.');
 

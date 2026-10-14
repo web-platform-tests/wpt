@@ -82,8 +82,14 @@ def test_promise_all_reject(session):
 
 
 def test_await_promise_reject(session):
+    """
+    The script in this subtest is designed to execute without exception in
+    implementations which interpret it as a function body rather than an async
+    function body.
+    """
     response = execute_script(session, """
-        await Promise.reject(new Error('my error'));
+        window.await = () => {};
+        await(Promise.reject(new Error('my error')));
         return 'foo';
         """)
     assert_error(response, "javascript error")

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<title>AVIF: a streaming layered image item renders its last complete layer</title>
+<link rel="help" href="https://aomediacodec.github.io/av1-avif/#layered-image-item">
+<link rel="match" href="progressive-red-ref.html">
+<!-- resources/layers-3.avif is a 100x100 layered image item of three layers,
+     coloured blue, red then green.
+
+     The trickle pipe delivers the first 3633 bytes -- the container plus
+     layers 0 and 1, per the (51, 3275) layer sizes in a1lx and the mdat
+     payload offset of 307 -- then holds the response open for 30s. During the
+     stall the last complete layer is the red layer 1, so that is what a
+     decoder rendering layers as they arrive shows.
+
+     Layers 1 and 2 are inter-predicted from layer 0, so reaching layer 1 also
+     requires having decoded layer 0 first and in order. -->
+<body>
+<script src="resources/streaming-image-reftest.js"></script>
+<script>
+streamingImageReftest('resources/layers-3.avif?pipe=trickle(3633:d30)');
+</script>

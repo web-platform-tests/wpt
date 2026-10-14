@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>AVIF: a layered image item with spatially scaled layers renders its final layer</title>
+<link rel="help" href="https://aomediacodec.github.io/av1-avif/#layered-image-item">
+<link rel="match" href="layered-final-layer-green-ref.html">
+<!-- resources/layers-scaled.avif uses AV1 spatial scalability: layer 0 is a
+     25x25 blue frame and layer 1 is the 100x100 green image, against an ispe
+     of 100x100. A layer coded smaller than the image carries the image's
+     dimensions in its frame header's render size, which is how the format asks
+     for that layer to be scaled up to the image.
+
+     Only the final layer is full size, so the finished image is green either
+     way; this checks that the sub-resolution layer 0 does not leak into the
+     final result, e.g. by being mistaken for a frame size change. -->
+<img src="resources/layers-scaled.avif">

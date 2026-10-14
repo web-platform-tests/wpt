@@ -1,0 +1,35 @@
+<!doctype html>
+<html class="reftest-wait">
+  <meta charset="utf-8" />
+  <title>
+    AVIF: a streaming layered image item scales a sub-resolution layer with
+    alpha correctly
+  </title>
+  <link
+    rel="help"
+    href="https://aomediacodec.github.io/av1-avif/#layered-image-item"
+  />
+  <link rel="match" href="progressive-blue-alpha50-ref.html" />
+  <meta name="fuzzy" content="maxDifference=0-2; totalPixels=0-10000" />
+  <!-- As progressive-streaming-scaled-layer.html, but the alpha auxiliary item
+     is layered and scaled to match, so layer N of the colour item pairs with
+     layer N of the alpha item, and layer 0 is blue at 50% alpha.
+
+     The two items' extents are interleaved in the mdat, per iloc: alpha layer
+     0 at 478..509, colour layer 0 at 509..560, then alpha layer 1 at 560..576
+     and colour layer 1 at 576..613. Layer 0 of the image is therefore only
+     complete at 560 bytes, and the trickle pipe delivers exactly that before
+     holding the response open for 30s. An offset derived from one item's a1lx
+     alone would cut the other item's layer 0 in half, and a decoder holding a
+     colour layer with no matching alpha is right to paint nothing.
+
+     This is the case that catches premultiplication mistakes in the upscale -->
+  <body>
+    <script src="resources/streaming-image-reftest.js"></script>
+    <script>
+      streamingImageReftest(
+        "resources/layers-scaled-alpha.avif?pipe=trickle(560:d30)",
+      );
+    </script>
+  </body>
+</html>

@@ -10,14 +10,15 @@
   with the bottom margin of its last in-flow child if `height` computes
   to `auto`.
 
-  However, according to CSS Sizing, that was 'legacy spec prose' and
-  should be interpreted as 'behaves as `auto`'.
-
-  Therefore, an indefinite `stretch` in the preferred block size property
-  shouldn't prevent margin collapse, because it behaves as `auto`.
+  CSS Sizing says that an indefinite `stretch` in the preferred block size
+  property 'behaves as `auto`', but that is not the same as computing to
+  `auto`. Since `stretch` usually resolves to a positive value, it should
+  prevent margin collapsing, like any other non-auto height value.
 ">
 
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-<div style="width: 100px; height: stretch; background: red">
-  <div style="height: 100px; margin-bottom: 100px; background: green"></div>
+<div style="width: 100px; background: red">
+  <div style="height: stretch; background: green">
+    <div style="height: 50px; margin-bottom: 50px; background: green"></div>
+  </div>
 </div>

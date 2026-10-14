@@ -12,7 +12,7 @@
 <body>
 <div id="target"></div>
 <script>
-// <single-animation> = <time> || <easing-function> || <time> ||
+// <single-animation> = <time> || <easing-function> || <'animation-delay-start'> ||
 // <single-animation-iteration-count> || <single-animation-direction> ||
 // <single-animation-fill-mode> || <single-animation-play-state> ||
 // [ none | <keyframes-name> ]
@@ -45,6 +45,8 @@ test(() => {
   target.style.animation = "initial";
   target.style.animationDelay = "1s";
   assert_equals(getComputedStyle(target).animation, "0s 1s");
+  assert_equals(getComputedStyle(target).getPropertyValue('animation-delay-start'), "1s");
+  assert_equals(getComputedStyle(target).getPropertyValue('animation-delay-end'), "0s");
 }, "Animation with a delay but no duration");
 
 </script>

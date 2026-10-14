@@ -1,0 +1,40 @@
+<!doctype html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<title>CSS Animations Test: animation-delay-start - liveness with animationend</title>
+<link rel="help" href="https://drafts.csswg.org/css-animations-2/#propdef-animation-delay-start">
+<meta name="assert" content="Check that shortening the animation-delay-start triggers
+an animationend event">
+<meta name="flags" content="dom">
+<link rel="match" href="animation-common-ref.html">
+<style>
+@keyframes all-red {
+  from { background-color: red }
+  to   { background-color: red }
+}
+div {
+  width: 100px;
+  height: 100px;
+  background-color: orange;
+}
+</style>
+<div></div>
+<script>
+var div = document.querySelector('div');
+div.style.animation = 'all-red 1000s';
+window.getComputedStyle(div).animation;
+
+div.addEventListener('animationend', function() {
+  div.style.animation = 'none';
+  div.style.backgroundColor = 'green';
+});
+
+window.requestAnimationFrame(function() {
+  div.style.animationDelayStart = '-1000s';
+
+  window.requestAnimationFrame(function() {
+    document.documentElement.removeAttribute('class');
+  });
+});
+</script>
+</html>

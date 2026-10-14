@@ -54,6 +54,54 @@ test(t => {
                 'Initial value of endDelay');
 }, 'endDelay of a new animation');
 
+test(t => {
+  const div = addDiv(t, { style: 'animation: moveAnimation 100s; animation-delay-start: 10s' });
+  const effect = div.getAnimations()[0].effect;
+  assert_equals(effect.getComputedTiming().delay, 10 * MS_PER_SEC,
+                'animation-delay-start maps to delay');
+}, 'animation-delay-start maps to delay');
+
+test(t => {
+  const div = addDiv(t, { style: 'animation: moveAnimation 100s; animation-delay-end: 5s' });
+  const effect = div.getAnimations()[0].effect;
+  assert_equals(effect.getComputedTiming().endDelay, 5 * MS_PER_SEC,
+                'animation-delay-end maps to endDelay');
+}, 'animation-delay-end maps to endDelay');
+
+test(t => {
+  const div = addDiv(t, { style: 'animation: moveAnimation 100s; animation-delay: 2s 8s' });
+  const effect = div.getAnimations()[0].effect;
+  assert_equals(effect.getComputedTiming().delay, 2 * MS_PER_SEC,
+                'Two-value animation-delay start component');
+  assert_equals(effect.getComputedTiming().endDelay, 8 * MS_PER_SEC,
+                'Two-value animation-delay end component');
+}, 'Two-value animation-delay maps to delay and endDelay');
+
+test(t => {
+  const div = addDiv(t, { style: 'animation: moveAnimation 100s; animation-delay-end: 5s' });
+  div.style.animationDelay = '2s';
+  const effect = div.getAnimations()[0].effect;
+  assert_equals(effect.getComputedTiming().delay, 2 * MS_PER_SEC,
+                'Single-value animation-delay updates delay');
+  assert_equals(effect.getComputedTiming().endDelay, 5 * MS_PER_SEC,
+                'Single-value animation-delay leaves endDelay unchanged');
+}, 'Single-value animation-delay updates start delay only');
+
+test(t => {
+  const div = addDiv(t, { style: 'animation: moveAnimation 100s; animation-delay-end: 20s' });
+  const effect = div.getAnimations()[0].effect;
+  assert_equals(effect.getComputedTiming().endTime, 120 * MS_PER_SEC,
+                'endTime includes positive endDelay');
+}, 'endTime includes positive endDelay');
+
+test(t => {
+  const div = addDiv(t, { style: 'animation: moveAnimation 100s; animation-delay-start: -5s' });
+  const effect = div.getAnimations()[0].effect;
+  const answer = (100 - 5) * MS_PER_SEC;
+  assert_equals(effect.getComputedTiming().endTime, answer,
+                'endTime reflects negative start delay');
+}, 'endTime reflects negative animation-delay-start');
+
 
 // --------------------
 // fill

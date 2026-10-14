@@ -351,8 +351,7 @@ const sizeOfShape = (array) => {
 /**
  * Get bitwise of the given value.
  * @param {Number} value
- * @param {String} dataType - A data type string; currently only "float32" is
- *     supported by this function.
+ * @param {String} dataType - Either "float16" or "float32".
  * @return {BigInt} A 64-bit signed integer.
  */
 const getBitwise = (value, dataType) => {
@@ -361,6 +360,8 @@ const getBitwise = (value, dataType) => {
   let typedArray;
   if (dataType === "float32") {
     typedArray = new Float32Array(buffer);
+  } else if (dataType === "float16") {
+    typedArray = new Float16Array(buffer);
   } else {
     throw new AssertionError(`Data type ${dataType} is not supported`);
   }
@@ -426,12 +427,11 @@ const ulpDistance = (a, b, dataType) => {
     aBitwise = getBitwise(a, dataType);
     bBitwise = getBitwise(b, dataType);
   } else if (dataType === 'float16') {
-    // Actual values are Uint16 storage encodings; expected values are numbers.
-    // Order signed magnitudes numerically, with both zero encodings at zero.
-    const orderedBits = bits =>
-        (bits & 0x8000) ? 0 - (bits & 0x7FFF) : bits;
-    aBitwise = orderedBits(a);
-    bBitwise = orderedBits(toHalf(b));
+    // The current tensor-readback helpers return Uint16 storage encodings,
+    // whereas expected values are numbers. Decode before sharing the same
+    // signed ordering as float32; preserve the float16 distance's Number type.
+    aBitwise = Number(getBitwise(float16AsUint16ToNumber(a), dataType));
+    bBitwise = Number(getBitwise(b, dataType));
   } else if (dataType === 'int64' || dataType === 'uint64') {
     aBitwise = BigInt(a);
     bBitwise = BigInt(b);

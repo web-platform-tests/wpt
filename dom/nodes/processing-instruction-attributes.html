@@ -43,6 +43,30 @@
       assert_equals(pi.getAttribute("x"), null);
     }, "Processing instruction attribute parsing rejects unquoted attributes from " + source);
 
+    // Per the rules for parsing pseudo-attributes from a string, the whole
+    // string has to match PseudoAtts and no name may appear twice. Any
+    // violation is an error, which makes the processing instruction have no
+    // attributes at all (rather than, say, the first or last duplicate winning).
+    for (const data of [
+      'name="p" name="q"',
+      'name="p" junk',
+      'junk name="p"',
+      'name="p"other="q"',
+      'name="p" ="q"',
+      'name="p" other=',
+      'name="p" other="q',
+    ]) {
+      test(() => {
+        const pi = createProcessingInstruction("t", data);
+        assert_equals(pi.data, data, "data is preserved verbatim");
+        assert_false(pi.hasAttributes());
+        assert_array_equals(pi.getAttributeNames(), []);
+        assert_false(pi.hasAttribute("name"));
+        assert_equals(pi.getAttribute("name"), null);
+        assert_equals(pi.getAttribute("other"), null);
+      }, `Malformed pseudo-attributes ${JSON.stringify(data)} yield no attributes (source: ${source})`);
+    }
+
     test(() => {
       const pi = createProcessingInstruction("t", 'a="b" x="yy"');
       const mutation_observer = new MutationObserver((records) => {});

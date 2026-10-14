@@ -1,18 +1,18 @@
 <!DOCTYPE HTML>
 <meta charset="utf-8" />
-<title>HTML partial updates: for is ignored when shadowrootmode is set but no shadow root is attached</title>
+<title>HTML partial updates: for applies when shadowrootmode doesn't attach a shadow root</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inhead">
+<link rel="help" href="https://github.com/whatwg/html/issues/13075">
 <link rel="help" href="https://github.com/WICG/declarative-partial-updates">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<!-- A <template> with a valid shadowrootmode never takes the "for" branch,
-     even when the shadow root can't be attached: a non-shadow-host host, a
-     host that already has a shadow root, the host being the root of the
+<!-- A <template> with both shadowrootmode and for only skips patching when a
+     shadow root is actually attached. When it isn't - a non-shadow-host host,
+     a host that already has a shadow root, the host being the root of the
      fragment, a host the sanitizer replaces with its children, or declarative
-     shadow roots being disallowed altogether (innerHTML, DOMParser). In all
-     those cases it's inserted as a regular template element, exactly like
-     any other declarative shadow root fallback, and the marker is kept. -->
+     shadow roots being disallowed altogether (innerHTML, DOMParser) - the
+     template falls through to the "for" steps and patches as usual. -->
 
 <a id="anchor-host"><?marker name="anchor"><template shadowrootmode="open" for="anchor">content</template></a>
 <span id="double-host"><?marker name="double"><template shadowrootmode="open">first</template><template shadowrootmode="open" for="double">content</template></span>
@@ -20,76 +20,54 @@
 <script>
 const markup = '<span><?marker name="x"></span><template shadowrootmode="open" for="x">content</template>';
 
-// The marker is still in place, nothing was patched, and the template was
-// inserted as a regular template with its contents intact.
-function assert_fallback_template(root, host = root.querySelector("span")) {
-  const marker = host.firstChild;
-  assert_equals(marker.nodeType, Node.PROCESSING_INSTRUCTION_NODE, "marker is kept");
-  assert_equals(marker.target, "marker");
-  assert_equals(host.textContent, "", "nothing was patched into the marker's parent");
-  const template = root.querySelector("template");
-  assert_not_equals(template, null, "template is inserted");
-  assert_equals(template.shadowRootMode, "open");
-  assert_equals(template.getAttribute("for"), "x");
-  assert_equals(template.content.textContent, "content");
-  assert_equals(template.content.childNodes.length, 1);
+// The marker was consumed, the content was patched in its place and no
+// template element was inserted.
+function assert_patched(root, host = root.querySelector("span")) {
+  assert_equals(host.textContent, "content", "content is patched into the marker's parent");
+  assert_false([...host.childNodes].some(n => n.nodeType === Node.PROCESSING_INSTRUCTION_NODE),
+    "marker is removed");
+  assert_equals(root.querySelector("template"), null, "template is not inserted");
 }
 
 test(() => {
   const anchor = document.getElementById("anchor-host");
   assert_equals(anchor.shadowRoot, null);
-  assert_equals(anchor.firstChild.nodeType, Node.PROCESSING_INSTRUCTION_NODE, "marker is kept");
-  assert_equals(anchor.textContent, "", "nothing was patched");
-  const template = anchor.querySelector("template");
-  assert_not_equals(template, null, "template is inserted as a regular template");
-  assert_equals(template.content.textContent, "content");
-}, "Host that can't have a shadow root: template is inserted, not patched");
+  assert_patched(anchor, anchor);
+}, "Host that can't have a shadow root: patches");
 
 test(() => {
   const host = document.getElementById("double-host");
-  assert_equals(host.shadowRoot.textContent, "first");
-  assert_equals(host.firstChild.nodeType, Node.PROCESSING_INSTRUCTION_NODE, "marker is kept");
-  assert_equals(host.textContent, "", "nothing was patched");
-  const template = host.querySelector("template");
-  assert_not_equals(template, null, "second template is inserted as a regular template");
-  assert_equals(template.content.textContent, "content");
-}, "Host that already has a shadow root: template is inserted, not patched");
+  assert_equals(host.shadowRoot.textContent, "first", "first template attached the shadow root");
+  assert_patched(host, host);
+}, "Host that already has a shadow root: patches");
 
 test(() => {
   const container = document.createElement("div");
   container.innerHTML = markup;
   assert_equals(container.querySelector("span").shadowRoot, null);
-  assert_fallback_template(container);
-}, "innerHTML (declarative shadow roots disallowed): template is inserted, not patched");
-
-test(() => {
-  // Control: without shadowrootmode the very same markup patches.
-  const container = document.createElement("div");
-  container.innerHTML = markup.replace(' shadowrootmode="open"', "");
-  assert_equals(container.querySelector("span").textContent, "content");
-  assert_equals(container.querySelector("template"), null);
-}, "innerHTML without shadowrootmode: control, patches");
+  assert_patched(container);
+}, "innerHTML (declarative shadow roots disallowed): patches");
 
 test(() => {
   const doc = new DOMParser().parseFromString(markup, "text/html");
   assert_equals(doc.querySelector("span").shadowRoot, null);
-  assert_fallback_template(doc.body);
-}, "DOMParser (declarative shadow roots disallowed): template is inserted, not patched");
+  assert_patched(doc.body);
+}, "DOMParser (declarative shadow roots disallowed): patches");
 
 test(() => {
   const container = document.createElement("div");
   container.setHTMLUnsafe('<?marker name="x"><template shadowrootmode="open" for="x">content</template>');
   assert_equals(container.shadowRoot, null, "no shadow root is attached to the context element");
-  assert_fallback_template(container, container);
-}, "setHTMLUnsafe with the root as host: template is inserted, not patched");
+  assert_patched(container, container);
+}, "setHTMLUnsafe with the root as host: patches");
 
 test(() => {
   const container = document.createElement("div");
   container.setHTMLUnsafe('<a><?marker name="x"><template shadowrootmode="open" for="x">content</template></a>');
   const a = container.querySelector("a");
   assert_equals(a.shadowRoot, null);
-  assert_fallback_template(container, a);
-}, "setHTMLUnsafe with a host that can't have a shadow root: template is inserted, not patched");
+  assert_patched(container, a);
+}, "setHTMLUnsafe with a host that can't have a shadow root: patches");
 
 test(() => {
   const container = document.createElement("div");
@@ -98,12 +76,12 @@ test(() => {
     { sanitizer: { replaceWithChildrenElements: ["span"] } });
   assert_equals(container.querySelector("span"), null, "span was replaced with its children");
   assert_equals(container.shadowRoot, null);
-  assert_fallback_template(container, container);
-}, "setHTMLUnsafe with a host replaced with its children: template is inserted, not patched");
+  assert_patched(container, container);
+}, "setHTMLUnsafe with a host replaced with its children: patches");
 
 test(() => {
-  // Control: when the shadow root is attached, "for" is ignored as well, and
-  // the marker is kept in the light tree.
+  // Control: when the shadow root is attached, "for" is ignored and the
+  // marker is kept in the light tree.
   const container = document.createElement("div");
   container.setHTMLUnsafe('<span><?marker name="x"><template shadowrootmode="open" for="x">content</template></span>');
   const span = container.querySelector("span");

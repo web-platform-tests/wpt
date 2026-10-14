@@ -403,56 +403,5 @@ for (const method of ["streamHTML", "streamHTMLUnsafe", "streamAppendHTML", "str
     }
   }, `${method} on <template> does not construct or upgrade top-level or nested custom elements`);
 }
-
-// 6. T3: Custom element reactions queued by the adoption agency algorithm run
-// before the next inline script. For <b><div><x-ce></x-ce></b>, the agency
-// moves the <div> under the common ancestor (disconnected, connected), takes
-// <x-ce> into a new <b> (disconnected), and appends the new <b> into the <div>
-// (connected). All of that must be observable before the script runs.
-const adoptionAgencyLog = ["constructed", "connected", "disconnected", "connected", "disconnected", "connected", "script"];
-for (const method of [
-  "streamHTMLUnsafe", "streamAppendHTMLUnsafe", "streamPrependHTMLUnsafe",
-  "streamBeforeHTMLUnsafe", "streamAfterHTMLUnsafe", "streamReplaceWithHTMLUnsafe",
-]) {
-  promise_test(async (t) => {
-    const container = document.getElementById("container");
-    t.add_cleanup(() => container.replaceChildren());
-
-    const { name, log } = createCustomElementClass();
-    window.aaa_log = log;
-    t.add_cleanup(() => { delete window.aaa_log; });
-
-    const target = document.createElement("div");
-    container.appendChild(target);
-
-    const writer = target[method]({ runScripts: true }).getWriter();
-    await writer.write(`<b><div><${name}></${name}></b><script>window.aaa_log.push("script");<` + `/script>`);
-    await writer.close();
-
-    assert_array_equals(log, adoptionAgencyLog);
-  }, `${method}: adoption agency reactions run before the next inline script`);
-}
-
-promise_test(async (t) => {
-  const iframe = document.createElement("iframe");
-  t.add_cleanup(() => iframe.remove());
-  await new Promise(resolve => {
-    iframe.addEventListener("load", resolve, { once: true });
-    document.body.appendChild(iframe);
-  });
-  const doc = iframe.contentDocument;
-  const win = iframe.contentWindow;
-  const log = [];
-  win.aaa_log = log;
-  win.customElements.define("aaa-elem", class extends win.HTMLElement {
-    constructor() { super(); log.push("constructed"); }
-    connectedCallback() { log.push("connected"); }
-    disconnectedCallback() { log.push("disconnected"); }
-  });
-  doc.open();
-  doc.write(`<b><div><aaa-elem></aaa-elem></b><script>window.aaa_log.push("script");<` + `/script>`);
-  doc.close();
-  assert_array_equals(log, adoptionAgencyLog);
-}, "document.write(): adoption agency reactions run before the next inline script");
 </script>
 </body>

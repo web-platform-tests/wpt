@@ -91,7 +91,7 @@ for (const method of asyncMethods) {
       const container = document.getElementById("container");
       t.add_cleanup(() => container.replaceChildren());
 
-      const shadow = container.attachShadow({ mode: "open", registry });
+      const shadow = container.attachShadow({ mode: "open", customElementRegistry: registry });
       t.add_cleanup(() => {
         const newContainer = document.createElement("div");
         newContainer.id = "container";
@@ -178,7 +178,7 @@ for (const method of syncMethods) {
       const container = document.getElementById("container");
       t.add_cleanup(() => container.replaceChildren());
 
-      const shadow = container.attachShadow({ mode: "open", registry });
+      const shadow = container.attachShadow({ mode: "open", customElementRegistry: registry });
       t.add_cleanup(() => {
         const newContainer = document.createElement("div");
         newContainer.id = "container";

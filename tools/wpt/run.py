@@ -266,18 +266,6 @@ class GenericBrowserSetup(BrowserSetup):
         super().__init__(venv, prompt)
 
 
-def safe_unsetenv(env_var):
-    """Safely remove an environment variable.
-
-    Python3 does not support os.unsetenv in Windows for python<3.9, so we better
-    remove the variable directly from os.environ.
-    """
-    try:
-        del os.environ[env_var]
-    except KeyError:
-        pass
-
-
 class Firefox(BrowserSetup):
     name = "firefox"
     browser_cls = browser.Firefox
@@ -346,11 +334,6 @@ Consider installing certutil via your OS package manager or directly.""")
 
         if kwargs["enable_webtransport_h3"] is None:
             kwargs["enable_webtransport_h3"] = True
-
-        # Turn off Firefox WebRTC ICE logging on WPT (turned on by mozrunner)
-        safe_unsetenv('R_LOG_LEVEL')
-        safe_unsetenv('R_LOG_DESTINATION')
-        safe_unsetenv('R_LOG_VERBOSE')
 
         # Allow WebRTC tests to call getUserMedia.
         kwargs["extra_prefs"].append("media.navigator.streams.fake=true")

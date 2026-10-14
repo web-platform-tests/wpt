@@ -10,7 +10,7 @@ import subprocess
 import sys
 import tempfile
 import traceback
-from collections import defaultdict
+from collections import Counter, defaultdict
 from typing import (Any, Callable, Dict, IO, Iterable, List, Optional, Sequence, Set, Text, Tuple,
                     Type, TypeVar)
 
@@ -264,27 +264,42 @@ def check_unique_testharness_basenames(repo_root: Text, paths: List[Text]) -> Li
 
 
 def check_unique_case_insensitive_paths(repo_root: Text, paths: List[Text]) -> List[rules.Error]:
-    # A case-insensitive file system also merges directories. Of the spellings of
-    # a path, the one with the most files is taken to be correct.
-    spellings: Dict[Text, Dict[Text, int]] = defaultdict(dict)
-    split_paths = [path.split(os.path.sep) for path in paths]
-    for parts in split_paths:
+    # A case-insensitive file system also merges directories, so check those too.
+    seen: Dict[Text, Text] = {}
+    duplicates: Set[Text] = set()
+    directories: Set[Text] = set()
+    for path in paths:
+        names = [path]
+        directory = path.rpartition(os.path.sep)[0]
+        while directory and directory not in directories:
+            directories.add(directory)
+            names.append(directory)
+            directory = directory.rpartition(os.path.sep)[0]
+        for name in names:
+            first = seen.setdefault(name.lower(), name)
+            if first != name:
+                duplicates.update((first, name))
+
+    if not duplicates:
+        return []
+
+    # Take the spelling with the most files to be correct. Ties go to the one seen first.
+    duplicate_prefixes = []
+    file_counts: Dict[Text, Counter[Text]] = defaultdict(Counter)
+    for path in paths:
+        parts = path.split(os.path.sep)
         for i in range(1, len(parts) + 1):
             prefix = os.path.sep.join(parts[:i])
-            counts = spellings[prefix.lower()]
-            counts[prefix] = counts.get(prefix, 0) + 1
+            if prefix in duplicates:
+                duplicate_prefixes.append((path, prefix))
+                file_counts[prefix.lower()][prefix] += 1
+                break
 
     errors = []
-    for path, parts in zip(paths, split_paths):
-        for i in range(1, len(parts) + 1):
-            prefix = os.path.sep.join(parts[:i])
-            counts = spellings[prefix.lower()]
-            if len(counts) == 1:
-                continue
-            expected = max(counts, key=counts.__getitem__)
-            if prefix != expected:
-                errors.append(rules.DuplicatePathCaseInsensitive.error(path, (expected,)))
-                break
+    for path, prefix in duplicate_prefixes:
+        correct_spelling, _ = file_counts[prefix.lower()].most_common(1)[0]
+        if prefix != correct_spelling:
+            errors.append(rules.DuplicatePathCaseInsensitive.error(path, (correct_spelling,)))
     return errors
 
 

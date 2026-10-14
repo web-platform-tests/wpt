@@ -307,8 +307,7 @@ const sizeOfShape = (array) => {
 /**
  * Get bitwise of the given value.
  * @param {Number} value
- * @param {String} dataType - A data type string; currently only "float32" is
- *     supported by this function.
+ * @param {String} dataType - Either "float16" or "float32".
  * @return {BigInt} A 64-bit signed integer.
  */
 const getBitwise = (value, dataType) => {
@@ -317,6 +316,8 @@ const getBitwise = (value, dataType) => {
   let typedArray;
   if (dataType === "float32") {
     typedArray = new Float32Array(buffer);
+  } else if (dataType === "float16") {
+    typedArray = new Float16Array(buffer);
   } else {
     throw new AssertionError(`Data type ${dataType} is not supported`);
   }
@@ -347,7 +348,7 @@ const assert_array_approx_equals_ulp = (actual, expected, nulp, dataType, descri
       actual.length, expected.length,
       `assert_array_approx_equals_ulp: ${description} lengths differ`);
   for (let i = 0; i < actual.length; i++) {
-    if (actual[i] === expected[i]) {
+    if (dataType !== 'float16' && actual[i] === expected[i]) {
       continue;
     } else {
       const actualValue = dataType === 'float16' ?
@@ -391,17 +392,11 @@ const ulpDistance = (a, b, dataType) => {
     aBitwise = getBitwise(a, dataType);
     bBitwise = getBitwise(b, dataType);
   } else if (dataType === 'float16') {
-    aBitwise = a;
-    // convert b data of Float16 to Uint16
-    bBitwise = toHalf(b);
-
-    // Workaround to use mask to check returned special float16 value -0.0 which
-    // is 32768 (1000 0000 0000 0000) of uint16
-    const signExclusionMask = 0x00007FFF;
-    if ((aBitwise & signExclusionMask) === 0 &&
-        (bBitwise & signExclusionMask) === 0) {
-      return 0;
-    }
+    // The current tensor-readback helpers return Uint16 storage encodings,
+    // whereas expected values are numbers. Decode before sharing the same
+    // signed ordering as float32; preserve the float16 distance's Number type.
+    aBitwise = Number(getBitwise(float16AsUint16ToNumber(a), dataType));
+    bBitwise = Number(getBitwise(b, dataType));
   } else if (dataType === 'int64' || dataType === 'uint64') {
     aBitwise = BigInt(a);
     bBitwise = BigInt(b);

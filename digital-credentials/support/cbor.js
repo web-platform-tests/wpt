@@ -1,7 +1,4 @@
 export function encodeHead(majorType, val) {
-  if (!Number.isInteger(val) || val < 0 || val > 4294967295) {
-    throw new RangeError("Value must be an integer from 0 to 4294967295");
-  }
   if (val < 24) {
     return new Uint8Array([(majorType << 5) | val]);
   } else if (val < 256) {
@@ -19,21 +16,7 @@ export function encodeHead(majorType, val) {
   }
 }
 
-export function concat(arrays) {
-  let total = 0;
-  for (const a of arrays) total += a.length;
-  const res = new Uint8Array(total);
-  let offset = 0;
-  for (const a of arrays) {
-    res.set(a, offset);
-    offset += a.length;
-  }
-  return res;
-}
-
-export function cborUint(val) {
-  return encodeHead(0, val);
-}
+export const concat = (arrays) => new Uint8Array(arrays.flatMap((a) => [...a]));
 
 export function cborBytes(arr) {
   return concat([encodeHead(2, arr.length), arr]);
@@ -49,12 +32,7 @@ export function cborArray(items) {
 }
 
 export function cborMap(pairs) {
-  const parts = [encodeHead(5, pairs.length)];
-  for (const [k, v] of pairs) {
-    parts.push(k);
-    parts.push(v);
-  }
-  return concat(parts);
+  return concat([encodeHead(5, pairs.length), ...pairs.flat()]);
 }
 
 export function cborTag(tag, item) {
@@ -63,9 +41,4 @@ export function cborTag(tag, item) {
 
 export function cborBool(val) {
   return new Uint8Array([val ? 0xf5 : 0xf4]);
-}
-
-export function toBase64Url(arr) {
-  const b64 = btoa(String.fromCharCode.apply(null, arr));
-  return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }

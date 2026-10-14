@@ -3,6 +3,7 @@
 <title>Largest Contentful Paint: performance entries are emitted in the expected sequence</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/largest-contentful-paint-helpers.js"></script>
 
 <div id="container"></div>
 
@@ -24,6 +25,8 @@
       window.PerformancePaintTiming, "PerformancePaintTiming is not implemented");
     assert_implements(
       window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
+
+    const lcpEntriesPromise = observeLCPEntries(3);
 
     requestAnimationFrame(() => {
       // Frame 1: paint three divs, with one being the largest. This should produce
@@ -48,17 +51,8 @@
       });
     });
 
-    const lcpEntries = await new Promise(resolve => {
-      const entries = [];
-      const observer = new PerformanceObserver(entryList => {
-        entries.push(...entryList.getEntries());
-        if (entries.length == 3) {
-          observer.disconnect();
-          resolve(entries);
-        }
-      });
-      observer.observe({type: 'largest-contentful-paint', buffered: true});
-    });
+    const lcpEntries = await awaitEntry(t, lcpEntriesPromise,
+        'Timed out waiting for the three LCP entries');
 
     assert_equals(lcpEntries.length, 3);
     assert_equals(lcpEntries[0].id, 'text2');

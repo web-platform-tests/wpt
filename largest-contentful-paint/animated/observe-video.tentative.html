@@ -9,22 +9,18 @@
 </head>
 <body>
   <script>
+    assert_implements(window.LargestContentfulPaint,
+                      "LargestContentfulPaint is not implemented");
+    const beforeLoad = performance.now();
+    const url = window.location.origin +
+                `/media/test-1s.webm?pipe=trickle(1500:d${delay_pipe_value})`;
+    // test-1s.webm is 320 by 240.
+    // TODO(yoav): Validate the load and render times as well. They are
+    // currently skipped by 'skipTiming'.
     promise_test(async () => {
-      assert_implements(window.LargestContentfulPaint,
-                        "LargestContentfulPaint is not implemented");
-      const beforeLoad = performance.now();
-      // 136 is the size of the animated GIF up until the first frame.
-      // The trickle pipe delays the response after the first frame by 1 second.
-      const url = window.location.origin +
-                  `/media/test-1s.webm?pipe=trickle(1500:d${delay_pipe_value})`;
       const entry = await load_video_and_observe(url);
-      // Video is 320 x 184.
-      const size = 320 * 184;
-      // TODO(yoav): Validate size as well as load and render times. "skip" is
-      // currently causing those checks to be skipped.
-      checkImage(entry, url, 'video_id', size, beforeLoad, ["skip"]);
-    }, "Same origin animated image is observable and has a first frame.");
+      checkEntry(entry, url, 'video_id', 320 * 240, beforeLoad, ["skipTiming"]);
+    }, "Same-origin video is observable and has a first frame.");
   </script>
 </body>
 </html>
-

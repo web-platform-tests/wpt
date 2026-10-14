@@ -4,23 +4,17 @@
   to be emitted</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/largest-contentful-paint-helpers.js"></script>
 
 <body>
   <script>
-    const get_lcp_entry = () => {
-      return new Promise(resolve => {
-        new PerformanceObserver((list, observer) => {
-          if (list.getEntries()) {
-            observer.disconnect();
-            resolve(list.getEntries()[0]);
-          }
-        }).observe({ type: "largest-contentful-paint", buffered: true });
-      });
-    };
-
     promise_test(async t => {
-      lcpEntry = await get_lcp_entry();
-      assert_true(lcpEntry.url.startsWith('data:video/webm;base64,GkXfo59C'));
+      // The base64 video can take a while to decode; allow most of the
+      // harness timeout.
+      const entry = await awaitEntry(t,
+          observeLCP(entry => entry.url !== ''),
+          'Timed out waiting for the video entry', 9000);
+      assert_true(entry.url.startsWith('data:video/webm;base64,GkXfo59C'));
     }, "Video of data URI src should trigger an LCP entry to be emitted.")
   </script>
   <!--

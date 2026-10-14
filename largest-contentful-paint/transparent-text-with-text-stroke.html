@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/largest-contentful-paint-helpers.js"></script>
 <!--
   Transparent text with text stroke decoration should be eligible for LCP.
 -->
@@ -24,24 +25,18 @@
   <p id='larger_text' class='large-transparent'>fake LCP</p>
 
   <script>
-    const LcpEntryPromise = (entry_id) => {
-      return new Promise(resolve => {
-        new PerformanceObserver((entryList, observer) => {
-          if (entryList.getEntries().filter(e => e.id == entry_id).length > 0) {
-            resolve(entryList.getEntries());
-            observer.disconnect();
-          }
-        }).observe({ type: 'largest-contentful-paint', buffered: true });
-      });
-    }
-
     promise_test(async t => {
       assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
 
-      lcpEntries = await LcpEntryPromise('larger_text');
+      const lcpEntries = await collectLCPEntries(t, {settleMs: 300});
+      const lastEntry = lcpEntries[lcpEntries.length - 1];
 
-      assert_equals(lcpEntries[lcpEntries.length - 1].id, 'larger_text',
+      assert_equals(lastEntry.id, 'larger_text',
         "Transparent text with text stroke decoration was included in LCP but not at correct place in timeline.");
+      assert_equals(lastEntry.element, document.getElementById('larger_text'),
+        "Entry element should be the transparent text element.");
+      assert_equals(lastEntry.url, "", "Entry url should be empty for text.");
     }, "Transparent text with text stroke decoration should not be excluded from LCP.")
   </script>
 </body>
+</html>

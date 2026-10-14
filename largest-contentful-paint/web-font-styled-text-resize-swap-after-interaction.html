@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/largest-contentful-paint-helpers.js"></script>
 <script src=/resources/testdriver.js></script>
 <script src=/resources/testdriver-actions.js></script>
 <script src=/resources/testdriver-vendor.js></script>
@@ -26,29 +27,12 @@
     styleSheet.insertRule(fontAtRule);
   }
 
-  function LCPEntryList(t) {
-    return new Promise(resolve => {
-      let = lcpEntries = [];
-      new PerformanceObserver((entryList, observer) => {
-        lcpEntries = lcpEntries.concat(entryList.getEntries());
-        if (lcpEntries) {
-          // Adding timeout to wait a bit more so that if there are more than
-          // expected LCP entries emitted, they can be observed.
-          t.step_timeout(() => {
-            resolve(lcpEntries);
-            observer.disconnect();
-          }, 200);
-        }
-      }).observe({ type: 'largest-contentful-paint', buffered: true });
-    });
-  }
-
   promise_test(async t => {
     await document.fonts.ready;
     let system_font_size = document.getElementsByClassName('test')[0].offsetHeight;
 
     // Verify an LCP entry is emitted.
-    let entryList = await LCPEntryList(t);
+    let entryList = await collectLCPEntries(t);
     assert_equals(entryList.length, 1, 'Text with system font should make a LCP emission.');
 
     let lcpEntryBeforeInteraction = entryList[0];
@@ -79,7 +63,7 @@
 
     // Assert there is only 1 LCP entry, which verifies the added web font does
     // not make a new LCP entry after an input.
-    entryList = await LCPEntryList(t);
+    entryList = await collectLCPEntries(t);
     assert_equals(entryList.length, 1, 'Text with system font should not make a LCP emission.');
 
     // Verify the LCP entry is the same one emitted before interaction by

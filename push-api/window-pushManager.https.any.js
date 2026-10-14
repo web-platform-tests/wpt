@@ -6,12 +6,13 @@
 // Tests for window.pushManager
 // https://w3c.github.io/push-api/#extensions-to-the-serviceworkerregistration-interface
 
-import { encrypt } from "/push-api/resources/helpers.js"
+import { pushMessage } from "/push-api/resources/helpers.js"
 
 let windowSubscription;
 promise_setup(async () => {
   await trySettingPermission("granted");
   windowSubscription = await pushManager.subscribe();
+  add_completion_callback(() => windowSubscription.unsubscribe());
 });
 
 promise_test(async t => {
@@ -23,15 +24,7 @@ promise_test(async t => {
   navigator.serviceWorker.addEventListener("message", e => {
     resolve(e.data.data.text);
   }, {once: true});
-  const result = await encrypt(
-    new TextEncoder().encode("Hello"),
-    windowSubscription.getKey("p256dh"),
-    windowSubscription.getKey("auth")
-  );
-  await fetch(windowSubscription.endpoint, {
-    method: "post",
-    ...result
-  });
+  await pushMessage(windowSubscription, { message: "Hello" });
   const pushText = await promise;
   assert_equals(pushText, "Hello",
     "Service worker should get push event when push message is sent through window.pushManager.");

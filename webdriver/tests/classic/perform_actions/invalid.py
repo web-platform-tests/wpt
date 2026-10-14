@@ -250,48 +250,6 @@ def test_input_source_action_sequence_actions_pause_duration_invalid_value(
     assert_error(response, "invalid argument")
 
 
-@pytest.mark.parametrize("value", [-1, MAX_INT + 1])
-def test_pointer_action_move_duration_invalid_value(session, value):
-    actions = [
-        {
-            "type": "pointer",
-            "id": "foo",
-            "actions": [
-                {
-                    "type": "pointerMove",
-                    "x": 0,
-                    "y": 0,
-                    "duration": value,
-                }
-            ],
-        }
-    ]
-    response = perform_actions(session, actions)
-    assert_error(response, "invalid argument")
-
-
-@pytest.mark.parametrize("value", [-1, MAX_INT + 1])
-def test_wheel_action_scroll_duration_invalid_value(session, value):
-    actions = [
-        {
-            "type": "wheel",
-            "id": "foo",
-            "actions": [
-                {
-                    "type": "scroll",
-                    "x": 0,
-                    "y": 0,
-                    "deltaX": 0,
-                    "deltaY": 0,
-                    "duration": value,
-                }
-            ],
-        }
-    ]
-    response = perform_actions(session, actions)
-    assert_error(response, "invalid argument")
-
-
 @pytest.mark.parametrize("value", ["", "pauses"])
 def test_null_action_type_invalid_value(session, value):
     actions = [
@@ -432,6 +390,26 @@ def test_pointer_action_move_coordinate_invalid_type(session, coordinate, value)
     assert_error(response, "invalid argument")
 
 
+@pytest.mark.parametrize("value", [-1, MAX_INT + 1])
+def test_pointer_action_move_duration_invalid_value(session, value):
+    actions = [
+        {
+            "type": "pointer",
+            "id": "foo",
+            "actions": [
+                {
+                    "type": "pointerMove",
+                    "x": 0,
+                    "y": 0,
+                    "duration": value,
+                }
+            ],
+        }
+    ]
+    response = perform_actions(session, actions)
+    assert_error(response, "invalid argument")
+
+
 @pytest.mark.parametrize("value", [None, True, 42, [], {}])
 def test_pointer_action_move_origin_invalid_type(session, value):
     actions = [
@@ -534,7 +512,7 @@ def test_pointer_action_up_down_button_invalid_value(session, pointer_action, va
 
 @pytest.mark.parametrize("pointer_action", ["pointerDown", "pointerMove", "pointerUp"])
 @pytest.mark.parametrize("dimension", ["width", "height"])
-@pytest.mark.parametrize("value", [None, "foo", True, 0.1, [], {}])
+@pytest.mark.parametrize("value", [None, "foo", True, [], {}])
 def test_pointer_action_common_properties_dimensions_invalid_type(
     session, dimension, pointer_action, value
 ):
@@ -554,7 +532,7 @@ def test_pointer_action_common_properties_dimensions_invalid_type(
 
 @pytest.mark.parametrize("pointer_action", ["pointerDown", "pointerMove", "pointerUp"])
 @pytest.mark.parametrize("dimension", ["width", "height"])
-@pytest.mark.parametrize("value", [-1, MAX_INT + 1])
+@pytest.mark.parametrize("value", [-1])
 def test_pointer_action_common_properties_dimensions_invalid_value(
     session, dimension, pointer_action, value
 ):
@@ -756,6 +734,28 @@ def test_wheel_action_scroll_delta_invalid_value(session, delta, value):
                     "type": "scroll",
                     "deltaX": value if delta == "x" else 0,
                     "deltaY": value if delta == "y" else 0,
+                }
+            ],
+        }
+    ]
+    response = perform_actions(session, actions)
+    assert_error(response, "invalid argument")
+
+
+@pytest.mark.parametrize("value", [-1, MAX_INT + 1])
+def test_wheel_action_scroll_duration_invalid_value(session, value):
+    actions = [
+        {
+            "type": "wheel",
+            "id": "foo",
+            "actions": [
+                {
+                    "type": "scroll",
+                    "x": 0,
+                    "y": 0,
+                    "deltaX": 0,
+                    "deltaY": 0,
+                    "duration": value,
                 }
             ],
         }

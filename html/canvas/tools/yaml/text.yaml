@@ -6,6 +6,9 @@
     ctx.font = '20PX   SERIF';
     @assert ctx.font === '20px serif'; @moz-todo
 
+    ctx.font = '  15px sans-serif  ';
+    @assert ctx.font === '15px sans-serif';
+
 - name: 2d.text.font.parse.tiny
   code: |
     ctx.font = '1px sans-serif';
@@ -106,6 +109,10 @@
 
     ctx.font = '20px serif';
     ctx.font = '1em serif; background: green; margin: 10px';
+    @assert ctx.font === '20px serif';
+
+    ctx.font = '20px serif';
+    ctx.font = 'if(supports(list-style-type: disc): 13px MyFont)';
     @assert ctx.font === '20px serif';
 
 - name: 2d.text.font.default

@@ -1,7 +1,17 @@
 # SPDX-License-Identifier: MIT
 
+import os
+
 from importlib import metadata
 from pathlib import Path
+
+
+# Set canonical URL from the Read the Docs Domain
+html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "")
+
+# Tell Jinja2 templates the build is running on Read the Docs
+if os.environ.get("READTHEDOCS", "") == "True":
+    html_context = {"READTHEDOCS": True}
 
 
 # -- Path setup -----------------------------------------------------------
@@ -16,10 +26,14 @@ from attr import define, frozen, field, validators, Factory
 """
 
 linkcheck_ignore = [
+    # Fastly blocks this.
+    "https://pypi.org/project/attr/#history",
     # We run into GitHub's rate limits.
     r"https://github.com/.*/(issues|pull)/\d+",
     # Rate limits and the latest tag is missing anyways on release.
     "https://github.com/python-attrs/attrs/tree/.*",
+    # GitHub just completely broke anchors hashtag modern web dev.
+    "https://github.com/python-attrs/attrs/commit/88aa1c897dfe2ee4aa987e4a56f2ba1344a17238#diff-4fc63db1f2fcb7c6e464ee9a77c3c74e90dd191d1c9ffc3bdd1234d3a6663dc0R48",
 ]
 
 # In nitpick mode (-n), still ignore any of the following "broken" references
@@ -36,6 +50,7 @@ nitpick_ignore = [
 # ones.
 extensions = [
     "myst_parser",
+    "sphinx.ext.napoleon",
     "sphinx.ext.autodoc",
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
@@ -97,7 +112,7 @@ html_theme_options = {
     "sidebar_hide_name": True,
     "light_logo": "attrs_logo.svg",
     "dark_logo": "attrs_logo_white.svg",
-    "top_of_page_button": None,
+    "top_of_page_buttons": [],
     "light_css_variables": {
         "font-stack": "Inter,sans-serif",
         "font-stack--monospace": "BerkeleyMono, MonoLisa, ui-monospace, "
@@ -162,12 +177,12 @@ texinfo_documents = [
         "attrs Documentation",
         "Hynek Schlawack",
         "attrs",
-        "Python Clases Without Boilerplate",
+        "Python Classes Without Boilerplate",
         "Miscellaneous",
     )
 ]
 
-epub_description = "Python Clases Without Boilerplate"
+epub_description = "Python Classes Without Boilerplate"
 
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 

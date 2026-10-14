@@ -4,7 +4,7 @@
 import functools
 import types
 
-from ._make import _make_ne
+from ._make import __ne__
 
 
 _operation_names = {"eq": "==", "lt": "<", "le": "<=", "gt": ">", "ge": ">="}
@@ -26,21 +26,31 @@ def cmp_using(
     The resulting class will have a full set of ordering methods if at least
     one of ``{lt, le, gt, ge}`` and ``eq``  are provided.
 
-    :param Optional[callable] eq: `callable` used to evaluate equality of two
-        objects.
-    :param Optional[callable] lt: `callable` used to evaluate whether one
-        object is less than another object.
-    :param Optional[callable] le: `callable` used to evaluate whether one
-        object is less than or equal to another object.
-    :param Optional[callable] gt: `callable` used to evaluate whether one
-        object is greater than another object.
-    :param Optional[callable] ge: `callable` used to evaluate whether one
-        object is greater than or equal to another object.
+    Args:
+        eq (typing.Callable | None):
+            Callable used to evaluate equality of two objects.
 
-    :param bool require_same_type: When `True`, equality and ordering methods
-        will return `NotImplemented` if objects are not of the same type.
+        lt (typing.Callable | None):
+            Callable used to evaluate whether one object is less than another
+            object.
 
-    :param Optional[str] class_name: Name of class. Defaults to 'Comparable'.
+        le (typing.Callable | None):
+            Callable used to evaluate whether one object is less than or equal
+            to another object.
+
+        gt (typing.Callable | None):
+            Callable used to evaluate whether one object is greater than
+            another object.
+
+        ge (typing.Callable | None):
+            Callable used to evaluate whether one object is greater than or
+            equal to another object.
+
+        require_same_type (bool):
+            When `True`, equality and ordering methods will return
+            `NotImplemented` if objects are not of the same type.
+
+        class_name (str | None): Name of class. Defaults to "Comparable".
 
     See `comparison` for more details.
 
@@ -61,7 +71,7 @@ def cmp_using(
     if eq is not None:
         has_eq_function = True
         body["__eq__"] = _make_operator("eq", eq)
-        body["__ne__"] = _make_ne()
+        body["__ne__"] = __ne__
 
     if lt is not None:
         num_order_functions += 1

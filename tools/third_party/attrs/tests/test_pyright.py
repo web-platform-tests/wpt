@@ -10,8 +10,6 @@ from pathlib import Path
 
 import pytest
 
-import attrs
-
 
 pytestmark = [
     pytest.mark.skipif(
@@ -20,21 +18,16 @@ pytestmark = [
 ]
 
 
-@attrs.frozen
-class PyrightDiagnostic:
-    severity: str
-    message: str
-
-
-def parse_pyright_output(test_file: Path) -> set[PyrightDiagnostic]:
+def parse_pyright_output(test_file: Path) -> set[tuple[str, str]]:
     pyright = subprocess.run(  # noqa: PLW1510
         ["pyright", "--outputjson", str(test_file)], capture_output=True
     )
 
     pyright_result = json.loads(pyright.stdout)
 
+    # We use tuples instead of proper classes to get nicer diffs from pytest.
     return {
-        PyrightDiagnostic(d["severity"], d["message"])
+        (d["severity"], d["message"])
         for d in pyright_result["generalDiagnostics"]
     }
 
@@ -49,41 +42,38 @@ def test_pyright_baseline():
 
     diagnostics = parse_pyright_output(test_file)
 
-    # Expected diagnostics as per pyright 1.1.311
     expected_diagnostics = {
-        PyrightDiagnostic(
-            severity="information",
-            message='Type of "Define.__init__" is'
-            ' "(self: Define, a: str, b: int) -> None"',
+        (
+            "information",
+            'Type of "Define.__init__" is "(self: Define, a: str, b: int) -> None"',
         ),
-        PyrightDiagnostic(
-            severity="information",
-            message='Type of "DefineConverter.__init__" is '
+        (
+            "information",
+            'Type of "DefineConverter.__init__" is '
             '"(self: DefineConverter, with_converter: str | Buffer | '
             'SupportsInt | SupportsIndex | SupportsTrunc) -> None"',
         ),
-        PyrightDiagnostic(
-            severity="error",
-            message='Cannot assign member "a" for type '
-            '"Frozen"\n\xa0\xa0"Frozen" is frozen\n\xa0\xa0\xa0\xa0Member "__set__" is unknown',
+        (
+            "error",
+            'Cannot assign to attribute "a" for class '
+            '"Frozen"\n\xa0\xa0Attribute "a" is read-only',
         ),
-        PyrightDiagnostic(
-            severity="information",
-            message='Type of "d.a" is "Literal[\'new\']"',
+        (
+            "information",
+            'Type of "d.a" is "Literal[\'new\']"',
         ),
-        PyrightDiagnostic(
-            severity="error",
-            message='Cannot assign member "a" for type '
-            '"FrozenDefine"\n\xa0\xa0"FrozenDefine" is frozen\n\xa0\xa0\xa0\xa0'
-            'Member "__set__" is unknown',
+        (
+            "error",
+            'Cannot assign to attribute "a" for class '
+            '"FrozenDefine"\n\xa0\xa0Attribute "a" is read-only',
         ),
-        PyrightDiagnostic(
-            severity="information",
-            message='Type of "d2.a" is "Literal[\'new\']"',
+        (
+            "information",
+            'Type of "d2.a" is "Literal[\'new\']"',
         ),
-        PyrightDiagnostic(
-            severity="information",
-            message='Type of "af.__init__" is "(_a: int) -> None"',
+        (
+            "information",
+            'Type of "af.__init__" is "(_a: int) -> None"',
         ),
     }
 
@@ -110,9 +100,9 @@ reveal_type(attrs.AttrsInstance)
 
     diagnostics = parse_pyright_output(test_pyright_attrsinstance_compat_path)
     expected_diagnostics = {
-        PyrightDiagnostic(
-            severity="information",
-            message='Type of "attrs.AttrsInstance" is "type[AttrsInstance]"',
-        ),
+        (
+            "information",
+            'Type of "attrs.AttrsInstance" is "type[AttrsInstance]"',
+        )
     }
     assert diagnostics == expected_diagnostics

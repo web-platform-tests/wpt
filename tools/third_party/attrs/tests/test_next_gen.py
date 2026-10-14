@@ -14,6 +14,8 @@ import pytest
 import attr as _attr  # don't use it by accident
 import attrs
 
+from attr._compat import PY_3_11_PLUS
+
 
 @attrs.define
 class C:
@@ -36,7 +38,7 @@ class TestNextGen:
 
         A = attrs.make_class("A", classFields)
 
-        assert int == attrs.fields(A).testint.type
+        assert int is attrs.fields(A).testint.type
 
     def test_no_slots(self):
         """
@@ -226,7 +228,7 @@ class TestNextGen:
         @attrs.define
         class C:
             def __eq__(self, o):
-                raise ValueError()
+                raise ValueError
 
         with pytest.raises(ValueError):
             C() == C()
@@ -316,7 +318,7 @@ class TestNextGen:
 
         with pytest.raises(MyException) as ei:
             try:
-                raise ValueError()
+                raise ValueError
             except ValueError:
                 raise MyException("foo") from None
 
@@ -332,7 +334,7 @@ class TestNextGen:
             attrs.mutable,
         ],
     )
-    def test_setting_traceback_on_exception(self, decorator):
+    def test_setting_exception_mutable_attributes(self, decorator):
         """
         contextlib.contextlib (re-)sets __traceback__ on raised exceptions.
 
@@ -348,12 +350,22 @@ class TestNextGen:
             yield
 
         with do_nothing(), pytest.raises(MyException) as ei:
-            raise MyException()
+            raise MyException
 
         assert isinstance(ei.value, MyException)
 
         # this should not raise an exception either
         ei.value.__traceback__ = ei.value.__traceback__
+        ei.value.__cause__ = ValueError("cause")
+        ei.value.__context__ = TypeError("context")
+        ei.value.__suppress_context__ = True
+        ei.value.__suppress_context__ = False
+        ei.value.__notes__ = []
+        del ei.value.__notes__
+
+        if PY_3_11_PLUS:
+            ei.value.add_note("note")
+            del ei.value.__notes__
 
     def test_converts_and_validates_by_default(self):
         """

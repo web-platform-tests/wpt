@@ -4,7 +4,6 @@
 Tests for dunder methods from `attrib._make`.
 """
 
-
 import copy
 import inspect
 import pickle
@@ -20,8 +19,8 @@ from attr._make import (
     NOTHING,
     Factory,
     _add_repr,
-    _is_slot_cls,
-    _make_init,
+    _compile_and_eval,
+    _make_init_script,
     fields,
     make_class,
 )
@@ -65,16 +64,16 @@ class OrderCallableCSlots:
 # HashC is hashable by explicit definition while HashCSlots is hashable
 # implicitly.  The "Cached" versions are the same, except with hash code
 # caching enabled
-HashC = simple_class(hash=True)
-HashCSlots = simple_class(hash=None, eq=True, frozen=True, slots=True)
-HashCCached = simple_class(hash=True, cache_hash=True)
+HashC = simple_class(unsafe_hash=True)
+HashCSlots = simple_class(unsafe_hash=None, eq=True, frozen=True, slots=True)
+HashCCached = simple_class(unsafe_hash=True, cache_hash=True)
 HashCSlotsCached = simple_class(
-    hash=None, eq=True, frozen=True, slots=True, cache_hash=True
+    unsafe_hash=None, eq=True, frozen=True, slots=True, cache_hash=True
 )
 # the cached hash code is stored slightly differently in this case
 # so it needs to be tested separately
 HashCFrozenNotSlotsCached = simple_class(
-    frozen=True, slots=False, hash=True, cache_hash=True
+    frozen=True, slots=False, unsafe_hash=True, cache_hash=True
 )
 
 
@@ -87,22 +86,27 @@ def _add_init(cls, frozen):
     """
     has_pre_init = bool(getattr(cls, "__attrs_pre_init__", False))
 
-    cls.__init__ = _make_init(
+    script, globs, annots = _make_init_script(
         cls,
         cls.__attrs_attrs__,
         has_pre_init,
-        len(inspect.signature(cls.__attrs_pre_init__).parameters) > 1
-        if has_pre_init
-        else False,
+        (
+            len(inspect.signature(cls.__attrs_pre_init__).parameters) > 1
+            if has_pre_init
+            else False
+        ),
         getattr(cls, "__attrs_post_init__", False),
         frozen,
-        _is_slot_cls(cls),
+        "__slots__" in cls.__dict__,
         cache_hash=False,
         base_attr_map={},
         is_exc=False,
         cls_on_setattr=None,
         attrs_init=False,
     )
+    _compile_and_eval(script, globs, filename="__init__")
+    cls.__init__ = globs["__init__"]
+    cls.__init__.__annotations__ = annots
     return cls
 
 
@@ -442,17 +446,17 @@ class TestAddRepr:
 
 # these are for use in TestAddHash.test_cache_hash_serialization
 # they need to be out here so they can be un-pickled
-@attr.attrs(hash=True, cache_hash=False)
+@attr.attrs(unsafe_hash=True, cache_hash=False)
 class HashCacheSerializationTestUncached:
     foo_value = attr.ib()
 
 
-@attr.attrs(hash=True, cache_hash=True)
+@attr.attrs(unsafe_hash=True, cache_hash=True)
 class HashCacheSerializationTestCached:
     foo_value = attr.ib()
 
 
-@attr.attrs(slots=True, hash=True, cache_hash=True)
+@attr.attrs(slots=True, unsafe_hash=True, cache_hash=True)
 class HashCacheSerializationTestCachedSlots:
     foo_value = attr.ib()
 
@@ -480,12 +484,12 @@ class TestAddHash:
         exc_args = ("Invalid value for hash.  Must be True, False, or None.",)
 
         with pytest.raises(TypeError) as e:
-            make_class("C", {}, hash=1),
+            make_class("C", {}, unsafe_hash=1)
 
         assert exc_args == e.value.args
 
         with pytest.raises(TypeError) as e:
-            make_class("C", {"a": attr.ib(hash=1)}),
+            make_class("C", {"a": attr.ib(hash=1)})
 
         assert exc_args == e.value.args
 
@@ -500,13 +504,18 @@ class TestAddHash:
             "enabled.",
         )
         with pytest.raises(TypeError) as e:
-            make_class("C", {}, hash=False, cache_hash=True)
+            make_class("C", {}, unsafe_hash=False, cache_hash=True)
         assert exc_args == e.value.args
 
         # unhashable case
         with pytest.raises(TypeError) as e:
             make_class(
-                "C", {}, hash=None, eq=True, frozen=False, cache_hash=True
+                "C",
+                {},
+                unsafe_hash=None,
+                eq=True,
+                frozen=False,
+                cache_hash=True,
             )
         assert exc_args == e.value.args
 
@@ -520,7 +529,7 @@ class TestAddHash:
             " init must be True.",
         )
         with pytest.raises(TypeError) as e:
-            make_class("C", {}, init=False, hash=True, cache_hash=True)
+            make_class("C", {}, init=False, unsafe_hash=True, cache_hash=True)
         assert exc_args == e.value.args
 
     @given(booleans(), booleans())
@@ -532,7 +541,7 @@ class TestAddHash:
             "C",
             {"a": attr.ib(hash=False), "b": attr.ib()},
             slots=slots,
-            hash=True,
+            unsafe_hash=True,
             cache_hash=cache_hash,
         )
 
@@ -628,13 +637,13 @@ class TestAddHash:
         Uncached = make_class(
             "Uncached",
             {"hash_counter": attr.ib(factory=HashCounter)},
-            hash=True,
+            unsafe_hash=True,
             cache_hash=False,
         )
         Cached = make_class(
             "Cached",
             {"hash_counter": attr.ib(factory=HashCounter)},
-            hash=True,
+            unsafe_hash=True,
             cache_hash=True,
         )
 
@@ -659,7 +668,7 @@ class TestAddHash:
 
         # Give it an explicit hash if we don't have an implicit one
         if not frozen:
-            kwargs["hash"] = True
+            kwargs["unsafe_hash"] = True
 
         @attr.s(**kwargs)
         class C:
@@ -710,7 +719,7 @@ class TestAddHash:
         __reduce__ generated when cache_hash=True works in that case.
         """
 
-        @attr.s(frozen=frozen, cache_hash=True, hash=True)
+        @attr.s(frozen=frozen, cache_hash=True, unsafe_hash=True)
         class C:
             x = attr.ib()
 
@@ -835,6 +844,29 @@ class TestAddInit:
         assert [] == i.a
         assert isinstance(i.b, D)
 
+    def test_factory_takes_self(self):
+        """
+        If takes_self on factories is True, self is passed.
+        """
+        C = make_class(
+            "C",
+            {
+                "x": attr.ib(
+                    default=Factory((lambda self: self), takes_self=True)
+                )
+            },
+        )
+
+        i = C()
+
+        assert i is i.x
+
+    def test_factory_hashable(self):
+        """
+        Factory is hashable.
+        """
+        assert hash(Factory(None, False)) == hash(Factory(None, False))
+
     def test_validator(self):
         """
         If a validator is passed, call it with the preliminary instance, the
@@ -941,7 +973,7 @@ class TestNothing:
         assert False is bool(NOTHING)
 
 
-@attr.s(hash=True, order=True)
+@attr.s(unsafe_hash=True, order=True)
 class C:
     pass
 
@@ -950,7 +982,7 @@ class C:
 OriginalC = C
 
 
-@attr.s(hash=True, order=True)
+@attr.s(unsafe_hash=True, order=True)
 class C:
     pass
 
@@ -958,9 +990,11 @@ class C:
 CopyC = C
 
 
-@attr.s(hash=True, order=True)
+@attr.s(unsafe_hash=True, order=True)
 class C:
-    """A different class, to generate different methods."""
+    """
+    A different class, to generate different methods.
+    """
 
     a = attr.ib()
 
@@ -972,37 +1006,37 @@ class TestFilenames:
         """
         assert (
             OriginalC.__init__.__code__.co_filename
-            == "<attrs generated init tests.test_dunders.C>"
+            == "<attrs generated methods tests.test_dunders.C>"
         )
         assert (
             OriginalC.__eq__.__code__.co_filename
-            == "<attrs generated eq tests.test_dunders.C>"
+            == "<attrs generated methods tests.test_dunders.C>"
         )
         assert (
             OriginalC.__hash__.__code__.co_filename
-            == "<attrs generated hash tests.test_dunders.C>"
+            == "<attrs generated methods tests.test_dunders.C>"
         )
         assert (
             CopyC.__init__.__code__.co_filename
-            == "<attrs generated init tests.test_dunders.C>"
+            == "<attrs generated methods tests.test_dunders.C>"
         )
         assert (
             CopyC.__eq__.__code__.co_filename
-            == "<attrs generated eq tests.test_dunders.C>"
+            == "<attrs generated methods tests.test_dunders.C>"
         )
         assert (
             CopyC.__hash__.__code__.co_filename
-            == "<attrs generated hash tests.test_dunders.C>"
+            == "<attrs generated methods tests.test_dunders.C>"
         )
         assert (
             C.__init__.__code__.co_filename
-            == "<attrs generated init tests.test_dunders.C-1>"
+            == "<attrs generated methods tests.test_dunders.C-1>"
         )
         assert (
             C.__eq__.__code__.co_filename
-            == "<attrs generated eq tests.test_dunders.C-1>"
+            == "<attrs generated methods tests.test_dunders.C-1>"
         )
         assert (
             C.__hash__.__code__.co_filename
-            == "<attrs generated hash tests.test_dunders.C-1>"
+            == "<attrs generated methods tests.test_dunders.C-1>"
         )

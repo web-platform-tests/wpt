@@ -10,8 +10,8 @@ env:
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
   PIP_NO_PYTHON_VERSION_WARNING: "1"
 
-permissions:
-  contents: read
+permissions: {}
+
 
 jobs:
   docset:
@@ -20,15 +20,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v4
+          persist-credentials: false
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+      - uses: hynek/setup-cached-uv@v2
 
-      - run: python -Im pip install tox
+      - run: uvx --with=tox-uv tox run -e docset
 
-      - run: python -Im tox run -e docset
-
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: docset
           path: attrs.tgz

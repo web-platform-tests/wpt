@@ -17,7 +17,7 @@ True
 False
 ```
 
-So in other words: *attrs* is useful even without actual attributes!
+So in other words: *attrs* is useful even without actual {term}`fields <field>`!
 
 But you'll usually want some data on your classes, so let's add some:
 
@@ -112,7 +112,7 @@ This is useful in times when you want to enhance classes that are not yours (nic
 SomethingFromSomeoneElse(x=1)
 ```
 
-[Subclassing is bad for you](https://www.youtube.com/watch?v=3MNVP9-hglc), but *attrs* will still do what you'd hope for:
+[Subclassing is bad for you](https://www.youtube.com/watch?v=3MNVP9-hglc) (except when doing [strict specialization](https://hynek.me/articles/python-subclassing-redux/)), but *attrs* will still do what you'd hope for:
 
 ```{doctest}
 >>> @define(slots=False)
@@ -569,7 +569,7 @@ AutoC(l=[], x=1, foo='every attrib needs a type if auto_attribs=True', bar=None)
 
 The generated `__init__` method will have an attribute called `__annotations__` that contains this type information.
 
-If your annotations contain strings (e.g. forward references),
+If your annotations contain strings (for example, forward references),
 you can resolve these after all references have been defined by using {func}`attrs.resolve_types`.
 This will replace the *type* attribute in the respective fields.
 
@@ -674,8 +674,36 @@ C(x=1, y=3)
 False
 ```
 
+On Python 3.13 and later, you can also use {func}`copy.replace` from the standard library:
+
+```{doctest}
+>>> import copy
+>>> @frozen
+... class C:
+...     x: int
+...     y: int
+>>> i = C(1, 2)
+>>> copy.replace(i, y=3)
+C(x=1, y=3)
+```
+
 
 ## Other Goodies
+
+When building systems that have something resembling a plugin interface, you may want to have a registry of all classes that implement a certain interface:
+
+```{doctest}
+>>> REGISTRY = []
+>>> class Base:  # does NOT have to be an attrs class!
+...     @classmethod
+...     def __attrs_init_subclass__(cls):
+...         REGISTRY.append(cls)
+>>> @define
+... class Impl(Base):
+...     pass
+>>> REGISTRY
+[<class 'Impl'>]
+```
 
 Sometimes you may want to create a class programmatically.
 *attrs* gives you {func}`attrs.make_class` for that:
@@ -689,7 +717,7 @@ Sometimes you may want to create a class programmatically.
 >>> C2 = make_class("C2", {"x": field(type=int), "y": field()})
 >>> fields(C1) == fields(C2)
 True
->>> fields(C1).x.type
+>>> fields(C2).x.type
 <class 'int'>
 ```
 

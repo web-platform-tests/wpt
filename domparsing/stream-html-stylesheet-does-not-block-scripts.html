@@ -81,8 +81,12 @@
       await done;
       assert_array_equals(window.events, ["external"]);
       assert_less_than(performance.now() - start, 2500, "the external script ran without waiting for the style sheet");
+      // The close promise doesn't wait for the parser, which resumes after the
+      // external script in a task.
       await writer.close();
-      assert_not_equals(target.querySelector("#after-external"), null);
+      await t.step_wait(() => target.querySelector("#after-external"),
+                        "parsing resumed after the external script without waiting for the style sheet", 2500);
+      assert_less_than(performance.now() - start, 2500, "parsing resumed without waiting for the style sheet");
     }, `${method}: a streamed <link rel=stylesheet> does not block a following streamed external script`);
   }
 </script>

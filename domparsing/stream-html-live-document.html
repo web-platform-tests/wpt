@@ -59,7 +59,9 @@
       assert_equals(target.querySelector("#later").ownerDocument, doc);
 
       doc.close();
-      assert_equals(doc.readyState, "complete");
+      // "The end" sets the readiness to "interactive" synchronously, and to
+      // "complete" from a later task.
+      assert_not_equals(doc.readyState, "loading", "document.close() ended the implied document.open()");
       assert_not_equals(doc.getElementById("written"), null);
     }, `document.write() from a script streamed by ${method} writes to the live document`);
 

@@ -115,6 +115,7 @@
 
   promise_test(async (t) => {
     const style = document.querySelector("#style");
+    t.add_cleanup(() => { style.textContent = ""; });
     const writable = style.streamAppendHTML();
     assert_true(
       writable instanceof WritableStream,
@@ -130,20 +131,24 @@
   }, "streamAppendHTML() can stream into <style>");
 
   promise_test(async (t) => {
+    const target = document.querySelector("#target");
+    assert_not_equals(getComputedStyle(target).color, "rgb(0, 100, 100)",
+                      "sanity: the color is not already applied");
     const style = document.createElement("style");
     style.innerHTML = "#target { color: rgba";
+    document.head.append(style);
+    t.add_cleanup(() => style.remove());
+    assert_not_equals(getComputedStyle(target).color, "rgb(0, 100, 100)",
+                      "sanity: the incomplete rule does not apply");
     const writable = style.streamAppendHTML();
     assert_true(
       writable instanceof WritableStream,
       "node.streamAppendHTML() returns a writable stream",
     );
     const writer = await writable.getWriter();
-    await writer.write("(100, 0, 100); }");
+    await writer.write("(0, 100, 100); }");
     await writer.close();
-    assert_equals(
-      getComputedStyle(document.querySelector("#target")).color,
-      "rgb(100, 0, 100)",
-    );
+    assert_equals(getComputedStyle(target).color, "rgb(0, 100, 100)");
   }, "streamAppendHTML() can stream into a non-empty <style>");
 
   promise_test(async (t) => {

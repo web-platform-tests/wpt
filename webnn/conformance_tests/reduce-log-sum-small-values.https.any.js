@@ -11,6 +11,8 @@
 // reduceLogSum is log(sum(x)), without an added epsilon. All input values
 // below are exactly representable in both input types. The large-sum case
 // has a finite float16 result even though the sum exceeds float16's range.
+// That case assumes at least float32 intermediate accumulation, or another
+// algorithm that avoids float16 overflow before taking the logarithm.
 const logSumSmallValueTests = [];
 for (const dataType of ['float32', 'float16']) {
   const expected = dataType === 'float32' ? {

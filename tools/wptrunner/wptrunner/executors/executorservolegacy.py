@@ -244,7 +244,7 @@ class ServoLegacyRefTestExecutor(ServoExecutorMixin, RefTestExecutor):
         os.rmdir(self.tempdir)
         super().teardown()
 
-    def screenshot(self, test, viewport_size, dpi, page_ranges):
+    def screenshot(self, test, viewport_size, dpi, page_ranges, safe_printable_inset):
         with TempFilename(self.tempdir) as output_path:
             extra_args = ["--exit",
                           "--output=%s" % output_path,

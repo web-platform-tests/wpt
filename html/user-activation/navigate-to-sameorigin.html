@@ -80,7 +80,7 @@
     {
       const context = new RemoteContext(uuid2);
       const result = await context.execute_script(getUserActivationState);
-      assertUserActivationState(result, false, true, "after window redirected");
+      assertUserActivationState(result, false, true, "after window navigated");
     }
 }, "User activation propagation across a same-origin navigation");
 </script>

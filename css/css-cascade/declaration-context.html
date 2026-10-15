@@ -135,6 +135,52 @@ test(t => {
   assert_equals(style.getPropertyValue('display'), 'grid');
 }, 'Declarations after a nested @page inside @scope are not restricted');
 
+const computed = getComputedStyle(document.documentElement);
+const allProperties = Array.from(computed, name => [name, computed.getPropertyValue(name)]);
+const allDeclarations = allProperties.map(([name, value]) => `${name}: ${value};`).join(' ');
+
+function checkMatches(scoped, unscoped) {
+  for (const [name] of allProperties) {
+    assert_equals(scoped.getPropertyValue(name), unscoped.getPropertyValue(name), name);
+  }
+}
+
+function testScopedMatches(description, getUnscopedStyle, getScopedStyle) {
+  test(t => {
+    checkMatches(getScopedStyle(t, allDeclarations), getUnscopedStyle(t, allDeclarations));
+  }, `${description} parses the same declarations`);
+
+  test(t => {
+    const unscoped = getUnscopedStyle(t, '');
+    const scoped = getScopedStyle(t, '');
+    for (const [name, value] of allProperties) {
+      unscoped.setProperty(name, value);
+      scoped.setProperty(name, value);
+    }
+    checkMatches(scoped, unscoped);
+  }, `${description} accepts the same properties set`);
+}
+
+for (const [kind, ruleText, getStyle] of [
+  ['@position-try', body => `@position-try --fallback { ${body} }`, rule => rule.style],
+  ['@keyframes', body => `@keyframes k { to { ${body} } }`, rule => rule.cssRules[0].style],
+  ['@page', body => `@page { ${body} }`, rule => rule.style],
+]) {
+  testScopedMatches(
+    `${kind} inside @scope vs. in the stylesheet`,
+    (t, body) => getStyle(createSheet(t, ruleText(body)).cssRules[0]),
+    (t, body) => getStyle(createSheet(t, `@scope (:root) { ${ruleText(body)} }`).cssRules[0].cssRules[0]));
+}
+
+testScopedMatches(
+  'Bare declarations inside @scope vs. in a style rule',
+  (t, body) => createSheet(t, `:root { --unused: 0; ${body} }`).cssRules[0].style,
+  (t, body) => {
+    const rule = createSheet(t, `@scope (:root) { --unused: 0; ${body} }`).cssRules[0].cssRules[0];
+    assert_true(rule instanceof CSSNestedDeclarations);
+    return rule.style;
+  });
+
 test(t => {
   const groups = [':root', '@scope (:root)', '@media all'];
   const sheet = createSheet(t, wrapRules(groups, ''));

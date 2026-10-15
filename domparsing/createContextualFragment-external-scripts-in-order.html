@@ -1,0 +1,40 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>External scripts from createContextualFragment() execute in order once inserted</title>
+<link rel="help" href="https://html.spec.whatwg.org/#prepare-the-script-element" />
+<link rel="help" href="https://w3c.github.io/DOM-Parsing/#dom-range-createcontextualfragment" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+  // The fragment parser prepares the script elements it creates, but preparing
+  // returns early because they are not connected. Their parser document is
+  // cleared, and since their intended document is not their parser document,
+  // force async is left false. So when the fragment is inserted, the external
+  // scripts (which have no async attribute) execute in order.
+  promise_test(async (t) => {
+    window.events = [];
+    const slowRan = new Promise((resolve) => { window.on_slow = resolve; });
+    const fastRan = new Promise((resolve) => { window.resolve_fast = resolve; });
+    t.add_cleanup(() => { delete window.on_slow; delete window.resolve_fast; });
+
+    const range = document.createRange();
+    range.selectNodeContents(document.body);
+    const fragment = range.createContextualFragment(
+      "<script src='resources/slow.js?pipe=trickle(d0.3)&ccf=1'></" + "script>" +
+      "<script src=\"data:text/javascript,window.events.push('fast');window.resolve_fast();\"></" + "script>" +
+      "<script>window.events.push('inline');</" + "script>"
+    );
+    assert_array_equals(window.events, [], "scripts don't run before the fragment is inserted");
+
+    const container = document.createElement("div");
+    container.append(fragment);
+    document.body.append(container);
+    t.add_cleanup(() => container.remove());
+    assert_array_equals(window.events, ["inline"], "the inline script runs synchronously when connected");
+    await Promise.all([slowRan, fastRan]);
+    assert_array_equals(window.events, ["inline", "slow", "fast"],
+                        "external scripts without async execute in order");
+  }, "External scripts from createContextualFragment() execute in order once connected");
+</script>
+</body>

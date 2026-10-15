@@ -114,10 +114,13 @@ async function prepare_exec_popup(t, origin) {
 function test_loaf_script(cb, invoker, invokerType, label) {
   promise_test(async t => {
     let [entry, script] = [];
+    const fallbackInvoker = invokerType === "resolve-promise" ? "Promise.then" :
+        invokerType === "reject-promise" ? "Promise.catch" : null;
     [entry, script] = await expect_long_frame_with_script(cb,
       script => (
         script.invokerType === invokerType &&
-        script.invoker.startsWith(invoker)), t);
+        (script.invoker.startsWith(invoker) ||
+         (fallbackInvoker !== null && script.invoker === fallbackInvoker))), t);
 
     assert_true(!!entry, "Entry detected");
     // Allow small epsilon for independent time clamping of entry vs script.

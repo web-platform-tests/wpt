@@ -18,7 +18,7 @@ for (const origin of ["ORIGIN", "REMOTE_ORIGIN", "HTTP_NOTSAMESITE_ORIGIN"]) {
         const [executor] = await prepare_exec_iframe(t, host_info[origin]);
         const entry = await executor.execute_script(async (duration) => {
             const entryPromise = new Promise(resolve => new PerformanceObserver(list => {
-                resolve(list.getEntries(0));
+                resolve(list.getEntries());
             }).observe({entryTypes: ["long-animation-frame"]}));
             const deadline = performance.now() + duration;
             while (performance.now() < deadline) {}

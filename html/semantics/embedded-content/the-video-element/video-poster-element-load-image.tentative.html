@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/poster-utils.js"></script>
+<script src="resources/poster-lazy-load-utils.js"></script>
+
+<body>
+  <script>
+    promise_test(async function (t) {
+      assertCurrentPosterSupported();
+
+      const attributeUrl = uniquePosterUrl('loadImageAttribute');
+      const imgUrl = uniquePosterUrl('loadImageElement');
+      const attributeEntries = observePosterFetches(t, absoluteUrl(attributeUrl));
+      const imgEntries = observePosterFetches(t, absoluteUrl(imgUrl));
+
+      const video = document.createElement('video');
+      video.src = '/media/A4.webm';
+      const img = document.createElement('img');
+      img.src = imgUrl;
+      video.appendChild(createPoster(img));
+      video.poster = attributeUrl;
+      t.add_cleanup(() => video.remove());
+      document.body.appendChild(video);
+
+      await t.step_wait(() => imgEntries.length > 0);
+      await settleFrames();
+
+      assert_equals(
+        attributeEntries.length,
+        0,
+        'Poster attribute should not be fetched when a poster element is present'
+      );
+    }, 'Only the poster element image should load');
+  </script>
+</body>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/poster-utils.js"></script>
+<script src="resources/poster-lazy-load-utils.js"></script>
+
+<body>
+  <script>
+    promise_test(async (t) => {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+
+      const { video, entries } = createPosterVideo(t, {
+        videoLoading: 'eager',
+        imgLoading: 'lazy',
+        offscreen: true,
+        id: 'eagerVideoLazyImg',
+      });
+      document.body.appendChild(video);
+
+      await waitForEagerPosterFetch(t);
+      assert_equals(
+        entries.length,
+        0,
+        'Poster image with loading=lazy should not fetch while the video is below the viewport, even though video.loading is eager'
+      );
+
+      video.scrollIntoView();
+      await t.step_wait(() => entries.length > 0);
+    }, 'Poster image loading=lazy takes precedence over video loading=eager and defers the poster fetch');
+
+    promise_test(async (t) => {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+
+      const { video, entries } = createPosterVideo(t, {
+        videoLoading: 'lazy',
+        imgLoading: 'eager',
+        offscreen: true,
+        id: 'lazyVideoEagerImg',
+      });
+      document.body.appendChild(video);
+
+      await t.step_wait(
+        () => entries.length > 0,
+        'Poster image with loading=eager should fetch immediately, even though the video is below the viewport and video.loading is lazy'
+      );
+    }, 'Poster image loading=eager takes precedence over video loading=lazy and fetches the poster immediately');
+  </script>
+</body>

@@ -135,6 +135,7 @@
       t.add_cleanup(() => video.remove());
 
       const img = document.createElement('img');
+      // The attribute is removed before src is set, so it is never on at fetch time.
       img.loading = 'eager';
       img.removeAttribute('loading');
       img.src = uniquePosterUrl('removeImgEager');

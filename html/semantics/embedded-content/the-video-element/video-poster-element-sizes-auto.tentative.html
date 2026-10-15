@@ -89,7 +89,7 @@
 
     video.loading = 'eager';
 
-    await t.step_wait(() => img.currentSrc !== slotUrl(50),
+    await t.step_wait(() => img.currentSrc !== '' && img.currentSrc !== slotUrl(50),
       'sizes=auto stops applying once the poster image is eager');
   }, 'Changing the video from loading=lazy to loading=eager stops sizes=auto from applying');
 </script>

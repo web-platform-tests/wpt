@@ -2,6 +2,7 @@
 <title>Background image-set images should be LCP candidates</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/largest-contentful-paint-helpers.js"></script>
 <style>
   .background {
     width: calc(100vw - 40px);
@@ -15,28 +16,15 @@
 <body>
   <div class="background"></div>
   <p>fallback</p>
-</body>
 
-<script>
-  promise_test(async (t) => {
-    await Promise.race([
-      new Promise((resolve) => {
-        const entries = [];
-        new PerformanceObserver((list) => {
-          entries.push(...list.getEntries());
-          for (const entry of entries) {
-            if (entry.url.includes("lcp-100x50")) {
-              resolve(entry.url);
-              return;
-            }
-          }
-        }).observe({ type: "largest-contentful-paint", buffered: true });
-      }),
-      new Promise((resolve, reject) => {
-        t.step_timeout(() => {
-          reject(new Error("Timed out waiting for LCP entry for background image-set image."));
-        }, 3000);
-      }),
-    ]);
-  }, "Background image-set images should be eligible for LCP candidates");
-</script>
+  <script>
+    assert_implements(window.LargestContentfulPaint,
+                      "LargestContentfulPaint is not implemented");
+    const beforeLoad = performance.now();
+    promise_test(async () => {
+      const entry = await observeLCP(entry => entry.url.includes("lcp-100x50"));
+      checkEntry(entry, window.location.origin + "/images/lcp-100x50.png", "",
+                 undefined, beforeLoad, ["skipElement", "skipSize", "skipLoadTime"]);
+    }, 'Background image-set images should be eligible for LCP candidates');
+  </script>
+</body>

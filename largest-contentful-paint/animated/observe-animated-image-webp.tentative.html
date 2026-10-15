@@ -9,19 +9,18 @@
 </head>
 <body>
   <script>
+    assert_implements(window.LargestContentfulPaint,
+                      "LargestContentfulPaint is not implemented");
+    const beforeLoad = performance.now();
+    // 142 is the size of the animated WebP up until the first frame.
+    // The trickle pipe delays the response after the first frame by 1 second.
+    const url = window.location.origin +
+      `/images/webp-animated.webp?pipe=trickle(142:d${delay_pipe_value})`;
+    // webp-animated.webp is 11 by 29.
     promise_test(async () => {
-      assert_implements(window.LargestContentfulPaint,
-                        "LargestContentfulPaint is not implemented");
-      const beforeLoad = performance.now();
-      // 142 is the size of the animated WebP up until the first frame.
-      // The trickle pipe delays the response after the first frame by 1 second.
-      const url = window.location.origin +
-        `/images/webp-animated.webp?pipe=trickle(142:d${delay_pipe_value})`;
       const entry = await load_and_observe(url);
-      // webp-animated.webp is 11 by 29.
-      const size = 11 * 29;
-      checkImage(entry, url, 'image_id', size, beforeLoad, ["animated"]);
-    }, "Same origin animated image is observable and has a first frame.");
+      checkEntry(entry, url, 'image_id', 11 * 29, beforeLoad, ["animated"]);
+    }, "Same-origin animated WebP is observable and has a first frame.");
   </script>
 </body>
 </html>

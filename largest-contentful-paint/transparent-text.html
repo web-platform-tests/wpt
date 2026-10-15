@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/largest-contentful-paint-helpers.js"></script>
 <!--
   Transparent text should not be eligible for LCP.
 -->
@@ -23,26 +24,13 @@
   <p id="fake_lcp" class='large-transparent'>fake LCP</p>
 
   <script>
-    const LcpEntryListPromise = (t) => {
-      return new Promise(resolve => {
-        new PerformanceObserver((entryList, observer) => {
-          if (entryList.getEntries().length > 0) {
-            resolve(entryList.getEntries());
-
-            observer.disconnect();
-          }
-        }).observe({ type: 'largest-contentful-paint', buffered: true });
-      });
-    }
-
     promise_test(async t => {
       assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
 
-      lcpEntries = await LcpEntryListPromise();
+      const entry = await awaitEntry(t, observeLCP(),
+          'Timed out waiting for the LCP entry');
 
-      assert_equals(lcpEntries.length, 1, "There should only be 1 entry.");
-
-      assert_true(lcpEntries[0].url.includes('lcp-133x106.png'), "The LCP entry should be the image.");
+      assert_true(entry.url.includes('lcp-133x106.png'), "The LCP entry should be the image.");
     }, "Transparent text should not be LCP.")
   </script>
 </body>

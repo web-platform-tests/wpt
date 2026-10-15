@@ -11,29 +11,13 @@ mathml {
 }
 </style>
 <script>
-  async_test(function (t) {
-    assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
-    let beforeLoad;
-    const observer = new PerformanceObserver(
-      t.step_func_done(function(entryList) {
-        assert_equals(entryList.getEntries().length, 1);
-        const entry = entryList.getEntries()[0];
-        assert_equals(entry.entryType, 'largest-contentful-paint');
-        assert_greater_than_equal(entry.renderTime, beforeRender);
-        assert_approx_equals(entry.startTime, entry.renderTime, 0.001,
-          'startTime should be equal to renderTime to the precision of 1 millisecond.');
-        assert_equals(entry.duration, 0);
-        // Some lower bound: height of at least 12 px.
-        // Width of at least 100 px.
-        assert_greater_than(entry.size, 1200);
-        assert_equals(entry.loadTime, 0);
-        assert_equals(entry.id, 'mathml');
-        assert_equals(entry.url, '');
-        assert_equals(entry.element, document.getElementById('mathml'));
-      })
-    );
-    observer.observe({type: 'largest-contentful-paint', buffered: true});
-    beforeRender = performance.now();
+  assert_implements(window.LargestContentfulPaint,
+                    "LargestContentfulPaint is not implemented");
+  const beforeRender = performance.now();
+  // Some lower bound: height of at least 12 px, width of at least 100 px.
+  promise_test(async () => {
+    const entry = await observeLCP({id: 'mathml'});
+    checkEntry(entry, '', 'mathml', 1200, beforeRender, ['text', 'sizeLowerBound']);
   }, 'Element rendered by MathML is observable');
 </script>
 <math display="block">

@@ -5,32 +5,10 @@
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="resources/largest-contentful-paint-helpers.js"></script>
-  <script src="/common/get-host-info.sub.js"></script>
   <script>
-    promise_test(async function (t) {
-      assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
-      const beforeLoad = performance.now();
-      // Wait for the entry.
-      const entry = await new Promise(resolve => {
-        const observer = new PerformanceObserver(entryList => {
-          assert_equals(entryList.getEntries().length, 1);
-          observer.disconnect();
-          resolve(entryList.getEntries()[0]);
-        });
-        observer.observe({type: 'largest-contentful-paint', buffered: true})
-      });
-      const imgElement = document.getElementById('image_id');
-      const imageSrc =  imgElement.currentSrc;
-      const imageWidth = imgElement.naturalWidth;
-      const imageHeight = imgElement.naturalHeight;
-      const size = imageWidth * imageHeight;
-      const lcpLoadTime = entry.loadTime;
-      const lcpRenderTime = entry.renderTime;
-      const resLoadTime = calculateResourceLoadTime(imageSrc);
-      assert_greater_than_equal(lcpLoadTime,resLoadTime,'Load before LCP event fired');
-      assert_greater_than_equal(lcpRenderTime,resLoadTime,'Load before LCP event rendered');
-      checkImage(entry, imageSrc, 'image_id', size, beforeLoad);
-    }, 'Ensure Progressive JPEG LCP load and render events occur after resource loading');
+    assert_implements(window.LargestContentfulPaint,
+                      "LargestContentfulPaint is not implemented");
+    const beforeLoad = performance.now();
 
     function calculateResourceLoadTime(imageSrc) {
       const entries = performance.getEntriesByName(imageSrc);
@@ -38,6 +16,22 @@
       assert_equals(entries.length, 1, 'No Resource timing entry found');
       return resourceEntry.responseEnd;
     }
+
+    promise_test(async function (t) {
+      const entry = await awaitEntry(t, observeLCP({id: 'image_id'}),
+          'Timed out waiting for the progressively loaded image entry');
+      const imgElement = document.getElementById('image_id');
+      const imageSrc = imgElement.currentSrc;
+      const size = imgElement.naturalWidth * imgElement.naturalHeight;
+      const resLoadTime = calculateResourceLoadTime(imageSrc);
+      assert_greater_than_equal(entry.loadTime, resLoadTime, 'Load before LCP event fired');
+      assert_greater_than_equal(entry.renderTime, resLoadTime, 'Load before LCP event rendered');
+      assert_equals(entry.url, imageSrc, 'Entry url should be the image url');
+      assert_equals(entry.id, 'image_id', 'Entry ID matches expected one');
+      assert_equals(entry.element, imgElement, 'Entry element is expected one');
+      assert_equals(entry.size, size, 'Entry size should be the natural image size');
+      assert_greater_than_equal(entry.paintTime, beforeLoad, 'paintTime should represent the time when the UA started painting');
+    }, 'Ensure Progressive JPEG LCP load and render events occur after resource loading');
   </script>
   <img src='/images/computer.jpg?pipe=trickle(982:d1)' id='image_id'/>
 </body>

@@ -2,7 +2,7 @@
 <title>Largest Contentful Paint: invisible images are not observable</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/invisible-images.js"></script>
+<script src="resources/largest-contentful-paint-helpers.js"></script>
 <style>
   .opacity0 {
     opacity: 0;
@@ -20,3 +20,4 @@
 <div class='opacity0'><img src='/images/yellow.png' id='divOpacity0'/></div>
 <div class='visibilityHidden'><img src='/images/yellow.png' id='divVisibilityHidden'/></div>
 <div class='displayNone'><img src='/images/yellow.png' id='divDisplayNone'/></div>
+<script src="resources/invisible-images.js"></script>

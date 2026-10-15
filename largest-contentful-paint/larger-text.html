@@ -5,6 +5,7 @@
 <body>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="resources/largest-contentful-paint-helpers.js"></script>
   <style type="text/css">
     #text2 {
       position: absolute;
@@ -19,10 +20,14 @@
   <div id='text2'></div>
   <img id='image2' />
   <script>
+    assert_implements(window.LargestContentfulPaint,
+                      "LargestContentfulPaint is not implemented");
+    let beforeRender = 0;
+
     const load_image = async (id, url) => {
       await new Promise(resolve => {
         const image = document.getElementById(id);
-        image.addEventListener('load', resolve);
+        image.addEventListener('load', resolve, {once: true});
         image.src = url;
       });
     }
@@ -32,9 +37,12 @@
       div.innerHTML = text;
     }
 
+    const entryPromise = observeLCP({id: 'text2'});
+
+    // This driver is registered before the check tests so that it runs first:
+    // promise tests are queued sequentially.
     promise_test(async (t) => {
-      assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
-      let beforeRender = performance.now();
+      beforeRender = performance.now();
 
       // Load images and add texts.
       await load_image('image1', '/images/lcp-1x1.png');
@@ -45,50 +53,18 @@
 
       await load_image('image2', '/images/lcp-2x2.png');
 
-      await new Promise(resolve => {
-        new PerformanceObserver(
-          t.step_func((entryList, observer) => {
-            entryList.getEntries().forEach(entry => {
-              // The tiny images or text1 could be reported as LCP if it is rendered before text2.
-              if (entry.id !== 'text2')
-                return;
+      await awaitEntry(t, entryPromise,
+          'Timed out waiting for the text2 entry');
+    }, 'The largest text is reported as the Largest Contentful Paint.');
 
-              assert_equals(entry.entryType, 'largest-contentful-paint',
-                'The entry entryType should be largest-contentful-paint.');
-
-              assert_greater_than_equal(entry.renderTime, beforeRender,
-                'The entry renderTime should be greater than or equal to the beforeRender.');
-
-              assert_greater_than_equal(performance.now(), entry.renderTime,
-                'The performance.now() timestamp should be greater than or equal to the entry renderTime.');
-
-              assert_approx_equals(entry.startTime, entry.renderTime, 0.001,
-                'The entry startTime should be equal to renderTime to the precision of 1 millisecond.');
-
-              assert_equals(entry.duration, 0, 'The entry duration should be 0.');
-
-              const div = document.getElementById('text2');
-
-              // The div styling makes it approximate the text size.
-              assert_greater_than_equal(entry.size, (div.clientHeight - 5) * (div.clientWidth - 5),
-                'Reported LCP size should not be significantly smaller than the text2 div.');
-
-              assert_less_than_equal(entry.size, (div.clientHeight + 1) * (div.clientWidth + 1),
-                'Reported LCP size should not be larger than the text2 div.');
-
-              assert_equals(entry.loadTime, 0, 'The entry loadTime should be 0.');
-
-              assert_equals(entry.url, '', 'The entry url should be empty.');
-
-              assert_equals(entry.element, div, 'The entry element should be test2 div.');
-
-              observer.disconnect();
-
-              resolve();
-              })
-            })
-          ).observe({ type: 'largest-contentful-paint', buffered: true });
-      });
+    promise_test(async () => {
+      const entry = await entryPromise;
+      checkEntry(entry, '', 'text2', () => {
+        // The div styling makes it approximate the text size.
+        const div = document.getElementById('text2');
+        return [(div.clientHeight - 5) * (div.clientWidth - 5),
+                (div.clientHeight + 1) * (div.clientWidth + 1)];
+      }, () => beforeRender, ['text', 'sizeRange']);
     }, 'Largest Contentful Paint: largest text is reported.');
   </script>
 </body>

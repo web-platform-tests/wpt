@@ -8,7 +8,7 @@
 
 <body>
   <script>
-    const createDeferredVideo = (t, { posterAttribute, imgUrl } = {}) => {
+    const createDeferredVideo = async (t, { posterAttribute, imgUrl } = {}) => {
       const video = document.createElement('video');
       video.src = '/media/A4.webm';
       video.loading = 'lazy';
@@ -23,6 +23,7 @@
       }
       t.add_cleanup(() => video.remove());
       document.body.appendChild(video);
+      await Promise.resolve();
       return { video, img };
     };
 
@@ -35,7 +36,7 @@
       const newUrl = uniquePosterUrl('stalePosterImgNew');
       const oldEntries = observe(t, oldUrl);
       const newEntries = observe(t, newUrl);
-      const { video, img } = createDeferredVideo(t, { imgUrl: oldUrl });
+      const { video, img } = await createDeferredVideo(t, { imgUrl: oldUrl });
 
       img.src = newUrl;
       await waitForEagerPosterFetch(t);
@@ -54,7 +55,7 @@
       const newUrl = uniquePosterUrl('stalePosterAttrNew');
       const oldEntries = observe(t, oldUrl);
       const newEntries = observe(t, newUrl);
-      const { video } = createDeferredVideo(t, { posterAttribute: oldUrl });
+      const { video } = await createDeferredVideo(t, { posterAttribute: oldUrl });
 
       video.poster = newUrl;
       await waitForEagerPosterFetch(t);
@@ -71,7 +72,7 @@
       window.scrollTo(0, 0);
       const oldUrl = uniquePosterUrl('stalePosterAttrEmptied');
       const oldEntries = observe(t, oldUrl);
-      const { video } = createDeferredVideo(t, { posterAttribute: oldUrl });
+      const { video } = await createDeferredVideo(t, { posterAttribute: oldUrl });
 
       video.poster = '';
       await waitForEagerPosterFetch(t);
@@ -89,7 +90,7 @@
       const imgUrl = uniquePosterUrl('staleInsertPosterImg');
       const attributeEntries = observe(t, attributeUrl);
       const imgEntries = observe(t, imgUrl);
-      const { video } = createDeferredVideo(t, { posterAttribute: attributeUrl });
+      const { video } = await createDeferredVideo(t, { posterAttribute: attributeUrl });
 
       const img = document.createElement('img');
       img.src = imgUrl;
@@ -110,7 +111,7 @@
       const imgUrl = uniquePosterUrl('staleRemovePosterImg');
       const attributeEntries = observe(t, attributeUrl);
       const imgEntries = observe(t, imgUrl);
-      const { video, img } = createDeferredVideo(t, {
+      const { video, img } = await createDeferredVideo(t, {
         posterAttribute: attributeUrl,
         imgUrl,
       });

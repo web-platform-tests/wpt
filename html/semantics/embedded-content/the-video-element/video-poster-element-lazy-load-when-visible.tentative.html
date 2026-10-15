@@ -33,5 +33,27 @@
         'Poster image should be fetched after the video scrolls into view'
       );
     }, "Video with loading=lazy and a poster element does not fetch the poster image while off-screen, then fetches once the video scrolls into view");
+
+    promise_test(async function (t) {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+
+      const { video, entries } = createPosterVideo(t, {
+        videoLoading: 'lazy',
+        offscreen: true,
+        id: 'displacedFirst',
+      });
+      const displaced = document.createElement('img');
+      displaced.src = uniquePosterUrl('displacedSecond');
+      const displacedEntries = observePosterFetches(t, absoluteUrl(displaced.src));
+      video.querySelector('poster').appendChild(displaced);
+      document.body.appendChild(video);
+
+      await waitForEagerPosterFetch(t);
+      assert_equals(displacedEntries.length, 0, 'An img that is not the poster image is not fetched while the video is deferred');
+
+      video.scrollIntoView();
+      await t.step_wait(() => entries.length > 0);
+    }, 'A second img in the poster element is not fetched while the lazy video is off-screen');
   </script>
 </body>

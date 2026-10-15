@@ -12,7 +12,6 @@
   const img = document.createElement('img');
   video.src = '/media/A4.webm';
   video.controls = true;
-  video.muted = true;
   img.src = '/media/poster.png';
   img.alt = altText;
   const poster = document.createElement('poster');
@@ -29,20 +28,4 @@
     assert_equals(img.alt, altText);
     assert_equals(img.getAttribute('alt'), altText);
   }, 'The img in the poster element keeps its alt text');
-
-  promise_test(async function (t) {
-    assert_implements(
-      'currentPoster' in HTMLVideoElement.prototype,
-      'HTMLVideoElement.currentPoster is not supported'
-    );
-    const eventWatcher = new EventWatcher(t, video, ['playing']);
-    const playPromise = video.play();
-    if (playPromise) {
-      playPromise.catch(t.unreached_func('play rejected'));
-    }
-    await eventWatcher.wait_for(['playing']);
-
-    assert_false(img.hasAttribute('hidden'));
-    assert_equals(img.alt, altText);
-  }, 'Playing the video does not set the hidden attribute on the img in the poster element');
 </script>

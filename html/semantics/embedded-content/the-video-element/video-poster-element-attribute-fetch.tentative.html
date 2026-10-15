@@ -34,6 +34,25 @@
 
     promise_test(async (t) => {
       assertCurrentPosterSupported();
+      const attributeUrl = uniquePosterUrl('sameTurn');
+      const attributeEntries = observePosterFetches(t, absoluteUrl(attributeUrl));
+
+      const video = createVideo();
+      t.add_cleanup(() => video.remove());
+      document.body.appendChild(video);
+      const img = document.createElement('img');
+      img.src = uniquePosterUrl('sameTurnElement');
+
+      video.poster = attributeUrl;
+      video.appendChild(createPoster(img));
+
+      await settled(img);
+      await waitForEagerPosterFetch(t);
+      assert_equals(attributeEntries.length, 0);
+    }, 'The poster attribute URL is never fetched when the attribute is set and a poster element is inserted in the same task');
+
+    promise_test(async (t) => {
+      assertCurrentPosterSupported();
       const attributeUrl = uniquePosterUrl('attributeAfterPoster');
       const attributeEntries = observePosterFetches(t, absoluteUrl(attributeUrl));
 
@@ -96,7 +115,12 @@
       const attributeUrl = absoluteUrl(uniquePosterUrl('parserNoPoster'));
 
       const iframe = document.createElement('iframe');
-      iframe.srcdoc = `<video id="v" poster="${attributeUrl}"></video>`;
+      iframe.srcdoc = `<video id="v" poster="${attributeUrl}">
+        <script>
+          window.attributeEntriesBeforeClose =
+            performance.getEntriesByName('${attributeUrl}').length;
+        <\/script>
+      </video>`;
       t.add_cleanup(() => iframe.remove());
       document.body.appendChild(iframe);
       await new Promise((resolve) =>
@@ -104,7 +128,8 @@
       );
 
       const win = iframe.contentWindow;
+      assert_equals(win.attributeEntriesBeforeClose, 0);
       await t.step_wait(() => win.performance.getEntriesByName(attributeUrl).length > 0);
-    }, 'The poster attribute URL is fetched by the parser when there is no poster element');
+    }, 'The poster attribute URL is not fetched by the parser before the video end tag, and is fetched after when there is no poster element');
   </script>
 </body>

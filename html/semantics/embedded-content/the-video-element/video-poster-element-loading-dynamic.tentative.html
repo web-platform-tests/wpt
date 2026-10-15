@@ -104,5 +104,49 @@
       video.scrollIntoView();
       await t.step_wait(() => entries.length > 0);
     }, 'A poster image added after the video loading changed from eager to lazy is deferred');
+
+    promise_test(async (t) => {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+
+      const { video, img, entries } = createPosterVideo(t, {
+        videoLoading: 'eager',
+        imgLoading: 'lazy',
+        offscreen: true,
+        id: 'removeImgLazy',
+      });
+      document.body.appendChild(video);
+
+      await waitForEagerPosterFetch(t);
+      assert_equals(entries.length, 0);
+
+      img.removeAttribute('loading');
+      await t.step_wait(() => entries.length > 0);
+    }, 'Removing loading=lazy from a poster image in an eager video fetches it');
+
+    promise_test(async (t) => {
+      assertPosterLazyLoadSupported();
+      window.scrollTo(0, 0);
+
+      const video = document.createElement('video');
+      video.src = '/media/A4.webm';
+      video.loading = 'lazy';
+      video.style.marginTop = '1000vh';
+      t.add_cleanup(() => video.remove());
+
+      const img = document.createElement('img');
+      img.loading = 'eager';
+      img.removeAttribute('loading');
+      img.src = uniquePosterUrl('removeImgEager');
+      const entries = observePosterFetches(t, absoluteUrl(img.src));
+      video.appendChild(createPoster(img));
+      document.body.appendChild(video);
+
+      await waitForEagerPosterFetch(t);
+      assert_equals(entries.length, 0, 'The poster image inherits lazy from the video');
+
+      video.scrollIntoView();
+      await t.step_wait(() => entries.length > 0);
+    }, 'A poster image whose loading=eager was removed inherits lazy loading from a lazy video');
   </script>
 </body>

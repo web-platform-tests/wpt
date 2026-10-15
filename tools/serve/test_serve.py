@@ -162,7 +162,7 @@ def test_websocket_h3_https_alt_svc():
 
 def test_start_websocket_h3_server():
     pytest.importorskip("aioquic")
-    from websocket.h3 import websocket_h3_server
+    from websocket.h3 import websocket_h3_server  # type: ignore[import-not-found]
 
     with ConfigBuilder(logger, ports={"websocket-h3": [11001]},
                        ws_extra=["/extra-handlers"]) as c:
@@ -189,7 +189,7 @@ def test_start_websocket_h3_server():
 
 def test_websocket_h3_server_listens():
     pytest.importorskip("aioquic")
-    from websocket.h3.websocket_h3_server import server_is_running
+    from websocket.h3.websocket_h3_server import server_is_running  # type: ignore[import-not-found]
 
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         sock.bind(("127.0.0.1", 0))

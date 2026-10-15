@@ -56,7 +56,7 @@ def webtranport_h3_server_is_running(host, port, timeout):
 
 
 def websocket_h3_server_is_running(host, port, timeout):
-    from websocket.h3.websocket_h3_server import server_is_running
+    from websocket.h3.websocket_h3_server import server_is_running  # type: ignore[import-not-found]
     return server_is_running(host, port, timeout)
 
 

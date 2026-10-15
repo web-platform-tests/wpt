@@ -1404,7 +1404,7 @@ def start_webtransport_h3_server(logger, host, port, paths, routes, bind_address
 
 def start_websocket_h3_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
     try:
-        from websocket.h3.websocket_h3_server import WebSocketH3Server
+        from websocket.h3.websocket_h3_server import WebSocketH3Server  # type: ignore[import-not-found]
         return WebSocketH3Server(host=host,
                                  port=port,
                                  ws_doc_root=paths["ws_doc_root"],

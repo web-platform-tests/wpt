@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Event Timing: programmatic label activation is not observed</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/event-timing-test-utils.js"></script>
+<label id="label" for="control">Click me</label>
+<input id="control" type="checkbox">
+<script>
+promise_test(async t => {
+  assert_implements(window.PerformanceEventTiming, 'Event Timing is not supported.');
+  const label = document.getElementById('label');
+  const control = document.getElementById('control');
+  const entries = [];
+  const observer = new PerformanceObserver(list => entries.push(...list.getEntries()));
+  t.add_cleanup(() => observer.disconnect());
+  observer.observe({type: 'event', durationThreshold: 16});
+  addListeners(label, ['click']);
+  addListeners(control, ['click']);
+  let forwardedClicks = 0;
+  control.addEventListener('click', () => forwardedClicks++);
+
+  const initialCount = performance.interactionCount;
+  label.click();
+  assert_equals(forwardedClicks, 1, 'The programmatic click activates the control');
+  await afterNextPaint();
+  await afterNextPaint();
+  assert_equals(performance.interactionCount, initialCount,
+      'Programmatic label activation does not count as an interaction');
+  const beforeTrustedClick = performance.now();
+
+  await clickAndBlockMain('label');
+  await t.step_wait(() => entries.some(entry =>
+      entry.name === 'click' && entry.target === control &&
+      entry.processingStart >= beforeTrustedClick), 'Trusted control click is observed');
+  entries.push(...observer.takeRecords());
+  assert_equals(forwardedClicks, 2, 'The trusted click also activates the control');
+  assert_false(entries.some(entry => entry.processingStart < beforeTrustedClick),
+      'Neither the synthetic label click nor its forwarded control click is observed');
+  const labelClicks = entries.filter(entry => entry.name === 'click' && entry.target === label);
+  assert_equals(labelClicks.length, 1, 'Only the trusted label click is observed');
+  assert_greater_than(labelClicks[0].interactionId, 0, 'The trusted click has an interactionId');
+  const controlClicks = entries.filter(entry => entry.name === 'click' && entry.target === control);
+  assert_equals(controlClicks.length, 1, 'Only the trusted forwarded click is observed');
+  assert_equals(controlClicks[0].interactionId, 0, 'The forwarded click is not a separate interaction');
+  await verifyInteractionCount(t, initialCount + 1);
+}, 'Event Timing ignores programmatic label clicks and their forwarded control clicks');
+</script>

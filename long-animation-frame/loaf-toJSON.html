@@ -24,7 +24,6 @@
     assert_equals(typeof(entry.toJSON), 'function');
     const entryJSON = entry.toJSON();
     assert_equals(typeof(entryJSON), 'object');
-    // Check attributes inheritted from PerformanceEntry.
     const performanceEntryKeys = [
         'name',
         'entryType',
@@ -32,14 +31,49 @@
         'duration',
         'renderStart',
         'styleAndLayoutStart',
-        'blockingTime',
+        'blockingDuration',
         'firstUIEventTimestamp',
         'styleDuration',
-        'layoutDuration'
+        'layoutDuration',
+        'paintTime',
+        'presentationTime'
     ];
     for (const key of performanceEntryKeys) {
+        assert_not_equals(entryJSON[key], undefined,
+            `entry.toJSON().${key} should be defined`);
         assert_equals(entryJSON[key], entry[key],
             `entry.toJSON().${key} should match entry.${key}`);
+    }
+    assert_true(Array.isArray(entryJSON.scripts), 'entry.toJSON().scripts should be an Array');
+    assert_equals(entryJSON.scripts.length, entry.scripts.length);
+    const scriptEntryKeys = [
+        'name',
+        'entryType',
+        'startTime',
+        'duration',
+        'invokerType',
+        'invoker',
+        'executionStart',
+        'sourceURL',
+        'sourceFunctionName',
+        'sourceCharPosition',
+        'sourceLine',
+        'sourceColumn',
+        'pauseDuration',
+        'forcedStyleAndLayoutDuration',
+        'forcedStyleDuration',
+        'forcedLayoutDuration',
+        'windowAttribution'
+    ];
+    for (let i = 0; i < entry.scripts.length; ++i) {
+        for (const key of scriptEntryKeys) {
+            assert_not_equals(entryJSON.scripts[i][key], undefined,
+                `entry.toJSON().scripts[${i}].${key} should be defined`);
+            assert_equals(entryJSON.scripts[i][key], entry.scripts[i][key],
+                `entry.toJSON().scripts[${i}].${key} should match entry.scripts[${i}].${key}`);
+        }
+        assert_equals(entryJSON.scripts[i].window, undefined,
+            'Window is not a JSON type and should not be included in toJSON()');
     }
 
   }, 'Test toJSON() in PerformanceLongAnimationFrameTiming');

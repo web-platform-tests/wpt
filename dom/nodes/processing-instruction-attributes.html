@@ -43,6 +43,30 @@
       assert_equals(pi.getAttribute("x"), null);
     }, "Processing instruction attribute parsing rejects unquoted attributes from " + source);
 
+    // Per the rules for parsing pseudo-attributes from a string, the whole
+    // string has to match PseudoAtts and no name may appear twice. Any
+    // violation is an error, which makes the processing instruction have no
+    // attributes at all (rather than, say, the first or last duplicate winning).
+    for (const data of [
+      'name="p" name="q"',
+      'name="p" junk',
+      'junk name="p"',
+      'name="p"other="q"',
+      'name="p" ="q"',
+      'name="p" other=',
+      'name="p" other="q',
+    ]) {
+      test(() => {
+        const pi = createProcessingInstruction("t", data);
+        assert_equals(pi.data, data, "data is preserved verbatim");
+        assert_false(pi.hasAttributes());
+        assert_array_equals(pi.getAttributeNames(), []);
+        assert_false(pi.hasAttribute("name"));
+        assert_equals(pi.getAttribute("name"), null);
+        assert_equals(pi.getAttribute("other"), null);
+      }, `Malformed pseudo-attributes ${JSON.stringify(data)} yield no attributes (source: ${source})`);
+    }
+
     test(() => {
       const pi = createProcessingInstruction("t", 'a="b" x="yy"');
       const mutation_observer = new MutationObserver((records) => {});
@@ -270,6 +294,24 @@
     test_distinct_attribute_name("ABC", "abc");
     test_distinct_attribute_name("abC", "abc");
     test_distinct_attribute_name("x123A", "x123a");
+
+    test(() => {
+      // This data would be normalized to `a="b" c="d"` if it went through
+      // "update data from attributes".
+      const data = `a='b'   c = "d"`;
+      const pi = createProcessingInstruction("t", data);
+      assert_equals(pi.data, data);
+      assert_array_equals(pi.getAttributeNames(), ["a", "c"]);
+      const mutation_observer = new MutationObserver((records) => {});
+      mutation_observer.observe(pi, { characterData: true, attributes: true });
+      pi.removeAttribute("x");
+      assert_equals(pi.data, data, "removeAttribute() doesn't change data");
+      pi.toggleAttribute("x", false);
+      assert_equals(pi.data, data, "toggleAttribute(name, false) doesn't change data");
+      assert_array_equals(pi.getAttributeNames(), ["a", "c"]);
+      assert_equals(mutation_observer.takeRecords().length, 0,
+                    "no mutation records");
+    }, "Removing a non-existent PI attribute doesn't normalize data from " + source);
 
     // HTML parser ignores xml-stylesheet
     if (source == "html-parser")

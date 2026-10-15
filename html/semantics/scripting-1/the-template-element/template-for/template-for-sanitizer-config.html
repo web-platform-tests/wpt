@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8" />
+<title>HTML partial updates: patching while sanitizing</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inhead">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/sanitization.html">
+<link rel="help" href="https://github.com/WICG/declarative-partial-updates">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const markup =
+  '<div id="target"><?marker name="x"></div>' +
+  '<!-- comment -->' +
+  '<template for="x"><b title="t">bold</b><i>italic</i></template>';
+
+function parse(method, options) {
+  const container = document.createElement("div");
+  container[method](markup, options);
+  return container;
+}
+
+function assert_patched(container, expected_target_html) {
+  const target = container.querySelector("div");
+  assert_equals(target.innerHTML, expected_target_html, "target is patched");
+  assert_equals(container.querySelector("template"), null, "template is not inserted");
+}
+
+function assert_not_patched(container) {
+  const target = container.querySelector("div");
+  assert_equals(target.childNodes.length, 0, "marker was removed and nothing was patched");
+  const template = container.querySelector('template[for="x"]');
+  assert_not_equals(template, null, "template is inserted as a regular template");
+  assert_equals(template.content.textContent, "bolditalic");
+}
+
+function has_comment(container) {
+  return [...container.childNodes].some(node => node.nodeType === Node.COMMENT_NODE);
+}
+
+// Sanitizing unrelated content doesn't prevent patching.
+test(() => {
+  const container = parse("setHTMLUnsafe", { sanitizer: { removeElements: ["b"] } });
+  assert_patched(container, "<i>italic</i>");
+}, "setHTMLUnsafe: removeElements for an element inside the template still patches");
+
+test(() => {
+  const container = parse("setHTMLUnsafe", { sanitizer: { replaceWithChildrenElements: ["b"] } });
+  assert_patched(container, "bold<i>italic</i>");
+}, "setHTMLUnsafe: replaceWithChildrenElements for an element inside the template still patches");
+
+test(() => {
+  const container = parse("setHTMLUnsafe", { sanitizer: { removeAttributes: ["title"] } });
+  assert_patched(container, "<b>bold</b><i>italic</i>");
+}, "setHTMLUnsafe: removeAttributes for an attribute inside the template still patches");
+
+test(() => {
+  const container = parse("setHTMLUnsafe", { sanitizer: { elements: ["div", "template", "b", "i"], attributes: ["for", "title"] } });
+  assert_patched(container, '<b title="t">bold</b><i>italic</i>');
+}, "setHTMLUnsafe: allow-lists that keep template and for still patch");
+
+// Processing instructions are governed by processingInstructions /
+// removeProcessingInstructions, independently of comments.
+test(() => {
+  const container = parse("setHTMLUnsafe", { sanitizer: { comments: false } });
+  assert_false(has_comment(container), "comment is removed");
+  assert_patched(container, '<b title="t">bold</b><i>italic</i>');
+}, "setHTMLUnsafe: comments: false keeps markers and patches");
+
+test(() => {
+  const container = parse("setHTMLUnsafe", { sanitizer: { comments: false, processingInstructions: ["marker"] } });
+  assert_false(has_comment(container), "comment is removed");
+  assert_patched(container, '<b title="t">bold</b><i>italic</i>');
+}, "setHTMLUnsafe: comments: false with processingInstructions allowing the marker patches");
+
+test(() => {
+  const container = parse("setHTMLUnsafe", { sanitizer: { comments: true, removeProcessingInstructions: ["marker"] } });
+  assert_true(has_comment(container), "comment is kept");
+  assert_not_patched(container);
+}, "setHTMLUnsafe: comments: true with removeProcessingInstructions removing the marker does not patch");
+
+test(() => {
+  const container = parse("setHTMLUnsafe", { sanitizer: { comments: true, processingInstructions: [] } });
+  assert_true(has_comment(container), "comment is kept");
+  assert_not_patched(container);
+}, "setHTMLUnsafe: comments: true with an empty processingInstructions list does not patch");
+
+test(() => {
+  const container = parse("setHTMLUnsafe", { sanitizer: { processingInstructions: ["start", "end"] } });
+  assert_not_patched(container);
+}, "setHTMLUnsafe: processingInstructions not including the marker's target does not patch");
+
+test(() => {
+  const container = parse("setHTML", { sanitizer: { comments: false, processingInstructions: ["marker"] } });
+  assert_false(has_comment(container), "comment is removed");
+  assert_patched(container, '<b title="t">bold</b><i>italic</i>');
+}, "setHTML: comments: false with processingInstructions allowing the marker patches");
+</script>
+</body>

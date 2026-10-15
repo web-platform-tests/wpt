@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8" />
+<title>HTML partial updates: markers with malformed pseudo-attributes don't match</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/scripting.html#find-markers">
+<link rel="help" href="https://www.w3.org/TR/xml-stylesheet/#dt-parsing">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<!-- A duplicate pseudo-attribute name, or anything that isn't a well-formed
+     pseudo-attribute, makes the whole processing instruction parse as an
+     error. Such a marker has no "name" at all, so it matches nothing: neither
+     of the duplicated names, and not the name that precedes the junk. -->
+<div id="duplicate"><?marker name="p" name="q"></div>
+<template for="p">patched p</template>
+<template for="q">patched q</template>
+
+<div id="trailing-junk"><?marker name="j" junk></div>
+<template for="j">patched j</template>
+
+<div id="leading-junk"><?marker junk name="k"></div>
+<template for="k">patched k</template>
+
+<div id="no-space"><?marker name="n"other="1"></div>
+<template for="n">patched n</template>
+
+<div id="duplicate-range"><?start name="r" name="r">old<?end></div>
+<template for="r">patched r</template>
+
+<!-- Control: extra well-formed pseudo-attributes are fine. -->
+<div id="well-formed"><?marker name="g" other="1"></div>
+<template for="g">patched g</template>
+
+<script>
+function assert_not_patched(id, ...names) {
+  const container = document.getElementById(id);
+  const pi = container.firstChild;
+  assert_equals(pi.nodeType, Node.PROCESSING_INSTRUCTION_NODE, `${id}: marker is kept`);
+  assert_equals(pi.getAttribute("name"), null, `${id}: marker has no name`);
+  assert_false(container.textContent.startsWith("patched"), `${id}: not patched`);
+  for (const name of names) {
+    const template = document.querySelector(`template[for="${name}"]`);
+    assert_not_equals(template, null, `template[for=${name}] is inserted as a regular template`);
+    assert_equals(template.content.textContent, `patched ${name}`);
+  }
+}
+
+test(() => {
+  assert_not_patched("duplicate", "p", "q");
+  assert_equals(document.getElementById("duplicate").textContent, "");
+}, "Duplicate name pseudo-attribute matches neither name");
+
+test(() => {
+  assert_not_patched("trailing-junk", "j");
+}, "Junk after a well-formed pseudo-attribute invalidates the marker");
+
+test(() => {
+  assert_not_patched("leading-junk", "k");
+}, "Junk before a well-formed pseudo-attribute invalidates the marker");
+
+test(() => {
+  assert_not_patched("no-space", "n");
+}, "Pseudo-attributes without whitespace between them invalidate the marker");
+
+test(() => {
+  assert_not_patched("duplicate-range", "r");
+  assert_equals(document.getElementById("duplicate-range").textContent, "old");
+}, "Duplicate name pseudo-attribute on <?start> matches nothing");
+
+test(() => {
+  const container = document.getElementById("well-formed");
+  assert_equals(container.textContent, "patched g");
+  assert_equals(container.firstChild.nodeType, Node.TEXT_NODE, "marker is consumed");
+  assert_equals(document.querySelector('template[for="g"]'), null);
+}, "Additional well-formed pseudo-attributes don't prevent matching");
+
+test(() => {
+  const container = document.createElement("div");
+  container.innerHTML =
+    '<div><?marker name="a" name="b"></div><template for="a">A</template><template for="b">B</template>' +
+    '<div><?marker name="c" junk></div><template for="c">C</template>' +
+    '<div><?marker name="d"></div><template for="d">D</template>';
+  const [dupe, junk, good] = container.querySelectorAll("div");
+  assert_equals(dupe.textContent, "");
+  assert_equals(dupe.firstChild.nodeType, Node.PROCESSING_INSTRUCTION_NODE);
+  assert_equals(junk.textContent, "");
+  assert_equals(junk.firstChild.nodeType, Node.PROCESSING_INSTRUCTION_NODE);
+  assert_equals(good.textContent, "D");
+  assert_array_equals(
+    [...container.querySelectorAll("template")].map(t => t.getAttribute("for")),
+    ["a", "b", "c"]);
+}, "Malformed markers don't match in a fragment parser either");
+</script>

@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8" />
-<title>Scripts streamed into a disconnected element run, in order, once it is connected</title>
+<title>Scripts streamed into a disconnected element run once it is connected, with external scripts running async</title>
 <link rel="help" href="https://html.spec.whatwg.org/#html-streaming-methods" />
 <link rel="help" href="https://html.spec.whatwg.org/#prepare-the-script-element" />
 <script src="/resources/testharness.js"></script>
@@ -8,12 +8,11 @@
 <body>
 <script>
   // A script element created by a fragment parser that runs scripts is
-  // prepared when its end tag is seen, but preparing returns early because the
-  // element is not connected, without marking it "already started". The
-  // element's parser document is cleared, and since its intended document is
-  // not its parser document, its force async is left false. So once the
-  // element is connected, the scripts are prepared again: inline scripts run
-  // synchronously, and external scripts execute in order.
+  // prepared when its end tag is seen, which clears its parser document and
+  // sets its force async to true before returning early because the element is
+  // not connected (without marking it "already started"). Once the element is
+  // connected, the scripts are prepared again: inline scripts run
+  // synchronously, and external scripts without async execute asynchronously.
 
   for (const method of ["streamHTMLUnsafe", "streamAppendHTMLUnsafe"]) {
     promise_test(async (t) => {
@@ -33,14 +32,17 @@
       await writer.close();
       assert_array_equals(window.events, [], "scripts don't run while the target is disconnected");
       assert_not_equals(element.querySelector("#after"), null, "external scripts don't block the parser when disconnected");
+      for (const script of element.querySelectorAll("script")) {
+        assert_true(script.async, "script.async is true while disconnected");
+      }
 
       document.body.append(element);
       t.add_cleanup(() => element.remove());
       assert_array_equals(window.events, ["inline"], "the inline script runs synchronously when connected");
       await Promise.all([slowRan, fastRan]);
-      assert_array_equals(window.events, ["inline", "slow", "fast"],
-                          "external scripts without async execute in order");
-    }, `${method} with runScripts: true into a disconnected element: scripts run in order once connected`);
+      assert_array_equals(window.events, ["inline", "fast", "slow"],
+                          "external scripts without async execute as async");
+    }, `${method} with runScripts: true into a disconnected element: external scripts run async once connected`);
 
     promise_test(async (t) => {
       window.events = [];

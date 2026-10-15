@@ -344,6 +344,21 @@
   }, '"docRequests" that is not an array');
 
   promise_test(async (t) => {
+    await checkRequest(
+      t,
+      "org-iso-mdoc",
+      {
+        deviceRequest: buildDeviceRequest([]).toBase64({
+          alphabet: "base64url",
+          omitPadding: true,
+        }),
+        encryptionInfo: CANONICAL_ENCRYPTION_INFO,
+      },
+      "AbortError",
+    );
+  }, 'a device request whose "docRequests" is an empty array');
+
+  promise_test(async (t) => {
     const req = buildDeviceRequest([cborText("not a map")]).toBase64({
       alphabet: "base64url",
       omitPadding: true,
@@ -355,6 +370,27 @@
       TypeError,
     );
   }, "a document request that is a CBOR text string instead of a map");
+
+  promise_test(async (t) => {
+    const docReqNoItems = cborMap([
+      [
+        cborText("otherKey"),
+        buildItemsRequest(buildNamespaces(canonNsMapPairs)),
+      ],
+    ]);
+    await checkRequest(
+      t,
+      "org-iso-mdoc",
+      {
+        deviceRequest: buildDeviceRequest([docReqNoItems]).toBase64({
+          alphabet: "base64url",
+          omitPadding: true,
+        }),
+        encryptionInfo: CANONICAL_ENCRYPTION_INFO,
+      },
+      TypeError,
+    );
+  }, 'a document request that is a map but has no "itemsRequest" entry');
 
   promise_test(async (t) => {
     const docReqNoTag = cborMap([
@@ -451,6 +487,26 @@
       TypeError,
     );
   }, 'an itemsRequest whose "nameSpaces" is not a map');
+
+  promise_test(async (t) => {
+    const itemsReqNoNamespaces = cborMap([
+      [cborText("docType"), cborText("org.iso.18013.5.1.mDL")],
+    ]);
+    await checkRequest(
+      t,
+      "org-iso-mdoc",
+      {
+        deviceRequest: buildDeviceRequest([
+          buildDocRequest(buildItemsRequest(itemsReqNoNamespaces)),
+        ]).toBase64({
+          alphabet: "base64url",
+          omitPadding: true,
+        }),
+        encryptionInfo: CANONICAL_ENCRYPTION_INFO,
+      },
+      TypeError,
+    );
+  }, 'an items request that is a map but has no "nameSpaces" entry');
 
   promise_test(async (t) => {
     const extraTopLevelMap = cborMap([

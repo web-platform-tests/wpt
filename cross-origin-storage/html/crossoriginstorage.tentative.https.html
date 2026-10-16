@@ -194,5 +194,23 @@ promise_test(async t => {
   assert_not_equals(markerColor(), 'rgb(1, 2, 3)',
     'without crossoriginstorage, a broken-href <link> must not be rescued from COS');
 }, 'HTML: omitting crossoriginstorage preserves ordinary integrity behavior with no COS participation');
+
+promise_test(async t => {
+  // The integrity hash is what identifies the resource in COS, so without
+  // `integrity` there is nothing to look up and the attribute has no effect: a
+  // broken-URL <script> must fail even though COS holds the bytes.
+  window.__cosHtmlUniqueRunCount = 0;
+  const jsText = `window.__cosHtmlUniqueRunCount++;\n// ${cosUniqueContent('html-no-integrity')}\n`;
+  await appendScript(t, {
+    src: cosResourceUrl(jsText, 'text/javascript'),
+    integrity: await cosSha256Integrity(jsText),
+    crossoriginstorage: '',
+  });
+  assert_equals(window.__cosHtmlUniqueRunCount, 1);
+
+  await promise_rejects_js(t, Error, appendScript(t, {src: cosBrokenUrl('js'), crossoriginstorage: ''}));
+  assert_equals(window.__cosHtmlUniqueRunCount, 1,
+    'a crossoriginstorage <script> without integrity is not served from COS');
+}, 'HTML: crossoriginstorage without integrity has no effect');
 </script>
 </body>

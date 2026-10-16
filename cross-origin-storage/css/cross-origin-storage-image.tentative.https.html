@@ -20,6 +20,22 @@
 
 const POLL_TIMEOUT_MS = 5000;
 
+// An image sizes its box as soon as its header is decoded, before the load
+// finishes and the bytes are stored, so wait for the entry itself. The
+// storing origin can always read what it stored.
+async function waitUntilStored(t, hash) {
+  const deadline = performance.now() + POLL_TIMEOUT_MS;
+  while (performance.now() < deadline) {
+    try {
+      await navigator.crossOriginStorage.getFileHandle(hash);
+      return;
+    } catch (e) {
+      await new Promise(resolve => t.step_timeout(resolve, 50));
+    }
+  }
+  assert_unreached('the image was not stored');
+}
+
 async function imageWidth(t, url, integrity, modifierArgs) {
   const id = `cos-image-${Math.random().toString(36).slice(2)}`;
   const style = document.createElement('style');
@@ -41,9 +57,10 @@ async function imageWidth(t, url, integrity, modifierArgs) {
 
 promise_test(async t => {
   const url = cosUniqueImageUrl('css-image');
-  const {integrity} = await cosIntegrityOfUrl(url);
+  const {integrity, hash} = await cosIntegrityOfUrl(url);
 
   assert_equals(await imageWidth(t, url, integrity, ''), 60, 'the image loaded from the network');
+  await waitUntilStored(t, hash);
   assert_equals(await imageWidth(t, cosBrokenUrl('png'), integrity, ''), 60,
     'an image with a broken URL but the same integrity() hash loaded, via COS');
 }, 'CSS: an image with cross-origin-storage() is served from COS on a subsequent request');
@@ -51,8 +68,9 @@ promise_test(async t => {
 promise_test(async t => {
   // Without the modifier, a broken URL fails even though COS holds the bytes.
   const url = cosUniqueImageUrl('css-image-without-modifier');
-  const {integrity} = await cosIntegrityOfUrl(url);
+  const {integrity, hash} = await cosIntegrityOfUrl(url);
   assert_equals(await imageWidth(t, url, integrity, ''), 60, 'the image loaded from the network');
+  await waitUntilStored(t, hash);
 
   const id = `cos-image-${Math.random().toString(36).slice(2)}`;
   const style = document.createElement('style');

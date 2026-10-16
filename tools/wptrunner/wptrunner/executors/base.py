@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+import subprocess
 import base64
 import hashlib
 import io

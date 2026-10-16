@@ -607,6 +607,15 @@ def start(**kwargs: Any) -> int:
             rv = check_stability(**kwargs) or 0
         else:
             rv = int(not run_tests(**kwargs)[0])
+    except Exception:
+        import subprocess
+        import threading
+        logger.info(f"Active Python thread count {threading.active_count()}")
+        thread_info = subprocess.check_output(["ps", "-eLf"])
+        logger.info(f"Running OS threads:\n{thread_info}")
+        limits = subprocess.check_output(["ulimit", "-a"])
+        logger.info(f"System limits:\n{limits}")
+        raise
     finally:
         logger.remove_handler(handler)
 

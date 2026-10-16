@@ -372,6 +372,21 @@ RunnerManagerState = Union[BeforeInitState,
                            StopState]
 
 
+def log_thread_state(logger):
+    import subprocess
+    logger.info(f"Active Python thread count {threading.active_count()}")
+    try:
+        thread_info = subprocess.check_output(["ps", "-eLf"])
+        logger.info(f"Running OS threads:\n{thread_info}")
+    except Exception:
+        logger.info("Running ps failed")
+    try:
+        limits = subprocess.check_output(["ulimit", "-a"])
+        logger.info(f"System limits:\n{limits}")
+    except Exception:
+        logger.info("Running ulimit failed")
+
+
 class TestRunnerManager(threading.Thread):
     def __init__(self, suite_name, index, test_queue,
                  test_implementations, stop_flag, retry_index=0, rerun=1,
@@ -463,6 +478,8 @@ class TestRunnerManager(threading.Thread):
             RestartingState: self.restart_runner,
         }
 
+        log_thread_state(self.logger)
+
         end_states = (StopState, ErrorState)
         assert isinstance(self.state, BeforeInitState)
         try:
@@ -523,6 +540,7 @@ class TestRunnerManager(threading.Thread):
                 self.browser.browser.cleanup()
             self.logger.debug("TestRunnerManager main loop terminated")
         finally:
+            log_thread_state(self.logger)
             # Even if the cleanup fails, signal that this thread is ready to
             # exit. Otherwise, the barrier backing `parent_stop_flag` will never
             # get enough watiers, causing wptrunner to hang.
@@ -1099,6 +1117,7 @@ class ManagerGroup:
         self.logger.info("Using %i child processes" % size)
         self.stop_flag = StopFlag(size)
 
+        log_thread_state(self.logger)
         for idx in range(size):
             manager = TestRunnerManager(self.suite_name,
                                         idx,
@@ -1120,6 +1139,7 @@ class ManagerGroup:
             manager.start()
             self.pool.add(manager)
         self.wait()
+        log_thread_state(self.logger)
 
     def wait(self, timeout: Optional[float] = None) -> None:
         """Wait for all the managers in the group to finish.

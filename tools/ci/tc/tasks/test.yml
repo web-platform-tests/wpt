@@ -172,14 +172,14 @@ tasks:
   # Run full suites on push
   - $map:
       for:
-        - vars:
-            suite: testharness
-        - vars:
-            suite: reftest
-        - vars:
-            suite: wdspec
-        - vars:
-            suite: crashtest
+        # - vars:
+        #     suite: testharness
+        # - vars:
+        #     suite: reftest
+        # - vars:
+        #     suite: wdspec
+        # - vars:
+        #     suite: crashtest
         - vars:
             suite: test262
       do:

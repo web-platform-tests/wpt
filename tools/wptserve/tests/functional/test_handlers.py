@@ -468,6 +468,31 @@ class TestAnyHtmlHandler(TestWrapperHandlerUsingServer):
                               headers=[('X-Foo', '1'), ('X-Bar', '2')])
 
 
+class TestAnyHtmlHandlerDuplicateHeaders(TestWrapperHandlerUsingServer):
+    dummy_files = {'foo.any.js': b'',
+                   'foo.any.js.headers': b'X-Foo: 1\nX-Foo: 2\n',
+                   '__dir__.headers': b'X-Foo: 0\n'}
+
+    def test_any_html_duplicate_headers(self):
+        self.run_wrapper_test('foo.any.html',
+                              'text/html',
+                              serve.AnyHtmlHandler)
+        resp = self.request('foo.any.html')
+        self.assert_multiple_headers(resp, 'X-Foo', ['0', '1', '2'])
+
+
+class TestAnyHtmlHandlerContentTypeOverride(TestWrapperHandlerUsingServer):
+    dummy_files = {'foo.any.js': b'',
+                   'foo.any.js.headers': b'Content-Type: text/plain\n'}
+
+    def test_any_html_content_type_override(self):
+        self.run_wrapper_test('foo.any.html',
+                              'text/plain',
+                              serve.AnyHtmlHandler)
+        resp = self.request('foo.any.html')
+        self.assert_multiple_headers(resp, 'Content-Type', ['text/plain'])
+
+
 class TestSharedWorkersHandler(TestWrapperHandlerUsingServer):
     dummy_files = {'foo.any.js': b'// META: global=sharedworker\n'}
 

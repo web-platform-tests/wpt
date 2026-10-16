@@ -14,7 +14,11 @@ top-level properties:
 * `maxRunTime`: Number. Maximum time in seconds for which the task can
   run.
 * `artifacts`: Object. List of artifacts and directories to upload; see
-  Taskcluster documentation.
+  Taskcluster documentation. An artifact can specify `expires-after` as a
+  duration such as `"7 days"`; the decision task converts it to an `expires`
+  timestamp. This allows browser bundles to expire sooner than test results
+  and logs. The expiration must be after the task deadline and no later than
+  the task expiration.
 * `command`: String. Command to run. This is automatically wrapped in a
   run_tc command
 * `options`: Optional Object. Options to pass into run_tc

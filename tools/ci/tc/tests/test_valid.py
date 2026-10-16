@@ -116,7 +116,7 @@ def test_verify_payload():
             "wptrunner_infrastructure",
             "wptrunner_unittest"]
 
-    for filename in ["pr_event.json", "master_push_event.json"]:
+    for filename in ["pr_event.json", "master_push_event.json", "epochs_daily_push_event.json"]:
         with open(data_path(filename), encoding="utf8") as f:
             event = json.load(f)
 
@@ -341,6 +341,7 @@ def test_command(event_path, event_update, task, expected):
       'wpt-chrome-stable-testharness-14',
       'wpt-chrome-stable-testharness-15',
       'wpt-chrome-stable-testharness-16',
+      'download-webkitgtk_minibrowser-nightly',
       'wpt-webkitgtk_minibrowser-nightly-testharness-1',
       'wpt-webkitgtk_minibrowser-nightly-testharness-2',
       'wpt-webkitgtk_minibrowser-nightly-testharness-3',
@@ -357,6 +358,7 @@ def test_command(event_path, event_update, task, expected):
       'wpt-webkitgtk_minibrowser-nightly-testharness-14',
       'wpt-webkitgtk_minibrowser-nightly-testharness-15',
       'wpt-webkitgtk_minibrowser-nightly-testharness-16',
+      'download-wpewebkit_minibrowser-nightly',
       'wpt-wpewebkit_minibrowser-nightly-testharness-1',
       'wpt-wpewebkit_minibrowser-nightly-testharness-2',
       'wpt-wpewebkit_minibrowser-nightly-testharness-3',

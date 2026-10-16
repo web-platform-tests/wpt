@@ -276,6 +276,10 @@ def create_tc_task(event: Event,
                    env_extra: Optional[Mapping[str, str]] = None) -> Tuple[str, TcTask]:
     command = build_full_command(event, task)
     task_id = taskcluster.slugId()
+    artifacts = {name: dict(artifact) for name, artifact in task.get("artifacts", {}).items()}
+    for artifact in artifacts.values():
+        if "expires-after" in artifact:
+            artifact["expires"] = taskcluster.fromNowJSON(artifact.pop("expires-after"))
     task_data = {
         "taskGroupId": taskgroup_id,
         "created": taskcluster.fromNowJSON(""),
@@ -291,7 +295,7 @@ def create_tc_task(event: Event,
             "source": event["repository"]["clone_url"]
         },
         "payload": {
-            "artifacts": task.get("artifacts"),
+            "artifacts": artifacts,
             "command": command,
             "image": task.get("image"),
             "maxRunTime": task.get("maxRunTime"),

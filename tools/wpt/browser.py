@@ -2605,6 +2605,7 @@ class WebKitGlibBaseMiniBrowser(WebKit):
         bundle_url = base_download_dir + quote(bundle_filename)
 
         dest = self._get_browser_download_dir(dest, channel)
+        os.makedirs(dest, exist_ok=True)
         bundle_file_path = os.path.join(dest, bundle_filename)
 
         self.logger.info("Downloading %s MiniBrowser bundle from %s" % (self.PORT_PRETTY_NAME, bundle_url))
@@ -2620,11 +2621,15 @@ class WebKitGlibBaseMiniBrowser(WebKit):
         if bundle_expected_hash != bundle_computed_hash:
             self.logger.error("Calculated SHA256 hash is %s but was expecting %s" % (bundle_computed_hash, bundle_expected_hash))
             raise RuntimeError("The %s MiniBrowser bundle at %s has incorrect SHA256 hash." % (self.PORT_PRETTY_NAME, bundle_file_path))
+        if rename:
+            renamed_path = os.path.join(dest, rename + get_ext(bundle_filename))
+            os.rename(bundle_file_path, renamed_path)
+            bundle_file_path = renamed_path
         return bundle_file_path
 
     def install(self, dest=None, channel=None, url=None):
         dest = self._get_browser_binary_dir(dest, channel)
-        bundle_path = self.download(dest, channel, url)
+        bundle_path = self.download(dest=dest, channel=channel, url=url)
         bundle_uncompress_directory = os.path.join(dest, self.product)
 
         # Clean it from previous runs

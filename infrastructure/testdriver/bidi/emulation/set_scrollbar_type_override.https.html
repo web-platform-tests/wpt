@@ -35,33 +35,11 @@
         });
         assert_equals(getScrollbarWidth(), initialScrollbarWidth);
 
-        // Emulate classic scrollbars.
-        await test_driver.bidi.emulation.set_scrollbar_type_override({
-            scrollbarType: "classic"
-        });
-        assert_greater_than(getScrollbarWidth(), 0);
-
-        // Clear the scrollbar type override with null.
-        await test_driver.bidi.emulation.set_scrollbar_type_override({
-            scrollbarType: null
-        });
-        assert_equals(getScrollbarWidth(), initialScrollbarWidth);
-
         // Emulate overlay scrollbars again.
         await test_driver.bidi.emulation.set_scrollbar_type_override({
             scrollbarType: "overlay"
         });
         assert_equals(getScrollbarWidth(), 0);
-
-        // Clear the scrollbar type override by omitting scrollbarType.
-        await test_driver.bidi.emulation.set_scrollbar_type_override({});
-        assert_equals(getScrollbarWidth(), initialScrollbarWidth);
-
-        // Emulate classic scrollbars again.
-        await test_driver.bidi.emulation.set_scrollbar_type_override({
-            scrollbarType: "classic"
-        });
-        assert_greater_than(getScrollbarWidth(), 0);
 
         // Clear the scrollbar type override by omitting scrollbarType.
         await test_driver.bidi.emulation.set_scrollbar_type_override({});

@@ -1,6 +1,6 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
-// META: script=/common/subset-tests-by-key.js
+// META: script=/common/subset-idlharness-by-name.js
 // META: variant=?include=Node
 // META: variant=?exclude=Node
 // META: timeout=long
@@ -14,6 +14,7 @@ idl_test(
   ['dom', 'fullscreen'],
   ['html'],
   async idl_array => {
+    idl_array.set_test_filter(subset_idlharness_by_name);
     idl_array.add_untested_idls((await fetch_spec('document-load-promises.tentative')).idl);
     self.xmlDoc = document.implementation.createDocument(null, '', null);
     self.detachedRange = document.createRange();

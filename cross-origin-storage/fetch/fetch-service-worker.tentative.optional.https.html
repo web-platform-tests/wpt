@@ -1,0 +1,63 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: fetch() integration lookup in a service worker</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="../resources/helpers.js"></script>
+<script src="../resources/integration-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#permissions-policy-integration
+// https://github.com/WICG/cross-origin-storage#fetch-integration
+// https://github.com/whatwg/fetch/issues/1954
+//
+// Optional: the spec defines the store half for a service worker (see
+// fetch-service-worker.tentative.https.html). The lookup half belongs to the
+// Fetch Standard. A ServiceWorkerGlobalScope fails "check Cross-Origin Storage
+// permission", and getFileHandle() rejects there, so this test expects the
+// lookup to be skipped as well: the fetch runs as if `crossOriginStorage` were
+// absent.
+
+// Registers resources/cos-fetch-sw.js under a fresh scope and resolves with
+// a function that runs fetch(url, init) inside it.
+async function cosServiceWorkerFetcher(t) {
+  const scope = `../resources/cos-fetch-sw-scope-${token()}/`;
+  const reg = await navigator.serviceWorker.register('../resources/cos-fetch-sw.js', {scope});
+  t.add_cleanup(() => reg.unregister());
+  const sw = reg.installing || reg.waiting || reg.active;
+  await new Promise((resolve) => {
+    if (reg.active) return resolve();
+    sw.addEventListener('statechange', () => {
+      if (sw.state === 'activated') resolve();
+    });
+  });
+  return (url, init) => new Promise((resolve) => {
+    const channel = new MessageChannel();
+    channel.port1.onmessage = ({data}) => resolve(data);
+    reg.active.postMessage({port: channel.port2, url, init}, [channel.port2]);
+  });
+}
+
+promise_test(async t => {
+  const content = cosUniqueContent('sw-fetch-lookup');
+  await cosStore(content);
+  const integrity = await cosSha256Integrity(content);
+
+  // Control: this page, same-origin with the service worker and the storing
+  // origin, is served the entry, which keeps the check below from passing in a
+  // browser that does not implement the integration at all.
+  const here = await fetch(cosBrokenUrl(), {integrity, crossOriginStorage: ''});
+  assert_true(here.ok, 'the storing page is served the 404 URL from COS');
+  assert_equals(await here.text(), content);
+
+  const swFetch = await cosServiceWorkerFetcher(t);
+  const result = await swFetch(cosBrokenUrl(), {integrity, crossOriginStorage: ''});
+  assert_false(result.ok, 'a service worker is not served the entry from COS');
+  assert_equals(result.name, 'TypeError',
+    'the 404 stays an ordinary integrity-checked network error');
+}, 'fetch, service worker: a crossOriginStorage fetch() in a service worker is not served from COS');
+</script>
+</body>

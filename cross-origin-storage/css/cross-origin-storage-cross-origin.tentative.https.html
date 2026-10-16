@@ -1,0 +1,130 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Cross-Origin Storage: CSS integration, cross-origin</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="../resources/helpers.js"></script>
+<script src="../resources/cross-origin-helpers.js"></script>
+<script src="../resources/integration-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://github.com/WICG/cross-origin-storage#css-integration
+// https://wicg.github.io/cross-origin-storage/#storing-fetched-resources
+// https://wicg.github.io/cross-origin-storage/#availability-gating
+//
+// Cross-origin counterpart of cross-origin-storage.tentative.https.html. Every
+// font here is a copy of Ahem with trailing bytes unique to the run (served by
+// cos-resource.py), so none is on the Public Hash List and no earlier write of
+// the same bytes can have widened its scope. Every outcome below is therefore
+// deterministic: the Public Hash List gate and GREASE'ing apply only to a
+// reader that qualifies through the "*" grant alone, and such a reader is
+// refused for an unlisted hash. A list-scoped write is bounded by the
+// `Cross-Origin-Storage-Allow-Origin` header on the font's own response.
+
+// Stores a unique font through @font-face on this page. `allow`, if given, is
+// the font's `Cross-Origin-Storage-Allow-Origin` header. Returns the font's
+// integrity and COS hash.
+async function storeFontHere(t, label, modifierArgs, {allow} = {}) {
+  const url = cosUniqueFontUrl(`css-xorigin-${label}`, {allow});
+  const {integrity, hash} = await cosIntegrityOfUrl(url);
+  const style = document.createElement('style');
+  const family = 'COSStorerFont-' + Math.random();
+  style.textContent = `
+    @font-face {
+      font-family: "${family}";
+      src: url("${url}" integrity("${integrity}") cross-origin-storage(${modifierArgs}));
+    }
+  `;
+  t.add_cleanup(() => style.remove());
+  document.head.appendChild(style);
+  assert_true(await cosFontLoaded(family), 'the storing @font-face loaded');
+  return {integrity, hash};
+}
+
+async function remoteFontProbe(ctx, integrity, modifierArgs) {
+  return ctx.execute_script(async (integrity, modifierArgs) => {
+    // A relative path resolved against the executor's own origin: a real,
+    // fast 404 (a nonexistent TLD risks a slow or hanging DNS lookup in some
+    // network environments).
+    const brokenUrl = './does-not-exist-' + Math.random() + '.ttf';
+    const family = 'COSRemoteFont-' + Math.random();
+    const style = document.createElement('style');
+    style.textContent = `
+      @font-face {
+        font-family: "${family}";
+        src: url("${brokenUrl}" integrity("${integrity}") cross-origin-storage(${modifierArgs}));
+      }
+    `;
+    document.head.appendChild(style);
+    try {
+      // `document.fonts.check()` reports success for a face that failed or a
+      // `src` the parser dropped, so check each face's status.
+      const faces = await document.fonts.load(`16px "${family}"`);
+      return {ok: faces.length > 0 && faces.every((face) => face.status === 'loaded')};
+    } catch (e) {
+      return {ok: false};
+    } finally {
+      style.remove();
+    }
+  }, [integrity, modifierArgs]);
+}
+
+promise_test(async t => {
+  const {integrity, hash} = await storeFontHere(t, 'global', '*');
+  const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
+  const result = await remoteFontProbe(ctx, integrity, '*');
+  assert_false(result.ok,
+    'a "*"-scoped @font-face whose hash is not on the Public Hash List is not served cross-site');
+  cosAssertNotDisclosed(await cosRemoteReadDigest(ctx, hash),
+    'a cross-site getFileHandle() of the same entry');
+}, 'CSS, cross-origin: a cross-origin-storage(*) font that is not on the Public Hash List is never served cross-site');
+
+promise_test(async t => {
+  const {integrity} = await storeFontHere(t, 'samesite', '');
+  const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
+  const result = await remoteFontProbe(ctx, integrity, '');
+  assert_false(result.ok,
+    'a same-site-scoped @font-face is never disclosed to a cross-site origin');
+}, 'CSS, cross-origin: cross-origin-storage() with no arguments (same-site) is never served to a cross-site origin');
+
+promise_test(async t => {
+  // The same-site baseline every entry carries applies ahead of the Public
+  // Hash List gate and GREASE'ing, so the read is asserted outright.
+  const {integrity, hash} = await storeFontHere(t, 'samesite-baseline', '');
+  const {ctx} = await cosOpenRemoteContext(cosNextSameSiteOrigin());
+  const result = await remoteFontProbe(ctx, integrity, '');
+  assert_true(result.ok, 'a same-site origin is served the same-site-scoped @font-face');
+  cosAssertDisclosedDigest(await cosRemoteReadDigest(ctx, hash), hash.value,
+    'a same-site getFileHandle() of the same entry');
+}, 'CSS, cross-origin: a same-site origin is always served a same-site-scoped @font-face from COS');
+
+promise_test(async t => {
+  const origin = cosNextCrossSiteOrigin();
+  const {ctx} = await cosOpenRemoteContext(origin);
+  const {integrity, hash} = await storeFontHere(t, 'list', `"${origin}"`, {allow: origin});
+  const result = await remoteFontProbe(ctx, integrity, `"${origin}"`);
+  assert_true(result.ok,
+    'a listed cross-site origin the font\'s header names is served the @font-face');
+  cosAssertDisclosedDigest(await cosRemoteReadDigest(ctx, hash), hash.value,
+    'the listed origin reads the same entry through getFileHandle()');
+}, 'CSS, cross-origin: cross-origin-storage("origin") is served to a listed cross-site origin the resource\'s header authorizes');
+
+promise_test(async t => {
+  // Without the header on the font's response, the list is dropped and the
+  // entry falls back to the same-site default.
+  const origin = cosNextCrossSiteOrigin();
+  const {ctx} = await cosOpenRemoteContext(origin);
+  const {integrity, hash} = await storeFontHere(t, 'list-no-header', `"${origin}"`);
+  const result = await remoteFontProbe(ctx, integrity, `"${origin}"`);
+  assert_false(result.ok, 'a listed cross-site origin the font does not authorize is not served');
+  cosAssertNotDisclosed(await cosRemoteReadDigest(ctx, hash),
+    'nor can it read the entry through getFileHandle()');
+}, 'CSS, cross-origin: cross-origin-storage("origin") without the resource\'s header is not served to a listed cross-site origin');
+</script>
+</body>

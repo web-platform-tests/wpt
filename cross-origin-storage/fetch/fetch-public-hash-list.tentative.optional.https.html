@@ -1,0 +1,70 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: fetch() integration and the Public Hash List</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="../resources/helpers.js"></script>
+<script src="../resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#public-hash-list
+// https://wicg.github.io/cross-origin-storage/#availability-gating
+// https://github.com/WICG/cross-origin-storage#fetch-integration
+//
+// Optional: the contents of the Public Hash List are implementation-defined.
+// This test assumes the list carries resources/phl-listed-resource.js
+// (jQuery 3.7.1's minified build, see public-hash-list.tentative.optional.https.html).
+// fetch-cross-origin.tentative.https.html covers the negative direction for
+// bytes unique to a run.
+//
+// A "*"-scoped entry whose hash is on the list is disclosable to a cross-site
+// origin through the fetch integration. GREASE'ing, or a cross-site lookup
+// budget, may still refuse any single lookup, so the reader tries a few times
+// and the file fails only if no lookup was ever served.
+
+const LISTED_RESOURCE = new URL('../resources/phl-listed-resource.js', location.href).href;
+const ATTEMPTS = 8;
+
+promise_test(async t => {
+  const text = await fetch(LISTED_RESOURCE).then(r => r.text());
+  const integrity = await cosSha256Integrity(text);
+  const stored = await fetch(LISTED_RESOURCE, {integrity, crossOriginStorage: '*'});
+  assert_true(stored.ok, 'the storing fetch itself succeeded');
+  await stored.text();
+
+  const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
+  let result;
+  for (let i = 0; i < ATTEMPTS; ++i) {
+    result = await ctx.execute_script(async (integrity) => {
+      const brokenUrl = './does-not-exist-' + Math.random() + '.js';
+      try {
+        const response = await fetch(brokenUrl, {integrity, crossOriginStorage: '*'});
+        return {ok: true, text: await response.text()};
+      } catch (e) {
+        return {ok: false, name: e.name};
+      }
+    }, [integrity]);
+    if (result.ok) break;
+  }
+  // The fetch-integration counterpart of cosAssertDisclosableOrGreased(): a
+  // refused lookup falls through to the network and fails as a TypeError.
+  cosDisclosureTally.authorized++;
+  if (result.ok) {
+    cosDisclosureTally.disclosed++;
+    assert_equals(result.text, text, 'the served bytes are the listed resource');
+  } else {
+    assert_equals(result.name, 'TypeError',
+      'a refused lookup fails like any other integrity-checked 404');
+  }
+}, 'fetch, Public Hash List: a "*"-scoped listed resource may be served to a cross-site fetch');
+
+promise_test(async t => {
+  cosAssertSomeDisclosureObserved();
+}, 'meta: the listed resource was served cross-site at least once');
+</script>
+</body>

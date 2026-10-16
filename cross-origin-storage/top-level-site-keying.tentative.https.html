@@ -1,0 +1,177 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Cross-Origin Storage: grants are keyed to the top-level site</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#cos-entries
+// https://wicg.github.io/cross-origin-storage/#reading-files
+// https://wicg.github.io/cross-origin-storage/#original-storer-access
+//
+// Every grant except the global one records the COS partition (the site of
+// the top-level origin) of the write that added it, and "determine COS
+// disclosure" honors it only for reads under that same partition. A frame
+// embedded on two sites therefore cannot read back on one what it wrote on
+// the other, and an origin cannot read back from a frame what it wrote
+// top-level. An origins list written in a first-party COS context also admits
+// the listed origins wherever they run first-party.
+//
+// wptserve offers two sites: this document's, and the "alt" site. This
+// document is top-level on the first. The second becomes a top-level site by
+// opening an alt-site window, and an alt-site frame in this document is the
+// cross-site frame the keying exists for. List-scoped writes from this
+// document rely on the companion .sub.headers file, whose
+// Cross-Origin-Storage-Allow-Origin ceiling names the alt-site origins.
+
+const {HTTPS_NOTSAMESITE_ORIGIN, HTTPS_OTHER_NOTSAMESITE_ORIGIN} = get_host_info();
+
+// Opens `origin` as a new top-level window and returns a RemoteContext in it.
+async function openTopLevel(t, origin) {
+  const uuid = token();
+  window.open(remoteExecutorUrl(uuid, {host: new URL(origin).host}), '_blank', 'noopener');
+  const ctx = new RemoteContext(uuid);
+  await ctx.execute_script(() => true);
+  t.add_cleanup(() => ctx.execute_script(() => window.close()).catch(() => {}));
+  return ctx;
+}
+
+// Opens an iframe at `origin` inside the context `parent`, with
+// cross-origin-storage allowed, and returns a RemoteContext in the frame.
+async function openFrameIn(parent, origin) {
+  const uuid = token();
+  const url = `${origin}/common/dispatcher/remote-executor.html?uuid=${uuid}`;
+  await parent.execute_script((url) => {
+    const iframe = document.createElement('iframe');
+    iframe.allow = 'cross-origin-storage';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+  }, [url]);
+  const ctx = new RemoteContext(uuid);
+  await ctx.execute_script(() => true);
+  return ctx;
+}
+
+async function uniqueHash(label) {
+  const content = cosUniqueContent(label);
+  return {content, hash: cosHash(await cosSha256Hex(content))};
+}
+
+async function storeIn(ctx, hash, content, options) {
+  const stored = await cosRemoteStore(ctx, hash, content, options);
+  assert_true(stored.ok, `the write succeeds, got ${stored.name}: ${stored.message}`);
+}
+
+promise_test(async t => {
+  const {hash, content} = await uniqueHash('frame-reads-back-under-same-top-level');
+  const {ctx: writer} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  await storeIn(writer, hash, content);
+
+  const {ctx: reader} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  cosAssertDisclosed(await cosRemoteRead(reader, hash), content,
+    'a second frame of the storing origin, under the same top-level site');
+}, 'a cross-site frame reads back what it wrote, under the same top-level site');
+
+promise_test(async t => {
+  const {hash, content} = await uniqueHash('frame-write-not-readable-top-level');
+  const {ctx: frame} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  await storeIn(frame, hash, content);
+
+  const topLevel = await openTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  cosAssertNotDisclosed(await cosRemoteRead(topLevel, hash),
+    'the storing origin, top-level on its own site, reading what its frame wrote here');
+}, 'what a cross-site frame wrote is not readable by the same origin under another top-level site');
+
+promise_test(async t => {
+  const {hash, content} = await uniqueHash('frame-write-not-readable-in-other-frame');
+  const {ctx: frame} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  await storeIn(frame, hash, content);
+
+  const topLevel = await openTopLevel(t, HTTPS_OTHER_NOTSAMESITE_ORIGIN);
+  const otherFrame = await openFrameIn(topLevel, HTTPS_NOTSAMESITE_ORIGIN);
+  cosAssertNotDisclosed(await cosRemoteRead(otherFrame, hash),
+    'the storing origin, framed under another top-level site');
+}, 'what a cross-site frame wrote is not readable by the same origin framed under another top-level site');
+
+promise_test(async t => {
+  const {hash, content} = await uniqueHash('top-level-write-not-readable-in-frame');
+  const topLevel = await openTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  await storeIn(topLevel, hash, content);
+  cosAssertDisclosed(await cosRemoteRead(topLevel, hash), content,
+    'the storing origin, top-level, reading its own write');
+
+  const {ctx: frame} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  cosAssertNotDisclosed(await cosRemoteRead(frame, hash),
+    'the storing origin, framed under this document, reading what it wrote top-level');
+}, 'what an origin wrote top-level is not readable by its frames under another top-level site');
+
+promise_test(async t => {
+  const {hash, content} = await uniqueHash('same-site-baseline-keyed');
+  const {ctx: frame} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  await storeIn(frame, hash, content);
+
+  const {ctx: sibling} = await cosOpenRemoteContext(HTTPS_OTHER_NOTSAMESITE_ORIGIN);
+  cosAssertDisclosed(await cosRemoteRead(sibling, hash), content,
+    'an origin same site with the storing origin, under the same top-level site');
+
+  const topLevel = await openTopLevel(t, HTTPS_OTHER_NOTSAMESITE_ORIGIN);
+  cosAssertNotDisclosed(await cosRemoteRead(topLevel, hash),
+    'an origin same site with the storing origin, under another top-level site');
+}, 'the same-site baseline is keyed to the top-level site of the write');
+
+promise_test(async t => {
+  // A first-party list admits the listed origins first-party anywhere, and
+  // also under the writer's own top-level site.
+  const {hash, content} = await uniqueHash('first-party-list');
+  await cosStore(content, {origins: [HTTPS_NOTSAMESITE_ORIGIN]});
+
+  const topLevel = await openTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  cosAssertDisclosed(await cosRemoteRead(topLevel, hash), content,
+    'the listed origin, top-level on its own site');
+  const {ctx: frame} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  cosAssertDisclosed(await cosRemoteRead(frame, hash), content,
+    'the listed origin, framed under the writer\'s top-level site');
+}, 'an origins list written first-party admits the listed origins first-party and under the writer\'s top-level site');
+
+promise_test(async t => {
+  // A list written from a cross-site frame is keyed like every other grant
+  // that frame adds. The frame's own response authorizes the listed origin,
+  // which is the origin of a different frame of the same site.
+  const {hash, content} = await uniqueHash('frame-list-keyed');
+  const {ctx: frame} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN,
+    {pipeHeader: cosAllowOriginPipe(HTTPS_NOTSAMESITE_ORIGIN)});
+  await storeIn(frame, hash, content, {origins: [HTTPS_NOTSAMESITE_ORIGIN]});
+
+  const topLevel = await openTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  cosAssertNotDisclosed(await cosRemoteRead(topLevel, hash),
+    'the origin a cross-site frame listed, top-level on its own site');
+}, 'an origins list written from a cross-site frame only applies under that frame\'s top-level site');
+
+promise_test(async t => {
+  // A create request grants nothing until its bytes are written and verified,
+  // so it cannot make its caller a storing origin of an entry someone else
+  // stored.
+  const {hash} = await cosStore(cosUniqueContent('create-without-bytes'));
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const result = await ctx.execute_script(async (hash) => {
+    await navigator.crossOriginStorage.getFileHandle(hash, {create: true});
+    try {
+      await navigator.crossOriginStorage.getFileHandle(hash);
+      return {ok: true};
+    } catch (e) {
+      return {ok: false, name: e.name, message: e.message};
+    }
+  }, [hash]);
+  cosAssertNotDisclosed(result,
+    'a cross-site frame reading an entry after a create request that wrote no bytes');
+}, 'a create request with no bytes does not make its caller a storing origin');
+</script>
+</body>

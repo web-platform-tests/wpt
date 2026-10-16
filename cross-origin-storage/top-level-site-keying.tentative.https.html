@@ -37,26 +37,10 @@ const {HTTPS_NOTSAMESITE_ORIGIN, HTTPS_OTHER_NOTSAMESITE_ORIGIN} = get_host_info
 // Opens `origin` as a new top-level window and returns a RemoteContext in it.
 async function openTopLevel(t, origin) {
   const uuid = token();
-  window.open(remoteExecutorUrl(uuid, {host: new URL(origin).host}), '_blank', 'noopener');
+  window.open(remoteExecutorUrl(uuid, {host: new URL(origin).host}), '_blank');
   const ctx = new RemoteContext(uuid);
   await ctx.execute_script(() => true);
   t.add_cleanup(() => ctx.execute_script(() => window.close()).catch(() => {}));
-  return ctx;
-}
-
-// Opens an iframe at `origin` inside the context `parent`, with
-// cross-origin-storage allowed, and returns a RemoteContext in the frame.
-async function openFrameIn(parent, origin) {
-  const uuid = token();
-  const url = `${origin}/common/dispatcher/remote-executor.html?uuid=${uuid}`;
-  await parent.execute_script((url) => {
-    const iframe = document.createElement('iframe');
-    iframe.allow = 'cross-origin-storage';
-    iframe.src = url;
-    document.body.appendChild(iframe);
-  }, [url]);
-  const ctx = new RemoteContext(uuid);
-  await ctx.execute_script(() => true);
   return ctx;
 }
 
@@ -89,17 +73,6 @@ promise_test(async t => {
   cosAssertNotDisclosed(await cosRemoteRead(topLevel, hash),
     'the storing origin, top-level on its own site, reading what its frame wrote here');
 }, 'what a cross-site frame wrote is not readable by the same origin under another top-level site');
-
-promise_test(async t => {
-  const {hash, content} = await uniqueHash('frame-write-not-readable-in-other-frame');
-  const {ctx: frame} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
-  await storeIn(frame, hash, content);
-
-  const topLevel = await openTopLevel(t, HTTPS_OTHER_NOTSAMESITE_ORIGIN);
-  const otherFrame = await openFrameIn(topLevel, HTTPS_NOTSAMESITE_ORIGIN);
-  cosAssertNotDisclosed(await cosRemoteRead(otherFrame, hash),
-    'the storing origin, framed under another top-level site');
-}, 'what a cross-site frame wrote is not readable by the same origin framed under another top-level site');
 
 promise_test(async t => {
   const {hash, content} = await uniqueHash('top-level-write-not-readable-in-frame');

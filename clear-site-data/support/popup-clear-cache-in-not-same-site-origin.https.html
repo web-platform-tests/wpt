@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script>
+  async function loadResourceAndCheckWhetherItWasCached(resource_token, clear_cache_afterward) {
+    const resource_url = "/images/green-100x100.png";
+    await (await fetch(`${resource_url}?resource_token=${resource_token}&pipe=header(Cache-Control,max-age=3600)`)).bytes();
+    if (clear_cache_afterward) {
+      await (await fetch(`echo-clear-site-data.py?cache`)).text();
+    }
+    const entry = performance.getEntriesByType("resource").findLast(entry =>
+      new URL(entry.name).pathname === resource_url
+    );
+    // A network request (cache miss) returns 300 + encodedBodySize while a
+    // cached request can be either 0 or 300.
+    const resource_in_cache = [0, 300].includes(entry.transferSize);
+    return resource_in_cache;
+  }
+  const params = (new URL(location.href)).searchParams;
+  const resource_token = params.get("resource_token");
+  const clear_cache_afterward = params.get("clear_cache_afterward") === "true";
+  loadResourceAndCheckWhetherItWasCached(resource_token, clear_cache_afterward).then(resource_in_cache => opener.postMessage({resource_token, resource_in_cache}, "*"));
+</script>

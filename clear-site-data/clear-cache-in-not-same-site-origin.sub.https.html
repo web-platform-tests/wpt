@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta name="timeout" content="long"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<body>
+<script>
+  function isResourceInCache(origin, resource_token, clear_cache_afterward) {
+    return new Promise(resolve => {
+      let win;
+      addEventListener("message", e => {
+        if (e.data.resource_token === resource_token) {
+           win?.close();
+          resolve(e.data.resource_in_cache);
+        }
+      });
+      win = window.open(`${origin}/clear-site-data/support/popup-clear-cache-in-not-same-site-origin.https.html?resource_token=${resource_token}&clear_cache_afterward=${clear_cache_afterward}`);
+    });
+  }
+
+  const origin = get_host_info().HTTPS_OTHER_NOTSAMESITE_ORIGIN;
+  promise_test(async test => {
+    const resource_token = token();
+    assert_false(await isResourceInCache(origin, resource_token, false /* clear_cache_afterward */), "Resource initially not in cache.");
+    assert_true(await isResourceInCache(origin, resource_token, true /* clear_cache_afterward */), "Resource in cache after first load.");
+    assert_false(await isResourceInCache(origin, resource_token, true /* clear_cache_afterward */), "Resource not in cache after clearing cache.");
+  }, `Calling clear-site-data: cache from ${origin} properly works.`);
+</script>
+</body>

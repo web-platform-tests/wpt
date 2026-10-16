@@ -1,0 +1,37 @@
+<!doctype html>
+<title>VTTRegion.lines unsiged long</title>
+<link rel="help" href="https://w3c.github.io/webvtt/#dom-vttregion-lines">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id=log></div>
+<script>
+test(function() {
+    var region = new VTTRegion();
+    assert_true('lines' in region, 'lines is not supported');
+
+    for (var i = 1; i <= 100; i++) {
+        region.lines = i;
+        assert_equals(region.lines, i);
+    }
+
+    // https://heycam.github.io/webidl/#abstract-opdef-converttoint
+    [
+     [2147483648, 2147483648],
+     [4294967295, 4294967295],
+     [4294967296, 'IndexSizeError']
+    ].forEach(function (pair) {
+        var input = pair[0];
+        var expected = pair[1];
+
+        if (expected === 'IndexSizeError') {
+          assert_throws(expected, function() {
+            region.lines = input;
+          });
+        } else {
+          region.lines = input;
+          assert_equals(region.lines, expected);
+        }
+    });
+
+}, document.title + ' script-created region');
+</script>

@@ -46,7 +46,7 @@ promise_test(async () => {
 }, 'JS import attribute: dynamic import() with a real URL and crossOriginStorage: "" (same-site) succeeds and stores into COS');
 
 promise_test(async () => {
-  const brokenUrl = 'does-not-exist-' + Math.random() + '.mjs';
+  const brokenUrl = './does-not-exist-' + Math.random() + '.mjs';
   const mod = await import(brokenUrl, {
     with: {integrity: moduleIntegrity, crossOriginStorage: ''},
   });
@@ -59,7 +59,7 @@ promise_test(async () => {
     with: {integrity: moduleIntegrity, crossOriginStorage: '*'},
   });
   assert_equals(mod1.default, EXPECTED_VALUE);
-  const brokenUrl = 'does-not-exist-' + Math.random() + '.mjs';
+  const brokenUrl = './does-not-exist-' + Math.random() + '.mjs';
   const mod2 = await import(brokenUrl, {
     with: {integrity: moduleIntegrity, crossOriginStorage: '*'},
   });
@@ -71,7 +71,7 @@ promise_test(async () => {
     with: {integrity: moduleIntegrity, crossOriginStorage: location.origin},
   });
   assert_equals(mod1.default, EXPECTED_VALUE);
-  const brokenUrl = 'does-not-exist-' + Math.random() + '.mjs';
+  const brokenUrl = './does-not-exist-' + Math.random() + '.mjs';
   const mod2 = await import(brokenUrl, {
     with: {integrity: moduleIntegrity, crossOriginStorage: location.origin},
   });
@@ -126,7 +126,7 @@ promise_test(async t => {
   });
   assert_equals(mod1.default, EXPECTED_VALUE);
 
-  const brokenUrl = 'does-not-exist-' + Math.random() + '.mjs';
+  const brokenUrl = './does-not-exist-' + Math.random() + '.mjs';
   await promise_rejects_js(t, TypeError, import(brokenUrl, {
     with: {integrity: moduleIntegrity},
   }));
@@ -139,5 +139,54 @@ promise_test(async () => {
   const mod = await import('../resources/static-import-crossoriginstorage.mjs' + uniqueQuery());
   assert_equals(mod.value, EXPECTED_VALUE);
 }, 'JS import attribute: the static import form (import ... with { integrity, crossOriginStorage }) is recognized');
+
+promise_test(async () => {
+  // Make sure marker-module.mjs is in COS, then statically import a broken
+  // specifier that carries its integrity: only a COS hit can resolve it.
+  await import(REAL_URL + uniqueQuery(), {
+    with: {integrity: moduleIntegrity, crossOriginStorage: ''},
+  });
+  const mod = await import('../resources/static-import-crossoriginstorage-broken.mjs' + uniqueQuery());
+  assert_equals(mod.value, EXPECTED_VALUE,
+    'a statically imported broken specifier must be served from COS');
+}, 'JS import attribute: a static import of a broken URL resolves from COS given a matching integrity hash');
+
+promise_test(async t => {
+  await import(REAL_URL + uniqueQuery(), {
+    with: {integrity: moduleIntegrity, crossOriginStorage: ''},
+  });
+  await promise_rejects_js(t, TypeError,
+    import('../resources/static-import-integrity-only-broken.mjs' + uniqueQuery()),
+    'a static import with integrity alone must not consult COS');
+}, 'JS import attribute: a static import with integrity and no crossOriginStorage gets no COS participation');
+
+promise_test(async () => {
+  const text = JSON.stringify({value: EXPECTED_VALUE, token: cosUniqueContent('import-json')});
+  const integrity = await cosSha256Integrity(text);
+  const mod1 = await import(cosResourceUrl(text, 'application/json'), {
+    with: {type: 'json', integrity, crossOriginStorage: ''},
+  });
+  assert_equals(mod1.default.value, EXPECTED_VALUE);
+  const mod2 = await import('./does-not-exist-' + Math.random() + '.json', {
+    with: {type: 'json', integrity, crossOriginStorage: ''},
+  });
+  assert_equals(mod2.default.value, EXPECTED_VALUE,
+    'a broken JSON module specifier must be served from COS as JSON');
+}, 'JS import attribute: a JSON module (type: "json") is stored into and served from COS');
+
+promise_test(async () => {
+  const text = cosUniqueStylesheet('import-css', 'cos-import-css-marker');
+  const integrity = await cosSha256Integrity(text);
+  const mod1 = await import(cosResourceUrl(text, 'text/css'), {
+    with: {type: 'css', integrity, crossOriginStorage: ''},
+  });
+  assert_true(mod1.default instanceof CSSStyleSheet);
+  const mod2 = await import('./does-not-exist-' + Math.random() + '.css', {
+    with: {type: 'css', integrity, crossOriginStorage: ''},
+  });
+  assert_true(mod2.default instanceof CSSStyleSheet,
+    'a broken CSS module specifier must be served from COS as CSS');
+  assert_equals(mod2.default.cssRules[0].selectorText, '#cos-import-css-marker');
+}, 'JS import attribute: a CSS module (type: "css") is stored into and served from COS');
 </script>
 </body>

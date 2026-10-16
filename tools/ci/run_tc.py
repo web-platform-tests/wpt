@@ -265,6 +265,9 @@ def unpack(path):
 
 
 def setup_environment(**kwargs):
+    print("Checking ulimits")
+    print(run(["ulimit", "-a"], return_stdout=True))
+
     if "TASK_ARTIFACTS" in os.environ:
         artifacts = json.loads(os.environ["TASK_ARTIFACTS"])
         download_artifacts(artifacts)

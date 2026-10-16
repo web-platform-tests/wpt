@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+import subprocess
 import base64
 import hashlib
 import io
@@ -211,8 +212,14 @@ class TimedRunner:
                 self.result = (False, err)
                 return self.result
 
+        self.logger.info(f"Active Python thread count {threading.active_count()}")
         executor = threading.Thread(target=self.run_func)
-        executor.start()
+        try:
+            executor.start()
+        except RuntimeError:
+            thread_info = subprocess.check_output(["ps", "-eLf"])
+            self.logger.info(f"Running threads:\n{thread_info}")
+            raise
 
         # Add twice the extra timeout since the called function is expected to
         # wait at least self.timeout + self.extra_timeout and this gives some leeway

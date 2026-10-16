@@ -37,6 +37,14 @@ function cosUniqueFontUrl(label, {allow} = {}) {
   return `${COS_RESOURCE_URL}?${params}`;
 }
 
+// A same-origin URL that serves a copy of /css/support/60x60-green.png with
+// unique trailing bytes, so that its hash is one nothing has stored before.
+function cosUniqueImageUrl(label, {allow} = {}) {
+  const params = new URLSearchParams({kind: 'image', token: cosUniqueContent(label)});
+  cosAddAllow_(params, allow);
+  return `${COS_RESOURCE_URL}?${params}`;
+}
+
 // Fetches `url` without COS and returns the Subresource Integrity string and
 // the COS hash of its bytes.
 async function cosIntegrityOfUrl(url) {

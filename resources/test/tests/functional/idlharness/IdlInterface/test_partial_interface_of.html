@@ -104,6 +104,98 @@
         partial interface M { attribute any A; };`);
       idlArray.merge_partials();
     })();
+
+    // Test filter: partials follow the interface they extend
+    (() => {
+      const idlArray = new IdlArray();
+      idlArray.add_idls(`
+        [Exposed=Window] interface N { attribute any n; };
+        partial interface N { attribute any n2; };
+        [Exposed=Window] interface O { attribute any o; };
+        partial interface O { attribute any o; };`);
+      idlArray.set_test_filter(name => name === "N");
+      idlArray.merge_partials();
+    })();
+
+    // Test filter: multiple partials of an accepted interface
+    (() => {
+      const idlArray = new IdlArray();
+      idlArray.add_idls(`
+        [Exposed=Window] interface P {};
+        partial interface P { attribute any p1; };
+        partial interface P { attribute any p2; };`);
+      idlArray.set_test_filter(name => name === "P");
+      idlArray.merge_partials();
+    })();
+
+    // Test filter: complementary filters generate every test exactly once
+    (() => {
+      const idl = `
+        [Exposed=Window] interface Q {};
+        partial interface Q { attribute any q; };
+        [Exposed=Window] interface R {};
+        partial interface R { attribute any r; };
+        [Exposed=Window] interface S {};
+        partial interface S { attribute any s; };
+        interface mixin T { attribute any mq; };
+        interface mixin X { attribute any ms; };
+        Q includes T;
+        R includes T;
+        S includes X;`;
+      for (const filter of [name => name === "Q", name => name !== "Q"]) {
+        const idlArray = new IdlArray();
+        idlArray.add_idls(idl);
+        idlArray.set_test_filter(filter);
+        idlArray.merge_partials();
+        idlArray.merge_mixins();
+      }
+    })();
+
+    // Test filter: exposure is checked against the partial's own name
+    (() => {
+      const idlArray = new IdlArray();
+      idlArray.add_untested_idls(`
+        [Exposed=Window] interface V {};
+        [Exposed=Window] interface W {};`);
+      idlArray.add_idls(`
+        [Exposed=DedicatedWorker] partial interface V {};
+        [Exposed=DedicatedWorker] partial interface W {};`);
+      idlArray.set_test_filter(name => name === "V");
+      idlArray.merge_partials();
+    })();
+
+    // Test filter: a partial of a missing interface generates no tests
+    (() => {
+      const idlArray = new IdlArray();
+      idlArray.add_idls('partial interface Missing { undefined f(); };');
+      idlArray.set_test_filter(() => false);
+      idlArray.merge_partials();
+    })();
+
+    // Name clash in an untested partial is still reported without a filter
+    (() => {
+      const idlArray = new IdlArray();
+      idlArray.add_untested_idls(`
+        interface U { attribute any a; };
+        partial interface U { attribute any a; };`);
+      idlArray.merge_partials();
+    })();
+
+    // Test filter: a mixin clash is attributed to the including interface
+    (() => {
+      const idl = `
+        [Exposed=Window] interface Y {};
+        interface mixin Z { attribute any m; };
+        partial interface mixin Z { attribute any m2; };
+        Y includes Z;`;
+      for (const filter of [name => name === "Y", name => name === "Z"]) {
+        const idlArray = new IdlArray();
+        idlArray.add_idls(idl);
+        idlArray.set_test_filter(filter);
+        idlArray.merge_partials();
+        idlArray.merge_mixins();
+      }
+    })();
   </script>
   <script type="text/json" id="expected">
 {
@@ -177,6 +269,132 @@
       "status_string": "FAIL",
       "properties": {},
       "message": "assert_true: member A is unique expected true got false"
+    },
+    {
+      "name": "Partial interface U: member names are unique",
+      "status_string": "FAIL",
+      "properties": {},
+      "message": "assert_true: member a is unique expected true got false"
+    },
+    {
+      "name": "Partial interface V: original interface defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface V: valid exposure set",
+      "status_string": "FAIL",
+      "properties": {},
+      "message": "Partial V interface is exposed to 'DedicatedWorker', the original interface is not."
+    },
+    {
+      "name": "Partial interface mixin Z: original interface mixin defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface mixin Z: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Y includes Z: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface N: original interface defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface N: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface P: original interface defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface P: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface P[2]: original interface defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface P[2]: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface Q: original interface defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface Q: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Q includes T: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface R: original interface defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface R: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "R includes T: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface S: original interface defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface S: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "S includes X: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
     }
   ],
   "type": "complete"

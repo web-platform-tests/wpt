@@ -66,6 +66,47 @@
       idlArray.merge_partials();
       idlArray.merge_mixins();
     })();
+
+    // Test filter: the test follows the including interface
+    (() => {
+      const idlArray = new IdlArray();
+      idlArray.add_idls(`
+        [Exposed=Window] interface I6 {};
+        [Exposed=Window] interface I7 {};
+        interface mixin M6 { attribute any a6; };
+        I6 includes M6;
+        I7 includes M6;`);
+      idlArray.set_test_filter(name => name === "I6");
+      idlArray.merge_partials();
+      idlArray.merge_mixins();
+    })();
+
+    // Test filter: accepting only the mixin generates no test
+    (() => {
+      const idlArray = new IdlArray();
+      idlArray.add_idls(`
+        [Exposed=Window] interface I8 {};
+        interface mixin M8 { attribute any a8; };
+        I8 includes M8;`);
+      idlArray.set_test_filter(name => name === "M8");
+      idlArray.merge_partials();
+      idlArray.merge_mixins();
+    })();
+
+    // Test filter: a clash is reported only for the accepted including interface
+    (() => {
+      const idlArray = new IdlArray();
+      idlArray.add_idls(`
+        [Exposed=Window] interface I9 { attribute any a9; };
+        [Exposed=Window] interface I10 { attribute any a10; };
+        interface mixin M9 { attribute any a9; };
+        interface mixin M10 { attribute any a10; };
+        I9 includes M9;
+        I10 includes M10;`);
+      idlArray.set_test_filter(name => name === "I9");
+      idlArray.merge_partials();
+      idlArray.merge_mixins();
+    })();
   </script>
   <script type="text/json" id="expected">
 {
@@ -91,6 +132,18 @@
       "status_string": "FAIL",
       "properties": {},
       "message": "assert_true: member a5 is unique expected true got false"
+    },
+    {
+      "name": "I6 includes M6: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "I9 includes M9: member names are unique",
+      "status_string": "FAIL",
+      "properties": {},
+      "message": "assert_true: member a9 is unique expected true got false"
     },
     {
       "name": "Partial interface mixin M2: member names are unique",

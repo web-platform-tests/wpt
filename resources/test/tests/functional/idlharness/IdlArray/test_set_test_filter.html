@@ -167,6 +167,53 @@ with set_test_filter().</p>
   idlArray.set_test_filter(() => false);
   idlArray.test();
 })();
+
+// Partial interface members are still merged when the interface is excluded
+(() => {
+  Object.defineProperty(window, "H", {
+    enumerable: false,
+    writable: true,
+    configurable: true,
+    value: function H() {
+      throw new TypeError("Illegal constructor");
+    }
+  });
+  H.prototype.p = function p() {
+    throw new TypeError("Illegal invocation");
+  };
+  Object.defineProperty(H, "prototype", { writable: false });
+
+  const idlArray = new IdlArray();
+  idlArray.add_idls(`
+    [Exposed=Window] interface H { undefined base(); };
+    partial interface H { undefined p(); };`);
+  idlArray.set_test_filter((name, member) => member === "p");
+  idlArray.test();
+})();
+
+// Mixin members are still merged when the including interface is excluded
+(() => {
+  Object.defineProperty(window, "I", {
+    enumerable: false,
+    writable: true,
+    configurable: true,
+    value: function I() {
+      throw new TypeError("Illegal constructor");
+    }
+  });
+  I.prototype.mm = function mm() {
+    throw new TypeError("Illegal invocation");
+  };
+  Object.defineProperty(I, "prototype", { writable: false });
+
+  const idlArray = new IdlArray();
+  idlArray.add_idls(`
+    [Exposed=Window] interface I { undefined base(); };
+    interface mixin N { undefined mm(); };
+    I includes N;`);
+  idlArray.set_test_filter((name, member) => member === "mm");
+  idlArray.test();
+})();
 </script>
 <script type="text/json" id="expected">
 {
@@ -309,6 +356,18 @@ with set_test_filter().</p>
     },
     {
       "name": "F interface: operation child()",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "H interface: operation p()",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "I interface: operation mm()",
       "status_string": "PASS",
       "properties": {},
       "message": null

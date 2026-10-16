@@ -74,6 +74,31 @@ namespace Absent {
 };
 `);
 idlArray.test();
+
+// The test filter only applies to interfaces
+(() => {
+  Object.defineProperty(self, "qux", {
+    value: Object.defineProperty({}, "Truth", {
+      value: function() {},
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    }),
+    writable: true,
+    enumerable: false,
+    configurable: true,
+  });
+
+  const idlArray = new IdlArray();
+  idlArray.add_idls(`
+[Exposed=Window]
+namespace qux {
+  undefined Truth();
+};
+`);
+  idlArray.set_test_filter(() => false);
+  idlArray.test();
+})();
 </script>
 <script type="text/json" id="expected">
 {
@@ -241,6 +266,54 @@ idlArray.test();
     },
     {
       "name": "Absent namespace: existence and properties of namespace object",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "qux namespace: extended attributes",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "qux namespace: property descriptor",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "qux namespace: [[Extensible]] is true",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "qux namespace: [[Prototype]] is Object.prototype",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "qux namespace: typeof is \"object\"",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "qux namespace: has no length property",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "qux namespace: has no name property",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "qux namespace: operation Truth()",
       "status_string": "PASS",
       "properties": {},
       "message": null

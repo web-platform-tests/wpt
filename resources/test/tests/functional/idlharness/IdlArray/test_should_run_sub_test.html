@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>idlharness: shouldRunSubTest</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/WebIDLParser.js"></script>
+  <script src="/resources/idlharness.js"></script>
+</head>
+<body>
+<p>Verify the series of sub-tests that are executed when shouldRunSubTest()
+rejects tests.</p>
+<script>
+"use strict";
+
+// Partials and mixins are merged even if shouldRunSubTest() rejects their tests
+(() => {
+  const originalShouldRunSubTest = self.shouldRunSubTest;
+  const rejected = /^(?:J|J includes P: member names are unique)$/;
+  self.shouldRunSubTest = key => !rejected.test(key);
+
+  const idlArray = new IdlArray();
+  idlArray.add_idls(`
+    [Exposed=Window] interface J { undefined base(); };
+    partial interface J { undefined partialJ(); };
+    interface mixin P { undefined mixinJ(); };
+    J includes P;
+    [Exposed=Window] interface K { undefined base(); };
+    partial interface K { undefined partialK(); };
+    interface mixin Q { undefined mixinK(); };
+    K includes Q;`);
+  idlArray.merge_partials();
+  idlArray.merge_mixins();
+  self.shouldRunSubTest = originalShouldRunSubTest;
+
+  test(() => {
+    assert_array_equals(
+      idlArray.members.J.members.map(m => m.name), ["base", "partialJ", "mixinJ"]);
+    assert_array_equals(
+      idlArray.members.K.members.map(m => m.name), ["base", "partialK", "mixinK"]);
+  }, "J and K: members are merged whether or not shouldRunSubTest() rejects the tests");
+})();
+</script>
+<script type="text/json" id="expected">
+{
+  "summarized_status": {
+    "status_string": "OK",
+    "message": null
+  },
+  "summarized_tests": [
+    {
+      "name": "J and K: members are merged whether or not shouldRunSubTest() rejects the tests",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "K includes Q: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface K: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface K: original interface defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    }
+  ],
+  "type": "complete"
+}
+</script>
+</body>
+</html>

@@ -125,6 +125,24 @@ promise_test(async t => {
 }, 'fetch: crossOriginStorage accepts the array list form as well as a string');
 
 promise_test(async t => {
+  // The member is part of the request, so it travels with a Request object,
+  // including one copied from another, the way `integrity` does.
+  const content = cosUniqueContent('fetch-request-object');
+  await cosStore(content);
+  const integrity = await cosSha256Integrity(content);
+  const request = new Request(cosBrokenUrl(), {integrity, crossOriginStorage: ''});
+
+  const response = await fetch(request);
+  assert_true(response.ok,
+    'a Request constructed with crossOriginStorage is served from COS');
+  assert_equals(await response.text(), content);
+
+  const copied = await fetch(new Request(request));
+  assert_true(copied.ok, 'a Request copied from one carries its crossOriginStorage');
+  assert_equals(await copied.text(), content);
+}, 'fetch: crossOriginStorage on a Request object takes part in COS, also once copied');
+
+promise_test(async t => {
   // Presence, not truthiness, is the opt-in: "" is falsy but still opts in,
   // which the first test above already relies on. The inverse is what this
   // one pins down -- omitting the member entirely, while keeping integrity,

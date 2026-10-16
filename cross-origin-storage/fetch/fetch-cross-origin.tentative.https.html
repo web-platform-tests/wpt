@@ -158,10 +158,16 @@ promise_test(async t => {
 promise_test(async t => {
   // An origin that is not on the list is refused just as any cross-site origin
   // is, which is what makes the list a restriction and not a hint.
-  const origin = cosNextCrossSiteOrigin();
-  const {integrity} = await storeHere('list-excluded', [origin], {allow: origin});
+  //
+  // Every origin in the cross-site pool belongs to one site, and a listed
+  // origin admits the origins same site with it, so listing a cross-site pool
+  // origin would admit the reader below. The listed origin is therefore one of
+  // this document's own site, other than this origin, and the reader comes
+  // from the cross-site pool, outside every grant the entry carries.
+  const listed = cosNextSameSiteOrigin();
+  const {integrity} = await storeHere('list-excluded', [listed], {allow: listed});
   const {ctx: excluded} = await openCrossSite();
-  assertFetchNotDisclosed(await remoteFetchProbe(excluded, integrity, [origin]),
+  assertFetchNotDisclosed(await remoteFetchProbe(excluded, integrity, [listed]),
     'an origin absent from the list is not served the entry');
 }, 'fetch, cross-origin: crossOriginStorage: [origin] refuses a cross-site origin that is not listed');
 

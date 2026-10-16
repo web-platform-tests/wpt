@@ -1,0 +1,60 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>setTimeout() and setInterval() return 0 on a Window whose document isn't fully active</title>
+<link rel=help href="https://html.spec.whatwg.org/#timer-initialisation-steps">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<body>
+<script>
+function loadIframe(t, src) {
+  return new Promise(resolve => {
+    const iframe = document.createElement("iframe");
+    iframe.onload = () => resolve(iframe);
+    iframe.src = src;
+    document.body.append(iframe);
+    t.add_cleanup(() => iframe.remove());
+  });
+}
+
+async function detachedWindowMethod(t, method) {
+  const iframe = await loadIframe(t, "/common/blank.html?detached");
+  const win = iframe.contentWindow;
+  iframe.remove();
+  return (...args) => win[method](...args);
+}
+
+async function navigatedAwayWindowMethod(t, method) {
+  const iframe = await loadIframe(t, "/common/blank.html?before");
+  const win = iframe.contentWindow;
+  const oldMethod = win[method];
+  const oldDocument = win.document;
+  const documentGetter = Object.getOwnPropertyDescriptor(win, "document").get;
+  await new Promise(resolve => {
+    iframe.onload = resolve;
+    iframe.src = "/common/blank.html?after";
+  });
+  assert_equals(documentGetter.call(undefined), oldDocument,
+    "precondition: an undefined this value resolves to the old Window");
+  return (...args) => oldMethod(...args);
+}
+
+const cases = [
+  ["detached iframe", detachedWindowMethod],
+  ["navigated-away iframe", navigatedAwayWindowMethod],
+];
+const handlers = [
+  ["string", "parent.handlerRan = true"],
+  ["function", () => { window.handlerRan = true; }],
+];
+
+for (const [caseName, getMethod] of cases) {
+  for (const method of ["setTimeout", "setInterval"]) {
+    for (const [handlerName, handler] of handlers) {
+      promise_test(async t => {
+        const call = await getMethod(t, method);
+        assert_equals(call(handler, 0), 0);
+      }, `${method}() with a ${handlerName} handler on the Window of a ${caseName} returns 0`);
+    }
+  }
+}
+</script>

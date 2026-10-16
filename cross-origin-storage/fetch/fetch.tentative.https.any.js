@@ -124,6 +124,20 @@ promise_test(async t => {
     'an array-valued crossOriginStorage stores the entry');
 }, 'fetch: crossOriginStorage accepts the array list form as well as a string');
 
+test(() => {
+  // Feature detection: an engine reads a RequestInit member only if it
+  // supports it, so a getter on the init dictionary reports support, as for
+  // other RequestInit members such as `duplex`.
+  let supported = false;
+  new Request('data:,', {
+    get crossOriginStorage() {
+      supported = true;
+      return undefined;
+    },
+  });
+  assert_true(supported, 'the crossOriginStorage member is read from RequestInit');
+}, 'fetch: crossOriginStorage is detectable through a getter on RequestInit');
+
 promise_test(async t => {
   // The member is part of the request, so it travels with a Request object,
   // including one copied from another, the way `integrity` does.

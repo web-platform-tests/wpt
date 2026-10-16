@@ -6,7 +6,7 @@ import sys
 from mozlog import commandline
 
 from tools.manifest import manifest
-from wptrunner import metadata, wptcommandline
+from wptrunner import metadata, testloader, wptcommandline
 
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
@@ -42,6 +42,13 @@ def update_expectations(_, **kwargs):
                                                 extra_properties=kwargs["extra_property"],
                                                 product=kwargs["product"])
 
+    include = list(kwargs["include"] or [])
+    if kwargs["include_file"]:
+        include.extend(testloader.read_test_prefixes_from_file(kwargs["include_file"]))
+    exclude = list(kwargs["exclude"] or [])
+    if kwargs["exclude_file"]:
+        exclude.extend(testloader.read_test_prefixes_from_file(kwargs["exclude_file"]))
+
     manifest_update(kwargs["test_paths"])
     metadata.update_expected(kwargs["test_paths"],
                              kwargs["run_log"],
@@ -49,4 +56,7 @@ def update_expectations(_, **kwargs):
                              full_update=False,
                              disable_intermittent=kwargs["update_intermittent"],
                              update_intermittent=kwargs["update_intermittent"],
-                             remove_intermittent=kwargs["update_intermittent"])
+                             remove_intermittent=kwargs["update_intermittent"],
+                             include=include,
+                             exclude=exclude,
+                             include_manifest=kwargs["include_manifest"])

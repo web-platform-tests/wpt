@@ -76,8 +76,10 @@ def update(tests, *logs, **kwargs):
     disable_intermittent = kwargs.pop("disable_intermittent", False)
     update_intermittent = kwargs.pop("update_intermittent", False)
     remove_intermittent = kwargs.pop("remove_intermittent", False)
+    include = kwargs.pop("include", None)
+    exclude = kwargs.pop("exclude", None)
     assert not kwargs
-    id_test_map, updater = create_updater(tests)
+    id_test_map, updater = create_updater(tests, include=include, exclude=exclude)
 
     for log in logs:
         log = create_log(log)
@@ -105,14 +107,28 @@ def update(tests, *logs, **kwargs):
                                         remove_intermittent))
 
 
-def create_updater(tests, url_base="/", **kwargs):
-    id_test_map = {}
+@pytest.fixture
+def log_messages():
+    """The (level, message) of each message metadata logs during the test"""
+    messages = []
+
+    def handler(data):
+        if data["action"] == "log":
+            messages.append((data["level"], data["message"]))
+
+    metadata.logger.add_handler(handler)
+    yield messages
+    metadata.logger.remove_handler(handler)
+
+
+def create_updater(tests, url_base="/", include=None, exclude=None):
     m = create_test_manifest(tests, url_base)
 
     reset_globals()
-    id_test_map = metadata.create_test_tree(None, m)
+    id_test_map, excluded_ids = metadata.load_test_data({m: {"metadata_path": None}},
+                                                        include, exclude)
 
-    return id_test_map, metadata.ExpectedUpdater(id_test_map, **kwargs)
+    return id_test_map, metadata.ExpectedUpdater(id_test_map, excluded_ids=excluded_ids)
 
 
 def create_log(entries):
@@ -1146,6 +1162,167 @@ def test_update_new_test(logger):
         "expected", run_info_1) == "FAIL"
 
 
+@pytest.mark.parametrize("kwargs", [
+    {},
+    # An unknown test is reported even if include/exclude would have filtered it out
+    {"include": [test_id]},
+    {"exclude": ["/other/"]},
+])
+def test_update_unknown_test(logger, log_messages, kwargs):
+    tests = [("path/to/test.htm", [test_id], "testharness",
+              b"""[test.htm]
+  [test1]
+    expected: FAIL""")]
+
+    unknown_id = "/path/to/unknown.htm"
+    log = suite_log([("test_start", {"test": unknown_id}),
+                     ("test_status", {"test": unknown_id,
+                                      "subtest": "test1",
+                                      "status": "FAIL",
+                                      "expected": "PASS"}),
+                     ("test_end", {"test": unknown_id,
+                                   "status": "OK"}),
+                     ("test_start", {"test": test_id}),
+                     ("test_status", {"test": test_id,
+                                      "subtest": "test1",
+                                      "status": "PASS",
+                                      "expected": "FAIL"}),
+                     ("test_end", {"test": test_id,
+                                   "status": "OK"})])
+
+    updated = update(tests, log, **kwargs)
+    assert len(updated) == 1
+    assert updated[0][1].is_empty
+    assert ("WARNING", "Test not found %s, skipping" % unknown_id) in log_messages
+
+
+def test_update_include(logger):
+    test_id_2 = "/other/dir/test2.htm"
+    tests = [("path/to/test.htm", [test_id], "testharness",
+              b"""[test.htm]
+  [test1]
+    expected: FAIL"""),
+             ("other/dir/test2.htm", [test_id_2], "testharness",
+              b"""[test2.htm]
+  [test1]
+    expected: FAIL""")]
+
+    log = suite_log([("test_start", {"test": test_id}),
+                     ("test_status", {"test": test_id,
+                                      "subtest": "test1",
+                                      "status": "PASS",
+                                      "expected": "FAIL"}),
+                     ("test_end", {"test": test_id,
+                                   "status": "OK"}),
+                     ("test_start", {"test": test_id_2}),
+                     ("test_status", {"test": test_id_2,
+                                      "subtest": "test1",
+                                      "status": "PASS",
+                                      "expected": "FAIL"}),
+                     ("test_end", {"test": test_id_2,
+                                   "status": "OK"})])
+
+    updated = update(tests, log, include=[test_id])
+    assert len(updated) == 1
+    assert updated[0][1].get_test(test_id) is not None
+
+
+def test_update_excluded_silent(logger, log_messages):
+    test_id_2 = "/other/dir/test2.htm"
+    tests = [("path/to/test.htm", [test_id], "testharness",
+              b"""[test.htm]
+  [test1]
+    expected: FAIL"""),
+             ("other/dir/test2.htm", [test_id_2], "testharness",
+              b"""[test2.htm]
+  [test1]
+    expected: FAIL""")]
+
+    log = suite_log([("test_start", {"test": test_id_2}),
+                     ("test_status", {"test": test_id_2,
+                                      "subtest": "test1",
+                                      "status": "PASS",
+                                      "expected": "FAIL"}),
+                     ("test_end", {"test": test_id_2,
+                                   "status": "OK"})])
+
+    updated = update(tests, log, exclude=["/other/"])
+    assert not updated
+    assert not [message for _, message in log_messages if test_id_2 in message]
+
+
+def update_expected_from_files(tmp_path, paths, log, **kwargs):
+    """Run metadata.update_expected against real files in tmp_path, unlike
+    update() which bypasses loading the manifest. Returns the metadata root."""
+    tests_path = tmp_path / "tests"
+    metadata_path = tmp_path / "metadata"
+    for path in paths:
+        test_file = tests_path / path
+        test_file.parent.mkdir(parents=True, exist_ok=True)
+        test_file.write_text('<script src="/resources/testharness.js"></script>\n')
+
+        metadata_file = metadata_path / (path + ".ini")
+        metadata_file.parent.mkdir(parents=True, exist_ok=True)
+        metadata_file.write_text("[%s]\n  [test1]\n    expected: FAIL\n" %
+                                 os.path.basename(path))
+
+    test_paths = {"/": wptcommandline.TestRoot(str(tests_path),
+                                               str(metadata_path),
+                                               str(tmp_path / "MANIFEST.json"))}
+
+    log_path = tmp_path / "run.log"
+    log_path.write_text(create_log(log).getvalue())
+
+    update_properties = (["debug", "os", "version", "processor"],
+                         {"os": ["version"], "processor": ["bits"]})
+
+    metadata.update_expected(test_paths, [str(log_path)], update_properties, **kwargs)
+    return metadata_path
+
+
+def two_tests_log():
+    """A log where test1 passes (but is expected to fail) in two tests in different directories"""
+    return suite_log([("test_start", {"test": "/path/to/test.html"}),
+                      ("test_status", {"test": "/path/to/test.html",
+                                       "subtest": "test1",
+                                       "status": "PASS",
+                                       "expected": "FAIL"}),
+                      ("test_end", {"test": "/path/to/test.html",
+                                    "status": "OK"}),
+                      ("test_start", {"test": "/other/dir/test2.html"}),
+                      ("test_status", {"test": "/other/dir/test2.html",
+                                       "subtest": "test1",
+                                       "status": "PASS",
+                                       "expected": "FAIL"}),
+                      ("test_end", {"test": "/other/dir/test2.html",
+                                    "status": "OK"})])
+
+
+@pytest.mark.parametrize("kwargs,updated,untouched", [
+    ({"include": ["/path/to/"]}, "path/to/test.html", "other/dir/test2.html"),
+    ({"exclude": ["/path/to/"]}, "other/dir/test2.html", "path/to/test.html"),
+])
+def test_update_expected_include_exclude(logger, tmp_path, kwargs, updated, untouched):
+    metadata_path = update_expected_from_files(
+        tmp_path, ["path/to/test.html", "other/dir/test2.html"], two_tests_log(), **kwargs)
+
+    # Updating makes the metadata empty, which removes the file.
+    assert not (metadata_path / (updated + ".ini")).exists()
+    assert (metadata_path / (untouched + ".ini")).exists()
+
+
+def test_update_expected_include_manifest(logger, tmp_path):
+    include_manifest = tmp_path / "include.ini"
+    include_manifest.write_text("skip: true\n[path]\n  [to]\n    skip: false\n")
+
+    metadata_path = update_expected_from_files(
+        tmp_path, ["path/to/test.html", "other/dir/test2.html"], two_tests_log(),
+        include_manifest=str(include_manifest))
+
+    assert not (metadata_path / "path/to/test.html.ini").exists()
+    assert (metadata_path / "other/dir/test2.html.ini").exists()
+
+
 def test_update_duplicate(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""
 [test.htm]
@@ -1494,6 +1671,24 @@ def test_update_assertion_count_2(logger):
     assert not updated
 
 
+def test_update_assertion_count_excluded(logger):
+    tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
+  max-asserts: 4
+  min-asserts: 2
+""")]
+
+    log_0 = suite_log([("test_start", {"test": test_id}),
+                       ("assertion_count", {"test": test_id,
+                                            "count": 6,
+                                            "min_expected": 2,
+                                            "max_expected": 4}),
+                       ("test_end", {"test": test_id,
+                                     "status": "OK"})])
+
+    updated = update(tests, log_0, exclude=[test_id])
+    assert not updated
+
+
 def test_update_assertion_count_3(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   max-asserts: 4
@@ -1571,6 +1766,37 @@ def test_update_lsan_0(logger):
     assert not new_manifest.is_empty
     assert new_manifest.modified
     assert new_manifest.get("lsan-allowed") == ["foo"]
+
+
+@pytest.mark.parametrize("action,data", [
+    ("lsan_leak", {"frames": ["foo"]}),
+    ("mozleak_object", {"process": "default", "name": "Foo", "bytes": 100, "allowed": False}),
+    ("mozleak_total", {"process": "default", "bytes": 100, "threshold": 0, "objects": []}),
+])
+def test_update_leak_unknown_directory(logger, action, data):
+    tests = [("path/to/test.htm", [test_id], "testharness", b"")]
+
+    log_0 = suite_log([(action, {"scope": "other/dir/", **data})])
+
+    updated = update(tests, log_0)
+    assert not updated
+
+
+def test_update_lsan_excluded(logger):
+    test_id_2 = "/other/dir/test2.htm"
+    tests = [("path/to/test.htm", [test_id], "testharness", b""),
+             ("path/to/__dir__", [dir_id], None, b""),
+             ("other/dir/test2.htm", [test_id_2], "testharness", b""),
+             ("other/dir/__dir__", ["other/dir/__dir__"], None, b"")]
+
+    log_0 = suite_log([("lsan_leak", {"scope": "path/to/",
+                                      "frames": ["foo"]}),
+                       ("lsan_leak", {"scope": "other/dir/",
+                                      "frames": ["bar"]})])
+
+    updated = update(tests, log_0, exclude=[test_id])
+    assert len(updated) == 1
+    assert updated[0][1].get("lsan-allowed") == ["bar"]
 
 
 def test_update_lsan_1(logger):

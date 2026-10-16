@@ -5,10 +5,11 @@ import os
 
 import pytest
 
-from tools.wpt import wpt
+from tools.wpt import update, wpt
 from wptrunner import manifestexpected
 from wptrunner.manifestupdate import get_test_name
 from localpaths import repo_root
+
 
 @pytest.fixture
 def metadata_file(tmp_path):
@@ -127,3 +128,78 @@ def test_update(tmp_path, metadata_file):
                                                     run_info_chrome)
     assert chrome_expected.get_test(get_test_name(test_id)).expected == "ERROR"
     assert chrome_expected.get_test(get_test_name(test_id)).get_subtest(subtest_name).expected == "NOTRUN"
+
+
+@pytest.mark.parametrize("option", ["include", "exclude"])
+def test_update_prefix_option_and_file(tmp_path, metadata_file, option):
+    # These have to be real tests so they're in the manifest
+    named = "/infrastructure/assumptions/allowed-to-play.html"
+    named_in_file = "/infrastructure/assumptions/cookie.html"
+    not_named = "/infrastructure/assumptions/document-fonts-ready.html"
+    test_ids = [named, named_in_file, not_named]
+    subtest_name = "subtest"
+    wptreport_paths = [metadata_file(test_id, subtest_name, "firefox", subtest_status="FAIL")[1]
+                       for test_id in test_ids]
+
+    metadata_path = str(os.path.join(tmp_path, "metadata"))
+    os.makedirs(metadata_path)
+    with open(os.path.join(metadata_path, "update_properties.json"), "w") as f:
+        json.dump({"properties": ["product"]}, f)
+
+    prefix_file = os.path.join(tmp_path, "prefixes.txt")
+    with open(prefix_file, "w") as f:
+        f.write(named_in_file + "\n")
+
+    args = update.create_parser_update().parse_args(
+        ["--manifest", os.path.join(repo_root, "MANIFEST.json"),
+         "--metadata", metadata_path,
+         "--log-mach-level", "debug",
+         f"--{option}", named,
+         f"--{option}-file", prefix_file] + wptreport_paths)
+
+    update.update_expectations(None, **vars(args))
+
+    # --include/--exclude and their -file variants are combined
+    updated = {test_id for test_id in test_ids
+               if os.path.exists(os.path.join(metadata_path, test_id.lstrip("/") + ".ini"))}
+    if option == "include":
+        assert updated == {named, named_in_file}
+    else:
+        assert updated == {not_named}
+
+    # and the parsed arguments aren't modified in the process
+    assert getattr(args, option) == [named]
+
+
+def test_update_include_manifest(tmp_path, metadata_file):
+    # These have to be real tests so they're in the manifest
+    included = "/infrastructure/assumptions/cookie.html"
+    not_included = "/infrastructure/assumptions/document-fonts-ready.html"
+    test_ids = [included, not_included]
+    wptreport_paths = [metadata_file(test_id, "subtest", "firefox", subtest_status="FAIL")[1]
+                       for test_id in test_ids]
+
+    metadata_path = str(os.path.join(tmp_path, "metadata"))
+    os.makedirs(metadata_path)
+    with open(os.path.join(metadata_path, "update_properties.json"), "w") as f:
+        json.dump({"properties": ["product"]}, f)
+
+    include_manifest = os.path.join(tmp_path, "include.ini")
+    with open(include_manifest, "w") as f:
+        f.write("skip: true\n"
+                "[infrastructure]\n"
+                "  [assumptions]\n"
+                "    [cookie.html]\n"
+                "      skip: false\n")
+
+    args = update.create_parser_update().parse_args(
+        ["--manifest", os.path.join(repo_root, "MANIFEST.json"),
+         "--metadata", metadata_path,
+         "--log-mach-level", "debug",
+         "--include-manifest", include_manifest] + wptreport_paths)
+
+    update.update_expectations(None, **vars(args))
+
+    updated = {test_id for test_id in test_ids
+               if os.path.exists(os.path.join(metadata_path, test_id.lstrip("/") + ".ini"))}
+    assert updated == {included}

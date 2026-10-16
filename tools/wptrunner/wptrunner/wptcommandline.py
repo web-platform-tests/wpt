@@ -786,6 +786,16 @@ def create_parser_metadata_update(product_choices=None):
                         "${metadata_root}/update_properties.json, even if it exists.")
     parser.add_argument("--extra-property", action="append", default=[],
                         help="Extra property from run_info.json to use in metadata update.")
+    parser.add_argument("--include", action="append",
+                        help="URL prefix to include")
+    parser.add_argument("--include-file",
+                        help="A file listing URL prefixes of tests to include, one per line")
+    parser.add_argument("--exclude", action="append",
+                        help="URL prefix to exclude")
+    parser.add_argument("--exclude-file",
+                        help="A file listing URL prefixes of tests to exclude, one per line")
+    parser.add_argument("--include-manifest", type=abs_path,
+                        help="Path to manifest listing tests to include")
     # TODO: Should make this required iff run=logfile
     parser.add_argument("run_log", nargs="*", type=abs_path,
                         help="Log file from run of tests")

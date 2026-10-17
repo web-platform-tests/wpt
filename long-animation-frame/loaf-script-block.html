@@ -10,8 +10,11 @@
   window.generate_loaf_now = window.busy_wait
 </script>
 <script src="resources/busy.js?from-parser"></script>
+<script defer src="resources/busy.js?defer"></script>
 <script>
-  delete window.generate_loaf_now;
+  window.addEventListener("DOMContentLoaded", () => {
+    delete window.generate_loaf_now;
+  }, {once: true});
 </script>
 <body>
 <h1>Long Animation Frame: script blocks</h1>
@@ -28,6 +31,26 @@ promise_test(async t => {
     }).observe({type: "long-animation-frame", buffered: true});
   })
 }, "Parser-inserted classic script should generate a long script");
+
+promise_test(async t => {
+  const script = await new Promise(resolve => {
+    new PerformanceObserver((list, observer) => {
+      for (const loaf of list.getEntries()) {
+        const match = loaf.scripts.find(s =>
+          s.invoker === new URL("resources/busy.js?defer", location.href).href);
+        if (match) {
+          observer.disconnect();
+          resolve(match);
+          return;
+        }
+      }
+    }).observe({type: "long-animation-frame", buffered: true});
+  });
+  assert_equals(script.invokerType, "classic-script");
+  assert_equals(script.executionStart, script.startTime,
+      "Deferred classic script executed in a later task should have executionStart == startTime");
+  assert_equals(script.sourceCharPosition, 0);
+}, "Deferred classic script should generate a long script with executionStart == startTime");
 
 test_self_script_block(t => {
     const script = document.createElement("script");
@@ -78,5 +101,23 @@ test_self_script_block(t => {
     script.src = blob_url;
     document.body.appendChild(script);
 }, blob_url, "classic-script");
+
+promise_test(async t => {
+    const [entry, script] = await expect_long_frame_with_script(() => {
+        const s = document.createElement("script");
+        // Generate a large script body so compilation + execution happen in the same task
+        const statements = Array.from({length: 5000}, (_, i) => `var v_${i} = ${i};`).join("\n");
+        s.textContent = `${statements}\nwindow.generate_loaf_now();\n`;
+        document.body.appendChild(s);
+        t.add_cleanup(() => s.remove());
+    }, s => s.invokerType === "classic-script" && s.invoker === location.href, t);
+
+    assert_true(!!entry, "Entry detected");
+    assert_greater_than_equal(script.executionStart, script.startTime,
+        "Inline classic script compiled and run in the same task has executionStart >= startTime");
+    assert_equals(script.sourceCharPosition, 0);
+    assert_equals(script.sourceLine, 1);
+    assert_equals(script.sourceColumn, 1);
+}, "Inline classic script has executionStart >= startTime and initial source location");
 </script>
 </body>

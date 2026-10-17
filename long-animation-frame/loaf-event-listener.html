@@ -40,5 +40,15 @@ test_self_event_listener((t, busy_wait) => {
     });
     xhr.send();
 }, "XMLHttpRequest.onload");
+
+test_self_event_listener((t, busy_wait) => {
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+    t.add_cleanup(() => div.remove());
+    div.addEventListener("custom", () => {
+        busy_wait();
+    });
+    t.step_timeout(() => div.dispatchEvent(new Event("custom")), 0);
+}, "DIV.oncustom");
 </script>
 </body>

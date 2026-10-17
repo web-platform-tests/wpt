@@ -48,6 +48,8 @@ interface PerformanceScriptTiming : PerformanceEntry {
     readonly attribute DOMString sourceURL;
     readonly attribute DOMString sourceFunctionName;
     readonly attribute long long sourceCharPosition;
+    readonly attribute long long sourceLine;
+    readonly attribute long long sourceColumn;
     readonly attribute DOMHighResTimeStamp pauseDuration;
     readonly attribute DOMHighResTimeStamp forcedStyleAndLayoutDuration;
     readonly attribute Window? window;

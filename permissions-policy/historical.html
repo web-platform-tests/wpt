@@ -1,25 +1,25 @@
 <!DOCTYPE html>
-<title>Historical Feature Policy features should not be present</title>
+<title>Historical Permissions Policy features should not be present</title>
 <link rel="help" href="https://www.w3.org/TR/permissions-policy/" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
   <script>
-    // Test 1: document.featurePolicy API should not exist (replaced by document.permissionsPolicy)
+    // Test 1: document.permissionsPolicy API should not exist (replaced by document.featurePolicy)
     test(() => {
       assert_false(
-        "featurePolicy" in document,
-        "document.featurePolicy should not exist"
+        "permissionsPolicy" in document,
+        "document.permissionsPolicy should not exist"
       );
-    }, "document.featurePolicy should not be present (use document.permissionsPolicy instead)");
+    }, "document.permissionsPolicy should not be present (use document.featurePolicy instead)");
 
-    // Test 2: HTMLIFrameElement.featurePolicy API should not exist (replaced by permissionsPolicy)
+    // Test 2: HTMLIFrameElement.permissionsPolicy API should not exist (replaced by featurePolicy)
     test(() => {
       assert_false(
-        "featurePolicy" in HTMLIFrameElement.prototype,
-        "HTMLIFrameElement.prototype.featurePolicy should not exist"
+        "permissionsPolicy" in HTMLIFrameElement.prototype,
+        "HTMLIFrameElement.prototype.permissionsPolicy should not exist"
       );
-    }, "HTMLIFrameElement.prototype.featurePolicy should not be present");
+    }, "HTMLIFrameElement.prototype.permissionsPolicy should not be present");
 
     // Test 3: Permissions-Policy header takes precedence over Feature-Policy header
     // The header file sets:

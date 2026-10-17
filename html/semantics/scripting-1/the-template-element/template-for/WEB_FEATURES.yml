@@ -1,3 +1,2 @@
 rules:
-- stream-append-*: [html-streaming-setters, template-for]
 - "**": [template-for]

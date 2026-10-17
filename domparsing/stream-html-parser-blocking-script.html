@@ -126,13 +126,23 @@
     const writable = placeholder.streamHTMLUnsafe({ runScripts: true });
     const writer = writable.getWriter();
 
-    await writer.write("<script src='resources/slow.js?pipe=trickle(d0.2)&abort_test=1'><" + "/script>");
+    await writer.write(
+      "<script src='resources/slow.js?pipe=trickle(d0.2)&abort_test=1'><" + "/script>" +
+      "<p id='after'>after</p>" +
+      "<script>window.events.push('after');<" + "/script>"
+    );
+    await writer.write(
+      "<p id='queued'>queued</p>" +
+      "<script>window.events.push('queued');<" + "/script>"
+    );
     await writer.abort();
 
     // Wait 300ms to ensure the network response for slow.js arrived
     await new Promise(r => t.step_timeout(r, 300));
-    assert_array_equals(window.events, [], "Aborted parser-blocking script must not execute after abort");
-  }, "streamHTMLUnsafe with parser-blocking script should not execute after abort");
+    assert_array_equals(window.events, [], "Aborted parser-blocking script and trailing/queued scripts must not execute after abort");
+    assert_equals(placeholder.querySelector("#after"), null, "Trailing markup after aborted blocking script must not be inserted");
+    assert_equals(placeholder.querySelector("#queued"), null, "Queued chunk after aborted blocking script must not be inserted");
+  }, "streamHTMLUnsafe with parser-blocking script should not execute or parse buffered markup after abort");
 
   promise_test(async (t) => {
     window.events = [];

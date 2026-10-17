@@ -284,5 +284,35 @@ for (const method of [...asyncMethods, ...syncMethods, "setHTML", "setHTMLUnsafe
     assert_true(connected_called, "connectedCallback must be called for a kept element inside a replaced ancestor");
   }, `${method} constructs a kept custom element nested in a replaceWithChildren element`);
 }
+
+// Sanitizing in a non-fully-active document (createHTMLDocument()) with a
+// scoped CustomElementRegistry must still suppress custom element constructors
+// for removed elements and their descendants.
+for (const method of [...asyncMethods, ...syncMethods, "setHTML", "setHTMLUnsafe"]) {
+  for (const config of [
+    { name: "removeElements: custom element", options: { sanitizer: { removeElements: ["disallowed-element-scoped"] } } },
+    { name: "removeElements: ancestor div", options: { sanitizer: { removeElements: ["div"] } } },
+  ]) {
+    promise_test(async (t) => {
+      constructor_called = false;
+      connected_called = false;
+
+      const inertDoc = document.implementation.createHTMLDocument();
+      const target = inertDoc.createElement("section", { customElementRegistry: registry });
+      inertDoc.body.appendChild(target);
+
+      await set_markup(
+        target,
+        method,
+        "<div><disallowed-element-scoped></disallowed-element-scoped></div>",
+        config.options,
+      );
+
+      assert_equals(target.querySelector("disallowed-element-scoped"), null);
+      assert_false(constructor_called, "Scoped CE constructor must not run for sanitized elements in createHTMLDocument()");
+      assert_false(connected_called, "Scoped CE connectedCallback must not run for sanitized elements in createHTMLDocument()");
+    }, `${method} in createHTMLDocument() with scoped registry blocks CE constructor when removed (${config.name})`);
+  }
+}
 </script>
 </body>

@@ -402,6 +402,69 @@ for (const method of ["streamHTML", "streamHTMLUnsafe", "streamAppendHTML", "str
       assert_equals(el.ownerDocument, tpl.content.ownerDocument);
     }
   }, `${method} on <template> does not construct or upgrade top-level or nested custom elements`);
+
+  // Disconnected target with a scoped CustomElementRegistry constructs custom
+  // elements before write() resolves (without invoking connectedCallback until connected)
+  promise_test(async (t) => {
+    const scoped = new CustomElementRegistry();
+    const log = [];
+    class ScopedElement extends HTMLElement {
+      constructor() {
+        super();
+        log.push("constructed");
+      }
+      connectedCallback() {
+        log.push("connected");
+      }
+      disconnectedCallback() {
+        log.push("disconnected");
+      }
+    }
+    scoped.define("scoped-disconnected-ce", ScopedElement);
+
+    const disconnectedTarget = document.createElement("div", { customElementRegistry: scoped });
+    const options = method.includes("Unsafe")
+      ? undefined
+      : { sanitizer: { elements: ["scoped-disconnected-ce"] } };
+    const writer = disconnectedTarget[method](options).getWriter();
+    await writer.write("<scoped-disconnected-ce></scoped-disconnected-ce>");
+
+    const el = disconnectedTarget.querySelector("scoped-disconnected-ce");
+    assert_not_equals(el, null);
+    assert_true(el instanceof ScopedElement, "Custom element in disconnected target must be upgraded before write() resolves");
+    assert_array_equals(log, ["constructed"], "Constructor runs before write() resolves without connectedCallback");
+
+    await writer.close();
+    assert_array_equals(log, ["constructed"]);
+
+    const container = document.getElementById("container");
+    t.add_cleanup(() => container.replaceChildren());
+    container.appendChild(disconnectedTarget);
+    assert_array_equals(log, ["constructed", "connected"]);
+  }, `${method} on a disconnected target with scoped registry constructs custom elements before write() resolves`);
+
+  // Misnested formatting elements (<b><div><my-ce></my-ce></b></div>) invoke adoption agency
+  // reactions in order (constructed, connected, then disconnected + connected when moved to new <b>,
+  // and disconnected + connected when <div> is reinserted)
+  promise_test(async (t) => {
+    const container = document.getElementById("container");
+    t.add_cleanup(() => container.replaceChildren());
+
+    const { name, log } = createCustomElementClass();
+    const options = method.includes("Unsafe")
+      ? undefined
+      : { sanitizer: { elements: ["b", "div", name] } };
+    const writer = container[method](options).getWriter();
+    await writer.write(`<b><div><${name}>text</${name}></b></div>`);
+    await writer.close();
+
+    assert_equals(container.innerHTML, `<b></b><div><b><${name}>text</${name}></b></div>`);
+    assert_array_equals(
+      log,
+      ["constructed", "connected", "disconnected", "connected", "disconnected", "connected"],
+      `${method} with misnested formatting elements must invoke adoption agency CE reactions in order`,
+    );
+  }, `${method} with misnested formatting elements (<b><div><my-ce></my-ce></b></div>) invokes adoption agency CE reactions in order`);
 }
 </script>
 </body>

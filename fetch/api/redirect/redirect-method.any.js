@@ -109,4 +109,39 @@ redirectMethod("Redirect 307 with POST (string body)", redirUrl, locationUrl, 30
 redirectMethod("Redirect 307 with POST (blob body)", redirUrl, locationUrl, 307, "POST", "POST", { body: blobBody, expectedBodyAsString: blobBodyAsString });
 redirectMethod("Redirect 307 with HEAD", redirUrl, locationUrl, 307, "HEAD", "HEAD");
 
+// A FormData body is sent again as the same bytes, so its boundary still matches
+// the one in the Content-Type header, and changes made to the FormData object
+// after fetch() was called are not included.
+for (const status of [307, 308]) {
+  promise_test(async () => {
+    const formData = new FormData();
+    formData.append("a", "b");
+    formData.append("c", new File(["d"], "e.txt", { type: "text/plain" }));
+    const url = redirUrl + "?redirect_status=" + status + "&location=" +
+                encodeURIComponent(locationUrl);
+    const responsePromise = fetch(url, { method: "POST", body: formData });
+    formData.append("f", "g");
+    const resp = await responsePromise;
+    assert_true(resp.redirected, "redirected");
+    assert_equals(resp.headers.get("x-request-method"), "POST", "request method");
+    const contentType = resp.headers.get("x-request-content-type");
+    const prefix = "multipart/form-data; boundary=";
+    assert_true(contentType.startsWith(prefix), `unexpected Content-Type: ${contentType}`);
+    const boundary = contentType.substring(prefix.length);
+    assert_equals(await resp.text(), [
+      `--${boundary}`,
+      `Content-Disposition: form-data; name="a"`,
+      "",
+      "b",
+      `--${boundary}`,
+      `Content-Disposition: form-data; name="c"; filename="e.txt"`,
+      "Content-Type: text/plain",
+      "",
+      "d",
+      `--${boundary}--`,
+      "",
+    ].join("\r\n"), "request body");
+  }, `Redirect ${status} with POST (FormData body)`);
+}
+
 done();

@@ -97,6 +97,8 @@ async function read_numbers_byob(reader, controller, N) {
 promise_test(async t => {
   // Establish a WebTransport session.
   const wt = new WebTransport(webtransport_url('echo.py'));
+  wt.closed.catch(() => {});
+  t.add_cleanup(() => wt.close());
   await wt.ready;
 
   const writer = wt.datagrams.createWritable().getWriter();
@@ -120,6 +122,8 @@ promise_test(async t => {
 promise_test(async t => {
   // Establish a WebTransport session.
   const wt = new WebTransport(webtransport_url('echo.py'), { 'datagramsReadableType' : 'bytes' });
+  wt.closed.catch(() => {});
+  t.add_cleanup(() => wt.close());
   await wt.ready;
 
   const writer = wt.datagrams.createWritable().getWriter();
@@ -153,6 +157,8 @@ promise_test(async t => {
 promise_test(async t => {
   // Establish a WebTransport session.
   const wt = new WebTransport(webtransport_url('echo.py'), { 'datagramsReadableType' : 'bytes' });
+  wt.closed.catch(() => {});
+  t.add_cleanup(() => wt.close());
   await wt.ready;
 
   const writer = wt.datagrams.createWritable().getWriter();
@@ -177,6 +183,8 @@ promise_test(async t => {
 promise_test(async t => {
   // Establish a WebTransport session.
   const wt = new WebTransport(webtransport_url('echo_datagram_length.py'));
+  wt.closed.catch(() => {});
+  t.add_cleanup(() => wt.close());
   await wt.ready;
 
   const writer = wt.datagrams.createWritable().getWriter();
@@ -198,7 +206,9 @@ promise_test(async t => {
 
 promise_test(async t => {
   // Establish a WebTransport session.
-  const wt = new WebTransport(webtransport_url('echo.py'));
+  const wt = new WebTransport(webtransport_url('echo_datagram_length.py'));
+  wt.closed.catch(() => {});
+  t.add_cleanup(() => wt.close());
   await wt.ready;
 
   const writer = wt.datagrams.createWritable().getWriter();
@@ -227,6 +237,8 @@ promise_test(async t => {
 promise_test(async t => {
   // Make a WebTransport connection, but session is not necessarily established.
   const wt = new WebTransport(webtransport_url('echo.py'));
+  wt.closed.catch(() => {});
+  t.add_cleanup(() => wt.close());
 
   const writer = wt.datagrams.createWritable().getWriter();
   const reader = wt.datagrams.readable.getReader();
@@ -251,8 +263,9 @@ promise_test(async t => {
 }, 'Sending and receiving datagrams is ready to use before session is established');
 
 promise_test(async t => {
-  // Establish a WebTransport session.
   const wt = new WebTransport(webtransport_url('echo.py'));
+  wt.closed.catch(() => {});
+  t.add_cleanup(() => wt.close());
   await wt.ready;
 
   const N = 5;
@@ -261,43 +274,27 @@ promise_test(async t => {
   const writer = wt.datagrams.createWritable().getWriter();
   const encoder = new TextEncoder();
 
-  // Write N-1 datagrams.
-  let counter;
-  for (counter = 0; counter < N-1; counter++) {
-    var datagram = counter.toString();
-    let resolved = false;
-    writer.write(encoder.encode(datagram));
-
-    // Check writer.ready resolves immediately.
-    writer.ready.then(() => resolved = true);
-    // TODO(nidhijaju): The number of `await Promise.resolve()` calls is
-    // implementation dependent, so we should not have this as the final
-    // solution.
-    for (let i = 0; i < 10; i++) {
-      await Promise.resolve();
-    }
-    assert_true(resolved);
+  // Write N-1 datagrams synchronously — should not trigger backpressure.
+  for (let i = 0; i < N - 1; i++) {
+    writer.write(encoder.encode(i.toString()));
   }
+  assert_greater_than(writer.desiredSize, 0,
+                      'desiredSize should be positive after N-1 writes');
 
-  // Write one more datagram.
-  resolved = false;
-  const last_datagram = counter.toString();
-  writer.write(encoder.encode(last_datagram));
+  // Write the Nth datagram — should trigger backpressure.
+  writer.write(encoder.encode((N - 1).toString()));
+  assert_less_than_equal(writer.desiredSize, 0,
+                         'desiredSize should be non-positive after N writes');
 
-  // Check writer.ready does not resolve immediately.
-  writer.ready.then(() => resolved = true);
-  for (let i = 0; i < 10; i++) {
-    await Promise.resolve();
-  }
-  assert_false(resolved);
-
-  // Make sure writer.ready is resolved eventually.
+  // Backpressure should eventually lift as datagrams drain.
   await writer.ready;
-}, 'Datagram\'s outgoingMaxBufferedDatagrams correctly regulates written datagrams');
+}, "Datagram's outgoingMaxBufferedDatagrams correctly regulates written datagrams");
 
 promise_test(async t => {
   // Establish a WebTransport session.
   const wt = new WebTransport(webtransport_url('echo.py'));
+  wt.closed.catch(() => {});
+  t.add_cleanup(() => wt.close());
   await wt.ready;
 
   const N = 5;
@@ -305,44 +302,49 @@ promise_test(async t => {
 
   const writer = wt.datagrams.createWritable().getWriter();
   const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
 
-  // Write 10*N datagrams.
-  let counter;
-  for (counter = 0; counter < 10*N; counter++) {
-    var datagram = counter.toString();
-    writer.write(encoder.encode(datagram));
+  // Write 10*N datagrams with incrementing sequence numbers.
+  const totalDatagrams = 10 * N;
+  for (let counter = 0; counter < totalDatagrams; counter++) {
+    writer.write(encoder.encode(counter.toString()));
     await writer.ready;
   }
 
-  // Wait for incoming datagrams to arrive.
-  wait(500);
+  // Wait for incoming datagrams to arrive and for the queue to stabilize under
+  // HWM. No reader is active during this time so HWM enforcement takes effect.
+  await wait(2000);
 
+  // Read only what is already buffered. A short per-read timeout detects when
+  // the queue is empty so we don't sit waiting for new datagrams to arrive.
   const reader = wt.datagrams.readable.getReader();
-
-  // Read all of the immediately available datagrams.
-  let receivedDatagrams = 0;
+  const receivedSequenceNumbers = [];
   while (true) {
-    let resolved = false;
-    reader.read().then(() => resolved = true);
-    // TODO(nidhijaju): Find a better solution instead of just having numerous
-    // `await Promise.resolve()` calls.
-    for (let i = 0; i < 10; i++) {
-      await Promise.resolve();
-    }
-    if (!resolved) {
-      break;
-    }
-    receivedDatagrams++;
+    const result = await Promise.race([reader.read(), wait(100)]);
+    if (result === undefined) break;
+    receivedSequenceNumbers.push(parseInt(decoder.decode(result.value)));
   }
 
   // Check that the receivedDatagrams is less than or equal to the
   // incomingMaxBufferedDatagrams.
-  assert_less_than_equal(receivedDatagrams, N);
+  assert_less_than_equal(receivedSequenceNumbers.length, N);
+
+  // Check that the received datagrams are from the end of the sequence.
+  // If datagrams are being dropped from the beginning, the received sequence
+  // numbers should all be from the later part of the sequence.
+  // We won't assume that every datagram sent was received or dropped to avoid
+  // timing issues.  Just verify that the received datagrams don't come from the
+  // start of the sequence.
+  const minReceivedSequence = Math.min(...receivedSequenceNumbers);
+  assert_greater_than_equal(minReceivedSequence, N-1,
+    'Dropped datagrams should be from the beginning of the sequence');
 }, 'Datagrams read is less than or equal to the incomingMaxBufferedDatagrams');
 
 promise_test(async t => {
   // Establish a WebTransport session.
   const wt = new WebTransport(webtransport_url('echo.py'));
+  wt.closed.catch(() => {});
+  t.add_cleanup(() => wt.close());
   await wt.ready;
 
   assert_equals(wt.datagrams.incomingMaxAge, null);
@@ -367,6 +369,8 @@ promise_test(async t => {
 promise_test(async t => {
   // Establish a WebTransport session.
   const wt = new WebTransport(webtransport_url('echo.py'));
+  wt.closed.catch(() => {});
+  t.add_cleanup(() => wt.close());
   await wt.ready;
 
   // Initial values are implementation-defined

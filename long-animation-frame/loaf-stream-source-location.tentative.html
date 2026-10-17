@@ -11,6 +11,18 @@
 <div id="log"></div>
 <script>
 
+test_promise_script(async (t, busy_wait) => {
+    const response = await fetch("/common/dummy.xml");
+    const {readable, writable} = new TransformStream({
+      start() {},
+      transform() {
+        busy_wait(very_long_frame_duration);
+      }
+    });
+    response.body.pipeTo(writable);
+    await readable.getReader().read();
+}, "resolve", "StreamPromise.resolve");
+
 promise_test(async t => {
   const scriptLocation = new URL("resources/stream-promise-generates-loaf.js", location.href);
   const [entry, script] = await expect_long_frame_with_script(() => {

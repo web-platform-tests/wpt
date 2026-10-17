@@ -30,3 +30,25 @@ test(t => {
   const e = new WebTransportError('boom');
   assert_equals(e.message, 'boom');
 }, 'WebTransportError message is settable via the first constructor argument');
+
+test(t => {
+  const e = new WebTransportError('boom', {source: 'session', streamErrorCode: 70000});
+  const clone = structuredClone(e);
+  assert_true(clone instanceof WebTransportError, 'instanceof');
+  assert_equals(clone.name, 'WebTransportError', 'name');
+  assert_equals(clone.message, 'boom', 'message');
+  assert_equals(clone.source, 'session', 'source');
+  assert_equals(clone.streamErrorCode, 70000, 'streamErrorCode');
+}, 'WebTransportError is serializable');
+
+test(t => {
+  const clone = structuredClone(new WebTransportError());
+  assert_equals(clone.message, '', 'message');
+  assert_equals(clone.source, 'stream', 'source');
+  assert_equals(clone.streamErrorCode, null, 'streamErrorCode');
+}, 'WebTransportError serialization preserves a null streamErrorCode');
+
+test(t => {
+  const clone = structuredClone(new WebTransportError('', {streamErrorCode: 0}));
+  assert_equals(clone.streamErrorCode, 0);
+}, 'WebTransportError serialization distinguishes streamErrorCode 0 from null');

@@ -76,3 +76,42 @@ promise_test(async t => {
     'after it ends');
 }, 'Datagrams read with a reader attached are not capped by ' +
    'incomingMaxBufferedDatagrams');
+
+promise_test(async t => {
+  // Establish a WebTransport session.
+  const wt = new WebTransport(webtransport_url('server-flood-datagrams.py'));
+  wt.closed.catch(() => {});
+  t.add_cleanup(() => wt.close());
+  await wt.ready;
+
+  const N = 5;
+  wt.datagrams.incomingMaxBufferedDatagrams = N;
+
+  const writer = wt.datagrams.createWritable().getWriter();
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+
+  // Unlike the echoing handlers, this burst is not paced by anything the client
+  // did, so the datagrams can genuinely pile up on the receive path.
+  const requested = 500;
+
+  const received = [];
+  const readLoop = (async () => {
+    for await (const value of wt.datagrams.readable) {
+      received.push(parseInt(decoder.decode(value)));
+      if (received.length == requested) {
+        return;
+      }
+    }
+  })();
+
+  await writer.write(encoder.encode(requested.toString()));
+  await Promise.race([readLoop, wait(1000)]);
+
+  // Datagrams are unreliable and a burst this size may legitimately overrun
+  // buffers, so don't require a particular yield. What must hold is that the
+  // burst isn't collapsed to a single queueful: that would mean the consumer
+  // never got to run while the burst was arriving.
+  assert_greater_than(received.length, N,
+    'A server-initiated burst should not be reduced to one queueful');
+}, 'Server-initiated datagram bursts are not reduced to incomingMaxBufferedDatagrams');

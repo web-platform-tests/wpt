@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Closing streamPrependHTML while head is detached</title>
+<link rel="help" href="https://html.spec.whatwg.org/#html-streaming-methods" />
+<body>
+<script>
+  (async () => {
+    // Per spec, streaming into the html element throws; implementations that
+    // accept it must not crash either, so try it first and fall back to body.
+    let writer;
+    try {
+      writer = document.documentElement.streamPrependHTML().getWriter();
+    } catch {
+      writer = document.body.streamPrependHTML().getWriter();
+    }
+    document.head.remove();
+    await writer.close();
+  })();
+</script>
+</body>

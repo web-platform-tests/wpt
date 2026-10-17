@@ -8,7 +8,9 @@ idl_test(
   [],
   idl_array => {
     idl_array.add_objects({
-      // TODO: objects
+      ReportBody: [],
+      Report: [],
+      ReportingObserver: ['new ReportingObserver((reports, observer) => {})'],
     });
   }
 );

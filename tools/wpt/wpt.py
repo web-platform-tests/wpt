@@ -175,7 +175,7 @@ def install_command_flag_requirements(venv, props, kwargs):
     requirements = props["conditional_requirements"].get("commandline_flag", {})
     install_paths = []
     for command_flag_name, requirement_paths in requirements.items():
-        if command_flag_name in kwargs:
+        if kwargs.get(command_flag_name):
             install_paths.extend(requirement_paths)
     venv.install_requirements(*install_paths)
 

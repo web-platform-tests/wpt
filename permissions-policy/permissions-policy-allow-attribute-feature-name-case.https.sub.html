@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!-- Feature names in the allow attribute are matched strictly identically (case-sensitively). -->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+  const crossOriginUrl = 'https://{{domains[www]}}:{{ports[https][0]}}/permissions-policy/resources/report-fullscreen-enabled.html';
+
+  function test_allow_attribute(allowValue, expected) {
+    promise_test(async t => {
+      const iframe = document.createElement('iframe');
+      iframe.src = crossOriginUrl;
+      iframe.allow = allowValue;
+      t.add_cleanup(() => iframe.remove());
+
+      const messagePromise = new Promise(resolve => {
+        window.addEventListener('message', function handler(e) {
+          if (e.source === iframe.contentWindow) {
+            window.removeEventListener('message', handler);
+            resolve(e);
+          }
+        });
+      });
+
+      document.body.appendChild(iframe);
+
+      const event = await messagePromise;
+      assert_equals(event.data.type, 'fullscreen-enabled');
+      assert_equals(event.data.enabled, expected);
+    }, `allow="${allowValue}" expects ${expected}`);
+  }
+
+  test_allow_attribute('fullscreen', true);
+  test_allow_attribute('Fullscreen', false);
+</script>

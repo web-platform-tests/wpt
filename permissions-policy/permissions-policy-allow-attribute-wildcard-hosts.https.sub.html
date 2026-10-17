@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!-- Testing allowlist entries in the iframe allow attribute whose host contains "*" -->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const frame_origin = 'https://{{domains[www]}}:{{ports[https][0]}}';
+
+function test_allow(allow_value, expected) {
+  async_test(t => {
+    const frame = document.createElement('iframe');
+    frame.allow = allow_value;
+    frame.src = frame_origin + '/permissions-policy/resources/report-fullscreen-enabled.html';
+    window.addEventListener('message', t.step_func(e => {
+      if (e.source === frame.contentWindow && e.data.type === 'fullscreen-enabled') {
+        assert_equals(e.data.enabled, expected);
+        t.done();
+      }
+    }));
+    document.body.appendChild(frame);
+  }, `allow="${allow_value}" expects ${expected}`);
+}
+
+test_allow(
+  'fullscreen https://*.{{domains[]}}:{{ports[https][0]}}',
+  false
+);
+
+test_allow(
+  'fullscreen https://*:{{ports[https][0]}}',
+  false
+);
+
+test_allow(
+  'fullscreen https://*.{{domains[]}}:{{ports[https][0]}} https://{{domains[www]}}:{{ports[https][0]}}',
+  true
+);
+
+test_allow(
+  'fullscreen https://{{domains[www]}}:{{ports[https][0]}}',
+  true
+);
+</script>
+</body>

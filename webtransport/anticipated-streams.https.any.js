@@ -74,3 +74,81 @@ promise_test(async t => {
   assert_equals(wt.anticipatedConcurrentIncomingBidirectionalStreams, 50,
                 'values should persist after close');
 }, 'anticipatedConcurrentIncoming* attributes should persist after session close');
+
+async function first(readable) {
+  for await (const v of readable.values({ preventCancel: true })) return v;
+}
+
+// Helper function to request stream creation and get the response
+async function requestServerStreamLimits(wt, numUni, numBidi) {
+  const { readable, writable } = await first(wt.incomingBidirectionalStreams);
+
+  const writer = writable.getWriter();
+  const request = JSON.stringify({ uni: numUni, bidi: numBidi });
+  writer.write(new TextEncoder().encode(request)).catch(() => {});
+  await writer.close();
+
+  let responseText = "";
+  for await (const txt of readable.pipeThrough(new TextDecoderStream())) {
+    responseText += txt;
+  }
+
+  return JSON.parse(responseText);
+}
+
+promise_test(async t => {
+  assert_throws_js(TypeError, () => {
+    new WebTransport(webtransport_url('anticipated-streams.py'), {
+      anticipatedConcurrentIncomingUnidirectionalStreams: 65536,
+    });
+  });
+
+  assert_throws_js(TypeError, () => {
+    new WebTransport(webtransport_url('anticipated-streams.py'), {
+      anticipatedConcurrentIncomingUnidirectionalStreams: -1,
+    });
+  });
+}, 'WebTransportOptions enforces limits on min/maximum anticipated streams');
+
+// Note: the values here need to be larger than the normally-negotiated initial values
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('anticipated-streams.py'), {
+    anticipatedConcurrentIncomingUnidirectionalStreams: 500,
+    anticipatedConcurrentIncomingBidirectionalStreams: 300
+  });
+  await wt.ready;
+  t.add_cleanup(() => wt.close());
+
+  const result = await requestServerStreamLimits(wt, 500, 300);
+
+  assert_greater_than_equal(result.uni_created, 500,
+                            'server should create at least 500 unidirectional streams');
+  assert_greater_than_equal(result.bidi_created, 300,
+                            'server should create at least 300 bidirectional streams');
+}, 'server can create anticipated number of unidirectional and bidirectional streams');
+
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('anticipated-streams.py'), {
+    anticipatedConcurrentIncomingUnidirectionalStreams: 1000
+  });
+  await wt.ready;
+  t.add_cleanup(() => wt.close());
+
+  const result = await requestServerStreamLimits(wt, 1000, 0);
+
+  assert_greater_than_equal(result.uni_created, 1000,
+                            'server should create at least 1000 unidirectional streams');
+}, 'server can create 1000 anticipated unidirectional streams');
+
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('anticipated-streams.py'), {
+    anticipatedConcurrentIncomingBidirectionalStreams: 2000
+  });
+  await wt.ready;
+  t.add_cleanup(() => wt.close());
+
+  const result = await requestServerStreamLimits(wt, 0, 2000);
+
+  assert_greater_than_equal(result.bidi_created, 2000,
+                            'server should create at least 2000 bidirectional streams');
+}, 'server can create 2000 anticipated bidirectional streams');

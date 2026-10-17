@@ -189,6 +189,7 @@ self.IdlArray = function()
      * dependency (to retroactively process them).
      */
     this.skipped = new Map();
+    this.test_filter = null;
 };
 
 IdlArray.prototype.add_idls = function(raw_idls, options)
@@ -504,6 +505,14 @@ IdlArray.prototype.prevent_multiple_testing = function(name)
     this.members[name].prevent_multiple_testing = true;
 };
 
+IdlArray.prototype.set_test_filter = function(filter)
+{
+    if (typeof filter !== "function") {
+        throw new TypeError("The test filter must be a function.");
+    }
+    this.test_filter = filter;
+};
+
 IdlArray.prototype.is_json_type = function(type)
 {
     /**
@@ -741,6 +750,17 @@ IdlArray.prototype.test = function()
         var globals = exposure_set(member);
         member.exposed = exposed_in(globals);
         member.exposureSet = globals;
+
+        if (this.test_filter && member instanceof IdlInterface) {
+            if (!this.test_filter(memberName)) {
+                member.untested = true;
+            }
+            for (const idlMember of member.members) {
+                if (!this.test_filter(memberName, idlMember.name)) {
+                    idlMember.untested = true;
+                }
+            }
+        }
     }.bind(this));
 
     // Now run test() on every member, and test_object() for every object.

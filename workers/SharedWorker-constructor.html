@@ -12,7 +12,9 @@ test(() => {
 }, "Test toString exception propagated correctly.");
 
 test(() => {
-  assert_throws_js(RangeError,
+  let StackOverflow;
+  try { (function f() { 1 + f() })() } catch (e) { StackOverflow = e.constructor }
+  assert_throws_js(StackOverflow,
                    function() {
                      var foo = {toString:function(){new Worker(foo)}}
                      new SharedWorker(foo, name); },

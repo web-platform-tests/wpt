@@ -1080,7 +1080,7 @@
         // The policy set to the <script referrerpolicy> attribute is used for
         // dynamic imports initiated from the script, passed as referencing
         // script's fetch options.
-        // https://html.spec.whatwg.org/multipage/webappapis.html#hostimportmoduledynamically(referencingscriptormodule,-modulerequest,-promisecapability)
+        // https://html.spec.whatwg.org/multipage/webappapis.html#hostloadimportedmodule
         "attr"
       ],
       "sharedworker-classic": [],

@@ -60,7 +60,7 @@ promise_test(async t => {
   assert_equals(promise_state, 'pending', 'Promise state while inactive');
   // If the first document is restored, then that will occur immediately after
   // pagehide (and associated microtasks), before the next global task is run.
-  // https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta
+  // https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history-by-a-delta
   await promise_new_task(t);
   if (proxy.navigator.mediaDevices == devices) {
     // The first document was persisted and restored.

@@ -13,7 +13,7 @@
 //      multiple iframes are being removed in the same task. Iframe removal,
 //      from the perspective of the parent's DOM tree, is atomic.
 //
-// [1]: https://html.spec.whatwg.org/C#the-iframe-element:html-element-insertion-steps
+// [1]: https://html.spec.whatwg.org/C#the-iframe-element:html-element-post-connection-steps
 // [2]: https://dom.spec.whatwg.org/#concept-node-insert
 // [3]: https://html.spec.whatwg.org/C#the-iframe-element:html-element-removing-steps
 

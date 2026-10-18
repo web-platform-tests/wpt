@@ -1,6 +1,6 @@
 # Origin-keyed agent clusters tests
 
-These are tests for the [origin-keyed agent clusters](https://html.spec.whatwg.org/multipage/origin.html#origin-keyed-agent-clusters)
+These are tests for the [origin-keyed agent clusters](https://html.spec.whatwg.org/multipage/browsers.html#origin-keyed-agent-clusters)
 feature.
 
 ## Test filenames

@@ -20,6 +20,7 @@ jobs:
           url: 'https://${{ matrix.host }}/api/checks/github-actions/'
           retry: 10
           retryWait: 30000
+          timeout: 60000
           method: 'POST'
           contentType: 'application/x-www-form-urlencoded'
           data: |

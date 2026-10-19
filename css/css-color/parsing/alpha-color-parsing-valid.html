@@ -9,6 +9,13 @@
 <div id="target"></div>
 <script>
 
+// The alpha adjustment is optional in the current alpha() grammar.
+test_valid_value("color", "alpha(from red)");
+test_valid_value("color", "alpha(from currentcolor)");
+test_valid_value("color", "alpha(from color(srgb 1 0 0 / 0.3))");
+test_valid_value("color", "alpha(from alpha(from currentcolor / 0.5))");
+test_valid_value("color", "alpha(from alpha(from currentcolor) / 0.5)");
+
 // Basic usage with literal alpha.
 test_valid_value("color", "alpha(from red / 0.5)");
 test_valid_value("color", "alpha(from blue / 1)");

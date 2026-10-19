@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<head>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/autofill-helper.js"></script>
+<style>
+  input:autofill { color: red; padding: 5px;}
+  input { color: blue; padding: 10px;}
+</style>
+</head>
+<body>
+<form id="test_form">
+  <input type="text" autocomplete="name" id="test_field" value="name">
+</form>
+<script>
+  promise_test(async t => {
+    if (!window.test_driver) {
+      return;
+    }
+    // Save form data to autofill.
+    await save_address_fields({"NAME_FULL": "foobar"});
+
+    // Now test that the values were properly filled
+    await test_driver.trigger_autofill("test_field");
+    await wait_on_element_autofill("test_field", "padding", "5px");
+    assert_element_has_value("test_field", "foobar");
+  });
+</script>
+
+

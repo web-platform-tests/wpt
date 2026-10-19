@@ -51,7 +51,7 @@
   var attrElem = document.getElementById("attr");
 
   attrElem.setAttribute('data-bar', 'attr(data-foo)');
-  test_attr_cycle('--y', 'attr(data-foo type(*))', 'attr(data-bar type(*))');
+  test_attr_no_cycle('--y', 'attr(data-foo type(*))', 'attr(data-bar type(*))', '"attr(data-bar type(*))"');
   attrElem.removeAttribute('data-bar');
 
   /* Cycle with attr() and var() */
@@ -146,12 +146,12 @@
   attrElem.removeAttribute('data-bar');
   attrElem.style.setProperty('--y', null);
 
-  /* No cycle, wrong attr syntax in attribute */
-  test_attr_no_cycle('--x', 'attr(data-foo type(*), abc)', 'attr(data-foo', 'abc');
+  /* EOF recovery closes the nested bare attr(), which returns a raw string. */
+  test_attr_no_cycle('--x', 'attr(data-foo type(*), abc)', 'attr(data-foo', '"attr(data-foo"');
 
-  /* Multiple attributes cycling simultaneously in bare attr() form */
+  /* Bare attr() returns strings without recursively substituting their contents. */
   attrElem.setAttribute('data-bar', 'attr(data-foo) attr(data-bar)');
-  test_attr_no_cycle('--x', 'attr(data-foo type(*), abc)', 'attr(data-bar type(*), fallback)', 'abc');
+  test_attr_no_cycle('--x', 'attr(data-foo type(*), abc)', 'attr(data-bar type(*), fallback)', '"attr(data-bar type(*), fallback)" "attr(data-foo) attr(data-bar)"');
   attrElem.removeAttribute('data-bar');
 
   /* Transitive cycle through var() */

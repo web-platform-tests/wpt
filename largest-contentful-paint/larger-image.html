@@ -13,21 +13,29 @@
   <img src='' id='lcp3' />
   <p>More text!</p>
   <script>
+    assert_implements(window.LargestContentfulPaint,
+                      "LargestContentfulPaint is not implemented");
+
     // Add listener for load event that is fired when image is loaded.
     function image_load_promise(image_element) {
       return new Promise(resolve => {
-        image_element.addEventListener('load', resolve);
+        image_element.addEventListener('load', resolve, {once: true});
       });
     }
 
-    promise_test(async (t) => {
-      assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
+    const lcp2Url = window.location.origin + '/images/lcp-133x106.png';
+    const entryPromise = observeLCP({id: 'lcp2'});
+    let beforeLoad = 0;
 
+    // This driver is registered before the check tests so that it runs first:
+    // promise tests are queued sequentially, so images driven from a test
+    // registered after the checks would never load while they wait.
+    promise_test(async (t) => {
       let promise = image_load_promise(document.getElementById('lcp1'));
       document.getElementById('lcp1').src = '/images/lcp-100x50.png';
       await promise;
 
-      const beforeLoad = performance.now();
+      beforeLoad = performance.now();
 
       promise = image_load_promise(document.getElementById('lcp2'));
       document.getElementById('lcp2').src = '/images/lcp-133x106.png';
@@ -37,24 +45,13 @@
       document.getElementById('lcp3').src = '/images/lcp-100x50-alt.png';
       await promise;
 
-      // Wait for the entry of the largest image.
-      const entry = await new Promise(resolve => {
-        const observer = new PerformanceObserver(entryList => {
-          for (const entry of entryList.getEntries()) {
-            // The text or other image could be reported as LCP if it is rendered before the larger image.
-            if (entry.id !== 'lcp2')
-              continue;
-            observer.disconnect();
-            resolve(entry);
-            return;
-          }
-        });
-        observer.observe({ type: 'largest-contentful-paint', buffered: true });
-      });
+      await awaitEntry(t, entryPromise,
+          'Timed out waiting for the entry of the largest image');
+    }, 'The largest image is reported as the Largest Contentful Paint.');
 
-      const url = window.location.origin + '/images/lcp-133x106.png';
-      const size = 133 * 106;
-      checkImage(entry, url, 'lcp2', size, beforeLoad);
+    promise_test(async () => {
+      const entry = await entryPromise;
+      checkEntry(entry, lcp2Url, 'lcp2', 133 * 106, () => beforeLoad);
     }, 'Largest Contentful Paint: largest image is reported.');
   </script>
 </body>

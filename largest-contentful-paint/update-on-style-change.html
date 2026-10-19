@@ -3,25 +3,19 @@
 <title>LargestContentfulPaint entries should NOT be emitted for updates to previous LargestContentfulPaint elements.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/largest-contentful-paint-helpers.js"></script>
 
 <body>
   <script>
       promise_test(async (t) => {
       assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
-      let lcpEntries = [];
-      await new Promise(resolve => t.step_timeout(() => {
-        new PerformanceObserver(list => {
-          lcpEntries = lcpEntries.concat(list.getEntries())
-          if (lcpEntries.length > 1) {
-            assert_unreached("There shouldn't be more than 1 LCP entry for an element.");
-          }
-          if (lcpEntries) {
-            assert_equals(lcpEntries.length, 1, "There should be only 1 LCP entry for one element. ");
-            assert_equals(lcpEntries[0].id, "text", "The LCP should have id 'text'");
-            resolve();
-          }
-        }).observe({ type: 'largest-contentful-paint', buffered: true });
-      }, 200));
+      // The slow stylesheet changes the font size after 1 second; the element
+      // has already been reported as the Largest Contentful Paint and must
+      // not be reconsidered.
+      const entries = await collectLCPEntries(
+          t, {filter: {id: 'text'}, settleMs: 2000});
+      assert_equals(entries.length, 1, "There should be only 1 LCP entry for one element. ");
+      assert_equals(entries[0].id, "text", "The LCP should have id 'text'");
     })
   </script>
   <div id="text">text</div>

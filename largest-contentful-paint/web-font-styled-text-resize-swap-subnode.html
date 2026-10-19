@@ -1,6 +1,7 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/largest-contentful-paint-helpers.js"></script>
 <style>
   @font-face {
     font-family: "ADTestFaceSwapSubnode";
@@ -39,23 +40,7 @@
       "Font should be the web font added",
     );
 
-    let lcpEntries = [];
-    await Promise.race([
-      new Promise((resolve, reject) => {
-        t.step_timeout(() => {
-          resolve(lcpEntries);
-        }, 3000);
-      }),
-      new Promise((resolve, reject) => {
-        new PerformanceObserver((list, observer) => {
-          lcpEntries.push(...list.getEntries());
-          if (lcpEntries.length >= 2) {
-            resolve();
-            observer.disconnect();
-          }
-        }).observe({ type: "largest-contentful-paint", buffered: true });
-      }),
-    ]);
+    const lcpEntries = await collectLCPEntries(t, {settleMs: 3000});
 
     // Verify there are 2 LCP entries emitted.
     assert_equals(
@@ -68,7 +53,7 @@
     assert_greater_than(
       lcpEntries[1].size,
       lcpEntries[0].size,
-      "The size of 2nd LCP entry should be larger than that of the 1st one.",
+      "The size of 2ndLCP entry should be larger than that of the 1st one.",
     );
   }, "LCP should be updated if the web font styled text resizes to be larger during the swap period");
 </script>

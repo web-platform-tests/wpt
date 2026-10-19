@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <title>CSS Values and Units Test: attr() security limitations using if()</title>
 <link rel="help" href="https://drafts.csswg.org/css-values-5/#attr-security">
+<link rel="help" href="https://drafts.csswg.org/css-images-4/#serialization">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -62,7 +63,7 @@
                 if(style(--true): url(${url2});
                    else: attr(data-foo);))`,
               url2,
-              `image-set(url("${url2}") 1dppx)`);
+              `image-set(url("${url2}"))`);
     test_attr('background-image',
               `image-set(
                 if(style(--some-string): url(${url});))`,
@@ -85,7 +86,7 @@
                             style(--condition-val): url(${url});
                             else: url(${url});))`,
               'attr(data-foo type(*))',
-              `image-set(url("${url}") 1dppx)`);
+              `image-set(url("${url}"))`);
     test_attr('background-image',
               `image-set(
                 if(style(--condition-val: if(style(--true): attr(data-foo type(*));)): url(${url});))`,

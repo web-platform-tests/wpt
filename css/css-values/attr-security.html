@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <title>CSS Values and Units Test: attr() security limitations</title>
 <link rel="help" href="https://drafts.csswg.org/css-values-5/#attr-security">
+<link rel="help" href="https://drafts.csswg.org/css-images-4/#serialization">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -103,7 +104,7 @@
     test_attr('background-image',
               `image-set("${url}")`,
               url,
-              `image-set(url("${url}") 1dppx)`);
+              `image-set(url("${url}"))`);
 
     test_attr('--x',
               `src(attr(data-foo))`,

@@ -63,14 +63,14 @@
   // Note: 'test_if()' places the 'if()' in a custom property '--prop'.
   test_if(`if(style(--prop): var(--prop); else: value)`,
         [],
-        '');
+        'value');
   test_if(`if(style(--x): var(--prop); else: value)`,
         [['--x', 'var(--prop)']],
         '');
   test_if(`if(style(--prop: 3): true_value;
           else: false_value)`,
         [['--prop', '3']],
-        '');
+        'false_value');
   test_if(`if(style(--x: 3): true_value;
           else: false_value)`,
         [['--x', 'var(--prop)']],
@@ -78,7 +78,7 @@
   test_if(`if(style(not (--prop)): true_value;
           else: false_value)`,
         [],
-        '');
+        'true_value');
   test_if(`if(style(not (--x: var(--y))): true_value;
           else: false_value)`,
         [['--x', '11'], ['--y', 'var(--prop)']],
@@ -86,11 +86,11 @@
   test_if(`if(style((--prop) or (--y)): true_value;
           else: false_value)`,
         [['--y', '3']],
-        '');
+        'true_value');
   test_if(`if(style((--prop) and (--y)): true_value;
           else: false_value)`,
         [['--y', '3']],
-        '');
+        'false_value');
   test_if(`if(style(--x: var(--prop)): true_value;
           else: false_value)`,
         [['--x', '3']],
@@ -126,11 +126,11 @@
   test_if(`if(style(not (--x: var(--y))): true_value;
           else: false_value)`,
         [['--x', '11'], ['--y', 'var(--y)']],
-        'true_value');
+        'false_value');
   test_if(`if(style(not (--x: var(--y))): true_value;
           else: false_value)`,
         [['--x', '11'], ['--y', 'var(--y)']],
-        'true_value');
+        'false_value');
   test_if(`if(style((--x) or (--y)): true_value;
           else: false_value)`,
         [['--x', 'var(--x)'], ['--y', '3']],

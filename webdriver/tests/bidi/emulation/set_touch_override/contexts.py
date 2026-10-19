@@ -5,6 +5,21 @@ from . import MAX_TOUCHES_PER_CONTEXT, MAX_TOUCHES_PER_USER_CONTEXT, \
 pytestmark = pytest.mark.asyncio
 
 
+@pytest.mark.parametrize("max_touch_points", [16, 17, 100])
+async def test_max_touch_points_not_limited_by_event_storage_capacity(
+        bidi_session, top_context, get_max_touch_points, max_touch_points):
+    try:
+        await bidi_session.emulation.set_touch_override(
+            max_touch_points=max_touch_points,
+            contexts=[top_context["context"]])
+
+        assert await get_max_touch_points(top_context) == max_touch_points
+    finally:
+        await bidi_session.emulation.set_touch_override(
+            max_touch_points=None,
+            contexts=[top_context["context"]])
+
+
 async def test_contexts_isolation(bidi_session, top_context,
                                   get_max_touch_points,
                                   initial_max_touch_points):

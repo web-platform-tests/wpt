@@ -119,9 +119,17 @@
     assert_array_equals(ids, ["p1", "", "from-script", "p2", ""]);
   }, "DOM mutations inside streamed parser-blocking script maintain correct insertion order");
 
-  async function waitForSlowScriptAndOneMoreTick(query) {
-    await fetch(`resources/slow.js?pipe=trickle(d0.2)&${query}`);
-    await new Promise(resolve => step_timeout(resolve, 0));
+  function waitForResource(url) {
+    const name = new URL(url, location.href).href;
+    return new Promise(resolve => {
+      const observer = new PerformanceObserver(list => {
+        if (list.getEntries().some(e => e.name === name)) {
+          observer.disconnect();
+          resolve();
+        }
+      });
+      observer.observe({ type: "resource", buffered: true });
+    });
   }
 
   promise_test(async (t) => {
@@ -131,9 +139,10 @@
     const writable = placeholder.streamHTMLUnsafe({ runScripts: true });
     const writer = writable.getWriter();
 
-    const settle = waitForSlowScriptAndOneMoreTick("abort_test_sentinel=1");
+    const url = "resources/slow.js?pipe=trickle(d0.2)&abort_test=1";
+    const settle = waitForResource(url).then(() => new Promise(r => t.step_timeout(r, 0)));
     await writer.write(
-      "<script src='resources/slow.js?pipe=trickle(d0.2)&abort_test=1'><" + "/script>" +
+      `<script src='${url}'><` + "/script>" +
       "<p id='after'>after</p>" +
       "<script>window.events.push('after');<" + "/script>"
     );
@@ -331,10 +340,11 @@
       const ref = document.createElement("span");
       placeholder.appendChild(ref);
 
-      const settle = waitForSlowScriptAndOneMoreTick("d6_sentinel=" + rejectKind);
+      const url = `resources/slow.js?pipe=trickle(d0.2)&d6=${rejectKind}`;
+      const settle = waitForResource(url).then(() => new Promise(r => t.step_timeout(r, 0)));
       const writer = ref.streamBeforeHTMLUnsafe({ runScripts: true }).getWriter();
       await writer.write(
-        "<script src='resources/slow.js?pipe=trickle(d0.2)&d6=" + rejectKind + "'><" + "/script>" +
+        `<script src='${url}'><` + "/script>" +
         "<p id='buffered-after-blocking'>buffered</p>"
       );
 
@@ -520,7 +530,6 @@
       document.body.appendChild(iframe);
     });
 
-    const settle = waitForSlowScriptAndOneMoreTick("f12_sentinel=1");
     const target = iframe.contentDocument.getElementById("target");
     const writer = target.streamHTMLUnsafe({ runScripts: true }).getWriter();
     await writer.write(
@@ -529,7 +538,7 @@
     );
 
     iframe.remove();
-    await settle;
+    await new Promise(r => t.step_timeout(r, 350));
     assert_false(window.iframe_blocked_ran, "Scripts in removed iframe must not execute");
   }, "Removing iframe while stream is blocked on external script does not crash or execute scripts");
 

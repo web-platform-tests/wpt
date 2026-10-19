@@ -111,7 +111,7 @@ promise_test(t => {
 }, "Test that encodingInfo rejects if the video configuration contentType has more than one parameter");
 
 promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
+  return navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     video: {
       contentType: 'video/webm; foo="bar"',
@@ -120,8 +120,12 @@ promise_test(t => {
       bitrate: 3000,
       framerate: 24,
     },
-  }));
-}, "Test that encodingInfo rejects if the video configuration contentType has one parameter that isn't codecs");
+  }).then(ability => {
+    assert_false(ability.supported);
+    assert_false(ability.smooth);
+    assert_false(ability.powerEfficient);
+  });
+}, "Test that encodingInfo returns supported, smooth, and powerEfficient set to false if the video configuration contentType has one parameter that isn't codecs");
 
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
@@ -138,11 +142,15 @@ promise_test(t => {
 }, "Test that encodingInfo rejects if the audio configuration contentType has more than one parameters");
 
 promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
+  return navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     audio: { contentType: 'audio/webm; foo="bar"' },
-  }));
-}, "Test that encodingInfo rejects if the audio configuration contentType has one parameter that isn't codecs");
+  }).then(ability => {
+    assert_false(ability.supported);
+    assert_false(ability.smooth);
+    assert_false(ability.powerEfficient);
+  });
+}, "Test that encodingInfo returns supported, smooth, and powerEfficient set to false if the audio configuration contentType has one parameter that isn't codecs");
 
 promise_test(t => {
   return navigator.mediaCapabilities.encodingInfo({
@@ -157,7 +165,7 @@ promise_test(t => {
 }, "Test that encodingInfo returns a valid MediaCapabilitiesInfo objects");
 
 promise_test(t => {
-  return navigator.mediaCapabilities.encodingInfo({
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     video: {
       contentType: 'video/webm; codecs="vp09.00.10.08"',
@@ -167,26 +175,18 @@ promise_test(t => {
       framerate: 24,
     },
     audio: minimalAudioConfiguration,
-  }).then(ability => {
-    assert_false(ability.supported);
-    assert_false(ability.smooth);
-    assert_false(ability.powerEfficient);
-  });
-}, "Test that encodingInfo returns supported, smooth, and powerEfficient set to false for non-webrtc video content type.");
+  }));
+}, "Test that encodingInfo rejects for non-webrtc video content type with codecs parameter.");
 
 promise_test(t => {
-  return navigator.mediaCapabilities.encodingInfo({
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     video: minimalVideoConfiguration,
     audio: {
       contentType: 'audio/webm; codecs="opus"',
     },
-  }).then(ability => {
-    assert_false(ability.supported);
-    assert_false(ability.smooth);
-    assert_false(ability.powerEfficient);
-  });
-}, "Test that encodingInfo returns supported, smooth, and powerEfficient set to false for non-webrtc audio content type.");
+  }));
+}, "Test that encodingInfo rejects for non-webrtc audio content type with codecs parameter.");
 
 const validAudioCodecs = (() => {
   // Some codecs that are returned by getCapabilities() are not real codecs,
@@ -309,3 +309,96 @@ promise_test(t => {
     }
   }));
 }, "Test that encodingInfo rejects if transferFunction is specified for type webrtc");
+
+promise_test(t => {
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
+    type: 'webrtc',
+    video: {
+      contentType: 'video/VP9; codecs="vp09.00.10.08"',
+      width: 800,
+      height: 600,
+      bitrate: 3000,
+      framerate: 24,
+    },
+  }));
+}, "Test that encodingInfo rejects if the webrtc video configuration contentType has a codecs parameter");
+
+promise_test(t => {
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
+    type: 'webrtc',
+    video: {
+      contentType: 'video/VP9; codecs="vp09.00.10.08"; profile-id="0"',
+      width: 800,
+      height: 600,
+      bitrate: 3000,
+      framerate: 24,
+    },
+  }));
+}, "Test that encodingInfo rejects if the webrtc video configuration contentType has both codecs and profile parameters");
+
+promise_test(t => {
+  return navigator.mediaCapabilities.encodingInfo({
+    type: 'webrtc',
+    video: {
+      contentType: 'video/VP9; profile-id="0"',
+      width: 800,
+      height: 600,
+      bitrate: 3000,
+      framerate: 24,
+    },
+  }).then(ability => {
+    assert_equals(typeof ability.supported, "boolean");
+    assert_equals(typeof ability.smooth, "boolean");
+    assert_equals(typeof ability.powerEfficient, "boolean");
+  });
+}, "Test that encodingInfo resolves if the webrtc video configuration contentType has a profile parameter without codecs");
+
+promise_test(t => {
+  return navigator.mediaCapabilities.encodingInfo({
+    type: 'webrtc',
+    video: {
+      contentType: 'video/VP9',
+      width: 800,
+      height: 600,
+      bitrate: 3000,
+      framerate: 24,
+    },
+  }).then(ability => {
+    assert_true(ability.supported);
+  });
+}, "Test that encodingInfo resolves with supported true if the webrtc video configuration contentType has no parameters");
+
+promise_test(t => {
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
+    type: 'webrtc',
+    audio: { contentType: 'audio/opus; codecs="opus"' },
+  }));
+}, "Test that encodingInfo rejects if the webrtc audio configuration contentType has a codecs parameter");
+
+promise_test(t => {
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
+    type: 'webrtc',
+    audio: { contentType: 'audio/opus; codecs="opus"; stereo=1' },
+  }));
+}, "Test that encodingInfo rejects if the webrtc audio configuration contentType has both codecs and fmtp parameters");
+
+promise_test(t => {
+  return navigator.mediaCapabilities.encodingInfo({
+    type: 'webrtc',
+    audio: { contentType: 'audio/opus; stereo=1' },
+  }).then(ability => {
+    assert_equals(typeof ability.supported, "boolean");
+    assert_equals(typeof ability.smooth, "boolean");
+    assert_equals(typeof ability.powerEfficient, "boolean");
+  });
+}, "Test that encodingInfo resolves if the webrtc audio configuration contentType has an fmtp parameter without codecs");
+
+promise_test(t => {
+  return navigator.mediaCapabilities.encodingInfo({
+    type: 'webrtc',
+    audio: { contentType: 'audio/opus' },
+  }).then(ability => {
+    assert_true(ability.supported);
+  });
+}, "Test that encodingInfo resolves with supported true if the webrtc audio configuration contentType has no parameters");
+

@@ -18,6 +18,8 @@ jobs:
         uses: fjogeleit/http-request-action@v2
         with:
           url: 'https://${{ matrix.host }}/api/checks/github-actions/'
+          retry: 10
+          retryWait: 30000
           method: 'POST'
           contentType: 'application/x-www-form-urlencoded'
           data: |

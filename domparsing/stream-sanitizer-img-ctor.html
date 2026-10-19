@@ -65,12 +65,12 @@
         return child;
       }
 
-      function awaitImageLoadFailure(t) {
+      function awaitImageLoadFailure() {
         return new Promise(resolve => {
           const img = new Image();
+          img.onload = resolve;
           img.onerror = resolve;
           img.src = "invalid-src-helper-abc";
-          t.step_timeout(resolve, 500);
         });
       }
 
@@ -100,7 +100,7 @@
             await writer.write(tc.input(var_name));
             await writer.close();
 
-            await awaitImageLoadFailure(t);
+            await awaitImageLoadFailure();
 
             assert_false(window[var_name], `Event handler should not fire for ${testName}`);
           }, `Sanitizer bypass check for ${testName}`);
@@ -140,10 +140,7 @@
           await writer.write(`<img src="invalid-src-xyz" onerror="window.${var_name}_fired()">`);
           await writer.close();
 
-          await Promise.race([
-            fired_promise,
-            new Promise(resolve => t.step_timeout(resolve, 500))
-          ]);
+          await fired_promise;
 
           assert_true(window[var_name], `Event handler SHOULD fire for control case: ${m.name}`);
         }, `Control check for ${m.name}`);

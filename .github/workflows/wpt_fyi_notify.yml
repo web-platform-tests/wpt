@@ -8,7 +8,7 @@ on:
 jobs:
   wpt-fyi-notify:
     name: "Notify ${{ matrix.host }}"
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     strategy:
       fail-fast: false
       matrix:

@@ -133,16 +133,16 @@
     }
 
     for (const [long_keyword, short_keyword] of Object.entries(block_keywords)) {
-      test_computed_value("position-area", `${long_keyword} span-all`, long_keyword);
-      test_computed_value("position-area", `span-all ${long_keyword}`, long_keyword);
+      test_computed_value("position-area", `${long_keyword} span-all`, `${short_keyword} span-all`);
+      test_computed_value("position-area", `span-all ${long_keyword}`, `${short_keyword} span-all`);
 
       test_computed_value("position-area", `${long_keyword} center`, `${short_keyword} center`);
       test_computed_value("position-area", `center ${long_keyword}`, `${short_keyword} center`);
     }
 
     for (const [long_keyword, short_keyword] of Object.entries(inline_keywords)) {
-      test_computed_value("position-area", `${long_keyword} span-all`, long_keyword);
-      test_computed_value("position-area", `span-all ${long_keyword}`, long_keyword);
+      test_computed_value("position-area", `${long_keyword} span-all`, `span-all ${short_keyword}`);
+      test_computed_value("position-area", `span-all ${long_keyword}`, `span-all ${short_keyword}`);
 
       test_computed_value("position-area", `${long_keyword} center`, `center ${short_keyword}`);
       test_computed_value("position-area", `center ${long_keyword}`, `center ${short_keyword}`);
@@ -159,9 +159,9 @@
       }
     }
 
-    for (const [keyword, { block: block_keyword, inline: inline_keyword }] of Object.entries(keywords)) {
-      test_computed_value("position-area", `${keyword} span-all`, block_keyword);
-      test_computed_value("position-area", `span-all ${keyword}`, inline_keyword);
+    for (const keyword of Object.keys(keywords)) {
+      test_computed_value("position-area", `${keyword} span-all`);
+      test_computed_value("position-area", `span-all ${keyword}`);
 
       test_computed_value("position-area", `${keyword} center`);
       test_computed_value("position-area", `center ${keyword}`);
@@ -174,10 +174,18 @@
   test_computed_value("position-area", "center");
   test_single_keyword(horizontal);
   test_single_keyword(vertical);
-  test_single_keyword(Object.keys(inline));
-  test_single_keyword(Object.keys(block));
-  test_single_keyword(Object.keys(self_inline));
-  test_single_keyword(Object.keys(self_block));
+  for (const [long_keyword, short_keyword] of Object.entries(inline)) {
+    test_computed_value("position-area", long_keyword, `span-all ${short_keyword}`);
+  }
+  for (const [long_keyword, short_keyword] of Object.entries(block)) {
+    test_computed_value("position-area", long_keyword, `${short_keyword} span-all`);
+  }
+  for (const [long_keyword, short_keyword] of Object.entries(self_inline)) {
+    test_computed_value("position-area", long_keyword, `span-all ${short_keyword}`);
+  }
+  for (const [long_keyword, short_keyword] of Object.entries(self_block)) {
+    test_computed_value("position-area", long_keyword, `${short_keyword} span-all`);
+  }
   test_single_keyword(Object.keys(start_end));
   test_single_keyword(Object.keys(self_start_end));
 

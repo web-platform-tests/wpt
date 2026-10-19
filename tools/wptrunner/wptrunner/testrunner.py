@@ -373,6 +373,10 @@ RunnerManagerState = Union[BeforeInitState,
 
 
 class TestRunnerManager(threading.Thread):
+    # Statuses that indicate the runner/browser may be in a broken state and
+    # should be restarted before the next test.
+    RESTART_STATUSES = frozenset({"CRASH", "EXTERNAL-TIMEOUT", "INTERNAL-ERROR"})
+
     def __init__(self, suite_name, index, test_queue,
                  test_implementations, stop_flag, retry_index=0, rerun=1,
                  pause_after_test=False, pause_on_unexpected=False,
@@ -872,8 +876,15 @@ class TestRunnerManager(threading.Thread):
                              stack=file_result.stack,
                              subsuite=self.state.test_group.subsuite)
 
+        browser_died = False
+        if (file_result.status not in self.RESTART_STATUSES and
+                not self.browser.is_alive()):
+            self.logger.warning("Browser is no longer running; forcing a restart")
+            browser_died = True
+
         restart_before_next = (self.retry_index > 0 or test.restart_after or
-                               file_result.status in ("CRASH", "EXTERNAL-TIMEOUT", "INTERNAL-ERROR") or
+                               file_result.status in self.RESTART_STATUSES or
+                               browser_died or
                                ((subtest_unexpected or is_unexpected) and
                                 self.restart_on_unexpected))
         force_stop = test.test_type == "wdspec" and file_result.status == "EXTERNAL-TIMEOUT"

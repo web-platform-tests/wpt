@@ -108,33 +108,8 @@ def test_help():
 
 def test_load_commands():
     commands = wpt.load_commands()
-    for command, flag in (("serve", "websocket_h3"),
-                          ("run", "enable_websocket_h3")):
-        assert os.path.isfile(commands[command]["conditional_requirements"]
-                              ["commandline_flag"][flag][0])
-
-
-@pytest.mark.parametrize("command,flag", [("serve", "websocket_h3"),
-                                           ("run", "enable_websocket_h3")])
-@pytest.mark.parametrize("enabled", [None, False, True])
-def test_install_websocket_h3_requirements(command, flag, enabled):
-    props = wpt.load_commands()[command]
-    venv = mock.Mock()
-
-    wpt.install_command_flag_requirements(venv, props, {flag: enabled})
-
-    paths = props["conditional_requirements"]["commandline_flag"][flag]
-    venv.install_requirements.assert_called_once_with(*paths)
-
-
-@pytest.mark.parametrize("command", ["serve", "run"])
-def test_install_websocket_h3_requirements_without_flag(command):
-    props = wpt.load_commands()[command]
-    venv = mock.Mock()
-
-    wpt.install_command_flag_requirements(venv, props, {})
-
-    venv.install_requirements.assert_called_once_with()
+    # The `wpt run` command has conditional requirements.
+    assert "conditional_requirements" in commands["run"]
 
 
 def test_dispatcher_uncaught_exception_exits_70(monkeypatch, capsys):

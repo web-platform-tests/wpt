@@ -16,7 +16,7 @@ const selectionA = [16777216, 16777217, -16777216, -16777217,
   -2147483648, -2147483647, 2147483647, 2147483646];
 const selectionB = [16777217, 16777216, -16777217, -16777216,
   -2147483647, -2147483648, 2147483646, 2147483647];
-const integerPackets = [
+const integerTestCases = [
   {op: 'min', a: selectionA, b: selectionB,
     expected: [16777216, 16777216, -16777217, -16777217,
       -2147483648, -2147483648, 2147483646, 2147483646]},
@@ -28,13 +28,16 @@ const integerPackets = [
     b: [2, -2, 1, 1, 3, -3],
     expected: [-16777217, -16777217, -2147483648, 2147483647, -2, -2]},
 ];
-for (const {op, a, b, expected} of integerPackets) {
+for (const {op, a, b, expected} of integerTestCases) {
   for (const constant of [false, true]) {
     const descriptor = {shape: [a.length], dataType: 'int32'};
     fullRangeIntegerTests.push({
       name: `${op} int32 full range ${constant ? 'constant' : 'runtime'}`,
       graph: {
-        inputs: {a: {data: a, descriptor, constant}, b: {data: b, descriptor, constant}},
+        inputs: {
+          a: {data: a, descriptor, constant},
+          b: {data: b, descriptor, constant}
+        },
         operators: [{name: op, arguments: [{a: 'a'}, {b: 'b'}], outputs: 'output'}],
         expectedOutputs: {output: {data: expected, descriptor}}
       }
@@ -49,25 +52,32 @@ for (const op of ['argMin', 'argMax']) {
     fullRangeIntegerTests.push({
       name: `${op} int32 adjacent unique winners ${constant ? 'constant' : 'runtime'}`,
       graph: {
-        inputs: {input: {
-          data: [16777216, 16777217, 16777217, 16777216,
-            -2147483648, -2147483647, 2147483647, 2147483646],
-          descriptor: {shape: [4, 2], dataType: 'int32'}, constant
-        }},
+        inputs: {
+          input: {
+            data: [16777216, 16777217, 16777217, 16777216,
+              -2147483648, -2147483647, 2147483647, 2147483646],
+            descriptor: {shape: [4, 2], dataType: 'int32'},
+            constant
+          }
+        },
         operators: [{name: op, arguments: [
           {input: 'input'}, {axis: 1}, {options: {outputDataType: 'int32'}}
         ], outputs: 'output'}],
-        expectedOutputs: {output: {
-          data: op === 'argMin' ? [0, 1, 0, 1] : [1, 0, 1, 0],
-          descriptor: {shape: [4], dataType: 'int32'}
-        }}
+        expectedOutputs: {
+          output: {
+            data: op === 'argMin' ? [0, 1, 0, 1] : [1, 0, 1, 0],
+            descriptor: {shape: [4], dataType: 'int32'}
+          }
+        }
       }
     });
   }
 }
 
-// Expose only the consumer: exposing the producer too can let output aliasing
-// hide a lossy copy. The producer and these consumers all have zero error.
+// Return only Identity's output. In an affected implementation, Div produced
+// -16777217 correctly, but Identity changed it to -16777216. Also returning
+// the quotient bypassed the faulty copy path and hid the bug.
+// Both operations require exact int32 results.
 for (const consumer of ['identity']) {
   const descriptor = {shape: [4], dataType: 'int32'};
   const args = [{input: 'quotient'}];
@@ -82,10 +92,12 @@ for (const consumer of ['identity']) {
         {name: 'div', arguments: [{a: 'a'}, {b: 'b'}], outputs: 'quotient'},
         {name: consumer, arguments: args, outputs: 'output'}
       ],
-      expectedOutputs: {output: {
-        data: [-16777217, -16777217, -2147483648, 2147483647],
-        descriptor: {shape: [4], dataType: 'int32'}
-      }}
+      expectedOutputs: {
+        output: {
+          data: [-16777217, -16777217, -2147483648, 2147483647],
+          descriptor: {shape: [4], dataType: 'int32'}
+        }
+      }
     }
   });
 }

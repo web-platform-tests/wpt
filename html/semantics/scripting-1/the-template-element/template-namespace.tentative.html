@@ -1,0 +1,472 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HTML Templates: template contents namespace (type attribute, ancestor inheritance, and template for)</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#the-template-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<template id="explicit-svg" type="svg">
+  <circle cx="10" cy="10" r="5" />
+  <clippath id="cp"><rect width="10" height="10" /></clippath>
+  <text id="svg-cdata-type"><![CDATA[<raw>&text</raw>]]></text>
+  <script id="svg-script-in-template">window.templateScriptExecuted = true;</script>
+  <circle id="after-svg-script" cx="20" cy="20" r="5" />
+  <foreignObject id="fo-in-svg-template"><tr><td>hello</td></tr></foreignObject>
+</template>
+
+<template id="explicit-mathml" type="mathml">
+  <msup><mi>a</mi><mn>2</mn></msup>
+</template>
+
+<template id="explicit-html" type="html">
+  <div><span>hello</span></div>
+</template>
+
+<svg id="ancestor-svg">
+  <template id="in-svg">
+    <circle cx="10" cy="10" r="5" />
+    <text id="svg-cdata-inherited"><![CDATA[<raw>&inherited</raw>]]></text>
+    <template id="nested-in-svg">
+      <rect width="10" height="10" />
+    </template>
+    <template id="override-html-in-svg" type="html">
+      <div>html inside svg template</div>
+    </template>
+  </template>
+  <foreignObject>
+    <template id="in-foreign-object">
+      <div>inside foreignObject</div>
+    </template>
+  </foreignObject>
+</svg>
+
+<math id="ancestor-math">
+  <template id="in-math">
+    <mrow><mi>x</mi><mo>+</mo><mi>y</mi></mrow>
+  </template>
+  <mtext>
+    <template id="in-mtext">
+      <span>inside mtext</span>
+    </template>
+  </mtext>
+  <annotation-xml encoding="text/html">
+    <template id="in-annotation-html">
+      <div>inside annotation-xml text/html</div>
+    </template>
+  </annotation-xml>
+  <annotation-xml encoding="application/xhtml+xml">
+    <template id="in-annotation-xhtml">
+      <div>inside annotation-xml application/xhtml+xml</div>
+    </template>
+  </annotation-xml>
+  <annotation-xml encoding="application/mathml-presentation+xml">
+    <template id="in-annotation-mathml">
+      <mrow><mi>z</mi></mrow>
+    </template>
+  </annotation-xml>
+</math>
+
+<svg id="patch-svg"><?marker name="svg-slot"><g><?start name="svg-range"><text>old</text><?end></g></svg>
+<template for="svg-slot"><circle id="patched-circle" cx="5" cy="5" r="2" /></template>
+<template for="svg-range"><rect id="patched-rect" width="5" height="5" /><clippath id="patched-cp" /></template>
+
+<math id="patch-math"><?marker name="math-slot"></math>
+<template for="math-slot"><msup id="patched-msup"><mi>x</mi><mn>2</mn></msup></template>
+
+<svg id="patch-svg-override"><?marker name="svg-html-slot"></svg>
+<template for="svg-html-slot" type="html"><div id="patched-html-in-svg">html</div></template>
+
+<template id="failed-for-in-body" for="nonexistent-slot"><circle id="failed-for-circle" /></template>
+
+<div id="outer-div-for-stray-end-tag"><template id="stray-end-tag-svg" type="svg"><g></div><circle id="circle-after-stray-div-end" /></g></template><span id="sibling-after-stray-div-end"></span></div>
+
+<div id="outer-div-for-inherited-stray-end-tag"><svg><template id="stray-end-tag-in-svg"><g></div><circle id="circle-after-inherited-stray-div-end" /></g></template></svg><span id="sibling-after-inherited-stray-div-end"></span></div>
+
+<template id="unclosed-foreign" type="svg"><g id="unclosed-g"><circle id="unclosed-circle" r="5"></template><div id="after-unclosed-foreign"></div>
+
+<template id="breakout-in-svg-template" type="svg"><g id="breakout-g"><p id="breakout-p"><span id="inside-breakout-span">text</span></p><circle id="after-breakout-circle" /></g></template>
+
+<div id="sr-host"><template shadowrootmode="open" type="svg"><circle id="sr-direct-circle" /><?marker name="sr-root-slot"><template for="sr-root-slot"><div id="sr-root-patched">patched in shadow root</div></template></template></div>
+
+<script>
+const HTML_NS = "http://www.w3.org/1999/xhtml";
+const SVG_NS = "http://www.w3.org/2000/svg";
+const MATHML_NS = "http://www.w3.org/1998/Math/MathML";
+
+test(() => {
+  const t = document.createElement("template");
+  assert_equals(t.type, "");
+
+  for (const val of ["html", "svg", "mathml"]) {
+    t.type = val;
+    assert_equals(t.getAttribute("type"), val);
+    assert_equals(t.type, val);
+
+    t.setAttribute("type", val.toUpperCase());
+    assert_equals(t.type, val);
+  }
+
+  t.setAttribute("type", "invalid");
+  assert_equals(t.type, "");
+}, "HTMLTemplateElement.type reflection is limited to only known values");
+
+test(() => {
+  const t = document.getElementById("explicit-svg");
+  assert_equals(t.namespaceURI, HTML_NS);
+  assert_equals(t.type, "svg");
+  const circle = t.content.querySelector("circle");
+  assert_not_equals(circle, null);
+  assert_equals(circle.namespaceURI, SVG_NS);
+  const clipPath = t.content.querySelector("clipPath");
+  assert_not_equals(clipPath, null);
+  assert_equals(clipPath.namespaceURI, SVG_NS);
+  assert_equals(clipPath.localName, "clipPath");
+}, "<template type='svg'> parses contents in the SVG namespace");
+
+test(() => {
+  const t = document.getElementById("explicit-mathml");
+  assert_equals(t.namespaceURI, HTML_NS);
+  assert_equals(t.type, "mathml");
+  const msup = t.content.querySelector("msup");
+  assert_not_equals(msup, null);
+  assert_equals(msup.namespaceURI, MATHML_NS);
+  assert_equals(msup.firstElementChild.namespaceURI, MATHML_NS);
+}, "<template type='mathml'> parses contents in the MathML namespace");
+
+test(() => {
+  const t = document.getElementById("explicit-html");
+  assert_equals(t.namespaceURI, HTML_NS);
+  assert_equals(t.type, "html");
+  assert_equals(t.content.firstElementChild.namespaceURI, HTML_NS);
+}, "<template type='html'> parses contents in the HTML namespace");
+
+test(() => {
+  const t = document.getElementById("in-svg");
+  assert_equals(t.namespaceURI, HTML_NS);
+  assert_true(t instanceof HTMLTemplateElement);
+  const circle = t.content.querySelector("circle");
+  assert_not_equals(circle, null);
+  assert_equals(circle.namespaceURI, SVG_NS);
+
+  const nested = t.content.getElementById("nested-in-svg");
+  assert_equals(nested.namespaceURI, HTML_NS);
+  assert_equals(nested.content.firstElementChild.namespaceURI, SVG_NS);
+
+  const overrideHtml = t.content.getElementById("override-html-in-svg");
+  assert_equals(overrideHtml.namespaceURI, HTML_NS);
+  assert_equals(overrideHtml.content.firstElementChild.namespaceURI, HTML_NS);
+
+  const inForeignObject = document.getElementById("in-foreign-object");
+  assert_equals(inForeignObject.namespaceURI, HTML_NS);
+  assert_equals(inForeignObject.content.firstElementChild.namespaceURI, HTML_NS);
+}, "<template> inside <svg> is an HTMLTemplateElement and inherits SVG namespace unless in foreignObject or overridden");
+
+test(() => {
+  const t = document.getElementById("in-math");
+  assert_equals(t.namespaceURI, HTML_NS);
+  assert_true(t instanceof HTMLTemplateElement);
+  const mrow = t.content.querySelector("mrow");
+  assert_not_equals(mrow, null);
+  assert_equals(mrow.namespaceURI, MATHML_NS);
+
+  const inMtext = document.getElementById("in-mtext");
+  assert_equals(inMtext.namespaceURI, HTML_NS);
+  assert_equals(inMtext.content.firstElementChild.namespaceURI, HTML_NS);
+
+  const inAnnotationHtml = document.getElementById("in-annotation-html");
+  assert_equals(inAnnotationHtml.namespaceURI, HTML_NS);
+  assert_equals(inAnnotationHtml.content.firstElementChild.namespaceURI, HTML_NS);
+
+  const inAnnotationXhtml = document.getElementById("in-annotation-xhtml");
+  assert_equals(inAnnotationXhtml.namespaceURI, HTML_NS);
+  assert_equals(inAnnotationXhtml.content.firstElementChild.namespaceURI, HTML_NS);
+
+  const inAnnotationMathml = document.getElementById("in-annotation-mathml");
+  assert_equals(inAnnotationMathml.namespaceURI, HTML_NS);
+  assert_equals(inAnnotationMathml.content.firstElementChild.namespaceURI, MATHML_NS);
+}, "<template> inside <math> is an HTMLTemplateElement and inherits MathML namespace unless in a MathML text or HTML integration point");
+
+test(() => {
+  const tSvg = document.getElementById("explicit-svg");
+  const cdataType = tSvg.content.getElementById("svg-cdata-type");
+  assert_not_equals(cdataType, null);
+  assert_equals(cdataType.textContent, "<raw>&text</raw>");
+
+  const tInherited = document.getElementById("in-svg");
+  const cdataInherited = tInherited.content.getElementById("svg-cdata-inherited");
+  assert_not_equals(cdataInherited, null);
+  assert_equals(cdataInherited.textContent, "<raw>&inherited</raw>");
+}, "CDATA sections are supported inside SVG templates (both explicit type='svg' and inherited)");
+
+test(() => {
+  const tSvg = document.getElementById("explicit-svg");
+  const script = tSvg.content.getElementById("svg-script-in-template");
+  assert_not_equals(script, null);
+  assert_equals(script.namespaceURI, SVG_NS);
+  assert_true(script instanceof SVGScriptElement);
+  assert_equals(window.templateScriptExecuted, undefined);
+
+  const afterCircle = tSvg.content.getElementById("after-svg-script");
+  assert_not_equals(afterCircle, null);
+  assert_equals(afterCircle.namespaceURI, SVG_NS);
+}, "<script> inside <template type='svg'> is an inert SVGScriptElement and closes properly");
+
+test(() => {
+  const tSvg = document.getElementById("explicit-svg");
+  const fo = tSvg.content.getElementById("fo-in-svg-template");
+  assert_not_equals(fo, null);
+  assert_equals(fo.namespaceURI, SVG_NS);
+  assert_equals(fo.querySelector("tr"), null);
+  assert_equals(fo.querySelector("td"), null);
+  assert_equals(fo.textContent, "hello");
+}, "<foreignObject> inside <template type='svg'> uses 'in body' insertion mode rather than 'in template' for table tags");
+
+test(() => {
+  const circle = document.getElementById("patched-circle");
+  assert_not_equals(circle, null);
+  assert_equals(circle.namespaceURI, SVG_NS);
+
+  const rect = document.getElementById("patched-rect");
+  assert_not_equals(rect, null);
+  assert_equals(rect.namespaceURI, SVG_NS);
+
+  const cp = document.getElementById("patched-cp");
+  assert_not_equals(cp, null);
+  assert_equals(cp.namespaceURI, SVG_NS);
+  assert_equals(cp.localName, "clipPath");
+
+  const msup = document.getElementById("patched-msup");
+  assert_not_equals(msup, null);
+  assert_equals(msup.namespaceURI, MATHML_NS);
+
+  const htmlInSvg = document.getElementById("patched-html-in-svg");
+  assert_not_equals(htmlInSvg, null);
+  assert_equals(htmlInSvg.namespaceURI, HTML_NS);
+
+  const failedTemplate = document.getElementById("failed-for-in-body");
+  assert_not_equals(failedTemplate, null);
+  assert_equals(failedTemplate.content.firstElementChild.namespaceURI, HTML_NS);
+}, "Successful <template for> inherits namespace from its target unless overridden by type");
+
+test(() => {
+  const t = document.createElement("template");
+  t.type = "svg";
+  t.innerHTML = "<g viewBox='0 0 10 10'><circle cx='1' cy='2' r='3'/></g>";
+  const g = t.content.firstElementChild;
+  assert_equals(g.namespaceURI, SVG_NS);
+  assert_true(g.hasAttribute("viewBox"));
+  assert_equals(g.firstElementChild.namespaceURI, SVG_NS);
+
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.innerHTML = "<template><path d='M0 0'/></template>";
+  const innerTemplate = svg.firstElementChild;
+  assert_equals(innerTemplate.namespaceURI, HTML_NS);
+  assert_equals(innerTemplate.content.firstElementChild.namespaceURI, SVG_NS);
+
+  const svgPatch = document.createElementNS(SVG_NS, "svg");
+  svgPatch.innerHTML = "<?marker name='frag-svg-slot'><template for='frag-svg-slot'><circle id='frag-patched-circle'/></template>";
+  assert_equals(svgPatch.firstElementChild.namespaceURI, SVG_NS);
+}, "Fragment parsing (innerHTML) respects template type and ancestor SVG namespace");
+
+test(() => {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  const tInSvg = document.createElement("template");
+  svg.appendChild(tInSvg);
+  tInSvg.innerHTML = "<circle cx='5' cy='5' r='5'/>";
+  assert_equals(tInSvg.content.firstElementChild.namespaceURI, SVG_NS);
+
+  const math = document.createElementNS(MATHML_NS, "math");
+  const tInMath = document.createElement("template");
+  math.appendChild(tInMath);
+  tInMath.innerHTML = "<mrow><mi>x</mi></mrow>";
+  assert_equals(tInMath.content.firstElementChild.namespaceURI, MATHML_NS);
+
+  const annotationHtml = document.createElementNS(MATHML_NS, "annotation-xml");
+  annotationHtml.setAttribute("encoding", "text/html");
+  const tInAnnotationHtml = document.createElement("template");
+  annotationHtml.appendChild(tInAnnotationHtml);
+  tInAnnotationHtml.innerHTML = "<div>html in dom annotation-xml</div>";
+  assert_equals(tInAnnotationHtml.content.firstElementChild.namespaceURI, HTML_NS);
+}, "DOM-created <template> appended to <svg> or <math> inherits parent namespace on innerHTML");
+
+test(() => {
+  const t = document.createElement("template");
+  t.type = "svg";
+  t.innerHTML = "<circle/>";
+  assert_equals(t.content.firstElementChild.namespaceURI, SVG_NS);
+
+  t.type = "mathml";
+  t.innerHTML = "<mi>x</mi>";
+  assert_equals(t.content.firstElementChild.namespaceURI, MATHML_NS);
+
+  t.type = "html";
+  t.innerHTML = "<div></div>";
+  assert_equals(t.content.firstElementChild.namespaceURI, HTML_NS);
+
+  t.setHTMLUnsafe("<svg><template id='unsafe-in-svg'><rect/></template></svg>");
+  const unsafeT = t.content.getElementById("unsafe-in-svg");
+  assert_equals(unsafeT.namespaceURI, HTML_NS);
+  assert_equals(unsafeT.content.firstElementChild.namespaceURI, SVG_NS);
+
+  const tSvgUnsafe = document.createElement("template");
+  tSvgUnsafe.type = "svg";
+  tSvgUnsafe.setHTMLUnsafe("<clippath/>");
+  assert_equals(tSvgUnsafe.content.firstElementChild.namespaceURI, SVG_NS);
+  assert_equals(tSvgUnsafe.content.firstElementChild.localName, "clipPath");
+}, "Dynamic template.type changes and setHTMLUnsafe respect template contents namespace");
+
+test(() => {
+  const tInSvg = document.getElementById("in-svg");
+  const cloned = tInSvg.cloneNode(true);
+  assert_equals(cloned.namespaceURI, HTML_NS);
+  assert_equals(cloned.content.querySelector("circle").namespaceURI, SVG_NS);
+
+  // Even when detached from <svg>, the cloned template retains its inherited namespace.
+  cloned.innerHTML = "<rect width='5' height='5'/>";
+  assert_equals(cloned.content.firstElementChild.namespaceURI, SVG_NS);
+}, "cloneNode(true) on a <template> parsed inside <svg> preserves contents and inherited namespace");
+
+test(() => {
+  const outer1 = document.getElementById("outer-div-for-stray-end-tag");
+  const t1 = document.getElementById("stray-end-tag-svg");
+  const sibling1 = document.getElementById("sibling-after-stray-div-end");
+  assert_equals(sibling1.parentNode, outer1);
+  const circle1 = t1.content.getElementById("circle-after-stray-div-end");
+  assert_not_equals(circle1, null);
+  assert_equals(circle1.namespaceURI, SVG_NS);
+  assert_equals(circle1.parentNode.localName, "g");
+  assert_equals(circle1.parentNode.namespaceURI, SVG_NS);
+
+  const outer2 = document.getElementById("outer-div-for-inherited-stray-end-tag");
+  const t2 = document.getElementById("stray-end-tag-in-svg");
+  const sibling2 = document.getElementById("sibling-after-inherited-stray-div-end");
+  assert_equals(sibling2.parentNode, outer2);
+  const circle2 = t2.content.getElementById("circle-after-inherited-stray-div-end");
+  assert_not_equals(circle2, null);
+  assert_equals(circle2.namespaceURI, SVG_NS);
+  assert_equals(circle2.parentNode.localName, "g");
+  assert_equals(circle2.parentNode.namespaceURI, SVG_NS);
+}, "Stray end tag inside <template type='svg'> or <svg><template> does not close an open HTML ancestor outside <template>");
+
+test(() => {
+  const t = document.getElementById("unclosed-foreign");
+  const g = t.content.getElementById("unclosed-g");
+  assert_not_equals(g, null);
+  assert_equals(g.namespaceURI, SVG_NS);
+  const circle = t.content.getElementById("unclosed-circle");
+  assert_not_equals(circle, null);
+  assert_equals(circle.namespaceURI, SVG_NS);
+  assert_equals(circle.parentNode, g);
+
+  const afterDiv = document.getElementById("after-unclosed-foreign");
+  assert_not_equals(afterDiv, null);
+  assert_equals(afterDiv.namespaceURI, HTML_NS);
+  assert_equals(afterDiv.previousElementSibling, t);
+}, "Unclosed foreign elements inside <template type='svg'> are closed by </template>");
+
+test(() => {
+  const t = document.getElementById("breakout-in-svg-template");
+  const g = t.content.getElementById("breakout-g");
+  assert_not_equals(g, null);
+  assert_equals(g.namespaceURI, SVG_NS);
+
+  const p = t.content.getElementById("breakout-p");
+  assert_not_equals(p, null);
+  assert_equals(p.namespaceURI, HTML_NS);
+  assert_equals(p.parentNode, t.content);
+
+  const span = t.content.getElementById("inside-breakout-span");
+  assert_not_equals(span, null);
+  assert_equals(span.namespaceURI, HTML_NS);
+  assert_equals(span.parentNode, p);
+
+  const circle = t.content.getElementById("after-breakout-circle");
+  assert_not_equals(circle, null);
+  assert_equals(circle.namespaceURI, SVG_NS);
+  assert_equals(circle.parentNode, t.content);
+}, "Foreign-content HTML breakout tag inside <template type='svg'> breaks out to the template root in HTML namespace");
+
+test(() => {
+  const srHost = document.getElementById("sr-host");
+  assert_not_equals(srHost.shadowRoot, null);
+  const directCircle = srHost.shadowRoot.getElementById("sr-direct-circle");
+  assert_not_equals(directCircle, null);
+  assert_equals(directCircle.namespaceURI, SVG_NS);
+  const patchedDiv = srHost.shadowRoot.getElementById("sr-root-patched");
+  assert_not_equals(patchedDiv, null);
+  assert_equals(patchedDiv.namespaceURI, HTML_NS);
+
+  const host2 = document.createElement("div");
+  const sr2 = host2.attachShadow({ mode: "open" });
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.innerHTML = "<template><circle/></template>";
+  const tFromSvg = svg.firstElementChild;
+  assert_equals(tFromSvg.content.firstElementChild.namespaceURI, SVG_NS);
+
+  sr2.appendChild(tFromSvg);
+  tFromSvg.innerHTML = "<div>in shadow root</div>";
+  assert_equals(tFromSvg.content.firstElementChild.namespaceURI, HTML_NS);
+}, "<template shadowrootmode='open' type='svg'> parses direct contents in SVG namespace while <template for> targeting the ShadowRoot and reparenting into a ShadowRoot use the shadow host's namespace");
+
+test(() => {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  const domTemplate = document.createElement("template");
+  svg.appendChild(domTemplate);
+
+  const clonedFromDomInSvg = domTemplate.cloneNode(true);
+  clonedFromDomInSvg.innerHTML = "<circle cx='1' cy='1' r='1'/>";
+  assert_equals(clonedFromDomInSvg.content.firstElementChild.namespaceURI, SVG_NS);
+
+  domTemplate.type = "html";
+  const clonedWithOverride = domTemplate.cloneNode(true);
+  clonedWithOverride.removeAttribute("type");
+  clonedWithOverride.innerHTML = "<rect width='2' height='2'/>";
+  assert_equals(clonedWithOverride.content.firstElementChild.namespaceURI, SVG_NS);
+
+  const svg2 = document.createElementNS(SVG_NS, "svg");
+  svg2.innerHTML = "<template><path/></template>";
+  const parserTemplate = svg2.firstElementChild;
+  const div = document.createElement("div");
+  div.appendChild(parserTemplate);
+
+  const clonedAfterReparent = parserTemplate.cloneNode(true);
+  clonedAfterReparent.innerHTML = "<span>html after reparent and clone</span>";
+  assert_equals(clonedAfterReparent.content.firstElementChild.namespaceURI, HTML_NS);
+}, "Cloning a DOM-created <template> appended to <svg> or a parser-created <svg><template> reparented into <div> updates inherited namespace");
+
+test(() => {
+  const t = document.createElement("template");
+  t.type = "svg";
+  t.innerHTML = "<g id='ctx-g'></g>";
+  const g = t.content.firstElementChild;
+  assert_equals(g.namespaceURI, SVG_NS);
+
+  const range = document.createRange();
+  range.selectNodeContents(g);
+  const frag = range.createContextualFragment("<circle cx='3' cy='4' r='5'/><clippath/>");
+  assert_equals(frag.firstElementChild.namespaceURI, SVG_NS);
+  assert_equals(frag.lastElementChild.namespaceURI, SVG_NS);
+  assert_equals(frag.lastElementChild.localName, "clipPath");
+}, "Range.prototype.createContextualFragment with a context inside <template type='svg'>");
+
+test(() => {
+  const outer = document.createElement("template");
+  outer.type = "svg";
+  const inner = document.createElement("template");
+  outer.content.appendChild(inner);
+  inner.innerHTML = "<circle cx='1' cy='1' r='2'/>";
+  assert_equals(inner.content.firstElementChild.namespaceURI, SVG_NS);
+
+  const standaloneFrag = new DocumentFragment();
+  standaloneFrag.appendChild(inner);
+  inner.innerHTML = "<div>falls back to default HTML inherited namespace</div>";
+  assert_equals(inner.content.firstElementChild.namespaceURI, HTML_NS);
+
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.innerHTML = "<template><rect/></template>";
+  const parsedInSvg = svg.firstElementChild;
+  standaloneFrag.appendChild(parsedInSvg);
+  parsedInSvg.innerHTML = "<path/>";
+  assert_equals(parsedInSvg.content.firstElementChild.namespaceURI, SVG_NS);
+}, "DOM-attached <template> inside outer template.content or standalone DocumentFragment");
+</script>

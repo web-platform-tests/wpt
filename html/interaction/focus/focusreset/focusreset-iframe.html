@@ -198,19 +198,20 @@ promise_test(async t => {
   assert_equals(document.activeElement, iframe,
                 "sanity: iframe is still the parent's active element");
 
-  // Blurring the iframe runs the focus update steps with an old chain that
-  // contains the iframe (and the child document) and a new chain that only
-  // contains the parent's viewport. Since blur events are fired for the old
-  // chain, focusreset is cancelled.
-  iframe.blur();
-  assert_equals(document.activeElement, document.body,
+  // Focusing an element in the parent runs the focus update steps with an old
+  // chain that contains the iframe (and the child document) and a new chain
+  // that doesn't. Since blur events are fired for the old chain, focusreset is
+  // cancelled.
+  const parentButton = createFocusable(t);
+  parentButton.focus();
+  assert_equals(document.activeElement, parentButton,
                 "focus moved out of the iframe");
   assert_false(childDocument.hasFocus(), "child document lost focus");
 
   await afterNextRenderingUpdateInBoth(t, iframe);
   assert_equals(childEvents.length, 0, "no focusreset in the child");
   assert_equals(parentEvents.length, 0, "no focusreset in the parent");
-}, "Blurring the iframe after a removal in it cancels focusreset");
+}, "Moving focus out of the iframe after a removal in it cancels focusreset");
 
 promise_test(async t => {
   await settle(t);
@@ -301,9 +302,9 @@ promise_test(async t => {
   assert_equals(parentEvents.length, 1,
                 "sanity: focusreset in the parent for the iframe removal");
 
-  // The child document no longer has a navigable, so it can't have focus.
+  // The iframe was removed, so the child document is no longer in the focus chain.
   assert_false(childDocument.hasFocus(),
-               "a document without a navigable doesn't have focus");
+               "a document whose iframe was removed doesn't have focus");
   button.remove();
   assert_equals(button.parentNode, null, "sanity: button was removed");
   await afterNextRenderingUpdateAndTask(t);

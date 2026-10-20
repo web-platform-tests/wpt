@@ -173,8 +173,8 @@ promise_test(async t => {
   c.remove();
   await afterNextRenderingUpdateAndTask(t);
   assert_equals(events.length, 1,
-                "multiple focus resets in one task produce a single event");
-}, "Multiple removals of focused elements in the same task coalesce into one focusreset");
+                "a single focusreset, for the last removal");
+}, "Focus/removal cycles in one task fire a single focusreset, for the last removal");
 
 promise_test(async t => {
   await settle(t);

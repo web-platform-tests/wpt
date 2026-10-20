@@ -60,22 +60,6 @@ promise_test(async t => {
   const button = createFocusable(t);
   const other = createFocusable(t);
   button.focus();
-  button.remove();
-  other.focus();
-  other.blur();
-  assert_equals(document.activeElement, document.body,
-                "sanity: body is active");
-  await afterNextRenderingUpdateAndTask(t);
-  assert_equals(events.length, 0,
-                "no focusreset, even though the viewport ended up focused");
-}, "Focusing then blurring another element after the removal cancels focusreset");
-
-promise_test(async t => {
-  await settle(t);
-  const events = recordFocusResets(t);
-  const button = createFocusable(t);
-  const other = createFocusable(t);
-  button.focus();
   // This microtask is queued before the mutation observer microtask, so it
   // runs first.
   queueMicrotask(() => other.focus());

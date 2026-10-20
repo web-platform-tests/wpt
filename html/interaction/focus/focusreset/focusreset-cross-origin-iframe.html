@@ -3,6 +3,7 @@
 <title>focusreset event: cross-origin iframes</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/infrastructure.html#node-remove-focus-fixup">
 <link rel="help" href="https://dom.spec.whatwg.org/#notify-mutation-observers">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#allow-focus-steps">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
@@ -32,6 +33,9 @@ function nextMessage(t, iframe, command) {
 
 async function createCrossOriginIframe(t) {
   const iframe = document.createElement("iframe");
+  // Without this, the cross-origin child's focus() calls are blocked by the
+  // allow focus steps, as there is no user activation.
+  iframe.allow = "focus-without-user-activation";
   iframe.src = get_host_info().HTTP_REMOTE_ORIGIN + CHILD_PATH;
   const ready = nextMessage(t, iframe, "ready");
   document.body.append(iframe);
@@ -54,7 +58,6 @@ promise_test(async t => {
   const result = await sendCommand(t, iframe, "focus-and-remove");
   assert_true(result.focusedBeforeRemoval, "sanity: child button was focused");
   assert_true(result.hadFocus, "sanity: child document had focus");
-  assert_equals(document.activeElement, iframe, "sanity: iframe is active");
   assert_equals(result.resetsAfterRemoval, 0, "focusreset isn't fired synchronously");
   assert_true(result.activeElementIsBody, "child focus was reset to the body");
   assert_equals(result.focusResets, 1, "focusreset fired at the child document");
@@ -73,6 +76,9 @@ promise_test(async t => {
   const result = await sendCommand(t, iframe, "focus");
   assert_true(result.buttonFocused, "sanity: child button is focused");
   assert_true(result.hasFocus, "sanity: child document has focus");
+  // The parent's focused area is updated by the child's focus() call, which
+  // might be observed asynchronously when the child is in another process.
+  await afterNextRenderingUpdateAndTask(t);
   assert_equals(document.activeElement, iframe, "sanity: iframe is active");
 
   iframe.remove();

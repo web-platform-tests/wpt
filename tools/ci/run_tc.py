@@ -282,7 +282,16 @@ def setup_environment(**kwargs):
     # These browsers use dbus for various features.
     if {"chrome", "firefox", "webkitgtk_minibrowser", "wpewebkit_minibrowser"}.intersection(
             kwargs["browser"]):
+        if "firefox" in kwargs["browser"]:
+            # Firefox tries to use rtkit to set the priority of the media threads. This is failing
+            # in CI and leaking processes, so as a workaround uninstall rtkit
+            try:
+                run(["sudo", "apt-get",  "-qqy", "purge", "rtkit"])
+            except Exception:
+                pass
+
         start_dbus()
+
 
     if kwargs["xvfb"]:
         start_xvfb()

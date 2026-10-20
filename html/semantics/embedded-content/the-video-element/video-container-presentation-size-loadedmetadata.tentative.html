@@ -1,0 +1,29 @@
+<!doctype html>
+<title>videoWidth and videoHeight use the coded size, not the container's presentation size, at loadedmetadata</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/media.html#concept-video-intrinsic-width">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/media.html#dom-media-have_metadata">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const resources = [
+  ['320x240-h264-tkhd-160x120.mp4', 'video/mp4; codecs="avc1.64000b"', 'MP4 tkhd, H.264'],
+  ['320x240-vp9-tkhd-160x120.mp4', 'video/mp4; codecs="vp09.00.20.08"', 'MP4 tkhd, VP9'],
+  ['320x240-av1-tkhd-160x120.mp4', 'video/mp4; codecs="av01.0.00M.08"', 'MP4 tkhd, AV1'],
+  ['320x240-vp9-display-160x120.webm', 'video/webm; codecs="vp9,opus"', 'WebM DisplayWidth/DisplayHeight, VP9'],
+];
+
+for (const [file, type, description] of resources) {
+  promise_test(async t => {
+    const video = document.createElement('video');
+    assert_implements_optional(video.canPlayType(type), `${type} supported`);
+    video.onerror = t.unreached_func('error');
+    video.src = `resources/${file}?${Math.random()}`;
+    document.body.append(video);
+    t.add_cleanup(() => video.remove());
+    await new Promise(resolve => video.addEventListener('loadedmetadata', resolve, {once: true}));
+    assert_equals(video.videoWidth, 320, 'videoWidth');
+    assert_equals(video.videoHeight, 240, 'videoHeight');
+  }, `${description}: 160x120 declared for 320x240 video`);
+}
+</script>

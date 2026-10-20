@@ -5,6 +5,7 @@
 <title>CSS Images Module Level 4: parsing image-resolution with invalid values</title>
 <link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-images-4/#propdef-image-resolution">
+<link rel="help" href="https://drafts.csswg.org/css-values-4/#resolution">
 <meta name="assert" content="image-resolution supports only the grammar '[ from-image || <resolution> ] && snap?'.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -17,6 +18,7 @@ test_invalid_value("image-resolution", "100%");
 test_invalid_value("image-resolution", "2");
 test_invalid_value("image-resolution", "3dpi snap from-image");
 test_invalid_value("image-resolution", "from-image snap 4dppx");
+test_invalid_value("image-resolution", "snap -8dpcm from-image");
 </script>
 </body>
 </html>

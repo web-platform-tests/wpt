@@ -1,0 +1,51 @@
+<!doctype html>
+<title>videoWidth and videoHeight with MSE use the coded size, not the container's presentation size</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/media.html#concept-video-intrinsic-width">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/media.html#dom-media-have_metadata">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const resources = [
+  ['320x240-av1-fragmented-tkhd-160x120.mp4', 'video/mp4; codecs="av01.0.00M.08,opus"', 'MP4 tkhd, AV1'],
+  ['320x240-vp9-display-160x120.webm', 'video/webm; codecs="vp9,opus"', 'WebM DisplayWidth/DisplayHeight, VP9'],
+];
+
+async function load(t, file, type) {
+  assert_implements_optional(MediaSource.isTypeSupported(type), `${type} supported`);
+  const video = document.createElement('video');
+  video.muted = true;
+  video.onerror = t.unreached_func('error');
+  document.body.append(video);
+  t.add_cleanup(() => video.remove());
+  const mediaSource = new MediaSource();
+  video.src = URL.createObjectURL(mediaSource);
+  await new Promise(resolve => mediaSource.addEventListener('sourceopen', resolve, {once: true}));
+  const sourceBuffer = mediaSource.addSourceBuffer(type);
+  const response = await fetch(`/html/semantics/embedded-content/the-video-element/resources/${file}`);
+  sourceBuffer.appendBuffer(await response.arrayBuffer());
+  sourceBuffer.addEventListener('updateend', () => mediaSource.endOfStream(), {once: true});
+  return video;
+}
+
+const nextFrame = video => new Promise(resolve => video.requestVideoFrameCallback(resolve));
+
+for (const [file, type, description] of resources) {
+  promise_test(async t => {
+    const video = await load(t, file, type);
+    await new Promise(resolve => video.addEventListener('loadedmetadata', resolve, {once: true}));
+    assert_equals(video.videoWidth, 320, 'videoWidth');
+    assert_equals(video.videoHeight, 240, 'videoHeight');
+  }, `${description}: 160x120 declared for 320x240 video, at loadedmetadata`);
+
+  promise_test(async t => {
+    assert_implements('requestVideoFrameCallback' in HTMLVideoElement.prototype, 'requestVideoFrameCallback');
+    const video = await load(t, file, type);
+    video.play().catch(() => {});
+    await nextFrame(video);
+    await nextFrame(video);
+    assert_equals(video.videoWidth, 320, 'videoWidth');
+    assert_equals(video.videoHeight, 240, 'videoHeight');
+  }, `${description}: 160x120 declared for 320x240 video, after frames are presented`);
+}
+</script>

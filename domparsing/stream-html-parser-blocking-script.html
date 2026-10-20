@@ -593,4 +593,27 @@
       assert_equals(placeholder.querySelector("#after-close"), null);
     }, `${method}: close() waits for a pending parser-blocking script and remaining input`);
   }
+
+  promise_test(async (t) => {
+    window.events = [];
+    const placeholder = document.getElementById("placeholder");
+    placeholder.innerHTML = "<span id='ref'>ref</span>";
+    const ref = document.getElementById("ref");
+    const writer = ref.streamBeforeHTMLUnsafe({ runScripts: true }).getWriter();
+
+    const deferSrc = "data:text/javascript,window.events.push('defer');";
+    await writer.write(
+      `<script defer src="${deferSrc}"></` + "script>" +
+      "<p id='before-blocking'>before</p>" +
+      "<script src='resources/slow.js?pipe=trickle(d0.5)&close-ref=1'></" + "script>" +
+      "<script>document.getElementById('ref').remove();</" + "script>" +
+      "<p id='after-removal'>after</p>"
+    );
+    const closePromise = writer.close();
+    await promise_rejects_dom(t, "HierarchyRequestError", closePromise);
+    await new Promise(r => t.step_timeout(r, 0));
+    assert_array_equals(window.events, ["slow"], "deferred script must not execute when close() rejects due to displaced referenceChild");
+    assert_not_equals(placeholder.querySelector("#before-blocking"), null);
+    assert_equals(placeholder.querySelector("#after-removal"), null);
+  }, "streamBeforeHTMLUnsafe: close() rejects with HierarchyRequestError if referenceChild is removed after a pending parser-blocking script");
 </script>

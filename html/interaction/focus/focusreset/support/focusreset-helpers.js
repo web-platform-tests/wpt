@@ -1,5 +1,6 @@
 // Helpers for the focusreset event tests.
-// https://github.com/whatwg/html/pull/13050
+// https://html.spec.whatwg.org/multipage/infrastructure.html#node-remove-focus-fixup
+// https://dom.spec.whatwg.org/#notify-mutation-observers
 
 // focusreset is fired from the mutation observer microtask (after
 // MutationObserver callbacks and slotchange events) that is queued when the
@@ -26,10 +27,15 @@ async function afterNextRenderingUpdateAndTask(t) {
 }
 
 // Makes sure the test isn't running from inside a rendering update (e.g. a
-// ResizeObserver callback) and that the document is being rendered.
+// ResizeObserver callback) and that the document is being rendered. Also
+// asserts that the document has focus, since focusreset is only fired at
+// documents that have focus.
 function settle(t) {
   return new Promise(resolve => {
     requestAnimationFrame(() => t.step_timeout(resolve, 0));
+  }).then(() => {
+    assert_true(document.hasFocus(),
+                'precondition: the test window has system focus');
   });
 }
 

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>focusreset event: nested browsing contexts</title>
-<link rel="help" href="https://github.com/whatwg/html/pull/13050">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#focus-fixup-rule">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/infrastructure.html#node-remove-focus-fixup">
+<link rel="help" href="https://dom.spec.whatwg.org/#notify-mutation-observers">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/focusreset-helpers.js"></script>
@@ -274,8 +274,8 @@ promise_test(async t => {
   button.focus();
   button.remove();
   // The child document has a pending focus reset at this point. Removing the
-  // iframe makes it lose focus (and destroys it) before the focusreset
-  // microtask runs.
+  // iframe resets the parent's focus, so by the time the focusreset microtask
+  // runs, the child document no longer has focus.
   iframe.remove();
   assert_equals(document.activeElement, document.body,
                 "parent focus is reset synchronously");

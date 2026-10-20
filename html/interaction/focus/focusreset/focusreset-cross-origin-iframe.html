@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>focusreset event: cross-origin iframes</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/infrastructure.html#node-remove-focus-fixup">
+<link rel="help" href="https://dom.spec.whatwg.org/#notify-mutation-observers">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="support/focusreset-helpers.js"></script>
+
+<script>
+"use strict";
+
+const CHILD_PATH =
+    new URL("support/focusreset-cross-origin-child.html", location.href).pathname;
+
+// Resolves with the next message posted by |iframe|'s window whose command is
+// |command|.
+function nextMessage(t, iframe, command) {
+  return new Promise(resolve => {
+    const listener = t.step_func(e => {
+      if (e.source !== iframe.contentWindow || e.data.command !== command) {
+        return;
+      }
+      window.removeEventListener("message", listener);
+      resolve(e.data);
+    });
+    window.addEventListener("message", listener);
+    t.add_cleanup(() => window.removeEventListener("message", listener));
+  });
+}
+
+async function createCrossOriginIframe(t) {
+  const iframe = document.createElement("iframe");
+  iframe.src = get_host_info().HTTP_REMOTE_ORIGIN + CHILD_PATH;
+  const ready = nextMessage(t, iframe, "ready");
+  document.body.append(iframe);
+  t.add_cleanup(() => iframe.remove());
+  await ready;
+  return iframe;
+}
+
+async function sendCommand(t, iframe, command) {
+  const reply = nextMessage(t, iframe, command);
+  iframe.contentWindow.postMessage(command, "*");
+  return reply;
+}
+
+promise_test(async t => {
+  await settle(t);
+  const iframe = await createCrossOriginIframe(t);
+  const parentEvents = recordFocusResets(t, document);
+
+  const result = await sendCommand(t, iframe, "focus-and-remove");
+  assert_true(result.focusedBeforeRemoval, "sanity: child button was focused");
+  assert_true(result.hadFocus, "sanity: child document had focus");
+  assert_equals(document.activeElement, iframe, "sanity: iframe is active");
+  assert_equals(result.resetsAfterRemoval, 0, "focusreset isn't fired synchronously");
+  assert_true(result.activeElementIsBody, "child focus was reset to the body");
+  assert_equals(result.focusResets, 1, "focusreset fired at the child document");
+
+  await afterNextRenderingUpdateAndTask(t);
+  assert_equals(parentEvents.length, 0,
+                "focusreset isn't fired at the parent document");
+  assert_equals(document.activeElement, iframe, "iframe is still active");
+}, "Removing the focused element inside a cross-origin iframe fires focusreset only at the iframe's document");
+
+promise_test(async t => {
+  await settle(t);
+  const iframe = await createCrossOriginIframe(t);
+  const parentEvents = recordFocusResets(t, document);
+
+  const result = await sendCommand(t, iframe, "focus");
+  assert_true(result.buttonFocused, "sanity: child button is focused");
+  assert_true(result.hasFocus, "sanity: child document has focus");
+  assert_equals(document.activeElement, iframe, "sanity: iframe is active");
+
+  iframe.remove();
+  assert_equals(document.activeElement, document.body,
+                "parent focus is reset synchronously");
+
+  await afterNextRenderingUpdateAndTask(t);
+  assert_equals(parentEvents.length, 1,
+                "focusreset fired at the parent document");
+  assert_equals(parentEvents[0].target, document);
+}, "Removing a cross-origin iframe which contains the focused element fires focusreset at the parent document");
+</script>

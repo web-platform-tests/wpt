@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>focusreset event: document.open()</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#document-open-steps">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/infrastructure.html#node-remove-focus-fixup">
+<link rel="help" href="https://dom.spec.whatwg.org/#notify-mutation-observers">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/focusreset-helpers.js"></script>
+
+<script>
+"use strict";
+
+// document.open() replaces all of the document's children with null, which
+// removes the focused element and so runs the focus fixup. Note that it also
+// erases all event listeners on the document before doing so, so listeners
+// have to be added after document.open() returns (which is still before the
+// mutation observer microtask that fires focusreset).
+
+function createIframe(t) {
+  return new Promise(resolve => {
+    const iframe = document.createElement("iframe");
+    iframe.srcdoc = "<!DOCTYPE html><button id=b>b</button>";
+    iframe.onload = () => resolve(iframe);
+    document.body.append(iframe);
+    t.add_cleanup(() => iframe.remove());
+  });
+}
+
+promise_test(async t => {
+  await settle(t);
+  const iframe = await createIframe(t);
+  const childDocument = iframe.contentDocument;
+  const parentEvents = recordFocusResets(t, document);
+
+  const button = childDocument.getElementById("b");
+  button.focus();
+  assert_equals(childDocument.activeElement, button, "sanity: child focused");
+  assert_true(childDocument.hasFocus(), "sanity: child document has focus");
+
+  childDocument.open();
+  t.add_cleanup(() => childDocument.close());
+  assert_false(button.isConnected, "sanity: document.open() removed the button");
+  assert_equals(childDocument.documentElement, null,
+                "sanity: document.open() removed all children");
+  assert_not_equals(childDocument.activeElement, button,
+                    "the removed button is no longer focused");
+  assert_true(childDocument.hasFocus(), "child document still has focus");
+
+  const childEvents = recordFocusResets(t, childDocument);
+  await nextTask(t);
+  assert_equals(childEvents.length, 1, "focusreset fired at the child document");
+  assert_equals(childEvents[0].target, childDocument);
+  assert_equals(parentEvents.length, 0,
+                "focusreset isn't fired at the parent document");
+}, "document.open() on a document whose focused element is a descendant fires focusreset");
+
+promise_test(async t => {
+  await settle(t);
+  const iframe = await createIframe(t);
+  const childDocument = iframe.contentDocument;
+  const parentButton = createFocusable(t);
+  childDocument.getElementById("b").focus();
+  parentButton.focus();
+  assert_false(childDocument.hasFocus(), "sanity: child document doesn't have focus");
+
+  childDocument.open();
+  t.add_cleanup(() => childDocument.close());
+  const childEvents = recordFocusResets(t, childDocument);
+  const parentEvents = recordFocusResets(t, document);
+  await nextTask(t);
+  assert_equals(childEvents.length, 0, "no focusreset in the child document");
+  assert_equals(parentEvents.length, 0, "no focusreset in the parent document");
+  assert_equals(document.activeElement, parentButton, "parent focus is unaffected");
+}, "document.open() on a document that doesn't have focus doesn't fire focusreset");
+</script>

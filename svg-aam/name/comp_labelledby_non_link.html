@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+  <title>Name Comp: Labelledby on non-link SVG elements</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+<body>
+
+<h1>SVG-AAM: Labelledby Tests on non-link elements</h1>
+
+<p>Tests aria-labelledby on SVG elements other than <code>a</code>, per <a href="https://w3c.github.io/svg-aam/#mapping_additional_nd">SVG-AAM §8.1 Name and Description</a>. Shapes and <code>text</code> use an explicit <code>role="img"</code> because their default role is generic, which prohibits naming.</p>
+
+<span id="huey">Huey</span>
+<span id="dewey">Dewey</span>
+<span id="louie">Louie</span>
+<span id="scrooge">Scrooge</span>
+
+<h2>SVG g[aria-labelledby]</h2>
+<svg viewbox="0 0 200 90">
+  <g aria-labelledby="scrooge" data-expectedlabel="Scrooge" data-testname="g[aria-labelledby] to HTML span" class="ex" fill="white" stroke="green" stroke-width="5">
+    <circle cx="40" cy="40" r="25" />
+    <circle cx="60" cy="60" r="25" />
+  </g>
+</svg>
+<br>
+
+<h2>SVG [role=img][aria-labelledby]</h2>
+<svg viewbox="0 0 300 100">
+  <circle role="img" aria-labelledby="huey" data-expectedlabel="Huey" data-testname="circle[role=img][aria-labelledby]" class="ex" cx="26" cy="26" r="25"></circle>
+  <rect role="img" aria-labelledby="dewey" data-expectedlabel="Dewey" data-testname="rect[role=img][aria-labelledby]" class="ex" x="60" y="1" width="50" height="50"></rect>
+  <polygon role="img" aria-labelledby="louie" data-expectedlabel="Louie" data-testname="polygon[role=img][aria-labelledby]" class="ex" points="100,100 150,25 150,75 200,0" fill="none" stroke="black"></polygon>
+  <path role="img" aria-labelledby="scrooge" data-expectedlabel="Scrooge" data-testname="path[role=img][aria-labelledby]" class="ex" d="M220 20 L280 20 L250 80 Z" fill="none" stroke="black"></path>
+</svg><br>
+<svg viewbox="0 0 200 50">
+  <text role="img" aria-labelledby="huey" data-expectedlabel="Huey" data-testname="text[role=img][aria-labelledby]" class="ex" x="10" y="30">Cardinal</text>
+</svg>
+<br>
+
+<h2>SVG [aria-labelledby] with multiple IDREFs</h2>
+<svg viewbox="0 0 200 90">
+  <g aria-labelledby="huey dewey louie" data-expectedlabel="Huey Dewey Louie" data-testname="g[aria-labelledby] to multiple HTML spans" class="ex" fill="white" stroke="green" stroke-width="5">
+    <circle cx="40" cy="40" r="25" />
+    <circle cx="60" cy="60" r="25" />
+  </g>
+</svg>
+<br>
+
+<h2>SVG [aria-labelledby] to SVG elements</h2>
+<svg viewbox="0 0 300 100">
+  <polygon id="svg-title-label" points="100,100 150,25 150,75 200,0" fill="none" stroke="black"><title>Villeneuve</title></polygon>
+  <g aria-labelledby="svg-title-label" data-expectedlabel="Villeneuve" data-testname="g[aria-labelledby] to SVG element named by title" class="ex" fill="white" stroke="green" stroke-width="5">
+    <circle cx="240" cy="40" r="25" />
+  </g>
+</svg>
+<br>
+
+<script>
+AriaUtils.verifyLabelsBySelector(".ex");
+</script>
+</body>
+</html>

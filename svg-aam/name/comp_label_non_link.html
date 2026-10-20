@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <title>Name Comp: Label on non-link SVG elements</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+<body>
+
+<h1>SVG-AAM: Label Tests on non-link elements</h1>
+
+<p>Tests aria-label on SVG elements other than <code>a</code>, per <a href="https://w3c.github.io/svg-aam/#mapping_additional_nd">SVG-AAM §8.1 Name and Description</a>. Shapes and <code>text</code> use an explicit <code>role="img"</code> because their default role is generic, which prohibits naming.</p>
+
+<h2>SVG g[aria-label]</h2>
+<svg viewbox="0 0 200 90">
+  <g aria-label="Athos" data-expectedlabel="Athos" data-testname="g[aria-label]" class="ex" fill="white" stroke="green" stroke-width="5">
+    <circle cx="40" cy="40" r="25" />
+    <circle cx="60" cy="60" r="25" />
+  </g>
+</svg>
+<br>
+
+<h2>SVG [role=img][aria-label]</h2>
+<svg viewbox="0 0 300 100">
+  <circle role="img" aria-label="Porthos" data-expectedlabel="Porthos" data-testname="circle[role=img][aria-label]" class="ex" cx="26" cy="26" r="25"></circle>
+  <rect role="img" aria-label="Aramis" data-expectedlabel="Aramis" data-testname="rect[role=img][aria-label]" class="ex" x="60" y="1" width="50" height="50"></rect>
+  <polygon role="img" aria-label="D’Artagnan" data-expectedlabel="D’Artagnan" data-testname="polygon[role=img][aria-label]" class="ex" points="100,100 150,25 150,75 200,0" fill="none" stroke="black"></polygon>
+  <path role="img" aria-label="Constance" data-expectedlabel="Constance" data-testname="path[role=img][aria-label]" class="ex" d="M220 20 L280 20 L250 80 Z" fill="none" stroke="black"></path>
+</svg><br>
+<svg viewbox="0 0 200 50">
+  <text role="img" aria-label="Richelieu" data-expectedlabel="Richelieu" data-testname="text[role=img][aria-label]" class="ex" x="10" y="30">Cardinal</text>
+</svg>
+<br>
+
+<script>
+AriaUtils.verifyLabelsBySelector(".ex");
+</script>
+</body>
+</html>

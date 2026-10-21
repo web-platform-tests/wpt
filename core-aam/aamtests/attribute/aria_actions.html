@@ -1,0 +1,10 @@
+<div role=tab tabindex=0 id='test' aria-actions='otherthing'>
+  Foobar
+  <button onclick="buttonAction()" id='otherthing'>Close</button>
+</div>
+<script>
+  function buttonAction() {
+    let closeButton = document.getElementById('otherthing');
+    closeButton.innerHTML = "Open";
+  }
+</script>

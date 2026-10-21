@@ -778,6 +778,145 @@
                 }
             },
             /**
+             * `browsingContext <https://w3c.github.io/webdriver-bidi/#module-browsingContext>`_ module.
+             */
+            browsing_context: {
+                /**
+                 * `browsingContext.downloadWillBegin <https://w3c.github.io/webdriver-bidi/#event-browsingContext-downloadWillBegin>`_
+                 * event.
+                 */
+                download_will_begin: {
+                    /**
+                     * @typedef {object} DownloadWillBegin
+                     * `browsingContext.DownloadWillBeginParams <https://w3c.github.io/webdriver-bidi/#event-browsingContext-downloadWillBegin>`_
+                     * event.
+                     */
+
+                    /**
+                     * Subscribes to the event. Events will be emitted only if
+                     * there is a subscription for the event. This method does
+                     * not add actual listeners. To listen to the event, use the
+                     * `on` or `once` methods. The buffered events will be
+                     * emitted before the command promise is resolved.
+                     *
+                     * @param {object} [params] Parameters for the subscription.
+                     * @param {null|Array.<(Context)>} [params.contexts] The
+                     * optional contexts parameter specifies which browsing
+                     * contexts to subscribe to the event on. It should be
+                     * either an array of Context objects, or null. If null, the
+                     * event will be subscribed to globally. If omitted, the
+                     * event will be subscribed to on the current browsing
+                     * context.
+                     * @returns {Promise<(function(): Promise<void>)>} Callback
+                     * for unsubscribing from the created subscription.
+                     */
+                    subscribe: async function(params = {}) {
+                        assertBidiIsEnabled();
+                        return window.test_driver_internal.bidi.browsing_context
+                            .download_will_begin.subscribe(params);
+                    },
+                    /**
+                     * Adds an event listener for the event.
+                     *
+                     * @param {function(DownloadWillBegin): void} callback The
+                     * callback to be called when the event is emitted. The
+                     * callback is called with the event object as a parameter.
+                     * @returns {function(): void} A function that removes the
+                     * added event listener when called.
+                     */
+                    on: function(callback) {
+                        assertBidiIsEnabled();
+                        return window.test_driver_internal.bidi.browsing_context
+                            .download_will_begin.on(callback);
+                    },
+                    /**
+                     * Adds an event listener for the event that is only called
+                     * once and removed afterward.
+                     *
+                     * @return {Promise<DownloadWillBegin>} The promise which
+                     * is resolved with the event object when the event is emitted.
+                     */
+                    once: function() {
+                        assertBidiIsEnabled();
+                        return new Promise(resolve => {
+                            const remove_handler =
+                                window.test_driver_internal.bidi.browsing_context
+                                    .download_will_begin.on(event => {
+                                    resolve(event);
+                                    remove_handler();
+                                });
+                        });
+                    }
+                },
+                /**
+                 * `browsingContext.downloadEnd <https://w3c.github.io/webdriver-bidi/#event-browsingContext-downloadEnd>`_
+                 * event.
+                 */
+                download_end: {
+                    /**
+                     * @typedef {object} DownloadEnd
+                     * `browsingContext.DownloadEndParams <https://w3c.github.io/webdriver-bidi/#event-browsingContext-downloadEnd>`_
+                     * event.
+                     */
+
+                    /**
+                     * Subscribes to the event. Events will be emitted only if
+                     * there is a subscription for the event. This method does
+                     * not add actual listeners. To listen to the event, use the
+                     * `on` or `once` methods. The buffered events will be
+                     * emitted before the command promise is resolved.
+                     *
+                     * @param {object} [params] Parameters for the subscription.
+                     * @param {null|Array.<(Context)>} [params.contexts] The
+                     * optional contexts parameter specifies which browsing
+                     * contexts to subscribe to the event on. It should be
+                     * either an array of Context objects, or null. If null, the
+                     * event will be subscribed to globally. If omitted, the
+                     * event will be subscribed to on the current browsing
+                     * context.
+                     * @returns {Promise<(function(): Promise<void>)>} Callback
+                     * for unsubscribing from the created subscription.
+                     */
+                    subscribe: async function(params = {}) {
+                        assertBidiIsEnabled();
+                        return window.test_driver_internal.bidi.browsing_context
+                            .download_end.subscribe(params);
+                    },
+                    /**
+                     * Adds an event listener for the event.
+                     *
+                     * @param {function(DownloadEnd): void} callback The
+                     * callback to be called when the event is emitted. The
+                     * callback is called with the event object as a parameter.
+                     * @returns {function(): void} A function that removes the
+                     * added event listener when called.
+                     */
+                    on: function(callback) {
+                        assertBidiIsEnabled();
+                        return window.test_driver_internal.bidi.browsing_context
+                            .download_end.on(callback);
+                    },
+                    /**
+                     * Adds an event listener for the event that is only called
+                     * once and removed afterward.
+                     *
+                     * @return {Promise<DownloadEnd>} The promise which
+                     * is resolved with the event object when the event is emitted.
+                     */
+                    once: function() {
+                        assertBidiIsEnabled();
+                        return new Promise(resolve => {
+                            const remove_handler =
+                                window.test_driver_internal.bidi.browsing_context
+                                    .download_end.on(event => {
+                                    resolve(event);
+                                    remove_handler();
+                                });
+                        });
+                    }
+                }
+            },
+            /**
              * `speculation <https://wicg.github.io/nav-speculation/prefetch.html>`_ module.
              */
             speculation: {
@@ -2628,6 +2767,28 @@
                     on() {
                         throw new Error(
                             'bidi.bluetooth.descriptor_event_generated.on is not implemented by testdriver-vendor.js');
+                    }
+                }
+            },
+            browsing_context: {
+                download_will_begin: {
+                    async subscribe() {
+                        throw new Error(
+                            'bidi.browsing_context.download_will_begin.subscribe is not implemented by testdriver-vendor.js');
+                    },
+                    on() {
+                        throw new Error(
+                            'bidi.browsing_context.download_will_begin.on is not implemented by testdriver-vendor.js');
+                    }
+                },
+                download_end: {
+                    async subscribe() {
+                        throw new Error(
+                            'bidi.browsing_context.download_end.subscribe is not implemented by testdriver-vendor.js');
+                    },
+                    on() {
+                        throw new Error(
+                            'bidi.browsing_context.download_end.on is not implemented by testdriver-vendor.js');
                     }
                 }
             },

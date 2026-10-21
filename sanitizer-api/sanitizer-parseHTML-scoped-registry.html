@@ -1,0 +1,59 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Document.parseHTML sanitizes shadowrootcustomelementregistry</title>
+<link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+<link rel="help" href="https://html.spec.whatwg.org/#dom-parsehtml" />
+<link rel="help" href="https://html.spec.whatwg.org/#parsing-main-inhead" />
+<link rel="help" href="https://dom.spec.whatwg.org/#concept-node-adopt" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    "use strict";
+
+    for (const removeRegistryAttribute of [false, true]) {
+      test(
+        (t) => {
+          const name = `parse-html-global-${removeRegistryAttribute}`;
+          let constructions = 0;
+          class GlobalElement extends HTMLElement {
+            constructor() {
+              super();
+              ++constructions;
+            }
+          }
+          customElements.define(name, GlobalElement);
+          const sanitizer = removeRegistryAttribute
+            ? { removeAttributes: ["shadowrootcustomelementregistry"] }
+            : {};
+          const parsed = Document.parseHTML(
+            `<div><template shadowrootmode="open" shadowrootcustomelementregistry><${name}></${name}></template></div>`,
+            { sanitizer },
+          );
+          const host = parsed.body.firstElementChild;
+          const shadow = host.shadowRoot;
+          const element = shadow.firstElementChild;
+          assert_equals(shadow.customElementRegistry, null);
+          assert_equals(element.customElementRegistry, null);
+          assert_false(element.matches(":defined"));
+          assert_equals(constructions, 0);
+
+          t.add_cleanup(() => host.remove());
+          document.body.append(host);
+          if (removeRegistryAttribute) {
+            assert_equals(shadow.customElementRegistry, customElements);
+            assert_equals(element.customElementRegistry, customElements);
+            assert_true(element instanceof GlobalElement);
+            assert_equals(constructions, 1);
+          } else {
+            assert_equals(shadow.customElementRegistry, null);
+            assert_equals(element.customElementRegistry, null);
+            assert_false(element.matches(":defined"));
+            assert_equals(constructions, 0);
+          }
+        },
+        `parseHTML declarative shadow root ${removeRegistryAttribute ? "uses the global registry on adoption when the sanitizer removes shadowrootcustomelementregistry" : "keeps a null registry on adoption when the sanitizer keeps shadowrootcustomelementregistry"}`,
+      );
+    }
+  </script>
+</body>

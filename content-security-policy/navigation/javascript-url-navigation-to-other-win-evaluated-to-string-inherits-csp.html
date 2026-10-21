@@ -9,22 +9,13 @@
   </head>
     <body>
       <script>
-          const otherWin = window.open(
-            "support/doc-with-csp-frame-src-none-and-report-uri.sub.html" +
-            "?report_cookie_name=javascript-url-navigation-to-other-win-evaluated-to-string-inherits-csp",
-            "otherWin"
-          );
-
-          otherWin.addEventListener("load", () => {
-            // <frame-wth-csp.sub.html> has no CSP if no "?csp=..." argument is passed.
-            otherWin.location.href =
-              "javascript:'<iframe src=support/frame-with-csp.sub.html></iframe>'";
-
-            const checkReportScript = document.createElement("script");
-            checkReportScript.src = encodeURIWithApostrophes(
-              "../support/checkReport.sub.js?reportField=violated-directive&reportValue=frame-src 'none'");
-            document.body.appendChild(checkReportScript);
-          });
+          openWindowAssignJavascriptUrlEvaluatedToIframeStringAndCheckViolatedDirective(
+            { url: "support/doc-with-csp-frame-src-none-and-report-uri.sub.html" +
+                "?report_cookie_name=javascript-url-navigation-to-other-win-evaluated-to-string-inherits-csp",
+              target: "otherWin",
+              windowFeatures: "",
+            },
+            "frame-src 'none'");
         </script>
     </body>
 </html>

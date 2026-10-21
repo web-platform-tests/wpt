@@ -4,12 +4,15 @@
 <title>CSS Selectors 4 - :lang matching</title>
 <link rel="author" title="Jonathan Kew" href="mailto:jkew@mozilla.com">
 <link rel="help" href="https://drafts.csswg.org/selectors-4/#the-lang-pseudo">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/8720">
 <link rel="match" href="lang-000-ref.html">
 
 <style>
 div.test { color: red; }
-:lang("x") { color: green; } /* not a well-formed lang tag, but matches per
-                                the Extended Filtering algorithm */
+:lang("x-lojban") { color: green; }
+/* Selectors 4 requires a well-formed range, even when extended filtering alone would match.
+   This restriction remains under discussion in https://github.com/w3c/csswg-drafts/issues/8720. */
+:lang("x") { color: red; }
 </style>
 
 <div class="test"><span lang="x-lojban">This should be green</span></div>

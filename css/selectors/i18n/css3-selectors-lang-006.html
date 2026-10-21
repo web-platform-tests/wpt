@@ -10,7 +10,7 @@
 <style type='text/css'>
 .test div { width: 50px; }
  		#colonlangcontroltest { color: red; font-weight: bold; width: 400px; }
-		#colonlangcontroltest:lang(xx) { display:none; }
+		#colonlangcontroltest:lang(und) { display:none; }
 #box:lang(es-MX) { width: 100px; }
 </style>
 </head>
@@ -19,7 +19,7 @@
 
 
 <div class="test"><div id="box" lang="es">&#xA0;</div></div>
-<p lang='xx' id='colonlangcontroltest'>This test failed because it relies on :lang for results, but :lang is not supported by this browser.
+<p lang='und' id='colonlangcontroltest'>This test failed because it relies on :lang for results, but :lang is not supported by this browser.
 
 
 <!--Notes:

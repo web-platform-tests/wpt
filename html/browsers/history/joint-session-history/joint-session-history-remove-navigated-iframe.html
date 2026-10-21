@@ -1,0 +1,50 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Removing a navigated iframe removes its steps from the joint session history</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/document-sequences.html#destroy-a-child-navigable">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#getting-all-used-history-steps">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#getting-the-used-step">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+promise_setup(async () => {
+  // Wait for the document to be completely loaded, so that fragment navigations push.
+  await new Promise(resolve => addEventListener("load", resolve, {once: true}));
+  await new Promise(resolve => step_timeout(resolve, 0));
+});
+
+// Appends an iframe and navigates it once, which adds a step to the joint session history.
+async function appendNavigatedIframe(t) {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => { iframe.remove(); });
+  iframe.src = "joint-session-history-filler.html?1";
+  document.body.append(iframe);
+  await new Promise(resolve => iframe.onload = resolve);
+  // Per spec the iframe's document is already completely loaded here, but some browsers make a
+  // navigation during the iframe's load event a replace, so wait a task.
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  const lengthBefore = history.length;
+  iframe.contentWindow.location.href = "joint-session-history-filler.html?2";
+  await new Promise(resolve => iframe.onload = resolve);
+  await t.step_wait(() => history.length === lengthBefore + 1,
+                    "history.length after navigating the iframe");
+  return iframe;
+}
+
+promise_test(async t => {
+  const startLength = history.length;
+  const iframe = await appendNavigatedIframe(t);
+  iframe.remove();
+  await t.step_wait(() => history.length === startLength,
+                    "history.length after removing the iframe");
+}, "history.length doesn't count a removed iframe's steps");
+
+promise_test(async t => {
+  location.hash = "before-iframe";
+  const iframe = await appendNavigatedIframe(t);
+  iframe.remove();
+  history.back();
+  await t.step_wait(() => location.hash === "", "location.hash after history.back()");
+}, "history.back() after removing a navigated iframe traverses the parent");
+</script>

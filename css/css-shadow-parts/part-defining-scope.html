@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>CSS Shadow Parts - :host::part() not matching in same scope</title>
+<link rel="help" href="https://drafts.csswg.org/css-shadow-parts/#part">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1993859">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="host">
+  <template shadowrootmode="open">
+    <style>
+      ::part(x) {
+        color: red;
+      }
+    </style>
+    <p part="x">This should not be red</p>
+  </template>
+</div>
+<script>
+  test(() => {
+    const part = document.querySelector("#host").shadowRoot.querySelector("p");
+    assert_equals(getComputedStyle(part).color, "rgb(0, 0, 0)");
+  }, "::part() should not match a rule in the defining scope");
+</script>

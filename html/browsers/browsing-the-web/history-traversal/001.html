@@ -1,5 +1,6 @@
 <!doctype html>
 <title>pageshow event from traversal</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/document-lifecycle.html#unload-a-document">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -18,7 +19,7 @@ onload = t.step_func(function() {
   onload = null;
 })
 
-do_test = t.step_func(function() {
+do_test = t.step_func_done(function() {
   assert_equals(events.length, 2);
   events.forEach(function(e, i) {
     phase = i ? "after" : "before";
@@ -28,8 +29,8 @@ do_test = t.step_func(function() {
     assert_equals(e.bubbles, true, "bubbles " + phase + " navigation");
     assert_equals(e.cancelable, true, "cancelable " + phase + " navigation");
 
-    assert_equals(e.persisted, i == 0 ? false : true, "persisted " + phase + " navigation");
-    t.done();
+    // An iframe's own traversal gets a new document, not one from bfcache.
+    assert_equals(e.persisted, false, "persisted " + phase + " navigation");
   });
 });
 </script>

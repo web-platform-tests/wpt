@@ -1,0 +1,123 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>An iframe's own navigations don't keep its previous document alive</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/document-lifecycle.html#unload-a-document">
+<link rel="help" href="https://github.com/whatwg/html/pull/13097">
+<meta name="variant" content="?navigate">
+<meta name="variant" content="?history-back">
+<meta name="variant" content="?navigation-back">
+<meta name="variant" content="?history-forward">
+<meta name="variant" content="?parent-history-back">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const url = "resources/report-page-transition-events.html";
+const variant = location.search.slice(1);
+
+// Each variant creates one iframe, so earlier iframes' session history entries can't get in the
+// way of traversals.
+function variantTest(name, func, description) {
+  if (name === variant) {
+    promise_test(func, description);
+  }
+}
+
+function recordEvents(t) {
+  const events = [];
+  window.recordPageTransitionEvent = event => events.push(event);
+  t.add_cleanup(() => { delete window.recordPageTransitionEvent; });
+  return events;
+}
+
+async function waitForPageshow(t, events, search) {
+  const start = events.length;
+  let pageshow;
+  await t.step_wait(() => {
+    pageshow = events.slice(start).find(e => e.type === "pageshow" && e.search === search);
+    return pageshow !== undefined;
+  }, `pageshow from ${search}`);
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  return pageshow;
+}
+
+async function navigateTo(t, iframe, events, search) {
+  const pageshow = waitForPageshow(t, events, search);
+  iframe.contentWindow.location.href = `${url}${search}`;
+  return pageshow;
+}
+
+async function setUp(t) {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  const events = recordEvents(t);
+  const firstPageshow = waitForPageshow(t, events, "?1");
+  iframe.src = `${url}?1`;
+  document.body.append(iframe);
+  await firstPageshow;
+  const firstDoc = iframe.contentDocument;
+  iframe.contentWindow.marker = "first";
+  await navigateTo(t, iframe, events, "?2");
+  return {iframe, events, firstDoc};
+}
+
+function assertNewDocument(iframe, pageshow, oldDoc, search) {
+  assert_equals(iframe.contentWindow.location.search, search, "location");
+  assert_not_equals(iframe.contentDocument, oldDoc, "document");
+  assert_equals(iframe.contentWindow.marker, undefined, "Window state");
+  assert_false(pageshow.persisted, "pageshow persisted");
+}
+
+variantTest("navigate", async t => {
+  const {events} = await setUp(t);
+  const pagehide = events.find(e => e.type === "pagehide");
+  assert_not_equals(pagehide, undefined, "pagehide fired");
+  assert_equals(pagehide.search, "?1");
+  assert_false(pagehide.persisted, "pagehide persisted");
+}, "pagehide has persisted false when an iframe navigates away");
+
+variantTest("navigate", async t => {
+  const {firstDoc} = await setUp(t);
+  assert_equals(firstDoc.defaultView, null);
+}, "the iframe's previous document is destroyed");
+
+variantTest("history-back", async t => {
+  const {iframe, events, firstDoc} = await setUp(t);
+  const pageshow = waitForPageshow(t, events, "?1");
+  iframe.contentWindow.history.back();
+  assertNewDocument(iframe, await pageshow, firstDoc, "?1");
+}, "history.back() in an iframe creates a new document");
+
+variantTest("navigation-back", async t => {
+  const {iframe, events, firstDoc} = await setUp(t);
+  assert_implements(iframe.contentWindow.navigation, "Navigation API");
+  const pageshow = waitForPageshow(t, events, "?1");
+  const {committed, finished} = iframe.contentWindow.navigation.back();
+  committed.catch(() => {});
+  finished.catch(() => {});
+  assertNewDocument(iframe, await pageshow, firstDoc, "?1");
+  const {activation} = iframe.contentWindow.navigation;
+  assert_equals(activation.navigationType, "traverse", "activation.navigationType");
+  assert_equals(new URL(activation.entry.url).search, "?1", "activation.entry");
+  assert_equals(new URL(activation.from.url).search, "?2", "activation.from");
+}, "navigation.back() in an iframe creates a new document");
+
+variantTest("history-forward", async t => {
+  const {iframe, events} = await setUp(t);
+  const secondDoc = iframe.contentDocument;
+  iframe.contentWindow.marker = "second";
+  const backPageshow = waitForPageshow(t, events, "?1");
+  iframe.contentWindow.history.back();
+  await backPageshow;
+  const pageshow = waitForPageshow(t, events, "?2");
+  iframe.contentWindow.history.forward();
+  assertNewDocument(iframe, await pageshow, secondDoc, "?2");
+}, "history.forward() in an iframe creates a new document");
+
+variantTest("parent-history-back", async t => {
+  const {iframe, events, firstDoc} = await setUp(t);
+  const pageshow = waitForPageshow(t, events, "?1");
+  history.back();
+  assertNewDocument(iframe, await pageshow, firstDoc, "?1");
+}, "history.back() in the parent that traverses an iframe creates a new document");
+</script>

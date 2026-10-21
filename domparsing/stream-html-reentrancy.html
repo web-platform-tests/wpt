@@ -120,11 +120,11 @@
 
     // After a parser-blocking external script, the parser resumes from a task.
     // There is no write in progress then, so the stream invokes the sink's
-    // algorithms synchronously while the parser is running: an abort is
-    // deferred until the parser returns ("fragment parser abort requested"),
-    // and written input is consumed by the ongoing run. slow.js calls
-    // window.on_slow(); the parser then resumes synchronously in the same task,
-    // so the rest of the chunk has been parsed by the time a timeout fires.
+    // algorithms synchronously while the parser is running: an abort sets
+    // "fragment parser abort requested" so the tokenizer stops after the
+    // current token and aborting the parser is deferred until the parser
+    // returns, and written input is consumed by the ongoing run. slow.js calls
+    // window.on_slow(); the parser then resumes synchronously in the same task.
     promise_test(async (t) => {
       const target = document.getElementById("target");
       target.replaceChildren();
@@ -148,13 +148,13 @@
       await after_task(t);
       assert_array_equals(window.events, ["slow"]);
       assert_array_equals(window.ids_at_script, ["a"]);
-      assert_array_equals(ids(target), ["a", "b"], "the rest of the chunk is parsed before the deferred abort takes effect");
-      assert_true(window.rest_parsed, "scripts in the rest of the chunk still run");
+      assert_array_equals(ids(target), ["a"], "parsing stops after the current token when abort() is called from a task");
+      assert_false(window.rest_parsed, "scripts in the rest of the chunk do not run");
       await window.abort_promise;
       await promise_rejects_exactly(t, "aborted-from-task", writer.closed);
       await promise_rejects_exactly(t, "aborted-from-task", writer.write("<p id='c'>c</p>"), "subsequent writes reject with the abort reason");
-      assert_array_equals(ids(target), ["a", "b"]);
-    }, `${method}: abort() from a streamed inline script after a parser-blocking script is deferred until the current chunk is parsed`);
+      assert_array_equals(ids(target), ["a"]);
+    }, `${method}: abort() from a streamed inline script after a parser-blocking script stops parsing after the current token`);
 
     promise_test(async (t) => {
       const target = document.getElementById("target");

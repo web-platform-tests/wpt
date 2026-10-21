@@ -132,7 +132,7 @@
       const response = await fetch(`${stashPath}?read=${uuid}`);
       const requestCount = await response.text();
 
-      assert_equals(requestCount, "1", "Server SHOULD observe request in control case");
+      assert_equals(requestCount, "1", "Server should observe exactly one request in control case");
     }, `Control: ${m.name} initiates resource fetch when src is preserved`);
   }
 </script>

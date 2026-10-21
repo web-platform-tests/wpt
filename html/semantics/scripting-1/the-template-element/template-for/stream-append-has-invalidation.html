@@ -36,7 +36,7 @@
     for (let i = 0; i < 20; ++i) {
       await update('<?start name="content"?><span class="blue">Has blue</span>');
       await new Promise((resolve) => requestAnimationFrame(resolve));
-      await update("Green (no span)");
+      await update('<?start name="content"?>Green (no span)');
       await new Promise((resolve) => requestAnimationFrame(resolve));
       assert_equals(container.textContent.trim(), "Green (no span)", container.innerHTML);
       assert_equals(
@@ -44,5 +44,5 @@
         "rgb(0, 128, 0)"
       );
     }
-  }, "");
+  }, ":has() invalidation when streaming <template for>");
 </script>

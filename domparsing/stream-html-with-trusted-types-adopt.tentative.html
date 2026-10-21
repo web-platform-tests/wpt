@@ -35,7 +35,6 @@
       ];
 
       for (const method of methods) {
-        const safe = !method.endsWith("Unsafe");
         promise_test(async (t) => {
           const iframe = document.createElement("iframe");
           t.add_cleanup(() => iframe.remove());
@@ -56,22 +55,18 @@
             passThroughPolicy.createScript("return target[method]();")
           );
 
-          if (safe) {
-            const stream = runInNonTT(adoptedDiv, method);
-            assert_true(
-              stream instanceof WritableStream ||
-              stream instanceof iframe.contentWindow.WritableStream
-            );
-          } else {
-            const expectedTypeError = new adoptedDiv.constructor.constructor(
-              passThroughPolicy.createScript("return TypeError")
-            )();
-            assert_throws_js(expectedTypeError, () => runInNonTT(adoptedDiv, method));
-          }
-        }, `${method} on an element adopted from a non-TT document into a TT document ${safe ? "returns a WritableStream" : "throws TypeError"}.`);
+          // Trusted Types enforcement checks `this`'s relevant global object
+          // (where the element was created), which adoption does not change.
+          const stream = runInNonTT(adoptedDiv, method);
+          assert_true(
+            stream instanceof WritableStream ||
+            stream instanceof iframe.contentWindow.WritableStream
+          );
+        }, `${method} on an element adopted from a non-TT document into a TT document returns a WritableStream.`);
       }
 
       for (const method of methods) {
+        const safe = !method.endsWith("Unsafe");
         promise_test(async (t) => {
           const iframe = document.createElement("iframe");
           t.add_cleanup(() => iframe.remove());
@@ -86,12 +81,17 @@
           iframe.contentDocument.body.appendChild(adoptedDiv);
           t.add_cleanup(() => adoptedDiv.remove());
 
-          const stream = adoptedDiv[method]();
-          assert_true(
-            stream instanceof WritableStream ||
-            stream instanceof iframe.contentWindow.WritableStream
-          );
-        }, `${method} on an element adopted from a TT document into a non-TT document returns a WritableStream.`);
+          // `ttDiv`'s relevant global object is the TT window even after adoption.
+          if (safe) {
+            const stream = adoptedDiv[method]();
+            assert_true(
+              stream instanceof WritableStream ||
+              stream instanceof iframe.contentWindow.WritableStream
+            );
+          } else {
+            assert_throws_js(TypeError, () => adoptedDiv[method]());
+          }
+        }, `${method} on an element adopted from a TT document into a non-TT document ${safe ? "returns a WritableStream" : "throws TypeError"}.`);
       }
     </script>
   </body>

@@ -185,7 +185,12 @@
       await writer.write("<td>NewCell</td>");
       await writer.close();
 
-      assert_true(tr.querySelectorAll("td").length >= 1, "Positional update in <tr> succeeds");
+      const expectedTrHTML = method.startsWith("streamBefore")
+        ? "<td>NewCell</td><td>Initial</td>"
+        : method.startsWith("streamAfter")
+          ? "<td>Initial</td><td>NewCell</td>"
+          : "<td>NewCell</td>";
+      assert_equals(tr.innerHTML, expectedTrHTML, "Positional update in <tr> succeeds");
     }, `${method} targeting child in <tr> context`);
 
     promise_test(async (t) => {

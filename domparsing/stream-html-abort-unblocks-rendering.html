@@ -18,19 +18,25 @@
 
   window.events = [];
 
-  const scriptInserted = new Promise((resolve) => {
-    new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (node.localName === "script") {
-            resolve(node);
+  function waitForNextInsertedScript(deferOnly = false) {
+    return new Promise((resolve) => {
+      const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          for (const node of mutation.addedNodes) {
+            if (node.localName === "script" && (!deferOnly || node.defer)) {
+              observer.disconnect();
+              resolve(node);
+              return;
+            }
           }
         }
-      }
-    }).observe(document.head, { childList: true });
-  });
+      });
+      observer.observe(document.head, { childList: true });
+    });
+  }
 
-  const streamed = (async () => {
+  promise_test(async (t) => {
+    const scriptInserted = waitForNextInsertedScript(false);
     const writer = document.head
       .streamAppendHTMLUnsafe({ runScripts: true })
       .getWriter();
@@ -45,11 +51,7 @@
     });
     const abortTime = performance.now();
     await writer.abort();
-    return { script, loaded, abortTime };
-  })();
 
-  promise_test(async (t) => {
-    const { script, loaded, abortTime } = await streamed;
     // Rendering must be unblocked promptly, long before the 3s slow script
     // would have finished loading.
     const frameTime = await new Promise((resolve) =>
@@ -67,19 +69,8 @@
 
   // Same for a deferred script, which is in the fragment parser's list of
   // scripts that will execute when the document has finished parsing.
-  const deferScriptInserted = new Promise((resolve) => {
-    new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (node.localName === "script" && node.defer) {
-            resolve(node);
-          }
-        }
-      }
-    }).observe(document.head, { childList: true });
-  });
-
-  const streamedDefer = (async () => {
+  promise_test(async (t) => {
+    const deferScriptInserted = waitForNextInsertedScript(true);
     const writer = document.head
       .streamAppendHTMLUnsafe({ runScripts: true })
       .getWriter();
@@ -94,11 +85,7 @@
     });
     const abortTime = performance.now();
     await writer.abort();
-    return { script, loaded, abortTime };
-  })();
 
-  promise_test(async (t) => {
-    const { script, loaded, abortTime } = await streamedDefer;
     const frameTime = await new Promise((resolve) =>
       requestAnimationFrame(resolve)
     );

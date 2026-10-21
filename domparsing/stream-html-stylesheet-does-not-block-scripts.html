@@ -14,17 +14,6 @@
 
   const SLOW_CSS = "resources/slow.css?pipe=trickle(d3)";
 
-  function slow_css(t) {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = `${SLOW_CSS}&id=${Math.random()}`;
-    const loaded = new Promise((resolve) => {
-      link.onload = link.onerror = () => resolve();
-    });
-    t.add_cleanup(() => link.remove());
-    return { link, loaded };
-  }
-
   for (const method of ["streamHTMLUnsafe", "streamAppendHTMLUnsafe", "streamPrependHTMLUnsafe"]) {
     promise_test(async (t) => {
       window.events = [];
@@ -47,15 +36,25 @@
 
     promise_test(async (t) => {
       window.events = [];
-      const target = document.getElementById("target");
-      target.replaceChildren();
-      const { link } = slow_css(t);
-      document.head.appendChild(link);
+      // A style sheet only "contributes a script-blocking style sheet" when it
+      // was created by its Document's parser. Leave an iframe's document parser
+      // open after writing a slow <link rel=stylesheet> so the live document has
+      // a genuine script-blocking style sheet.
+      const iframe = document.createElement("iframe");
+      document.body.appendChild(iframe);
+      t.add_cleanup(() => iframe.remove());
+      iframe.contentDocument.open();
+      iframe.contentDocument.write(
+        `<link rel="stylesheet" href="${SLOW_CSS}&id=${Math.random()}">` +
+        `<div id="target"></div>`
+      );
+      await new Promise((resolve) => t.step_timeout(resolve, 0));
+      const target = iframe.contentDocument.getElementById("target");
 
       const writer = target[method]({ runScripts: true }).getWriter();
       const start = performance.now();
       await writer.write(
-        "<script>window.events.push('inline');</" + "script>" +
+        "<script>parent.events.push('inline');</" + "script>" +
         "<p id='after-inline'>after</p>"
       );
       assert_array_equals(window.events, ["inline"], "the inline script ran without waiting for the live document's pending style sheet");
@@ -81,11 +80,9 @@
       await done;
       assert_array_equals(window.events, ["external"]);
       assert_less_than(performance.now() - start, 2500, "the external script ran without waiting for the style sheet");
-      // The close promise doesn't wait for the parser, which resumes after the
-      // external script in a task.
       await writer.close();
-      await t.step_wait(() => target.querySelector("#after-external"),
-                        "parsing resumed after the external script without waiting for the style sheet", 2500);
+      assert_not_equals(target.querySelector("#after-external"), null,
+                        "close() waited for parsing to resume after the external script");
       assert_less_than(performance.now() - start, 2500, "parsing resumed without waiting for the style sheet");
     }, `${method}: a streamed <link rel=stylesheet> does not block a following streamed external script`);
   }

@@ -326,9 +326,11 @@
     assert_not_equals(script, null, "Unclosed <script> element is in the DOM");
     assert_false(window.unclosed_close_ran, "Unclosed <script> must not execute on close()");
 
-    // Because it is marked already started at EOF, modifying it or re-inserting it must not execute it.
+    // Because it is marked already started at EOF, modifying it or cloning and
+    // inserting it must not execute it.
     script.appendChild(document.createTextNode("window.unclosed_close_ran = true;"));
-    assert_false(window.unclosed_close_ran, "Appending text to unclosed <script> after close() must not execute it");
+    placeholder.appendChild(script.cloneNode(true));
+    assert_false(window.unclosed_close_ran, "Appending text to or cloning unclosed <script> after close() must not execute it");
   }, "Unclosed <script> at close() never runs, stays in the DOM, and is marked already started");
 
   // D6: A rejected write aborts the parser so a pending blocking script never runs and buffered markup is not inserted
@@ -379,6 +381,7 @@
     assert_false(window.aborted_script_ran);
 
     script.appendChild(document.createTextNode("window.aborted_script_ran = true;"));
+    placeholder.appendChild(script.cloneNode(true));
     assert_false(window.aborted_script_ran, "Aborted unclosed <script> is marked already started");
   }, "Abort with an unclosed <script> marks it already started");
 
@@ -408,16 +411,21 @@
     window.events = [];
     window.ext_done = Promise.withResolvers();
     window.defer_done = Promise.withResolvers();
-    const placeholder = document.getElementById("placeholder");
-    placeholder.replaceChildren();
 
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "resources/slow.css?pipe=trickle(d2)&f5=1";
-    document.head.appendChild(link);
-    t.add_cleanup(() => link.remove());
+    const iframe = document.createElement("iframe");
+    t.add_cleanup(() => iframe.remove());
+    document.body.appendChild(iframe);
+    iframe.contentDocument.open();
+    iframe.contentDocument.write(
+      '<link rel="stylesheet" href="resources/slow.css?pipe=trickle(d2)&f5=1"><div id="target"></div>'
+    );
+    await new Promise((resolve) => t.step_timeout(resolve, 0));
+    iframe.contentWindow.events = window.events;
+    iframe.contentWindow.ext_done = window.ext_done;
+    iframe.contentWindow.defer_done = window.defer_done;
+    const target = iframe.contentDocument.getElementById("target");
 
-    const writer = placeholder.streamHTMLUnsafe({ runScripts: true }).getWriter();
+    const writer = target.streamHTMLUnsafe({ runScripts: true }).getWriter();
     await writer.write(
       "<script defer src=\"data:text/javascript,window.events.push('defer');window.defer_done.resolve();\"><" + "/script>" +
       "<script>window.events.push('inline');<" + "/script>" +
@@ -530,11 +538,14 @@
       document.body.appendChild(iframe);
     });
 
+    iframe.contentWindow.notifyParent = () => {
+      window.iframe_blocked_ran = true;
+    };
     const target = iframe.contentDocument.getElementById("target");
     const writer = target.streamHTMLUnsafe({ runScripts: true }).getWriter();
     await writer.write(
       "<script src='resources/slow.js?pipe=trickle(d0.2)&f12=1'><" + "/script>" +
-      "<script>parent.iframe_blocked_ran = true;<" + "/script>"
+      "<script>window.notifyParent();<" + "/script>"
     );
 
     iframe.remove();

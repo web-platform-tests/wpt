@@ -112,7 +112,45 @@ for (const method of ["streamAppendHTMLUnsafe", "streamHTMLUnsafe"]) {
         assert_false(window.did_run);
         assert_equals(placeholder.querySelector("svg > script").namespaceURI, "http://www.w3.org/2000/svg");
     }, `element.${method} does not run SVG scripts with runScripts: false`);
+
+    promise_test(async t => {
+        const disconnected = document.createElement("div");
+        const writer = disconnected[method]({runScripts: true}).getWriter();
+        window.did_run = false;
+        t.add_cleanup(() => { window.did_run = false });
+        await writer.write("<svg><script>window.did_run = true;</" + "script></svg>");
+        await writer.close();
+        assert_false(window.did_run, "SVG <script> in a disconnected target must not execute");
+    }, `element.${method} does not run SVG scripts when target is disconnected`);
+
+    promise_test(async t => {
+        const placeholder = document.getElementById("placeholder");
+        const writer = placeholder[method]({
+            runScripts: true,
+            sanitizer: { removeElements: [{ name: "svg", namespace: "http://www.w3.org/2000/svg" }] },
+        }).getWriter();
+        window.did_run = false;
+        t.add_cleanup(() => { window.did_run = false });
+        await writer.write("<svg><script>window.did_run = true;</" + "script></svg>");
+        await writer.close();
+        assert_false(window.did_run, "SVG <script> whose <svg> ancestor was removed by the sanitizer must not execute");
+    }, `element.${method} does not run SVG scripts when an ancestor is removed by the sanitizer`);
 }
+
+promise_test(async t => {
+    const iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+    t.add_cleanup(() => iframe.remove());
+    window.svg_in_detached_ancestor_ran = false;
+    t.add_cleanup(() => { delete window.svg_in_detached_ancestor_ran; });
+    iframe.contentDocument.open();
+    iframe.contentDocument.write(
+        "<div id='d'><script>document.getElementById('d').remove();</" + "script>" +
+        "<svg><script>parent.svg_in_detached_ancestor_ran = true;</" + "script></svg></div>"
+    );
+    iframe.contentDocument.close();
+    assert_false(window.svg_in_detached_ancestor_ran, "Disconnected SVG <script> during document parsing must not execute");
+}, "Document parsing does not execute an SVG <script> whose ancestor was disconnected before </script>");
 
 // A parser-inserted script's intended document is the document the parser
 // runs scripts against. If the element is moved to a different document

@@ -302,7 +302,7 @@
         await writer.write("<p>2</p>");
         await writer.close();
         assert_equals(parent.textContent, "12");
-      }, `element.${method}: mutating the sanitizer while streaming does not effect the originally given sanitizer`);
+      }, `element.${method}: mutating the sanitizer while streaming does not affect the originally given sanitizer`);
 
       promise_test(async (t) => {
         const parent = document.createElement("div");

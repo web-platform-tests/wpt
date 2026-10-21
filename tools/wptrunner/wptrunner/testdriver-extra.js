@@ -441,6 +441,36 @@
                 actionParams.context = window;
             }
             return create_action("bidi.browsing_context.set_viewport", actionParams);
+        },
+        download_will_begin: {
+            subscribe: function(params) {
+                return subscribe(
+                    {...params, events: ['browsingContext.downloadWillBegin']})
+            },
+            on: function(callback) {
+                const on_event = (event) => {
+                    callback(event.payload);
+                };
+                event_target.addEventListener(
+                    'browsingContext.downloadWillBegin', on_event);
+                return () => event_target.removeEventListener(
+                    'browsingContext.downloadWillBegin', on_event);
+            }
+        },
+        download_end: {
+            subscribe: function(params) {
+                return subscribe(
+                    {...params, events: ['browsingContext.downloadEnd']})
+            },
+            on: function(callback) {
+                const on_event = (event) => {
+                    callback(event.payload);
+                };
+                event_target.addEventListener(
+                    'browsingContext.downloadEnd', on_event);
+                return () => event_target.removeEventListener(
+                    'browsingContext.downloadEnd', on_event);
+            }
         }
     };
 

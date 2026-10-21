@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>isSecureContext of a popup opened by a sandboxed frame that lets popups escape the sandbox</title>
+<link rel=help href="https://html.spec.whatwg.org/multipage/webappapis.html#secure-context">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<body>
+<script>
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  iframe.sandbox = "allow-scripts allow-popups allow-popups-to-escape-sandbox";
+  iframe.src = "support/open-popup-from-opaque-origin.html";
+  const message = new Promise(resolve => addEventListener("message", e => {
+    if (e.source === iframe.contentWindow)
+      resolve(e.data);
+  }));
+  document.body.append(iframe);
+  t.add_cleanup(() => iframe.remove());
+
+  const { frame, popup } = await message;
+  assert_true(frame, "frame");
+  assert_false(popup, "popup's initial about:blank");
+}, "a popup with an opaque origin");
+</script>

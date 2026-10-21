@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>isSecureContext of a popup opened by a non-secure frame with a potentially trustworthy origin</title>
+<link rel=help href="https://html.spec.whatwg.org/multipage/webappapis.html#secure-context">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=server-locations.sub.js></script>
+<body>
+<script>
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  iframe.src = https_dir + "support/open-same-origin-popup.html";
+  const message = new Promise(resolve => addEventListener("message", e => {
+    if (e.source === iframe.contentWindow)
+      resolve(e.data);
+  }));
+  document.body.append(iframe);
+  t.add_cleanup(() => iframe.remove());
+
+  const { frame, initial, loaded } = await message;
+  assert_false(frame, "frame");
+  assert_true(initial, "initial about:blank");
+  assert_true(loaded, "loaded document");
+}, "a popup opened by a non-secure https: frame");
+</script>

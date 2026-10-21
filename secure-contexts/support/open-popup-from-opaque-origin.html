@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<script>
+const popup = window.open();
+parent.postMessage({ frame: isSecureContext, popup: popup.isSecureContext }, "*");
+popup.close();
+</script>

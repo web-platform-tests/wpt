@@ -2,6 +2,7 @@
 <meta charset="utf-8" />
 <title>CSS Selectors: part pseudo selectors</title>
 <link rel="help" href="https://drafts.csswg.org/css-shadow-parts/#part" />
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#element-like">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
@@ -40,5 +41,5 @@
   test_valid_forgiving_selector("::part(foo):is(nav ul)");
   test_valid_forgiving_selector("::part(foo):where(ul)");
   test_valid_forgiving_selector("::part(foo):where(nav ul)");
-  test_invalid_selector("::part(foo):has(li)");
+  test_valid_selector("::part(foo):has(li)");
 </script>

@@ -596,7 +596,7 @@
         t.add_cleanup(() => { delete window.remove_ref; });
 
         const writer = create_unsafe_stream(parent, ref_node).getWriter();
-        // No tokens follow </script>, so invalid reference child steps do not run during this write.
+        // No tokens follow the script end tag, so invalid reference child steps do not run during this write.
         await writer.write("A<script>window.remove_ref();<" + "/script>");
 
         // Moving ref_node back into parent before the next write allows the stream to continue.

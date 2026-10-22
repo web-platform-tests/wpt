@@ -104,6 +104,7 @@ for (const method of ["streamAppendHTMLUnsafe", "streamHTMLUnsafe"]) {
 
     promise_test(async t => {
         const placeholder = document.getElementById("placeholder");
+        placeholder.replaceChildren();
         const writer = placeholder[method]({runScripts: false}).getWriter();
         window.did_run = false;
         t.add_cleanup(() => { window.did_run = false });
@@ -203,6 +204,7 @@ for (const method of ["streamHTMLUnsafe", "streamAppendHTMLUnsafe"]) {
 for (const method of ["streamHTML", "streamAppendHTML"]) {
     promise_test(async t => {
         const placeholder = document.getElementById("placeholder");
+        placeholder.replaceChildren();
         const writer = placeholder[method]({runScripts: true, sanitizer: {elements: [{name: "svg", namespace: "http://www.w3.org/2000/svg"}, {name: "script", namespace: "http://www.w3.org/2000/svg"}]}}).getWriter();
         window.did_run = false;
         t.add_cleanup(() => { window.did_run = false });

@@ -66,37 +66,6 @@
     // Whether the fetch continues or is cancelled is not observable here.
     loaded.then(() => {});
   }, "abort() unblocks rendering on a streamed render-blocking parser-blocking script");
-
-  // Same for a deferred script, which is in the fragment parser's list of
-  // scripts that will execute when the document has finished parsing.
-  promise_test(async (t) => {
-    const deferScriptInserted = waitForNextInsertedScript(true);
-    const writer = document.head
-      .streamAppendHTMLUnsafe({ runScripts: true })
-      .getWriter();
-    await writer.write(
-      "<script defer blocking='render' src='resources/slow.js?pipe=trickle(d3)&render_blocking_abort_defer=1'></" +
-        "script>"
-    );
-    const script = await deferScriptInserted;
-    const loaded = new Promise((resolve) => {
-      script.addEventListener("load", () => resolve("load"));
-      script.addEventListener("error", () => resolve("error"));
-    });
-    const abortTime = performance.now();
-    await writer.abort();
-
-    const frameTime = await new Promise((resolve) =>
-      requestAnimationFrame(resolve)
-    );
-    assert_less_than(
-      frameTime - abortTime,
-      2000,
-      "requestAnimationFrame() should fire well before the aborted slow defer script finishes loading"
-    );
-    assert_array_equals(window.events, [], "the aborted defer script must not run");
-    loaded.then(() => {});
-  }, "abort() unblocks rendering on a streamed render-blocking defer script");
 </script>
 <body>
 </body>

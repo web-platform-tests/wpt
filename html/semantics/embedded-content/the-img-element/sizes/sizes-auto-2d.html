@@ -78,6 +78,11 @@ const tests = [
   // 'h' descriptors take precedence over the dimension attribute aspect ratio:
   // aspect ratios are 50/500 = 0.1 and 51/510 = 0.1, so max(10px, 100px * 0.1) = 10px.
   {loading: 'lazy', sizes: 'auto', width: '10', height: '1', style: 'object-fit: cover', h: [' 500h', ' 510h'], ref: 'ref1'},
+  // Content box, not border box, is used for both width and height:
+  // - padding: 0 45px reduces content-box width from 100px to 10px, so contain gives min(10px, 100px) = 10px (ref1).
+  // - padding: 45px 0 reduces content-box height from 100px to 10px, so cover gives max(10px, 10px) = 10px (ref1).
+  {loading: 'lazy', sizes: 'auto', style: 'object-fit: contain; box-sizing: border-box; width: 100px; height: 100px; padding: 0 45px', h: [' 50h', ' 51h'], ref: 'ref1'},
+  {loading: 'lazy', sizes: 'auto', style: 'object-fit: cover; box-sizing: border-box; width: 10px; height: 100px; padding: 45px 0', h: [' 50h', ' 51h'], ref: 'ref1'},
   // Non-lazy img falls back to 1px and does not use CSS object-fit.
   {sizes: 'auto, 1px', width: '1', height: '1', style: 'object-fit: cover', h: [' 1h', ' 2h'], ref: 'ref1'},
 ];

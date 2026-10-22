@@ -62,6 +62,8 @@ const tests = [
   {sizes: 'Cover 10px 1000px', h: square, ref: 'ref2'},
   {sizes: 'cover 0px 1000px', h: square, ref: 'ref2'},
   {sizes: 'contain 1000px 0px', h: square, ref: 'ref1'},
+  {sizes: 'cover 0px 0px', h: square, ref: 'ref1'},
+  {sizes: 'cover 0 1000px', h: square, ref: 'ref2'},
   // 'h' descriptors give aspect ratios of 50 and 25.5;
   // max(10px, 10px * 50) = 500px and max(10px, 10px * 25.5) = 255px.
   {sizes: 'cover 10px 10px', h: [' 1h', ' 2h'], ref: 'ref2'},
@@ -69,6 +71,12 @@ const tests = [
   // normalized densities (w / (1000px * (w / 100)) = 0.1), so the first
   // candidate wins per duplicate density removal.
   {sizes: 'cover 10px 1000px', h: [' 100h', ' 100h'], ref: 'ref1'},
+  // Invalid 'h' descriptors cause that image candidate to be dropped.
+  {sizes: 'cover 10px 1000px', h: [' 0h', ' 51h'], ref: 'ref2'},
+  {sizes: 'cover 10px 1000px', h: [' -50h', ' 51h'], ref: 'ref2'},
+  {sizes: 'cover 10px 1000px', h: [' 50.5h', ' 51h'], ref: 'ref2'},
+  {sizes: 'cover 10px 1000px', h: [' 50h 50h', ' 51h'], ref: 'ref2'},
+  {sizes: 'cover 10px 1000px', h: [' 50h 1x', ' 51h'], ref: 'ref2'},
   // 'h' descriptor preceding the 'w' descriptor.
   {sizes: 'cover 10px 10px', h: ['1h ', '2h '], ref: 'ref2'},
   {sizes: 'contain 10px 1000px', h: ['50h ', '51h '], ref: 'ref1'},
@@ -76,6 +84,8 @@ const tests = [
   {sizes: 'contain min(10px, 1000px) max(500px, 1000px)', h: square, ref: 'ref1'},
   {sizes: 'cover 10px clamp(500px, 1000px, 2000px)', h: square, ref: 'ref2'},
   {sizes: 'contain 10px 1000px, cover 10px 1000px', h: square, ref: 'ref1'},
+  {sizes: 'cover 10px 1000px, 1px', h: square, ref: 'ref2'},
+  {sizes: 'contain 10px 1000px, 1000px', h: square, ref: 'ref1'},
 
   // Media conditions with two-dimensional sizes.
   {sizes: '(min-width: 0px) cover 10px 1000px, 1px', h: square, ref: 'ref2'},
@@ -336,6 +346,23 @@ onload = () => {
     await new Promise(resolve => t.step_timeout(resolve, 50));
     assert_false(unexpectedEvent);
   }, 'Changing dimension attributes on an <img src> without srcset or <picture> does not fire load');
+
+  // An 'h' descriptor without a 'w' descriptor is a descriptor parse error,
+  // causing that candidate to be dropped.
+  async_promise_test(async (t) => {
+    const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+    const img = document.createElement('img');
+    t.add_cleanup(() => img.remove());
+    img.sizes = 'contain 10px 1000px';
+    img.srcset = '/images/green-1x1.png?bare-h 50h, /images/green-16x16.png?bare-h 51w 51h';
+    const loaded = new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+    });
+    document.body.appendChild(img);
+    await loaded;
+    assert_equals(img.currentSrc.split('?')[0], ref2);
+  }, 'An h descriptor without a w descriptor drops the candidate');
 
   done();
 }

@@ -37,6 +37,7 @@
           if (safe) {
             assert_true(d[method]() instanceof WritableStream);
           } else {
+            assert_equals(typeof Element.prototype[method], "function", `${method} is supported`);
             assert_throws_js(TypeError, () => d[method]());
           }
         }, `${method} with trusted types and no default policy ${safe ? "returns a WritableStream" : "throws"}.`);
@@ -49,6 +50,7 @@
       ]) {
         test((t) => {
           const detached = document.createElement("div");
+          assert_equals(typeof Element.prototype[method], "function", `${method} is supported`);
           assert_throws_js(
             TypeError,
             () => detached[method](),
@@ -60,6 +62,7 @@
           const frag = document.createDocumentFragment();
           const child = document.createElement("div");
           frag.appendChild(child);
+          assert_equals(typeof Element.prototype[method], "function", `${method} is supported`);
           assert_throws_js(
             TypeError,
             () => child[method](),
@@ -68,6 +71,7 @@
         }, `${method} on a DocumentFragment child with no default policy throws TypeError before HierarchyRequestError.`);
 
         test((t) => {
+          assert_equals(typeof Element.prototype[method], "function", `${method} is supported`);
           assert_throws_js(
             TypeError,
             () => document.implementation.createHTMLDocument().head[method](),
@@ -82,6 +86,7 @@
 
       for (const method of ["streamAppendHTMLUnsafe", "streamPrependHTMLUnsafe"]) {
         test((t) => {
+          assert_equals(typeof Element.prototype[method], "function", `${method} is supported`);
           assert_throws_js(
             TypeError,
             () => document.implementation.createHTMLDocument().documentElement[method](),
@@ -94,6 +99,7 @@
         test((t) => {
           const script = document.createElement("script");
           document.querySelector("#container").appendChild(script);
+          assert_equals(typeof Element.prototype[method], "function", `${method} is supported`);
           assert_throws_js(
             TypeError,
             () => script[method](),

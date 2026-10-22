@@ -311,6 +311,7 @@
         existingChild.textContent = "keep";
         placeholder.appendChild(existingChild);
         parent.appendChild(placeholder);
+        assert_equals(typeof Element.prototype[method], "function", `${method} is supported`);
         assert_throws_js(TypeError, _ => {
           placeholder[method]({sanitizer: {elements: ["div"], removeElements: ["div"]}});
         });

@@ -47,6 +47,7 @@
             if (safe) {
               assert_true(d[method]() instanceof WritableStream);
             } else {
+              assert_equals(typeof Element.prototype[method], "function", `${method} is supported`);
               assert_throws_js(TypeError, () => d[method]());
             }
           },

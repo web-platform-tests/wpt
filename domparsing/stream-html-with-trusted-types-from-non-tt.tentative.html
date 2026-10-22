@@ -52,6 +52,7 @@
             const expectedTypeError = new adoptedDiv.constructor.constructor(
               "return TypeError"
             )();
+            assert_equals(typeof Element.prototype[method], "function", `${method} is supported`);
             assert_throws_js(expectedTypeError, () => adoptedDiv[method]());
           }
         }, `${method} called from non-TT document on an element adopted into a TT document ${safe ? "returns a WritableStream" : "throws TypeError"}.`);

@@ -30,6 +30,7 @@
           if (safe) {
             assert_true(d[method]() instanceof WritableStream);
           } else {
+            assert_equals(typeof Element.prototype[method], "function", `${method} is supported`);
             assert_throws_js(TypeError, () => d[method]());
           }
         }, `Streaming with trusted types and no default policy ${safe ? "does not throw" : "throws"} for ${method}.`);

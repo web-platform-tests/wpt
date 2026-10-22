@@ -1,0 +1,28 @@
+<!doctype html>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#reload">
+<link rel="help" href="https://github.com/web-platform-tests/interop/issues/1441">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<iframe id="i" src="/common/blank.html"></iframe>
+<script>
+promise_test(async t => {
+  await new Promise(resolve => window.onload = resolve);
+  const iframe = document.getElementById("i");
+
+  await iframe.contentWindow.navigation.navigate("#1", { state: { key: "old" } }).committed;
+  assert_equals(iframe.contentWindow.navigation.currentEntry.getState().key, "old");
+
+  let destinationState;
+  iframe.contentWindow.navigation.onnavigate = t.step_func(e => {
+    assert_false(e.destination.sameDocument);
+    destinationState = e.destination.getState();
+  });
+  iframe.contentWindow.navigation.reload({ state: { key: "new" } });
+  await new Promise(resolve => iframe.onload = resolve);
+
+  assert_equals(destinationState?.key, "new", "destination.getState()");
+  assert_equals(iframe.contentWindow.navigation.currentEntry.getState()?.key, "old", "currentEntry.getState()");
+  assert_equals(iframe.contentWindow.navigation.activation.entry.getState()?.key, "old", "activation.entry.getState()");
+}, "reload() state is ignored for cross-document reloads");
+</script>

@@ -37,7 +37,9 @@
           createParserOptions = (options) => options;
         });
 
-        const element = document.createElement("div");
+        // Append and Prepend only have a hierarchy check for the html element.
+        const element = document.createElement(
+          pos === "Append" || pos === "Prepend" ? "html" : "div");
         try {
           element[method_name]();
           assert_unreached("Should have thrown");

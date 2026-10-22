@@ -23,6 +23,7 @@
       ];
 
       for (const method of methods) {
+        const safe = !method.endsWith("Unsafe");
         promise_test(async (t) => {
           const iframe = document.createElement("iframe");
           t.add_cleanup(() => iframe.remove());
@@ -41,15 +42,19 @@
           iframe.contentDocument.body.appendChild(adoptedDiv);
           t.add_cleanup(() => adoptedDiv.remove());
 
-          // Trusted Types enforcement checks `this`'s relevant global object
-          // (the non-TT window where `localDiv` was created), which adoption
-          // into the TT iframe document does not change.
-          const stream = adoptedDiv[method]();
-          assert_true(
-            stream instanceof WritableStream ||
-            stream instanceof iframe.contentWindow.WritableStream
-          );
-        }, `${method} called from non-TT document on an element adopted into a TT document returns a WritableStream.`);
+          if (safe) {
+            const stream = adoptedDiv[method]();
+            assert_true(
+              stream instanceof WritableStream ||
+              stream instanceof iframe.contentWindow.WritableStream
+            );
+          } else {
+            const expectedTypeError = new adoptedDiv.constructor.constructor(
+              "return TypeError"
+            )();
+            assert_throws_js(expectedTypeError, () => adoptedDiv[method]());
+          }
+        }, `${method} called from non-TT document on an element adopted into a TT document ${safe ? "returns a WritableStream" : "throws TypeError"}.`);
       }
     </script>
   </body>

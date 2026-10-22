@@ -119,9 +119,14 @@
     assert_array_equals(ids, ["p1", "", "from-script", "p2", ""]);
   }, "DOM mutations inside streamed parser-blocking script maintain correct insertion order");
 
+  // Gives up after a while, so that a failing test can't stall the rest of the file.
+  function withTimeout(promise, ms = 3000) {
+    return Promise.race([promise, new Promise(resolve => step_timeout(resolve, ms))]);
+  }
+
   function waitForResource(url) {
     const name = new URL(url, location.href).href;
-    return new Promise(resolve => {
+    return withTimeout(new Promise(resolve => {
       const observer = new PerformanceObserver(list => {
         if (list.getEntries().some(e => e.name === name)) {
           observer.disconnect();
@@ -129,7 +134,7 @@
         }
       });
       observer.observe({ type: "resource", buffered: true });
-    });
+    }));
   }
 
   promise_test(async (t) => {
@@ -299,7 +304,7 @@
     );
 
     const closePromise = writer.close();
-    t.add_cleanup(() => window.defer_done.promise);
+    t.add_cleanup(() => withTimeout(window.defer_done.promise));
     assert_array_equals(window.events, [], "close() does not run the blocked parser synchronously");
     assert_equals(placeholder.querySelector("#d4-after"), null);
 
@@ -390,7 +395,7 @@
   promise_test(async (t) => {
     window.events = [];
     window.resolvers = Promise.withResolvers();
-    t.add_cleanup(() => window.resolvers.promise);
+    t.add_cleanup(() => withTimeout(window.resolvers.promise));
     const placeholder = document.getElementById("placeholder");
     placeholder.replaceChildren();
     const writer = placeholder.streamHTMLUnsafe({ runScripts: true }).getWriter();
@@ -563,7 +568,7 @@
       window.events = [];
       const done = Promise.withResolvers();
       window.resolve_second = done.resolve;
-      t.add_cleanup(() => done.promise.then(() => { delete window.resolve_second; }));
+      t.add_cleanup(() => withTimeout(done.promise).then(() => { delete window.resolve_second; }));
       const placeholder = document.getElementById("placeholder");
       placeholder.replaceChildren();
       const writer = placeholder[method]({ runScripts: true }).getWriter();

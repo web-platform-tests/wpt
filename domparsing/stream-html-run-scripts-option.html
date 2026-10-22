@@ -150,7 +150,7 @@ promise_test(async t => {
     );
     iframe.contentDocument.close();
     assert_false(window.svg_in_detached_ancestor_ran, "Disconnected SVG <script> during document parsing must not execute");
-}, "Document parsing does not execute an SVG <script> whose ancestor was disconnected before </script>");
+}, "Document parsing does not execute an SVG <script> whose ancestor was disconnected before its end tag");
 
 // A parser-inserted script's intended document is the document the parser
 // runs scripts against. If the element is moved to a different document

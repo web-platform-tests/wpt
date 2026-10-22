@@ -43,16 +43,16 @@
     // Script 1 takes 0.3s, Script 2 takes 0.1s.
     // Script 2 must NOT execute before Script 1.
     await writer.write(
-      "<script src='resources/slow.js?pipe=trickle(d0.3)&t=2_1'><" + "/script>" +
+      "<script src='resources/slow.js?pipe=trickle(d0.3)&t=2_1&tag=slow-1'><" + "/script>" +
       "<p id='mid'>mid</p>" +
-      "<script src='resources/slow.js?pipe=trickle(d0.1)&t=2_2'><" + "/script>" +
+      "<script src='resources/slow.js?pipe=trickle(d0.1)&t=2_2&tag=slow-2'><" + "/script>" +
       "<script>window.events.push('inline'); window.resolvers.resolve();<" + "/script>"
     );
     await writer.close();
 
     await window.resolvers.promise;
 
-    assert_array_equals(window.events, ["slow", "slow", "inline"]);
+    assert_array_equals(window.events, ["slow-1", "slow-2", "inline"]);
   }, "Multiple parser-blocking scripts with out-of-order fetch times execute in document order");
 
   promise_test(async (t) => {

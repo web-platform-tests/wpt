@@ -427,7 +427,7 @@
           "HierarchyRequestError",
           writer.write(
             `before<script>window.remove_ref();<` + `/script>` +
-            `<img src="${imgSrc}" onload="window.on_dropped_img_event()" onerror="window.on_dropped_img_event()">`
+            `<img src="${imgSrc}" onload="window.on_dropped_img_event?.()" onerror="window.on_dropped_img_event?.()">`
           ),
         );
         await new Promise((resolve) => t.step_timeout(resolve, 20));

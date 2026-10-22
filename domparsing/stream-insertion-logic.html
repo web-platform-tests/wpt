@@ -484,7 +484,7 @@
 
         const p = parent.querySelector("p");
         assert_not_equals(p, null, "<p> inserted before displacement must remain in parent");
-        assert_equals(p.textContent, "x");
+        assert_equals(p.firstChild.data, "x");
       }, `${method_name}: adoption agency at the root after ref_node displacement keeps existing nodes and errors the stream`);
 
       promise_test(async (t) => {

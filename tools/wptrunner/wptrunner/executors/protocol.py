@@ -2,7 +2,7 @@
 
 import collections
 import traceback
-from http.client import HTTPConnection
+from http.client import HTTPConnection, HTTPException
 
 from abc import ABCMeta, abstractmethod
 from typing import Any, Awaitable, Callable, ClassVar, Dict, List, Literal, Mapping, Optional, \
@@ -1287,16 +1287,22 @@ class PytestProtocol(ConnectionlessProtocol):
         WebDriver spec tests to not have a WebDriver session, since this
         may be what is tested.
 
-        An HTTP request to an invalid path that results in a 404 is
-        proof enough to us that the server is alive and kicking.
+        An HTTP request to an invalid path that results in a 404 is proof
+        enough to us that the server is alive and kicking, with 2 seconds of
+        timeout that should be more than enough to check if WebDriver is still
+        alive, and allows to complete the check within the testrunner 5 seconds
+        of extra_timeout we have to end the test before the external timeout
+        from testrunner triggers.
         """
-        conn = HTTPConnection(self.browser.host, self.browser.port)
+        conn = HTTPConnection(self.browser.host, self.browser.port, timeout=2)
         try:
             conn.request("HEAD", "/invalid")
             res = conn.getresponse()
             return res.status == 404
-        except OSError:
+        except (OSError, HTTPException):
             return False
+        finally:
+            conn.close()
 
 
 class VirtualSensorProtocolPart(ProtocolPart):

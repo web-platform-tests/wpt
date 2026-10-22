@@ -155,6 +155,25 @@ onload = () => {
     check(picture, img, 'ref2');
   }
 
+  // A <source> with explicit sizes="auto" also uses auto-sizes when <img>
+  // allows auto-sizes.
+  {
+    const picture = document.createElement('picture');
+    const source = document.createElement('source');
+    const img = document.createElement('img');
+    source.sizes = 'auto';
+    source.srcset = srcsetFor('picture-explicit-source-auto', ['', '']);
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.width = 1;
+    img.height = 1;
+    img.style = 'object-fit: cover';
+    picture.appendChild(source);
+    picture.appendChild(img);
+    document.body.appendChild(picture);
+    check(picture, img, 'ref2');
+  }
+
   // A <source> with width and height attributes uses its own dimension
   // attribute aspect ratio.
   {

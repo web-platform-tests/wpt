@@ -185,6 +185,31 @@ for (const method of ["streamHTMLUnsafe", "streamAppendHTMLUnsafe"]) {
     }, `element.${method}: a streamed <script> moved to another document before its end tag does not execute`);
 
     promise_test(async t => {
+        const iframe = document.createElement("iframe");
+        t.add_cleanup(() => iframe.remove());
+        await new Promise(resolve => {
+            iframe.onload = resolve;
+            document.body.appendChild(iframe);
+        });
+        const otherDocument = iframe.contentDocument;
+        window.did_run = false;
+        iframe.contentWindow.did_run = false;
+        t.add_cleanup(() => { window.did_run = false });
+
+        const target = document.body.appendChild(document.createElement("div"));
+        const writer = target[method]({runScripts: true}).getWriter();
+        await writer.write("<p>before</p>");
+        otherDocument.body.appendChild(target);
+        assert_equals(target.ownerDocument, otherDocument);
+        await writer.write("<svg><script>window.did_run = true;</" + "script></svg>");
+        await writer.close();
+
+        assert_not_equals(target.querySelector("svg > script"), null, "parsing continues after the move");
+        assert_false(window.did_run, "SVG script must not run in the original document");
+        assert_false(iframe.contentWindow.did_run, "SVG script must not run in the new document");
+    }, `element.${method}: a streamed SVG <script> does not execute after the target moves to another document`);
+
+    promise_test(async t => {
         window.did_run = false;
         t.add_cleanup(() => { window.did_run = false });
         const placeholder = document.getElementById("placeholder");

@@ -17,6 +17,7 @@
       } catch (e) {}
 
       const writer = document.documentElement.streamHTML().getWriter();
+      await writer.write("<head></head>");
       document.head?.remove();
       await writer.close();
     } finally {

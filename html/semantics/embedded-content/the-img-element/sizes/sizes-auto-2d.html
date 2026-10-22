@@ -199,6 +199,27 @@ onload = () => {
     check(picture, img, 'ref2');
   }
 
+  // A <source> with width and height attributes updates the <img>'s dimension
+  // attribute source (and thus its presentational hint layout dimensions)
+  // before sizes=auto evaluates the <img>'s content box.
+  {
+    const picture = document.createElement('picture');
+    const source = document.createElement('source');
+    const img = document.createElement('img');
+    source.srcset = srcsetFor('picture-source-presentational-hint', [' 50h', ' 51h']);
+    source.setAttribute('width', '10');
+    source.setAttribute('height', '100');
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.width = 10;
+    img.height = 10;
+    img.style = 'width: auto; height: auto; object-fit: cover';
+    picture.appendChild(source);
+    picture.appendChild(img);
+    document.body.appendChild(picture);
+    check(picture, img, 'ref2');
+  }
+
   // A <source> with only a width or only a height attribute has no dimension
   // attribute aspect ratio and does not fall back to the <img>'s.
   {
@@ -300,10 +321,16 @@ onload = () => {
     assert_false(unexpectedEvent);
     assert_equals(baseUrl(img.currentSrc), ref1);
 
-    const reloaded = waitForLoad(img);
+    let reloaded = waitForLoad(img);
     img.height = 1;
     await reloaded;
     assert_equals(baseUrl(img.currentSrc), ref2);
+
+    img.srcset = srcsetFor('dynamic-img-dims-removed', ['', '']);
+    reloaded = waitForLoad(img);
+    img.removeAttribute('height');
+    await reloaded;
+    assert_equals(baseUrl(img.currentSrc), ref1);
   }, 'Changing dimension attributes on an auto-sized img updates currentSrc');
 
   // Dynamic change to width/height attributes on a previous sibling <source>
@@ -326,10 +353,16 @@ onload = () => {
     await waitForLoad(img);
     assert_equals(baseUrl(img.currentSrc), ref1);
 
-    const reloaded = waitForLoad(img);
+    let reloaded = waitForLoad(img);
     source.setAttribute('height', '1');
     await reloaded;
     assert_equals(baseUrl(img.currentSrc), ref2);
+
+    source.srcset = srcsetFor('dynamic-source-dims-removed', ['', '']);
+    reloaded = waitForLoad(img);
+    source.removeAttribute('height');
+    await reloaded;
+    assert_equals(baseUrl(img.currentSrc), ref1);
   }, 'Changing dimension attributes on a <source> in <picture> updates currentSrc');
 
   // Changing a dimension attribute when the selected candidate URL does not
@@ -367,11 +400,12 @@ onload = () => {
     await waitForLoad(img);
     assert_equals(baseUrl(img.currentSrc), ref2);
 
-    // Hide the image and change object-fit to contain while unrendered.
+    // Hide the image first, then change object-fit to contain while unrendered.
     // Source selection while display:none must still use the last auto-sizes
     // size (10px x 100px with cover).
-    img.style.objectFit = 'contain';
     img.style.display = 'none';
+    img.getBoundingClientRect();
+    img.style.objectFit = 'contain';
     img.getBoundingClientRect();
 
     let reloaded = waitForLoad(img);

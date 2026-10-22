@@ -83,6 +83,8 @@ const tests = [
   {sizes: 'cover 10px calc(500px + 500px)', h: square, ref: 'ref2'},
   {sizes: 'contain min(10px, 1000px) max(500px, 1000px)', h: square, ref: 'ref1'},
   {sizes: 'cover 10px clamp(500px, 1000px, 2000px)', h: square, ref: 'ref2'},
+  {sizes: 'cover/**/10px/**/1000px', h: square, ref: 'ref2'},
+  {sizes: 'cover calc(10px)calc(1000px)', h: square, ref: 'ref2'},
   {sizes: 'cover 1px 100vh', h: square, ref: 'ref2'},
   {sizes: 'contain 1px 100vh', h: square, ref: 'ref1'},
   {sizes: 'cover 100vw 1px', h: square, ref: 'ref2'},
@@ -93,6 +95,7 @@ const tests = [
 
   // Media conditions with two-dimensional sizes.
   {sizes: '(min-width: 0px) cover 10px 1000px, 1px', h: square, ref: 'ref2'},
+  {sizes: '(min-width: 0px)cover 10px 1000px, 1px', h: square, ref: 'ref2'},
   {sizes: '(max-width: 0px) cover 10px 1000px, 1px', h: square, ref: 'ref1'},
   {sizes: '(max-width: 0px) contain 10px 1000px, (min-width: 0px) cover 10px 1000px, 1px', h: square, ref: 'ref2'},
   {sizes: '(max-width: 0px) cover 10px 1000px, contain 10px 1000px', h: square, ref: 'ref1'},
@@ -367,6 +370,64 @@ onload = () => {
     await loaded;
     assert_equals(img.currentSrc.split('?')[0], ref2);
   }, 'An h descriptor without a w descriptor drops the candidate');
+
+  // Normalized source density from a 2D source size scales the image's
+  // density-corrected natural dimensions (16w / 100px = 0.16x -> 16 / 0.16 = 100px;
+  // 16w / 10px = 1.6x -> 16 / 1.6 = 10px).
+  async_promise_test(async (t) => {
+    const img = document.createElement('img');
+    t.add_cleanup(() => img.remove());
+    img.style = 'width: auto; height: auto';
+    img.sizes = 'cover 10px 100px';
+    img.srcset = '/images/green-16x16.png?density-corrected 16w 16h';
+    let loaded = new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+    });
+    document.body.appendChild(img);
+    await loaded;
+    assert_equals(img.width, 100);
+    assert_equals(img.height, 100);
+
+    loaded = new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+    });
+    img.sizes = 'contain 10px 100px';
+    await loaded;
+    assert_equals(img.width, 10);
+    assert_equals(img.height, 10);
+  }, '2D sizes scales density-corrected natural dimensions and updates on dynamic sizes mutation');
+
+  // Dynamically mutating sizes between 2D values on <img> and <source>
+  // re-selects the image candidate.
+  async_promise_test(async (t) => {
+    const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+    const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+    const picture = document.createElement('picture');
+    t.add_cleanup(() => picture.remove());
+    const source = document.createElement('source');
+    const img = document.createElement('img');
+    source.sizes = 'contain 10px 1000px';
+    source.srcset = srcsetFor('dynamic-2d-sizes', square);
+    picture.appendChild(source);
+    picture.appendChild(img);
+    let loaded = new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+    });
+    document.body.appendChild(picture);
+    await loaded;
+    assert_equals(img.currentSrc.split('?')[0], ref1);
+
+    loaded = new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+    });
+    source.sizes = 'cover 10px 1000px';
+    await loaded;
+    assert_equals(img.currentSrc.split('?')[0], ref2);
+  }, 'Dynamically mutating 2D sizes on <source> updates currentSrc');
 
   done();
 }

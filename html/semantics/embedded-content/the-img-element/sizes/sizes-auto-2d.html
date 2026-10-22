@@ -401,12 +401,15 @@ onload = () => {
     assert_equals(baseUrl(img.currentSrc), ref2);
 
     // Hide the image first, then change object-fit to contain while unrendered.
-    // Source selection while display:none must still use the last auto-sizes
-    // size (10px x 100px with cover).
+    // Changing object-fit while display:none is not a relevant mutation (so
+    // img.complete remains true), and source selection while display:none must
+    // still use the last auto-sizes size (10px x 100px with cover).
     img.style.display = 'none';
     img.getBoundingClientRect();
     img.style.objectFit = 'contain';
     img.getBoundingClientRect();
+    await new Promise(resolve => t.step_timeout(resolve, 20));
+    assert_true(img.complete, 'changing object-fit while display:none must not start a pending request');
 
     let reloaded = waitForLoad(img);
     img.srcset = srcsetFor('last-auto-sizes-hidden', [' 50h', ' 51h']);

@@ -241,6 +241,31 @@
       return { name, log };
     }
 
+    // An element that the sanitizer replaces with its children records where it
+    // would have been inserted. If that's before a foster-parenting table that a
+    // script then moves, the element's later children are dropped, but the stream
+    // isn't errored, since its own insertion point is still valid.
+    async function stream_into_replaced_element_after_table_moves(t, create_stream) {
+      const parent = document.body.appendChild(document.createElement("div"));
+      t.add_cleanup(() => parent.remove());
+      const ref_node = parent.appendChild(document.createElement("span"));
+      const elsewhere = document.createElement("div");
+      window.move_table = () => elsewhere.append(parent.querySelector("table"));
+      t.add_cleanup(() => { delete window.move_table; });
+
+      const writer = create_stream(parent, ref_node, {
+        runScripts: true,
+        sanitizer: { replaceWithChildrenElements: ["span"] },
+      }).getWriter();
+      await writer.write(
+        "<table><span><script>window.move_table();<" + "/script>text<b>bold</b></span></table>after"
+      );
+      await writer.close();
+
+      assert_equals(elsewhere.innerHTML, "<table></table>", "the table was moved");
+      return parent;
+    }
+
     // E1, E2, E3: Reference child displaced mid-chunk and target removed mid-stream
     for (const method of ["Before", "ReplaceWith", "Prepend", "After"]) {
       const method_name = `stream${method}HTMLUnsafe`;
@@ -608,7 +633,18 @@
         assert_equals(parent.querySelector("p").textContent, "kept");
         assert_equals(parent.lastChild, ref_node);
       }, `${method_name}: moving ref_node back into parent before next write when no node was inserted after displacement allows stream to continue`);
+
+      promise_test(async (t) => {
+        const parent = await stream_into_replaced_element_after_table_moves(t, create_unsafe_stream);
+        assert_equals(parent.innerHTML, `${prefix}<script>window.move_table();<` + `/script>after<span></span>`);
+      }, `${method_name}: children of a replaceWithChildrenElements element are dropped, without erroring the stream, when the table it was foster parented before is moved`);
     }
+
+    promise_test(async (t) => {
+      const parent = await stream_into_replaced_element_after_table_moves(
+        t, (parent, ref_node, options) => parent.streamAppendHTMLUnsafe(options));
+      assert_equals(parent.innerHTML, `<span></span><script>window.move_table();<` + `/script>after`);
+    }, "streamAppendHTMLUnsafe: children of a replaceWithChildrenElements element are dropped, without erroring the stream, when the table it was foster parented before is moved");
 
     // E3: Target removed with runScripts: nodes still go into target; scripts don't run
     for (const method of ["streamHTMLUnsafe", "streamAppendHTMLUnsafe", "streamPrependHTMLUnsafe"]) {

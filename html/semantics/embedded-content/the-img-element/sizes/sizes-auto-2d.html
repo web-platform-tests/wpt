@@ -8,7 +8,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <style>
 /* Keep images small so that lazy images are in the viewport and load. */
-img { width: 10px; height: 100px; }
+img:not(.use-pres-hint) { width: 10px; height: 100px; }
 </style>
 <div id=log></div>
 <!-- ref1 selects the 50w candidate, ref2 selects the 51w candidate. -->
@@ -213,11 +213,30 @@ onload = () => {
     img.sizes = 'auto';
     img.width = 10;
     img.height = 10;
-    img.style = 'width: auto; height: auto; object-fit: cover';
+    img.className = 'use-pres-hint';
+    img.style = 'object-fit: cover';
     picture.appendChild(source);
     picture.appendChild(img);
     document.body.appendChild(picture);
     check(picture, img, 'ref2');
+  }
+  {
+    const picture = document.createElement('picture');
+    const source = document.createElement('source');
+    const img = document.createElement('img');
+    source.srcset = srcsetFor('picture-source-presentational-hint-small', [' 50h', ' 51h']);
+    source.setAttribute('width', '10');
+    source.setAttribute('height', '10');
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.width = 10;
+    img.height = 100;
+    img.className = 'use-pres-hint';
+    img.style = 'object-fit: cover';
+    picture.appendChild(source);
+    picture.appendChild(img);
+    document.body.appendChild(picture);
+    check(picture, img, 'ref1');
   }
 
   // A <source> with only a width or only a height attribute has no dimension

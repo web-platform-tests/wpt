@@ -127,8 +127,8 @@ const tests = [
   {sizes: '1000px contain 1000px, 1px', h: square, ref: 'ref1'},
   {sizes: 'contain cover 1000px 1000px, 1px', h: square, ref: 'ref1'},
   {sizes: 'contain, 1px', h: square, ref: 'ref1'},
-  {sizes: 'cover 10px var(--h, 1000px), 1px', h: square, ref: 'ref1'},
-  {sizes: '(min-width: 0px) cover 10px 1000px 5px, 1px', h: square, ref: 'ref1'},
+  {sizes: 'cover 1000px var(--h, 1000px), 1px', h: square, ref: 'ref1'},
+  {sizes: '(min-width: 0px) cover 10px 1000px 1000px, 1px', h: square, ref: 'ref1'},
   {sizes: '(min-width: 0px) contain 1000px, cover 10px 1000px', h: square, ref: 'ref2'},
 
   // Without 'h' descriptors, the dimension attribute aspect ratio is used:
@@ -428,6 +428,39 @@ onload = () => {
     await loaded;
     assert_equals(img.currentSrc.split('?')[0], ref2);
   }, 'Dynamically mutating 2D sizes on <source> updates currentSrc');
+
+  // Dynamically mutating width/height attributes on an eager <img> or <source>
+  // with explicit 2D sizes and no 'h' descriptors updates the dimension
+  // attribute aspect ratio and re-selects the candidate.
+  async_promise_test(async (t) => {
+    const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+    const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+    const picture = document.createElement('picture');
+    t.add_cleanup(() => picture.remove());
+    const source = document.createElement('source');
+    const img = document.createElement('img');
+    source.sizes = 'cover 10px 1000px';
+    source.srcset = srcsetFor('eager-dynamic-dims', ['', '']);
+    source.setAttribute('width', '1');
+    source.setAttribute('height', '100');
+    picture.appendChild(source);
+    picture.appendChild(img);
+    let loaded = new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+    });
+    document.body.appendChild(picture);
+    await loaded;
+    assert_equals(img.currentSrc.split('?')[0], ref1);
+
+    loaded = new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+    });
+    source.setAttribute('height', '1');
+    await loaded;
+    assert_equals(img.currentSrc.split('?')[0], ref2);
+  }, 'Dynamically mutating width/height on <source> with explicit 2D sizes updates currentSrc');
 
   done();
 }

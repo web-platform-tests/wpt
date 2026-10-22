@@ -1275,6 +1275,10 @@
          * <https://w3c.github.io/webdriver/#element-click>`_
          * WebDriver command.
          *
+         * The click is dispatched as a genuine user interaction, so
+         * no script is on the JavaScript execution context stack
+         * when event listeners run.
+         *
          * **Note:** If the element to be clicked does not have a
          * unique ID, the document must not have any DOM mutations
          * made between the function being called and the promise

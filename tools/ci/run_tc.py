@@ -38,12 +38,15 @@ the serialization of a GitHub event payload.
 
 import argparse
 import fnmatch
+import glob
 import json
 import os
 import subprocess
 import sys
 import tarfile
 import tempfile
+import threading
+import time
 import zipfile
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -56,6 +59,12 @@ root = os.path.abspath(
 
 
 started_processes = []
+
+# DEBUG(wpt#62901): the first Chrome launch on a fresh CI worker stalls for
+# 20-46s.  When True, read the files Chrome needs at startup before running
+# the job, and report how long each group takes.  When False, only record the
+# I/O statistics so that a run without warmed caches can be used as a baseline.
+COLD_START_PREREAD = True
 
 
 def run(cmd, return_stdout=False, **kwargs):
@@ -130,6 +139,138 @@ def start_userspace_oom_killer(log_only=False):
     if log_only:
         cmd.append("--dryrun")
     start(cmd)
+
+
+def read_io_counters():
+    counters = {}
+    with open("/proc/vmstat") as f:
+        for line in f:
+            name, value = line.split()
+            if name in ("pgpgin", "pgmajfault"):
+                counters[name] = int(value)
+    with open("/proc/stat") as f:
+        # cpu user nice system idle iowait irq softirq steal ...
+        cpu = [int(value) for value in f.readline().split()[1:]]
+    counters["iowait"] = cpu[4]
+    counters["cpu_total"] = sum(cpu)
+    return counters
+
+
+def start_io_stats(path, interval=1.0):
+    # Sample block reads, major page faults and iowait once per interval.
+    # The counters are host-wide, which is what we want: the stall is
+    # suspected to come from a cold disk on the worker, not from the container.
+    # Busy samples are also printed, so that they line up with the test log.
+    def sample():
+        prev = read_io_counters()
+        with open(path, "w") as f:
+            f.write("utc_time\tread_kib\tmajfault\tiowait_pct\n")
+            while True:
+                time.sleep(interval)
+                cur = read_io_counters()
+                read_kib = cur["pgpgin"] - prev["pgpgin"]
+                majfault = cur["pgmajfault"] - prev["pgmajfault"]
+                cpu_delta = cur["cpu_total"] - prev["cpu_total"]
+                iowait_pct = (100.0 * (cur["iowait"] - prev["iowait"]) / cpu_delta
+                              if cpu_delta else 0.0)
+                line = "%s\t%d\t%d\t%.1f" % (time.strftime("%H:%M:%S", time.gmtime()),
+                                             read_kib, majfault, iowait_pct)
+                f.write(line + "\n")
+                f.flush()
+                if read_kib >= 1024 or majfault >= 100:
+                    print("IO-STATS: %s" % line, flush=True)
+                prev = cur
+
+    print("INFO: cold-start: recording I/O statistics to %s" % path)
+    threading.Thread(target=sample, daemon=True).start()
+
+
+def chrome_libraries(channel):
+    install_dir = {"experimental": "chrome-unstable",
+                   "dev": "chrome-unstable",
+                   "beta": "chrome-beta",
+                   "stable": "chrome"}.get(channel)
+    if install_dir is None:
+        # Canary is Chrome for Testing, which is only installed by wpt run.
+        return []
+    output = run(["ldd", os.path.join("/opt/google", install_dir, "chrome")],
+                 return_stdout=True)
+    libraries = []
+    for line in output.splitlines():
+        if "=>" in line:
+            path = line.split("=>")[1].split("(")[0].strip()
+            if path.startswith("/"):
+                libraries.append(path)
+    return libraries
+
+
+def files_under(paths):
+    for path in paths:
+        if os.path.isfile(path) and not os.path.islink(path):
+            yield path
+        for dir_path, _, file_names in os.walk(path):
+            for name in file_names:
+                file_path = os.path.join(dir_path, name)
+                if os.path.isfile(file_path) and not os.path.islink(file_path):
+                    yield file_path
+
+
+def preread(label, paths, max_bytes=None):
+    # Read the files (or their first max_bytes) so that they end up in the page
+    # cache, and report the throughput.  A low throughput means a cold disk.
+    start_time = time.monotonic()
+    count = 0
+    total = 0
+    for path in paths:
+        try:
+            with open(path, "rb") as f:
+                remaining = max_bytes
+                while remaining is None or remaining > 0:
+                    chunk = f.read(1 << 20 if remaining is None else min(1 << 20, remaining))
+                    if not chunk:
+                        break
+                    total += len(chunk)
+                    if remaining is not None:
+                        remaining -= len(chunk)
+            count += 1
+        except OSError:
+            pass
+    elapsed = time.monotonic() - start_time
+    mib = total / (1 << 20)
+    print("INFO: cold-start: pre-read %s: %d files, %.1f MiB in %.1fs (%.1f MiB/s)" %
+          (label, count, mib, elapsed, mib / elapsed if elapsed else 0.0), flush=True)
+
+
+def debug_cold_start(channel):
+    artifacts_dir = os.path.expanduser("~/artifacts")
+    os.makedirs(artifacts_dir, exist_ok=True)
+    start_io_stats(os.path.join(artifacts_dir, "io-stats.tsv"))
+    if not COLD_START_PREREAD:
+        return
+
+    lib_dir = "/usr/lib/x86_64-linux-gnu"
+    preread("chrome-libs", chrome_libraries(channel))
+    # Libraries that Chrome loads with dlopen(), and the data they read at startup.
+    gui_libs = []
+    for pattern in ["libgtk-*", "libgdk*", "libatk*", "libatspi*", "libpango*", "libcairo*",
+                    "libharfbuzz*", "libepoxy*", "libX*", "libxcb*", "libxkb*", "libEGL*",
+                    "libGL*", "libgbm*", "libdrm*", "libva*", "libdbus*", "libgio*",
+                    "libglib*", "libgobject*", "libgmodule*", "libpulse*"]:
+        gui_libs.extend(glob.glob(os.path.join(lib_dir, pattern)))
+    preread("gui-libs", files_under(gui_libs + [
+        os.path.join(lib_dir, "gtk-3.0"),
+        os.path.join(lib_dir, "gdk-pixbuf-2.0"),
+        os.path.join(lib_dir, "gio"),
+        "/usr/share/X11",
+        "/usr/share/glib-2.0",
+        "/usr/share/icons",
+        "/usr/share/mime",
+        "/usr/lib/locale",
+    ]))
+    # The fontconfig caches, and the head of every font file, which is what a
+    # fontconfig rescan reads if it decides the caches are stale.
+    preread("fontconfig", files_under(["/etc/fonts", "/var/cache/fontconfig"]))
+    preread("font-headers", files_under(["/usr/share/fonts"]), max_bytes=64 << 10)
 
 
 def make_hosts_file():
@@ -290,6 +431,9 @@ def setup_environment(**kwargs):
     if kwargs["oom_killer"]:
         log_only = "firefox_android" in kwargs["browser"]
         start_userspace_oom_killer(log_only)
+
+    if "chrome" in kwargs["browser"]:
+        debug_cold_start(kwargs["channel"])
 
 
 def setup_repository(**kwargs):

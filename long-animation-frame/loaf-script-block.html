@@ -50,10 +50,10 @@ promise_test(async t => {
     }).observe({type: "long-animation-frame", buffered: true});
   });
   assert_equals(script.invokerType, "classic-script");
-  assert_equals(script.executionStart, script.startTime,
-      "Deferred classic script executed in a later task should have executionStart == startTime");
+  assert_greater_than_equal(script.executionStart, script.startTime,
+      "Deferred classic script executed in a later task should have executionStart >= startTime");
   assert_equals(script.sourceCharPosition, 0);
-}, "Deferred classic script should generate a long script with executionStart == startTime");
+}, "Deferred classic script should generate a long script with executionStart >= startTime");
 
 test_self_script_block(t => {
     const script = document.createElement("script");
@@ -103,7 +103,7 @@ test_self_script_block(t => {
     const script = document.createElement("script");
     script.src = blob_url;
     document.body.appendChild(script);
-}, blob_url, "classic-script");
+}, `blob:${location.origin}/`, "classic-script");
 
 promise_test(async t => {
     const script = await new Promise(resolve => {

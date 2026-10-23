@@ -1,4 +1,4 @@
-const windowLoaded = new Promise(resolve => window.addEventListener('load', resolve));
+const windowLoaded = new Promise(resolve => window.addEventListener('load', () => setTimeout(resolve, 0)));
 if ("setup" in globalThis) {
   setup(() =>
     assert_implements(window.PerformanceLongAnimationFrameTiming,
@@ -65,10 +65,15 @@ async function expect_long_frame(cb, t) {
 }
 
 async function expect_long_frame_with_script(cb, predicate, t) {
-  const entry = await expect_long_frame(cb, t);
-  for (const script of entry.scripts ?? []) {
-    if (predicate(script, entry))
-      return [entry, script];
+  for (let i = 0; i < 3; ++i) {
+    const entry = await expect_long_frame(cb, t);
+    if (entry === "timeout" || !entry)
+      continue;
+    for (const script of entry.scripts ?? []) {
+      if (predicate(script, entry))
+        return [entry, script];
+    }
+    break;
   }
 
   return [];

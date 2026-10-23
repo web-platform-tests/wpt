@@ -126,8 +126,8 @@ promise_test(async t => {
       const start = performance.now();
       let i = 0;
       while (performance.now() - start < 20) {
-        container.style.width = (100 + (i++ % 50)) + "px";
-        void container.offsetHeight;
+        container.style.color = (i++ % 2 === 0) ? "red" : "blue";
+        void getComputedStyle(container).color;
       }
       busy_wait(very_long_frame_duration);
     }, 0);
@@ -135,9 +135,11 @@ promise_test(async t => {
 
   assert_true(!!entry, "Entry detected");
   assert_true(!!script, "Script detected");
+  assert_greater_than(script.forcedStyleDuration, 0,
+      "forcedStyleDuration should be > 0 after sustained forced style work");
   assert_greater_than(script.forcedStyleAndLayoutDuration, 0,
-      "forcedStyleAndLayoutDuration should be > 0 after sustained forced style and layout work");
-}, "forcedStyleAndLayoutDuration is strictly positive after heavy forced style and layout work");
+      "forcedStyleAndLayoutDuration should be > 0 after sustained forced style work");
+}, "forcedStyleDuration and forcedStyleAndLayoutDuration are strictly positive after heavy forced style work");
 
 </script>
 </body>

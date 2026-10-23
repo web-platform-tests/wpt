@@ -163,9 +163,11 @@ promise_test(async t => {
 
   assert_true(!!entry, "Entry detected");
   assert_true(!!script, "Script detected");
+  assert_greater_than(script.forcedLayoutDuration, 0,
+      "forcedLayoutDuration should be > 0 after sustained forced layout work");
   assert_greater_than(script.forcedStyleAndLayoutDuration, 0,
       "forcedStyleAndLayoutDuration should be > 0 after sustained forced layout work");
-}, "forcedStyleAndLayoutDuration is strictly positive after heavy forced layout work");
+}, "forcedLayoutDuration and forcedStyleAndLayoutDuration are strictly positive after heavy forced layout work");
 
 </script>
 </body>

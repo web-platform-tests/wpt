@@ -2,6 +2,7 @@
 <meta charset="utf-8">
 <title>CSS Pseudo-Elements Test: highlight selectors parsing</title>
 <link rel="help" href="https://drafts.csswg.org/css-pseudo/#highlight-selectors">
+<link rel="help" href="https://drafts.csswg.org/selectors-4/#pseudo-element-states">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
@@ -16,7 +17,7 @@
     test_invalid_selector(`${pseudo}.a`);
     test_invalid_selector(`${pseudo} div`);
     test_invalid_selector(`${pseudo}::after`);
-    test_invalid_selector(`${pseudo}:hover`);
+    test_valid_selector(`${pseudo}:hover`);
     test_invalid_selector(`:not(${pseudo})`);
   }
 </script>

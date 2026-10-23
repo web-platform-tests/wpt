@@ -2,6 +2,7 @@
 <meta charset="utf-8" />
 <title>CSS Selectors: slotted pseudo selectors</title>
 <link rel="help" href="https://drafts.csswg.org/css-shadow/#slotted-pseudo" />
+<link rel="help" href="https://drafts.csswg.org/selectors-4/#pseudo-element-states">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
@@ -20,8 +21,8 @@
   test_invalid_selector("::slotted(0)");
   test_invalid_selector(":slotted(foo)");
   test_invalid_selector("::slotted(foo):first-child");
-  test_invalid_selector("::slotted(foo):hover");
-  test_invalid_selector("::slotted(foo):focus");
+  test_valid_selector("::slotted(foo):hover");
+  test_valid_selector("::slotted(foo):focus");
   test_invalid_selector("::slotted(foo):lang(en)");
   test_invalid_selector("::slotted(foo):dir(ltr)");
   test_invalid_selector('::slotted(foo) + ::slotted(bar)');

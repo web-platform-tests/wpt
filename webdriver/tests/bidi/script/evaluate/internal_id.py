@@ -1,4 +1,5 @@
 import pytest
+from webdriver.bidi.modules.script import ContextTarget, ScriptEvaluateResultException
 
 from ... import recursive_compare, any_string
 
@@ -49,6 +50,55 @@ async def test_remote_values_with_internal_id(
     assert internalId1 == internalId2
 
     recursive_compare(value, result_value)
+
+
+@pytest.mark.parametrize(
+    "result_expression, await_promise",
+    [
+        ("throw [data, data]", False),
+        ("Promise.reject([data, data])", True),
+    ],
+    ids=["throw", "promise-rejection"],
+)
+@pytest.mark.parametrize(
+    "expression, remote_type",
+    [
+        ("[1]", "array"),
+        ("new Map([[true, false]])", "map"),
+        ("new Set(['baz'])", "set"),
+        ("{ baz: 'qux' }", "object"),
+    ],
+)
+async def test_exception_remote_values_with_internal_id(
+    bidi_session,
+    top_context,
+    result_expression,
+    await_promise,
+    expression,
+    remote_type,
+):
+    with pytest.raises(ScriptEvaluateResultException) as exception:
+        await bidi_session.script.evaluate(
+            expression=f"{{const data = {expression}; {result_expression}}}",
+            target=ContextTarget(top_context["context"]),
+            await_promise=await_promise,
+        )
+
+    result_value = exception.value.result["exceptionDetails"]["exception"]
+
+    assert len(result_value["value"]) == 2
+    assert result_value["value"][0]["internalId"] == result_value["value"][1]["internalId"]
+
+    recursive_compare(
+        {
+            "type": "array",
+            "value": [
+                {"type": remote_type, "internalId": any_string},
+                {"type": remote_type, "internalId": any_string},
+            ],
+        },
+        result_value,
+    )
 
 
 async def test_different_remote_values_have_unique_internal_ids(evaluate):

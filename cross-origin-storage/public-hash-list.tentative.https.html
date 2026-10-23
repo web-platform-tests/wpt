@@ -1,0 +1,77 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: the Public Hash List gate on "*"-scoped disclosure</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#public-hash-list
+// https://wicg.github.io/cross-origin-storage/#availability-gating
+//
+// A "*"-scoped entry is disclosed to an origin outside its storing origins
+// (and the origins same site with them) only if its hash is on the Public Hash
+// List ("determine COS disclosure"). A hash is admitted to the list only once
+// it clears a popularity bar, so content generated for this run is never on
+// it, and a cross-site non-storer is refused deterministically.
+//
+// The positive direction, a listed hash being disclosed, depends on
+// implementation-defined list membership and lives in
+// public-hash-list.tentative.optional.https.html.
+const {HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+
+// Every read below must be refused. Repeating it shows the refusal is not a
+// one-off answer that a later read could flip.
+const ATTEMPTS = 8;
+
+async function storeBytes(bytes, options) {
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  const value = Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0')).join('');
+  const hash = cosHash(value);
+  const handle = await navigator.crossOriginStorage.getFileHandle(
+    hash, {...options, create: true});
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([bytes]));
+  await writable.close();
+  return hash;
+}
+
+promise_test(async t => {
+  // Invented here, so it cannot be on any curated list of ubiquitous
+  // resources.
+  const unlistedBytes = new TextEncoder().encode(cosUniqueContent('phl-unlisted'));
+  const unlistedHash = await storeBytes(unlistedBytes, {origins: '*'});
+
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const names = [];
+  for (let i = 0; i < ATTEMPTS; ++i) {
+    const result = await cosRemoteReadDigest(ctx, unlistedHash);
+    assert_false(result.ok,
+      'a "*"-scoped entry whose hash is not on the PHL must never be disclosed ' +
+      'to an origin outside its storing origins');
+    names.push(result.name);
+  }
+  assert_array_equals(names, new Array(ATTEMPTS).fill('NotFoundError'),
+    'every refusal must be indistinguishable from a genuine miss');
+}, 'PHL gate: an unlisted "*"-scoped hash is never disclosed to a cross-site non-storer');
+
+promise_test(async t => {
+  // The gate is only about disclosure to *other* origins. The origin that
+  // stored the bytes reads them back regardless of PHL membership, which is
+  // what keeps the list from becoming a precondition for using the API at all.
+  const unlistedBytes = new TextEncoder().encode(cosUniqueContent('phl-storer'));
+  const hash = await storeBytes(unlistedBytes, {origins: '*'});
+  const handle = await navigator.crossOriginStorage.getFileHandle(hash);
+  const file = await handle.getFile();
+  assert_equals(await cosSha256Hex(new Uint8Array(await file.arrayBuffer())),
+    await cosSha256Hex(unlistedBytes));
+}, 'PHL gate: the storing origin reads its own "*"-scoped entry back whether or not it is listed');
+</script>
+</body>

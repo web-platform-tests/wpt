@@ -1,0 +1,234 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Cross-Origin Storage: fetch() integration, cross-origin</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="../resources/helpers.js"></script>
+<script src="../resources/cross-origin-helpers.js"></script>
+<script src="../resources/integration-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://github.com/WICG/cross-origin-storage#fetch-integration
+// https://github.com/whatwg/fetch/issues/1954
+// https://wicg.github.io/cross-origin-storage/#storing-fetched-resources
+// https://wicg.github.io/cross-origin-storage/#allow-origin-header
+//
+// The scope an entry is stored with decides which origins may later retrieve
+// it, and the fetch integration is bound by exactly the same scoping as
+// getFileHandle(). A refusal surfaces differently: the imperative API rejects
+// with NotFoundError, and a refused lookup here falls through to the network,
+// so the caller sees whatever the network did. For these tests that is an
+// integrity-checked 404, an ordinary fetch failure. That indistinguishability
+// is the point, so these tests assert the *outcome* (bytes or no bytes).
+//
+// Every entry here holds bytes unique to the run, so none of them is on the
+// Public Hash List. A reader that qualifies only through the "*" grant is
+// therefore refused deterministically ("determine COS disclosure"), and a
+// storing, listed, or same-site reader is served deterministically, since the
+// Public Hash List gate and GREASE'ing apply to the "*" grant alone.
+//
+// The list form is bounded by the `Cross-Origin-Storage-Allow-Origin` header
+// on the *fetched resource's* response: "store a fetched resource in
+// Cross-Origin Storage" intersects the declared list with it, and a list left
+// empty falls back to the same-site default. cos-resource.py sends that header
+// when asked to.
+//
+// Each remote read below fetches a URL that 404s on the remote origin, so a
+// successful read there can only have come from COS.
+
+// Stores unique bytes from this document, through the fetch integration
+// itself, at the given scope. `allow`, if given, is the resource's
+// `Cross-Origin-Storage-Allow-Origin` header. Returns what a remote origin
+// needs to ask for the bytes.
+async function storeHere(label, crossOriginStorage, {allow, content} = {}) {
+  content = content ?? cosUniqueContent(`fetch-xorigin-${label}`);
+  const integrity = await cosSha256Integrity(content);
+  const response = await fetch(cosResourceUrl(content, 'text/plain', {allow}),
+                               {integrity, crossOriginStorage});
+  assert_true(response.ok, 'the storing fetch itself succeeded');
+  assert_equals(await response.text(), content);
+  return {content, integrity, hash: cosHash(await cosSha256Hex(content))};
+}
+
+// Runs a COS-opted-in fetch inside a RemoteContext against a URL that 404s
+// there, and reports a plain, serializable result. A DOMException would not
+// survive the boundary with its name intact, and none is expected here
+// anyway: a refused lookup becomes a network failure, not a COS error.
+async function remoteFetchProbe(ctx, integrity, crossOriginStorage) {
+  return ctx.execute_script(async (integrity, crossOriginStorage) => {
+    // Relative to the executor's own origin: a real, fast 404 (a nonexistent
+    // TLD risks a slow or hanging DNS lookup).
+    const brokenUrl = './does-not-exist-' + Math.random() + '.txt';
+    try {
+      const response = await fetch(brokenUrl, {integrity, crossOriginStorage});
+      return {ok: true, text: await response.text(), name: null};
+    } catch (e) {
+      return {ok: false, text: null, name: e.name};
+    }
+  }, [integrity, crossOriginStorage]);
+}
+
+// The fetch-integration counterpart of cosAssertDisclosed().
+function assertFetchDisclosed(result, expectedText, description) {
+  assert_true(result.ok, `${description}: expected to be served from COS, got ${result.name}`);
+  assert_equals(result.text, expectedText, `${description}: content`);
+}
+
+// The fetch-integration counterpart of cosAssertNotDisclosed(): a refused
+// lookup falls through to the network and fails like any integrity-checked 404.
+function assertFetchNotDisclosed(result, description) {
+  assert_false(result.ok, `${description}: expected the lookup to be refused`);
+  assert_equals(result.name, 'TypeError',
+    `${description}: a refused lookup fails as an ordinary network error`);
+}
+
+// Opens a cross-site RemoteContext and returns it with its origin.
+async function openCrossSite() {
+  const origin = cosNextCrossSiteOrigin();
+  const {ctx} = await cosOpenRemoteContext(origin);
+  return {ctx, origin};
+}
+
+promise_test(async t => {
+  const {integrity, hash} = await storeHere('global', '*');
+  const {ctx} = await openCrossSite();
+  assertFetchNotDisclosed(await remoteFetchProbe(ctx, integrity, '*'),
+    'a cross-site fetch of a "*"-scoped entry whose hash is not on the Public Hash List');
+  cosAssertNotDisclosed(await cosRemoteRead(ctx, hash),
+    'a cross-site getFileHandle() of the same entry');
+}, 'fetch, cross-origin: a "*"-scoped entry that is not on the Public Hash List is never served cross-site');
+
+promise_test(async t => {
+  const {integrity} = await storeHere('samesite', '');
+  const {ctx} = await openCrossSite();
+  assertFetchNotDisclosed(await remoteFetchProbe(ctx, integrity, ''),
+    'a same-site-scoped entry is never served to a cross-site origin');
+}, 'fetch, cross-origin: crossOriginStorage: "" (same-site) is never served to a cross-site origin');
+
+promise_test(async t => {
+  // Scope belongs to the entry, not to the request that reads it. An entry
+  // stored same-site must stay same-site no matter how permissive a value a
+  // later reader declares, or "*" on a read would be a way to launder a
+  // narrow entry into a broad one.
+  const {integrity} = await storeHere('no-laundering', '');
+  const {ctx} = await openCrossSite();
+  assertFetchNotDisclosed(await remoteFetchProbe(ctx, integrity, '*'),
+    'declaring "*" on the reading fetch does not widen an entry that was stored same-site');
+}, 'fetch, cross-origin: a wider crossOriginStorage value on a read does not widen a same-site entry');
+
+promise_test(async t => {
+  // The same-site baseline every entry carries: an origin same-site with a
+  // storing origin reads the entry, ahead of the Public Hash List gate and
+  // GREASE'ing, so the read is asserted outright.
+  const {content, integrity, hash} = await storeHere('samesite-baseline', '');
+  const {ctx} = await cosOpenRemoteContext(cosNextSameSiteOrigin());
+  assertFetchDisclosed(await remoteFetchProbe(ctx, integrity, ''), content,
+    'a same-site origin is served a same-site-scoped entry');
+  cosAssertDisclosed(await cosRemoteRead(ctx, hash), content,
+    'a same-site origin reads the same entry through getFileHandle()');
+}, 'fetch, cross-origin: a same-site origin is always served an entry the fetch integration stored');
+
+promise_test(async t => {
+  const {ctx, origin} = await openCrossSite();
+  const {content, integrity, hash} = await storeHere('list', [origin], {allow: origin});
+  assertFetchDisclosed(await remoteFetchProbe(ctx, integrity, [origin]), content,
+    'a cross-site origin that is listed and authorized by the resource\'s header is served');
+  cosAssertDisclosed(await cosRemoteRead(ctx, hash), content,
+    'the listed origin reads the same entry through getFileHandle()');
+}, 'fetch, cross-origin: crossOriginStorage: [origin] authorizes a cross-site origin the resource\'s header names');
+
+promise_test(async t => {
+  // Without a header on the resource's response the scope ceiling is empty,
+  // every listed origin is dropped, and the entry falls back to the same-site
+  // default ("apply a COS scope ceiling").
+  const {ctx, origin} = await openCrossSite();
+  const {integrity, hash} = await storeHere('list-no-header', [origin]);
+  assertFetchNotDisclosed(await remoteFetchProbe(ctx, integrity, [origin]),
+    'a listed origin the resource does not authorize is not served');
+  cosAssertNotDisclosed(await cosRemoteRead(ctx, hash),
+    'nor can it read the entry through getFileHandle()');
+}, 'fetch, cross-origin: crossOriginStorage: [origin] without the resource\'s header does not authorize a cross-site origin');
+
+promise_test(async t => {
+  // An origin that is not on the list is refused just as any cross-site origin
+  // is, which is what makes the list a restriction and not a hint.
+  //
+  // Every origin in the cross-site pool belongs to one site, and a listed
+  // origin admits the origins same site with it, so listing a cross-site pool
+  // origin would admit the reader below. The listed origin is therefore one of
+  // this document's own site, other than this origin, and the reader comes
+  // from the cross-site pool, outside every grant the entry carries.
+  const listed = cosNextSameSiteOrigin();
+  const {integrity} = await storeHere('list-excluded', [listed], {allow: listed});
+  const {ctx: excluded} = await openCrossSite();
+  assertFetchNotDisclosed(await remoteFetchProbe(excluded, integrity, [listed]),
+    'an origin absent from the list is not served the entry');
+}, 'fetch, cross-origin: crossOriginStorage: [origin] refuses a cross-site origin that is not listed');
+
+promise_test(async t => {
+  // The ceiling comes from the fetched resource's response. The loading
+  // document's own header plays no part, so a document cannot declare a
+  // resource it does not serve shareable with origins of its choosing. The
+  // writer here is a same-origin document whose own header names the reader;
+  // the second write, of a resource that names the reader itself, is the
+  // control showing that the reader is otherwise reachable.
+  const {ctx: reader, origin} = await openCrossSite();
+  const {ctx: writer} = await cosOpenRemoteContext(location.origin,
+    {pipeHeader: cosAllowOriginPipe(origin)});
+
+  const withoutHeader = cosUniqueContent('fetch-doc-ceiling-ignored');
+  const withHeader = cosUniqueContent('fetch-doc-ceiling-control');
+  const entries = [];
+  for (const [content, allow] of [[withoutHeader, undefined], [withHeader, origin]]) {
+    const integrity = await cosSha256Integrity(content);
+    const url = cosResourceUrl(content, 'text/plain', {allow});
+    const stored = await writer.execute_script(async (url, integrity, origin) => {
+      const response = await fetch(url, {integrity, crossOriginStorage: [origin]});
+      return response.ok && (await response.text()).length > 0;
+    }, [url, integrity, origin]);
+    assert_true(stored, 'the storing fetch itself succeeded');
+    entries.push({content, hash: cosHash(await cosSha256Hex(content))});
+  }
+
+  cosAssertNotDisclosed(await cosRemoteRead(reader, entries[0].hash),
+    'the writing document\'s header does not authorize a list for a resource without one');
+  cosAssertDisclosed(await cosRemoteRead(reader, entries[1].hash), entries[1].content,
+    'the resource\'s own header does authorize it');
+}, 'fetch, cross-origin: the scope ceiling comes from the fetched resource, never from the loading document');
+
+for (const [label, allowFor] of [
+  ['"*"', () => '*'],
+  ['a header that also names a non-potentially-trustworthy origin',
+   (origin) => `${origin}, http://example.test`],
+]) {
+  promise_test(async t => {
+    // "parse a COS scope ceiling" returns an empty set for a header holding
+    // "*" or any token that is not a potentially trustworthy http(s) origin,
+    // even next to a valid one. The failure is closed: it authorizes nothing.
+    const {ctx, origin} = await openCrossSite();
+    const {hash} = await storeHere('bad-header', [origin], {allow: allowFor(origin)});
+    cosAssertNotDisclosed(await cosRemoteRead(ctx, hash),
+      `a resource header of ${label} authorizes no listed origin`);
+  }, `fetch, cross-origin: a Cross-Origin-Storage-Allow-Origin header of ${label} authorizes nothing`);
+}
+
+promise_test(async t => {
+  // Visibility can be upgraded but never downgraded. Later writes of the same
+  // bytes with "*" and with "" leave the listed origin's grant in place, and
+  // the listed origin needs no Public Hash List membership to use it.
+  const {ctx, origin} = await openCrossSite();
+  const content = cosUniqueContent('fetch-upgrade-additive');
+  const {hash} = await storeHere('upgrade-list', [origin], {allow: origin, content});
+  await storeHere('upgrade-global', '*', {content});
+  await storeHere('upgrade-samesite', '', {content});
+  cosAssertDisclosed(await cosRemoteRead(ctx, hash), content,
+    'a listed origin keeps its grant after later "*" and "" writes of the same bytes');
+}, 'fetch, cross-origin: later fetch() writes of the same bytes never narrow an entry\'s visibility');
+</script>
+</body>

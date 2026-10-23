@@ -1,0 +1,57 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: fetch() integration in a service worker</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="../resources/helpers.js"></script>
+<script src="../resources/integration-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#storing-fetched-resources
+// https://wicg.github.io/cross-origin-storage/#permissions-policy-integration
+//
+// A ServiceWorkerGlobalScope has an empty owner set, so "check Cross-Origin
+// Storage permission" returns false there, and "store a fetched resource in
+// Cross-Origin Storage" returns before storing anything. A crossOriginStorage
+// fetch() made by a service worker therefore never writes to COS. This page is
+// same-origin with the service worker, so it would be a storing origin of any
+// entry the worker had written, and reads it back unconditionally.
+
+// Registers resources/cos-fetch-sw.js under a fresh scope and resolves with
+// a function that runs fetch(url, init) inside it.
+async function cosServiceWorkerFetcher(t) {
+  const scope = `../resources/cos-fetch-sw-scope-${token()}/`;
+  const reg = await navigator.serviceWorker.register('../resources/cos-fetch-sw.js', {scope});
+  t.add_cleanup(() => reg.unregister());
+  const sw = reg.installing || reg.waiting || reg.active;
+  await new Promise((resolve) => {
+    if (reg.active) return resolve();
+    sw.addEventListener('statechange', () => {
+      if (sw.state === 'activated') resolve();
+    });
+  });
+  return (url, init) => new Promise((resolve) => {
+    const channel = new MessageChannel();
+    channel.port1.onmessage = ({data}) => resolve(data);
+    reg.active.postMessage({port: channel.port2, url, init}, [channel.port2]);
+  });
+}
+
+promise_test(async t => {
+  const swFetch = await cosServiceWorkerFetcher(t);
+  for (const scope of ['', '*']) {
+    const content = cosUniqueContent(`sw-fetch-store-${scope || 'samesite'}`);
+    const integrity = await cosSha256Integrity(content);
+    const result = await swFetch(cosResourceUrl(content), {integrity, crossOriginStorage: scope});
+    assert_true(result.ok,
+      `the service worker's integrity-checked fetch itself succeeds (crossOriginStorage: "${scope}")`);
+    assert_equals(result.text, content);
+    await cosAssertNotStored(t, cosHash(await cosSha256Hex(content)),
+      `a service worker's fetch with crossOriginStorage: "${scope}" stores nothing`);
+  }
+}, 'fetch, service worker: a crossOriginStorage fetch() in a service worker never stores into COS');
+</script>
+</body>

@@ -22,89 +22,87 @@ def ignore_exceptions(f):
 
 
 def cleanup_session(session):
-    """Clean-up the current session for a clean state."""
+    """Clean-up the current session for a clean state.
+
+    It runs after every single subtest, so it sends as few commands as
+    possible. The window size and position are not reset here, because the
+    session fixtures enforce them before each test anyway.
+    """
     @ignore_exceptions
-    def _dismiss_user_prompts(session):
-        """Dismiss any open user prompts in windows."""
-        current_window = session.window_handle
-
-        for window in _windows(session):
-            session.window_handle = window
-            try:
-                session.alert.dismiss()
-            except webdriver.NoSuchAlertException:
-                pass
-
-        session.window_handle = current_window
-
-    @ignore_exceptions
-    def _ensure_valid_window(session):
-        """If current window was closed, ensure to have a valid one selected."""
+    def _dismiss_user_prompt(session):
+        """Dismiss the open user prompt in the current window, if any."""
         try:
-            session.window_handle
-        except webdriver.NoSuchWindowException:
-            handles = session.handles
-            if handles:
-                # Update only when there is at least one valid window left.
-                session.window_handle = handles[0]
+            session.alert.dismiss()
+        except webdriver.NoSuchAlertException:
+            pass
+
+    @ignore_exceptions
+    def _close_window(session, window):
+        """Dismiss the open user prompt in the given window, and close it."""
+        session.window_handle = window
+        # Closing a window with an open user prompt would fail.
+        _dismiss_user_prompt(session)
+        session.window.close()
 
     @ignore_exceptions
     def _restore_timeouts(session):
         """Restore modified timeouts to their default values."""
-        session.timeouts.implicit = defaults.IMPLICIT_WAIT_TIMEOUT
-        session.timeouts.page_load = defaults.PAGE_LOAD_TIMEOUT
-        session.timeouts.script = defaults.SCRIPT_TIMEOUT
-
-    @ignore_exceptions
-    def _restore_window_state(session):
-        """Reset window to an acceptable size.
-
-        This also includes bringing it out of maximized, minimized,
-        or fullscreen state.
-        """
-        if session.capabilities.get("setWindowRect"):
-            session.window.size = defaults.WINDOW_SIZE
+        # A single command for all the timeouts saves round-trips.
+        session.send_session_command("POST", "timeouts", {
+            "implicit": defaults.IMPLICIT_WAIT_TIMEOUT * 1000,
+            "pageLoad": defaults.PAGE_LOAD_TIMEOUT * 1000,
+            "script": defaults.SCRIPT_TIMEOUT * 1000,
+        })
 
     @ignore_exceptions
     def _restore_windows(session):
-        """Close superfluous windows opened by the test.
+        """Dismiss open user prompts and close superfluous windows opened
+        by the test.
 
-        It will not end the session implicitly by closing the last window.
+        The current window is kept, or the first remaining one if the
+        current window was closed, so it will not end the session implicitly
+        by closing the last window. Its top-level browsing context ends up
+        selected.
         """
-        current_window = session.window_handle
+        # Query the window handles only once.
+        handles = session.handles
+        if not handles:
+            return
 
-        for window in _windows(session, exclude=[current_window]):
-            session.window_handle = window
-            if len(session.handles) > 1:
-                session.window.close()
+        try:
+            current_window = session.window_handle
+        except webdriver.NoSuchWindowException:
+            current_window = None
 
-        session.window_handle = current_window
+        if current_window in handles:
+            window_to_keep = current_window
+        else:
+            # The current window was closed, so select the first remaining one.
+            window_to_keep = handles[0]
+
+        for window in handles:
+            if window != window_to_keep:
+                _close_window(session, window)
+
+        # Switching to the window also selects its top-level browsing context,
+        # and unlike switching frames it doesn't fail for open user prompts.
+        session.window_handle = window_to_keep
+        _dismiss_user_prompt(session)
 
     _restore_timeouts(session)
-    _ensure_valid_window(session)
-    _dismiss_user_prompts(session)
     _restore_windows(session)
-    _restore_window_state(session)
-    _switch_to_top_level_browsing_context(session)
 
 
-@ignore_exceptions
-def _switch_to_top_level_browsing_context(session):
-    """If the current browsing context selected by WebDriver is a
-    `<frame>` or an `<iframe>`, switch it back to the top-level
-    browsing context.
-    """
-    session.switch_to_frame(None)
-
-
-def _windows(session, exclude=None):
-    """Set of window handles, filtered by an `exclude` list if
-    provided.
-    """
-    if exclude is None:
-        exclude = []
-    wins = [w for w in session.handles if w not in exclude]
-    return set(wins)
+def set_default_window_rect(session):
+    """Set the default window size and position with a single command."""
+    width, height = defaults.WINDOW_SIZE
+    x, y = defaults.WINDOW_POSITION
+    try:
+        session.window.rect = {"x": x, "y": y, "width": width, "height": height}
+    except (webdriver.UnknownErrorException, webdriver.InvalidArgumentException):
+        # Silently ignore this error as the command is not implemented for
+        # Android, the same way the window `size` and `position` setters do.
+        pass
 
 
 def document_dimensions(session):

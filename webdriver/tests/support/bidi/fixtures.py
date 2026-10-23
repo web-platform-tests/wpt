@@ -29,9 +29,8 @@ from webdriver.bidi.undefined import UNDEFINED
 from webdriver.error import TimeoutException
 
 import tests.support.fixtures as global_fixtures
-from tests.support import defaults
 from tests.support.asserts import assert_pdf
-from tests.support.classic.helpers import cleanup_session
+from tests.support.classic.helpers import cleanup_session, set_default_window_rect
 from tests.support.helpers import deep_update
 from tests.support.image import cm_to_px, png_dimensions, ImageDifference
 from tests.support.sync import AsyncPoll
@@ -73,8 +72,7 @@ async def bidi_session(capabilities, configuration):
 
             # Enforce a fixed default window size and position
             if session.capabilities.get("setWindowRect"):
-                session.window.size = defaults.WINDOW_SIZE
-                session.window.position = defaults.WINDOW_POSITION
+                set_default_window_rect(session)
 
             yield session.bidi_session
 

@@ -16,8 +16,11 @@ async def test_address(bidi_session, top_context, load_form, get_element, select
     assert result == {}
 
     values = await get_form_control_values(bidi_session, top_context)
-    assert values["given-name"] == "John"
-    assert values["family-name"] == "Smith"
-    assert values["address-line1"] == "123 Main St"
-    assert values["address-level2"] == "San Francisco"
-    assert values["postal-code"] == "94102"
+    assert values == {
+        "given-name": "John",
+        "family-name": "Smith",
+        "address-line1": "123 Main St",
+        "address-level2": "San Francisco",
+        "address-level1": "CA",
+        "postal-code": "94102",
+    }

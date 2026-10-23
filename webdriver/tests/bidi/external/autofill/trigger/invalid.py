@@ -32,20 +32,29 @@ async def test_params_context_invalid_value(bidi_session, load_form, get_element
 
 
 @pytest.mark.parametrize("value", [None, False, 42, "foo", []])
-async def test_params_element_invalid_type(bidi_session, top_context, load_form, value):
-    await load_form(CARD_FORM)
-
+async def test_params_element_invalid_type(bidi_session, top_context, value):
     with pytest.raises(InvalidArgumentException):
         await bidi_session.autofill.trigger(
             context=top_context["context"], element=value, card=CARD
         )
 
 
-async def test_params_element_invalid_shared_reference_value(
-    bidi_session, top_context, load_form
-):
-    await load_form(CARD_FORM)
+async def test_params_element_sharedId_missing(bidi_session, top_context):
+    with pytest.raises(InvalidArgumentException):
+        await bidi_session.autofill.trigger(
+            context=top_context["context"], element={}, card=CARD
+        )
 
+
+@pytest.mark.parametrize("value", [None, False, 42, {}, []])
+async def test_params_element_sharedId_invalid_type(bidi_session, top_context, value):
+    with pytest.raises(InvalidArgumentException):
+        await bidi_session.autofill.trigger(
+            context=top_context["context"], element={"sharedId": value}, card=CARD
+        )
+
+
+async def test_params_element_invalid_shared_reference_value(bidi_session, top_context):
     with pytest.raises(NoSuchNodeException):
         await bidi_session.autofill.trigger(
             context=top_context["context"],

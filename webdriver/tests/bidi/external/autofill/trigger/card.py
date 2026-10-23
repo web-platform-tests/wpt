@@ -16,5 +16,9 @@ async def test_card(bidi_session, top_context, load_form, get_element, selector)
     assert result == {}
 
     values = await get_form_control_values(bidi_session, top_context)
-    assert values["cc-name"] == CARD["name"]
-    assert values["cc-number"] == CARD["number"]
+    assert values == {
+        "cc-name": CARD["name"],
+        "cc-number": CARD["number"],
+        "cc-exp-month": CARD["expiryMonth"],
+        "cc-exp-year": CARD["expiryYear"],
+    }

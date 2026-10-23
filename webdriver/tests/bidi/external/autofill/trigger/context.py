@@ -15,13 +15,21 @@ async def test_context(bidi_session, top_context, new_tab, load_form, get_elemen
     )
 
     values = await get_form_control_values(bidi_session, new_tab)
-    assert values["cc-name"] == CARD["name"]
-    assert values["cc-number"] == CARD["number"]
+    assert values == {
+        "cc-name": CARD["name"],
+        "cc-number": CARD["number"],
+        "cc-exp-month": CARD["expiryMonth"],
+        "cc-exp-year": CARD["expiryYear"],
+    }
 
     # Make sure that the form in the other context is not filled.
     values = await get_form_control_values(bidi_session, top_context)
-    assert values["cc-name"] == ""
-    assert values["cc-number"] == ""
+    assert values == {
+        "cc-name": "",
+        "cc-number": "",
+        "cc-exp-month": "",
+        "cc-exp-year": "",
+    }
 
 
 @pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
@@ -42,5 +50,9 @@ async def test_iframe(bidi_session, new_tab, inline, get_element, domain):
     )
 
     values = await get_form_control_values(bidi_session, iframe_context)
-    assert values["cc-name"] == CARD["name"]
-    assert values["cc-number"] == CARD["number"]
+    assert values == {
+        "cc-name": CARD["name"],
+        "cc-number": CARD["number"],
+        "cc-exp-month": CARD["expiryMonth"],
+        "cc-exp-year": CARD["expiryYear"],
+    }

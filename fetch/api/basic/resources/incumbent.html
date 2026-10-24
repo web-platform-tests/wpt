@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Incumbent global page used as a test helper</title>
+
+<h1>Incumbent</h1>
+
+<script>
+"use strict";
+
+window.runResponseError = () => {
+  return parent.frames[1].Response.error.call(parent.frames[2]);
+};
+
+window.runResponseRedirect = (code, location) => {
+  return parent.frames[1].Response.redirect.call(parent.frames[2], code, location);
+}
+
+window.runFetch = (input, init = {}) => {
+  return parent.frames[1].fetch.call(parent.frames[2], input, init);
+}
+</script>

@@ -52,16 +52,6 @@ function testEmptyModule(makeBufferSource, description) {
   }, `WebAssembly.compile() rejects with a CompileError for ${description}`);
 }
 
-function testTypeError(makeBufferSource, description) {
-  test(() => {
-    assert_throws_js(TypeError, () => WebAssembly.validate(makeBufferSource()));
-  }, `WebAssembly.validate() throws a TypeError for ${description}`);
-
-  promise_test(t => {
-    return promise_rejects_js(t, TypeError, WebAssembly.compile(makeBufferSource()));
-  }, `WebAssembly.compile() rejects with a TypeError for ${description}`);
-}
-
 // Buffers passed directly, exercising "byte length" for buffer types.
 
 testValidModule(() => {
@@ -166,9 +156,11 @@ test(() => {
   assert_true(WebAssembly.validate(view), "after growing");
 }, "Growing a SharedArrayBuffer changes what a length-tracking Uint8Array holds");
 
-// %TypedArray%.prototype.byteLength and %TypedArray%.prototype.byteOffset both
-// report 0 for an out-of-bounds typed array rather than throwing, so Web IDL
-// copies zero bytes from one and the module comes out empty.
+// An out-of-bounds view reports a byte length and byte offset of 0 rather than
+// throwing, so Web IDL copies zero bytes from it and the module comes out
+// empty. For a DataView, this assumes tc39/ecma262#3972, which makes
+// DataView.prototype.byteLength and DataView.prototype.byteOffset return 0
+// like their %TypedArray% counterparts.
 
 testEmptyModule(() => {
   const rab = new ArrayBuffer(8, { maxByteLength: 8 });
@@ -184,21 +176,15 @@ testEmptyModule(() => {
   return view;
 }, "an out-of-bounds fixed-length Uint8Array");
 
-// DataView is the exception: DataView.prototype.byteLength and
-// DataView.prototype.byteOffset throw for an out-of-bounds view, so the copy
-// fails and the TypeError is propagated to the caller.
-
-testTypeError(() => {
+testEmptyModule(() => {
   const rab = new ArrayBuffer(8, { maxByteLength: 8 });
   const view = new DataView(rab, 4);
   rab.resize(2);
   return view;
 }, "an out-of-bounds DataView");
 
-// Detachedness is checked before the byte length is read, so a detached
-// DataView is treated as empty even though DataView.prototype.byteLength would
-// throw for it. This is the one case where an out-of-bounds DataView does not
-// produce a TypeError.
+// A detached buffer source likewise has a byte length of 0, whether it is a
+// buffer or a view.
 
 testEmptyModule(() => {
   const ab = new ArrayBuffer(emptyModuleBinary.length);

@@ -37,6 +37,9 @@ promise_test(async (t) => {
   });
 
   controller.enqueue(new Uint8Array(0x110).fill(0x42));
+  assert_false(flag, 'patched then() should not be called during enqueue()');
+
+  await flushAsyncEvents();
   assert_true(flag, 'patched then() should be called');
 
   // The first read() is filled entirely with 0x100 bytes

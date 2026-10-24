@@ -19,6 +19,15 @@ runPropertyTests('text-emphasis-position', [
   { syntax: 'under' },
 ]);
 
+runInvalidKeywordTests('text-emphasis-position', [
+  'left',
+  'right',
+  'none',
+  'over left',
+  'under right',
+  'auto left',
+]);
+
 // We can not set 'under right' or 'over right' via Typed OM.
 // On the other hand, we might get a CSSKeywordValue instance for them instead
 // of a CSSStyleValue because they can be represented as just 'under' / 'over'

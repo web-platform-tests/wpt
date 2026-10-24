@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP registerTool rejects an empty description</title>
+<link rel="help" href="https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+promise_test(async t => {
+  await promise_rejects_dom(t, 'InvalidStateError',
+    document.modelContext.registerTool({
+      name: 'empty_description',
+      description: '',
+      execute: async () => 'unused'
+    }));
+
+  const tools = await document.modelContext.getTools();
+  assert_false(tools.some(tool => tool.name === 'empty_description'),
+               'A rejected tool must not be registered');
+}, 'registerTool() rejects an empty description with InvalidStateError.');
+
+promise_test(async t => {
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+  await document.modelContext.registerTool({
+    name: 'whitespace_description',
+    description: ' ',
+    execute: async () => 'unused'
+  }, { signal: controller.signal });
+
+  const tools = await document.modelContext.getTools();
+  const tool = tools.find(tool => tool.name === 'whitespace_description');
+  assert_true(!!tool, 'A whitespace-only description is not empty');
+  assert_equals(tool.description, ' ');
+}, 'registerTool() accepts a whitespace-only description.');
+</script>
+</body>
+</html>

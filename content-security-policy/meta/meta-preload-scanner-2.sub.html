@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+
+<body>
+
+<!-- Block parser for a while, to allow HTML preload scanner to work on <img>s
+     before the CSP <meta> is inserted by the script below. -->
+<script src="/common/slow.py?delay=2000"></script>
+
+<script>
+const meta = document.createElement('meta');
+meta.setAttribute('http-equiv', 'Content-Security-Policy');
+meta.setAttribute('content', "img-src 'self' http://{{hosts[][www2]}}:{{ports[http][0]}}");
+document.head.appendChild(meta);
+
+async function checkPrefetched(img) {
+  const url = new URL(img.getAttribute('src'), location.href);
+  const key = url.searchParams.get('key');
+  const value = url.searchParams.get('value');
+  const res = await fetch(`/common/security-features/subresource/xhr.py?key=${key}&action=take&path=/content-security-policy/meta`);
+
+  return [(await res.json()).result, value];
+}
+
+promise_test(async () => {
+  await new Promise(resolve => window.onload = resolve);
+
+  // Image should not be *preloaded* when blocked by CSP.
+  assert_true(img_allowed.onload_called, 'img_allowed.onload_called');
+  assert_equals(img_allowed.onerror_called, undefined, 'img_allowed.onerror_called');
+
+  assert_equals(img_blocked_dynamic_csp.onload_called, undefined, 'img_blocked_dynamic_csp.onload_called');
+  assert_true(img_blocked_dynamic_csp.onerror_called, 'img_blocked_dynamic_csp.onerror_called');
+
+  // Image should not be *prefetched* when blocked by CSP.
+  // If the image is (pre)fetched, `value` is set to stash and obtained here.
+  {
+    const [actual, expectedIfPrefetched] = await checkPrefetched(img_allowed);
+    assert_equals(actual, expectedIfPrefetched,
+        "img_allowed request should reach the server");
+  }
+  {
+    const [actual, expectedIfPrefetched] = await checkPrefetched(img_blocked_dynamic_csp);
+    assert_not_equals(actual, expectedIfPrefetched,
+        "img_blocked_dynamic_csp request should NOT reach the server");
+  }
+}, "Dynamically inserted CSP meta tag should block imgs below (without parser-inserted CSP)");
+</script>
+<img id="img_blocked_dynamic_csp"
+  src="http://{{hosts[][www1]}}:{{ports[http][0]}}/common/security-features/subresource/image.py?key={{uuid()}}&action=put&value={{uuid()}}&path=/content-security-policy/meta"
+  onload="this.onload_called=true;" onerror="this.onerror_called=true;">
+<img id="img_allowed"
+  src="http://{{hosts[][www2]}}:{{ports[http][0]}}/common/security-features/subresource/image.py?key={{uuid()}}&action=put&value={{uuid()}}&path=/content-security-policy/meta"
+  onload="this.onload_called=true;" onerror="this.onerror_called=true;">
+</body>
+</html>

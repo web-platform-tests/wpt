@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8" />
+<title>HTML partial updates: the body-to-parent scope redirection only applies to the document's body</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inhead">
+<link rel="help" href="https://github.com/WICG/declarative-partial-updates">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+// When a <template for> is parsed directly inside the body element of its
+// node document, markers are looked up in the body's parent so that <head>
+// can be patched from <body>. That redirection is keyed on the body element
+// of the document, not on the context element of a fragment parser.
+
+function head_markup(name) {
+  return `<!doctype html><head><?marker name="${name}"></head><body></body>`;
+}
+
+async function load_iframe(t, srcdoc) {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  await new Promise(resolve => {
+    iframe.onload = resolve;
+    iframe.srcdoc = srcdoc;
+    document.body.append(iframe);
+  });
+  return iframe.contentDocument;
+}
+
+function assert_head_not_patched(doc, root = doc.body) {
+  const marker = doc.head.firstChild;
+  assert_equals(marker.nodeType, Node.PROCESSING_INSTRUCTION_NODE, "marker is kept in head");
+  assert_equals(doc.getElementById("added"), null, "head is not patched");
+  const template = root.querySelector('template[for="h"]');
+  assert_not_equals(template, null, "template is inserted as a regular template");
+  assert_equals(template.content.querySelector("#added").localName, "meta");
+}
+
+const template_markup = '<template for="h"><meta id="added"></template>';
+
+const setters = {
+  innerHTML: (body, markup) => { body.innerHTML = markup; },
+  setHTMLUnsafe: (body, markup) => body.setHTMLUnsafe(markup),
+  insertAdjacentHTML: (body, markup) => body.insertAdjacentHTML("beforeend", markup),
+  appendHTMLUnsafe: (body, markup) => body.appendHTMLUnsafe(markup),
+  createContextualFragment: (body, markup) => {
+    const range = body.ownerDocument.createRange();
+    range.selectNodeContents(body);
+    body.append(range.createContextualFragment(markup));
+  },
+};
+
+for (const [name, setter] of Object.entries(setters)) {
+  promise_test(async (t) => {
+    const doc = await load_iframe(t, head_markup("h"));
+    setter(doc.body, template_markup);
+    assert_head_not_patched(doc);
+  }, `${name} on the document's body does not patch markers in head`);
+}
+
+promise_test(async (t) => {
+  const doc = await load_iframe(t, head_markup("h"));
+  const body = doc.createElement("body");
+  body.innerHTML = template_markup;
+  assert_head_not_patched(doc, body);
+}, "innerHTML on a detached body does not patch markers in the document's head");
+
+promise_test(async (t) => {
+  const doc = await load_iframe(t, head_markup("h"));
+  const body = doc.createElement("body");
+  body.innerHTML = '<div><?start name="x">old<?end></div><template for="x">new</template>';
+  assert_equals(body.innerHTML, "<div>new</div>");
+
+  body.innerHTML = '<?start name="x">old<?end><template for="x">new</template>';
+  assert_equals(body.innerHTML, "new");
+}, "innerHTML on a detached body patches markers within the fragment");
+
+promise_test(async (t) => {
+  const doc = await load_iframe(t, head_markup("h"));
+  const html = doc.createElement("html");
+  html.innerHTML = `<head><?marker name="h"></head><body>${template_markup}</body>`;
+  const head = html.querySelector("head");
+  assert_equals(head.firstChild.nodeType, Node.PROCESSING_INSTRUCTION_NODE, "marker is kept in the fragment's head");
+  assert_equals(html.querySelector("meta"), null, "neither head is patched");
+  assert_equals(doc.getElementById("added"), null);
+  assert_head_not_patched(doc, html.querySelector("body"));
+}, "A body element that is not the document's body does not redirect the scope to its parent");
+</script>
+</body>

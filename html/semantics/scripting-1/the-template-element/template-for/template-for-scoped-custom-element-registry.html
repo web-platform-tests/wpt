@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8" />
+<title>HTML partial updates: patched elements use the custom element registry of the tree they are inserted into</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#create-an-element-for-the-token">
+<link rel="help" href="https://github.com/WICG/declarative-partial-updates">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+class GlobalFoo extends HTMLElement {}
+customElements.define("x-foo", GlobalFoo);
+</script>
+
+<!-- Control: patching in the light tree uses the global registry. -->
+<div id="light"><?marker name="light"></div>
+<template for="light"><x-foo id="light-foo"></x-foo></template>
+
+<!-- The template is parsed by the document parser, whose document has the
+     global registry, but the patch target is inside a shadow root with a
+     null registry. Elements are created with the registry of their intended
+     parent, so the patched <x-foo> must not be upgraded by the global
+     definition, just like the unpatched one next to it. -->
+<div id="host">
+  <template shadowrootmode="open" shadowrootcustomelementregistry>
+    <x-foo id="unpatched"></x-foo>
+    <span><?marker name="shadow"></span>
+    <template for="shadow"><x-foo id="patched"></x-foo></template>
+  </template>
+</div>
+
+<script>
+test(() => {
+  const foo = document.getElementById("light-foo");
+  assert_true(foo instanceof GlobalFoo);
+  assert_equals(foo.customElementRegistry, customElements);
+}, "Patched element in the light tree uses the global registry (control)");
+
+test(() => {
+  const shadow = document.getElementById("host").shadowRoot;
+  assert_equals(shadow.customElementRegistry, null);
+
+  const unpatched = shadow.getElementById("unpatched");
+  assert_false(unpatched instanceof GlobalFoo, "unpatched element is not upgraded");
+  assert_equals(unpatched.customElementRegistry, null);
+
+  const patched = shadow.querySelector("span > x-foo");
+  assert_not_equals(patched, null, "the patch was applied");
+  assert_equals(patched.id, "patched");
+  assert_equals(shadow.querySelector("template"), null);
+  assert_false(patched instanceof GlobalFoo, "patched element is not upgraded by the document's registry");
+  assert_equals(patched.customElementRegistry, null);
+  assert_equals(Object.getPrototypeOf(patched), HTMLElement.prototype);
+}, "Patched element inside a declarative shadow root with a null registry is not upgraded by the global registry");
+
+function makeHost(t, registry) {
+  const host = document.createElement("div");
+  document.body.append(host);
+  t.add_cleanup(() => host.remove());
+  return host.attachShadow({ mode: "open", customElementRegistry: registry });
+}
+
+test((t) => {
+  const scoped = new CustomElementRegistry();
+  class ScopedFoo extends HTMLElement {}
+  scoped.define("x-foo", ScopedFoo);
+  const shadow = makeHost(t, scoped);
+  shadow.setHTMLUnsafe('<span><?marker name="x"></span><template for="x"><x-foo></x-foo></template>');
+  const foo = shadow.querySelector("span > x-foo");
+  assert_not_equals(foo, null, "the patch was applied");
+  assert_true(foo instanceof ScopedFoo, "patched element is upgraded by the shadow root's registry");
+  assert_false(foo instanceof GlobalFoo);
+  assert_equals(foo.customElementRegistry, scoped);
+}, "setHTMLUnsafe on a shadow root with a scoped registry: patched element uses the scoped registry");
+
+test((t) => {
+  const scoped = new CustomElementRegistry();
+  const shadow = makeHost(t, scoped);
+  shadow.setHTMLUnsafe('<span><?marker name="x"></span><template for="x"><x-foo></x-foo></template>');
+  const foo = shadow.querySelector("span > x-foo");
+  assert_not_equals(foo, null, "the patch was applied");
+  assert_false(foo instanceof GlobalFoo, "patched element is not upgraded by the document's registry");
+  assert_equals(foo.customElementRegistry, scoped);
+  class ScopedFoo extends HTMLElement {}
+  scoped.define("x-foo", ScopedFoo);
+  assert_true(foo instanceof ScopedFoo, "patched element is upgraded once the scoped registry defines it");
+}, "setHTMLUnsafe on a shadow root with an empty scoped registry: patched element is not upgraded by the global registry");
+
+promise_test(async (t) => {
+  const scoped = new CustomElementRegistry();
+  class ScopedFoo extends HTMLElement {}
+  scoped.define("x-foo", ScopedFoo);
+  const shadow = makeHost(t, scoped);
+  // The marker is a child of the shadow root itself, so the patch target is
+  // the live ShadowRoot rather than a node created by this parser.
+  shadow.innerHTML = '<?marker name="x">';
+  const writer = shadow.streamAppendHTMLUnsafe().getWriter();
+  await writer.write('<template for="x"><x-foo></x-foo></template>');
+  await writer.close();
+  const foo = shadow.querySelector("x-foo");
+  assert_not_equals(foo, null, "the patch was applied");
+  assert_true(foo instanceof ScopedFoo, "patched element is upgraded by the shadow root's registry");
+  assert_false(foo instanceof GlobalFoo);
+  assert_equals(foo.customElementRegistry, scoped);
+}, "Streaming into a shadow root with a scoped registry: element patched directly into the shadow root uses the scoped registry");
+</script>

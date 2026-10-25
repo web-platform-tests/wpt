@@ -11,8 +11,8 @@
 # information has been redirected to the stderr.
 
 UNICODE_DATA_FILE='UnicodeData.txt'
-UNICODE_DATA_URL="http://www.unicode.org/Public/8.0.0/ucd/$UNICODE_DATA_FILE"
-UNICODE_DATA_DIGEST='38b17e1118206489a7e0ab5d29d7932212d38838df7d3ec025ecb58e8798ec20'
+UNICODE_DATA_URL="https://www.unicode.org/Public/18.0.0/ucd/$UNICODE_DATA_FILE"
+UNICODE_DATA_DIGEST='0736451de439ae7baf1425136617da495e09ee5afbe6e394374db7009ea08950'
 
 TEST_FILE='text-emphasis-style-property-010%s.html'
 REF_FILE='text-emphasis-style-property-010-ref.html'

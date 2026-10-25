@@ -543,21 +543,26 @@
           const ref_node = document.createElement("span");
           parent.appendChild(ref_node);
 
+          const other_parent = document.createElement("div");
+          other_parent.appendChild(document.createTextNode("unrelated"));
+          window.displace_ref = () => other_parent.appendChild(ref_node);
+          t.add_cleanup(() => { delete window.displace_ref; });
+
           const writer = create_unsafe_stream(parent, ref_node).getWriter();
-          await writer.write("A");
-          ref_node.remove();
           await promise_rejects_dom(
             t,
             "HierarchyRequestError",
-            writer.write(chunk),
-            `Chunk containing only ${label} after displacement must error the stream`,
+            writer.write("A<script>window.displace_ref();<" + "/script>" + chunk),
+            `${label} as the only token after displacement must error the stream`,
           );
           await promise_rejects_dom(
             t,
             "HierarchyRequestError",
             writer.closed,
           );
-        }, `${method_name}: a chunk whose only token after displacement is ${label} errors the stream`);
+          assert_equals(other_parent.innerHTML, "unrelated<span></span>", `${label} must not be inserted before the displaced ref_node`);
+          assert_equals(parent.innerHTML, `${prefix}A<script>window.displace_ref();<` + "/script>");
+        }, `${method_name}: ${label} as the only token after mid-chunk displacement errors the stream and is dropped`);
       }
 
       promise_test(async (t) => {

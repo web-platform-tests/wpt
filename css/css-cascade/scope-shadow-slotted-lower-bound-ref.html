@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Reference: @scope lower bound with slotted light-DOM elements</title>
+<link rel="author" title="Jack Holden" href="mailto:jack@holdhelm.com">
+<link rel="help" href="https://drafts.csswg.org/css-cascade-6/#scoped-styles">
+<link rel="help" href="https://drafts.csswg.org/css-cascade-6/#scope-atrule">
+
+<style>
+    /* red by default */
+    a {
+        color: red;
+    }
+
+    /* blue for light dom elements to be slotted in my-menu that are not special */
+    my-menu a:not([slot="special"]) {
+        color: blue;
+    }
+</style>
+
+<my-menu>
+  <template shadowrootmode="open">
+    <style>
+      :host { display: block; border: 1px solid #ccc; padding: 0.5rem; }
+      ::slotted(a) { display: inline-block; }
+    </style>
+    <nav>
+      <slot></slot>
+      <slot name="special"></slot>
+    </nav>
+  </template>
+
+  <a id="link1" href="#">Should be blue (in scope)</a>
+  <a id="link2" href="#">Should be blue (in scope)</a>
+  <a id="special" slot="special" href="#">Should be red (excluded from scope)</a>
+</my-menu>

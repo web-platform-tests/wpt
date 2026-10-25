@@ -651,6 +651,25 @@
       assert_equals(parent.innerHTML, `<span></span><script>window.move_table();<` + `/script>after`);
     }, "streamAppendHTMLUnsafe: children of a replaceWithChildrenElements element are dropped, without erroring the stream, when the table it was foster parented before is moved");
 
+    // If a script makes the foster parenting table the document element, a later
+    // element that the sanitizer replaces with its children is not inserted, like
+    // any other element whose insertion location is a Document with an element
+    // child, so its children are dropped too.
+    promise_test(async (t) => {
+      const iframe = await load_iframe(t);
+      const doc = iframe.contentDocument;
+      const target = doc.body.appendChild(doc.createElement("div"));
+      const script = "document.replaceChild(document.getElementById('t'), document.documentElement);";
+      const writer = target.streamHTMLUnsafe({
+        runScripts: true,
+        sanitizer: { replaceWithChildrenElements: ["span"] },
+      }).getWriter();
+      await writer.write(`<table id="t"><script>${script}<` + `/script><span>x<b>y</b></span></table>after`);
+      await writer.close();
+      assert_equals(doc.documentElement.outerHTML, `<table id="t"><script>${script}<` + `/script></table>`);
+      assert_equals(target.innerHTML, "after");
+    }, "streamHTMLUnsafe: a replaceWithChildrenElements element foster parented before a table that became the document element is dropped with its children");
+
     // E3: Target removed with runScripts: nodes still go into target; scripts don't run
     for (const method of ["streamHTMLUnsafe", "streamAppendHTMLUnsafe", "streamPrependHTMLUnsafe"]) {
       promise_test(async (t) => {

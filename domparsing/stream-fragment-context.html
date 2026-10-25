@@ -337,7 +337,23 @@
       assert_not_equals(textarea, null);
       assert_equals(textarea.defaultValue, "abc");
       assert_equals(textarea.value, "abc");
-    }, `${method}: unclosed <textarea> is popped on close() and has expected defaultValue`);
+    }, `${method}: unclosed <textarea> has expected defaultValue after close()`);
+
+    promise_test(async (t) => {
+      const container = document.getElementById("container");
+      t.add_cleanup(() => container.replaceChildren());
+      const div = container.appendChild(document.createElement("div"));
+      const options = method.includes("Unsafe") ? {} : { sanitizer: { elements: ["style"] } };
+      const writer = div[method](options).getWriter();
+      await writer.write("<style>#container { --popped: 1; }");
+
+      // A style element's style sheet is only updated once it's popped off the stack of open elements.
+      const style = div.querySelector("style");
+      assert_not_equals(style, null);
+      assert_equals(style.sheet, null, "the style element is still open");
+      await writer.close();
+      assert_not_equals(style.sheet, null, "the style element is popped on close()");
+    }, `${method}: unclosed <style> is popped on close()`);
   }
 </script>
 </body>

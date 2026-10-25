@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>HTMLSelectElement.selectedOptions</title>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/forms.html#dom-select-selectedoptions">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-elements.html#dom-select-selectedoptions">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -93,13 +93,13 @@ test(() => {
 
 // "A select element whose multiple attribute is not specified must not have
 // more than one descendant option element with its selected attribute set."
-// - https://html.spec.whatwg.org/multipage/forms.html#the-option-element:the-select-element-6
+// - https://html.spec.whatwg.org/multipage/form-elements.html#the-option-element:the-select-element-6
 
 // "If two or more option elements in the select element's list of options
 //  have their selectedness set to true, set the selectedness of all but
 // the last option element with its selectedness set to true in the list of
 // options in tree order to false."
-// - https://html.spec.whatwg.org/multipage/forms.html#the-select-element:the-option-element-21
+// - https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element:the-option-element-21
 test(() => {
   const select = document.getElementById("invalid-select");
 

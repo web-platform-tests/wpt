@@ -476,7 +476,7 @@ cases:
   # These tests are served over HTTPS so the induced requests will be both
   # same-origin with the document [1] and a potentially-trustworthy URL [2].
   #
-  # [1] https://html.spec.whatwg.org/multipage/origin.html#same-origin
+  # [1] https://html.spec.whatwg.org/multipage/browsers.html#same-origin
   # [2] https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url
   - common_axis:
       - headerName: sec-fetch-mode

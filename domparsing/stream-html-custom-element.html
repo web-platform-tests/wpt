@@ -468,24 +468,30 @@ for (const method of ["streamHTML", "streamHTMLUnsafe", "streamAppendHTML", "str
 }
 
 // Elements inserted directly into the target use the target's registry, even
-// after the target is adopted into another document mid-stream.
-promise_test(async (t) => {
-  const iframe = document.createElement("iframe");
-  t.add_cleanup(() => iframe.remove());
-  await new Promise((resolve) => {
-    iframe.onload = resolve;
-    document.body.appendChild(iframe);
-  });
-  const { name, log } = createCustomElementClass();
-  const target = document.getElementById("container").appendChild(document.createElement("div"));
-  const writer = target.streamHTMLUnsafe().getWriter();
-  await writer.write("<p></p>");
-  iframe.contentDocument.body.appendChild(target);
-  await writer.write(`<${name}></${name}>`);
-  await writer.close();
+// after the target is adopted into another document mid-stream. This includes
+// children of an element that the sanitizer replaces with its children.
+for (const [description, options, first_chunk] of [
+  ["", undefined, "<p></p>"],
+  [" for children of a replaceWithChildrenElements element", { sanitizer: { replaceWithChildrenElements: ["span"] } }, "<span>"],
+]) {
+  promise_test(async (t) => {
+    const iframe = document.createElement("iframe");
+    t.add_cleanup(() => iframe.remove());
+    await new Promise((resolve) => {
+      iframe.onload = resolve;
+      document.body.appendChild(iframe);
+    });
+    const { name, log } = createCustomElementClass();
+    const target = document.getElementById("container").appendChild(document.createElement("div"));
+    const writer = target.streamHTMLUnsafe(options).getWriter();
+    await writer.write(first_chunk);
+    iframe.contentDocument.body.appendChild(target);
+    await writer.write(`<${name}></${name}>`);
+    await writer.close();
 
-  assert_not_equals(target.querySelector(name), null);
-  assert_array_equals(log, [], "the original document's definition must not be used");
-}, "streamHTMLUnsafe uses the new document's registry after the target is adopted mid-stream");
+    assert_not_equals(target.querySelector(name), null);
+    assert_array_equals(log, [], "the original document's definition must not be used");
+  }, `streamHTMLUnsafe uses the new document's registry after the target is adopted mid-stream${description}`);
+}
 </script>
 </body>

@@ -3,6 +3,7 @@
 <title>Test pseudo elements parsing of valid selectors</title>
 <link rel="author" title="Tim Nguyen" href="https://github.com/nt1m">
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-1/">
+<link rel="help" href="https://drafts.csswg.org/selectors-4/#pseudo-element-states">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
@@ -16,6 +17,8 @@ const functionPseudoElements = [
 
 function test_valid_selector_combinations(pseudo) {
     test_valid_selector(pseudo);
+    test_valid_selector(`${pseudo}:hover`);
+    test_valid_selector(`${pseudo}:active`);
     test_valid_selector(`:root${pseudo}`);
     test_valid_selector(`.a${pseudo}`);
     test_valid_selector(`div ${pseudo}`);

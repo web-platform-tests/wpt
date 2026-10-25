@@ -1,0 +1,21 @@
+<!doctype html>
+<html class="test-wait">
+<meta charset="utf-8">
+<title>location.ancestorOrigins of an iframe inserted into a non-fully active document</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/dom.html#internal-ancestor-origin-objects-list-creation-steps">
+<link rel="help" href="https://github.com/whatwg/html/pull/13067">
+<iframe src="/common/blank.html"></iframe>
+<script>
+onload = () => {
+  const iframe = document.querySelector("iframe");
+  const oldDoc = iframe.contentDocument;
+  iframe.onload = () => {
+    const child = oldDoc.createElement("iframe");
+    oldDoc.body.append(child);
+    child.contentWindow?.location.ancestorOrigins;
+    document.documentElement.className = "";
+  };
+  iframe.src = "/common/blank.html?2";
+};
+</script>
+</html>

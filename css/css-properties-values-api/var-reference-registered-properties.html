@@ -150,8 +150,8 @@ test(function(){
     let unregistered = '--unregistered'
     element.style = `${name}: red; ${unregistered}: var(${name})`
     let computedStyle = getComputedStyle(element);
-    assert_equals(computedStyle.getPropertyValue(unregistered), '');
-}, 'Invalid values for registered properties are serialized as the empty string')
+    assert_equals(computedStyle.getPropertyValue(unregistered), '0px');
+}, 'Invalid registered values substitute their registered initial value')
 
 function test_valid_fallback(syntax, value, fallback) {
     test(function(){

@@ -62,6 +62,13 @@
                 ];
 
                 function check_gradient(gradient, stops, shouldParse) {
+                        // End a valid gradient prelude before the stop list. Images 4
+                        // allows a leading `0%` to specify a radius; after `ellipse,`
+                        // it can only be an invalid hint before the first color stop.
+                        // The valid prelude also preserves the positive test cases.
+                        if (gradient.includes("radial-gradient")) {
+                                stops = "ellipse, " + stops;
+                        }
                         var div = document.createElement('div');
                         div.setAttribute("style", "background-image: " + gradient + "(" + stops + ")");
 

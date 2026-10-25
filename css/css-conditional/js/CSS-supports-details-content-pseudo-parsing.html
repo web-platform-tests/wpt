@@ -28,14 +28,18 @@
   }, "selector() function accepts ::details-content followed by :lang()");
 
   test(function() {
+    assert_equals(CSS.supports("selector(::details-content:nth-of-type(1))"), true);
+  }, "selector() function accepts a valid structural pseudo-class after ::details-content");
+
+  test(function() {
     assert_equals(CSS.supports("selector(::details-content:nth-of-type(slot)"), false);
-  }, "selector() function doesn't accept ::details-content followed by a tree-structural pseudo-class");
+  }, "selector() function rejects a malformed nth-of-type() argument after ::details-content");
 
   test(function() {
-    assert_equals(CSS.supports("selector(::details-content:has(a)"), false);
-  }, "selector() function doesn't accept ::details-content followed by :has()");
+    assert_equals(CSS.supports("selector(::details-content:has(a)"), true);
+  }, "selector() function accepts ::details-content followed by :has()");
 
   test(function() {
-    assert_equals(CSS.supports("selector(::details-content::part(a)"), false);
-  }, "selector() function doesn't accept ::details-content followed by a part");
+    assert_equals(CSS.supports("selector(::details-content::part(a)"), true);
+  }, "selector() function accepts ::details-content followed by a part");
 </script>

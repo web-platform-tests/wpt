@@ -19,11 +19,13 @@
         { name: "streamPrependHTML", type: "element" },
         { name: "streamBeforeHTML", type: "child" },
         { name: "streamAfterHTML", type: "child" },
+        { name: "streamReplaceWithHTML", type: "child" },
         { name: "streamHTMLUnsafe", type: "element" },
         { name: "streamAppendHTMLUnsafe", type: "element" },
         { name: "streamPrependHTMLUnsafe", type: "element" },
         { name: "streamBeforeHTMLUnsafe", type: "child" },
-        { name: "streamAfterHTMLUnsafe", type: "child" }
+        { name: "streamAfterHTMLUnsafe", type: "child" },
+        { name: "streamReplaceWithHTMLUnsafe", type: "child" }
       ];
 
       const configs = [
@@ -86,13 +88,8 @@
           promise_test(async (t) => {
             const container = document.getElementById("container");
             const target = setupTarget(container, m.type);
-            t.add_cleanup(() => {
-              if (m.type === "child") {
-                target.parentNode.remove();
-              } else {
-                target.remove();
-              }
-            });
+            const wrapper = m.type === "child" ? target.parentNode : target;
+            t.add_cleanup(() => wrapper.remove());
 
             const var_name = `__xss_fired_${m.name}_${tc.name.replace(/[^a-zA-Z0-9]/g, "_")}_${Math.random().toString(36).slice(2)}`;
             window[var_name] = false;
@@ -118,13 +115,8 @@
         promise_test(async (t) => {
           const container = document.getElementById("container");
           const target = setupTarget(container, m.type);
-          t.add_cleanup(() => {
-            if (m.type === "child") {
-              target.parentNode.remove();
-            } else {
-              target.remove();
-            }
-          });
+          const wrapper = m.type === "child" ? target.parentNode : target;
+          t.add_cleanup(() => wrapper.remove());
 
           const var_name = `__control_fired_${m.name}_${Math.random().toString(36).slice(2)}`;
           window[var_name] = false;

@@ -117,6 +117,7 @@ promise_test(async t => {
   const select = createListBox(t, 'size=10');
   // Layout is out of date as the list box was just inserted.
   const boxes = boxesOf(select);
+  assert_greater_than(boxes.one.width, 0, 'one has a box');
   await rendered();
   assertBoxesEqual(boxes, boxesOf(select), 'after rendering');
 }, 'Option and optgroup boxes are up to date right after the list box is inserted');

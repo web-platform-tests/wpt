@@ -75,6 +75,7 @@ promise_test(async () => {
     boxesRightAfterOpening = boxes();
   });
   assert_true(select.matches(':open'), 'the picker is open');
+  assert_greater_than(boxesRightAfterOpening.one.width, 0, 'one has a box');
   await rendered();
   assertBoxesEqual(boxesRightAfterOpening, boxes(), 'after rendering');
 }, 'Option and optgroup boxes are up to date right after the picker opens');

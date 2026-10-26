@@ -161,6 +161,43 @@
       assert_array_equals(ids(target), ["a"]);
     }, `${method}: abort() from a streamed inline script after a parser-blocking script stops parsing after the current token`);
 
+    // A script end tag performs a microtask checkpoint before the script is
+    // prepared. An abort from a microtask there (here, a mutation observer
+    // callback) is deferred while the parser runs, but the script doesn't run.
+    promise_test(async (t) => {
+      const target = document.getElementById("target");
+      target.replaceChildren();
+      const writer = target[method]({ runScripts: true }).getWriter();
+      window.events = [];
+      window.ran_after_abort = false;
+      const slowRan = new Promise((resolve) => { window.on_slow = resolve; });
+      let abortPromise = null;
+      // Abort only once the inline script and its text have been inserted, so
+      // that the abort happens at that script's end tag.
+      const observer = new MutationObserver(() => {
+        const script = target.querySelector("#late");
+        if (!abortPromise && script && script.text.includes("ran_after_abort")) {
+          abortPromise = writer.abort("aborted-from-microtask");
+        }
+      });
+      observer.observe(target, { childList: true, subtree: true });
+      t.add_cleanup(() => { observer.disconnect(); delete window.on_slow; delete window.ran_after_abort; });
+
+      await writer.write(
+        parser_blocking_script("abort_from_microtask") +
+        "<p>before</p>" +
+        "<script id='late'>window.ran_after_abort = true;</" + "script>"
+      );
+      await failOnTimeout(slowRan);
+      await after_task(t);
+      assert_array_equals(window.events, ["slow"]);
+      assert_not_equals(abortPromise, null, "the mutation observer aborted the stream");
+      assert_not_equals(target.querySelector("#late"), null, "the inline script was inserted");
+      assert_false(window.ran_after_abort, "the script whose end tag was being processed does not run");
+      await abortPromise;
+      await promise_rejects_exactly(t, "aborted-from-microtask", writer.closed);
+    }, `${method}: abort() from a microtask before a streamed script is prepared prevents that script from running`);
+
     promise_test(async (t) => {
       const target = document.getElementById("target");
       target.replaceChildren();

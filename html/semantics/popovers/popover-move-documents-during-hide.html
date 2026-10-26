@@ -7,9 +7,11 @@
   href="https://html.spec.whatwg.org/multipage/popover.html#hide-popover-algorithm"
 />
 <link rel="help" href="https://github.com/whatwg/html/pull/13001" />
+<link rel="help" href="https://github.com/whatwg/html/pull/13045" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/popover-utils.js"></script>
 
@@ -82,5 +84,98 @@
       await waitForRender();
       assert_false(popover.matches(":popover-open"));
     }, "A popover moved and re-shown in another document closes on Escape there");
+
+    function showChain(createPopover, types) {
+      const chain = [];
+      for (const type of types) {
+        const popover = createPopover();
+        popover.popover = type;
+        const source = chain
+          .at(-1)
+          ?.appendChild(document.createElement("button"));
+        popover.showPopover({ source });
+        chain.push(popover);
+      }
+      return chain;
+    }
+
+    function moveAndReshowOnBeforeToggle(listenOn, popover, otherDoc, type) {
+      const events = [];
+      listenOn.addEventListener(
+        "beforetoggle",
+        () => {
+          otherDoc.body.append(popover);
+          popover.popover = type;
+          popover.showPopover();
+          popover.addEventListener("beforetoggle", (e) =>
+            events.push(e.newState),
+          );
+        },
+        { once: true },
+      );
+      return events;
+    }
+
+    const stackHiders = {
+      "Calling hidePopover() on the root": (t, root) => root.hidePopover(),
+      "Showing an unrelated popover": (t, root, createPopover) =>
+        createPopover().showPopover(),
+      "Light dismiss": async (t) => {
+        const outside = document.body.appendChild(
+          document.createElement("button"),
+        );
+        t.add_cleanup(() => outside.remove());
+        outside.textContent = "outside";
+        await clickOn(outside);
+      },
+    };
+
+    for (const [description, hideStack] of Object.entries(stackHiders)) {
+      for (const reshowAs of ["auto", "manual"]) {
+        promise_test(async (t) => {
+          const { otherDoc, createPopover } = await setup(t);
+          const [root, child, grandchild] = showChain(createPopover, [
+            "auto",
+            "auto",
+            "auto",
+          ]);
+          const childEvents = moveAndReshowOnBeforeToggle(
+            grandchild,
+            child,
+            otherDoc,
+            reshowAs,
+          );
+
+          await hideStack(t, root, createPopover);
+          assert_false(root.matches(":popover-open"), "root");
+          assert_false(grandchild.matches(":popover-open"), "grandchild");
+          assert_equals(child.ownerDocument, otherDoc);
+          assert_true(child.matches(":popover-open"), "child");
+          assert_array_equals(childEvents, [], "child beforetoggle events");
+        }, `${description} leaves a later popover moved and re-shown as ${reshowAs} in another document`);
+      }
+    }
+
+    promise_test(async (t) => {
+      const { otherDoc, createPopover } = await setup(t);
+      const [root, hint, nestedHint] = showChain(createPopover, [
+        "auto",
+        "hint",
+        "hint",
+      ]);
+      const hintEvents = moveAndReshowOnBeforeToggle(
+        nestedHint,
+        hint,
+        otherDoc,
+        "hint",
+      );
+
+      root.hidePopover();
+      assert_false(root.matches(":popover-open"), "root");
+      assert_false(nestedHint.matches(":popover-open"), "nested hint");
+      assert_equals(hint.ownerDocument, otherDoc);
+      assert_true(hint.matches(":popover-open"), "hint");
+      assert_array_equals(hintEvents, [], "hint beforetoggle events");
+    }, "Hiding a hint stack leaves a later hint popover moved and re-shown in another document");
   </script>
 </body>

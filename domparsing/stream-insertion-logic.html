@@ -455,7 +455,12 @@
             `<img src="${imgSrc}" onload="window.on_dropped_img_event?.()" onerror="window.on_dropped_img_event?.()">`
           ),
         );
-        await new Promise((resolve) => t.step_timeout(resolve, 20));
+        // A live <img> with the same src would have loaded by the time a control image has.
+        await new Promise((resolve) => {
+          const control = new Image();
+          control.onload = control.onerror = () => t.step_timeout(resolve, 0);
+          control.src = imgSrc;
+        });
 
         assert_false(imgLoadedOrErrored, "Image parsed as first token after ref_node displacement must not load in the active document");
       }, `${method_name}: <img> as first token after ref_node displacement is created in an inert document`);

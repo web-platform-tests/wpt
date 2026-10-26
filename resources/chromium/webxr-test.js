@@ -56,6 +56,19 @@ function getPoseFromTransform(transform) {
   };
 }
 
+// Parses a FakeXRVelocityInit into a mojo XRVelocity.
+function getVelocityFromInit(velocityInit) {
+  if (velocityInit.linear?.length != 3 || velocityInit.angular?.length != 3) {
+    throw new TypeError(
+        'FakeXRVelocityInit.linear and angular need three elements.');
+  }
+  const toVector = (v) => ({x: v[0], y: v[1], z: v[2]});
+  return {
+    linear: toVector(velocityInit.linear),
+    angular: toVector(velocityInit.angular)
+  };
+}
+
 function composeGFXTransform(fakeTransformInit) {
   return {data: {matrix: getMatrixFromTransform(fakeTransformInit)}};
 }
@@ -391,6 +404,7 @@ class MockRuntime {
     this.presentation_provider_ = new MockXRPresentationProvider();
 
     this.pose_ = null;
+    this.viewer_velocity_ = null;
     this.next_frame_id_ = 0;
     this.bounds_ = null;
     this.send_mojo_space_reset_ = false;
@@ -531,10 +545,6 @@ class MockRuntime {
       orientation: { x: q[0], y: q[1], z: q[2], w: q[3] },
       position: { x: p[0], y: p[1], z: p[2] },
       emulatedPosition: emulatedPosition,
-      angularVelocity: null,
-      linearVelocity: null,
-      angularAcceleration: null,
-      linearAcceleration: null,
       inputState: null,
       poseIndex: 0
     };
@@ -542,6 +552,14 @@ class MockRuntime {
 
   clearViewerOrigin() {
     this.pose_ = null;
+  }
+
+  setViewerVelocity(velocity) {
+    this.viewer_velocity_ = getVelocityFromInit(velocity);
+  }
+
+  clearViewerVelocity() {
+    this.viewer_velocity_ = null;
   }
 
   setFloorOrigin(floorOrigin) {
@@ -1048,6 +1066,13 @@ class MockRuntime {
           stageParametersId: this.stageParametersId_,
           lightEstimationData: this.light_estimate_
         };
+
+        if (this.pose_) {
+          frameData.renderInfo.mojoFromViewer = {
+            ...this.pose_,
+            velocity: this.viewer_velocity_,
+          };
+        }
 
         this.next_frame_id_++;
 
@@ -2069,6 +2094,7 @@ class MockXRInputSource {
     if (fakeInputSourceInit.gripOrigin != null) {
       this.setGripOrigin(fakeInputSourceInit.gripOrigin);
     }
+    this.grip_velocity_ = null;
 
     // This properly handles if supportedButtons were not specified.
     this.setSupportedButtons(fakeInputSourceInit.supportedButtons);
@@ -2116,6 +2142,14 @@ class MockXRInputSource {
       this.emulated_position_ = false;
       this.desc_dirty_ = true;
     }
+  }
+
+  setGripVelocity(velocity) {
+    this.grip_velocity_ = getVelocityFromInit(velocity);
+  }
+
+  clearGripVelocity() {
+    this.grip_velocity_ = null;
   }
 
   setPointerOrigin(transform, emulatedPosition = false) {
@@ -2272,6 +2306,7 @@ class MockXRInputSource {
     this.primary_squeeze_clicked_ = false;
 
     input_state.mojoFromInput = this.mojo_from_input_;
+    input_state.gripVelocity = this.grip_velocity_;
 
     input_state.gamepad = this.gamepad_;
 

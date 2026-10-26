@@ -156,6 +156,7 @@ promise_test(async t => {
     const writer = shadowRoot.streamHTMLUnsafe().getWriter();
     await writer.write("<div id=added>A</div>");
     assert_equals(shadowRoot.getElementById("added").textContent, "A");
+    assert_equals(shadowRoot.textContent, "A", "existing children are replaced");
 }, "streamHTMLUnsafe into a ShadowRoot");
 
 promise_test(async t => {
@@ -164,6 +165,8 @@ promise_test(async t => {
     const writer = element.streamHTMLUnsafe().getWriter();
     await writer.write("<div id=added>A</div>");
     assert_equals(element.content.getElementById("added").textContent, "A");
+    assert_equals(element.content.textContent, "A", "existing template contents are replaced");
+    assert_equals(element.childNodes.length, 0, "nothing is inserted into the template itself");
 }, "streamHTMLUnsafe into a template");
 
 promise_test(async t => {

@@ -228,6 +228,17 @@
   }, "streamHTML on ShadowRoot uses safe sanitizer");
 
   promise_test(async (t) => {
+    const template = document.createElement("template");
+    template.innerHTML = "<p>before</p>";
+    const writer = template.streamHTML().getWriter();
+    await writer.write("<span>A</span><script><" + "/script>");
+    await writer.close();
+    assert_equals(template.content.childNodes.length, 1);
+    assert_equals(template.content.firstChild.outerHTML, "<span>A</span>", "existing template contents are replaced, and the script is removed");
+    assert_equals(template.childNodes.length, 0, "nothing is inserted into the template itself");
+  }, "streamHTML on a template replaces its template contents");
+
+  promise_test(async (t) => {
     const element = document.createElement("div");
     document.body.append(element);
     t.add_cleanup(() => element.remove());

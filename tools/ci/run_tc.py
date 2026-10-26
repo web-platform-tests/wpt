@@ -41,6 +41,7 @@ import fnmatch
 import glob
 import json
 import os
+import stat
 import subprocess
 import sys
 import tarfile
@@ -241,13 +242,92 @@ def preread(label, paths, max_bytes=None):
           (label, count, mib, elapsed, mib / elapsed if elapsed else 0.0), flush=True)
 
 
+def page_cache_snapshot(roots, min_size=1 << 20):
+    # Map each regular file of at least min_size bytes to (resident bytes, mtime).
+    start_time = time.monotonic()
+    stats = {}
+    for root_dir in roots:
+        for dir_path, _, file_names in os.walk(root_dir):
+            for name in file_names:
+                path = os.path.join(dir_path, name)
+                try:
+                    st = os.lstat(path)
+                except OSError:
+                    continue
+                if stat.S_ISREG(st.st_mode) and st.st_size >= min_size:
+                    stats[path] = st.st_mtime
+    snapshot = {}
+    paths = list(stats)
+    for i in range(0, len(paths), 200):
+        output = subprocess.run(["fincore", "--bytes", "--noheadings", "--raw",
+                                 "--output", "RES,FILE"] + paths[i:i + 200],
+                                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                encoding="utf-8").stdout
+        for line in output.splitlines():
+            resident, path = line.split(" ", 1)
+            if path in stats:
+                snapshot[path] = (int(resident), stats[path])
+    print("INFO: cold-start: page cache snapshot of %d files (>= %d KiB) in %.1fs" %
+          (len(snapshot), min_size >> 10, time.monotonic() - start_time), flush=True)
+    return snapshot
+
+
+# Directories that may hold files read by the browser; see report_page_cache_growth().
+PAGE_CACHE_ROOTS = ["/usr", "/opt", "/etc", "/var", "/tmp", os.path.expanduser("~")]
+page_cache_before = None
+
+
+def report_page_cache_growth(top=40):
+    # Report the files that entered the page cache while the job ran.  With
+    # the pre-read done, these are the files the browser had to read from disk.
+    # Files created or modified during the job are marked, because their pages
+    # are cached by writing, not by reading.
+    if page_cache_before is None:
+        return
+    after = page_cache_snapshot(PAGE_CACHE_ROOTS)
+    growth = []
+    for path, (resident, mtime) in after.items():
+        before_resident, before_mtime = page_cache_before.get(path, (0, None))
+        if resident > before_resident:
+            written = before_mtime is None or mtime != before_mtime
+            growth.append((resident - before_resident, path, written))
+    growth.sort(reverse=True)
+
+    total_read = sum(size for size, _, written in growth if not written)
+    total_written = sum(size for size, _, written in growth if written)
+    print("INFO: cold-start: page cache growth: %.1f MiB in files present before the job, "
+          "%.1f MiB in files written during the job" %
+          (total_read / (1 << 20), total_written / (1 << 20)))
+    by_dir = {}
+    for size, path, written in growth:
+        if not written:
+            key = "/".join(path.split("/")[:4])
+            by_dir[key] = by_dir.get(key, 0) + size
+    for key, size in sorted(by_dir.items(), key=lambda item: -item[1])[:15]:
+        print("INFO: cold-start:   %8.1f MiB  %s/" % (size / (1 << 20), key))
+    for size, path, written in growth[:top]:
+        print("INFO: cold-start:   %8.1f MiB  %s%s" %
+              (size / (1 << 20), path, "  (written during job)" if written else ""))
+
+    with open(os.path.expanduser("~/artifacts/page-cache-growth.tsv"), "w") as f:
+        f.write("growth_bytes\twritten_during_job\tpath\n")
+        for size, path, written in growth:
+            f.write("%d\t%d\t%s\n" % (size, written, path))
+    sys.stdout.flush()
+
+
 def debug_cold_start(channel):
+    global page_cache_before
+
     artifacts_dir = os.path.expanduser("~/artifacts")
     os.makedirs(artifacts_dir, exist_ok=True)
     start_io_stats(os.path.join(artifacts_dir, "io-stats.tsv"))
-    if not COLD_START_PREREAD:
-        return
+    if COLD_START_PREREAD:
+        preread_startup_files(channel)
+    page_cache_before = page_cache_snapshot(PAGE_CACHE_ROOTS)
 
+
+def preread_startup_files(channel):
     lib_dir = "/usr/lib/x86_64-linux-gnu"
     preread("chrome-libs", chrome_libraries(channel))
     # Libraries that Chrome loads with dlopen(), and the data they read at startup.
@@ -591,7 +671,9 @@ def run_tc(*args, **kwargs):
         os.chdir(root)
         cmd = [kwargs["script"]] + kwargs["script_args"]
         print(" ".join(cmd))
-        sys.exit(subprocess.call(cmd))
+        returncode = subprocess.call(cmd)
+        report_page_cache_growth()
+        sys.exit(returncode)
     finally:
         for process in started_processes:
             process.terminate()

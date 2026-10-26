@@ -1530,11 +1530,15 @@ promise_test(t => {
 
   const reader = stream.getReader({ mode: 'byob' });
 
-
   return promise_rejects_js(t, TypeError, reader.read(new Uint16Array(1)), 'read(view) must fail')
-      .then(() => promise_rejects_js(t, TypeError, reader.closed, 'reader.closed should reject'));
+      .then(() => reader.read(new Uint8Array(1)))
+      .then(result => {
+        assert_false(result.done, 'result.done');
+        assert_typed_array_equals(result.value, new Uint8Array([0xff]), 'result.value');
+        return reader.closed;
+      });
 }, 'ReadableStream with byte source: read(view) with Uint16Array on close()-d stream with 1 byte enqueue()-d must ' +
-   'fail');
+   'fail, but must keep the byte in the queue');
 
 promise_test(t => {
   let controller;
@@ -1555,12 +1559,83 @@ promise_test(t => {
 
   const readPromise = reader.read(new Uint16Array(1));
 
-  assert_throws_js(TypeError, () => controller.close(), 'controller.close() must throw');
+  controller.close();
+  controller.byobRequest.respond(0);
 
   return promise_rejects_js(t, TypeError, readPromise, 'read(view) must fail')
-      .then(() => promise_rejects_js(t, TypeError, reader.closed, 'reader.closed must reject'));
-}, 'ReadableStream with byte source: A stream must be errored if close()-d before fulfilling read(view) with ' +
-   'Uint16Array');
+      .then(() => reader.read(new Uint8Array(1)))
+      .then(result => {
+        assert_false(result.done, 'result.done');
+        assert_typed_array_equals(result.value, new Uint8Array([0xff]), 'result.value');
+        return reader.closed;
+      });
+}, 'ReadableStream with byte source: read(view) with Uint16Array must fail if close()-d before it is fulfilled, but ' +
+   'must keep the partially filled byte in the queue');
+
+promise_test(async t => {
+  let controller;
+  const stream = new ReadableStream({
+    start(c) {
+      controller = c;
+    },
+    pull: t.unreached_func('pull() should not be called'),
+    type: 'bytes'
+  });
+  const reader = stream.getReader({ mode: 'byob' });
+
+  const read1 = reader.read(new Uint16Array(1));
+  const read2 = reader.read(new Uint16Array(1));
+  const read3 = reader.read(new Uint8Array(2));
+  const read4 = reader.read(new Uint8Array(1));
+
+  controller.enqueue(new Uint8Array([0x01]));
+  controller.close();
+  assert_throws_js(TypeError, () => controller.byobRequest.respond(1), 'respond(1) after close() must throw');
+  controller.byobRequest.respond(0);
+
+  await promise_rejects_js(t, TypeError, read1, 'first read must fail');
+  await promise_rejects_js(t, TypeError, read2, 'second read must fail');
+  const result3 = await read3;
+  assert_false(result3.done, 'third result.done');
+  assert_typed_array_equals(result3.value, new Uint8Array([0x01, 0x00]).subarray(0, 1), 'third result.value');
+  const result4 = await read4;
+  assert_true(result4.done, 'fourth result.done');
+  assert_typed_array_equals(result4.value, new Uint8Array(1).subarray(0, 0), 'fourth result.value');
+  await reader.closed;
+}, 'ReadableStream with byte source: close() with a partially filled read(view) must move the partial bytes to ' +
+   'the next read(view) that can hold them');
+
+promise_test(async t => {
+  let pullCount = 0;
+  const stream = new ReadableStream({
+    type: 'bytes',
+    pull: t.step_func(c => {
+      ++pullCount;
+      if (pullCount === 1) {
+        c.byobRequest.view[0] = 0xaa;
+        c.byobRequest.respond(1);
+      } else {
+        c.close();
+        c.byobRequest.respond(0);
+      }
+    })
+  });
+  const [branch1, branch2] = stream.tee();
+  const reader1 = branch1.getReader({ mode: 'byob' });
+  const reader2 = branch2.getReader({ mode: 'byob' });
+
+  await promise_rejects_js(t, TypeError, reader1.read(new Uint16Array(1)), 'branch1 read(view) must fail');
+
+  const result2 = await reader2.read(new Uint8Array(1));
+  assert_false(result2.done, 'branch2 result.done');
+  assert_typed_array_equals(result2.value, new Uint8Array([0xaa]), 'branch2 result.value');
+
+  const result1 = await reader1.read(new Uint8Array(1));
+  assert_false(result1.done, 'branch1 result.done');
+  assert_typed_array_equals(result1.value, new Uint8Array([0xaa]), 'branch1 result.value');
+
+  await Promise.all([reader1.closed, reader2.closed]);
+}, 'ReadableStream with byte source: tee() with a partially filled read(view) when the original stream closes');
 
 test(() => {
   let controller;

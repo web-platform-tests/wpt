@@ -751,7 +751,7 @@ IdlArray.prototype.test = function()
         member.exposed = exposed_in(globals);
         member.exposureSet = globals;
 
-        if (this.test_filter && member instanceof IdlInterface) {
+        if (this.test_filter) {
             if (!this.test_filter(memberName)) {
                 member.filtered = true;
             }
@@ -3490,7 +3490,7 @@ IdlNamespace.prototype.test = function ()
     // If the namespace object is not exposed, only test that. Members can't be
     // tested either
     if (!this.exposed) {
-        if (!this.untested) {
+        if (!this.untested && !this.filtered) {
             subsetTestByKey(this.name, test, function() {
                 assert_false(this.name in self, this.name + " namespace should not exist");
             }.bind(this), this.name + " namespace: existence and properties of namespace object");
@@ -3498,11 +3498,14 @@ IdlNamespace.prototype.test = function ()
         return;
     }
 
-    if (!this.untested) {
+    if (!this.untested && !this.filtered) {
         this.test_self();
     }
 
     for (const v of Object.values(this.members)) {
+        if (v.filtered) {
+            continue;
+        }
         switch (v.type) {
 
         case 'operation':

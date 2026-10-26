@@ -75,7 +75,7 @@ namespace Absent {
 `);
 idlArray.test();
 
-// The test filter only applies to interfaces
+// The test filter applies to namespaces
 (() => {
   Object.defineProperty(self, "qux", {
     value: Object.defineProperty({}, "Truth", {
@@ -94,6 +94,22 @@ idlArray.test();
 [Exposed=Window]
 namespace qux {
   undefined Truth();
+};
+partial namespace qux {
+  undefined Lies();
+};
+`);
+  idlArray.set_test_filter((name, memberName) => memberName === "Truth");
+  idlArray.test();
+})();
+
+// A filtered namespace object is not checked for being absent where it isn't exposed
+(() => {
+  const idlArray = new IdlArray();
+  idlArray.add_idls(`
+[Exposed=Worker]
+namespace Hidden {
+  undefined Lies();
 };
 `);
   idlArray.set_test_filter(() => false);
@@ -266,48 +282,6 @@ namespace qux {
     },
     {
       "name": "Absent namespace: existence and properties of namespace object",
-      "status_string": "PASS",
-      "properties": {},
-      "message": null
-    },
-    {
-      "name": "qux namespace: extended attributes",
-      "status_string": "PASS",
-      "properties": {},
-      "message": null
-    },
-    {
-      "name": "qux namespace: property descriptor",
-      "status_string": "PASS",
-      "properties": {},
-      "message": null
-    },
-    {
-      "name": "qux namespace: [[Extensible]] is true",
-      "status_string": "PASS",
-      "properties": {},
-      "message": null
-    },
-    {
-      "name": "qux namespace: [[Prototype]] is Object.prototype",
-      "status_string": "PASS",
-      "properties": {},
-      "message": null
-    },
-    {
-      "name": "qux namespace: typeof is \"object\"",
-      "status_string": "PASS",
-      "properties": {},
-      "message": null
-    },
-    {
-      "name": "qux namespace: has no length property",
-      "status_string": "PASS",
-      "properties": {},
-      "message": null
-    },
-    {
-      "name": "qux namespace: has no name property",
       "status_string": "PASS",
       "properties": {},
       "message": null

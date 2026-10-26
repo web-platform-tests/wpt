@@ -102,12 +102,13 @@ objects.
 
 ### `set_test_filter(filter)`
 
-Sets a predicate controlling which interface and member tests are generated.
-The predicate receives an interface name and, for member tests, a member name.
-It must return `true` to include the tests or `false` to exclude them.
+Sets a predicate controlling which tests are generated. The predicate receives
+the name of a definition (an interface or namespace) and, for member tests, a
+member name. It must return `true` to include the tests or `false` to exclude
+them.
 
-Interface-level and member-level filtering are independent: an interface's
-members can be tested even when its interface-level checks are excluded.
+Interface-level and member-level filtering are independent: a definition's
+members can be tested even when its own checks are excluded.
 Constructors are part of the interface-level checks. IDL validation and
 dependency definitions are unaffected. Structural checks for partial
 definitions and mixins are filtered by the name of the definition they extend

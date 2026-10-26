@@ -13,6 +13,8 @@
     // parsing too, so an unclosed <script> produced by a fragment parser must
     // never execute, even once it is connected or its text changes.
 
+    const container = document.getElementById("container");
+
     function assert_never_runs(script, description) {
       assert_not_equals(script, null, `${description}: script element exists`);
       assert_false(window.unclosed_ran, `${description}: must not run on insertion`);

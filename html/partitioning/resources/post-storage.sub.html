@@ -1,0 +1,21 @@
+<!doctype html>
+<meta charset=utf-8>
+<body>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    let key = urlParams.get("key");
+    let result;
+    if (urlParams.has("cookie")) {
+      result = "{{header_or_default(cookie, )}}";
+    } else {
+      result = localStorage.getItem(key);
+      if (urlParams.has("store")) {
+        localStorage.setItem(key, urlParams.get("store"));
+      }
+    }
+    parent.postMessage({
+      type: "result",
+      value: result,
+      key,
+    }, "*");
+  </script>

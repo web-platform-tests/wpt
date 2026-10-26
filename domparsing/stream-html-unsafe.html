@@ -169,6 +169,20 @@ promise_test(async t => {
     assert_equals(element.childNodes.length, 0, "nothing is inserted into the template itself");
 }, "streamHTMLUnsafe into a template");
 
+// The rejected write aborts the parser, and the abort algorithm still runs
+// afterwards because abort() was called while that write was in flight.
+promise_test(async t => {
+    const element = document.createElement("div");
+    const writer = element.streamHTMLUnsafe().getWriter();
+    await writer.write("<p>a</p>");
+    const writePromise = writer.write(Symbol("bad"));
+    const abortPromise = writer.abort("aborted");
+    await promise_rejects_js(t, TypeError, writePromise);
+    await abortPromise;
+    await promise_rejects_exactly(t, "aborted", writer.closed);
+    assert_equals(element.innerHTML, "<p>a</p>");
+}, "streamHTMLUnsafe: abort() while a write that aborts the parser is in flight");
+
 promise_test(async t => {
     const element = document.createElement("div");
     document.body.append(element);

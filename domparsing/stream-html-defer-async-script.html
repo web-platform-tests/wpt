@@ -6,6 +6,11 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="placeholder"></div>
 <script>
+  // Fails instead of stalling the rest of the file if the promise never settles.
+  function failOnTimeout(promise, ms = 3000) {
+    return Promise.race([promise, new Promise((resolve, reject) => step_timeout(() => reject(new Error("timed out")), ms))]);
+  }
+
   for (const method of ["streamAppendHTMLUnsafe", "streamHTMLUnsafe"]) {
     promise_test(async (t) => {
       window.events = [];
@@ -31,20 +36,20 @@
       await write_script("window.events.push('defer'); window.defer_resolver.resolve();", {defer: true});
       assert_array_equals(window.events, []);
       await write_script("window.events.push('immediate'); window.immediate_resolver.resolve();");
-      await window.immediate_resolver.promise;
+      await failOnTimeout(window.immediate_resolver.promise);
       assert_array_equals(window.events, ["immediate"]);
       await write_script("window.events.push('module');window.module_resolver.resolve();", {type: "module"});
       assert_array_equals(window.events, ["immediate"]);
       await write_script("window.events.push('async'); window.async_resolver.resolve();", {async: true});
-      await window.async_resolver.promise;
+      await failOnTimeout(window.async_resolver.promise);
       assert_array_equals(window.events, ["immediate", "async"]);
       await write_script("window.events.push('immediate-2'); window.immediate_2_resolver.resolve();");
-      await window.immediate_2_resolver.promise;
+      await failOnTimeout(window.immediate_2_resolver.promise);
       assert_array_equals(window.events, ["immediate", "async", "immediate-2"]);
       await writer.close();
       assert_array_equals(window.events, ["immediate", "async", "immediate-2"],
         "the close promise does not wait for defer/module scripts");
-      await Promise.all([window.defer_resolver.promise, window.module_resolver.promise]);
+      await failOnTimeout(Promise.all([window.defer_resolver.promise, window.module_resolver.promise]));
       assert_array_equals(window.events, [
         "immediate",
         "async",
@@ -91,7 +96,7 @@
       await writer.close();
       assert_array_equals(window.events, [], "Defer and module scripts must run in tasks queued after close() resolves");
 
-      await window.done_resolver.promise;
+      await failOnTimeout(window.done_resolver.promise);
       assert_array_equals(window.events, [
         "d1",
         "d1-microtask",
@@ -137,12 +142,12 @@
       assert_not_equals(placeholder.querySelector("#after-async"), null, "Async scripts must not block subsequent DOM parsing");
       assert_true(window.events.includes("sync-inline"), "Inline script runs without waiting for async script");
 
-      await window.fast_async.promise;
+      await failOnTimeout(window.fast_async.promise);
       assert_equals(window.events[0], "sync-inline");
       assert_equals(window.events[1], "fast-async");
 
       await writer.close();
-      await window.slow_async.promise;
+      await failOnTimeout(window.slow_async.promise);
       assert_array_equals(window.events, ["sync-inline", "fast-async", "slow"]);
     }, `element.${method}: async scripts do not block parsing and run in load order`);
 

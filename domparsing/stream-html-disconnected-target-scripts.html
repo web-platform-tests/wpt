@@ -7,6 +7,11 @@
 <script src="/resources/testharnessreport.js"></script>
 <body>
 <script>
+  // Fails instead of stalling the rest of the file if the promise never settles.
+  function failOnTimeout(promise, ms = 3000) {
+    return Promise.race([promise, new Promise((resolve, reject) => step_timeout(() => reject(new Error("timed out")), ms))]);
+  }
+
   // A script element created by a fragment parser that runs scripts is
   // prepared when its end tag is seen, which clears its parser document and
   // sets its force async to true before returning early because the element is
@@ -39,7 +44,7 @@
       document.body.append(element);
       t.add_cleanup(() => element.remove());
       assert_array_equals(window.events, ["inline"], "the inline script runs synchronously when connected");
-      await Promise.all([slowRan, fastRan]);
+      await failOnTimeout(Promise.all([slowRan, fastRan]));
       assert_array_equals(window.events, ["inline", "fast", "slow"],
                           "external scripts without async execute as async");
     }, `${method} with runScripts: true into a disconnected element: external scripts run async once connected`);

@@ -8,6 +8,11 @@
 <body>
 <div id="target"></div>
 <script>
+  // Fails instead of stalling the rest of the file if the promise never settles.
+  function failOnTimeout(promise, ms = 3000) {
+    return Promise.race([promise, new Promise((resolve, reject) => step_timeout(() => reject(new Error("timed out")), ms))]);
+  }
+
   // Unlike main document parsing, no style sheet - whether streamed or already
   // pending in the live document - blocks streamed scripts: "a style sheet
   // that is blocking scripts" is a property of the parser's inert Document.
@@ -77,7 +82,7 @@
       );
       const link = target.querySelector("link");
       t.add_cleanup(() => link.remove());
-      await done;
+      await failOnTimeout(done);
       assert_array_equals(window.events, ["external"]);
       assert_less_than(performance.now() - start, 2500, "the external script ran without waiting for the style sheet");
       await writer.close();

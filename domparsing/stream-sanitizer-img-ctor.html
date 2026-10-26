@@ -8,6 +8,11 @@
   <body>
     <div id="container"></div>
     <script>
+      // Fails instead of stalling the rest of the file if the promise never settles.
+      function failOnTimeout(promise, ms = 3000) {
+        return Promise.race([promise, new Promise((resolve, reject) => step_timeout(() => reject(new Error("timed out")), ms))]);
+      }
+
       const methods = [
         { name: "streamHTML", type: "element" },
         { name: "streamAppendHTML", type: "element" },
@@ -140,7 +145,7 @@
           await writer.write(`<img src="invalid-src-xyz" onerror="window.${var_name}_fired()">`);
           await writer.close();
 
-          await fired_promise;
+          await failOnTimeout(fired_promise);
 
           assert_true(window[var_name], `Event handler SHOULD fire for control case: ${m.name}`);
         }, `Control check for ${m.name}`);

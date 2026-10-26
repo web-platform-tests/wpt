@@ -7,6 +7,11 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="placeholder"></div>
 <script>
+  // Fails instead of stalling the rest of the file if the promise never settles.
+  function failOnTimeout(promise, ms = 3000) {
+    return Promise.race([promise, new Promise((resolve, reject) => step_timeout(() => reject(new Error("timed out")), ms))]);
+  }
+
   setup({ allow_uncaught_exception: true });
 
   promise_test(async (t) => {
@@ -25,9 +30,9 @@
     await writer.write("<script>window.events.push('inline'); window.resolvers.resolve();<" + "/script>");
 
     // We close the writer.
-    await writer.close();
+    await failOnTimeout(writer.close());
 
-    await window.resolvers.promise;
+    await failOnTimeout(window.resolvers.promise);
 
     assert_array_equals(window.events, ["slow", "inline"]);
   }, "streamHTMLUnsafe with parser blocking script should process in order");
@@ -48,9 +53,9 @@
       "<script src='resources/slow.js?pipe=trickle(d0.1)&t=2_2&tag=slow-2'><" + "/script>" +
       "<script>window.events.push('inline'); window.resolvers.resolve();<" + "/script>"
     );
-    await writer.close();
+    await failOnTimeout(writer.close());
 
-    await window.resolvers.promise;
+    await failOnTimeout(window.resolvers.promise);
 
     assert_array_equals(window.events, ["slow-1", "slow-2", "inline"]);
   }, "Multiple parser-blocking scripts with out-of-order fetch times execute in document order");
@@ -86,9 +91,9 @@
     await writer.write("><" + "/");
     await writer.write("script>");
     await writer.write("<script>window.events.push('inline'); window.resolvers.resolve();<" + "/script>");
-    await writer.close();
+    await failOnTimeout(writer.close());
 
-    await window.resolvers.promise;
+    await failOnTimeout(window.resolvers.promise);
     assert_array_equals(window.events, ["slow", "inline"]);
   }, "External script tag split across chunk boundaries parses and executes correctly");
 
@@ -112,8 +117,8 @@
       "<p id='p2'>p2</p>" +
       "<script>window.resolvers.resolve();<" + "/script>"
     );
-    await writer.close();
-    await window.resolvers.promise;
+    await failOnTimeout(writer.close());
+    await failOnTimeout(window.resolvers.promise);
 
     const ids = Array.from(placeholder.children).map(c => c.id);
     assert_array_equals(ids, ["p1", "", "from-script", "p2", ""]);
@@ -186,7 +191,7 @@
       "<script>window.events.push('after-err'); window.resolvers.resolve();<" + "/script>"
     );
     await writer.close();
-    await window.resolvers.promise;
+    await failOnTimeout(window.resolvers.promise);
 
     assert_true(got_error, "window.onerror should receive the thrown error");
     assert_array_equals(window.events, ["before-err", "after-err"]);
@@ -231,8 +236,8 @@
       assert_equals(placeholder.querySelector("#after-blocking"), null, "Markup after blocking script is not parsed yet when write() resolves");
     }
 
-    await writer.close();
-    await window.resolvers.promise;
+    await failOnTimeout(writer.close());
+    await failOnTimeout(window.resolvers.promise);
 
     assert_array_equals(window.events, ["slow"]);
     assert_not_equals(placeholder.querySelector("#after-blocking"), null);
@@ -255,7 +260,7 @@
     await writer.write(`<span id="before">1</span><script src="resources/slow.js?pipe=trickle(d0.2)&d2=1"><` + `/script><span id="same-chunk">2</span>`);
     await writer.write(`<span id="queued-chunk">3</span>`);
 
-    await window.resolvers.promise;
+    await failOnTimeout(window.resolvers.promise);
     await writer.close();
 
     const ids = Array.from(placeholder.querySelectorAll("span")).map(s => s.id);
@@ -279,8 +284,8 @@
       "<script>window.write_from_inline();<" + "/script>" +
       "<span id='rest-of-chunk'>rest</span>"
     );
-    await nestedWritePromise;
-    await writer.close();
+    await failOnTimeout(nestedWritePromise);
+    await failOnTimeout(writer.close());
 
     const ids = Array.from(placeholder.querySelectorAll("span")).map(s => s.id);
     assert_array_equals(ids, ["first", "rest-of-chunk", "nested"]);
@@ -308,11 +313,11 @@
     assert_array_equals(window.events, [], "close() does not run the blocked parser synchronously");
     assert_equals(placeholder.querySelector("#d4-after"), null);
 
-    await closePromise;
+    await failOnTimeout(closePromise);
     assert_not_equals(placeholder.querySelector("#d4-after"), null, "remaining tokens are parsed before close() resolves");
     assert_array_equals(window.events, ["slow", "after-blocking"], "close() resolves after the blocking script and remaining inline scripts, before defer scripts");
 
-    await window.defer_done.promise;
+    await failOnTimeout(window.defer_done.promise);
     assert_array_equals(window.events, ["slow", "after-blocking", "defer"]);
   }, "close() while blocked waits for the blocking script and remaining input, then defer scripts run");
 
@@ -405,7 +410,7 @@
       "<p id='after-404'>continued</p>" +
       "<script>window.events.push('after-404'); window.resolvers.resolve();<" + "/script>"
     );
-    await writer.close();
+    await failOnTimeout(writer.close());
 
     assert_array_equals(window.events, ["error", "after-404"]);
     assert_equals(placeholder.querySelector("#after-404").textContent, "continued");
@@ -438,10 +443,10 @@
     );
 
     assert_true(window.events.includes("inline"), "Streamed inline script is not blocked by pending stylesheet in live document");
-    await window.ext_done.promise;
+    await failOnTimeout(window.ext_done.promise);
     assert_array_equals(window.events, ["inline", "external"]);
     await writer.close();
-    await window.defer_done.promise;
+    await failOnTimeout(window.defer_done.promise);
     assert_array_equals(window.events, ["inline", "external", "defer"]);
   }, "Live document script-blocking stylesheets do not block streamed inline, external, or defer scripts");
 
@@ -486,8 +491,8 @@
     const writer1 = target.streamHTMLUnsafe({ runScripts: true }).getWriter();
     const extCode = "document.write('<p id=destroyed>destroyed</p>'); window.extDone.resolve();";
     await writer1.write(`<script src="data:text/javascript,${encodeURIComponent(extCode)}"><` + `/script><span id="kept">kept</span>`);
-    await writer1.close();
-    await extDone.promise;
+    await failOnTimeout(writer1.close());
+    await failOnTimeout(extDone.promise);
 
     assert_equals(iframe.contentDocument.getElementById("destroyed"), null, "External script document.write is ignored");
     assert_not_equals(iframe.contentDocument.getElementById("kept"), null);
@@ -525,8 +530,8 @@
     assert_array_equals(window.events, ["stream2-inline"], "Second stream is not blocked by first stream");
 
     await writer2.close();
-    await writer1.close();
-    await window.stream1_done.promise;
+    await failOnTimeout(writer1.close());
+    await failOnTimeout(window.stream1_done.promise);
 
     assert_array_equals(window.events, ["stream2-inline", "slow", "stream1-after"]);
   }, "Two concurrent streams block independently");
@@ -598,15 +603,17 @@
         assert_equals(placeholder.querySelector("#after-blocking"), null);
       }
 
-      // Once closing has started, abort() is a no-op and write() rejects.
-      await writer.abort("too late");
+      // Once closing has started, write() rejects and abort() doesn't abort; the
+      // abort promise settles when the close completes.
+      const abortPromise = writer.abort("too late");
       await promise_rejects_js(t, TypeError, writer.write("<p id='after-close'>x</p>"));
 
-      await closePromise;
+      await failOnTimeout(closePromise);
       assert_array_equals(window.events, ["slow"], "the pending parser-blocking script has executed when close() resolves");
       assert_not_equals(placeholder.querySelector("#after-blocking"), null, "markup after the blocking script is inserted before close() resolves");
       assert_not_equals(placeholder.querySelector("#second-chunk"), null, "subsequent chunks are parsed before close() resolves");
       assert_equals(placeholder.querySelector("#after-close"), null);
+      await failOnTimeout(abortPromise);
     }, `${method}: close() waits for a pending parser-blocking script and remaining input`);
   }
 
@@ -626,7 +633,7 @@
       "<p id='after-removal'>after</p>"
     );
     const closePromise = writer.close();
-    await promise_rejects_dom(t, "HierarchyRequestError", closePromise);
+    await promise_rejects_dom(t, "HierarchyRequestError", failOnTimeout(closePromise));
     await new Promise(r => t.step_timeout(r, 0));
     assert_array_equals(window.events, ["slow"], "deferred script must not execute when close() rejects due to displaced referenceChild");
     assert_not_equals(placeholder.querySelector("#before-blocking"), null);

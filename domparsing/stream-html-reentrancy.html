@@ -10,6 +10,11 @@
 <body>
 <div id="target"></div>
 <script>
+  // Fails instead of stalling the rest of the file if the promise never settles.
+  function failOnTimeout(promise, ms = 3000) {
+    return Promise.race([promise, new Promise((resolve, reject) => step_timeout(() => reject(new Error("timed out")), ms))]);
+  }
+
   // An abort requested while the parser is running (from a streamed inline
   // script or from a custom element reaction) is deferred until the parser
   // returns: the rest of the current chunk is still parsed, nothing after it
@@ -57,7 +62,7 @@
         "window.resolve_abort();</" + "script>" +
         "<p id='b'>b</p><div id='c'><p id='d'>d</p>"
       );
-      await abortPromise;
+      await failOnTimeout(abortPromise);
       assert_array_equals(ids(target), ["a", "b", "c", "d"], "the rest of the chunk is parsed before the deferred abort takes effect");
       await window.abort_promise;
       await promise_rejects_exactly(t, "aborted-from-script", writer.write("<p id='e'>e</p>"), "subsequent writes reject with the abort reason");
@@ -97,7 +102,7 @@
         "<p id='b'>b</p>"
       );
       assert_array_equals(window.ids_at_script, ["a"], "the re-entrant write is not parsed while the script runs");
-      await writer.closed;
+      await failOnTimeout(writer.closed);
       assert_array_equals(ids(target), ["a", "b", "c"], "the queued write is parsed after the current chunk, then the stream is closed");
       await promise_rejects_js(t, TypeError, writer.write("<p id='d'>d</p>"), "the stream is closed");
     }, `${method}: write() and close() from a streamed inline script are processed after the current chunk`);
@@ -144,7 +149,7 @@
         "<script>window.rest_parsed = true;</" + "script>"
       );
       assert_array_equals(ids(target), ["a"], "the write promise does not wait for the parser-blocking script");
-      await slowRan;
+      await failOnTimeout(slowRan);
       await after_task(t);
       assert_array_equals(window.events, ["slow"]);
       assert_array_equals(window.ids_at_script, ["a"]);
@@ -174,7 +179,7 @@
         "<script>window.ids_at_rest = ids(document.getElementById('target'));</" + "script>"
       );
       assert_array_equals(ids(target), ["a"], "the write promise does not wait for the parser-blocking script");
-      await slowRan;
+      await failOnTimeout(slowRan);
       await after_task(t);
       assert_array_equals(window.events, ["slow"]);
       assert_array_equals(window.ids_at_script, ["a"], "the re-entrant write is not parsed while the script runs");
@@ -206,14 +211,14 @@
         "Promise.resolve().then(() => { window.close_settled_at_rest = window.close_settled; });</" + "script>"
       );
       assert_array_equals(ids(target), ["a"], "the write promise does not wait for the parser-blocking script");
-      await slowRan;
+      await failOnTimeout(slowRan);
       await after_task(t);
       assert_array_equals(window.events, ["slow"]);
       assert_array_equals(ids(target), ["a", "b"], "the rest of the chunk is parsed before the stream is closed");
       assert_true(window.rest_parsed, "scripts in the rest of the chunk still run");
       assert_false(window.close_settled_at_rest, "the close promise does not resolve before the rest of the chunk is parsed");
-      await window.close_promise;
-      await writer.closed;
+      await failOnTimeout(window.close_promise);
+      await failOnTimeout(writer.closed);
       await promise_rejects_js(t, TypeError, writer.write("<p id='c'>c</p>"), "the stream is closed");
       assert_array_equals(ids(target), ["a", "b"]);
     }, `${method}: close() from a streamed inline script after a parser-blocking script closes the stream after the current chunk`);

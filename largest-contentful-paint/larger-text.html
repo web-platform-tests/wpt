@@ -59,7 +59,7 @@
               // The div styling makes it approximate the text size.
               const sizeLowerBound = (div.clientHeight - 5) * (div.clientWidth - 5);
               const sizeUpperBound = (div.clientHeight + 1) * (div.clientWidth + 1);
-              checkTextEntry(entry, '', 'text2',
+              checkTextEntry(entry, 'text2',
                              [sizeLowerBound, sizeUpperBound], beforeRender);
 
               observer.disconnect();

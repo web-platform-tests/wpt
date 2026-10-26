@@ -21,7 +21,7 @@ p {
         // Some lower bound: height of at least 12 px.
         // Width of at least 100 px.
         // TODO: find a good way to bound text width.
-        checkTextEntry(entry, '', 'my_text', 1200, beforeRender);
+        checkTextEntry(entry, 'my_text', 1200, beforeRender);
       })
     );
     observer.observe({type: 'largest-contentful-paint', buffered: true});

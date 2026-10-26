@@ -97,9 +97,9 @@ function checkEntry(entry, expectedUrl, expectedID, expectedSize, timeLowerBound
 }
 
 // Checks a LargestContentfulPaint |entry| of a text.
-function checkTextEntry(entry, expectedUrl, expectedID, expectedSize,
+function checkTextEntry(entry, expectedID, expectedSize,
                         timeLowerBound, options = []) {
-  checkEntry(entry, expectedUrl, expectedID, expectedSize, timeLowerBound,
+  checkEntry(entry, '', expectedID, expectedSize, timeLowerBound,
              options.concat(['skipLoadTime', 'sizeRange']));
 }
 

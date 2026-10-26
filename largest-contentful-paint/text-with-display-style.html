@@ -29,7 +29,7 @@
         // TODO: find a good way to bound text size.
         if (!observedFlex) {
           observedFlex = true;
-          checkTextEntry(entry, '', 'title', 500, beforeRender);
+          checkTextEntry(entry, 'title', 500, beforeRender);
           const title = document.getElementById('title');
           // Remove 'display: flex' and add 'display: grid' text.
           title.parentNode.removeChild(title);
@@ -41,7 +41,7 @@
           beforeRender = performance.now();
         } else if (!observedGrid) {
           observedGrid = true;
-          checkTextEntry(entry, '', 'title2', 500, beforeRender);
+          checkTextEntry(entry, 'title2', 500, beforeRender);
           const title2 = document.getElementById('title2');
           // Remove 'display: grid' and add 'display: block' text.
           title2.parentNode.removeChild(title2);
@@ -52,7 +52,7 @@
           document.body.appendChild(title3);
           beforeRender = performance.now();
         } else {
-          checkTextEntry(entry, '', 'title3', 500, beforeRender);
+          checkTextEntry(entry, 'title3', 500, beforeRender);
           t.done();
         }
       })

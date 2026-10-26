@@ -606,12 +606,13 @@
           writer.write("<p>still rejected</p>"),
           "Subsequent write must still reject with HierarchyRequestError after stream errored",
         );
-        await promise_rejects_dom(
+        await promise_rejects_js(
           t,
-          "HierarchyRequestError",
+          TypeError,
           writer.close(),
-          "close() must reject with HierarchyRequestError after stream errored",
+          "close() must reject with TypeError after stream errored",
         );
+        await promise_rejects_dom(t, "HierarchyRequestError", writer.closed);
         assert_equals(parent.querySelector("p"), null);
       }, `${method_name}: moving ref_node back into parent after mid-chunk displacement does not recover the errored stream`);
 

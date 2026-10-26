@@ -233,6 +233,49 @@
       await promise_rejects_exactly(t, "aborted-from-reaction", writer.closed);
     }, `${method}: abort() from a custom element reaction drops text that the current token would insert`);
 
+    // As above, but a second formatting element is reconstructed after the <b>
+    // that aborts. It's created without a custom element registry and not inserted.
+    promise_test(async (t) => {
+      const target = document.getElementById("target");
+      target.replaceChildren();
+      const abort_name = `x-abort-b2-${method.toLowerCase()}`;
+      const log_name = `x-log-i-${method.toLowerCase()}`;
+      let connections = 0;
+      let constructions = 0;
+      let abortPromise = null;
+      let writer = null;
+      customElements.define(abort_name, class extends HTMLElement {
+        connectedCallback() {
+          if (++connections === 2) {
+            abortPromise = writer.abort("aborted-from-reaction");
+          }
+        }
+      }, { extends: "b" });
+      customElements.define(log_name, class extends HTMLElement {
+        constructor() {
+          super();
+          constructions++;
+        }
+      }, { extends: "i" });
+      writer = target[method]({ runScripts: true }).getWriter();
+      window.events = [];
+      const slowRan = new Promise((resolve) => { window.on_slow = resolve; });
+      t.add_cleanup(() => { delete window.on_slow; });
+
+      await writer.write(parser_blocking_script("abort_before_element") +
+                         `<p><b is="${abort_name}">1<i is="${log_name}">2</p>3`);
+      await failOnTimeout(slowRan);
+      await after_task(t);
+      assert_array_equals(window.events, ["slow"]);
+      assert_equals(connections, 2, "the reconstructed <b> was inserted");
+      assert_equals(constructions, 1, "the reconstructed <i> is not constructed");
+      assert_equals(target.innerHTML.replace(/<script[^]*<\/script>/, ""),
+                    `<p><b is="${abort_name}">1<i is="${log_name}">2</i></b></p><b is="${abort_name}"></b>`,
+                    "the reconstructed <i> and the text after the abort are not inserted");
+      await abortPromise;
+      await promise_rejects_exactly(t, "aborted-from-reaction", writer.closed);
+    }, `${method}: abort() from a custom element reaction drops elements that the current token would insert`);
+
     promise_test(async (t) => {
       const target = document.getElementById("target");
       target.replaceChildren();

@@ -35,6 +35,14 @@
     }
   });
 
+  // Globals set by streamed scripts, deleted after each test so a later test
+  // can't pass on values left by an earlier one.
+  function delete_script_globals() {
+    for (const name of ["ids_at_script", "ids_at_rest", "abort_promise", "write_promise", "close_promise"]) {
+      delete window[name];
+    }
+  }
+
   function ids(target) {
     return Array.from(target.querySelectorAll("[id]"), (e) => e.id);
   }
@@ -53,7 +61,7 @@
       target.replaceChildren();
       const writer = target[method]({ runScripts: true }).getWriter();
       window.current_writer = writer;
-      t.add_cleanup(() => { delete window.current_writer; });
+      t.add_cleanup(() => { delete window.current_writer; delete_script_globals(); });
 
       const abortPromise = new Promise((resolve) => { window.resolve_abort = resolve; });
       await writer.write(
@@ -76,7 +84,7 @@
       const writer = target[method]().getWriter();
       window.current_writer = writer;
       window.reaction_log = [];
-      t.add_cleanup(() => { delete window.current_writer; });
+      t.add_cleanup(() => { delete window.current_writer; delete_script_globals(); });
 
       await writer.write(
         "<p id='a'>a</p><abort-on-connect id='ce'></abort-on-connect><p id='b'>b</p>"
@@ -93,7 +101,7 @@
       target.replaceChildren();
       const writer = target[method]({ runScripts: true }).getWriter();
       window.current_writer = writer;
-      t.add_cleanup(() => { delete window.current_writer; });
+      t.add_cleanup(() => { delete window.current_writer; delete_script_globals(); });
 
       await writer.write(
         "<p id='a'>a</p>" +
@@ -113,7 +121,7 @@
       const writer = target[method]().getWriter();
       window.current_writer = writer;
       window.reaction_log = [];
-      t.add_cleanup(() => { delete window.current_writer; });
+      t.add_cleanup(() => { delete window.current_writer; delete_script_globals(); });
 
       await writer.write(
         "<p id='a'>a</p><write-on-connect id='ce'></write-on-connect><p id='b'>b</p>"
@@ -138,7 +146,7 @@
       window.events = [];
       window.rest_parsed = false;
       const slowRan = new Promise((resolve) => { window.on_slow = resolve; });
-      t.add_cleanup(() => { delete window.current_writer; delete window.on_slow; });
+      t.add_cleanup(() => { delete window.current_writer; delete_script_globals(); delete window.on_slow; });
 
       await writer.write(
         "<p id='a'>a</p>" +
@@ -283,7 +291,7 @@
       window.current_writer = writer;
       window.events = [];
       const slowRan = new Promise((resolve) => { window.on_slow = resolve; });
-      t.add_cleanup(() => { delete window.current_writer; delete window.on_slow; });
+      t.add_cleanup(() => { delete window.current_writer; delete_script_globals(); delete window.on_slow; });
 
       await writer.write(
         "<p id='a'>a</p>" +
@@ -314,7 +322,7 @@
       window.rest_parsed = false;
       window.close_settled_at_rest = false;
       const slowRan = new Promise((resolve) => { window.on_slow = resolve; });
-      t.add_cleanup(() => { delete window.current_writer; delete window.on_slow; });
+      t.add_cleanup(() => { delete window.current_writer; delete_script_globals(); delete window.on_slow; });
 
       await writer.write(
         "<p id='a'>a</p>" +

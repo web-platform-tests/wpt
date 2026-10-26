@@ -28,6 +28,8 @@ let ctx = canvas.getContext("2d", {willReadFrequently:true});
 let child = document.getElementById("child");
 
 promise_test(() => new Promise((resolve, reject) => {
+  assert_implements('drawElementImage' in CanvasRenderingContext2D.prototype,
+                    'html-in-canvas is not supported');
   let sawRed = false, sawGreen = false, sawBlue = false;
   let colorEquals = (a, b) => {
     return a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && a[3] == b[3];

@@ -355,5 +355,27 @@
       assert_not_equals(style.sheet, null, "the style element is popped on close()");
     }, `${method}: unclosed <style> is popped on close()`);
   }
+
+  // 11. The HTML parser is used regardless of the type of document.
+  for (const method of methods) {
+    promise_test(async (t) => {
+      const doc = new DOMParser().parseFromString(
+        '<html xmlns="http://www.w3.org/1999/xhtml"><body><div id="target"></div></body></html>',
+        "application/xhtml+xml");
+      const target = doc.getElementById("target");
+      const writer = target[method]().getWriter();
+      await writer.write("<P>a<p>b");
+      await writer.close();
+
+      const paragraphs = Array.from(target.children);
+      assert_equals(paragraphs.length, 2, "the second <p> implicitly closes the first");
+      for (const p of paragraphs) {
+        assert_equals(p.localName, "p");
+        assert_equals(p.namespaceURI, "http://www.w3.org/1999/xhtml");
+        assert_equals(p.ownerDocument, doc);
+      }
+      assert_equals(target.textContent, "ab");
+    }, `${method} into an element in an XML document uses the HTML parser`);
+  }
 </script>
 </body>

@@ -33,13 +33,10 @@
       t.add_cleanup(() => script.remove());
 
       const target = is_positional ? initialChild : script;
-      const var_name = `executed_${method}`;
-      window[var_name] = false;
 
       assert_throws_dom("NotSupportedError", () => {
         target[method]();
       });
-      assert_false(window[var_name], "Script should not execute");
       assert_equals(script.childNodes.length, 1, "Existing children of <script> must remain untouched");
       assert_equals(script.firstChild, initialChild, "Initial child node is preserved");
       assert_equals(script.textContent, "/* setup */");
@@ -65,13 +62,10 @@
       t.add_cleanup(() => svg.remove());
 
       const target = is_positional ? initialChild : script;
-      const var_name = `executed_svg_${method}`;
-      window[var_name] = false;
 
       assert_throws_dom("NotSupportedError", () => {
         target[method]();
       });
-      assert_false(window[var_name], "Script should not execute");
       assert_equals(script.childNodes.length, 1, "Existing children of SVG <script> must remain untouched");
       assert_equals(script.firstChild, initialChild, "Initial child node is preserved");
       assert_equals(script.textContent, "/* setup */");

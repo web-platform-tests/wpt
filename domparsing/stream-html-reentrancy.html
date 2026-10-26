@@ -198,6 +198,41 @@
       await promise_rejects_exactly(t, "aborted-from-microtask", writer.closed);
     }, `${method}: abort() from a microtask before a streamed script is prepared prevents that script from running`);
 
+    // Reconstructing the active formatting elements for the "2" character token
+    // inserts a new <b>, whose connectedCallback aborts the stream. The "2" is
+    // then not inserted, like nodes from later tokens. A formatting element is
+    // needed, so this uses a customized built-in element.
+    promise_test(async (t) => {
+      const target = document.getElementById("target");
+      target.replaceChildren();
+      const name = `x-abort-b-${method.toLowerCase()}`;
+      let connections = 0;
+      let abortPromise = null;
+      let writer = null;
+      customElements.define(name, class extends HTMLElement {
+        connectedCallback() {
+          if (++connections === 2) {
+            abortPromise = writer.abort("aborted-from-reaction");
+          }
+        }
+      }, { extends: "b" });
+      writer = target[method]({ runScripts: true }).getWriter();
+      window.events = [];
+      const slowRan = new Promise((resolve) => { window.on_slow = resolve; });
+      t.add_cleanup(() => { delete window.on_slow; });
+
+      await writer.write(parser_blocking_script("abort_before_text") + `<p><b is="${name}">1</p>2`);
+      await failOnTimeout(slowRan);
+      await after_task(t);
+      assert_array_equals(window.events, ["slow"]);
+      assert_equals(connections, 2, "the reconstructed <b> was inserted");
+      assert_equals(target.innerHTML.replace(/<script[^]*<\/script>/, ""),
+                    `<p><b is="${name}">1</b></p><b is="${name}"></b>`,
+                    "the text after the abort is not inserted");
+      await abortPromise;
+      await promise_rejects_exactly(t, "aborted-from-reaction", writer.closed);
+    }, `${method}: abort() from a custom element reaction drops text that the current token would insert`);
+
     promise_test(async (t) => {
       const target = document.getElementById("target");
       target.replaceChildren();

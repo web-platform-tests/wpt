@@ -42,7 +42,7 @@
         }).then(entryList => {
           assert_equals(entryList.getEntries().length, 1);
           const entry = entryList.getEntries()[0];
-          checkTextEntry(entry, '', elementId, elemSizeLowerBound, beforeRender);
+          checkTextEntry(entry, elementId, elemSizeLowerBound, beforeRender);
         });
       }, testName);
     }

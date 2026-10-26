@@ -20,7 +20,7 @@ mathml {
         const entry = entryList.getEntries()[0];
         // Some lower bound: height of at least 12 px.
         // Width of at least 100 px.
-        checkTextEntry(entry, '', 'mathml', 1200, beforeRender);
+        checkTextEntry(entry, 'mathml', 1200, beforeRender);
       })
     );
     observer.observe({type: 'largest-contentful-paint', buffered: true});

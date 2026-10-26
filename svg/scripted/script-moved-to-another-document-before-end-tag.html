@@ -1,0 +1,23 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>An SVG script moved to another document before its end tag doesn't run</title>
+<link rel="help" href="https://html.spec.whatwg.org/#scriptForeignEndTag">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<iframe id="parsed"></iframe>
+<iframe id="other"></iframe>
+<script>
+test(t => {
+    const doc = document.getElementById("parsed").contentDocument;
+    const other = document.getElementById("other").contentDocument;
+    window.moved_svg_script_ran = false;
+    t.add_cleanup(() => { delete window.moved_svg_script_ran; });
+    doc.open();
+    doc.write("<svg><script>");
+    other.body.append(doc.querySelector("script"));
+    doc.write("parent.moved_svg_script_ran = true;</" + "script></svg>");
+    doc.close();
+    assert_false(window.moved_svg_script_ran);
+}, "Document parsing does not execute an SVG <script> moved to another document before its end tag");
+</script>

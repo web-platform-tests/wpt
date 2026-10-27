@@ -2,19 +2,6 @@
 
 const CssAamUtils = {
     /*
-      Clones test container template.
-
-      */
-    cloneTestContainer: function(templateID, containerID) {
-        let template = document.querySelector(`#${templateID}`);
-        let container = document.body.appendChild(document.createElement("div"));
-        container.id = containerID;
-        container.appendChild(template.content.cloneNode(true));
-
-        return container
-    },
-
-    /*
       Replaces white space with dashes.
 
       */

@@ -41,7 +41,6 @@ import fnmatch
 import glob
 import json
 import os
-import stat
 import subprocess
 import sys
 import tarfile
@@ -61,11 +60,12 @@ root = os.path.abspath(
 
 started_processes = []
 
-# DEBUG(wpt#62901): the first Chrome launch on a fresh CI worker stalls for
-# 20-46s.  When True, read the files Chrome needs at startup before running
-# the job, and report how long each group takes.  When False, only record the
-# I/O statistics so that a run without warmed caches can be used as a baseline.
-COLD_START_PREREAD = True
+# DEBUG(wpt#62901): Chrome bundles its own fontconfig, whose cache format does
+# not match the caches in the image, so the first Chrome launch in a task
+# rebuilds the font caches, which can take 15-46s on a cold disk.  When True,
+# launch Chrome once before the job so that the caches exist when tests start.
+# When False, only record the I/O statistics, as a baseline.
+CHROME_WARM_UP = True
 
 
 def run(cmd, return_stdout=False, **kwargs):
@@ -186,171 +186,50 @@ def start_io_stats(path, interval=1.0):
     threading.Thread(target=sample, daemon=True).start()
 
 
-def chrome_libraries(channel):
+def fontconfig_cache_counts():
+    # Count the fontconfig cache files per format version (".cache-<N>").
+    counts = {}
+    for path in glob.glob(os.path.expanduser("~/.cache/fontconfig/*.cache-*")):
+        version = path.rsplit(".", 1)[1]
+        counts[version] = counts.get(version, 0) + 1
+    return counts
+
+
+def warm_up_chrome(channel):
+    # Launch the system Chrome once, so that its bundled fontconfig builds the
+    # font caches in its own format before any test starts the browser.
     install_dir = {"experimental": "chrome-unstable",
                    "dev": "chrome-unstable",
                    "beta": "chrome-beta",
                    "stable": "chrome"}.get(channel)
     if install_dir is None:
         # Canary is Chrome for Testing, which is only installed by wpt run.
-        return []
-    output = run(["ldd", os.path.join("/opt/google", install_dir, "chrome")],
-                 return_stdout=True)
-    libraries = []
-    for line in output.splitlines():
-        if "=>" in line:
-            path = line.split("=>")[1].split("(")[0].strip()
-            if path.startswith("/"):
-                libraries.append(path)
-    return libraries
-
-
-def files_under(paths):
-    for path in paths:
-        if os.path.isfile(path) and not os.path.islink(path):
-            yield path
-        for dir_path, _, file_names in os.walk(path):
-            for name in file_names:
-                file_path = os.path.join(dir_path, name)
-                if os.path.isfile(file_path) and not os.path.islink(file_path):
-                    yield file_path
-
-
-def preread(label, paths, max_bytes=None):
-    # Read the files (or their first max_bytes) so that they end up in the page
-    # cache, and report the throughput.  A low throughput means a cold disk.
-    start_time = time.monotonic()
-    count = 0
-    total = 0
-    for path in paths:
-        try:
-            with open(path, "rb") as f:
-                remaining = max_bytes
-                while remaining is None or remaining > 0:
-                    chunk = f.read(1 << 20 if remaining is None else min(1 << 20, remaining))
-                    if not chunk:
-                        break
-                    total += len(chunk)
-                    if remaining is not None:
-                        remaining -= len(chunk)
-            count += 1
-        except OSError:
-            pass
-    elapsed = time.monotonic() - start_time
-    mib = total / (1 << 20)
-    print("INFO: cold-start: pre-read %s: %d files, %.1f MiB in %.1fs (%.1f MiB/s)" %
-          (label, count, mib, elapsed, mib / elapsed if elapsed else 0.0), flush=True)
-
-
-def page_cache_snapshot(roots, min_size=1 << 20):
-    # Map each regular file of at least min_size bytes to (resident bytes, mtime).
-    start_time = time.monotonic()
-    stats = {}
-    for root_dir in roots:
-        for dir_path, _, file_names in os.walk(root_dir):
-            for name in file_names:
-                path = os.path.join(dir_path, name)
-                try:
-                    st = os.lstat(path)
-                except OSError:
-                    continue
-                if stat.S_ISREG(st.st_mode) and st.st_size >= min_size:
-                    stats[path] = st.st_mtime
-    snapshot = {}
-    paths = list(stats)
-    for i in range(0, len(paths), 200):
-        output = subprocess.run(["fincore", "--bytes", "--noheadings", "--raw",
-                                 "--output", "RES,FILE"] + paths[i:i + 200],
-                                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                                encoding="utf-8").stdout
-        for line in output.splitlines():
-            resident, path = line.split(" ", 1)
-            if path in stats:
-                snapshot[path] = (int(resident), stats[path])
-    print("INFO: cold-start: page cache snapshot of %d files (>= %d KiB) in %.1fs" %
-          (len(snapshot), min_size >> 10, time.monotonic() - start_time), flush=True)
-    return snapshot
-
-
-# Directories that may hold files read by the browser; see report_page_cache_growth().
-PAGE_CACHE_ROOTS = ["/usr", "/opt", "/etc", "/var", "/tmp", os.path.expanduser("~")]
-page_cache_before = None
-
-
-def report_page_cache_growth(top=40):
-    # Report the files that entered the page cache while the job ran.  With
-    # the pre-read done, these are the files the browser had to read from disk.
-    # Files created or modified during the job are marked, because their pages
-    # are cached by writing, not by reading.
-    if page_cache_before is None:
+        print("INFO: cold-start: no system Chrome for channel %s, skipping warm-up" % channel)
         return
-    after = page_cache_snapshot(PAGE_CACHE_ROOTS)
-    growth = []
-    for path, (resident, mtime) in after.items():
-        before_resident, before_mtime = page_cache_before.get(path, (0, None))
-        if resident > before_resident:
-            written = before_mtime is None or mtime != before_mtime
-            growth.append((resident - before_resident, path, written))
-    growth.sort(reverse=True)
-
-    total_read = sum(size for size, _, written in growth if not written)
-    total_written = sum(size for size, _, written in growth if written)
-    print("INFO: cold-start: page cache growth: %.1f MiB in files present before the job, "
-          "%.1f MiB in files written during the job" %
-          (total_read / (1 << 20), total_written / (1 << 20)))
-    by_dir = {}
-    for size, path, written in growth:
-        if not written:
-            key = "/".join(path.split("/")[:4])
-            by_dir[key] = by_dir.get(key, 0) + size
-    for key, size in sorted(by_dir.items(), key=lambda item: -item[1])[:15]:
-        print("INFO: cold-start:   %8.1f MiB  %s/" % (size / (1 << 20), key))
-    for size, path, written in growth[:top]:
-        print("INFO: cold-start:   %8.1f MiB  %s%s" %
-              (size / (1 << 20), path, "  (written during job)" if written else ""))
-
-    with open(os.path.expanduser("~/artifacts/page-cache-growth.tsv"), "w") as f:
-        f.write("growth_bytes\twritten_during_job\tpath\n")
-        for size, path, written in growth:
-            f.write("%d\t%d\t%s\n" % (size, written, path))
-    sys.stdout.flush()
+    binary = os.path.join("/opt/google", install_dir, "chrome")
+    print("INFO: cold-start: fontconfig caches before warm-up: %s" % fontconfig_cache_counts(),
+          flush=True)
+    start_time = time.monotonic()
+    with tempfile.TemporaryDirectory() as profile:
+        cmd = [binary, "--headless=new", "--no-sandbox", "--no-first-run",
+               "--user-data-dir=%s" % profile, "--dump-dom", "about:blank"]
+        print(" ".join(cmd), flush=True)
+        try:
+            result = subprocess.call(cmd, stdout=subprocess.DEVNULL, timeout=300)
+        except subprocess.TimeoutExpired:
+            result = "timeout"
+    print("INFO: cold-start: Chrome warm-up finished (%s) in %.1fs" %
+          (result, time.monotonic() - start_time))
+    print("INFO: cold-start: fontconfig caches after warm-up: %s" % fontconfig_cache_counts(),
+          flush=True)
 
 
 def debug_cold_start(channel):
-    global page_cache_before
-
     artifacts_dir = os.path.expanduser("~/artifacts")
     os.makedirs(artifacts_dir, exist_ok=True)
     start_io_stats(os.path.join(artifacts_dir, "io-stats.tsv"))
-    if COLD_START_PREREAD:
-        preread_startup_files(channel)
-    page_cache_before = page_cache_snapshot(PAGE_CACHE_ROOTS)
-
-
-def preread_startup_files(channel):
-    lib_dir = "/usr/lib/x86_64-linux-gnu"
-    preread("chrome-libs", chrome_libraries(channel))
-    # Libraries that Chrome loads with dlopen(), and the data they read at startup.
-    gui_libs = []
-    for pattern in ["libgtk-*", "libgdk*", "libatk*", "libatspi*", "libpango*", "libcairo*",
-                    "libharfbuzz*", "libepoxy*", "libX*", "libxcb*", "libxkb*", "libEGL*",
-                    "libGL*", "libgbm*", "libdrm*", "libva*", "libdbus*", "libgio*",
-                    "libglib*", "libgobject*", "libgmodule*", "libpulse*"]:
-        gui_libs.extend(glob.glob(os.path.join(lib_dir, pattern)))
-    preread("gui-libs", files_under(gui_libs + [
-        os.path.join(lib_dir, "gtk-3.0"),
-        os.path.join(lib_dir, "gdk-pixbuf-2.0"),
-        os.path.join(lib_dir, "gio"),
-        "/usr/share/X11",
-        "/usr/share/glib-2.0",
-        "/usr/share/icons",
-        "/usr/share/mime",
-        "/usr/lib/locale",
-    ]))
-    # The fontconfig caches, and the head of every font file, which is what a
-    # fontconfig rescan reads if it decides the caches are stale.
-    preread("fontconfig", files_under(["/etc/fonts", "/var/cache/fontconfig"]))
-    preread("font-headers", files_under(["/usr/share/fonts"]), max_bytes=64 << 10)
+    if CHROME_WARM_UP:
+        warm_up_chrome(channel)
 
 
 def make_hosts_file():
@@ -671,9 +550,7 @@ def run_tc(*args, **kwargs):
         os.chdir(root)
         cmd = [kwargs["script"]] + kwargs["script_args"]
         print(" ".join(cmd))
-        returncode = subprocess.call(cmd)
-        report_page_cache_growth()
-        sys.exit(returncode)
+        sys.exit(subprocess.call(cmd))
     finally:
         for process in started_processes:
             process.terminate()

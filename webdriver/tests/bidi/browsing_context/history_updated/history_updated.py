@@ -1,6 +1,7 @@
 import pytest
 
 from webdriver.bidi.modules.script import ContextTarget
+from webdriver.error import TimeoutException
 
 from ... import any_int, int_interval, recursive_compare
 
@@ -10,6 +11,50 @@ EMPTY_PAGE = "/webdriver/tests/bidi/browsing_context/support/empty.html"
 FRAGMENT_NAVIGATED_EVENT = "browsingContext.fragmentNavigated"
 HISTORY_UPDATED_EVENT = "browsingContext.historyUpdated"
 CREATED_EVENT = "browsingContext.contextCreated"
+
+
+async def test_cross_process_frame_round_trip_emits_once(
+    bidi_session, subscribe_events, wait_for_bidi_events, new_tab, inline
+):
+    local_url = inline("<div>local</div>")
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"],
+        url=inline(f"<iframe src='{local_url}'></iframe>"),
+        wait="complete",
+    )
+    contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
+    frame = contexts[0]["children"][0]
+    await subscribe_events(events=[HISTORY_UPDATED_EVENT], contexts=[frame["context"]])
+
+    final_url = inline("<div>back to local</div>")
+    expected_url = f"{final_url}#updated"
+    final_events = []
+
+    async def on_event(_, data):
+        if data["url"] == expected_url:
+            final_events.append(data)
+
+    remove_listener = bidi_session.add_event_listener(HISTORY_UPDATED_EVENT, on_event)
+    try:
+        await bidi_session.browsing_context.navigate(
+            context=frame["context"],
+            url=inline("<div>remote</div>", domain="alt"),
+            wait="complete",
+        )
+        await bidi_session.browsing_context.navigate(
+            context=frame["context"], url=final_url, wait="complete"
+        )
+        await bidi_session.script.call_function(
+            function_declaration="""() => history.pushState(null, '', '#updated')""",
+            await_promise=False,
+            target=ContextTarget(frame["context"]),
+        )
+        await wait_for_bidi_events(final_events, 1)
+        with pytest.raises(TimeoutException):
+            await wait_for_bidi_events(final_events, 2, timeout=0.5)
+        assert final_events[0]["context"] == frame["context"]
+    finally:
+        remove_listener()
 
 
 @pytest.mark.parametrize(

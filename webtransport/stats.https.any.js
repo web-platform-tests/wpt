@@ -12,38 +12,50 @@ function validate_rtt_stats(stats) {
     assert_greater_than(stats.smoothedRtt, 0, "smoothedRtt");
     assert_less_than(stats.smoothedRtt, 5 * 1000, "smoothedRtt");
   }
+  if ("rttVariation" in stats) {
+    assert_greater_than_equal(stats.rttVariation, 0, "rttVariation");
+  }
+}
+
+const COUNTER_STATS = ["bytesSent", "bytesSentOverhead", "bytesAcknowledged",
+                       "packetsSent", "bytesLost", "packetsLost",
+                       "bytesReceived", "packetsReceived"];
+
+// getStats() only sets the members the user agent wishes to expose, and
+// unavailable stats are absent, so most members are optional.  The exceptions
+// are "datagrams", which is required, and "estimatedSendRate" and
+// "atSendCapacity", which have default values; WebIDL guarantees all three are
+// always present.
+function validate_connection_stats(stats) {
+  validate_rtt_stats(stats);
+  for (const member of COUNTER_STATS) {
+    if (member in stats) {
+      assert_greater_than_equal(stats[member], 0, member);
+    }
+  }
+  assert_equals(typeof stats.datagrams, "object", "datagrams");
+  assert_true("estimatedSendRate" in stats, "estimatedSendRate is present");
+  if (stats.estimatedSendRate !== null) {
+    assert_greater_than(stats.estimatedSendRate, 0, "estimatedSendRate when not null");
+  }
+  assert_equals(typeof stats.atSendCapacity, "boolean", "atSendCapacity");
+}
+
+function assert_not_decreased(before, after, members) {
+  for (const member of members) {
+    if (member in before && member in after) {
+      assert_greater_than_equal(after[member], before[member],
+                                `${member} should not decrease`);
+    }
+  }
 }
 
 promise_test(async t => {
   const wt = new WebTransport(webtransport_url('echo.py'));
   await wt.ready;
   const stats = await wt.getStats();
-  validate_rtt_stats(stats);
+  validate_connection_stats(stats);
 
-  // Check all required fields are present
-  assert_greater_than_equal(stats.bytesSent, 0, "bytesSent");
-  assert_greater_than_equal(stats.bytesReceived, 0, "bytesReceived");
-  assert_greater_than_equal(stats.packetsSent, 0, "packetsSent");
-  assert_greater_than_equal(stats.packetsReceived, 0, "packetsReceived");
-  assert_greater_than_equal(stats.bytesAcknowledged, 0, "bytesAcknowledged");
-  assert_greater_than_equal(stats.bytesLost, 0, "bytesLost");
-  assert_greater_than_equal(stats.packetsLost, 0, "packetsLost");
-  assert_greater_than_equal(stats.rttVariation, 0, "rttVariation");
-
-  // bytesSentOverhead is omitted: Firefox cannot decompose bytesSent into
-  // payload vs. framing/retransmission overhead (see bug 2051624), and the
-  // spec requires unavailable stats to be absent from the dictionary.
-  assert_equals(stats.bytesSentOverhead, undefined, "bytesSentOverhead");
-
-  // estimatedSendRate can be null or a positive number
-  if (stats.estimatedSendRate !== null) {
-    assert_greater_than(stats.estimatedSendRate, 0, "estimatedSendRate when not null");
-  }
-
-  // atSendCapacity is a boolean
-  assert_true(typeof stats.atSendCapacity === 'boolean', "atSendCapacity is boolean");
-
-  // Datagram stats
   if ("expiredOutgoing" in stats.datagrams) {
     assert_equals(stats.datagrams.expiredOutgoing, 0);
   }
@@ -57,11 +69,12 @@ promise_test(async t => {
     assert_equals(stats.datagrams.expiredIncoming, 0);
   }
 
-  // After connection establishment, we should have sent/received bytes
-  assert_greater_than(stats.bytesSent, 0, "Should have sent bytes during handshake");
-  assert_greater_than(stats.bytesReceived, 0, "Should have received bytes during handshake");
-  assert_greater_than(stats.packetsSent, 0, "Should have sent packets during handshake");
-  assert_greater_than(stats.packetsReceived, 0, "Should have received packets during handshake");
+  // The handshake has completed, so traffic has flowed in both directions.
+  for (const member of ["bytesSent", "bytesReceived", "packetsSent", "packetsReceived"]) {
+    if (member in stats) {
+      assert_greater_than(stats[member], 0, `${member} after handshake`);
+    }
+  }
 }, "WebTransport client should be able to provide stats after connection has been established");
 
 promise_test(async t => {
@@ -87,15 +100,17 @@ promise_test(async t => {
   wt2.close();
 
   // Server closes immediately, so RTT stats may be 0. Handshake bytes are
-  // always exchanged though, regardless of close code or timing, so assert
-  // strictly greater than 0 rather than the always-true >= 0.
-  const stats = await wt.getStats();
-  assert_greater_than(stats.bytesSent, 0, "bytesSent should be present");
-  assert_greater_than(stats.bytesReceived, 0, "bytesReceived should be present");
-
-  const stats2 = await wt2.getStats();
-  assert_greater_than(stats2.bytesSent, 0, "wt2 bytesSent should be present");
-  assert_greater_than(stats2.bytesReceived, 0, "wt2 bytesReceived should be present");
+  // always exchanged though, regardless of close code or timing, so if the
+  // byte counts are exposed assert strictly greater than 0 rather than the
+  // always-true >= 0.
+  for (const [name, transport] of [["wt", wt], ["wt2", wt2]]) {
+    const stats = await transport.getStats();
+    for (const member of ["bytesSent", "bytesReceived"]) {
+      if (member in stats) {
+        assert_greater_than(stats[member], 0, `${name} ${member}`);
+      }
+    }
+  }
 }, "WebTransport client should be able to provide stats after server closes connection");
 
 promise_test(async t => {
@@ -262,25 +277,24 @@ promise_test(async t => {
   // Get final stats
   const finalStats = await wt.getStats();
 
-  // Verify packet stats increased - packet counts should always increase with activity
-  assert_greater_than(finalStats.packetsReceived, initialStats.packetsReceived,
-                      "packetsReceived should increase");
-  assert_greater_than(finalStats.packetsSent, initialStats.packetsSent,
-                      "packetsSent should increase");
+  validate_connection_stats(finalStats);
 
-  // bytesReceived/bytesSent track transport-level bytes including overhead
-  // They may increase by less than application data due to implementation details
-  assert_greater_than_equal(finalStats.bytesReceived, initialStats.bytesReceived,
-                            "bytesReceived should not decrease");
-  assert_greater_than_equal(finalStats.bytesSent, initialStats.bytesSent,
-                            "bytesSent should not decrease");
+  // Packet counts should always increase with activity.
+  for (const member of ["packetsReceived", "packetsSent"]) {
+    if (member in initialStats && member in finalStats) {
+      assert_greater_than(finalStats[member], initialStats[member],
+                          `${member} should increase`);
+    }
+  }
 
-  // BytesAcknowledged should be > 0 (we ACKed packets)
-  assert_greater_than(finalStats.bytesAcknowledged, 0,
-                      "bytesAcknowledged should be positive after data transfer");
+  // bytesReceived/bytesSent may increase by less than the application data
+  // due to implementation details.
+  assert_not_decreased(initialStats, finalStats, ["bytesReceived", "bytesSent"]);
 
-  // bytesSentOverhead is omitted (see the note above the first stats test).
-  assert_equals(finalStats.bytesSentOverhead, undefined, "bytesSentOverhead");
+  if ("bytesAcknowledged" in finalStats) {
+    assert_greater_than(finalStats.bytesAcknowledged, 0,
+                        "bytesAcknowledged should be positive after data transfer");
+  }
 }, "WebTransport stats should accurately track data transfer");
 
 promise_test(async t => {
@@ -292,22 +306,16 @@ promise_test(async t => {
 
   // Sequential stats calls should show monotonically increasing or equal values
   // (equal if no traffic between calls)
-  assert_greater_than_equal(stats2.bytesSent, stats1.bytesSent,
-                            "bytesSent should not decrease");
-  assert_greater_than_equal(stats2.bytesReceived, stats1.bytesReceived,
-                            "bytesReceived should not decrease");
-  assert_greater_than_equal(stats2.packetsSent, stats1.packetsSent,
-                            "packetsSent should not decrease");
-  assert_greater_than_equal(stats2.packetsReceived, stats1.packetsReceived,
-                            "packetsReceived should not decrease");
-  assert_greater_than_equal(stats2.bytesAcknowledged, stats1.bytesAcknowledged,
-                            "bytesAcknowledged should not decrease");
+  assert_not_decreased(stats1, stats2, ["bytesSent", "bytesReceived", "packetsSent",
+                                        "packetsReceived", "bytesAcknowledged"]);
   // bytesLost and packetsLost are not monotonically increasing per spec:
   // packets initially declared lost can subsequently be received.
 
   // minRtt should not increase (it's the minimum observed)
-  assert_less_than_equal(stats2.minRtt, stats1.minRtt,
-                         "minRtt should not increase");
+  if ("minRtt" in stats1 && "minRtt" in stats2) {
+    assert_less_than_equal(stats2.minRtt, stats1.minRtt,
+                           "minRtt should not increase");
+  }
 }, "WebTransport stats should maintain monotonicity");
 
 promise_test(async t => {
@@ -316,22 +324,32 @@ promise_test(async t => {
 
   const stats = await wt.getStats();
 
+  const has = (...members) => members.every(m => m in stats);
+
   // Verify RTT variation is reasonable
-  assert_less_than(stats.rttVariation, stats.smoothedRtt * 2,
-                   "rttVariation should be < 2x smoothedRtt for stable connection");
+  if (has("rttVariation", "smoothedRtt")) {
+    assert_less_than(stats.rttVariation, stats.smoothedRtt * 2,
+                     "rttVariation should be < 2x smoothedRtt for stable connection");
+  }
 
   // Verify bytesAcknowledged <= bytesSent (with tolerance for timing)
   // Allow up to 20% slack due to timing of stat collection and packets in flight
-  const maxAllowed = stats.bytesSent * 1.2;
-  assert_less_than_equal(stats.bytesAcknowledged, maxAllowed,
-                         "bytesAcknowledged should not significantly exceed bytesSent");
+  if (has("bytesAcknowledged", "bytesSent")) {
+    const maxAllowed = stats.bytesSent * 1.2;
+    assert_less_than_equal(stats.bytesAcknowledged, maxAllowed,
+                           "bytesAcknowledged should not significantly exceed bytesSent");
+  }
 
   // Verify bytesLost <= bytesSent
-  assert_less_than_equal(stats.bytesLost, stats.bytesSent,
-                         "bytesLost should not exceed bytesSent");
+  if (has("bytesLost", "bytesSent")) {
+    assert_less_than_equal(stats.bytesLost, stats.bytesSent,
+                           "bytesLost should not exceed bytesSent");
+  }
 
   // Verify packetsLost <= packetsSent
-  assert_less_than_equal(stats.packetsLost, stats.packetsSent,
-                         "packetsLost should not exceed packetsSent");
+  if (has("packetsLost", "packetsSent")) {
+    assert_less_than_equal(stats.packetsLost, stats.packetsSent,
+                           "packetsLost should not exceed packetsSent");
+  }
 }, "WebTransport stats should satisfy invariants");
 

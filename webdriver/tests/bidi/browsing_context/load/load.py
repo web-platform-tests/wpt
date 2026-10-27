@@ -123,6 +123,44 @@ async def test_iframe(
     remove_listener()
 
 
+async def test_cross_process_frame_round_trip_emits_once(
+    bidi_session, subscribe_events, wait_for_bidi_events, new_tab, inline
+):
+    local_url = inline("<div>local</div>")
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"],
+        url=inline(f"<iframe src='{local_url}'></iframe>"),
+        wait="complete",
+    )
+    contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
+    frame = contexts[0]["children"][0]
+    await subscribe_events(events=[CONTEXT_LOAD_EVENT], contexts=[frame["context"]])
+
+    final_url = inline("<div>back to local</div>")
+    final_events = []
+
+    async def on_event(_, data):
+        if data["url"] == final_url:
+            final_events.append(data)
+
+    remove_listener = bidi_session.add_event_listener(CONTEXT_LOAD_EVENT, on_event)
+    try:
+        await bidi_session.browsing_context.navigate(
+            context=frame["context"],
+            url=inline("<div>remote</div>", domain="alt"),
+            wait="complete",
+        )
+        await bidi_session.browsing_context.navigate(
+            context=frame["context"], url=final_url, wait="complete"
+        )
+        await wait_for_bidi_events(final_events, 1)
+        with pytest.raises(TimeoutException):
+            await wait_for_bidi_events(final_events, 2, timeout=0.5)
+        assert final_events[0]["context"] == frame["context"]
+    finally:
+        remove_listener()
+
+
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
 async def test_new_context_not_emitted(bidi_session, subscribe_events,
       wait_for_event, wait_for_bidi_events, wait_for_future_safe, type_hint):

@@ -25,9 +25,13 @@ def get_browser_args(product, channel, artifact_path, wpt_args):
         # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
         return ["--enable-swiftshader", "--install-browser", "--install-webdriver"]
     if product in ["webkitgtk_minibrowser", "wpewebkit_minibrowser"]:
+        bundle_dir = os.path.expanduser(os.path.join("~", "build", product))
+        webdriver = "WebKitWebDriver" if product == "webkitgtk_minibrowser" else "WPEWebDriver"
         # Using 4 parallel jobs gives 4x speed-up even on a 1-core machine and doesn't cause extra timeouts.
         # See: https://github.com/web-platform-tests/wpt/issues/38723#issuecomment-1470938179
-        return ["--install-browser", "--processes=4"]
+        return ["--binary=%s" % os.path.join(bundle_dir, "MiniBrowser"),
+                "--webdriver-binary=%s" % os.path.join(bundle_dir, webdriver),
+                "--processes=4"]
     return []
 
 

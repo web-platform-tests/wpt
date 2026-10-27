@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <title>Tests for keyboard-utils.js' keyboard trap check</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/common/keyboard-utils.js"></script>
+</head>
+<body>
+
+  <h1>Tests for keyboard-utils.js' keyboard trap check</h1>
+
+  <button class="ex-no-keyboard-trap" data-testname="button does not cause keyboard focus trap">x</button>
+  <a href="#" class="ex-no-keyboard-trap" data-testname="link does not cause keyboard focus trap">x</a>
+  <textarea class="ex-no-keyboard-trap" data-testname="textarea does not cause keyboard focus trap">x</textarea>
+  <input type="checkbox" class="ex-no-keyboard-trap" data-testname="input[checkbox] does not cause keyboard focus trap">
+
+  <span role="button" tabindex="0" class="ex-no-keyboard-trap" data-testname="span with button role, tabindex=0 does not cause keyboard focus trap">x</span>
+  <span role="link" tabindex="0" class="ex-no-keyboard-trap" data-testname="span with link role, tabindex=0 does not cause keyboard focus trap">x</span>
+  <span role="checkbox" tabindex="0" class="ex-no-keyboard-trap" data-testname="span with checkbox role, tabindex=0 cause keyboard focus trap">x</span>
+
+<script>
+  keyboardUtils.verifyElementsDoNotCauseKeyboardTrap(".ex-no-keyboard-trap");
+</script>
+
+</body>
+</html>

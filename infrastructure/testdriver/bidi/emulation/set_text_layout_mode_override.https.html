@@ -14,8 +14,9 @@
     // comparing the computed font size of an element with
     // `text-size-adjust: 200%` against one with `text-size-adjust: none`.
     function isTextAutosizingEnabled() {
-        // Use a unique z-index per call so repeated checks on the same
-        // document do not hit cached matched properties.
+        // Use a unique inline style per call, so that styles cached before the
+        // override changed are not reused. Workaround for
+        // https://crbug.com/564804235.
         checkCount++;
         const unadjusted = document.createElement("div");
         unadjusted.style.fontSize = "16px";

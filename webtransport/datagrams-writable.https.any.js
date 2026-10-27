@@ -148,6 +148,11 @@ promise_test(async t => {
   const writer = writable.getWriter();
 
   await writer.ready;
+  // Per spec the outgoing datagrams writable is set up with no explicit
+  // highWaterMark (Streams default of 1); outgoingMaxBufferedDatagrams sizes the
+  // datagram queue and is enforced by writeDatagrams withholding the write
+  // promise, not via the queuing-strategy highWaterMark. So desiredSize is 1.
+  // https://w3c.github.io/webtransport/#writedatagrams
   assert_equals(writer.desiredSize, 1, 'writer is ready to write');
 }, 'WebTransportDatagramsWritable writer.ready works correctly');
 

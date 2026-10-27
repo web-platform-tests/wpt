@@ -213,3 +213,33 @@ promise_test(async t => {
   const jsonObject = JSON.parse(datagramStr);
   assert_equals(jsonObject['length'], maxSize);
 }, 'WebTransportDatagramsWritable can write max-size datagrams');
+
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('echo.py'));
+  wt.closed.catch(() => {});
+  await wt.ready;
+
+  const writer = wt.datagrams.createWritable().getWriter();
+  wt.close();
+
+  await writer.closed;
+  await wt.closed;
+}, 'WebTransportDatagramsWritable is closed when the transport is closed');
+
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('server-connection-close.py'));
+  add_completion_callback(() => wt.close());
+  await wt.ready;
+
+  const writer = wt.datagrams.createWritable().getWriter();
+
+  const streams_reader = wt.incomingBidirectionalStreams.getReader();
+  const { value: bidi } = await streams_reader.read();
+  bidi.writable.getWriter().write(new Uint8Array([65])).catch(() => {});
+
+  // Sadly we cannot use promise_rejects_dom as the error constructor is
+  // WebTransportError rather than DOMException.
+  const e = await wt.closed.catch(e => e);
+  assert_true(e instanceof WebTransportError);
+  await promise_rejects_exactly(t, e, writer.closed, 'writer.closed');
+}, 'WebTransportDatagramsWritable is errored when the connection fails');

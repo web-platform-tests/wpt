@@ -27,7 +27,14 @@
       await loaded;
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       await new Promise(resolve => step_timeout(resolve, 0));
-      assert_array_equals(loads[kind], [false], "Only the original element's onload handler should run");
+      if (kind == "html-img" && loads[kind].length != 1) {
+        // <html:img> may be removed from the cloned subtree. We allow
+        // triggering the load on the clone as long as it's not in the closed
+        // shadow tree.
+        assert_array_equals(loads[kind], [false, false], "Load shouldn't expose shadow tree");
+      } else {
+        assert_array_equals(loads[kind], [false], "Only the original element's onload handler should run");
+      }
     }, `Inline onload handler of ${kind} in a use element shadow tree doesn't run`);
   }
 </script>

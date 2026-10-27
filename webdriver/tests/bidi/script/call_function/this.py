@@ -38,6 +38,19 @@ async def test_default_this(bidi_session, top_context):
     }, result)
 
 
+async def test_default_this_strict_mode(bidi_session, top_context):
+    result = await bidi_session.script.call_function(
+        function_declaration="""function() {
+            "use strict";
+            return this === null;
+        }""",
+        await_promise=False,
+        target=ContextTarget(top_context["context"]),
+    )
+
+    assert result == {"type": "boolean", "value": True}
+
+
 @pytest.mark.parametrize(
     "value_fn, function_declaration",
     [

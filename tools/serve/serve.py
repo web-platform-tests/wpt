@@ -252,7 +252,10 @@ class HtmlScriptInjectorHandlerWrapper:
     def __call__(self, request, response):
         self.wrap(request, response)
         # If the response content type isn't html, don't modify it.
-        if not isinstance(response.headers, ResponseHeaders) or response.headers.get("Content-Type")[0] != b"text/html":
+        if not isinstance(response.headers, ResponseHeaders):
+            return response
+        content_types = response.headers.get("Content-Type")
+        if not content_types or content_types[0] != b"text/html":
             return response
 
         # Skip injection on custom streaming responses.

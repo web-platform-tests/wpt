@@ -5,6 +5,7 @@
 
 <meta name="author" title="Tab Atkins-Bittner">
 <link rel=help href="https://drafts.csswg.org/css-syntax/#serialization">
+<link rel=help href="https://drafts.csswg.org/css-variables-1/#serializing-custom-props">
 <body>
 <!--
     The serialization chapter provides a table listing all the combinations of consecutive tokens that will,
@@ -115,7 +116,7 @@ function testComments(text, t1, expected) {
     }, `Comments are handled correctly when computing ${text} using t1:${t1}.`);
 }
 testComments("a/* comment */b", "", "a/* comment */b");
-testComments("a/* comment */var(--t1)", "b", "a/**/b");
+testComments("a/* comment */var(--t1)", "b", "a/* comment */b");
 testComments("var(--t1)b", "a/* comment */", "a/**/b");
 
 // Test comments within quotes.

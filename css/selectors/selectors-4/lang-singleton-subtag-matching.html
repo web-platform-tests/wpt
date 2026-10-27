@@ -4,7 +4,10 @@
 <meta charset="utf-8">
 <title>CSS Selectors 4 - :lang extended filtering with singleton subtags</title>
 <link rel="help" href="https://drafts.csswg.org/selectors-4/#the-lang-pseudo">
-<link rel="help" href="https://www.rfc-editor.org/rfc/rfc4647#section-3.4">
+<link rel="help" href="https://www.rfc-editor.org/rfc/rfc4647#section-3.3.2">
+<link rel="help" href="https://www.rfc-editor.org/rfc/rfc5646#section-2.1">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/8720">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/3022">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -19,57 +22,143 @@
 <div lang="en-x-private"></div>
 <div lang="zh-x"></div>
 <div lang="zh-x-foobar"></div>
+<div lang="fr-CA"></div>
+<div lang="fr-x-CA"></div>
+<div lang="en-x"></div>
+<div lang="en-u"></div>
+<div lang="en-u-ca-gregory"></div>
+<div lang="en-t"></div>
+<div lang="en-t-fr"></div>
+<div lang="en-FR"></div>
+<div lang="fr-x-a"></div>
+<div lang="fr-x-abcdefgh"></div>
+<div lang="fr-x-ninechars"></div>
 
 <script>
-// Per RFC 4647 Section 3.4, singleton subtags (single-character subtags) in the
+// Per RFC 4647 Section 3.3.2, singleton subtags (single-character subtags) in the
 // language tag should block *skipping* during extended filtering (step 3D), but
 // should NOT prevent *matching* when the range subtag equals the tag subtag (step 3C).
+//
+// Selectors 4 additionally requires ranges to be well-formed language tags
+// (with an exception for an initial '*'), so singleton-ending ranges never match.
+// This restriction remains under discussion:
+// https://github.com/w3c/csswg-drafts/issues/8720.
+// Selectors 4 also rejects unregistered tags/ranges after the edits for
+// https://github.com/w3c/csswg-drafts/issues/3022#issuecomment-4878496703.
 
 test(function() {
-    assert_equals(document.querySelectorAll(':lang(fr-x)').length, 2);
-}, ':lang(fr-x) matches lang="fr-x" and lang="fr-x-standard" (singleton "x" matches)');
+    assert_equals(document.querySelectorAll(':lang(fr-x)').length, 0);
+}, ':lang(fr-x) matches neither lang="fr-x" nor lang="fr-x-standard"');
 
 test(function() {
-    assert_equals(document.querySelectorAll(':lang(fr-x)').length, 2);
-    var matched = document.querySelectorAll(':lang(fr-x)');
-    assert_equals(matched[0].getAttribute('lang'), 'fr-x');
-    assert_equals(matched[1].getAttribute('lang'), 'fr-x-standard');
-}, ':lang(fr-x) matches the correct elements');
+    assert_equals(document.querySelectorAll(':lang(fr-x-standard)').length, 1);
+    var matched = document.querySelectorAll(':lang(fr-x-standard)');
+    assert_equals(matched[0].getAttribute('lang'), 'fr-x-standard');
+}, ':lang(fr-x-standard) matches the complete tag but not lang="fr-x"');
 
 test(function() {
-    assert_equals(document.querySelectorAll(':lang(fr-standard)').length, 1);
-}, ':lang(fr-standard) only matches lang="fr-standard" (not lang="fr-x-standard")');
+    assert_equals(document.querySelectorAll(':lang(fr-standard)').length, 0);
+}, ':lang(fr-standard) does not match an unregistered variant');
 
 test(function() {
-    assert_equals(document.querySelectorAll(':lang(fr)').length, 3);
-}, ':lang(fr) does not match lang="fr-ninechars" (subtag exceeds 8-char limit)');
+    assert_array_equals(document.querySelectorAll(':lang(fr)'), [
+        document.querySelector('[lang="fr-x-standard"]'),
+        document.querySelector('[lang="fr-CA"]'),
+        document.querySelector('[lang="fr-x-CA"]'),
+        document.querySelector('[lang="fr-x-a"]'),
+        document.querySelector('[lang="fr-x-abcdefgh"]')
+    ]);
+}, ':lang(fr) excludes incomplete, overlong, and unregistered tags');
 
 test(function() {
-    assert_equals(document.querySelectorAll(':lang(cocoa-1)').length, 1);
-    assert_equals(document.querySelectorAll(':lang(cocoa-1)')[0].getAttribute('lang'), 'cocoa-1-bar');
-}, ':lang(cocoa-1) matches lang="cocoa-1-bar" (singleton "1" matches)');
+    assert_equals(document.querySelectorAll(':lang(cocoa-1)').length, 0);
+}, ':lang(cocoa-1) does not match lang="cocoa-1-bar"');
 
 test(function() {
-    assert_equals(document.querySelectorAll(':lang(cocoa-a)').length, 1);
-    assert_equals(document.querySelectorAll(':lang(cocoa-a)')[0].getAttribute('lang'), 'cocoa-a-bar');
-}, ':lang(cocoa-a) matches lang="cocoa-a-bar" (singleton "a" matches)');
+    assert_equals(document.querySelectorAll(':lang(cocoa-a)').length, 0);
+}, ':lang(cocoa-a) does not match lang="cocoa-a-bar"');
 
 test(function() {
     assert_equals(document.querySelectorAll(':lang(cocoa-bar)').length, 0);
-}, ':lang(cocoa-bar) does not match lang="cocoa-1-bar" (cannot skip past singleton "1")');
+}, ':lang(cocoa-bar) does not match an unregistered language');
 
 test(function() {
-    assert_equals(document.querySelectorAll(':lang(en-x)').length, 1);
-    assert_equals(document.querySelectorAll(':lang(en-x)')[0].getAttribute('lang'), 'en-x-private');
-}, ':lang(en-x) matches lang="en-x-private" (private-use singleton)');
+    assert_equals(document.querySelectorAll(':lang(en-x)').length, 0);
+}, ':lang(en-x) matches neither lang="en-x" nor lang="en-x-private"');
 
 test(function() {
-    assert_equals(document.querySelectorAll(':lang(zh-x)').length, 2);
-}, ':lang(zh-x) matches both lang="zh-x" and lang="zh-x-foobar"');
+    assert_equals(document.querySelectorAll(':lang(zh-x)').length, 0);
+}, ':lang(zh-x) matches neither lang="zh-x" nor lang="zh-x-foobar"');
 
 test(function() {
     assert_equals(document.querySelectorAll(':lang(en-private)').length, 0);
-}, ':lang(en-private) does not match lang="en-x-private" (cannot skip past singleton "x")');
+}, ':lang(en-private) does not match an unregistered variant');
+
+// Additional extension and private-use controls.
+test(function() {
+    assert_array_equals(document.querySelectorAll(':lang(en-u)'), []);
+}, ':lang(en-u) matches neither lang="en-u" nor lang="en-u-ca-gregory"');
+
+test(function() {
+    assert_array_equals(document.querySelectorAll(':lang(en-t)'), []);
+}, ':lang(en-t) matches neither lang="en-t" nor lang="en-t-fr"');
+
+test(function() {
+    assert_array_equals(document.querySelectorAll(':lang(en-x-private)'), [
+        document.querySelector('[lang="en-x-private"]')
+    ]);
+}, ':lang(en-x-private) matches the complete tag but not lang="en-x"');
+
+test(function() {
+    assert_array_equals(document.querySelectorAll(':lang(zh-x-foobar)'), [
+        document.querySelector('[lang="zh-x-foobar"]')
+    ]);
+}, ':lang(zh-x-foobar) matches the complete tag but not lang="zh-x"');
+
+test(function() {
+    assert_array_equals(document.querySelectorAll(':lang(en-u-ca-gregory)'), [
+        document.querySelector('[lang="en-u-ca-gregory"]')
+    ]);
+}, ':lang(en-u-ca-gregory) matches the complete tag but not lang="en-u"');
+
+test(function() {
+    assert_array_equals(document.querySelectorAll(':lang(en-t-fr)'), [
+        document.querySelector('[lang="en-t-fr"]')
+    ]);
+}, ':lang(en-t-fr) matches the complete tag but not lang="en-t"');
+
+test(function() {
+    assert_array_equals(document.querySelectorAll('div[lang]:lang(en)'), [
+        document.querySelector('[lang="en-x-private"]'),
+        document.querySelector('[lang="en-u-ca-gregory"]'),
+        document.querySelector('[lang="en-t-fr"]'),
+        document.querySelector('[lang="en-FR"]')
+    ]);
+}, ':lang(en) matches complete private-use and extension tags but not incomplete tags');
+
+test(function() {
+    assert_array_equals(document.querySelectorAll(':lang(zh)'), [
+        document.querySelector('[lang="zh-x-foobar"]')
+    ]);
+}, ':lang(zh) matches lang="zh-x-foobar" but not lang="zh-x"');
+
+test(function() {
+    assert_array_equals(document.querySelectorAll(':lang(fr-CA)'), [
+        document.querySelector('[lang="fr-CA"]')
+    ]);
+}, ':lang(fr-CA) matches lang="fr-CA" but cannot skip the singleton in lang="fr-x-CA"');
+
+test(function() {
+    assert_array_equals(document.querySelectorAll(':lang(fr-x-CA)'), [
+        document.querySelector('[lang="fr-x-CA"]')
+    ]);
+}, ':lang(fr-x-CA) matches the singleton in lang="fr-x-CA"');
+
+test(function() {
+    assert_array_equals(document.querySelectorAll(':lang(en-FR)'), [
+        document.querySelector('[lang="en-FR"]')
+    ]);
+}, ':lang(en-FR) matches lang="en-FR" but cannot skip the singleton in lang="en-t-fr"');
 </script>
 
 <div id="log"></div>

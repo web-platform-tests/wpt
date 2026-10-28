@@ -1,4 +1,4 @@
-// META: title=test WebNN API gather and cast of a constant int8 table
+// META: title=test WebNN API gather and cast of an int8 table
 // META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
@@ -11,11 +11,14 @@
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gather
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-cast
 //
-// A constant int8 lookup table of shape [8, 4] holding -128, -1, 0 and 127 is
-// read with runtime int32 indices at the first, middle and last rows (one
+// An int8 lookup table of shape [8, 4] holding -128, -1, 0 and 127 is read
+// with runtime int32 indices at the first, middle and last rows (one
 // repeated), then widened to float32 in both orders (gather -> cast and
 // cast -> gather), optionally scaled by the exact power of two 2^-7, reshaped,
-// or read by two gathers sharing the same constant (fanout). Every value is an
+// or read by two gathers sharing the same constant (fanout). The table is a
+// constant, and also a runtime input for both orders: the cast tests elsewhere
+// widen only non-negative runtime int8 values, so these are the cases where a
+// runtime int8 operand read as unsigned (-128 as 128) shows. Every value is an
 // integer in [-128, 127] or such an integer times 2^-7, so every transport and
 // the scaling are exact; the expected outputs are the source table values.
 // Tolerance comes from utils.js: gather, cast and reshape contribute 0 ULP and
@@ -89,6 +92,72 @@ const gatherCastInt8TableTests = [
           'data': int8Table,
           'descriptor': {shape: [8, 4], dataType: 'int8'},
           'constant': true
+        },
+        'indices': {
+          'data': indicesA,
+          'descriptor': {shape: [4], dataType: 'int32'}
+        }
+      },
+      'operators': [
+        {
+          'name': 'cast',
+          'arguments': [{'input': 'table'}, {'type': 'float32'}],
+          'outputs': 'tableFloat32'
+        },
+        {
+          'name': 'gather',
+          'arguments': [{'input': 'tableFloat32'}, {'indices': 'indices'}],
+          'outputs': 'output'
+        }
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': gatheredRowsA,
+          'descriptor': {shape: [4, 4], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'gather int8 runtime table then cast to float32',
+    'graph': {
+      'inputs': {
+        'table': {
+          'data': int8Table,
+          'descriptor': {shape: [8, 4], dataType: 'int8'}
+        },
+        'indices': {
+          'data': indicesA,
+          'descriptor': {shape: [4], dataType: 'int32'}
+        }
+      },
+      'operators': [
+        {
+          'name': 'gather',
+          'arguments': [{'input': 'table'}, {'indices': 'indices'}],
+          'outputs': 'gathered'
+        },
+        {
+          'name': 'cast',
+          'arguments': [{'input': 'gathered'}, {'type': 'float32'}],
+          'outputs': 'output'
+        }
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': gatheredRowsA,
+          'descriptor': {shape: [4, 4], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'cast int8 runtime table to float32 then gather',
+    'graph': {
+      'inputs': {
+        'table': {
+          'data': int8Table,
+          'descriptor': {shape: [8, 4], dataType: 'int8'}
         },
         'indices': {
           'data': indicesA,

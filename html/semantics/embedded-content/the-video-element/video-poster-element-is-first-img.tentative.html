@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/poster-utils.js"></script>
+
+<body>
+  <script>
+    const createVideo = () => {
+      const video = document.createElement('video');
+      video.src = '/media/A4.webm';
+      video.controls = true;
+      return video;
+    };
+
+    const createImg = (query) => {
+      const img = document.createElement('img');
+      img.src = '/media/poster.png?' + query;
+      return img;
+    };
+
+    const createPicture = (img) => {
+      const picture = document.createElement('picture');
+      picture.appendChild(img);
+      return picture;
+    };
+
+    promise_test(async function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      const img0 = createImg('first=true');
+      const img1 = createImg('second=true');
+      video.appendChild(createPoster(img0, img1));
+      document.body.appendChild(video);
+      await settled(img0);
+
+      assert_equals(video.currentPoster, img0.currentSrc);
+      assert_not_equals(video.currentPoster, img1.currentSrc);
+    }, 'HTMLVideoElement.currentPoster matches only the first img in the poster element');
+
+    promise_test(async function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      const img0 = createImg('picture=0');
+      const img1 = createImg('picture=1');
+      video.appendChild(createPoster(createPicture(img0), createPicture(img1)));
+      document.body.appendChild(video);
+      await settled(img0);
+
+      assert_equals(video.currentPoster, img0.currentSrc);
+      assert_not_equals(video.currentPoster, img1.currentSrc);
+    }, 'HTMLVideoElement.currentPoster matches only the first picture>img in the poster element; a second picture is ignored');
+
+    promise_test(async function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      const img0 = createImg('order=bareImgFirst');
+      const img1 = createImg('order=pictureSecond');
+      video.appendChild(createPoster(img0, createPicture(img1)));
+      document.body.appendChild(video);
+      await settled(img0);
+
+      assert_equals(video.currentPoster, img0.currentSrc);
+      assert_not_equals(video.currentPoster, img1.currentSrc);
+    }, 'HTMLVideoElement.currentPoster matches a bare img over a subsequent picture>img in the poster element');
+
+    promise_test(async function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      const img0 = createImg('order=pictureFirst');
+      const img1 = createImg('order=bareImgSecond');
+      video.appendChild(createPoster(createPicture(img0), img1));
+      document.body.appendChild(video);
+      await settled(img0);
+
+      assert_equals(video.currentPoster, img0.currentSrc);
+      assert_not_equals(video.currentPoster, img1.currentSrc);
+    }, 'HTMLVideoElement.currentPoster matches a picture>img over a subsequent bare img in the poster element');
+
+    promise_test(async function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      const img = createImg('scriptSupporting=true');
+      video.appendChild(
+        createPoster(
+          document.createElement('script'),
+          img,
+          document.createElement('template')
+        )
+      );
+      document.body.appendChild(video);
+      await settled(img);
+
+      assert_equals(video.currentPoster, img.currentSrc);
+    }, 'Script-supporting elements may be intermixed with the img in the poster element');
+
+    promise_test(async function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      const posterImg = createImg('poster=first');
+      const laterImg = createImg('poster=second');
+      video.appendChild(createPoster(posterImg));
+      video.appendChild(createPoster(laterImg));
+      document.body.appendChild(video);
+      await settled(posterImg);
+
+      assert_equals(video.currentPoster, posterImg.currentSrc);
+      assert_not_equals(video.currentPoster, laterImg.currentSrc);
+    }, 'HTMLVideoElement.currentPoster uses only the first poster element child; later poster elements are ignored');
+
+    promise_test(async function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      const img = createImg('poster=afterEmpty');
+      video.appendChild(createPoster());
+      video.appendChild(createPoster(img));
+      document.body.appendChild(video);
+      await settled(img);
+
+      assert_equals(
+        video.currentPoster,
+        '',
+        'The first poster element is selected even if it has no img, so a later poster element does not supply the poster'
+      );
+    }, 'An empty first poster element is not skipped in favor of a later poster element');
+
+    promise_test(async function () {
+      assertCurrentPosterSupported();
+      const video = createVideo();
+      const bareImg = createImg('bare=true');
+      const posterImg = createImg('wrapped=true');
+      video.appendChild(bareImg);
+      video.appendChild(createPoster(posterImg));
+      document.body.appendChild(video);
+      await settled(posterImg);
+
+      assert_equals(video.currentPoster, posterImg.currentSrc);
+      assert_not_equals(video.currentPoster, bareImg.currentSrc);
+    }, 'A bare img child of the video before the poster element is not used as the poster');
+  </script>
+</body>

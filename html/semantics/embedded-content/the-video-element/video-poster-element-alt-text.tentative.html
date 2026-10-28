@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<link rel="author" title="Squarespace" href="https://www.squarespace.com/">
+<link rel="help" href="https://github.com/whatwg/html/pull/12585">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body></body>
+
+<script>
+  const altText = 'A theater with rows of empty seats';
+  const video = document.createElement('video');
+  const img = document.createElement('img');
+  video.src = '/media/A4.webm';
+  video.controls = true;
+  img.src = '/media/poster.png';
+  img.alt = altText;
+  const poster = document.createElement('poster');
+  poster.appendChild(img);
+  video.appendChild(poster);
+
+  document.body.appendChild(video);
+
+  test(function () {
+    assert_implements(
+      'currentPoster' in HTMLVideoElement.prototype,
+      'HTMLVideoElement.currentPoster is not supported'
+    );
+    assert_equals(img.alt, altText);
+    assert_equals(img.getAttribute('alt'), altText);
+  }, 'The img in the poster element keeps its alt text');
+</script>

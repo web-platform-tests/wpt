@@ -191,7 +191,7 @@ def warm_up_chrome(binary):
     # Chrome bundles its own fontconfig, whose cache format may differ from the
     # caches built into the image. If that happens, the first Chrome launch
     # rescans all fonts, which can hit the test timeout on CI worker.
-    # To prevent that, launch Chrome once before the job to build the font 
+    # To prevent that, launch Chrome once before the job to build the font
     # caches. It will take little time if the font cache is compatible already.
     # See https://github.com/web-platform-tests/wpt/issues/62901 for the full
     # context.

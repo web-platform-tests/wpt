@@ -19,53 +19,44 @@ function create_shared_buffer() {
   return {buffer, view};
 }
 
-function put_and_validate_key(t, db, key, view_on_sab, key_copy) {
+const key_cases = [
+  {
+    description: 'A SharedArrayBuffer',
+    create_key: () => create_shared_buffer().buffer,
+  },
+  {
+    description: 'A SharedArrayBuffer-backed view',
+    create_key: () => create_shared_buffer().view,
+  },
+  {
+    description: 'A SharedArrayBuffer in an array',
+    create_key: () => [create_shared_buffer().buffer],
+  },
+];
+
+test(() => {
   assert_true(
       self.crossOriginIsolated, 'The page should be cross-origin isolated');
+}, 'The page is cross-origin isolated');
 
-  // Put the SAB-backed key in the store.
-  const tx = db.transaction('store', 'readwrite');
-  const store = tx.objectStore('store');
-  const put_request = store.put('value', key);
-  put_request.onerror = t.unreached_func('put should succeed');
+for (const {description, create_key} of key_cases) {
+  test(() => {
+    assert_throws_dom('DataError', () => {
+      indexedDB.cmp(create_key(), 0);
+    });
+  }, `${description} cannot be compared with indexedDB.cmp()`);
 
-  // Modifying the SAB after put should have no effect.
-  view_on_sab.fill(0);
-
-  // Reading the record back out of the key should work.
-  const get_request = store.get(key_copy);
-  get_request.onerror = t.unreached_func('get should succeed');
-  get_request.onsuccess = t.step_func(() => {
-    assert_equals(get_request.result, 'value');
-  });
-
-  tx.oncomplete = t.step_func_done();
+  indexeddb_test(
+      create_object_store,
+      (t, db) => {
+        // Putting a SAB-backed key in the store should throw.
+        const tx = db.transaction('store', 'readwrite');
+        const store = tx.objectStore('store');
+        assert_throws_dom('DataError', () => {
+          store.put('value', create_key());
+        });
+        t.done();
+      },
+      `${description} cannot be used as an IndexedDB key`);
 }
-
-indexeddb_test(
-    create_object_store,
-    (t, db) => {
-      const {buffer, view} = create_shared_buffer();
-      put_and_validate_key(
-          t, db, buffer, view, new Uint8Array(key_data));
-    },
-    'A SharedArrayBuffer can be used as an IndexedDB key');
-
-indexeddb_test(
-    create_object_store,
-    (t, db) => {
-      const {view} = create_shared_buffer();
-      put_and_validate_key(
-          t, db, view, view, new Uint8Array(key_data));
-    },
-    'A SharedArrayBuffer-backed view can be used as an IndexedDB key');
-
-indexeddb_test(
-    create_object_store,
-    (t, db) => {
-      const {buffer, view} = create_shared_buffer();
-      put_and_validate_key(
-          t, db, [buffer], view, [new Uint8Array(key_data)]);
-    },
-    'A SharedArrayBuffer in an array can be used as an IndexedDB key');
 </script>

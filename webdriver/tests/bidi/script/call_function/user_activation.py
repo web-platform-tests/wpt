@@ -44,3 +44,27 @@ async def test_userActivation_copy(bidi_session, top_context, user_activation):
         user_activation=user_activation)
 
     assert result == {"type": "boolean", "value": user_activation}
+
+
+async def test_user_activation_starts_after_declaration_evaluation(
+    bidi_session, top_context
+):
+    # Consume any previously set activation.
+    await bidi_session.script.call_function(
+        function_declaration="() => { window.open(); }",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False,
+        user_activation=False,
+    )
+
+    result = await bidi_session.script.call_function(
+        function_declaration="""(() => {
+            const activeDuringDeclaration = navigator.userActivation.isActive;
+            return () => !activeDuringDeclaration && navigator.userActivation.isActive;
+        })()""",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False,
+        user_activation=True,
+    )
+
+    assert result == {"type": "boolean", "value": True}

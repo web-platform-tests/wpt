@@ -44,3 +44,19 @@ async def test_await_promise_async_arrow(bidi_session, top_context, await_promis
         recursive_compare({
             "type": "promise"},
             result)
+
+
+async def test_await_promise_thenable(bidi_session, top_context):
+    result = await bidi_session.script.call_function(
+        function_declaration="""() => {
+            const value = {};
+            Object.defineProperty(value, "then", {
+                value() { throw new Error("thenable was awaited"); }
+            });
+            return value;
+        }""",
+        await_promise=True,
+        target=ContextTarget(top_context["context"]),
+    )
+
+    recursive_compare({"type": "object"}, result)

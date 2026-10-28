@@ -98,3 +98,62 @@ async def test_local_value(bidi_session, top_context, argument, expected_type):
     )
 
     recursive_compare(argument, result)
+
+
+async def test_nested_local_value_types(bidi_session, top_context):
+    argument = {
+        "type": "object",
+        "value": [
+            [
+                "array",
+                {
+                    "type": "array",
+                    "value": [
+                        {"type": "undefined"},
+                        {"type": "number", "value": "-0"},
+                    ],
+                },
+            ],
+            [
+                "map",
+                {
+                    "type": "map",
+                    "value": [
+                        [
+                            {"type": "bigint", "value": "42"},
+                            {
+                                "type": "set",
+                                "value": [
+                                    {
+                                        "type": "date",
+                                        "value": "2022-05-31T13:47:29.000Z",
+                                    }
+                                ],
+                            },
+                        ]
+                    ],
+                },
+            ],
+            ["regexp", {"type": "regexp", "value": {"pattern": "foo", "flags": "g"}}],
+        ],
+    }
+
+    result = await bidi_session.script.call_function(
+        function_declaration="""value => {
+            const nestedSet = value.map.get(42n);
+            const date = nestedSet.values().next().value;
+            return value.array[0] === undefined
+                && Object.is(value.array[1], -0)
+                && nestedSet instanceof Set
+                && date instanceof Date
+                && date.toISOString() === "2022-05-31T13:47:29.000Z"
+                && value.regexp instanceof RegExp
+                && value.regexp.source === "foo"
+                && value.regexp.flags === "g";
+        }""",
+        arguments=[argument],
+        await_promise=False,
+        target=ContextTarget(top_context["context"]),
+    )
+
+    assert result == {"type": "boolean", "value": True}

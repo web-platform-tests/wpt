@@ -876,7 +876,7 @@ class TestRunnerManager(threading.Thread):
                                file_result.status in ("CRASH", "EXTERNAL-TIMEOUT", "INTERNAL-ERROR") or
                                ((subtest_unexpected or is_unexpected) and
                                 self.restart_on_unexpected))
-        force_stop = test.test_type == "wdspec" and file_result.status == "EXTERNAL-TIMEOUT"
+        force_stop = test.test_type == "wdspec" and restart_before_next
 
         self.recording.set(["testrunner", "after-test"])
         if (not file_result.status == "CRASH" and

@@ -748,9 +748,18 @@ class PytestExecutor(TestExecutor):
                                   timeout).run()
 
         if success:
-            return self.convert_result(test, data)
+            result, subtest_results = self.convert_result(test, data)
+        else:
+            result, subtest_results = test.make_result(*data), []
 
-        return (test.make_result(*data), [])
+        # pytestrunner.run swallows errors from a dead driver, so a dead
+        # browser can otherwise look like an ordinary test result.
+        if result.status != "CRASH" and not self.is_alive():
+            self.logger.info("Browser not responding, setting status to CRASH")
+            result = test.make_result("CRASH", result.message,
+                                      extra=result.extra, stack=result.stack)
+
+        return result, subtest_results
 
     def do_pytest(self, path, timeout):
         session_config = {

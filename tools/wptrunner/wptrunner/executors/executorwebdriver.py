@@ -1172,10 +1172,10 @@ class WebDriverProtocol(Protocol):
             return False
         try:
             # Get a simple property over the connection, with 2 seconds of timeout
-            # that should be more than enough to check if the WebDriver its
-            # still alive, and allows to complete the check within the testrunner
-            # 5 seconds of extra_timeout we have as maximum to end the test before
-            # the external timeout from testrunner triggers.
+            # that should be more than enough to check if WebDriver is still
+            # alive, and allows to complete the check within the testrunner 5
+            # seconds of extra_timeout we have to end the test before the external
+            # timeout from testrunner triggers.
             self.webdriver.send_session_command("GET", "window/handles", timeout=2)
         except (OSError, webdriver_error.WebDriverException, socket.timeout,
                 webdriver_error.UnknownErrorException,

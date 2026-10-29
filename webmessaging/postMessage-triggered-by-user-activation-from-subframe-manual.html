@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<title>postMessage's task triggered by user activation from a subframe</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<!-- This test is manual since we cannot currently test action triggered by user
+     activation with the test runner (blocking popups is always disabled).
+     Moreover, testdriver does not currently support clicking elements from a
+     subframe. -->
+<script src="support/postMessage-triggered-by-user-activation.js"></script>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/web-messaging.html#dom-window-postmessage">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/comms.html#dom-messageport-postmessage">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/web-messaging.html#dom-broadcastchannel-postmessage">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#triggered-by-user-activation">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsers.html#the-rules-for-choosing-a-browsing-context-given-a-browsing-context-name">
+<body>
+<p>Click all the buttons below. If only "PASS" results appear the test passes,
+  otherwise it fails.</p>
+<script>
+"use strict";
+
+setup({explicit_timeout: true}); // Disable timeout for manual testing.
+
+let windowTest = async_test("With window");
+let click1 = windowTest.step_func(() => {
+  assert_true(canOpenPopup(), "onmessage should be able to open popup");
+  windowTest.done();
+});
+
+let messagePortTest = async_test(() => {
+  assert_true("MessageChannel" in self, "The browser must support MessageChannel");
+}, "With a MessageChannel and its MessagePorts");
+let channel2 = messagePortTest.step_func(port => {
+  port.onmessage = messagePortTest.step_func_done(e => {
+    assert_equals(e.data, "click2");
+    assert_true(canOpenPopup(), "onmessage should be able to open popup");
+  });
+});
+
+async_test(t => {
+  assert_true("BroadcastChannel" in self, "The browser must support BroadcastChannel");
+
+  const channel = new BroadcastChannel("channel3");
+
+  channel.onmessage = t.step_func_done(e => {
+    assert_equals(e.data, "click3");
+    assert_true(canOpenPopup(), "onmessage should be able to open popup");
+  });
+}, "With a BroadcastChannel");
+
+window.onmessage = (e => {
+  if (e.data === "click1")
+    click1();
+  else if (e.data === "channel2") {
+    let port = e.ports[0];
+    channel2(port);
+  } else
+    assert_unreached("Unknown message received.");
+});
+
+</script>
+<iframe src="support/postMessage-triggered-by-user-activation-subframe.html"></iframe>
+</body>

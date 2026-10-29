@@ -716,8 +716,7 @@ function runGenericSensorTests(sensorData, readingData) {
         sensor2.stop();
         assert_sensor_reading_is_null(sensor2);
       },
-      `${sensorName}: sensor reading is correct when options.referenceFrame\
- is 'screen'.`);
+      `${sensorName}: sensor reading is correct when options.referenceFrame is 'screen'.`);
 }
 
 function runGenericSensorInsecureContext(sensorName) {

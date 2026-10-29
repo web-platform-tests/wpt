@@ -1,0 +1,271 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Custom Attributes: Attr constructor</title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="The Attr constructor must create a custom attribute for a defined Attr subclass, and throw otherwise"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="resources/custom-attributes-helpers.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      test(function () {
+        assert_throws_js(TypeError, function () {
+          new Attr();
+        });
+      }, "Attr constructor must throw a TypeError when NewTarget is equal to itself");
+
+      test(function () {
+        customAttributes.define("plain-attr", Attr);
+        assert_throws_js(TypeError, function () {
+          new Attr();
+        });
+      }, "Attr constructor must throw a TypeError when NewTarget is equal to itself even when Attr has been defined");
+
+      test(function () {
+        class SomeAttr extends Attr {}
+        assert_throws_js(TypeError, function () {
+          new SomeAttr();
+        });
+      }, "Attr constructor must throw a TypeError when the subclass has not been defined by customAttributes.define");
+
+      test(function () {
+        class InferredNameAttr extends Attr {}
+        customAttributes.define("inferred-name", InferredNameAttr);
+
+        const instance = new InferredNameAttr();
+        assert_true(
+          instance instanceof InferredNameAttr,
+          "the instance must be an instance of the subclass",
+        );
+        assert_true(
+          instance instanceof Attr,
+          "a custom attribute must inherit from Attr",
+        );
+        assert_true(
+          instance instanceof Node,
+          "a custom attribute must inherit from Node",
+        );
+        assert_equals(instance.localName, "inferred-name");
+        assert_equals(instance.name, "inferred-name");
+        assert_equals(instance.nodeName, "inferred-name");
+        assert_equals(instance.nodeType, Node.ATTRIBUTE_NODE);
+        assert_equals(
+          instance.namespaceURI,
+          null,
+          "a custom attribute must not have a namespace",
+        );
+        assert_equals(instance.prefix, null);
+        assert_equals(
+          instance.value,
+          "",
+          "a newly constructed attribute must have an empty value",
+        );
+        assert_equals(
+          instance.ownerElement,
+          null,
+          "a newly constructed attribute must not have an owner element",
+        );
+        assert_equals(
+          instance.ownerDocument,
+          document,
+          "a newly constructed attribute must belong to the document of the constructor",
+        );
+      }, "Attr constructor must infer the attribute name from the definition");
+
+      test(function () {
+        class ConcreteAttr extends Attr {}
+        class SubAttr extends ConcreteAttr {}
+        customAttributes.define("concrete-attr", ConcreteAttr);
+
+        assert_true(new ConcreteAttr() instanceof ConcreteAttr);
+        assert_throws_js(
+          TypeError,
+          function () {
+            new SubAttr();
+          },
+          "a subclass of a defined class that is not itself defined must not be constructable",
+        );
+
+        customAttributes.define("sub-attr", SubAttr);
+        const sub = new SubAttr();
+        assert_true(sub instanceof SubAttr);
+        assert_true(sub instanceof ConcreteAttr);
+        assert_equals(
+          sub.name,
+          "sub-attr",
+          "the name must come from the definition of NewTarget, not of a superclass",
+        );
+      }, "Attr constructor must look up the definition by NewTarget");
+
+      test(function () {
+        class ReflectedAttr extends Attr {}
+        customAttributes.define("reflected-attr", ReflectedAttr);
+        const instance = Reflect.construct(Attr, [], ReflectedAttr);
+        assert_true(instance instanceof ReflectedAttr);
+        assert_equals(instance.name, "reflected-attr");
+      }, "Attr constructor must use NewTarget when called via Reflect.construct");
+
+      test(function () {
+        class ValueAttr extends Attr {}
+        customAttributes.define("value-attr", ValueAttr);
+        const instance = new ValueAttr();
+        instance.value = "hello";
+        assert_equals(
+          instance.value,
+          "hello",
+          "a detached custom attribute must hold its value",
+        );
+
+        const element = document.createElement("div");
+        element.setAttributeNode(instance);
+        assert_equals(instance.ownerElement, element);
+        assert_equals(element.getAttribute("value-attr"), "hello");
+        assert_equals(
+          element.getAttributeNode("value-attr"),
+          instance,
+          "getAttributeNode must return the same custom attribute node",
+        );
+        assert_equals(
+          element.attributes["value-attr"],
+          instance,
+          "the attributes collection must expose the same custom attribute node",
+        );
+        assert_true(element.hasAttribute("value-attr"));
+      }, "A constructed custom attribute must be attachable with setAttributeNode");
+
+      test(function () {
+        const custom = define_new_custom_attribute();
+        const instance = new custom.class();
+        const log = custom.takeLog();
+        assert_array_equals(log.types(), ["constructed"]);
+        assert_constructed_entry(log[0], instance);
+        assert_equals(
+          log[0].element,
+          null,
+          "ownerElement must be null inside the constructor",
+        );
+        assert_equals(
+          log[0].value,
+          "",
+          "value must be empty inside the constructor",
+        );
+      }, "Attr constructor must not enqueue any lifecycle callback for a detached attribute");
+
+      test(function () {
+        class ReentrantAttr extends Attr {
+          constructor() {
+            super();
+            ReentrantAttr.nested = new ReentrantAttr.Other();
+          }
+        }
+        ReentrantAttr.Other = class extends Attr {};
+        customAttributes.define("reentrant-attr", ReentrantAttr);
+        customAttributes.define("reentrant-other-attr", ReentrantAttr.Other);
+
+        const instance = new ReentrantAttr();
+        assert_true(instance instanceof ReentrantAttr);
+        assert_true(ReentrantAttr.nested instanceof ReentrantAttr.Other);
+        assert_equals(ReentrantAttr.nested.name, "reentrant-other-attr");
+      }, "Attr constructor must allow constructing another custom attribute from within a constructor");
+
+      test(function () {
+        let caught = null;
+        let depth = 0;
+        class SelfReentrantAttr extends Attr {
+          constructor() {
+            super();
+            if (depth++ == 0) {
+              try {
+                new SelfReentrantAttr();
+              } catch (e) {
+                caught = e;
+              }
+            }
+          }
+        }
+        customAttributes.define("self-reentrant-attr", SelfReentrantAttr);
+
+        const element = document.createElement("div");
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        element.setAttribute("self-reentrant-attr", "");
+
+        assert_true(
+          element.getAttributeNode("self-reentrant-attr") instanceof
+            SelfReentrantAttr,
+          "the outer upgrade must succeed",
+        );
+        assert_equals(
+          depth,
+          1,
+          "the inner super() call must throw before the inner constructor body runs",
+        );
+        assert_true(
+          caught instanceof TypeError,
+          "constructing the same custom attribute inside its own upgrade must throw a TypeError",
+        );
+      }, "Attr constructor must throw a TypeError when constructing the attribute being upgraded from within its own constructor");
+
+      test(function () {
+        class DirectFromUpgradeAttr extends Attr {
+          constructor() {
+            super();
+            DirectFromUpgradeAttr.direct = new DirectFromUpgradeAttr.Other();
+          }
+        }
+        DirectFromUpgradeAttr.Other = class extends Attr {};
+        customAttributes.define(
+          "direct-from-upgrade-attr",
+          DirectFromUpgradeAttr,
+        );
+        customAttributes.define(
+          "direct-from-upgrade-other-attr",
+          DirectFromUpgradeAttr.Other,
+        );
+
+        const element = document.createElement("div");
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        element.setAttribute("direct-from-upgrade-attr", "");
+
+        const upgraded = element.getAttributeNode("direct-from-upgrade-attr");
+        assert_true(upgraded instanceof DirectFromUpgradeAttr);
+        assert_true(
+          DirectFromUpgradeAttr.direct instanceof DirectFromUpgradeAttr.Other,
+        );
+        assert_equals(
+          DirectFromUpgradeAttr.direct.ownerElement,
+          null,
+          "a directly constructed attribute must be detached even when constructed during an upgrade",
+        );
+        assert_not_equals(DirectFromUpgradeAttr.direct, upgraded);
+      }, "Attr constructor must construct a new detached attribute for a different definition during an upgrade");
+
+      test(function () {
+        const proto = Object.create(Attr.prototype);
+        function ProtoCheckAttr() {
+          return Reflect.construct(Attr, [], new.target);
+        }
+        ProtoCheckAttr.prototype = proto;
+        customAttributes.define("proto-check-attr", ProtoCheckAttr);
+        const instance = new ProtoCheckAttr();
+        assert_equals(
+          Object.getPrototypeOf(instance),
+          proto,
+          "the prototype must come from NewTarget.prototype",
+        );
+        assert_equals(instance.name, "proto-check-attr");
+      }, "Attr constructor must use NewTarget.prototype as the prototype of the new attribute");
+    </script>
+  </body>
+</html>

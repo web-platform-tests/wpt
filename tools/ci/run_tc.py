@@ -38,12 +38,15 @@ the serialization of a GitHub event payload.
 
 import argparse
 import fnmatch
+import glob
 import json
 import os
 import subprocess
 import sys
 import tarfile
 import tempfile
+import threading
+import time
 import zipfile
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -56,6 +59,13 @@ root = os.path.abspath(
 
 
 started_processes = []
+
+# DEBUG(wpt#62901): Chrome bundles its own fontconfig, whose cache format does
+# not match the caches in the image, so the first Chrome launch in a task
+# rebuilds the font caches, which can take 15-46s on a cold disk.  When True,
+# launch Chrome once before the job so that the caches exist when tests start.
+# When False, only record the I/O statistics, as a baseline.
+CHROME_WARM_UP = True
 
 
 def run(cmd, return_stdout=False, **kwargs):
@@ -130,6 +140,96 @@ def start_userspace_oom_killer(log_only=False):
     if log_only:
         cmd.append("--dryrun")
     start(cmd)
+
+
+def read_io_counters():
+    counters = {}
+    with open("/proc/vmstat") as f:
+        for line in f:
+            name, value = line.split()
+            if name in ("pgpgin", "pgmajfault"):
+                counters[name] = int(value)
+    with open("/proc/stat") as f:
+        # cpu user nice system idle iowait irq softirq steal ...
+        cpu = [int(value) for value in f.readline().split()[1:]]
+    counters["iowait"] = cpu[4]
+    counters["cpu_total"] = sum(cpu)
+    return counters
+
+
+def start_io_stats(path, interval=1.0):
+    # Sample block reads, major page faults and iowait once per interval.
+    # The counters are host-wide, which is what we want: the stall is
+    # suspected to come from a cold disk on the worker, not from the container.
+    # Busy samples are also printed, so that they line up with the test log.
+    def sample():
+        prev = read_io_counters()
+        with open(path, "w") as f:
+            f.write("utc_time\tread_kib\tmajfault\tiowait_pct\n")
+            while True:
+                time.sleep(interval)
+                cur = read_io_counters()
+                read_kib = cur["pgpgin"] - prev["pgpgin"]
+                majfault = cur["pgmajfault"] - prev["pgmajfault"]
+                cpu_delta = cur["cpu_total"] - prev["cpu_total"]
+                iowait_pct = (100.0 * (cur["iowait"] - prev["iowait"]) / cpu_delta
+                              if cpu_delta else 0.0)
+                line = "%s\t%d\t%d\t%.1f" % (time.strftime("%H:%M:%S", time.gmtime()),
+                                             read_kib, majfault, iowait_pct)
+                f.write(line + "\n")
+                f.flush()
+                if read_kib >= 1024 or majfault >= 100:
+                    print("IO-STATS: %s" % line, flush=True)
+                prev = cur
+
+    print("INFO: cold-start: recording I/O statistics to %s" % path)
+    threading.Thread(target=sample, daemon=True).start()
+
+
+def fontconfig_cache_counts():
+    # Count the fontconfig cache files per format version (".cache-<N>").
+    counts = {}
+    for path in glob.glob(os.path.expanduser("~/.cache/fontconfig/*.cache-*")):
+        version = path.rsplit(".", 1)[1]
+        counts[version] = counts.get(version, 0) + 1
+    return counts
+
+
+def warm_up_chrome(channel):
+    # Launch the system Chrome once, so that its bundled fontconfig builds the
+    # font caches in its own format before any test starts the browser.
+    install_dir = {"experimental": "chrome-unstable",
+                   "dev": "chrome-unstable",
+                   "beta": "chrome-beta",
+                   "stable": "chrome"}.get(channel)
+    if install_dir is None:
+        # Canary is Chrome for Testing, which is only installed by wpt run.
+        print("INFO: cold-start: no system Chrome for channel %s, skipping warm-up" % channel)
+        return
+    binary = os.path.join("/opt/google", install_dir, "chrome")
+    print("INFO: cold-start: fontconfig caches before warm-up: %s" % fontconfig_cache_counts(),
+          flush=True)
+    start_time = time.monotonic()
+    with tempfile.TemporaryDirectory() as profile:
+        cmd = [binary, "--headless=new", "--no-sandbox", "--no-first-run",
+               "--user-data-dir=%s" % profile, "--dump-dom", "about:blank"]
+        print(" ".join(cmd), flush=True)
+        try:
+            result = subprocess.call(cmd, stdout=subprocess.DEVNULL, timeout=300)
+        except subprocess.TimeoutExpired:
+            result = "timeout"
+    print("INFO: cold-start: Chrome warm-up finished (%s) in %.1fs" %
+          (result, time.monotonic() - start_time))
+    print("INFO: cold-start: fontconfig caches after warm-up: %s" % fontconfig_cache_counts(),
+          flush=True)
+
+
+def debug_cold_start(channel):
+    artifacts_dir = os.path.expanduser("~/artifacts")
+    os.makedirs(artifacts_dir, exist_ok=True)
+    start_io_stats(os.path.join(artifacts_dir, "io-stats.tsv"))
+    if CHROME_WARM_UP:
+        warm_up_chrome(channel)
 
 
 def make_hosts_file():
@@ -290,6 +390,9 @@ def setup_environment(**kwargs):
     if kwargs["oom_killer"]:
         log_only = "firefox_android" in kwargs["browser"]
         start_userspace_oom_killer(log_only)
+
+    if "chrome" in kwargs["browser"]:
+        debug_cold_start(kwargs["channel"])
 
 
 def setup_repository(**kwargs):

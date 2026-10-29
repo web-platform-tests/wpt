@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Custom Attributes: connectedMoveCallback</title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="Moving an element with moveBefore must invoke connectedMoveCallback of its custom attributes, or disconnectedCallback then connectedCallback when it is not defined"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <div id="first"></div>
+    <div id="second"></div>
+    <script>
+      const first = document.getElementById("first");
+      const second = document.getElementById("second");
+      let attributeNumber = 1;
+
+      // Defines a custom attribute with the given lifecycle callbacks, each of
+      // which records its name and the attribute's owner element in calls.
+      function define_with_callbacks(callbackNames, calls) {
+        class MoveAttr extends Attr {}
+        for (const callbackName of callbackNames) {
+          MoveAttr.prototype[callbackName] = function () {
+            calls.push({ name: callbackName, element: this.ownerElement });
+          };
+        }
+        const name = "move-callback-attr-" + attributeNumber++;
+        customAttributes.define(name, MoveAttr);
+        return name;
+      }
+
+      function create_connected_element(test, name) {
+        const element = document.createElement("div");
+        element.setAttribute(name, "");
+        first.appendChild(element);
+        test.add_cleanup(() => element.remove());
+        return element;
+      }
+
+      test(function () {
+        const calls = [];
+        const name = define_with_callbacks(
+          [
+            "connectedCallback",
+            "disconnectedCallback",
+            "connectedMoveCallback",
+          ],
+          calls,
+        );
+        const element = create_connected_element(this, name);
+        calls.length = 0;
+
+        second.moveBefore(element, null);
+        assert_equals(element.parentNode, second);
+        assert_array_equals(
+          calls.map((call) => call.name),
+          ["connectedMoveCallback"],
+          "only connectedMoveCallback must be invoked when it is defined",
+        );
+        assert_equals(calls[0].element, element);
+      }, "moveBefore must invoke connectedMoveCallback of a custom attribute of the moved element");
+
+      test(function () {
+        const calls = [];
+        const name = define_with_callbacks(
+          [
+            "connectedCallback",
+            "disconnectedCallback",
+            "connectedMoveCallback",
+          ],
+          calls,
+        );
+        const parent = document.createElement("div");
+        const element = document.createElement("span");
+        element.setAttribute(name, "");
+        parent.appendChild(element);
+        first.appendChild(parent);
+        this.add_cleanup(() => parent.remove());
+        calls.length = 0;
+
+        second.moveBefore(parent, null);
+        assert_array_equals(
+          calls.map((call) => call.name),
+          ["connectedMoveCallback"],
+        );
+        assert_equals(calls[0].element, element);
+      }, "moveBefore must invoke connectedMoveCallback of a custom attribute of a descendant of the moved element");
+
+      test(function () {
+        const calls = [];
+        const name = define_with_callbacks(
+          ["connectedCallback", "disconnectedCallback"],
+          calls,
+        );
+        const element = create_connected_element(this, name);
+        calls.length = 0;
+
+        second.moveBefore(element, null);
+        assert_array_equals(
+          calls.map((call) => call.name),
+          ["disconnectedCallback", "connectedCallback"],
+          "disconnectedCallback then connectedCallback must be invoked when connectedMoveCallback is not defined",
+        );
+        assert_equals(calls[0].element, element);
+        assert_equals(calls[1].element, element);
+      }, "moveBefore must invoke disconnectedCallback then connectedCallback of a custom attribute without connectedMoveCallback");
+
+      test(function () {
+        const calls = [];
+        const name = define_with_callbacks(
+          ["attributeChangedCallback", "adoptedCallback"],
+          calls,
+        );
+        const element = create_connected_element(this, name);
+        calls.length = 0;
+
+        second.moveBefore(element, null);
+        assert_equals(element.parentNode, second);
+        assert_array_equals(calls, [], "no callback must be invoked");
+      }, "moveBefore must not invoke any callback of a custom attribute without connectedMoveCallback, connectedCallback and disconnectedCallback");
+    </script>
+  </body>
+</html>

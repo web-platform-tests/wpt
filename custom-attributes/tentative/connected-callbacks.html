@@ -1,0 +1,264 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Custom Attributes: connectedCallback</title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="connectedCallback must be enqueued whenever a custom attribute is present on an element that becomes connected, or is added to a connected element"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/custom-elements/resources/custom-elements-helpers.js"></script>
+    <script src="resources/custom-attributes-helpers.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      const custom = define_new_custom_attribute();
+
+      // Returns a disconnected element carrying an already constructed custom
+      // attribute, with the log cleared.
+      function create_element_with_custom_attribute() {
+        const element = document.createElement("div");
+        const attr = document.createAttribute(custom.name);
+        element.setAttributeNode(attr);
+        custom.takeLog();
+        return { element, attr };
+      }
+
+      document_types().forEach(function (entry) {
+        const documentName = entry.name;
+        const getDocument = entry.create;
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element, attr } = create_element_with_custom_attribute();
+              t.add_cleanup(() => element.remove());
+              doc.documentElement.appendChild(element);
+              const log = custom.takeLog();
+              assert_array_equals(
+                log.types().filter((type) => type == "connected"),
+                ["connected"],
+              );
+              assert_connected_entry(log.last(), attr, element);
+            });
+          },
+          "Inserting an element with a custom attribute into " +
+            documentName +
+            " must enqueue and invoke connectedCallback",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element, attr } = create_element_with_custom_attribute();
+              const parent = document.createElement("div");
+              parent.appendChild(element);
+              t.add_cleanup(() => parent.remove());
+              custom.takeLog();
+              doc.documentElement.appendChild(parent);
+              const log = custom.takeLog();
+              assert_array_equals(
+                log.types().filter((type) => type == "connected"),
+                ["connected"],
+              );
+              assert_connected_entry(log.last(), attr, element);
+            });
+          },
+          "Inserting an ancestor of an element with a custom attribute into " +
+            documentName +
+            " must enqueue and invoke connectedCallback",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element, attr } = create_element_with_custom_attribute();
+              const host = doc.createElementNS(
+                "http://www.w3.org/1999/xhtml",
+                "div",
+              );
+              const shadowRoot = host.attachShadow({ mode: "closed" });
+              doc.documentElement.appendChild(host);
+              t.add_cleanup(() => host.remove());
+
+              custom.takeLog();
+              shadowRoot.appendChild(element);
+              const log = custom.takeLog();
+              assert_array_equals(
+                log.types().filter((type) => type == "connected"),
+                ["connected"],
+              );
+              assert_connected_entry(log.last(), attr, element);
+            });
+          },
+          "Inserting an element with a custom attribute into a shadow tree in " +
+            documentName +
+            " must enqueue and invoke connectedCallback",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element, attr } = create_element_with_custom_attribute();
+              const host = doc.createElementNS(
+                "http://www.w3.org/1999/xhtml",
+                "div",
+              );
+              const shadowRoot = host.attachShadow({ mode: "closed" });
+              shadowRoot.appendChild(element);
+
+              custom.takeLog();
+              doc.documentElement.appendChild(host);
+              t.add_cleanup(() => host.remove());
+              const log = custom.takeLog();
+              assert_array_equals(
+                log.types().filter((type) => type == "connected"),
+                ["connected"],
+              );
+              assert_connected_entry(log.last(), attr, element);
+            });
+          },
+          "Inserting the shadow host of an element with a custom attribute into " +
+            documentName +
+            " must enqueue and invoke connectedCallback",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element } = create_element_with_custom_attribute();
+              const host = doc.createElementNS(
+                "http://www.w3.org/1999/xhtml",
+                "div",
+              );
+              const shadowRoot = host.attachShadow({ mode: "closed" });
+
+              shadowRoot.appendChild(element);
+              assert_array_equals(
+                custom
+                  .takeLog()
+                  .types()
+                  .filter((type) => type == "connected"),
+                [],
+              );
+            });
+          },
+          "Inserting an element with a custom attribute into a detached shadow tree that belongs to " +
+            documentName +
+            " must not enqueue and invoke connectedCallback",
+        );
+      });
+
+      test(function () {
+        const element = document.createElement("div");
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        custom.takeLog();
+
+        element.setAttribute(custom.name, "value");
+        const attr = element.getAttributeNode(custom.name);
+        assert_true(
+          attr instanceof custom.class,
+          "the attribute must be upgraded before setAttribute returns",
+        );
+        const log = custom.takeLog();
+        assert_array_equals(log.types(), [
+          "constructed",
+          "attributeChanged",
+          "connected",
+        ]);
+        assert_constructed_entry(log[0], attr);
+        assert_attribute_changed_entry(log[1], {
+          oldValue: null,
+          newValue: "value",
+          attribute: attr,
+        });
+        assert_connected_entry(log[2], attr, element);
+      }, "Setting a defined attribute on a connected element must construct it and invoke attributeChangedCallback then connectedCallback");
+
+      test(function () {
+        const element = document.createElement("div");
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        const attr = document.createAttribute(custom.name);
+        attr.value = "node";
+        custom.takeLog();
+
+        element.setAttributeNode(attr);
+        const log = custom.takeLog();
+        assert_array_equals(
+          log.types(),
+          ["attributeChanged", "connected"],
+          "an already constructed attribute must not be constructed again",
+        );
+        assert_attribute_changed_entry(log[0], {
+          oldValue: null,
+          newValue: "node",
+          attribute: attr,
+        });
+        assert_connected_entry(log[1], attr, element);
+      }, "setAttributeNode with a custom attribute on a connected element must invoke attributeChangedCallback then connectedCallback");
+
+      test(function () {
+        custom.takeLog();
+        const element = document.createElement("div");
+        element.setAttribute(custom.name, "disconnected");
+        const attr = element.getAttributeNode(custom.name);
+        assert_true(
+          attr instanceof custom.class,
+          "an attribute set on a disconnected element must be upgraded",
+        );
+        let log = custom.takeLog();
+        assert_array_equals(
+          log.types(),
+          ["constructed", "attributeChanged"],
+          "connectedCallback must not be invoked for a disconnected element",
+        );
+        assert_attribute_changed_entry(log[1], {
+          oldValue: null,
+          newValue: "disconnected",
+          attribute: attr,
+        });
+
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        assert_equals(element.getAttributeNode(custom.name), attr);
+        log = custom.takeLog();
+        assert_array_equals(log.types(), ["connected"]);
+        assert_connected_entry(log[0], attr, element);
+      }, "Connecting an element with an attribute upgraded while disconnected must only invoke connectedCallback");
+
+      test(function () {
+        const { element, attr } = create_element_with_custom_attribute();
+        const first = document.createElement("div");
+        const second = document.createElement("div");
+        document.body.appendChild(first);
+        document.body.appendChild(second);
+        this.add_cleanup(() => {
+          first.remove();
+          second.remove();
+        });
+
+        first.appendChild(element);
+        assert_array_equals(custom.takeLog().types(), ["connected"]);
+        second.appendChild(element);
+        const log = custom.takeLog();
+        assert_array_equals(log.types(), ["disconnected", "connected"]);
+        assert_disconnected_entry(log[0], attr);
+        assert_connected_entry(log[1], attr, element);
+      }, "Moving an element with a custom attribute within the document must invoke disconnectedCallback then connectedCallback");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,584 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Custom Attributes: upgrading</title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="Attributes with a valid custom attribute name must be upgraded when a definition becomes available for the custom attribute registry of their element"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/custom-elements/resources/custom-elements-helpers.js"></script>
+    <script src="resources/custom-attributes-helpers.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <div id="container"></div>
+    <script>
+      const container = document.getElementById("container");
+
+      function define_logging_class(name) {
+        const custom = { log: [] };
+        custom.class = class extends Attr {
+          constructor() {
+            super();
+            custom.log.push({ type: "constructed", attribute: this });
+          }
+          connectedCallback() {
+            custom.log.push({ type: "connected", attribute: this });
+          }
+          disconnectedCallback() {
+            custom.log.push({ type: "disconnected", attribute: this });
+          }
+          attributeChangedCallback(oldValue, newValue) {
+            custom.log.push({
+              type: "attributeChanged",
+              attribute: this,
+              argumentCount: arguments.length,
+              oldValue,
+              newValue,
+            });
+          }
+        };
+        custom.name = name;
+        custom.takeLog = () => {
+          const log = custom.log;
+          custom.log = [];
+          log.types = () => log.map((e) => e.type);
+          return log;
+        };
+        return custom;
+      }
+
+      test(function () {
+        const element = document.createElement("div");
+        element.setAttribute("upgrade-connected", "value");
+        container.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        const before = element.getAttributeNode("upgrade-connected");
+        assert_equals(
+          Object.getPrototypeOf(before),
+          Attr.prototype,
+          "the attribute must be a plain Attr before the definition",
+        );
+
+        const custom = define_logging_class("upgrade-connected");
+        customAttributes.define(custom.name, custom.class);
+
+        const after = element.getAttributeNode("upgrade-connected");
+        assert_equals(
+          after,
+          before,
+          "upgrading must preserve the identity of an existing attribute node",
+        );
+        assert_true(
+          after instanceof custom.class,
+          "the attribute must be upgraded when the definition is added",
+        );
+        assert_equals(after.value, "value");
+        const log = custom.takeLog();
+        assert_array_equals(log.types(), [
+          "constructed",
+          "attributeChanged",
+          "connected",
+        ]);
+        assert_equals(log[0].attribute, after);
+        assert_attribute_changed_entry(log[1], {
+          oldValue: null,
+          newValue: "value",
+          attribute: after,
+        });
+      }, "customAttributes.define must upgrade attributes on connected elements and preserve node identity");
+
+      test(function () {
+        const element = document.createElement("div");
+        element.setAttribute("upgrade-disconnected", "value");
+
+        const custom = define_logging_class("upgrade-disconnected");
+        customAttributes.define(custom.name, custom.class);
+        assert_equals(
+          Object.getPrototypeOf(
+            element.getAttributeNode("upgrade-disconnected"),
+          ),
+          Attr.prototype,
+          "attributes on disconnected elements must not be upgraded by define",
+        );
+        assert_array_equals(custom.takeLog().types(), []);
+
+        container.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        assert_true(
+          element.getAttributeNode("upgrade-disconnected") instanceof
+            custom.class,
+          "the attribute must be upgraded when its element becomes connected",
+        );
+        assert_array_equals(custom.takeLog().types(), [
+          "constructed",
+          "attributeChanged",
+          "connected",
+        ]);
+      }, "customAttributes.define must not upgrade attributes on disconnected elements; they upgrade on insertion");
+
+      test(function () {
+        const element = document.createElement("div");
+        element.setAttribute("upgrade-removed-first", "value");
+        container.appendChild(element);
+        element.remove();
+
+        const custom = define_logging_class("upgrade-removed-first");
+        customAttributes.define(custom.name, custom.class);
+        assert_equals(
+          Object.getPrototypeOf(
+            element.getAttributeNode("upgrade-removed-first"),
+          ),
+          Attr.prototype,
+        );
+        assert_array_equals(custom.takeLog().types(), []);
+      }, "customAttributes.define must not upgrade attributes on elements that were disconnected before the definition");
+
+      test(function () {
+        const element = document.createElement("div");
+        element.setAttribute("upgrade-removed-attr", "value");
+        container.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        element.removeAttribute("upgrade-removed-attr");
+
+        const custom = define_logging_class("upgrade-removed-attr");
+        customAttributes.define(custom.name, custom.class);
+        assert_array_equals(
+          custom.takeLog().types(),
+          [],
+          "a removed attribute must not be upgraded",
+        );
+      }, "customAttributes.define must not upgrade attributes that have been removed");
+
+      test(function () {
+        const first = document.createElement("div");
+        first.setAttribute("upgrade-order", "1");
+        const second = document.createElement("div");
+        second.setAttribute("upgrade-order", "2");
+        const third = document.createElement("div");
+        third.setAttribute("upgrade-order", "3");
+        container.append(first, second, third);
+        this.add_cleanup(() => {
+          first.remove();
+          second.remove();
+          third.remove();
+        });
+
+        const custom = define_logging_class("upgrade-order");
+        customAttributes.define(custom.name, custom.class);
+        const constructed = custom
+          .takeLog()
+          .filter((entry) => entry.type == "constructed")
+          .map((entry) => entry.attribute.ownerElement);
+        assert_array_equals(
+          constructed,
+          [first, second, third],
+          "candidates must be upgraded in tree order",
+        );
+      }, "customAttributes.define must upgrade candidates in tree order");
+
+      test(function () {
+        const element = document.createElement("div");
+        element.setAttribute("upgrade-shadow", "value");
+        const host = document.createElement("div");
+        const shadowRoot = host.attachShadow({ mode: "open" });
+        shadowRoot.appendChild(element);
+        container.appendChild(host);
+        this.add_cleanup(() => host.remove());
+
+        const custom = define_logging_class("upgrade-shadow");
+        customAttributes.define(custom.name, custom.class);
+        assert_true(
+          element.getAttributeNode("upgrade-shadow") instanceof custom.class,
+          "elements in shadow trees must be upgraded",
+        );
+        assert_array_equals(custom.takeLog().types(), [
+          "constructed",
+          "attributeChanged",
+          "connected",
+        ]);
+      }, "customAttributes.define must upgrade attributes on elements in connected shadow trees");
+
+      test(function () {
+        const element = document.createElement("div");
+        element.setAttribute("upgrade-explicit", "value");
+        const child = document.createElement("span");
+        child.setAttribute("upgrade-explicit", "child");
+        element.appendChild(child);
+
+        const custom = define_logging_class("upgrade-explicit");
+        customAttributes.define(custom.name, custom.class);
+        assert_array_equals(custom.takeLog().types(), []);
+
+        customAttributes.upgrade(element);
+        assert_true(
+          element.getAttributeNode("upgrade-explicit") instanceof custom.class,
+          "upgrade() must upgrade the root",
+        );
+        assert_true(
+          child.getAttributeNode("upgrade-explicit") instanceof custom.class,
+          "upgrade() must upgrade descendants",
+        );
+        const log = custom.takeLog();
+        assert_array_equals(
+          log.types(),
+          [
+            "constructed",
+            "attributeChanged",
+            "constructed",
+            "attributeChanged",
+          ],
+          "upgrade() on disconnected elements must not invoke connectedCallback",
+        );
+        assert_equals(log[0].attribute.ownerElement, element);
+        assert_equals(log[2].attribute.ownerElement, child);
+
+        customAttributes.upgrade(element);
+        assert_array_equals(
+          custom.takeLog().types(),
+          [],
+          "upgrade() must not upgrade an attribute twice",
+        );
+      }, "customAttributes.upgrade must upgrade attributes on disconnected elements without invoking connectedCallback");
+
+      test(function () {
+        const host = document.createElement("div");
+        const shadowRoot = host.attachShadow({ mode: "open" });
+        const inner = document.createElement("div");
+        inner.setAttribute("upgrade-explicit-shadow", "value");
+        shadowRoot.appendChild(inner);
+
+        const custom = define_logging_class("upgrade-explicit-shadow");
+        customAttributes.define(custom.name, custom.class);
+        customAttributes.upgrade(host);
+        assert_true(
+          inner.getAttributeNode("upgrade-explicit-shadow") instanceof
+            custom.class,
+          "upgrade() must visit shadow-including descendants",
+        );
+      }, "customAttributes.upgrade must upgrade attributes in shadow trees");
+
+      test(function () {
+        const custom = define_logging_class("upgrade-undefined-name");
+        const element = document.createElement("div");
+        element.setAttribute("upgrade-undefined-name", "value");
+        customAttributes.upgrade(element);
+        assert_equals(
+          Object.getPrototypeOf(
+            element.getAttributeNode("upgrade-undefined-name"),
+          ),
+          Attr.prototype,
+          "upgrade() must do nothing for names without a definition",
+        );
+      }, "customAttributes.upgrade must do nothing for attributes without a definition");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        class ScopedOnlyAttr extends Attr {}
+        scoped.define("upgrade-scoped-only", ScopedOnlyAttr);
+        class GlobalOnlyAttr extends Attr {}
+        customAttributes.define("upgrade-global-only", GlobalOnlyAttr);
+
+        const globalElement = document.createElement("div");
+        globalElement.setAttribute("upgrade-scoped-only", "value");
+        const nullElement = document.createElement("div", {
+          customAttributeRegistry: null,
+        });
+        nullElement.setAttribute("upgrade-scoped-only", "value");
+        globalElement.appendChild(nullElement);
+        scoped.upgrade(globalElement);
+        assert_equals(
+          Object.getPrototypeOf(
+            globalElement.getAttributeNode("upgrade-scoped-only"),
+          ),
+          Attr.prototype,
+          "a scoped registry must not upgrade attributes of an element using the global registry",
+        );
+        assert_equals(
+          Object.getPrototypeOf(
+            nullElement.getAttributeNode("upgrade-scoped-only"),
+          ),
+          Attr.prototype,
+          "a scoped registry must not upgrade attributes of an element with a null registry",
+        );
+
+        const scopedElement = document.createElement("div", {
+          customAttributeRegistry: scoped,
+        });
+        scopedElement.setAttribute("upgrade-global-only", "value");
+        customAttributes.upgrade(scopedElement);
+        assert_equals(
+          Object.getPrototypeOf(
+            scopedElement.getAttributeNode("upgrade-global-only"),
+          ),
+          Attr.prototype,
+          "the global registry must not upgrade attributes of an element using a scoped registry",
+        );
+      }, "CustomAttributeRegistry.upgrade must only upgrade attributes of elements whose registry is that registry");
+
+      test(function () {
+        const custom = define_logging_class("upgrade-set-disconnected");
+        customAttributes.define(custom.name, custom.class);
+
+        const element = document.createElement("div");
+        element.setAttribute(custom.name, "value");
+        const attr = element.getAttributeNode(custom.name);
+        assert_true(
+          attr instanceof custom.class,
+          "setAttribute must upgrade the attribute of a disconnected element",
+        );
+        let log = custom.takeLog();
+        assert_array_equals(log.types(), ["constructed", "attributeChanged"]);
+        assert_attribute_changed_entry(log[1], {
+          oldValue: null,
+          newValue: "value",
+          attribute: attr,
+        });
+
+        container.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        assert_equals(element.getAttributeNode(custom.name), attr);
+        assert_array_equals(
+          custom.takeLog().types(),
+          ["connected"],
+          "insertion must only invoke connectedCallback",
+        );
+      }, "setAttribute on a disconnected element must upgrade the attribute without invoking connectedCallback");
+
+      test(function () {
+        const custom = define_logging_class("upgrade-clone");
+        customAttributes.define(custom.name, custom.class);
+        const element = document.createElement("div");
+        element.setAttribute(custom.name, "value");
+        const child = document.createElement("span");
+        child.setAttribute(custom.name, "child");
+        element.appendChild(child);
+        custom.takeLog();
+
+        const clone = element.cloneNode(true);
+        const cloneAttr = clone.getAttributeNode(custom.name);
+        const childCloneAttr = clone.firstChild.getAttributeNode(custom.name);
+        assert_not_equals(
+          cloneAttr,
+          element.getAttributeNode(custom.name),
+          "a clone must have new attribute nodes",
+        );
+        assert_true(
+          cloneAttr instanceof custom.class,
+          "cloning must upgrade the attributes of the clone",
+        );
+        assert_true(
+          childCloneAttr instanceof custom.class,
+          "cloning must upgrade the attributes of cloned descendants",
+        );
+        assert_equals(cloneAttr.value, "value");
+        let log = custom.takeLog();
+        assert_array_equals(log.types(), [
+          "constructed",
+          "attributeChanged",
+          "constructed",
+          "attributeChanged",
+        ]);
+        assert_equals(log[0].attribute, cloneAttr);
+        assert_equals(log[2].attribute, childCloneAttr);
+
+        container.appendChild(clone);
+        this.add_cleanup(() => clone.remove());
+        assert_equals(clone.getAttributeNode(custom.name), cloneAttr);
+        assert_array_equals(custom.takeLog().types(), [
+          "connected",
+          "connected",
+        ]);
+      }, "Cloning an element must upgrade the attributes of the clone");
+
+      test(function () {
+        const custom = define_logging_class("upgrade-attr-clone");
+        customAttributes.define(custom.name, custom.class);
+        const element = document.createElement("div");
+        element.setAttribute(custom.name, "value");
+        const attr = element.getAttributeNode(custom.name);
+        assert_true(attr instanceof custom.class);
+        custom.takeLog();
+
+        const clone = attr.cloneNode();
+        assert_equals(
+          Object.getPrototypeOf(clone),
+          Attr.prototype,
+          "Attr.cloneNode must create a plain Attr",
+        );
+        assert_equals(clone.name, custom.name);
+        assert_equals(clone.value, "value");
+        assert_equals(clone.ownerElement, null);
+        assert_array_equals(
+          custom.takeLog().types(),
+          [],
+          "Attr.cloneNode must not run the constructor",
+        );
+
+        const other = document.createElement("div");
+        container.appendChild(other);
+        this.add_cleanup(() => other.remove());
+        other.setAttributeNode(clone);
+        assert_true(
+          clone instanceof custom.class,
+          "the cloned attribute must be upgraded once it is attached to an element",
+        );
+        assert_array_equals(custom.takeLog().types(), [
+          "constructed",
+          "attributeChanged",
+          "connected",
+        ]);
+      }, "Attr.cloneNode on a custom attribute must create a plain Attr");
+
+      test(function () {
+        const name = "upgrade-removed-while-pending";
+        const first = document.createElement("div");
+        first.setAttribute(name, "first");
+        const second = document.createElement("div");
+        second.setAttribute(name, "second");
+        container.append(first, second);
+        this.add_cleanup(() => {
+          first.remove();
+          second.remove();
+        });
+        const firstAttr = first.getAttributeNode(name);
+        const pending = second.getAttributeNode(name);
+
+        const constructed = [];
+        class RemovingAttr extends Attr {
+          constructor() {
+            super();
+            constructed.push(this);
+            if (this === firstAttr) second.removeAttributeNode(pending);
+          }
+        }
+        customAttributes.define(name, RemovingAttr);
+        assert_array_equals(constructed, [firstAttr]);
+        assert_equals(pending.ownerElement, null);
+        assert_equals(
+          Object.getPrototypeOf(pending),
+          Attr.prototype,
+          "an attribute removed from its element before its upgrade reaction runs must not be upgraded",
+        );
+
+        const third = document.createElement("div");
+        container.appendChild(third);
+        this.add_cleanup(() => third.remove());
+        third.setAttributeNode(pending);
+        assert_true(
+          pending instanceof RemovingAttr,
+          "the attribute must still be upgraded once attached again",
+        );
+        assert_array_equals(constructed, [firstAttr, pending]);
+      }, "An attribute removed from its element while its upgrade is pending must not be upgraded until it is attached again");
+
+      test(function () {
+        const name = "upgrade-moved-while-pending";
+        const scoped = new CustomAttributeRegistry();
+        const scopedElement = document.createElement("div", {
+          customAttributeRegistry: scoped,
+        });
+        const first = document.createElement("div");
+        first.setAttribute(name, "first");
+        const second = document.createElement("div");
+        second.setAttribute(name, "second");
+        container.append(scopedElement, first, second);
+        this.add_cleanup(() => {
+          scopedElement.remove();
+          first.remove();
+          second.remove();
+        });
+        const firstAttr = first.getAttributeNode(name);
+        const pending = second.getAttributeNode(name);
+
+        class GlobalAttr extends Attr {
+          constructor() {
+            super();
+            if (this === firstAttr) {
+              second.removeAttributeNode(pending);
+              scopedElement.setAttributeNode(pending);
+            }
+          }
+        }
+        customAttributes.define(name, GlobalAttr);
+        assert_true(firstAttr instanceof GlobalAttr);
+        assert_equals(pending.ownerElement, scopedElement);
+        assert_equals(
+          Object.getPrototypeOf(pending),
+          Attr.prototype,
+          "the pending upgrade must do nothing once the attribute is on an element whose registry has another definition",
+        );
+
+        class ScopedAttr extends Attr {}
+        scoped.define(name, ScopedAttr);
+        assert_true(
+          pending instanceof ScopedAttr,
+          "the attribute must be upgraded later with the definition that applies to it then",
+        );
+      }, "An attribute moved to an element using a different registry while its upgrade is pending must not be upgraded with the old definition");
+
+      test(function () {
+        const element = document.createElement("div");
+        element.setAttribute("upgrade-super-twice", "value");
+        container.appendChild(element);
+        this.add_cleanup(() => element.remove());
+
+        let caught = null;
+        class SuperTwiceAttr extends Attr {
+          constructor() {
+            super();
+            try {
+              super();
+            } catch (e) {
+              caught = e;
+            }
+          }
+        }
+        customAttributes.define("upgrade-super-twice", SuperTwiceAttr);
+        assert_true(
+          caught instanceof TypeError,
+          "the second super() call must throw a TypeError",
+        );
+        assert_true(
+          element.getAttributeNode("upgrade-super-twice") instanceof
+            SuperTwiceAttr,
+          "the upgrade itself must succeed",
+        );
+      }, "Calling super() twice in a custom attribute constructor during an upgrade must throw a TypeError");
+
+      test(function () {
+        const element = document.createElement("div");
+        element.setAttribute("upgrade-in-constructor", "value");
+        container.appendChild(element);
+        this.add_cleanup(() => element.remove());
+
+        let seenValue, seenOwner;
+        class InspectingAttr extends Attr {
+          constructor() {
+            super();
+            seenValue = this.value;
+            seenOwner = this.ownerElement;
+          }
+        }
+        customAttributes.define("upgrade-in-constructor", InspectingAttr);
+        assert_equals(
+          seenValue,
+          "value",
+          "the value must be available inside the constructor during an upgrade",
+        );
+        assert_equals(
+          seenOwner,
+          element,
+          "ownerElement must be available inside the constructor during an upgrade",
+        );
+      }, "The attribute value and owner element must be available inside the constructor during an upgrade");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,262 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Custom Attributes: reaction timing</title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="Custom attribute reactions must be invoked with the same timing as custom element reactions"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/custom-elements/resources/custom-elements-helpers.js"></script>
+    <script src="resources/custom-attributes-helpers.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      test(function () {
+        const custom = define_new_custom_attribute();
+        const element = document.createElement("div");
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+
+        element.setAttribute(custom.name, "value");
+        assert_array_equals(
+          custom.takeLog().types(),
+          ["constructed", "attributeChanged", "connected"],
+          "all reactions must have been invoked by the time setAttribute returns",
+        );
+      }, "Reactions enqueued by setAttribute must be invoked before setAttribute returns");
+
+      test(function () {
+        const custom = define_new_custom_attribute();
+        const element = document.createElement("div");
+        element.setAttribute(custom.name, "value");
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        assert_array_equals(
+          custom.takeLog().types(),
+          ["constructed", "attributeChanged", "connected"],
+          "all reactions must have been invoked by the time appendChild returns",
+        );
+        element.remove();
+        assert_array_equals(custom.takeLog().types(), ["disconnected"]);
+      }, "Reactions enqueued by node insertion and removal must be invoked before the DOM method returns");
+
+      test(function () {
+        const log = [];
+        class OuterAttr extends Attr {
+          constructor() {
+            super();
+            log.push("outer constructed");
+            this.ownerElement.setAttribute("inner-reaction-attr", "inner");
+            log.push("outer constructor done");
+          }
+          connectedCallback() {
+            log.push("outer connected");
+          }
+          attributeChangedCallback() {
+            log.push("outer attributeChanged");
+          }
+        }
+        class InnerAttr extends Attr {
+          constructor() {
+            super();
+            log.push("inner constructed");
+          }
+          connectedCallback() {
+            log.push("inner connected");
+          }
+          attributeChangedCallback() {
+            log.push("inner attributeChanged");
+          }
+        }
+        customAttributes.define("outer-reaction-attr", OuterAttr);
+        customAttributes.define("inner-reaction-attr", InnerAttr);
+
+        const element = document.createElement("div");
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        element.setAttribute("outer-reaction-attr", "outer");
+
+        assert_array_equals(
+          log,
+          [
+            "outer constructed",
+            "inner constructed",
+            "inner attributeChanged",
+            "inner connected",
+            "outer constructor done",
+            "outer attributeChanged",
+            "outer connected",
+          ],
+          "reactions enqueued inside a constructor must run before the enqueuing DOM method returns, and before the outer callbacks",
+        );
+      }, "Reactions enqueued inside a constructor must be invoked in a nested [CEReactions] scope");
+
+      test(function () {
+        const log = [];
+        class AttrA extends Attr {
+          attributeChangedCallback(oldValue, newValue) {
+            log.push(`a ${oldValue}->${newValue}`);
+            if (newValue == "1")
+              this.ownerElement.setAttribute("reaction-order-b", "from-a");
+          }
+        }
+        class AttrB extends Attr {
+          attributeChangedCallback(oldValue, newValue) {
+            log.push(`b ${oldValue}->${newValue}`);
+          }
+        }
+        customAttributes.define("reaction-order-a", AttrA);
+        customAttributes.define("reaction-order-b", AttrB);
+
+        const element = document.createElement("div");
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        element.setAttribute("reaction-order-a", "0");
+        element.setAttribute("reaction-order-b", "0");
+        log.length = 0;
+
+        element.setAttribute("reaction-order-a", "1");
+        assert_array_equals(log, ["a 0->1", "b 0->from-a"]);
+      }, "Reactions enqueued inside another callback must be invoked before that DOM method returns");
+
+      test(function () {
+        const log = [];
+        class ElementAttr extends Attr {
+          attributeChangedCallback(oldValue, newValue) {
+            log.push(`attribute ${oldValue}->${newValue}`);
+          }
+        }
+        class MyElement extends HTMLElement {
+          static observedAttributes = ["mixed-reaction-attr"];
+          attributeChangedCallback(name, oldValue, newValue) {
+            log.push(`element ${oldValue}->${newValue}`);
+          }
+        }
+        customAttributes.define("mixed-reaction-attr", ElementAttr);
+        customElements.define("mixed-reaction-element", MyElement);
+
+        const element = document.createElement("mixed-reaction-element");
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+
+        element.setAttribute("mixed-reaction-attr", "a");
+        assert_array_equals(
+          log,
+          ["element null->a", "attribute null->a"],
+          "the element reaction was enqueued first, then the attribute upgrade, which enqueued the attribute reaction",
+        );
+        log.length = 0;
+
+        element.setAttribute("mixed-reaction-attr", "b");
+        assert_array_equals(
+          log,
+          ["element a->b", "attribute a->b"],
+          "the element reaction was enqueued before the attribute reaction",
+        );
+      }, "Custom element and custom attribute reactions enqueued by the same attribute change must be invoked in the order they were enqueued");
+
+      test(function () {
+        const log = [];
+        const element = document.createElement("div");
+        class RemoverAttr extends Attr {
+          connectedCallback() {
+            log.push("remover connected");
+            element.removeAttribute("removed-before-connected-attr");
+          }
+        }
+        class RemovedAttr extends Attr {
+          connectedCallback() {
+            log.push(`removed connected, ownerElement ${this.ownerElement}`);
+          }
+          attributeChangedCallback(oldValue, newValue) {
+            log.push(`removed attributeChanged ${oldValue}->${newValue}`);
+          }
+          disconnectedCallback() {
+            log.push("removed disconnected");
+          }
+        }
+        customAttributes.define("remover-before-connected-attr", RemoverAttr);
+        customAttributes.define("removed-before-connected-attr", RemovedAttr);
+        element.setAttribute("remover-before-connected-attr", "");
+        element.setAttribute("removed-before-connected-attr", "value");
+        log.length = 0;
+
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        assert_array_equals(
+          log,
+          [
+            "remover connected",
+            "removed connected, ownerElement null",
+            "removed attributeChanged value->null",
+            "removed disconnected",
+          ],
+          "connectedCallback must still be invoked, with a null ownerElement, when the attribute was removed before it ran",
+        );
+      }, "A connectedCallback enqueued before the attribute is removed must run after the removal and see a null ownerElement");
+
+      test(function () {
+        const custom = define_new_custom_attribute();
+        const element = document.createElement("div");
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        element.setAttribute(custom.name, "a");
+        custom.takeLog();
+
+        element.setAttribute(custom.name, "b");
+        element.setAttribute(custom.name, "c");
+        element.removeAttribute(custom.name);
+        const log = custom.takeLog();
+        assert_array_equals(log.types(), [
+          "attributeChanged",
+          "attributeChanged",
+          "attributeChanged",
+          "disconnected",
+        ]);
+        assert_equals(log[0].newValue, "b");
+        assert_equals(log[1].newValue, "c");
+        assert_equals(log[2].newValue, null);
+      }, "Each attribute mutation must enqueue and invoke its own reactions in order");
+
+      promise_test(function (t) {
+        const order = [];
+        class ObservedAttr extends Attr {
+          attributeChangedCallback() {
+            order.push("reaction");
+          }
+        }
+        customAttributes.define("observed-timing-attr", ObservedAttr);
+        const element = document.createElement("div");
+        document.body.appendChild(element);
+        t.add_cleanup(() => element.remove());
+        element.setAttribute("observed-timing-attr", "value");
+        order.length = 0;
+
+        return new Promise(function (resolve) {
+          const observer = new MutationObserver(function () {
+            order.push("mutation observer");
+            observer.disconnect();
+            resolve();
+          });
+          observer.observe(element, { attributes: true });
+          element.setAttribute("observed-timing-attr", "changed");
+          order.push("setAttribute returned");
+        }).then(function () {
+          assert_array_equals(order, [
+            "reaction",
+            "setAttribute returned",
+            "mutation observer",
+          ]);
+        });
+      }, "Custom attribute reactions must be invoked before setAttribute returns and before mutation observers are notified");
+    </script>
+  </body>
+</html>

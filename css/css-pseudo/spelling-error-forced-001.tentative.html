@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" class="reftest-wait">
+<meta charset="UTF-8">
+<title>CSS Pseudo-Elements Test: highlighting of a forced spelling error (basic)</title>
+<link rel="author" title="Stalgia Grigg" href="mailto:stalgiag@igalia.com">
+<link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
+<link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-styling">
+<link rel="help" href="https://github.com/web-platform-tests/wpt/issues/30863">
+<link rel="match" href="spelling-error-forced-001-ref.html">
+<meta name="assert" content="A spelling marker on 'txet' is styled by ::spelling-error.">
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<style>
+div {
+  font-size: 300%;
+}
+
+div::spelling-error {
+  color: maroon;
+  text-decoration: underline dotted fuchsia;
+}
+</style>
+
+<p>Test passes if each glyph of "txet" is maroon and if "txet" is underlined with a fuchsia dotted line.
+
+<div id="target">A txet sample</div>
+
+<script>
+test_driver.set_text_marker(document.getElementById("target"), "spelling", 2, 6)
+  .finally(() => document.documentElement.classList.remove("reftest-wait"));
+</script>

@@ -44,3 +44,4 @@ test(() => {
   const value = new CSSUnitValue(0, 'fr');
   assert_numeric_type_equals(value.type(), { flex: 1 });
 }, 'Creating a type from <flex> returns { flex: 1 }');
+

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Named items: property names don't shadow in image, media and text documents</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-document-nameditem">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+function loadDocument(t, src) {
+  return new Promise((resolve, reject) => {
+    const iframe = document.createElement("iframe");
+    t.add_cleanup(() => iframe.remove());
+    iframe.onload = () => resolve(iframe.contentDocument);
+    iframe.onerror = reject;
+    iframe.src = src;
+    document.body.append(iframe);
+  });
+}
+
+function addNamed(doc, localName, name) {
+  const element = doc.defaultView.Document.prototype.createElement.call(doc, localName);
+  element.setAttribute("name", name);
+  doc.body.append(element);
+  return element;
+}
+
+for (const [kind, src] of [
+  ["image", "/images/green.png"],
+  ["media", "/media/white.webm"],
+  ["text", "/common/text-plain.txt"],
+]) {
+  promise_test(async t => {
+    const doc = await loadDocument(t, src);
+    const img = addNamed(doc, "img", "foobar");
+    assert_equals(doc.foobar, img);
+  }, `Named properties work in ${kind} documents (sanity check)`);
+
+  promise_test(async t => {
+    const doc = await loadDocument(t, src);
+    const title = doc.title;
+    addNamed(doc, "img", "title");
+    addNamed(doc, "form", "cookie");
+    addNamed(doc, "img", "createElement");
+    addNamed(doc, "img", "toString");
+    assert_equals(doc.title, title, "title");
+    assert_equals(typeof doc.cookie, "string", "cookie");
+    assert_equals(doc.createElement, doc.defaultView.Document.prototype.createElement, "createElement");
+    assert_equals(doc.toString, doc.defaultView.Object.prototype.toString, "toString");
+  }, `Built-in properties are not shadowed in ${kind} documents`);
+
+  promise_test(async t => {
+    const doc = await loadDocument(t, src);
+    const proto = doc.defaultView.Document.prototype;
+    t.add_cleanup(() => { delete proto.wptExpando; });
+    proto.wptExpando = "expando";
+    const img = addNamed(doc, "img", "wptExpando");
+    assert_equals(doc.wptExpando, "expando", "before delete");
+    delete proto.wptExpando;
+    assert_equals(doc.wptExpando, img, "after delete");
+  }, `Expando on Document.prototype is not shadowed in ${kind} documents`);
+}
+</script>

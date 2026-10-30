@@ -1,3 +1,4 @@
+# DEBUG(wpt#62901): touched only to trigger the stability job.
 from tests.support.classic.asserts import assert_success
 import time
 

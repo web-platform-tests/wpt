@@ -257,7 +257,7 @@ def build_full_command(event: Event, task: Task) -> List[str]:
   %(fetch_ref)s;
 %(install_str)s
 cd web-platform-tests;
-./wpt tc-run %(options_str)s -- %(task_cmd)s %(commit_args)s;
+/usr/bin/tini ./wpt -- tc-run %(options_str)s -- %(task_cmd)s %(commit_args)s;
 """ % cmd_args]
 
 
@@ -283,6 +283,7 @@ def create_tc_task(event: Event,
         "provisionerId": task["provisionerId"],
         "schedulerId": task["schedulerId"],
         "workerType": task["workerType"],
+        "priority": task.get("priority", "lowest"),
         "scopes": task.get("scopes", []),
         "metadata": {
             "name": task["name"],

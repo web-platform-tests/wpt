@@ -4,6 +4,7 @@
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="match" href="animated-clip-path-ref.html">
 <script src="/common/reftest-wait.js"></script>
+<script src="/html/canvas/resources/reftest-fail-on-error.js"></script>
 <style>
 #child {
   width: 100px;
@@ -26,6 +27,10 @@
 </canvas>
 <script>
 onload = async () => {
+  if (!failIfNot('drawElementImage' in CanvasRenderingContext2D.prototype,
+                 'drawElementImage is not supported')) {
+    return;
+  }
   let canvas = document.getElementById("canvas");
   let ctx = canvas.getContext("2d");
   let child = document.getElementById("child");

@@ -19,6 +19,8 @@
     const child = document.getElementById("child");
 
     promise_test(() => new Promise((resolve, reject) => {
+      assert_implements('drawElementImage' in CanvasRenderingContext2D.prototype,
+                        'html-in-canvas is not supported');
       // Video color reproduction is not 100% consistent.
       const channelTolerance = 3;
       const approxEquals = (a, b) => Math.abs(a-b) < channelTolerance;

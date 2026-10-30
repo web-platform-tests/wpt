@@ -5,6 +5,7 @@
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/common/media.js"></script>
+  <script src="./utils.js"></script>
   <script>
     setup({ explicit_timeout: true });
   </script>
@@ -38,6 +39,8 @@
   </body>
   <script>
     let v = document.getElementById("video");
+    enablePromptAfterMetadataLoaded(
+        v, document.getElementById("prompt-button"));
 
     async_test(t => {
       let button = document.getElementById("prompt-button");

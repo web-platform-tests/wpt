@@ -699,8 +699,8 @@ function runGenericSensorTests(sensorData, readingData) {
         ]);
 
         await Promise.all([
-          test_driver.update_virtual_sensor(testDriverName,
-          readings.next().value), sensorWatcher1.wait_for('reading'),
+          test_driver.update_virtual_sensor(testDriverName, readings.next().value),
+          sensorWatcher1.wait_for('reading'),
           sensorWatcher2.wait_for('reading')
         ]);
 

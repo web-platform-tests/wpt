@@ -20,7 +20,7 @@ async def cleanup_open_prompts(
     Tests in this file spawn unawaited background tasks (`script.evaluate` and
     `browsingContext.navigate`) that block while a prompt is open. We clean
     them up here rather than in shared fixtures because:
-    - `bidi_session` teardown (`_dismiss_user_prompts`) runs after the BiDi
+    - `bidi_session` teardown (`cleanup_session`) runs after the BiDi
       WebSocket closes and only sees the default user context via WebDriver
       Classic.
     - `create_user_context` teardown calls `browser.removeUserContext`, which

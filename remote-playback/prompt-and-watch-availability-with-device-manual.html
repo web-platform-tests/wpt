@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <title>
-    Test that watchAvailability() runs the callback with true when user selects a device
+    Test that watchAvailability() runs the callback with true when a device is
+    available for the user to select
   </title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -18,9 +19,10 @@
     </div>
     <div id="pick-device" style="display: none">
       <p>
-        Click the button below to prompt for a remote playback device and select
-        one!
+        Once the button below is enabled, click it to prompt for a remote
+        playback device and select one!
       </p>
+      <p id="status">Waiting for a remote playback device to be available...</p>
       <button id="prompt-button">Pick device</button>
     </div>
   </body>
@@ -28,33 +30,34 @@
   <script>
     let v = document.createElement("video");
     v.src = getVideoURI("/media/movie_300");
-    enablePromptAfterMetadataLoaded(
-        v, document.getElementById("prompt-button-prep"),
-        document.getElementById("prompt-button"));
+    let promptButton = document.getElementById("prompt-button");
+    // The prompt button is enabled below, once a device is available.
+    promptButton.disabled = true;
+    const metadataLoaded = enablePromptAfterMetadataLoaded(
+        v, document.getElementById("prompt-button-prep"));
 
-    async_test(t => {
-      let deviceAvailable = false;
-      let button = document.getElementById("prompt-button");
-      button.onclick = () => {
-        v.remote
-          .watchAvailability(t.step_func(avail => (deviceAvailable = avail)))
-          .then(
-            t.step_func(() => {
-              v.remote
-                .prompt()
-                .then(() => {
-                  assert_true(deviceAvailable);
-                  t.done();
-                })
-                .catch(
-                  t.unreached_func(
-                    "Selecting a remote device was not successful."
-                  )
-                );
-            }),
-            t.unreached_func()
-          );
-      };
-    }, "Test that watchAvailability() runs the callback with true when user selects a device.");
+    promise_test(async t => {
+      // Start watching availability once metadata has loaded, since remote
+      // playback availability for the media element may depend on it.
+      await metadataLoaded;
+
+      // The callback is invoked with the current availability in a task queued
+      // after the Promise returned by watchAvailability() resolves, and again
+      // whenever availability changes. Wait until it reports that a device is
+      // available.
+      await new Promise((resolve, reject) => {
+        v.remote.watchAvailability(available => {
+          if (available) {
+            resolve();
+          }
+        }).catch(reject);
+      });
+      document.getElementById("status").textContent =
+          "A remote playback device is available.";
+      promptButton.disabled = false;
+
+      // Selecting the available device must succeed.
+      await promptOnClick(promptButton, v.remote);
+    }, "Test that watchAvailability() runs the callback with true when a device is available for the user to select.");
   </script>
 </html>

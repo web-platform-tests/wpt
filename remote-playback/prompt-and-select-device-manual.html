@@ -26,17 +26,13 @@
   <script>
     let v = document.createElement("video");
     v.src = getVideoURI("/media/movie_300");
-    enablePromptAfterMetadataLoaded(
-        v, document.getElementById("prompt-button-prep"),
-        document.getElementById("prompt-button"));
+    let promptButton = document.getElementById("prompt-button");
+    const metadataLoaded = enablePromptAfterMetadataLoaded(
+        v, document.getElementById("prompt-button-prep"), promptButton);
 
-    async_test(t => {
-      let button = document.getElementById("prompt-button");
-      button.onclick = t.step_func_done(() => {
-        promise_test(() => {
-          return v.remote.prompt();
-        }, "Prompt resolves");
-      });
+    promise_test(async t => {
+      await metadataLoaded;
+      await promptOnClick(promptButton, v.remote);
     }, "Test that the Promise returned by prompt() is resolved when user selects a device.");
   </script>
 </html>

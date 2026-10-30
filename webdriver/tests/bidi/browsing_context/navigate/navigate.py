@@ -111,6 +111,32 @@ async def test_same_document_navigation_in_before_unload(bidi_session, new_tab, 
     await navigate_and_assert(bidi_session, new_tab, url_after, wait="complete")
 
 
+async def test_navigate_event_not_fired(bidi_session, inline, new_tab):
+    url_before = inline("<div>foo</div>")
+    url_after = inline("<div>bar</div>")
+    target = ContextTarget(new_tab["context"])
+
+    await navigate_and_assert(bidi_session, new_tab, url_before)
+
+    await bidi_session.script.evaluate(
+        expression="""navigation.addEventListener("navigate", event => {
+            sessionStorage.setItem("navigateEventFired", "true");
+            event.preventDefault();
+        });""",
+        target=target,
+        await_promise=False,
+    )
+
+    await navigate_and_assert(bidi_session, new_tab, url_after)
+
+    result = await bidi_session.script.evaluate(
+        expression='sessionStorage.getItem("navigateEventFired")',
+        target=target,
+        await_promise=False,
+    )
+    assert result == {"type": "null"}
+
+
 # https://github.com/whatwg/html/issues/12803
 async def test_same_url_replaces_current_history_entry(bidi_session, inline, new_tab):
     page = inline("")

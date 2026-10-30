@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <title>
+    Test that the Promise returned by prompt() is fulfilled before the
+    connecting event fires
+  </title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/common/media.js"></script>
+  <script src="./utils.js"></script>
+  <script>
+    setup({ explicit_timeout: true });
+  </script>
+  <body>
+    <div id="prep">
+      <p>Please make sure a device for remote playback is <b>available.</b></p>
+      <button id="prompt-button-prep">Show devices</button>
+      <button id="start-button">Start test</button>
+    </div>
+    <div id="pick-device" style="display: none">
+      <p>
+        Click the button below to prompt for a remote playback device and select
+        one! After the test completes, disconnect from the device.
+      </p>
+      <button id="prompt-button">Pick device</button>
+    </div>
+  </body>
+  <script src="./prepare-device.js"></script>
+  <script>
+    let v = document.createElement("video");
+    v.src = getVideoURI("/media/movie_300");
+    let promptButton = document.getElementById("prompt-button");
+    const metadataLoaded = enablePromptAfterMetadataLoaded(
+        v, document.getElementById("prompt-button-prep"), promptButton);
+
+    promise_test(async t => {
+      assert_equals(v.remote.state, "disconnected");
+
+      // Record the order of prompt() fulfillment and events fired at
+      // v.remote, along with the state observed at each step.
+      const log = [];
+      logRemotePlaybackEvents(v.remote, log);
+
+      await metadataLoaded;
+      await promptOnClick(promptButton, v.remote);
+      log.push(`prompt resolved:${v.remote.state}`);
+
+      // The state is set to "connecting" and the Promise is fulfilled in one
+      // task, and the connecting event is fired in a later task. Therefore no
+      // event has fired by the time the Promise reactions run.
+      assert_array_equals(log, ["prompt resolved:connecting"],
+                          "prompt() must resolve before any event is fired.");
+
+      await waitForEvent(v.remote, "connecting");
+      assert_array_equals(log,
+                          ["prompt resolved:connecting", "connecting:connecting"],
+                          "The connecting event must fire after prompt() " +
+                          "resolves, while the state is connecting.");
+    }, "Test that the Promise returned by prompt() is fulfilled before the connecting event fires.");
+  </script>
+</html>

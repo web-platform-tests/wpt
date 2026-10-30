@@ -56,8 +56,8 @@
       assert_equals(v.remote.state, "connecting",
                     "The state must be connecting when prompt() resolves.");
 
-      // This test does not check the order of prompt() fulfillment relative
-      // to the connecting event.
+      // The order of prompt() fulfillment and the connecting event is checked
+      // by prompt-resolves-before-connecting-manual.html.
       if (!eventsInLog().some(e => e.startsWith("connect:"))) {
         await waitForEvent(v.remote, "connect");
       }
@@ -76,14 +76,20 @@
       disconnectButton.style.display = "inline";
 
       await promptOnClick(disconnectButton, v.remote);
+      log.push(`prompt resolved:${v.remote.state}`);
 
-      // This test does not check the order of prompt() fulfillment relative
-      // to the disconnect event.
-      if (!eventsInLog().some(e => e.startsWith("disconnect:"))) {
-        await waitForEvent(v.remote, "disconnect");
-      }
-      assert_array_equals(eventsInLog(), ["disconnect:disconnected"]);
+      // When the user chooses to disconnect, the user agent queues a task to
+      // fulfill the Promise before running the steps to disconnect from the
+      // device, which queue a task to set the state to disconnected and fire
+      // the disconnect event.
+      assert_array_equals(log, ["prompt resolved:connected"],
+                          "prompt() must resolve before the disconnect event " +
+                          "is fired.");
+      await waitForEvent(v.remote, "disconnect");
+      assert_array_equals(log,
+                          ["prompt resolved:connected",
+                           "disconnect:disconnected"]);
       assert_equals(v.remote.state, "disconnected");
-    }, "Test that prompt() resolves and the ondisconnect event handler is called when the user disconnects using prompt().");
+    }, "Test that prompt() resolves and then the ondisconnect event handler is called when the user disconnects using prompt().");
   </script>
 </html>

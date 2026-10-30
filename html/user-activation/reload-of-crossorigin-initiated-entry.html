@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<title>User activation propagation across a reload of an entry a cross-origin window navigated to</title>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<body>
+  <p>Non-zero-sized body to allow clicks.</p>
+</body>
+
+<script>
+  'use strict';
+
+  let uuid1 = token();
+  let uuid2 = token();
+  let uuid3 = token();
+
+  let origin = get_host_info().HTTP_ORIGIN;
+  let remote_origin = get_host_info().HTTP_REMOTE_ORIGIN;
+
+  let navigator_window =
+        `${remote_origin}/common/dispatcher/remote-executor.html?uuid=${uuid3}`;
+  let navigated_to = `${origin}/common/dispatcher/remote-executor.html?uuid=${uuid2}`;
+
+  const getUserActivationState = () =>
+    [navigator.userActivation.isActive, navigator.userActivation.hasBeenActive];
+
+  const populateAndGetUserActivationState = () => {
+    const state = [navigator.userActivation.isActive,
+                   navigator.userActivation.hasBeenActive];
+
+    // Not sure why the first click below fails w/o this line!
+    document.body.textContent = "";
+
+    let elem = document.createElement("div");
+    elem.textContent = "Dummy text to make it clickable";
+    document.body.appendChild(elem);
+    return state;
+  };
+
+  function assertUserActivationState(list,
+        expected_transient_bit, expected_sticky_bit, msg) {
+    assert_equals(list[0], expected_transient_bit, "Transient bit " + msg);
+    assert_equals(list[1], expected_sticky_bit, "Sticky bit " + msg);
+  }
+
+  promise_test(async test => {
+    // Let a cross-origin window navigate this one, so that the entry it lands on
+    // records a cross-origin initiator, and then click and reload it. A reload is
+    // exempt from what the entry recorded about the navigation that created it,
+    // which is what lets a page reached by a typed URL or a cross-site link keep
+    // its activation across a reload.
+    let w;
+    document.body.onclick = () => {
+      w = window.open(`/common/dispatcher/remote-executor.html?uuid=${uuid1}`);
+    };
+
+    await test_driver.click(document.body);
+    assert_true(!!w, "A window is opened");
+    // Close the window at the end of the test, so that a later test in the same
+    // session cannot click a window this one left behind.
+    test.add_cleanup(() => w && w.close());
+
+    const first = new RemoteContext(uuid1);
+    const second = new RemoteContext(uuid2);
+    const navigator_context = new RemoteContext(uuid3);
+
+    // Check that the new window does not have user activation initially, and
+    // populate it in the same call to allow the click below.
+    {
+      const result = await first.execute_script(populateAndGetUserActivationState);
+      assertUserActivationState(result, false, false, "after window opened");
+    }
+
+    // Give the window user activation, which also allows it to open the
+    // cross-origin window below.
+    await test_driver.click(w.document.body.firstElementChild);
+    {
+      const result = await first.execute_script(url => {
+        const state = [navigator.userActivation.isActive,
+                       navigator.userActivation.hasBeenActive];
+        window.open(url);
+        return state;
+      }, [navigator_window]);
+      assertUserActivationState(result, true, true, "after window clicked");
+    }
+
+    // Let the cross-origin window navigate this one to a same-origin document.
+    await navigator_context.execute_script(url => {
+      opener.location = url;
+    }, [navigated_to]);
+
+    // The document it landed on gets nothing carried over, because the entry
+    // records the cross-origin window as the initiator. Populate it in the same
+    // call to allow the click below.
+    {
+      const result = await second.execute_script(populateAndGetUserActivationState);
+      assertUserActivationState(result, false, false,
+            "after window navigated by a cross-origin window");
+    }
+
+    // Confirm that it gets user activation of its own after a click.
+    await test_driver.click(w.document.body.firstElementChild);
+    {
+      const result = await second.execute_script(getUserActivationState);
+      assertUserActivationState(result, true, true, "after window clicked again");
+    }
+
+    // Reload the window.
+    await second.execute_script(() => {
+      executor.suspend(() => {
+        location.reload();
+      });
+    });
+
+    // Confirm that the reloaded window kept its sticky user activation, even
+    // though the entry it reloaded records a cross-origin initiator.
+    {
+      const [navigationType, state] = await second.execute_script(() =>
+            [performance.getEntriesByType("navigation")[0].type,
+             [navigator.userActivation.isActive,
+              navigator.userActivation.hasBeenActive]]);
+      assert_equals(navigationType, "reload", "The window was reloaded");
+      assertUserActivationState(state, false, true, "after window reloaded");
+    }
+}, "User activation propagation across a reload of an entry a cross-origin " +
+   "window navigated to");
+</script>

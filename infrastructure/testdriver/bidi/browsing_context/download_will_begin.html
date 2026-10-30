@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Can subscribe and receive browsingContext.downloadWillBegin events</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+    promise_test(async (t) => {
+        const unsubscribe_handle =
+            await test_driver.bidi.browsing_context.download_will_begin.subscribe();
+        t.add_cleanup(async () => await unsubscribe_handle());
+        const event_promise = test_driver.bidi.browsing_context.download_will_begin.once();
+
+        const href = new URL("/common/text-plain.txt", location.href).href;
+        const link = document.createElement("a");
+        link.href = href;
+        link.download = "";
+        document.body.append(link);
+        t.add_cleanup(() => link.remove());
+        link.click();
+
+        const event = await event_promise;
+        assert_equals(event.url, href);
+    }, "download_will_begin for a link with the download attribute");
+
+    promise_test(async (t) => {
+        const unsubscribe_handle =
+            await test_driver.bidi.browsing_context.download_will_begin.subscribe();
+        t.add_cleanup(async () => await unsubscribe_handle());
+        const event_promise = test_driver.bidi.browsing_context.download_will_begin.once();
+
+        const href = new URL(
+            "/common/text-plain.txt?pipe=header(Content-Disposition,attachment)",
+            location.href).href;
+        const link = document.createElement("a");
+        link.href = href;
+        document.body.append(link);
+        t.add_cleanup(() => link.remove());
+        link.click();
+
+        const event = await event_promise;
+        assert_equals(event.url, href);
+    }, "download_will_begin for a navigation to a Content-Disposition: attachment response");
+</script>

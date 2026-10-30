@@ -1,0 +1,47 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: cross-origin-storage() parsing and serialization</title>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/14056">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<div id="target"></div>
+<script>
+'use strict';
+
+// cross-origin-storage() = cross-origin-storage( [ '*' | <string># ]? )
+//
+// The grammar takes strings, not origins: whether a string names a usable
+// origin is decided when the resource is fetched, so a string that is not an
+// origin still parses. An argument the grammar does not allow invalidates the
+// declaration, as an unknown modifier does per the CSS Working Group
+// resolution recorded in https://github.com/w3c/csswg-drafts/issues/14056.
+
+const URL_PREFIX = 'url("https://example.com/resource.png"';
+
+test_valid_value('background-image', `${URL_PREFIX} cross-origin-storage())`);
+test_valid_value('background-image', `${URL_PREFIX} cross-origin-storage(*))`);
+test_valid_value('background-image', `${URL_PREFIX} cross-origin-storage("https://a.example"))`);
+test_valid_value('background-image',
+  `${URL_PREFIX} cross-origin-storage("https://a.example", "https://b.example"))`);
+test_valid_value('background-image', `${URL_PREFIX} cross-origin-storage("not an origin"))`);
+test_valid_value('background-image', `${URL_PREFIX} cross-origin-storage( * ))`,
+  `${URL_PREFIX} cross-origin-storage(*))`);
+test_valid_value('background-image',
+  `${URL_PREFIX} cross-origin-storage( "https://a.example" ,"https://b.example" ))`,
+  `${URL_PREFIX} cross-origin-storage("https://a.example", "https://b.example"))`);
+test_valid_value('background-image',
+  `${URL_PREFIX} integrity("sha256-foobar") cross-origin-storage(*))`);
+
+test_invalid_value('background-image', `${URL_PREFIX} cross-origin-storage(* *))`);
+test_invalid_value('background-image', `${URL_PREFIX} cross-origin-storage(*, "https://a.example"))`);
+test_invalid_value('background-image', `${URL_PREFIX} cross-origin-storage("https://a.example", *))`);
+test_invalid_value('background-image',
+  `${URL_PREFIX} cross-origin-storage("https://a.example" "https://b.example"))`);
+test_invalid_value('background-image', `${URL_PREFIX} cross-origin-storage("https://a.example",))`);
+test_invalid_value('background-image', `${URL_PREFIX} cross-origin-storage(,"https://a.example"))`);
+test_invalid_value('background-image', `${URL_PREFIX} cross-origin-storage(any))`);
+test_invalid_value('background-image', `${URL_PREFIX} cross-origin-storage(1))`);
+test_invalid_value('background-image',
+  `${URL_PREFIX} cross-origin-storage(*) cross-origin-storage(*))`);
+</script>

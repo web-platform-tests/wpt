@@ -1,0 +1,50 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: CSS integration, @import</title>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/14056">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/helpers.js"></script>
+<script src="../resources/integration-helpers.js"></script>
+<body>
+<span id="cos-import-marker">marker</span>
+<script>
+'use strict';
+
+// cross-origin-storage() is a <request-url-modifier>, so it applies wherever a
+// <url> with modifiers is fetched, including @import. An @import of a URL that
+// 404s can only apply if its bytes were served from COS.
+
+function markerColor() {
+  return getComputedStyle(document.getElementById('cos-import-marker')).color;
+}
+
+function importStylesheet(t, url, integrity, modifierArgs) {
+  return new Promise((resolve, reject) => {
+    const style = document.createElement('style');
+    style.textContent =
+      `@import url("${url}" integrity("${integrity}") cross-origin-storage(${modifierArgs}));`;
+    style.onload = () => resolve(style);
+    style.onerror = () => reject(new Error('@import failed to load'));
+    t.add_cleanup(() => style.remove());
+    document.head.appendChild(style);
+  });
+}
+
+for (const [label, modifierArgs] of [['same-site', ''], ['wildcard', '*']]) {
+  promise_test(async t => {
+    const cssText = cosUniqueStylesheet(`css-import-${label}`, 'cos-import-marker');
+    const integrity = await cosSha256Integrity(cssText);
+
+    const first = await importStylesheet(t, cosResourceUrl(cssText, 'text/css'), integrity, modifierArgs);
+    assert_equals(markerColor(), 'rgb(1, 2, 3)', 'the imported stylesheet applied from the network');
+    first.remove();
+    assert_not_equals(markerColor(), 'rgb(1, 2, 3)', 'the marker resets once the first import is gone');
+
+    await importStylesheet(t, cosBrokenUrl('css'), integrity, modifierArgs);
+    assert_equals(markerColor(), 'rgb(1, 2, 3)',
+      'an @import with a broken URL but the same integrity() hash applied, via COS');
+  }, `CSS: an @import with cross-origin-storage(${modifierArgs}) is served from COS on a subsequent request`);
+}
+</script>
+</body>

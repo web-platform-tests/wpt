@@ -1,0 +1,89 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: CSS integration, images</title>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/14056">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/helpers.js"></script>
+<script src="../resources/integration-helpers.js"></script>
+<style>
+  .cos-image { display: inline-block; }
+</style>
+<body>
+<script>
+'use strict';
+
+// cross-origin-storage() applies to images fetched through a <url> too. An
+// image loaded through `content` sizes its box, so the 60x60 image gives the
+// generated box a width of 60px once it has loaded, and none while it has not.
+// A URL that 404s can only produce that width if the bytes came from COS.
+
+const POLL_TIMEOUT_MS = 5000;
+
+// An image sizes its box as soon as its header is decoded, before the load
+// finishes and the bytes are stored, so wait for the entry itself. The
+// storing origin can always read what it stored.
+async function waitUntilStored(t, hash) {
+  const deadline = performance.now() + POLL_TIMEOUT_MS;
+  while (performance.now() < deadline) {
+    try {
+      await navigator.crossOriginStorage.getFileHandle(hash);
+      return;
+    } catch (e) {
+      await new Promise(resolve => t.step_timeout(resolve, 50));
+    }
+  }
+  assert_unreached('the image was not stored');
+}
+
+async function imageWidth(t, url, integrity, modifierArgs) {
+  const id = `cos-image-${Math.random().toString(36).slice(2)}`;
+  const style = document.createElement('style');
+  style.textContent = `#${id}::before {
+    content: url("${url}" integrity("${integrity}") cross-origin-storage(${modifierArgs}));
+  }`;
+  const element = document.createElement('span');
+  element.id = id;
+  element.className = 'cos-image';
+  t.add_cleanup(() => { style.remove(); element.remove(); });
+  document.head.appendChild(style);
+  document.body.appendChild(element);
+  const deadline = performance.now() + POLL_TIMEOUT_MS;
+  while (element.getBoundingClientRect().width < 60 && performance.now() < deadline) {
+    await new Promise(resolve => t.step_timeout(resolve, 50));
+  }
+  return element.getBoundingClientRect().width;
+}
+
+promise_test(async t => {
+  const url = cosUniqueImageUrl('css-image');
+  const {integrity, hash} = await cosIntegrityOfUrl(url);
+
+  assert_equals(await imageWidth(t, url, integrity, ''), 60, 'the image loaded from the network');
+  await waitUntilStored(t, hash);
+  assert_equals(await imageWidth(t, cosBrokenUrl('png'), integrity, ''), 60,
+    'an image with a broken URL but the same integrity() hash loaded, via COS');
+}, 'CSS: an image with cross-origin-storage() is served from COS on a subsequent request');
+
+promise_test(async t => {
+  // Without the modifier, a broken URL fails even though COS holds the bytes.
+  const url = cosUniqueImageUrl('css-image-without-modifier');
+  const {integrity, hash} = await cosIntegrityOfUrl(url);
+  assert_equals(await imageWidth(t, url, integrity, ''), 60, 'the image loaded from the network');
+  await waitUntilStored(t, hash);
+
+  const id = `cos-image-${Math.random().toString(36).slice(2)}`;
+  const style = document.createElement('style');
+  style.textContent = `#${id}::before { content: url("${cosBrokenUrl('png')}" integrity("${integrity}")); }`;
+  const element = document.createElement('span');
+  element.id = id;
+  element.className = 'cos-image';
+  t.add_cleanup(() => { style.remove(); element.remove(); });
+  document.head.appendChild(style);
+  document.body.appendChild(element);
+  await new Promise(resolve => t.step_timeout(resolve, 1000));
+  assert_less_than(element.getBoundingClientRect().width, 60,
+    'without cross-origin-storage(), a broken-URL image is not served from COS');
+}, 'CSS: an image without cross-origin-storage() is not served from COS');
+</script>
+</body>

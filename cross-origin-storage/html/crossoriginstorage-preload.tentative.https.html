@@ -1,0 +1,71 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: HTML integration, preloads</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/helpers.js"></script>
+<script src="../resources/integration-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://github.com/whatwg/html/issues/12770
+//
+// A <link rel=preload> fetches what a later <script> or stylesheet <link>
+// consumes, so the attribute applies to it too: a preload carrying `integrity`
+// and `crossoriginstorage` consults COS before the network. The load event of
+// a preload fires only once its fetch succeeds, so a preload of a URL that
+// 404s can only load if the bytes were served from COS.
+
+function appendElement(t, tag, attributes) {
+  return new Promise((resolve, reject) => {
+    const element = document.createElement(tag);
+    for (const [name, value] of Object.entries(attributes)) {
+      element.setAttribute(name, value);
+    }
+    element.onload = () => resolve(element);
+    element.onerror = () => reject(new Error(`<${tag}> failed to load`));
+    t.add_cleanup(() => element.remove());
+    (tag === 'script' ? document.body : document.head).appendChild(element);
+  });
+}
+
+promise_test(async t => {
+  const jsText = `// ${cosUniqueContent('html-preload-script')}\n`;
+  const integrity = await cosSha256Integrity(jsText);
+  await appendElement(t, 'script', {
+    src: cosResourceUrl(jsText, 'text/javascript'), integrity, crossoriginstorage: '',
+  });
+
+  await appendElement(t, 'link', {
+    rel: 'preload', as: 'script', href: cosBrokenUrl('js'), integrity, crossoriginstorage: '',
+  });
+}, 'HTML: a crossoriginstorage <link rel=preload as=script> is served from COS');
+
+promise_test(async t => {
+  const cssText = cosUniqueStylesheet('html-preload-style', 'cos-preload-marker');
+  const integrity = await cosSha256Integrity(cssText);
+  await appendElement(t, 'link', {
+    rel: 'stylesheet', href: cosResourceUrl(cssText, 'text/css'), integrity, crossoriginstorage: '',
+  });
+
+  await appendElement(t, 'link', {
+    rel: 'preload', as: 'style', href: cosBrokenUrl('css'), integrity, crossoriginstorage: '',
+  });
+}, 'HTML: a crossoriginstorage <link rel=preload as=style> is served from COS');
+
+promise_test(async t => {
+  // Without the attribute, a preload is an ordinary fetch, so a broken href
+  // fails even though COS holds bytes with the same integrity.
+  const jsText = `// ${cosUniqueContent('html-preload-without-attribute')}\n`;
+  const integrity = await cosSha256Integrity(jsText);
+  await appendElement(t, 'script', {
+    src: cosResourceUrl(jsText, 'text/javascript'), integrity, crossoriginstorage: '',
+  });
+
+  await promise_rejects_js(t, Error, appendElement(t, 'link', {
+    rel: 'preload', as: 'script', href: cosBrokenUrl('js'), integrity,
+  }));
+}, 'HTML: a <link rel=preload> without crossoriginstorage is not served from COS');
+</script>
+</body>

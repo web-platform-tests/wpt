@@ -45,6 +45,7 @@ promise_test(async t => {
   assert_not_equals(pipWindow.height, 0,
                     'pipWindow.height is non-zero before the iframe is unloaded');
 
+  const oldDocument = iframe.contentDocument;
   await navigateIframe(iframe, '/common/blank.html');
 
   assert_equals(iframe.contentDocument.pictureInPictureElement, null,
@@ -53,5 +54,7 @@ promise_test(async t => {
       () => pipWindow.width === 0 && pipWindow.height === 0,
       'pipWindow.width and pipWindow.height become 0 after the iframe ' +
       'document is unloaded');
+  assert_equals(oldDocument.pictureInPictureElement, null,
+                'the unloaded document no longer has a pictureInPictureElement');
 }, 'exit Picture-in-Picture algorithm runs as part of unloading document cleanup steps');
 </script>

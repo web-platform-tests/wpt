@@ -6,6 +6,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-    assert_in_array('autoplay', document.permissionsPolicy.features());
-}, 'document.permissionsPolicy.features should advertise autoplay.');
+    assert_in_array('autoplay', document.featurePolicy.features());
+}, 'document.featurePolicy.features should advertise autoplay.');
 </script>

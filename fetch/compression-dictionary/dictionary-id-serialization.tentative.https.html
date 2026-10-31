@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<meta name="timeout" content="long"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="./resources/compression-dictionary-util.sub.js"></script>
+</head>
+<body>
+<script>
+
+// Dictionary-ID is an sf-string identical to the server-provided "id" (RFC 9842,
+// Section 2.3), so it must be quoted and escaped. register-dictionary.py quotes
+// the `id` query parameter verbatim, so `serialized` is the on-the-wire form.
+const kDictionaryIds = [
+  {serialized: 'test', description: 'that is also a valid token'},
+  {serialized: 'a,b;c=d', description: 'containing list and parameter delimiters'},
+  {serialized: 'say \\"hi\\"', description: 'containing escaped DQUOTEs'},
+  {serialized: 'back\\\\slash', description: 'containing an escaped backslash'},
+];
+
+for (const {serialized, description} of kDictionaryIds) {
+  compression_dictionary_promise_test(async (t) => {
+    await (await fetch(
+        `${kRegisterDictionaryPath}?id=${encodeURIComponent(serialized)}`)).text();
+    assert_equals(
+        await waitUntilAvailableDictionaryHeader(t, {}),
+        kDefaultDictionaryHashBase64);
+    assert_equals(await checkHeader('dictionary-id', {}), `"${serialized}"`);
+  }, `Dictionary-ID is serialized as a String for an ID ${description}`);
+}
+
+</script>
+</body>

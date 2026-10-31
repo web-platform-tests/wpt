@@ -13,7 +13,6 @@ idl_test(
     idl_array.add_objects({
       Document: ['document'],
       HTMLIFrameElement: ['document.createElement("iframe")'],
-      PermissionsPolicy: ['document.permissionsPolicy'],
       // TODO: PermissionsPolicyViolationReportBody
     });
   }

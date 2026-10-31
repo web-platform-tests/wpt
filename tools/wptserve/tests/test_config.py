@@ -1,6 +1,7 @@
 import json
 import logging
 import pickle
+import socket
 from logging import handlers
 from shutil import which
 
@@ -9,6 +10,47 @@ import pytest
 config = pytest.importorskip("wptserve.config")
 
 logger = logging.getLogger()
+
+
+@pytest.mark.parametrize("reuse_address", [False, True])
+def test_reserved_auto_ports(reuse_address):
+    reservations = {}
+    with config.ConfigBuilder(logger, ports={"http": ["auto", "auto"]},
+                              port_reservations=reservations) as c:
+        ports = c.ports["http"]
+        assert ports[0] != ports[1]
+        assert json.loads(json.dumps(c.as_dict()))["ports"]["http"] == ports
+        assert pickle.loads(pickle.dumps(c)).ports["http"] == ports
+        for port in ports:
+            with socket.socket() as competitor:
+                competitor.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, reuse_address)
+                with pytest.raises(OSError):
+                    competitor.bind(("127.0.0.1", port))
+    assert not reservations
+    for port in ports:
+        with socket.socket() as competitor:
+            competitor.bind(("127.0.0.1", port))
+
+
+def test_failed_config_releases_reservations(monkeypatch):
+    reservations = {}
+    builder = config.ConfigBuilder(logger, ports={"http": ["auto"]},
+                                   port_reservations=reservations)
+    ports = []
+
+    def fail(data):
+        ports.extend(data["ports"]["http"])
+        raise ValueError("Invalid configuration")
+
+    monkeypatch.setattr(builder, "_get_domains", fail)
+    with pytest.raises(ValueError, match="Invalid configuration"):
+        with builder:
+            pytest.fail("Configuration unexpectedly succeeded")
+    assert not reservations
+    for port in ports:
+        with socket.socket() as competitor:
+            competitor.bind(("127.0.0.1", port))
+
 
 def test_renamed_are_renamed():
     assert len(set(config._renamed_props.keys()) & set(config.ConfigBuilder._default.keys())) == 0

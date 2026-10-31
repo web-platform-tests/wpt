@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Getter / setter / operation of a navigated-away global object called on null / undefined uses that global object, not the browsing context's current one</title>
+<link rel="help" href="https://webidl.spec.whatwg.org/#dfn-attribute-getter">
+<link rel="help" href="https://webidl.spec.whatwg.org/#dfn-attribute-setter">
+<link rel="help" href="https://webidl.spec.whatwg.org/#dfn-create-operation-function">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+function loadIframe(t) {
+  return new Promise(resolve => {
+    const iframe = document.createElement("iframe");
+    t.add_cleanup(() => iframe.remove());
+    iframe.onload = () => resolve(iframe);
+    iframe.src = "/common/blank.html?before";
+    document.body.append(iframe);
+  });
+}
+
+async function navigate(iframe) {
+  const oldDocument = iframe.contentDocument;
+  await new Promise(resolve => {
+    iframe.onload = resolve;
+    iframe.src = "/common/blank.html?after";
+  });
+  assert_not_equals(iframe.contentDocument, oldDocument, "precondition: the iframe has a new document");
+}
+
+promise_test(async t => {
+  const iframe = await loadIframe(t);
+  const oldDocument = iframe.contentDocument;
+  const documentGetter = Object.getOwnPropertyDescriptor(iframe.contentWindow, "document").get;
+  await navigate(iframe);
+
+  assert_equals(documentGetter.call(undefined), oldDocument);
+  assert_equals(documentGetter.call(null), oldDocument);
+  assert_equals((() => documentGetter())(), oldDocument);
+}, "Navigated-away global object's getter called on null / undefined");
+
+promise_test(async t => {
+  const iframe = await loadIframe(t);
+  const { get, set } = Object.getOwnPropertyDescriptor(iframe.contentWindow, "onmessage");
+  await navigate(iframe);
+
+  const handler = () => {};
+  set.call(undefined, handler);
+  assert_equals(iframe.contentWindow.onmessage, null, "the current Window's handler is unchanged");
+  assert_equals(get.call(undefined), handler);
+}, "Navigated-away global object's setter called on null / undefined");
+
+promise_test(async t => {
+  const iframe = await loadIframe(t);
+  const { structuredClone, Object: { prototype: oldObjectPrototype } } = iframe.contentWindow;
+  await navigate(iframe);
+
+  assert_equals(Object.getPrototypeOf(structuredClone.call(undefined, {})), oldObjectPrototype);
+  assert_equals(Object.getPrototypeOf(structuredClone.call(null, {})), oldObjectPrototype);
+  assert_equals(Object.getPrototypeOf((() => structuredClone({}))()), oldObjectPrototype);
+}, "Navigated-away global object's operation called on null / undefined");
+</script>

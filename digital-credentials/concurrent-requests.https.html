@@ -123,4 +123,166 @@
       "A request made after the previous requester's document was destroyed must be served, not rejected as concurrent.",
     );
   }, "Destroying the requesting document returns the coordinator to the idle interaction state.");
+
+  // Additional test: Concurrent create() calls
+  promise_test(async (t) => {
+    await test_driver.set_virtual_wallet_behavior("wait");
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+
+    const abortController = new AbortController();
+    const firstOptions = { signal: abortController.signal };
+    const secondOptions = {};
+
+    await test_driver.bless("user activation for first create request");
+    const firstRequest = navigator.credentials.create(firstOptions);
+
+    let secondRequest;
+    await test_driver.bless("user activation for second create request", () => {
+      assert_true(navigator.userActivation.isActive);
+      secondRequest = navigator.credentials.create(secondOptions);
+    });
+
+    await promise_rejects_dom(
+      t,
+      "NotAllowedError",
+      secondRequest,
+      "Second concurrent create() call should be rejected with NotAllowedError",
+    );
+
+    abortController.abort();
+    await promise_rejects_dom(
+      t,
+      "AbortError",
+      firstRequest,
+      "First create() request should be aborted",
+    );
+  }, "A second create() call while another is pending should reject with NotAllowedError.");
+
+  // Additional test: Mixed create() and get() concurrency
+  promise_test(async (t) => {
+    await test_driver.set_virtual_wallet_behavior("wait");
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+
+    const abortController = new AbortController();
+    await test_driver.bless("user activation for create request");
+    const createRequest = navigator.credentials.create(
+      { signal: abortController.signal },
+    );
+
+    let getRequest;
+    await test_driver.bless("user activation for get request", () => {
+      assert_true(navigator.userActivation.isActive);
+      getRequest = navigator.credentials.get(makeGetOptions());
+    });
+
+    await promise_rejects_dom(
+      t,
+      "NotAllowedError",
+      getRequest,
+      "get() call while create() is pending should be rejected with NotAllowedError",
+    );
+
+    abortController.abort();
+    await promise_rejects_dom(
+      t,
+      "AbortError",
+      createRequest,
+      "create() request should be aborted",
+    );
+  }, "A get() call while create() is pending should reject with NotAllowedError.");
+
+  // Additional test: Three concurrent requests
+  promise_test(async (t) => {
+    await test_driver.set_virtual_wallet_behavior("wait");
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+
+    const abortController = new AbortController();
+    await test_driver.bless("user activation for first request");
+    const firstRequest = navigator.credentials.get(
+      makeGetOptions({ signal: abortController.signal }),
+    );
+
+    let secondRequest, thirdRequest;
+    await test_driver.bless("user activation for second and third requests", () => {
+      assert_true(navigator.userActivation.isActive);
+      secondRequest = navigator.credentials.get(makeGetOptions());
+      thirdRequest = navigator.credentials.get(makeGetOptions());
+    });
+
+    await promise_rejects_dom(t, "NotAllowedError", secondRequest);
+    await promise_rejects_dom(t, "NotAllowedError", thirdRequest);
+
+    abortController.abort();
+    await promise_rejects_dom(t, "AbortError", firstRequest);
+  }, "Three concurrent get() calls should all reject except the first.");
+
+  // Additional test: Concurrent requests across iframes
+  promise_test(async (t) => {
+    await test_driver.set_virtual_wallet_behavior("wait");
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+
+    const iframe = document.createElement("iframe");
+    await new Promise((resolve) => {
+      iframe.addEventListener("load", resolve, { once: true });
+      iframe.src = "about:blank";
+      document.body.appendChild(iframe);
+    });
+
+    await test_driver.bless(
+      "user activation for subframe request",
+      null,
+      iframe.contentWindow,
+    );
+    const subframeRequest =
+      iframe.contentWindow.navigator.credentials.get(makeGetOptions());
+
+    let topLevelRequest;
+    await test_driver.bless("user activation for top-level request", () => {
+      assert_true(navigator.userActivation.isActive);
+      topLevelRequest = navigator.credentials.get(makeGetOptions());
+    });
+
+    await promise_rejects_dom(
+      t,
+      "NotAllowedError",
+      topLevelRequest,
+      "Top-level get() while subframe request is pending should be rejected",
+    );
+
+    iframe.remove();
+    await promise_rejects_dom(t, "AbortError", subframeRequest);
+  }, "Concurrent get() calls across iframes should reject all but the first.");
+
+  // Additional test: Concurrent request with different protocols
+  promise_test(async (t) => {
+    await test_driver.set_virtual_wallet_behavior("wait");
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+
+    const abortController = new AbortController();
+    await test_driver.bless("user activation for first request");
+    const firstRequest = navigator.credentials.get(
+      makeGetOptions({ signal: abortController.signal, protocol: "org-iso-mdoc" }),
+    );
+
+    let secondRequest;
+    await test_driver.bless("user activation for second request", () => {
+      assert_true(navigator.userActivation.isActive);
+      secondRequest = navigator.credentials.get(
+        makeGetOptions({ protocol: "org.example.other" }),
+      );
+    });
+
+    await promise_rejects_dom(
+      t,
+      "NotAllowedError",
+      secondRequest,
+      "Second concurrent request with different protocol should be rejected",
+    );
+
+    abortController.abort();
+    await promise_rejects_dom(t, "AbortError", firstRequest);
+  }, "Concurrent get() calls with different protocols should reject all but the first.");
+
 </script>
+</body>
+</html>

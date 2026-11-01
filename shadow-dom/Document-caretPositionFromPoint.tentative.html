@@ -310,6 +310,96 @@ test(() => {
     assert_equals(caretPosition.offsetNode, innerShadowRootSpanElement.firstChild);
     assert_equals(caretPosition.offset, characterIndex);
 }, 'document.caretPositionFromPoint() should return a CaretPosition at the specified location pointing to the inner shadow tree when the point is in an inner shadow tree and the inner shadow tree and the outer shadow tree are specified as an argument');
+
+// Additional test: Coordinates outside the viewport
+test(() => {
+    container.setHTMLUnsafe(`<div id="test">hello</div>`);
+    const rect = document.getElementById('test').getBoundingClientRect();
+    // Point far outside the viewport
+    const x = rect.right + 10000;
+    const y = rect.bottom + 10000;
+    const caretPosition = document.caretPositionFromPoint(x, y);
+    assert_equals(caretPosition, null);
+}, 'document.caretPositionFromPoint() should return null when coordinates are outside the viewport');
+
+// Additional test: Negative coordinates
+test(() => {
+    container.setHTMLUnsafe(`<div id="test">hello</div>`);
+    const caretPosition = document.caretPositionFromPoint(-100, -100);
+    assert_equals(caretPosition, null);
+}, 'document.caretPositionFromPoint() should return null for negative coordinates');
+
+// Additional test: Very large coordinates
+test(() => {
+    container.setHTMLUnsafe(`<div id="test">hello</div>`);
+    const caretPosition = document.caretPositionFromPoint(999999, 999999);
+    assert_equals(caretPosition, null);
+}, 'document.caretPositionFromPoint() should return null for very large coordinates');
+
+// Additional test: shadowRoots with non-shadow-root objects
+test(() => {
+    container.setHTMLUnsafe(`<div id="host"></div>`);
+    // shadowRoots is a sequence<ShadowRoot>; passing a non-ShadowRoot object
+    // must fail WebIDL conversion with a TypeError.
+    assert_throws_js(TypeError, () => {
+        document.caretPositionFromPoint(0, 0, {shadowRoots: [document.body]});
+    });
+}, 'document.caretPositionFromPoint() should throw TypeError for non-shadow-root objects in shadowRoots array');
+
+// Additional test: Duplicate shadowRoots in array
+test(() => {
+    container.setHTMLUnsafe(`<div id="host"></div>`);
+    const shadowRoot = host.attachShadow({mode: 'open'});
+    shadowRoot.setHTMLUnsafe(`<span>hello</span>`);
+    const rect = shadowRoot.firstChild.getBoundingClientRect();
+    const characterWidth = rect.width / shadowRoot.textContent.length;
+    const characterIndex = 1;
+    const x = rect.left + characterWidth * characterIndex;
+    const y = rect.top + rect.height / 2;
+    // Pass duplicate shadowRoots
+    const caretPosition = document.caretPositionFromPoint(x, y, {shadowRoots: [shadowRoot, shadowRoot]});
+    assert_true(caretPosition instanceof CaretPosition);
+    assert_true(caretPosition.offsetNode instanceof Text);
+    assert_equals(caretPosition.offsetNode, shadowRoot.firstChild.firstChild);
+    assert_equals(caretPosition.offset, characterIndex);
+}, 'document.caretPositionFromPoint() should handle duplicate shadowRoots in array');
+
+// Additional test: Element with display:none
+test(() => {
+    container.setHTMLUnsafe(`<div id="hidden" style="display:none">hidden text</div>`);
+    const hiddenElement = document.getElementById('hidden');
+    // display:none elements have no rect, so caretPositionFromPoint should not return them
+    const caretPosition = document.caretPositionFromPoint(0, 0);
+    assert_true(caretPosition instanceof CaretPosition);
+    assert_not_equals(caretPosition.offsetNode, hiddenElement);
+}, 'document.caretPositionFromPoint() should not return CaretPosition for display:none elements');
+
+// Additional test: Multiple nested shadow roots at different levels
+test(() => {
+    container.setHTMLUnsafe(`
+        <div id="level1">
+            <template shadowrootmode=open>
+                <div id="level2">
+                    <template shadowrootmode=open>
+                        <span>deep text</span>
+                    </template>
+                </div>
+            </template>
+        </div>`);
+    const level1ShadowRoot = document.getElementById('level1').shadowRoot;
+    const level2Host = level1ShadowRoot.getElementById('level2');
+    const level2ShadowRoot = level2Host.shadowRoot;
+    const deepSpan = level2ShadowRoot.querySelector('span');
+    const rect = deepSpan.getBoundingClientRect();
+    const characterWidth = rect.width / deepSpan.textContent.length;
+    const characterIndex = 2;
+    const x = rect.left + characterWidth * characterIndex;
+    const y = rect.top + rect.height / 2;
+    // Specify only level1 shadow root - should not reach level2
+    const caretPosition = document.caretPositionFromPoint(x, y, {shadowRoots: [level1ShadowRoot]});
+    assert_true(caretPosition instanceof CaretPosition);
+    assert_equals(caretPosition.offsetNode, level1ShadowRoot);
+}, 'document.caretPositionFromPoint() should not traverse into nested shadow trees when only outer shadow root is specified');
 </script>
 </body>
 </html>

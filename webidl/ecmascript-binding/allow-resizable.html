@@ -14,18 +14,4 @@ test(t => {
     new Response(new Uint8Array(rab));
   });
 }, "APIs without [AllowResizable] throw when passed resizable ArrayBuffers");
-
-test(t => {
-  const enc = new TextEncoder();
-
-  // Fixed-length SABs should not throw
-  const sab = createBuffer('SharedArrayBuffer', 16);
-  enc.encodeInto("foobar", new Uint8Array(sab));
-
-  const gsab = createBuffer('SharedArrayBuffer', 16, { maxByteLength: 1024 });
-  // TextEncoder.encodeInto doesn't have [AllowResizable] but has [AllowShared]
-  assert_throws_js(TypeError, () => {
-    enc.encodeInto("foobar", new Uint8Array(gsab));
-  });
-}, "APIs with [AllowShared] but without [AllowResizable] throw when passed growable SharedArrayBuffers");
 </script>

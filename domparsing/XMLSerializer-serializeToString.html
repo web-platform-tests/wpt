@@ -142,8 +142,8 @@ test(function() {
   let root = parse('<r xmlns:xx="uri"></r>');
   root.setAttributeNS('uri2', 'p:name', 'value');
   assert_equals(serialize(root),
-                '<r xmlns:xx="uri" xmlns:ns1="uri2" ns1:name="value"/>');
-}, 'Check if the prefix of an attribute is NOT preserved in a case where neither its prefix nor its namespace URI is not already used.');
+                '<r xmlns:xx="uri" xmlns:p="uri2" p:name="value"/>');
+}, 'Check if the prefix of an attribute is preserved in a case where neither its prefix nor its namespace URI is already used.');
 
 test(function() {
   let root = parse('<r xmlns:xx="uri"></r>');

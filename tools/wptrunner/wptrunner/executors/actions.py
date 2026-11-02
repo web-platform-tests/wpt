@@ -232,6 +232,33 @@ class SetPermissionAction:
         self.protocol.set_permission.set_permission(descriptor, state)
 
 
+class DeliverPushMessageAction:
+    name = "deliver_push_message"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        scope = payload["scope"]
+        data = payload["data"]
+        self.logger.debug("Delivering push message to %s" % scope)
+        return self.protocol.push.deliver_push_message(scope, data)
+
+
+class FirePushSubscriptionChangeEventAction:
+    name = "fire_push_subscription_change_event"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        scope = payload["scope"]
+        self.logger.debug("Firing pushsubscriptionchange for %s" % scope)
+        return self.protocol.push.fire_push_subscription_change_event(scope)
+
+
 class SetGlobalPrivacyControlAction:
     name = "set_global_privacy_control"
 
@@ -678,6 +705,8 @@ actions = [ClickAction,
            ActionSequenceAction,
            GenerateTestReportAction,
            SetPermissionAction,
+           DeliverPushMessageAction,
+           FirePushSubscriptionChangeEventAction,
            AddVirtualAuthenticatorAction,
            RemoveVirtualAuthenticatorAction,
            AddCredentialAction,

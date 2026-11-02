@@ -628,6 +628,14 @@
         return create_context_action("set_permission", context, {permission_params});
     };
 
+    window.test_driver_internal.deliver_push_message = function(scope, data, context=null) {
+        return create_context_action("deliver_push_message", context, {scope, data});
+    };
+
+    window.test_driver_internal.fire_push_subscription_change_event = function(scope, context=null) {
+        return create_context_action("fire_push_subscription_change_event", context, {scope});
+    };
+
     window.test_driver_internal.add_virtual_authenticator = function(config, context=null) {
         return create_context_action("add_virtual_authenticator", context, {config});
     };

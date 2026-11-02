@@ -25,7 +25,7 @@ from .executorwebdriver import (
     WebDriverTestharnessExecutor,
     WebDriverTestharnessProtocolPart,
 )
-from .protocol import LeakProtocolPart, ProtocolPart
+from .protocol import LeakProtocolPart, ProtocolPart, PushProtocolPart
 
 here = os.path.dirname(__file__)
 
@@ -312,6 +312,26 @@ class ChromeDriverDevToolsProtocolPart(ProtocolPart):
                                                    body=body)
 
 
+class ChromeDriverPushProtocolPart(PushProtocolPart):
+    def setup(self):
+        self.cdp = self.parent.cdp
+
+    def _run_command(self, command, params):
+        self.cdp.execute_cdp_command("ServiceWorker.enable")
+        result = self.cdp.execute_cdp_command(command, params)
+        self.cdp.execute_cdp_command("ServiceWorker.disable")
+        return result
+
+    def deliver_push_message(self, scope, data):
+        self._run_command("ServiceWorker.deliverPushMessageForScope",
+                          {"scopeURL": scope, "data": data})
+
+    def fire_push_subscription_change_event(self, scope):
+        self._run_command(
+            "ServiceWorker.firePushSubscriptionChangeEventForScope",
+            {"scopeURL": scope})
+
+
 class ChromeDriverTracingProtocolPart(ProtocolPart):
     name = "tracing"
 
@@ -350,6 +370,7 @@ class ChromeDriverProtocol(WebDriverProtocol):
         ChromeDriverBaseProtocolPart,
         ChromeDriverDevToolsProtocolPart,
         ChromeDriverFedCMProtocolPart,
+        ChromeDriverPushProtocolPart,
         ChromeDriverTestDriverProtocolPart,
         ChromeDriverTestharnessProtocolPart,
         ChromeDriverTracingProtocolPart,
@@ -376,6 +397,7 @@ class ChromeDriverBidiProtocol(WebDriverBidiProtocol):
         ChromeDriverBaseProtocolPart,
         ChromeDriverDevToolsProtocolPart,
         ChromeDriverFedCMProtocolPart,
+        ChromeDriverPushProtocolPart,
         ChromeDriverTestharnessProtocolPart,
         ChromeDriverTracingProtocolPart,
     ]

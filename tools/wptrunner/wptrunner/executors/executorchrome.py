@@ -25,7 +25,7 @@ from .executorwebdriver import (
     WebDriverTestharnessExecutor,
     WebDriverTestharnessProtocolPart,
 )
-from .protocol import LeakProtocolPart, ProtocolPart
+from .protocol import LeakProtocolPart, ProtocolPart, ServiceWorkerProtocolPart
 
 here = os.path.dirname(__file__)
 
@@ -312,6 +312,46 @@ class ChromeDriverDevToolsProtocolPart(ProtocolPart):
                                                    body=body)
 
 
+class ChromeDriverServiceWorkerProtocolPart(ServiceWorkerProtocolPart):
+    def setup(self):
+        self.cdp = self.parent.cdp
+        self.webdriver = self.parent.webdriver
+
+    def terminate_service_worker(self, scope=None):
+        if scope is None:
+            self.cdp.execute_cdp_command("ServiceWorker.enable")
+            self.cdp.execute_cdp_command("ServiceWorker.stopAllWorkers")
+            self.cdp.execute_cdp_command("ServiceWorker.disable")
+            return
+
+        # There is no scope in the target info, so go through the script URL.
+        # shortcut: registrations sharing a script are stopped together,
+        # revisit if a test needs to tell them apart.
+        script_url = self.webdriver.execute_async_script(
+            """const done = arguments[arguments.length - 1];
+               navigator.serviceWorker.getRegistration(arguments[0]).then(
+                 registration => done(registration && registration.active ?
+                     registration.active.scriptURL : null),
+                 () => done(null));
+            """,
+            args=[scope])
+        if not script_url:
+            raise ValueError("no active service worker for scope %s" % scope)
+
+        targets = self.cdp.execute_cdp_command("Target.getTargets")
+        targets = targets["targetInfos"]
+        target_ids = [
+            target["targetId"] for target in targets
+            if target.get("type") == "service_worker"
+            and target.get("url") == script_url
+        ]
+        if not target_ids:
+            raise ValueError("no running service worker for %s" % script_url)
+        for target_id in target_ids:
+            self.cdp.execute_cdp_command("Target.closeTarget",
+                                         {"targetId": target_id})
+
+
 class ChromeDriverTracingProtocolPart(ProtocolPart):
     name = "tracing"
 
@@ -350,6 +390,7 @@ class ChromeDriverProtocol(WebDriverProtocol):
         ChromeDriverBaseProtocolPart,
         ChromeDriverDevToolsProtocolPart,
         ChromeDriverFedCMProtocolPart,
+        ChromeDriverServiceWorkerProtocolPart,
         ChromeDriverTestDriverProtocolPart,
         ChromeDriverTestharnessProtocolPart,
         ChromeDriverTracingProtocolPart,
@@ -376,6 +417,7 @@ class ChromeDriverBidiProtocol(WebDriverBidiProtocol):
         ChromeDriverBaseProtocolPart,
         ChromeDriverDevToolsProtocolPart,
         ChromeDriverFedCMProtocolPart,
+        ChromeDriverServiceWorkerProtocolPart,
         ChromeDriverTestharnessProtocolPart,
         ChromeDriverTracingProtocolPart,
     ]

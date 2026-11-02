@@ -820,6 +820,21 @@ class SetPermissionProtocolPart(ProtocolPart):
         pass
 
 
+class ServiceWorkerProtocolPart(ProtocolPart):
+    """Protocol part for controlling service workers"""
+    __metaclass__ = ABCMeta
+
+    name = "service_worker"
+
+    @abstractmethod
+    def terminate_service_worker(self, scope):
+        """Terminate the service worker for `scope`.
+
+        If `scope` is None, terminate all running service workers.
+        """
+        pass
+
+
 class GlobalPrivacyControlProtocolPart(ProtocolPart):
     """Protocol part for reading and writing the GPC signal"""
     __metaclass__ = ABCMeta

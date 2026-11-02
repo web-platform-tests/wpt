@@ -2004,6 +2004,30 @@
         },
 
         /**
+         * Terminates a service worker.
+         *
+         * This is a vendor-specific extension. With `scope`, only the
+         * registration for that scope is stopped. Without `scope`, every
+         * running service worker in the browser is stopped. Registrations are
+         * kept, so workers restart when an event is dispatched to them.
+         *
+         * @example
+         * await test_driver.terminate_service_worker(registration.scope);
+         *
+         * @param {String} scope - The registration scope URL, or null to stop
+         *                         every running service worker.
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} Fulfilled after the worker has been terminated,
+         *                    or rejected if the browser does not support it.
+         */
+        terminate_service_worker: function(scope=null, context=null) {
+          return window.test_driver_internal.terminate_service_worker(scope, context);
+        },
+
+        /**
          * Cancels the Federated Credential Management dialog
          *
          * Matches the `Cancel dialog
@@ -2873,6 +2897,10 @@
 
         async set_spc_transaction_mode(mode, context=null) {
             throw new Error("set_spc_transaction_mode() is not implemented by testdriver-vendor.js");
+        },
+
+        async terminate_service_worker(scope=null, context=null) {
+            throw new Error("terminate_service_worker() is not implemented by testdriver-vendor.js");
         },
 
         set_rph_registration_mode: function(mode, context=null) {

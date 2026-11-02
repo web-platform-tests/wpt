@@ -628,6 +628,10 @@
         return create_context_action("set_permission", context, {permission_params});
     };
 
+    window.test_driver_internal.terminate_service_worker = function(scope, context=null) {
+        return create_context_action("terminate_service_worker", context, {scope});
+    };
+
     window.test_driver_internal.add_virtual_authenticator = function(config, context=null) {
         return create_context_action("add_virtual_authenticator", context, {config});
     };

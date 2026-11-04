@@ -1,0 +1,344 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Selecting an image source: mindensity and maxdensity attributes</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#select-an-image-source">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const dpr = window.devicePixelRatio;
+let nextId = 0;
+
+function imageUrl(label) {
+  return `/images/green-1x1.png?density-${label}-${++nextId}`;
+}
+
+function selectImg(t, attrs, sources = []) {
+  return new Promise((resolve, reject) => {
+    const picture = document.createElement("picture");
+    for (const sAttrs of sources) {
+      const source = document.createElement("source");
+      for (const [k, v] of Object.entries(sAttrs)) {
+        source.setAttribute(k, v);
+      }
+      picture.appendChild(source);
+    }
+    const img = document.createElement("img");
+    img.onload = () => resolve({ img, currentSrc: img.currentSrc });
+    img.onerror = () => reject(new Error(`Failed to load ${img.currentSrc}`));
+    for (const [k, v] of Object.entries(attrs)) {
+      img.setAttribute(k, v);
+    }
+    if (sources.length > 0) {
+      picture.appendChild(img);
+      document.body.appendChild(picture);
+      t.add_cleanup(() => picture.remove());
+    } else {
+      document.body.appendChild(img);
+      t.add_cleanup(() => img.remove());
+    }
+  });
+}
+
+function waitForLoad(img) {
+  return new Promise((resolve, reject) => {
+    img.addEventListener("load", () => resolve(img.currentSrc), { once: true });
+    img.addEventListener("error", () => reject(new Error("Image load failed")), { once: true });
+  });
+}
+
+test(() => {
+  const img = document.createElement("img");
+  assert_equals(img.minDensity, "");
+  assert_equals(img.maxDensity, "");
+
+  img.minDensity = "1.5";
+  assert_equals(img.getAttribute("mindensity"), "1.5");
+  assert_equals(img.minDensity, "1.5");
+
+  img.maxDensity = "2.5";
+  assert_equals(img.getAttribute("maxdensity"), "2.5");
+  assert_equals(img.maxDensity, "2.5");
+
+  img.setAttribute("mindensity", "0.75");
+  img.setAttribute("maxdensity", "3");
+  assert_equals(img.minDensity, "0.75");
+  assert_equals(img.maxDensity, "3");
+}, "HTMLImageElement minDensity and maxDensity IDL reflection");
+
+test(() => {
+  const source = document.createElement("source");
+  assert_equals(source.minDensity, "");
+  assert_equals(source.maxDensity, "");
+
+  source.minDensity = "1.25";
+  assert_equals(source.getAttribute("mindensity"), "1.25");
+  assert_equals(source.minDensity, "1.25");
+
+  source.maxDensity = "2";
+  assert_equals(source.getAttribute("maxdensity"), "2");
+  assert_equals(source.maxDensity, "2");
+
+  source.setAttribute("mindensity", "0.5");
+  source.setAttribute("maxdensity", "1.75");
+  assert_equals(source.minDensity, "0.5");
+  assert_equals(source.maxDensity, "1.75");
+}, "HTMLSourceElement minDensity and maxDensity IDL reflection");
+
+promise_test(async t => {
+  const uLow = imageUrl("low");
+  const uExact = imageUrl("exact");
+  const uHigh = imageUrl("high");
+  const low = dpr * 0.5;
+  const high = dpr * 2;
+
+  const { currentSrc } = await selectImg(t, {
+    srcset: `${uLow} ${low}x, ${uExact} ${dpr}x, ${uHigh} ${high}x`,
+    maxdensity: `${low}`,
+  });
+  assert_true(currentSrc.endsWith(uLow), `Expected ${uLow}, got ${currentSrc}`);
+}, "maxdensity clamps target density below devicePixelRatio");
+
+promise_test(async t => {
+  const uLow = imageUrl("low");
+  const uMid = imageUrl("mid");
+  const uExact = imageUrl("exact");
+  const low = dpr * 0.25;
+  const mid = dpr * 0.5;
+  const cap = dpr * 0.4;
+
+  const { currentSrc } = await selectImg(t, {
+    srcset: `${uLow} ${low}x, ${uMid} ${mid}x, ${uExact} ${dpr}x`,
+    maxdensity: `${cap}`,
+  });
+  assert_true(currentSrc.endsWith(uMid), `Expected ${uMid}, got ${currentSrc}`);
+}, "maxdensity between two candidates selects the first candidate >= maxdensity");
+
+promise_test(async t => {
+  const uLow = imageUrl("low");
+  const uExact = imageUrl("exact");
+  const uHigh = imageUrl("high");
+  const low = dpr * 0.5;
+  const high = dpr * 2;
+
+  const { currentSrc } = await selectImg(t, {
+    srcset: `${uLow} ${low}x, ${uExact} ${dpr}x, ${uHigh} ${high}x`,
+    maxdensity: `${high * 2}`,
+  });
+  assert_true(currentSrc.endsWith(uExact), `Expected ${uExact}, got ${currentSrc}`);
+}, "maxdensity greater than devicePixelRatio does not increase target density");
+
+promise_test(async t => {
+  const uExact = imageUrl("exact");
+  const uHigh = imageUrl("high");
+  const uVeryHigh = imageUrl("veryhigh");
+  const high = dpr * 2;
+  const veryHigh = dpr * 4;
+
+  const { currentSrc } = await selectImg(t, {
+    srcset: `${uExact} ${dpr}x, ${uHigh} ${high}x, ${uVeryHigh} ${veryHigh}x`,
+    mindensity: `${high}`,
+  });
+  assert_true(currentSrc.endsWith(uHigh), `Expected ${uHigh}, got ${currentSrc}`);
+}, "mindensity raises target density above devicePixelRatio");
+
+promise_test(async t => {
+  const uLow = imageUrl("low");
+  const uExact = imageUrl("exact");
+  const uHigh = imageUrl("high");
+  const low = dpr * 0.5;
+  const high = dpr * 2;
+
+  const { currentSrc } = await selectImg(t, {
+    srcset: `${uLow} ${low}x, ${uExact} ${dpr}x, ${uHigh} ${high}x`,
+    mindensity: `${low}`,
+  });
+  assert_true(currentSrc.endsWith(uExact), `Expected ${uExact}, got ${currentSrc}`);
+}, "mindensity less than devicePixelRatio does not lower target density");
+
+promise_test(async t => {
+  const uExact = imageUrl("exact");
+  const uHigh = imageUrl("high");
+  const high = dpr * 2;
+
+  const { currentSrc } = await selectImg(t, {
+    srcset: `${uExact} ${dpr}x, ${uHigh} ${high}x`,
+    mindensity: `${dpr * 10}`,
+  });
+  assert_true(currentSrc.endsWith(uHigh), `Expected ${uHigh}, got ${currentSrc}`);
+}, "mindensity greater than all candidates selects the last candidate");
+
+promise_test(async t => {
+  const uLow = imageUrl("low");
+  const uMid = imageUrl("mid");
+  const uHigh = imageUrl("high");
+  const low = dpr * 0.25;
+  const mid = dpr * 0.5;
+  const high = dpr * 2;
+
+  const { currentSrc } = await selectImg(t, {
+    srcset: `${uLow} ${low}x, ${uMid} ${mid}x, ${uHigh} ${high}x`,
+    mindensity: `${low}`,
+    maxdensity: `${mid}`,
+  });
+  assert_true(currentSrc.endsWith(uMid), `Expected ${uMid}, got ${currentSrc}`);
+}, "mindensity and maxdensity together clamp target density to [mindensity, maxdensity]");
+
+promise_test(async t => {
+  const uLow = imageUrl("low");
+  const uExact = imageUrl("exact");
+  const uHigh = imageUrl("high");
+  const low = dpr * 0.5;
+  const high = dpr * 2;
+
+  const { currentSrc } = await selectImg(t, {
+    srcset: `${uLow} ${low}x, ${uExact} ${dpr}x, ${uHigh} ${high}x`,
+    mindensity: `${high}`,
+    maxdensity: `${low}`,
+  });
+  assert_true(currentSrc.endsWith(uHigh), `Expected ${uHigh}, got ${currentSrc}`);
+}, "When mindensity > maxdensity, mindensity takes precedence");
+
+promise_test(async t => {
+  const wLow = Math.round(100 * dpr * 0.5);
+  const wExact = Math.round(100 * dpr);
+  const wHigh = Math.round(100 * dpr * 2);
+  const uLow = imageUrl("w-low");
+  const uExact = imageUrl("w-exact");
+  const uHigh = imageUrl("w-high");
+
+  const { currentSrc: maxClamped } = await selectImg(t, {
+    sizes: "100px",
+    srcset: `${uLow} ${wLow}w, ${uExact} ${wExact}w, ${uHigh} ${wHigh}w`,
+    maxdensity: `${wLow / 100}`,
+  });
+  assert_true(maxClamped.endsWith(uLow), `Expected ${uLow}, got ${maxClamped}`);
+
+  const { currentSrc: minClamped } = await selectImg(t, {
+    sizes: "100px",
+    srcset: `${uLow} ${wLow}w, ${uExact} ${wExact}w, ${uHigh} ${wHigh}w`,
+    mindensity: `${wHigh / 100}`,
+  });
+  assert_true(minClamped.endsWith(uHigh), `Expected ${uHigh}, got ${minClamped}`);
+}, "mindensity and maxdensity work with width descriptors and sizes");
+
+promise_test(async t => {
+  const low = dpr * 0.5;
+  const high = dpr * 2;
+
+  for (const invalid of ["", "0", "-1", "-0.5", "abc", "NaN", "Infinity"]) {
+    const uLow = imageUrl("low");
+    const uExact = imageUrl("exact");
+    const uHigh = imageUrl("high");
+    const { currentSrc } = await selectImg(t, {
+      srcset: `${uLow} ${low}x, ${uExact} ${dpr}x, ${uHigh} ${high}x`,
+      mindensity: invalid,
+      maxdensity: invalid,
+    });
+    assert_true(
+      currentSrc.endsWith(uExact),
+      `Invalid value "${invalid}" should be ignored; expected ${uExact}, got ${currentSrc}`
+    );
+  }
+}, "Invalid or non-positive mindensity and maxdensity values are ignored");
+
+promise_test(async t => {
+  const uSourceLow = imageUrl("source-low");
+  const uSourceExact = imageUrl("source-exact");
+  const uImgFallback = imageUrl("img-fallback");
+  const low = dpr * 0.5;
+
+  const { currentSrc } = await selectImg(
+    t,
+    { src: uImgFallback, maxdensity: `${dpr}` },
+    [{
+      srcset: `${uSourceLow} ${low}x, ${uSourceExact} ${dpr}x`,
+      maxdensity: `${low}`,
+    }]
+  );
+  assert_true(currentSrc.endsWith(uSourceLow), `Expected ${uSourceLow}, got ${currentSrc}`);
+}, "Matching <source maxdensity> overrides <img maxdensity>");
+
+promise_test(async t => {
+  const uSourceLow = imageUrl("source-low");
+  const uSourceExact = imageUrl("source-exact");
+  const uImgFallback = imageUrl("img-fallback");
+  const low = dpr * 0.5;
+
+  const { currentSrc } = await selectImg(
+    t,
+    { src: uImgFallback, maxdensity: `${low}` },
+    [{
+      srcset: `${uSourceLow} ${low}x, ${uSourceExact} ${dpr}x`,
+    }]
+  );
+  assert_true(currentSrc.endsWith(uSourceLow), `Expected ${uSourceLow}, got ${currentSrc}`);
+}, "Matching <source> without maxdensity falls back to <img maxdensity>");
+
+promise_test(async t => {
+  const uSourceLow = imageUrl("source-low");
+  const uSourceMid = imageUrl("source-mid");
+  const uSourceHigh = imageUrl("source-high");
+  const uImgFallback = imageUrl("img-fallback");
+  const low = dpr * 0.25;
+  const mid = dpr * 0.5;
+  const high = dpr * 2;
+
+  const { currentSrc } = await selectImg(
+    t,
+    { src: uImgFallback, maxdensity: `${mid}` },
+    [{
+      srcset: `${uSourceLow} ${low}x, ${uSourceMid} ${mid}x, ${uSourceHigh} ${high}x`,
+      mindensity: `${low}`,
+    }]
+  );
+  assert_true(currentSrc.endsWith(uSourceMid), `Expected ${uSourceMid}, got ${currentSrc}`);
+}, "<source mindensity> and <img maxdensity> combine independently");
+
+promise_test(async t => {
+  const uLow = imageUrl("low");
+  const uExact = imageUrl("exact");
+  const uHigh = imageUrl("high");
+  const low = dpr * 0.5;
+  const high = dpr * 2;
+
+  const { img, currentSrc } = await selectImg(t, {
+    srcset: `${uLow} ${low}x, ${uExact} ${dpr}x, ${uHigh} ${high}x`,
+  });
+  assert_true(currentSrc.endsWith(uExact), `Initial selection should be ${uExact}`);
+
+  const loadHigh = waitForLoad(img);
+  img.setAttribute("mindensity", `${high}`);
+  const afterMinSrc = await loadHigh;
+  assert_true(afterMinSrc.endsWith(uHigh), `After setting mindensity, expected ${uHigh}, got ${afterMinSrc}`);
+
+  const loadLow = waitForLoad(img);
+  img.removeAttribute("mindensity");
+  img.setAttribute("maxdensity", `${low}`);
+  const afterMaxSrc = await loadLow;
+  assert_true(afterMaxSrc.endsWith(uLow), `After setting maxdensity, expected ${uLow}, got ${afterMaxSrc}`);
+}, "Mutating mindensity and maxdensity on <img> triggers relevant mutation");
+
+promise_test(async t => {
+  const uLow = imageUrl("source-low");
+  const uExact = imageUrl("source-exact");
+  const uHigh = imageUrl("source-high");
+  const uFallback = imageUrl("img-fallback");
+  const low = dpr * 0.5;
+  const high = dpr * 2;
+
+  const { img, currentSrc } = await selectImg(
+    t,
+    { src: uFallback },
+    [{ srcset: `${uLow} ${low}x, ${uExact} ${dpr}x, ${uHigh} ${high}x` }]
+  );
+  assert_true(currentSrc.endsWith(uExact), `Initial selection should be ${uExact}`);
+
+  const source = img.parentElement.querySelector("source");
+  const loadHigh = waitForLoad(img);
+  source.setAttribute("mindensity", `${high}`);
+  const afterMinSrc = await loadHigh;
+  assert_true(afterMinSrc.endsWith(uHigh), `After setting <source mindensity>, expected ${uHigh}, got ${afterMinSrc}`);
+}, "Mutating mindensity on <source> inside <picture> triggers relevant mutation");
+</script>
+</body>

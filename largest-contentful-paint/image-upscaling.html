@@ -10,10 +10,10 @@
   <script src="/common/utils.js"></script>
   <script>
     setup({"hide_test_state": true});
-    assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint not implemented");
     const imageURL = `${window.location.origin}/images/blue.png`;
 
     async function load_image_and_get_lcp_size(t, imageStyle = {}, containerStyle = {}) {
+      assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint not implemented");
       let popup;
       await test_driver.bless('Open a popup', () => {
         popup = window.open('about:blank');

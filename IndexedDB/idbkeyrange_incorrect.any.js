@@ -54,6 +54,24 @@ test(() => {
   });
 }, "IDBKeyRange.bound(DOMString/Date/Array, 1) - A DOMString, Date and Array are greater than a float.");
 
+// Equal keys with an open bound
+for (const [lowerOpen, upperOpen] of [[true, false], [false, true], [true, true]]) {
+  test(() => {
+    assert_throws_dom('DataError', () => {
+      IDBKeyRange.bound(1, 1, lowerOpen, upperOpen);
+    });
+  }, `IDBKeyRange.bound(1, 1, ${lowerOpen}, ${upperOpen}) - equal keys with an open bound throw DataError.`);
+}
+
+test(() => {
+  const range = IDBKeyRange.bound(1, 1, false, false);
+  assert_equals(range.lower, 1);
+  assert_equals(range.upper, 1);
+  assert_false(range.lowerOpen);
+  assert_false(range.upperOpen);
+  assert_true(range.includes(1));
+}, 'IDBKeyRange.bound(1, 1, false, false) - equal keys with closed bounds succeed.');
+
 // ReferenceError: the variable is not defined
 test(() => {
   const goodVariable = 1;

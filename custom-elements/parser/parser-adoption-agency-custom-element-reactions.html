@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Custom Elements: the adoption agency algorithm invokes custom element reactions after each reparenting step</title>
+<meta name="assert" content="The adoption agency algorithm invokes the custom element reactions caused by moving or removing a node before processing the next token">
+<link rel="help" href="https://html.spec.whatwg.org/#adoption-agency-algorithm">
+<link rel="help" href="https://html.spec.whatwg.org/#custom-element-reactions">
+<link rel="help" href="https://github.com/whatwg/html/issues/13072">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+let log = [];
+customElements.define("x-aaa", class extends HTMLElement {
+  record(type) {
+    log.push(`${type}:${this.isConnected}:${this.parentNode ? this.parentNode.localName : null}`);
+  }
+  connectedCallback() { this.record("connected"); }
+  disconnectedCallback() { this.record("disconnected"); }
+});
+
+function takeLog() {
+  const result = log;
+  log = [];
+  return result;
+}
+
+function serialize(parent) {
+  return Array.from(parent.childNodes, node => node.outerHTML).join("");
+}
+</script>
+
+<div id="simple"><b><p><x-aaa></x-aaa></b></div>
+<script>
+test(() => {
+  const container = document.getElementById("simple");
+  assert_array_equals(takeLog(), [
+    "connected:true:p",
+    // furthestBlock <p> is moved from <b> to the common ancestor <div>.
+    "disconnected:true:p",
+    "connected:true:p",
+    // <p>'s children are moved into the new <b>, which is then inserted into <p>.
+    "disconnected:true:b",
+    "connected:true:b",
+  ], "reactions run before the next script element, after each reparenting step");
+  assert_equals(serialize(container), "<b></b><p><b><x-aaa></x-aaa></b></p>");
+}, "Reparenting the furthest block invokes custom element reactions before the following script");
+</script>
+
+<div id="inner-loop"><b><i><p><x-aaa></x-aaa></b></div>
+<script>
+test(() => {
+  const container = document.getElementById("inner-loop");
+  assert_array_equals(takeLog(), [
+    "connected:true:p",
+    // The inner loop moves <p> into a not yet inserted clone of <i>.
+    "disconnected:false:p",
+    // The clone of <i> is inserted into the common ancestor <div>.
+    "connected:true:p",
+    // <p>'s children are moved into the new <b>, which is then inserted into <p>.
+    "disconnected:true:b",
+    "connected:true:b",
+  ], "reactions run after each step of the inner loop, observing the intermediate tree");
+  assert_equals(serialize(container), "<b><i></i></b><i><p><b><x-aaa></x-aaa></b></p></i>");
+}, "Reparenting into a clone created by the inner loop invokes custom element reactions with the intermediate tree");
+</script>
+
+<div id="removed"><b><i><x-aaa></x-aaa><p><x-aaa></x-aaa></b></div>
+<script>
+test(() => {
+  const container = document.getElementById("removed");
+  assert_array_equals(takeLog(), [
+    "connected:true:i",
+    "connected:true:p",
+    // furthestBlock <p> is moved into a not yet inserted clone of <i>.
+    "disconnected:false:p",
+    // The clone of <i> is inserted into the common ancestor <div>.
+    "connected:true:p",
+    // <p>'s children are moved into the new <b>, which is then inserted into <p>.
+    "disconnected:true:b",
+    "connected:true:b",
+  ], "the element before the furthest block stays in the original <i> and is not reparented");
+  assert_equals(serialize(container), "<b><i><x-aaa></x-aaa></i></b><i><p><b><x-aaa></x-aaa></b></p></i>");
+}, "Elements that are not descendants of the furthest block do not get reactions");
+</script>
+
+<div id="document-write"></div>
+<script>
+test(() => {
+  // document.write() runs the parser from script; reactions must still run before the written
+  // script element, not when document.write() returns.
+  window.writtenLog = null;
+  document.write('<b><p><x-aaa></x-aaa></b><script>window.writtenLog = takeLog();<\/script>');
+  assert_array_equals(writtenLog, [
+    "connected:true:p",
+    "disconnected:true:p",
+    "connected:true:p",
+    "disconnected:true:b",
+    "connected:true:b",
+  ], "reactions run before the written script element");
+  assert_array_equals(takeLog(), [], "no reactions are left over after document.write() returns");
+}, "Reparenting by the adoption agency algorithm in document.write() invokes custom element reactions before the following script");
+</script>
+</body>
+</html>

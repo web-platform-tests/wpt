@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>The adoption agency algorithm with removed formatting elements and template commonAncestors</title>
+<link rel="help" href="https://html.spec.whatwg.org/#adoption-agency-algorithm">
+<link rel="help" href="https://html.spec.whatwg.org/#look-up-a-custom-element-registry">
+<link rel="help" href="https://html.spec.whatwg.org/#dom-element-sethtmlunsafe">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<body>
+<div id="container"></div>
+<script>
+  // When the sanitizer removes a formatting element, that element and
+  // everything parsed below it live in an inert document with a null custom
+  // element registry. The adoption agency algorithm can later reparent part of
+  // that subtree (furthestBlock and the chain above it) into the live tree.
+  // These tests pin down what happens to custom element registries, custom
+  // element reactions, and resource loads when it does.
+
+  const container = document.getElementById("container");
+
+  function defineLogging(registry, name, log, options) {
+    registry.define(name, class extends HTMLElement {
+      constructor() { super(); log.push("constructed"); }
+      connectedCallback() { log.push("connected"); }
+      disconnectedCallback() { log.push("disconnected"); }
+    }, options);
+  }
+
+  test((t) => {
+    t.add_cleanup(() => container.replaceChildren());
+    const scoped = new CustomElementRegistry();
+    const log = [];
+    defineLogging(scoped, "aaa-scoped-control", log);
+    const target = document.createElement("div", { customElementRegistry: scoped });
+    container.append(target);
+
+    // Control: no sanitizer. <p> is created below the kept <b>, which already
+    // has the target's scoped registry, so <p> inherits it when created. The
+    // custom element that follows </b> is parsed directly into <p>.
+    target.setHTMLUnsafe("<b><p></b><aaa-scoped-control></aaa-scoped-control></p>");
+    assert_equals(target.innerHTML,
+                  "<b></b><p><b></b><aaa-scoped-control></aaa-scoped-control></p>");
+    const p = target.querySelector("p");
+    assert_equals(p.customElementRegistry, scoped, "p's registry");
+    assert_equals(p.lastChild.customElementRegistry, scoped, "custom element's registry");
+    assert_array_equals(log, ["constructed", "connected"]);
+  }, "furthestBlock reparented out of a kept formatting element keeps the scoped registry");
+
+  test((t) => {
+    t.add_cleanup(() => container.replaceChildren());
+    const scoped = new CustomElementRegistry();
+    const log = [];
+    defineLogging(scoped, "aaa-scoped-child", log);
+    const target = document.createElement("div", { customElementRegistry: scoped });
+    container.append(target);
+
+    // <p> is created below the removed <b>, so it starts out with a null
+    // registry. When the adoption agency algorithm inserts it into the target,
+    // it must pick up the target's scoped registry, so that the custom element
+    // parsed into it afterwards is created with that registry.
+    target.setHTMLUnsafe("<b><p></b><aaa-scoped-child></aaa-scoped-child></p>",
+                         { sanitizer: { removeElements: ["b"] } });
+    assert_equals(target.innerHTML, "<p><aaa-scoped-child></aaa-scoped-child></p>");
+    const p = target.firstChild;
+    assert_equals(p.customElementRegistry, scoped, "p's registry");
+    assert_equals(p.firstChild.customElementRegistry, scoped, "custom element's registry");
+    assert_array_equals(log, ["constructed", "connected"]);
+  }, "furthestBlock reparented out of a removed formatting element gets the target's scoped registry");
+
+  test((t) => {
+    t.add_cleanup(() => container.replaceChildren());
+    const scoped = new CustomElementRegistry();
+    const log = [];
+    defineLogging(scoped, "aaa-scoped-grandchild", log);
+    const target = document.createElement("div", { customElementRegistry: scoped });
+    container.append(target);
+
+    // Same, but the reparented subtree is deeper: <i> is cloned by the inner
+    // loop and becomes lastNode, with <p> below it. Everything that is moved
+    // into the target gets the scoped registry.
+    target.setHTMLUnsafe(
+      "<b><i><p></b><aaa-scoped-grandchild></aaa-scoped-grandchild></p>",
+      { sanitizer: { removeElements: ["b"] } });
+    assert_equals(target.innerHTML,
+                  "<i><p><aaa-scoped-grandchild></aaa-scoped-grandchild></p></i>");
+    const i = target.firstChild;
+    const p = i.firstChild;
+    assert_equals(i.customElementRegistry, scoped, "i's registry");
+    assert_equals(p.customElementRegistry, scoped, "p's registry");
+    assert_equals(p.firstChild.customElementRegistry, scoped, "custom element's registry");
+    assert_array_equals(log, ["constructed", "connected"]);
+  }, "The whole subtree reparented out of a removed formatting element gets the target's scoped registry");
+
+  promise_test(async (t) => {
+    t.add_cleanup(() => container.replaceChildren());
+    const log = [];
+    defineLogging(customElements, "aaa-removed-child", log);
+    const target = document.createElement("div");
+    container.append(target);
+    const removedURL = `/fetch/metadata/resources/record-header.py?file=image-${token()}`;
+    const controlURL = `/fetch/metadata/resources/record-header.py?file=image-${token()}`;
+
+    // <b> is removed, so <p>, the custom element and the image are created in
+    // an inert document. The adoption agency algorithm moves <p> into the
+    // target, but the new <b> that takes over <p>'s children is removed too,
+    // so those children must never become connected: no custom element
+    // reactions run for them and the image is never fetched. The text that
+    // follows </b> is parsed into the now-empty <p>.
+    target.setHTMLUnsafe(
+      `<b><p><aaa-removed-child></aaa-removed-child><img src="${removedURL}"></b>x</p>`,
+      { sanitizer: { removeElements: ["b"] } });
+    assert_equals(target.innerHTML, "<p>x</p>");
+    assert_array_equals(log, [], "no custom element reactions after parsing");
+
+    // Load a control image through the same server, so that any request for
+    // the removed image would have been recorded by the time it finishes.
+    const control = document.createElement("div");
+    container.append(control);
+    await new Promise((resolve, reject) => {
+      control.innerHTML = `<img src="${controlURL}">`;
+      control.firstChild.onload = resolve;
+      control.firstChild.onerror = () => reject(new Error("control image failed to load"));
+    });
+    const controlRecord = await (await fetch(controlURL + "&retrieve=true")).text();
+    assert_false(controlRecord.includes("No header has been recorded"),
+                 "the control image request was recorded");
+    const removedRecord = await (await fetch(removedURL + "&retrieve=true")).text();
+    assert_true(removedRecord.includes("No header has been recorded"),
+                "the image below the removed formatting element was not fetched");
+    assert_array_equals(log, [], "no custom element reactions later either");
+  }, "Children of furthestBlock that end up below a removed formatting element never become connected");
+
+  test((t) => {
+    t.add_cleanup(() => container.replaceChildren());
+    const target = document.createElement("div");
+    container.append(target);
+
+    // commonAncestor is the <template> element, whose registry is the
+    // document's, but the inner loop's clone of <i> replaces an element in the
+    // template contents, so like everything else in there it has no registry.
+    target.innerHTML = "<template><b><i><p></b></template>";
+    const content = target.firstChild.content;
+    assert_equals(content.firstChild.outerHTML, "<b><i></i></b>");
+    assert_equals(content.lastChild.outerHTML, "<i><p><b></b></p></i>");
+    assert_equals(content.lastChild.customElementRegistry, null, "cloned i's registry");
+    assert_equals(content.lastChild.firstChild.customElementRegistry, null,
+                  "reparented p's registry");
+    assert_equals(content.firstChild.customElementRegistry, null, "original b's registry");
+    assert_equals(content.firstChild.firstChild.customElementRegistry, null,
+                  "original i's registry");
+  }, "Inner-loop clones in template contents have a null custom element registry");
+
+  test((t) => {
+    t.add_cleanup(() => container.replaceChildren());
+    const log = [];
+    defineLogging(customElements, "aaa-template-italic", log, { extends: "i" });
+    const target = document.createElement("div");
+    container.append(target);
+
+    // Had the clone of <i is> been created with the <template> element as its
+    // intended parent, it would have found the document's definition and been
+    // upgraded, unlike the original <i is> in the template contents.
+    target.innerHTML = '<template><b><i is="aaa-template-italic"><p></b></template>';
+    assert_array_equals(log, []);
+    const content = target.firstChild.content;
+    assert_equals(content.lastChild.outerHTML, '<i is="aaa-template-italic"><p><b></b></p></i>');
+  }, "Inner-loop clones in template contents are not upgraded");
+</script>
+</body>

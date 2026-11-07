@@ -1,0 +1,184 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Tree construction with foreign elements, formatting elements, and scope boundaries</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#reset-the-insertion-mode-appropriately">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inforeign">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#adoption-agency-algorithm">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-scope">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#special">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+"use strict";
+
+// Regressions from parse5's tree-conformance and correctness branches. Expected
+// trees are specified independently of the parser being tested.
+const cases = [
+  [
+    "foreign select does not select an insertion mode",
+    "document",
+    "<table><td><svg><select><desc><table></table><td>x",
+    "<table><tbody><tr><td><svg><select><desc><table></table></desc></select></svg></td><td>x</td></tr></tbody></table>"
+  ],
+  [
+    "foreign template does not select an insertion mode",
+    "document",
+    "<svg><template><desc><table></table>x<p>y",
+    "<svg><template><desc><table></table>x<p>y</p></desc></template></svg>"
+  ],
+  [
+    "foreign template does not hide the HTML table insertion mode",
+    "document",
+    "<table><svg><template><desc><select><template></template><td>x",
+    "<svg><template><desc><select><template></template></select></desc></template></svg><table><tbody><tr><td>x</td></tr></tbody></table>"
+  ],
+  [
+    "foreign end tag matches Kelvin sign literally",
+    "fragment",
+    "<svg><aK><desc></aK>x",
+    "<svg><aK><desc></desc></aK>x</svg>"
+  ],
+  [
+    "foreign end tag does not Unicode-fold Kelvin sign",
+    "fragment",
+    "<svg><aK><desc></ak>x",
+    "<svg><aK><desc>x</desc></aK></svg>"
+  ],
+  [
+    "HTML desc end tag does not close SVG desc",
+    "fragment",
+    "<svg><desc><span></desc>x",
+    "<svg><desc><span>x</span></desc></svg>"
+  ],
+  [
+    "HTML title end tag does not close SVG title",
+    "fragment",
+    "<svg><title><span></title>x",
+    "<svg><title><span>x</span></title></svg>"
+  ],
+  [
+    "HTML mi end tag does not close MathML mi",
+    "fragment",
+    "<math><mi><span></mi>x",
+    "<math><mi><span>x</span></mi></math>"
+  ],
+  [
+    "HTML desc end tag preserves active formatting inside SVG desc",
+    "document",
+    "<svg><desc><b>x</desc>y",
+    "<svg><desc><b>xy</b></desc></svg>"
+  ],
+  [
+    "foreign end tag walk reaching the fragment root uses HTML rules",
+    "fragment",
+    "<div><form></div><svg></form></svg><form>x",
+    "<div><form></form></div><svg></svg><form>x</form>"
+  ],
+  [
+    "adoption agency handles the current node removed by Noah's Ark",
+    "fragment",
+    "<b id=1><b><b><b><b></b></b></b></b>x",
+    "<b id=\"1\"><b><b><b><b></b></b></b></b>x</b>"
+  ],
+  [
+    "adoption agency handles the current node removed by Noah's Ark inside SVG",
+    "fragment",
+    "<b id=1><svg><desc><b><b><b><b></b></b></b></b>x",
+    "<b id=\"1\"><svg><desc><b><b><b><b></b></b></b></b>x</desc></svg></b>"
+  ],
+  [
+    "adoption agency tests the formatting element identity in scope",
+    "fragment",
+    "<b id=1><svg><desc><b><b><b><b></b></b></b><i></b>x",
+    "<b id=\"1\"><svg><desc><b><b><b><b></b></b></b><i>x</i></b></desc></svg></b>"
+  ],
+  [
+    "form end tag tests the form pointer identity in scope",
+    "document",
+    "<form id=a><table></form><form id=b></table><p>x</form>y",
+    "<form id=\"a\"><table><form id=\"b\"></form></table><p>xy</p></form>"
+  ],
+  [
+    "unmatched tfoot end tag does not close a row in tbody",
+    "fragment",
+    "<table><tr><td>a</td></tfoot><td>b",
+    "<table><tbody><tr><td>a</td><td>b</td></tr></tbody></table>"
+  ],
+  [
+    "unmatched tbody end tag does not close a row in thead",
+    "fragment",
+    "<table><thead><tr><td>a</td></tbody><td>b",
+    "<table><thead><tr><td>a</td><td>b</td></tr></thead></table>"
+  ],
+  [
+    "template is a table scope boundary for a tbody end tag",
+    "fragment",
+    "<table><tbody><template><td>a</td></tbody><td>b",
+    "<table><tbody><template><td>a</td><td>b</td></template></tbody></table>"
+  ],
+  [
+    "implied end tags do not pop a foreign option",
+    "fragment",
+    "<form><svg><option></form><g>",
+    "<form><svg><option><g></g></option></svg></form>"
+  ],
+  [
+    "template is a table scope boundary for a table end tag",
+    "fragment",
+    "<table><td><template><tr></table>X",
+    "<table><tbody><tr><td><template><tr></tr>X</template></td></tr></tbody></table>"
+  ]
+];
+
+for (const [description, mode, input, expected] of cases) {
+  test(() => {
+    if (mode === "document") {
+      const doc = new DOMParser().parseFromString(input, "text/html");
+      assert_equals(doc.documentElement.outerHTML,
+                    `<html><head></head><body>${expected}</body></html>`);
+    } else {
+      const context = document.createElement("div");
+      context.innerHTML = input;
+      assert_equals(context.innerHTML, expected);
+    }
+  }, description);
+}
+
+test(() => {
+  const context = document.createElementNS("http://www.w3.org/2000/svg", "select");
+  context.innerHTML = "<p><table></table><div>x";
+  assert_equals(context.innerHTML, "<p></p><table></table><div>x</div>");
+}, "A foreign select fragment context does not select the HTML select insertion mode");
+
+// The form ancestor initializes the fragment form pointer. For the first end
+// tag, the current node is already the synthetic html root: the foreign end-tag
+// algorithm returns at its topmost-element check, before handing it to HTML
+// rules. The ancestor's form pointer must therefore remain set.
+// https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inforeign
+test(() => {
+  const form = document.createElement("form");
+  const context = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  form.append(context);
+  context.innerHTML = "</form><p><form>x";
+  assert_equals(context.innerHTML, "<p>x</p>");
+}, "An unmatched foreign end tag with only the fragment root open is ignored");
+
+test(() => {
+  const foreignForm = document.createElementNS("http://www.w3.org/2000/svg", "form");
+  const context = document.createElementNS("http://www.w3.org/2000/svg", "desc");
+  foreignForm.append(context);
+  context.innerHTML = "<form>x";
+  assert_equals(context.innerHTML, "<form>x</form>");
+}, "A foreign form ancestor does not initialize the fragment form element pointer");
+
+test(() => {
+  const doc = new DOMParser().parseFromString(
+    '<!DOCTYPE root-element [SYSTEM OR PUBLIC FPI] "uri" [\n<!-- internal declarations -->\n]>',
+    "text/html"
+  );
+  assert_equals(doc.doctype.name, "root-element");
+  assert_equals(doc.doctype.publicId, "");
+  assert_equals(doc.doctype.systemId, "");
+  assert_equals(doc.body.textContent, "]>");
+}, "An invalid doctype internal subset ends at the first greater-than sign");
+</script>

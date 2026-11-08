@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Foreign form ancestor in HTML fragment parsing</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#html-fragment-parsing-algorithm">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  const foreignForm = document.createElementNS("http://www.w3.org/2000/svg", "form");
+  const context = document.createElementNS("http://www.w3.org/2000/svg", "desc");
+  foreignForm.append(context);
+  context.innerHTML = "<form>x";
+  assert_equals(context.innerHTML, "<form>x</form>");
+}, "A foreign form ancestor does not initialize the fragment form element pointer");
+</script>

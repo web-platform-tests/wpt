@@ -195,15 +195,16 @@ promise_test(async t => {
 
 promise_test(async t => {
   const slowUrl = `/images/green-100x100.png?partial-w-${token()}&pipe=trickle(2048:d0.9)`;
-  const dpr = window.devicePixelRatio || 1;
-  const wDescriptor = Math.round(200 * dpr);
   const img = document.createElement("img");
   t.add_cleanup(() => img.remove());
 
   let loadFired = false;
   img.addEventListener("load", () => { loadFired = true; }, { once: true });
+  // A width descriptor is normalized to a density of (w / source size),
+  // independent of devicePixelRatio: 200w at sizes=100px is 2x, and at
+  // sizes=50px is 4x.
   img.sizes = "100px";
-  img.srcset = `${slowUrl} ${wDescriptor}w`;
+  img.srcset = `${slowUrl} 200w`;
   const loaded = waitForEvent(img, "load");
   document.body.appendChild(img);
 

@@ -280,7 +280,6 @@
 
     const iframeDOMException = iframe.contentWindow.DOMException;
     const target = iframe.contentDocument.getElementById("target");
-    t.add_cleanup(() => target.remove());
     const writer = target.streamHTMLUnsafe({ runScripts: true }).getWriter();
     await writer.write(
       "<script defer src='resources/slow.js?pipe=trickle(d0.3)&defer_destroyed_doc=1'><" + "/script>" +

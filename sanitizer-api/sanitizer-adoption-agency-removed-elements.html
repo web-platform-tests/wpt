@@ -92,6 +92,35 @@
     assert_array_equals(log, ["constructed", "connected"]);
   }, "The whole subtree reparented out of a removed formatting element gets the target's scoped registry");
 
+  test((t) => {
+    t.add_cleanup(() => container.replaceChildren());
+    const scoped = new CustomElementRegistry();
+    const log = [];
+    defineLogging(scoped, "aaa-scoped-intermediate", log);
+    const target = document.createElement("div", { customElementRegistry: scoped });
+    container.append(target);
+
+    // <b> is kept, <span> is removed, and <p> and the custom element are
+    // created below the removed <span> with a null registry. When the adoption
+    // agency algorithm moves <p>'s children into the new <b> and inserts <p>
+    // into the target, the new <b>, <p>, and the custom element all get the
+    // target's scoped registry, and the custom element is upgraded.
+    target.setHTMLUnsafe(
+      "<b><span><p><aaa-scoped-intermediate></aaa-scoped-intermediate></b></p>",
+      { sanitizer: { removeElements: ["span"] } });
+    assert_equals(
+      target.innerHTML,
+      "<b></b><p><b><aaa-scoped-intermediate></aaa-scoped-intermediate></b></p>");
+    const [firstB, p] = target.children;
+    const secondB = p.firstChild;
+    const ce = secondB.firstChild;
+    assert_equals(firstB.customElementRegistry, scoped, "first b's registry");
+    assert_equals(p.customElementRegistry, scoped, "p's registry");
+    assert_equals(secondB.customElementRegistry, scoped, "newElement b's registry");
+    assert_equals(ce.customElementRegistry, scoped, "custom element's registry");
+    assert_array_equals(log, ["constructed", "connected"]);
+  }, "furthestBlock and its children reparented out of a removed intermediate element get the target's scoped registry");
+
   promise_test(async (t) => {
     t.add_cleanup(() => container.replaceChildren());
     const log = [];

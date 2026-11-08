@@ -278,27 +278,19 @@
       document.body.appendChild(iframe);
     });
 
+    const iframeDOMException = iframe.contentWindow.DOMException;
     const target = iframe.contentDocument.getElementById("target");
     t.add_cleanup(() => target.remove());
     const writer = target.streamHTMLUnsafe({ runScripts: true }).getWriter();
     await writer.write(
       "<script defer src='resources/slow.js?pipe=trickle(d0.3)&defer_destroyed_doc=1'><" + "/script>" +
-      "<p id='before-move'>before</p>"
+      "<p id='before-remove'>before</p>"
     );
 
-    // Move target into the active parent document and destroy the original iframe document
-    // before the slow defer script finishes loading.
-    document.body.appendChild(target);
     iframe.remove();
 
-    window.active_defer_ran = Promise.withResolvers();
-    t.add_cleanup(() => { delete window.active_defer_ran; });
-    await writer.write(
-      `<script defer src="data:text/javascript,window.events.push('active-defer');window.active_defer_ran.resolve();{let cache_buster=${Math.random()}}"><` + "/script>"
-    );
-    await failOnTimeout(writer.close());
-    await failOnTimeout(window.active_defer_ran.promise);
-
-    assert_array_equals(window.events, ["active-defer"], "Defer script prepared in the destroyed document is skipped while subsequent defer script in the active document runs");
-  }, "Defer script whose preparation-time document is destroyed before close() does not hang or block subsequent defer scripts");
+    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.closed));
+    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.close()));
+    assert_array_equals(window.events, [], "Defer script in destroyed document does not execute");
+  }, "Removing iframe while defer script is pending errors the stream with InvalidStateError and does not execute defer scripts");
 </script>

@@ -575,7 +575,7 @@
     assert_array_equals(window.events, ["stream2-inline", "slow", "stream1-after"]);
   }, "Two concurrent streams block independently");
 
-  // F12: Iframe removed while blocked: no execution, no crash, parser resumes and close() resolves
+  // F12: Iframe removed while blocked: stream is errored with InvalidStateError, no execution, no crash
   promise_test(async (t) => {
     window.iframe_blocked_ran = false;
     t.add_cleanup(() => { delete window.iframe_blocked_ran; });
@@ -588,6 +588,7 @@
       document.body.appendChild(iframe);
     });
 
+    const iframeDOMException = iframe.contentWindow.DOMException;
     iframe.contentWindow.notifyParent = () => {
       window.iframe_blocked_ran = true;
     };
@@ -603,15 +604,14 @@
     );
 
     iframe.remove();
-    await failOnTimeout(writer.close());
+    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.closed));
+    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.close()));
     await controlDone;
     assert_false(window.iframe_blocked_ran, "Scripts in removed iframe must not execute");
-    assert_not_equals(target.querySelector("#after"), null, "Markup after the pending script is parsed before close() resolves");
-  }, "Removing iframe while stream is blocked on external script does not hang, crash, or execute scripts in the removed iframe");
+    assert_equals(target.querySelector("#after"), null, "Markup after the pending script is not parsed after the stream is aborted");
+  }, "Removing iframe while stream is blocked on external script errors the stream with InvalidStateError and does not execute scripts");
 
   promise_test(async (t) => {
-    window.events = [];
-
     const iframe = document.createElement("iframe");
     t.add_cleanup(() => iframe.remove());
     iframe.srcdoc = "<!doctype html><body><div id='target'></div></body>";
@@ -620,23 +620,19 @@
       document.body.appendChild(iframe);
     });
 
+    const iframeDOMException = iframe.contentWindow.DOMException;
     const target = iframe.contentDocument.getElementById("target");
-    t.add_cleanup(() => target.remove());
     const writer = target.streamHTMLUnsafe({ runScripts: true }).getWriter();
-    await writer.write(
-      "<script src='resources/slow.js?pipe=trickle(d0.3)&f12_moved_remove=1'><" + "/script>" +
-      "<p id='after'>after</p>" +
-      "<script>window.events.push('inline-in-parent');<" + "/script>"
-    );
-    assert_equals(target.querySelector("#after"), null, "Parsing is initially blocked on the external script");
+    await writer.write("<p id='before'>before</p>");
+    assert_not_equals(target.querySelector("#before"), null);
 
-    document.body.appendChild(target);
     iframe.remove();
 
-    await failOnTimeout(writer.close());
-    assert_not_equals(target.querySelector("#after"), null, "Markup after the pending script is parsed into the moved target");
-    assert_array_equals(window.events, ["inline-in-parent"], "Pending script from destroyed document is skipped while subsequent inline script in active document runs");
-  }, "Moving target to active document and removing original iframe while blocked on external script resumes parsing and resolves close()");
+    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.closed));
+    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.write("<p id='after'>after</p>")));
+    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.close()));
+    assert_equals(target.querySelector("#after"), null);
+  }, "Removing iframe while stream is idle errors the stream with InvalidStateError");
 
   promise_test(async (t) => {
     window.events = [];
@@ -649,6 +645,7 @@
       document.body.appendChild(iframe);
     });
 
+    const iframeDOMException = iframe.contentWindow.DOMException;
     const target = iframe.contentDocument.getElementById("target");
     t.add_cleanup(() => target.remove());
     const writer = target.streamHTMLUnsafe({ runScripts: true }).getWriter();
@@ -659,16 +656,35 @@
     );
     assert_equals(target.querySelector("#after"), null, "Parsing is initially blocked on the external script");
 
-    document.body.appendChild(target);
     await new Promise(resolve => {
       iframe.addEventListener("load", resolve, { once: true });
       iframe.src = "about:blank";
     });
 
-    await failOnTimeout(writer.close());
-    assert_not_equals(target.querySelector("#after"), null, "Markup after the pending script is parsed into the moved target");
-    assert_array_equals(window.events, ["inline-after-navigate"], "Pending script from navigated-away document is skipped while subsequent inline script runs");
-  }, "Moving target to active document and navigating original iframe while blocked on external script resumes parsing and resolves close()");
+    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.closed));
+    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.close()));
+    assert_equals(target.querySelector("#after"), null, "Markup after the pending script is not parsed after the document is destroyed");
+    assert_array_equals(window.events, []);
+  }, "Navigating iframe while stream is blocked on external script errors the stream with InvalidStateError");
+
+  promise_test(async (t) => {
+    const iframe = document.createElement("iframe");
+    t.add_cleanup(() => iframe.remove());
+    iframe.srcdoc = "<!doctype html><body><div id='target'></div></body>";
+    await new Promise(resolve => {
+      iframe.addEventListener("load", resolve, { once: true });
+      document.body.appendChild(iframe);
+    });
+
+    const iframeDOMException = iframe.contentWindow.DOMException;
+    const target = iframe.contentDocument.getElementById("target");
+    iframe.remove();
+
+    const writer = target.streamHTMLUnsafe({ runScripts: true }).getWriter();
+    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.closed));
+    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.write("<p id='after'>after</p>")));
+    assert_equals(target.querySelector("#after"), null);
+  }, "Starting a stream on an element in an already-destroyed document immediately errors the stream with InvalidStateError");
 
   // The write promise does not wait for a pending parser-blocking script,
   // whereas the close promise waits until the parser stops parsing (after any

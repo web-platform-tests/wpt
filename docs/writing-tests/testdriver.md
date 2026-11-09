@@ -92,6 +92,12 @@ the global scope.
 ```eval_rst
 .. js:autofunction:: test_driver.create_window
 .. js:autofunction:: test_driver.navigate
+.. js:autofunction:: test_driver.bidi.browsing_context.download_will_begin.subscribe
+.. js:autofunction:: test_driver.bidi.browsing_context.download_will_begin.on
+.. js:autofunction:: test_driver.bidi.browsing_context.download_will_begin.once
+.. js:autofunction:: test_driver.bidi.browsing_context.download_end.subscribe
+.. js:autofunction:: test_driver.bidi.browsing_context.download_end.on
+.. js:autofunction:: test_driver.bidi.browsing_context.download_end.once
 ```
 
 ### Window State ###

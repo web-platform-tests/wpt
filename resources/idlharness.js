@@ -3498,6 +3498,9 @@ IdlNamespace.prototype.test = function ()
     }
 
     for (const v of Object.values(this.members)) {
+        if (v.untested) {
+            continue;
+        }
         switch (v.type) {
 
         case 'operation':

@@ -1,0 +1,86 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>lostpointercapture fires at old capture target during transfer, gotpointercapture at new</title>
+<link rel="help" href="https://w3c.github.io/pointerevents/#process-pending-pointer-capture">
+<link rel="help" href="https://w3c.github.io/pointerevents/#the-gotpointercapture-event">
+<link rel="help" href="https://w3c.github.io/pointerevents/#the-lostpointercapture-event">
+<link rel="help" href="https://w3c.github.io/pointerevents/#setting-pointer-capture">
+<link rel="help" href="https://w3c.github.io/pointerevents/#releasing-pointer-capture">
+<meta name="viewport" content="width=device-width">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<div id="target">target</div>
+<div id="a">a</div>
+<div id="b">b</div>
+<script>
+"use strict";
+
+promise_test(async () => {
+  const target = document.getElementById("target");
+  const a = document.getElementById("a");
+  const b = document.getElementById("b");
+  const event_log = [];
+
+  function logEvent(event) {
+    event_log.push(event.type + "@" + event.target.id);
+  }
+
+  // Basic a-to-b transfer with no handler mutations. The result is identical
+  // regardless of whether steps read live state or snapshot at algorithm entry.
+
+  target.addEventListener("pointerdown", event => {
+    logEvent(event);
+    a.setPointerCapture(event.pointerId);
+  });
+  a.addEventListener("gotpointercapture", event => {
+    logEvent(event);
+    a.addEventListener("pointermove", event => {
+      logEvent(event);
+      a.releasePointerCapture(event.pointerId);
+      b.setPointerCapture(event.pointerId);
+    }, {once: true});
+  }, {once: true});
+
+  a.addEventListener("lostpointercapture", logEvent);
+  a.addEventListener("pointerover", logEvent);
+  a.addEventListener("pointerout", logEvent);
+  a.addEventListener("pointerup", logEvent);
+
+  b.addEventListener("gotpointercapture", logEvent);
+  b.addEventListener("lostpointercapture", logEvent);
+  b.addEventListener("pointerover", logEvent);
+  b.addEventListener("pointerout", logEvent);
+  b.addEventListener("pointermove", logEvent);
+  b.addEventListener("pointerup", logEvent);
+
+  await new test_driver.Actions()
+    .pointerMove(0, 0, {origin: target})
+    .pointerDown()
+    // Move 1: a gets capture; pointermove handler initiates transfer
+    .pointerMove(1, 1, {origin: target})
+    // Move 2: process pending pointer capture; override=a, pending=b
+    .pointerMove(2, 2, {origin: target})
+    .pointerUp()
+    .send();
+
+  assert_array_equals(event_log, [
+    "pointerdown@target",
+    // Move 1
+    "pointerover@a",
+    "gotpointercapture@a",
+    "pointermove@a",
+    // Move 2
+    "lostpointercapture@a",
+    "pointerout@a",
+    "pointerover@b",
+    "gotpointercapture@b",
+    "pointermove@b",
+    "pointerup@b",
+    "lostpointercapture@b",
+    "pointerout@b",
+  ]);
+}, "lostpointercapture fires at old capture element A and gotpointercapture fires at new element B during transfer");
+</script>

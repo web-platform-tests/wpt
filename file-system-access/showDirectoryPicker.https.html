@@ -1,0 +1,125 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>showDirectoryPicker automation tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/test-helpers.js"></script>
+
+<script>
+// 1. Test selecting a pre-populated temporary directory.
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.set_file_picker_behavior(null);
+  });
+
+  const {path: rootPath} = await test_driver.create_temporary_directory({
+    entries: [
+      {type: 'directory', path: 'resources'},
+      {
+        type: 'file',
+        path: 'resources/testfile.txt',
+        data: {type: 'string', value: 'Hello World!\n'},
+      },
+      {
+        type: 'file',
+        path: 'resources/testfile2.txt',
+        data: {type: 'string', value: 'File to upload\n'},
+      },
+    ],
+  });
+  t.add_cleanup(async () => {
+    await test_driver.remove_temporary_directory({path: rootPath});
+  });
+
+  await test_driver.set_file_picker_behavior({
+    type: 'accept',
+    paths: [`${rootPath}/resources`],
+  });
+  await test_driver.bless('show a directory picker');
+
+  const dir = await self.showDirectoryPicker();
+  assert_true(dir instanceof FileSystemHandle);
+  assert_true(dir instanceof FileSystemDirectoryHandle);
+  assert_equals(dir.kind, 'directory');
+  assert_equals(dir.name, 'resources');
+
+  assert_array_equals(await getSortedDirectoryEntries(dir), ['testfile.txt', 'testfile2.txt']);
+  assert_equals(await dir.queryPermission({mode: 'read'}), 'granted');
+}, 'showDirectoryPicker can select a temporary directory');
+
+// 2. Test selecting a directory with readwrite mode and permissions handling.
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.set_file_picker_behavior(null);
+  });
+
+  const {path: rootPath} = await test_driver.create_temporary_directory({
+    entries: [
+      {
+        type: 'file',
+        path: 'readonly.txt',
+        data: {type: 'string', value: 'Cannot overwrite me'},
+        permissions: {readable: true, writable: false},
+      },
+    ],
+  });
+  t.add_cleanup(async () => {
+    await test_driver.remove_temporary_directory({path: rootPath});
+  });
+
+  await test_driver.set_file_picker_behavior({
+    type: 'accept',
+    paths: [rootPath],
+  });
+  await test_driver.bless('show a directory picker');
+
+  const dir = await self.showDirectoryPicker({mode: 'readwrite'});
+  assert_true(dir instanceof FileSystemHandle);
+  assert_true(dir instanceof FileSystemDirectoryHandle);
+  assert_equals(dir.kind, 'directory');
+
+  assert_equals(await dir.queryPermission({mode: 'readwrite'}), 'granted');
+
+  // Verify that creating a new file in the temporary directory works.
+  const newFileHandle = await dir.getFileHandle('created.txt', {create: true});
+  const writable = await newFileHandle.createWritable();
+  await writable.write('New file content');
+  await writable.close();
+  assert_equals(await (await newFileHandle.getFile()).text(), 'New file content');
+}, 'showDirectoryPicker can select a directory with readwrite mode and write files');
+
+// 3. Passing a file path to showDirectoryPicker cancels dialog.
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.set_file_picker_behavior(null);
+  });
+
+  const {path: rootPath} = await test_driver.create_temporary_directory({
+    entries: [{type: 'file', path: 'not_a_dir.txt'}],
+  });
+  t.add_cleanup(async () => {
+    await test_driver.remove_temporary_directory({path: rootPath});
+  });
+
+  await test_driver.set_file_picker_behavior({
+    type: 'accept',
+    paths: [`${rootPath}/not_a_dir.txt`],
+  });
+  await test_driver.bless('show a directory picker');
+
+  await promise_rejects_dom(t, 'AbortError', self.showDirectoryPicker());
+}, 'showDirectoryPicker rejects with AbortError when configured path is a file');
+
+// 4. Test dialog cancellation (AbortError).
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.set_file_picker_behavior(null);
+  });
+  await test_driver.set_file_picker_behavior({type: 'cancel'});
+  await test_driver.bless('show a directory picker');
+
+  await promise_rejects_dom(t, 'AbortError', self.showDirectoryPicker());
+}, 'showDirectoryPicker rejects with AbortError when canceled');
+</script>

@@ -462,6 +462,45 @@ class BidiDigitalCredentialsSetVirtualWalletBehaviorAction:
         return await self.protocol.digital_credentials.set_virtual_wallet_behavior(action, protocol, response, context)
 
 
+class BidiBrowserCreateTemporaryDirectoryAction:
+    name = "bidi.browser.create_temporary_directory"
+
+    def __init__(self, logger, protocol):
+        do_delayed_imports()
+        self.logger = logger
+        self.protocol = protocol
+
+    async def __call__(self, payload: Mapping[str, Any]) -> Any:
+        entries = payload.get("entries")
+        return await self.protocol.bidi_browser.create_temporary_directory(entries)
+
+
+class BidiBrowserRemoveTemporaryDirectoryAction:
+    name = "bidi.browser.remove_temporary_directory"
+
+    def __init__(self, logger, protocol):
+        do_delayed_imports()
+        self.logger = logger
+        self.protocol = protocol
+
+    async def __call__(self, payload: Mapping[str, Any]) -> Any:
+        path = payload["path"]
+        return await self.protocol.bidi_browser.remove_temporary_directory(path)
+
+
+class BidiBrowserSetFileDialogBehaviorAction:
+    name = "bidi.browser.set_file_dialog_behavior"
+
+    def __init__(self, logger, protocol):
+        do_delayed_imports()
+        self.logger = logger
+        self.protocol = protocol
+
+    async def __call__(self, payload: Mapping[str, Any]) -> Any:
+        file_dialog_behavior = payload.get("fileDialogBehavior")
+        return await self.protocol.bidi_browser.set_file_dialog_behavior(file_dialog_behavior)
+
+
 async_actions = [
     BidiBluetoothHandleRequestDevicePrompt,
     BidiBluetoothSimulateAdapterAction,
@@ -484,6 +523,9 @@ async_actions = [
     BidiEmulationSetViewportMetaOverrideAction,
     BidiUserAgentClientHintsSetClientHintsOverrideAction,
     BidiPermissionsSetPermissionAction,
+    BidiBrowserCreateTemporaryDirectoryAction,
+    BidiBrowserRemoveTemporaryDirectoryAction,
+    BidiBrowserSetFileDialogBehaviorAction,
     BidiSessionSubscribeAction,
     BidiSessionUnsubscribeAction,
     BidiPermissionsSetPermissionAction,

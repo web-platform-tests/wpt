@@ -638,6 +638,33 @@ class BidiPermissionsProtocolPart(ProtocolPart):
         pass
 
 
+class BidiBrowserProtocolPart(ProtocolPart):
+    """Protocol part for BiDi browser commands"""
+    __metaclass__ = ABCMeta
+    name = "bidi_browser"
+
+    @abstractmethod
+    async def create_temporary_directory(
+        self,
+        entries: Optional[List[Mapping[str, Any]]] = None,
+    ) -> Any:
+        pass
+
+    @abstractmethod
+    async def remove_temporary_directory(
+        self,
+        path: str,
+    ) -> Any:
+        pass
+
+    @abstractmethod
+    async def set_file_dialog_behavior(
+        self,
+        file_dialog_behavior: Optional[Mapping[str, Any]],
+    ) -> Any:
+        pass
+
+
 class BidiEmulationProtocolPart(ProtocolPart):
     """Protocol part for emulation"""
     __metaclass__ = ABCMeta

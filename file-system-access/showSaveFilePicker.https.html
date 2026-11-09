@@ -1,0 +1,87 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>showSaveFilePicker automation tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+// 1. Test saving a new file inside a temporary directory.
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.set_file_picker_behavior(null);
+  });
+
+  const {path: dirPath} = await test_driver.create_temporary_directory();
+  t.add_cleanup(async () => {
+    await test_driver.remove_temporary_directory({path: dirPath});
+  });
+  const saveFile = `${dirPath}/save_test_file.txt`;
+
+  await test_driver.set_file_picker_behavior({
+    type: 'accept',
+    paths: [saveFile],
+  });
+  await test_driver.bless('show a save file picker');
+
+  const file = await self.showSaveFilePicker();
+  assert_true(file instanceof FileSystemHandle);
+  assert_true(file instanceof FileSystemFileHandle);
+  assert_equals(file.kind, 'file');
+  assert_equals(file.name, 'save_test_file.txt');
+  assert_equals(await file.queryPermission(), 'granted');
+  assert_equals(await file.queryPermission({mode: 'readwrite'}), 'granted');
+
+  const writable = await file.createWritable();
+  await writable.write('Saved content');
+  await writable.close();
+
+  const fileData = await file.getFile();
+  assert_equals(await fileData.text(), 'Saved content');
+}, 'showSaveFilePicker can save a file in a temporary directory');
+
+// 2. Test that showSaveFilePicker truncates an existing file pre-populated by create_temporary_directory.
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.set_file_picker_behavior(null);
+  });
+
+  const {path: dirPath} = await test_driver.create_temporary_directory({
+    entries: [
+      {
+        type: 'file',
+        path: 'existing.txt',
+        data: {type: 'string', value: 'Existing content to be truncated'},
+      },
+    ],
+  });
+  t.add_cleanup(async () => {
+    await test_driver.remove_temporary_directory({path: dirPath});
+  });
+  const saveFile = `${dirPath}/existing.txt`;
+
+  await test_driver.set_file_picker_behavior({
+    type: 'accept',
+    paths: [saveFile],
+  });
+  await test_driver.bless('show a save file picker');
+  const file = await self.showSaveFilePicker();
+
+  // The file should be truncated to 0 length upon selection.
+  const truncatedData = await file.getFile();
+  assert_equals(truncatedData.size, 0);
+  assert_equals(await truncatedData.text(), '');
+}, 'showSaveFilePicker truncates an existing file');
+
+// 3. Test dialog cancellation (AbortError).
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.set_file_picker_behavior(null);
+  });
+  await test_driver.set_file_picker_behavior({type: 'cancel'});
+  await test_driver.bless('show a save file picker');
+
+  await promise_rejects_dom(t, 'AbortError', self.showSaveFilePicker());
+}, 'showSaveFilePicker rejects with AbortError when canceled');
+</script>

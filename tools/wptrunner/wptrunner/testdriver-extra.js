@@ -530,6 +530,36 @@
         });
     };
 
+    window.test_driver_internal.bidi.browser = {
+        create_temporary_directory: function (params) {
+            return create_action("bidi.browser.create_temporary_directory", params ?? {});
+        },
+        remove_temporary_directory: function (params) {
+            return create_action("bidi.browser.remove_temporary_directory", params);
+        },
+        set_file_dialog_behavior: function (params) {
+            const fileDialogBehavior = (params && typeof params === "object" && "fileDialogBehavior" in params)
+                ? params.fileDialogBehavior
+                : params;
+            return create_action("bidi.browser.set_file_dialog_behavior", {fileDialogBehavior});
+        }
+    };
+
+    window.test_driver_internal.create_temporary_directory = function (params) {
+        return create_action("bidi.browser.create_temporary_directory", params ?? {});
+    };
+
+    window.test_driver_internal.remove_temporary_directory = function (params) {
+        return create_action("bidi.browser.remove_temporary_directory", params);
+    };
+
+    window.test_driver_internal.set_file_picker_behavior = function (params) {
+        const fileDialogBehavior = (params && typeof params === "object" && "fileDialogBehavior" in params)
+            ? params.fileDialogBehavior
+            : params;
+        return create_action("bidi.browser.set_file_dialog_behavior", {fileDialogBehavior});
+    };
+
     window.test_driver_internal.set_test_context = function(context) {
         if (is_test_context()) {
             throw new Error("Tried to set testharness context in a window containing testharness.js");

@@ -1,0 +1,215 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>showOpenFilePicker automation tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+// 1. Test single-file selection using create_temporary_directory + set_file_picker_behavior.
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.set_file_picker_behavior(null);
+  });
+  const {path: dirPath} = await test_driver.create_temporary_directory({
+    entries: [
+      {
+        type: 'file',
+        path: 'testfile.txt',
+        data: {type: 'string', value: 'Hello World!\n'},
+      },
+    ],
+  });
+  t.add_cleanup(async () => {
+    await test_driver.remove_temporary_directory({path: dirPath});
+  });
+  await test_driver.set_file_picker_behavior({
+    type: 'accept',
+    paths: [`${dirPath}/testfile.txt`],
+  });
+  await test_driver.bless('show a file picker');
+
+  const files = await self.showOpenFilePicker();
+  assert_true(Array.isArray(files));
+  assert_equals(files.length, 1);
+  assert_true(files[0] instanceof FileSystemHandle);
+  assert_true(files[0] instanceof FileSystemFileHandle);
+  assert_equals(files[0].kind, 'file');
+  assert_equals(files[0].name, 'testfile.txt');
+
+  const file = await files[0].getFile();
+  assert_equals(file.name, 'testfile.txt');
+  assert_equals(await file.text(), 'Hello World!\n');
+  assert_equals(await files[0].queryPermission(), 'granted');
+
+  // Verify persistence: a second picker call without re-setting selects the same file.
+  await test_driver.bless('show a file picker again');
+  const filesAgain = await self.showOpenFilePicker();
+  assert_equals(filesAgain.length, 1);
+  assert_equals(filesAgain[0].name, 'testfile.txt');
+}, 'showOpenFilePicker can select a single file persistently');
+
+// 2. Test multi-file selection including base64 data and size-initialized file.
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.set_file_picker_behavior(null);
+  });
+  const {path: dirPath} = await test_driver.create_temporary_directory({
+    entries: [
+      {
+        type: 'file',
+        path: 'testfile.txt',
+        data: {type: 'base64', value: btoa('Hello World!\n')},
+      },
+      {
+        type: 'file',
+        path: 'zeroes.bin',
+        size: 16,
+      },
+    ],
+  });
+  t.add_cleanup(async () => {
+    await test_driver.remove_temporary_directory({path: dirPath});
+  });
+  await test_driver.set_file_picker_behavior({
+    type: 'accept',
+    paths: [
+      `${dirPath}/testfile.txt`,
+      `${dirPath}/zeroes.bin`,
+    ],
+  });
+  await test_driver.bless('show a file picker');
+
+  const files = await self.showOpenFilePicker({multiple: true});
+  assert_true(Array.isArray(files));
+  assert_equals(files.length, 2);
+
+  assert_equals(files[0].name, 'testfile.txt');
+  assert_equals(await (await files[0].getFile()).text(), 'Hello World!\n');
+
+  assert_equals(files[1].name, 'zeroes.bin');
+  const zeroesBuffer = new Uint8Array(await (await files[1].getFile()).arrayBuffer());
+  assert_equals(zeroesBuffer.length, 16);
+  assert_true(zeroesBuffer.every(b => b === 0));
+}, 'showOpenFilePicker can select multiple files (data and size)');
+
+// 3. Multiple files when multiple is false cancels dialog.
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.set_file_picker_behavior(null);
+  });
+  const {path: dirPath} = await test_driver.create_temporary_directory({
+    entries: [
+      {type: 'file', path: 'a.txt'},
+      {type: 'file', path: 'b.txt'},
+    ],
+  });
+  t.add_cleanup(async () => {
+    await test_driver.remove_temporary_directory({path: dirPath});
+  });
+  await test_driver.set_file_picker_behavior({
+    type: 'accept',
+    paths: [`${dirPath}/a.txt`, `${dirPath}/b.txt`],
+  });
+  await test_driver.bless('show a file picker');
+
+  await promise_rejects_dom(t, 'AbortError', self.showOpenFilePicker({multiple: false}));
+}, 'showOpenFilePicker rejects with AbortError when multiple files configured for single-file picker');
+
+// 4. Directory path or non-existent path cancels open file picker.
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.set_file_picker_behavior(null);
+  });
+  const {path: dirPath} = await test_driver.create_temporary_directory();
+  t.add_cleanup(async () => {
+    await test_driver.remove_temporary_directory({path: dirPath});
+  });
+  await test_driver.set_file_picker_behavior({
+    type: 'accept',
+    paths: [dirPath],
+  });
+  await test_driver.bless('show a file picker');
+  await promise_rejects_dom(t, 'AbortError', self.showOpenFilePicker());
+
+  await test_driver.set_file_picker_behavior({
+    type: 'accept',
+    paths: [`${dirPath}/nonexistent.txt`],
+  });
+  await test_driver.bless('show a file picker');
+  await promise_rejects_dom(t, 'AbortError', self.showOpenFilePicker());
+}, 'showOpenFilePicker rejects with AbortError when path is a directory or does not exist');
+
+// 5. Test dialog cancellation (AbortError).
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.set_file_picker_behavior(null);
+  });
+  await test_driver.set_file_picker_behavior({type: 'cancel'});
+  await test_driver.bless('show a file picker');
+
+  await promise_rejects_dom(t, 'AbortError', self.showOpenFilePicker());
+}, 'showOpenFilePicker rejects with AbortError when canceled');
+
+// 6. Test that passing an empty array rejects with TypeError.
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.set_file_picker_behavior(null);
+  });
+  await promise_rejects_js(
+      t, TypeError,
+      test_driver.set_file_picker_behavior({type: 'accept', paths: []}));
+}, 'set_file_picker_behavior rejects with TypeError when passing an empty array');
+
+// 7. Test path validation (rejects '..' escaping root and absolute paths).
+promise_test(async t => {
+  await promise_rejects_js(
+      t, TypeError,
+      test_driver.create_temporary_directory({
+        entries: [{type: 'file', path: '../escape.txt'}],
+      }));
+  await promise_rejects_js(
+      t, TypeError,
+      test_driver.create_temporary_directory({
+        entries: [{type: 'file', path: '/etc/passwd'}],
+      }));
+  await promise_rejects_js(
+      t, TypeError,
+      test_driver.create_temporary_directory({
+        entries: [{type: 'symlink', path: 'sub/link', target: '../outside'}],
+      }));
+}, 'create_temporary_directory rejects paths or symlink targets escaping root');
+
+// 8. Test second-pass permissions sorting: parent directory with writable: false before child file.
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.set_file_picker_behavior(null);
+  });
+  const {path: dirPath} = await test_driver.create_temporary_directory({
+    entries: [
+      {
+        type: 'directory',
+        path: 'ro_dir',
+        permissions: {readable: true, writable: false, executable: true},
+      },
+      {
+        type: 'file',
+        path: 'ro_dir/child.txt',
+        data: {type: 'string', value: 'Inside read-only directory'},
+      },
+    ],
+  });
+  t.add_cleanup(async () => {
+    await test_driver.remove_temporary_directory({path: dirPath});
+  });
+  await test_driver.set_file_picker_behavior({
+    type: 'accept',
+    paths: [`${dirPath}/ro_dir/child.txt`],
+  });
+  await test_driver.bless('show a file picker');
+  const files = await self.showOpenFilePicker();
+  assert_equals(files.length, 1);
+  assert_equals(await (await files[0].getFile()).text(), 'Inside read-only directory');
+}, 'create_temporary_directory applies permissions in descending depth order');
+</script>

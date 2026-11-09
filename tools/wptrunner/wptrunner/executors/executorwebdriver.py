@@ -45,6 +45,7 @@ from .protocol import (BaseProtocolPart,
                        BidiUserAgentClientHintsProtocolPart,
                        BidiEventsProtocolPart,
                        BidiPermissionsProtocolPart,
+                       BidiBrowserProtocolPart,
                        BidiScriptProtocolPart,
                        DevicePostureProtocolPart,
                        StorageProtocolPart,
@@ -451,6 +452,44 @@ class WebDriverBidiPermissionsProtocolPart(BidiPermissionsProtocolPart):
 
         return await self.webdriver.bidi_session.permissions.set_permission(**params)
 
+
+class WebDriverBidiBrowserProtocolPart(BidiBrowserProtocolPart):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.webdriver = None
+        self._temporary_directories = set()
+
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    async def create_temporary_directory(self, entries=None) -> Any:
+        params = {}
+        if entries is not None:
+            params["entries"] = entries
+        result = await self.webdriver.bidi_session.browser.create_temporary_directory(**params)
+        if isinstance(result, dict) and "path" in result:
+            self._temporary_directories.add(result["path"])
+        return result
+
+    async def remove_temporary_directory(self, path) -> Any:
+        self._temporary_directories.discard(path)
+        return await self.webdriver.bidi_session.browser.remove_temporary_directory(
+            path=path)
+
+    async def cleanup_temporary_directories(self) -> None:
+        paths = list(self._temporary_directories)
+        self._temporary_directories.clear()
+        for path in paths:
+            try:
+                await self.webdriver.bidi_session.browser.remove_temporary_directory(
+                    path=path)
+            except Exception as e:
+                self.logger.debug(f"Failed to remove temporary directory {path}: {e}")
+
+    async def set_file_dialog_behavior(self, file_dialog_behavior) -> Any:
+        return await self.webdriver.bidi_session.browser.set_file_dialog_behavior(
+            file_dialog_behavior=file_dialog_behavior)
+
 class WebDriverBidiWebExtensionsProtocolPart(WebExtensionsProtocolPart):
     def __init__(self, parent):
         super().__init__(parent)
@@ -744,6 +783,11 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
         if hasattr(self.parent, 'bidi_events'):
             # Use protocol loop to run the async cleanup.
             self.parent.loop.run_until_complete(self.parent.bidi_events.unsubscribe_all())
+
+        # Remove any temporary directories created during the test.
+        if hasattr(self.parent, 'bidi_browser'):
+            self.parent.loop.run_until_complete(
+                self.parent.bidi_browser.cleanup_temporary_directories())
 
         if len(self._unexpected_exceptions) > 0:
             # TODO: what to do if there are more then 1 unexpected exceptions?
@@ -1198,6 +1242,7 @@ class WebDriverBidiProtocol(WebDriverProtocol):
                   WebDriverBidiEmulationProtocolPart,
                   WebDriverBidiEventsProtocolPart,
                   WebDriverBidiPermissionsProtocolPart,
+                  WebDriverBidiBrowserProtocolPart,
                   WebDriverBidiScriptProtocolPart,
                   WebDriverBidiWebExtensionsProtocolPart,
                   WebDriverBidiUserAgentClientHintsProtocolPart,

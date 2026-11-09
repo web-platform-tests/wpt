@@ -1,0 +1,127 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HTML input type=file picker automation tests</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/input.html#show-the-picker,-if-applicable">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<input id="singleInput" type="file">
+<input id="multiInput" type="file" multiple>
+
+<script>
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    singleInput.value = '';
+    await test_driver.set_file_picker_behavior(null);
+  });
+
+  const {path: dirPath} = await test_driver.create_temporary_directory({
+    entries: [
+      {
+        type: 'file',
+        path: 'hello.txt',
+        data: {type: 'string', value: 'Hello Input File!\n'},
+      },
+    ],
+  });
+  t.add_cleanup(async () => {
+    await test_driver.remove_temporary_directory({path: dirPath});
+  });
+
+  await test_driver.set_file_picker_behavior({
+    type: 'accept',
+    paths: [`${dirPath}/hello.txt`],
+  });
+
+  const changePromise = new Promise(resolve => {
+    singleInput.addEventListener('change', resolve, {once: true});
+  });
+  await test_driver.bless('show file picker', () => singleInput.showPicker());
+  await changePromise;
+
+  assert_equals(singleInput.files.length, 1);
+  assert_equals(singleInput.files[0].name, 'hello.txt');
+  assert_equals(await singleInput.files[0].text(), 'Hello Input File!\n');
+}, 'input type=file selects a single file when file dialog behavior is accept');
+
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    multiInput.value = '';
+    await test_driver.set_file_picker_behavior(null);
+  });
+
+  const {path: dirPath} = await test_driver.create_temporary_directory({
+    entries: [
+      {type: 'file', path: 'first.txt', data: {type: 'string', value: 'First'}},
+      {type: 'file', path: 'second.txt', data: {type: 'string', value: 'Second'}},
+    ],
+  });
+  t.add_cleanup(async () => {
+    await test_driver.remove_temporary_directory({path: dirPath});
+  });
+
+  await test_driver.set_file_picker_behavior({
+    type: 'accept',
+    paths: [`${dirPath}/first.txt`, `${dirPath}/second.txt`],
+  });
+
+  const changePromise = new Promise(resolve => {
+    multiInput.addEventListener('change', resolve, {once: true});
+  });
+  await test_driver.bless('show multiple file picker', () => multiInput.showPicker());
+  await changePromise;
+
+  assert_equals(multiInput.files.length, 2);
+  assert_equals(multiInput.files[0].name, 'first.txt');
+  assert_equals(multiInput.files[1].name, 'second.txt');
+}, 'input type=file multiple selects multiple files');
+
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    singleInput.value = '';
+    await test_driver.set_file_picker_behavior(null);
+  });
+
+  await test_driver.set_file_picker_behavior({type: 'cancel'});
+
+  const cancelPromise = new Promise(resolve => {
+    singleInput.addEventListener('cancel', resolve, {once: true});
+  });
+  await test_driver.bless('show file picker and cancel', () => singleInput.showPicker());
+  await cancelPromise;
+
+  assert_equals(singleInput.files.length, 0);
+}, 'input type=file fires cancel event when file dialog behavior is cancel');
+
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    singleInput.value = '';
+    await test_driver.set_file_picker_behavior(null);
+  });
+
+  const {path: dirPath} = await test_driver.create_temporary_directory({
+    entries: [
+      {type: 'file', path: 'a.txt'},
+      {type: 'file', path: 'b.txt'},
+    ],
+  });
+  t.add_cleanup(async () => {
+    await test_driver.remove_temporary_directory({path: dirPath});
+  });
+
+  await test_driver.set_file_picker_behavior({
+    type: 'accept',
+    paths: [`${dirPath}/a.txt`, `${dirPath}/b.txt`],
+  });
+
+  const cancelPromise = new Promise(resolve => {
+    singleInput.addEventListener('cancel', resolve, {once: true});
+  });
+  await test_driver.bless('show single file picker with multiple paths', () => singleInput.showPicker());
+  await cancelPromise;
+
+  assert_equals(singleInput.files.length, 0);
+}, 'input type=file without multiple fires cancel event when multiple paths are configured');
+</script>

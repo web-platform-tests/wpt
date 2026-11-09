@@ -107,6 +107,37 @@ class Browser(BidiModule):
             "userContexts": user_contexts
         }
 
+    @command
+    def set_file_dialog_behavior(
+            self, file_dialog_behavior: Nullable[Mapping[str, Any]],
+            user_contexts: Maybe[List[str]] = UNDEFINED
+    ) -> Mapping[str, Any]:
+        return {
+            "fileDialogBehavior": file_dialog_behavior,
+            "userContexts": user_contexts
+        }
+
+    @command
+    def create_temporary_directory(
+            self, entries: Maybe[List[Mapping[str, Any]]] = UNDEFINED
+    ) -> Mapping[str, Any]:
+        return {
+            "entries": entries
+        }
+
+    @create_temporary_directory.result
+    def _create_temporary_directory(self, result: Mapping[str, Any]) -> Any:
+        assert isinstance(result["path"], str)
+        return {"path": result["path"]}
+
+    @command
+    def remove_temporary_directory(
+            self, path: str
+    ) -> Mapping[str, Any]:
+        return {
+            "path": path
+        }
+
     def _validate_client_window(self, client_window_info: Mapping[str, Any]) -> None:
         assert isinstance(client_window_info["active"], bool)
         assert isinstance(client_window_info["clientWindow"], str)

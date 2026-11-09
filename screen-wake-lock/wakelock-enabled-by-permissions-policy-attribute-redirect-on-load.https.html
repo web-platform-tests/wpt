@@ -15,24 +15,26 @@
   const cross_origin_src =
     base_src + get_host_info().HTTPS_REMOTE_ORIGIN + relative_path;
 
-  async_test(t => {
-    test_feature_availability(
-      'navigator.wakeLock.request("screen")',
-      t,
-      same_origin_src,
-      expect_feature_available_default,
-      "screen-wake-lock"
-    );
+  promise_test(t => {
+    return test_feature_availability({
+      feature_description: 'navigator.wakeLock.request("screen")',
+      test: t,
+      src: same_origin_src,
+      expect_feature_available: expect_feature_available_default,
+      feature_name: "screen-wake-lock",
+      is_promise_test: true,
+    });
   }, 'Permissions-Policy allow="screen-wake-lock" allows same-origin relocation');
 
-  async_test(t => {
-    test_feature_availability(
-      'navigator.wakeLock.request("screen")',
-      t,
-      cross_origin_src,
-      expect_feature_unavailable_default,
-      "screen-wake-lock"
-    );
+  promise_test(t => {
+    return test_feature_availability({
+      feature_description: 'navigator.wakeLock.request("screen")',
+      test: t,
+      src: cross_origin_src,
+      expect_feature_available: expect_feature_unavailable_default,
+      feature_name: "screen-wake-lock",
+      is_promise_test: true,
+    });
   }, 'Permissions-Policy allow="screen-wake-lock" disallows cross-origin relocation');
 
 </script>

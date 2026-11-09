@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>WebMCP origin wildcards</title>
+<meta name="timeout" content="long">
+<link rel="help" href="https://webmachinelearning.github.io/webmcp/#model-context-register-tool-options">
+<link rel="help" href="https://webmachinelearning.github.io/webmcp/#model-context-get-tool-options">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<body>
+<script>
+const hostInfo = get_host_info();
+const remoteOrigins = [
+  hostInfo.HTTPS_REMOTE_ORIGIN,
+  hostInfo.HTTPS_OTHER_NOTSAMESITE_ORIGIN,
+];
+
+async function createContext(t, origin, {allow = 'tools *', sandbox} = {}) {
+  const uuid = token();
+  const iframe = document.createElement('iframe');
+  const executorPath =
+    '/html/browsers/browsing-the-web/remote-context-helper/resources/executor-window.py';
+  iframe.src = `${origin}${executorPath}?uuid=${uuid}`;
+  iframe.allow = allow;
+  if (sandbox !== undefined) {
+    iframe.setAttribute('sandbox', sandbox);
+  }
+  const loaded = new Promise(resolve => iframe.onload = resolve);
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+  await loaded;
+  return new RemoteContext(uuid);
+}
+
+async function registerParentTool(t, exposedTo = ['*']) {
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+  await document.modelContext.registerTool({
+    name: 'parent_tool',
+    description: 'Parent tool',
+    execute: async () => 'parent result',
+  }, {exposedTo, signal: controller.signal});
+  return controller;
+}
+
+async function registerRemoteTool(context, name, exposedTo) {
+  await context.execute_script(async (name, exposedTo) => {
+    await document.modelContext.registerTool({
+      name,
+      description: 'Iframe tool',
+      execute: async () => 'iframe result',
+    }, {exposedTo});
+  }, [name, exposedTo]);
+}
+
+async function getRemoteTools(context, options = {}) {
+  return context.execute_script(async options => {
+    const tools = await document.modelContext.getTools(options);
+    return tools.map(tool => ({name: tool.name, origin: tool.origin}));
+  }, [options]);
+}
+
+for (const exposedTo of [
+  ['*'],
+  ['*', remoteOrigins[0]],
+  [remoteOrigins[0], '*'],
+  ['*', '*'],
+]) {
+  promise_test(async t => {
+    const contexts = await Promise.all(
+      remoteOrigins.map(origin => createContext(t, origin)));
+    await registerParentTool(t, exposedTo);
+
+    for (const context of contexts) {
+      const tools = await getRemoteTools(context, {fromOrigins: [self.origin]});
+      assert_array_equals(tools.map(tool => tool.name), ['parent_tool']);
+      assert_equals(tools[0].origin, self.origin);
+      const result = await context.execute_script(async origin => {
+        const tools = await document.modelContext.getTools({fromOrigins: [origin]});
+        return document.modelContext.executeTool(
+          tools.find(tool => tool.name === 'parent_tool'));
+      }, [self.origin]);
+      assert_equals(result, 'parent result');
+    }
+  }, `exposedTo ${JSON.stringify(exposedTo)} permits discovery and execution by multiple cross-origin consumers`);
+}
+
+promise_test(async t => {
+  await registerParentTool(t, []);
+  const origins = [self.origin, ...remoteOrigins];
+  const contexts = await Promise.all(
+    origins.map(origin => createContext(t, origin)));
+  for (const [index, context] of contexts.entries()) {
+    await registerRemoteTool(context, `iframe_tool_${index}`, [self.origin]);
+  }
+
+  for (const fromOrigins of [
+    ['*'],
+    ['*', remoteOrigins[0]],
+    [remoteOrigins[0], '*'],
+    ['*', '*'],
+  ]) {
+    const tools = await document.modelContext.getTools({fromOrigins});
+    assert_array_equals(
+      tools.map(tool => tool.name),
+      ['iframe_tool_0', 'iframe_tool_1', 'iframe_tool_2', 'parent_tool']);
+    assert_array_equals(tools.map(tool => tool.origin), [...origins, self.origin]);
+    for (const tool of tools.filter(tool => tool.name.startsWith('iframe_tool_'))) {
+      assert_equals(await document.modelContext.executeTool(tool), 'iframe result');
+    }
+  }
+}, 'fromOrigins wildcard includes same-origin and multiple cross-origin tools without duplicates');
+
+for (const exposedTo of [[], [remoteOrigins[1]]]) {
+  promise_test(async t => {
+    const context = await createContext(t, remoteOrigins[0]);
+    await registerRemoteTool(context, 'private_tool', exposedTo);
+    const tools = await document.modelContext.getTools({fromOrigins: ['*']});
+    assert_array_equals(tools, []);
+  }, `fromOrigins wildcard does not bypass exposedTo ${JSON.stringify(exposedTo)}`);
+}
+
+promise_test(async t => {
+  const context = await createContext(t, remoteOrigins[0]);
+  await registerParentTool(t);
+  for (const options of [{}, {fromOrigins: []}, {fromOrigins: [remoteOrigins[1]]}]) {
+    assert_array_equals(await getRemoteTools(context, options), []);
+  }
+}, 'exposedTo wildcard does not bypass the consumer origin filter');
+
+promise_test(async t => {
+  const context = await createContext(t, remoteOrigins[0]);
+  await context.execute_script(() => {
+    self.toolchange = new Promise(resolve => {
+      document.modelContext.addEventListener('toolchange', resolve, {once: true});
+    });
+  });
+
+  const controller = await registerParentTool(t);
+  await context.execute_script(async () => {
+    await self.toolchange;
+  });
+  assert_array_equals(await getRemoteTools(context), []);
+  assert_array_equals(
+    (await getRemoteTools(context, {fromOrigins: [self.origin]})).map(tool => tool.name),
+    ['parent_tool']);
+
+  await context.execute_script(() => {
+    self.toolchange = new Promise(resolve => {
+      document.modelContext.addEventListener('toolchange', resolve, {once: true});
+    });
+  });
+  controller.abort();
+  await context.execute_script(async () => {
+    await self.toolchange;
+  });
+  assert_array_equals(await getRemoteTools(context, {fromOrigins: [self.origin]}), []);
+}, 'Wildcard exposure sends registration and unregistration notifications without consumer discovery opt-in');
+
+promise_test(async t => {
+  const context = await createContext(
+    t, remoteOrigins[0], {allow: "tools 'none'"});
+  const errors = await context.execute_script(async () => {
+    const errors = [];
+    try {
+      await document.modelContext.getTools({fromOrigins: ['*']});
+      errors.push(null);
+    } catch (error) {
+      errors.push(error.name);
+    }
+    try {
+      await document.modelContext.registerTool({
+        name: 'blocked_tool',
+        description: 'Blocked tool',
+        execute: async () => 'blocked',
+      }, {exposedTo: ['*']});
+      errors.push(null);
+    } catch (error) {
+      errors.push(error.name);
+    }
+    return errors;
+  });
+  assert_array_equals(errors, ['NotAllowedError', 'NotAllowedError']);
+}, 'Origin wildcards do not bypass the tools Permissions Policy');
+
+promise_test(async t => {
+  const context = await createContext(
+    t, self.origin, {sandbox: 'allow-scripts'});
+  assert_equals(await context.execute_script(() => self.origin), 'null');
+  await registerRemoteTool(context, 'opaque_tool', [self.origin]);
+
+  const tools = await document.modelContext.getTools({fromOrigins: ['*']});
+  assert_array_equals(tools, []);
+  const opaqueTools = await getRemoteTools(context, {fromOrigins: ['*']});
+  assert_array_equals(opaqueTools.map(tool => tool.name), ['opaque_tool']);
+  assert_equals(opaqueTools[0].origin, 'null');
+}, 'fromOrigins wildcard excludes opaque providers while preserving their same-origin access');
+
+promise_test(async t => {
+  const context = await createContext(
+    t, self.origin, {sandbox: 'allow-scripts'});
+  assert_equals(await context.execute_script(() => self.origin), 'null');
+  await registerParentTool(t);
+  assert_array_equals(
+    await getRemoteTools(context, {fromOrigins: [self.origin]}), []);
+}, 'exposedTo wildcard excludes opaque consumers');
+
+for (const invalidOrigin of ['/', 'http://example.com', 'null', ' *', '* ']) {
+  for (const origins of [['*', invalidOrigin], [invalidOrigin, '*']]) {
+    promise_test(async t => {
+      const controller = new AbortController();
+      t.add_cleanup(() => controller.abort());
+      await promise_rejects_dom(t, 'SecurityError',
+        document.modelContext.registerTool({
+          name: 'invalid_origins',
+          description: 'Invalid origin list',
+          execute: async () => 'not registered',
+        }, {exposedTo: origins, signal: controller.signal}));
+      const tools = await document.modelContext.getTools();
+      assert_array_equals(tools, []);
+    }, `exposedTo rejects ${JSON.stringify(origins)} without registering a tool`);
+
+    promise_test(async t => {
+      await promise_rejects_dom(t, 'SecurityError',
+        document.modelContext.getTools({fromOrigins: origins}));
+    }, `fromOrigins rejects ${JSON.stringify(origins)}`);
+  }
+}
+</script>

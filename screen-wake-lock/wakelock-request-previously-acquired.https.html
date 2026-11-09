@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/html/user-activation/resources/utils.js"></script>
+  <body>
+    <script>
+      promise_test(async (t) => {
+        const iframe = document.createElement("iframe");
+        iframe.allow = "screen-wake-lock";
+        document.body.appendChild(iframe);
+        t.add_cleanup(() => iframe.remove());
+
+        assert_false(iframe.contentWindow.navigator.userActivation.isActive);
+        await promise_rejects_dom(
+          t,
+          "NotAllowedError",
+          iframe.contentWindow.DOMException,
+          iframe.contentWindow.navigator.wakeLock.request("screen")
+        );
+      }, "A fresh document without previous locks or transient activation rejects the request");
+
+      promise_test(async (t) => {
+        assert_false(navigator.userActivation.isActive);
+
+        await test_driver.bless("grant activation to acquire the first lock");
+        const firstLock = await navigator.wakeLock.request("screen");
+        await firstLock.release();
+
+        const consumed = await consumeTransientActivation();
+        assert_true(consumed, "Transient activation should be successfully consumed");
+        assert_false(navigator.userActivation.isActive);
+
+        const secondLock = await navigator.wakeLock.request("screen");
+        assert_equals(secondLock.type, "screen");
+        assert_false(secondLock.released);
+        await secondLock.release();
+      }, "A document that has previously acquired a wake lock can acquire it again without transient activation");
+    </script>
+  </body>
+</html>

@@ -755,6 +755,39 @@
     assert_equals(shadow.querySelector("#after"), null);
   }, "Removing iframe while ShadowRoot.streamHTML() is open errors the stream with InvalidStateError");
 
+  promise_test(async (t) => {
+    window.events = [];
+
+    const iframe = document.createElement("iframe");
+    t.add_cleanup(() => iframe.remove());
+    iframe.srcdoc = "<!doctype html><body><div id='target'></div></body>";
+    await new Promise(resolve => {
+      iframe.addEventListener("load", resolve, { once: true });
+      document.body.appendChild(iframe);
+    });
+
+    const iframeDOMException = iframe.contentWindow.DOMException;
+    iframe.contentWindow.events = window.events;
+    const controlDone = fetch("resources/slow.js?pipe=trickle(d0.5)&f12_inflight_close_control=1")
+      .then(r => r.text())
+      .then(() => new Promise(r => t.step_timeout(r, 0)));
+    const target = iframe.contentDocument.getElementById("target");
+    const writer = target.streamHTMLUnsafe({ runScripts: true }).getWriter();
+    await writer.write(
+      "<script src='resources/slow.js?pipe=trickle(d0.2)&f12_inflight_close=1'><" + "/script>" +
+      "<p id='after'>after</p>"
+    );
+
+    const closePromise = writer.close();
+    iframe.remove();
+
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(closePromise));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.closed));
+    await controlDone;
+    assert_equals(target.querySelector("#after"), null);
+    assert_array_equals(window.events, []);
+  }, "Removing iframe while writer.close() is waiting on a parser-blocking script rejects the in-flight close() with InvalidStateError");
+
   // The write promise does not wait for a pending parser-blocking script,
   // whereas the close promise waits until the parser stops parsing (after any
   // pending parser-blocking script has executed and any remaining input has

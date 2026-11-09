@@ -806,7 +806,7 @@ IdlArray.prototype.merge_partials = function()
         // Partials are always merged, but their structural tests are only
         // generated if the original definition's tests are not filtered out.
         const runTests = (!this.test_filter || this.test_filter(parsed_idl.name)) &&
-            self.shouldRunSubTest(partialTestName);
+            self.shouldRunSubTest(parsed_idl.name);
 
         if (runTests && !parsed_idl.untested) {
             test(function () {
@@ -918,7 +918,7 @@ IdlArray.prototype.merge_mixins = function()
                     existing.push(new IdlInterfaceMember(member));
                 }
             }
-            if ((!this.test_filter || this.test_filter(lhs)) && self.shouldRunSubTest(testName)) {
+            if ((!this.test_filter || this.test_filter(lhs)) && self.shouldRunSubTest(lhs)) {
                 test(function () {
                     assert_true(!clash, "member " + (clash && clash.name) + " is unique");
                 }, testName);

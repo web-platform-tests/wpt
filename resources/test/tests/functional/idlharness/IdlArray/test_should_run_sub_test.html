@@ -17,17 +17,19 @@ rejects tests.</p>
 // Partials and mixins are merged even if shouldRunSubTest() rejects their tests
 (() => {
   const originalShouldRunSubTest = self.shouldRunSubTest;
-  const rejected = /^(?:J|J includes P: member names are unique)$/;
+  const rejected = /^J$/;
   self.shouldRunSubTest = key => !rejected.test(key);
 
   const idlArray = new IdlArray();
   idlArray.add_idls(`
     [Exposed=Window] interface J { undefined base(); };
     partial interface J { undefined partialJ(); };
+    partial interface J { undefined partialJ2(); };
     interface mixin P { undefined mixinJ(); };
     J includes P;
     [Exposed=Window] interface K { undefined base(); };
     partial interface K { undefined partialK(); };
+    partial interface K { undefined partialK2(); };
     interface mixin Q { undefined mixinK(); };
     K includes Q;`);
   idlArray.merge_partials();
@@ -36,9 +38,9 @@ rejects tests.</p>
 
   test(() => {
     assert_array_equals(
-      idlArray.members.J.members.map(m => m.name), ["base", "partialJ", "mixinJ"]);
+      idlArray.members.J.members.map(m => m.name), ["base", "partialJ", "partialJ2", "mixinJ"]);
     assert_array_equals(
-      idlArray.members.K.members.map(m => m.name), ["base", "partialK", "mixinK"]);
+      idlArray.members.K.members.map(m => m.name), ["base", "partialK", "partialK2", "mixinK"]);
   }, "J and K: members are merged whether or not shouldRunSubTest() rejects the tests");
 })();
 </script>
@@ -69,6 +71,18 @@ rejects tests.</p>
     },
     {
       "name": "Partial interface K: original interface defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface K[2]: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface K[2]: original interface defined",
       "status_string": "PASS",
       "properties": {},
       "message": null

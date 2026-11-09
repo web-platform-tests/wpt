@@ -657,7 +657,7 @@
 
     await new Promise(resolve => {
       iframe.addEventListener("load", resolve, { once: true });
-      iframe.src = "about:blank";
+      iframe.srcdoc = "<!doctype html><body>navigated</body>";
     });
 
     await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.closed));

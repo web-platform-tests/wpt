@@ -13,8 +13,8 @@
 /* global controlledResponse */
 
 async function renderingOpportunity() {
-  // The parent runs its animation callbacks before the child. Wait for the next
-  // parent frame so the child's callbacks have had an opportunity to run.
+  // Allow time for an incorrectly unblocked child to render. Parent callbacks
+  // do not guarantee that the child has had a rendering opportunity.
   await new Promise(requestAnimationFrame);
   await new Promise(requestAnimationFrame);
 }
@@ -33,7 +33,15 @@ async function createFrame(t, control = false) {
 }
 
 promise_test(async t => {
+  assert_implements(document.createElement("link").relList.supports("expect"),
+                    "rel=expect must be supported");
   t.add_cleanup(() => { delete window.documentReady; });
+  // Start a still-blocked control first: the spec permits a render-blocking timeout,
+  // which must not be mistaken for unblocking caused by the insertion.
+  // https://html.spec.whatwg.org/multipage/dom.html#render-blocked
+  const blockedControl = await createFrame(t);
+  let blockedControlRendered = false;
+  blockedControl.contentWindow.requestAnimationFrame(() => { blockedControlRendered = true; });
   const iframe = await createFrame(t);
   const doc = iframe.contentDocument;
   let rendered = false;
@@ -56,8 +64,10 @@ promise_test(async t => {
   doc.body.append(form);
   assert_equals(input.form, form, "Moving the form preserves the association");
 
-  await renderingOpportunity();
+  // Wait for the child itself: its rendering opportunities need not coincide
+  // with the parent's.
+  await new Promise(resolve => { iframe.contentWindow.requestAnimationFrame(resolve); });
   assert_equals(doc.readyState, "loading", "Parsing has not finished");
-  assert_true(rendered, "Reinserting the parser-associated input unblocks rendering");
+  assert_false(blockedControlRendered, "The document without a target remains render-blocked");
 }, "A parser-inserted flag must not skip internal resource link processing on insertion");
 </script>

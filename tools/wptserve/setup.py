@@ -1,11 +1,14 @@
 from setuptools import setup
 
-PACKAGE_VERSION = '3.0'
-deps = ["h2>=3.0.1"]
+PACKAGE_VERSION = '4.0.3'
+deps = [
+    "h2>=4.1.0",
+    "pywebsocket3>=4.0.2",
+]
 
 setup(name='wptserve',
       version=PACKAGE_VERSION,
-      description="Python webserver intended for in web browser testing",
+      description="Python web server intended for in web browser testing",
       long_description=open("README.md").read(),
       # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=["Development Status :: 5 - Production/Stable",
@@ -16,7 +19,7 @@ setup(name='wptserve',
       author_email='james@hoppipolla.co.uk',
       url='http://wptserve.readthedocs.org/',
       license='BSD',
-      packages=['wptserve', 'wptserve.sslutils'],
+      packages=['wptserve', 'wptserve.sslutils', 'wptserve.cgi'],
       include_package_data=True,
       zip_safe=False,
       install_requires=deps

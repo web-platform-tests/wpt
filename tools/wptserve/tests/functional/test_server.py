@@ -1,18 +1,23 @@
+import os
+import socket
+import ssl
 import unittest
-
-import pytest
 from urllib.error import HTTPError
 
+import pytest
+
+from localpaths import repo_root
+
 wptserve = pytest.importorskip("wptserve")
-from .base import TestUsingServer, TestUsingH2Server
+from .base import TestUsingH2Server, TestUsingServer, doc_root
 
 
 class TestFileHandler(TestUsingServer):
     def test_not_handled(self):
         with self.assertRaises(HTTPError) as cm:
             self.request("/not_existing")
-
-        self.assertEqual(cm.exception.code, 404)
+        with cm.exception as exc:
+            self.assertEqual(exc.code, 404)
 
 
 class TestRewriter(TestUsingServer):
@@ -40,7 +45,8 @@ class TestRequestHandler(TestUsingServer):
         with self.assertRaises(HTTPError) as cm:
             self.request("/test/raises")
 
-        self.assertEqual(cm.exception.code, 500)
+        with cm.exception as exc:
+            self.assertEqual(exc.code, 500)
 
     def test_many_headers(self):
         headers = {"X-Val%d" % i: str(i) for i in range(256)}
@@ -58,6 +64,65 @@ class TestRequestHandler(TestUsingServer):
         self.server.router.register(*route)
         resp = self.request("/test/headers", headers=headers)
         self.assertEqual(200, resp.getcode())
+
+
+class TestH1TLSHandshake(TestUsingServer):
+    def setUp(self):
+        self.server = wptserve.server.WebTestHttpd(
+            host="localhost",
+            port=0,
+            use_ssl=True,
+            key_file=os.path.join(repo_root, "tools", "certs", "web-platform.test.key"),
+            certificate=os.path.join(
+                repo_root, "tools", "certs", "web-platform.test.pem"
+            ),
+            doc_root=doc_root,
+        )
+        self.server.start()
+
+    def test_no_handshake(self):
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context.load_verify_locations(
+            os.path.join(repo_root, "tools", "certs", "cacert.pem")
+        )
+
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_no_handshake:
+            s_no_handshake.connect(("localhost", self.server.port))
+            # Note: this socket is left open, notably not sending the TLS handshake.
+
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) as sock:
+                sock.settimeout(10)
+                with context.wrap_socket(
+                    sock,
+                    do_handshake_on_connect=False,
+                    server_hostname="web-platform.test",
+                ) as ssock:
+                    ssock.connect(("localhost", self.server.port))
+                    ssock.do_handshake()
+                    # The pass condition here is essentially "don't raise TimeoutError".
+
+
+class TestH2TLSHandshake(TestUsingH2Server):
+    def test_no_handshake(self):
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context.load_verify_locations(
+            os.path.join(repo_root, "tools", "certs", "cacert.pem")
+        )
+
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_no_handshake:
+            s_no_handshake.connect(("localhost", self.server.port))
+            # Note: this socket is left open, notably not sending the TLS handshake.
+
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) as sock:
+                sock.settimeout(10)
+                with context.wrap_socket(
+                    sock,
+                    do_handshake_on_connect=False,
+                    server_hostname="web-platform.test",
+                ) as ssock:
+                    ssock.connect(("localhost", self.server.port))
+                    ssock.do_handshake()
+                    # The pass condition here is essentially "don't raise TimeoutError".
 
 
 class TestH2Version(TestUsingH2Server):

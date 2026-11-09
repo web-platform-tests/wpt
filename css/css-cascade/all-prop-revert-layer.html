@@ -7,12 +7,17 @@
 <style>
 /* Set properties to a value different than the initial one. */
 #nothing {
+  /*
+   * Legacy longhand properties that were later converted to shorthands
+   * should be specified here to prevent resetting the new longhands.
+   */
+  vertical-align: 123px;
+
   accent-color: #123;
   align-content: baseline;
   align-items: baseline;
   align-self: baseline;
-  align-tracks: baseline;
-  alignment-baseline: central;
+  alignment-baseline: middle;
   alt: "a";
   animation-composition: add;
   animation-delay: 123s;
@@ -22,6 +27,7 @@
   animation-iteration-count: 123;
   animation-name: \.;
   animation-play-state: paused;
+  animation-range: 10% 20%;
   animation-timeline: none;
   animation-timing-function: linear;
   app-region: drag;
@@ -39,6 +45,7 @@
   background-repeat: round;
   background-size: 123px;
   baseline-shift: 123px;
+  baseline-source: first;
   block-size: 123px;
   border-block-end: 123px dashed #123;
   border-block-start: 123px dashed #123;
@@ -94,6 +101,7 @@
   container-name: foo;
   container-type: size;
   content: "b";
+  content-visibility: auto;
   counter-increment: add 123;
   counter-reset: add 123;
   counter-set: add 123;
@@ -131,12 +139,13 @@
   font-variant-alternates: historical-forms;
   font-variant-caps: small-caps;
   font-variant-east-asian: full-width;
+  font-variant-emoji: emoji;
   font-variant-ligatures: none;
   font-variant-numeric: tabular-nums;
   font-variant-position: super;
   font-variation-settings: "smcp" 1;
   font-weight: 123;
-  glyph-orientation-horizontal: 123deg;
+  forced-color-adjust: none;
   glyph-orientation-vertical: 123deg;
   grid-auto-columns: 123px;
   grid-auto-flow: column;
@@ -151,6 +160,7 @@
   hanging-punctuation: first;
   height: 123px;
   hyphenate-character: "e";
+  hyphenate-limit-chars: 5;
   hyphens: auto;
   image-orientation: none;
   image-rendering: pixelated;
@@ -166,7 +176,6 @@
   justify-content: center;
   justify-items: baseline;
   justify-self: baseline;
-  justify-tracks: center;
   kerning: 123px;
   left: 123px;
   letter-spacing: 123px;
@@ -185,6 +194,7 @@
   margin-left: 123px;
   margin-right: 123px;
   margin-top: 123px;
+  margin-trim: block;
   marker-end: url("#ref");
   marker-mid: url("#ref");
   marker-start: url("#ref");
@@ -246,6 +256,7 @@
   padding-left: 123px;
   padding-right: 123px;
   padding-top: 123px;
+  page: page;
   paint-order: fill;
   perspective: 123px;
   perspective-origin: 123px 123%;
@@ -283,6 +294,7 @@
   scroll-snap-align: center;
   scroll-snap-stop: always;
   scroll-snap-type: both;
+  scroll-timeline: --foo inline;
   scrollbar-color: #123 #123;
   scrollbar-gutter: stable;
   scrollbar-width: none;
@@ -327,12 +339,15 @@
   text-transform: lowercase;
   text-underline-offset: 123px;
   text-underline-position: under;
+  text-wrap-style: balance;
+  timeline-scope: --foo;
   top: 123px;
   touch-action: none;
   transform: scale(-1);
   transform-box: fill-box;
   transform-origin: 123px 123px 123px;
   transform-style: preserve-3d;
+  transition-behavior: allow-discrete;
   transition-delay: 123s;
   transition-duration: 123s;
   transition-property: add;
@@ -341,9 +356,11 @@
   unicode-bidi: plaintext;
   user-select: all;
   vector-effect: non-scaling-stroke;
-  vertical-align: 123px;
+  view-timeline: --foo inline 10px;
+  view-transition-name: --foo;
   visibility: collapse;
-  white-space: nowrap;
+  white-space: pre;
+  white-space-trim: discard-inner;
   widows: 123;
   width: 123px;
   will-change: height;

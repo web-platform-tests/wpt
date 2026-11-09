@@ -1,12 +1,11 @@
 import pytest
 
-from webdriver.bidi.modules.script import ContextTarget, ScriptEvaluateResultException
+from ... import recursive_compare
+from webdriver.bidi.modules.script import ContextTarget
 
-from ... import any_int, any_string, recursive_compare
-from .. import any_stack_trace
+pytestmark = pytest.mark.asyncio
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("await_promise", [True, False])
 async def test_await_promise_delayed(bidi_session, top_context, await_promise):
     result = await bidi_session.script.call_function(
@@ -30,7 +29,6 @@ async def test_await_promise_delayed(bidi_session, top_context, await_promise):
             result)
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("await_promise", [True, False])
 async def test_await_promise_async_arrow(bidi_session, top_context, await_promise):
     result = await bidi_session.script.call_function(

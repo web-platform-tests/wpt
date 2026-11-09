@@ -34,6 +34,9 @@ computeExpectedScore = (impactRegionArea, moveDistance) => {
   return impactFraction * distanceFraction;
 };
 
+// An list to record all the entries with startTime and score.
+let watcher_entry_record = [];
+
 // An object that tracks the document cumulative layout shift score.
 // Usage:
 //
@@ -61,6 +64,7 @@ ScoreWatcher = function() {
     list.getEntries().forEach(entry => {
       this.lastEntry = entry;
       this.score += entry.value;
+      watcher_entry_record.push({startTime: entry.startTime, score: entry.value, hadRecentInput : entry.hadRecentInput});
       if (!entry.hadRecentInput)
         this.scoreWithInputExclusion += entry.value;
       this.resolve();
@@ -71,9 +75,16 @@ ScoreWatcher = function() {
 
 ScoreWatcher.prototype.checkExpectation = function(expectation) {
   if (expectation.score != undefined)
-    assert_equals(this.score, expectation.score);
+    // The layout-instability cases are subject to several layers
+    // of floating point rounding, resulting in failures between platforms,
+    // so default to approximate equality.
+    assert_approx_equals(this.score, expectation.score, 1e-3);
   if (expectation.sources)
     check_sources(expectation.sources, this.lastEntry.sources);
+};
+
+ScoreWatcher.prototype.get_entry_record = function() {
+  return watcher_entry_record;
 };
 
 check_sources = (expect_sources, actual_sources) => {

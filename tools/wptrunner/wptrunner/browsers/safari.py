@@ -1,16 +1,17 @@
 # mypy: allow-untyped-defs
 
 import os
+import platform
 import plistlib
-from distutils.spawn import find_executable
-from distutils.version import LooseVersion
+from packaging.version import Version
+from shutil import which
 
 import psutil
 
 from .base import WebDriverBrowser, require_arg
 from .base import get_timeout_multiplier   # noqa: F401
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.base import WdspecExecutor  # noqa: F401
+from ..executors.base import PytestExecutor  # noqa: F401
 from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
                                            WebDriverRefTestExecutor,  # noqa: F401
                                            WebDriverCrashtestExecutor)  # noqa: F401
@@ -21,8 +22,10 @@ __wptrunner__ = {"product": "safari",
                  "browser": "SafariBrowser",
                  "executor": {"testharness": "WebDriverTestharnessExecutor",
                               "reftest": "WebDriverRefTestExecutor",
-                              "wdspec": "WdspecExecutor",
-                              "crashtest": "WebDriverCrashtestExecutor"},
+                              "wdspec": "PytestExecutor",
+                              "crashtest": "WebDriverCrashtestExecutor",
+                              "test262": "WebDriverTestharnessExecutor",
+                              "aamtest": "PytestExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
@@ -50,13 +53,19 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, **kwargs
     if kwargs["binary"] is not None:
         raise ValueError("Safari doesn't support setting executable location")
 
-    V = LooseVersion
     browser_bundle_version = run_info_data["browser_bundle_version"]
-    if browser_bundle_version is not None and V(browser_bundle_version[2:]) >= V("613.1.7.1"):
-        logger.debug("using acceptInsecureCerts=True")
+    if (browser_bundle_version is not None and
+        Version(browser_bundle_version[2:]) >= Version("613.1.7.1")):
         executor_kwargs["capabilities"]["acceptInsecureCerts"] = True
     else:
         logger.warning("not using acceptInsecureCerts, Safari will require certificates to be trusted")
+
+    if (browser_bundle_version is not None and
+        Version(browser_bundle_version[2:]) >= Version("622.1.17")):
+        executor_kwargs["capabilities"]["webkit:alwaysAllowAutoplay"] = True
+    else:
+        logger.warning("not using webkit:alwaysAllowAutoplay, " +
+                       "Safari will require all autoplay for all WPT domains to be allowed")
 
     return executor_kwargs
 
@@ -66,10 +75,17 @@ def env_extras(**kwargs):
 
 
 def env_options():
-    return {}
+    rv = {}
+
+    version, _, _ = platform.mac_ver()
+    if version:
+        if Version(version) >= Version("26.4"):
+            rv["enable_webtransport_h3"] = True
+
+    return rv
 
 
-def run_info_extras(**kwargs):
+def run_info_extras(logger, **kwargs):
     webdriver_binary = kwargs["webdriver_binary"]
     rv = {}
 
@@ -123,8 +139,8 @@ def get_safari_info(wd_path):
 
 def get_webkit_info(safari_bundle_path):
     framework_paths = [
-        os.path.join(os.path.dirname(safari_bundle_path), "Contents", "Frameworks"),  # bundled Safari (e.g. STP)
-        os.path.join(os.path.dirname(safari_bundle_path), ".."),  # local Safari build
+        os.path.join(os.path.normpath(safari_bundle_path), "Contents", "Frameworks"),  # bundled Safari (e.g. STP)
+        os.path.join(os.path.normpath(safari_bundle_path), ".."),  # local Safari build
         "/System/Library/PrivateFrameworks",
         "/Library/Frameworks",
         "/System/Library/Frameworks",
@@ -146,24 +162,19 @@ class SafariBrowser(WebDriverBrowser):
     """Safari is backed by safaridriver, which is supplied through
     ``wptrunner.webdriver.SafariDriverServer``.
     """
-    def __init__(self, logger, binary=None, webdriver_binary=None, webdriver_args=None,
-                 port=None, env=None, kill_safari=False, **kwargs):
+    def __init__(self, logger, kill_safari=False, **kwargs):
         """Creates a new representation of Safari.  The `webdriver_binary`
         argument gives the WebDriver binary to use for testing. (The browser
         binary location cannot be specified, as Safari and SafariDriver are
         coupled.) If `kill_safari` is True, then `Browser.stop` will stop Safari."""
         super().__init__(logger,
-                         binary,
-                         webdriver_binary,
-                         webdriver_args=webdriver_args,
-                         port=None,
                          supports_pac=False,
-                         env=env)
+                         **kwargs)
 
-        if "/" not in webdriver_binary:
-            wd_path = find_executable(webdriver_binary)
+        if "/" not in self.webdriver_binary:
+            wd_path = which(self.webdriver_binary)
         else:
-            wd_path = webdriver_binary
+            wd_path = self.webdriver_binary
         self.safari_path = self._find_safari_executable(wd_path)
 
         logger.debug("WebDriver executable path: %s" % wd_path)
@@ -184,6 +195,12 @@ class SafariBrowser(WebDriverBrowser):
 
         return exe_path
 
+    def restart_on_test_type_change(self, new_test_type, old_test_type):
+        # Restart the test runner when switch from/to wdspec or aamtest tests.
+        # These tests use a different protocol class so a restart is always needed.
+        wdspec_types = {"wdspec", "aamtest"}
+        return old_test_type in wdspec_types or new_test_type in wdspec_types
+
     def make_command(self):
         return [self.webdriver_binary, f"--port={self.port}"] + self.webdriver_args
 
@@ -193,15 +210,26 @@ class SafariBrowser(WebDriverBrowser):
         if self.kill_safari:
             self.logger.debug("Going to stop Safari")
             for proc in psutil.process_iter(attrs=["exe"]):
-                if (proc.info["exe"] is not None and
-                    os.path.samefile(proc.info["exe"], self.safari_path)):
-                    self.logger.debug("Stopping Safari %s" % proc.pid)
+                if proc.info["exe"] is None:
+                    continue
+
+                try:
+                    if not os.path.samefile(proc.info["exe"], self.safari_path):
+                        continue
+                except OSError:
+                    continue
+
+                self.logger.debug("Stopping Safari %s" % proc.pid)
+                try:
+                    proc.terminate()
                     try:
-                        proc.terminate()
-                        try:
-                            proc.wait(10)
-                        except psutil.TimeoutExpired:
-                            proc.kill()
-                            proc.wait(10)
-                    except psutil.NoSuchProcess:
-                        pass
+                        proc.wait(10)
+                    except psutil.TimeoutExpired:
+                        proc.kill()
+                        proc.wait(10)
+                except psutil.NoSuchProcess:
+                    pass
+                except Exception:
+                    # Safari is a singleton, so treat failure here as a critical error.
+                    self.logger.critical("Failed to stop Safari")
+                    raise

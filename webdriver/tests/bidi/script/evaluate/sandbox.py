@@ -5,8 +5,9 @@ from webdriver.bidi.modules.script import ContextTarget, RealmTarget, ScriptEval
 from ... import any_int, any_string, recursive_compare
 from .. import any_stack_trace
 
+pytestmark = pytest.mark.asyncio
 
-@pytest.mark.asyncio
+
 async def test_sandbox(bidi_session, new_tab):
     # Make changes in window
     await bidi_session.script.evaluate(
@@ -47,17 +48,15 @@ async def test_sandbox(bidi_session, new_tab):
     assert result == {"type": "undefined"}
 
 
-@pytest.mark.asyncio
 async def test_sandbox_with_empty_name(bidi_session, new_tab):
-    # BiDi specification doesn't have restrictions of a sandbox name,
-    # that's why we want to make sure that it works with an empty name
+    # An empty string as a `sandbox` means the default realm should be used.
     await bidi_session.script.evaluate(
         expression="window.foo = 'bar'",
         target=ContextTarget(new_tab["context"], ""),
         await_promise=True,
     )
 
-    # Make sure that we can find the sandbox with the empty name
+    # Make sure that we can find the sandbox with the empty name.
     result = await bidi_session.script.evaluate(
         expression="window.foo",
         target=ContextTarget(new_tab["context"], ""),
@@ -65,16 +64,15 @@ async def test_sandbox_with_empty_name(bidi_session, new_tab):
     )
     assert result == {"type": "string", "value": "bar"}
 
-    # Make sure that changes didn't leak from sandbox
+    # Make sure that we can find the value in the default realm.
     result = await bidi_session.script.evaluate(
         expression="window.foo",
         target=ContextTarget(new_tab["context"]),
         await_promise=True,
     )
-    assert result == {"type": "undefined"}
+    assert result == {"type": "string", "value": "bar"}
 
 
-@pytest.mark.asyncio
 async def test_switch_sandboxes(bidi_session, new_tab):
     # Test that sandboxes are retained when switching between them
     await bidi_session.script.evaluate(
@@ -103,7 +101,6 @@ async def test_switch_sandboxes(bidi_session, new_tab):
     assert result_in_sandbox_2 == {"type": "number", "value": 2}
 
 
-@pytest.mark.asyncio
 async def test_sandbox_with_side_effects(bidi_session, new_tab):
     # Make sure changing the node in sandbox will affect the other sandbox as well
     await bidi_session.script.evaluate(
@@ -128,7 +125,22 @@ async def test_sandbox_with_side_effects(bidi_session, new_tab):
     assert result_in_sandbox_2 == expected_value
 
 
-@pytest.mark.asyncio
+async def test_sandbox_returns_same_node(bidi_session, new_tab):
+    node = await bidi_session.script.evaluate(
+        expression="document.querySelector('body')",
+        target=ContextTarget(new_tab["context"]),
+        await_promise=True,
+    )
+    recursive_compare({"type": "node", "sharedId": any_string}, node)
+
+    node_sandbox = await bidi_session.script.evaluate(
+        expression="document.querySelector('body')",
+        target=ContextTarget(new_tab["context"], sandbox="sandbox_1"),
+        await_promise=True,
+    )
+    assert node_sandbox == node
+
+
 @pytest.mark.parametrize("await_promise", [True, False])
 async def test_exception_details(bidi_session, new_tab, await_promise):
     if await_promise:
@@ -158,7 +170,6 @@ async def test_exception_details(bidi_session, new_tab, await_promise):
     )
 
 
-@pytest.mark.asyncio
 async def test_target_realm(bidi_session, top_context, default_realm):
     result = await bidi_session.script.evaluate(
         raw_result=True,

@@ -1,7 +1,6 @@
 # mypy: allow-untyped-defs
 
 import base64
-import cgi
 import tempfile
 
 from http.cookies import BaseCookie
@@ -10,6 +9,7 @@ from typing import Dict, List, TypeVar
 from urllib.parse import parse_qsl, urlsplit
 
 from . import stash
+from .cgi import FieldStorage
 from .utils import HTTPException, isomorphic_encode, isomorphic_decode
 
 KT = TypeVar('KT')
@@ -59,6 +59,16 @@ class InputFile:
             self._buf = tempfile.TemporaryFile()
         else:
             self._buf = BytesIO()
+
+    def close(self):
+        self._buf.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        self.close()
+        return False
 
     @property
     def _buf_position(self):
@@ -264,7 +274,7 @@ class Request:
         self._headers = None
         self.raw_headers = request_handler.headers
 
-        scheme = request_handler.server.scheme
+        scheme = request_handler.scheme
         host = self.raw_headers.get("Host")
         port = request_handler.server.server_address[1]
 
@@ -299,6 +309,16 @@ class Request:
 
         self.server = Server(self)
 
+    def close(self):
+        return self.raw_input.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        self.close()
+        return False
+
     def __repr__(self):
         return "<Request %s %s>" % (self.method, self.url)
 
@@ -328,7 +348,7 @@ class Request:
                 "keep_blank_values": True,
                 "encoding": "iso-8859-1",
             }
-            fs = cgi.FieldStorage(**kwargs)
+            fs = FieldStorage(**kwargs)
             self._POST = MultiDict.from_field_storage(fs)
             self.raw_input.seek(pos)
         return self._POST
@@ -592,7 +612,7 @@ class MultiDict(Dict[KT, VT]):
 
     @classmethod
     def from_field_storage(cls, fs):
-        """Construct a MultiDict from a cgi.FieldStorage
+        """Construct a MultiDict from a FieldStorage
 
         Note that all keys and values are binary strings.
         """
@@ -608,7 +628,7 @@ class MultiDict(Dict[KT, VT]):
                 if not value.filename:
                     value = isomorphic_encode(value.value)
                 else:
-                    assert isinstance(value, cgi.FieldStorage)
+                    assert isinstance(value, FieldStorage)
                 self.add(isomorphic_encode(key), value)
         return self
 

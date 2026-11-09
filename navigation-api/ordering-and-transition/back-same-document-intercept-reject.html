@@ -1,7 +1,7 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<meta name="variant" content="">
+<meta name="variant" content="?no-currententrychange">
 <meta name="variant" content="?currententrychange">
 
 <script type="module">
@@ -44,6 +44,7 @@ promise_test(async t => {
     ["currententrychange", "", { from, navigationType: "traverse" }],
     ["handler run", "", { from, navigationType: "traverse" }],
     ["committed fulfilled", "", { from, navigationType: "traverse" }],
+    ["AbortSignal abort", "", { from, navigationType: "traverse" }],
     ["navigateerror", "", { from, navigationType: "traverse" }],
     ["finished rejected", "", null],
     ["transition.finished rejected", "", null]

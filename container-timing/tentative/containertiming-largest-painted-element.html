@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: lastPaintedElement is the largest element, not the last painted</title>
+<body>
+<style>
+body {
+  margin: 0;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/container-timing/resources/container-timing-helpers.js"></script>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
+    const div = addContainerRoot(document.body, 'div_ct');
+
+    // 100x100 = 10000 for the big one, 40x40 = 1600 for the small one.
+    addSquare100Image(div, {
+      id: 'big_id',
+      style: 'position: absolute; left: 0px; top: 0px; ' +
+             'width: 100px; height: 100px;'
+    });
+    addSquare100Image(div, {
+      id: 'small_id',
+      style: 'position: absolute; left: 200px; top: 200px; ' +
+             'width: 40px; height: 40px;'
+    });
+
+    const beforeRender = performance.now();
+
+    const entries = await getContainerEntries(t);
+    assert_equals(entries.length, 1);
+    const entry = entries[0];
+    // The small image is painted last, but the big one has the largest area
+    // of its own, so it is the one reported.
+    checkContainerEntry(entry, 'div_ct', 'big_id', beforeRender)
+    checkContainerIntersectionRect(entry, [0, 240, 0, 240])
+    checkContainerSize(entry, 11600);
+  }, 'lastPaintedElement reports the largest element painted.');
+</script>
+
+</body>

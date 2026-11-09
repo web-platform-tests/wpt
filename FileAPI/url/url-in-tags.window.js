@@ -1,3 +1,10 @@
+setup(() => {
+  const viewport_meta = document.createElement('meta');
+  viewport_meta.name = "viewport";
+  viewport_meta.content = "width=device-width,initial-scale=1";
+  document.head.appendChild(viewport_meta);
+});
+
 async_test(t => {
   const run_result = 'test_script_OK';
   const blob_contents = 'window.test_result = "' + run_result + '";';
@@ -9,9 +16,27 @@ async_test(t => {
   e.onload = t.step_func_done(() => {
     assert_equals(window.test_result, run_result);
   });
+  e.onerror = t.unreached_func();
 
   document.body.appendChild(e);
 }, 'Blob URLs can be used in <script> tags');
+
+async_test(t => {
+  const run_result = 'test_script_OK';
+  const blob_contents = 'window.test_result = "' + run_result + '";';
+  const blob = new Blob([blob_contents], {type: 'application/javascript'});
+  const url = URL.createObjectURL(blob);
+
+  const e = document.createElement('script');
+  e.setAttribute('src', url);
+  e.setAttribute('type', 'module');
+  e.onload = t.step_func_done(() => {
+    assert_equals(window.test_result, run_result);
+  });
+  e.onerror = t.unreached_func();
+
+  document.body.appendChild(e);
+}, 'Blob URLs can be used in module <script> tags');
 
 async_test(t => {
   const run_result = 'test_frame_OK';

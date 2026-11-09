@@ -2,6 +2,7 @@
 
 import abc
 import argparse
+import html
 import importlib
 import json
 import logging
@@ -15,22 +16,23 @@ import time
 import traceback
 import urllib
 import uuid
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 from io import IOBase
 from itertools import chain, product
 from html5lib import html5parser
-from typing import ClassVar, List, Set, Tuple
+from typing import ClassVar, List, Optional, Set, Tuple
 
 from localpaths import repo_root  # type: ignore
 
 from manifest.sourcefile import read_script_metadata, js_meta_re, parse_variants  # type: ignore
+from manifest.test262 import parse as test262_parse  # type: ignore
 from wptserve import server as wptserve, handlers
 from wptserve import stash
 from wptserve import config
 from wptserve.handlers import filesystem_path, wrap_pipeline
 from wptserve.response import ResponseHeaders
 from wptserve.utils import get_port, HTTPException, http2_compatible
-from mod_pywebsocket import standalone as pywebsocket
+from pywebsocket3 import standalone as pywebsocket
 
 
 EDIT_HOSTS_HELP = ("Please ensure all the necessary WPT subdomains "
@@ -93,11 +95,9 @@ def inject_script(html, script_tag):
         return html[:offset] + script_tag + html[offset:]
 
 
-class WrapperHandler:
+class WrapperHandler(metaclass=abc.ABCMeta):
 
-    __meta__ = abc.ABCMeta
-
-    headers = []  # type: ClassVar[List[Tuple[str, str]]]
+    headers: ClassVar[List[Tuple[str, str]]] = []
 
     def __init__(self, base_path=None, url_base="/"):
         self.base_path = base_path
@@ -207,25 +207,24 @@ class WrapperHandler:
         # a specific metadata key: value pair.
         pass
 
-    @abc.abstractmethod
     def check_exposure(self, request):
         # Raise an exception if this handler shouldn't be exposed after all.
         pass
 
 
 class HtmlWrapperHandler(WrapperHandler):
-    global_type = None  # type: ClassVar[str]
-    headers = [('Content-Type', 'text/html')]
+    global_type: ClassVar[Optional[str]] = None
+    headers = [("Content-Type", "text/html")]
 
     def check_exposure(self, request):
-        if self.global_type:
-            globals = ""
+        if self.global_type is not None:
+            global_variants = ""
             for (key, value) in self._get_metadata(request):
                 if key == "global":
-                    globals = value
+                    global_variants = value
                     break
 
-            if self.global_type not in parse_variants(globals):
+            if self.global_type not in parse_variants(global_variants):
                 raise HTTPException(404, "This test cannot be loaded in %s mode" %
                                     self.global_type)
 
@@ -235,7 +234,7 @@ class HtmlWrapperHandler(WrapperHandler):
                 return '<meta name="timeout" content="long">'
         if key == "title":
             value = value.replace("&", "&amp;").replace("<", "&lt;")
-            return '<title>%s</title>' % value
+            return "<title>%s</title>" % value
         return None
 
     def _script_replacement(self, key, value):
@@ -312,6 +311,153 @@ class WindowHandler(HtmlWrapperHandler):
 %(script)s
 <div id=log></div>
 <script src="%(path)s"></script>
+"""
+
+class ExtensionHandler(HtmlWrapperHandler):
+    path_replace = [(".extension.html", ".extension.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=extensions"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/web-extensions-helper.js"></script>
+%(script)s
+<div id=log></div>
+<script src="%(path)s"></script>
+"""
+
+
+class Test262WindowHandler(HtmlWrapperHandler):
+    path_replace = [(".test262.html", ".js", ".test262-test.html")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+<title>Test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const t = async_test(document.title);
+window.test262HarnessDone = t.step_func_done(function(status, message) {
+    if (status === 1) {
+        throw new Error(message || "Test failed");
+    } else if (status === 2) {
+        throw new Error(message || "Harness Error");
+    }
+});
+</script>
+%(meta)s
+%(script)s
+<div id=log></div>
+<iframe id="test262-iframe" src="%(path)s"></iframe>"""
+
+
+class Test262WindowTestBaseHandler(HtmlWrapperHandler):
+    # For SHAB
+    headers = [('Cross-Origin-Opener-Policy', 'same-origin'),
+               ('Cross-Origin-Embedder-Policy', 'require-corp')]
+
+    # Define a common HTML structure (testharness setup, etc.) that can be
+    # extended by subclasses. This avoids duplicating boilerplate. For example,
+    # Test262WindowModuleTestHandler reuses this `pre_wrapper` but appends a
+    # module script.
+    pre_wrapper = """<!doctype html>
+<meta charset=utf-8>
+<title>Test</title>
+<script src="/resources/test262/test262-reporter.js"></script>
+<script src="/third_party/test262/harness/assert.js"></script>
+<script src="/third_party/test262/harness/sta.js"></script>
+<script src="/resources/test262/test262-provider.js"></script>
+%(meta)s
+%(script)s"""
+    # The base wrapper for Test262 tests.
+    # It injects the reporter, the Test262 harness, and the provider.
+    wrapper = pre_wrapper + """<body><script>test262Setup()</script>
+<script src="%(path)s" onerror="test262ScriptError()"></script></body>"""
+
+    def _get_test_record(self, request):
+        path = self._get_filesystem_path(request)
+        with open(path, encoding='utf-8') as f:
+            return test262_parse(logging.getLogger(), f.read(), path)
+
+    def _get_meta(self, request):
+        yield from super()._get_meta(request)
+        test_record = self._get_test_record(request)
+        if test_record is None:
+            return
+
+        # Pass negative test metadata (type and phase) to the reporter to enable validation.
+        if test_record.negative:
+            yield "<script>test262Negative('%s', '%s')</script>" % (test_record.negative.get("type"), test_record.negative.get("phase"))
+
+        # Signal to the reporter if this is an async test.
+        if test_record.is_async:
+            yield "<script>test262IsAsync(true)</script>"
+
+    def _get_script(self, request):
+        yield from super()._get_script(request)
+        test_record = self._get_test_record(request)
+        if test_record is None:
+            return
+
+        # Include any harness files specified in the 'includes' frontmatter attribute.
+        for filename in (test_record.includes or []):
+            yield '<script src="/third_party/test262/harness/%s"></script>' % html.escape(filename)
+
+        # If it's an async test, the harness must wait for a print() signal,
+        # provided by Test262's doneprintHandle.js.
+        if test_record.is_async:
+            yield '<script src="/third_party/test262/harness/doneprintHandle.js"></script>'
+
+
+
+
+
+class Test262WindowTestHandler(Test262WindowTestBaseHandler):
+    # Handler for standard window tests.
+    path_replace = [(".test262-test.html", ".js")]
+
+
+class Test262WindowModuleHandler(Test262WindowHandler):
+    # Landing page for module tests (wraps further).
+    path_replace = [(".test262-module.html", ".js", ".test262-module-test.html")]
+
+class Test262WindowModuleTestHandler(Test262WindowTestBaseHandler):
+    # Specialized Handler for Test262 module tests using dynamic import().
+    path_replace = [(".test262-module-test.html", ".js")]
+    wrapper = Test262WindowTestBaseHandler.pre_wrapper + """<body>
+<script>window.__test262IsModule = true;</script>
+<script type="module">
+  test262Setup();
+  import("%(path)s").then(() => {
+    if (!window.test262Async) {
+      test262Done();
+    }
+  }).catch(error => {
+    setTimeout(() => { throw error; });
+  });
+</script>
+</body>"""
+
+
+class Test262StrictWindowHandler(Test262WindowHandler):
+    path_replace = [(".test262.strict.html", ".js", ".test262-test.strict.html")]
+
+class Test262StrictWindowTestHandler(Test262WindowTestBaseHandler):
+    path_replace = [(".test262-test.strict.html", ".js", ".test262.strict.js")]
+
+
+class WindowModulesHandler(HtmlWrapperHandler):
+    global_type = "window-module"
+    path_replace = [(".any.window-module.html", ".any.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+%(script)s
+<div id=log></div>
+<script type=module src="%(path)s"></script>
 """
 
 
@@ -411,37 +557,34 @@ class ServiceWorkerModulesHandler(HtmlWrapperHandler):
 </script>
 """
 
-class ShadowRealmHandler(HtmlWrapperHandler):
-    global_type = "shadowrealm"
-    path_replace = [(".any.shadowrealm.html", ".any.js")]
+
+class ShadowRealmInWindowHandler(HtmlWrapperHandler):
+    global_type = "shadowrealm-in-window"
+    path_replace = [(".any.shadowrealm-in-window.html", ".any.js")]
 
     wrapper = """<!doctype html>
 <meta charset=utf-8>
 %(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testharness-shadowrealm-outer.js"></script>
 <script>
 (async function() {
   const r = new ShadowRealm();
+  await shadowRealmEvalAsync(r, `
+    await import("/resources/testharness-shadowrealm-inner.js");
+    await import("/resources/testharness.js");
+  `);
+  r.evaluate("setShadowRealmGlobalProperties")(location.search, fetchAdaptor);
 
-  await new Promise(r.evaluate(`
-    (resolve, reject) => {
-      (async () => {
-        globalThis.self.GLOBAL = {
-          isWindow: function() { return false; },
-          isWorker: function() { return false; },
-          isShadowRealm: function() { return true; },
-        };
-        await import("/resources/testharness.js");
-        %(script)s
-        await import("%(path)s");
-      })().then(resolve, (e) => reject(e.toString()));
-    }
-  `));
+  await shadowRealmEvalAsync(r, `
+    %(script)s
+    await import("%(path)s");
+  `);
 
   await fetch_tests_from_shadow_realm(r);
   done();
-})();
+})().catch(e => setup(() => { throw e; }));
 </script>
 """
 
@@ -451,8 +594,132 @@ class ShadowRealmHandler(HtmlWrapperHandler):
         return None
 
 
-class BaseWorkerHandler(WrapperHandler):
+class ShadowRealmInShadowRealmHandler(HtmlWrapperHandler):
+    global_type = "shadowrealm-in-shadowrealm"
+    path_replace = [(".any.shadowrealm-in-shadowrealm.html", ".any.js")]
+
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testharness-shadowrealm-outer.js"></script>
+<script>
+(async function() {
+  const outer = new ShadowRealm();
+  outer.evaluate(`
+    var inner = new ShadowRealm();
+  `);
+  await shadowRealmEvalAsync(outer, `
+    await import("/resources/testharness-shadowrealm-outer.js");
+    await shadowRealmEvalAsync(inner, \\`
+      await import("/resources/testharness-shadowrealm-inner.js");
+      await import("/resources/testharness.js");
+    \\`);
+  `);
+
+  outer.evaluate(`
+    inner.evaluate("setShadowRealmGlobalProperties")
+  `)(location.search, fetchAdaptor);
+
+  await shadowRealmEvalAsync(outer, `
+    await shadowRealmEvalAsync(inner, \\`
+      %(script)s
+      await import("%(path)s");
+    \\`);
+  `);
+
+  outer.evaluate(`
+    function begin_shadow_realm_tests(windowCallback) {
+      inner.evaluate("begin_shadow_realm_tests")(windowCallback);
+    }
+  `);
+  await fetch_tests_from_shadow_realm(outer);
+  done();
+})().catch(e => setup(() => { throw e; }));
+</script>
+"""
+
+    def _script_replacement(self, key, value):
+        if key == "script":
+            return 'await import("%s");' % value
+        return None
+
+
+class ShadowRealmInDedicatedWorkerHandler(WorkersHandler):
+    global_type = "shadowrealm-in-dedicatedworker"
+    path_replace = [(".any.shadowrealm-in-dedicatedworker.html",
+                     ".any.js",
+                     ".any.worker-shadowrealm.js")]
+
+
+class ShadowRealmInSharedWorkerHandler(SharedWorkersHandler):
+    global_type = "shadowrealm-in-sharedworker"
+    path_replace = [(".any.shadowrealm-in-sharedworker.html",
+                     ".any.js",
+                     ".any.worker-shadowrealm.js")]
+
+
+class ShadowRealmInServiceWorkerHandler(ServiceWorkersHandler):
+    global_type = "shadowrealm-in-serviceworker"
+    path_replace = [(".https.any.shadowrealm-in-serviceworker.html",
+                     ".any.js",
+                     ".any.serviceworker-shadowrealm.js")]
+
+
+class ShadowRealmInAudioWorkletHandler(HtmlWrapperHandler):
+    global_type = "shadowrealm-in-audioworklet"
+    path_replace = [(".https.any.shadowrealm-in-audioworklet.html", ".any.js",
+                     ".any.audioworklet-shadowrealm.js")]
+
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testharness-shadowrealm-outer.js"></script>
+<script>
+(async function() {
+  const context = new AudioContext();
+  await context.audioWorklet.addModule(
+    "/resources/testharness-shadowrealm-outer.js");
+  await context.audioWorklet.addModule(
+    "/resources/testharness-shadowrealm-audioworkletprocessor.js");
+  await context.audioWorklet.addModule("%(path)s%(query)s");
+  const node = new AudioWorkletNode(context, "test-runner");
+  setupFakeFetchOverMessagePort(node.port);
+  fetch_tests_from_worker(node.port);
+})();
+</script>
+"""
+
+
+class Test262StrictHandler(WrapperHandler):
+    path_replace = [(".test262.strict.js", ".js")]
     headers = [('Content-Type', 'text/javascript')]
+    wrapper = """
+"use strict";
+%(script)s
+"""
+
+    def _meta_replacement(self, key, value):
+        return None
+
+    def _get_script(self, request):
+        """
+        Reads the entire content of the associated JavaScript file to be
+        prepended with "use strict".
+        """
+        path = self._get_filesystem_path(request)
+        try:
+            with open(path, encoding='utf-8') as f:
+                yield f.read()
+        except OSError:
+            raise HTTPException(404)
+
+
+class BaseWorkerHandler(WrapperHandler):
+    headers = [("Content-Type", "text/javascript")]
 
     def _meta_replacement(self, key, value):
         return None
@@ -509,6 +776,110 @@ done();
         return 'import "%s";' % attribute
 
 
+class ShadowRealmWorkerWrapperHandler(BaseWorkerHandler):
+    path_replace = [(".any.worker-shadowrealm.js", ".any.js")]
+    wrapper = """%(meta)s
+importScripts("/resources/testharness-shadowrealm-outer.js");
+(async function() {
+  const postMessageFunc = await getPostMessageFunc();
+  try {
+    const r = new ShadowRealm();
+    await shadowRealmEvalAsync(r, `
+      await import("/resources/testharness-shadowrealm-inner.js");
+      await import("/resources/testharness.js");
+    `);
+    r.evaluate("setShadowRealmGlobalProperties")("%(query)s", fetchAdaptor);
+
+    await shadowRealmEvalAsync(r, `
+      %(script)s
+      await import("%(path)s");
+    `);
+
+    function forwardMessage(msgJSON) {
+      postMessageFunc(JSON.parse(msgJSON));
+    }
+    r.evaluate('begin_shadow_realm_tests')(forwardMessage);
+  } catch (e) {
+    postMessageFunc(createSetupErrorResult(e));
+  }
+})();
+"""
+
+    def _create_script_import(self, attribute):
+        return 'await import("%s");' % attribute
+
+
+class ShadowRealmServiceWorkerWrapperHandler(BaseWorkerHandler):
+    path_replace = [(".any.serviceworker-shadowrealm.js", ".any.js")]
+    wrapper = """%(meta)s
+importScripts("/resources/testharness-shadowrealm-outer.js");
+
+(async function () {
+  const postMessageFunc = await getPostMessageFunc();
+  try {
+    const r = new ShadowRealm();
+    setupFakeDynamicImportInShadowRealm(r, fetchAdaptor);
+
+    await shadowRealmEvalAsync(r, `
+      await fakeDynamicImport("/resources/testharness-shadowrealm-inner.js");
+      await fakeDynamicImport("/resources/testharness.js");
+    `);
+    r.evaluate("setShadowRealmGlobalProperties")("%(query)s", fetchAdaptor);
+
+    await shadowRealmEvalAsync(r, `
+      %(script)s
+      await fakeDynamicImport("%(path)s");
+    `);
+
+    function forwardMessage(msgJSON) {
+      postMessageFunc(JSON.parse(msgJSON));
+    }
+    r.evaluate("begin_shadow_realm_tests")(forwardMessage);
+  } catch (e) {
+    postMessageFunc(createSetupErrorResult(e));
+  }
+})();
+"""
+
+    def _create_script_import(self, attribute):
+        return 'await fakeDynamicImport("%s");' % attribute
+
+
+class ShadowRealmAudioWorkletWrapperHandler(BaseWorkerHandler):
+    path_replace = [(".any.audioworklet-shadowrealm.js", ".any.js")]
+    wrapper = """%(meta)s
+TestRunner.prototype.createShadowRealmAndStartTests = async function() {
+  try {
+    const queryPart = import.meta.url.split('?')[1];
+    const locationSearch = queryPart ? '?' + queryPart : '';
+
+    const r = new ShadowRealm();
+    const adaptor = this.fetchOverPortExecutor.bind(this);
+    setupFakeDynamicImportInShadowRealm(r, adaptor);
+
+    await shadowRealmEvalAsync(r, `
+      await fakeDynamicImport("/resources/testharness-shadowrealm-inner.js");
+      await fakeDynamicImport("/resources/testharness.js");
+    `);
+    r.evaluate("setShadowRealmGlobalProperties")(locationSearch, adaptor);
+
+    await shadowRealmEvalAsync(r, `
+      %(script)s
+      await fakeDynamicImport("%(path)s");
+    `);
+    const forwardMessage = (msgJSON) =>
+      this.port.postMessage(JSON.parse(msgJSON));
+    r.evaluate("begin_shadow_realm_tests")(forwardMessage);
+  } catch (e) {
+    this.port.postMessage(createSetupErrorResult(e));
+  }
+}
+"""
+
+    def _create_script_import(self, attribute):
+        return 'await fakeDynamicImport("%s");' % attribute
+
+
 rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
 
 
@@ -526,10 +897,10 @@ class RoutesBuilder:
         self.extra = []
         self.inject_script_data = None
         if inject_script is not None:
-            with open(inject_script, 'rb') as f:
+            with open(inject_script, "rb") as f:
                 self.inject_script_data = f.read()
 
-        self.mountpoint_routes = OrderedDict()
+        self.mountpoint_routes = {}
 
         self.add_mount_point("/", None)
 
@@ -560,20 +931,46 @@ class RoutesBuilder:
             ("GET", "*.worker.html", WorkersHandler),
             ("GET", "*.worker-module.html", WorkerModulesHandler),
             ("GET", "*.window.html", WindowHandler),
+            ("GET", "*.test262.html", Test262WindowHandler),
+            ("GET", "*.test262-test.html", Test262WindowTestHandler),
+            ("GET", "*.test262-module.html", Test262WindowModuleHandler),
+            ("GET", "*.test262-module-test.html", Test262WindowModuleTestHandler),
+            ("GET", "*.test262.strict.html", Test262StrictWindowHandler),
+            ("GET", "*.test262-test.strict.html", Test262StrictWindowTestHandler),
+            ("GET", "*.test262.strict.js", Test262StrictHandler),
+            ("GET", "*.extension.html", ExtensionHandler),
             ("GET", "*.any.html", AnyHtmlHandler),
             ("GET", "*.any.sharedworker.html", SharedWorkersHandler),
             ("GET", "*.any.sharedworker-module.html", SharedWorkerModulesHandler),
             ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
             ("GET", "*.any.serviceworker-module.html", ServiceWorkerModulesHandler),
-            ("GET", "*.any.shadowrealm.html", ShadowRealmHandler),
+            ("GET", "*.any.shadowrealm-in-window.html", ShadowRealmInWindowHandler),
+            ("GET", "*.any.shadowrealm-in-shadowrealm.html", ShadowRealmInShadowRealmHandler),
+            ("GET", "*.any.shadowrealm-in-dedicatedworker.html", ShadowRealmInDedicatedWorkerHandler),
+            ("GET", "*.any.shadowrealm-in-sharedworker.html", ShadowRealmInSharedWorkerHandler),
+            ("GET", "*.any.shadowrealm-in-serviceworker.html", ShadowRealmInServiceWorkerHandler),
+            ("GET", "*.any.shadowrealm-in-audioworklet.html", ShadowRealmInAudioWorkletHandler),
+            ("GET", "*.any.window-module.html", WindowModulesHandler),
             ("GET", "*.any.worker.js", ClassicWorkerHandler),
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),
+            ("GET", "*.any.serviceworker-shadowrealm.js", ShadowRealmServiceWorkerWrapperHandler),
+            ("GET", "*.any.worker-shadowrealm.js", ShadowRealmWorkerWrapperHandler),
+            ("GET", "*.any.audioworklet-shadowrealm.js", ShadowRealmAudioWorkletWrapperHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("*", "/.well-known/attribution-reporting/report-event-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/debug/report-event-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/report-aggregate-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/debug/report-aggregate-attribution", handlers.PythonScriptHandler),
+            ("*", "/.well-known/attribution-reporting/debug/report-aggregate-debug", handlers.PythonScriptHandler),
+            ("*", "/.well-known/attribution-reporting/debug/verbose", handlers.PythonScriptHandler),
+            ("GET", "/.well-known/interest-group/permissions/", handlers.PythonScriptHandler),
+            ("*", "/.well-known/interest-group/real-time-report", handlers.PythonScriptHandler),
+            ("*", "/.well-known/private-aggregation/*", handlers.PythonScriptHandler),
+            ("GET", "/.well-known/shared-storage/trusted-origins", handlers.PythonScriptHandler),
+            ("GET", "/.well-known/web-app-origin-association", handlers.PythonScriptHandler),
             ("*", "/.well-known/web-identity", handlers.PythonScriptHandler),
+            ("*", "/.well-known/device-bound-sessions", handlers.PythonScriptHandler),
+            ("*", "/.well-known/email-verification", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)
         ]
@@ -609,6 +1006,24 @@ def get_route_builder(logger, aliases, config):
     return builder
 
 
+def raise_open_file_limit():
+    if sys.platform != "darwin":
+        return
+
+    # on Darwin, NOFILE starts with a very low limit (256), so bump it up a little
+    # by way of comparison, Debian starts with a limit of 1024, Windows 512
+    import resource  # local, as it only exists on Unix-like systems
+    maxfilesperproc = int(subprocess.check_output(
+        ["sysctl", "-n", "kern.maxfilesperproc"]
+    ).strip())
+    soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+    # 2048 is somewhat arbitrary, but gives us some headroom for wptrunner --parallel
+    # note that it's expected that 2048 will be the min here
+    new_soft = min(2048, maxfilesperproc, hard)
+    if soft < new_soft:
+        resource.setrlimit(resource.RLIMIT_NOFILE, (new_soft, hard))
+
+
 class ServerProc:
     def __init__(self, mp_context, scheme=None):
         self.proc = None
@@ -620,37 +1035,25 @@ class ServerProc:
     def start(self, init_func, host, port, paths, routes, bind_address, config, log_handlers, **kwargs):
         self.proc = self.mp_context.Process(target=self.create_daemon,
                                             args=(init_func, host, port, paths, routes, bind_address,
-                                                  config, log_handlers),
-                                            name='%s on port %s' % (self.scheme, port),
+                                                  config, log_handlers, dict(**os.environ)),
+                                            name="%s on port %s" % (self.scheme, port),
                                             kwargs=kwargs)
         self.proc.daemon = True
         self.proc.start()
 
     def create_daemon(self, init_func, host, port, paths, routes, bind_address,
-                      config, log_handlers, **kwargs):
+                      config, log_handlers, env, **kwargs):
         # Ensure that when we start this in a new process we have the global lock
         # in the logging module unlocked
         importlib.reload(logging)
+        os.environ = env
+        logger = get_logger(config.logging["level"], log_handlers)
 
-        logger = get_logger(config.log_level, log_handlers)
-
-        if sys.platform == "darwin":
-            # on Darwin, NOFILE starts with a very low limit (256), so bump it up a little
-            # by way of comparison, Debian starts with a limit of 1024, Windows 512
-            import resource  # local, as it only exists on Unix-like systems
-            maxfilesperproc = int(subprocess.check_output(
-                ["sysctl", "-n", "kern.maxfilesperproc"]
-            ).strip())
-            soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
-            # 2048 is somewhat arbitrary, but gives us some headroom for wptrunner --parallel
-            # note that it's expected that 2048 will be the min here
-            new_soft = min(2048, maxfilesperproc, hard)
-            if soft < new_soft:
-                resource.setrlimit(resource.RLIMIT_NOFILE, (new_soft, hard))
+        raise_open_file_limit()
         try:
             self.daemon = init_func(logger, host, port, paths, routes, bind_address, config, **kwargs)
         except OSError:
-            logger.critical("Socket error on port %s" % port, file=sys.stderr)
+            logger.critical("Socket error on port %s" % port)
             raise
         except Exception:
             logger.critical(traceback.format_exc())
@@ -722,23 +1125,30 @@ def check_subdomains(logger, config, routes, mp_context, log_handlers):
 
 
 def make_hosts_file(config, host):
-    rv = []
+    rv = ["# Start web-platform-tests hosts"]
 
-    for domain in config.domains_set:
-        rv.append("%s\t%s\n" % (host, domain))
+    for domain in sorted(
+        config.domains_set, key=lambda x: tuple(reversed(x.split(".")))
+    ):
+        rv.append("%s\t%s" % (host, domain))
 
-    # Windows interpets the IP address 0.0.0.0 as non-existent, making it an
+    # Windows interprets the IP address 0.0.0.0 as non-existent, making it an
     # appropriate alias for non-existent hosts. However, UNIX-like systems
-    # interpret the same address to mean any IP address, which is inappropraite
+    # interpret the same address to mean any IP address, which is inappropriate
     # for this context. These systems do not reserve any value for this
     # purpose, so the inavailability of the domains must be taken for granted.
     #
     # https://github.com/web-platform-tests/wpt/issues/10560
     if platform.uname()[0] == "Windows":
-        for not_domain in config.not_domains_set:
-            rv.append("0.0.0.0\t%s\n" % not_domain)
+        for not_domain in sorted(
+            config.not_domains_set, key=lambda x: tuple(reversed(x.split(".")))
+        ):
+            rv.append("0.0.0.0\t%s" % not_domain)
 
-    return "".join(rv)
+    rv.append("# End web-platform-tests hosts")
+    rv.append("")
+
+    return "\n".join(rv)
 
 
 def start_servers(logger, host, ports, paths, routes, bind_address, config,
@@ -747,14 +1157,25 @@ def start_servers(logger, host, ports, paths, routes, bind_address, config,
     for scheme, ports in ports.items():
         assert len(ports) == {"http": 2, "https": 2}.get(scheme, 1)
 
-        # If trying to start HTTP/2.0 server, check compatibility
-        if scheme == 'h2' and not http2_compatible():
-            logger.error('Cannot start HTTP/2.0 server as the environment is not compatible. ' +
-                         'Requires OpenSSL 1.0.2+')
+        # Skip HTTP/2 server if it is disabled or if incompatible.
+        if scheme == "h2":
+            if not kwargs.get("h2", True):
+                logging.warning("HTTP/2 server disabled")
+                continue
+
+            if not http2_compatible():
+                logger.error("Cannot start HTTP/2 server as the environment is not compatible. " +
+                             "Requires OpenSSL 1.0.2+")
+                continue
+
+        # Skip WebTransport over HTTP/3 server unless it is enabled explicitly.
+        if scheme == "webtransport-h3" and not kwargs.get("webtransport_h3"):
+            logging.warning("WebTransport over HTTP/3 server disabled")
             continue
 
-        # Skip WebTransport over HTTP/3 server unless if is enabled explicitly.
-        if scheme == 'webtransport-h3' and not kwargs.get("webtransport_h3"):
+        # Skip over DNS unless it is enabled explicitly.
+        if scheme == "dns" and not kwargs.get("dns"):
+            logging.info("DNS server disabled")
             continue
 
         for port in ports:
@@ -763,15 +1184,16 @@ def start_servers(logger, host, ports, paths, routes, bind_address, config,
 
             init_func = {
                 "http": start_http_server,
-                "http-private": start_http_server,
+                "http-local": start_http_server,
                 "http-public": start_http_server,
                 "https": start_https_server,
-                "https-private": start_https_server,
+                "https-local": start_https_server,
                 "https-public": start_https_server,
                 "h2": start_http2_server,
                 "ws": start_ws_server,
                 "wss": start_wss_server,
                 "webtransport-h3": start_webtransport_h3_server,
+                "dns": start_dns_server,
             }[scheme]
 
             server_proc = ServerProc(mp_context, scheme=scheme)
@@ -788,6 +1210,9 @@ def startup_failed(logger):
 
 
 def start_http_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
+    # If SSL is available, allow upgrading to TLS after a CONNECT request so
+    # that the HTTP server can also act as an HTTPS proxy.
+    ssl_config = config.ssl_config
     try:
         return wptserve.WebTestHttpd(host=host,
                                      port=port,
@@ -796,11 +1221,13 @@ def start_http_server(logger, host, port, paths, routes, bind_address, config, *
                                      rewrites=rewrites,
                                      bind_address=bind_address,
                                      config=config,
-                                     use_ssl=False,
-                                     key_file=None,
-                                     certificate=None,
+                                     use_ssl=ssl_config is not None,
+                                     key_file=ssl_config["key_path"] if ssl_config else None,
+                                     certificate=ssl_config["cert_path"] if ssl_config else None,
+                                     encrypt_after_connect=ssl_config is not None,
                                      latency=kwargs.get("latency"))
-    except Exception:
+    except Exception as error:
+        logger.critical(f"start_http_server: Caught exception from wptserve.WebTestHttpd: {error}")
         startup_failed(logger)
 
 
@@ -818,7 +1245,8 @@ def start_https_server(logger, host, port, paths, routes, bind_address, config, 
                                      certificate=config.ssl_config["cert_path"],
                                      encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
                                      latency=kwargs.get("latency"))
-    except Exception:
+    except Exception as error:
+        logger.critical(f"start_https_server: Caught exception from wptserve.WebTestHttpd: {error}")
         startup_failed(logger)
 
 
@@ -839,12 +1267,14 @@ def start_http2_server(logger, host, port, paths, routes, bind_address, config, 
                                      encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
                                      latency=kwargs.get("latency"),
                                      http2=True)
-    except Exception:
+    except Exception as error:
+        logger.critical(f"start_http2_server: Caught exception from wptserve.WebTestHttpd: {error}")
         startup_failed(logger)
 
 
 class WebSocketDaemon:
-    def __init__(self, host, port, doc_root, handlers_root, bind_address, ssl_config):
+    def __init__(self, host, port, doc_root, handlers_root, bind_address, ssl_config,
+                 extra_handler_paths=None):
         logger = logging.getLogger()
         self.host = host
         cmd_args = ["-p", port,
@@ -862,12 +1292,15 @@ class WebSocketDaemon:
         opts.cgi_directories = []
         opts.is_executable_method = None
         self.server = pywebsocket.WebSocketServer(opts)
+        if extra_handler_paths:
+            for path in extra_handler_paths:
+                self.server.websocket_server_options.dispatcher._source_handler_files_in_dir(path, path, False, None)
         ports = [item[0].getsockname()[1] for item in self.server._sockets]
         if not ports:
             # TODO: Fix the logging configuration in WebSockets processes
             # see https://github.com/web-platform-tests/wpt/issues/22719
             logger.critical("Failed to start websocket server on port %s, "
-                            "is something already using that port?" % port, file=sys.stderr)
+                            "is something already using that port?" % port)
             raise OSError()
         assert all(item == ports[0] for item in ports)
         self.port = ports[0]
@@ -905,8 +1338,10 @@ def start_ws_server(logger, host, port, paths, routes, bind_address, config, **k
                                repo_root,
                                config.paths["ws_doc_root"],
                                bind_address,
-                               ssl_config=None)
-    except Exception:
+                               ssl_config=None,
+                               extra_handler_paths=config.paths["ws_extra"])
+    except Exception as error:
+        logger.critical(f"start_ws_server: Caught exception from WebSocketDomain: {error}")
         startup_failed(logger)
 
 
@@ -917,8 +1352,10 @@ def start_wss_server(logger, host, port, paths, routes, bind_address, config, **
                                repo_root,
                                config.paths["ws_doc_root"],
                                bind_address,
-                               config.ssl_config)
-    except Exception:
+                               config.ssl_config,
+                               extra_handler_paths=config.paths["ws_extra"])
+    except Exception as error:
+        logger.critical(f"start_wss_server: Caught exception from WebSocketDomain: {error}")
         startup_failed(logger)
 
 
@@ -936,6 +1373,19 @@ def start_webtransport_h3_server(logger, host, port, paths, routes, bind_address
     except Exception as error:
         logger.critical(
             f"Failed to start WebTransport over HTTP/3 server: {error}")
+        sys.exit(0)
+
+
+def start_dns_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
+    try:
+        from .dns import DNSServerDaemon
+        return DNSServerDaemon(host=host,
+                               port=port,
+                               bind_address=bind_address,
+                               config=config,
+                               wildcards=kwargs.get("dns_wildcards"))
+    except Exception as error:
+        logger.critical(f"Failed to start DNS server: {error}")
         sys.exit(0)
 
 
@@ -989,20 +1439,22 @@ class ConfigBuilder(config.ConfigBuilder):
         },
         "doc_root": repo_root,
         "ws_doc_root": os.path.join(repo_root, "websockets", "handlers"),
+        "ws_extra": None,
         "server_host": None,
         "ports": {
             "http": [8000, "auto"],
-            "http-private": ["auto"],
+            "http-local": ["auto"],
             "http-public": ["auto"],
             "https": [8443, 8444],
-            "https-private": ["auto"],
+            "https-local": ["auto"],
             "https-public": ["auto"],
+            "h2": [9000],
             "ws": ["auto"],
             "wss": ["auto"],
             "webtransport-h3": ["auto"],
+            "dns": [8053],
         },
         "check_subdomains": True,
-        "log_level": "info",
         "bind_address": True,
         "ssl": {
             "type": "pregenerated",
@@ -1017,11 +1469,16 @@ class ConfigBuilder(config.ConfigBuilder):
             },
             "pregenerated": {
                 "host_key_path": os.path.join(repo_root, "tools", "certs", "web-platform.test.key"),
-                "host_cert_path": os.path.join(repo_root, "tools", "certs", "web-platform.test.pem")
+                "host_cert_path": os.path.join(repo_root, "tools", "certs", "web-platform.test.pem"),
+                "ca_cert_path": os.path.join(repo_root, "tools", "certs", "cacert.pem")
             },
             "none": {}
         },
-        "aliases": []
+        "aliases": [],
+        "logging": {
+            "level": "info",
+            "suppress_handler_traceback": False
+        }
     }
 
     computed_properties = ["ws_doc_root"] + config.ConfigBuilder.computed_properties
@@ -1054,17 +1511,12 @@ class ConfigBuilder(config.ConfigBuilder):
     def _get_paths(self, data):
         rv = super()._get_paths(data)
         rv["ws_doc_root"] = data["ws_doc_root"]
+        rv["ws_extra"] = data["ws_extra"]
         return rv
 
 
 def build_config(logger, override_path=None, config_cls=ConfigBuilder, **kwargs):
     rv = config_cls(logger)
-
-    enable_http2 = kwargs.get("h2")
-    if enable_http2 is None:
-        enable_http2 = True
-    if enable_http2:
-        rv._default["ports"]["h2"] = [9000]
 
     if override_path and os.path.exists(override_path):
         with open(override_path) as f:
@@ -1081,7 +1533,7 @@ def build_config(logger, override_path=None, config_cls=ConfigBuilder, **kwargs)
             raise ValueError("Config path %s does not exist" % other_path)
 
     if kwargs.get("verbose"):
-        rv.log_level = "debug"
+        rv.logging["level"] = "DEBUG"
 
     setattr(rv, "inject_script", kwargs.get("inject_script"))
 
@@ -1103,23 +1555,29 @@ def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--latency", type=int,
                         help="Artificial latency to add before sending http responses, in ms")
-    parser.add_argument("--config", action="store", dest="config_path",
+    parser.add_argument("--config", dest="config_path",
                         help="Path to external config file")
-    parser.add_argument("--doc_root", action="store", dest="doc_root",
-                        help="Path to document root. Overrides config.")
-    parser.add_argument("--ws_doc_root", action="store", dest="ws_doc_root",
+    parser.add_argument("--doc_root", help="Path to document root. Overrides config.")
+    parser.add_argument("--ws_doc_root",
                         help="Path to WebSockets document root. Overrides config.")
-    parser.add_argument("--inject-script", default=None,
+    parser.add_argument("--ws_extra", action="append", default=[],
+                        help="Path to extra directory containing ws handlers. Overrides config.")
+    parser.add_argument("--inject-script",
                         help="Path to script file to inject, useful for testing polyfills.")
-    parser.add_argument("--alias_file", action="store", dest="alias_file",
+    parser.add_argument("--alias_file",
                         help="File with entries for aliases/multiple doc roots. In form of `/ALIAS_NAME/, DOC_ROOT\\n`")
-    parser.add_argument("--h2", action="store_true", dest="h2", default=None,
+    parser.add_argument("--h2", action="store_true", default=True,
                         help=argparse.SUPPRESS)
-    parser.add_argument("--no-h2", action="store_false", dest="h2", default=None,
-                        help="Disable the HTTP/2.0 server")
+    parser.add_argument("--no-h2", action="store_false", dest="h2",
+                        help="Disable the HTTP/2 server")
     parser.add_argument("--webtransport-h3", action="store_true",
                         help="Enable WebTransport over HTTP/3 server")
-    parser.add_argument("--exit-after-start", action="store_true", help="Exit after starting servers")
+    parser.add_argument("--dns", action="store_true",
+                        help="Enable DNS server")
+    parser.add_argument("--dns-wildcards", type=int, metavar="N",
+                        help="Provide wildcards for N levels of subdomains")
+    parser.add_argument("--exit-after-start", action="store_true",
+                        help="Exit after starting servers")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
     parser.set_defaults(report=False)
     parser.set_defaults(is_wave=False)
@@ -1158,32 +1616,29 @@ def get_logger(log_level, log_handlers):
     return logger
 
 
-def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handlers=None,
-        **kwargs):
+def run(venv=None, config_cls=ConfigBuilder, route_builder=None,
+        mp_context=None, log_handlers=None, **kwargs):
     logger = get_logger("INFO", log_handlers)
 
     if mp_context is None:
-        if hasattr(multiprocessing, "get_context"):
-            mp_context = multiprocessing.get_context()
-        else:
-            mp_context = MpContext()
+        mp_context = multiprocessing.get_context("spawn")
 
     with build_config(logger,
                       os.path.join(repo_root, "config.json"),
                       config_cls=config_cls,
                       **kwargs) as config:
         # This sets the right log level
-        logger = get_logger(config.log_level, log_handlers)
+        logger = get_logger(config.logging["level"], log_handlers)
 
         bind_address = config["bind_address"]
 
         if kwargs.get("alias_file"):
             with open(kwargs["alias_file"]) as alias_file:
                 for line in alias_file:
-                    alias, doc_root = (x.strip() for x in line.split(','))
+                    alias, doc_root = (x.strip() for x in line.split(","))
                     config["aliases"].append({
-                        'url-path': alias,
-                        'local-dir': doc_root,
+                        "url-path": alias,
+                        "local-dir": doc_root,
                     })
 
         if route_builder is None:
@@ -1195,10 +1650,9 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handl
 
         stash_address = None
         if bind_address:
-            stash_address = (config.server_host, get_port(""))
-            logger.debug("Going to use port %d for stash" % stash_address[1])
+            stash_address = (config.server_host, 0)
 
-        with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
+        with stash.StashServer(stash_address, authkey=str(uuid.uuid4()), mp_context=mp_context):
             servers = start(logger, config, routes, mp_context, log_handlers, **kwargs)
 
             if not kwargs.get("exit_after_start"):
@@ -1223,6 +1677,11 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handl
                 server.wait(timeout=1)
                 if server.proc.exitcode == 0:
                     logger.info('Status of subprocess "%s": exited correctly', server.proc.name)
+                elif server.proc.exitcode is None:
+                    logger.warning(
+                        'Status of subprocess "%s": shutdown timed out',
+                        server.proc.name)
+                    failed_subproc += 1
                 else:
                     subproc = server.proc
                     logger.warning('Status of subprocess "%s": failed. Exit with non-zero status: %d',

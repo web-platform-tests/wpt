@@ -1,21 +1,23 @@
 const load = {
-  _cache_bust_value: Math.random().toString().substr(2),
 
   cache_bust: path => {
     let url = new URL(path, location.origin);
     url.href += (url.href.includes("?")) ? '&' : '?';
-    url.href += "unique=" + load._cache_bust_value++
+    // The `Number` type in Javascript, when interpreted as an integer, can only
+    // safely represent [-2^53 + 1, 2^53 - 1] without the loss of precision [1].
+    // We do not generate a global value and increment from it, as the increment
+    // might not have enough precision to be reflected.
+    //
+    // [1]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
+    url.href += "unique=" + Math.random().toString().substring(2);
     return url.href;
   },
 
   image_with_attrs: async (path, attribute_map) => {
     return new Promise(resolve => {
       const img = new Image();
-      if (attribute_map instanceof Object) {
-        for (const [key, value] of Object.entries(attribute_map)) {
-          img[key] = value;
-        }
-      }
+      for (const key in attribute_map)
+          img[key] = attribute_map[key];
       img.onload = img.onerror = resolve;
       img.src = load.cache_bust(path);
     });
@@ -26,6 +28,10 @@ const load = {
   image: path => {
     return load.image_with_attrs(path, undefined);
   },
+
+  // Returns a promise that settles once the given path has been fetched as an
+  // image resource.
+  image_cors: path => load.image_with_attrs(path, {crossOrigin: 'anonymous'}),
 
   // Returns a promise that settles once the given path has been fetched as a
   // font resource.
@@ -72,7 +78,8 @@ const load = {
     return load.stylesheet_with_attrs(path, undefined);
   },
 
-  iframe_with_attrs: async (path, attribute_map, validator) => {
+  iframe_with_attrs: async (path, attribute_map, validator,
+                            skip_wait_for_navigation) => {
     const frame = document.createElement("iframe");
     if (attribute_map instanceof Object) {
       for (const [key, value] of Object.entries(attribute_map)) {
@@ -84,11 +91,17 @@ const load = {
     });
     frame.src = load.cache_bust(path);
     document.body.appendChild(frame);
-    await loaded;
+    if ( !skip_wait_for_navigation ) {
+      await loaded;
+    }
     if (validator instanceof Function) {
       validator(frame);
     }
-    document.body.removeChild(frame);
+    // since we skipped the wait for load animation, we cannot
+    // remove the iframe here since the request could get cancelled
+    if ( !skip_wait_for_navigation ) {
+      document.body.removeChild(frame);
+    }
   },
 
   // Returns a promise that settles once the given path has been fetched as an
@@ -123,17 +136,19 @@ const load = {
   // object.
   object: async (path, type) => {
     const object = document.createElement("object");
-    const loaded = new Promise(resolve => {
+    const object_load_settled = new Promise(resolve => {
       object.onload = object.onerror = resolve;
     });
     object.data = load.cache_bust(path);
     if (type) {
       object.type = type;
     }
-    object.style = "width: 0px; height: 0px";
     document.body.appendChild(object);
-    await loaded;
-    document.body.removeChild(object);
+    await await_with_timeout(2000,
+      "Timeout was reached before load or error events fired",
+      object_load_settled,
+      () => { document.body.removeChild(object) }
+    );
   },
 
   // Returns a promise that settles once the given path has been fetched
@@ -156,5 +171,17 @@ const load = {
     return new Promise(resolve => {
       xhr.onload = xhr.onerror = resolve;
     });
+  },
+
+  image_object: async path => {
+    return load.object(path, 'image/png');
+  },
+
+  frame_object: async path => {
+    return load.object(path, 'text/html');
+  },
+
+  null_object: async path => {
+    return load.object(path, null);
   }
 };

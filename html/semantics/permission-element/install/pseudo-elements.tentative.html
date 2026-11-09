@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<link rel="match" href="pseudo-elements-ref.html">
+<link rel="help" href="https://github.com/WICG/PEPC/blob/main/explainer.md#locking-the-pepc-style">
+<body>
+  <div>
+    The install element should not create any pseudo elements.
+  </div>
+
+  <style>
+    body {
+      list-style-position: inside;
+      list-style-type: "FAIL";
+    }
+    install {
+      display: inline flow-root list-item;
+    }
+    install::before, install::after, install::marker { content: "FAIL"; }
+  </style>
+
+  <p>You should not see the word FAIL below.</p>
+
+  <install></install>
+</body>
+</html>

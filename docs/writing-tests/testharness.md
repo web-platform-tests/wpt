@@ -167,22 +167,67 @@ are:
 * `jsshell`: to be run in a JavaScript shell, without access to the DOM
   (currently only supported in SpiderMonkey, and skipped in wptrunner)
 * `worker`: shorthand for the dedicated, shared, and service worker scopes
-* `shadowrealm`: runs the test code in a
+* `shadowrealm-in-window`: runs the test code in a
   [ShadowRealm](https://github.com/tc39/proposal-shadowrealm) context hosted in
-  an ordinary Window context; to be run at <code><var>x</var>.any.shadowrealm.html</code>
+  an ordinary Window context; to be run at <code><var>x</var>.any.shadowrealm-in-window.html</code>
+* `shadowrealm-in-shadowrealm`: runs the test code in a ShadowRealm context
+  hosted in another ShadowRealm context; to be run at
+  <code><var>x</var>.any.shadowrealm-in-shadowrealm.html</code>
+* `shadowrealm-in-dedicatedworker`: runs the test code in a ShadowRealm context
+  hosted in a dedicated worker; to be run at
+  <code><var>x</var>.any.shadowrealm-in-dedicatedworker.html</code>
+* `shadowrealm-in-sharedworker`: runs the test code in a ShadowRealm context
+  hosted in a shared worker; to be run at
+  <code><var>x</var>.any.shadowrealm-in-sharedworker.html</code>
+* `shadowrealm-in-serviceworker`: runs the test code in a ShadowRealm context
+  hosted in a service worker; to be run at
+  <code><var>x</var>.https.any.shadowrealm-in-serviceworker.html</code>
+* `shadowrealm-in-audioworklet`: runs the test code in a ShadowRealm context
+  hosted in an AudioWorklet processor; to be run at
+  <code><var>x</var>.https.any.shadowrealm-in-audioworklet.html</code>
+* `shadowrealm`: shorthand for all of the ShadowRealm scopes
 
-To check if your test is run from a window or worker you can use the following two methods that will
+To check what scope your test is run from, you can use the following methods that will
 be made available by the framework:
 
     self.GLOBAL.isWindow()
     self.GLOBAL.isWorker()
+    self.GLOBAL.isShadowRealm()
 
 Although [the global `done()` function must be explicitly invoked for most
 dedicated worker tests and shared worker
 tests](testharness-api.html#determining-when-all-tests-are-complete), it is
 automatically invoked for tests defined using the "multi-global" pattern.
 
-## Other features of `.window.js`, `.worker.js` and `.any.js`
+## Extension tests (`.extension.js`)
+
+Create a JavaScript file whose name ends in `.extension.js` to have the necessary HTML boilerplate
+generated for you at `.extension.html`.
+
+Extension tests leverage the `browser.test` API rather than interacting with the `testharness.js`
+framework directly.
+
+For example, one could write a test for `browser.runtime.getURL()` by creating a
+`web-extensions/browser.runtime.extension.js` file as follows:
+
+```js
+runTestsWithWebExtension("/resources/runtime/")
+// ==> this method assumes that the extension resources (manifest, scripts, etc.) exist at the path
+```
+
+And by creating a `web-extensions/resources/runtime/background.js` file as follows:
+
+```js
+browser.test.runTests([
+  function getURLWithNoParameter() {
+    browser.test.assertThrows(() => browser.runtime.getURL())
+  }
+])
+```
+
+This test could then be run from `web-extensions/browser.runtime.extension.html`.
+
+## Other features of `.window.js`, `.worker.js`, `.any.js` and `.extension.js`
 
 ### Specifying a test title
 
@@ -203,6 +248,9 @@ In window environments, the script will be included using a classic `<script>` t
 worker environments, the script will be imported using `importScripts()`. In module worker
 environments, the script will be imported using a static `import`.
 
+wptserve generates markup with `/resources/testharness.js` and `/resources/testharnessreport.js`
+included automatically, so there's no need to include those scripts from the `.js` test file.
+
 ### Specifying a timeout of long
 
 Use `// META: timeout=long` at the beginning of the resource.
@@ -212,7 +260,7 @@ Use `// META: timeout=long` at the beginning of the resource.
 Use `// META: variant=url-suffix` at the beginning of the resource. For example,
 
 ```
-// META: variant=
+// META: variant=?default
 // META: variant=?wss
 ```
 
@@ -222,7 +270,7 @@ A test file can have multiple variants by including `meta` elements,
 for example:
 
 ```html
-<meta name="variant" content="">
+<meta name="variant" content="?default">
 <meta name="variant" content="?wss">
 ```
 

@@ -247,7 +247,7 @@ as resetting global state that need to happen consistently before the
 next test starts.
 
 To test that a promise rejects with a specified exception see [promise
-rejection].
+rejection](#promise-rejection).
 
 ### Single Page Tests ###
 
@@ -352,7 +352,7 @@ preferable if the entire test is optional.
 ### Consolidating tests from other documents ###
 
 ```eval_rst
-.. js::autofunction fetch_tests_from_window
+.. js:autofunction:: fetch_tests_from_window
 ```
 
 **Note:** By default any markup file referencing `testharness.js` will
@@ -408,7 +408,7 @@ Here's an example that uses `window.open`.
 ### Web Workers ###
 
 ```eval_rst
-.. js:autofunction fetch_tests_from_worker
+.. js:autofunction:: fetch_tests_from_worker
 ```
 
 The `testharness.js` script can be used from within [dedicated workers, shared
@@ -516,6 +516,24 @@ complex cleanup behavior should manage execution order explicitly. If
 any of the eventual values are rejected, the test runner will report
 an error.
 
+### AbortSignal support ###
+
+[`Test.get_signal`](#Test.get_signal) gives an AbortSignal that is aborted when
+the test finishes. This can be useful when dealing with AbortSignal-supported
+APIs.
+
+```js
+promise_test(t => {
+  // Throws when the user agent does not support AbortSignal
+  const signal = t.get_signal();
+  const event = await new Promise(resolve => {
+    document.body.addEventListener(resolve, { once: true, signal });
+    document.body.click();
+  });
+  assert_equals(event.type, "click");
+}, "");
+```
+
 ## Timers in Tests ##
 
 In general the use of timers (i.e. `setTimeout`) in tests is
@@ -536,8 +554,9 @@ when there's a specific condition that needs to be met for the test to
 proceed. [`Test.step_timeout()`](#Test.step_timeout) is preferred in other cases.
 
 Note that timeouts generally need to be a few seconds long in order to
-produce stable results in all test environments.
+produce stable results in all test environments. However, the use of timeouts should be avoided whenever possible in favor of event-driven approaches. Prefer to wait for an event (e.g., `load`, `DOMContentLoaded`, or custom events) to indicate readiness, or use two `requestAnimationFrame` calls to ensure rendering steps have completed. These alternatives improve reliability and consistency across different environments.
 
+In some cases, such as reftests that compare frames after a specific animation duration (e.g., APNG tests), use of `step_timeout()` may be acceptable. When doing so, consider documenting the reason.
 For [single page tests](#single-page-tests),
 [step_timeout](#step_timeout) is also available as a global function.
 
@@ -803,6 +822,29 @@ eventWatcher.wait_for('animationstart').then(t.step_func(function() {
   assertExpectedStateAtEndOfAnimation();
   t.done();
 }));
+```
+
+### Loading test data from JSON files ###
+
+```eval_rst
+.. js:autofunction:: fetch_json
+```
+
+Loading test data from a JSON file would normally be accomplished by
+something like this:
+
+```js
+promise_test(() => fetch('resources/my_data.json').then((res) => res.json()).then(runTests));
+function runTests(myData) {
+  /// ...
+}
+```
+
+However, `fetch()` is not exposed inside ShadowRealm scopes, so if the
+test is to be run inside a ShadowRealm, use `fetch_json()` instead:
+
+```js
+promise_test(() => fetch_json('resources/my_data.json').then(runTests));
 ```
 
 ### Utility Functions ###

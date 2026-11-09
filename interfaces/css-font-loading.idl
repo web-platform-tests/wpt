@@ -3,14 +3,11 @@
 // (https://github.com/w3c/webref)
 // Source: CSS Font Loading Module Level 3 (https://drafts.csswg.org/css-font-loading-3/)
 
-typedef (ArrayBuffer or ArrayBufferView) BinaryData;
-
 dictionary FontFaceDescriptors {
   CSSOMString style = "normal";
   CSSOMString weight = "normal";
   CSSOMString stretch = "normal";
   CSSOMString unicodeRange = "U+0-10FFFF";
-  CSSOMString variant = "normal";
   CSSOMString featureSettings = "normal";
   CSSOMString variationSettings = "normal";
   CSSOMString display = "auto";
@@ -23,14 +20,13 @@ enum FontFaceLoadStatus { "unloaded", "loading", "loaded", "error" };
 
 [Exposed=(Window,Worker)]
 interface FontFace {
-  constructor(CSSOMString family, (CSSOMString or BinaryData) source,
+  constructor(CSSOMString family, (CSSOMString or BufferSource) source,
                 optional FontFaceDescriptors descriptors = {});
   attribute CSSOMString family;
   attribute CSSOMString style;
   attribute CSSOMString weight;
   attribute CSSOMString stretch;
   attribute CSSOMString unicodeRange;
-  attribute CSSOMString variant;
   attribute CSSOMString featureSettings;
   attribute CSSOMString variationSettings;
   attribute CSSOMString display;
@@ -99,8 +95,6 @@ enum FontFaceSetLoadStatus { "loading", "loaded" };
 
 [Exposed=(Window,Worker)]
 interface FontFaceSet : EventTarget {
-  constructor(sequence<FontFace> initialFaces);
-
   setlike<FontFace>;
   FontFaceSet add(FontFace font);
   boolean delete(FontFace font);

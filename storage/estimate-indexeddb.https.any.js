@@ -1,75 +1,22 @@
 // META: title=StorageManager: estimate() for indexeddb
+// META: script=/storage/buckets/resources/util.js
 
-function indexedDbOpenRequest(t, dbname, upgrade_func) {
-  return new Promise((resolve, reject) => {
-    const openRequest = indexedDB.open(dbname);
-    t.add_cleanup(() => {
-      indexedDbDeleteRequest(dbname);
-    });
-
-    openRequest.onerror = () => {
-      reject(openRequest.error);
-    };
-    openRequest.onsuccess = () => {
-      resolve(openRequest.result);
-    };
-    openRequest.onupgradeneeded = event => {
-      upgrade_func(openRequest.result);
-    };
-  });
-}
-
-function indexedDbDeleteRequest(name) {
-  return new Promise((resolve, reject) => {
-    const deleteRequest = indexedDB.deleteDatabase(name);
-    deleteRequest.onerror = () => {
-      reject(deleteRequest.error);
-    };
-    deleteRequest.onsuccess = () => {
-      resolve();
-    };
-  });
-}
-
-function transactionPromise(txn) {
-  return new Promise((resolve, reject) => {
-    txn.onabort = () => {
-      reject(txn.error);
-    };
-    txn.oncomplete = () => {
-      resolve();
-    };
-  });
-}
-
-test(t => {
-  assert_true('estimate' in navigator.storage);
-  assert_equals(typeof navigator.storage.estimate, 'function');
-  assert_true(navigator.storage.estimate() instanceof Promise);
-}, 'estimate() method exists and returns a Promise');
-
-promise_test(async t => {
-  const estimate = await navigator.storage.estimate();
-  assert_equals(typeof estimate, 'object');
-  assert_true('usage' in estimate);
-  assert_equals(typeof estimate.usage, 'number');
-  assert_true('quota' in estimate);
-  assert_equals(typeof estimate.quota, 'number');
-}, 'estimate() resolves to dictionary with members');
-
+// Technically, this verifies unspecced behavior. See
+// https://github.com/whatwg/storage/issues/110 for defining this behavior.
 promise_test(async t => {
   const arraySize = 1e6;
   const objectStoreName = "storageManager";
-  const dbname = this.window ? window.location.pathname :
-        "estimate-worker.https.html";
+  const dbname =
+      this.window ? window.location.pathname : 'estimate-worker.https.html';
 
-  await indexedDbDeleteRequest(dbname);
+  await indexedDbDeleteRequest(indexedDB, dbname);
   let estimate = await navigator.storage.estimate();
 
   const usageBeforeCreate = estimate.usage;
-  const db = await indexedDbOpenRequest(t, dbname, (db_to_upgrade) => {
-    db_to_upgrade.createObjectStore(objectStoreName);
-  });
+  const db =
+      await indexedDbOpenRequest(t, indexedDB, dbname, (db_to_upgrade) => {
+        db_to_upgrade.createObjectStore(objectStoreName);
+      });
 
   estimate = await navigator.storage.estimate();
   const usageAfterCreate = estimate.usage;
@@ -86,7 +33,7 @@ promise_test(async t => {
     view[i] = Math.floor(Math.random() * 255);
   }
 
-  const testBlob = new Blob([buffer], {type: "binary/random"});
+  const testBlob = new Blob([buffer], {type: 'binary/random'});
   txn.objectStore(objectStoreName).add(testBlob, 1);
 
   await transactionPromise(txn);

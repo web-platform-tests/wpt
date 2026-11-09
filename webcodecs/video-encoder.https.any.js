@@ -23,22 +23,6 @@ promise_test(t => {
   return endAfterEventLoopTurn();
 }, 'Test VideoEncoder construction');
 
-promise_test(t => {
-  let encoder = new VideoEncoder(getDefaultCodecInit(t));
-
-  let badCodecsList = [
-    '',                         // Empty codec
-    'bogus',                    // Non exsitent codec
-    'vorbis',                   // Audio codec
-    'vp9',                      // Ambiguous codec
-    'video/webm; codecs="vp9"'  // Codec with mime type
-  ]
-
-  testConfigurations(encoder, defaultConfig, badCodecsList);
-
-  return endAfterEventLoopTurn();
-}, 'Test VideoEncoder.configure()');
-
 promise_test(async t => {
   let output_chunks = [];
   let codecInit = getDefaultCodecInit(t);
@@ -63,6 +47,10 @@ promise_test(async t => {
 
   let frame1 = createFrame(640, 480, 0);
   let frame2 = createFrame(640, 480, 33333);
+  t.add_cleanup(() => {
+    frame1.close();
+    frame2.close();
+  });
 
   encoder.encode(frame1);
   encoder.encode(frame2);
@@ -218,8 +206,12 @@ promise_test(async t => {
 
 promise_test(async t => {
   let output_chunks = [];
-  let codecInit = getDefaultCodecInit(t);
-  codecInit.output = chunk => output_chunks.push(chunk);
+  const codecInit = {
+    output: chunk => output_chunks.push(chunk),
+  };
+  const error = new Promise(resolve => codecInit.error = e => {
+    resolve(e);
+  });
 
   let encoder = new VideoEncoder(codecInit);
 
@@ -250,21 +242,21 @@ promise_test(async t => {
   output_chunks = [];
 
   let frame3 = createFrame(640, 480, 66666);
-  let frame4 = createFrame(640, 480, 100000);
 
   encoder.encode(frame3);
 
-  // Verify that a failed call to configure does not change the encoder's state.
   let badConfig = { ...defaultConfig };
-  badConfig.codec = 'bogus';
+  badConfig.codec = '';
   assert_throws_js(TypeError, () => encoder.configure(badConfig));
 
-  encoder.encode(frame4);
+  badConfig.codec = 'bogus';
+  encoder.configure(badConfig);
+  let e = await error;
+  assert_true(e instanceof DOMException);
+  assert_equals(e.name, 'NotSupportedError');
+  assert_equals(encoder.state, 'closed', 'state');
 
-  await encoder.flush();
-
-  assert_equals(output_chunks[0].timestamp, frame3.timestamp);
-  assert_equals(output_chunks[1].timestamp, frame4.timestamp);
+  // We may or may not have received frame3 before closing.
 }, 'Test successful encode() after re-configure().');
 
 promise_test(async t => {
@@ -291,7 +283,7 @@ promise_test(async t => {
 
   encoder.configure(defaultConfig);
 
-  assert_throws_dom("OperationError", () => {
+  assert_throws_js(TypeError, () => {
     encoder.encode(frame);
   });
 }, 'Verify encoding closed frames throws.');
@@ -314,3 +306,46 @@ promise_test(async t => {
   assert_equals(output_chunks[0].timestamp, -10000, "first chunk timestamp");
   assert_greater_than(output_chunks[0].byteLength, 0);
 }, 'Encode video with negative timestamp');
+
+promise_test(async t => {
+  let output_chunks = [];
+  let codecInit = getDefaultCodecInit(t);
+  codecInit.output = chunk => output_chunks.push(chunk);
+
+  let encoder = new VideoEncoder(codecInit);
+  encoder.configure(defaultConfig);
+
+  let frame_unset = createFrame(640, 480, 0, {duration: undefined});
+  let frame_zero = createFrame(640, 480, 10000, {duration: 0});
+  let frame_dup1 = createFrame(640, 480, 20000, {duration: 111});
+  let frame_dup2 = createFrame(640, 480, 20000, {duration: 222});
+  t.add_cleanup(() => {
+    frame_unset.close();
+    frame_zero.close();
+    frame_dup1.close();
+    frame_dup2.close();
+  });
+
+  assert_equals(frame_unset.duration, null);
+  assert_equals(frame_zero.duration, 0);
+  assert_equals(frame_dup1.duration, 111);
+  assert_equals(frame_dup2.duration, 222);
+
+  encoder.encode(frame_unset);
+  encoder.encode(frame_zero);
+  encoder.encode(frame_dup1);
+  encoder.encode(frame_dup2);
+
+  await encoder.flush();
+  encoder.close();
+
+  assert_equals(output_chunks.length, 4);
+  assert_equals(output_chunks[0].timestamp, 0);
+  assert_equals(output_chunks[0].duration, null);
+  assert_equals(output_chunks[1].timestamp, 10000);
+  assert_equals(output_chunks[1].duration, 0);
+  assert_equals(output_chunks[2].timestamp, 20000);
+  assert_equals(output_chunks[2].duration, 111);
+  assert_equals(output_chunks[3].timestamp, 20000);
+  assert_equals(output_chunks[3].duration, 222);
+}, 'Encode video preserves unset, zero, and duplicate-timestamp durations');

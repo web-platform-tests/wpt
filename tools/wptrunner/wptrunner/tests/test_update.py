@@ -3,12 +3,12 @@
 import json
 import os
 import sys
-from io import BytesIO
+from io import BytesIO, StringIO
 from unittest import mock
 
 import pytest
 
-from .. import metadata, manifestupdate, wptmanifest
+from .. import metadata, manifestupdate, wptcommandline, wptmanifest
 from ..update.update import WPTUpdate
 from ..update.base import StepRunner, Step
 from mozlog import structuredlog, handlers, formatters
@@ -116,7 +116,7 @@ def create_updater(tests, url_base="/", **kwargs):
 
 
 def create_log(entries):
-    data = BytesIO()
+    data = StringIO()
     if isinstance(entries, list):
         logger = structuredlog.StructuredLogger("expected_test")
         handler = handlers.StreamHandler(data, formatters.JSONFormatter())
@@ -127,7 +127,7 @@ def create_log(entries):
             getattr(logger, action)(**kwargs)
         logger.remove_handler(handler)
     else:
-        data.write(json.dumps(entries).encode())
+        data.write(json.dumps(entries))
     data.seek(0)
     return data
 
@@ -153,7 +153,7 @@ def create_test_manifest(tests, url_base="/"):
     return m
 
 
-def test_update_0():
+def test_update_0(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -173,7 +173,7 @@ def test_update_0():
     assert updated[0][1].is_empty
 
 
-def test_update_1():
+def test_update_1(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -195,7 +195,7 @@ def test_update_1():
     assert new_manifest.get_test(test_id).children[0].get("expected", default_run_info) == "FAIL"
 
 
-def test_update_known_intermittent_1():
+def test_update_known_intermittent_1(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -235,7 +235,7 @@ def test_update_known_intermittent_1():
         "expected", default_run_info) == ["PASS", "FAIL"]
 
 
-def test_update_known_intermittent_2():
+def test_update_known_intermittent_2(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -259,7 +259,7 @@ def test_update_known_intermittent_2():
         "expected", default_run_info) == "FAIL"
 
 
-def test_update_existing_known_intermittent():
+def test_update_existing_known_intermittent(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -301,7 +301,7 @@ def test_update_existing_known_intermittent():
         "expected", default_run_info) == ["PASS", "ERROR", "FAIL"]
 
 
-def test_update_remove_previous_intermittent():
+def test_update_remove_previous_intermittent(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -348,7 +348,7 @@ def test_update_remove_previous_intermittent():
         "expected", default_run_info) == ["PASS", "ERROR"]
 
 
-def test_update_new_test_with_intermittent():
+def test_update_new_test_with_intermittent(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", None)]
 
     log_0 = suite_log([("test_start", {"test": test_id}),
@@ -414,7 +414,7 @@ def test_update_expected_tie_resolution():
         "expected", default_run_info) == ["PASS", "FAIL"]
 
 
-def test_update_reorder_expected():
+def test_update_no_reorder_expected(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -448,15 +448,10 @@ def test_update_reorder_expected():
                                      "status": "OK"})])
 
     updated = update(tests, log_0, log_1, log_2, update_intermittent=True)
-    new_manifest = updated[0][1]
-
-    assert not new_manifest.is_empty
-    assert new_manifest.modified
-    assert new_manifest.get_test(test_id).children[0].get(
-        "expected", default_run_info) == ["PASS", "FAIL"]
+    assert not updated
 
 
-def test_update_and_preserve_unchanged_expected_intermittent():
+def test_update_and_preserve_unchanged_expected_intermittent(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""
 [test.htm]
   expected:
@@ -499,7 +494,59 @@ def test_update_and_preserve_unchanged_expected_intermittent():
         "expected", default_run_info) == "PASS"
 
 
-def test_update_test_with_intermittent_to_one_expected_status():
+def test_update_intermittent(logger):
+    tests = [("path/to/test.htm", [test_id], "testharness",
+              b"""[test.htm]
+  [test1]
+    expected:
+      if os == "linux" or os == "android": [PASS, FAIL, ERROR]""")]
+
+    # Logs where the test requires an update, but we don't want to update the
+    # intermittent status
+    log_0 = suite_log([("test_start", {"test": test_id}),
+                       ("test_status", {"test": test_id,
+                                        "subtest": "test1",
+                                        "status": "FAIL",
+                                        "expected": "PASS",
+                                        "known_intermittent": ["FAIL", "ERROR"]}),
+                       ("test_end", {"test": test_id,
+                                     "status": "OK"})])
+
+    log_1 = suite_log([("test_start", {"test": test_id}),
+                       ("test_status", {"test": test_id,
+                                        "subtest": "test1",
+                                        "status": "FAIL",
+                                        "expected": "PASS",
+                                        "known_intermittent": ["FAIL", "ERROR"]}),
+                       ("test_end", {"test": test_id,
+                                     "status": "OK"})])
+
+    log_2 = suite_log([("test_start", {"test": test_id}),
+                       ("test_status", {"test": test_id,
+                                        "subtest": "test1",
+                                        "status": "PASS",
+                                        "expected": "PASS",
+                                        "known_intermittent": ["FAIL", "ERROR"]}),
+                       ("test_end", {"test": test_id,
+                                     "status": "TIMEOUT"})],
+                      run_info={"os": "android"})
+
+    updated = update(tests, log_0, log_1, log_2, update_intermittent=True)
+    new_manifest = updated[0][1]
+
+    assert not new_manifest.is_empty
+    assert new_manifest.modified
+
+    run_info_1 = default_run_info.copy()
+    run_info_1.update({"os": "android"})
+    assert new_manifest.get_test(test_id).get(
+        "expected", run_info_1) == "TIMEOUT"
+
+    assert new_manifest.get_test(test_id).children[0].get(
+        "expected", default_run_info) == ["PASS", "FAIL", "ERROR"]
+
+
+def test_update_test_with_intermittent_to_one_expected_status(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -523,7 +570,7 @@ def test_update_test_with_intermittent_to_one_expected_status():
         "expected", default_run_info) == "ERROR"
 
 
-def test_update_intermittent_with_conditions():
+def test_update_intermittent_with_conditions(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""
 [test.htm]
   expected:
@@ -558,7 +605,7 @@ def test_update_intermittent_with_conditions():
         "expected", run_info_1) == ["PASS", "TIMEOUT", "FAIL"]
 
 
-def test_update_and_remove_intermittent_with_conditions():
+def test_update_and_remove_intermittent_with_conditions(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""
 [test.htm]
   expected:
@@ -593,7 +640,7 @@ def test_update_and_remove_intermittent_with_conditions():
         "expected", run_info_1) == ["PASS", "TIMEOUT"]
 
 
-def test_update_intermittent_full():
+def test_update_intermittent_full(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -632,7 +679,7 @@ def test_update_intermittent_full():
         "expected", default_run_info) == "FAIL"
 
 
-def test_update_intermittent_full_remove():
+def test_update_intermittent_full_remove(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -683,7 +730,7 @@ def test_update_intermittent_full_remove():
         "expected", default_run_info) == "FAIL"
 
 
-def test_full_update():
+def test_full_update(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -723,7 +770,7 @@ def test_full_update():
         "expected", default_run_info) == "FAIL"
 
 
-def test_full_orphan():
+def test_full_orphan(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -755,7 +802,7 @@ def test_full_orphan():
     assert len(new_manifest.get_test(test_id).children) == 1
 
 
-def test_update_reorder_expected_full_conditions():
+def test_update_no_reorder_expected_full_conditions(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -802,20 +849,10 @@ def test_update_reorder_expected_full_conditions():
                                    "status": "OK"})])
 
     updated = update(tests, log_0, log_1, log_2, log_3, update_intermittent=True, full_update=True)
-
-    new_manifest = updated[0][1]
-
-    assert not new_manifest.is_empty
-    assert new_manifest.modified
-    run_info_1 = default_run_info.copy()
-    run_info_1.update({"os": "mac"})
-    assert new_manifest.get_test(test_id).children[0].get(
-        "expected", run_info_1) == ["TIMEOUT", "FAIL"]
-    assert new_manifest.get_test(test_id).children[0].get(
-        "expected", default_run_info) == ["PASS", "FAIL"]
+    assert not updated
 
 
-def test_skip_0():
+def test_skip_0(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -833,7 +870,7 @@ def test_skip_0():
     assert not updated
 
 
-def test_new_subtest():
+def test_new_subtest(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   [test1]
     expected: FAIL""")]
@@ -857,7 +894,7 @@ def test_new_subtest():
     assert new_manifest.get_test(test_id).children[1].get("expected", default_run_info) == "FAIL"
 
 
-def test_update_subtest():
+def test_update_subtest(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   expected:
     if os == "linux": [OK, ERROR]
@@ -884,7 +921,7 @@ def test_update_subtest():
     assert new_manifest.get_test(test_id).children[0].get("expected", default_run_info) == "FAIL"
 
 
-def test_update_multiple_0():
+def test_update_multiple_0(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   [test1]
     expected: FAIL""")]
@@ -922,7 +959,7 @@ def test_update_multiple_0():
         "expected", {"debug": False, "os": "linux"}) == "TIMEOUT"
 
 
-def test_update_multiple_1():
+def test_update_multiple_1(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   [test1]
     expected: FAIL""")]
@@ -965,7 +1002,7 @@ def test_update_multiple_1():
         "expected", run_info_3) == "FAIL"
 
 
-def test_update_multiple_2():
+def test_update_multiple_2(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   [test1]
     expected: FAIL""")]
@@ -1004,7 +1041,7 @@ def test_update_multiple_2():
         "expected", run_info_2) == "TIMEOUT"
 
 
-def test_update_multiple_3():
+def test_update_multiple_3(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   [test1]
     expected:
@@ -1045,7 +1082,7 @@ def test_update_multiple_3():
         "expected", run_info_2) == "TIMEOUT"
 
 
-def test_update_ignore_existing():
+def test_update_ignore_existing(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   [test1]
     expected:
@@ -1086,7 +1123,7 @@ def test_update_ignore_existing():
         "expected", run_info_2) == "NOTRUN"
 
 
-def test_update_new_test():
+def test_update_new_test(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", None)]
 
     log_0 = suite_log([("test_start", {"test": test_id}),
@@ -1109,7 +1146,7 @@ def test_update_new_test():
         "expected", run_info_1) == "FAIL"
 
 
-def test_update_duplicate():
+def test_update_duplicate(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""
 [test.htm]
   expected: ERROR""")]
@@ -1129,7 +1166,7 @@ def test_update_duplicate():
         "expected", run_info_1) == "ERROR"
 
 
-def test_update_disable_intermittent():
+def test_update_disable_intermittent(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""
 [test.htm]
   expected: ERROR""")]
@@ -1149,7 +1186,7 @@ def test_update_disable_intermittent():
         "disabled", run_info_1) == "Some message"
 
 
-def test_update_stability_conditional_instability():
+def test_update_stability_conditional_instability(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""
 [test.htm]
   expected: ERROR""")]
@@ -1183,7 +1220,7 @@ def test_update_stability_conditional_instability():
         "expected", run_info_2) == "FAIL"
 
 
-def test_update_full():
+def test_update_full(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   [test1]
     expected:
@@ -1234,7 +1271,7 @@ def test_update_full():
         "expected", run_info_2) == "ERROR"
 
 
-def test_update_full_unknown():
+def test_update_full_unknown(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   [test1]
     expected:
@@ -1276,7 +1313,7 @@ def test_update_full_unknown():
         "expected", run_info_2) == "ERROR"
 
 
-def test_update_full_unknown_missing():
+def test_update_full_unknown_missing(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   [subtest_deleted]
     expected:
@@ -1297,7 +1334,7 @@ def test_update_full_unknown_missing():
     assert len(updated) == 0
 
 
-def test_update_default():
+def test_update_default(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   [test1]
     expected:
@@ -1329,7 +1366,7 @@ def test_update_default():
     assert new_manifest.modified
 
 
-def test_update_default_1():
+def test_update_default_1(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""
 [test.htm]
   expected:
@@ -1361,7 +1398,7 @@ def test_update_default_1():
         "expected", run_info_2) == "FAIL"
 
 
-def test_update_default_2():
+def test_update_default_2(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""
 [test.htm]
   expected:
@@ -1393,7 +1430,7 @@ def test_update_default_2():
         "expected", run_info_2) == "TIMEOUT"
 
 
-def test_update_assertion_count_0():
+def test_update_assertion_count_0(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   max-asserts: 4
   min-asserts: 2
@@ -1416,7 +1453,7 @@ def test_update_assertion_count_0():
     assert new_manifest.get_test(test_id).get("min-asserts") == "2"
 
 
-def test_update_assertion_count_1():
+def test_update_assertion_count_1(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   max-asserts: 4
   min-asserts: 2
@@ -1439,7 +1476,7 @@ def test_update_assertion_count_1():
     assert new_manifest.get_test(test_id).has_key("min-asserts") is False
 
 
-def test_update_assertion_count_2():
+def test_update_assertion_count_2(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   max-asserts: 4
   min-asserts: 2
@@ -1457,7 +1494,7 @@ def test_update_assertion_count_2():
     assert not updated
 
 
-def test_update_assertion_count_3():
+def test_update_assertion_count_3(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]
   max-asserts: 4
   min-asserts: 2
@@ -1490,7 +1527,7 @@ def test_update_assertion_count_3():
     assert new_manifest.get_test(test_id).get("min-asserts") == "2"
 
 
-def test_update_assertion_count_4():
+def test_update_assertion_count_4(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b"""[test.htm]""")]
 
     log_0 = suite_log([("test_start", {"test": test_id}),
@@ -1520,7 +1557,7 @@ def test_update_assertion_count_4():
     assert new_manifest.get_test(test_id).has_key("min-asserts") is False
 
 
-def test_update_lsan_0():
+def test_update_lsan_0(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b""),
              ("path/to/__dir__", [dir_id], None, b"")]
 
@@ -1536,7 +1573,7 @@ def test_update_lsan_0():
     assert new_manifest.get("lsan-allowed") == ["foo"]
 
 
-def test_update_lsan_1():
+def test_update_lsan_1(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b""),
              ("path/to/__dir__", [dir_id], None, b"""
 lsan-allowed: [foo]""")]
@@ -1555,7 +1592,7 @@ lsan-allowed: [foo]""")]
     assert new_manifest.get("lsan-allowed") == ["baz", "foo"]
 
 
-def test_update_lsan_2():
+def test_update_lsan_2(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b""),
              ("path/__dir__", ["path/__dir__"], None, b"""
 lsan-allowed: [foo]"""),
@@ -1576,7 +1613,7 @@ lsan-allowed: [foo]"""),
     assert new_manifest.get("lsan-allowed") == ["baz"]
 
 
-def test_update_lsan_3():
+def test_update_lsan_3(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b""),
              ("path/to/__dir__", [dir_id], None, b"")]
 
@@ -1597,7 +1634,7 @@ def test_update_lsan_3():
     assert new_manifest.get("lsan-allowed") == ["baz", "foo"]
 
 
-def test_update_wptreport_0():
+def test_update_wptreport_0(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   [test1]
@@ -1617,7 +1654,7 @@ def test_update_wptreport_0():
     assert updated[0][1].is_empty
 
 
-def test_update_wptreport_1():
+def test_update_wptreport_1(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b""),
              ("path/to/__dir__", [dir_id], None, b"")]
 
@@ -1632,7 +1669,7 @@ def test_update_wptreport_1():
     assert updated[0][1].get("lsan-allowed") == ["baz"]
 
 
-def test_update_leak_total_0():
+def test_update_leak_total_0(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b""),
              ("path/to/__dir__", [dir_id], None, b"")]
 
@@ -1650,7 +1687,7 @@ def test_update_leak_total_0():
     assert new_manifest.get("leak-threshold") == ['default:51200']
 
 
-def test_update_leak_total_1():
+def test_update_leak_total_1(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b""),
              ("path/to/__dir__", [dir_id], None, b"")]
 
@@ -1664,7 +1701,7 @@ def test_update_leak_total_1():
     assert not updated
 
 
-def test_update_leak_total_2():
+def test_update_leak_total_2(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b""),
              ("path/to/__dir__", [dir_id], None, b"""
 leak-total: 110""")]
@@ -1679,7 +1716,7 @@ leak-total: 110""")]
     assert not updated
 
 
-def test_update_leak_total_3():
+def test_update_leak_total_3(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b""),
              ("path/to/__dir__", [dir_id], None, b"""
 leak-total: 100""")]
@@ -1698,7 +1735,7 @@ leak-total: 100""")]
     assert new_manifest.get("leak-threshold") == ['default:51200']
 
 
-def test_update_leak_total_4():
+def test_update_leak_total_4(logger):
     tests = [("path/to/test.htm", [test_id], "testharness", b""),
              ("path/to/__dir__", [dir_id], None, b"""
 leak-total: 110""")]
@@ -1721,6 +1758,8 @@ leak-total: 110""")]
 
 
 class TestStep(Step):
+    __test__ = False
+
     def create(self, state):
         tests = [("path/to/test.htm", [test_id], "testharness", "")]
         state.foo = create_test_manifest(tests)
@@ -1730,15 +1769,15 @@ class UpdateRunner(StepRunner):
     steps = [TestStep]
 
 
-def test_update_pickle():
-    logger = structuredlog.StructuredLogger("expected_test")
+def test_update_pickle(logger):
+    wpt_root = os.path.abspath(os.path.join(here,
+                                            os.pardir,
+                                            os.pardir,
+                                            os.pardir,
+                                            os.pardir))
     args = {
         "test_paths": {
-            "/": {"tests_path": os.path.abspath(os.path.join(here,
-                                                             os.pardir,
-                                                             os.pardir,
-                                                             os.pardir,
-                                                             os.pardir))},
+            "/": wptcommandline.TestRoot(wpt_root, wpt_root),
         },
         "abort": False,
         "continue": False,
@@ -1751,7 +1790,7 @@ def test_update_pickle():
     wptupdate.run()
 
 
-def test_update_serialize_quoted():
+def test_update_serialize_quoted(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   expected: "ERROR"
@@ -1802,7 +1841,7 @@ def test_update_serialize_quoted():
 """
 
 
-def test_update_serialize_unquoted():
+def test_update_serialize_unquoted(logger):
     tests = [("path/to/test.htm", [test_id], "testharness",
               b"""[test.htm]
   expected: ERROR

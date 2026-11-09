@@ -43,6 +43,10 @@ test(function () {
 promise_test(async t => {
   // Both permissions are needed at some point, asking both at once
   await setMediaPermission();
+  // A successful camera gUM call is needed to expose camera information
+  const afterGum = await navigator.mediaDevices.getUserMedia({video: true});
+  afterGum.getTracks()[0].stop();
+
   assert_true(navigator.mediaDevices.getSupportedConstraints()["groupId"],
     "groupId should be supported");
   const devices = await navigator.mediaDevices.enumerateDevices();
@@ -66,6 +70,10 @@ promise_test(async t => {
 }, 'groupId is correctly supported by getUserMedia() for video devices');
 
 promise_test(async t => {
+  // A successful microphone gUM call is needed to expose microphone information
+  const afterGum = await navigator.mediaDevices.getUserMedia({audio: true});
+  afterGum.getTracks()[0].stop();
+
   assert_true(navigator.mediaDevices.getSupportedConstraints()["groupId"],
     "groupId should be supported");
   const devices = await navigator.mediaDevices.enumerateDevices();
@@ -106,7 +114,29 @@ promise_test(async t => {
   const [track] = stream.getVideoTracks();
   t.add_cleanup(() => track.stop());
   assert_equals(track.getSettings().resizeMode, 'crop-and-scale');
-}, 'getUserMedia() supports setting crop-and-scale as resizeMode.');
+}, 'getUserMedia() supports setting crop-and-scale as resizeMode without downscaling.');
+
+promise_test(async t => {
+  assert_true(navigator.mediaDevices.getSupportedConstraints()["resizeMode"],
+    "resizeMode should be supported");
+  const stream = await navigator.mediaDevices.getUserMedia(
+      { video: {resizeMode: {exact: 'crop-and-scale'}, width: {max: 30}}});
+  const [track] = stream.getVideoTracks();
+  t.add_cleanup(() => track.stop());
+  assert_equals(track.getSettings().resizeMode, 'crop-and-scale');
+  assert_less_than_equal(track.getSettings().width, 30);
+}, 'getUserMedia() supports setting crop-and-scale as resizeMode with downscaling.');
+
+promise_test(async t => {
+  assert_true(navigator.mediaDevices.getSupportedConstraints()["resizeMode"],
+    "resizeMode should be supported");
+  const stream = await navigator.mediaDevices.getUserMedia(
+      { video: {resizeMode: {exact: 'crop-and-scale'}, frameRate: {max: 5}}});
+  const [track] = stream.getVideoTracks();
+  t.add_cleanup(() => track.stop());
+  assert_equals(track.getSettings().resizeMode, 'crop-and-scale');
+  assert_less_than_equal(track.getSettings().frameRate, 5);
+}, 'getUserMedia() supports setting crop-and-scale as resizeMode with decimation.');
 
 promise_test(async t => {
   assert_true(navigator.mediaDevices.getSupportedConstraints()["resizeMode"],

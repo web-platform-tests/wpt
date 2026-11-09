@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Resource Timing - initiatorUrl for resources loaded by an external script via scheduler.postTask()</title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="../../resources/test-initiator.js"></script>
+<div id="log"></div>
+<script src="../../resources/loading-resources-in-posted-task.js"></script>
+<script>
+const expectedInitiatorUrl = getUrl(
+  "/resource-timing/resources/loading-resources-in-posted-task.js");
+const resources = [
+  "empty_style.css?no_cache",
+  "blue.png?no_cache",
+  "empty.js?no_cache",
+  "green.html?no_cache",
+];
+for (const resource of resources) {
+  initiator_url_test(resource, expectedInitiatorUrl, resource +
+    " initiatorUrl by scheduler.postTask() from external scripts",
+    resource + " timeout");
+}
+</script>

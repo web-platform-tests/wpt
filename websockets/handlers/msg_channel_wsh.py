@@ -6,7 +6,7 @@ import threading
 import traceback
 from queue import Empty
 
-from mod_pywebsocket import stream, msgutil
+from pywebsocket3 import stream, msgutil
 from wptserve import stash as stashmod
 
 logger = logging.getLogger()
@@ -150,8 +150,8 @@ def run_read(request, uuid, queue):
      close - Close the reader queue
 
     In addition there's a thread that listens for messages on the
-    socket itself. Typically this socket shouldn't recieve any
-    messages, but it can recieve an explicit "close" message,
+    socket itself. Typically this socket shouldn't receive any
+    messages, but it can receive an explicit "close" message,
     indicating the socket should be disconnected.
     """
 

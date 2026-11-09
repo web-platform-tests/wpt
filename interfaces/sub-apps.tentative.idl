@@ -1,17 +1,27 @@
-[
-  Exposed=Window,
-  SecureContext,
-  ImplementedAs=SubApps
-] partial interface Navigator {
-  [SameObject, RuntimeEnabled=DesktopPWAsSubApps] readonly attribute SubApps subApps;
+partial interface Window {
+  [SameObject] readonly attribute SubApps subApps;
+};
+
+dictionary SubAppsAddResponse {
+  record<USVString, USVString> installedApps;
+  record<USVString, DOMException> failedApps;
+};
+
+dictionary SubAppsRemoveResponse {
+  sequence<USVString> removedApps;
+  record<USVString, DOMException> failedApps;
+};
+
+dictionary SubAppsListResult {
+  required DOMString appName;
 };
 
 [
   Exposed=Window,
   SecureContext,
-  RuntimeEnabled=DesktopPWAsSubApps
+  IsolatedContext
 ] interface SubApps {
-  [CallWith=ScriptState, RaisesException] Promise<undefined> add(DOMString install_url);
-  [CallWith=ScriptState, RaisesException] Promise<FrozenArray<DOMString>> list();
-  [CallWith=ScriptState, RaisesException] Promise<undefined> remove(DOMString app_id);
+  Promise<SubAppsAddResponse> add(sequence<USVString> install_paths);
+  Promise<SubAppsRemoveResponse> remove(sequence<USVString> manifest_ids);
+  Promise<record<USVString, SubAppsListResult>> list();
 };

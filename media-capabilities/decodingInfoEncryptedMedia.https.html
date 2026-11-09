@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>MediaCapabilities.decodingInfo() for encrypted media</title>
+<title>MediaCapabilities.decodingInfo for encrypted media</title>
 <meta name="timeout" content="long">
 <script src=/resources/testharness.js></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -38,7 +38,7 @@ promise_test(t => {
     video: minimalVideoConfiguration,
     keySystemConfiguration: minimalKeySystemConfiguration,
   });
-}, "Test that decodingInfo() accepts a stub key system configuration (w/video).");
+}, "Test that decodingInfo accepts a stub key system configuration (w/video).");
 
 promise_test(t => {
   return navigator.mediaCapabilities.decodingInfo({
@@ -46,7 +46,7 @@ promise_test(t => {
     audio: minimalAudioConfiguration,
     keySystemConfiguration: minimalKeySystemConfiguration,
   });
-}, "Test that decodingInfo() accepts a stub key system configuration (w/audio).");
+}, "Test that decodingInfo accepts a stub key system configuration (w/audio).");
 
 promise_test(t => {
   return navigator.mediaCapabilities.decodingInfo({
@@ -59,7 +59,7 @@ promise_test(t => {
       },
     },
   });
-}, "Test that decodingInfo() accepts a key system configuration with video info.");
+}, "Test that decodingInfo accepts a key system configuration with video info.");
 
 promise_test(t => {
   return navigator.mediaCapabilities.decodingInfo({
@@ -72,7 +72,7 @@ promise_test(t => {
       },
     },
   });
-}, "Test that decodingInfo() accepts a key system configuration with audio info.");
+}, "Test that decodingInfo accepts a key system configuration with audio info.");
 
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
@@ -85,7 +85,7 @@ promise_test(t => {
       },
     },
   }));
-}, "Test that decodingInfo() rejects if robustness and configuration do not match (1).");
+}, "Test that decodingInfo rejects if robustness and configuration do not match (1).");
 
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
@@ -98,7 +98,7 @@ promise_test(t => {
       },
     },
   }));
-}, "Test that decodingInfo() rejects if robustness and configuration do not match (2).");
+}, "Test that decodingInfo rejects if robustness and configuration do not match (2).");
 
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
@@ -114,7 +114,7 @@ promise_test(t => {
       },
     },
   }));
-}, "Test that decodingInfo() rejects if robustness and configuration do not match (3).");
+}, "Test that decodingInfo rejects if robustness and configuration do not match (3).");
 
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
@@ -132,7 +132,7 @@ promise_test(t => {
       persistentState: "foobar",
     },
   }));
-}, "Test that decodingInfo() rejects if persistentState isn't valid.");
+}, "Test that decodingInfo rejects if persistentState isn't valid.");
 
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
@@ -150,7 +150,7 @@ promise_test(t => {
       distinctiveIdentifier: "foobar",
     },
   }));
-}, "Test that decodingInfo() rejects if distinctiveIdentifier isn't valid.");
+}, "Test that decodingInfo rejects if distinctiveIdentifier isn't valid.");
 
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
@@ -168,7 +168,7 @@ promise_test(t => {
       sessionTypes: "foobar",
     },
   }));
-}, "Test that decodingInfo() rejects if sessionTypes isn't a sequence.");
+}, "Test that decodingInfo rejects if sessionTypes isn't a sequence.");
 
 promise_test(t => {
   return navigator.mediaCapabilities.decodingInfo({
@@ -186,7 +186,7 @@ promise_test(t => {
       },
     },
   });
-}, "Test that decodingInfo() does not reject when properties are set to unexpected values.");
+}, "Test that decodingInfo does not reject when properties are set to unexpected values.");
 
 promise_test(t => {
   return navigator.mediaCapabilities.decodingInfo({
@@ -257,6 +257,65 @@ promise_test(t => {
     video: minimalVideoConfiguration,
     keySystemConfiguration: minimalKeySystemConfiguration,
   }));
-}, "Test that decodingInfo() with type webrtc rejects key system configuration.");
+}, "Test that decodingInfo with type webrtc rejects key system configuration.");
+
+async function runEncryptionSchemeTest(t, scheme, expectedSupported) {
+  const config = {
+    type: 'file',
+    video: minimalVideoConfiguration,
+    audio: minimalAudioConfiguration,
+    keySystemConfiguration: {
+      keySystem: 'org.w3.clearkey',
+      video: {
+        robustness: '',
+        encryptionScheme: scheme
+      }
+    }
+  };
+
+  const info = await navigator.mediaCapabilities.decodingInfo(config);
+  assert_equals(info.supported, expectedSupported, `supported should be ${expectedSupported}`);
+
+  if (expectedSupported) {
+    assert_not_equals(info.keySystemAccess, null, "keySystemAccess should be present in the result.");
+    const negotiatedConfig = info.keySystemAccess.getConfiguration();
+    assert_true(
+      !!negotiatedConfig.videoCapabilities && negotiatedConfig.videoCapabilities.length > 0,
+      "videoCapabilities should be present in the negotiated configuration."
+    );
+
+    // If the encryptionScheme is not passed from mediaCapabilities.decodingInfo()
+    // to the EME query, the negotiated keySystemAccess configuration will not contain
+    // the requested encryptionScheme (it will be null/unspecified).
+    assert_equals(
+      negotiatedConfig.videoCapabilities[0].encryptionScheme,
+      scheme,
+      `negotiated encryptionScheme should match requested scheme: ${scheme}`
+    );
+  } else {
+    assert_equals(info.keySystemAccess, null, "keySystemAccess should be null when not supported.");
+  }
+}
+
+promise_test(t => {
+  return runEncryptionSchemeTest(t, 'cenc', true);
+}, "decodingInfo() supports 'cenc' encryptionScheme and echoes it back.");
+
+promise_test(t => {
+  return runEncryptionSchemeTest(t, 'cbcs', true);
+}, "decodingInfo() supports 'cbcs' encryptionScheme and echoes it back.");
+
+promise_test(t => {
+  return runEncryptionSchemeTest(t, 'cbcs-1-9', true);
+}, "decodingInfo() supports 'cbcs-1-9' encryptionScheme and echoes it back.");
+
+promise_test(t => {
+  return runEncryptionSchemeTest(t, 'foobar', false);
+}, "decodingInfo() with unrecognized encryptionScheme returns supported: false.");
+
+promise_test(t => {
+  return runEncryptionSchemeTest(t, null, true);
+}, "decodingInfo() with null encryptionScheme returns supported: true and echoes null.");
+
 
 </script>

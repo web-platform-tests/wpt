@@ -1,21 +1,23 @@
 # mypy: allow-untyped-defs
 
+import argparse
 import errno
+import logging
 import os
 import shutil
 import socket
 import subprocess
 import sys
-import tempfile
 import time
-
+from unittest import mock
 from urllib.request import urlopen
 from urllib.error import URLError
 
 import pytest
 
+from tools.wpt import browser, utils, wpt
+
 here = os.path.abspath(os.path.dirname(__file__))
-from tools.wpt import utils, wpt
 
 
 def is_port_8000_in_use():
@@ -47,12 +49,21 @@ def init_manifest():
 
 
 @pytest.fixture
-def manifest_dir():
+def manifest_dir(tmp_path):
+    shutil.copyfile(get_persistent_manifest_path(),
+                    os.path.join(tmp_path, "MANIFEST.json"))
+    return str(tmp_path)
+
+
+@pytest.fixture(scope="module")
+def firefox_binary_path(tmp_path_factory):
     try:
-        path = tempfile.mkdtemp()
-        shutil.copyfile(get_persistent_manifest_path(),
-                        os.path.join(path, "MANIFEST.json"))
-        yield path
+        logger = logging.getLogger("firefox_binary_path")
+        path = str(tmp_path_factory.mktemp("firefox_binary"))
+        firefox = browser.Firefox(logger)
+        bin_path = firefox.install(dest=path)
+        assert os.path.exists(bin_path) and os.path.isfile(bin_path)
+        yield bin_path
     finally:
         utils.rmtree(path)
 
@@ -101,24 +112,60 @@ def test_load_commands():
     assert "conditional_requirements" in commands["run"]
 
 
+def test_dispatcher_uncaught_exception_exits_70(monkeypatch, capsys):
+    def boom(*args, **kwargs):
+        raise RuntimeError("boom")
+
+    def fake_import_command(prog, command, props):
+        return boom, argparse.ArgumentParser()
+
+    monkeypatch.setattr(wpt, "import_command", fake_import_command)
+
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["files-changed"])
+    assert excinfo.value.code == getattr(os, "EX_SOFTWARE", 70)
+    err = capsys.readouterr().err
+    assert "Traceback (most recent call last):" in err
+    assert "RuntimeError: boom" in err
+
+
+def test_dispatcher_uncaught_exception_debug_invokes_pdb(monkeypatch):
+    def boom(*args, **kwargs):
+        raise RuntimeError("boom")
+
+    def fake_import_command(prog, command, props):
+        return boom, argparse.ArgumentParser()
+
+    monkeypatch.setattr(wpt, "import_command", fake_import_command)
+
+    with mock.patch("pdb.post_mortem", autospec=True, spec_set=True) as mock_pm:
+        with pytest.raises(SystemExit) as excinfo:
+            wpt.main(argv=["--debug", "files-changed"])
+    # Falls through to the trailing sys.exit(0) after pdb.post_mortem returns.
+    assert excinfo.value.code == 0
+    mock_pm.assert_called_once_with()
+
+
 @pytest.mark.slow
 @pytest.mark.skipif(sys.platform == "win32",
                     reason="https://github.com/web-platform-tests/wpt/issues/28745")
-def test_list_tests(manifest_dir):
+def test_list_tests(manifest_dir, firefox_binary_path):
     """The `--list-tests` option should not produce an error under normal
     conditions."""
 
     with pytest.raises(SystemExit) as excinfo:
         wpt.main(argv=["run", "--metadata", manifest_dir, "--list-tests",
-                       "--channel", "dev", "--yes",
-                       # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
-                       "--enable-swiftshader",
-                       "chrome", "/dom/nodes/Element-tagName.html"])
+                       "--yes",
+                       # WebTransport server is not needed (web-platform-tests/wpt#41675).
+                       "--no-enable-webtransport-h3",
+                       "--binary", firefox_binary_path,
+                       "firefox", "/dom/nodes/Element-tagName.html"])
     assert excinfo.value.code == 0
 
 
 @pytest.mark.slow
-def test_list_tests_missing_manifest(manifest_dir):
+@pytest.mark.remote_network
+def test_list_tests_missing_manifest(manifest_dir, firefox_binary_path):
     """The `--list-tests` option should not produce an error in the absence of
     a test manifest file."""
 
@@ -133,15 +180,20 @@ def test_list_tests_missing_manifest(manifest_dir):
                        # drastically reduces the time to execute the test.
                        "--tests", here,
                        "--metadata", manifest_dir,
+                       "--log-mach", "-",
                        "--list-tests",
                        "--yes",
+                       # WebTransport server is not needed (web-platform-tests/wpt#41675).
+                       "--no-enable-webtransport-h3",
+                       "--binary", firefox_binary_path,
                        "firefox", "/dom/nodes/Element-tagName.html"])
 
     assert excinfo.value.code == 0
 
 
 @pytest.mark.slow
-def test_list_tests_invalid_manifest(manifest_dir):
+@pytest.mark.remote_network
+def test_list_tests_invalid_manifest(manifest_dir, firefox_binary_path):
     """The `--list-tests` option should not produce an error in the presence of
     a malformed test manifest file."""
 
@@ -161,8 +213,12 @@ def test_list_tests_invalid_manifest(manifest_dir):
                        # drastically reduces the time to execute the test.
                        "--tests", here,
                        "--metadata", manifest_dir,
+                       "--log-mach", "-",
                        "--list-tests",
                        "--yes",
+                       # WebTransport server is not needed (web-platform-tests/wpt#41675).
+                       "--no-enable-webtransport-h3",
+                       "--binary", firefox_binary_path,
                        "firefox", "/dom/nodes/Element-tagName.html"])
 
     assert excinfo.value.code == 0
@@ -172,25 +228,26 @@ def test_list_tests_invalid_manifest(manifest_dir):
 @pytest.mark.remote_network
 @pytest.mark.skipif(sys.platform == "win32",
                     reason="https://github.com/web-platform-tests/wpt/issues/28745")
-def test_run_zero_tests():
+def test_run_zero_tests(firefox_binary_path):
     """A test execution describing zero tests should be reported as an error
     even in the presence of the `--no-fail-on-unexpected` option."""
     if is_port_8000_in_use():
         pytest.skip("port 8000 already in use")
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--yes", "--no-pause", "--channel", "dev",
-                       # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
-                       "--enable-swiftshader",
-                       "chrome", "/non-existent-dir/non-existent-file.html"])
+        wpt.main(argv=["run", "--yes", "--no-pause",
+                       # WebTransport server is not needed (web-platform-tests/wpt#41675).
+                       "--no-enable-webtransport-h3",
+                       "--binary", firefox_binary_path,
+                       "firefox", "/non-existent-dir/non-existent-file.html"])
     assert excinfo.value.code != 0
 
     with pytest.raises(SystemExit) as excinfo:
         wpt.main(argv=["run", "--yes", "--no-pause", "--no-fail-on-unexpected",
-                       "--channel", "dev",
-                       # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
-                       "--enable-swiftshader",
-                       "chrome", "/non-existent-dir/non-existent-file.html"])
+                       # WebTransport server is not needed (web-platform-tests/wpt#41675).
+                       "--no-enable-webtransport-h3",
+                       "--binary", firefox_binary_path,
+                       "firefox", "/non-existent-dir/non-existent-file.html"])
     assert excinfo.value.code != 0
 
 
@@ -198,7 +255,7 @@ def test_run_zero_tests():
 @pytest.mark.remote_network
 @pytest.mark.skipif(sys.platform == "win32",
                     reason="https://github.com/web-platform-tests/wpt/issues/28745")
-def test_run_failing_test():
+def test_run_failing_test(firefox_binary_path):
     """Failing tests should be reported with a non-zero exit status unless the
     `--no-fail-on-unexpected` option has been specified."""
     if is_port_8000_in_use():
@@ -208,18 +265,20 @@ def test_run_failing_test():
     assert os.path.isfile("../../%s" % failing_test)
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--yes", "--no-pause", "--channel", "dev",
-                       # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
-                       "--enable-swiftshader",
-                       "chrome", failing_test])
+        wpt.main(argv=["run", "--yes", "--no-pause",
+                       # WebTransport server is not needed (web-platform-tests/wpt#41675).
+                       "--no-enable-webtransport-h3",
+                       "--binary", firefox_binary_path,
+                       "firefox", failing_test])
     assert excinfo.value.code != 0
 
     with pytest.raises(SystemExit) as excinfo:
         wpt.main(argv=["run", "--yes", "--no-pause", "--no-fail-on-unexpected",
                        "--channel", "dev",
-                       # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
-                       "--enable-swiftshader",
-                       "chrome", failing_test])
+                       # WebTransport server is not needed (web-platform-tests/wpt#41675).
+                       "--no-enable-webtransport-h3",
+                       "--binary", firefox_binary_path,
+                       "firefox", failing_test])
     assert excinfo.value.code == 0
 
 
@@ -227,7 +286,7 @@ def test_run_failing_test():
 @pytest.mark.remote_network
 @pytest.mark.skipif(sys.platform == "win32",
                     reason="https://github.com/web-platform-tests/wpt/issues/28745")
-def test_run_verify_unstable(temp_test):
+def test_run_verify_unstable(temp_test, firefox_binary_path):
     """Unstable tests should be reported with a non-zero exit status. Stable
     tests should be reported with a zero exit status."""
     if is_port_8000_in_use():
@@ -243,19 +302,21 @@ def test_run_verify_unstable(temp_test):
     """)
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--yes", "--verify", "--channel", "dev",
-                       # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
-                       "--enable-swiftshader",
-                       "chrome", unstable_test])
+        wpt.main(argv=["run", "--yes", "--verify",
+                       # WebTransport server is not needed (web-platform-tests/wpt#41675).
+                       "--no-enable-webtransport-h3",
+                       "--binary", firefox_binary_path,
+                       "firefox", unstable_test])
     assert excinfo.value.code != 0
 
     stable_test = temp_test("test(function() {}, 'my test');")
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--yes", "--verify", "--channel", "dev",
-                       # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
-                       "--enable-swiftshader",
-                       "chrome", stable_test])
+        wpt.main(argv=["run", "--yes", "--verify",
+                       # WebTransport server is not needed (web-platform-tests/wpt#41675).
+                       "--no-enable-webtransport-h3",
+                       "--binary", firefox_binary_path,
+                       "firefox", stable_test])
     assert excinfo.value.code == 0
 
 
@@ -346,7 +407,7 @@ def test_tests_affected_idlharness(capsys, manifest_dir):
             "webrtc-encoded-transform/idlharness.https.window.js\n" +
             "webrtc-identity/idlharness.https.window.js\n" +
             "webrtc-stats/idlharness.window.js\n" +
-            "webrtc-stats/supported-stats.html\n" +
+            "webrtc-stats/supported-stats.https.html\n" +
             "webrtc/idlharness.https.window.js\n") == out
 
 
@@ -399,6 +460,7 @@ def test_serve():
                 break
     finally:
         os.killpg(p.pid, 15)
+        p.wait(10)
 
 # The following commands are slow running and used implicitly in other CI
 # jobs, so we skip them here:

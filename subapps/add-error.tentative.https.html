@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <title>Sub Apps: Error cases for add()</title>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/subapps-helpers.js"></script>
@@ -12,101 +14,108 @@ promise_test(async t => {
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
 
-  const iframeNavigator = iframe.contentWindow.navigator;
   const iframeDOMException = iframe.contentWindow.DOMException;
 
-  // Detach the frame.
+  const subApps = iframe.contentWindow.subApps;
   iframe.remove();
-
-  const same_origin_url = document.location.origin + '/sub-app';
-  let subapp = {};
-  let install_options = {};
-  install_options["install_url"] = same_origin_url;
-  subapp[same_origin_url] = install_options;
-
-  // At this point the iframe is detached and unloaded, and its execution
-  // context is gone.
-  await promise_rejects_dom(t, 'NotFoundError', iframeDOMException, iframeNavigator.subApps.add(subapp));
+  await promise_rejects_dom(t, 'OperationError', iframeDOMException, subApps.add([]));
 }, "The object is no longer associated to a document.");
 
 promise_test(async t => {
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
 
-  const iframeNavigator = iframe.contentWindow.navigator;
   const iframeDOMException = iframe.contentWindow.DOMException;
   t.add_cleanup(() => iframe.remove());
 
-  const same_origin_url = document.location.origin + '/sub-app';
-  let subapp = {};
-  let install_options = {};
-  install_options["install_url"] = same_origin_url;
-  subapp[same_origin_url] = install_options;
-
-  await promise_rejects_dom(t, 'InvalidStateError', iframeDOMException, iframeNavigator.subApps.add(subapp));
+  await promise_rejects_dom(t, 'NotSupportedError', iframeDOMException, iframe.contentWindow.subApps.add([]));
 }, "API is only supported in top-level browsing contexts.");
 
 promise_test(async t => {
-  const wrong_origin_url = 'https://some.other.origin/sub-app';
-  let subapp = {};
-  let install_options = {};
-  install_options["install_url"] = wrong_origin_url;
-  subapp[wrong_origin_url] = install_options;
-  await promise_rejects_dom(t, 'URLMismatchError', navigator.subApps.add(subapp));
-}, 'Wrong origin URL argument.');
+  const cross_origin_url = 'https://example.com/sub-app';
+
+  let add_call_params = [cross_origin_url];
+
+  t.add_cleanup(async () => {
+    await mockSubAppsService.reset();
+    mockSubAppsService = null;
+  });
+
+  await createMockSubAppsService(Status.SUCCESS, [], [], []);
+  await test_driver.bless("installing subapps", async function () {
+    await promise_rejects_js(t, TypeError, window.subApps.add(add_call_params));
+  });
+}, 'API supports only same-origin URLs.');
 
 promise_test(async t => {
-  const same_origin_url = document.location.origin + '/sub-app';
-  let subapps = {};
-  let install_options = {};
-  install_options["install_url"] = same_origin_url;
-  subapps[same_origin_url] = install_options;
+  const url_1 = '/sub-app-1';
+  const url_2 = '/sub-app-2';
 
-  let add_call_return_value = [{unhashedAppId: same_origin_url, resultCode: 3}]
-  let expected_results = {same_origin_url: "expected-app-id-check-failed"};
+  let add_call_params = [url_1, url_2];
 
-  await subapps_add_expect_reject_with_result(t, {}, add_call_return_value, expected_results);
-}, 'Service failed to add single sub-app.');
+  let mocked_response = () => [
+    { "installPath": url_1, "manifestId": url_1, "resultType": SubAppsServiceAddResultType.kGenericError },
+    { "installPath": url_2, "manifestId": url_2, "resultType": SubAppsServiceAddResultType.kGenericError }
+  ];
 
-promise_test(async t => {
-  let subapps = {};
+  let expected_results = () => ({
+    failedApps: {
+      [url_1]: "OperationError",
+      [url_2]: "OperationError"
+    }
+  });
 
-  const url_1 = document.location.origin + '/sub-app-1';
-  let install_options_1 = {};
-  install_options_1["install_url"] = url_1;
-  subapps[url_1] = install_options_1;
-
-  const url_2 = document.location.origin + '/sub-app-2';
-  let install_options_2 = {};
-  install_options_2["install_url"] = url_2;
-  subapps[url_2] = install_options_2;
-
-  let add_call_return_value = [{unhashedAppId: url_1, resultCode: 3},
-                               {unhashedAppId: url_2, resultCode: 5}]
-  let expected_results = {url_1: "expected-app-id-check-failed",
-                          url_2: "failure"};
-
-  await subapps_add_expect_reject_with_result(t, {}, add_call_return_value, expected_results);
+  await test_driver.bless("installing a subapp", async function () {
+    await subapps_add_expect_success_with_result(t, add_call_params, mocked_response, expected_results);
+  });
 }, 'Service failed to add two sub-apps.');
 
 promise_test(async t => {
-  let subapps = {};
+  const url_1 = '/sub-app-1';
+  const url_2 = '/sub-app-2';
 
-  const url_1 = document.location.origin + '/sub-app-1';
-  let install_options_1 = {};
-  install_options_1["install_url"] = url_1;
-  subapps[url_1] = install_options_1;
+  let add_call_params = [url_1, url_2];
 
-  const url_2 = document.location.origin + '/sub-app-2';
-  let install_options_2 = {};
-  install_options_2["install_url"] = url_2;
-  subapps[url_2] = install_options_2;
+  let mocked_response = () => [
+    { "installPath": url_1, "manifestId": url_1, "resultType": SubAppsServiceAddResultType.kSuccess },
+    { "installPath": url_2, "manifestId": url_2, "resultType": SubAppsServiceAddResultType.kGenericError }
+  ];
 
-  let add_call_return_value = [{unhashedAppId: url_1, resultCode: 1},
-                               {unhashedAppId: url_2, resultCode: 3}]
-  let expected_results = {url_1: "success-new-install",
-                          url_2: "expected-app-id-check-failed"};
+  let expected_results = () => ({
+    installedApps: {
+      [url_1]: url_1
+    },
+    failedApps: {
+      [url_2]: "OperationError"
+    }
+  });
 
-  await subapps_add_expect_reject_with_result(t, {}, add_call_return_value, expected_results);
+  await test_driver.bless("installing a subapp", async function () {
+    await subapps_add_expect_success_with_result(t, add_call_params, mocked_response, expected_results);
+  });
 }, 'Service added one sub-app failed to add another sub-app.');
+
+promise_test(async t => {
+  const url_1 = '/sub-app-1';
+
+  let add_call_params = [url_1];
+
+  t.add_cleanup(async () => {
+    await mockSubAppsService.reset();
+    mockSubAppsService = null;
+  });
+
+  await createMockSubAppsService(Status.USER_DECLINED, [], [], []);
+  await test_driver.bless("installing a subapp", async function () {
+    await window.subApps.add(add_call_params).then(
+      result => {
+        assert_unreached("Should have rejected: ", result);
+      },
+      error => {
+        assert_true(error instanceof DOMException);
+        assert_equals(error.name, "NotAllowedError");
+      });
+  });
+}, 'Service rejected call because user denied permission.');
+
 </script>

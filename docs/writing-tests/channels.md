@@ -27,7 +27,7 @@ Channels can be used in any global and are not specifically linked to
 The high level API provides a way to message another global, and to
 execute functions in that global and return the result.
 
-Globals wanting to recieve messages using the high level API have to
+Globals wanting to receive messages using the high level API have to
 be loaded with a `uuid` query parameter in their URL, with a value
 that's a UUID. This will be used to identify the channel dedicated to
 messages sent to that context.
@@ -75,9 +75,9 @@ test.html
 ```html
 <!doctype html>
 <title>call example</title>
-<script src="/resources/testharness.js">
-<script src="/resources/testharnessreport.js">
-<script src="/resources/channel.js">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/channels.sub.js"></script>
 
 <script>
 promise_test(async t => {
@@ -94,7 +94,8 @@ promise_test(async t => {
 child.html
 
 ```html
-<script src="/resources/channel.js">
+<!doctype html>
+<script src="/resources/channels.sub.js"></script>
 
 <p id="nottest">FAIL</p>
 <p id="test">PASS</p>

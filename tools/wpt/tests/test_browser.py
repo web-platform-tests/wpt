@@ -24,55 +24,64 @@ def test_all_browser_abc():
     # products in unit tests.
     classes = inspect.getmembers(browser)
     for name, cls in classes:
-        if cls in (browser.Browser, browser.ChromeAndroidBase):
+        if cls in (browser.Browser, browser.ChromeChromiumBase, browser.ChromeAndroidBase):
             continue
         if inspect.isclass(cls) and issubclass(cls, browser.Browser):
             assert not inspect.isabstract(cls), "%s is abstract" % name
 
 
-def test_edgechromium_webdriver_supports_browser():
-    # EdgeDriver binary cannot be called.
-    edge = browser.EdgeChromium(logger)
+def test_edge_webdriver_supports_browser():
+    # MSEdgeDriver binary cannot be called.
+    edge = browser.Edge(logger)
     edge.webdriver_version = mock.MagicMock(return_value=None)
-    assert not edge.webdriver_supports_browser('/usr/bin/edgedriver', '/usr/bin/edge')
+    assert not edge.webdriver_supports_browser('/usr/bin/edgedriver', '/usr/bin/edge', 'stable')
 
     # Browser binary cannot be called.
-    edge = browser.EdgeChromium(logger)
+    edge = browser.Edge(logger)
     edge.webdriver_version = mock.MagicMock(return_value='70.0.1')
     edge.version = mock.MagicMock(return_value=None)
-    assert edge.webdriver_supports_browser('/usr/bin/edgedriver', '/usr/bin/edge')
+    assert edge.webdriver_supports_browser('/usr/bin/edgedriver', '/usr/bin/edge', 'stable')
 
     # Browser version matches.
-    edge = browser.EdgeChromium(logger)
-    edge.webdriver_version = mock.MagicMock(return_value='70.0.1')
+    edge = browser.Edge(logger)
+    # Versions should be an exact match to be compatible.
+    edge.webdriver_version = mock.MagicMock(return_value='70.1.5')
     edge.version = mock.MagicMock(return_value='70.1.5')
-    assert edge.webdriver_supports_browser('/usr/bin/edgedriver', '/usr/bin/edge')
+    assert edge.webdriver_supports_browser('/usr/bin/edgedriver', '/usr/bin/edge', 'stable')
 
     # Browser version doesn't match.
-    edge = browser.EdgeChromium(logger)
+    edge = browser.Edge(logger)
     edge.webdriver_version = mock.MagicMock(return_value='70.0.1')
     edge.version = mock.MagicMock(return_value='69.0.1')
-    assert not edge.webdriver_supports_browser('/usr/bin/edgedriver', '/usr/bin/edge')
+    assert not edge.webdriver_supports_browser('/usr/bin/edgedriver', '/usr/bin/edge', 'stable')
 
+    # MSEdgeDriver version should match for MAJOR.MINOR.BUILD version.
+    edge = browser.Edge(logger)
+    edge.webdriver_version = mock.MagicMock(return_value='70.0.1.0')
+    edge.version = mock.MagicMock(return_value='70.0.1.1 dev')
+    assert edge.webdriver_supports_browser('/usr/bin/edgedriver', '/usr/bin/edge', 'dev')
+    # Mismatching minor version should not match.
+    edge.webdriver_version = mock.MagicMock(return_value='70.9.1')
+    assert not edge.webdriver_supports_browser('/usr/bin/edgedriver', '/usr/bin/edge', 'dev')
 
 # On Windows, webdriver_version directly calls _get_fileversion, so there is no
 # logic to test there.
 @pytest.mark.skipif(sys.platform.startswith('win'), reason='just uses _get_fileversion on Windows')
 @mock.patch('tools.wpt.browser.call')
-def test_edgechromium_webdriver_version(mocked_call):
-    edge = browser.EdgeChromium(logger)
+def test_edge_webdriver_version(mocked_call):
+    edge = browser.Edge(logger)
     webdriver_binary = '/usr/bin/edgedriver'
 
     # Working cases.
-    mocked_call.return_value = 'MSEdgeDriver 84.0.4147.30'
+    mocked_call.return_value = 'Microsoft Edge WebDriver 84.0.4147.30'
     assert edge.webdriver_version(webdriver_binary) == '84.0.4147.30'
-    mocked_call.return_value = 'MSEdgeDriver 87.0.1 (abcd1234-refs/branch-heads/4147@{#310})'
+    mocked_call.return_value = 'Microsoft Edge WebDriver 87.0.1 (abcd1234-refs/branch-heads/4147@{#310})'
     assert edge.webdriver_version(webdriver_binary) == '87.0.1'
 
     # Various invalid version strings
     mocked_call.return_value = 'Edge 84.0.4147.30 (dev)'
     assert edge.webdriver_version(webdriver_binary) is None
-    mocked_call.return_value = 'MSEdgeDriver New 84.0.4147.30'
+    mocked_call.return_value = 'Microsoft Edge WebDriver New 84.0.4147.30'
     assert edge.webdriver_version(webdriver_binary) is None
     mocked_call.return_value = ''
     assert edge.webdriver_version(webdriver_binary) is None
@@ -96,7 +105,8 @@ def test_chrome_webdriver_supports_browser():
 
     # Browser version matches.
     chrome = browser.Chrome(logger)
-    chrome.webdriver_version = mock.MagicMock(return_value='70.0.1')
+    # Versions should be an exact match to be compatible.
+    chrome.webdriver_version = mock.MagicMock(return_value='70.1.5')
     chrome.version = mock.MagicMock(return_value='70.1.5')
     assert chrome.webdriver_supports_browser('/usr/bin/chromedriver', '/usr/bin/chrome', 'stable')
 
@@ -106,13 +116,13 @@ def test_chrome_webdriver_supports_browser():
     chrome.version = mock.MagicMock(return_value='69.0.1')
     assert not chrome.webdriver_supports_browser('/usr/bin/chromedriver', '/usr/bin/chrome', 'stable')
 
-    # The dev channel switches between beta and ToT ChromeDriver, so is sometimes
-    # a version behind its ChromeDriver. As such, we accept browser version + 1 there.
+    # ChromeDriver version should match for MAJOR.MINOR.BUILD version.
     chrome = browser.Chrome(logger)
-    chrome.webdriver_version = mock.MagicMock(return_value='70.0.1')
-    chrome.version = mock.MagicMock(return_value='70.1.0')
+    chrome.webdriver_version = mock.MagicMock(return_value='70.0.1.0')
+    chrome.version = mock.MagicMock(return_value='70.0.1.1 dev')
     assert chrome.webdriver_supports_browser('/usr/bin/chromedriver', '/usr/bin/chrome', 'dev')
-    chrome.webdriver_version = mock.MagicMock(return_value='71.0.1')
+    # Matching major version should match.
+    chrome.webdriver_version = mock.MagicMock(return_value='70.9.1')
     assert chrome.webdriver_supports_browser('/usr/bin/chromedriver', '/usr/bin/chrome', 'dev')
 
 
@@ -331,8 +341,9 @@ def test_webkitgtk_minibrowser_version(mocked_check_output):
     assert webkitgtk_minibrowser.version(binary='MiniBrowser') == '2.26.1'
 
     # nightly version
-    mocked_check_output.return_value = b'WebKitGTK 2.27.1 (r250823)\n'
-    assert webkitgtk_minibrowser.version(binary='MiniBrowser') == '2.27.1 (r250823)'
+    mocked_check_output.return_value = b'WebKitGTK 2.47.1 (286783@main)\n'
+    assert webkitgtk_minibrowser.version(binary='MiniBrowser') == '2.47.1 (286783@main)'
+
 
 @mock.patch('subprocess.check_output')
 def test_webkitgtk_minibrowser_version_errors(mocked_check_output):
@@ -351,36 +362,170 @@ def test_webkitgtk_minibrowser_version_errors(mocked_check_output):
     assert webkitgtk_minibrowser.version(binary='MiniBrowser') is None
 
 
-# The test below doesn't work on Windows because distutils find_binary()
+# The test below doesn't work on Windows because find_binary()
 # on Windows only works if the binary name ends with a ".exe" suffix.
 # But, WebKitGTK itself doesn't support Windows, so lets skip the test.
 @pytest.mark.skipif(sys.platform.startswith('win'), reason='test not needed on Windows')
+@mock.patch('os.path.isdir', return_value=True)
+@mock.patch('os.access', return_value=True)
+@mock.patch('shutil.which')
+@mock.patch('os.listdir')
 @mock.patch('os.path.isfile')
-def test_webkitgtk_minibrowser_find_binary(mocked_os_path_isfile):
+def test_webkitgtk_minibrowser_find_binary(mocked_os_path_isfile, mocked_os_listdir, mocked_which, _mocked_os_access, _mocked_os_isdir):
     webkitgtk_minibrowser = browser.WebKitGTKMiniBrowser(logger)
 
-    # No MiniBrowser found
-    mocked_os_path_isfile.side_effect = lambda path: path == '/etc/passwd'
+    # No WebKitGTK MiniBrowser found (WPE one shouldn't match)
+    mocked_os_path_isfile.side_effect = lambda path: path == '/usr/libexec/wpe-webkit-1.0/MiniBrowser'
+    mocked_os_listdir.side_effect = lambda contents: ['wpe-webkit-1.0', 'webkitgtk-6.0', 'webkit2gtk-4.0']
+    mocked_which.side_effect = lambda found: None
     assert webkitgtk_minibrowser.find_binary() is None
 
     # Found on the default Fedora path
     fedora_minibrowser_path = '/usr/libexec/webkit2gtk-4.0/MiniBrowser'
     mocked_os_path_isfile.side_effect = lambda path: path == fedora_minibrowser_path
+    mocked_os_listdir.side_effect = lambda contents: ['wpe-webkit-1.0', 'webkitgtk-6.0', 'webkit2gtk-4.0']
+    mocked_which.side_effect = lambda found: None
     assert webkitgtk_minibrowser.find_binary() == fedora_minibrowser_path
 
     # Found on the default Debian path for AMD64 (gcc not available)
     debian_minibrowser_path_amd64 = '/usr/lib/x86_64-linux-gnu/webkit2gtk-4.0/MiniBrowser'
     mocked_os_path_isfile.side_effect = lambda path: path == debian_minibrowser_path_amd64
+    mocked_os_listdir.side_effect = lambda contents: ['wpe-webkit-1.0', 'webkitgtk-6.0', 'webkit2gtk-4.0']
+    mocked_which.side_effect = lambda found: None
     assert webkitgtk_minibrowser.find_binary() == debian_minibrowser_path_amd64
 
     # Found on the default Debian path for AMD64 (gcc available but gives an error)
     debian_minibrowser_path_amd64 = '/usr/lib/x86_64-linux-gnu/webkit2gtk-4.0/MiniBrowser'
     mocked_os_path_isfile.side_effect = lambda path: path in [debian_minibrowser_path_amd64, '/usr/bin/gcc']
+    mocked_os_listdir.side_effect = lambda contents: ['wpe-webkit-1.0', 'webkitgtk-6.0', 'webkit2gtk-4.0']
+    mocked_which.side_effect = lambda found: '/usr/bin/gcc'
     with mock.patch('subprocess.check_output', return_value = b'error', side_effect = subprocess.CalledProcessError(1, 'cmd')):
         assert webkitgtk_minibrowser.find_binary() == debian_minibrowser_path_amd64
 
-        # Found on the default Debian path for ARM64 (gcc available)
-        debian_minibrowser_path_arm64 = '/usr/lib/aarch64-linux-gnu/webkit2gtk-4.0/MiniBrowser'
-        mocked_os_path_isfile.side_effect = lambda path: path in [debian_minibrowser_path_arm64, '/usr/bin/gcc']
-        with mock.patch('subprocess.check_output', return_value = b'aarch64-linux-gnu'):
-            assert webkitgtk_minibrowser.find_binary() == debian_minibrowser_path_arm64
+    # Found on the default Debian path for ARM64 (gcc available)
+    debian_minibrowser_path_arm64 = '/usr/lib/aarch64-linux-gnu/webkit2gtk-4.0/MiniBrowser'
+    mocked_os_path_isfile.side_effect = lambda path: path in [debian_minibrowser_path_arm64, '/usr/bin/gcc']
+    mocked_os_listdir.side_effect = lambda contents: sorted(['wpe-webkit-1.0', 'webkitgtk-6.0', 'webkit2gtk-4.0'])
+    mocked_which.side_effect = lambda found: '/usr/bin/gcc'
+    with mock.patch('subprocess.check_output', return_value = b'aarch64-linux-gnu'):
+        assert webkitgtk_minibrowser.find_binary() == debian_minibrowser_path_arm64
+
+    # Find first the MiniBrowser on the directory with the higher number in case two available
+    mocked_os_path_isfile.side_effect = lambda path: True
+    mocked_os_listdir.side_effect = lambda contents: ['wpe-webkit-1.0', 'webkitgtk-6.0', 'webkit2gtk-4.0']
+    mocked_which.side_effect = lambda found: None
+    assert webkitgtk_minibrowser.find_binary() == '/usr/libexec/webkitgtk-6.0/MiniBrowser'
+
+
+@mock.patch('subprocess.check_output')
+def test_wpewebkit_minibrowser_version(mocked_check_output):
+    wpewebkit_minibrowser = browser.WPEWebKitMiniBrowser(logger)
+
+    # stable version
+    mocked_check_output.return_value = b'WPE WebKit 2.26.1\n'
+    assert wpewebkit_minibrowser.version(binary='MiniBrowser') == '2.26.1'
+
+    # nightly version
+    mocked_check_output.return_value = b'WPE WebKit 2.47.1 (286783@main)\n'
+    assert wpewebkit_minibrowser.version(binary='MiniBrowser') == '2.47.1 (286783@main)'
+
+
+@mock.patch('subprocess.check_output')
+def test_wpewebkit_minibrowser_version_errors(mocked_check_output):
+    wpewebkit_minibrowser = browser.WPEWebKitMiniBrowser(logger)
+
+    # No binary
+    assert wpewebkit_minibrowser.version() is None
+
+    # `MiniBrowser --version` return gibberish
+    mocked_check_output.return_value = b'gibberish'
+    assert wpewebkit_minibrowser.version(binary='MiniBrowser') is None
+
+    # `MiniBrowser --version` fails (as it does for MiniBrowser <= 2.26.0)
+    mocked_check_output.return_value = b'dummy'
+    mocked_check_output.side_effect = subprocess.CalledProcessError(1, 'cmd')
+    assert wpewebkit_minibrowser.version(binary='MiniBrowser') is None
+
+
+# The test below doesn't work on Windows because find_binary()
+# on Windows only works if the binary name ends with a ".exe" suffix.
+# But, WPE WebKit itself doesn't support Windows, so lets skip the test.
+@pytest.mark.skipif(sys.platform.startswith('win'), reason='test not needed on Windows')
+@mock.patch('os.path.isdir', return_value=True)
+@mock.patch('os.access', return_value=True)
+@mock.patch('shutil.which')
+@mock.patch('os.listdir')
+@mock.patch('os.path.isfile')
+def test_wpewebkit_minibrowser_find_binary(mocked_os_path_isfile, mocked_os_listdir, mocked_which, _mocked_os_access, _mocked_os_isdir):
+    wpewebkit_minibrowser = browser.WPEWebKitMiniBrowser(logger)
+
+    # No WPE MiniBrowser found (WebKitGTK one shouldn't match)
+    mocked_os_path_isfile.side_effect = lambda path: path == '/usr/libexec/wpewebkit-6.0/MiniBrowser'
+    mocked_os_listdir.side_effect = lambda contents: ['wpewebkit-6.0', 'webkit2gtk-4.0', 'wpe-webkit-1.0']
+    mocked_which.side_effect = lambda found: None
+    assert wpewebkit_minibrowser.find_binary() is None
+
+    # Found on the default Arch path
+    arch_minibrowser_path = '/usr/lib/wpe-webkit-1.0/MiniBrowser'
+    mocked_os_path_isfile.side_effect = lambda path: path == arch_minibrowser_path
+    mocked_os_listdir.side_effect = lambda contents: ['wpewebkit-6.0', 'webkit2gtk-4.0', 'wpe-webkit-1.0']
+    mocked_which.side_effect = lambda found: None
+    assert wpewebkit_minibrowser.find_binary() == arch_minibrowser_path
+
+    # Found on the default Debian path for AMD64 (gcc not available)
+    debian_minibrowser_path_amd64 = '/usr/lib/x86_64-linux-gnu/wpe-webkit-1.0/MiniBrowser'
+    mocked_os_path_isfile.side_effect = lambda path: path == debian_minibrowser_path_amd64
+    mocked_os_listdir.side_effect = lambda contents: ['wpewebkit-6.0', 'webkit2gtk-4.0', 'wpe-webkit-1.0']
+    mocked_which.side_effect = lambda found: None
+    assert wpewebkit_minibrowser.find_binary() == debian_minibrowser_path_amd64
+
+    # Found on the default Debian path for AMD64 (gcc available but gives an error)
+    debian_minibrowser_path_amd64 = '/usr/lib/x86_64-linux-gnu/wpe-webkit-1.0/MiniBrowser'
+    mocked_os_path_isfile.side_effect = lambda path: path in [debian_minibrowser_path_amd64, '/usr/bin/gcc']
+    mocked_os_listdir.side_effect = lambda contents: ['wpewebkit-6.0', 'webkit2gtk-4.0', 'wpe-webkit-1.0']
+    mocked_which.side_effect = lambda found: '/usr/bin/gcc'
+    with mock.patch('subprocess.check_output', return_value = b'error', side_effect = subprocess.CalledProcessError(1, 'cmd')):
+        assert wpewebkit_minibrowser.find_binary() == debian_minibrowser_path_amd64
+
+    # Found on the default Debian path for ARM64 (gcc available)
+    debian_minibrowser_path_arm64 = '/usr/lib/aarch64-linux-gnu/wpe-webkit-1.0/MiniBrowser'
+    mocked_os_path_isfile.side_effect = lambda path: path in [debian_minibrowser_path_arm64, '/usr/bin/gcc']
+    mocked_os_listdir.side_effect = lambda contents: ['wpewebkit-6.0', 'webkit2gtk-4.0', 'wpe-webkit-1.0']
+    mocked_which.side_effect = lambda found: '/usr/bin/gcc'
+    with mock.patch('subprocess.check_output', return_value = b'aarch64-linux-gnu'):
+        assert wpewebkit_minibrowser.find_binary() == debian_minibrowser_path_arm64
+
+    # Find first the MiniBrowser on the directory with the higher number in case two available
+    mocked_os_path_isfile.side_effect = lambda path: True
+    mocked_os_listdir.side_effect = lambda contents: sorted(['wpewebkit-6.0', 'webkit2gtk-4.0', 'wpe-webkit-2.0', 'wpe-webkit-1.0'])
+    mocked_which.side_effect = lambda found: None
+    assert wpewebkit_minibrowser.find_binary() == '/usr/libexec/wpe-webkit-2.0/MiniBrowser'
+
+
+@pytest.mark.parametrize("host_cpu,channel,index", [
+    ("x86_64", None, "gecko.v2.mozilla-central.shippable.latest.mobile.android-x86_64-opt"),
+    ("aarch64", None, "gecko.v2.mozilla-central.shippable.latest.mobile.android-aarch64-opt"),
+    ("aarch64", "beta", "gecko.v2.mozilla-beta.shippable.latest.mobile.android-aarch64-opt"),
+])
+@mock.patch("tools.wpt.browser.get_taskcluster_artifact")
+def test_firefox_android_download_arch(mocked_get_artifact, host_cpu, channel, index, tmp_path):
+    mocked_get_artifact.return_value.content = b"apk"
+    firefox_android = browser.FirefoxAndroid(logging.getLogger("FirefoxAndroid"))
+
+    with mock.patch("tools.wpt.android.get_host_cpu", return_value=host_cpu):
+        path = firefox_android.download(dest=str(tmp_path), channel=channel)
+
+    mocked_get_artifact.assert_called_once_with(index, "public/build/geckoview-test_runner.apk")
+    assert path == str(tmp_path / "geckoview-test_runner.apk")
+    assert (tmp_path / "geckoview-test_runner.apk").read_bytes() == b"apk"
+
+
+@mock.patch("tools.wpt.browser.get_taskcluster_artifact")
+def test_firefox_android_download_unsupported_arch(mocked_get_artifact, tmp_path):
+    firefox_android = browser.FirefoxAndroid(logging.getLogger("FirefoxAndroid"))
+
+    with mock.patch("tools.wpt.android.get_host_cpu", return_value="riscv64"):
+        with pytest.raises(NotImplementedError):
+            firefox_android.download(dest=str(tmp_path))
+
+    mocked_get_artifact.assert_not_called()

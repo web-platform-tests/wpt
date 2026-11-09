@@ -35,7 +35,7 @@ _addTest(function(canvas, ctx) {
   // A simple filter that just overrides the red channel if successful.
   function makeFilter(value) {
     return new CanvasFilter({
-      filter: "componentTransfer",
+      name: "componentTransfer",
       funcR: {type: "table", tableValues: value}
     });
   }
@@ -47,7 +47,7 @@ _addTest(function(canvas, ctx) {
       ctx.reset();
       ctx.filter = makeFilter(tc.input);
       ctx.fillRect(0, 0, 100, 100);
-      _assertPixelApprox(canvas, 5, 5, tc.result,0,0,255, "5,5", `${tc.result},0,0,255`, 2);
+      _assertPixelApprox(canvas, 5, 5, tc.result,0,0,255, 2);
     }
   }
   t.done();

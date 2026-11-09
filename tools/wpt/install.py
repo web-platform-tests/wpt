@@ -4,16 +4,18 @@ import argparse
 from . import browser
 
 latest_channels = {
-    'android_weblayer': 'dev',
     'android_webview': 'dev',
     'firefox': 'nightly',
-    'chrome': 'nightly',
+    'firefox_android': 'nightly',
+    'chrome': 'canary',
     'chrome_android': 'dev',
     'chromium': 'nightly',
-    'edgechromium': 'dev',
+    'edge': 'dev',
     'safari': 'preview',
     'servo': 'nightly',
-    'webkitgtk_minibrowser': 'nightly'
+    'webkitgtk_minibrowser': 'nightly',
+    'wpewebkit_minibrowser': 'nightly',
+    'wktr': 'main',
 }
 
 channel_by_name = {
@@ -29,7 +31,7 @@ channel_by_name = {
 
 channel_args = argparse.ArgumentParser(add_help=False)
 channel_args.add_argument('--channel', choices=channel_by_name.keys(),
-                          default='nightly', action='store',
+                          default='nightly',
                           help='''
 Name of browser release channel (default: nightly). "stable" and "release" are
 synonyms for the latest browser stable release; "beta" is the beta release;
@@ -44,18 +46,18 @@ def get_parser():
     parser = argparse.ArgumentParser(
         parents=[channel_args],
         description="Install a given browser or webdriver frontend.")
-    parser.add_argument('browser', choices=['firefox', 'chrome', 'chromium', 'servo', 'safari'],
+    parser.add_argument('browser', choices=['firefox', 'chrome', 'chromium', 'servo', 'safari', 'wktr'],
                         help='name of web browser product')
     parser.add_argument('component', choices=['browser', 'webdriver'],
                         help='name of component')
     parser.add_argument('--download-only', action="store_true",
                         help="Download the selected component but don't install it")
-    parser.add_argument('--rename', action="store", default=None,
+    parser.add_argument('--rename',
                         help="Filename, excluding extension for downloaded archive "
                         "(only with --download-only)")
     parser.add_argument('-d', '--destination',
                         help='filesystem directory to place the component')
-    parser.add_argument('--revision', default=None,
+    parser.add_argument('--revision',
                         help='Chromium revision to install from snapshots')
     return parser
 
@@ -107,7 +109,12 @@ def install(name, component, destination, channel="nightly", logger=None, downlo
 
     method = prefix + suffix
 
-    browser_cls = getattr(browser, name.title())
+    if name == "wktr":
+        canonical_name = "WebKitTestRunner"
+    else:
+        canonical_name = name.title()
+
+    browser_cls = getattr(browser, canonical_name)
     logger.info('Now installing %s %s...', name, component)
     kwargs = {}
     if download_only and rename:

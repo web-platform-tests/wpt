@@ -1,17 +1,19 @@
-promise_test(() => fetch("resources/urltestdata.json").then(res => res.json()).then(runURLTests), "Loading data…");
+promise_test(() => Promise.all([
+  fetch("resources/urltestdata.json").then(res => res.json()),
+  fetch("resources/urltestdata-javascript-only.json").then(res => res.json()),
+]).then((tests) => tests.flat()).then(runURLTests), "Loading data…");
 
-function bURL(url, base) {
-  return base ? new URL(url, base) : new URL(url)
-}
+function runURLTests(urlTests) {
+  for (const expected of urlTests) {
+    // Skip comments and tests without "origin" expectation
+    if (typeof expected === "string" || !("origin" in expected))
+      continue;
 
-function runURLTests(urltests) {
-  for(var i = 0, l = urltests.length; i < l; i++) {
-    var expected = urltests[i]
-    if (typeof expected === "string" || !("origin" in expected)) continue
+    const base = expected.base !== null ? expected.base : undefined;
 
-    test(function() {
-      var url = bURL(expected.input, expected.base)
-      assert_equals(url.origin, expected.origin, "origin")
-    }, "Origin parsing: <" + expected.input + "> against <" + expected.base + ">")
+    test(() => {
+      const url = new URL(expected.input, base);
+      assert_equals(url.origin, expected.origin, "origin");
+    }, `Origin parsing: <${expected.input}> ${base ? "against <" + base + ">" : "without base"}`);
   }
 }

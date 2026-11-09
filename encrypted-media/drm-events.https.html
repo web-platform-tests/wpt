@@ -13,7 +13,6 @@
     <!-- Helper scripts for Encrypted Media Extensions tests  -->
     <script src=/encrypted-media/util/utils.js></script>
     <script src=/encrypted-media/util/utf8.js></script>
-    <script src=/encrypted-media/util/fetch.js></script>
     <script src=/encrypted-media/util/testmediasource.js></script>
 
     <!-- Content metadata -->
@@ -29,8 +28,8 @@
   <body>
     <div id='log'></div>
 
-    <script>
-        var keysystem = getSupportedKeySystem();
+    <script type="module">
+        var keysystem = await getSupportedKeySystem();
 
         getSupportedContentAndInitDataTypes( keysystem )
         .then( function( supported )
@@ -66,7 +65,6 @@
                         initData:           initData
                     } );
         } );
-
     </script>
   </body>
 </html>

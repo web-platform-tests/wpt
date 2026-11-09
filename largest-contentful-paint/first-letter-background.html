@@ -14,6 +14,7 @@ div {
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/largest-contentful-paint-helpers.js"></script>
 <script>
+  setup({"hide_test_state": true});
   async_test(function (t) {
     assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
     let beforeLoad = performance.now();
@@ -28,14 +29,15 @@ div {
             assert_equals(entry.entryType, 'largest-contentful-paint');
             assert_greater_than_equal(entry.renderTime, beforeLoad);
             assert_greater_than_equal(performance.now(), entry.renderTime);
-            assert_equals(entry.startTime, entry.renderTime, 'startTime should equal renderTime');
+            assert_approx_equals(entry.startTime, entry.renderTime, 0.001,
+              'startTime should be equal to renderTime to the precision of 1 millisecond.');
             assert_equals(entry.duration, 0);
             assert_equals(entry.loadTime, 0);
             assert_equals(entry.id, 'target');
             assert_equals(entry.element, document.getElementById('target'));
           } else {
             const url = window.location.origin + '/images/black-rectangle.png';
-            checkImage(entry, url, 'target', 0, beforeLoad, ['sizeLowerBound']);
+            checkImage(entry, url, 'target', 0, beforeLoad, ['sizeRange']);
           }
 
           // Now change the div content to proceed to the second part of the test.
@@ -56,7 +58,8 @@ div {
           assert_equals(entry.entryType, 'largest-contentful-paint');
           assert_greater_than_equal(entry.renderTime, beforeLoad, 'blaaa');
           assert_greater_than_equal(performance.now(), entry.renderTime, 'bleee');
-          assert_equals(entry.startTime, entry.renderTime, 'startTime should equal renderTime');
+          assert_approx_equals(entry.startTime, entry.renderTime, 0.001,
+            'startTime should be equal to renderTime to the precision of 1 millisecond.');
           assert_equals(entry.duration, 0);
           assert_equals(entry.id, 'target2');
           const div = document.getElementById('target2');

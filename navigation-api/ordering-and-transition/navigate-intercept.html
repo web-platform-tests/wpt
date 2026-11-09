@@ -1,7 +1,7 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<meta name="variant" content="">
+<meta name="variant" content="?no-currententrychange">
 <meta name="variant" content="?currententrychange">
 
 <script type="module">
@@ -37,9 +37,10 @@ promise_test(async t => {
     ["navigate", "", null],
     ["currententrychange", "#1", { from, navigationType: "push" }],
     ["handler run", "#1", { from, navigationType: "push" }],
-    ["committed fulfilled", "#1", { from, navigationType: "push" }],
-    ["promise microtask", "#1", { from, navigationType: "push" }],
     ["navigatesuccess", "#1", { from, navigationType: "push" }],
+    ["committed fulfilled", "#1", null],
+    ["transition.committed fulfilled", "#1", null],
+    ["promise microtask", "#1", null],
     ["finished fulfilled", "#1", null],
     ["transition.finished fulfilled", "#1", null],
   ]);

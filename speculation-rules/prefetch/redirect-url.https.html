@@ -1,19 +1,43 @@
 <!DOCTYPE html>
+<meta name="timeout" content="long">
+<meta name="variant" content="?origin=same-origin">
+<meta name="variant" content="?origin=cross-site-redirect">
+<meta name="variant" content="?origin=cross-site-initial">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/common/utils.js"></script>
+<script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
+<script src="resources/redirect-helper.sub.js"></script>
 
 <script>
+setup(() => assertSpeculationRulesIsSupported());
+// Navigate to the initial URL of the prefetch.
+for (const prefetchTiming of
+    ['redirect-received-before-navigation-start',
+     'redirect-received-after-navigation-start']) {
   promise_test(async t => {
-    assert_implements(HTMLScriptElement.supports('speculationrules'), "Speculation Rules not supported");
+    const waitForReady =
+        prefetchTiming === 'redirect-received-before-navigation-start';
+    const {agent,
+           prefetchInitialUrl,
+           prefetchFinalUrl,
+           redirectToPrefetchInitialUrl,
+           redirectToPrefetchFinalUrl} = await prepare(t, prefetchTiming);
 
-    let url = getRedirectUrl();
-    insertSpeculationRules({ prefetch: [{ source: 'list', urls: [url] }] });
-    await new Promise(resolve => t.step_timeout(resolve, 2000));
+    if (waitForReady) {
+      await agent.forceSinglePrefetchAndWaitForStatus(prefetchInitialUrl);
+    } else {
+      await agent.forceSinglePrefetch(prefetchInitialUrl);
+    }
+    await agent.navigate(prefetchInitialUrl,
+                         {expectedDestinationUrl: prefetchFinalUrl});
 
-    let was_prefetched = await isUrlPrefetched(url);
-    assert_true(was_prefetched, "redirected url should be prefetched");
-  }, "browser should be able to prefetch redirected urls");
+    assert_prefetched(await agent.getRequestHeaders(),
+        'Prefetched response should be used by navigation.');
+  }, prefetchTiming);
+}
 </script>

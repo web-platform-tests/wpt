@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: two nested containertiming nodes, with a child img inside of the inner, and a containertimingignore between the roots</title>
+<body>
+<style>
+body {
+  margin: 0;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/container-timing/resources/container-timing-helpers.js"></script>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
+    const div1 = addContainerRoot(document.body, 'div1_ct');
+
+    // Intermediate div with containertimingignore blocking propagation to
+    // the parent containertiming root
+    const div2 = addElement(div1, 'div', {containertimingignore: ''});
+    const div3 = addContainerRoot(div2, 'div2_ct');
+    addSquare100Image(div3, {id: 'img_id'});
+
+    const beforeRender = performance.now();
+
+    const entries = await getContainerEntries(t);
+    assert_equals(entries.length, 1, 'one entry expected for the image, for the inner containertiming');
+    const entry = entries[0];
+    checkContainerEntry(entry, 'div2_ct', 'img_id', beforeRender)
+    checkContainerIntersectionRect(entry, [0, 100, 0, 100])
+    checkContainerSize(entry, 10000);
+  }, 'A parent containertiming root does not get paints from a nested containertiming root if an intermediate containertimingignore is set.');
+</script>
+
+</body>

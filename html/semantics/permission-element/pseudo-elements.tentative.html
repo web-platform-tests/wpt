@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<link rel="match" href="pseudo-elements-ref.html">
+<link rel="help" href="https://github.com/WICG/PEPC/blob/main/explainer.md#locking-the-pepc-style">
+<body>
+  <div>
+    The usermedia element should not create any pseudo elements.
+  </div>
+
+  <style>
+    body {
+      list-style-position: inside;
+      list-style-type: "FAIL";
+    }
+    usermedia {
+      display: inline flow-root list-item;
+    }
+    usermedia::before, usermedia::after, usermedia::marker { content: "FAIL"; }
+  </style>
+
+  <p>You should not see the word FAIL below.</p>
+
+  <usermedia type="camera"></usermedia>
+</body>
+</html>

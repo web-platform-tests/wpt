@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Resource Timing - initiatorUrl for a resource fetched in an XMLHttpRequest load handler</title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="../../resources/test-initiator.js"></script>
+<script src="../../resources/loading-resource-lib.js"></script>
+<div id="log"></div>
+<script>
+const img = document.createElement("img");
+document.body.appendChild(img);
+
+const label = "initiator_url_xmlhttprequest";
+const resource = "/images/blue.png?" + label;
+const expectedInitiatorUrl = getUrl(
+  "/resource-timing/tentative/initiator-url/xml-http-request.html");
+const request = new XMLHttpRequest();
+request.onload = function() {load_image(label, img);};
+request.open("GET", "/resources/blank.html");
+request.send();
+
+initiator_url_test(resource, expectedInitiatorUrl, resource +
+  " initiatorUrl from XMLHttpRequest()", resource + " timeout");
+</script>

@@ -4,11 +4,10 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../RTCPeerConnection-helper.js"></script>
-<script src="../RTCStats-helper.js"></script>
 <script>
 'use strict';
 
-// draft-ietf-rtcweb-security-20 section 6.5
+// RFC 8827 section 6.5
 //
 // All Implementations MUST support DTLS 1.2 with the
 // TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 cipher suite and the P-256
@@ -22,26 +21,24 @@
 const acceptableTlsVersions = new Set([
   'FEFD', // DTLS 1.2 - RFC 6437 section 4.1
   '0304', // TLS 1.3 - RFC 8446 section 5.1
+  'FEFC', // DTLS 1.3 - RFC 9147 section 5.3
 ]);
 
 const acceptableDtlsCiphersuites = new Set([
   'TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256',
+  'TLS_AES_128_GCM_SHA256',
 ]);
 
 const acceptableSrtpCiphersuites = new Set([
   'SRTP_AES128_CM_HMAC_SHA1_80',
-  'AES_CM_128_HMAC_SHA1_80',
-]);
-
-const acceptableTlsGroups = new Set([
-  'P-256',
+  'SRTP_AEAD_AES_128_GCM',
+  'SRTP_AEAD_AES_256_GCM',
 ]);
 
 const acceptableValues = {
   'tlsVersion': acceptableTlsVersions,
   'dtlsCipher': acceptableDtlsCiphersuites,
   'srtpCipher': acceptableSrtpCiphersuites,
-  'tlsGroup': acceptableTlsGroups,
 };
 
 function verifyStat(name, transportStats) {
@@ -61,8 +58,7 @@ for (const name of Object.keys(acceptableValues)) {
     await exchangeOfferAnswer(pc1, pc2);
     await waitForState(pc1.sctp.transport, 'connected');
     const statsReport = await pc1.getStats();
-    const transportStats = findStatsFromReport(statsReport,
-                                               stats => stats.type === 'transport')
+    const transportStats = [...statsReport.values()].find(({type}) => type === 'transport');
     verifyStat(name, transportStats);
   }, name + ' is acceptable on data-only');
 
@@ -77,8 +73,7 @@ for (const name of Object.keys(acceptableValues)) {
     await exchangeOfferAnswer(pc1, pc2);
     await waitForState(transceiver.sender.transport, 'connected');
     const statsReport = await pc1.getStats();
-    const transportStats = findStatsFromReport(statsReport,
-                                               stats => stats.type === 'transport')
+    const transportStats = [...statsReport.values()].find(({type}) => type === 'transport');
     verifyStat(name, transportStats);
   }, name + ' is acceptable on video-only');
 }

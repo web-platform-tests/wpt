@@ -25,7 +25,7 @@ function convertTemplatesToShadowRootsWithin(node) {
     var parent = template.parentNode;
     parent.removeChild(template);
     var shadowRoot;
-    if (!mode || mode == 'v0') {
+    if (!mode) {
       shadowRoot = parent.attachShadow({ mode: 'open' });
     } else {
       shadowRoot =
@@ -41,16 +41,6 @@ function convertTemplatesToShadowRootsWithin(node) {
 
     convertTemplatesToShadowRootsWithin(shadowRoot);
   }
-}
-
-function convertDeclarativeTemplatesToShadowRootsWithin(root) {
-  root.querySelectorAll("template[shadowroot]").forEach(template => {
-    const mode = template.getAttribute("shadowroot");
-    const shadowRoot = template.parentNode.attachShadow({ mode });
-    shadowRoot.appendChild(template.content);
-    template.remove();
-    convertDeclarativeTemplatesToShadowRootsWithin(shadowRoot);
-  });
 }
 
 function isShadowHost(node) {
@@ -83,10 +73,7 @@ function createTestTree(node) {
     let parent = template.parentNode;
     parent.removeChild(template);
     let shadowRoot;
-    if (template.getAttribute('data-mode') === 'v0') {
-      // For legacy Shadow DOM
-      shadowRoot = parent.attachShadow({ mode: 'open' });
-    } else if (template.getAttribute('data-slot-assignment') === 'manual') {
+    if (template.getAttribute('data-slot-assignment') === 'manual') {
       shadowRoot =
         parent.attachShadow({
           mode: template.getAttribute('data-mode'),

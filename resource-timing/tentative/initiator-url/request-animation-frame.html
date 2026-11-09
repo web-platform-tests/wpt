@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Resource Timing - initiatorUrl for a resource fetched in a requestAnimationFrame() callback</title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="../../resources/test-initiator.js"></script>
+<script src="../../resources/loading-resource-lib.js"></script>
+<div id="log"></div>
+<script>
+const img = document.createElement("img");
+document.body.appendChild(img);
+
+const label = "initiator_url_requestanimationframe";
+const resource = "/images/blue.png?" + label;
+const expectedInitiatorUrl = getUrl(
+  "/resource-timing/tentative/initiator-url/request-animation-frame.html");
+requestAnimationFrame(function() {load_image(label, img);});
+
+initiator_url_test(resource, expectedInitiatorUrl, resource +
+  " initiatorUrl from requestAnimationFrame()", resource + " timeout");
+</script>

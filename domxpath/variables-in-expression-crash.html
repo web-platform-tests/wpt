@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="help" href="https://github.com/servo/servo/issues/36971">
+    <meta name="assert" content="Using variables in xpath expression should not crash.">
+</head>
+<body>
+    <script>
+      // The exact behaviour here is not defined. Firefox throws an error, Chrome doesn't.
+      // None of these should cause a renderer crash.
+      try { document.evaluate("$foo", document.createElement("div")); } catch {}
+      try { document.evaluate("any[$any]", document.createElement("div")); } catch {}
+    </script>
+</body>

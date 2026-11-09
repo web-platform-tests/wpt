@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: observe containertiming in a containertiming tree overlapping image children</title>
+<body>
+<style>
+body {
+  margin: 0;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/container-timing/resources/container-timing-helpers.js"></script>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
+    const div = addContainerRoot(document.body, 'div_ct');
+    addSquare100Image(div, {id: 'img1_id', style: 'position: absolute;'});
+    addSquare100Image(div, {
+      id: 'img2_id',
+      style: 'margin-left: 50px; margin-top: 50px; position: absolute;'
+    });
+
+    const beforeRender = performance.now();
+
+    const entries = await getContainerEntries(t);
+    assert_equals(entries.length, 1);
+    const entry = entries[0];
+    // lastPaintedElement is not asserted: both images are the same size, so
+    // which one wins the tie is not defined. See
+    // containertiming-largest-painted-element.html.
+    checkContainerEntry(entry, 'div_ct', null, beforeRender)
+    checkContainerIntersectionRect(entry, [0, 150, 0, 150])
+    // size is the total area that has been painted, so the more intersection, the less area painted.
+    checkContainerSize(entry, 17500);
+  }, 'Overlapping images report to containertiming.');
+</script>
+
+</body>

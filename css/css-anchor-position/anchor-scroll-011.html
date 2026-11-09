@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test that scrolling the anchor element's scroll container updates the outer scroller's scroll height on scroll end</title>
+<link rel="author" title="Ting-Yu Lin" href="mailto:tlin@mozilla.com">
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#scroll">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/14112">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=2072683">
+<meta name="assert" content="Once scrolling of an anchor's scroll container stops, the positioned element's layout is consistent with a full relayout at that scroll offset, updating the outer scroll container's scrollHeight.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/rendering-utils.js"></script>
+
+<style>
+#scroller1 {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  overflow: scroll;
+}
+#scroller2 {
+  width: 100px;
+  height: 100px;
+  overflow: scroll;
+}
+#anchor {
+  anchor-name: --a;
+  height: 20px;
+  background: orange;
+}
+#positioned {
+  position: absolute;
+  position-anchor: --a;
+  left: anchor(left);
+  top: anchor(bottom);
+  width: 100px;
+  height: 100px;
+  background: lime;
+}
+</style>
+
+<div id="scroller1">
+  <div style="height: 100px"></div>
+  <div id="scroller2">
+    <div style="height: 230px"></div>
+    <div id="anchor"></div>
+    <div style="height: 230px"></div>
+  </div>
+  <div style="height: 100px"></div>
+  <div id="positioned"></div>
+</div>
+
+<script>
+promise_test(async () => {
+  const scroller1 = document.getElementById("scroller1");
+  const scroller2 = document.getElementById("scroller2");
+
+  // #scroller1 has 300px of in-flow content, and #positioned (height 100px) has
+  // its un-scrolled bottom at 100 + 230 + 20 + 100 = 450px. Once scrolling
+  // stops, #positioned relayouts at 450 - y.
+  for (const y of [50, 100, 150, 200, 250, 150, 50, 0]) {
+    scroller2.scrollTop = y;
+    await waitForAtLeastOneFrame();
+    const expectedScrollHeight = Math.max(300, 450 - y);
+    assert_equals(scroller1.scrollHeight, expectedScrollHeight,
+                  `scroller1.scrollHeight should match relayout (when scroller2.scrollTop=${y})`);
+  }
+}, "Scrolling the anchor's scroller updates the positioned element's scroller's scrollHeight on scroll end");
+</script>

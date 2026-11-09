@@ -1,1475 +1,1790 @@
-import asyncio
-import contextlib
-import sys
-import unittest
+import logging
 import unittest.mock
-import warnings
 
-from websockets.exceptions import ConnectionClosed, InvalidState
-from websockets.framing import *
-from websockets.protocol import State, WebSocketCommonProtocol
+from websockets.exceptions import (
+    ConnectionClosedError,
+    ConnectionClosedOK,
+    InvalidState,
+    PayloadTooBig,
+    ProtocolError,
+)
+from websockets.frames import (
+    OP_BINARY,
+    OP_CLOSE,
+    OP_CONT,
+    OP_PING,
+    OP_PONG,
+    OP_TEXT,
+    Close,
+    CloseCode,
+    Frame,
+)
+from websockets.protocol import *
+from websockets.protocol import CLIENT, CLOSED, CLOSING, SERVER
 
-from .utils import MS, AsyncioTestCase
-
-
-async def async_iterable(iterable):
-    for item in iterable:
-        yield item
-
-
-class TransportMock(unittest.mock.Mock):
-    """
-    Transport mock to control the protocol's inputs and outputs in tests.
-
-    It calls the protocol's connection_made and connection_lost methods like
-    actual transports.
-
-    It also calls the protocol's connection_open method to bypass the
-    WebSocket handshake.
-
-    To simulate incoming data, tests call the protocol's data_received and
-    eof_received methods directly.
-
-    They could also pause_writing and resume_writing to test flow control.
-
-    """
-
-    # This should happen in __init__ but overriding Mock.__init__ is hard.
-    def setup_mock(self, loop, protocol):
-        self.loop = loop
-        self.protocol = protocol
-        self._eof = False
-        self._closing = False
-        # Simulate a successful TCP handshake.
-        self.protocol.connection_made(self)
-        # Simulate a successful WebSocket handshake.
-        self.protocol.connection_open()
-
-    def can_write_eof(self):
-        return True
-
-    def write_eof(self):
-        # When the protocol half-closes the TCP connection, it expects the
-        # other end to close it. Simulate that.
-        if not self._eof:
-            self.loop.call_soon(self.close)
-        self._eof = True
-
-    def close(self):
-        # Simulate how actual transports drop the connection.
-        if not self._closing:
-            self.loop.call_soon(self.protocol.connection_lost, None)
-        self._closing = True
-
-    def abort(self):
-        # Change this to an `if` if tests call abort() multiple times.
-        assert self.protocol.state is not State.CLOSED
-        self.loop.call_soon(self.protocol.connection_lost, None)
+from .extensions.utils import Rsv2Extension
+from .test_frames import FramesTestCase
 
 
-class CommonTests:
-    """
-    Mixin that defines most tests but doesn't inherit unittest.TestCase.
+class ProtocolTestCase(FramesTestCase):
+    def assertFrameSent(self, connection, frame, eof=False):
+        """
+        Outgoing data for ``connection`` contains the given frame.
 
-    Tests are run by the ServerTests and ClientTests subclasses.
+        ``frame`` may be ``None`` if no frame is expected.
 
-    """
+        When ``eof`` is ``True``, the end of the stream is also expected.
 
-    def setUp(self):
-        super().setUp()
-        # Disable pings to make it easier to test what frames are sent exactly.
-        self.protocol = WebSocketCommonProtocol(ping_interval=None)
-        self.transport = TransportMock()
-        self.transport.setup_mock(self.loop, self.protocol)
-
-    def tearDown(self):
-        self.transport.close()
-        self.loop.run_until_complete(self.protocol.close())
-        super().tearDown()
-
-    # Utilities for writing tests.
-
-    def make_drain_slow(self, delay=MS):
-        # Process connection_made in order to initialize self.protocol.transport.
-        self.run_loop_once()
-
-        original_drain = self.protocol._drain
-
-        async def delayed_drain():
-            await asyncio.sleep(
-                delay, loop=self.loop if sys.version_info[:2] < (3, 8) else None
+        """
+        frames_sent = [
+            None
+            if write is SEND_EOF
+            else self.parse(
+                write,
+                mask=connection.side is CLIENT,
+                extensions=connection.extensions,
             )
-            await original_drain()
-
-        self.protocol._drain = delayed_drain
-
-    close_frame = Frame(True, OP_CLOSE, serialize_close(1000, "close"))
-    local_close = Frame(True, OP_CLOSE, serialize_close(1000, "local"))
-    remote_close = Frame(True, OP_CLOSE, serialize_close(1000, "remote"))
-
-    def receive_frame(self, frame):
-        """
-        Make the protocol receive a frame.
-
-        """
-        write = self.protocol.data_received
-        mask = not self.protocol.is_client
-        frame.write(write, mask=mask)
-
-    def receive_eof(self):
-        """
-        Make the protocol receive the end of the data stream.
-
-        Since ``WebSocketCommonProtocol.eof_received`` returns ``None``, an
-        actual transport would close itself after calling it. This function
-        emulates that behavior.
-
-        """
-        self.protocol.eof_received()
-        self.loop.call_soon(self.transport.close)
-
-    def receive_eof_if_client(self):
-        """
-        Like receive_eof, but only if this is the client side.
-
-        Since the server is supposed to initiate the termination of the TCP
-        connection, this method helps making tests work for both sides.
-
-        """
-        if self.protocol.is_client:
-            self.receive_eof()
-
-    def close_connection(self, code=1000, reason="close"):
-        """
-        Execute a closing handshake.
-
-        This puts the connection in the CLOSED state.
-
-        """
-        close_frame_data = serialize_close(code, reason)
-        # Prepare the response to the closing handshake from the remote side.
-        self.receive_frame(Frame(True, OP_CLOSE, close_frame_data))
-        self.receive_eof_if_client()
-        # Trigger the closing handshake from the local side and complete it.
-        self.loop.run_until_complete(self.protocol.close(code, reason))
-        # Empty the outgoing data stream so we can make assertions later on.
-        self.assertOneFrameSent(True, OP_CLOSE, close_frame_data)
-
-        assert self.protocol.state is State.CLOSED
-
-    def half_close_connection_local(self, code=1000, reason="close"):
-        """
-        Start a closing handshake but do not complete it.
-
-        The main difference with `close_connection` is that the connection is
-        left in the CLOSING state until the event loop runs again.
-
-        The current implementation returns a task that must be awaited or
-        canceled, else asyncio complains about destroying a pending task.
-
-        """
-        close_frame_data = serialize_close(code, reason)
-        # Trigger the closing handshake from the local endpoint.
-        close_task = self.loop.create_task(self.protocol.close(code, reason))
-        self.run_loop_once()  # wait_for executes
-        self.run_loop_once()  # write_frame executes
-        # Empty the outgoing data stream so we can make assertions later on.
-        self.assertOneFrameSent(True, OP_CLOSE, close_frame_data)
-
-        assert self.protocol.state is State.CLOSING
-
-        # Complete the closing sequence at 1ms intervals so the test can run
-        # at each point even it goes back to the event loop several times.
-        self.loop.call_later(
-            MS, self.receive_frame, Frame(True, OP_CLOSE, close_frame_data)
-        )
-        self.loop.call_later(2 * MS, self.receive_eof_if_client)
-
-        # This task must be awaited or canceled by the caller.
-        return close_task
-
-    def half_close_connection_remote(self, code=1000, reason="close"):
-        """
-        Receive a closing handshake but do not complete it.
-
-        The main difference with `close_connection` is that the connection is
-        left in the CLOSING state until the event loop runs again.
-
-        """
-        # On the server side, websockets completes the closing handshake and
-        # closes the TCP connection immediately. Yield to the event loop after
-        # sending the close frame to run the test while the connection is in
-        # the CLOSING state.
-        if not self.protocol.is_client:
-            self.make_drain_slow()
-
-        close_frame_data = serialize_close(code, reason)
-        # Trigger the closing handshake from the remote endpoint.
-        self.receive_frame(Frame(True, OP_CLOSE, close_frame_data))
-        self.run_loop_once()  # read_frame executes
-        # Empty the outgoing data stream so we can make assertions later on.
-        self.assertOneFrameSent(True, OP_CLOSE, close_frame_data)
-
-        assert self.protocol.state is State.CLOSING
-
-        # Complete the closing sequence at 1ms intervals so the test can run
-        # at each point even it goes back to the event loop several times.
-        self.loop.call_later(2 * MS, self.receive_eof_if_client)
-
-    def process_invalid_frames(self):
-        """
-        Make the protocol fail quickly after simulating invalid data.
-
-        To achieve this, this function triggers the protocol's eof_received,
-        which interrupts pending reads waiting for more data.
-
-        """
-        self.run_loop_once()
-        self.receive_eof()
-        self.loop.run_until_complete(self.protocol.close_connection_task)
-
-    def sent_frames(self):
-        """
-        Read all frames sent to the transport.
-
-        """
-        stream = asyncio.StreamReader(loop=self.loop)
-
-        for (data,), kw in self.transport.write.call_args_list:
-            stream.feed_data(data)
-        self.transport.write.call_args_list = []
-        stream.feed_eof()
-
-        frames = []
-        while not stream.at_eof():
-            frames.append(
-                self.loop.run_until_complete(
-                    Frame.read(stream.readexactly, mask=self.protocol.is_client)
-                )
-            )
-        return frames
-
-    def last_sent_frame(self):
-        """
-        Read the last frame sent to the transport.
-
-        This method assumes that at most one frame was sent. It raises an
-        AssertionError otherwise.
-
-        """
-        frames = self.sent_frames()
-        if frames:
-            assert len(frames) == 1
-            return frames[0]
-
-    def assertFramesSent(self, *frames):
-        self.assertEqual(self.sent_frames(), [Frame(*args) for args in frames])
-
-    def assertOneFrameSent(self, *args):
-        self.assertEqual(self.last_sent_frame(), Frame(*args))
-
-    def assertNoFrameSent(self):
-        self.assertIsNone(self.last_sent_frame())
-
-    def assertConnectionClosed(self, code, message):
-        # The following line guarantees that connection_lost was called.
-        self.assertEqual(self.protocol.state, State.CLOSED)
-        # A close frame was received.
-        self.assertEqual(self.protocol.close_code, code)
-        self.assertEqual(self.protocol.close_reason, message)
-
-    def assertConnectionFailed(self, code, message):
-        # The following line guarantees that connection_lost was called.
-        self.assertEqual(self.protocol.state, State.CLOSED)
-        # No close frame was received.
-        self.assertEqual(self.protocol.close_code, 1006)
-        self.assertEqual(self.protocol.close_reason, "")
-        # A close frame was sent -- unless the connection was already lost.
-        if code == 1006:
-            self.assertNoFrameSent()
-        else:
-            self.assertOneFrameSent(True, OP_CLOSE, serialize_close(code, message))
-
-    @contextlib.contextmanager
-    def assertCompletesWithin(self, min_time, max_time):
-        t0 = self.loop.time()
-        yield
-        t1 = self.loop.time()
-        dt = t1 - t0
-        self.assertGreaterEqual(dt, min_time, f"Too fast: {dt} < {min_time}")
-        self.assertLess(dt, max_time, f"Too slow: {dt} >= {max_time}")
-
-    # Test constructor.
-
-    def test_timeout_backwards_compatibility(self):
-        with warnings.catch_warnings(record=True) as recorded_warnings:
-            protocol = WebSocketCommonProtocol(timeout=5)
-
-        self.assertEqual(protocol.close_timeout, 5)
-
-        self.assertEqual(len(recorded_warnings), 1)
-        warning = recorded_warnings[0].message
-        self.assertEqual(str(warning), "rename timeout to close_timeout")
-        self.assertEqual(type(warning), DeprecationWarning)
-
-    # Test public attributes.
-
-    def test_local_address(self):
-        get_extra_info = unittest.mock.Mock(return_value=("host", 4312))
-        self.transport.get_extra_info = get_extra_info
-
-        self.assertEqual(self.protocol.local_address, ("host", 4312))
-        get_extra_info.assert_called_with("sockname")
-
-    def test_local_address_before_connection(self):
-        # Emulate the situation before connection_open() runs.
-        _transport = self.protocol.transport
-        del self.protocol.transport
-        try:
-            self.assertEqual(self.protocol.local_address, None)
-        finally:
-            self.protocol.transport = _transport
-
-    def test_remote_address(self):
-        get_extra_info = unittest.mock.Mock(return_value=("host", 4312))
-        self.transport.get_extra_info = get_extra_info
-
-        self.assertEqual(self.protocol.remote_address, ("host", 4312))
-        get_extra_info.assert_called_with("peername")
-
-    def test_remote_address_before_connection(self):
-        # Emulate the situation before connection_open() runs.
-        _transport = self.protocol.transport
-        del self.protocol.transport
-        try:
-            self.assertEqual(self.protocol.remote_address, None)
-        finally:
-            self.protocol.transport = _transport
-
-    def test_open(self):
-        self.assertTrue(self.protocol.open)
-        self.close_connection()
-        self.assertFalse(self.protocol.open)
-
-    def test_closed(self):
-        self.assertFalse(self.protocol.closed)
-        self.close_connection()
-        self.assertTrue(self.protocol.closed)
-
-    def test_wait_closed(self):
-        wait_closed = self.loop.create_task(self.protocol.wait_closed())
-        self.assertFalse(wait_closed.done())
-        self.close_connection()
-        self.assertTrue(wait_closed.done())
-
-    # Test the recv coroutine.
-
-    def test_recv_text(self):
-        self.receive_frame(Frame(True, OP_TEXT, "café".encode("utf-8")))
-        data = self.loop.run_until_complete(self.protocol.recv())
-        self.assertEqual(data, "café")
-
-    def test_recv_binary(self):
-        self.receive_frame(Frame(True, OP_BINARY, b"tea"))
-        data = self.loop.run_until_complete(self.protocol.recv())
-        self.assertEqual(data, b"tea")
-
-    def test_recv_on_closing_connection_local(self):
-        close_task = self.half_close_connection_local()
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(self.protocol.recv())
-
-        self.loop.run_until_complete(close_task)  # cleanup
-
-    def test_recv_on_closing_connection_remote(self):
-        self.half_close_connection_remote()
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(self.protocol.recv())
-
-    def test_recv_on_closed_connection(self):
-        self.close_connection()
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(self.protocol.recv())
-
-    def test_recv_protocol_error(self):
-        self.receive_frame(Frame(True, OP_CONT, "café".encode("utf-8")))
-        self.process_invalid_frames()
-        self.assertConnectionFailed(1002, "")
-
-    def test_recv_unicode_error(self):
-        self.receive_frame(Frame(True, OP_TEXT, "café".encode("latin-1")))
-        self.process_invalid_frames()
-        self.assertConnectionFailed(1007, "")
-
-    def test_recv_text_payload_too_big(self):
-        self.protocol.max_size = 1024
-        self.receive_frame(Frame(True, OP_TEXT, "café".encode("utf-8") * 205))
-        self.process_invalid_frames()
-        self.assertConnectionFailed(1009, "")
-
-    def test_recv_binary_payload_too_big(self):
-        self.protocol.max_size = 1024
-        self.receive_frame(Frame(True, OP_BINARY, b"tea" * 342))
-        self.process_invalid_frames()
-        self.assertConnectionFailed(1009, "")
-
-    def test_recv_text_no_max_size(self):
-        self.protocol.max_size = None  # for test coverage
-        self.receive_frame(Frame(True, OP_TEXT, "café".encode("utf-8") * 205))
-        data = self.loop.run_until_complete(self.protocol.recv())
-        self.assertEqual(data, "café" * 205)
-
-    def test_recv_binary_no_max_size(self):
-        self.protocol.max_size = None  # for test coverage
-        self.receive_frame(Frame(True, OP_BINARY, b"tea" * 342))
-        data = self.loop.run_until_complete(self.protocol.recv())
-        self.assertEqual(data, b"tea" * 342)
-
-    def test_recv_queue_empty(self):
-        recv = self.loop.create_task(self.protocol.recv())
-        with self.assertRaises(asyncio.TimeoutError):
-            self.loop.run_until_complete(
-                asyncio.wait_for(asyncio.shield(recv), timeout=MS)
-            )
-
-        self.receive_frame(Frame(True, OP_TEXT, "café".encode("utf-8")))
-        data = self.loop.run_until_complete(recv)
-        self.assertEqual(data, "café")
-
-    def test_recv_queue_full(self):
-        self.protocol.max_queue = 2
-        # Test internals because it's hard to verify buffers from the outside.
-        self.assertEqual(list(self.protocol.messages), [])
-
-        self.receive_frame(Frame(True, OP_TEXT, "café".encode("utf-8")))
-        self.run_loop_once()
-        self.assertEqual(list(self.protocol.messages), ["café"])
-
-        self.receive_frame(Frame(True, OP_BINARY, b"tea"))
-        self.run_loop_once()
-        self.assertEqual(list(self.protocol.messages), ["café", b"tea"])
-
-        self.receive_frame(Frame(True, OP_BINARY, b"milk"))
-        self.run_loop_once()
-        self.assertEqual(list(self.protocol.messages), ["café", b"tea"])
-
-        self.loop.run_until_complete(self.protocol.recv())
-        self.run_loop_once()
-        self.assertEqual(list(self.protocol.messages), [b"tea", b"milk"])
-
-        self.loop.run_until_complete(self.protocol.recv())
-        self.run_loop_once()
-        self.assertEqual(list(self.protocol.messages), [b"milk"])
-
-        self.loop.run_until_complete(self.protocol.recv())
-        self.run_loop_once()
-        self.assertEqual(list(self.protocol.messages), [])
-
-    def test_recv_queue_no_limit(self):
-        self.protocol.max_queue = None
-
-        for _ in range(100):
-            self.receive_frame(Frame(True, OP_TEXT, "café".encode("utf-8")))
-            self.run_loop_once()
-
-        # Incoming message queue can contain at least 100 messages.
-        self.assertEqual(list(self.protocol.messages), ["café"] * 100)
-
-        for _ in range(100):
-            self.loop.run_until_complete(self.protocol.recv())
-
-        self.assertEqual(list(self.protocol.messages), [])
-
-    def test_recv_other_error(self):
-        async def read_message():
-            raise Exception("BOOM")
-
-        self.protocol.read_message = read_message
-        self.process_invalid_frames()
-        self.assertConnectionFailed(1011, "")
-
-    def test_recv_canceled(self):
-        recv = self.loop.create_task(self.protocol.recv())
-        self.loop.call_soon(recv.cancel)
-
-        with self.assertRaises(asyncio.CancelledError):
-            self.loop.run_until_complete(recv)
-
-        # The next frame doesn't disappear in a vacuum (it used to).
-        self.receive_frame(Frame(True, OP_TEXT, "café".encode("utf-8")))
-        data = self.loop.run_until_complete(self.protocol.recv())
-        self.assertEqual(data, "café")
-
-    def test_recv_canceled_race_condition(self):
-        recv = self.loop.create_task(
-            asyncio.wait_for(self.protocol.recv(), timeout=0.000_001)
-        )
-        self.loop.call_soon(
-            self.receive_frame, Frame(True, OP_TEXT, "café".encode("utf-8"))
-        )
-
-        with self.assertRaises(asyncio.TimeoutError):
-            self.loop.run_until_complete(recv)
-
-        # The previous frame doesn't disappear in a vacuum (it used to).
-        self.receive_frame(Frame(True, OP_TEXT, "tea".encode("utf-8")))
-        data = self.loop.run_until_complete(self.protocol.recv())
-        # If we're getting "tea" there, it means "café" was swallowed (ha, ha).
-        self.assertEqual(data, "café")
-
-    def test_recv_when_transfer_data_cancelled(self):
-        # Clog incoming queue.
-        self.protocol.max_queue = 1
-        self.receive_frame(Frame(True, OP_TEXT, "café".encode("utf-8")))
-        self.receive_frame(Frame(True, OP_BINARY, b"tea"))
-        self.run_loop_once()
-
-        # Flow control kicks in (check with an implementation detail).
-        self.assertFalse(self.protocol._put_message_waiter.done())
-
-        # Schedule recv().
-        recv = self.loop.create_task(self.protocol.recv())
-
-        # Cancel transfer_data_task (again, implementation detail).
-        self.protocol.fail_connection()
-        self.run_loop_once()
-        self.assertTrue(self.protocol.transfer_data_task.cancelled())
-
-        # recv() completes properly.
-        self.assertEqual(self.loop.run_until_complete(recv), "café")
-
-    def test_recv_prevents_concurrent_calls(self):
-        recv = self.loop.create_task(self.protocol.recv())
-
-        with self.assertRaisesRegex(
-            RuntimeError,
-            "cannot call recv while another coroutine "
-            "is already waiting for the next message",
-        ):
-            self.loop.run_until_complete(self.protocol.recv())
-
-        recv.cancel()
-
-    # Test the send coroutine.
-
-    def test_send_text(self):
-        self.loop.run_until_complete(self.protocol.send("café"))
-        self.assertOneFrameSent(True, OP_TEXT, "café".encode("utf-8"))
-
-    def test_send_binary(self):
-        self.loop.run_until_complete(self.protocol.send(b"tea"))
-        self.assertOneFrameSent(True, OP_BINARY, b"tea")
-
-    def test_send_binary_from_bytearray(self):
-        self.loop.run_until_complete(self.protocol.send(bytearray(b"tea")))
-        self.assertOneFrameSent(True, OP_BINARY, b"tea")
-
-    def test_send_binary_from_memoryview(self):
-        self.loop.run_until_complete(self.protocol.send(memoryview(b"tea")))
-        self.assertOneFrameSent(True, OP_BINARY, b"tea")
-
-    def test_send_binary_from_non_contiguous_memoryview(self):
-        self.loop.run_until_complete(self.protocol.send(memoryview(b"tteeaa")[::2]))
-        self.assertOneFrameSent(True, OP_BINARY, b"tea")
-
-    def test_send_type_error(self):
-        with self.assertRaises(TypeError):
-            self.loop.run_until_complete(self.protocol.send(42))
-        self.assertNoFrameSent()
-
-    def test_send_iterable_text(self):
-        self.loop.run_until_complete(self.protocol.send(["ca", "fé"]))
-        self.assertFramesSent(
-            (False, OP_TEXT, "ca".encode("utf-8")),
-            (False, OP_CONT, "fé".encode("utf-8")),
-            (True, OP_CONT, "".encode("utf-8")),
-        )
-
-    def test_send_iterable_binary(self):
-        self.loop.run_until_complete(self.protocol.send([b"te", b"a"]))
-        self.assertFramesSent(
-            (False, OP_BINARY, b"te"), (False, OP_CONT, b"a"), (True, OP_CONT, b"")
-        )
-
-    def test_send_iterable_binary_from_bytearray(self):
-        self.loop.run_until_complete(
-            self.protocol.send([bytearray(b"te"), bytearray(b"a")])
-        )
-        self.assertFramesSent(
-            (False, OP_BINARY, b"te"), (False, OP_CONT, b"a"), (True, OP_CONT, b"")
-        )
-
-    def test_send_iterable_binary_from_memoryview(self):
-        self.loop.run_until_complete(
-            self.protocol.send([memoryview(b"te"), memoryview(b"a")])
-        )
-        self.assertFramesSent(
-            (False, OP_BINARY, b"te"), (False, OP_CONT, b"a"), (True, OP_CONT, b"")
-        )
-
-    def test_send_iterable_binary_from_non_contiguous_memoryview(self):
-        self.loop.run_until_complete(
-            self.protocol.send([memoryview(b"ttee")[::2], memoryview(b"aa")[::2]])
-        )
-        self.assertFramesSent(
-            (False, OP_BINARY, b"te"), (False, OP_CONT, b"a"), (True, OP_CONT, b"")
-        )
-
-    def test_send_empty_iterable(self):
-        self.loop.run_until_complete(self.protocol.send([]))
-        self.assertNoFrameSent()
-
-    def test_send_iterable_type_error(self):
-        with self.assertRaises(TypeError):
-            self.loop.run_until_complete(self.protocol.send([42]))
-        self.assertNoFrameSent()
-
-    def test_send_iterable_mixed_type_error(self):
-        with self.assertRaises(TypeError):
-            self.loop.run_until_complete(self.protocol.send(["café", b"tea"]))
-        self.assertFramesSent(
-            (False, OP_TEXT, "café".encode("utf-8")),
-            (True, OP_CLOSE, serialize_close(1011, "")),
-        )
-
-    def test_send_iterable_prevents_concurrent_send(self):
-        self.make_drain_slow(2 * MS)
-
-        async def send_iterable():
-            await self.protocol.send(["ca", "fé"])
-
-        async def send_concurrent():
-            await asyncio.sleep(MS)
-            await self.protocol.send(b"tea")
-
-        self.loop.run_until_complete(asyncio.gather(send_iterable(), send_concurrent()))
-        self.assertFramesSent(
-            (False, OP_TEXT, "ca".encode("utf-8")),
-            (False, OP_CONT, "fé".encode("utf-8")),
-            (True, OP_CONT, "".encode("utf-8")),
-            (True, OP_BINARY, b"tea"),
-        )
-
-    def test_send_async_iterable_text(self):
-        self.loop.run_until_complete(self.protocol.send(async_iterable(["ca", "fé"])))
-        self.assertFramesSent(
-            (False, OP_TEXT, "ca".encode("utf-8")),
-            (False, OP_CONT, "fé".encode("utf-8")),
-            (True, OP_CONT, "".encode("utf-8")),
-        )
-
-    def test_send_async_iterable_binary(self):
-        self.loop.run_until_complete(self.protocol.send(async_iterable([b"te", b"a"])))
-        self.assertFramesSent(
-            (False, OP_BINARY, b"te"), (False, OP_CONT, b"a"), (True, OP_CONT, b"")
-        )
-
-    def test_send_async_iterable_binary_from_bytearray(self):
-        self.loop.run_until_complete(
-            self.protocol.send(async_iterable([bytearray(b"te"), bytearray(b"a")]))
-        )
-        self.assertFramesSent(
-            (False, OP_BINARY, b"te"), (False, OP_CONT, b"a"), (True, OP_CONT, b"")
-        )
-
-    def test_send_async_iterable_binary_from_memoryview(self):
-        self.loop.run_until_complete(
-            self.protocol.send(async_iterable([memoryview(b"te"), memoryview(b"a")]))
-        )
-        self.assertFramesSent(
-            (False, OP_BINARY, b"te"), (False, OP_CONT, b"a"), (True, OP_CONT, b"")
-        )
-
-    def test_send_async_iterable_binary_from_non_contiguous_memoryview(self):
-        self.loop.run_until_complete(
-            self.protocol.send(
-                async_iterable([memoryview(b"ttee")[::2], memoryview(b"aa")[::2]])
-            )
-        )
-        self.assertFramesSent(
-            (False, OP_BINARY, b"te"), (False, OP_CONT, b"a"), (True, OP_CONT, b"")
-        )
-
-    def test_send_empty_async_iterable(self):
-        self.loop.run_until_complete(self.protocol.send(async_iterable([])))
-        self.assertNoFrameSent()
-
-    def test_send_async_iterable_type_error(self):
-        with self.assertRaises(TypeError):
-            self.loop.run_until_complete(self.protocol.send(async_iterable([42])))
-        self.assertNoFrameSent()
-
-    def test_send_async_iterable_mixed_type_error(self):
-        with self.assertRaises(TypeError):
-            self.loop.run_until_complete(
-                self.protocol.send(async_iterable(["café", b"tea"]))
-            )
-        self.assertFramesSent(
-            (False, OP_TEXT, "café".encode("utf-8")),
-            (True, OP_CLOSE, serialize_close(1011, "")),
-        )
-
-    def test_send_async_iterable_prevents_concurrent_send(self):
-        self.make_drain_slow(2 * MS)
-
-        async def send_async_iterable():
-            await self.protocol.send(async_iterable(["ca", "fé"]))
-
-        async def send_concurrent():
-            await asyncio.sleep(MS)
-            await self.protocol.send(b"tea")
-
-        self.loop.run_until_complete(
-            asyncio.gather(send_async_iterable(), send_concurrent())
-        )
-        self.assertFramesSent(
-            (False, OP_TEXT, "ca".encode("utf-8")),
-            (False, OP_CONT, "fé".encode("utf-8")),
-            (True, OP_CONT, "".encode("utf-8")),
-            (True, OP_BINARY, b"tea"),
-        )
-
-    def test_send_on_closing_connection_local(self):
-        close_task = self.half_close_connection_local()
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(self.protocol.send("foobar"))
-
-        self.assertNoFrameSent()
-
-        self.loop.run_until_complete(close_task)  # cleanup
-
-    def test_send_on_closing_connection_remote(self):
-        self.half_close_connection_remote()
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(self.protocol.send("foobar"))
-
-        self.assertNoFrameSent()
-
-    def test_send_on_closed_connection(self):
-        self.close_connection()
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(self.protocol.send("foobar"))
-
-        self.assertNoFrameSent()
-
-    # Test the ping coroutine.
-
-    def test_ping_default(self):
-        self.loop.run_until_complete(self.protocol.ping())
-        # With our testing tools, it's more convenient to extract the expected
-        # ping data from the library's internals than from the frame sent.
-        ping_data = next(iter(self.protocol.pings))
-        self.assertIsInstance(ping_data, bytes)
-        self.assertEqual(len(ping_data), 4)
-        self.assertOneFrameSent(True, OP_PING, ping_data)
-
-    def test_ping_text(self):
-        self.loop.run_until_complete(self.protocol.ping("café"))
-        self.assertOneFrameSent(True, OP_PING, "café".encode("utf-8"))
-
-    def test_ping_binary(self):
-        self.loop.run_until_complete(self.protocol.ping(b"tea"))
-        self.assertOneFrameSent(True, OP_PING, b"tea")
-
-    def test_ping_binary_from_bytearray(self):
-        self.loop.run_until_complete(self.protocol.ping(bytearray(b"tea")))
-        self.assertOneFrameSent(True, OP_PING, b"tea")
-
-    def test_ping_binary_from_memoryview(self):
-        self.loop.run_until_complete(self.protocol.ping(memoryview(b"tea")))
-        self.assertOneFrameSent(True, OP_PING, b"tea")
-
-    def test_ping_binary_from_non_contiguous_memoryview(self):
-        self.loop.run_until_complete(self.protocol.ping(memoryview(b"tteeaa")[::2]))
-        self.assertOneFrameSent(True, OP_PING, b"tea")
-
-    def test_ping_type_error(self):
-        with self.assertRaises(TypeError):
-            self.loop.run_until_complete(self.protocol.ping(42))
-        self.assertNoFrameSent()
-
-    def test_ping_on_closing_connection_local(self):
-        close_task = self.half_close_connection_local()
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(self.protocol.ping())
-
-        self.assertNoFrameSent()
-
-        self.loop.run_until_complete(close_task)  # cleanup
-
-    def test_ping_on_closing_connection_remote(self):
-        self.half_close_connection_remote()
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(self.protocol.ping())
-
-        self.assertNoFrameSent()
-
-    def test_ping_on_closed_connection(self):
-        self.close_connection()
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(self.protocol.ping())
-
-        self.assertNoFrameSent()
-
-    # Test the pong coroutine.
-
-    def test_pong_default(self):
-        self.loop.run_until_complete(self.protocol.pong())
-        self.assertOneFrameSent(True, OP_PONG, b"")
-
-    def test_pong_text(self):
-        self.loop.run_until_complete(self.protocol.pong("café"))
-        self.assertOneFrameSent(True, OP_PONG, "café".encode("utf-8"))
-
-    def test_pong_binary(self):
-        self.loop.run_until_complete(self.protocol.pong(b"tea"))
-        self.assertOneFrameSent(True, OP_PONG, b"tea")
-
-    def test_pong_binary_from_bytearray(self):
-        self.loop.run_until_complete(self.protocol.pong(bytearray(b"tea")))
-        self.assertOneFrameSent(True, OP_PONG, b"tea")
-
-    def test_pong_binary_from_memoryview(self):
-        self.loop.run_until_complete(self.protocol.pong(memoryview(b"tea")))
-        self.assertOneFrameSent(True, OP_PONG, b"tea")
-
-    def test_pong_binary_from_non_contiguous_memoryview(self):
-        self.loop.run_until_complete(self.protocol.pong(memoryview(b"tteeaa")[::2]))
-        self.assertOneFrameSent(True, OP_PONG, b"tea")
-
-    def test_pong_type_error(self):
-        with self.assertRaises(TypeError):
-            self.loop.run_until_complete(self.protocol.pong(42))
-        self.assertNoFrameSent()
-
-    def test_pong_on_closing_connection_local(self):
-        close_task = self.half_close_connection_local()
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(self.protocol.pong())
-
-        self.assertNoFrameSent()
-
-        self.loop.run_until_complete(close_task)  # cleanup
-
-    def test_pong_on_closing_connection_remote(self):
-        self.half_close_connection_remote()
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(self.protocol.pong())
-
-        self.assertNoFrameSent()
-
-    def test_pong_on_closed_connection(self):
-        self.close_connection()
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(self.protocol.pong())
-
-        self.assertNoFrameSent()
-
-    # Test the protocol's logic for acknowledging pings with pongs.
-
-    def test_answer_ping(self):
-        self.receive_frame(Frame(True, OP_PING, b"test"))
-        self.run_loop_once()
-        self.assertOneFrameSent(True, OP_PONG, b"test")
-
-    def test_ignore_pong(self):
-        self.receive_frame(Frame(True, OP_PONG, b"test"))
-        self.run_loop_once()
-        self.assertNoFrameSent()
-
-    def test_acknowledge_ping(self):
-        ping = self.loop.run_until_complete(self.protocol.ping())
-        self.assertFalse(ping.done())
-        ping_frame = self.last_sent_frame()
-        pong_frame = Frame(True, OP_PONG, ping_frame.data)
-        self.receive_frame(pong_frame)
-        self.run_loop_once()
-        self.run_loop_once()
-        self.assertTrue(ping.done())
-
-    def test_abort_ping(self):
-        ping = self.loop.run_until_complete(self.protocol.ping())
-        # Remove the frame from the buffer, else close_connection() complains.
-        self.last_sent_frame()
-        self.assertFalse(ping.done())
-        self.close_connection()
-        self.assertTrue(ping.done())
-        self.assertIsInstance(ping.exception(), ConnectionClosed)
-
-    def test_abort_ping_does_not_log_exception_if_not_retreived(self):
-        self.loop.run_until_complete(self.protocol.ping())
-        # Get the internal Future, which isn't directly returned by ping().
-        (ping,) = self.protocol.pings.values()
-        # Remove the frame from the buffer, else close_connection() complains.
-        self.last_sent_frame()
-        self.close_connection()
-        # Check a private attribute, for lack of a better solution.
-        self.assertFalse(ping._log_traceback)
-
-    def test_acknowledge_previous_pings(self):
-        pings = [
-            (self.loop.run_until_complete(self.protocol.ping()), self.last_sent_frame())
-            for i in range(3)
+            for write in connection.data_to_send()
         ]
-        # Unsolicited pong doesn't acknowledge pings
-        self.receive_frame(Frame(True, OP_PONG, b""))
-        self.run_loop_once()
-        self.run_loop_once()
-        self.assertFalse(pings[0][0].done())
-        self.assertFalse(pings[1][0].done())
-        self.assertFalse(pings[2][0].done())
-        # Pong acknowledges all previous pings
-        self.receive_frame(Frame(True, OP_PONG, pings[1][1].data))
-        self.run_loop_once()
-        self.run_loop_once()
-        self.assertTrue(pings[0][0].done())
-        self.assertTrue(pings[1][0].done())
-        self.assertFalse(pings[2][0].done())
+        frames_expected = [] if frame is None else [frame]
+        if eof:
+            frames_expected += [None]
+        self.assertEqual(frames_sent, frames_expected)
 
-    def test_acknowledge_aborted_ping(self):
-        ping = self.loop.run_until_complete(self.protocol.ping())
-        ping_frame = self.last_sent_frame()
-        # Clog incoming queue. This lets connection_lost() abort pending pings
-        # with a ConnectionClosed exception before transfer_data_task
-        # terminates and close_connection cancels keepalive_ping_task.
-        self.protocol.max_queue = 1
-        self.receive_frame(Frame(True, OP_TEXT, b"1"))
-        self.receive_frame(Frame(True, OP_TEXT, b"2"))
-        # Add pong frame to the queue.
-        pong_frame = Frame(True, OP_PONG, ping_frame.data)
-        self.receive_frame(pong_frame)
-        # Connection drops.
-        self.receive_eof()
-        self.loop.run_until_complete(self.protocol.wait_closed())
-        # Ping receives a ConnectionClosed exception.
-        with self.assertRaises(ConnectionClosed):
-            ping.result()
+    def assertFrameReceived(self, connection, frame):
+        """
+        Incoming data for ``connection`` contains the given frame.
 
-        # transfer_data doesn't crash, which would be logged.
-        with self.assertNoLogs():
-            # Unclog incoming queue.
-            self.loop.run_until_complete(self.protocol.recv())
-            self.loop.run_until_complete(self.protocol.recv())
+        ``frame`` may be ``None`` if no frame is expected.
 
-    def test_canceled_ping(self):
-        ping = self.loop.run_until_complete(self.protocol.ping())
-        ping_frame = self.last_sent_frame()
-        ping.cancel()
-        pong_frame = Frame(True, OP_PONG, ping_frame.data)
-        self.receive_frame(pong_frame)
-        self.run_loop_once()
-        self.run_loop_once()
-        self.assertTrue(ping.cancelled())
+        """
+        frames_received = connection.events_received()
+        frames_expected = [] if frame is None else [frame]
+        self.assertEqual(frames_received, frames_expected)
 
-    def test_duplicate_ping(self):
-        self.loop.run_until_complete(self.protocol.ping(b"foobar"))
-        self.assertOneFrameSent(True, OP_PING, b"foobar")
-        with self.assertRaises(ValueError):
-            self.loop.run_until_complete(self.protocol.ping(b"foobar"))
-        self.assertNoFrameSent()
+    def assertConnectionClosing(self, connection, code=None, reason=""):
+        """
+        Incoming data caused the "Start the WebSocket Closing Handshake" process.
 
-    # Test the protocol's logic for rebuilding fragmented messages.
-
-    def test_fragmented_text(self):
-        self.receive_frame(Frame(False, OP_TEXT, "ca".encode("utf-8")))
-        self.receive_frame(Frame(True, OP_CONT, "fé".encode("utf-8")))
-        data = self.loop.run_until_complete(self.protocol.recv())
-        self.assertEqual(data, "café")
-
-    def test_fragmented_binary(self):
-        self.receive_frame(Frame(False, OP_BINARY, b"t"))
-        self.receive_frame(Frame(False, OP_CONT, b"e"))
-        self.receive_frame(Frame(True, OP_CONT, b"a"))
-        data = self.loop.run_until_complete(self.protocol.recv())
-        self.assertEqual(data, b"tea")
-
-    def test_fragmented_text_payload_too_big(self):
-        self.protocol.max_size = 1024
-        self.receive_frame(Frame(False, OP_TEXT, "café".encode("utf-8") * 100))
-        self.receive_frame(Frame(True, OP_CONT, "café".encode("utf-8") * 105))
-        self.process_invalid_frames()
-        self.assertConnectionFailed(1009, "")
-
-    def test_fragmented_binary_payload_too_big(self):
-        self.protocol.max_size = 1024
-        self.receive_frame(Frame(False, OP_BINARY, b"tea" * 171))
-        self.receive_frame(Frame(True, OP_CONT, b"tea" * 171))
-        self.process_invalid_frames()
-        self.assertConnectionFailed(1009, "")
-
-    def test_fragmented_text_no_max_size(self):
-        self.protocol.max_size = None  # for test coverage
-        self.receive_frame(Frame(False, OP_TEXT, "café".encode("utf-8") * 100))
-        self.receive_frame(Frame(True, OP_CONT, "café".encode("utf-8") * 105))
-        data = self.loop.run_until_complete(self.protocol.recv())
-        self.assertEqual(data, "café" * 205)
-
-    def test_fragmented_binary_no_max_size(self):
-        self.protocol.max_size = None  # for test coverage
-        self.receive_frame(Frame(False, OP_BINARY, b"tea" * 171))
-        self.receive_frame(Frame(True, OP_CONT, b"tea" * 171))
-        data = self.loop.run_until_complete(self.protocol.recv())
-        self.assertEqual(data, b"tea" * 342)
-
-    def test_control_frame_within_fragmented_text(self):
-        self.receive_frame(Frame(False, OP_TEXT, "ca".encode("utf-8")))
-        self.receive_frame(Frame(True, OP_PING, b""))
-        self.receive_frame(Frame(True, OP_CONT, "fé".encode("utf-8")))
-        data = self.loop.run_until_complete(self.protocol.recv())
-        self.assertEqual(data, "café")
-        self.assertOneFrameSent(True, OP_PONG, b"")
-
-    def test_unterminated_fragmented_text(self):
-        self.receive_frame(Frame(False, OP_TEXT, "ca".encode("utf-8")))
-        # Missing the second part of the fragmented frame.
-        self.receive_frame(Frame(True, OP_BINARY, b"tea"))
-        self.process_invalid_frames()
-        self.assertConnectionFailed(1002, "")
-
-    def test_close_handshake_in_fragmented_text(self):
-        self.receive_frame(Frame(False, OP_TEXT, "ca".encode("utf-8")))
-        self.receive_frame(Frame(True, OP_CLOSE, b""))
-        self.process_invalid_frames()
-        # The RFC may have overlooked this case: it says that control frames
-        # can be interjected in the middle of a fragmented message and that a
-        # close frame must be echoed. Even though there's an unterminated
-        # message, technically, the closing handshake was successful.
-        self.assertConnectionClosed(1005, "")
-
-    def test_connection_close_in_fragmented_text(self):
-        self.receive_frame(Frame(False, OP_TEXT, "ca".encode("utf-8")))
-        self.process_invalid_frames()
-        self.assertConnectionFailed(1006, "")
-
-    # Test miscellaneous code paths to ensure full coverage.
-
-    def test_connection_lost(self):
-        # Test calling connection_lost without going through close_connection.
-        self.protocol.connection_lost(None)
-
-        self.assertConnectionFailed(1006, "")
-
-    def test_ensure_open_before_opening_handshake(self):
-        # Simulate a bug by forcibly reverting the protocol state.
-        self.protocol.state = State.CONNECTING
-
-        with self.assertRaises(InvalidState):
-            self.loop.run_until_complete(self.protocol.ensure_open())
-
-    def test_ensure_open_during_unclean_close(self):
-        # Process connection_made in order to start transfer_data_task.
-        self.run_loop_once()
-
-        # Ensure the test terminates quickly.
-        self.loop.call_later(MS, self.receive_eof_if_client)
-
-        # Simulate the case when close() times out sending a close frame.
-        self.protocol.fail_connection()
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(self.protocol.ensure_open())
-
-    def test_legacy_recv(self):
-        # By default legacy_recv in disabled.
-        self.assertEqual(self.protocol.legacy_recv, False)
-
-        self.close_connection()
-
-        # Enable legacy_recv.
-        self.protocol.legacy_recv = True
-
-        # Now recv() returns None instead of raising ConnectionClosed.
-        self.assertIsNone(self.loop.run_until_complete(self.protocol.recv()))
-
-    def test_connection_closed_attributes(self):
-        self.close_connection()
-
-        with self.assertRaises(ConnectionClosed) as context:
-            self.loop.run_until_complete(self.protocol.recv())
-
-        connection_closed_exc = context.exception
-        self.assertEqual(connection_closed_exc.code, 1000)
-        self.assertEqual(connection_closed_exc.reason, "close")
-
-    # Test the protocol logic for sending keepalive pings.
-
-    def restart_protocol_with_keepalive_ping(
-        self, ping_interval=3 * MS, ping_timeout=3 * MS
-    ):
-        initial_protocol = self.protocol
-        # copied from tearDown
-        self.transport.close()
-        self.loop.run_until_complete(self.protocol.close())
-        # copied from setUp, but enables keepalive pings
-        self.protocol = WebSocketCommonProtocol(
-            ping_interval=ping_interval, ping_timeout=ping_timeout
+        """
+        close_frame = Frame(
+            OP_CLOSE,
+            b"" if code is None else Close(code, reason).serialize(),
         )
-        self.transport = TransportMock()
-        self.transport.setup_mock(self.loop, self.protocol)
-        self.protocol.is_client = initial_protocol.is_client
-        self.protocol.side = initial_protocol.side
-
-    def test_keepalive_ping(self):
-        self.restart_protocol_with_keepalive_ping()
-
-        # Ping is sent at 3ms and acknowledged at 4ms.
-        self.loop.run_until_complete(asyncio.sleep(4 * MS))
-        (ping_1,) = tuple(self.protocol.pings)
-        self.assertOneFrameSent(True, OP_PING, ping_1)
-        self.receive_frame(Frame(True, OP_PONG, ping_1))
-
-        # Next ping is sent at 7ms.
-        self.loop.run_until_complete(asyncio.sleep(4 * MS))
-        (ping_2,) = tuple(self.protocol.pings)
-        self.assertOneFrameSent(True, OP_PING, ping_2)
-
-        # The keepalive ping task goes on.
-        self.assertFalse(self.protocol.keepalive_ping_task.done())
-
-    def test_keepalive_ping_not_acknowledged_closes_connection(self):
-        self.restart_protocol_with_keepalive_ping()
-
-        # Ping is sent at 3ms and not acknowleged.
-        self.loop.run_until_complete(asyncio.sleep(4 * MS))
-        (ping_1,) = tuple(self.protocol.pings)
-        self.assertOneFrameSent(True, OP_PING, ping_1)
-
-        # Connection is closed at 6ms.
-        self.loop.run_until_complete(asyncio.sleep(4 * MS))
-        self.assertOneFrameSent(True, OP_CLOSE, serialize_close(1011, ""))
-
-        # The keepalive ping task is complete.
-        self.assertEqual(self.protocol.keepalive_ping_task.result(), None)
-
-    def test_keepalive_ping_stops_when_connection_closing(self):
-        self.restart_protocol_with_keepalive_ping()
-        close_task = self.half_close_connection_local()
-
-        # No ping sent at 3ms because the closing handshake is in progress.
-        self.loop.run_until_complete(asyncio.sleep(4 * MS))
-        self.assertNoFrameSent()
-
-        # The keepalive ping task terminated.
-        self.assertTrue(self.protocol.keepalive_ping_task.cancelled())
-
-        self.loop.run_until_complete(close_task)  # cleanup
-
-    def test_keepalive_ping_stops_when_connection_closed(self):
-        self.restart_protocol_with_keepalive_ping()
-        self.close_connection()
-
-        # The keepalive ping task terminated.
-        self.assertTrue(self.protocol.keepalive_ping_task.cancelled())
-
-    def test_keepalive_ping_does_not_crash_when_connection_lost(self):
-        self.restart_protocol_with_keepalive_ping()
-        # Clog incoming queue. This lets connection_lost() abort pending pings
-        # with a ConnectionClosed exception before transfer_data_task
-        # terminates and close_connection cancels keepalive_ping_task.
-        self.protocol.max_queue = 1
-        self.receive_frame(Frame(True, OP_TEXT, b"1"))
-        self.receive_frame(Frame(True, OP_TEXT, b"2"))
-        # Ping is sent at 3ms.
-        self.loop.run_until_complete(asyncio.sleep(4 * MS))
-        (ping_waiter,) = tuple(self.protocol.pings.values())
-        # Connection drops.
-        self.receive_eof()
-        self.loop.run_until_complete(self.protocol.wait_closed())
-
-        # The ping waiter receives a ConnectionClosed exception.
-        with self.assertRaises(ConnectionClosed):
-            ping_waiter.result()
-        # The keepalive ping task terminated properly.
-        self.assertIsNone(self.protocol.keepalive_ping_task.result())
-
-        # Unclog incoming queue to terminate the test quickly.
-        self.loop.run_until_complete(self.protocol.recv())
-        self.loop.run_until_complete(self.protocol.recv())
-
-    def test_keepalive_ping_with_no_ping_interval(self):
-        self.restart_protocol_with_keepalive_ping(ping_interval=None)
-
-        # No ping is sent at 3ms.
-        self.loop.run_until_complete(asyncio.sleep(4 * MS))
-        self.assertNoFrameSent()
-
-    def test_keepalive_ping_with_no_ping_timeout(self):
-        self.restart_protocol_with_keepalive_ping(ping_timeout=None)
-
-        # Ping is sent at 3ms and not acknowleged.
-        self.loop.run_until_complete(asyncio.sleep(4 * MS))
-        (ping_1,) = tuple(self.protocol.pings)
-        self.assertOneFrameSent(True, OP_PING, ping_1)
-
-        # Next ping is sent at 7ms anyway.
-        self.loop.run_until_complete(asyncio.sleep(4 * MS))
-        ping_1_again, ping_2 = tuple(self.protocol.pings)
-        self.assertEqual(ping_1, ping_1_again)
-        self.assertOneFrameSent(True, OP_PING, ping_2)
-
-        # The keepalive ping task goes on.
-        self.assertFalse(self.protocol.keepalive_ping_task.done())
-
-    def test_keepalive_ping_unexpected_error(self):
-        self.restart_protocol_with_keepalive_ping()
-
-        async def ping():
-            raise Exception("BOOM")
-
-        self.protocol.ping = ping
-
-        # The keepalive ping task fails when sending a ping at 3ms.
-        self.loop.run_until_complete(asyncio.sleep(4 * MS))
-
-        # The keepalive ping task is complete.
-        # It logs and swallows the exception.
-        self.assertEqual(self.protocol.keepalive_ping_task.result(), None)
-
-    # Test the protocol logic for closing the connection.
-
-    def test_local_close(self):
-        # Emulate how the remote endpoint answers the closing handshake.
-        self.loop.call_later(MS, self.receive_frame, self.close_frame)
-        self.loop.call_later(MS, self.receive_eof_if_client)
-
-        # Run the closing handshake.
-        self.loop.run_until_complete(self.protocol.close(reason="close"))
-
-        self.assertConnectionClosed(1000, "close")
-        self.assertOneFrameSent(*self.close_frame)
-
-        # Closing the connection again is a no-op.
-        self.loop.run_until_complete(self.protocol.close(reason="oh noes!"))
-
-        self.assertConnectionClosed(1000, "close")
-        self.assertNoFrameSent()
-
-    def test_remote_close(self):
-        # Emulate how the remote endpoint initiates the closing handshake.
-        self.loop.call_later(MS, self.receive_frame, self.close_frame)
-        self.loop.call_later(MS, self.receive_eof_if_client)
-
-        # Wait for some data in order to process the handshake.
-        # After recv() raises ConnectionClosed, the connection is closed.
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(self.protocol.recv())
-
-        self.assertConnectionClosed(1000, "close")
-        self.assertOneFrameSent(*self.close_frame)
-
-        # Closing the connection again is a no-op.
-        self.loop.run_until_complete(self.protocol.close(reason="oh noes!"))
-
-        self.assertConnectionClosed(1000, "close")
-        self.assertNoFrameSent()
-
-    def test_remote_close_and_connection_lost(self):
-        self.make_drain_slow()
-        # Drop the connection right after receiving a close frame,
-        # which prevents echoing the close frame properly.
-        self.receive_frame(self.close_frame)
-        self.receive_eof()
-
-        with self.assertNoLogs():
-            self.loop.run_until_complete(self.protocol.close(reason="oh noes!"))
-
-        self.assertConnectionClosed(1000, "close")
-        self.assertOneFrameSent(*self.close_frame)
-
-    def test_simultaneous_close(self):
-        # Receive the incoming close frame right after self.protocol.close()
-        # starts executing. This reproduces the error described in:
-        # https://github.com/aaugustin/websockets/issues/339
-        self.loop.call_soon(self.receive_frame, self.remote_close)
-        self.loop.call_soon(self.receive_eof_if_client)
-
-        self.loop.run_until_complete(self.protocol.close(reason="local"))
-
-        self.assertConnectionClosed(1000, "remote")
-        # The current implementation sends a close frame in response to the
-        # close frame received from the remote end. It skips the close frame
-        # that should be sent as a result of calling close().
-        self.assertOneFrameSent(*self.remote_close)
-
-    def test_close_preserves_incoming_frames(self):
-        self.receive_frame(Frame(True, OP_TEXT, b"hello"))
-
-        self.loop.call_later(MS, self.receive_frame, self.close_frame)
-        self.loop.call_later(MS, self.receive_eof_if_client)
-        self.loop.run_until_complete(self.protocol.close(reason="close"))
-
-        self.assertConnectionClosed(1000, "close")
-        self.assertOneFrameSent(*self.close_frame)
-
-        next_message = self.loop.run_until_complete(self.protocol.recv())
-        self.assertEqual(next_message, "hello")
-
-    def test_close_protocol_error(self):
-        invalid_close_frame = Frame(True, OP_CLOSE, b"\x00")
-        self.receive_frame(invalid_close_frame)
-        self.receive_eof_if_client()
-        self.run_loop_once()
-        self.loop.run_until_complete(self.protocol.close(reason="close"))
-
-        self.assertConnectionFailed(1002, "")
-
-    def test_close_connection_lost(self):
-        self.receive_eof()
-        self.run_loop_once()
-        self.loop.run_until_complete(self.protocol.close(reason="close"))
-
-        self.assertConnectionFailed(1006, "")
-
-    def test_local_close_during_recv(self):
-        recv = self.loop.create_task(self.protocol.recv())
-
-        self.loop.call_later(MS, self.receive_frame, self.close_frame)
-        self.loop.call_later(MS, self.receive_eof_if_client)
-
-        self.loop.run_until_complete(self.protocol.close(reason="close"))
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(recv)
-
-        self.assertConnectionClosed(1000, "close")
-
-    # There is no test_remote_close_during_recv because it would be identical
-    # to test_remote_close.
-
-    def test_remote_close_during_send(self):
-        self.make_drain_slow()
-        send = self.loop.create_task(self.protocol.send("hello"))
-
-        self.receive_frame(self.close_frame)
-        self.receive_eof()
-
-        with self.assertRaises(ConnectionClosed):
-            self.loop.run_until_complete(send)
-
-        self.assertConnectionClosed(1000, "close")
-
-    # There is no test_local_close_during_send because this cannot really
-    # happen, considering that writes are serialized.
-
-
-class ServerTests(CommonTests, AsyncioTestCase):
-    def setUp(self):
-        super().setUp()
-        self.protocol.is_client = False
-        self.protocol.side = "server"
-
-    def test_local_close_send_close_frame_timeout(self):
-        self.protocol.close_timeout = 10 * MS
-        self.make_drain_slow(50 * MS)
-        # If we can't send a close frame, time out in 10ms.
-        # Check the timing within -1/+9ms for robustness.
-        with self.assertCompletesWithin(9 * MS, 19 * MS):
-            self.loop.run_until_complete(self.protocol.close(reason="close"))
-        self.assertConnectionClosed(1006, "")
-
-    def test_local_close_receive_close_frame_timeout(self):
-        self.protocol.close_timeout = 10 * MS
-        # If the client doesn't send a close frame, time out in 10ms.
-        # Check the timing within -1/+9ms for robustness.
-        with self.assertCompletesWithin(9 * MS, 19 * MS):
-            self.loop.run_until_complete(self.protocol.close(reason="close"))
-        self.assertConnectionClosed(1006, "")
-
-    def test_local_close_connection_lost_timeout_after_write_eof(self):
-        self.protocol.close_timeout = 10 * MS
-        # If the client doesn't close its side of the TCP connection after we
-        # half-close our side with write_eof(), time out in 10ms.
-        # Check the timing within -1/+9ms for robustness.
-        with self.assertCompletesWithin(9 * MS, 19 * MS):
-            # HACK: disable write_eof => other end drops connection emulation.
-            self.transport._eof = True
-            self.receive_frame(self.close_frame)
-            self.loop.run_until_complete(self.protocol.close(reason="close"))
-        self.assertConnectionClosed(1000, "close")
-
-    def test_local_close_connection_lost_timeout_after_close(self):
-        self.protocol.close_timeout = 10 * MS
-        # If the client doesn't close its side of the TCP connection after we
-        # half-close our side with write_eof() and close it with close(), time
-        # out in 20ms.
-        # Check the timing within -1/+9ms for robustness.
-        with self.assertCompletesWithin(19 * MS, 29 * MS):
-            # HACK: disable write_eof => other end drops connection emulation.
-            self.transport._eof = True
-            # HACK: disable close => other end drops connection emulation.
-            self.transport._closing = True
-            self.receive_frame(self.close_frame)
-            self.loop.run_until_complete(self.protocol.close(reason="close"))
-        self.assertConnectionClosed(1000, "close")
-
-
-class ClientTests(CommonTests, AsyncioTestCase):
-    def setUp(self):
-        super().setUp()
-        self.protocol.is_client = True
-        self.protocol.side = "client"
-
-    def test_local_close_send_close_frame_timeout(self):
-        self.protocol.close_timeout = 10 * MS
-        self.make_drain_slow(50 * MS)
-        # If we can't send a close frame, time out in 20ms.
-        # - 10ms waiting for sending a close frame
-        # - 10ms waiting for receiving a half-close
-        # Check the timing within -1/+9ms for robustness.
-        with self.assertCompletesWithin(19 * MS, 29 * MS):
-            self.loop.run_until_complete(self.protocol.close(reason="close"))
-        self.assertConnectionClosed(1006, "")
-
-    def test_local_close_receive_close_frame_timeout(self):
-        self.protocol.close_timeout = 10 * MS
-        # If the server doesn't send a close frame, time out in 20ms:
-        # - 10ms waiting for receiving a close frame
-        # - 10ms waiting for receiving a half-close
-        # Check the timing within -1/+9ms for robustness.
-        with self.assertCompletesWithin(19 * MS, 29 * MS):
-            self.loop.run_until_complete(self.protocol.close(reason="close"))
-        self.assertConnectionClosed(1006, "")
-
-    def test_local_close_connection_lost_timeout_after_write_eof(self):
-        self.protocol.close_timeout = 10 * MS
-        # If the server doesn't half-close its side of the TCP connection
-        # after we send a close frame, time out in 20ms:
-        # - 10ms waiting for receiving a half-close
-        # - 10ms waiting for receiving a close after write_eof
-        # Check the timing within -1/+9ms for robustness.
-        with self.assertCompletesWithin(19 * MS, 29 * MS):
-            # HACK: disable write_eof => other end drops connection emulation.
-            self.transport._eof = True
-            self.receive_frame(self.close_frame)
-            self.loop.run_until_complete(self.protocol.close(reason="close"))
-        self.assertConnectionClosed(1000, "close")
-
-    def test_local_close_connection_lost_timeout_after_close(self):
-        self.protocol.close_timeout = 10 * MS
-        # If the client doesn't close its side of the TCP connection after we
-        # half-close our side with write_eof() and close it with close(), time
-        # out in 20ms.
-        # - 10ms waiting for receiving a half-close
-        # - 10ms waiting for receiving a close after write_eof
-        # - 10ms waiting for receiving a close after close
-        # Check the timing within -1/+9ms for robustness.
-        with self.assertCompletesWithin(29 * MS, 39 * MS):
-            # HACK: disable write_eof => other end drops connection emulation.
-            self.transport._eof = True
-            # HACK: disable close => other end drops connection emulation.
-            self.transport._closing = True
-            self.receive_frame(self.close_frame)
-            self.loop.run_until_complete(self.protocol.close(reason="close"))
-        self.assertConnectionClosed(1000, "close")
+        # A close frame was received.
+        self.assertFrameReceived(connection, close_frame)
+        # A close frame and possibly the end of stream were sent.
+        self.assertFrameSent(connection, close_frame, eof=connection.side is SERVER)
+
+    def assertConnectionFailing(self, connection, code=None, reason=""):
+        """
+        Incoming data caused the "Fail the WebSocket Connection" process.
+
+        """
+        close_frame = Frame(
+            OP_CLOSE,
+            b"" if code is None else Close(code, reason).serialize(),
+        )
+        # No frame was received.
+        self.assertFrameReceived(connection, None)
+        # A close frame and possibly the end of stream were sent.
+        self.assertFrameSent(connection, close_frame, eof=connection.side is SERVER)
+
+
+class MaskingTests(ProtocolTestCase):
+    """
+    Test frame masking.
+
+    5.1.  Overview
+
+    """
+
+    unmasked_text_frame_date = b"\x81\x04Spam"
+    masked_text_frame_data = b"\x81\x84\x00\xff\x00\xff\x53\x8f\x61\x92"
+
+    def test_client_sends_masked_frame(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\xff\x00\xff"):
+            client.send_text(b"Spam", True)
+        self.assertEqual(client.data_to_send(), [self.masked_text_frame_data])
+
+    def test_server_sends_unmasked_frame(self):
+        server = Protocol(SERVER)
+        server.send_text(b"Spam", True)
+        self.assertEqual(server.data_to_send(), [self.unmasked_text_frame_date])
+
+    def test_client_receives_unmasked_frame(self):
+        client = Protocol(CLIENT)
+        client.receive_data(self.unmasked_text_frame_date)
+        self.assertFrameReceived(
+            client,
+            Frame(OP_TEXT, b"Spam"),
+        )
+
+    def test_server_receives_masked_frame(self):
+        server = Protocol(SERVER)
+        server.receive_data(self.masked_text_frame_data)
+        self.assertFrameReceived(
+            server,
+            Frame(OP_TEXT, b"Spam"),
+        )
+
+    def test_client_receives_masked_frame(self):
+        client = Protocol(CLIENT)
+        client.receive_data(self.masked_text_frame_data)
+        self.assertIsInstance(client.parser_exc, ProtocolError)
+        self.assertEqual(str(client.parser_exc), "incorrect masking")
+        self.assertConnectionFailing(
+            client, CloseCode.PROTOCOL_ERROR, "incorrect masking"
+        )
+
+    def test_server_receives_unmasked_frame(self):
+        server = Protocol(SERVER)
+        server.receive_data(self.unmasked_text_frame_date)
+        self.assertIsInstance(server.parser_exc, ProtocolError)
+        self.assertEqual(str(server.parser_exc), "incorrect masking")
+        self.assertConnectionFailing(
+            server, CloseCode.PROTOCOL_ERROR, "incorrect masking"
+        )
+
+
+class ContinuationTests(ProtocolTestCase):
+    """
+    Test continuation frames without text or binary frames.
+
+    """
+
+    def test_client_sends_unexpected_continuation(self):
+        client = Protocol(CLIENT)
+        with self.assertRaises(ProtocolError) as raised:
+            client.send_continuation(b"", fin=False)
+        self.assertEqual(str(raised.exception), "unexpected continuation frame")
+
+    def test_server_sends_unexpected_continuation(self):
+        server = Protocol(SERVER)
+        with self.assertRaises(ProtocolError) as raised:
+            server.send_continuation(b"", fin=False)
+        self.assertEqual(str(raised.exception), "unexpected continuation frame")
+
+    def test_client_receives_unexpected_continuation(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x00\x00")
+        self.assertIsInstance(client.parser_exc, ProtocolError)
+        self.assertEqual(str(client.parser_exc), "unexpected continuation frame")
+        self.assertConnectionFailing(
+            client, CloseCode.PROTOCOL_ERROR, "unexpected continuation frame"
+        )
+
+    def test_server_receives_unexpected_continuation(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x00\x80\x00\x00\x00\x00")
+        self.assertIsInstance(server.parser_exc, ProtocolError)
+        self.assertEqual(str(server.parser_exc), "unexpected continuation frame")
+        self.assertConnectionFailing(
+            server, CloseCode.PROTOCOL_ERROR, "unexpected continuation frame"
+        )
+
+    def test_client_sends_continuation_after_sending_close(self):
+        client = Protocol(CLIENT)
+        # Since it isn't possible to send a close frame in a fragmented
+        # message (see test_client_send_close_in_fragmented_message), in fact,
+        # this is the same test as test_client_sends_unexpected_continuation.
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_close(CloseCode.GOING_AWAY)
+        self.assertEqual(client.data_to_send(), [b"\x88\x82\x00\x00\x00\x00\x03\xe9"])
+        with self.assertRaises(ProtocolError) as raised:
+            client.send_continuation(b"", fin=False)
+        self.assertEqual(str(raised.exception), "unexpected continuation frame")
+
+    def test_server_sends_continuation_after_sending_close(self):
+        # Since it isn't possible to send a close frame in a fragmented
+        # message (see test_server_send_close_in_fragmented_message), in fact,
+        # this is the same test as test_server_sends_unexpected_continuation.
+        server = Protocol(SERVER)
+        server.send_close(CloseCode.NORMAL_CLOSURE)
+        self.assertEqual(server.data_to_send(), [b"\x88\x02\x03\xe8"])
+        with self.assertRaises(ProtocolError) as raised:
+            server.send_continuation(b"", fin=False)
+        self.assertEqual(str(raised.exception), "unexpected continuation frame")
+
+    def test_client_receives_continuation_after_receiving_close(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x02\x03\xe8")
+        self.assertConnectionClosing(client, CloseCode.NORMAL_CLOSURE)
+        client.receive_data(b"\x00\x00")
+        self.assertFrameReceived(client, None)
+        self.assertFrameSent(client, None)
+
+    def test_server_receives_continuation_after_receiving_close(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x82\x00\x00\x00\x00\x03\xe9")
+        self.assertConnectionClosing(server, CloseCode.GOING_AWAY)
+        server.receive_data(b"\x00\x80\x00\xff\x00\xff")
+        self.assertFrameReceived(server, None)
+        self.assertFrameSent(server, None)
+
+
+class TextTests(ProtocolTestCase):
+    """
+    Test text frames and continuation frames.
+
+    """
+
+    def test_client_sends_text(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_text("😀".encode())
+        self.assertEqual(
+            client.data_to_send(), [b"\x81\x84\x00\x00\x00\x00\xf0\x9f\x98\x80"]
+        )
+
+    def test_server_sends_text(self):
+        server = Protocol(SERVER)
+        server.send_text("😀".encode())
+        self.assertEqual(server.data_to_send(), [b"\x81\x04\xf0\x9f\x98\x80"])
+
+    def test_client_receives_text(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x81\x04\xf0\x9f\x98\x80")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_TEXT, "😀".encode()),
+        )
+
+    def test_server_receives_text(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x81\x84\x00\x00\x00\x00\xf0\x9f\x98\x80")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_TEXT, "😀".encode()),
+        )
+
+    def test_client_receives_text_over_size_limit(self):
+        client = Protocol(CLIENT, max_size=3)
+        client.receive_data(b"\x81\x04\xf0\x9f\x98\x80")
+        self.assertIsInstance(client.parser_exc, PayloadTooBig)
+        self.assertEqual(str(client.parser_exc), "over size limit (4 > 3 bytes)")
+        self.assertConnectionFailing(
+            client, CloseCode.MESSAGE_TOO_BIG, "over size limit (4 > 3 bytes)"
+        )
+
+    def test_server_receives_text_over_size_limit(self):
+        server = Protocol(SERVER, max_size=3)
+        server.receive_data(b"\x81\x84\x00\x00\x00\x00\xf0\x9f\x98\x80")
+        self.assertIsInstance(server.parser_exc, PayloadTooBig)
+        self.assertEqual(str(server.parser_exc), "over size limit (4 > 3 bytes)")
+        self.assertConnectionFailing(
+            server, CloseCode.MESSAGE_TOO_BIG, "over size limit (4 > 3 bytes)"
+        )
+
+    def test_client_receives_text_without_size_limit(self):
+        client = Protocol(CLIENT, max_size=None)
+        client.receive_data(b"\x81\x04\xf0\x9f\x98\x80")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_TEXT, "😀".encode()),
+        )
+
+    def test_server_receives_text_without_size_limit(self):
+        server = Protocol(SERVER, max_size=None)
+        server.receive_data(b"\x81\x84\x00\x00\x00\x00\xf0\x9f\x98\x80")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_TEXT, "😀".encode()),
+        )
+
+    def test_client_sends_fragmented_text(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_text("😀".encode()[:2], fin=False)
+        self.assertEqual(client.data_to_send(), [b"\x01\x82\x00\x00\x00\x00\xf0\x9f"])
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_continuation("😀😀".encode()[2:6], fin=False)
+        self.assertEqual(
+            client.data_to_send(), [b"\x00\x84\x00\x00\x00\x00\x98\x80\xf0\x9f"]
+        )
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_continuation("😀".encode()[2:], fin=True)
+        self.assertEqual(client.data_to_send(), [b"\x80\x82\x00\x00\x00\x00\x98\x80"])
+
+    def test_server_sends_fragmented_text(self):
+        server = Protocol(SERVER)
+        server.send_text("😀".encode()[:2], fin=False)
+        self.assertEqual(server.data_to_send(), [b"\x01\x02\xf0\x9f"])
+        server.send_continuation("😀😀".encode()[2:6], fin=False)
+        self.assertEqual(server.data_to_send(), [b"\x00\x04\x98\x80\xf0\x9f"])
+        server.send_continuation("😀".encode()[2:], fin=True)
+        self.assertEqual(server.data_to_send(), [b"\x80\x02\x98\x80"])
+
+    def test_client_receives_fragmented_text(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x01\x02\xf0\x9f")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_TEXT, "😀".encode()[:2], fin=False),
+        )
+        client.receive_data(b"\x00\x04\x98\x80\xf0\x9f")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_CONT, "😀😀".encode()[2:6], fin=False),
+        )
+        client.receive_data(b"\x80\x02\x98\x80")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_CONT, "😀".encode()[2:]),
+        )
+
+    def test_server_receives_fragmented_text(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x01\x82\x00\x00\x00\x00\xf0\x9f")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_TEXT, "😀".encode()[:2], fin=False),
+        )
+        server.receive_data(b"\x00\x84\x00\x00\x00\x00\x98\x80\xf0\x9f")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_CONT, "😀😀".encode()[2:6], fin=False),
+        )
+        server.receive_data(b"\x80\x82\x00\x00\x00\x00\x98\x80")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_CONT, "😀".encode()[2:]),
+        )
+
+    def test_client_receives_fragmented_text_over_size_limit(self):
+        client = Protocol(CLIENT, max_size=3)
+        client.receive_data(b"\x01\x02\xf0\x9f")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_TEXT, "😀".encode()[:2], fin=False),
+        )
+        client.receive_data(b"\x80\x02\x98\x80")
+        self.assertIsInstance(client.parser_exc, PayloadTooBig)
+        self.assertEqual(str(client.parser_exc), "over size limit (2 > 1 bytes)")
+        self.assertConnectionFailing(
+            client, CloseCode.MESSAGE_TOO_BIG, "over size limit (2 > 1 bytes)"
+        )
+
+    def test_server_receives_fragmented_text_over_size_limit(self):
+        server = Protocol(SERVER, max_size=3)
+        server.receive_data(b"\x01\x82\x00\x00\x00\x00\xf0\x9f")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_TEXT, "😀".encode()[:2], fin=False),
+        )
+        server.receive_data(b"\x80\x82\x00\x00\x00\x00\x98\x80")
+        self.assertIsInstance(server.parser_exc, PayloadTooBig)
+        self.assertEqual(str(server.parser_exc), "over size limit (2 > 1 bytes)")
+        self.assertConnectionFailing(
+            server, CloseCode.MESSAGE_TOO_BIG, "over size limit (2 > 1 bytes)"
+        )
+
+    def test_client_receives_fragmented_text_without_size_limit(self):
+        client = Protocol(CLIENT, max_size=None)
+        client.receive_data(b"\x01\x02\xf0\x9f")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_TEXT, "😀".encode()[:2], fin=False),
+        )
+        client.receive_data(b"\x00\x04\x98\x80\xf0\x9f")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_CONT, "😀😀".encode()[2:6], fin=False),
+        )
+        client.receive_data(b"\x80\x02\x98\x80")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_CONT, "😀".encode()[2:]),
+        )
+
+    def test_server_receives_fragmented_text_without_size_limit(self):
+        server = Protocol(SERVER, max_size=None)
+        server.receive_data(b"\x01\x82\x00\x00\x00\x00\xf0\x9f")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_TEXT, "😀".encode()[:2], fin=False),
+        )
+        server.receive_data(b"\x00\x84\x00\x00\x00\x00\x98\x80\xf0\x9f")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_CONT, "😀😀".encode()[2:6], fin=False),
+        )
+        server.receive_data(b"\x80\x82\x00\x00\x00\x00\x98\x80")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_CONT, "😀".encode()[2:]),
+        )
+
+    def test_client_sends_unexpected_text(self):
+        client = Protocol(CLIENT)
+        client.send_text(b"", fin=False)
+        with self.assertRaises(ProtocolError) as raised:
+            client.send_text(b"", fin=False)
+        self.assertEqual(str(raised.exception), "expected a continuation frame")
+
+    def test_server_sends_unexpected_text(self):
+        server = Protocol(SERVER)
+        server.send_text(b"", fin=False)
+        with self.assertRaises(ProtocolError) as raised:
+            server.send_text(b"", fin=False)
+        self.assertEqual(str(raised.exception), "expected a continuation frame")
+
+    def test_client_receives_unexpected_text(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x01\x00")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_TEXT, b"", fin=False),
+        )
+        client.receive_data(b"\x01\x00")
+        self.assertIsInstance(client.parser_exc, ProtocolError)
+        self.assertEqual(str(client.parser_exc), "expected a continuation frame")
+        self.assertConnectionFailing(
+            client, CloseCode.PROTOCOL_ERROR, "expected a continuation frame"
+        )
+
+    def test_server_receives_unexpected_text(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x01\x80\x00\x00\x00\x00")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_TEXT, b"", fin=False),
+        )
+        server.receive_data(b"\x01\x80\x00\x00\x00\x00")
+        self.assertIsInstance(server.parser_exc, ProtocolError)
+        self.assertEqual(str(server.parser_exc), "expected a continuation frame")
+        self.assertConnectionFailing(
+            server, CloseCode.PROTOCOL_ERROR, "expected a continuation frame"
+        )
+
+    def test_client_sends_text_after_sending_close(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_close(CloseCode.GOING_AWAY)
+        self.assertEqual(client.data_to_send(), [b"\x88\x82\x00\x00\x00\x00\x03\xe9"])
+        with self.assertRaises(InvalidState):
+            client.send_text(b"")
+
+    def test_server_sends_text_after_sending_close(self):
+        server = Protocol(SERVER)
+        server.send_close(CloseCode.NORMAL_CLOSURE)
+        self.assertEqual(server.data_to_send(), [b"\x88\x02\x03\xe8"])
+        with self.assertRaises(InvalidState):
+            server.send_text(b"")
+
+    def test_client_receives_text_after_receiving_close(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x02\x03\xe8")
+        self.assertConnectionClosing(client, CloseCode.NORMAL_CLOSURE)
+        client.receive_data(b"\x81\x00")
+        self.assertFrameReceived(client, None)
+        self.assertFrameSent(client, None)
+
+    def test_server_receives_text_after_receiving_close(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x82\x00\x00\x00\x00\x03\xe9")
+        self.assertConnectionClosing(server, CloseCode.GOING_AWAY)
+        server.receive_data(b"\x81\x80\x00\xff\x00\xff")
+        self.assertFrameReceived(server, None)
+        self.assertFrameSent(server, None)
+
+
+class BinaryTests(ProtocolTestCase):
+    """
+    Test binary frames and continuation frames.
+
+    """
+
+    def test_client_sends_binary(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_binary(b"\x01\x02\xfe\xff")
+        self.assertEqual(
+            client.data_to_send(), [b"\x82\x84\x00\x00\x00\x00\x01\x02\xfe\xff"]
+        )
+
+    def test_server_sends_binary(self):
+        server = Protocol(SERVER)
+        server.send_binary(b"\x01\x02\xfe\xff")
+        self.assertEqual(server.data_to_send(), [b"\x82\x04\x01\x02\xfe\xff"])
+
+    def test_client_receives_binary(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x82\x04\x01\x02\xfe\xff")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_BINARY, b"\x01\x02\xfe\xff"),
+        )
+
+    def test_server_receives_binary(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x82\x84\x00\x00\x00\x00\x01\x02\xfe\xff")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_BINARY, b"\x01\x02\xfe\xff"),
+        )
+
+    def test_client_receives_binary_over_size_limit(self):
+        client = Protocol(CLIENT, max_size=3)
+        client.receive_data(b"\x82\x04\x01\x02\xfe\xff")
+        self.assertIsInstance(client.parser_exc, PayloadTooBig)
+        self.assertEqual(str(client.parser_exc), "over size limit (4 > 3 bytes)")
+        self.assertConnectionFailing(
+            client, CloseCode.MESSAGE_TOO_BIG, "over size limit (4 > 3 bytes)"
+        )
+
+    def test_server_receives_binary_over_size_limit(self):
+        server = Protocol(SERVER, max_size=3)
+        server.receive_data(b"\x82\x84\x00\x00\x00\x00\x01\x02\xfe\xff")
+        self.assertIsInstance(server.parser_exc, PayloadTooBig)
+        self.assertEqual(str(server.parser_exc), "over size limit (4 > 3 bytes)")
+        self.assertConnectionFailing(
+            server, CloseCode.MESSAGE_TOO_BIG, "over size limit (4 > 3 bytes)"
+        )
+
+    def test_client_sends_fragmented_binary(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_binary(b"\x01\x02", fin=False)
+        self.assertEqual(client.data_to_send(), [b"\x02\x82\x00\x00\x00\x00\x01\x02"])
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_continuation(b"\xee\xff\x01\x02", fin=False)
+        self.assertEqual(
+            client.data_to_send(), [b"\x00\x84\x00\x00\x00\x00\xee\xff\x01\x02"]
+        )
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_continuation(b"\xee\xff", fin=True)
+        self.assertEqual(client.data_to_send(), [b"\x80\x82\x00\x00\x00\x00\xee\xff"])
+
+    def test_server_sends_fragmented_binary(self):
+        server = Protocol(SERVER)
+        server.send_binary(b"\x01\x02", fin=False)
+        self.assertEqual(server.data_to_send(), [b"\x02\x02\x01\x02"])
+        server.send_continuation(b"\xee\xff\x01\x02", fin=False)
+        self.assertEqual(server.data_to_send(), [b"\x00\x04\xee\xff\x01\x02"])
+        server.send_continuation(b"\xee\xff", fin=True)
+        self.assertEqual(server.data_to_send(), [b"\x80\x02\xee\xff"])
+
+    def test_client_receives_fragmented_binary(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x02\x02\x01\x02")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_BINARY, b"\x01\x02", fin=False),
+        )
+        client.receive_data(b"\x00\x04\xfe\xff\x01\x02")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_CONT, b"\xfe\xff\x01\x02", fin=False),
+        )
+        client.receive_data(b"\x80\x02\xfe\xff")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_CONT, b"\xfe\xff"),
+        )
+
+    def test_server_receives_fragmented_binary(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x02\x82\x00\x00\x00\x00\x01\x02")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_BINARY, b"\x01\x02", fin=False),
+        )
+        server.receive_data(b"\x00\x84\x00\x00\x00\x00\xee\xff\x01\x02")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_CONT, b"\xee\xff\x01\x02", fin=False),
+        )
+        server.receive_data(b"\x80\x82\x00\x00\x00\x00\xfe\xff")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_CONT, b"\xfe\xff"),
+        )
+
+    def test_client_receives_fragmented_binary_over_size_limit(self):
+        client = Protocol(CLIENT, max_size=3)
+        client.receive_data(b"\x02\x02\x01\x02")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_BINARY, b"\x01\x02", fin=False),
+        )
+        client.receive_data(b"\x80\x02\xfe\xff")
+        self.assertIsInstance(client.parser_exc, PayloadTooBig)
+        self.assertEqual(str(client.parser_exc), "over size limit (2 > 1 bytes)")
+        self.assertConnectionFailing(
+            client, CloseCode.MESSAGE_TOO_BIG, "over size limit (2 > 1 bytes)"
+        )
+
+    def test_server_receives_fragmented_binary_over_size_limit(self):
+        server = Protocol(SERVER, max_size=3)
+        server.receive_data(b"\x02\x82\x00\x00\x00\x00\x01\x02")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_BINARY, b"\x01\x02", fin=False),
+        )
+        server.receive_data(b"\x80\x82\x00\x00\x00\x00\xfe\xff")
+        self.assertIsInstance(server.parser_exc, PayloadTooBig)
+        self.assertEqual(str(server.parser_exc), "over size limit (2 > 1 bytes)")
+        self.assertConnectionFailing(
+            server, CloseCode.MESSAGE_TOO_BIG, "over size limit (2 > 1 bytes)"
+        )
+
+    def test_client_sends_unexpected_binary(self):
+        client = Protocol(CLIENT)
+        client.send_binary(b"", fin=False)
+        with self.assertRaises(ProtocolError) as raised:
+            client.send_binary(b"", fin=False)
+        self.assertEqual(str(raised.exception), "expected a continuation frame")
+
+    def test_server_sends_unexpected_binary(self):
+        server = Protocol(SERVER)
+        server.send_binary(b"", fin=False)
+        with self.assertRaises(ProtocolError) as raised:
+            server.send_binary(b"", fin=False)
+        self.assertEqual(str(raised.exception), "expected a continuation frame")
+
+    def test_client_receives_unexpected_binary(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x02\x00")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_BINARY, b"", fin=False),
+        )
+        client.receive_data(b"\x02\x00")
+        self.assertIsInstance(client.parser_exc, ProtocolError)
+        self.assertEqual(str(client.parser_exc), "expected a continuation frame")
+        self.assertConnectionFailing(
+            client, CloseCode.PROTOCOL_ERROR, "expected a continuation frame"
+        )
+
+    def test_server_receives_unexpected_binary(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x02\x80\x00\x00\x00\x00")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_BINARY, b"", fin=False),
+        )
+        server.receive_data(b"\x02\x80\x00\x00\x00\x00")
+        self.assertIsInstance(server.parser_exc, ProtocolError)
+        self.assertEqual(str(server.parser_exc), "expected a continuation frame")
+        self.assertConnectionFailing(
+            server, CloseCode.PROTOCOL_ERROR, "expected a continuation frame"
+        )
+
+    def test_client_sends_binary_after_sending_close(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_close(CloseCode.GOING_AWAY)
+        self.assertEqual(client.data_to_send(), [b"\x88\x82\x00\x00\x00\x00\x03\xe9"])
+        with self.assertRaises(InvalidState):
+            client.send_binary(b"")
+
+    def test_server_sends_binary_after_sending_close(self):
+        server = Protocol(SERVER)
+        server.send_close(CloseCode.NORMAL_CLOSURE)
+        self.assertEqual(server.data_to_send(), [b"\x88\x02\x03\xe8"])
+        with self.assertRaises(InvalidState):
+            server.send_binary(b"")
+
+    def test_client_receives_binary_after_receiving_close(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x02\x03\xe8")
+        self.assertConnectionClosing(client, CloseCode.NORMAL_CLOSURE)
+        client.receive_data(b"\x82\x00")
+        self.assertFrameReceived(client, None)
+        self.assertFrameSent(client, None)
+
+    def test_server_receives_binary_after_receiving_close(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x82\x00\x00\x00\x00\x03\xe9")
+        self.assertConnectionClosing(server, CloseCode.GOING_AWAY)
+        server.receive_data(b"\x82\x80\x00\xff\x00\xff")
+        self.assertFrameReceived(server, None)
+        self.assertFrameSent(server, None)
+
+
+class CloseTests(ProtocolTestCase):
+    """
+    Test close frames.
+
+    See RFC 6544:
+
+    5.5.1. Close
+    7.1.6.  The WebSocket Connection Close Reason
+    7.1.7.  Fail the WebSocket Connection
+
+    """
+
+    def test_close_code(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x04\x03\xe8OK")
+        client.receive_eof()
+        self.assertEqual(client.close_code, CloseCode.NORMAL_CLOSURE)
+
+    def test_close_reason(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x84\x00\x00\x00\x00\x03\xe8OK")
+        server.receive_eof()
+        self.assertEqual(server.close_reason, "OK")
+
+    def test_close_code_not_provided(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x80\x00\x00\x00\x00")
+        server.receive_eof()
+        self.assertEqual(server.close_code, CloseCode.NO_STATUS_RCVD)
+
+    def test_close_reason_not_provided(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x00")
+        client.receive_eof()
+        self.assertEqual(client.close_reason, "")
+
+    def test_close_code_not_available(self):
+        client = Protocol(CLIENT)
+        client.receive_eof()
+        self.assertEqual(client.close_code, CloseCode.ABNORMAL_CLOSURE)
+
+    def test_close_reason_not_available(self):
+        server = Protocol(SERVER)
+        server.receive_eof()
+        self.assertEqual(server.close_reason, "")
+
+    def test_close_code_not_available_yet(self):
+        server = Protocol(SERVER)
+        self.assertIsNone(server.close_code)
+
+    def test_close_reason_not_available_yet(self):
+        client = Protocol(CLIENT)
+        self.assertIsNone(client.close_reason)
+
+    def test_client_sends_close(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x3c\x3c\x3c\x3c"):
+            client.send_close()
+        self.assertEqual(client.data_to_send(), [b"\x88\x80\x3c\x3c\x3c\x3c"])
+        self.assertIs(client.state, CLOSING)
+
+    def test_server_sends_close(self):
+        server = Protocol(SERVER)
+        server.send_close()
+        self.assertEqual(server.data_to_send(), [b"\x88\x00"])
+        self.assertIs(server.state, CLOSING)
+
+    def test_client_receives_close(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x3c\x3c\x3c\x3c"):
+            client.receive_data(b"\x88\x00")
+        self.assertEqual(client.events_received(), [Frame(OP_CLOSE, b"")])
+        self.assertEqual(client.data_to_send(), [b"\x88\x80\x3c\x3c\x3c\x3c"])
+        self.assertIs(client.state, CLOSING)
+
+    def test_server_receives_close(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x80\x3c\x3c\x3c\x3c")
+        self.assertEqual(server.events_received(), [Frame(OP_CLOSE, b"")])
+        self.assertEqual(server.data_to_send(), [b"\x88\x00", b""])
+        self.assertIs(server.state, CLOSING)
+
+    def test_client_sends_close_then_receives_close(self):
+        # Client-initiated close handshake on the client side.
+        client = Protocol(CLIENT)
+
+        client.send_close()
+        self.assertFrameReceived(client, None)
+        self.assertFrameSent(client, Frame(OP_CLOSE, b""))
+
+        client.receive_data(b"\x88\x00")
+        self.assertFrameReceived(client, Frame(OP_CLOSE, b""))
+        self.assertFrameSent(client, None)
+
+        client.receive_eof()
+        self.assertFrameReceived(client, None)
+        self.assertFrameSent(client, None, eof=True)
+
+    def test_server_sends_close_then_receives_close(self):
+        # Server-initiated close handshake on the server side.
+        server = Protocol(SERVER)
+
+        server.send_close()
+        self.assertFrameReceived(server, None)
+        self.assertFrameSent(server, Frame(OP_CLOSE, b""))
+
+        server.receive_data(b"\x88\x80\x3c\x3c\x3c\x3c")
+        self.assertFrameReceived(server, Frame(OP_CLOSE, b""))
+        self.assertFrameSent(server, None, eof=True)
+
+        server.receive_eof()
+        self.assertFrameReceived(server, None)
+        self.assertFrameSent(server, None)
+
+    def test_client_receives_close_then_sends_close(self):
+        # Server-initiated close handshake on the client side.
+        client = Protocol(CLIENT)
+
+        client.receive_data(b"\x88\x00")
+        self.assertFrameReceived(client, Frame(OP_CLOSE, b""))
+        self.assertFrameSent(client, Frame(OP_CLOSE, b""))
+
+        client.receive_eof()
+        self.assertFrameReceived(client, None)
+        self.assertFrameSent(client, None, eof=True)
+
+    def test_server_receives_close_then_sends_close(self):
+        # Client-initiated close handshake on the server side.
+        server = Protocol(SERVER)
+
+        server.receive_data(b"\x88\x80\x3c\x3c\x3c\x3c")
+        self.assertFrameReceived(server, Frame(OP_CLOSE, b""))
+        self.assertFrameSent(server, Frame(OP_CLOSE, b""), eof=True)
+
+        server.receive_eof()
+        self.assertFrameReceived(server, None)
+        self.assertFrameSent(server, None)
+
+    def test_client_sends_close_with_code(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_close(CloseCode.GOING_AWAY)
+        self.assertEqual(client.data_to_send(), [b"\x88\x82\x00\x00\x00\x00\x03\xe9"])
+        self.assertIs(client.state, CLOSING)
+
+    def test_server_sends_close_with_code(self):
+        server = Protocol(SERVER)
+        server.send_close(CloseCode.NORMAL_CLOSURE)
+        self.assertEqual(server.data_to_send(), [b"\x88\x02\x03\xe8"])
+        self.assertIs(server.state, CLOSING)
+
+    def test_client_receives_close_with_code(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x02\x03\xe8")
+        self.assertConnectionClosing(client, CloseCode.NORMAL_CLOSURE, "")
+        self.assertIs(client.state, CLOSING)
+
+    def test_server_receives_close_with_code(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x82\x00\x00\x00\x00\x03\xe9")
+        self.assertConnectionClosing(server, CloseCode.GOING_AWAY, "")
+        self.assertIs(server.state, CLOSING)
+
+    def test_client_sends_close_with_code_and_reason(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_close(CloseCode.GOING_AWAY, "going away")
+        self.assertEqual(
+            client.data_to_send(), [b"\x88\x8c\x00\x00\x00\x00\x03\xe9going away"]
+        )
+        self.assertIs(client.state, CLOSING)
+
+    def test_server_sends_close_with_code_and_reason(self):
+        server = Protocol(SERVER)
+        server.send_close(CloseCode.NORMAL_CLOSURE, "OK")
+        self.assertEqual(server.data_to_send(), [b"\x88\x04\x03\xe8OK"])
+        self.assertIs(server.state, CLOSING)
+
+    def test_client_receives_close_with_code_and_reason(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x04\x03\xe8OK")
+        self.assertConnectionClosing(client, CloseCode.NORMAL_CLOSURE, "OK")
+        self.assertIs(client.state, CLOSING)
+
+    def test_server_receives_close_with_code_and_reason(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x8c\x00\x00\x00\x00\x03\xe9going away")
+        self.assertConnectionClosing(server, CloseCode.GOING_AWAY, "going away")
+        self.assertIs(server.state, CLOSING)
+
+    def test_client_sends_close_with_reason_only(self):
+        client = Protocol(CLIENT)
+        with self.assertRaises(ProtocolError) as raised:
+            client.send_close(reason="going away")
+        self.assertEqual(str(raised.exception), "cannot send a reason without a code")
+
+    def test_server_sends_close_with_reason_only(self):
+        server = Protocol(SERVER)
+        with self.assertRaises(ProtocolError) as raised:
+            server.send_close(reason="OK")
+        self.assertEqual(str(raised.exception), "cannot send a reason without a code")
+
+    def test_client_receives_close_with_truncated_code(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x01\x03")
+        self.assertIsInstance(client.parser_exc, ProtocolError)
+        self.assertEqual(str(client.parser_exc), "close frame too short")
+        self.assertConnectionFailing(
+            client, CloseCode.PROTOCOL_ERROR, "close frame too short"
+        )
+        self.assertIs(client.state, CLOSING)
+
+    def test_server_receives_close_with_truncated_code(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x81\x00\x00\x00\x00\x03")
+        self.assertIsInstance(server.parser_exc, ProtocolError)
+        self.assertEqual(str(server.parser_exc), "close frame too short")
+        self.assertConnectionFailing(
+            server, CloseCode.PROTOCOL_ERROR, "close frame too short"
+        )
+        self.assertIs(server.state, CLOSING)
+
+    def test_client_receives_close_with_non_utf8_reason(self):
+        client = Protocol(CLIENT)
+
+        client.receive_data(b"\x88\x04\x03\xe8\xff\xff")
+        self.assertIsInstance(client.parser_exc, UnicodeDecodeError)
+        self.assertEqual(
+            str(client.parser_exc),
+            "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte",
+        )
+        self.assertConnectionFailing(
+            client, CloseCode.INVALID_DATA, "invalid start byte at position 0"
+        )
+        self.assertIs(client.state, CLOSING)
+
+    def test_server_receives_close_with_non_utf8_reason(self):
+        server = Protocol(SERVER)
+
+        server.receive_data(b"\x88\x84\x00\x00\x00\x00\x03\xe9\xff\xff")
+        self.assertIsInstance(server.parser_exc, UnicodeDecodeError)
+        self.assertEqual(
+            str(server.parser_exc),
+            "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte",
+        )
+        self.assertConnectionFailing(
+            server, CloseCode.INVALID_DATA, "invalid start byte at position 0"
+        )
+        self.assertIs(server.state, CLOSING)
+
+
+class PingTests(ProtocolTestCase):
+    """
+    Test ping. See 5.5.2. Ping in RFC 6544.
+
+    """
+
+    def test_client_sends_ping(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\x44\x88\xcc"):
+            client.send_ping(b"")
+        self.assertEqual(client.data_to_send(), [b"\x89\x80\x00\x44\x88\xcc"])
+
+    def test_server_sends_ping(self):
+        server = Protocol(SERVER)
+        server.send_ping(b"")
+        self.assertEqual(server.data_to_send(), [b"\x89\x00"])
+
+    def test_client_receives_ping(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x89\x00")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_PING, b""),
+        )
+        self.assertFrameSent(
+            client,
+            Frame(OP_PONG, b""),
+        )
+
+    def test_server_receives_ping(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x89\x80\x00\x44\x88\xcc")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_PING, b""),
+        )
+        self.assertFrameSent(
+            server,
+            Frame(OP_PONG, b""),
+        )
+
+    def test_client_sends_ping_with_data(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\x44\x88\xcc"):
+            client.send_ping(b"\x22\x66\xaa\xee")
+        self.assertEqual(
+            client.data_to_send(), [b"\x89\x84\x00\x44\x88\xcc\x22\x22\x22\x22"]
+        )
+
+    def test_server_sends_ping_with_data(self):
+        server = Protocol(SERVER)
+        server.send_ping(b"\x22\x66\xaa\xee")
+        self.assertEqual(server.data_to_send(), [b"\x89\x04\x22\x66\xaa\xee"])
+
+    def test_client_receives_ping_with_data(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x89\x04\x22\x66\xaa\xee")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_PING, b"\x22\x66\xaa\xee"),
+        )
+        self.assertFrameSent(
+            client,
+            Frame(OP_PONG, b"\x22\x66\xaa\xee"),
+        )
+
+    def test_server_receives_ping_with_data(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x89\x84\x00\x44\x88\xcc\x22\x22\x22\x22")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_PING, b"\x22\x66\xaa\xee"),
+        )
+        self.assertFrameSent(
+            server,
+            Frame(OP_PONG, b"\x22\x66\xaa\xee"),
+        )
+
+    def test_client_sends_fragmented_ping_frame(self):
+        client = Protocol(CLIENT)
+        # This is only possible through a private API.
+        with self.assertRaises(ProtocolError) as raised:
+            client.send_frame(Frame(OP_PING, b"", fin=False))
+        self.assertEqual(str(raised.exception), "fragmented control frame")
+
+    def test_server_sends_fragmented_ping_frame(self):
+        server = Protocol(SERVER)
+        # This is only possible through a private API.
+        with self.assertRaises(ProtocolError) as raised:
+            server.send_frame(Frame(OP_PING, b"", fin=False))
+        self.assertEqual(str(raised.exception), "fragmented control frame")
+
+    def test_client_receives_fragmented_ping_frame(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x09\x00")
+        self.assertIsInstance(client.parser_exc, ProtocolError)
+        self.assertEqual(str(client.parser_exc), "fragmented control frame")
+        self.assertConnectionFailing(
+            client, CloseCode.PROTOCOL_ERROR, "fragmented control frame"
+        )
+
+    def test_server_receives_fragmented_ping_frame(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x09\x80\x3c\x3c\x3c\x3c")
+        self.assertIsInstance(server.parser_exc, ProtocolError)
+        self.assertEqual(str(server.parser_exc), "fragmented control frame")
+        self.assertConnectionFailing(
+            server, CloseCode.PROTOCOL_ERROR, "fragmented control frame"
+        )
+
+    def test_client_sends_ping_after_sending_close(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_close(CloseCode.GOING_AWAY)
+        self.assertEqual(client.data_to_send(), [b"\x88\x82\x00\x00\x00\x00\x03\xe9"])
+        # The spec says: "An endpoint MAY send a Ping frame any time (...)
+        # before the connection is closed" but websockets doesn't support
+        # sending a Ping frame after a Close frame.
+        with self.assertRaises(InvalidState) as raised:
+            client.send_ping(b"")
+        self.assertEqual(
+            str(raised.exception),
+            "cannot write to a WebSocket in the CLOSING state",
+        )
+
+    def test_server_sends_ping_after_sending_close(self):
+        server = Protocol(SERVER)
+        server.send_close(CloseCode.NORMAL_CLOSURE)
+        self.assertEqual(server.data_to_send(), [b"\x88\x02\x03\xe8"])
+        # The spec says: "An endpoint MAY send a Ping frame any time (...)
+        # before the connection is closed" but websockets doesn't support
+        # sending a Ping frame after a Close frame.
+        with self.assertRaises(InvalidState) as raised:
+            server.send_ping(b"")
+        self.assertEqual(
+            str(raised.exception),
+            "cannot write to a WebSocket in the CLOSING state",
+        )
+
+    def test_client_receives_ping_after_receiving_close(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x02\x03\xe8")
+        self.assertConnectionClosing(client, CloseCode.NORMAL_CLOSURE)
+        client.receive_data(b"\x89\x04\x22\x66\xaa\xee")
+        self.assertFrameReceived(client, None)
+        self.assertFrameSent(client, None)
+
+    def test_server_receives_ping_after_receiving_close(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x82\x00\x00\x00\x00\x03\xe9")
+        self.assertConnectionClosing(server, CloseCode.GOING_AWAY)
+        server.receive_data(b"\x89\x84\x00\x44\x88\xcc\x22\x22\x22\x22")
+        self.assertFrameReceived(server, None)
+        self.assertFrameSent(server, None)
+
+
+class PongTests(ProtocolTestCase):
+    """
+    Test pong frames. See 5.5.3. Pong in RFC 6544.
+
+    """
+
+    def test_client_sends_pong(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\x44\x88\xcc"):
+            client.send_pong(b"")
+        self.assertEqual(client.data_to_send(), [b"\x8a\x80\x00\x44\x88\xcc"])
+
+    def test_server_sends_pong(self):
+        server = Protocol(SERVER)
+        server.send_pong(b"")
+        self.assertEqual(server.data_to_send(), [b"\x8a\x00"])
+
+    def test_client_receives_pong(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x8a\x00")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_PONG, b""),
+        )
+
+    def test_server_receives_pong(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x8a\x80\x00\x44\x88\xcc")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_PONG, b""),
+        )
+
+    def test_client_sends_pong_with_data(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\x44\x88\xcc"):
+            client.send_pong(b"\x22\x66\xaa\xee")
+        self.assertEqual(
+            client.data_to_send(), [b"\x8a\x84\x00\x44\x88\xcc\x22\x22\x22\x22"]
+        )
+
+    def test_server_sends_pong_with_data(self):
+        server = Protocol(SERVER)
+        server.send_pong(b"\x22\x66\xaa\xee")
+        self.assertEqual(server.data_to_send(), [b"\x8a\x04\x22\x66\xaa\xee"])
+
+    def test_client_receives_pong_with_data(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x8a\x04\x22\x66\xaa\xee")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_PONG, b"\x22\x66\xaa\xee"),
+        )
+
+    def test_server_receives_pong_with_data(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x8a\x84\x00\x44\x88\xcc\x22\x22\x22\x22")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_PONG, b"\x22\x66\xaa\xee"),
+        )
+
+    def test_client_sends_fragmented_pong_frame(self):
+        client = Protocol(CLIENT)
+        # This is only possible through a private API.
+        with self.assertRaises(ProtocolError) as raised:
+            client.send_frame(Frame(OP_PONG, b"", fin=False))
+        self.assertEqual(str(raised.exception), "fragmented control frame")
+
+    def test_server_sends_fragmented_pong_frame(self):
+        server = Protocol(SERVER)
+        # This is only possible through a private API.
+        with self.assertRaises(ProtocolError) as raised:
+            server.send_frame(Frame(OP_PONG, b"", fin=False))
+        self.assertEqual(str(raised.exception), "fragmented control frame")
+
+    def test_client_receives_fragmented_pong_frame(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x0a\x00")
+        self.assertIsInstance(client.parser_exc, ProtocolError)
+        self.assertEqual(str(client.parser_exc), "fragmented control frame")
+        self.assertConnectionFailing(
+            client, CloseCode.PROTOCOL_ERROR, "fragmented control frame"
+        )
+
+    def test_server_receives_fragmented_pong_frame(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x0a\x80\x3c\x3c\x3c\x3c")
+        self.assertIsInstance(server.parser_exc, ProtocolError)
+        self.assertEqual(str(server.parser_exc), "fragmented control frame")
+        self.assertConnectionFailing(
+            server, CloseCode.PROTOCOL_ERROR, "fragmented control frame"
+        )
+
+    def test_client_sends_pong_after_sending_close(self):
+        client = Protocol(CLIENT)
+        with self.enforce_mask(b"\x00\x00\x00\x00"):
+            client.send_close(CloseCode.GOING_AWAY)
+        self.assertEqual(client.data_to_send(), [b"\x88\x82\x00\x00\x00\x00\x03\xe9"])
+        # websockets doesn't support sending a Pong frame after a Close frame.
+        with self.assertRaises(InvalidState):
+            client.send_pong(b"")
+
+    def test_server_sends_pong_after_sending_close(self):
+        server = Protocol(SERVER)
+        server.send_close(CloseCode.NORMAL_CLOSURE)
+        self.assertEqual(server.data_to_send(), [b"\x88\x02\x03\xe8"])
+        # websockets doesn't support sending a Pong frame after a Close frame.
+        with self.assertRaises(InvalidState):
+            server.send_pong(b"")
+
+    def test_client_receives_pong_after_receiving_close(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x02\x03\xe8")
+        self.assertConnectionClosing(client, CloseCode.NORMAL_CLOSURE)
+        client.receive_data(b"\x8a\x04\x22\x66\xaa\xee")
+        self.assertFrameReceived(client, None)
+        self.assertFrameSent(client, None)
+
+    def test_server_receives_pong_after_receiving_close(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x82\x00\x00\x00\x00\x03\xe9")
+        self.assertConnectionClosing(server, CloseCode.GOING_AWAY)
+        server.receive_data(b"\x8a\x84\x00\x44\x88\xcc\x22\x22\x22\x22")
+        self.assertFrameReceived(server, None)
+        self.assertFrameSent(server, None)
+
+
+class FailTests(ProtocolTestCase):
+    """
+    Test failing the connection.
+
+    See 7.1.7. Fail the WebSocket Connection in RFC 6544.
+
+    """
+
+    def test_client_stops_processing_frames_after_fail(self):
+        client = Protocol(CLIENT)
+        client.fail(CloseCode.PROTOCOL_ERROR)
+        self.assertConnectionFailing(client, CloseCode.PROTOCOL_ERROR)
+        client.receive_data(b"\x88\x02\x03\xea")
+        self.assertFrameReceived(client, None)
+
+    def test_server_stops_processing_frames_after_fail(self):
+        server = Protocol(SERVER)
+        server.fail(CloseCode.PROTOCOL_ERROR)
+        self.assertConnectionFailing(server, CloseCode.PROTOCOL_ERROR)
+        server.receive_data(b"\x88\x82\x00\x00\x00\x00\x03\xea")
+        self.assertFrameReceived(server, None)
+
+
+class FragmentationTests(ProtocolTestCase):
+    """
+    Test message fragmentation.
+
+    See 5.4. Fragmentation in RFC 6544.
+
+    """
+
+    def test_client_send_ping_pong_in_fragmented_message(self):
+        client = Protocol(CLIENT)
+        client.send_text(b"Spam", fin=False)
+        self.assertFrameSent(client, Frame(OP_TEXT, b"Spam", fin=False))
+        client.send_ping(b"Ping")
+        self.assertFrameSent(client, Frame(OP_PING, b"Ping"))
+        client.send_continuation(b"Ham", fin=False)
+        self.assertFrameSent(client, Frame(OP_CONT, b"Ham", fin=False))
+        client.send_pong(b"Pong")
+        self.assertFrameSent(client, Frame(OP_PONG, b"Pong"))
+        client.send_continuation(b"Eggs", fin=True)
+        self.assertFrameSent(client, Frame(OP_CONT, b"Eggs"))
+
+    def test_server_send_ping_pong_in_fragmented_message(self):
+        server = Protocol(SERVER)
+        server.send_text(b"Spam", fin=False)
+        self.assertFrameSent(server, Frame(OP_TEXT, b"Spam", fin=False))
+        server.send_ping(b"Ping")
+        self.assertFrameSent(server, Frame(OP_PING, b"Ping"))
+        server.send_continuation(b"Ham", fin=False)
+        self.assertFrameSent(server, Frame(OP_CONT, b"Ham", fin=False))
+        server.send_pong(b"Pong")
+        self.assertFrameSent(server, Frame(OP_PONG, b"Pong"))
+        server.send_continuation(b"Eggs", fin=True)
+        self.assertFrameSent(server, Frame(OP_CONT, b"Eggs"))
+
+    def test_client_receive_ping_pong_in_fragmented_message(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x01\x04Spam")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_TEXT, b"Spam", fin=False),
+        )
+        client.receive_data(b"\x89\x04Ping")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_PING, b"Ping"),
+        )
+        self.assertFrameSent(
+            client,
+            Frame(OP_PONG, b"Ping"),
+        )
+        client.receive_data(b"\x00\x03Ham")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_CONT, b"Ham", fin=False),
+        )
+        client.receive_data(b"\x8a\x04Pong")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_PONG, b"Pong"),
+        )
+        client.receive_data(b"\x80\x04Eggs")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_CONT, b"Eggs"),
+        )
+
+    def test_server_receive_ping_pong_in_fragmented_message(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x01\x84\x00\x00\x00\x00Spam")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_TEXT, b"Spam", fin=False),
+        )
+        server.receive_data(b"\x89\x84\x00\x00\x00\x00Ping")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_PING, b"Ping"),
+        )
+        self.assertFrameSent(
+            server,
+            Frame(OP_PONG, b"Ping"),
+        )
+        server.receive_data(b"\x00\x83\x00\x00\x00\x00Ham")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_CONT, b"Ham", fin=False),
+        )
+        server.receive_data(b"\x8a\x84\x00\x00\x00\x00Pong")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_PONG, b"Pong"),
+        )
+        server.receive_data(b"\x80\x84\x00\x00\x00\x00Eggs")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_CONT, b"Eggs"),
+        )
+
+    def test_client_send_close_in_fragmented_message(self):
+        client = Protocol(CLIENT)
+        client.send_text(b"Spam", fin=False)
+        self.assertFrameSent(client, Frame(OP_TEXT, b"Spam", fin=False))
+        # The spec says: "An endpoint MUST be capable of handling control
+        # frames in the middle of a fragmented message." However, since the
+        # endpoint must not send a data frame after a close frame, a close
+        # frame can't be "in the middle" of a fragmented message.
+        with self.assertRaises(ProtocolError) as raised:
+            client.send_close(CloseCode.GOING_AWAY)
+        self.assertEqual(str(raised.exception), "expected a continuation frame")
+        client.send_continuation(b"Eggs", fin=True)
+
+    def test_server_send_close_in_fragmented_message(self):
+        server = Protocol(CLIENT)
+        server.send_text(b"Spam", fin=False)
+        self.assertFrameSent(server, Frame(OP_TEXT, b"Spam", fin=False))
+        # The spec says: "An endpoint MUST be capable of handling control
+        # frames in the middle of a fragmented message." However, since the
+        # endpoint must not send a data frame after a close frame, a close
+        # frame can't be "in the middle" of a fragmented message.
+        with self.assertRaises(ProtocolError) as raised:
+            server.send_close(CloseCode.NORMAL_CLOSURE)
+        self.assertEqual(str(raised.exception), "expected a continuation frame")
+
+    def test_client_receive_close_in_fragmented_message(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x01\x04Spam")
+        self.assertFrameReceived(
+            client,
+            Frame(OP_TEXT, b"Spam", fin=False),
+        )
+        # The spec says: "An endpoint MUST be capable of handling control
+        # frames in the middle of a fragmented message." However, since the
+        # endpoint must not send a data frame after a close frame, a close
+        # frame can't be "in the middle" of a fragmented message.
+        client.receive_data(b"\x88\x02\x03\xe8")
+        self.assertIsInstance(client.parser_exc, ProtocolError)
+        self.assertEqual(str(client.parser_exc), "incomplete fragmented message")
+        self.assertConnectionFailing(
+            client, CloseCode.PROTOCOL_ERROR, "incomplete fragmented message"
+        )
+
+    def test_server_receive_close_in_fragmented_message(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x01\x84\x00\x00\x00\x00Spam")
+        self.assertFrameReceived(
+            server,
+            Frame(OP_TEXT, b"Spam", fin=False),
+        )
+        # The spec says: "An endpoint MUST be capable of handling control
+        # frames in the middle of a fragmented message." However, since the
+        # endpoint must not send a data frame after a close frame, a close
+        # frame can't be "in the middle" of a fragmented message.
+        server.receive_data(b"\x88\x82\x00\x00\x00\x00\x03\xe9")
+        self.assertIsInstance(server.parser_exc, ProtocolError)
+        self.assertEqual(str(server.parser_exc), "incomplete fragmented message")
+        self.assertConnectionFailing(
+            server, CloseCode.PROTOCOL_ERROR, "incomplete fragmented message"
+        )
+
+
+class EOFTests(ProtocolTestCase):
+    """
+    Test half-closes on connection termination.
+
+    """
+
+    def test_client_receives_eof(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x00")
+        self.assertConnectionClosing(client)
+        client.receive_eof()
+        self.assertIs(client.state, CLOSED)
+
+    def test_server_receives_eof(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x80\x3c\x3c\x3c\x3c")
+        self.assertConnectionClosing(server)
+        server.receive_eof()
+        self.assertIs(server.state, CLOSED)
+
+    def test_client_receives_eof_between_frames(self):
+        client = Protocol(CLIENT)
+        client.receive_eof()
+        self.assertIsInstance(client.parser_exc, EOFError)
+        self.assertEqual(str(client.parser_exc), "unexpected end of stream")
+        self.assertIs(client.state, CLOSED)
+
+    def test_server_receives_eof_between_frames(self):
+        server = Protocol(SERVER)
+        server.receive_eof()
+        self.assertIsInstance(server.parser_exc, EOFError)
+        self.assertEqual(str(server.parser_exc), "unexpected end of stream")
+        self.assertIs(server.state, CLOSED)
+
+    def test_client_receives_eof_inside_frame(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x81")
+        client.receive_eof()
+        self.assertIsInstance(client.parser_exc, EOFError)
+        self.assertEqual(
+            str(client.parser_exc),
+            "stream ends after 1 bytes, expected 2 bytes",
+        )
+        self.assertIs(client.state, CLOSED)
+
+    def test_server_receives_eof_inside_frame(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x81")
+        server.receive_eof()
+        self.assertIsInstance(server.parser_exc, EOFError)
+        self.assertEqual(
+            str(server.parser_exc),
+            "stream ends after 1 bytes, expected 2 bytes",
+        )
+        self.assertIs(server.state, CLOSED)
+
+    def test_client_receives_data_after_exception(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\xff\xff")
+        self.assertConnectionFailing(client, CloseCode.PROTOCOL_ERROR, "invalid opcode")
+        client.receive_data(b"\x00\x00")
+        self.assertFrameSent(client, None)
+
+    def test_server_receives_data_after_exception(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\xff\xff")
+        self.assertConnectionFailing(server, CloseCode.PROTOCOL_ERROR, "invalid opcode")
+        server.receive_data(b"\x00\x00")
+        self.assertFrameSent(server, None)
+
+    def test_client_receives_eof_after_exception(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\xff\xff")
+        self.assertConnectionFailing(client, CloseCode.PROTOCOL_ERROR, "invalid opcode")
+        client.receive_eof()
+        self.assertFrameSent(client, None, eof=True)
+
+    def test_server_receives_eof_after_exception(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\xff\xff")
+        self.assertConnectionFailing(server, CloseCode.PROTOCOL_ERROR, "invalid opcode")
+        server.receive_eof()
+        self.assertFrameSent(server, None)
+
+    def test_client_receives_data_and_eof_after_exception(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\xff\xff")
+        self.assertConnectionFailing(client, CloseCode.PROTOCOL_ERROR, "invalid opcode")
+        client.receive_data(b"\x00\x00")
+        client.receive_eof()
+        self.assertFrameSent(client, None, eof=True)
+
+    def test_server_receives_data_and_eof_after_exception(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\xff\xff")
+        self.assertConnectionFailing(server, CloseCode.PROTOCOL_ERROR, "invalid opcode")
+        server.receive_data(b"\x00\x00")
+        server.receive_eof()
+        self.assertFrameSent(server, None)
+
+    def test_client_receives_data_after_eof(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x00")
+        self.assertConnectionClosing(client)
+        client.receive_eof()
+        with self.assertRaises(EOFError) as raised:
+            client.receive_data(b"\x88\x00")
+        self.assertEqual(str(raised.exception), "stream ended")
+
+    def test_server_receives_data_after_eof(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x80\x3c\x3c\x3c\x3c")
+        self.assertConnectionClosing(server)
+        server.receive_eof()
+        with self.assertRaises(EOFError) as raised:
+            server.receive_data(b"\x88\x80\x00\x00\x00\x00")
+        self.assertEqual(str(raised.exception), "stream ended")
+
+    def test_client_receives_eof_after_eof(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x00")
+        self.assertConnectionClosing(client)
+        client.receive_eof()
+        with self.assertRaises(EOFError) as raised:
+            client.receive_eof()
+        self.assertEqual(str(raised.exception), "stream ended")
+
+    def test_server_receives_eof_after_eof(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x80\x3c\x3c\x3c\x3c")
+        self.assertConnectionClosing(server)
+        server.receive_eof()
+        with self.assertRaises(EOFError) as raised:
+            server.receive_eof()
+        self.assertEqual(str(raised.exception), "stream ended")
+
+
+class TCPCloseTests(ProtocolTestCase):
+    """
+    Test expectation of TCP close on connection termination.
+
+    """
+
+    def test_client_default(self):
+        client = Protocol(CLIENT)
+        self.assertFalse(client.close_expected())
+
+    def test_server_default(self):
+        server = Protocol(SERVER)
+        self.assertFalse(server.close_expected())
+
+    def test_client_sends_close(self):
+        client = Protocol(CLIENT)
+        client.send_close()
+        self.assertTrue(client.close_expected())
+
+    def test_server_sends_close(self):
+        server = Protocol(SERVER)
+        server.send_close()
+        self.assertTrue(server.close_expected())
+
+    def test_client_receives_close(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x00")
+        self.assertTrue(client.close_expected())
+
+    def test_client_receives_close_then_eof(self):
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x00")
+        client.receive_eof()
+        self.assertFalse(client.close_expected())
+
+    def test_server_receives_close_then_eof(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x80\x3c\x3c\x3c\x3c")
+        server.receive_eof()
+        self.assertFalse(server.close_expected())
+
+    def test_server_receives_close(self):
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x80\x3c\x3c\x3c\x3c")
+        self.assertTrue(server.close_expected())
+
+    def test_client_fails_connection(self):
+        client = Protocol(CLIENT)
+        client.fail(CloseCode.PROTOCOL_ERROR)
+        self.assertTrue(client.close_expected())
+
+    def test_server_fails_connection(self):
+        server = Protocol(SERVER)
+        server.fail(CloseCode.PROTOCOL_ERROR)
+        self.assertTrue(server.close_expected())
+
+
+class ConnectionClosedTests(ProtocolTestCase):
+    """
+    Test connection closed exception.
+
+    """
+
+    def test_client_sends_close_then_receives_close(self):
+        # Client-initiated close handshake on the client side complete.
+        client = Protocol(CLIENT)
+        client.send_close(CloseCode.NORMAL_CLOSURE, "")
+        client.receive_data(b"\x88\x02\x03\xe8")
+        client.receive_eof()
+        exc = client.close_exc
+        self.assertIsInstance(exc, ConnectionClosedOK)
+        self.assertEqual(exc.rcvd, Close(CloseCode.NORMAL_CLOSURE, ""))
+        self.assertEqual(exc.sent, Close(CloseCode.NORMAL_CLOSURE, ""))
+        self.assertFalse(exc.rcvd_then_sent)
+
+    def test_server_sends_close_then_receives_close(self):
+        # Server-initiated close handshake on the server side complete.
+        server = Protocol(SERVER)
+        server.send_close(CloseCode.NORMAL_CLOSURE, "")
+        server.receive_data(b"\x88\x82\x00\x00\x00\x00\x03\xe8")
+        server.receive_eof()
+        exc = server.close_exc
+        self.assertIsInstance(exc, ConnectionClosedOK)
+        self.assertEqual(exc.rcvd, Close(CloseCode.NORMAL_CLOSURE, ""))
+        self.assertEqual(exc.sent, Close(CloseCode.NORMAL_CLOSURE, ""))
+        self.assertFalse(exc.rcvd_then_sent)
+
+    def test_client_receives_close_then_sends_close(self):
+        # Server-initiated close handshake on the client side complete.
+        client = Protocol(CLIENT)
+        client.receive_data(b"\x88\x02\x03\xe8")
+        client.receive_eof()
+        exc = client.close_exc
+        self.assertIsInstance(exc, ConnectionClosedOK)
+        self.assertEqual(exc.rcvd, Close(CloseCode.NORMAL_CLOSURE, ""))
+        self.assertEqual(exc.sent, Close(CloseCode.NORMAL_CLOSURE, ""))
+        self.assertTrue(exc.rcvd_then_sent)
+
+    def test_server_receives_close_then_sends_close(self):
+        # Client-initiated close handshake on the server side complete.
+        server = Protocol(SERVER)
+        server.receive_data(b"\x88\x82\x00\x00\x00\x00\x03\xe8")
+        server.receive_eof()
+        exc = server.close_exc
+        self.assertIsInstance(exc, ConnectionClosedOK)
+        self.assertEqual(exc.rcvd, Close(CloseCode.NORMAL_CLOSURE, ""))
+        self.assertEqual(exc.sent, Close(CloseCode.NORMAL_CLOSURE, ""))
+        self.assertTrue(exc.rcvd_then_sent)
+
+    def test_client_sends_close_then_receives_eof(self):
+        # Client-initiated close handshake on the client side times out.
+        client = Protocol(CLIENT)
+        client.send_close(CloseCode.NORMAL_CLOSURE, "")
+        client.receive_eof()
+        exc = client.close_exc
+        self.assertIsInstance(exc, ConnectionClosedError)
+        self.assertIsNone(exc.rcvd)
+        self.assertEqual(exc.sent, Close(CloseCode.NORMAL_CLOSURE, ""))
+        self.assertIsNone(exc.rcvd_then_sent)
+
+    def test_server_sends_close_then_receives_eof(self):
+        # Server-initiated close handshake on the server side times out.
+        server = Protocol(SERVER)
+        server.send_close(CloseCode.NORMAL_CLOSURE, "")
+        server.receive_eof()
+        exc = server.close_exc
+        self.assertIsInstance(exc, ConnectionClosedError)
+        self.assertIsNone(exc.rcvd)
+        self.assertEqual(exc.sent, Close(CloseCode.NORMAL_CLOSURE, ""))
+        self.assertIsNone(exc.rcvd_then_sent)
+
+    def test_client_receives_eof(self):
+        # Server-initiated close handshake on the client side times out.
+        client = Protocol(CLIENT)
+        client.receive_eof()
+        exc = client.close_exc
+        self.assertIsInstance(exc, ConnectionClosedError)
+        self.assertIsNone(exc.rcvd)
+        self.assertIsNone(exc.sent)
+        self.assertIsNone(exc.rcvd_then_sent)
+
+    def test_server_receives_eof(self):
+        # Client-initiated close handshake on the server side times out.
+        server = Protocol(SERVER)
+        server.receive_eof()
+        exc = server.close_exc
+        self.assertIsInstance(exc, ConnectionClosedError)
+        self.assertIsNone(exc.rcvd)
+        self.assertIsNone(exc.sent)
+        self.assertIsNone(exc.rcvd_then_sent)
+
+
+class ErrorTests(ProtocolTestCase):
+    """
+    Test other error cases.
+
+    """
+
+    def test_client_hits_internal_error_reading_frame(self):
+        client = Protocol(CLIENT)
+        # This isn't supposed to happen, so we're simulating it.
+        with unittest.mock.patch("struct.unpack", side_effect=RuntimeError("BOOM")):
+            client.receive_data(b"\x81\x00")
+            self.assertIsInstance(client.parser_exc, RuntimeError)
+            self.assertEqual(str(client.parser_exc), "BOOM")
+        self.assertConnectionFailing(client, CloseCode.INTERNAL_ERROR, "")
+
+    def test_server_hits_internal_error_reading_frame(self):
+        server = Protocol(SERVER)
+        # This isn't supposed to happen, so we're simulating it.
+        with unittest.mock.patch("struct.unpack", side_effect=RuntimeError("BOOM")):
+            server.receive_data(b"\x81\x80\x00\x00\x00\x00")
+            self.assertIsInstance(server.parser_exc, RuntimeError)
+            self.assertEqual(str(server.parser_exc), "BOOM")
+        self.assertConnectionFailing(server, CloseCode.INTERNAL_ERROR, "")
+
+
+class ExtensionsTests(ProtocolTestCase):
+    """
+    Test how extensions affect frames.
+
+    """
+
+    def test_client_extension_encodes_frame(self):
+        client = Protocol(CLIENT)
+        client.extensions = [Rsv2Extension()]
+        with self.enforce_mask(b"\x00\x44\x88\xcc"):
+            client.send_ping(b"")
+        self.assertEqual(client.data_to_send(), [b"\xa9\x80\x00\x44\x88\xcc"])
+
+    def test_server_extension_encodes_frame(self):
+        server = Protocol(SERVER)
+        server.extensions = [Rsv2Extension()]
+        server.send_ping(b"")
+        self.assertEqual(server.data_to_send(), [b"\xa9\x00"])
+
+    def test_client_extension_decodes_frame(self):
+        client = Protocol(CLIENT)
+        client.extensions = [Rsv2Extension()]
+        client.receive_data(b"\xaa\x00")
+        self.assertEqual(client.events_received(), [Frame(OP_PONG, b"")])
+
+    def test_server_extension_decodes_frame(self):
+        server = Protocol(SERVER)
+        server.extensions = [Rsv2Extension()]
+        server.receive_data(b"\xaa\x80\x00\x44\x88\xcc")
+        self.assertEqual(server.events_received(), [Frame(OP_PONG, b"")])
+
+
+class MiscTests(unittest.TestCase):
+    def test_client_default_logger(self):
+        client = Protocol(CLIENT)
+        logger = logging.getLogger("websockets.client")
+        self.assertIs(client.logger, logger)
+
+    def test_server_default_logger(self):
+        server = Protocol(SERVER)
+        logger = logging.getLogger("websockets.server")
+        self.assertIs(server.logger, logger)
+
+    def test_client_custom_logger(self):
+        logger = logging.getLogger("test")
+        client = Protocol(CLIENT, logger=logger)
+        self.assertIs(client.logger, logger)
+
+    def test_server_custom_logger(self):
+        logger = logging.getLogger("test")
+        server = Protocol(SERVER, logger=logger)
+        self.assertIs(server.logger, logger)

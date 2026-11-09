@@ -133,7 +133,6 @@ class ConfigBuilder:
         "server_host": None,
         "ports": {"http": [8000]},
         "check_subdomains": True,
-        "log_level": "debug",
         "bind_address": True,
         "ssl": {
             "type": "none",
@@ -152,14 +151,18 @@ class ConfigBuilder:
                 "host_cert_path": None,
             },
         },
-        "aliases": []
+        "aliases": [],
+        "logging": {
+            "level": "debug",
+            "suppress_handler_traceback": False,
+        }
     }
     default_config_cls = Config
 
     # Configuration properties that are computed. Each corresponds to a method
     # _get_foo, which is called with the current data dictionary. The properties
     # are computed in the order specified in the list.
-    computed_properties = ["log_level",
+    computed_properties = ["logging",
                            "paths",
                            "server_host",
                            "ports",
@@ -209,6 +212,12 @@ class ConfigBuilder:
         else:
             self.__dict__[key] = value
 
+    def __getattr__(self, key):
+        try:
+            return self._data[key]
+        except KeyError as e:
+            raise AttributeError from e
+
     def update(self, override):
         """Load an overrides dict to override config values"""
         override = override.copy()
@@ -251,8 +260,10 @@ class ConfigBuilder:
         self._ssl_env.__exit__(*args)
         self._ssl_env = None
 
-    def _get_log_level(self, data):
-        return data["log_level"].upper()
+    def _get_logging(self, data):
+        logging = data["logging"]
+        logging["level"] = logging["level"].upper()
+        return logging
 
     def _get_paths(self, data):
         return {"doc_root": data["doc_root"]}
@@ -319,10 +330,12 @@ class ConfigBuilder:
         kwargs = data["ssl"].get(ssl_type, {})
         self._ssl_env = ssl_cls(self._logger, **kwargs)
         self._ssl_env.__enter__()
-        if self._ssl_env.ssl_enabled:
-            key_path, cert_path = self._ssl_env.host_cert_path(data["domains_set"])
-            ca_cert_path = self._ssl_env.ca_cert_path(data["domains_set"])
+        key_path, cert_path = self._ssl_env.host_cert_path(data["domains_set"])
+        ca_cert_path = self._ssl_env.ca_cert_path(data["domains_set"])
+        # Always enable SSL if we have the necessary data, either directly
+        # or with encrypt_after_connect.
+        if key_path is not None and cert_path is not None and ca_cert_path is not None:
             return {"key_path": key_path,
                     "ca_cert_path": ca_cert_path,
                     "cert_path": cert_path,
-                    "encrypt_after_connect": data["ssl"].get("encrypt_after_connect", False)}
+                    "encrypt_after_connect": data["ssl"].get("encrypt_after_connect", not self._ssl_env.ssl_enabled)}

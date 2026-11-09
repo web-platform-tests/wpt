@@ -18,11 +18,39 @@ def handle_headers(frame, request, response):
     for encoded_preload in request.GET.get_list(b"preloads"):
         preload = json.loads(encoded_preload.decode("utf-8"))
         header = "<{}>; rel=preload; as={}".format(preload["url"], preload["as_attr"])
+        if "crossorigin_attr" in preload:
+            crossorigin = preload["crossorigin_attr"]
+            if crossorigin:
+                header += "; crossorigin={}".format(crossorigin)
+            else:
+                header += "; crossorigin"
+        if "fetchpriority_attr" in preload:
+            fetchpriority = preload["fetchpriority_attr"]
+            if fetchpriority:
+                header += "; fetchpriority={}".format(fetchpriority)
+        if "integrity_attr" in preload:
+            integrity = preload["integrity_attr"]
+            if integrity:
+                header += "; integrity=\"{}\"".format(integrity)
         preload_headers.append(header.encode())
+
+    preconnect_headers = []
+    for encoded_preconnect in request.GET.get_list(b"preconnects"):
+        preconnect = json.loads(encoded_preconnect.decode("utf-8"))
+        header = "<{}>; rel=preconnect".format(preconnect["url"])
+        if "crossorigin_attr" in preconnect:
+            crossorigin = preconnect["crossorigin_attr"]
+            if crossorigin:
+                header += "; crossorigin={}".format(crossorigin)
+            else:
+                header += "; crossorigin"
+        preconnect_headers.append(header.encode())
 
     # Send a 103 response.
     early_hints = [(b":status", b"103")]
     for header in preload_headers:
+        early_hints.append((b"link", header))
+    for header in preconnect_headers:
         early_hints.append((b"link", header))
     response.writer.write_raw_header_frame(headers=early_hints,
                                            end_headers=True)
@@ -31,8 +59,9 @@ def handle_headers(frame, request, response):
     time.sleep(0.2)
     response.status = 200
     response.headers[b"content-type"] = "text/html"
-    for header in preload_headers:
-        response.headers.append(b"link", header)
+    if request.GET[b"exclude_preloads_from_ok_response"].decode("utf-8") != "true":
+        for header in preload_headers:
+            response.headers.append(b"link", header)
     response.write_status_headers()
 
 

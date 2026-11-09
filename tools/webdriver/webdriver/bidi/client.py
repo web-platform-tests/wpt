@@ -6,8 +6,8 @@ from typing import Any, Awaitable, Callable, List, Optional, Mapping, MutableMap
 from urllib.parse import urljoin, urlparse
 
 from . import modules
-from .error import from_error_details
-from .transport import get_running_loop, Transport
+from .error import from_error_details, UnknownErrorException
+from .transport import Transport
 
 
 class BidiSession:
@@ -90,9 +90,18 @@ class BidiSession:
 
         # Modules.
         # For each module, have a property representing that module
-        self.session = modules.Session(self)
+        self.bluetooth = modules.Bluetooth(self)
+        self.browser = modules.Browser(self)
         self.browsing_context = modules.BrowsingContext(self)
+        self.emulation = modules.Emulation(self)
+        self.input = modules.Input(self)
+        self.network = modules.Network(self)
+        self.permissions = modules.Permissions(self)
         self.script = modules.Script(self)
+        self.session = modules.Session(self)
+        self.storage = modules.Storage(self)
+        self.user_agent_client_hints = modules.UserAgentClientHints(self)
+        self.web_extension = modules.WebExtension(self)
 
     @property
     def event_loop(self):
@@ -122,7 +131,7 @@ class BidiSession:
                   requested_capabilities: Optional[Mapping[str, Any]] = None) -> "BidiSession":
         """Create a BiDi session where there is no existing HTTP session
 
-        :param webdocket_url: URL to the WebSocket server listening for BiDi connections
+        :param websocket_url: URL to the WebSocket server listening for BiDi connections
         :param requested_capabilities: Capabilities request for establishing the session."""
         return cls(websocket_url, requested_capabilities=requested_capabilities)
 
@@ -133,19 +142,37 @@ class BidiSession:
     async def __aexit__(self, *args: Any) -> None:
         await self.end()
 
+    async def start_transport(self,
+                              loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
+        if self.transport is None:
+            self.transport = Transport(self.websocket_url,
+                 self.on_message,
+                 loop=loop,
+                                       on_closed=self.on_transport_closed)
+            await self.transport.start()
+        elif loop is not None and loop is not self.event_loop:
+            raise ValueError("Transport with a different event loop already exists")
+
     async def start(self,
                     loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
         """Connect to the WebDriver BiDi remote via WebSockets"""
 
-        if loop is None:
-            loop = get_running_loop()
+        try:
+            await self.start_transport(loop)
 
-        self.transport = Transport(self.websocket_url, self.on_message, loop=loop)
-        await self.transport.start()
+            if self.session_id is None:
+                self.session_id, self.capabilities = await self.session.new(  # type: ignore
+                    capabilities=self.requested_capabilities)
 
-        if self.session_id is None:
-            self.session_id, self.capabilities = await self.session.new(
-                capabilities=self.requested_capabilities)
+        except Exception:
+            # Make sure we end up back in a consistent state.
+            await self.end()
+            raise
+
+    def on_transport_closed(self):
+        for future in self.pending_commands.values():
+            if future is not None and not future.done():
+                future.set_exception(UnknownErrorException("WebSocket connection closed"))
 
     async def send_command(
         self,
@@ -171,40 +198,41 @@ class BidiSession:
 
     async def on_message(self, data: Mapping[str, Any]) -> None:
         """Handle a message from the remote server"""
-        if "id" in data:
+        if data["type"] in ["error", "success"]:
             # This is a command response or error
             future = self.pending_commands.get(data["id"])
             if future is None:
                 raise ValueError(f"No pending command with id {data['id']}")
-            if "result" in data:
+            if data["type"] == "success":
+                assert isinstance(data["result"], dict)
                 future.set_result(data["result"])
-            elif "error" in data and "message" in data:
+            else:
                 assert isinstance(data["error"], str)
                 assert isinstance(data["message"], str)
                 exception = from_error_details(data["error"],
                                                data["message"],
                                                data.get("stacktrace"))
-                future.set_exception(exception)
-            else:
-                raise ValueError(f"Unexpected message: {data!r}")
-        elif "method" in data and "params" in data:
+                # Only set the exception if the future is not cancelled.
+                if future.cancelled() is not True:
+                    future.set_exception(exception)
+        elif data["type"] == "event":
             # This is an event
-            method = data["method"]
-            params = data["params"]
+            assert isinstance(data["method"], str)
+            assert isinstance(data["params"], dict)
 
-            listeners = self.event_listeners.get(method, [])
+            listeners = self.event_listeners.get(data["method"], [])
             if not listeners:
                 listeners = self.event_listeners.get(None, [])
             for listener in listeners:
-                await listener(method, params)
+                asyncio.create_task(listener(data["method"], data["params"]))
         else:
             raise ValueError(f"Unexpected message: {data!r}")
 
     async def end(self) -> None:
         """Close websocket connection."""
-        assert self.transport is not None
-        await self.transport.end()
-        self.transport = None
+        if self.transport is not None:
+            await self.transport.end()
+            self.transport = None
 
     def add_event_listener(
         self,
@@ -223,4 +251,10 @@ class BidiSession:
         """
         self.event_listeners[name].append(fn)
 
-        return lambda: self.event_listeners[name].remove(fn)
+        def remove_listener():
+            try:
+                self.event_listeners[name].remove(fn)
+            except ValueError:
+                pass
+
+        return remove_listener

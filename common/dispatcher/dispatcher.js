@@ -1,7 +1,32 @@
 // Define a universal message passing API. It works cross-origin and across
 // browsing context groups.
 const dispatcher_path = "/common/dispatcher/dispatcher.py";
-const dispatcher_url = new URL(dispatcher_path, location.href).href;
+
+// Finds the nearest ancestor window that has a non srcdoc location. This should
+// give us a usable location for constructing further URLs.
+function findLocationFromAncestors(w) {
+  if (w.location.href == 'about:srcdoc') {
+    return findLocationFromAncestors(w.parent);
+  }
+  return w.location;
+}
+
+// Handles differences between workers vs frames (src vs srcdoc).
+function findLocation() {
+  if (location.href == 'about:srcdoc') {
+    return findLocationFromAncestors(window.parent);
+  }
+  if (location.protocol == 'blob:' || location.protocol == 'data:') {
+    // Allows working around blob and data URLs.
+    if (self.document && self.document.baseURI) {
+      return self.document.baseURI;
+    }
+  }
+  return location;
+}
+
+const dispatcherLocation = findLocation();
+const dispatcher_url = new URL(dispatcher_path, dispatcherLocation).href;
 
 // Return a promise, limiting the number of concurrent accesses to a shared
 // resources to |max_concurrent_access|.
@@ -126,6 +151,31 @@ const cacheableShowRequestHeaders = function(origin, uuid) {
 
 // This script requires
 // - `/common/utils.js` for `token()`.
+
+// Returns the URL of a document that can be used as a `RemoteContext`.
+//
+// `uuid` should be a UUID uniquely identifying the given remote context.
+// `options` has the following shape:
+//
+// {
+//   host: (optional) Sets the returned URL's `host` property. Useful for
+//     cross-origin executors.
+//   protocol: (optional) Sets the returned URL's `protocol` property.
+// }
+function remoteExecutorUrl(uuid, options) {
+  const url = new URL("/common/dispatcher/remote-executor.html", dispatcherLocation);
+  url.searchParams.set("uuid", uuid);
+
+  if (options?.host) {
+    url.host = options.host;
+  }
+
+  if (options?.protocol) {
+    url.protocol = options.protocol;
+  }
+
+  return url;
+}
 
 // Represents a remote executor. For more detailed explanation see `README.md`.
 class RemoteContext {

@@ -2,7 +2,7 @@
 
 # Usage: python3 generate.py
 #
-# This will remove all existing files in the generated directories and generate new tests.
+# This will remove all existing .html files in the generated directories and generate new tests.
 
 
 # Notes on potential confusion with the 3 string substitution features in different layers:
@@ -164,6 +164,62 @@ tentative_tests = [
       u'template-script-src',
       u'utf-8',
       u'<template><script src="{}"></script></template>',
+      None,
+      u'false',
+      u'true'
+    ),
+    (
+      u'template-link-stylesheet',
+      u'utf-8',
+      u'<template><link rel=stylesheet href="{}"></template>',
+      None,
+      u'false',
+      u'true'
+    ),
+    (
+      u'template-img-src',
+      u'utf-8',
+      u'<template><img src="{}"></template>',
+      None,
+      u'false',
+      u'true'
+    ),
+    (
+      u'template-shadowrootmode-script-src',
+      u'utf-8',
+      u'<div><template shadowrootmode="closed"><script src="{}"></script></template></div>',
+      None,
+      u'true',
+      u'true'
+    ),
+    (
+      u'template-shadowrootmode-link-stylesheet',
+      u'utf-8',
+      u'<div><template shadowrootmode="closed"><link rel=stylesheet href="{}"></template></div>',
+      None,
+      u'true',
+      u'true'
+    ),
+    (
+      u'template-shadowrootmode-img-src',
+      u'utf-8',
+      u'<div><template shadowrootmode="closed"><img src="{}"></template></div>',
+      None,
+      u'true',
+      u'true'
+    ),
+    (
+      u'nested-template-shadowrootmode-1',
+      u'utf-8',
+      u'<template><div><template shadowrootmode="closed"><script src="{}"></script></template></div></template>',
+      None,
+      u'false',
+      u'true'
+    ),
+    (
+      u'nested-template-shadowrootmode-2',
+      u'utf-8',
+      u'<div><template shadowrootmode="closed"><template><script src="{}"></script></template></template></div>',
       None,
       u'false',
       u'true'
@@ -462,6 +518,35 @@ tentative_tests = [
       u'false',
       u'true'
     ),
+    (
+      # base with nonexistent host causes no load
+      u'base-nonexistent',
+      u'utf-8',
+      u'<base href=//{{{{domains[nonexistent]}}}}:{{{{ports[http][0]}}}}><script src="{}"></script>',
+      None,
+      u'false',
+      u'true'
+    ),
+    (
+      # base in declarative shadow dom does not affect content outside template
+      # Compare to test base-nonexistent, above.
+      u'base-in-dsd',
+      u'utf-8',
+      u'<template shadowrootmode="open"><base href=//{{{{domains[nonexistent]}}}}:{{{{ports[http][0]}}}}></template><script src="{}"></script>',
+      None,
+      u'true',
+      u'true'
+    ),
+    (
+      # A Content-Security-Policy inside declarative shadow DOM doesn't affect content outside of it.
+      # Compare to test meta-csp-img-src-none, above.
+      u'meta-csp-img-src-in-dsd',
+      u'utf-8',
+      u'<template shadowrootmode="open"><meta http-equiv="Content-Security-Policy" content="script-src \'self\' \'unsafe-inline\'; img-src \'none\'"></template><img src="{}">',
+      None,
+      u'true',
+      u'true'
+    ),
 ]
 
 tests = [
@@ -593,9 +678,14 @@ template_prerender_linked = u"""{preamble}
 
 # Generate tests
 
-# wipe target_dir
+# wipe target_dir of HTML files
 if os.path.isdir(target_dir):
-    shutil.rmtree(target_dir)
+  for root, dirs, files in os.walk(target_dir):
+    for name in files:
+      if name.endswith('.html'):
+        path = os.path.join(root, name)
+        if os.path.isfile(path):
+          os.remove(path)
 
 def write_file(path, content):
     path = os.path.join(target_dir, path)
@@ -619,7 +709,7 @@ def generate_tests(testcase, tentative):
 
     html_testcase_markup = template_testcase_markup.format(url_wptserve_sub)
     html_nonspeculative_testcase_markup = template_nonspeculative_testcase_markup.format(url_wptserve_sub)
-    js_testcase_markup = template_testcase_markup.format(url_js_sub).replace(u"</script>", u"<\/script>").replace(u"<meta charset", u"<meta\ charset")
+    js_testcase_markup = template_testcase_markup.format(url_js_sub).replace(u"</script>", u"<\\/script>").replace(u"<meta charset", u"<meta\\ charset")
 
     if test_nonspeculative == u'true':
         nonspeculative = template_nonspeculative.format(preamble=preamble, encoding_decl=encoding_decl, title=title, nonspeculative_testcase_markup=html_nonspeculative_testcase_markup, delay=delay)

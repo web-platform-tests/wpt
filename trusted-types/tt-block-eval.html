@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="variant" content="?default">
+  <meta name="variant" content="?trusted-types-eval">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script'">
+  <script>
+    if (location.search === "?trusted-types-eval") {
+      const meta = document.createElement("meta");
+      meta.httpEquiv = "Content-Security-Policy";
+      meta.content = "script-src 'nonce-abc' 'trusted-types-eval'";
+      document.head.appendChild(meta);
+    }
+  </script>
+</head>
+<body>
+<script nonce="abc">
+  trustedTypes.createPolicy("default", {createScript: _ => null});
+
+  test(t => {
+    let a = 0;
+    assert_throws_js(EvalError, _ => {
+      eval('a="hello there"');
+    });
+    assert_equals(a, 0);
+  }, "eval blocks if the default policy rejects a value.");
+</script>

@@ -10,10 +10,11 @@ class NodeVisitor:
 
 
 class Node:
-    def __init__(self, data=None):
+    def __init__(self, data=None, comments=None):
         self.data = data
         self.parent = None
         self.children = []
+        self.comments = comments or []
 
     def append(self, other):
         other.parent = self
@@ -32,17 +33,17 @@ class Node:
         return "\n".join(rv)
 
     def __eq__(self, other):
-        if not (self.__class__ == other.__class__ and
-                self.data == other.data and
-                len(self.children) == len(other.children)):
+        if (self.__class__ != other.__class__ or
+            self.data != other.data or
+            len(self.children) != len(other.children)):
             return False
         for child, other_child in zip(self.children, other.children):
-            if not child == other_child:
+            if child != other_child:
                 return False
         return True
 
     def copy(self):
-        new = self.__class__(self.data)
+        new = self.__class__(self.data, self.comments)
         for item in self.children:
             new.append(item.copy())
         return new
@@ -169,4 +170,8 @@ class StringNode(Node):
 
 
 class NumberNode(ValueNode):
+    pass
+
+
+class AtomExprNode(ValueNode):
     pass

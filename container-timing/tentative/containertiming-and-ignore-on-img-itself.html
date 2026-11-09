@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: observe an image with both containertiming and containertimingignore</title>
+<body>
+<style>
+body {
+  margin: 0;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/container-timing/resources/container-timing-helpers.js"></script>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
+    // Add an image that is itself a container timing root AND has
+    // containertimingignore set. containertimingignore only blocks upward
+    // propagation to ancestor roots; the element's own paint still reports
+    // under its own root.
+    addSquare100Image(document.body, {
+      containertiming: 'image_ct',
+      containertimingignore: '',
+      id: 'my_id'
+    });
+
+    const beforeRender = performance.now();
+
+    const entries = await getContainerEntries(t);
+    assert_equals(entries.length, 1);
+    const entry = entries[0];
+    checkContainerEntry(entry, 'image_ct', 'my_id', beforeRender);
+    checkContainerIntersectionRect(entry, [0, 100, 0, 100])
+    checkContainerSize(entry, 10000);
+  }, 'Image with both containertiming and containertimingignore reports its own paint.');
+</script>
+
+</body>

@@ -6,6 +6,7 @@ import logging
 import multiprocessing
 import os
 import sys
+import traceback
 
 from tools import localpaths  # noqa: F401
 
@@ -71,14 +72,18 @@ def load_commands():
 
 def parse_args(argv, commands=load_commands()):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--venv", action="store", help="Path to an existing virtualenv to use")
+    parser.add_argument("--venv", help="Path to an existing virtualenv to use")
     parser.add_argument("--skip-venv-setup", action="store_true",
-                        dest="skip_venv_setup",
                         help="Whether to use the virtualenv as-is. Must set --venv as well")
-    parser.add_argument("--debug", action="store_true", help="Run the debugger in case of an exception")
+    parser.add_argument("--debug", action="store_true",
+                        help="Run the debugger in case of an exception")
     subparsers = parser.add_subparsers(dest="command")
     for command, props in commands.items():
         subparsers.add_parser(command, help=props["help"], add_help=False)
+
+    if not argv:
+        parser.print_help()
+        return None, None
 
     args, extra = parser.parse_known_args(argv)
 
@@ -128,8 +133,14 @@ def create_complete_parser():
     for command in commands:
         props = commands[command]
 
-        for path in props.get("requirements", []):
-            venv.install_requirements(path)
+        try:
+            venv.install_requirements(*props.get("requirements", []))
+        except Exception:
+            logging.warning(
+                f"Unable to install requirements ({props['requirements']!r}) for command {command}"
+            )
+            continue
+
 
         subparser = import_command('wpt', command, props)[1]
         if not subparser:
@@ -156,16 +167,17 @@ def setup_virtualenv(path, skip_venv_setup, props):
     venv = virtualenv.Virtualenv(path, should_skip_setup)
     if not should_skip_setup:
         venv.start()
-        for path in props["requirements"]:
-            venv.install_requirements(path)
+        venv.install_requirements(*props.get("requirements", []))
     return venv
 
 
-def install_command_flag_requirements(venv, kwargs, requirements):
+def install_command_flag_requirements(venv, props, kwargs):
+    requirements = props["conditional_requirements"].get("commandline_flag", {})
+    install_paths = []
     for command_flag_name, requirement_paths in requirements.items():
         if command_flag_name in kwargs:
-            for path in requirement_paths:
-                venv.install_requirements(path)
+            install_paths.extend(requirement_paths)
+    venv.install_requirements(*install_paths)
 
 
 def main(prog=None, argv=None):
@@ -189,6 +201,9 @@ def main(prog=None, argv=None):
 
     main_args, command_args = parse_args(argv, commands)
 
+    if not main_args:
+        return
+
     command = main_args.command
     props = commands[command]
     venv = None
@@ -208,9 +223,8 @@ def main(prog=None, argv=None):
         kwargs = {}
 
     if venv is not None:
-        requirements = props["conditional_requirements"].get("commandline_flag")
-        if requirements is not None and not main_args.skip_venv_setup:
-            install_command_flag_requirements(venv, kwargs, requirements)
+        if not main_args.skip_venv_setup:
+            install_command_flag_requirements(venv, props, kwargs)
         args = (venv,) + extras
     else:
         args = extras
@@ -225,7 +239,8 @@ def main(prog=None, argv=None):
                 import pdb
                 pdb.post_mortem()
             else:
-                raise
+                traceback.print_exc()
+                sys.exit(getattr(os, "EX_SOFTWARE", 70))
     sys.exit(0)
 
 

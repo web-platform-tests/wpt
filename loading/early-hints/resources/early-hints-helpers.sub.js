@@ -8,24 +8,49 @@ const SAME_ORIGIN_RESOURCES_URL = SAME_ORIGIN + RESOURCES_PATH;
 const CROSS_ORIGIN_RESOURCES_URL = CROSS_ORIGIN + RESOURCES_PATH;
 
 /**
+ * Opens `url` in an auxiliary top-level browsing context (popup) and registers
+ * cleanup. The returned window runs the test page and reports its subtests back
+ * to the opener via `fetch_tests_from_window()`, so the test runner's top-level
+ * window is never navigated away (which is racy for navigation tests).
+ *
+ * @param {string|URL} url
+ * @returns {Window}
+ */
+function openWindow(url) {
+    const win = window.open(url, "_blank");
+    assert_not_equals(win, null, "window.open() should open a popup");
+    add_completion_callback(() => win.close());
+    return win;
+}
+
+/**
  * Navigate to a test page with an Early Hints response.
  *
  * @typedef {Object} Preload
  * @property {string} url - A URL to preload. Note: This is relative to the
  *     `test_url` parameter of `navigateToTestWithEarlyHints()`.
  * @property {string} as_attr - `as` attribute of this preload.
+ * @property {string} [crossorigin_attr] - `crossorigin` attribute of this
+ *     preload.
+ * @property {string} [fetchpriority_attr] - `fetchpriority` attribute of this
+ *     preload.
+ * @property {string} [integrity_attr] - `integrity` attribute (subresource
+ *     integrity metadata) of this preload.
  *
  * @param {string} test_url - URL of a test after the Early Hints response.
  * @param {Array<Preload>} preloads  - Preloads included in the Early Hints response.
+ * @param {bool} exclude_preloads_from_ok_response - Whether to exclude the preloads from the 200 OK reponse.
  */
-function navigateToTestWithEarlyHints(test_url, preloads) {
+function navigateToTestWithEarlyHints(test_url, preloads, exclude_preloads_from_ok_response) {
     const params = new URLSearchParams();
     params.set("test_url", test_url);
+    params.set("exclude_preloads_from_ok_response",
+               (!!exclude_preloads_from_ok_response).toString());
     for (const preload of preloads) {
         params.append("preloads", JSON.stringify(preload));
     }
-    const url = "resources/early-hints-test-loader.h2.py?" + params.toString();
-    window.location.replace(new URL(url, window.location));
+    const url = RESOURCES_PATH +"/early-hints-test-loader.h2.py?" + params.toString();
+    return openWindow(new URL(url, window.location));
 }
 
 /**
@@ -42,6 +67,43 @@ function getPreloadsFromSearchParams() {
         preloads.push(JSON.parse(encoded));
     }
     return preloads;
+}
+
+/**
+ * Navigate to a test page with an Early Hints response containing preconnects.
+ *
+ * @typedef {Object} Preconnect
+ * @property {string} url - An origin/URL to preconnect to.
+ * @property {string} [crossorigin_attr] - `crossorigin` attribute of this
+ *     preconnect.
+ *
+ * @param {string} test_url - URL of a test after the Early Hints response.
+ * @param {Array<Preconnect>} preconnects - Preconnects in the Early Hints
+ *     response.
+ */
+function navigateToTestWithEarlyHintsPreconnects(test_url, preconnects) {
+    const params = new URLSearchParams();
+    params.set("test_url", test_url);
+    params.set("exclude_preloads_from_ok_response", "true");
+    for (const preconnect of preconnects) {
+        params.append("preconnects", JSON.stringify(preconnect));
+    }
+    const url = RESOURCES_PATH + "/early-hints-test-loader.h2.py?" +
+        params.toString();
+    return openWindow(new URL(url, window.location));
+}
+
+/**
+ * Parses the query string of the current window location and returns
+ * preconnects in the Early Hints response sent via
+ * `navigateToTestWithEarlyHintsPreconnects()`.
+ *
+ * @returns {Array<Preconnect>}
+ */
+function getPreconnectsFromSearchParams() {
+    const params = new URLSearchParams(window.location.search);
+    const encoded = params.getAll("preconnects");
+    return encoded.map(e => JSON.parse(e));
 }
 
 /**
@@ -108,7 +170,7 @@ function testReferrerPolicy(referrer_policy) {
 
     const path = "resources/referrer-policy-test-loader.h2.py?" + params.toString();
     const url = new URL(path, window.location);
-    window.location.replace(url);
+    return openWindow(url);
 }
 
 /**
@@ -133,7 +195,7 @@ function navigateToContentSecurityPolicyBasicTest(
     params.set("final-policy", final_policy);
 
     const url = "resources/csp-basic-loader.h2.py?" + params.toString();
-    window.location.replace(new URL(url, window.location));
+    return openWindow(new URL(url, window.location));
 }
 
 /**
@@ -157,7 +219,7 @@ function navigateToContentSecurityPolicyDocumentDisallowTest(early_hints_policy)
     params.set("early-hints-policy", early_hints_policy);
 
     const url = "resources/csp-document-disallow-loader.h2.py?" + params.toString();
-    window.location.replace(new URL(url, window.location));
+    return openWindow(new URL(url, window.location));
 }
 
 /**
@@ -176,5 +238,5 @@ function navigateToCrossOriginEmbedderPolicyMismatchTest(
     params.set("final-policy", final_policy);
 
     const url = "resources/coep-mismatch.h2.py?" + params.toString();
-    window.location.replace(new URL(url, window.location));
+    return openWindow(new URL(url, window.location));
 }

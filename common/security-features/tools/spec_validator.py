@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-from __future__ import print_function
-
 import json, sys
 
 
 def assert_non_empty_string(obj, field):
     assert field in obj, 'Missing field "%s"' % field
-    assert isinstance(obj[field], basestring), \
+    assert isinstance(obj[field], str), \
         'Field "%s" must be a string' % field
     assert len(obj[field]) > 0, 'Field "%s" must not be empty' % field
 
@@ -36,7 +34,7 @@ def assert_value_from(obj, field, items):
 
 
 def assert_atom_or_list_items_from(obj, field, items):
-    if isinstance(obj[field], basestring) or isinstance(
+    if isinstance(obj[field], str) or isinstance(
             obj[field], int) or obj[field] is None:
         assert_value_from(obj, field, items)
         return
@@ -106,7 +104,7 @@ def validate(spec_json, details):
     # Should be consistent with `sourceContextMap` in
     # `/common/security-features/resources/common.sub.js`.
     valid_source_context_names = [
-        "top", "iframe", "iframe-blank", "srcdoc", "worker-classic",
+        "top", "iframe", "iframe-blank", "iframe-data", "srcdoc", "worker-classic",
         "worker-module", "worker-classic-data", "worker-module-data",
         "sharedworker-classic", "sharedworker-module",
         "sharedworker-classic-data", "sharedworker-module-data"
@@ -115,7 +113,8 @@ def validate(spec_json, details):
     valid_subresource_names = [
         "a-tag", "area-tag", "audio-tag", "form-tag", "iframe-tag", "img-tag",
         "link-css-tag", "link-prefetch-tag", "object-tag", "picture-tag",
-        "script-tag", "script-tag-dynamic-import", "video-tag"
+        "mathml-a-tag", "script-tag", "script-tag-dynamic-import", "svg-a-tag",
+        "video-tag"
     ] + ["beacon", "fetch", "xhr", "websocket"] + [
         "worker-classic", "worker-module", "worker-import",
         "worker-import-data", "sharedworker-classic", "sharedworker-module",
@@ -238,7 +237,7 @@ def assert_valid_spec_json(spec_json):
     try:
         validate(spec_json, error_details)
     except AssertionError as err:
-        print('ERROR:', err.message)
+        print('ERROR:', err)
         print(json.dumps(error_details, indent=4))
         sys.exit(1)
 

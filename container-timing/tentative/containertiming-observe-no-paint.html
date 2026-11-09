@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: if no paint happens, observer is not called</title>
+<body>
+<style>
+body {
+  margin: 0;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/container-timing/resources/container-timing-helpers.js"></script>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
+    addContainerRoot(document.body, 'div_ct');
+    const entries = await getContainerEntries(t, 0);
+
+    assert_equals(entries.length, 0, 'No entry is expected with nothing to paint');
+  }, 'Container timing did not report paints when there was nothing to paint.');
+</script>
+
+</body>

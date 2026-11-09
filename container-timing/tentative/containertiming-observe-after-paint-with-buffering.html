@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: starting observation after image paint, with buffering, reports paint.</title>
+<body>
+<style>
+body {
+  margin: 0;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/container-timing/resources/container-timing-helpers.js"></script>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
+
+    addSquare100Image(document.body, {containertiming: 'image_ct', id: 'my_id'});
+    const beforeRender = performance.now();
+    await waitWithoutObserving(t);
+
+    const entries = await getContainerEntries(t);
+    assert_equals(entries.length, 1);
+    const entry = entries[0];
+    checkContainerEntry(entry, 'image_ct', 'my_id', beforeRender);
+    checkContainerIntersectionRect(entry, [0, 100, 0, 100])
+    checkContainerSize(entry, 10000);
+  }, 'Paint is reported when observation starts after image paint if buffering is enabled.');
+</script>
+
+</body>

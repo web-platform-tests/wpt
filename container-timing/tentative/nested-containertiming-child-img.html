@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: two nested containertiming nodes, with a child img inside of the inner</title>
+<body>
+<style>
+body {
+  margin: 0;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/container-timing/resources/container-timing-helpers.js"></script>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
+    const div1 = addContainerRoot(document.body, 'div1_ct');
+    const div2 = addContainerRoot(div1, 'div2_ct');
+    addSquare100Image(div2, {id: 'img_id'});
+
+    const beforeRender = performance.now();
+
+    const entries = await getContainerEntries(t);
+    assert_equals(entries.length, 2, 'two entries expected for the image, one for each containertiming');
+
+    const entry_div1 = entries.find(e => e.identifier == 'div1_ct');
+    checkContainerEntry(entry_div1, 'div1_ct', 'img_id', beforeRender)
+    checkContainerIntersectionRect(entry_div1, [0, 100, 0, 100])
+    checkContainerSize(entry_div1, 10000);
+
+    const entry_div2 = entries.find(e => e.identifier == 'div2_ct');
+    checkContainerEntry(entry_div2, 'div2_ct', 'img_id', beforeRender)
+    checkContainerIntersectionRect(entry_div2, [0, 100, 0, 100])
+    checkContainerSize(entry_div2, 10000);
+  }, 'Paints in a nested containertiming root are also reported to the parent containertiming root.');
+</script>
+
+</body>

@@ -1,5 +1,6 @@
 from webdriver.bidi.modules.script import ContextTarget
-from ... import any_int, any_list, any_string, recursive_compare
+
+from ... import any_int, any_list, any_string, create_console_api_message, recursive_compare
 
 
 def assert_base_entry(
@@ -9,6 +10,7 @@ def assert_base_entry(
     timestamp=any_int,
     realm=any_string,
     context=None,
+    user_context=None,
     stacktrace=None
 ):
     recursive_compare({
@@ -35,6 +37,8 @@ def assert_base_entry(
     if context is not None:
         assert "context" in source
         assert source["context"] == context
+    if user_context is not None and "userContext" in source:
+        assert source["userContext"] == user_context
 
 
 def assert_console_entry(
@@ -46,6 +50,7 @@ def assert_console_entry(
     timestamp=any_int,
     realm=any_string,
     context=None,
+    user_context=None,
     stacktrace=None
 ):
     assert_base_entry(
@@ -55,6 +60,7 @@ def assert_console_entry(
         timestamp=timestamp,
         realm=realm,
         context=context,
+        user_context=user_context,
         stacktrace=stacktrace)
 
     recursive_compare({
@@ -71,6 +77,7 @@ def assert_javascript_entry(
     timestamp=any_int,
     realm=any_string,
     context=None,
+    userContext = None,
     stacktrace=None
 ):
     assert_base_entry(
@@ -80,24 +87,15 @@ def assert_javascript_entry(
         timestamp=timestamp,
         realm=realm,
         stacktrace=stacktrace,
-        context=context)
+        context=context,
+        user_context=userContext)
 
     recursive_compare({
         "type": "javascript",
     }, entry)
 
 
-async def create_console_api_message(bidi_session, context, text):
-    await bidi_session.script.call_function(
-        function_declaration="""(text) => console.log(text)""",
-        arguments=[{"type": "string", "value": text}],
-        await_promise=False,
-        target=ContextTarget(context["context"]),
-    )
-    return text
-
-
-async def create_console_api_message_for_primitive_value(bidi_session, context, type, value):
+async def create_console_api_message_from_string(bidi_session, context, type, value):
     await bidi_session.script.evaluate(
         expression=f"""console.{type}({value})""",
         await_promise=False,

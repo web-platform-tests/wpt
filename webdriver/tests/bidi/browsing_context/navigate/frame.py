@@ -1,6 +1,7 @@
 import pytest
+from webdriver.bidi.modules.script import ContextTarget
 
-from . import navigate_and_assert
+from .. import navigate_and_assert
 
 pytestmark = pytest.mark.asyncio
 
@@ -33,7 +34,7 @@ async def test_multiple_frames(
 
     await navigate_and_assert(bidi_session, frame, inline(PAGE_CONTENT))
 
-    # Make sure that the sesond frame hasn't been navigated
+    # Make sure that the second frame hasn't been navigated
     contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
     assert contexts[0]["children"][1]["url"] == test_page2
 
@@ -57,3 +58,46 @@ async def test_nested_frames(
     assert frame_level_2["url"] == test_page
 
     await navigate_and_assert(bidi_session, frame_level_2, inline(PAGE_CONTENT))
+
+
+async def test_subframe_replacestate(bidi_session, new_tab, inline):
+    script_url = "/webdriver/tests/bidi/browsing_context/support/empty.js"
+    # An iframe that calls history.replaceState on itself, must
+    # not cause the top-level navigation to complete prematurely.
+    # The slow parser-blocking script delays the page load so that premature
+    # completion is detectable via document.readyState.
+    iframe_url = inline('<script>history.replaceState(null, "", "#hash");</script>')
+    url = inline(
+        f'<iframe src="{iframe_url}"></iframe>'
+        f'<script src="{script_url}?pipe=trickle(d1)"></script>'
+    )
+
+    await navigate_and_assert(bidi_session, new_tab, url)
+
+    ready_state = await bidi_session.script.evaluate(
+        expression="document.readyState",
+        target=ContextTarget(new_tab["context"]),
+        await_promise=False,
+    )
+
+    assert ready_state["value"] == "complete"
+
+
+async def test_subframe_error_page(bidi_session, new_tab, inline):
+    # An iframe served with X-Frame-Options: DENY will fail to load and show
+    # an error page. This must not cause the top-level navigation to fail.
+    iframe_url = inline(
+        PAGE_CONTENT,
+        parameters={"pipe": "header(X-Frame-Options, DENY)"},
+    )
+    url = inline(f'<iframe src="{iframe_url}"></iframe>')
+
+    await navigate_and_assert(bidi_session, new_tab, url)
+
+    ready_state = await bidi_session.script.evaluate(
+        expression="document.readyState",
+        target=ContextTarget(new_tab["context"]),
+        await_promise=False,
+    )
+
+    assert ready_state["value"] == "complete"

@@ -72,7 +72,7 @@ var testrules = [
   { rule: makeRule("bongo", "@styleset { abc: 1 2 3a }"), serializationNoValueDefn: true },
   { rule: makeRule("bongo", "@styleset { abc: 1 2 3, def: 1; }"), serializationNoValueDefn: true },
   { rule: makeRule("bongo", "@blah @styleset { abc: 1 2 3; }"), serializationNoValueDefn: true },
-  { rule: makeRule("bongo", "@blah } @styleset { abc: 1 2 3; }"), serializationNoValueDefn: true },
+  { rule: makeRule("bongo", "@blah } @styleset { abc: 1 2 3; }"), invalid: true },
   { rule: makeRule("bongo", "@blah , @styleset { abc: 1 2 3; }"), serializationNoValueDefn: true },
   { rule: ruleName() + " bongo { @styleset { abc: 1 2 3; }", serialization: _("@styleset { abc: 1 2 3; }") },
   { rule: ruleName() + " bongo { @styleset { abc: 1 2 3 }", serialization: _("@styleset { abc: 1 2 3; }") },
@@ -81,6 +81,7 @@ var testrules = [
   { rule: _("@styleset { ok-1: 1; }"), serializationSame: true },
   { rule: _("@annotation { ok-1: 3; }"), serializationSame: true },
   { rule: _("@stylistic { blah: 3; }"), serializationSame: true },
+  { rule: _("@stylistic { blah: sibling-index(); }"), serializationNoValueDefn: true },
   { rule: makeRule("bongo", "\n@styleset\n  { blah: 3; super-blah: 4 5;\n  more-blah: 5 6 7;\n }"), serializationSame: true },
   { rule: makeRule("bongo", "\n@styleset\n  {\n blah:\n 3\n;\n super-blah:\n 4\n 5\n;\n  more-blah:\n 5 6\n 7;\n }"), serializationSame: true },
 
@@ -151,8 +152,8 @@ var testrules = [
   { rule: makeRule("--bongo", "@styleset { blah: 1; }"), invalid: true },
 
   /* ident tests */
-  { rule: _("@styleset { blah: 1; blah: 1; }"), serializationSame: true },
-  { rule: _("@styleset { blah: 1; de-blah: 1; blah: 2; }"), serializationSame: true },
+  { rule: _("@styleset { blah: 1; blah: 1; }"), serialization: _("@styleset { blah: 1; }") },
+  { rule: _("@styleset { blah: 1; de-blah: 1; blah: 2; }"), serialization: _("@styleset { blah: 2; de-blah: 1; }") },
   { rule: _("@styleset { \\tra-la: 1; }"), serialization: _("@styleset { tra-la: 1; }") },
   { rule: _("@styleset { b\\lah: 1; }"), serialization: _("@styleset { blah: 1; }") },
   { rule: _("@styleset { \\62 lah: 1; }"), serialization: _("@styleset { blah: 1; }") },

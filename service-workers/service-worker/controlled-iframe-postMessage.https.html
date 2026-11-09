@@ -1,0 +1,72 @@
+<html>
+<head>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.sub.js"></script>
+</head>
+<body>
+<script>
+// Scope only the frame used by this test. A broad scope such as 'resources'
+// would make this worker intercept navigations made by other tests that run
+// later in the same browser session.
+const SCOPE = 'resources/controlled-frame-postMessage.html';
+let registration;
+
+promise_test(async (test) => {
+    registration = await service_worker_unregister_and_register(
+        test, "postMessage-client-worker.js", SCOPE);
+    const worker = registration.installing || registration.waiting || registration.active;
+    await wait_for_state(test, worker, "activated");
+}, "Register service worker");
+
+function with_iframe(test, url) {
+    return new Promise(function(resolve, reject) {
+        test.step_timeout(() => reject("with_iframe timed out"), 2000);
+        var frame = document.createElement('iframe');
+        frame.className = 'test-iframe';
+        frame.src = url;
+        frame.onload = function() { resolve(frame); };
+        document.body.appendChild(frame);
+    });
+}
+
+promise_test(async (test) => {
+    const frame = await with_iframe(test, 'resources/controlled-frame-postMessage.html');
+    let counter = 0;
+    while (counter++ < 100 && frame.contentWindow.messageData == undefined)
+       await new Promise(resolve => test.step_timeout(resolve, 50));
+    assert_equals(frame.contentWindow.messageData, 0);
+    frame.remove();
+}, "Verify frame gets early messages if setting synchronously message event listener");
+
+promise_test(async (test) => {
+    const frame = await with_iframe(test, 'resources/controlled-frame-postMessage.html?repeatMessages');
+    let counter = 0;
+    while (counter++ < 100 && frame.contentWindow.messageData == undefined)
+       await new Promise(resolve => test.step_timeout(resolve, 50));
+    assert_not_equals(frame.contentWindow.messageData, 0);
+    frame.remove();
+}, "Verify frame does not get all messages if not setting event listener early");
+
+promise_test(async (test) => {
+    const frame = await with_iframe(test, 'resources/controlled-frame-postMessage.html?repeatMessages&listener');
+    let counter = 0;
+    while (counter++ < 100 && frame.contentWindow.messageData.length < 5)
+       await new Promise(resolve => test.step_timeout(resolve, 50));
+
+    assert_less_than(counter, 100);
+    data = frame.contentWindow.messageData;
+    for (let cptr = 1; cptr < data.length; cptr++)
+        assert_true(data[cptr - 1] < data[cptr]);
+    frame.remove();
+}, "Verify frame does get messages in order");
+
+// Declared last so it runs after the tests above; leaves no registration
+// behind for subsequent tests in the same browser session.
+promise_test(async (test) => {
+    await registration.unregister();
+}, "Unregister service worker");
+</script>
+</body>
+</html>

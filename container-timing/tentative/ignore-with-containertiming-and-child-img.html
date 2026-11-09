@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: an image inside a containertiming inside a containertimingignore</title>
+<body>
+<style>
+body {
+  margin: 0;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/container-timing/resources/container-timing-helpers.js"></script>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
+    const div1 = addElement(document.body, 'div', {containertimingignore: ''});
+    const div2 = addContainerRoot(div1, 'div2_ct');
+    addSquare100Image(div2, {id: 'img_id'});
+
+    const beforeRender = performance.now();
+
+    const entries = await getContainerEntries(t);
+    assert_equals(entries.length, 1);
+    const entry = entries[0];
+    checkContainerEntry(entry, 'div2_ct', 'img_id', beforeRender)
+    checkContainerIntersectionRect(entry, [0, 100, 0, 100])
+    checkContainerSize(entry, 10000);
+  }, 'An image inside a containertiming, inside a containertimingignore is still reported.');
+</script>
+
+</body>

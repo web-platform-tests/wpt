@@ -11,7 +11,6 @@
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  //   assert_session_desc_similar
   //   generateAudioReceiveOnlyOffer
 
   /*
@@ -68,7 +67,8 @@
     .then(() => {
       assert_equals(pc.signalingState, 'have-local-offer');
       assert_not_equals(pc.localDescription, null);
-      assert_not_equals(pc.pendingLocalDescription, null);
+      assert_equals(pc.localDescription, pc.localDescription);
+      assert_equals(pc.pendingLocalDescription, pc.localDescription);
       assert_equals(pc.currentLocalDescription, null);
 
       return pc.setLocalDescription({ type: 'rollback' });
@@ -117,6 +117,14 @@
     });
   }, `setLocalDescription(rollback) after setting answer description should reject with InvalidStateError`);
 
+  promise_test(async t => {
+    const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+    const offer = await generateAudioReceiveOnlyOffer(pc);
+    await pc.setRemoteDescription(offer);
+    await promise_rejects_dom(t, 'InvalidStateError', pc.setLocalDescription({ type: 'rollback' }));
+  }, `setLocalDescription(rollback) after setting a remote offer should reject with InvalidStateError`);
+
   promise_test(t => {
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
@@ -140,7 +148,7 @@
 
     assert_not_equals(pc.pendingLocalDescription, null, "pendingLocalDescription should not be set synchronously after a call to sLD");
     assert_equals(pc.pendingLocalDescription.type, "offer");
-    assert_equals(pc.pendingLocalDescription.sdp, pc.localDescription.sdp);
+    assert_equals(pc.pendingLocalDescription, pc.localDescription);
     assert_equals(pc.pendingRemoteDescription, null, "pendingRemoteDescription should never be set due to sLD(offer)");
 
     const stablePromise = new Promise(resolve => {

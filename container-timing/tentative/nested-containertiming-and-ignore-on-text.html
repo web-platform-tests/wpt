@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: a paragraph with both containertiming and containertimingignore inside an outer containertiming root</title>
+<body>
+<style>
+body {
+  margin: 0;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/container-timing/resources/container-timing-helpers.js"></script>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
+    const outer = addContainerRoot(document.body, 'outer_ct');
+
+    // Paragraph that is itself a container timing root and has
+    // containertimingignore set. The ignore must prevent the text paint
+    // from propagating to the outer containertiming root, but the paragraph
+    // itself must still report its own text paint.
+    addText(outer, {
+      containertiming: 'p_ct',
+      containertimingignore: '',
+      id: 'my_id'
+    });
+
+    const beforeRender = performance.now();
+
+    const entries = await getContainerEntries(t);
+    // Only one entry: the inner text root. The outer containertiming
+    // root must NOT receive the paint because the paragraph carries
+    // containertimingignore which blocks upward propagation.
+    assert_equals(entries.length, 1,
+        'one entry expected for the text root, none for the outer root');
+    const entry = entries[0];
+    checkContainerEntry(entry, 'p_ct', 'my_id', beforeRender);
+  }, 'Text element with containertiming + containertimingignore inside outer containertiming reports under itself only.');
+</script>
+
+</body>

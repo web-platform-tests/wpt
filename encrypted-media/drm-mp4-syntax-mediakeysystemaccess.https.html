@@ -12,7 +12,6 @@
     <!-- Helper scripts for Encrypted Media Extensions tests  -->
     <script src=/encrypted-media/util/utils.js></script>
     <script src=/encrypted-media/util/utf8.js></script>
-    <script src=/encrypted-media/util/fetch.js></script>
 
     <!-- Content metadata -->
     <script src=/encrypted-media/content/content-metadata.js></script>
@@ -26,8 +25,8 @@
     <div id='video'>
       <video id="videoelement" width="200px"></video>
     </div>
-    <script>
-        var keysystem = getSupportedKeySystem();
+    <script type="module">
+        var keysystem = await getSupportedKeySystem();
         var contentItem = content['mp4-basic'],
             config = {
                 keysystem: keysystem,

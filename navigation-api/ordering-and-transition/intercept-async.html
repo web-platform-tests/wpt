@@ -1,7 +1,7 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<meta name="variant" content="">
+<meta name="variant" content="?no-currententrychange">
 <meta name="variant" content="?currententrychange">
 
 <script type="module">
@@ -45,6 +45,7 @@ promise_test(async t => {
     ["handler sync", "#1", { from, navigationType: "push" }],
     ["handler after microtask", "#1", { from, navigationType: "push" }],
     ["committed fulfilled", "#1", { from, navigationType: "push" }],
+    ["transition.committed fulfilled", "#1", { from, navigationType: "push" }],
     ["promise microtask", "#1", { from, navigationType: "push" }],
     ["handler after setTimeout", "#1", { from, navigationType: "push" }],
     ["navigatesuccess", "#1", { from, navigationType: "push" }],

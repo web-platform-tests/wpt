@@ -9,8 +9,13 @@
  * @param {string|array} computed  The expected computed value,
  *                                 or an array of permitted computed value.
  *                                 If omitted, defaults to specified.
+ * @param {string} titleExtra Additional information to put in test output.
+ * @param {object} options  Additional test information, such as a custom
+ *                          comparison function required for color tests.
+ *                          comparisonFunction is a function that takes two
+ *                          arguments, actual and expected and contains asserts.
  */
-function test_computed_value(property, specified, computed, titleExtra) {
+function test_computed_value(property, specified, computed, titleExtra, options = {}) {
   if (!computed)
     computed = specified;
 
@@ -22,7 +27,9 @@ function test_computed_value(property, specified, computed, titleExtra) {
     target.style[property] = specified;
 
     let readValue = getComputedStyle(target)[property];
-    if (Array.isArray(computed)) {
+    if (options.comparisonFunction) {
+      options.comparisonFunction(readValue, computed);
+    } else if (Array.isArray(computed)) {
       assert_in_array(readValue, computed);
     } else {
       assert_equals(readValue, computed);

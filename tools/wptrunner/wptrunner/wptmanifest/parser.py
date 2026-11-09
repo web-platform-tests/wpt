@@ -12,11 +12,10 @@
 #      PASS
 #
 
-# TODO: keep comments in the tree
 
 from io import BytesIO
 
-from .node import (Node, AtomNode, BinaryExpressionNode, BinaryOperatorNode,
+from .node import (Node, AtomNode, AtomExprNode, BinaryExpressionNode, BinaryOperatorNode,
                    ConditionalNode, DataNode, IndexNode, KeyValueNode, ListNode,
                    NumberNode, StringNode, UnaryExpressionNode,
                    UnaryOperatorNode, ValueNode, VariableNode)
@@ -46,7 +45,8 @@ operators = ["==", "!=", "not", "and", "or"]
 
 atoms = {"True": True,
          "False": False,
-         "Reset": object()}
+         "Reset": object(),
+         "Null": None}
 
 def decode(s):
     assert isinstance(s, str)
@@ -59,7 +59,30 @@ def precedence(operator_node):
 
 class TokenTypes:
     def __init__(self) -> None:
-        for type in ["group_start", "group_end", "paren", "list_start", "list_end", "separator", "ident", "string", "number", "atom", "eof"]:
+        for type in [
+            "group_start",
+            "group_end",
+            "paren",
+            "list_start",
+            "list_end",
+            "separator",
+            "ident",
+            "string",
+            "number",
+            "atom",
+            # Without an end-of-line token type, we need two different comment
+            # token types to distinguish between:
+            #   [heading1]  # Comment attached to heading 1
+            #   [heading2]
+            #
+            # and
+            #   [heading1]
+            #   # Comment attached to heading 2
+            #   [heading2]
+            "comment",
+            "inline_comment",
+            "eof",
+        ]:
             setattr(self, type, type)
 
 token_types = TokenTypes()
@@ -130,6 +153,9 @@ class Tokenizer:
         self.skip_whitespace()
         if self.char() == eol:
             self.state = self.eol_state
+            return
+        if self.char() == "#":
+            self.state = self.comment_state
             return
         if self.index > self.indent_levels[-1]:
             self.indent_levels.append(self.index)
@@ -202,12 +228,9 @@ class Tokenizer:
     def after_key_state(self):
         self.skip_whitespace()
         c = self.char()
-        if c == "#":
+        if c in {"#", eol}:
             self.next_state = self.expr_or_value_state
-            self.state = self.comment_state
-        elif c == eol:
-            self.next_state = self.expr_or_value_state
-            self.state = self.eol_state
+            self.state = self.line_end_state
         elif c == "[":
             self.state = self.list_start_state
         else:
@@ -216,12 +239,9 @@ class Tokenizer:
     def after_expr_state(self):
         self.skip_whitespace()
         c = self.char()
-        if c == "#":
+        if c in {"#", eol}:
             self.next_state = self.after_expr_state
-            self.state = self.comment_state
-        elif c == eol:
-            self.next_state = self.after_expr_state
-            self.state = self.eol_state
+            self.state = self.line_end_state
         elif c == "[":
             self.state = self.list_start_state
         else:
@@ -246,12 +266,9 @@ class Tokenizer:
             elif self.char() != ",":
                 raise ParseError(self.filename, self.line_number, "Junk after quoted string")
             self.consume()
-        elif self.char() == "#":
-            self.state = self.comment_state
+        elif self.char() in {"#", eol}:
+            self.state = self.line_end_state
             self.next_line_state = self.list_value_start_state
-        elif self.char() == eol:
-            self.next_line_state = self.list_value_start_state
-            self.state = self.eol_state
         elif self.char() == ",":
             raise ParseError(self.filename, self.line_number, "List item started with separator")
         elif self.char() == "@":
@@ -308,14 +325,9 @@ class Tokenizer:
             quote_char = self.char()
             self.consume()
             yield (token_types.string, self.consume_string(quote_char))
-            if self.char() == "#":
-                self.state = self.comment_state
-            else:
-                self.state = self.line_end_state
+            self.state = self.line_end_state
         elif c == "@":
-            self.consume()
-            for _, value in self.value_inner_state():
-                yield token_types.atom, value
+            self.state = self.value_atom_state
         elif c == "[":
             self.state = self.list_start_state
         else:
@@ -328,16 +340,13 @@ class Tokenizer:
             c = self.char()
             if c == "\\":
                 rv += self.consume_escape()
-            elif c == "#":
-                self.state = self.comment_state
+            elif c in {"#", eol}:
+                self.state = self.line_end_state
                 break
             elif c == " ":
                 # prevent whitespace before comments from being included in the value
                 spaces += 1
                 self.consume()
-            elif c == eol:
-                self.state = self.line_end_state
-                break
             else:
                 rv += " " * spaces
                 spaces = 0
@@ -352,16 +361,28 @@ class Tokenizer:
                              "(expressions must start on a newline and be indented)")
         yield (token_types.string, rv)
 
-    def comment_state(self):
+    def _consume_comment(self):
+        assert self.char() == "#"
+        self.consume()
+        comment = ''
         while self.char() is not eol:
+            comment += self.char()
             self.consume()
+        return comment
+
+    def comment_state(self):
+        yield (token_types.comment, self._consume_comment())
+        self.state = self.eol_state
+
+    def inline_comment_state(self):
+        yield (token_types.inline_comment, self._consume_comment())
         self.state = self.eol_state
 
     def line_end_state(self):
         self.skip_whitespace()
         c = self.char()
         if c == "#":
-            self.state = self.comment_state
+            self.state = self.inline_comment_state
         elif c == eol:
             self.state = self.eol_state
         else:
@@ -411,6 +432,8 @@ class Tokenizer:
             self.state = self.operator_state
         elif c in digits:
             self.state = self.digit_state
+        elif c == "@":
+            self.state = self.expr_atom_state
         else:
             self.state = self.ident_state
 
@@ -477,6 +500,17 @@ class Tokenizer:
         self.state = self.expr_state
         yield (token_types.ident, self.line[index_0:self.index])
 
+    def value_atom_state(self):
+        self.consume()
+        _, value = next(self.ident_state())
+        self.state = self.line_end_state
+        yield (token_types.atom, value)
+
+    def expr_atom_state(self):
+        self.consume()
+        _, value = next(self.ident_state())
+        yield (token_types.atom, value)
+
     def consume_escape(self):
         assert self.char() == "\\"
         self.consume()
@@ -529,6 +563,7 @@ class Parser:
         self.tree = Treebuilder(DataNode(None))
         self.expr_builder = None
         self.expr_builders = []
+        self.comments = []
 
     def parse(self, input):
         try:
@@ -558,31 +593,67 @@ class Parser:
 
         self.consume()
 
+    def maybe_consume_inline_comment(self):
+        if self.token[0] == token_types.inline_comment:
+            self.comments.append(self.token)
+            self.consume()
+
+    def consume_comments(self):
+        while self.token[0] == token_types.comment:
+            self.comments.append(self.token)
+            self.consume()
+
+    def flush_comments(self, target_node=None):
+        """Transfer comments from the parser's buffer to a parse tree node.
+
+        Use the tree's current node if no target node is explicitly specified.
+
+        The comments are buffered because the target node they should belong to
+        may not exist yet. For example:
+
+            [heading]
+              # comment to be attached to the subheading
+              [subheading]
+        """
+        (target_node or self.tree.node).comments.extend(self.comments)
+        self.comments.clear()
+
     def manifest(self):
         self.data_block()
         self.expect(token_types.eof)
 
     def data_block(self):
-        while self.token[0] == token_types.string:
-            self.tree.append(KeyValueNode(self.token[1]))
-            self.consume()
-            self.expect(token_types.separator)
-            self.value_block()
-            self.tree.pop()
-
-        while self.token == (token_types.paren, "["):
-            self.consume()
-            if self.token[0] != token_types.string:
-                raise ParseError(self.tokenizer.filename, self.tokenizer.line_number,
-                                 f"Token '{self.token[0]}' is not a string")
-            self.tree.append(DataNode(self.token[1]))
-            self.consume()
-            self.expect(token_types.paren, "]")
-            if self.token[0] == token_types.group_start:
+        while self.token[0] in {token_types.comment, token_types.string,
+                                token_types.paren}:
+            if self.token[0] == token_types.comment:
+                self.consume_comments()
+            elif self.token[0] == token_types.string:
+                self.tree.append(KeyValueNode(self.token[1]))
                 self.consume()
-                self.data_block()
-                self.eof_or_end_group()
-            self.tree.pop()
+                self.expect(token_types.separator)
+                self.maybe_consume_inline_comment()
+                self.flush_comments()
+                self.consume_comments()
+                self.value_block()
+                self.flush_comments()
+                self.tree.pop()
+            else:
+                self.expect(token_types.paren, "[")
+                if self.token[0] != token_types.string:
+                    raise ParseError(self.tokenizer.filename,
+                                     self.tokenizer.line_number,
+                                     f"Token '{self.token[0]}' is not a string")
+                self.tree.append(DataNode(self.token[1]))
+                self.consume()
+                self.expect(token_types.paren, "]")
+                self.maybe_consume_inline_comment()
+                self.flush_comments()
+                self.consume_comments()
+                if self.token[0] == token_types.group_start:
+                    self.consume()
+                    self.data_block()
+                    self.eof_or_end_group()
+                self.tree.pop()
 
     def eof_or_end_group(self):
         if self.token[0] != token_types.eof:
@@ -597,11 +668,31 @@ class Parser:
         elif self.token[0] == token_types.group_start:
             self.consume()
             self.expression_values()
+            default_value = None
             if self.token[0] == token_types.string:
-                self.value()
+                default_value = self.value
+            elif self.token[0] == token_types.atom:
+                default_value = self.atom
             elif self.token[0] == token_types.list_start:
                 self.consume()
-                self.list_value()
+                default_value = self.list_value
+            if default_value:
+                default_value()
+            # For this special case where a group exists, attach comments to
+            # the string/list value, not the key-value node. That is,
+            #   key:
+            #     ...
+            #     # comment attached to condition default
+            #     value
+            #
+            # should not read
+            #   # comment attached to condition default
+            #   key:
+            #     ...
+            #     value
+            self.consume_comments()
+            self.flush_comments(
+                self.tree.node.children[-1] if default_value else None)
             self.eof_or_end_group()
         elif self.token[0] == token_types.atom:
             self.atom()
@@ -611,26 +702,32 @@ class Parser:
 
     def list_value(self):
         self.tree.append(ListNode())
+        self.maybe_consume_inline_comment()
         while self.token[0] in (token_types.atom, token_types.string):
             if self.token[0] == token_types.atom:
                 self.atom()
             else:
                 self.value()
         self.expect(token_types.list_end)
+        self.maybe_consume_inline_comment()
         self.tree.pop()
 
     def expression_values(self):
+        self.consume_comments()
         while self.token == (token_types.ident, "if"):
             self.consume()
             self.tree.append(ConditionalNode())
             self.expr_start()
             self.expect(token_types.separator)
             self.value_block()
+            self.flush_comments()
             self.tree.pop()
+            self.consume_comments()
 
     def value(self):
         self.tree.append(ValueNode(self.token[1]))
         self.consume()
+        self.maybe_consume_inline_comment()
         self.tree.pop()
 
     def atom(self):
@@ -638,6 +735,7 @@ class Parser:
             raise ParseError(self.tokenizer.filename, self.tokenizer.line_number, "Unrecognised symbol @%s" % self.token[1])
         self.tree.append(AtomNode(atoms[self.token[1]]))
         self.consume()
+        self.maybe_consume_inline_comment()
         self.tree.pop()
 
     def expr_start(self):
@@ -669,7 +767,7 @@ class Parser:
         elif self.token[0] == token_types.ident and self.token[1] in unary_operators:
             self.expr_unary_op()
             self.expr_operand()
-        elif self.token[0] in [token_types.string, token_types.ident]:
+        elif self.token[0] in [token_types.string, token_types.ident, token_types.atom]:
             self.expr_value()
         elif self.token[0] == token_types.number:
             self.expr_number()
@@ -692,8 +790,14 @@ class Parser:
 
     def expr_value(self):
         node_type = {token_types.string: StringNode,
-                     token_types.ident: VariableNode}[self.token[0]]
-        self.expr_builder.push_operand(node_type(self.token[1]))
+                     token_types.ident: VariableNode,
+                     token_types.atom: AtomExprNode}[self.token[0]]
+        if self.token[0] == token_types.atom:
+            value = atoms[self.token[1]]
+        else:
+            value = self.token[1]
+
+        self.expr_builder.push_operand(node_type(value))
         self.consume()
         if self.token == (token_types.paren, "["):
             self.consume()

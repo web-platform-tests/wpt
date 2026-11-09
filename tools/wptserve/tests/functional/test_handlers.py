@@ -19,7 +19,9 @@ class TestFileHandler(TestUsingServer):
         resp = self.request("/document.txt")
         self.assertEqual(200, resp.getcode())
         self.assertEqual("text/plain", resp.info()["Content-Type"])
-        self.assertEqual(open(os.path.join(doc_root, "document.txt"), 'rb').read(), resp.read())
+        with open(os.path.join(doc_root, "document.txt"), 'rb') as f:
+            expected = f.read()
+        self.assertEqual(expected, resp.read())
 
     def test_headers(self):
         resp = self.request("/with_headers.txt")
@@ -36,7 +38,8 @@ class TestFileHandler(TestUsingServer):
         resp = self.request("/document.txt", headers={"Range":"bytes=10-19"})
         self.assertEqual(206, resp.getcode())
         data = resp.read()
-        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
+        with open(os.path.join(doc_root, "document.txt"), 'rb') as f:
+            expected = f.read()
         self.assertEqual(10, len(data))
         self.assertEqual("bytes 10-19/%i" % len(expected), resp.info()['Content-Range'])
         self.assertEqual("10", resp.info()['Content-Length'])
@@ -46,7 +49,8 @@ class TestFileHandler(TestUsingServer):
         resp = self.request("/document.txt", headers={"Range":"bytes=10-"})
         self.assertEqual(206, resp.getcode())
         data = resp.read()
-        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
+        with open(os.path.join(doc_root, "document.txt"), 'rb') as f:
+            expected = f.read()
         self.assertEqual(len(expected) - 10, len(data))
         self.assertEqual("bytes 10-%i/%i" % (len(expected) - 1, len(expected)), resp.info()['Content-Range'])
         self.assertEqual(expected[10:], data)
@@ -55,7 +59,8 @@ class TestFileHandler(TestUsingServer):
         resp = self.request("/document.txt", headers={"Range":"bytes=-10"})
         self.assertEqual(206, resp.getcode())
         data = resp.read()
-        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
+        with open(os.path.join(doc_root, "document.txt"), 'rb') as f:
+            expected = f.read()
         self.assertEqual(10, len(data))
         self.assertEqual("bytes %i-%i/%i" % (len(expected) - 10, len(expected) - 1, len(expected)),
                          resp.info()['Content-Range'])
@@ -65,7 +70,8 @@ class TestFileHandler(TestUsingServer):
         resp = self.request("/document.txt", headers={"Range":"bytes=1-2,5-7,6-10"})
         self.assertEqual(206, resp.getcode())
         data = resp.read()
-        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
+        with open(os.path.join(doc_root, "document.txt"), 'rb') as f:
+            expected = f.read()
         self.assertTrue(resp.info()["Content-Type"].startswith("multipart/byteranges; boundary="))
         boundary = resp.info()["Content-Type"].split("boundary=")[1]
         parts = data.split(b"--" + boundary.encode("ascii"))
@@ -82,12 +88,20 @@ class TestFileHandler(TestUsingServer):
     def test_range_invalid(self):
         with self.assertRaises(HTTPError) as cm:
             self.request("/document.txt", headers={"Range":"bytes=11-10"})
-        self.assertEqual(cm.exception.code, 416)
 
-        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
+        with cm.exception as exc:
+            # Ensure we read the response
+            exc.read()
+            self.assertEqual(exc.code, 416)
+
+        with open(os.path.join(doc_root, "document.txt"), 'rb') as f:
+            expected = f.read()
         with self.assertRaises(HTTPError) as cm:
             self.request("/document.txt", headers={"Range":"bytes=%i-%i" % (len(expected), len(expected) + 10)})
-        self.assertEqual(cm.exception.code, 416)
+        with cm.exception as exc:
+            # Ensure we read the response
+            exc.read()
+            self.assertEqual(exc.code, 416)
 
     def test_sub_config(self):
         resp = self.request("/sub.sub.txt")
@@ -129,7 +143,10 @@ class TestFunctionHandler(TestUsingServer):
         with pytest.raises(HTTPError) as cm:
             self.request(route[1])
 
-        assert cm.value.code == 500
+        with cm.value as exc:
+            # Ensure we read the response
+            exc.read()
+            assert exc.code == 500
 
     def test_tuple_2_rv(self):
         @wptserve.handlers.handler
@@ -180,7 +197,10 @@ class TestFunctionHandler(TestUsingServer):
         with pytest.raises(HTTPError) as cm:
             self.request(route[1])
 
-        assert cm.value.code == 500
+        with cm.value as exc:
+            # Ensure we read the response
+            exc.read()
+            assert exc.code == 500
 
     def test_none_rv(self):
         @wptserve.handlers.handler
@@ -266,23 +286,43 @@ class TestPythonHandler(TestUsingServer):
         self.assertEqual("text/plain", resp.info()["Content-Type"])
         self.assertEqual(b"PASS", resp.read())
 
+    def test_directory(self):
+        route = ("GET", "/defaultpy", wptserve.handlers.python_script_handler)
+        self.server.router.register(*route)
+        resp = self.request("/defaultpy")
+        self.assertEqual(200, resp.getcode())
+        self.assertEqual("text/plain", resp.info()["Content-Type"])
+        # default.py returns "default", default.sub.py returns "default.sub".
+        # Because this should find the first matching default*.py file
+        # lexicographically sorted, this should have gotten "default".
+        self.assertEqual(b"default", resp.read())
+
     def test_no_main(self):
         with pytest.raises(HTTPError) as cm:
             self.request("/no_main.py")
 
-        assert cm.value.code == 500
+        # Ensure we read the response
+        with cm.value as exc:
+            exc.read()
+            assert exc.code == 500
 
     def test_invalid(self):
         with pytest.raises(HTTPError) as cm:
             self.request("/invalid.py")
 
-        assert cm.value.code == 500
+        with cm.value as exc:
+            # Ensure we read the response
+            exc.read()
+            assert exc.code == 500
 
     def test_missing(self):
         with pytest.raises(HTTPError) as cm:
             self.request("/missing.py")
 
-        assert cm.value.code == 404
+        with cm.value as exc:
+            # Ensure we read the response
+            exc.read()
+            assert exc.code == 404
 
 
 class TestDirectoryHandler(TestUsingServer):
@@ -312,6 +352,17 @@ class TestAsIsHandler(TestUsingServer):
         self.assertEqual("PASS", resp.info()["X-Test"])
         self.assertEqual(b"Content", resp.read())
         #Add a check that the response is actually sane
+
+    def test_directory_fails(self):
+        route = ("GET", "/subdir", wptserve.handlers.as_is_handler)
+        self.server.router.register(*route)
+        with pytest.raises(HTTPError) as cm:
+            self.request("/subdir")
+
+        with cm.value as exc:
+            # Ensure we read the response
+            exc.read()
+            assert exc.code == 500
 
 
 class TestH2Handler(TestUsingH2Server):
@@ -398,6 +449,12 @@ class TestWindowHandler(TestWrapperHandlerUsingServer):
         self.run_wrapper_test('foo.window.html',
                               'text/html', serve.WindowHandler)
 
+class TestWindowModulesHandler(TestWrapperHandlerUsingServer):
+    dummy_files = {'foo.any.js': b'// META: global=window-module\n'}
+
+    def test_any_window_module_html(self):
+        self.run_wrapper_test('foo.any.window-module.html',
+                              'text/html', serve.WindowModulesHandler)
 
 class TestAnyHtmlHandler(TestWrapperHandlerUsingServer):
     dummy_files = {'foo.any.js': b'',

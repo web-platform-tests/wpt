@@ -1,1 +1,0 @@
-Feature-Policy: ch-device-memory *; ch-dpr 'none'; ch-viewport-width 'self'; ch-ua 'self'; ch-ua-mobile 'none'

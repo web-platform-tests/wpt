@@ -1,23 +1,25 @@
-# mypy: no-warn-return-any
-
 from enum import IntEnum
 from typing import Iterator, Optional
 
-# TODO(bashi): Remove import check suppressions once aioquic dependency is
-# resolved.
-from aioquic.buffer import UINT_VAR_MAX_SIZE, Buffer, BufferReadError  # type: ignore
+from aioquic.buffer import UINT_VAR_MAX_SIZE, Buffer, BufferReadError
 
 
 class CapsuleType(IntEnum):
     # Defined in
-    # https://www.ietf.org/archive/id/draft-ietf-masque-h3-datagram-03.html.
-    DATAGRAM = 0xff37a0
-    REGISTER_DATAGRAM_CONTEXT = 0xff37a1
-    REGISTER_DATAGRAM_NO_CONTEXT = 0xff37a2
-    CLOSE_DATAGRAM_CONTEXT = 0xff37a3
+    # https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-04#section-8.2
+    DATAGRAM_DRAFT04 = 0xff37a0
+    REGISTER_DATAGRAM_CONTEXT_DRAFT04 = 0xff37a1
+    REGISTER_DATAGRAM_NO_CONTEXT_DRAFT04 = 0xff37a2
+    CLOSE_DATAGRAM_CONTEXT_DRAFT04 = 0xff37a3
+    # Defined in
+    # https://datatracker.ietf.org/doc/html/rfc9297#section-5.4
+    DATAGRAM_RFC = 0x00
     # Defined in
     # https://www.ietf.org/archive/id/draft-ietf-webtrans-http3-01.html.
     CLOSE_WEBTRANSPORT_SESSION = 0x2843
+    # Defined in
+    # https://datatracker.ietf.org/doc/html/draft-ietf-webtrans-http3-14#section-4.7
+    WT_DRAIN_SESSION = 0x78ae
 
 
 class H3Capsule:
@@ -25,6 +27,7 @@ class H3Capsule:
     Represents the Capsule concept defined in
     https://ietf-wg-masque.github.io/draft-ietf-masque-h3-datagram/draft-ietf-masque-h3-datagram.html#name-capsules.
     """
+
     def __init__(self, type: int, data: bytes) -> None:
         """
         :param type the type of this Capsule. We don't use CapsuleType here
@@ -50,6 +53,7 @@ class H3CapsuleDecoder:
     A decoder of H3Capsule. This is a streaming decoder and can handle multiple
     decoders.
     """
+
     def __init__(self) -> None:
         self._buffer: Optional[Buffer] = None
         self._type: Optional[int] = None
@@ -103,7 +107,7 @@ class H3CapsuleDecoder:
             if self._final:
                 raise e
             if not self._buffer:
-                return 0
+                return
             size = self._buffer.capacity - self._buffer.tell()
             if size >= UINT_VAR_MAX_SIZE:
                 raise e

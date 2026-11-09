@@ -40,19 +40,22 @@
     await anim.ready;
 
     // 0%
-    container.scrollTop = 600;
-    await waitForNextFrame();
+    await runAndWaitForFrameUpdate(() => {
+      container.scrollTop = 640;
+    });
     assert_percents_equal(anim.currentTime, 0);
 
     // 50%
-    container.scrollTop = 800;
-    await waitForNextFrame();
+    await runAndWaitForFrameUpdate(() => {
+      container.scrollTop = 800;
+    });
     assert_percents_equal(anim.currentTime, 50);
 
     // 100%
-    container.scrollTop = 1000;
-    await waitForNextFrame();
+    await runAndWaitForFrameUpdate(() => {
+      container.scrollTop = 960;
+    });
     assert_percents_equal(anim.currentTime, 100);
-  }, 'Default ViewTimeline is not affected by scroll-padding');
+  }, 'Default ViewTimeline is affected by scroll-padding');
 </script>
 </html>

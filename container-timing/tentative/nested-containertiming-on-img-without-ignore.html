@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: an image with containertiming (no ignore) inside an outer containertiming root</title>
+<body>
+<style>
+body {
+  margin: 0;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/container-timing/resources/container-timing-helpers.js"></script>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
+    const outer = addContainerRoot(document.body, 'outer_ct');
+    addSquare100Image(outer, {containertiming: 'image_ct', id: 'my_id'});
+
+    const beforeRender = performance.now();
+
+    const entries = await getContainerEntries(t);
+    assert_equals(entries.length, 2,
+        'two entries expected: one for the image root, one for the outer root');
+
+    const entry_outer = entries.find(e => e.identifier == 'outer_ct');
+    checkContainerEntry(entry_outer, 'outer_ct', 'my_id', beforeRender);
+    checkContainerIntersectionRect(entry_outer, [0, 100, 0, 100]);
+    checkContainerSize(entry_outer, 10000);
+
+    const entry_image = entries.find(e => e.identifier == 'image_ct');
+    checkContainerEntry(entry_image, 'image_ct', 'my_id', beforeRender);
+    checkContainerIntersectionRect(entry_image, [0, 100, 0, 100]);
+    checkContainerSize(entry_image, 10000);
+  }, 'Image with containertiming (no ignore) inside outer containertiming reports under itself and propagates to the outer root.');
+</script>
+
+</body>

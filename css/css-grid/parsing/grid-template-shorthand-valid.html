@@ -41,17 +41,20 @@ test_valid_value("grid-template", '"a" [a] [b] "b"', '"a" [a b] "b"');
 test_valid_value("grid-template", '"a" [a] "b"');
 test_valid_value("grid-template", '"a" / 0', '"a" / 0px');
 test_valid_value("grid-template", '"a" 10px / 10px');
+test_valid_value("grid-template", '"a" calc(100% - 10px) / calc(10px)');
 test_valid_value("grid-template", '"a" [a] "b" 10px');
 test_valid_value("grid-template", '"a" [a] "b" 10px [a]');
 test_valid_value("grid-template", '"a" [a] [a] "b" 10px', '"a" [a a] "b" 10px');
 test_valid_value("grid-template", '"a" [a] [] "b" 10px', '"a" [a] "b" 10px');
+test_valid_value("grid-template", '"a" 10px [] [b] "b" 20px', '"a" 10px [b] "b" 20px');
+test_valid_value("grid-template", '"a" 10px [] [b] "b" 20px / 30px', '"a" 10px [b] "b" 20px / 30px');
 test_valid_value("grid-template", '"a" 10px [a] "b" [a]');
 test_valid_value("grid-template", '"a" [a] "b" [a]');
 test_valid_value("grid-template", '[a] "a" [a] "b" [a]');
 test_valid_value("grid-template", '"a" "a" [a] "b" [a]');
 test_valid_value("grid-template", '"a" [a] "b" [a] / 0', '"a" [a] "b" [a] / 0px');
 test_valid_value("grid-template", '"a" "a" [a] [a] "b" / auto', '"a" "a" [a a] "b" / auto');
-test_valid_value("grid-template", '"a" auto [a] "b" auto [b] / 10px');
+test_valid_value("grid-template", '"a" auto [a] "b" auto [b] / 10px', '"a" [a] "b" [b] / 10px');
 
 // FIXME: add more values to test full syntax
 

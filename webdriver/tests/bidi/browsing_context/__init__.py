@@ -1,5 +1,27 @@
+from typing import Any, Mapping
+
+import pytest
+from webdriver.bidi.error import UnknownErrorException
+from webdriver.bidi.modules.script import ContextTarget
+
+from .. import (
+    any_int,
+    any_string,
+    any_string_or_null,
+    recursive_compare,
+)
+
+
 def assert_browsing_context(
-    info, context, children=None, is_root=True, parent=None, url=None
+    info,
+    context,
+    children=None,
+    client_window=None,
+    original_opener=None,
+    parent_expected=True,
+    parent=None,
+    url=None,
+    user_context="default",
 ):
     assert "children" in info
     if children is not None:
@@ -7,6 +29,14 @@ def assert_browsing_context(
         assert len(info["children"]) == children
     else:
         assert info["children"] is None
+
+    assert "clientWindow" in info
+    assert isinstance(info["clientWindow"], str)
+    # Note: Only the tests for browsingContext.getTree should be allowed to
+    # pass None here because it's not possible to assert the exact client
+    # window id for other browser windows.
+    if client_window is not None:
+        assert info["clientWindow"] == client_window
 
     assert "context" in info
     assert isinstance(info["context"], str)
@@ -16,7 +46,7 @@ def assert_browsing_context(
     if context is not None:
         assert info["context"] == context
 
-    if is_root:
+    if parent_expected:
         if parent is None:
             # For a top-level browsing context there is no parent
             assert info["parent"] is None
@@ -32,17 +62,91 @@ def assert_browsing_context(
     assert "url" in info
     assert isinstance(info["url"], str)
     assert info["url"] == url
+    assert info["userContext"] == user_context
+    assert info["originalOpener"] == original_opener
 
 
-def assert_navigation_info(event, context, url):
-    assert "context" in event
-    assert isinstance(event["context"], str)
-    assert event["context"] == context
+async def assert_document_status(bidi_session, context, get_document_focus, visible, focused):
+    state = "visible" if visible else "hidden"
 
-    assert "url" in event
-    assert isinstance(event["url"], str)
-    assert event["url"] == url
+    assert await get_visibility_state(bidi_session, context) == state
+    assert await get_document_focus(context) is focused
 
-    assert "navigation" in event
-    if event["navigation"] is not None:
-        assert isinstance(event["navigation"], str)
+
+def assert_navigation_info(event, expected_navigation_info):
+    recursive_compare(
+        {
+            "context": any_string,
+            "navigation": any_string_or_null,
+            "timestamp": any_int,
+            "url": any_string,
+            **({"userContext": any_string} if "userContext" in event else {}),
+        },
+        event,
+    )
+
+    if "context" in expected_navigation_info:
+        assert event["context"] == expected_navigation_info["context"]
+
+    if "navigation" in expected_navigation_info:
+        assert event["navigation"] == expected_navigation_info["navigation"]
+
+    if "timestamp" in expected_navigation_info:
+        expected_navigation_info["timestamp"](event["timestamp"])
+
+    if "url" in expected_navigation_info:
+        assert event["url"] == expected_navigation_info["url"]
+
+    # This parameter should become mandatory when
+    # https://github.com/w3c/webdriver-bidi/issues/1071 is resolved.
+    if "userContext" in expected_navigation_info and "userContext" in event:
+        assert event["userContext"] == expected_navigation_info["userContext"]
+
+
+async def get_visibility_state(bidi_session, context: Mapping[str, Any]) -> str:
+    result = await bidi_session.script.call_function(
+        function_declaration="""() => {
+        return document.visibilityState;
+    }""",
+        target=ContextTarget(context["context"]),
+        await_promise=False)
+    return result["value"]
+
+
+def find_context_info(contexts, context):
+    return next(
+        (
+            context_info
+            for context_info in contexts
+            if context_info["context"] == context
+        ),
+        None,
+    )
+
+
+async def navigate_and_assert(
+    bidi_session, context, url, wait="complete", expected_error=False, expected_url=None
+):
+    if expected_url is None:
+        expected_url = url
+
+    if expected_error:
+        with pytest.raises(UnknownErrorException):
+            await bidi_session.browsing_context.navigate(
+                context=context['context'], url=url, wait=wait
+            )
+
+    else:
+        result = await bidi_session.browsing_context.navigate(
+            context=context['context'], url=url, wait=wait
+        )
+        assert result["url"] == expected_url
+        any_string(result["navigation"])
+
+        contexts = await bidi_session.browsing_context.get_tree(
+            root=context['context']
+        )
+        assert len(contexts) == 1
+        assert contexts[0]["url"] == expected_url
+
+        return contexts

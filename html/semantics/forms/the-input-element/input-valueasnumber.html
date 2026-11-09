@@ -73,9 +73,13 @@
      ["", NaN],
      ["0000-12", NaN],
      ["2019-00", NaN],
-     ["2019-12", 599]
+     ["2019-12", 599],
+     ["1969-12", -1],
    ]);
-   testValueAsNumberSetter("month", monthInput, [[599, "2019-12"]]);
+   testValueAsNumberSetter("month", monthInput, [
+     [599, "2019-12"],
+     [-1, "1969-12"],
+   ]);
 
    const weekInput = document.getElementById("input_week");
    testValueAsNumberGetter("week", weekInput, [
@@ -83,11 +87,13 @@
      ["0000-W50", NaN],
      ["2019-W00", NaN],
      ["2019-W60", NaN],
-     ["2019-W50", 1575849600000]
+     ["2019-W50", 1575849600000],
+     ["1969-W20", -20217600000],
    ]);
    testValueAsNumberSetter("week", weekInput, [
      [0, "1970-W01"],
-     [1575849600000, "2019-W50"]
+     [1575849600000, "2019-W50"],
+     [-20217600000, "1969-W20"],
    ]);
 
    const timeInput = document.getElementById("input_time");
@@ -102,7 +108,9 @@
    testValueAsNumberSetter("time", timeInput, [
      [0, "00:00"],
      [12 * 3600 * 1000, "12:00"],
-     [((23 * 3600) + (59 * 60)) * 1000, "23:59"]
+     [((23 * 3600) + (59 * 60)) * 1000, "23:59"],
+     [2.7343337071894478e26, "10:54:10.944"],
+     [-3600 * 1000, "23:00"]
    ]);
 
    const dateTimeLocalInput = document.getElementById("input_datetime-local");
@@ -113,7 +121,9 @@
    ]);
    testValueAsNumberSetter("datetime-local", dateTimeLocalInput, [
      [1575936000000, "2019-12-10T00:00"],
-     [1575979200000, "2019-12-10T12:00"]
+     [1575979200000, "2019-12-10T12:00"],
+     [-1000 * 3600 * 24, "1969-12-31T00:00"],
+     [2.7343337071894478e26, ""]
    ]);
 
    const numberInput = document.getElementById("input_number");

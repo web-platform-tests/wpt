@@ -13,6 +13,7 @@ body { margin: 0; }
    height: 350px;
    position: relative;
    font-family: Ahem;
+   line-height: 1;
 }
 .block > :nth-child(1) { font-size:24px; }
 .block > :nth-child(2) { font-size:32px; }
@@ -28,11 +29,12 @@ body { margin: 0; }
 .extraRightPadding { padding-right: 30px; }
 .inline { display: inline-block; }
 .item { display: inline-block; }
+.item.horizontalTB:not(.bottom) { margin-left: 0px; }
 .bottom { vertical-align: bottom; }
 </style>
 
 <p>4x1 with parallel and orthogonal items.</p>
-<div class="block verticalLR"><div class="item horizontalTB bottom">É</div><div class="item">É</div><div class="item bottom horizontalTB">É</div><div class="item">É</div></div>
-<div class="block verticalLR"><div class="item horizontalTB bottom extraRightPadding">É</div><div class="item extraLeftPadding">É</div><div class="item bottom horizontalTB">É</div><div class="item">É</div></div>
+<div class="block verticalLR"><div class="item horizontalTB">É</div><div class="item">É</div><div class="item horizontalTB">É</div><div class="item">É</div></div>
+<div class="block verticalLR"><div class="item horizontalTB extraRightPadding">É</div><div class="item extraLeftPadding">É</div><div class="item horizontalTB">É</div><div class="item">É</div></div>
 <div class="block verticalRL"><div class="item horizontalTB bottom">É</div><div class="item">É</div><div class="item bottom horizontalTB">É</div><div class="item">É</div></div>
 <div class="block verticalRL"><div class="item horizontalTB bottom extraRightPadding">É</div><div class="item extraLeftPadding">É</div><div class="item bottom horizontalTB">É</div><div class="item">É</div></div>

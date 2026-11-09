@@ -1,13 +1,15 @@
+import asyncio
 import functools
 from typing import (
     Any,
-    Awaitable,
     Callable,
     Optional,
     Mapping,
     MutableMapping,
     TYPE_CHECKING,
 )
+
+from ..undefined import UNDEFINED
 
 if TYPE_CHECKING:
     from ..client import BidiSession
@@ -49,7 +51,8 @@ class command:
         self.params_fn = fn
         self.result_fn: Optional[Callable[..., Any]] = None
 
-    def result(self, fn: Callable[[Any, MutableMapping[str, Any]], Mapping[str, Any]]) -> None:
+    def result(self, fn: Callable[[Any, MutableMapping[str, Any]],
+                                  Any]) -> None:
         self.result_fn = fn
 
     def __set_name__(self, owner: Any, name: str) -> None:
@@ -61,7 +64,9 @@ class command:
         @functools.wraps(params_fn)
         async def inner(self: Any, **kwargs: Any) -> Any:
             raw_result = kwargs.pop("raw_result", False)
-            params = params_fn(self, **kwargs)
+            extension_params = kwargs.pop("_extension_params", {})
+
+            params = remove_undefined(params_fn(self, **kwargs))
 
             # Convert the classname and the method name to a bidi command name
             mod_name = owner.__name__[0].lower() + owner.__name__[1:]
@@ -69,23 +74,31 @@ class command:
                 mod_name = f"{owner.prefix}:{mod_name}"
             cmd_name = f"{mod_name}.{to_camelcase(name)}"
 
+            # Verify specified vendor parameters
+            for key in extension_params:
+                if ":" not in key:
+                    raise ValueError(f"Extension parameter '{key}' misses prefix.")
+
+            # Merge into params (vendor keys win if duplicates)
+            params.update(extension_params)
+
             future = await self.session.send_command(cmd_name, params)
             result = await future
 
             if result_fn is not None and not raw_result:
                 # Convert the result if we have a conversion function defined
-                result = result_fn(self, result)
+                if asyncio.iscoroutinefunction(result_fn):
+                    result = await result_fn(self, result)
+                else:
+                    result = result_fn(self, result)
             return result
 
         # Overwrite the method on the owner class with the wrapper
         setattr(owner, name, inner)
 
-    def __call__(*args: Any, **kwargs: Any) -> Awaitable[Any]:
-        # This isn't really used, but mypy doesn't understand __set_name__
-        pass
-
 
 class BidiModule:
+
     def __init__(self, session: "BidiSession"):
         self.session = session
 
@@ -97,3 +110,55 @@ def to_camelcase(name: str) -> str:
     for i in range(1, len(parts)):
         parts[i] = parts[i].title()
     return "".join(parts)
+
+
+def remove_undefined(obj: Any) -> Any:
+    """
+    Removes entries from a dictionary where the value is UNDEFINED. Also removes
+    UNDEFINED values from lists. Recursively processes nested dictionaries and
+    lists.
+
+    >>> from ..undefined import UNDEFINED
+    >>> remove_undefined({"a": 1, "b": UNDEFINED, "c": 3})
+    {'a': 1, 'c': 3}
+
+    >>> remove_undefined({"a": 1, "b": {"x": UNDEFINED, "y": 2}, "c": UNDEFINED})
+    {'a': 1, 'b': {'y': 2}}
+
+    >>> remove_undefined({"a": 1, "b": [1, UNDEFINED, 3], "c": UNDEFINED})
+    {'a': 1, 'b': [1, 3]}
+
+    >>> remove_undefined({"a": 1, "b": [{"x": UNDEFINED, "y": 2}], "c": UNDEFINED})
+    {'a': 1, 'b': [{'y': 2}]}
+
+    >>> remove_undefined({"a": UNDEFINED, "b": {"x": UNDEFINED}})
+    {'b': {}}
+
+    >>> remove_undefined({})
+    {}
+
+    >>> remove_undefined([])
+    []
+
+    >>> remove_undefined(1)
+    1
+
+    >>> remove_undefined("foo")
+    'foo'
+
+    >>> remove_undefined(None)
+
+    """
+    if isinstance(obj, Mapping):
+        new_obj = {}
+        for key, value in obj.items():
+            if value is not UNDEFINED:
+                new_obj[key] = remove_undefined(value)
+        return new_obj
+    elif isinstance(obj, list):
+        new_list = []
+        for item in obj:
+            if item is not UNDEFINED:
+                new_list.append(remove_undefined(item))
+        return new_list
+    return obj

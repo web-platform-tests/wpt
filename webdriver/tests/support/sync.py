@@ -1,5 +1,6 @@
 import asyncio
 import collections
+import inspect
 import sys
 import time
 
@@ -23,14 +24,16 @@ class Poll(object):
     on the page.
     """
 
-    def __init__(self,
-                 session,
-                 timeout=DEFAULT_TIMEOUT,
-                 interval=DEFAULT_INTERVAL,
-                 raises=error.TimeoutException,
-                 message=None,
-                 ignored_exceptions=None,
-                 clock=time):
+    def __init__(
+        self,
+        session,
+        timeout=DEFAULT_TIMEOUT,
+        interval=DEFAULT_INTERVAL,
+        raises=error.TimeoutException,
+        message=None,
+        ignored_exceptions=None,
+        clock=time,
+    ):
         """
         Configure the poller to have a custom timeout, interval,
         and list of ignored exceptions.  Optionally a different time
@@ -62,8 +65,10 @@ class Poll(object):
             If not used, an `error.TimeoutException` is raised.
             If it is `None`, no exception is raised on the poll elapsing.
 
-        :param message: An optional message to include in `raises`'s
-            message if the `until` condition times out.
+        :param message: An optional fallback message to include in `raises`'s
+            message if the `until` condition times out and no assertion failure
+            or other exception message from calling the condition callback is
+            available.
 
         :param ignored_exceptions: Ignore specific types of exceptions
             whilst waiting for the condition.  Any exceptions not in this list
@@ -79,7 +84,7 @@ class Poll(object):
         self.exc_msg = message
         self.clock = clock
 
-        exceptions = []
+        exceptions = [AssertionError]
         if ignored_exceptions is not None:
             if isinstance(ignored_exceptions, collections.abc.Iterable):
                 exceptions.extend(iter(ignored_exceptions))
@@ -104,43 +109,44 @@ class Poll(object):
         timeout duration is reached.
 
         :param condition: A callable function whose return value will
-            be returned by this function.
+            be returned by this function. Use assert statements within this
+            callback to see more detailed error messages.
         """
-        rv = None
-        tb = None
         start = self.clock.time()
         end = start + self.timeout
 
         while not self.clock.time() >= end:
+            condition_msg = result = traceback = None
+
             try:
                 next = self.clock.time() + self.interval
-                rv = condition(self.session)
+                result = condition(self.session)
             except (KeyboardInterrupt, SystemExit):
                 raise
             except self.exceptions:
-                _, _, tb = sys.exc_info()
+                _, condition_msg, traceback = sys.exc_info()
 
             # re-adjust the interval depending on how long
             # the callback took to evaluate the condition
             interval_new = max(next - self.clock.time(), 0)
 
-            if not rv:
-                self.clock.sleep(interval_new)
-                continue
-
-            if rv is not None:
-                return rv
+            if result is None:  # assertions were used, so no return value
+                if not traceback:  # assertions in the condition all passed, we are done
+                    return
+            else:
+                if result:  # condition returned True, we are done
+                    return result
 
             self.clock.sleep(interval_new)
 
         if self.exc_cls is not None:
             elapsed = round((self.clock.time() - start), 1)
-            message = "Timed out after {} seconds".format(elapsed)
-            if self.exc_msg is not None:
-                message = "{} with message: {}".format(message, self.exc_msg)
-            raise self.exc_cls(message=message).with_traceback(tb)
+            message = f"Timed out after {elapsed} seconds"
+            if condition_msg or self.exc_msg:
+                message += f" with message: {condition_msg or self.exc_msg}"
+            raise self.exc_cls(message=message).with_traceback(traceback)
         else:
-            return rv
+            return result
 
 
 class AsyncPoll(object):
@@ -156,14 +162,16 @@ class AsyncPoll(object):
     on the page.
     """
 
-    def __init__(self,
-                 session,
-                 timeout=DEFAULT_TIMEOUT,
-                 interval=DEFAULT_INTERVAL,
-                 raises=error.TimeoutException,
-                 message=None,
-                 ignored_exceptions=None,
-                 clock=None):
+    def __init__(
+        self,
+        session,
+        timeout=DEFAULT_TIMEOUT,
+        interval=DEFAULT_INTERVAL,
+        raises=error.TimeoutException,
+        message=None,
+        ignored_exceptions=None,
+        clock=None,
+    ):
         """
         Configure the poller to have a custom timeout, interval,
         and list of ignored exceptions.  Optionally a different time
@@ -195,8 +203,10 @@ class AsyncPoll(object):
             If not used, an `error.TimeoutException` is raised.
             If it is `None`, no exception is raised on the poll elapsing.
 
-        :param message: An optional message to include in `raises`'s
-            message if the `until` condition times out.
+        :param message: An optional fallback message to include in `raises`'s
+            message if the `until` condition times out and no assertion failure
+            or other exception message from calling the condition callback is
+            available.
 
         :param ignored_exceptions: Ignore specific types of exceptions
             whilst waiting for the condition.  Any exceptions not in this list
@@ -212,7 +222,7 @@ class AsyncPoll(object):
         self.exc_msg = message
         self.clock = clock if clock is not None else asyncio.get_event_loop()
 
-        exceptions = []
+        exceptions = [AssertionError]
         if ignored_exceptions is not None:
             if isinstance(ignored_exceptions, collections.abc.Iterable):
                 exceptions.extend(iter(ignored_exceptions))
@@ -220,7 +230,7 @@ class AsyncPoll(object):
                 exceptions.append(ignored_exceptions)
         self.exceptions = tuple(set(exceptions))
 
-    async def until(self, condition):
+    async def until(self, condition, *args, **kwargs):
         """
         This will repeatedly evaluate `condition` in anticipation
         for a truthy return value, or the timeout to expire.
@@ -237,38 +247,47 @@ class AsyncPoll(object):
         timeout duration is reached.
 
         :param condition: A callable function whose return value will
-            be returned by this function.
+            be returned by this function. Use assert statements within this
+            callback to see more detailed error messages.
         """
-        result = None
-        traceback = None
 
         async def poll():
-            result = None
+            start = self.clock.time()
+            end = start + self.timeout
 
-            while True:
+            while not self.clock.time() >= end:
+                condition_msg = result = traceback = None
+
                 next = self.clock.time() + self.interval
 
                 try:
-                    result = condition(self.session)
+                    _result = condition(self.session, *args, **kwargs)
+                    result = await _result if inspect.isawaitable(_result) else _result
+                except (KeyboardInterrupt, SystemExit):
+                    raise
                 except self.exceptions:
-                    _, _, traceback = sys.exc_info()
+                    _, condition_msg, traceback = sys.exc_info()
 
                 # re-adjust the interval depending on how long
                 # the callback took to evaluate the condition
                 interval_new = max(next - self.clock.time(), 0)
 
-                if result:
-                    return result
+                if result is None:  # assertions were used, so no return value
+                    if not traceback:  # assertions in the condition all passed, we are done
+                        return
+                else:
+                    if result:  # condition returned True, we are done
+                        return result
 
                 await asyncio.sleep(interval_new)
 
-        try :
-            result = await asyncio.wait_for(poll(), timeout=self.timeout)
-        except asyncio.TimeoutError:
             if self.exc_cls is not None:
-                message = f"Timed out after {self.timeout} seconds"
-                if self.exc_msg is not None:
-                    message = f"{message} with message: {self.exc_msg}"
+                elapsed = round((self.clock.time() - start), 1)
+                message = f"Timed out after {elapsed} seconds"
+                if condition_msg or self.exc_msg:
+                    message += f" with message: {condition_msg or self.exc_msg}"
                 raise self.exc_cls(message=message).with_traceback(traceback)
             else:
                 return result
+
+        return await poll()

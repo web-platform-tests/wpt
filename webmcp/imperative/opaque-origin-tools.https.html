@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP Opaque Origin Tool</title>
+<link rel="author" href="mailto:dom@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+promise_test(async t => {
+  // Assert that our CSP header took effect.
+  assert_equals(self.origin, 'null');
+
+  await document.modelContext.registerTool({
+    name: 'opaque_tool',
+    description: 'Opaque tool description',
+    execute: async () => 'success'
+  });
+
+  // The tool should be available, but its execution is rejected because opaque
+  // origins lose their same-origin identity during string serialization ("null").
+  const tools = await document.modelContext.getTools();
+  const tool = tools.find(t => t.name === 'opaque_tool');
+
+  await promise_rejects_dom(
+    t,
+    'NotSupportedError',
+    document.modelContext.executeTool(tool),
+    'executeTool() must reject with NotSupportedError in opaque origin documents'
+  );
+}, 'An opaque origin document can register but not execute its own tools');
+
+// Executing a tool whose origin as returned from `getTools()` is "null"
+// synchronously rejects the execution Promise. "null" fails to parse as a URL,
+// because we don't parse it relative to the document's URL as a base URL.
+//
+// Script used to be able to pass a fabricated tool whose origin was an
+// arbitrary string (e.g., an unparseable URL, or a URL with an opaque origin),
+// but `executeTool()` now only accepts a real `Tool`, whose `origin` is always
+// the serialization of the registering document's origin. A compromised
+// renderer supplying an opaque target origin is covered by the
+// `SecurityExploitBrowserTestWebMCPEnabled.ExecuteRemoteScriptToolOpaqueTargetOrigin`
+// Chromium browser test.
+promise_test(async t => {
+  const tools = await document.modelContext.getTools();
+  const tool = tools.find(t => t.name === 'opaque_tool');
+  assert_equals(tool.origin, "null", "getTools() gives");
+
+  let events = [];
+  const p = document.modelContext.executeTool(tool);
+
+  // Since `executeTool()` synchronously rejects the Promise for opaque origins,
+  // the microtask to run the catch reaction is already queued before
+  // `queueMicrotask()` is invoked below.
+  p.catch(() => events.push('rejection'));
+
+  // Queue another microtask immediately after.
+  queueMicrotask(() => events.push('microtask'));
+
+  await promise_rejects_dom(
+    t,
+    'NotSupportedError',
+    document.modelContext.executeTool(tool, {"param1":"value"}),
+    'executeTool() must reject with NotSupportedError in opaque origin documents'
+  );
+
+  assert_array_equals(events, ['rejection', 'microtask'],
+    'returned promise is rejected before custom microtask is queued');
+}, 'executeTool() rejects synchronously for origin "null" that fails to parse as a URL');
+</script>
+</body>
+</html>

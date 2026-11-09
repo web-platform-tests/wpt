@@ -4,6 +4,7 @@
 <link rel="help" href="https://drafts.csswg.org/cssom-view/#smooth-scrolling">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/dom/events/scrolling/scroll_support.js"></script>
 <style>
   .filler { height: 10000px }
 
@@ -24,6 +25,10 @@
   <div class="filler"></div>
 </div>
 <script>
+  promise_test(async () => {
+    await waitForCompositorReady();
+  }, "Make sure the page is ready for animation.");
+
   var instantHistoryNavigationTest =
     async_test("Instant scrolling while doing history navigation.");
   var smoothHistoryNavigationTest =
@@ -45,7 +50,7 @@
       window.onhashchange = function() {
         instantHistoryNavigationTest.step(function() {
           assert_equals(location.hash, "", "Shouldn't be scrolled to a fragment.");
-          assert_equals(window.scrollY, 0, "Shouldn't be scrolled back to top yet.");
+          assert_equals(window.scrollY, 0, "Should be scrolled to top.");
         });
         p.remove();
         instantHistoryNavigationTest.done();
@@ -65,7 +70,6 @@
     });
     location.hash = "foo";
   };
-  instant();
 
   function smooth() {
     document.documentElement.className = "";
@@ -105,4 +109,9 @@
   };
 
   testContainer.style.display = "none";
+
+  // Setting location.hash while loading results in a replace load, which we don't want.
+  window.onload = () => {
+    step_timeout(instant, 0);
+  }
 </script>

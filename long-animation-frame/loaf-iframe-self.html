@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Long Animation Frame Timing: iframes (self)</title>
+<meta name="timeout" content="long">
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+<div id="log"></div>
+<script>
+const host_info = get_host_info();
+
+for (const origin of ["ORIGIN", "REMOTE_ORIGIN", "HTTP_NOTSAMESITE_ORIGIN"]) {
+    promise_test(async t => {
+        const [executor] = await prepare_exec_iframe(t, host_info[origin]);
+        await new Promise(resolve => window.requestAnimationFrame(resolve));
+        await new Promise(resolve => t.step_timeout(resolve, 0));
+        await executor.execute_script(async (duration) => {
+            const entryPromise = new Promise(resolve => new PerformanceObserver(list => {
+                resolve();
+            }).observe({entryTypes: ["long-animation-frame"]}));
+            while (true) {
+                await new Promise(resolve => window.requestAnimationFrame(resolve));
+                const timeout = new Promise(resolve => setTimeout(() => resolve("timeout"), duration * 2));
+                setTimeout(() => {
+                    const deadline = performance.now() + duration;
+                    while (performance.now() < deadline) {}
+                }, 0);
+                const res = await Promise.race([entryPromise, timeout]);
+                if (res !== "timeout")
+                    break;
+            }
+        }, [very_long_frame_duration]);
+    }, `frames receive own long animation frames (${origin})`);
+}
+
+</script>
+</body>

@@ -1,8 +1,15 @@
-// META: global=window,worker
+// META: global=window,dedicatedworker,sharedworker
+// META: pac=/common/proxy-all.sub.pac
+
+// The PAC file sends every request to wptserve. With this, a port that is
+// not blocked gets a response even though nothing listens on it and the host
+// only resolves through the proxy.
+var PROXIED_HOST = "bad-port.wpt";
 
 // list of bad ports according to
 // https://fetch.spec.whatwg.org/#port-blocking
 var BLOCKED_PORTS_LIST = [
+    0,
     1,    // tcpmux
     7,    // echo
     9,    // discard
@@ -72,6 +79,7 @@ var BLOCKED_PORTS_LIST = [
     2049, // nfs
     3659, // apple-sasl
     4045, // lockd
+    4190, // sieve
     5060, // sip
     5061, // sips
     6000, // x11
@@ -81,12 +89,21 @@ var BLOCKED_PORTS_LIST = [
     6667, // irc (default)
     6668, // irc (alternate)
     6669, // irc (alternate)
+    6679, // osaut
     6697, // irc+tls
     10080, // amanda
 ];
 
+promise_test(function(t){
+    let url = new URL(`http://${PROXIED_HOST}:30303/common/blank.html`);
+    return fetch(url, {mode: "no-cors"}).then(function(response){
+        assert_equals(response.type, "opaque");
+    });
+}, 'Request on a port that is not bad should succeed through the proxy.');
+
 BLOCKED_PORTS_LIST.map(function(a){
     promise_test(function(t){
-        return promise_rejects_js(t, TypeError, fetch("http://example.com:" + a))
+        let url = new URL(`http://${PROXIED_HOST}:${a}/common/blank.html`);
+        return promise_rejects_js(t, TypeError, fetch(url, {mode: "no-cors"}))
     }, 'Request on bad port ' + a + ' should throw TypeError.');
 });

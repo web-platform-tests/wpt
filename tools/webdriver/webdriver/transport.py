@@ -2,6 +2,7 @@
 
 import json
 import select
+import socket
 
 from http.client import HTTPConnection
 from typing import Dict, List, Mapping, Sequence, Tuple
@@ -74,7 +75,7 @@ class Response:
         cls_name = self.__class__.__name__
         if self.error:
             return f"<{cls_name} status={self.status} error={repr(self.error)}>"
-        return f"<{cls_name: }tatus={self.status} body={json.dumps(self.body)}>"
+        return f"<{cls_name}: status={self.status} body={json.dumps(self.body)}>"
 
     def __str__(self):
         return json.dumps(self.body, indent=2)
@@ -92,7 +93,7 @@ class Response:
             headers = ResponseHeaders(http_response.getheaders())
         except ValueError:
             raise ValueError("Failed to decode response body as JSON:\n" +
-                http_response.read())
+                             repr(http_response.read()))
 
         return cls(http_response.status, body, headers)
 
@@ -102,9 +103,9 @@ class HTTPWireProtocol:
     Transports messages (commands and responses) over the WebDriver
     wire protocol.
 
-    Complex objects, such as ``webdriver.Element``, ``webdriver.Frame``,
-    and ``webdriver.Window`` are by default not marshaled to enable
-    use of `session.transport.send` in WPT tests::
+    Complex objects, such as ``webdriver.ShadowRoot``, ``webdriver.WebElement``,
+    ``webdriver.WebFrame``, and ``webdriver.WebWindow`` are by default not
+    marshaled to enable use of `session.transport.send` in WPT tests::
 
         session = webdriver.Session("127.0.0.1", 4444)
         response = transport.send("GET", "element/active", None)
@@ -180,17 +181,17 @@ class HTTPWireProtocol:
         """
         Send a command to the remote.
 
-        The request `body` must be JSON serialisable unless a
+        The request `body` must be JSON serializable unless a
         custom `encoder` has been provided.  This means complex
-        objects such as ``webdriver.Element``, ``webdriver.Frame``,
-        and `webdriver.Window`` are not automatically made
-        into JSON.  This behaviour is, however, provided by
+        objects such as ``webdriver.ShadowRoot``, ``webdriver.WebElement``,
+        ``webdriver.WebFrame``, and `webdriver.Window`` are not automatically
+        made into JSON.  This behavior is, however, provided by
         ``webdriver.protocol.Encoder``, should you want it.
 
         Similarly, the response body is returned au natural
         as plain JSON unless a `decoder` that converts web
         element references to ``webdriver.Element`` is provided.
-        Use ``webdriver.protocol.Decoder`` to achieve this behaviour.
+        Use ``webdriver.protocol.Decoder`` to achieve this behavior.
 
         The client will attempt to use persistent HTTP connections.
 
@@ -204,6 +205,8 @@ class HTTPWireProtocol:
             ``json.JSONEncoder`` unless specified.
         :param decoder: JSON decoder class, which defaults to
             ``json.JSONDecoder`` unless specified.
+        :param timeout: Optional timeout for the underlying socket. `None` will
+            retain the existing timeout.
         :param codec_kwargs: Surplus arguments passed on to `encoder`
             and `decoder` on construction.
 
@@ -211,7 +214,7 @@ class HTTPWireProtocol:
             describing the HTTP response received from the remote end.
 
         :raises ValueError: If `body` or the response body are not
-            JSON serialisable.
+            JSON serializable.
         """
         if body is None and method == "POST":
             body = {}
@@ -222,17 +225,9 @@ class HTTPWireProtocol:
                 payload = json.dumps(body, cls=encoder, **codec_kwargs)
             except ValueError:
                 raise ValueError("Failed to encode request body as JSON:\n"
-                    "%s" % json.dumps(body, indent=2))
+                                 "%s" % json.dumps(body, indent=2))
 
-        # When the timeout triggers, the TestRunnerManager thread will reuse
-        # this connection to check if the WebDriver its alive and we may end
-        # raising an httplib.CannotSendRequest exception if the WebDriver is
-        # not responding and this httplib.request() call is blocked on the
-        # runner thread. We use the boolean below to check for that and restart
-        # the connection in that case.
-        self._last_request_is_blocked = True
-        response = self._request(method, uri, payload, headers, timeout=None)
-        self._last_request_is_blocked = False
+        response = self._request(method, uri, payload, headers, timeout=timeout)
         return Response.from_http(response, decoder=decoder, **codec_kwargs)
 
     def _request(self, method, uri, payload, headers=None, timeout=None):
@@ -248,19 +243,31 @@ class HTTPWireProtocol:
         if self._last_request_is_blocked or self._has_unread_data():
             self.close()
 
+        # When the timeout triggers, the TestRunnerManager thread will reuse
+        # this connection to check if the WebDriver its alive and we may end
+        # raising an httplib.CannotSendRequest exception if the WebDriver is
+        # not responding and this httplib.request() call is blocked on the
+        # runner thread. We use the boolean below to check for that and restart
+        # the connection in that case.
+        self._last_request_is_blocked = True
         self.connection.request(method, url, payload, headers)
 
-        # timeout for request has to be set just before calling httplib.getresponse()
-        # and the previous value restored just after that, even on exception raised
+        # `timeout` for this request has to be set just before calling
+        # `getresponse()` and the previous value restored just after that,
+        # even on exception raised. Initialize `previous_timeout` to the global
+        # default socket timeout in case the lazily created socket doesn't exist
+        # before `getresponse()`.
+        previous_timeout = socket.getdefaulttimeout()
         try:
-            if timeout:
-                previous_timeout = self._conn.gettimeout()
-                self._conn.settimeout(timeout)
+            if timeout and self.connection.sock:
+                previous_timeout = self.connection.sock.gettimeout()
+                self.connection.sock.settimeout(timeout)
             response = self.connection.getresponse()
         finally:
-            if timeout:
-                self._conn.settimeout(previous_timeout)
+            if timeout and self.connection.sock:
+                self.connection.sock.settimeout(previous_timeout)
 
+        self._last_request_is_blocked = False
         return response
 
     def _has_unread_data(self):

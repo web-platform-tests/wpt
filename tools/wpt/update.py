@@ -5,28 +5,25 @@ import sys
 
 from mozlog import commandline
 
+from tools.manifest import manifest
+from wptrunner import metadata, wptcommandline
+
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
-sys.path.insert(0, os.path.abspath(os.path.join(wpt_root, "tools")))
 
 
 def manifest_update(test_paths):
-    from manifest import manifest  # type: ignore
     for url_base, paths in test_paths.items():
         manifest.load_and_update(
-            paths["tests_path"],
-            paths["manifest_path"],
+            paths.tests_path,
+            paths.manifest_path,
             url_base)
 
 
 def create_parser_update():
-    from wptrunner import wptcommandline
-
     return wptcommandline.create_parser_metadata_update()
 
 
 def update_expectations(_, **kwargs):
-    from wptrunner import metadata, wptcommandline
-
     commandline.setup_logging("web-platform-tests",
                               kwargs,
                               {"mach": sys.stdout},
@@ -43,7 +40,6 @@ def update_expectations(_, **kwargs):
 
     update_properties = metadata.get_properties(properties_file=kwargs["properties_file"],
                                                 extra_properties=kwargs["extra_property"],
-                                                config=kwargs["config"],
                                                 product=kwargs["product"])
 
     manifest_update(kwargs["test_paths"])

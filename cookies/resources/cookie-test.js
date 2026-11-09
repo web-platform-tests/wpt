@@ -5,7 +5,6 @@ async function getAndExpireCookiesForDefaultPathTest() {
     try {
       const iframe = document.createElement('iframe');
       iframe.style = 'display: none';
-      iframe.src = '/cookies/resources/echo-cookie.html';
       iframe.addEventListener('load', (e) => {
         const win = e.target.contentWindow;
         const iframeCookies = win.getCookies();
@@ -14,6 +13,7 @@ async function getAndExpireCookiesForDefaultPathTest() {
           resolve(iframeCookies);
         });
       }, {once: true});
+      iframe.src = '/cookies/resources/echo-cookie.html';
       document.documentElement.appendChild(iframe);
     } catch (e) {
       reject(e);
@@ -28,7 +28,6 @@ async function getAndExpireCookiesForRedirectTest(location) {
     try {
       const iframe = document.createElement('iframe');
       iframe.style = 'display: none';
-      iframe.src = location;
       const listener = (e) => {
         if (typeof e.data == 'object' && 'cookies' in e.data) {
           window.removeEventListener('message', listener);
@@ -38,8 +37,25 @@ async function getAndExpireCookiesForRedirectTest(location) {
       };
       window.addEventListener('message', listener);
       iframe.addEventListener('load', (e) => {
-        e.target.contentWindow.postMessage('getAndExpireCookiesForRedirectTest', '*');
+        // When redirecting to a directory path (e.g. ending in '/'), wptserve
+        // returns an auto-generated directory listing that does not include
+        // path-redirect-shared.js. For same-origin directory listings, read
+        // cookies from the iframe's document and expire them directly.
+        if (iframe.contentDocument &&
+            !iframe.contentWindow.setTestContextUsingRootWindow) {
+          const cookies = iframe.contentDocument.cookie;
+          test_driver.delete_all_cookies()
+              .finally(() => {
+                window.removeEventListener('message', listener);
+                document.documentElement.removeChild(iframe);
+              })
+              .then(() => resolve(cookies), reject);
+          return;
+        }
+        e.target.contentWindow.postMessage('getAndExpireCookiesForRedirectTest',
+                                           '*');
       }, {once: true});
+      iframe.src = location;
       document.documentElement.appendChild(iframe);
     } catch (e) {
       reject(e);
@@ -49,7 +65,10 @@ async function getAndExpireCookiesForRedirectTest(location) {
 
 // httpCookieTest sets a `cookie` (via HTTP), then asserts it was or was not set
 // via `expectedValue` (via the DOM). Then cleans it up (via test driver). Most
-// tests do not set a Path attribute, so `defaultPath` defaults to true.
+// tests do not set a Path attribute, so `defaultPath` defaults to true. If the
+// cookie values are expected to cause the HTTP request or response to fail, the
+// test can be made to pass when this happens via `allowFetchFailure`, which
+// defaults to false.
 //
 // `cookie` may be a single cookie string, or an array of cookie strings, where
 // the order of the array items represents the order of the Set-Cookie headers
@@ -57,27 +76,44 @@ async function getAndExpireCookiesForRedirectTest(location) {
 //
 // Note: this function has a dependency on testdriver.js. Any test files calling
 // it should include testdriver.js and testdriver-vendor.js
-function httpCookieTest(cookie, expectedValue, name, defaultPath = true) {
-  return promise_test(async (t) => {
-    // The result is ignored as we're expiring cookies for cleaning here.
-    await getAndExpireCookiesForDefaultPathTest();
-    await test_driver.delete_all_cookies();
-    t.add_cleanup(test_driver.delete_all_cookies);
+function httpCookieTest(cookie, expectedValue, name, defaultPath = true,
+                        allowFetchFailure = false) {
+  return promise_test((t) => {
+    var skipAssertions = false;
+    return new Promise(async (resolve, reject) => {
+      // The result is ignored as we're expiring cookies for cleaning here.
+      await getAndExpireCookiesForDefaultPathTest();
+      await test_driver.delete_all_cookies();
+      t.add_cleanup(test_driver.delete_all_cookies);
 
-    let encodedCookie = encodeURIComponent(JSON.stringify(cookie));
-    await fetch(`/cookies/resources/cookie.py?set=${encodedCookie}`);
-    let cookies = document.cookie;
-    if (defaultPath) {
-      // for the tests where a Path is set from the request-uri
-      // path, we need to go look for cookies in an iframe at that
-      // default path.
-      cookies = await getAndExpireCookiesForDefaultPathTest();
-    }
-    if (Boolean(expectedValue)) {
-      assert_equals(cookies, expectedValue, 'The cookie was set as expected.');
-    } else {
-      assert_equals(cookies, expectedValue, 'The cookie was rejected.');
-    }
+      let encodedCookie = encodeURIComponent(JSON.stringify(cookie));
+      try {
+        await fetch(`/cookies/resources/cookie.py?set=${encodedCookie}`);
+      } catch {
+        if (allowFetchFailure) {
+          skipAssertions = true;
+        } else {
+          reject('Failed to fetch /cookies/resources/cookie.py');
+        }
+      }
+      let cookies = document.cookie;
+      if (defaultPath) {
+        // for the tests where a Path is set from the request-uri
+        // path, we need to go look for cookies in an iframe at that
+        // default path.
+        cookies = await getAndExpireCookiesForDefaultPathTest();
+      }
+      resolve(cookies);
+    }).then((cookies) => {
+      if (skipAssertions) {
+        return;
+      }
+      if (Boolean(expectedValue)) {
+        assert_equals(cookies, expectedValue, 'The cookie was set as expected.');
+      } else {
+        assert_equals(cookies, expectedValue, 'The cookie was rejected.');
+      }
+    });
   }, name);
 }
 

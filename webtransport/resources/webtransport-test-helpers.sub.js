@@ -1,16 +1,9 @@
-// The file including this must also include /common/get-host-info.sub.js to
-// pick up the necessary constants.
-
-const HOST = get_host_info().ORIGINAL_HOST;
-const PORT = '{{ports[webtransport-h3][0]}}';
-const BASE = `https://${HOST}:${PORT}`;
-
 // Wait for the given number of milliseconds (ms).
 function wait(ms) { return new Promise(res => step_timeout(res, ms)); }
 
 // Create URL for WebTransport session.
 function webtransport_url(handler) {
-  return `${BASE}/webtransport/handlers/${handler}`;
+  return `https://{{host}}:{{ports[webtransport-h3][0]}}/webtransport/handlers/${handler}`;
 }
 
 // Converts WebTransport stream error code to HTTP/3 error code.
@@ -18,6 +11,23 @@ function webtransport_url(handler) {
 function webtransport_code_to_http_code(n) {
   const first = 0x52e4a40fa8db;
   return first + n + Math.floor(n / 0x1e);
+}
+
+// Read all chunks from |readable_stream| and return as an array of arrays
+async function read_stream(readable_stream) {
+  const reader = readable_stream.getReader();
+
+  let chunks = [];
+  while (true) {
+    const {value: chunk, done} = await reader.read();
+    if (done) {
+      break;
+    }
+    chunks.push(chunk);
+  }
+  reader.releaseLock();
+
+  return chunks;
 }
 
 // Read all chunks from |readable_stream|, decode chunks to a utf-8 string, then
@@ -53,13 +63,13 @@ function check_and_remove_standard_headers(headers) {
   delete headers[':scheme'];
   assert_equals(headers[':method'], 'CONNECT');
   delete headers[':method'];
-  assert_equals(headers[':authority'], `${HOST}:${PORT}`);
+  assert_equals(headers[':authority'], '{{host}}:{{ports[webtransport-h3][0]}}');
   delete headers[':authority'];
   assert_equals(headers[':path'], '/webtransport/handlers/echo-request-headers.py');
   delete headers[':path'];
   assert_equals(headers[':protocol'], 'webtransport');
   delete headers[':protocol'];
-  assert_equals(headers['origin'], `${get_host_info().ORIGIN}`);
+  assert_equals(headers['origin'], 'https://{{location[host]}}');
   delete headers['origin'];
 }
 
@@ -78,6 +88,18 @@ async function query(token) {
   }
 }
 
+// Polls the server until the stream close info for |token| is recorded, then
+// returns it. Avoids racing on a fixed delay for the close signal to arrive.
+async function query_stream_close_info(token) {
+  while (true) {
+    const data = await query(token);
+    if ('stream-close-info' in data) {
+      return data['stream-close-info'];
+    }
+    await wait(10);
+  }
+}
+
 async function readInto(reader, buffer) {
   let offset = 0;
 
@@ -92,4 +114,25 @@ async function readInto(reader, buffer) {
   }
 
   return buffer;
+}
+
+// Opens a new WebTransport connection.
+async function openWebTransport(remoteContextHelper) {
+  const url = webtransport_url('custom-response.py?:status=200');
+  await remoteContextHelper.executeScript((url) => {
+    window.testWebTransport = new WebTransport(url);
+    return window.testWebTransport.ready;
+  }, [url]);
+}
+
+// Opens a new WebTransport connection and then close it.
+async function openThenCloseWebTransport(remoteContextHelper) {
+  const url = webtransport_url('custom-response.py?:status=200');
+  await remoteContextHelper.executeScript((url) => {
+    window.testWebTransport = new WebTransport(url);
+    return window.testWebTransport.ready.then(async () => {
+      window.testWebTransport.close();
+      await window.testWebTransport.closed;
+    });
+  }, [url]);
 }

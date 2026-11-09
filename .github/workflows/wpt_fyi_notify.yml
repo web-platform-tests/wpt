@@ -1,0 +1,33 @@
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        required: true
+        type: string
+
+jobs:
+  wpt-fyi-notify:
+    name: "Notify ${{ matrix.host }}"
+    runs-on: ubuntu-slim
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [wpt.fyi, staging.wpt.fyi]
+    steps:
+      - name: ${{ matrix.host }}
+        uses: fjogeleit/http-request-action@v2
+        with:
+          url: 'https://${{ matrix.host }}/api/checks/github-actions/'
+          retry: 10
+          retryWait: 30000
+          timeout: 60000
+          method: 'POST'
+          contentType: 'application/x-www-form-urlencoded'
+          data: |
+            ${{ format(
+                  '{{"run_id": {0}, "owner": {1}, "repo": {2}, "artifact_name": {3}}}',
+                  toJSON(github.run_id),
+                  toJSON(github.repository_owner),
+                  toJSON(github.event.repository.name),
+                  toJSON(inputs.artifact-name)
+            ) }}

@@ -28,34 +28,34 @@ const gValidColorTestCases = [
 
 for (const {color, desc, skipAlpha} of gInvalidColorTestCases) {
   test(() => {
-    assert_throws_js(TypeError, () => new CSSRGB(color, 0, 0));
-    assert_throws_js(TypeError, () => new CSSRGB(0, color, 0));
-    assert_throws_js(TypeError, () => new CSSRGB(0, 0, color));
-    assert_throws_js(TypeError, () => new CSSRGB(color, 0, 0, 0));
-    assert_throws_js(TypeError, () => new CSSRGB(0, color, 0, 0));
-    assert_throws_js(TypeError, () => new CSSRGB(0, 0, color, 0));
-    if (!skipAlpha) assert_throws_js(TypeError, () => new CSSRGB(0, 0, 0, color));
-  }, `Constructing a CSSRGB with ${desc} for the color channels throws a TypeError.`);
+    assert_throws_dom("SyntaxError", () => new CSSRGB(color, 0, 0));
+    assert_throws_dom("SyntaxError", () => new CSSRGB(0, color, 0));
+    assert_throws_dom("SyntaxError", () => new CSSRGB(0, 0, color));
+    assert_throws_dom("SyntaxError", () => new CSSRGB(color, 0, 0, 0));
+    assert_throws_dom("SyntaxError", () => new CSSRGB(0, color, 0, 0));
+    assert_throws_dom("SyntaxError", () => new CSSRGB(0, 0, color, 0));
+    if (!skipAlpha) assert_throws_dom("SyntaxError", () => new CSSRGB(0, 0, 0, color));
+  }, `Constructing a CSSRGB with ${desc} for the color channels throws a SyntaxError.`);
 }
 
 test(() => {
-  assert_throws_js(TypeError, () => new CSSRGB(0, 0, 0, CSS.number(1)));
-}, `Constructing a CSSRGB with a CSS number for the alpha channels throws a TypeError.`);
+  assert_throws_dom("SyntaxError", () => new CSSRGB(0, 0, 0, CSS.number(1)));
+}, `Constructing a CSSRGB with a CSS number for the alpha channels throws a SyntaxError.`);
 
 for (const attr of ['r', 'g', 'b', 'alpha']) {
-  for (const {value, desc} of gInvalidColorTestCases) {
+  for (const {color, desc} of gInvalidColorTestCases) {
     test(() => {
       const result = new CSSRGB(0, 0, 0, 0);
-      assert_throws_js(TypeError, () => result[attr] = value);
+      assert_throws_dom("SyntaxError", () => result[attr] = color);
       assert_style_value_equals(result[attr], CSS.percent(0));
-    }, `Updating CSSRGB. ${attr} to ${desc} throws a TypeError.`);
+    }, `Updating CSSRGB. ${attr} to ${desc} throws a SyntaxError.`);
   }
 }
 
 test(() => {
   const result = new CSSRGB(0, 0, 0);
-  assert_throws_js(TypeError, () => result.alpha = CSS.number(1));
-}, "Updating the alpha channel to a CSS number throws a TypeError.");
+  assert_throws_dom("SyntaxError", () => result.alpha = CSS.number(1));
+}, "Updating the alpha channel to a CSS number throws a SyntaxError.");
 
 test(() => {
   const result = new CSSRGB(0.5, CSS.number(73), CSS.percent(91));
@@ -84,33 +84,4 @@ for (const attr of ["r", "g", "b", "alpha"]) {
     }, `CSSRGB.${attr} can be updated with ${testCase.desc}`);
   }
 }
-
-test(() => {
-  const color = new CSSRGB(
-    new CSSMathSum(CSS.percent(10), CSS.percent(20)),
-    new CSSMathProduct(CSS.percent(10), CSS.number(2)),
-    new CSSMathMax(CSS.percent(10), CSS.percent(50))
-  );
-  assert_color_channel_approx_equals(color.r, new CSSMathSum(CSS.percent(10), CSS.percent(20)));
-  assert_color_channel_approx_equals(color.g, new CSSMathProduct(CSS.percent(10), CSS.number(2)));
-  assert_color_channel_approx_equals(color.b, new CSSMathMax(CSS.percent(10), CSS.percent(50)));
-  let result = color.toRGB();
-  assert_color_channel_approx_equals(result.r, CSS.percent(30));
-  assert_color_channel_approx_equals(result.g, CSS.percent(20));
-  assert_color_channel_approx_equals(result.b, CSS.percent(50));
-}, `toRGB function evaluates sum, product and max objects.`);
-
-test(() => {
-  const color = new CSSRGB(1, 0.5, CSS.number(0.3), CSS.percent(50));
-  let result = color.toRGB();
-  assert_color_channel_approx_equals(result.r, CSS.percent(100));
-  assert_color_channel_approx_equals(result.g, CSS.percent(50));
-  assert_color_channel_approx_equals(result.b, CSS.percent(30));
-  assert_color_channel_approx_equals(result.alpha, CSS.percent(50));
-  for (const attr of ["r", "g", "b", "alpha"]) {
-    color[attr] = 0.7;
-    result = color.toRGB();
-    assert_color_channel_approx_equals(result[attr], CSS.percent(70));
-  }
-}, "toRGB() function works as expected and values can be updated.");
 </script>

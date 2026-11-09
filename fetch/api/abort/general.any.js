@@ -4,7 +4,10 @@
 // META: script=/common/get-host-info.sub.js
 // META: script=../request/request-error.js
 
-const BODY_METHODS = ['arrayBuffer', 'blob', 'formData', 'json', 'text'];
+const BODY_METHODS = ['arrayBuffer', 'blob', 'bytes', 'formData', 'json', 'text'];
+
+const error1 = new Error('error1');
+error1.name = 'error1';
 
 // This is used to close connections that weren't correctly closed during the tests,
 // otherwise you can end up running out of HTTP connections.
@@ -30,6 +33,26 @@ promise_test(async t => {
 
   await promise_rejects_dom(t, "AbortError", fetchPromise);
 }, "Aborting rejects with AbortError");
+
+promise_test(async t => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  controller.abort(error1);
+
+  const fetchPromise = fetch('../resources/data.json', { signal });
+
+  await promise_rejects_exactly(t, error1, fetchPromise, 'fetch() should reject with abort reason');
+}, "Aborting rejects with abort reason");
+
+promise_test(async t => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  const fetchPromise = fetch('../resources/data.json', { signal });
+  controller.abort(error1);
+
+  await promise_rejects_exactly(t, error1, fetchPromise, 'fetch() should reject with abort reason when aborted after fetch() called');
+}, "Aborting rejects with abort reason when aborted after fetch() called");
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -90,6 +113,22 @@ promise_test(async t => {
 
   await promise_rejects_dom(t, "AbortError", fetchPromise);
 }, "Signal on request object");
+
+promise_test(async t => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  controller.abort(error1);
+
+  const request = new Request('../resources/data.json', { signal });
+
+  assert_not_equals(request.signal, signal, 'Request has a new signal, not a reference');
+  assert_true(request.signal.aborted, `Request's signal has aborted`);
+  assert_equals(request.signal.reason, error1, `Request's signal's abort reason is error1`);
+
+  const fetchPromise = fetch(request);
+
+  await promise_rejects_exactly(t, error1, fetchPromise, "fetch() should reject with abort reason");
+}, "Signal on request object should also have abort reason");
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -209,6 +248,20 @@ for (const bodyMethod of BODY_METHODS) {
 
     assert_array_equals(log, [`${bodyMethod}-reject`, 'next-microtask']);
   }, `response.${bodyMethod}() rejects if already aborted`);
+
+  promise_test(async t => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    const response = await fetch('../resources/data.json', { signal });
+
+    controller.abort(error1);
+
+    const bodyPromise = response[bodyMethod]();
+
+    await promise_rejects_exactly(t, error1, bodyPromise,
+      `${bodyMethod}() should reject with abort reason`);
+  }, `response.${bodyMethod}() rejects with abort reason if already aborted`);
 }
 
 promise_test(async (t) => {
@@ -432,6 +485,33 @@ promise_test(async t => {
   const response = await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal });
   const reader = response.body.getReader();
 
+  controller.abort(error1);
+
+  await promise_rejects_exactly(t, error1, reader.read());
+  await promise_rejects_exactly(t, error1, reader.closed);
+
+  // The connection won't close immediately, but it should close at some point:
+  const start = Date.now();
+
+  await t.step_wait(async () => {
+    const response = await fetch(`../resources/stash-take.py?key=${stateKey}`);
+    const json = await response.json();
+    return json == 'closed';
+  }, "underlying connection should close");
+}, "Stream errors once aborted with abort reason. Underlying connection closed.");
+
+promise_test(async t => {
+  await abortRequests();
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+  const stateKey = token();
+  const abortKey = token();
+  requestAbortKeys.push(abortKey);
+
+  const response = await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal });
+  const reader = response.body.getReader();
+
   await reader.read();
 
   controller.abort();
@@ -490,6 +570,7 @@ promise_test(async t => {
   const fetchPromise = fetch('../resources/empty.txt', {
     body, signal,
     method: 'POST',
+    duplex: 'half',
     headers: {
       'Content-Type': 'text/plain'
     }
@@ -536,7 +617,7 @@ test(() => {
 
   controller.abort();
 
-  assert_array_equals(log, ['clone-aborted', 'original-aborted'], "Abort events fired in correct order");
+  assert_array_equals(log, ['original-aborted', 'clone-aborted'], "Abort events fired in correct order");
   assert_true(request.signal.aborted, 'Signal aborted');
   assert_true(clonedRequest.signal.aborted, 'Signal aborted');
 }, "Clone aborts with original controller");

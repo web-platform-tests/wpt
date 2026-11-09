@@ -5,8 +5,17 @@ const SUBFRAME = 'sub';
 
 async function isUnloadAllowed(remoteContextWrapper) {
   return remoteContextWrapper.executeScript(() => {
-    return document.featurePolicy.allowsFeature('unload');
+    return document.permissionsPolicy.allowsFeature('unload');
   });
+}
+
+// Checks whether a frame allows running unload handlers by checking the policy.
+async function assertWindowAllowsUnload(
+    remoteContextWrapper, name, {shouldRunUnload}) {
+  const maybeNot = shouldRunUnload ? '' : 'not ';
+  assert_equals(
+      await isUnloadAllowed(remoteContextWrapper), shouldRunUnload,
+      `${name}: unload in ${name} should ${maybeNot}be allowed`);
 }
 
 // Checks whether a frame runs unload handlers.
@@ -14,10 +23,8 @@ async function isUnloadAllowed(remoteContextWrapper) {
 // navigates the frame checking that the handler ran.
 async function assertWindowRunsUnload(
     remoteContextWrapper, name, {shouldRunUnload}) {
+  await assertWindowAllowsUnload(remoteContextWrapper, name, {shouldRunUnload});
   const maybeNot = shouldRunUnload ? '' : 'not ';
-  assert_equals(
-      await isUnloadAllowed(remoteContextWrapper), shouldRunUnload,
-      `${name}: unload in ${name} should ${maybeNot}be allowed`);
 
   // Set up recording of whether unload handler ran.
   await remoteContextWrapper.executeScript((name) => {

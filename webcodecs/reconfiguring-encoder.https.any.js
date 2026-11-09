@@ -1,3 +1,4 @@
+// META: timeout=long
 // META: global=window,dedicatedworker
 // META: script=/webcodecs/video-encoder-utils.js
 // META: variant=?av1
@@ -14,12 +15,11 @@ promise_setup(async () => {
     '?vp8': {codec: 'vp8'},
     '?vp9_p0': {codec: 'vp09.00.10.08'},
     '?vp9_p2': {codec: 'vp09.02.10.10'},
-    '?h264_avc': {codec: 'avc1.42001E', avc: {format: 'avc'}},
-    '?h264_annexb': {codec: 'avc1.42001E', avc: {format: 'annexb'}}
+    '?h264_avc': {codec: 'avc1.42001F', avc: {format: 'avc'}},
+    '?h264_annexb': {codec: 'avc1.42001F', avc: {format: 'annexb'}}
   }[location.search];
   config.hardwareAcceleration = 'prefer-software';
   config.bitrateMode = "constant";
-  config.scalabilityMode = "L1T2";
   config.framerate = 30;
   ENCODER_CONFIG = config;
 });
@@ -89,6 +89,7 @@ promise_test(async t => {
   for (let i = 0; i < frames_to_encode; i++) {
     var frame = createFrame(original_w, original_h, next_ts++);
     encoder.encode(frame, {});
+    frame.close();
   }
 
   params.width = new_w;
@@ -102,6 +103,7 @@ promise_test(async t => {
   for (let i = 0; i < frames_to_encode; i++) {
     var frame = createFrame(new_w, new_h, next_ts++);
     encoder.encode(frame, {});
+    frame.close();
   }
 
   await encoder.flush();

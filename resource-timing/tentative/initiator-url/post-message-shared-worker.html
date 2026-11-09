@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Resource Timing - initiatorUrl for resources fetched in a message handler in a shared worker</title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const worker = new SharedWorker(
+  "../../resources/message-handler-in-shared-worker.js");
+const {promise: workerPromise, resolve: resolveWorker} =
+  Promise.withResolvers();
+
+worker.port.onmessage = function(event) {
+  resolveWorker(event.data);
+}
+
+promise_test(async () => {
+  const {result, expected} = await workerPromise;
+  assert_equals(result, expected,
+    "initiatorUrl for resources fetched in message handler in worker thread");
+}, "check initiatorUrl for resources fetched in message handler in worker thread");
+
+worker.port.postMessage("please_test");
+</script>

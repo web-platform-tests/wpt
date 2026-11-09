@@ -10,9 +10,10 @@
 const audioProperties = [
   {name: "sampleRate", type: "number"},
   {name: "sampleSize", type: "number"},
-  {name: "echoCancellation", type: "boolean"},
+  {name: "echoCancellation", type: "boolean or string", validValues: [true, false, "all", "remote-only"]},
   {name: "autoGainControl", type: "boolean"},
   {name: "noiseSuppression", type: "boolean"},
+  {name: "voiceIsolation", type: "boolean"},
   {name: "latency", type: "number"},
   {name: "channelCount", type: "number"},
   {name: "deviceId", type: "string"},
@@ -61,6 +62,13 @@ function verifyEnumAllCapability(capability, enumMembers, testNamePrefix) {
   });
 }
 
+function verifyBooleanOrStringCapability(capability, validMembers) {
+  capability.forEach(c => {
+    assert_true(typeof c == "boolean" || typeof c == "string");
+    assert_in_array(c, validMembers);
+  });
+}
+
 function testCapabilities(capabilities, property, testNamePrefix) {
   let testName = testNamePrefix + " " + property.name;
   test(() => {
@@ -78,6 +86,12 @@ function testCapabilities(capabilities, property, testNamePrefix) {
   if (property.type == "boolean") {
     test(() => {
       verifyBooleanCapability(capability);
+    }, testName);
+  }
+
+  if (property.type == "boolean or string") {
+    test(() => {
+      verifyBooleanOrStringCapability(capability, property.validValues);
     }, testName);
   }
 

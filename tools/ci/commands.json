@@ -13,6 +13,16 @@
     "help": "Output a hosts file to stdout",
     "virtualenv": false
   },
+  "macos-display-configuration": {
+    "path": "macos_display_configuration.py",
+    "script": "run",
+    "parser": "create_parser",
+    "help": "Configure macOS displays (scale, color profile)",
+    "virtualenv": true,
+    "requirements": [
+      "requirements_macos_display_configuration.txt"
+    ]
+  },
   "regen-certs": {
     "path": "regen_certs.py",
     "script": "run",
@@ -68,6 +78,27 @@
     "virtualenv": true,
     "requirements": [
       "requirements_tc.txt"
+    ]
+  },
+  "tc-run": {
+    "path": "run_tc.py",
+    "script": "run_tc",
+    "parser": "get_parser",
+    "parse_known": true,
+    "help": "Run command in Taskcluster CI environment (for use in Docker image)",
+    "virtualenv": true,
+    "requirements": [
+      "requirements_tc.txt"
+    ]
+  },
+  "update-codeowners": {
+    "path": "update_codeowners.py",
+    "parser": "get_parser",
+    "script": "run_update_codeowners",
+    "help": "Update CODEOWNERS file",
+    "virtualenv": true,
+    "requirements": [
+      "requirements_update_codeowners.txt"
     ]
   }
 }

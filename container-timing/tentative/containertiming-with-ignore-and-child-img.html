@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: observe with a node with containertiming and containertimingignore, and an image child</title>
+<body>
+<style>
+body {
+  margin: 0;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/container-timing/resources/container-timing-helpers.js"></script>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
+    // containertimingignore on the root itself does not block its own paints,
+    // as containertiming takes precedence.
+    const div = addContainerRoot(document.body, 'div_ct', {
+      containertimingignore: ''
+    });
+    addSquare100Image(div, {id: 'img_id'});
+    const beforeRender = performance.now();
+
+    const entries = await getContainerEntries(t);
+    assert_equals(entries.length, 1);
+    const entry = entries[0];
+    checkContainerEntry(entry, 'div_ct', 'img_id', beforeRender)
+    checkContainerIntersectionRect(entry, [0, 100, 0, 100])
+    checkContainerSize(entry, 10000);
+  }, 'Paint of the image child of container timing with ignore is not blocked.');
+</script>
+
+</body>

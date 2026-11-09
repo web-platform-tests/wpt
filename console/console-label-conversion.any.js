@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker
+
 "use strict";
 // https://console.spec.whatwg/org/#counting
 // https://console.spec.whatwg/org/#timing

@@ -1,10 +1,11 @@
 import pytest
 
 from webdriver.bidi.modules.script import ContextTarget, ScriptEvaluateResultException
-from .. import assert_handle
+from ... import assert_handle
+
+pytestmark = pytest.mark.asyncio
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("result_ownership, should_contain_handle",
                          [("root", True), ("none", False), (None, False)])
 async def test_throw_exception(bidi_session, top_context, result_ownership, should_contain_handle):
@@ -18,7 +19,6 @@ async def test_throw_exception(bidi_session, top_context, result_ownership, shou
     assert_handle(exception.value.result["exceptionDetails"]["exception"], should_contain_handle)
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("result_ownership, should_contain_handle",
                          [("root", True), ("none", False), (None, False)])
 async def test_invalid_script(bidi_session, top_context, result_ownership, should_contain_handle):
@@ -32,7 +32,6 @@ async def test_invalid_script(bidi_session, top_context, result_ownership, shoul
     assert_handle(exception.value.result["exceptionDetails"]["exception"], should_contain_handle)
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("result_ownership, should_contain_handle",
                          [("root", True), ("none", False), (None, False)])
 async def test_rejected_promise(bidi_session, top_context, result_ownership, should_contain_handle):
@@ -46,13 +45,12 @@ async def test_rejected_promise(bidi_session, top_context, result_ownership, sho
     assert_handle(exception.value.result["exceptionDetails"]["exception"], should_contain_handle)
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("await_promise", [True, False])
 @pytest.mark.parametrize("result_ownership, should_contain_handle",
                          [("root", True), ("none", False), (None, False)])
 async def test_return_value(bidi_session, top_context, await_promise, result_ownership, should_contain_handle):
     result = await bidi_session.script.evaluate(
-        expression="Promise.resolve({a:1})",
+        expression="Promise.resolve({a: {b:1}})",
         await_promise=await_promise,
         result_ownership=result_ownership,
         target=ContextTarget(top_context["context"]))

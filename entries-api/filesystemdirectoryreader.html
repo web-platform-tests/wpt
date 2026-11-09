@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Entries API: FileSystemDirectoryReader with script-created DataTransfer</title>
+<link rel=help href="https://wicg.github.io/entries-api/#api-directoryreader">
+<link rel=author title="Euclid Ye" href="mailto:yezhizhenjiakang@gmail.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="automated-support.js"></script>
+<script>
+promise_test(async () => {
+  const names = [];
+  const dt = new DataTransfer();
+  for (let i = 0; i < 101; i++) {
+    const name = 'f' + i + '.txt';
+    names.push(name);
+    dt.items.add(new File(['x'], name));
+  }
+
+  const root = dt.items[0].webkitGetAsEntry().filesystem.root;
+  const entries = await readAll(root.createReader());
+
+  assert_equals(entries.length, names.length,
+                'readEntries() should return every entry in the directory');
+  assert_array_equals(entries.map(entry => entry.name).sort(),
+                      names.slice().sort(),
+                      'readEntries() should return every expected entry');
+  assert_array_equals(entries.map(entry => entry.fullPath).sort(),
+                      names.map(name => '/' + name).sort(),
+                      'each entry should have the expected full path');
+  assert_true(entries.every(entry => entry.isFile),
+              'every entry should be a file');
+  assert_false(entries.some(entry => entry.isDirectory),
+               'no entry should be a directory');
+}, 'readEntries() enumerates all entries in the root directory');
+
+promise_test(async () => {
+  const reader = createRoot().createReader();
+  await readAll(reader);
+  const entries = await new Promise((resolve, reject) => {
+    reader.readEntries(resolve, reject);
+  });
+  assert_equals(entries.length, 0,
+                'calling readEntries() when done yields an empty sequence');
+}, 'readEntries() returns an empty sequence once done');
+
+promise_test(async t => {
+  const reader = createRoot().createReader();
+  const first = new Promise((resolve, reject) => {
+    reader.readEntries(resolve, reject);
+  });
+  const second = new Promise(resolve => {
+    reader.readEntries(
+        t.unreached_func('readEntries() should fail if already reading'),
+        resolve);
+  });
+  const [entries, error] = await Promise.all([first, second]);
+  assert_equals(entries.length, 1, 'the first read succeeds');
+  assert_equals(error.name, 'InvalidStateError');
+  assert_equals(typeof error.message, 'string');
+}, 'readEntries() fails with InvalidStateError when a read is in progress');
+
+test(() => {
+  const root = createRoot();
+  assert_not_equals(root.createReader(), root.createReader());
+}, 'createReader() returns a new reader each time');
+</script>

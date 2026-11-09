@@ -2,8 +2,9 @@ import pytest
 
 from ... import recursive_compare, any_string
 
+pytestmark = pytest.mark.asyncio
 
-@pytest.mark.asyncio
+
 @pytest.mark.parametrize(
     "return_structure, result_type",
     [
@@ -50,7 +51,6 @@ async def test_remote_values_with_internal_id(
     recursive_compare(value, result_value)
 
 
-@pytest.mark.asyncio
 async def test_different_remote_values_have_unique_internal_ids(evaluate):
     result = await evaluate(
         "{const obj1 = [1]; const obj2 = {'foo': 'bar'}; [obj1, obj2, obj1, obj2]}"
@@ -63,3 +63,20 @@ async def test_different_remote_values_have_unique_internal_ids(evaluate):
 
     # Make sure that different duplicated objects have different internal ids
     assert internalId1 != internalId2
+
+
+async def test_nested_remote_values_have_same_internal_ids(evaluate):
+    result = await evaluate(
+        "{const obj1 = document; const obj2 = {}; ({key1:obj1, key2:obj2, nested:{key3:obj1, key4:obj2}}) }"
+    )
+
+    assert len(result["value"]) == 3
+
+    internalIdKey1 = result["value"][0][1]["internalId"]
+    internalIdKey2 = result["value"][1][1]["internalId"]
+    internalIdKey3 = result["value"][2][1]["value"][0][1]["internalId"]
+    internalIdKey4 = result["value"][2][1]["value"][1][1]["internalId"]
+
+    assert internalIdKey1 != internalIdKey2
+    assert internalIdKey1 == internalIdKey3
+    assert internalIdKey2 == internalIdKey4

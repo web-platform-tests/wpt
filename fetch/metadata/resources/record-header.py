@@ -18,6 +18,7 @@ def main(request, response):
   ## Handle the header retrieval request ##
   if b'retrieve' in request.GET:
     response.writer.write_status(200)
+    response.writer.write_header(b"Connection", b"close")
     response.writer.end_headers()
     try:
       header_value = request.server.stash.take(testId)
@@ -116,6 +117,11 @@ def main(request, response):
       image = file.read()
       file.close()
       return image
+
+    ## Return valid text content and Content-Type ##
+    if key.startswith(b"text"):
+      response.headers.set(b"Content-Type", b"text/plain")
+      return b""
 
     ## Return a valid dedicated worker
     if key.startswith(b"worker"):

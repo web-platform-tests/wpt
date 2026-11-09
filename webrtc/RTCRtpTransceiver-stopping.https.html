@@ -1,11 +1,16 @@
 <!doctype html>
 <meta charset=utf-8>
+<meta name="variant" content="?interop-2026">
+<meta name="variant" content="?rest">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
 'use strict';
+const rest = !new URLSearchParams(location.search).has("interop-2026");
+const interop2026 = !new URLSearchParams(location.search).has("rest");
 
 ['audio', 'video'].forEach((kind) => {
+  if (interop2026) {
   promise_test(async t => {
     const pc1 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -43,14 +48,15 @@
     assert_equals(transceiver.currentDirection, 'stopped',
                   'currentDirection after negotiation');
   }, `[${kind}] Locally stopped transceiver goes from stopping to stopped`);
+  }
 
+  if (rest) {
   promise_test(async t => {
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
 
     const transceiver = pc.addTransceiver(kind);
-    const trackEnded = new Promise(
-        r => { transceiver.receiver.track.onended = () => { r(); } });
+    const trackEnded = new Promise(r => transceiver.receiver.track.onended = r);
     assert_equals(transceiver.receiver.track.readyState, 'live');
     transceiver.stop();
     // Stopping triggers ending the track, but this happens asynchronously.
@@ -79,9 +85,15 @@
     // Applying the remote offer immediately ends the track, we don't need to
     // create or apply an answer.
     await pc2.setRemoteDescription(pc1.localDescription);
+    // sRD just resolved, so we're in the success task for sRD. The transition
+    // from live -> ended is queued right now.
+    assert_equals(pc2Transceiver.receiver.track.readyState, 'live');
+    await new Promise(r => pc2Transceiver.receiver.track.onended = r);
     assert_equals(pc2Transceiver.receiver.track.readyState, 'ended');
   }, `[${kind}] Remotely stopping a transceiver ends the track`);
+  }
 
+  if (interop2026) {
   promise_test(async t => {
     const pc1 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -125,7 +137,9 @@
     assert_equals(pc2Transceiver.currentDirection, 'stopped',
                   'currentDirection after negotiation');
   }, `[${kind}] Remotely stopped transceiver goes directly to stopped`);
+  }
 
+  if (rest) {
   promise_test(async t => {
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
@@ -152,11 +166,17 @@
     const [pc2Transceiver] = pc2.getTransceivers();
 
     // Rollback such that the transceiver is removed.
-    await pc2.setLocalDescription({type:'rollback'});
+    await pc2.setRemoteDescription({type:'rollback'});
     assert_equals(pc2.getTransceivers().length, 0);
+    // sRD just resolved, so we're in the success task for sRD. The transition
+    // from live -> ended is queued right now.
+    assert_equals(pc2Transceiver.receiver.track.readyState, 'live');
+    await new Promise(r => pc2Transceiver.receiver.track.onended = r);
     assert_equals(pc2Transceiver.receiver.track.readyState, 'ended');
   }, `[${kind}] Rollback when removing transceiver does end the track`);
+  }
 
+  if (interop2026) {
   // Same test as above but looking at direction and currentDirection.
   promise_test(async t => {
     const pc1 = new RTCPeerConnection();
@@ -172,7 +192,7 @@
     const [pc2Transceiver] = pc2.getTransceivers();
 
     // Rollback such that the transceiver is removed.
-    await pc2.setLocalDescription({type:'rollback'});
+    await pc2.setRemoteDescription({type:'rollback'});
     assert_equals(pc2.getTransceivers().length, 0);
     // The removed transceiver is stopped.
     assert_equals(pc2Transceiver.currentDirection, 'stopped',
@@ -183,7 +203,9 @@
     // A stopped transceiver has no mid.
     assert_equals(pc2Transceiver.mid, null, 'not associated');
   }, `[${kind}] Rollback when removing transceiver makes it stopped`);
+  }
 
+  if (rest) {
   promise_test(async t => {
     const pc1 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -213,5 +235,6 @@
     // Sanity check: the track should still be live when ontrack fires.
     assert_equals((await ontrackEvent).readyState, 'live');
   }, `[${kind}] Glare when transceiver is not removed does not end track`);
+  }
 });
 </script>

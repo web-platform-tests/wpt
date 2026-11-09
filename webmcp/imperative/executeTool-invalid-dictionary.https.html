@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP: executeTool argument validation checks</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+promise_test(async t => {
+  await document.modelContext.registerTool({
+    name: "legit_tool",
+    description: "Legitimate tool description",
+    execute: async (args) => "success"
+  });
+
+  const tools = await document.modelContext.getTools();
+  const legit = tools.find(t => t.name === "legit_tool");
+  assert_true(!!legit, "Legitimate tool must be successfully discovered");
+
+  // A plain object that mirrors every attribute of a real `Tool` is still not
+  // a `Tool`, so it must not be accepted.
+  const lookalike = {
+    name: legit.name,
+    description: legit.description,
+    title: legit.title,
+    window: legit.window,
+    origin: legit.origin,
+  };
+
+  await promise_rejects_js(
+    t,
+    TypeError,
+    document.modelContext.executeTool(lookalike),
+    "executeTool() must reject with TypeError for an object that is not a Tool"
+  );
+}, "executeTool() rejects with TypeError when passed an object that is not a Tool");
+
+promise_test(async t => {
+  await document.modelContext.registerTool({
+    name: "json-test-tool",
+    description: "Tool for JSON tests",
+    execute: async (args) => "success"
+  });
+
+  const tools = await document.modelContext.getTools();
+  const tool = tools.find(t => t.name === "json-test-tool");
+  assert_true(!!tool, "Legitimate tool must be successfully discovered");
+
+  const circularObject = {};
+  circularObject.self = circularObject;
+  await promise_rejects_js(
+    t,
+    TypeError,
+    document.modelContext.executeTool(tool, circularObject),
+    "executeTool() must reject with TypeError for circular JSON input"
+  );
+
+  const undefinedToJSON = {
+    toJSON: () => undefined
+  };
+  await promise_rejects_js(
+    t,
+    TypeError,
+    document.modelContext.executeTool(tool, undefinedToJSON),
+    "executeTool() must reject with TypeError when toJSON returns undefined"
+  );
+
+  await promise_rejects_js(
+    t,
+    TypeError,
+    document.modelContext.executeTool(tool, BigInt(42)),
+    "executeTool() must reject with TypeError for non-serializable types JSON input"
+  );
+}, "executeTool() rejects with TypeError for invalid JSON arguments");
+</script>
+</body>
+</html>

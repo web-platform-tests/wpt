@@ -16,6 +16,8 @@
 </div>
 <script>
 test_computed_value("justify-items", "normal");
+test_computed_value("justify-items", "unsafe normal");
+test_computed_value("justify-items", "safe normal");
 test_computed_value("justify-items", "stretch");
 
 test_computed_value("justify-items", "baseline");
@@ -26,8 +28,12 @@ test_computed_value("justify-items", "start");
 test_computed_value("justify-items", "end");
 test_computed_value("justify-items", "self-start");
 test_computed_value("justify-items", "self-end");
-test_computed_value("justify-items", "flex-start");
-test_computed_value("justify-items", "flex-end");
+test_computed_value("justify-items", "flex-start", "flow-start");
+test_computed_value("justify-items", "flex-end", "flow-end");
+test_computed_value("justify-items", "flow-start");
+test_computed_value("justify-items", "flow-end");
+test_computed_value("justify-items", "safe flow-start");
+test_computed_value("justify-items", "unsafe flow-end");
 test_computed_value("justify-items", "unsafe center");
 test_computed_value("justify-items", "safe self-end");
 test_computed_value("justify-items", "right");

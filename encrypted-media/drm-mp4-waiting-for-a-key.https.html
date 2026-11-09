@@ -14,7 +14,6 @@
     <script src=/encrypted-media/util/utils.js></script>
     <script src=/encrypted-media/util/utf8.js></script>
     <script src=/encrypted-media/util/testmediasource.js></script>
-    <script src=/encrypted-media/util/fetch.js></script>
 
     <!-- Message handler for DRM servers -->
     <script src=/encrypted-media/util/drm-messagehandler.js></script>
@@ -32,9 +31,9 @@
       <video id="videoelement" width="200px"></video>
     </div>
 
-    <script>
+    <script type="module">
         var contentItem = content['mp4-basic'],
-            keysystem = getSupportedKeySystem(),
+            keysystem = await getSupportedKeySystem(),
             handler = new MessageHandler( keysystem, contentItem ),
             config = {
                 video: document.getElementById('videoelement'),

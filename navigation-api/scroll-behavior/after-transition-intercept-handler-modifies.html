@@ -1,8 +1,9 @@
 <!doctype html>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
-<div id="main" style="height: 1000px; width: 1000px;"></div>
+<div id="main" style="height: 200vh; width: 200vw;"></div>
 <script>
 promise_test(async t => {
   // Wait for after the load event so that the navigation doesn't get converted
@@ -26,6 +27,10 @@ promise_test(async t => {
     }
   );
   await navigation.navigate("?go").finished;
+  // Ensure the layout changes and scroll position update from the first
+  // navigation are processed before navigating back, otherwise the restored
+  // scroll postion can be overwritten.
+  await new Promise(resolve => requestAnimationFrame(resolve));
   await navigation.back().finished;
   assert_equals(window.scrollY, 100);
 }, "scroll: state should be saved before intercept handlers run");

@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-from __future__ import print_function
-
 import os, re, os.path, glob
 
 head = re.compile( r"^(\s*</head>)", re.MULTILINE )
@@ -11,7 +9,6 @@ scripts = '''
     <!-- Polyfill files (NOTE: These are added by auto-generation script) -->
     <script src=/encrypted-media/polyfill/chrome-polyfill.js></script>
     <script src=/encrypted-media/polyfill/firefox-polyfill.js></script>
-    <script src=/encrypted-media/polyfill/edge-persistent-usage-record.js></script>
     <script src=/encrypted-media/polyfill/edge-keystatuses.js></script>
     <script src=/encrypted-media/polyfill/clearkey-polyfill.js></script>'''
 

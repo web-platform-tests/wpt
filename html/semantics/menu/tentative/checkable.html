@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+<link rel=author href=mailto:dom@chromium.org>
+<link rel=help href=https://open-ui.org/components/menu.explainer>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<menulist>
+  <fieldset>
+    <menuitemradio id=single1></menuitemradio>
+    <menuitemradio id=single2></menuitemradio>
+    <menuitemradio id=single3></menuitemradio>
+  </fieldset>
+  <fieldset>
+    <menuitemcheckbox id=multiple1></menuitemcheckbox>
+    <menuitemcheckbox id=multiple2></menuitemcheckbox>
+    <menuitemcheckbox id=multiple3></menuitemcheckbox>
+  </fieldset>
+  <fieldset>
+    <menuitemcheckbox defaultchecked id=defaultCheckedItem>Default checked</menuitemcheckbox>
+  </fieldset>
+</menulist>
+
+<script>
+test(() => {
+  const mi = document.createElement('menuitem');
+  assert_equals(mi.checked, undefined, "menuitem has no checked property");
+  assert_false(mi.matches(":checked"));
+
+  document.body.append(mi);
+
+  assert_equals(mi.checked, undefined, "menuitem has no checked property");
+  assert_false(mi.matches(":checked"));
+
+  mi.remove();
+}, "menuitem is not checkable");
+
+test(() => {
+  assert_false(single1.checked, "single1 not checked");
+  assert_false(single1.matches(":checked"), "single1 not :checked");
+  assert_false(single2.checked, "single2 not checked");
+  assert_false(single2.matches(":checked"), "single2 not :checked");
+  assert_false(single3.checked, "single3 not checked");
+  assert_false(single3.matches(":checked"), "single3 not :checked");
+
+  single1.checked = true;
+  assert_true(single1.checked, "single1 IS checked [after single1 checked]");
+  assert_true(single1.matches(":checked"),
+      "single1 IS :checked [after single1 checked]");
+  assert_false(single2.checked, "single2 not checked [after single1 checked]");
+  assert_false(single2.matches(":checked"),
+      "single2 not :checked [after single1 checked]");
+  assert_false(single3.checked, "single3 not checked [after single1 checked]");
+  assert_false(single3.matches(":checked"),
+      "single3 not :checked [after single1 checked]");
+
+  single2.checked = true;
+  assert_false(single1.checked, "single1 not checked [after single2 checked]");
+  assert_false(single1.matches(":checked"),
+      "single1 not :checked [after single2 checked]");
+  assert_true(single2.checked, "single2 IS checked [after single1 checked]");
+  assert_true(single2.matches(":checked"),
+      "single2 IS :checked [after single2 checked]");
+  assert_false(single3.checked, "single3 not checked [after single2 checked]");
+  assert_false(single3.matches(":checked"),
+      "single3 not :checked [after single2 checked]");
+
+  single3.checked = true;
+  assert_false(single1.checked, "single1 not checked [after single3 checked]");
+  assert_false(single1.matches(":checked"),
+      "single1 not :checked [after single3 checked]");
+  assert_false(single2.checked, "single2 not checked [after single3 checked]");
+  assert_false(single2.matches(":checked"),
+      "single2 not :checked [after single3 checked]");
+  assert_true(single3.checked, "single3 IS checked [after single3 checked]");
+  assert_true(single3.matches(":checked"),
+      "single3 IS :checked [after single3 checked]");
+}, "menuitemradio exclusivity");
+
+test(() => {
+  assert_false(multiple1.checked, "multiple1 not checked");
+  assert_false(multiple1.matches(":checked"), "multiple1 not :checked");
+  assert_false(multiple2.checked, "multiple2 not checked");
+  assert_false(multiple2.matches(":checked"), "multiple2 not :checked");
+  assert_false(multiple3.checked, "multiple3 not checked");
+  assert_false(multiple3.matches(":checked"), "multiple2 not :checked");
+
+  multiple1.checked = true;
+  assert_true(multiple1.checked, "multiple1 checked [after multiple1 checked]");
+  assert_true(multiple1.matches(":checked"),
+      "multiple1 IS :checked [after multiple1 checked]");
+  assert_false(multiple2.checked, "multiple2 not checked [after multiple1 checked]");
+  assert_false(multiple2.matches(":checked"),
+      "multiple2 not :checked [after multiple1 checked]");
+  assert_false(multiple3.checked, "multiple3 not checked [after multiple1 checked]");
+  assert_false(multiple3.matches(":checked"),
+      "multiple3 not :checked [after multiple1 checked]");
+
+  multiple2.checked = true;
+  assert_true(multiple1.checked, "multiple1 checked [after multiple2 checked]");
+  assert_true(multiple1.matches(":checked"),
+      "multiple1 IS :checked [after multiple2 checked]");
+  assert_true(multiple2.checked, "multiple2 checked [after multiple2 checked]");
+  assert_true(multiple2.matches(":checked"),
+      "multiple2 IS :checked [after multiple2 checked]");
+  assert_false(multiple3.checked, "multiple3 not checked [after multiple2 checked]");
+  assert_false(multiple3.matches(":checked"),
+      "multiple3 not :checked [after multiple2 checked]");
+
+  multiple3.checked = true;
+  assert_true(multiple1.checked, "multiple1 checked [after multiple3 checked]");
+  assert_true(multiple1.matches(":checked"),
+      "multiple1 IS :checked [after multiple3 checked]");
+  assert_true(multiple2.checked, "multiple2 checked [after multiple3 checked]");
+  assert_true(multiple2.matches(":checked"),
+      "multiple2 IS :checked [after multiple3 checked]");
+  assert_true(multiple3.checked, "multiple3 checked [after multiple3 checked]");
+  assert_true(multiple3.matches(":checked"),
+      "multiple3 IS checked [after multiple3 checked]");
+}, "menuitemcheckbox allows multiple checked items");
+
+test(() => {
+  const menulist = document.createElement('menulist');
+  const fieldset = menulist.appendChild(document.createElement('fieldset'));
+  const single1 = fieldset.appendChild(document.createElement('menuitemradio'));
+  const single2 = fieldset.appendChild(document.createElement('menuitemradio'));
+
+  single1.checked = true;
+  single2.checked = true;
+
+  assert_false(single1.checked, "single1 is unchecked");
+  assert_true(single2.checked, "single2 is checked");
+}, "menuitemradio exclusivity when disconnected");
+
+// Testing the `defaultchecked` content attribute and `defaultChecked` IDL
+// attribute.
+test(() => {
+  assert_true(defaultCheckedItem.checked,
+      "defaultchecked makes the menu item checked by default");
+  assert_true(defaultCheckedItem.matches(":default"),
+      ":default matches when the defaultchecked attribute is present");
+
+  // Unset the default while checkedness is still clean.
+  defaultCheckedItem.removeAttribute('defaultchecked');
+  assert_false(defaultCheckedItem.defaultChecked,
+      "defaultChecked IDL attribute reflects the content attribute");
+  assert_false(defaultCheckedItem.checked,
+      "Unsetting defaultchecked when checkedness is clean unchecks the item");
+  assert_false(defaultCheckedItem.matches(":default"),
+      ":default does not match when defaultchecked attribute is missing or false (1/2)");
+
+  // Toggle it again while checkedness is clean, but this time with the IDL
+  // attribute, which should reflect the content attribute.
+  defaultCheckedItem.defaultChecked = true;
+  assert_true(defaultCheckedItem.checked,
+      "Setting defaultChecked to true when checkedness is clean checks the item");
+  assert_true(defaultCheckedItem.matches(":default"),
+      ":default matches when the defaultchecked attribute is set, even via IDL");
+
+  // Unset checkedness, dirtying the default checkedness.
+  defaultCheckedItem.checked = false;
+  assert_true(defaultCheckedItem.defaultChecked,
+      "Default checkedness is still true");
+  assert_false(defaultCheckedItem.checked, "checked becomes false");
+  assert_true(defaultCheckedItem.matches(":default"),
+      "still matches the default checkedness");
+
+  // Unset default checkedness. This will only have the effect of changing the
+  // :default pseudo-class matching.
+  defaultCheckedItem.defaultChecked = false;
+  assert_false(defaultCheckedItem.matches(":default"),
+      ":default no longer matches");
+
+  // Set default checkedness back to true. Since the checkedness is now dirty,
+  // this won't change the actual checked state anymore, as the menu item has
+  // had its default checkedness overridden.
+  defaultCheckedItem.defaultChecked = true;
+  assert_false(defaultCheckedItem.checked,
+      "checked state is no longer dictated by default checkedness any");
+  assert_true(defaultCheckedItem.matches(":default"),
+      ":default matches again, following the default checkedness, even " +
+      "though the checkedness is dirty");
+}, "Default checkedness and checkedness dirtying on menuitemcheckbox");
+
+promise_test(async (t) => {
+  const menulist = document.createElement('menulist');
+  document.body.appendChild(menulist);
+  const item1 = menulist.appendChild(document.createElement('menuitemradio'));
+  const item2 = menulist.appendChild(document.createElement('menuitemradio'));
+
+  // 1. Verify that setting checked via IDL attribute does not fire checked
+  // event.
+  let item1CheckedEvents = 0;
+  item1.addEventListener('checked', () => {
+    item1CheckedEvents++;
+  });
+  item1.checked = true;
+  assert_equals(item1CheckedEvents, 0,
+      "setting .checked to true via IDL should not fire checked event");
+  item1.checked = false;
+  assert_equals(item1CheckedEvents, 0,
+      "setting .checked to false via IDL should not fire checked event");
+
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  assert_equals(item1CheckedEvents, 0,
+      "no checked event should be queued when setting .checked via IDL");
+
+  // 2. Verify that activation (click) queues a checked event on menuitemradio.
+  let eventReceived = null;
+  const item1EventPromise = new Promise(resolve => {
+    item1.addEventListener('checked', (e) => {
+      eventReceived = e;
+      resolve();
+    }, { once: true });
+  });
+
+  item1.click();
+  // Checked event should be queued asynchronously on user interaction task source,
+  // so it does not fire synchronously during click().
+  assert_equals(eventReceived, null,
+      "checked event should not fire synchronously during click()");
+  assert_true(item1.checked,
+      "item should be checked synchronously after activation");
+
+  await item1EventPromise;
+  assert_not_equals(eventReceived, null,
+      "checked event should fire asynchronously after activation");
+  assert_equals(eventReceived.type, "checked",
+      "event type should be 'checked'");
+  assert_false(eventReceived.bubbles, "checked event should not bubble");
+  assert_false(eventReceived.cancelable, "checked event should not be cancelable");
+  assert_true(item1.checked,
+      "item should be checked after checked event fires");
+  assert_true(item1.matches(':checked'),
+      "item should match :checked after checked event fires");
+
+  // 3. Verify event timing with exclusivity update, and exclusivity update does not fire checked event.
+  let item2EventReceived = false;
+  let item1EventsDuringItem2Click = 0;
+
+  item1.addEventListener('checked', () => {
+    item1EventsDuringItem2Click++;
+  });
+  const item2EventPromise = new Promise(resolve => {
+    item2.addEventListener('checked', () => {
+      item2EventReceived = true;
+      resolve();
+    }, { once: true });
+  });
+
+  item2.click();
+  assert_false(item2EventReceived,
+      "item2 checked event should not fire synchronously");
+  assert_true(item2.checked,
+      "item2 should be checked synchronously after click");
+  assert_false(item1.checked,
+      "item1 should be unchecked synchronously after click due to exclusivity");
+
+  await item2EventPromise;
+  assert_true(item2EventReceived,
+      "checked event should fire on item2 activation");
+  assert_true(item2.checked,
+      "item2 should be checked after item2's checked event");
+  assert_false(item1.checked,
+      "item1 should be unchecked after item2's checked event");
+  assert_equals(item1EventsDuringItem2Click, 0,
+      "unchecking item1 due to exclusivity should not fire checked event on item1");
+
+  menulist.remove();
+}, "checked event fires asynchronously on menuitemradio activation, but not from IDL attribute setter or exclusivity updates");
+
+promise_test(async () => {
+  const menulist = document.createElement('menulist');
+  document.body.appendChild(menulist);
+  const item = menulist.appendChild(document.createElement('menuitemcheckbox'));
+
+  item.checked = true;
+
+  let eventFired = false;
+  const eventPromise = new Promise(resolve => {
+    item.addEventListener('checked', () => {
+      eventFired = true;
+      resolve();
+    }, { once: true });
+  });
+
+  item.click();
+  assert_false(eventFired,
+      "checked event should not fire synchronously on uncheck");
+  assert_false(item.checked,
+      "item should be unchecked synchronously after click");
+
+  await eventPromise;
+  assert_true(eventFired,
+      "checked event should fire asynchronously when toggling from checked to unchecked");
+  assert_false(item.checked,
+      "item should be unchecked after event promise resolves");
+
+  menulist.remove();
+}, "checked event fires asynchronously when toggling a menuitemcheckbox to unchecked");
+
+promise_test(async (t) => {
+  const menulist = document.createElement('menulist');
+  document.body.appendChild(menulist);
+  const item = menulist.appendChild(document.createElement('menuitem'));
+
+  let eventFired = false;
+  item.addEventListener('checked', () => {
+    eventFired = true;
+  });
+
+  item.click();
+  assert_false(eventFired,
+      "checked event should not fire synchronously on menuitem activation");
+
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  assert_false(eventFired,
+      "checked event should not fire asynchronously on menuitem activation");
+
+  menulist.remove();
+}, "checked event does not fire on menuitem activation");
+
+test(() => {
+  const cb = document.createElement('menuitemcheckbox');
+  assert_false(cb.checked, "defaults to unchecked when detached");
+  assert_false(cb.matches(":checked"));
+  cb.checked = true;
+  assert_true(cb.checked, "can be checked when detached");
+  assert_true(cb.matches(":checked"));
+
+  document.body.append(cb);
+  assert_true(cb.checked, "remains checked when connected");
+  assert_true(cb.matches(":checked"));
+  cb.checked = false;
+  assert_false(cb.checked, "can be unchecked when connected");
+  assert_false(cb.matches(":checked"));
+  cb.remove();
+}, "menuitemcheckbox is checkable on its own");
+
+test(() => {
+  const radio = document.createElement('menuitemradio');
+  assert_false(radio.checked, "defaults to unchecked when detached");
+  assert_false(radio.matches(":checked"));
+  radio.checked = true;
+  assert_true(radio.checked, "can be checked when detached");
+  assert_true(radio.matches(":checked"));
+
+  document.body.append(radio);
+  assert_true(radio.checked, "remains checked when connected");
+  assert_true(radio.matches(":checked"));
+  radio.remove();
+}, "menuitemradio is checkable on its own");
+
+test(() => {
+  const radio = document.createElement('menuitemradio');
+  radio.setAttribute('defaultchecked', '');
+  assert_true(radio.checked,
+      "defaultchecked makes the menu item checked by default");
+  assert_true(radio.matches(":default"),
+      ":default matches when the defaultchecked attribute is present");
+
+  radio.removeAttribute('defaultchecked');
+  assert_false(radio.defaultChecked);
+  assert_false(radio.checked);
+  assert_false(radio.matches(":default"));
+
+  radio.defaultChecked = true;
+  assert_true(radio.checked);
+  assert_true(radio.matches(":default"));
+
+  radio.checked = false;
+  assert_true(radio.defaultChecked);
+  assert_false(radio.checked);
+  assert_true(radio.matches(":default"));
+
+  radio.defaultChecked = false;
+  assert_false(radio.matches(":default"));
+
+  radio.defaultChecked = true;
+  assert_false(radio.checked);
+  assert_true(radio.matches(":default"));
+}, "Default checkedness and checkedness dirtying on menuitemradio");
+
+test(() => {
+  const menulist = document.createElement('menulist');
+  document.body.appendChild(menulist);
+  const fs1 = menulist.appendChild(document.createElement('fieldset'));
+  const fs1_r1 = fs1.appendChild(document.createElement('menuitemradio'));
+  const fs2 = menulist.appendChild(document.createElement('fieldset'));
+  const fs2_r1 = fs2.appendChild(document.createElement('menuitemradio'));
+  const fs2_r2 = fs2.appendChild(document.createElement('menuitemradio'));
+
+  fs1_r1.checked = true;
+  assert_true(fs1_r1.checked);
+
+  fs2_r1.checked = true;
+  assert_true(fs2_r1.checked);
+  assert_true(fs1_r1.checked,
+      "different fieldset ancestor does not affect radio in fs1");
+
+  fs2_r2.checked = true;
+  assert_true(fs2_r2.checked);
+  assert_false(fs2_r1.checked);
+  assert_true(fs1_r1.checked, "fs1 radio stays checked");
+
+  menulist.remove();
+}, "menuitemradio groups are separated by nearest fieldset ancestor");
+
+test(() => {
+  const menubar = document.createElement('menubar');
+  document.body.appendChild(menubar);
+  const r1 = menubar.appendChild(document.createElement('menuitemradio'));
+  const r2 = menubar.appendChild(document.createElement('menuitemradio'));
+
+  assert_false(r1.checked);
+  assert_false(r2.checked);
+
+  r1.checked = true;
+  assert_true(r1.checked);
+  assert_false(r2.checked);
+
+  r2.checked = true;
+  assert_false(r1.checked);
+  assert_true(r2.checked);
+
+  menubar.remove();
+}, "menuitemradio exclusivity within a menubar");
+
+test(() => {
+  const menulist = document.createElement('menulist');
+  document.body.appendChild(menulist);
+  const r1 = menulist.appendChild(document.createElement('menuitemradio'));
+  const r2 = menulist.appendChild(document.createElement('menuitemradio'));
+
+  r1.checked = true;
+  assert_true(r1.checked);
+  assert_false(r2.checked);
+
+  r2.checked = true;
+  assert_false(r1.checked);
+  assert_true(r2.checked);
+
+  menulist.remove();
+}, "menuitemradio exclusivity directly under a menulist (no fieldset)");
+
+test(() => {
+  const checkbox = document.createElement('menuitemcheckbox');
+  const radio = document.createElement('menuitemradio');
+  const menuitem = document.createElement('menuitem');
+
+  assert_equals(checkbox.commandForElement, undefined);
+  assert_equals(checkbox.command, undefined);
+  assert_equals(radio.commandForElement, undefined);
+  assert_equals(radio.command, undefined);
+  assert_equals(menuitem.commandForElement, null);
+  assert_equals(menuitem.command, "");
+
+  const target = document.createElement('div');
+  target.popover = 'auto';
+  document.body.appendChild(target);
+
+  checkbox.setAttribute('commandfor', 'test-target');
+  checkbox.setAttribute('command', 'toggle-popover');
+  target.id = 'test-target';
+  checkbox.click();
+  assert_false(target.matches(':popover-open'),
+      'menuitemcheckbox does not invoke popover via commandfor');
+
+  radio.setAttribute('commandfor', 'test-target');
+  radio.setAttribute('command', 'toggle-popover');
+  radio.click();
+  assert_false(target.matches(':popover-open'),
+      'menuitemradio does not invoke popover via commandfor');
+
+  target.remove();
+}, "menuitemcheckbox and menuitemradio do not support command and commandfor attributes");
+</script>
+</html>

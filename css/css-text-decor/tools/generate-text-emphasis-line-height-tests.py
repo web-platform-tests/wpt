@@ -8,8 +8,6 @@ script outputs a list of all tests it generated in the format of Mozilla
 reftest.list to the stdout.
 """
 
-from __future__ import unicode_literals, print_function, absolute_import
-
 TEST_FILE = 'text-emphasis-line-height-{:03}{}.html'
 TEST_TEMPLATE = '''<!DOCTYPE html>
 <meta charset="utf-8">
@@ -21,6 +19,10 @@ TEST_TEMPLATE = '''<!DOCTYPE html>
 <link rel="help" href="https://drafts.csswg.org/css-text-decor-3/#text-emphasis-position-property">
 <meta name="assert" content="text emphasis marks should expand the line height like ruby if necessary">
 <link rel="match" href="text-emphasis-line-height-{index:03}-ref.html">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<style>
+div {{ font: 40px Ahem; }}
+</style>
 <p>Pass if the emphasis marks are {dir} the black line:</p>
 {start}試験テスト{end}
 '''
@@ -33,7 +35,11 @@ REF_TEMPLATE='''<!DOCTYPE html>
 <title>CSS Reference: text-emphasis line height, {pos}</title>
 <link rel="author" title="Xidorn Quan" href="https://www.upsuper.org">
 <link rel="author" title="Mozilla" href="https://www.mozilla.org">
-<style> rt {{ font-variant-east-asian: inherit; }} </style>
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<style>
+div {{ font: 40px Ahem; }}
+rt {{ font-variant-east-asian: inherit; }}
+</style>
 <p>Pass if the emphasis marks are {dir} the black line:</p>
 <div lang="ja" style="line-height: 1; border-{pos}: 1px solid black; writing-mode: {wm}; ruby-position: {posval}"><ruby>試<rt>&#x25CF;</rt>験<rt>&#x25CF;</rt>テ<rt>&#x25CF;</rt>ス<rt>&#x25CF;</rt>ト<rt>&#x25CF;</rt></ruby></div>
 '''

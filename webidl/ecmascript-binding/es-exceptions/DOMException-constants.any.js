@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker
+
 'use strict';
 
 test(function() {

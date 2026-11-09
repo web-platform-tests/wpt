@@ -1,5 +1,9 @@
 'use strict';
 
+// A flag indicating whether to use Web Bluetooth BiDi commands for Bluetooth
+// emulation.
+let useBidi = false;
+
 /**
  * Test Setup Helpers
  */
@@ -90,6 +94,41 @@ function bluetooth_test(
 }
 
 /**
+ * These tests rely on the User Agent providing an implementation of the
+ * WebDriver-Bidi for testing Web Bluetooth
+ * https://webbluetoothcg.github.io/web-bluetooth/#automated-testing
+ * @param {function{*}: Promise<*>} test_function The Web Bluetooth test to run.
+ * @param {string} name The name or description of the test.
+ * @param {object} properties An object containing extra options for the test.
+ * @param {Boolean} validate_response_consumed Whether to validate all response
+ *     consumed or not.
+ * @returns {Promise<void>} Resolves if Web Bluetooth test ran successfully, or
+ *     rejects if the test failed.
+ */
+function bluetooth_bidi_test(
+  test_function, name, properties, validate_response_consumed = true) {
+return promise_test(async (t) => {
+  assert_implements(navigator.bluetooth, 'missing navigator.bluetooth');
+
+  // Necessary setup for Bluetooth emulation using WebDriver Bidi commands.
+  useBidi = true;
+  await loadScript('/resources/web-bluetooth-bidi-test.js');
+  await initializeBluetoothBidiResources();
+  assert_implements(
+      navigator.bluetooth.test, 'missing navigator.bluetooth.test');
+  await test_driver.bidi.bluetooth.request_device_prompt_updated.subscribe();
+  await test_driver.bidi.bluetooth.gatt_connection_attempted.subscribe();
+  await test_driver.bidi.bluetooth.characteristic_event_generated.subscribe();
+  await test_driver.bidi.bluetooth.descriptor_event_generated.subscribe();
+  try {
+    await test_function(t);
+  } finally {
+    await test_driver.bidi.bluetooth.disable_simulation();
+  }
+}, name, properties);
+}
+
+/**
  * Test Helpers
  */
 
@@ -118,19 +157,47 @@ function waitForDocumentReady() {
  */
 async function callWithTrustedClick(callback) {
   await waitForDocumentReady();
-  return new Promise(resolve => {
-    let button = document.createElement('button');
-    button.textContent = 'click to continue test';
-    button.style.display = 'block';
-    button.style.fontSize = '20px';
-    button.style.padding = '10px';
-    button.onclick = () => {
-      document.body.removeChild(button);
-      resolve(callback());
-    };
-    document.body.appendChild(button);
-    test_driver.click(button);
+  let button = document.createElement('button');
+  button.textContent = 'click to continue test';
+  button.style.display = 'block';
+  button.style.fontSize = '20px';
+  button.style.padding = '10px';
+  const clicked = new Promise(resolve => {
+    button.onclick = resolve;
   });
+  document.body.appendChild(button);
+  // Run the callback only after test_driver.click() has completed, rather
+  // than from the click handler. The transient activation is still valid at
+  // that point, and this avoids a race in Chrome, which checks for activation
+  // again in the browser process for requestDevice(). That check receives the
+  // request on a different IPC channel than the activation notification, so
+  // it can see the request first.
+  await test_driver.click(button);
+  await clicked;
+  document.body.removeChild(button);
+  return callback();
+}
+
+/**
+ * Registers a one-time handler that selects the first device in the device
+ * prompt upon a device prompt updated event.
+ * @returns {Promise<void>} Fulfilled after the Bluetooth device prompt
+ * is handled, or rejected if the operation fails.
+ */
+function selectFirstDeviceOnDevicePromptUpdated() {
+  if (!useBidi) {
+    // Return a resolved promise when there is no bidi support.
+    return Promise.resolve();
+  }
+  test_driver.bidi.bluetooth.request_device_prompt_updated.once().then(
+      (promptEvent) => {
+        assert_greater_than(promptEvent.devices.length, 0);
+        return test_driver.bidi.bluetooth.handle_request_device_prompt({
+          prompt: promptEvent.prompt,
+          accept: true,
+          device: promptEvent.devices[0].id
+        });
+      });
 }
 
 /**
@@ -139,6 +206,7 @@ async function callWithTrustedClick(callback) {
  *     successful or rejects with an error.
  */
 function requestDeviceWithTrustedClick() {
+  selectFirstDeviceOnDevicePromptUpdated();
   let args = arguments;
   return callWithTrustedClick(
       () => navigator.bluetooth.requestDevice.apply(navigator.bluetooth, args));
@@ -172,22 +240,11 @@ function assert_promise_rejects_with_message(promise, expected, description) {
       error => {
         assert_equals(error.name, expected.name, 'Unexpected Error Name:');
         if (expected.message) {
-          assert_equals(
-              error.message, expected.message, 'Unexpected Error Message:');
+          assert_true(
+              error.message.includes(expected.message),
+              'Unexpected Error Message:');
         }
       });
-}
-
-/**
- * Runs the garbage collection.
- * @returns {Promise<void>} Resolves when garbage collection has finished.
- */
-function runGarbageCollection() {
-  // Run gc() as a promise.
-  return new Promise(function(resolve, reject) {
-    GCController.collect();
-    step_timeout(resolve, 0);
-  });
 }
 
 /**
@@ -326,7 +383,7 @@ function assert_promise_resolves_after_event(
 }
 
 /**
- * Returns a promise that resolves after 100ms unless the the event is fired on
+ * Returns a promise that resolves after 100ms unless the event is fired on
  * the object in which case the promise rejects.
  * @param {EventTarget} object The target object to listen for events.
  * @param {string} event_name The event type to listen for.

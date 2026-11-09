@@ -19,6 +19,23 @@ window.assertNeverSettles = (t, result, w = window) => {
   );
 };
 
+window.assertBothFulfillEntryNotAvailable = async (t, result, w = window) => {
+  assertReturnValue(result, w);
+
+  // Don't use await here so that we can catch out-of-order settlements.
+  let committedValue;
+  result.committed.then(
+    t.step_func(v => { committedValue = v;}),
+    t.unreached_func("committed must not reject")
+  );
+
+  const finishedValue = await result.finished;
+
+  assert_not_equals(committedValue, undefined, "committed must fulfill before finished");
+  assert_equals(finishedValue, committedValue, "committed and finished must fulfill with the same value");
+  assert_true(finishedValue instanceof w.NavigationHistoryEntry, "fulfillment value must be a NavigationHistoryEntry");
+};
+
 window.assertBothFulfill = async (t, result, expected, w = window) => {
   assertReturnValue(result, w);
 
@@ -57,7 +74,6 @@ window.assertCommittedFulfillsFinishedRejectsExactly = async (t, result, expecte
 window.assertCommittedFulfillsFinishedRejectsDOM = async (t, result, expectedEntry, expectedDOMExceptionCode, w = window, domExceptionConstructor = w.DOMException, navigationHistoryEntryConstuctor = w.NavigationHistoryEntry) => {
   assertReturnValue(result, w);
 
-  // Don't use await here so that we can catch out-of-order settlements.
   let committedValue;
   result.committed.then(
     t.step_func(v => { committedValue = v; }),
@@ -71,12 +87,58 @@ window.assertCommittedFulfillsFinishedRejectsDOM = async (t, result, expectedEnt
   assert_equals(committedValue, expectedEntry);
 };
 
+// We cannot use Promise.all() because the automatic coercion behavior when
+// promises from multiple realms are involved causes it to hang if one of the
+// promises is from a detached iframe's realm. See discussion at
+// https://github.com/whatwg/html/issues/11252#issuecomment-2984143855.
+window.waitForAllLenient = (iterable) => {
+  const { promise: all, resolve, reject } = Promise.withResolvers();
+  let remaining = 0;
+  let results = [];
+  for (const promise of iterable) {
+    let index = remaining++;
+    promise.then(v => {
+      results[index] = v;
+      --remaining;
+      if (!remaining) {
+        resolve(results);
+      }
+      return v;
+    }, v => reject(v));
+  }
+
+  if (!remaining) {
+    resolve(results);
+  }
+
+  return all;
+}
+
+window.assertBothRejectExactly = async (t, result, expectedRejection, w = window) => {
+  assertReturnValue(result, w);
+
+  let committedReason, finishedReason;
+  await waitForAllLenient([
+    result.committed.then(
+      t.unreached_func("committed must not fulfill"),
+      t.step_func(r => { committedReason = r; })
+    ),
+    result.finished.then(
+      t.unreached_func("finished must not fulfill"),
+      t.step_func(r => { finishedReason = r; })
+    )
+  ]);
+
+  assert_equals(committedReason, finishedReason, "committed and finished must reject with the same value");
+  assert_equals(expectedRejection, committedReason);
+};
+
 window.assertBothRejectDOM = async (t, result, expectedDOMExceptionCode, w = window, domExceptionConstructor = w.DOMException) => {
   assertReturnValue(result, w);
 
   // Don't use await here so that we can catch out-of-order settlements.
   let committedReason, finishedReason;
-  await Promise.all([
+  await waitForAllLenient([
     result.committed.then(
       t.unreached_func("committed must not fulfill"),
       t.step_func(r => { committedReason = r; })

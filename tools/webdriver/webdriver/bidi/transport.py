@@ -6,6 +6,8 @@ from typing import Any, Callable, Coroutine, List, Optional, Mapping
 
 import websockets
 
+from websockets.exceptions import ConnectionClosed
+
 logger = logging.getLogger("webdriver.bidi")
 
 
@@ -23,12 +25,15 @@ def get_running_loop() -> asyncio.AbstractEventLoop:
 class Transport:
     """Low level message handler for the WebSockets connection"""
     def __init__(self, url: str,
-                 msg_handler: Callable[[Mapping[str, Any]], Coroutine[Any, Any, None]],
-                 loop: Optional[asyncio.AbstractEventLoop] = None):
+            msg_handler: Callable[
+                [Mapping[str, Any]], Coroutine[Any, Any, None]],
+            loop: Optional[asyncio.AbstractEventLoop] = None,
+            on_closed: Optional[Callable[[], None]] = None):
         self.url = url
         self.connection: Optional[websockets.WebSocketClientProtocol] = None
         self.msg_handler = msg_handler
         self.send_buf: List[Mapping[str, Any]] = []
+        self.on_closed = on_closed
 
         if loop is None:
             loop = get_running_loop()
@@ -37,7 +42,9 @@ class Transport:
         self.read_message_task: Optional[asyncio.Task[Any]] = None
 
     async def start(self) -> None:
-        self.connection = await websockets.client.connect(self.url)
+        # Default max_size of 1048576 bytes is too small for some messages.
+        # 128MB should be enough.
+        self.connection = await websockets.connect(self.url, max_size=128 * 1024 * 1024)
         self.read_message_task = self.loop.create_task(self.read_messages())
 
         for msg in self.send_buf:
@@ -70,7 +77,16 @@ class Transport:
 
     async def read_messages(self) -> None:
         assert self.connection is not None
-        async for msg in self.connection:
-            if not isinstance(msg, str):
-                raise ValueError("Got a binary message")
-            await self.handle(msg)
+        try:
+            async for msg in self.connection:
+                if not isinstance(msg, str):
+                    raise ValueError("Got a binary message")
+                await self.handle(msg)
+        except ConnectionClosed:
+            logger.debug("connection closed while reading messages")
+            if self.on_closed:
+                self.on_closed()
+
+    async def wait_closed(self) -> None:
+        if self.connection and not self.connection.closed:
+            await self.connection.wait_closed()

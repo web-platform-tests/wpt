@@ -19,12 +19,15 @@ function changeScriptText() {
 }
 
 // Allow the parser to prepare `script0` while the stylesheet blocks execution.
+// Use the global timer: `t.step_timeout()` skips its callback after the test
+// finishes, but the stylesheet must still be released so document loading can
+// finish even if the test has already failed.
 step_timeout(() => {
+  // Record mutation failures without preventing the stylesheet release below.
   t.step(changeScriptText);
-  // Release the stylesheet even if the mutation fails. Use XHR rather than
-  // `fetch()`, which Firefox can defer until blocking CSS finishes. Firefox
-  // explicitly exempts XHR to prevent deadlocks with CSS/JS responses waiting
-  // for an XHR signal:
+  // Use XHR rather than `fetch()`, which Firefox can defer until blocking CSS
+  // finishes. Firefox explicitly exempts XHR to prevent deadlocks with CSS/JS
+  // responses waiting for an XHR signal:
   // https://github.com/mozilla-firefox/firefox/blob/6399208a6b0ab89af6a834648e0330367168ccd1/dom/xhr/XMLHttpRequestMainThread.cpp#L2824-L2828
   const request = new XMLHttpRequest();
   request.open("POST", stylesheetURL);

@@ -12,6 +12,8 @@
 <body>
 <script>
 test_invalid_value('counter-reset', 'none chapter');
+test_invalid_value('counter-reset', 'chapter none');
+test_invalid_value('counter-reset', 'chapter 0 none 0');
 test_invalid_value('counter-reset', 'reversed(none)');
 test_invalid_value('counter-reset', 'reversed(chapter) none');
 test_invalid_value('counter-reset', '3');

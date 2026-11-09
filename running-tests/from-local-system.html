@@ -130,6 +130,26 @@ port definitions of your choice e.g.:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>The WebSocket-over-HTTP/3 server is disabled by default. Start it with
+<code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">serve</span> <span class="pre">--websocket-h3</span></code>; it prints its automatically chosen UDP port and
+starts a paired HTTPS listener on the same numbered TCP port. To run the
+WebSocket H3 test variant manually, open
+<code class="docutils literal notranslate"><span class="pre">https://web-platform.test:&lt;port&gt;/websockets/binary/001.html?wpt_flags=websocket-h3</span></code>
+using that port. The HTTPS listener advertises the H3 endpoint through
+Alt-Svc, and the test uses the configured port for its <code class="docutils literal notranslate"><span class="pre">wss:</span></code> connection.
+With <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">run</span></code>, the server uses port 11001 and is also disabled by default;
+pass <code class="docutils literal notranslate"><span class="pre">--enable-websocket-h3</span></code> to start it and enable the WebSocket
+<code class="docutils literal notranslate"><span class="pre">?wpt_flags=websocket-h3</span></code> test variants. Without it, those variants are
+skipped. Browsers must separately support WebSocket over H3; for local builds
+where the implementation is behind a feature flag, enable that flag with
+<code class="docutils literal notranslate"><span class="pre">--binary-arg</span></code> when running the test.</p>
+<p>The browser must also accept the WPT test certificate for the QUIC connection
+to the H3 server. Certificate settings that allow ordinary HTTPS tests may not
+also allow QUIC: some browsers distinguish a locally trusted root from a
+recognized public root and require an additional test exception for QUIC.
+Check your browser’s test-certificate configuration if the H3 connection
+fails. HTTP/3 requires TLS; switching to plain HTTP does not remove this
+requirement.</p>
 <p>After your <code class="docutils literal notranslate"><span class="pre">hosts</span></code> file is configured, the servers will be locally accessible at:</p>
 <p>http://web-platform.test:8000/<br>
 https://web-platform.test:8443/ *</p>

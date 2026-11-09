@@ -744,15 +744,15 @@
     const host = iframe.contentDocument.getElementById("host");
     const shadow = host.attachShadow({ mode: "open" });
     const writer = shadow.streamHTML().getWriter();
-    await writer.write("<p id='before'>before</p>");
-    assert_not_equals(shadow.querySelector("#before"), null);
+    await writer.write("<p>before</p>");
+    assert_not_equals(shadow.querySelector("p"), null);
 
     iframe.remove();
 
     await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.closed));
-    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.write("<p id='after'>after</p>")));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.write("<span>after</span>")));
     await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.close()));
-    assert_equals(shadow.querySelector("#after"), null);
+    assert_equals(shadow.querySelector("span"), null);
   }, "Removing iframe while ShadowRoot.streamHTML() is open errors the stream with InvalidStateError");
 
   promise_test(async (t) => {

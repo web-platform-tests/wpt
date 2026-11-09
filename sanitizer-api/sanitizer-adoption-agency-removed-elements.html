@@ -102,9 +102,9 @@
 
     // <b> is kept, <span> is removed, and <p> and the custom element are
     // created below the removed <span> with a null registry. When the adoption
-    // agency algorithm moves <p>'s children into the new <b> and inserts <p>
-    // into the target, the new <b>, <p>, and the custom element all get the
-    // target's scoped registry, and the custom element is upgraded.
+    // agency algorithm inserts <p> into the target and then moves <p>'s
+    // children into the new <b>, the new <b>, <p>, and the custom element all
+    // get the target's scoped registry, and the custom element is upgraded.
     target.setHTMLUnsafe(
       "<b><span><p><aaa-scoped-intermediate></aaa-scoped-intermediate></b></p>",
       { sanitizer: { removeElements: ["span"] } });
@@ -118,7 +118,7 @@
     assert_equals(p.customElementRegistry, scoped, "p's registry");
     assert_equals(secondB.customElementRegistry, scoped, "newElement b's registry");
     assert_equals(ce.customElementRegistry, scoped, "custom element's registry");
-    assert_array_equals(log, ["constructed", "connected"]);
+    assert_array_equals(log, ["constructed", "connected", "disconnected", "connected"]);
   }, "furthestBlock and its children reparented out of a removed intermediate element get the target's scoped registry");
 
   promise_test(async (t) => {

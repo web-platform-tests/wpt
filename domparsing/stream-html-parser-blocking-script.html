@@ -577,6 +577,7 @@
 
   // F12: Iframe removed while blocked: stream is errored with InvalidStateError, no execution, no crash
   promise_test(async (t) => {
+    window.events = [];
     window.iframe_blocked_ran = false;
     t.add_cleanup(() => { delete window.iframe_blocked_ran; });
 
@@ -589,10 +590,11 @@
     });
 
     const iframeDOMException = iframe.contentWindow.DOMException;
+    iframe.contentWindow.events = window.events;
     iframe.contentWindow.notifyParent = () => {
       window.iframe_blocked_ran = true;
     };
-    const controlDone = fetch("resources/slow.js?pipe=trickle(d0.6)&f12_control=1")
+    const controlDone = fetch("resources/slow.js?pipe=trickle(d0.5)&f12_control=1")
       .then(r => r.text())
       .then(() => new Promise(r => t.step_timeout(r, 0)));
     const target = iframe.contentDocument.getElementById("target");
@@ -604,10 +606,11 @@
     );
 
     iframe.remove();
-    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.closed));
-    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.close()));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.closed));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.close()));
     await controlDone;
     assert_false(window.iframe_blocked_ran, "Scripts in removed iframe must not execute");
+    assert_array_equals(window.events, []);
     assert_equals(target.querySelector("#after"), null, "Markup after the pending script is not parsed after the stream is aborted");
   }, "Removing iframe while stream is blocked on external script errors the stream with InvalidStateError and does not execute scripts");
 
@@ -628,9 +631,9 @@
 
     iframe.remove();
 
-    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.closed));
-    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.write("<p id='after'>after</p>")));
-    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.close()));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.closed));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.write("<p id='after'>after</p>")));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.close()));
     assert_equals(target.querySelector("#after"), null);
   }, "Removing iframe while stream is idle errors the stream with InvalidStateError");
 
@@ -646,12 +649,16 @@
     });
 
     const iframeDOMException = iframe.contentWindow.DOMException;
+    iframe.contentWindow.events = window.events;
+    const controlDone = fetch("resources/slow.js?pipe=trickle(d0.5)&f12_moved_navigate_control=1")
+      .then(r => r.text())
+      .then(() => new Promise(r => t.step_timeout(r, 0)));
     const target = iframe.contentDocument.getElementById("target");
     const writer = target.streamHTMLUnsafe({ runScripts: true }).getWriter();
     await writer.write(
-      "<script src='resources/slow.js?pipe=trickle(d0.3)&f12_moved_navigate=1'><" + "/script>" +
+      "<script src='resources/slow.js?pipe=trickle(d0.2)&f12_moved_navigate=1'><" + "/script>" +
       "<p id='after'>after</p>" +
-      "<script>window.events.push('inline-after-navigate');<" + "/script>"
+      "<script>parent.events.push('inline-after-navigate');<" + "/script>"
     );
     assert_equals(target.querySelector("#after"), null, "Parsing is initially blocked on the external script");
 
@@ -660,8 +667,9 @@
       iframe.srcdoc = "<!doctype html><body>navigated</body>";
     });
 
-    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.closed));
-    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.close()));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.closed));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.close()));
+    await controlDone;
     assert_equals(target.querySelector("#after"), null, "Markup after the pending script is not parsed after the document is destroyed");
     assert_array_equals(window.events, []);
   }, "Navigating iframe while stream is blocked on external script errors the stream with InvalidStateError");
@@ -678,13 +686,17 @@
     });
 
     const iframeDOMException = iframe.contentWindow.DOMException;
+    iframe.contentWindow.events = window.events;
+    const controlDone = fetch("resources/slow.js?pipe=trickle(d0.5)&f12_adopted_remove_control=1")
+      .then(r => r.text())
+      .then(() => new Promise(r => t.step_timeout(r, 0)));
     const target = iframe.contentDocument.getElementById("target");
     t.add_cleanup(() => target.remove());
     const writer = target.streamHTMLUnsafe({ runScripts: true }).getWriter();
     await writer.write(
-      "<script src='resources/slow.js?pipe=trickle(d0.3)&f12_adopted_remove=1'><" + "/script>" +
+      "<script src='resources/slow.js?pipe=trickle(d0.2)&f12_adopted_remove=1'><" + "/script>" +
       "<p id='after'>after</p>" +
-      "<script>window.events.push('inline-in-parent');<" + "/script>"
+      "<script>parent.events.push('inline-in-parent');<" + "/script>"
     );
     assert_equals(target.querySelector("#after"), null, "Parsing is initially blocked on the external script");
 
@@ -693,8 +705,9 @@
     document.body.appendChild(target);
     iframe.remove();
 
-    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.closed));
-    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.close()));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.closed));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.close()));
+    await controlDone;
     assert_equals(target.querySelector("#after"), null, "Markup after the pending script is not parsed into the adopted target");
     assert_array_equals(window.events, []);
   }, "Adopting target into active document and removing original iframe while blocked on external script errors the stream with InvalidStateError");
@@ -713,8 +726,8 @@
     iframe.remove();
 
     const writer = target.streamHTMLUnsafe({ runScripts: true }).getWriter();
-    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.closed));
-    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.write("<p id='after'>after</p>")));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.closed));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.write("<p id='after'>after</p>")));
     assert_equals(target.querySelector("#after"), null);
   }, "Starting a stream on an element in an already-destroyed document immediately errors the stream with InvalidStateError");
 
@@ -736,9 +749,9 @@
 
     iframe.remove();
 
-    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.closed));
-    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.write("<p id='after'>after</p>")));
-    await failOnTimeout(promise_rejects_dom(t, "InvalidStateError", iframeDOMException, writer.close()));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.closed));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.write("<p id='after'>after</p>")));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.close()));
     assert_equals(shadow.querySelector("#after"), null);
   }, "Removing iframe while ShadowRoot.streamHTML() is open errors the stream with InvalidStateError");
 

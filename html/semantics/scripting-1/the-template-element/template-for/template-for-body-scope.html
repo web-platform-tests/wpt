@@ -43,6 +43,11 @@ const setters = {
   setHTMLUnsafe: (body, markup) => body.setHTMLUnsafe(markup),
   insertAdjacentHTML: (body, markup) => body.insertAdjacentHTML("beforeend", markup),
   appendHTMLUnsafe: (body, markup) => body.appendHTMLUnsafe(markup),
+  streamAppendHTMLUnsafe: async (body, markup) => {
+    const writer = body.streamAppendHTMLUnsafe().getWriter();
+    await writer.write(markup);
+    await writer.close();
+  },
   createContextualFragment: (body, markup) => {
     const range = body.ownerDocument.createRange();
     range.selectNodeContents(body);
@@ -50,10 +55,19 @@ const setters = {
   },
 };
 
+promise_test(async (t) => {
+  const doc = await load_iframe(
+    t,
+    `<!doctype html><head><?marker name="h"></head><body>${template_markup}</body>`,
+  );
+  assert_not_equals(doc.head.querySelector("meta#added"), null, "head is patched");
+  assert_equals(doc.body.querySelector("template"), null, "template is not inserted in body");
+}, "Document parser in body redirects scope to documentElement and patches markers in head");
+
 for (const [name, setter] of Object.entries(setters)) {
   promise_test(async (t) => {
     const doc = await load_iframe(t, head_markup("h"));
-    setter(doc.body, template_markup);
+    await setter(doc.body, template_markup);
     assert_head_not_patched(doc);
   }, `${name} on the document's body does not patch markers in head`);
 }

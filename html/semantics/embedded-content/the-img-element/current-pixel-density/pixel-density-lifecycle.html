@@ -1,0 +1,334 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>img current pixel density and density-corrected dimensions lifecycle</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#updating-the-image-data">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#density-corrected-natural-width-and-height">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<body>
+<script>
+function waitForEvent(target, name) {
+  return new Promise((resolve, reject) => {
+    target.addEventListener(name, () => resolve(), { once: true });
+    if (name === "load") {
+      target.addEventListener("error", () => reject(new Error("Unexpected error event")), { once: true });
+    }
+  });
+}
+
+function nextAnimationFrames(win, count = 2) {
+  return new Promise(resolve => {
+    function step(remaining) {
+      if (remaining <= 0) {
+        resolve();
+        return;
+      }
+      win.requestAnimationFrame(() => step(remaining - 1));
+    }
+    step(count);
+  });
+}
+
+promise_test(async t => {
+  const img1 = document.createElement("img");
+  t.add_cleanup(() => img1.remove());
+  document.body.appendChild(img1);
+  const load1 = waitForEvent(img1, "load");
+  img1.src = `/density-size-correction/resources/exif-resolution-valid-lores.jpg?1x-${token()}`;
+  await load1;
+
+  const w1 = img1.naturalWidth;
+  const h1 = img1.naturalHeight;
+  assert_greater_than(w1, 0, "1x EXIF naturalWidth");
+  assert_greater_than(h1, 0, "1x EXIF naturalHeight");
+
+  const img2 = document.createElement("img");
+  t.add_cleanup(() => img2.remove());
+  document.body.appendChild(img2);
+  const load2 = waitForEvent(img2, "load");
+  img2.srcset = `/density-size-correction/resources/exif-resolution-valid-lores.jpg?2x-${token()} 2x`;
+  await load2;
+
+  for (let i = 1; i <= 3; i++) {
+    assert_equals(img2.naturalWidth, w1 / 2, `naturalWidth read #${i}`);
+    assert_equals(img2.naturalHeight, h1 / 2, `naturalHeight read #${i}`);
+  }
+}, "Repeated naturalWidth and naturalHeight reads do not mutate EXIF density-corrected dimensions");
+
+promise_test(async t => {
+  const img = document.createElement("img");
+  t.add_cleanup(() => img.remove());
+  document.body.appendChild(img);
+
+  let loaded = waitForEvent(img, "load");
+  img.src = `/density-size-correction/resources/exif-resolution-valid-lores.jpg?exif-${token()}`;
+  await loaded;
+  assert_not_equals(img.naturalWidth, 256);
+
+  loaded = waitForEvent(img, "load");
+  img.src = `/images/green-256x256.png?fresh-${token()}`;
+  await loaded;
+  assert_equals(img.naturalWidth, 256);
+  assert_equals(img.naturalHeight, 256);
+}, "Switching from EXIF density-corrected image to non-EXIF image resets preferred density-corrected dimensions");
+
+promise_test(async t => {
+  const availUrl = `/images/green-256x256.png?avail-exif-${token()}`;
+  const preload = document.createElement("img");
+  t.add_cleanup(() => preload.remove());
+  document.body.appendChild(preload);
+  const preloaded = waitForEvent(preload, "load");
+  preload.src = availUrl;
+  await preloaded;
+
+  const img = document.createElement("img");
+  t.add_cleanup(() => img.remove());
+  document.body.appendChild(img);
+  let loaded = waitForEvent(img, "load");
+  img.src = `/density-size-correction/resources/exif-resolution-valid-lores.jpg?exif-avail-${token()}`;
+  await loaded;
+  assert_not_equals(img.naturalWidth, 256);
+
+  loaded = waitForEvent(img, "load");
+  img.src = availUrl;
+  assert_equals(img.naturalWidth, 256, "synchronous naturalWidth from list of available images");
+  assert_equals(img.naturalHeight, 256, "synchronous naturalHeight from list of available images");
+  await loaded;
+  assert_equals(img.naturalWidth, 256);
+  assert_equals(img.naturalHeight, 256);
+}, "Switching from EXIF density-corrected image to available non-EXIF image resets dimensions synchronously");
+
+promise_test(async t => {
+  const availUrl = `/images/green-256x256.png?avail-density-${token()}`;
+  const preload = document.createElement("img");
+  t.add_cleanup(() => preload.remove());
+  document.body.appendChild(preload);
+  const preloaded = waitForEvent(preload, "load");
+  preload.src = availUrl;
+  await preloaded;
+
+  const img = document.createElement("img");
+  t.add_cleanup(() => img.remove());
+  document.body.appendChild(img);
+  let loaded = waitForEvent(img, "load");
+  img.srcset = `/images/green-100x100.png?srcset2x-${token()} 2x`;
+  await loaded;
+  assert_equals(img.naturalWidth, 50);
+  assert_equals(img.naturalHeight, 50);
+
+  img.removeAttribute("srcset");
+  loaded = waitForEvent(img, "load");
+  img.src = availUrl;
+  assert_equals(img.naturalWidth, 256, "synchronous naturalWidth at 1x density");
+  assert_equals(img.naturalHeight, 256, "synchronous naturalHeight at 1x density");
+  await loaded;
+  assert_equals(img.naturalWidth, 256);
+  assert_equals(img.naturalHeight, 256);
+}, "Switching from 2x srcset image to available src image resets current pixel density to 1");
+
+promise_test(async t => {
+  const url = `/images/green-256x256.png?same-url-${token()}`;
+  const img = document.createElement("img");
+  t.add_cleanup(() => img.remove());
+  document.body.appendChild(img);
+
+  let loaded = waitForEvent(img, "load");
+  img.srcset = `${url} 2x`;
+  await loaded;
+  assert_equals(img.naturalWidth, 128);
+  assert_equals(img.naturalHeight, 128);
+
+  loaded = waitForEvent(img, "load");
+  img.srcset = `${url} 4x`;
+  await loaded;
+  assert_equals(img.naturalWidth, 64);
+  assert_equals(img.naturalHeight, 64);
+
+  loaded = waitForEvent(img, "load");
+  img.removeAttribute("srcset");
+  img.src = url;
+  await loaded;
+  assert_equals(img.naturalWidth, 256);
+  assert_equals(img.naturalHeight, 256);
+}, "Changing srcset descriptor density for the same URL updates natural dimensions");
+
+promise_test(async t => {
+  const img = document.createElement("img");
+  t.add_cleanup(() => img.remove());
+  document.body.appendChild(img);
+
+  const loaded = waitForEvent(img, "load");
+  img.srcset = `/images/green-256x256.png?clear-${token()} 2x`;
+  await loaded;
+  assert_equals(img.naturalWidth, 128);
+
+  img.removeAttribute("srcset");
+  await t.step_wait(() => img.currentSrc === "", "currentSrc cleared", 1000, 10);
+  assert_equals(img.naturalWidth, 0);
+  assert_equals(img.naturalHeight, 0);
+}, "Clearing srcset resets currentSrc and natural dimensions");
+
+promise_test(async t => {
+  const slowUrl = `/images/green-100x100.png?partial-x-${token()}&pipe=trickle(2048:d0.9)`;
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  const img = document.createElement("img");
+  t.add_cleanup(() => picture.remove());
+
+  let loadFired = false;
+  img.addEventListener("load", () => { loadFired = true; }, { once: true });
+  source.srcset = `${slowUrl} 2x`;
+  picture.append(source, img);
+  const loaded = waitForEvent(img, "load");
+  document.body.appendChild(picture);
+
+  await t.step_wait(() => img.naturalWidth > 0, "partially available header decoded", 600, 10);
+  assert_equals(img.naturalWidth, 50);
+  assert_false(loadFired, "image load should still be in flight");
+
+  source.srcset = `${slowUrl} 4x`;
+  await loaded;
+  assert_equals(img.naturalWidth, 25);
+  assert_equals(img.naturalHeight, 25);
+}, "Updating selected pixel density via source x-descriptor while same-URL current request is partially available updates natural dimensions");
+
+promise_test(async t => {
+  const slowUrl = `/images/green-100x100.png?partial-w-${token()}&pipe=trickle(2048:d0.9)`;
+  const img = document.createElement("img");
+  t.add_cleanup(() => img.remove());
+
+  let loadFired = false;
+  img.addEventListener("load", () => { loadFired = true; }, { once: true });
+  // A width descriptor is normalized to a density of (w / source size),
+  // independent of devicePixelRatio: 200w at sizes=100px is 2x, and at
+  // sizes=50px is 4x.
+  img.sizes = "100px";
+  img.srcset = `${slowUrl} 200w`;
+  const loaded = waitForEvent(img, "load");
+  document.body.appendChild(img);
+
+  await t.step_wait(() => img.naturalWidth > 0, "partially available header decoded", 600, 10);
+  assert_approx_equals(img.naturalWidth, 50, 1);
+  assert_false(loadFired, "image load should still be in flight");
+
+  img.sizes = "50px";
+  await loaded;
+  assert_approx_equals(img.naturalWidth, 25, 1);
+  assert_approx_equals(img.naturalHeight, 25, 1);
+}, "Updating selected pixel density via sizes while same-URL w-descriptor current request is partially available updates natural dimensions");
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  const img = document.createElement("img");
+  t.add_cleanup(() => picture.remove());
+  picture.append(source, img);
+  document.body.appendChild(picture);
+
+  let loaded = waitForEvent(img, "load");
+  img.src = `/images/green-256x256.png?init-active-${token()}`;
+  await loaded;
+  assert_equals(img.naturalWidth, 256);
+
+  const slowUrl = `/images/green-100x100.png?pending-active-${token()}&pipe=trickle(d0.5)`;
+  let loadFired = false;
+  img.addEventListener("load", () => { loadFired = true; }, { once: true });
+  loaded = waitForEvent(img, "load");
+  source.srcset = `${slowUrl} 2x`;
+
+  await new Promise(resolve => t.step_timeout(resolve, 100));
+  assert_false(loadFired, "pending request should still be waiting for response");
+  assert_equals(img.naturalWidth, 256, "current request keeps its own pixel density while pending request loads");
+
+  await loaded;
+  assert_equals(img.naturalWidth, 50);
+  assert_equals(img.naturalHeight, 50);
+}, "Starting a 2x pending request does not change naturalWidth of the active current request while waiting for response");
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  const img = document.createElement("img");
+  t.add_cleanup(() => picture.remove());
+  picture.append(source, img);
+  document.body.appendChild(picture);
+
+  let loaded = waitForEvent(img, "load");
+  img.src = `/images/green-256x256.png?init-swap-${token()}`;
+  await loaded;
+  assert_equals(img.naturalWidth, 256);
+
+  const slowUrl = `/images/green-100x100.png?pending-swap-${token()}&pipe=trickle(d0.5)`;
+  let loadFired = false;
+  img.addEventListener("load", () => { loadFired = true; }, { once: true });
+  loaded = waitForEvent(img, "load");
+  source.srcset = `${slowUrl} 2x`;
+
+  await new Promise(resolve => t.step_timeout(resolve, 100));
+  assert_false(loadFired, "pending request should still be in flight");
+
+  source.srcset = `${slowUrl} 4x`;
+  await loaded;
+  assert_equals(img.naturalWidth, 25);
+  assert_equals(img.naturalHeight, 25);
+}, "Updating selected pixel density for an in-flight pending request with the same URL updates natural dimensions on swap");
+
+promise_test(async t => {
+  const id = token();
+  const stashBase = "/html/semantics/embedded-content/the-img-element/resources/image-and-stash.py";
+  const iframe = document.createElement("iframe");
+  iframe.style.width = "300px";
+  iframe.style.height = "200px";
+  t.add_cleanup(() => iframe.remove());
+  const iframeLoaded = waitForEvent(iframe, "load");
+  iframe.srcdoc = "<!doctype html><body></body>";
+  document.body.appendChild(iframe);
+  await iframeLoaded;
+
+  const img = iframe.contentDocument.createElement("img");
+  const loaded = waitForEvent(img, "load");
+  img.srcset = `${stashBase}?increment=${id} 2x`;
+  iframe.contentDocument.body.appendChild(img);
+  await loaded;
+
+  let countText = await (await fetch(`${stashBase}?read=${id}`)).text();
+  assert_equals(countText, "1", "initial load fetched once");
+
+  let extraLoads = 0;
+  img.addEventListener("load", () => { extraLoads++; });
+  iframe.style.width = "500px";
+  await nextAnimationFrames(iframe.contentWindow, 3);
+  await new Promise(resolve => t.step_timeout(resolve, 150));
+
+  countText = await (await fetch(`${stashBase}?read=${id}`)).text();
+  assert_equals(extraLoads, 0, "viewport resize should not fire another load event");
+  assert_equals(countText, "1", "viewport resize should not re-fetch unchanged 2x candidate");
+}, "Environment change does not re-fetch an already loaded 2x srcset candidate");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  iframe.style.width = "300px";
+  iframe.style.height = "200px";
+  t.add_cleanup(() => iframe.remove());
+  const iframeLoaded = waitForEvent(iframe, "load");
+  iframe.srcdoc = "<!doctype html><body></body>";
+  document.body.appendChild(iframe);
+  await iframeLoaded;
+
+  const img = iframe.contentDocument.createElement("img");
+  let errorCount = 0;
+  img.addEventListener("error", () => { errorCount++; });
+  const initialError = new Promise(resolve => img.addEventListener("error", resolve, { once: true }));
+  img.srcset = `/images/broken.png?broken-${token()} 2x`;
+  iframe.contentDocument.body.appendChild(img);
+  await initialError;
+  assert_equals(errorCount, 1);
+
+  iframe.style.width = "500px";
+  await nextAnimationFrames(iframe.contentWindow, 3);
+  await new Promise(resolve => t.step_timeout(resolve, 150));
+  assert_equals(errorCount, 1, "viewport resize should not re-fetch broken 2x candidate");
+}, "Environment change does not re-fetch a broken 2x srcset candidate");
+</script>
+</body>

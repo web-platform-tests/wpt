@@ -370,6 +370,7 @@ regexps = [item() for item in  # type: ignore
             rules.SetTimeoutRegexp,
             rules.W3CTestOrgRegexp,
             rules.WebPlatformTestRegexp,
+            rules.HTMLMultipageNoFragmentRegexp,
             rules.Webidl2Regexp,
             rules.ConsoleRegexp,
             rules.GenerateTestsRegexp,

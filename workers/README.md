@@ -1,7 +1,7 @@
 # Worker WPT tests
 
 These are the workers (`Worker`, `SharedWorker`) tests for the
-[Web workers chapter of the HTML Standard](https://html.spec.whatwg.org/multipage/workers.html).
+[Web workers chapter of the HTML Standard](https://html.spec.whatwg.org/multipage/workers.html#workers).
 
 See also
 [testharness.js API > Web Workers](https://web-platform-tests.org/writing-tests/testharness-api.html#web-workers).

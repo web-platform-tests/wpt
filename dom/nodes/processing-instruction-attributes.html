@@ -343,4 +343,28 @@
       assert_array_equals(pi.getAttributeNames(), ["type", "href"]);
     }, "Processing instruction attributes with xml-stylesheet from " + source);
   }
+
+  test(() => {
+    const pi = sources["html-parser"]("target", 'name="a\0b"');
+    assert_equals(pi.data, 'name="a\uFFFDb"');
+    assert_true(pi.hasAttributes());
+    assert_array_equals(pi.getAttributeNames(), ["name"]);
+    assert_equals(pi.getAttribute("name"), "a\uFFFDb");
+
+    const pi_name = sources["html-parser"]("target", '\0="c"');
+    assert_equals(pi_name.data, '\uFFFD="c"');
+    assert_true(pi_name.hasAttributes());
+    assert_array_equals(pi_name.getAttributeNames(), ["\uFFFD"]);
+    assert_equals(pi_name.getAttribute("\uFFFD"), "c");
+  }, "U+0000 NULL in processing instruction data is replaced with U+FFFD in HTML parser");
+
+  for (const source of ["html-dom", "xml-dom"]) {
+    test(() => {
+      const pi = sources[source]("target", 'name="a\0b"');
+      assert_equals(pi.data, 'name="a\0b"');
+      assert_false(pi.hasAttributes());
+      assert_array_equals(pi.getAttributeNames(), []);
+      assert_equals(pi.getAttribute("name"), null);
+    }, `U+0000 NULL in processing instruction data invalidates pseudo-attributes from ${source}`);
+  }
 </script>

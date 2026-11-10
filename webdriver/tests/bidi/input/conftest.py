@@ -3,6 +3,8 @@ import pytest_asyncio
 
 from webdriver.bidi.modules.script import ContextTarget
 
+from tests.support.bidi.gesture import flush_stale_input
+
 
 @pytest.fixture
 def get_focused_key_input(bidi_session, top_context):
@@ -27,6 +29,9 @@ async def release_actions(bidi_session, top_context):
     # release all actions after each test
     yield
     await bidi_session.input.release_actions(context=top_context["context"])
+    # releaseActions doesn't release a held touch in some WebKit-based remote
+    # ends, see flush_stale_input.
+    await flush_stale_input(bidi_session, top_context)
 
 
 @pytest_asyncio.fixture

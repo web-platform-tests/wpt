@@ -306,11 +306,21 @@
       mutation_observer.observe(pi, { characterData: true, attributes: true });
       pi.removeAttribute("x");
       assert_equals(pi.data, data, "removeAttribute() doesn't change data");
-      pi.toggleAttribute("x", false);
+      assert_false(pi.toggleAttribute("x", false));
       assert_equals(pi.data, data, "toggleAttribute(name, false) doesn't change data");
       assert_array_equals(pi.getAttributeNames(), ["a", "c"]);
       assert_equals(mutation_observer.takeRecords().length, 0,
                     "no mutation records");
+
+      const malformed = "a=b";
+      const malformed_pi = createProcessingInstruction("t", malformed);
+      mutation_observer.observe(malformed_pi, { characterData: true, attributes: true });
+      malformed_pi.removeAttribute("a");
+      assert_equals(malformed_pi.data, malformed, "removeAttribute() doesn't wipe malformed data");
+      assert_false(malformed_pi.toggleAttribute("a", false));
+      assert_equals(malformed_pi.data, malformed, "toggleAttribute(name, false) doesn't wipe malformed data");
+      assert_equals(mutation_observer.takeRecords().length, 0,
+                    "no mutation records on malformed PI");
     }, "Removing a non-existent PI attribute doesn't normalize data from " + source);
 
     // HTML parser ignores xml-stylesheet

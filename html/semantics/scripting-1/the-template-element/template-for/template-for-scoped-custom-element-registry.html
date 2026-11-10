@@ -85,6 +85,23 @@ test((t) => {
   assert_true(foo instanceof ScopedFoo, "patched element is upgraded once the scoped registry defines it");
 }, "setHTMLUnsafe on a shadow root with an empty scoped registry: patched element is not upgraded by the global registry");
 
+test((t) => {
+  const scoped = new CustomElementRegistry();
+  class ScopedFoo extends HTMLElement {}
+  scoped.define("x-foo", ScopedFoo);
+  const shadow = makeHost(t, scoped);
+  shadow.setHTMLUnsafe(
+    '<?marker name="x"><template for="x"><x-foo id="direct"></x-foo><div><x-foo id="nested"></x-foo></div></template>',
+  );
+  for (const id of ["#direct", "#nested"]) {
+    const foo = shadow.querySelector(id);
+    assert_not_equals(foo, null, `${id} was patched`);
+    assert_true(foo instanceof ScopedFoo, `${id} is upgraded by the shadow root's registry`);
+    assert_false(foo instanceof GlobalFoo);
+    assert_equals(foo.customElementRegistry, scoped);
+  }
+}, "setHTMLUnsafe on a shadow root with a top-level marker: direct and nested patched elements use the scoped registry");
+
 promise_test(async (t) => {
   const scoped = new CustomElementRegistry();
   class ScopedFoo extends HTMLElement {}

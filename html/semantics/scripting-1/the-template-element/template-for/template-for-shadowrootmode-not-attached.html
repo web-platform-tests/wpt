@@ -70,6 +70,22 @@ test(() => {
 }, "setHTMLUnsafe with a host that can't have a shadow root: patches");
 
 test(() => {
+  customElements.define(
+    "x-disabled-shadow",
+    class extends HTMLElement {
+      static disabledFeatures = ["shadow"];
+    },
+  );
+  const container = document.createElement("div");
+  container.setHTMLUnsafe(
+    '<x-disabled-shadow><?marker name="x"><template shadowrootmode="open" for="x">content</template></x-disabled-shadow>',
+  );
+  const host = container.querySelector("x-disabled-shadow");
+  assert_equals(host.shadowRoot, null);
+  assert_patched(container, host);
+}, "setHTMLUnsafe with a custom element host that disables shadow: patches");
+
+test(() => {
   const container = document.createElement("div");
   container.setHTMLUnsafe(
     '<span><?marker name="x"><template shadowrootmode="open" for="x">content</template></span>',

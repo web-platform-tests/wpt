@@ -10,6 +10,7 @@
 <script>
 const test_cases = [
   {success: false, origin: '/'},
+  {success: false, origin: '*'},
   {success: false, origin: 'https://example:bogus'},
   {success: false, origin: 'https://\ud800.com'},
   {success: false, origin: 'http://example.com'},
@@ -19,7 +20,6 @@ const test_cases = [
 
   {success: true, origin: 'https://example.com'},
   {success: true, origin: 'http://localhost:3000'},
-  {success: true, origin: '*'},
 ];
 
 for (const test of test_cases) {

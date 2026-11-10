@@ -307,7 +307,7 @@ promise_test(async t => {
 
   await writer.write(
     "before" +
-    "<script src='resources/slow.js?pipe=trickle(d0.2)&pending_text=1'><" + "/script>" +
+    "<script src='resources/slow.sub.js?pipe=trickle(d0.2)&pending_text=1'><" + "/script>" +
     "after &amp; more"
   );
 
@@ -343,7 +343,7 @@ promise_test(async t => {
 
   await writer.write(
     "before" +
-    "<script id='self-rm' src='resources/slow.js?pipe=trickle(d0.2)&tag=self_rm'><" + "/script>" +
+    "<script id='self-rm' src='resources/slow.sub.js?pipe=trickle(d0.2)&tag=self_rm'><" + "/script>" +
     " after"
   );
 

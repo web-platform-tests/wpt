@@ -1,6 +1,8 @@
 <!doctype html>
 <meta charset="utf-8" />
 <title>Patching should finalize at EOF</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-intemplate" />
+<link rel="help" href="https://github.com/whatwg/html/issues/13036" />
 <link rel="help" href="https://github.com/WICG/declarative-partial-updates" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -12,7 +14,50 @@
     const placeholder = document.querySelector("#placeholder");
     assert_equals(placeholder.textContent, "New content");
     assert_equals(placeholder.childNodes.length, 1);
-  }, "EOF should finalize patching");
+  }, "EOF should finalize patching in document parser");
+
+  test(() => {
+    const container = document.createElement("div");
+    container.innerHTML =
+      '<section><?marker name="m"></section><template for="m">New content';
+    const section = container.querySelector("section");
+    assert_equals(section.textContent, "New content");
+    assert_equals(section.childNodes.length, 1);
+  }, "EOF should finalize <?marker> patching in innerHTML");
+
+  test(() => {
+    const container = document.createElement("div");
+    container.setHTMLUnsafe(
+      '<section><?start name="p">Old content<?end></section>' +
+      '<template for="p"><span>New content',
+    );
+    const section = container.querySelector("section");
+    assert_equals(section.innerHTML, "<span>New content</span>");
+    assert_equals(section.childNodes.length, 1);
+  }, "EOF with an unclosed child element inside <template for> should finalize patching");
+
+  test(() => {
+    const container = document.createElement("div");
+    container.setHTMLUnsafe(
+      '<template id="outer"><section><?start name="p">Old content<?end></section>' +
+      '<template for="p"><span>New content',
+    );
+    const outer = container.querySelector("#outer");
+    const section = outer.content.querySelector("section");
+    assert_equals(section.innerHTML, "<span>New content</span>");
+    assert_equals(section.childNodes.length, 1);
+  }, "EOF with nested open templates should finalize patching");
+
+  promise_test(async () => {
+    const container = document.createElement("div");
+    const writer = container.streamAppendHTMLUnsafe().getWriter();
+    await writer.write('<section><?start name="p">Old content<?end></section>');
+    await writer.write('<template for="p"><span>New content');
+    await writer.close();
+    const section = container.querySelector("section");
+    assert_equals(section.innerHTML, "<span>New content</span>");
+    assert_equals(section.childNodes.length, 1);
+  }, "EOF should finalize patching when streaming HTML");
 </script>
 <section id="placeholder"><?start name="p">Old content<?end></section>
 <template for="p">New content

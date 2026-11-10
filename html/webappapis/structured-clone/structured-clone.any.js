@@ -1,4 +1,5 @@
 // META: title=structuredClone() tests
+// META: global=window,dedicatedworker,shadowrealm
 // META: script=/common/sab.js
 // META: script=/html/webappapis/structured-clone/structured-clone-battery-of-tests.js
 // META: script=/html/webappapis/structured-clone/structured-clone-battery-of-tests-with-transferables.js
@@ -11,4 +12,5 @@ runStructuredCloneBatteryOfTests({
     });
   },
   hasDocument: typeof document !== "undefined",
+  hasBlob: typeof Blob !== "undefined",
 });

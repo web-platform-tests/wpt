@@ -229,7 +229,7 @@
 
     test(() => {
       const pi = createProcessingInstruction("t", DATA);
-      const container = attach(pi);
+      attach(pi);
       const range = pi.ownerDocument.createRange();
       range.setStart(pi, 0);
       range.setEnd(pi, 5);
@@ -255,7 +255,7 @@
     for (const [name, mutate] of Object.entries(attribute_mutations)) {
       test(() => {
         const pi = createProcessingInstruction("t", DATA);
-        const container = attach(pi);
+        attach(pi);
         const range = pi.ownerDocument.createRange();
         range.setStart(pi, 6);
         range.setEnd(pi, 12);

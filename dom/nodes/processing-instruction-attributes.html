@@ -1,6 +1,8 @@
 <!doctype html>
 <meta charset="utf-8" />
 <title>Processing instruction attributes</title>
+<link rel="help" href="https://dom.spec.whatwg.org/#interface-processinginstruction" />
+<link rel="help" href="https://www.w3.org/TR/xml-stylesheet/#dt-parsing" />
 <link rel="help" href="https://github.com/WICG/declarative-partial-updates" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -302,15 +304,18 @@
       const pi = createProcessingInstruction("t", data);
       assert_equals(pi.data, data);
       assert_array_equals(pi.getAttributeNames(), ["a", "c"]);
-      const mutation_observer = new MutationObserver((records) => {});
+      const mutation_observer = new MutationObserver(() => {});
       mutation_observer.observe(pi, { characterData: true, attributes: true });
       pi.removeAttribute("x");
       assert_equals(pi.data, data, "removeAttribute() doesn't change data");
       assert_false(pi.toggleAttribute("x", false));
       assert_equals(pi.data, data, "toggleAttribute(name, false) doesn't change data");
       assert_array_equals(pi.getAttributeNames(), ["a", "c"]);
-      assert_equals(mutation_observer.takeRecords().length, 0,
-                    "no mutation records");
+      assert_equals(
+        mutation_observer.takeRecords().length,
+        0,
+        "no mutation records",
+      );
 
       const malformed = "a=b";
       const malformed_pi = createProcessingInstruction("t", malformed);
@@ -319,8 +324,11 @@
       assert_equals(malformed_pi.data, malformed, "removeAttribute() doesn't wipe malformed data");
       assert_false(malformed_pi.toggleAttribute("a", false));
       assert_equals(malformed_pi.data, malformed, "toggleAttribute(name, false) doesn't wipe malformed data");
-      assert_equals(mutation_observer.takeRecords().length, 0,
-                    "no mutation records on malformed PI");
+      assert_equals(
+        mutation_observer.takeRecords().length,
+        0,
+        "no mutation records on malformed PI",
+      );
     }, "Removing a non-existent PI attribute doesn't normalize data from " + source);
 
     // HTML parser ignores xml-stylesheet
@@ -368,6 +376,8 @@
     assert_equals(pi_name.getAttribute("\uFFFD"), "c");
   }, "U+0000 NULL in processing instruction data is replaced with U+FFFD in HTML parser");
 
+  // "xml-parser" is omitted because U+0000 is not a valid XML Char and
+  // produces a parse error rather than a ProcessingInstruction node.
   for (const source of ["html-dom", "xml-dom"]) {
     test(() => {
       const pi = sources[source]("target", 'name="a\0b"');

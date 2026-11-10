@@ -122,44 +122,53 @@
     assert_array_equals(log, ["constructed", "connected"]);
   }, "furthestBlock and its children reparented out of a removed intermediate element get the target's scoped registry");
 
-  promise_test(async (t) => {
-    t.add_cleanup(() => container.replaceChildren());
-    const log = [];
-    defineLogging(customElements, "aaa-removed-child", log);
-    const target = document.createElement("div");
-    container.append(target);
-    const removedURL = `/fetch/metadata/resources/record-header.py?file=image-${token()}`;
-    const controlURL = `/fetch/metadata/resources/record-header.py?file=image-${token()}`;
+  for (const method of ["setHTMLUnsafe", "streamHTMLUnsafe"]) {
+    promise_test(async (t) => {
+      t.add_cleanup(() => container.replaceChildren());
+      const log = [];
+      const ceName = `aaa-removed-child-${method.toLowerCase()}`;
+      defineLogging(customElements, ceName, log);
+      const target = document.createElement("div");
+      container.append(target);
+      const removedURL = `/fetch/metadata/resources/record-header.py?file=image-${token()}`;
+      const controlURL = `/fetch/metadata/resources/record-header.py?file=image-${token()}`;
+      const html = `<b><p><${ceName}></${ceName}><img src="${removedURL}"></b>x</p>`;
+      const options = { sanitizer: { removeElements: ["b"] } };
 
-    // <b> is removed, so <p>, the custom element and the image are created in
-    // an inert document. The adoption agency algorithm moves <p> into the
-    // target, but the new <b> that takes over <p>'s children is removed too,
-    // so those children must never become connected: no custom element
-    // reactions run for them and the image is never fetched. The text that
-    // follows </b> is parsed into the now-empty <p>.
-    target.setHTMLUnsafe(
-      `<b><p><aaa-removed-child></aaa-removed-child><img src="${removedURL}"></b>x</p>`,
-      { sanitizer: { removeElements: ["b"] } });
-    assert_equals(target.innerHTML, "<p>x</p>");
-    assert_array_equals(log, [], "no custom element reactions after parsing");
+      // <b> is removed, so <p>, the custom element and the image are created in
+      // an inert document. The adoption agency algorithm moves <p> into the
+      // target, but the new <b> that takes over <p>'s children is removed too,
+      // so those children must never become connected: no custom element
+      // reactions run for them and the image is never fetched. The text that
+      // follows </b> is parsed into the now-empty <p>.
+      if (method === "setHTMLUnsafe") {
+        target.setHTMLUnsafe(html, options);
+      } else {
+        const writer = target.streamHTMLUnsafe(options).getWriter();
+        await writer.write(html);
+        await writer.close();
+      }
+      assert_equals(target.innerHTML, "<p>x</p>");
+      assert_array_equals(log, [], "no custom element reactions after parsing");
 
-    // Load a control image through the same server, so that any request for
-    // the removed image would have been recorded by the time it finishes.
-    const control = document.createElement("div");
-    container.append(control);
-    await new Promise((resolve, reject) => {
-      control.innerHTML = `<img src="${controlURL}">`;
-      control.firstChild.onload = resolve;
-      control.firstChild.onerror = () => reject(new Error("control image failed to load"));
-    });
-    const controlRecord = await (await fetch(controlURL + "&retrieve=true")).text();
-    assert_false(controlRecord.includes("No header has been recorded"),
-                 "the control image request was recorded");
-    const removedRecord = await (await fetch(removedURL + "&retrieve=true")).text();
-    assert_true(removedRecord.includes("No header has been recorded"),
-                "the image below the removed formatting element was not fetched");
-    assert_array_equals(log, [], "no custom element reactions later either");
-  }, "Children of furthestBlock that end up below a removed formatting element never become connected");
+      // Load a control image through the same server, so that any request for
+      // the removed image would have been recorded by the time it finishes.
+      const control = document.createElement("div");
+      container.append(control);
+      await new Promise((resolve, reject) => {
+        control.innerHTML = `<img src="${controlURL}">`;
+        control.firstChild.onload = resolve;
+        control.firstChild.onerror = () => reject(new Error("control image failed to load"));
+      });
+      const controlRecord = await (await fetch(controlURL + "&retrieve=true")).text();
+      assert_false(controlRecord.includes("No header has been recorded"),
+                   "the control image request was recorded");
+      const removedRecord = await (await fetch(removedURL + "&retrieve=true")).text();
+      assert_true(removedRecord.includes("No header has been recorded"),
+                  "the image below the removed formatting element was not fetched");
+      assert_array_equals(log, [], "no custom element reactions later either");
+    }, `${method}: children of furthestBlock that end up below a removed formatting element never become connected`);
+  }
 
   test((t) => {
     t.add_cleanup(() => container.replaceChildren());

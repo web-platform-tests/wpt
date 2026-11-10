@@ -89,7 +89,7 @@ test(() => {
     "reactions run right after the adoption agency algorithm finishes, before #after is parsed");
   assert_equals(
     serialize(container),
-    '<b></b><p><b><x-aaa data-check-id="after"></x-aaa></b></p><span id="after"></span>');
+    '<b></b><p><b><x-aaa data-check-id="after"></x-aaa></b><span id="after"></span></p>');
 }, "Custom element reactions from the adoption agency algorithm run before later tokens are processed");
 </script>
 

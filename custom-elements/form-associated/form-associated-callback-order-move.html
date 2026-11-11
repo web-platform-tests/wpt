@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<title>formAssociatedCallback is called after connectedMoveCallback</title>
+<link rel="help" href="https://dom.spec.whatwg.org/#move">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#reset-the-form-owner">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const log = [];
+
+customElements.define("face-element", class extends HTMLElement {
+  static formAssociated = true;
+  connectedCallback() {
+    log.push(`${this.id}: connected`);
+  }
+  disconnectedCallback() {
+    log.push(`${this.id}: disconnected`);
+  }
+  connectedMoveCallback() {
+    log.push(`${this.id}: connectedMove`);
+  }
+  formAssociatedCallback(form) {
+    log.push(`${this.id}: formAssociated(${form ? form.id : "null"})`);
+  }
+});
+
+test(t => {
+  const form = document.createElement("form");
+  form.id = "form";
+  const face = document.createElement("face-element");
+  face.id = "face";
+  document.body.append(form, face);
+  t.add_cleanup(() => { form.remove(); face.remove(); });
+
+  log.length = 0;
+  form.moveBefore(face, null);
+  assert_array_equals(log, ["face: connectedMove", "face: formAssociated(form)"]);
+}, "Moving a control into a form calls connectedMoveCallback before formAssociatedCallback");
+
+test(t => {
+  const form = document.createElement("form");
+  form.id = "form";
+  const face = document.createElement("face-element");
+  face.id = "face";
+  form.append(face);
+  document.body.append(form);
+  t.add_cleanup(() => { form.remove(); face.remove(); });
+
+  log.length = 0;
+  document.body.moveBefore(face, null);
+  assert_array_equals(log, ["face: connectedMove", "face: formAssociated(null)"]);
+}, "Moving a control out of a form calls connectedMoveCallback before formAssociatedCallback");
+
+test(t => {
+  const form1 = document.createElement("form");
+  form1.id = "form1";
+  const form2 = document.createElement("form");
+  form2.id = "form2";
+  const face = document.createElement("face-element");
+  face.id = "face";
+  form1.append(face);
+  document.body.append(form1, form2);
+  t.add_cleanup(() => { form1.remove(); form2.remove(); });
+
+  log.length = 0;
+  form2.moveBefore(face, null);
+  assert_array_equals(log, ["face: connectedMove", "face: formAssociated(form2)"]);
+}, "Moving a control from one form to another calls connectedMoveCallback, then formAssociatedCallback once");
+</script>
+</body>

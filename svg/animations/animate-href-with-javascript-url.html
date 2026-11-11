@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<meta charset="utf-8">
+<title>Test behaviour when animating anchors with href attributes to javascript: URLs.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+
+for (const doctype of ["text/html", "text/xml"]) {
+  for (const attribute of ["href", "xlink:href", "   href  ", "bla:href"]) {
+    for (const xmlns of [undefined, "xlink", "bla"]) {
+      const test_id = `${doctype}-${attribute}-${xmlns}-`;
+      const is_xml = doctype.includes("xml");
+      async_test(t => {
+        const probe = `
+          <div ${is_xml ? "xmlns='http://www.w3.org/1999/xhtml'" : ""}>
+           <svg ${is_xml ? "xmlns='http://www.w3.org/2000/svg'" : ""}
+                ${xmlns ? "xmlns:" + xmlns + "='http://www.w3.org/1999/xlink'" : ""}>
+            <animate href="#x"
+                     attributeName="${attribute}"
+                     values="javascript:parent.postMessage('${test_id}animated','*')">
+            </animate>
+            <a id="x" href="javascript:parent.postMessage('${test_id}static','*')">
+             <text x="10" y="10">Click me</text>
+            </a>
+           </svg>
+           <script>
+             setTimeout(_ => {
+               document.getElementById("x").dispatchEvent(new MouseEvent("click"));
+             });
+           </${"script"}>
+          </div>
+          `;
+
+        const iframe = document.createElement("iframe");
+        iframe.src = `data:${doctype};base64,${btoa(probe)}`;
+        document.body.appendChild(iframe);
+        t.add_cleanup(_ => { iframe.remove(); });
+
+        window.addEventListener("message", t.step_func(e => {
+          if (e.data.startsWith(test_id)) {
+            assert_equals(e.data.substring(test_id.length), "animated");
+            t.done();
+          }
+        }));
+      }, `Test for ${test_id}.`);
+    }
+  }
+}
+
+</script>

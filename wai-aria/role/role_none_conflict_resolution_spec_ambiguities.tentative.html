@@ -15,7 +15,7 @@
     <!-- PR with proposed clarification, pending user agent tests: https://github.com/w3c/aria/pull/2237 -->
     <h1>Presentational role</h1>
     <h2>Inherited presentational role with global ARIA attribute</h2>
-    
+
     <!-- li inherits the presentational role from ul; aria-describedby is a global ARIA attribute and does not override the inherited presentational role -->
     <ul role="none">
       <li aria-describedby="test" data-testname="presentational roles conflict - ul[role=none] > li[aria-describedby]" class="ex-generic">a</li>
@@ -31,7 +31,7 @@
           </tr>
       </tbody>
     </table>
-    
+
     <!-- td inherits the presentational role from table; aria-describedby is a global ARIA attribute and does not override the inherited presentational role -->
     <style>
       table.with-style, table.with-style th, table.with-style td {

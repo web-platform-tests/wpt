@@ -5,6 +5,7 @@
 <link rel="author" title="Euclid Ye" href="mailto:yezhizhenjiakang@gmail.com">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="automated-support.js"></script>
 
 <script>
 test(t => {
@@ -17,11 +18,7 @@ test(t => {
 }, 'webkitGetAsEntry() returns null for text items');
 
 test(t => {
-  const file = new File(['hello world'], 'test.txt', { type: 'text/plain' });
-  const dt = new DataTransfer();
-  dt.items.add(file);
-
-  const item = dt.items[0];
+  const item = createDataTransferItem();
   assert_equals(item.kind, 'file');
 
   const entry = item.webkitGetAsEntry();
@@ -35,11 +32,7 @@ test(t => {
 }, 'webkitGetAsEntry() returns FileSystemFileEntry with correct attributes');
 
 async_test(t => {
-  const file = new File(['hello world'], 'test.txt', { type: 'text/plain' });
-  const dt = new DataTransfer();
-  dt.items.add(file);
-
-  const entry = dt.items[0].webkitGetAsEntry();
+  const entry = createFileEntry();
 
   entry.file(
     t.step_func_done(f => {
@@ -50,4 +43,25 @@ async_test(t => {
     t.unreached_func('file() should not invoke the error callback')
   );
 }, 'FileSystemFileEntry.file() invokes callback with a File');
+
+promise_test(async () => {
+  const names = ['a.txt', 'b.txt', 'c.txt'];
+  const dt = new DataTransfer();
+  for (const name of names)
+    dt.items.add(new File(['hello'], name));
+
+  const entries = names.map((_, i) => dt.items[i].webkitGetAsEntry());
+  for (let i = 0; i < entries.length; i++) {
+    assert_true(entries[i].isFile, 'item ' + i + ' should yield a file entry');
+    assert_equals(entries[i].name, names[i]);
+    assert_equals(entries[i].fullPath, '/' + names[i]);
+  }
+
+  assert_not_equals(dt.items[0].webkitGetAsEntry(), entries[0],
+                    'each call returns a new entry object');
+
+  const children = await readAll(entries[0].filesystem.root.createReader());
+  assert_equals(children.length, names.length);
+  assert_array_equals(children.map(entry => entry.name), names);
+}, 'webkitGetAsEntry() places every file item under the drag data store root');
 </script>

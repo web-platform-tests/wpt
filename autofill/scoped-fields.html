@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Scoped Autofill Fields Test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/autofill-bidi-helpers.js"></script>
+</head>
+<body>
+<form id="test_form">
+  <input type="text" name="shipping-address" autocomplete="section-delivery shipping address-line1"
+         placeholder="Shipping address" id="shipping_address">
+  <input type="text" name="shipping-postal" autocomplete="section-delivery shipping postal-code"
+         placeholder="Shipping Postal Code" id="shipping_postal">
+
+  <input type="text" name="billing-address" autocomplete="section-payment billing address-line1"
+         placeholder="Billing address" id="billing_address">
+  <input type="text" name="billing-postal" autocomplete="section-payment billing postal-code"
+         placeholder="Billing Postal Code" id="billing_postal">
+</form>
+<script>
+  /**
+   * This test checks that the autofill is correctly scoped to the form sections.
+   * When autofill is triggered on a shipping field, only shipping fields should be filled.
+   */
+  promise_test(async t => {
+    const shippingField = document.getElementById('shipping_address');
+
+    await triggerAutofill(shippingField, {
+      'address-line1': '1 Main St',
+      'postal-code': '12345'
+    });
+
+    // Assert shipping scope was correctly autofilled
+    assertElementHasValue('shipping_address', '1 Main St');
+    assertElementHasValue('shipping_postal', '12345');
+
+    // Assert billing scope was NOT autofilled
+    assertElementHasValue('billing_address', '');
+    assertElementHasValue('billing_postal', '');
+  }, 'Autofill respects section scoping - shipping only');
+
+  promise_test(async t => {
+    // Clear previous values
+    document.getElementById('shipping_address').value = '';
+    document.getElementById('shipping_postal').value = '';
+
+    const billingField = document.getElementById('billing_address');
+
+    await triggerAutofill(billingField, {
+      'address-line1': '456 Bill Ave',
+      'postal-code': '67890'
+    });
+
+    // Assert billing scope was correctly autofilled
+    assertElementHasValue('billing_address', '456 Bill Ave');
+    assertElementHasValue('billing_postal', '67890');
+
+    // Assert shipping scope was NOT autofilled (should still be empty)
+    assertElementHasValue('shipping_address', '');
+    assertElementHasValue('shipping_postal', '');
+  }, 'Autofill respects section scoping - billing only');
+</script>
+</body>
+</html>
+

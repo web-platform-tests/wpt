@@ -116,3 +116,58 @@ test(() => {
   assert_array_equals(counts, [1, 2, 1, 0]);
   assert_equals(source.activeSubscribers, 0);
 }, "activeSubscribers includes nested closed-replay observations until their terminal delivery");
+
+test(t => {
+  const source = new SharedObservable(() => {});
+  const wrapper = source.share({maxReplayValues: 1});
+  const external = new AbortController();
+  const a = new AbortController();
+  const b = new AbortController();
+  t.add_cleanup(() => { external.abort(); a.abort(); b.abort(); });
+  source.subscribe({}, {signal: external.signal});
+  assert_equals(source.activeSubscribers, 1);
+  wrapper.subscribe({}, {signal: a.signal});
+  wrapper.subscribe({}, {signal: b.signal});
+  assert_equals(wrapper.activeSubscribers, 2);
+  assert_equals(source.activeSubscribers, 2, "Both wrapper consumers share one upstream observation");
+  a.abort();
+  assert_equals(wrapper.activeSubscribers, 1);
+  assert_equals(source.activeSubscribers, 2);
+  b.abort();
+  assert_equals(wrapper.activeSubscribers, 0);
+  assert_equals(source.activeSubscribers, 1, "Only the external observation remains");
+  external.abort();
+  assert_equals(source.activeSubscribers, 0);
+}, "A wrapper owns one upstream observation and releases it after its last consumer cancels");
+
+for (const kind of ["complete", "error"]) {
+  test(() => {
+    const reason = {};
+    const source = new SharedObservable({
+      maxReplayValues: 2,
+      producer(s) {
+        s.next(41);
+        s.next(42);
+        if (kind === "complete") s.complete({close: true});
+        else s.error(reason, {close: true});
+      },
+    });
+    const wrapper = source.share({maxReplayValues: 1});
+    wrapper.subscribe({error() {}});
+    assert_array_equals(source.replayValues, [41, 42]);
+    assert_array_equals(wrapper.replayValues, [], "The wrapper reset independently of the source");
+    assert_equals(source.activeSubscribers, 0);
+    assert_equals(wrapper.activeSubscribers, 0);
+  }, `A wrapper resetting after source ${kind} closure clears only its own replay history`);
+}
+
+test(() => {
+  for (const create of [
+    maxReplayValues => new SharedObservable({producer() {}, maxReplayValues}),
+    maxReplayValues => new Observable(() => {}).share({maxReplayValues}),
+    maxReplayValues => new SharedObservable({producer() {}, maxReplayValues: 1}).share({maxReplayValues}),
+  ]) {
+    assert_equals(create(-0).maxReplayValues, 0, "Negative zero is normalized to positive zero");
+    assert_equals(create(2 ** 53 - 1).maxReplayValues, 2 ** 53 - 1);
+  }
+}, "maxReplayValues exposes normalized zero and the maximum accepted capacity");

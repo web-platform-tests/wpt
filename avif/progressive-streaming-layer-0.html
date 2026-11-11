@@ -1,0 +1,29 @@
+<!doctype html>
+<html class="reftest-wait">
+  <meta charset="utf-8" />
+  <title>
+    AVIF: a streaming layered image item renders its first complete layer
+  </title>
+  <link
+    rel="help"
+    href="https://aomediacodec.github.io/av1-avif/#layered-image-item"
+  />
+  <link rel="match" href="progressive-blue-ref.html" />
+  <!-- resources/layers-2.avif is a 100x100 layered (progressively renderable)
+     image item: two AV1 frames of the same picture concatenated in one item,
+     coloured blue then green, described by an a1lx property and with no lsel
+     selecting a particular layer.
+
+     The trickle pipe delivers the first 348 bytes -- the container plus the
+     whole of layer 0, per the 49-byte layer 0 size in a1lx and the mdat
+     payload offset of 299 -- then holds the response open for 30s. The
+     screenshot is taken during that stall, when layer 0 is complete and
+     layer 1 has not started, so a decoder that renders layers as they arrive
+     shows blue. -->
+  <body>
+    <script src="resources/streaming-image-reftest.js"></script>
+    <script>
+      streamingImageReftest("resources/layers-2.avif?pipe=trickle(348:d30)");
+    </script>
+  </body>
+</html>

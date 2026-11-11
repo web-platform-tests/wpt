@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<title>AVIF: a streaming four-layer image item renders its last complete layer</title>
+<link rel="help" href="https://aomediacodec.github.io/av1-avif/#layered-image-item">
+<link rel="match" href="progressive-yellow-ref.html">
+<!-- Four layers is the most a1lx can describe: it gives the sizes of the
+     first three and the fourth takes the remainder of the item.
+     resources/layers-4.avif is a 100x100 layered image item of four layers,
+     coloured blue, red, yellow then green.
+
+     The trickle pipe delivers the first 3680 bytes -- the container plus
+     layers 0 to 2, per the (53, 3275, 37) layer sizes in a1lx and the mdat
+     payload offset of 315 -- then holds the response open for 30s. During the
+     stall the last complete layer is the yellow layer 2, which exercises the
+     final explicit a1lx size rather than only the implicit remainder. -->
+<body>
+<script src="resources/streaming-image-reftest.js"></script>
+<script>
+streamingImageReftest('resources/layers-4.avif?pipe=trickle(3680:d30)');
+</script>

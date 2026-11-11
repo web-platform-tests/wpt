@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Form owners after moveBefore()</title>
+<link rel="help" href="https://dom.spec.whatwg.org/#dom-parentnode-movebefore">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#reset-the-form-owner">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<!-- In each fixture below, the parser places the form as an empty child of the table and
+     associates the input in the cell with it, even though the form is not its ancestor.
+     The </form> after </table> clears the form element pointer so the fixtures don't affect
+     each other. -->
+<div id="table-moved"><table id="table-moved-table"><form id="table-moved-form"><tr><td><input id="table-moved-input"></td></tr></table></form></div>
+<div id="table-into-form"><table id="table-into-form-table"><form id="table-into-form-form"><tr><td><input id="table-into-form-input"></td></tr></table></form></div>
+<div id="table-into-shadow"><table id="table-into-shadow-table"><form id="table-into-shadow-form"><tr><td><input id="table-into-shadow-input"></td></tr></table></form></div>
+<div id="cell-moved"><table><form id="cell-moved-form"><tr><td id="cell-moved-cell"><input id="cell-moved-input"></td></tr></table></form></div>
+<div id="cell-into-form"><table><form id="cell-into-form-form"><tr><td id="cell-into-form-cell"><input id="cell-into-form-input"></td></tr></table></form></div>
+<div id="input-moved"><table><form id="input-moved-form"><tr><td><input id="input-moved-input"></td></tr></table></form></div>
+<div id="form-moved"><table><form id="form-moved-form"><tr><td><input id="form-moved-input"></td></tr></table></form></div>
+<div id="form-into-shadow"><table><form id="form-into-shadow-form"><tr><td><input id="form-into-shadow-input"></td></tr></table></form></div>
+<div id="destination"></div>
+<script>
+test(t => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  document.body.append(form, input);
+  t.add_cleanup(() => { form.remove(); input.remove(); });
+  assert_equals(input.form, null);
+
+  form.moveBefore(input, null);
+  assert_equals(input.form, form);
+}, "Moving an input into a form associates it with the form");
+
+test(t => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  form.append(input);
+  const destination = document.createElement("div");
+  document.body.append(form, destination);
+  t.add_cleanup(() => { form.remove(); destination.remove(); });
+  assert_equals(input.form, form);
+
+  destination.moveBefore(input, null);
+  assert_equals(input.form, null);
+}, "Moving an input out of a form disassociates it");
+
+test(t => {
+  const form1 = document.createElement("form");
+  const form2 = document.createElement("form");
+  const input = document.createElement("input");
+  form1.append(input);
+  document.body.append(form1, form2);
+  t.add_cleanup(() => { form1.remove(); form2.remove(); });
+  assert_equals(input.form, form1);
+
+  form2.moveBefore(input, null);
+  assert_equals(input.form, form2);
+}, "Moving an input from one form to another associates it with the new form");
+
+test(t => {
+  const form = document.createElement("form");
+  const wrapper = document.createElement("div");
+  const input = document.createElement("input");
+  wrapper.append(input);
+  document.body.append(form, wrapper);
+  t.add_cleanup(() => { form.remove(); wrapper.remove(); });
+  assert_equals(input.form, null);
+
+  form.moveBefore(wrapper, null);
+  assert_equals(input.form, form);
+}, "Moving an ancestor of an input into a form associates the input with the form");
+
+test(t => {
+  const form = document.getElementById("table-moved-form");
+  const input = document.getElementById("table-moved-input");
+  assert_equals(input.form, form, "the input is associated with the form by the parser");
+
+  document.getElementById("destination").moveBefore(document.getElementById("table-moved-table"), null);
+  assert_equals(input.form, form);
+}, "Moving a table containing both a parser-associated input and its form keeps the association");
+
+test(t => {
+  const form = document.getElementById("table-into-form-form");
+  const input = document.getElementById("table-into-form-input");
+  const outerForm = document.createElement("form");
+  document.body.append(outerForm);
+  t.add_cleanup(() => outerForm.remove());
+  assert_equals(input.form, form, "the input is associated with the form by the parser");
+
+  outerForm.moveBefore(document.getElementById("table-into-form-table"), null);
+  assert_equals(input.form, form);
+}, "Moving a table containing both a parser-associated input and its form into another form keeps the association");
+
+test(t => {
+  const form = document.getElementById("table-into-shadow-form");
+  const input = document.getElementById("table-into-shadow-input");
+  const host = document.createElement("div");
+  document.body.append(host);
+  t.add_cleanup(() => host.remove());
+  const root = host.attachShadow({ mode: "open" });
+  assert_equals(input.form, form, "the input is associated with the form by the parser");
+
+  root.moveBefore(document.getElementById("table-into-shadow-table"), null);
+  assert_equals(input.form, form);
+}, "Moving a table containing both a parser-associated input and its form into a shadow root keeps the association");
+
+test(t => {
+  const input = document.getElementById("cell-moved-input");
+  assert_equals(input.form, document.getElementById("cell-moved-form"), "the input is associated with the form by the parser");
+
+  document.getElementById("destination").moveBefore(document.getElementById("cell-moved-cell"), null);
+  assert_equals(input.form, null);
+}, "Moving the cell containing a parser-associated input, but not its form, resets the form owner");
+
+test(t => {
+  const input = document.getElementById("cell-into-form-input");
+  const outerForm = document.createElement("form");
+  document.body.append(outerForm);
+  t.add_cleanup(() => outerForm.remove());
+  assert_equals(input.form, document.getElementById("cell-into-form-form"), "the input is associated with the form by the parser");
+
+  outerForm.moveBefore(document.getElementById("cell-into-form-cell"), null);
+  assert_equals(input.form, outerForm);
+}, "Moving the cell containing a parser-associated input into another form associates the input with that form");
+
+test(t => {
+  const input = document.getElementById("input-moved-input");
+  assert_equals(input.form, document.getElementById("input-moved-form"), "the input is associated with the form by the parser");
+
+  document.getElementById("destination").moveBefore(input, null);
+  assert_equals(input.form, null);
+}, "Moving a parser-associated input without its form resets the form owner");
+
+test(t => {
+  const form = document.getElementById("form-moved-form");
+  const input = document.getElementById("form-moved-input");
+  assert_equals(input.form, form, "the input is associated with the form by the parser");
+
+  document.getElementById("destination").moveBefore(form, null);
+  assert_equals(input.form, null);
+}, "Moving a form away from an input it was associated with by the parser resets the input's form owner");
+
+test(t => {
+  const form = document.getElementById("form-into-shadow-form");
+  const input = document.getElementById("form-into-shadow-input");
+  const host = document.createElement("div");
+  document.body.append(host);
+  t.add_cleanup(() => host.remove());
+  const root = host.attachShadow({ mode: "open" });
+  assert_equals(input.form, form, "the input is associated with the form by the parser");
+
+  root.moveBefore(form, null);
+  assert_equals(input.form, null);
+}, "Moving a form into a shadow root resets the form owner of an input it was associated with by the parser");
+</script>
+</body>

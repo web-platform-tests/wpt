@@ -19,11 +19,13 @@ import tempfile
 
 
 pytest = None
+debug_timing = None
 
 
 def do_delayed_imports():
-    global pytest
+    global pytest, debug_timing
     import pytest
+    from . import debug_timing  # DEBUG(wpt#62901)
 
 
 def run(path, server_config, session_config, timeout=0):
@@ -77,7 +79,7 @@ def run(path, server_config, session_config, timeout=0):
                         "-o=console_output_style=classic",  # disable test progress bar
                         path,
                     ],
-                    plugins=[harness, subtests],
+                    plugins=[harness, subtests, debug_timing.TimingRecorder()],
                 )
             except Exception as e:
                 harness.outcome = ("INTERNAL-ERROR", str(e))

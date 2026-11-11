@@ -1,5 +1,6 @@
 // META: script=/resources/testdriver.js
 // META: script=/resources/testdriver-vendor.js
+// META: script=/resources/testdriver-actions.js
 
 function createSwitch(t) {
   assert_true("switch" in HTMLInputElement.prototype, "switch is supported");
@@ -39,6 +40,23 @@ promise_test(async t => {
   assert_true(input.checked);
   assert_array_equals(events, ["click", "input", "change"]);
 }, "Clicking a switch toggles it and fires click, input, and change once");
+
+promise_test(async t => {
+  const input = createSwitch(t);
+  input.disabled = true;
+  input.style.margin = "20px";
+  const events = recordEvents(input);
+  const offset = Math.round(input.getBoundingClientRect().width * 0.35);
+
+  await new test_driver.Actions()
+    .pointerMove(-offset, 0, { origin: input })
+    .pointerDown()
+    .pointerMove(offset, 0, { origin: input })
+    .pointerUp()
+    .send();
+  assert_false(input.checked);
+  assert_array_equals(events, []);
+}, "Dragging across a disabled switch does not toggle it");
 
 test(t => {
   const input = createSwitch(t);

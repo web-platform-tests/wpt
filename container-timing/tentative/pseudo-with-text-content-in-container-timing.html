@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<head>
+<meta charset=utf-8>
+<title>Container Timing: observe a node with a pseudo before text inside a container timing root</title>
+<style>
+body {
+  margin: 20px;
+}
+.has_before_pseudo::before {
+  content: 'This is text I care about';
+  font-size: 12px;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/container-timing/resources/container-timing-helpers.js"></script>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
+    const beforeRender = performance.now();
+
+    const entries = await getContainerEntries(t);
+    assert_equals(entries.length, 1);
+    const entry = entries[0];
+    checkContainerEntry(entry, 'ct', 'hbp_id', beforeRender);
+  }, 'Element with a pseudo before text inside a container timing that is observed.');
+</script>
+</head>
+<body>
+<div id="ct_id" containertiming="ct">
+  <p class="has_before_pseudo" id="hbp_id"></p>
+</div>
+</body>

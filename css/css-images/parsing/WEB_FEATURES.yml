@@ -1,7 +1,7 @@
-features:
-- name: image-orientation
-  files:
-  - image-orientation-*
-- name: gradient-interpolation
-  files:
-  - "gradient-interpolation-*"
+rules:
+- gradient-position-*: [gradients]
+- gradient-interpolation-*: [gradient-interpolation]
+- image-orientation-*: [image-orientation]
+- image-rendering-*: [image-rendering]
+- object-fit-*: [object-fit]
+- object-position-*: [object-position]

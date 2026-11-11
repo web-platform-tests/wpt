@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>Federated Credential Management API multi IDP optional mediation tests.</title>
+<meta name="pac" content="/fedcm/support/proxy.sub.pac">
 <link rel="help" href="https://fedidcg.github.io/FedCM">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -10,6 +11,7 @@
 import {request_options_with_two_idps,
         fedcm_test,
         fedcm_get_and_select_first_account,
+        fedcm_expect_auto_reauthn,
         fedcm_select_account_promise} from '../support/fedcm-helper.sub.js';
 
 fedcm_test(async t => {
@@ -21,7 +23,8 @@ fedcm_test(async t => {
   await fedcm_get_and_select_first_account(t, request_options_with_two_idps());
 
   // Now use mediation:optional and it should work.
-  return navigator.credentials.get(request_options_with_two_idps('optional'));
+  return fedcm_expect_auto_reauthn(t,
+      navigator.credentials.get(request_options_with_two_idps('optional')));
 }, "Mediation optional automatically succeeds when there is one returning account.");
 
 fedcm_test(async t => {

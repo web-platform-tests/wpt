@@ -549,6 +549,46 @@ const tests = [
       label: label,
     },
   },
+  {
+    name:
+        '[convTranspose2d] Throw if a stride is larger than the output height.',
+    input: {dataType: 'float32', shape: [1, 1, 1, 1]},
+    filter: {dataType: 'float32', shape: [1, 1, 1, 1]},
+    options: {
+      strides: [kMaxUnsignedLong, 1],
+      label: label,
+    },
+  },
+  {
+    name:
+        '[convTranspose2d] Throw if a stride is larger than the output width.',
+    input: {dataType: 'float32', shape: [1, 1, 1, 1]},
+    filter: {dataType: 'float32', shape: [1, 1, 1, 1]},
+    options: {
+      strides: [1, kMaxUnsignedLong],
+      label: label,
+    },
+  },
+  {
+    name:
+        '[convTranspose2d] Throw if a dilation is larger than the output height.',
+    input: {dataType: 'float32', shape: [1, 1, 3, 3]},
+    filter: {dataType: 'float32', shape: [1, 1, 1, 1]},
+    options: {
+      dilations: [kMaxUnsignedLong, 1],
+      label: label,
+    },
+  },
+  {
+    name:
+        '[convTranspose2d] Throw if a dilation is larger than the output width.',
+    input: {dataType: 'float32', shape: [1, 1, 3, 3]},
+    filter: {dataType: 'float32', shape: [1, 1, 1, 1]},
+    options: {
+      dilations: [1, kMaxUnsignedLong],
+      label: label,
+    },
+  },
 ];
 
 tests.forEach(
@@ -574,3 +614,12 @@ tests.forEach(
             regrexp);
       }
     }, test.name));
+
+validateOperandRank('convTranspose2d', 'input', (builder, input) => {
+  // Default layouts are inputLayout='nchw' and filterLayout='iohw', so the
+  // filter's input-channel dim (I) must equal the input's C dim
+  // (kExampleDimSize) for the default groups=1 to divide evenly.
+  const filter = builder.input(
+      'filter', {dataType: input.dataType, shape: [kExampleDimSize, 1, 1, 1]});
+  return builder.convTranspose2d(input, filter);
+});

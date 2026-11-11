@@ -101,6 +101,23 @@ const tests = [
       label: label,
     }
   },
+  {
+    name: '[split] Throw if splits (scalar) exceeds limit.',
+    input: {dataType: 'float32', shape: [2, 6]},
+    splits: 8193,
+    options: {
+      label: label,
+    },
+  },
+  {
+    name: '[split] Throw if number of splits exceeds limit.',
+    input: {dataType: 'float32', shape: [2, 8193]},
+    splits: Array(8193).fill(1),
+    options: {
+      axis: 1,
+      label: label,
+    },
+  },
 ];
 
 tests.forEach(
@@ -120,3 +137,7 @@ tests.forEach(
             () => builder.split(input, test.splits, test.options), regrexp);
       }
     }, test.name));
+
+validateOperandRank('split', 'input', (builder, input) => {
+  return builder.split(input, kExampleDimSize, {axis: 0})[0];
+});

@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Permission Element: display style validation</title>
+    <title>Usermedia Element: display style validation</title>
     <link
       rel="help"
       href="https://github.com/WICG/PEPC/blob/main/explainer.md#locking-the-pepc-style"
@@ -12,10 +12,8 @@
   </head>
   <body>
     <script>
-      function createPermissionElementWithStyle(displayValue, type) {
-        const element = document.createElement("permission");
-
-        element.setAttribute("type", type);
+      function createGeolocationElementWithStyle(displayValue) {
+        const element = document.createElement("geolocation");
         element.style.display = displayValue;
         document.body.appendChild(element);
         return element;
@@ -26,11 +24,23 @@
         ["inline-block", ""],
         ["flex", ""],
         ["inline-flex", ""],
+        ["block flow", ""],
+        ["block flow-root", ""],
+        ["inline flow-root", ""],
+        ["block flex", ""],
         ["inline", "style_invalid"],
+        ["inline flow", "style_invalid"],
         ["contents", "style_invalid"],
         ["inline-table", "style_invalid"],
         ["list-item", "style_invalid"],
+        ["inline list-item", "style_invalid"],
+        ["flow-root list-item", "style_invalid"],
+        ["inline flow-root list-item", "style_invalid"],
+        ["block list-item", "style_invalid"],
+        ["block flow-root list-item", "style_invalid"],
         ["ruby", "style_invalid"],
+        ["block ruby", "style_invalid"],
+        ["inline ruby", "style_invalid"],
         ["ruby-text", "style_invalid"],
         ["table", "style_invalid"],
         ["table-caption", "style_invalid"],
@@ -43,34 +53,29 @@
         ["table-row-group", "style_invalid"],
       ];
 
-      const permissionTypes = ["camera", "microphone", "camera microphone", "geolocation"];
+      for (const [displayValue, expectedInvalidReason] of testCases) {
+        promise_test(async (t) => {
+          const element = createGeolocationElementWithStyle(displayValue);
+          t.add_cleanup(() => element.remove());
 
-      testCases.forEach((testCase, index) =>
-        testCase.push(permissionTypes[index % permissionTypes.length]),
-      );
-      async_test((t) => {
-        let completedTests = 0;
-
-        testCases.forEach(([displayValue, expectedInvalidReason, type]) => {
-          const element = createPermissionElementWithStyle(displayValue, type);
-          element.onvalidationstatuschange = t.step_func(() => {
-            // These two invalid reasons are expected when the permission element was just created.
-            if (
-              element.invalidReason == "unsuccessful_registration" ||
-              element.invalidReason == "intersection_changed"
-            ) {
-              return;
-            }
-            assert_equals(
-              element.invalidReason,
-              expectedInvalidReason,
-              `display: ${displayValue} should be ${expectedInvalidReason === "" ? "valid" : "invalid"}`,
-            );
-            element.remove();
-            if (++completedTests === testCases.length) t.done();
+          await new Promise((resolve) => {
+            element.onvalidationstatuschange = t.step_func(() => {
+              if (
+                element.invalidReason == "unsuccessful_registration" ||
+                element.invalidReason == "intersection_changed"
+              ) {
+                return;
+              }
+              assert_equals(
+                element.invalidReason,
+                expectedInvalidReason,
+                `display: ${displayValue} should be ${expectedInvalidReason === "" ? "valid" : "invalid"}`,
+              );
+              resolve();
+            });
           });
-        });
-      }, "Permission element display style validation");
+        }, `display: ${displayValue}`);
+      }
     </script>
   </body>
 </html>

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <meta charset=utf-8>
 <link rel="match" href="large-min-size-reftest-ref.html">
 <link rel="help" href="https://github.com/WICG/PEPC/blob/main/explainer.md#locking-the-pepc-style">
 <body>
   <div>
-    The permission element min-width/height should not be allowed to exceeed the maximum
+    The usermedia element min-width/height should not be allowed to exceeed the maximum
     allowed value for max-width/height.
   </div>
 
@@ -29,6 +30,11 @@
   }
 </style>
 
-<div><permission id="id1" type="geolocation"></permission></div>
-<div><permission id="id2" type="camera"></permission></div>
+<div><usermedia id="id1"></usermedia></div>
+<div><geolocation id="id2"></geolocation></div>
+  <script>
+    requestAnimationFrame(() => {
+      document.documentElement.classList.remove('reftest-wait');
+    });
+  </script>
 </body>

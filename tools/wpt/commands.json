@@ -7,12 +7,16 @@
     "virtualenv": true,
     "requirements": [
       "../manifest/requirements.txt",
-      "../wptrunner/requirements.txt"
+      "../wptrunner/requirements.txt",
+      "../serve/requirements.txt"
     ],
     "conditional_requirements": {
       "commandline_flag": {
         "enable_webtransport_h3": [
           "../webtransport/requirements.txt"
+        ],
+        "enable_websocket_h3": [
+          "../websocket/requirements.txt"
         ]
       }
     }
@@ -75,7 +79,7 @@
     "path": "android.py",
     "script": "run_install",
     "parser": "get_parser_install",
-    "help": "Setup the x86 android emulator",
+    "help": "Setup the Android emulator",
     "virtualenv": true,
     "requirements": [
       "requirements.txt",
@@ -86,7 +90,7 @@
     "path": "android.py",
     "script": "run_start",
     "parser": "get_parser_start",
-    "help": "Start the x86 android emulator",
+    "help": "Start the Android emulator",
     "virtualenv": true,
     "requirements": [
       "requirements.txt",
@@ -100,7 +104,7 @@
     "help": "Validate metadata from wpt-metadata",
     "virtualenv": true,
     "requirements": [
-      "requirements_metadata.txt"
+      "../metadata/requirements.txt"
     ]
   },
   "metadata-list": {
@@ -110,7 +114,7 @@
     "help": "List metadata with given labels from wpt-metadata",
     "virtualenv": true,
     "requirements": [
-      "requirements_metadata.txt"
+      "../metadata/requirements.txt"
     ]
   }
 }

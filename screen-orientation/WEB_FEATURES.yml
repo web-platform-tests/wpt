@@ -1,3 +1,4 @@
-features:
-- name: screen-orientation
-  files: "**"
+rules:
+- active-lock.html: [screen-orientation-lock]
+- lock*: [screen-orientation-lock]
+- "*": [screen-orientation]

@@ -534,6 +534,82 @@ const tests = [
       label: label,
     },
   },
+  {
+    name: '[conv2d] Throw if the intermediate padded tensor is too large.',
+    input: {dataType: 'float32', shape: [5354, 5, 1, 33]},
+    filter: {dataType: 'float32', shape: [1, 6, 1, 33]},
+    options: {
+      inputLayout: 'nhwc',
+      filterLayout: 'ohwi',
+      padding: [0, 32767, 32766, 5],
+      dilations: [4963, 1],
+      strides: [5390, 21245],
+      bias: {dataType: 'float32', shape: [1]},
+      groups: 1,
+      label: label,
+    },
+  },
+  {
+    name: '[conv2d] Throw if a stride is larger than the padded input height.',
+    input: {dataType: 'float32', shape: [1, 1, 5, 5]},
+    filter: {dataType: 'float32', shape: [1, 1, 1, 1]},
+    options: {
+      strides: [kMaxUnsignedLong, 1],
+      label: label,
+    },
+  },
+  {
+    name: '[conv2d] Throw if a stride is larger than the padded input width.',
+    input: {dataType: 'float32', shape: [1, 1, 5, 5]},
+    filter: {dataType: 'float32', shape: [1, 1, 1, 1]},
+    options: {
+      strides: [1, kMaxUnsignedLong],
+      label: label,
+    },
+  },
+  {
+    name:
+        '[conv2d] Throw if a dilation is larger than the padded input height.',
+    input: {dataType: 'float32', shape: [1, 1, 5, 5]},
+    filter: {dataType: 'float32', shape: [1, 1, 1, 1]},
+    options: {
+      dilations: [kMaxUnsignedLong, 1],
+      label: label,
+    },
+  },
+  {
+    name: '[conv2d] Throw if a dilation is larger than the padded input width.',
+    input: {dataType: 'float32', shape: [1, 1, 5, 5]},
+    filter: {dataType: 'float32', shape: [1, 1, 1, 1]},
+    options: {
+      dilations: [1, kMaxUnsignedLong],
+      label: label,
+    },
+  },
+  {
+    name: '[conv2d] Throw if the dilated effective filter height is larger ' +
+        'than the padded input height.',
+    input: {dataType: 'float32', shape: [1, 1, 5, 5]},
+    filter: {dataType: 'float32', shape: [1, 1, 3, 1]},
+    // Effective filter height = (3 - 1) * 3 + 1 = 7 > padded height 5, while
+    // the dilation itself (3) is not larger than the padded input.
+    options: {
+      dilations: [3, 1],
+      label: label,
+    },
+  },
+  {
+    name: '[conv2d] Throw if the dilated effective filter width is larger ' +
+        'than the padded input width.',
+    input: {dataType: 'float32', shape: [1, 1, 5, 5]},
+    filter: {dataType: 'float32', shape: [1, 1, 1, 3]},
+    // Effective filter width = (3 - 1) * 3 + 1 = 7 > padded width 5, while the
+    // dilation itself (3) is not larger than the padded input.
+    options: {
+      dilations: [1, 3],
+      label: label,
+    },
+  },
 ];
 
 tests.forEach(
@@ -558,3 +634,12 @@ tests.forEach(
             () => builder.conv2d(input, filter, test.options), regrexp);
       }
     }, test.name));
+
+validateOperandRank('conv2d', 'input', (builder, input) => {
+  // Default layouts are inputLayout='nchw' and filterLayout='oihw', so the
+  // filter's input-channel dim (I) must equal the input's C dim
+  // (kExampleDimSize) for the default groups=1 to divide evenly.
+  const filter = builder.input(
+      'filter', {dataType: input.dataType, shape: [1, kExampleDimSize, 1, 1]});
+  return builder.conv2d(input, filter);
+});

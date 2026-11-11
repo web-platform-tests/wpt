@@ -1,4 +1,4 @@
-features:
-- name: text-emphasis
-  files:
-  - "*"
+rules:
+- text-decoration-*: [text-decoration]
+- text-underline-position-*: [text-underline-position]
+- "*": [text-emphasis]

@@ -2,7 +2,7 @@ import pytest
 
 import webdriver.protocol as protocol
 
-from tests.support.asserts import assert_error, assert_success
+from tests.support.classic.asserts import assert_error, assert_success
 
 
 def switch_to_frame(session, frame):
@@ -14,7 +14,7 @@ def switch_to_frame(session, frame):
 
 
 def frameset(inline, *docs):
-    frames = list(map(lambda doc: "<frame src='{}'></frame>".format(inline(doc)), docs))
+    frames = list(map(lambda doc: "<frame src='{}'>".format(inline(doc)), docs))
     return "<frameset rows='{}'>\n{}</frameset>".format(len(frames) * "*,", "\n".join(frames))
 
 

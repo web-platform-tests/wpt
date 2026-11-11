@@ -2370,6 +2370,96 @@ const concatTests = [
         }
       }
     }
+  },
+
+  // int32 tests
+  {
+    'name': 'concat two int32 2D tensors of same shape along axis 0',
+    'graph': {
+      'inputs': {
+        'concatInput1': {
+          'data': [1, -2, 3, -4, 5, -6],
+          'descriptor': {shape: [2, 3], dataType: 'int32'}
+        },
+        'concatInput2': {
+          'data': [7, -8, 9, -10, 11, -12],
+          'descriptor': {shape: [2, 3], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'concat',
+        'arguments':
+            [{'inputs': ['concatInput1', 'concatInput2']}, {'axis': 0}],
+        'outputs': 'concatOutput'
+      }],
+      'expectedOutputs': {
+        'concatOutput': {
+          'data': [1, -2, 3, -4, 5, -6, 7, -8, 9, -10, 11, -12],
+          'descriptor': {shape: [4, 3], dataType: 'int32'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'concat two int32 2D tensors of same others dimensions except different 2nd dimension along axis 1',
+    'graph': {
+      'inputs': {
+        'concatInput1': {
+          'data': [1, -2, 3, -4, 5, -6],
+          'descriptor': {shape: [2, 3], dataType: 'int32'}
+        },
+        'concatInput2': {
+          'data': [7, -8, 9, -10],
+          'descriptor': {shape: [2, 2], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'concat',
+        'arguments':
+            [{'inputs': ['concatInput1', 'concatInput2']}, {'axis': 1}],
+        'outputs': 'concatOutput'
+      }],
+      'expectedOutputs': {
+        'concatOutput': {
+          'data': [1, -2, 3, 7, -8, -4, 5, -6, 9, -10],
+          'descriptor': {shape: [2, 5], dataType: 'int32'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'concat a single float32 4D tensor along axis 0 (identity, batch of 1)',
+    'graph': {
+      'inputs': {
+        'concatInput1': {
+          'data': [
+            -0.3944413363933563, 0.861982524394989, 0.337996244430542,
+            -0.990639865398407, 0.576785683631897, 0.32276400923728943,
+            -0.44735023379325867, 0.11028251051902771, -0.5945112705230713,
+            -0.402848482131958, -0.9531654119491577, -0.6731740236282349
+          ],
+          'descriptor': {shape: [1, 2, 2, 3], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'concat',
+        'arguments': [{'inputs': ['concatInput1']}, {'axis': 0}],
+        'outputs': 'concatOutput'
+      }],
+      'expectedOutputs': {
+        'concatOutput': {
+          'data': [
+            -0.3944413363933563, 0.861982524394989, 0.337996244430542,
+            -0.990639865398407, 0.576785683631897, 0.32276400923728943,
+            -0.44735023379325867, 0.11028251051902771, -0.5945112705230713,
+            -0.402848482131958, -0.9531654119491577, -0.6731740236282349
+          ],
+          'descriptor': {shape: [1, 2, 2, 3], dataType: 'float32'}
+        }
+      }
+    }
   }
 ];
 

@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Container Timing: paints in a cross-origin iframe do not leak to the parent observer</title>
+<body>
+<style>
+body {
+  margin: 0;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/container-timing/resources/container-timing-helpers.js"></script>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
+    // The parent must never observe entries: a cross-origin iframe's paints belong
+    // to the iframe's own performance timeline, not the parent's.
+    const parentEntries = [];
+    new PerformanceObserver(entryList => {
+      parentEntries.push(...entryList.getEntries());
+    }).observe({type: 'container'});
+
+    // Drive completion off the child's own postMessage: it proves the iframe
+    // actually painted a container entry, so parent silence is meaningful
+    // rather than vacuous.
+    const childEntries = new Promise(resolve => {
+      window.addEventListener('message', e => {
+        if (e.data && e.data.kind === 'child-entries') {
+          resolve(e.data);
+        }
+      });
+    });
+    const iframe = document.createElement('iframe');
+    iframe.src = 'http://{{domains[www]}}:{{ports[http][1]}}/container-timing/tentative/resources/iframe-isolation-subframe.html';
+    document.body.appendChild(iframe);
+
+    const data = await childEntries;
+    assert_equals(data.count, 1,
+        'iframe observer should see exactly 1 container entry');
+    assert_equals(data.identifier, 'child_ct',
+        "iframe entry identifier should be 'child_ct'");
+
+    // Wait a short grace period, so that an (erroneously) leaked parent entry
+    // would have a chance to be delivered before checking.
+    await new Promise(resolve => t.step_timeout(resolve, 500));
+    assert_equals(parentEntries.length, 0,
+        'Parent observer must not receive iframe paints. Got: ' +
+        parentEntries.map(e => e.identifier).join(','));
+  }, 'Container Timing entries from a cross-origin iframe do not appear in the parent observer.');
+</script>
+</body>

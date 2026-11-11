@@ -1,11 +1,7 @@
-features:
-- name: text-wrap-balance
-  files:
-  - text-wrap-balance-*
-- name: text-wrap-nowrap
-  files:
-  - text-wrap-nowrap-*
-- name: white-space-collapse
-  files:
-  - white-space-collapse-*
-  - line-edge-white-space-collapse-*
+rules:
+- text-wrap-balance-*: [text-wrap-balance]
+- text-wrap-nowrap-*: [text-wrap]
+- seg-break-transformation-*: []
+- white-space-collapse-*: [white-space-collapse]
+- line-edge-white-space-collapse-*: [white-space-collapse]
+- "*": [white-space]

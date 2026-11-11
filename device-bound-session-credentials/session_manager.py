@@ -46,6 +46,7 @@ class SessionManager:
         self.refresh_url = "/device-bound-session-credentials/refresh_session.py"
         self.include_site = True
         self.refresh_endpoint_unavailable = False
+        self.refresh_endpoint_unavailable_status = 500
         self.response_session_id_override = None
         self.allowed_refresh_initiators = ["*"]
         self.provider_session_id = None
@@ -54,6 +55,7 @@ class SessionManager:
         self.use_empty_response = False
         self.registration_extra_cookies = []
         self.has_custom_query_param = False
+        self.allows_challenges = True
 
     def next_session_id(self):
         return len(self.session_to_key_map)
@@ -135,6 +137,10 @@ class SessionManager:
         if refresh_endpoint_unavailable is not None:
             self.refresh_endpoint_unavailable = refresh_endpoint_unavailable
 
+        refresh_endpoint_unavailable_status = configuration.get("refreshEndpointUnavailableStatus")
+        if refresh_endpoint_unavailable_status is not None:
+            self.refresh_endpoint_unavailable_status = refresh_endpoint_unavailable_status
+
         response_session_id_override = configuration.get("responseSessionIdOverride")
         if response_session_id_override is not None:
             self.response_session_id_override = response_session_id_override
@@ -168,6 +174,10 @@ class SessionManager:
         has_custom_query_param = configuration.get("hasCustomQueryParam")
         if has_custom_query_param is not None:
             self.has_custom_query_param = has_custom_query_param
+
+        allows_challenges = configuration.get("allowsChallenges")
+        if allows_challenges is not None:
+            self.allows_challenges = allows_challenges
 
     def get_should_refresh_end_session(self):
         return self.should_refresh_end_session
@@ -268,6 +278,9 @@ class SessionManager:
     def get_refresh_endpoint_unavailable(self):
         return self.refresh_endpoint_unavailable
 
+    def get_refresh_endpoint_unavailable_status(self):
+        return self.refresh_endpoint_unavailable_status
+
     def get_provider_session_id(self):
         return self.provider_session_id
 
@@ -276,3 +289,6 @@ class SessionManager:
 
     def get_provider_key(self):
         return self.provider_key
+
+    def get_allows_challenges(self):
+        return self.allows_challenges

@@ -66,7 +66,7 @@
     // Examine the soft navigation LCP entry.
     const icps = results[1].value;
     assert_equals(icps.length, 1, "Expecting one LCP after click.");
-    assert_equals(icps[0].id, "lcp-img", "LCP after click should be for the image.");
+    assert_equals(icps[0].largestContentfulPaint.id, "lcp-img", "LCP after click should be for the image.");
 
     // Examine timestamps.
     assert_less_than(
@@ -74,10 +74,10 @@
       softNavs[0].startTime,
       "Soft navigation should start after first LCP.",
     );
-    assert_less_than(
+    assert_equals(
       softNavs[0].startTime,
       icps[0].startTime,
-      "LCP should start after soft navigation.",
+      "LCP startTime should equal that of the soft navigation.",
     );
 
     // Examine navigation ids.

@@ -1,5 +1,5 @@
 // This mock provides a way to intercept renderer <-> browser mojo messages for
-// navigator.subApps.* calls eliminating the need for an actual browser.
+// window.subApps.* calls eliminating the need for an actual browser.
 //
 // In Chromium-based browsers this implementation is provided by a polyfill
 // in order to reduce the amount of test-only code shipped to users.
@@ -8,11 +8,15 @@
 
 let mockSubAppsService = null;
 
-// TODO(crbug.com/1408101): Figure out how to export SubAppsServiceResult (and
-// get rid of this).
 const Status = {
-  SUCCESS: 0,
-  FAILURE: 1,
+  SUCCESS: -1,  // The mojo service responds with Result<..> in case of value
+                // present, it is converted to -1 SUCCESS for in these tests.
+  WRONG_CONTEXT: 0,   // SubAppsServiceResultCode.kWrongContext.
+  USER_DECLINED: 1,   // SubAppsServiceResultCode.kUserDeclined.
+  LIMIT_EXCEEDED: 2,  // SubAppsServiceResultCode.kLimitExceeded.
+  WEB_APPS_NOT_USER_INSTALLABLE:
+      3,             // SubAppsServiceResultCode.kWebAppsNotUserInstallable.
+  GENERIC_ERROR: 4,  // SubAppsServiceResultCode.kGenericError.
 };
 
 async function createMockSubAppsService(service_result_code, add_call_return_value, list_call_return_value, remove_call_return_value) {
@@ -39,7 +43,11 @@ async function createMockSubAppsService(service_result_code, add_call_return_val
 
   if (mockSubAppsService === null) {
     mockSubAppsService = new SubAppsServiceTest();
-    mockSubAppsService.initialize(service_result_code, add_call_return_value, list_call_return_value, remove_call_return_value);
+    await mockSubAppsService.initialize(
+        service_result_code, add_call_return_value, list_call_return_value,
+        remove_call_return_value);
+  } else {
+    throw new Error('MockSubAppsService was not cleaned up properly');
   }
 }
 
@@ -54,23 +62,25 @@ function subapps_test(func, description) {
   }, description);
 }
 
-async function subapps_add_expect_reject_with_result(t, add_call_params, mocked_response, expected_results) {
+async function subapps_add_expect_reject_with_result(
+    t, add_call_params, mocked_response, expected_error_name) {
   t.add_cleanup(async () => {
     await mockSubAppsService.reset();
     mockSubAppsService = null;
   });
 
-  await createMockSubAppsService(Status.FAILURE, mocked_response, [], []);
-  await navigator.subApps.add(add_call_params).then(
-    result => {
-      assert_unreached("Should have rejected: ", result);
-    },
-    error => {
-      for (const app_id in expected_results) {
-        assert_own_property(error, app_id, "Return results are missing entry for subapp.")
-        assert_equals(error[app_id], expected_results[app_id], "Return results are not as expected.")
-      }
-    });
+  await createMockSubAppsService(Status.GENERIC_ERROR, [], [], []);
+  mockSubAppsService.setAddCallReturnValue(mocked_response());
+
+  await window.subApps.add(add_call_params)
+      .then(
+          result => {
+            assert_unreached("Should have rejected: ", result);
+          },
+          error => {
+            assert_true(error instanceof DOMException);
+            assert_equals(error.name, expected_error_name);
+          });
 }
 
 async function subapps_add_expect_success_with_result(t, add_call_params, mocked_response, expected_results) {
@@ -79,32 +89,58 @@ async function subapps_add_expect_success_with_result(t, add_call_params, mocked
     mockSubAppsService = null;
   });
 
-  await createMockSubAppsService(Status.SUCCESS, mocked_response, [], []);
-  await navigator.subApps.add(add_call_params).then(result => {
-    for (const app_id in expected_results) {
-      assert_own_property(result, app_id, "Return results are missing entry for subapp.")
-      assert_equals(result[app_id], expected_results[app_id], "Return results are not as expected.")
+  await createMockSubAppsService(Status.SUCCESS, [], [], []);
+  let expected_results_evaluated = expected_results();
+  mockSubAppsService.setAddCallReturnValue(mocked_response());
+  await window.subApps.add(add_call_params).then(result => {
+    assert_equals(typeof result, 'object', 'add() should return an object');
+    if (expected_results_evaluated.installedApps) {
+      for (const key in expected_results_evaluated.installedApps) {
+        assert_own_property(result.installedApps, key,
+                            'installedApps should contain key');
+        assert_equals(result.installedApps[key],
+                      expected_results_evaluated.installedApps[key]);
+      }
+      assert_equals(
+          Object.keys(result.installedApps).length,
+          Object.keys(expected_results_evaluated.installedApps).length);
+    } else {
+      assert_equals(Object.keys(result.installedApps).length, 0);
+    }
+    if (expected_results_evaluated.failedApps) {
+      for (const key in expected_results_evaluated.failedApps) {
+        assert_own_property(result.failedApps, key,
+                            'failedApps should contain key');
+        assert_true(result.failedApps[key] instanceof DOMException);
+        assert_equals(result.failedApps[key].name,
+                      expected_results_evaluated.failedApps[key]);
+      }
+      assert_equals(Object.keys(result.failedApps).length,
+                    Object.keys(expected_results_evaluated.failedApps).length);
+    } else {
+      assert_equals(Object.keys(result.failedApps).length, 0);
     }
   });
 }
 
-async function subapps_remove_expect_reject_with_result(t, remove_call_params, mocked_response, expected_results) {
+async function subapps_remove_expect_reject_with_result(
+    t, remove_call_params, mocked_response, expected_error_name) {
   t.add_cleanup(async () => {
     await mockSubAppsService.reset();
     mockSubAppsService = null;
   });
 
-  await createMockSubAppsService(Status.FAILURE, [], [], mocked_response);
-  await navigator.subApps.remove(remove_call_params).then(
-    result => {
-      assert_unreached("Should have rejected: ", result);
-    },
-    error => {
-      for (const app_id in expected_results) {
-        assert_own_property(error, app_id, "Return results are missing entry for subapp.")
-        assert_equals(error[app_id], expected_results[app_id], "Return results are not as expected.")
-      }
-    });
+  await createMockSubAppsService(Status.GENERIC_ERROR, [], [], []);
+  mockSubAppsService.setRemoveCallReturnValue(mocked_response());
+  await window.subApps.remove(remove_call_params)
+      .then(
+          result => {
+            assert_unreached("Should have rejected: ", result);
+          },
+          error => {
+            assert_true(error instanceof DOMException);
+            assert_equals(error.name, expected_error_name);
+          });
 }
 
 async function subapps_remove_expect_success_with_result(t, remove_call_params, mocked_response, expected_results) {
@@ -113,11 +149,29 @@ async function subapps_remove_expect_success_with_result(t, remove_call_params, 
     mockSubAppsService = null;
   });
 
-  await createMockSubAppsService(Status.SUCCESS, [], [], mocked_response);
-  await navigator.subApps.remove(remove_call_params).then(result => {
-    for (const app_id in expected_results) {
-      assert_own_property(result, app_id, "Return results are missing entry for subapp.")
-      assert_equals(result[app_id], expected_results[app_id], "Return results are not as expected.")
+  await createMockSubAppsService(Status.SUCCESS, [], [], []);
+  let expected_results_evaluated = expected_results();
+  mockSubAppsService.setRemoveCallReturnValue(mocked_response());
+  await window.subApps.remove(remove_call_params).then(result => {
+    assert_equals(typeof result, 'object', 'remove() should return an object');
+    if (expected_results_evaluated.removedApps) {
+      assert_array_equals(result.removedApps,
+                          expected_results_evaluated.removedApps);
+    } else {
+      assert_equals(result.removedApps.length, 0);
+    }
+    if (expected_results_evaluated.failedApps) {
+      for (const key in expected_results_evaluated.failedApps) {
+        assert_own_property(result.failedApps, key,
+                            'failedApps should contain key');
+        assert_true(result.failedApps[key] instanceof DOMException);
+        assert_equals(result.failedApps[key].name,
+                      expected_results_evaluated.failedApps[key]);
+      }
+      assert_equals(Object.keys(result.failedApps).length,
+                    Object.keys(expected_results_evaluated.failedApps).length);
+    } else {
+      assert_equals(Object.keys(result.failedApps).length, 0);
     }
   });
 }

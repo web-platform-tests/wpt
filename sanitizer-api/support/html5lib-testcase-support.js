@@ -85,6 +85,8 @@ function parse_html5lib_testcases(content) {
       // Error handling is for another day.
     }
   }
+  // Flush the last testcase if the content doesn't end with an empty line.
+  add_html5lib_testcase(testcases, current);
   return testcases;
 }
 
@@ -176,10 +178,10 @@ function build_node_tree(root, docstr) {
       // `DOCTYPEs must be "<!DOCTYPE " then [... bla bla ...]`
       append_child_at(root, level,
          document.implementation.createDocumentType(match[1], match[3], match[5]));
-    } else if (match = remainder.match(/^<?([a-z]*)( (.*))>$/)) {
-      // `Processing instructions must be "<?", then the target, then [...]`
+    } else if (match = remainder.match(/^<\?([a-zA-Z0-9_-]*)(?:\s+(.*?))?\?>$/)) {
+      // `Processing instructions must be "<?", then the target, then [...], ending in "?>"`
       append_child_at(root, level, document.createProcessingInstruction(
-          match[1], match[3]));
+          match[1], match[2] || ""));
     } else if (remainder == "content") {
       // Template contents are represented by the string "content" with the
       // children below it.

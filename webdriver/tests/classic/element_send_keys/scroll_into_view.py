@@ -1,7 +1,7 @@
 import pytest
 
-from tests.support.asserts import assert_success
-from tests.support.helpers import is_element_in_viewport
+from tests.support.classic.asserts import assert_success
+from tests.support.classic.helpers import is_element_in_viewport
 
 
 def element_send_keys(session, element, text):
@@ -46,7 +46,7 @@ def test_element_outside_of_scrollable_viewport(session, inline):
         </style>
 
         <div class="scroll-container">
-            <input type="text" size="20" value="foo"></input>
+            <input type="text" size="20" value="foo">
         </div>
         """)
 

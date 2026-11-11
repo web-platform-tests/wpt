@@ -15,7 +15,6 @@ import threading
 import time
 import traceback
 import uuid
-from collections import OrderedDict
 from queue import Empty, Queue
 from typing import Dict
 
@@ -189,7 +188,7 @@ class WebTestServer(http.server.ThreadingHTTPServer):
         self.router = router
         self.rewriter = rewriter
 
-        self.scheme = "http2" if http2 else "https" if use_ssl else "http"
+        self.scheme = "http2" if http2 else "https" if use_ssl and not encrypt_after_connect else "http"
         self.logger = get_logger()
 
         self.latency = latency
@@ -325,9 +324,13 @@ class WebTestServer(http.server.ThreadingHTTPServer):
 class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
     """RequestHandler for WebTestHttpd"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, request, client_address, server):
         self.logger = get_logger()
-        super().__init__(*args, **kwargs)
+        # The scheme of requests on this connection. This starts out as the
+        # server's scheme, and changes to https once a CONNECT request has
+        # switched the connection to TLS.
+        self.scheme = server.scheme
+        super().__init__(request, client_address, server)
 
     def finish_handling_h1(self, request_line_is_valid):
 
@@ -412,7 +415,29 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
             self.request = ssl_context.wrap_socket(self.connection,
                                                    server_side=True)
             self.setup()
+            self.scheme = "https"
+            # parse_request() decided whether to keep the connection open
+            # based on the CONNECT request itself, e.g. an HTTP/1.0 CONNECT
+            # closes it by default. The tunnel needs to stay open for the
+            # requests that follow over TLS, so override that decision.
+            self.close_connection = False
         return
+
+    def finish(self):
+        super().finish()
+        # socketserver only shuts down and closes the socket it accepted,
+        # which wrap_socket() in handle_connect() has detached, so close the
+        # TLS socket here. Without this, the client never sees the end of a
+        # response that is delimited by closing the connection. Send a TLS
+        # close_notify first so that the client sees a clean close, but don't
+        # wait long for the client's reply.
+        if isinstance(self.request, ssl.SSLSocket) and self.server.encrypt_after_connect:
+            try:
+                self.request.settimeout(1)
+                self.request.unwrap()
+            except (OSError, ValueError):
+                pass
+            self.request.close()
 
     def log_request(self, code="-", size="-"):
         if isinstance(code, http.HTTPStatus):
@@ -493,7 +518,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
         try:
             while not self.close_connection:
                 data = self.request.recv(window_size)
-                if data == '':
+                if data == b'':
                     self.logger.debug('(%s) Socket Closed' % self.uid)
                     self.close_connection = True
                     continue
@@ -501,6 +526,11 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                 with self.conn as connection:
                     frames = connection.receive_data(data)
                     window_size = connection.remote_settings.initial_window_size
+                    non_closed_streams = {
+                        stream_id
+                        for stream_id, stream in connection.streams.items()
+                        if not stream.closed
+                    }
 
                 self.logger.debug('(%s) Frames Received: ' % self.uid + str(frames))
 
@@ -513,17 +543,24 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                         for stream_id, (thread, queue) in stream_queues.items():
                             queue.put(frame)
 
-                    elif hasattr(frame, 'stream_id'):
+                    elif hasattr(frame, 'stream_id') and frame.stream_id != 0:
+                        # Stream ID 0 is reserved for connection control messages (RFC 9113 § 5.1.1)
+                        # and is handled directly by h2, so we only create streams for stream IDs > 0
                         if frame.stream_id not in stream_queues:
                             queue = Queue()
                             stream_queues[frame.stream_id] = (self.start_stream_thread(frame, queue), queue)
                         stream_queues[frame.stream_id][1].put(frame)
 
-                        if isinstance(frame, StreamEnded) or getattr(frame, "stream_ended", False):
-                            del stream_queues[frame.stream_id]
+                for closed_id in set(stream_queues.keys()) - non_closed_streams:
+                    self.logger.debug(f'({self.uid}) Stream {closed_id} is closed, removing queue')
+                    del stream_queues[closed_id]
 
         except OSError as e:
             self.logger.error(f'({self.uid}) Closing Connection - \n{str(e)}')
+            if not self.close_connection:
+                self.close_connection = True
+        except ProtocolError as e:
+            self.logger.debug(f'H2 protocol error - {str(e)}')
             if not self.close_connection:
                 self.close_connection = True
         except Exception as e:
@@ -607,9 +644,9 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
             # wire. Flush the headers here.
             try:
                 h2response.write_status_headers()
-            except StreamClosedError:
+            except (StreamClosedError, ProtocolError):
                 # work around https://github.com/web-platform-tests/wpt/issues/27786
-                # The stream was already closed.
+                # The stream or connection was already closed.
                 return
 
             request_wrapper._dispatcher = dispatcher
@@ -737,9 +774,12 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
             if getattr(frame, "stream_ended", False):
                 try:
                     self.finish_handling(request, response, req_handler)
-                except StreamClosedError:
-                    self.logger.debug('(%s - %s) Unable to write response; stream closed' %
-                                    (self.uid, stream_id))
+                except (StreamClosedError, ProtocolError):
+                    # The stream or connection was closed before we could
+                    # finish writing the response.
+                    self.logger.debug(
+                        '(%s - %s) Unable to write response; stream or '
+                        'connection closed' % (self.uid, stream_id))
                 break
 
         cleanup()
@@ -773,7 +813,7 @@ class H2ConnectionGuard:
 
 class H2Headers(Dict[bytes, bytes]):
     def __init__(self, headers):
-        self.raw_headers = OrderedDict()
+        self.raw_headers = {}
         for key, val in headers:
             key = isomorphic_decode(key)
             val = isomorphic_decode(val)
@@ -798,6 +838,7 @@ class H2HandlerCopy:
         self.path = self.headers['path']
         self.h2_stream_id = req_frame.stream_id
         self.server = handler.server
+        self.scheme = handler.scheme
         self.protocol_version = handler.protocol_version
         self.client_address = handler.client_address
         self.raw_requestline = ''

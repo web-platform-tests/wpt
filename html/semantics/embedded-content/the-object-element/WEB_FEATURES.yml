@@ -1,4 +1,3 @@
-features:
-- name: constraint-validation
-  files:
-  - object-setcustomvalidity.html
+rules:
+- object-setcustomvalidity.html: [constraint-validation]
+- "*": [object]

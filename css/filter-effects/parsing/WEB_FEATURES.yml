@@ -1,4 +1,3 @@
-features:
-- name: backdrop-filter
-  files:
-  - backdrop-filter-*
+rules:
+- backdrop-filter-*: [backdrop-filter]
+- filter-*: [filter]

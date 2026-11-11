@@ -1,0 +1,3 @@
+rules:
+- clip.html: [clip, mathml]
+- "**": [mathml]

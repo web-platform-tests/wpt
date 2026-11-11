@@ -1,4 +1,5 @@
-features:
-- name: background-image
-  files:
-  - root-element-background-image-*
+rules:
+- root-element-background-image-*: [background-image]
+- line-with-svg-background.html: [mix-blend-mode]
+- root-element-blend-mode.html: [mix-blend-mode]
+- text-with-svg-background.html: [mix-blend-mode]

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<title>Menu reparenting with violation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body>
+<script>
+promise_test(async () => {
+  const outer = document.createElement('menubar');
+  document.body.appendChild(outer);
+
+  const inner = document.createElement('menulist');
+  const btn = document.createElement('button');
+   // inner menulist now has violating content.
+  inner.appendChild(btn);
+  document.body.appendChild(inner);
+
+  // Synchronously reparent inner into outer, so we can later check that outer
+  // is also marked as violated.
+  outer.appendChild(inner);
+
+  // Yield to allow microtasks to execute that, in some implementations, sync
+  // the violated state of the menu tree.
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+  // Populate the a11y tree.
+  inner.showPopover();
+
+  assert_equals(await test_driver.get_computed_role(outer), 'list', 'Outer menu should get list role because the violation was reparented into it');
+  assert_equals(await test_driver.get_computed_role(inner), 'list', 'Inner menu should retain its list role');
+}, 'Synchronous reparenting correctly distributes the list role to the new root');
+</script>

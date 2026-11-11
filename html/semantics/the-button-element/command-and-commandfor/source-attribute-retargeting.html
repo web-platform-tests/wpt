@@ -17,7 +17,7 @@ promise_test(async () => {
   const shadowButton = host.shadowRoot.getElementById('shadow-button');
   shadowButton.commandForElement = popover;
 
-  const eventNames = ['beforetoggle', 'toggle', 'command'];
+  const eventNames = ['command'];
   const eventNameToEvent = {};
   const eventNameToCaptureSource = {};
   const eventNameToBubbleSource = {};
@@ -33,8 +33,7 @@ promise_test(async () => {
   }
 
   shadowButton.click();
-  await new Promise(requestAnimationFrame);
-  await new Promise(requestAnimationFrame);
+  await new Promise(resolve => step_timeout(resolve, 0));
 
   for (const eventName of eventNames) {
     const event = eventNameToEvent[eventName];
@@ -48,7 +47,7 @@ promise_test(async () => {
     assert_equals(event.source, host,
       `${eventName}.source after dispatch.`);
   }
-}, 'CommandEvent.source and ToggleEvent.source should be retargeted during and after event dispatch.');
+}, 'CommandEvent.source should be retargeted during and after event dispatch.');
 </script>
 
 <div id=host2>
@@ -63,14 +62,13 @@ promise_test(async () => {
 </div>
 
 <script>
-// This does not test ToggleEvent because ToggleEventInit does not have a source attribute.
 promise_test(async () => {
   const host2 = document.getElementById('host2');
   const source = host2.shadowRoot.getElementById('source');
   const innerhost = host2.shadowRoot.getElementById('innerhost');
   const target = innerhost.shadowRoot.getElementById('target');
 
-  const targets = [host2, innerhost, target];
+  const targets = [innerhost, target];
   const targetToEvent = new Map();
   const targetToCaptureSource = new Map();
   const targetToBubbleSource = new Map();
@@ -88,13 +86,15 @@ promise_test(async () => {
   const commandEvent = new CommandEvent('command', {composed: true, source});
   target.dispatchEvent(commandEvent);
 
+  assert_false(targetToEvent.has(host2),
+    'host2: event should not have fired because target and source retarget to the same node in host2\'s scope.');
+
   for (const target of targets) {
-    const expectedSource = target == host2 ? host2 : source;
     assert_true(targetToEvent.has(target),
       `${target.id}: event should have fired.`);
-    assert_equals(targetToCaptureSource.get(target), expectedSource,
+    assert_equals(targetToCaptureSource.get(target), source,
       `${target.id}: event.source at capture.`);
-    assert_equals(targetToBubbleSource.get(target), expectedSource,
+    assert_equals(targetToBubbleSource.get(target), source,
       `${target.id}: event.source at bubble.`);
     assert_equals(targetToEvent.get(target).source, host2,
       `${target.id}: event.source after dispatch.`);
@@ -110,7 +110,7 @@ promise_test(async () => {
   const button = document.getElementById('button3');
   const popover = document.getElementById('popover3');
 
-  const eventNames = ['beforetoggle', 'toggle', 'command'];
+  const eventNames = ['command'];
   const eventNameToEvent = {};
   for (const eventName of eventNames) {
     popover.addEventListener(eventName, event => {
@@ -119,8 +119,7 @@ promise_test(async () => {
   }
 
   button.click();
-  await new Promise(requestAnimationFrame);
-  await new Promise(requestAnimationFrame);
+  await new Promise(resolve => step_timeout(resolve, 0));
 
   for (const eventName of eventNames) {
     const event = eventNameToEvent[eventName];
@@ -128,5 +127,5 @@ promise_test(async () => {
     assert_equals(event.source, button,
       `${eventName}.source should be the invoker button after dispatch.`);
   }
-}, 'CommandEvent.source and ToggleEvent.source should not be set to null after dispatch without ShadowDOM.');
+}, 'CommandEvent.source should not be set to null after dispatch without ShadowDOM.');
 </script>

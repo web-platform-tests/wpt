@@ -1,5 +1,5 @@
 // META: title=test WebNN `dequantization -> operators -> quantization` subgraph
-// META: global=window,worker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -1946,6 +1946,94 @@ const subgraphTests = [
             0.7843137979507446, 1.1764707565307617,
           ],
           'descriptor': {shape: [2, 2], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'per-channel quantized gemm with non-zero quantized dimension of the filter',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [1, 1, 1, 1],
+          'descriptor': {shape: [2, 2], dataType: 'int8'},
+          'constant': false
+        },
+        'inputAScale': {
+          'data': [0.5],
+          'descriptor': {shape: [1, 1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputAZeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1, 1], dataType: 'int8'},
+          'constant': true
+        },
+        'inputB': {
+          'data': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          'descriptor': {shape: [5, 2], dataType: 'int8'},
+          'constant': true
+        },
+        // Per-channel quantization on axis 1.
+        'inputBScale': {
+          'data': [0.5, 0.5],
+          'descriptor': {shape: [1, 2], dataType: 'float32'},
+          'constant': true
+        },
+        'inputBZeroPoint': {
+          'data': [0, 0],
+          'descriptor': {shape: [1, 2], dataType: 'int8'},
+          'constant': true
+        },
+        'outputScale': {
+          'data': [0.5],
+          'descriptor': {shape: [1, 1], dataType: 'float32'},
+          'constant': true
+        },
+        'outputZeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1, 1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'inputA'},
+            {'scale': 'inputAScale', 'zeroPoint': 'inputAZeroPoint'}
+          ],
+          'outputs': 'dequantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'inputB'},
+            {'scale': 'inputBScale', 'zeroPoint': 'inputBZeroPoint'}
+          ],
+          'outputs': 'dequantizedInputB'
+        },
+        {
+          'name': 'gemm',
+          'arguments': [
+            {'a': 'dequantizedInputA'}, {'b': 'dequantizedInputB'},
+            {'options': {'bTranspose': true, 'alpha': 1.0, 'beta': 1.0}}
+          ],
+          'outputs': 'gemmOutput'
+        },
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'gemmOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'output'
+        }
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          'descriptor': {shape: [2, 5], dataType: 'int8'}
         }
       }
     }
@@ -3912,6 +4000,63 @@ const subgraphTests = [
             1.7154645919799805, -0.3430929183959961, -7.89113712310791,
           ],
           'descriptor': {shape: [2, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'dequantizeLinear float16 output as graph output and prelu slope',
+    'graph': {
+      'inputs': {
+        'preluInput': {
+          'data': [
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
+          ],
+          'descriptor': {shape: [16], dataType: 'float16'},
+          'constant': false
+        },
+        'dequantizeLinearInput': {
+          'data': [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+          'descriptor': {shape: [16], dataType: 'int8'},
+          'constant': false
+        },
+        'dequantizeLinearScale': {
+          'data': [1],
+          'descriptor': {shape: [1], dataType: 'float16'},
+          'constant': true
+        },
+        'dequantizeLinearZeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        }
+      },
+      'operators': [
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'dequantizeLinearInput'},
+            {'scale': 'dequantizeLinearScale'},
+            {'zeroPoint': 'dequantizeLinearZeroPoint'}
+          ],
+          'outputs': 'dequantizeLinearOutput'
+        },
+        {
+          'name': 'prelu',
+          'arguments': [
+            {'input': 'preluInput'}, {'slope': 'dequantizeLinearOutput'}
+          ],
+          'outputs': 'preluOutput'
+        }
+      ],
+      'expectedOutputs': {
+        'dequantizeLinearOutput': {
+          'data': [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+          'descriptor': {shape: [16], dataType: 'float16'}
+        },
+        'preluOutput': {
+          'data': [8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7],
+          'descriptor': {shape: [16], dataType: 'float16'}
         }
       }
     }

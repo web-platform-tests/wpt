@@ -1,7 +1,4 @@
-features:
-- name: scrollend
-  files:
-  - scrollend-*
-- name: wheel-events
-  files:
-  - wheel-event-transactions-*
+rules:
+- scroll-*: [scroll-elements]
+- scrollend-*: [scrollend]
+- wheel-event-transactions-*: [wheel-events]

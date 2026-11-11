@@ -1,7 +1,5 @@
-features:
-- name: preserves-pitch
-  files:
-  - preserves-pitch.html
-- name: audio
-  files:
-  - audio_*
+rules:
+- video_*: [video]
+- preserves-pitch.html: [preserves-pitch]
+- audio_*: [audio]
+- controlsList.tentative.html: [controls-list]

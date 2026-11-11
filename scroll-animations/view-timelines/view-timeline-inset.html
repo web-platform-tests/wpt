@@ -40,7 +40,6 @@
     scroll-padding-inline: 10px 20px;
   }
 </style>
-</style>
 <body>
   <div id="container">
     <div id="content">
@@ -124,41 +123,6 @@
   }, 'view timeline with inset auto.');
 
 promise_test(async t => {
-  t.add_cleanup(() => {
-    target.classList.remove('big-font');
-  });
-  const anim = await runTimelineInsetTest(t, {
-    inset: [ CSS.em(1), CSS.em(2) ],
-    startOffset: 632,
-    endOffset: 884
-  });
-  verifyTimelineOffsets(anim, 632, 884);
-  target.classList.add('big-font');
-  await runTimelineBoundsTest(t, {
-    anim: anim,
-    startOffset: 640,
-    endOffset: 880,
-  }, 'Adjust for font size increase')
-      .then(anim => verifyTimelineOffsets(anim, 640, 880));
-}, 'view timeline with font relative inset.');
-
-promise_test(async t => {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const vmin = Math.min(vw, vh);
-  await runTimelineInsetTest(t, {
-    inset: [ CSS.vw(10), CSS.vw(20) ],
-    startOffset: 600 + 0.2 * vw,
-    endOffset: 900 - 0.1 * vw
-  });
-  await runTimelineInsetTest(t, {
-    inset: [ CSS.vmin(10), CSS.vmin(20) ],
-    startOffset: 600 + 0.2 * vmin,
-    endOffset: 900 - 0.1 * vmin
-  });
-}, 'view timeline with viewport relative insets.');
-
-promise_test(async t => {
   await runTimelineInsetTest(t, {
     inset: "10px",
     startOffset: 610,
@@ -184,11 +148,22 @@ promise_test(async t => {
     startOffset: 600,
     endOffset: 900
   });
-  await runTimelineInsetTest(t, {
-    inset: "1em 2em",
-    startOffset: 632,
-    endOffset: 884
+
+  // Relative units are not allowed.
+  // https://github.com/w3c/csswg-drafts/issues/13852
+  assert_throws_js(TypeError, () => {
+    new ViewTimeline({
+      subject: target,
+      inset: "1em 2em"
+    });
   });
+  assert_throws_js(TypeError, () => {
+    new ViewTimeline({
+      subject: target,
+      inset: "1vw 2vh"
+    });
+  });
+
   assert_throws_js(TypeError, () => {
     new ViewTimeline({
       subject: target,
@@ -202,10 +177,16 @@ promise_test(async t => {
       inset: "1 2"
     });
   });
-
 }, 'view timeline inset as string');
 
 promise_test(async t => {
+  assert_throws_js(TypeError, () => {
+    new ViewTimeline({
+      subject: target,
+      inset: []
+    });
+  });
+
   assert_throws_js(TypeError, () => {
     new ViewTimeline({
       subject: target,
@@ -219,8 +200,6 @@ promise_test(async t => {
       inset: [ CSS.px(10), CSS.px(10), CSS.px(10) ]
     });
   });
-
-
 }, 'view timeline with invalid inset');
 
 </script>

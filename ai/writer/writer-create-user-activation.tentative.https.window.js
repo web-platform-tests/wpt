@@ -1,5 +1,6 @@
 // META: title=Writer Create User Activation
 // META: script=/resources/testdriver.js
+// META: script=../resources/util.js
 // META: timeout=long
 
 'use strict';
@@ -12,10 +13,15 @@ promise_test(async t => {
   assert_implements_optional(await Writer.availability() == 'downloadable');
   assert_false(navigator.userActivation.isActive);
   await promise_rejects_dom(t, 'NotAllowedError', Writer.create());
-  await test_driver.bless('Writer.create', Writer.create);
+  await test_driver.bless();
+  const createPromise = Writer.create();
+  // User activation is not consumed by the create call.
+  assert_true(navigator.userActivation.isActive);
+  consumeTransientUserActivation();
+  await createPromise;
 
-  // Create does not require user activation when availability is 'available'.
+  // Create does not require transient user activation.
   assert_equals(await Writer.availability(), 'available');
   assert_false(navigator.userActivation.isActive);
   await Writer.create();
-}, 'Create requires user activation when availability is "downloadable"');
+}, 'Create requires sticky user activation when availability is "downloadable"');

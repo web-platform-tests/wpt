@@ -1,4 +1,4 @@
-// META: global=window,dedicatedworker,jsshell,shadowrealm
+// META: global=window,dedicatedworker,jsshell
 
 promise_test(async () => {
   const wasmModule = await import("./resources/js-string-builtins.wasm");
@@ -10,3 +10,4 @@ promise_test(async () => {
   assert_equals(wasmModule.testString("hello"), 1);
   assert_equals(wasmModule.testString(42), 0);
 }, "String builtins should be supported in imports in ESM integration");
+

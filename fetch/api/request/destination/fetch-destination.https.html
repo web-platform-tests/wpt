@@ -174,7 +174,7 @@ promise_test(async t => {
 //////////////////////
 promise_test(async t => {
   let audioContext = new frame.contentWindow.AudioContext();
-  await audioContext.audioWorklet.addModule("dummy?dest=audioworklet");
+  await audioContext.audioWorklet.addModule("dummy.js?dest=audioworklet");
 }, 'AudioWorklet module fetches with a "audioworklet" Request.destination');
 
 // Style destination
@@ -227,6 +227,24 @@ promise_test(t => {
     frame.contentWindow.onerror = null;
   });
 }, 'Import declaration with `type: "json"` fetches with a "json" Request.destination');
+
+// Text destination
+///////////////////
+
+// Import declaration with `type: "text"` - text destination
+promise_test(t => {
+  return new Promise((resolve, reject) => {
+      frame.contentWindow.onerror = reject;
+      let node = frame.contentWindow.document.createElement("script");
+      node.onload = resolve;
+      node.onerror = reject;
+      node.src = "import-declaration-type-text.js";
+      node.type = "module";
+      frame.contentWindow.document.body.appendChild(node);
+  }).then(() => {
+    frame.contentWindow.onerror = null;
+  });
+}, 'Import declaration with `type: "text"` fetches with a "text" Request.destination');
 
 // Preload tests
 ////////////////

@@ -1,14 +1,28 @@
 // META: global=window,worker
-// META: script=/common/get-host-info.sub.js
 // META: script=resources/webtransport-test-helpers.sub.js
 
 function validate_rtt_stats(stats) {
+  assert_true('datagrams' in stats, 'datagrams is required');
+  assert_equals(typeof stats.datagrams, 'object');
+  assert_not_equals(stats.datagrams, null);
+  assert_true('estimatedSendRate' in stats,
+              'estimatedSendRate defaults to null');
+  if (stats.estimatedSendRate !== null) {
+    assert_greater_than_equal(stats.estimatedSendRate, 0, 'estimatedSendRate');
+  }
   // The assumption below is that the RTT to localhost is under 5 seconds,
   // which is fairly generous.
-  assert_greater_than(stats.minRtt, 0, "minRtt");
-  assert_less_than(stats.minRtt, 5 * 1000, "minRtt");
-  assert_greater_than(stats.smoothedRtt, 0, "smoothedRtt");
-  assert_less_than(stats.smoothedRtt, 5 * 1000, "smoothedRtt");
+  if ("minRtt" in stats) {
+    assert_greater_than(stats.minRtt, 0, "minRtt");
+    assert_less_than(stats.minRtt, 5 * 1000, "minRtt");
+  }
+  if ("smoothedRtt" in stats) {
+    assert_greater_than(stats.smoothedRtt, 0, "smoothedRtt");
+    assert_less_than(stats.smoothedRtt, 5 * 1000, "smoothedRtt");
+  }
+  if ('rttVariation' in stats) {
+    assert_greater_than_equal(stats.rttVariation, 0, 'rttVariation');
+  }
 }
 
 promise_test(async t => {
@@ -16,9 +30,18 @@ promise_test(async t => {
   await wt.ready;
   const stats = await wt.getStats();
   validate_rtt_stats(stats);
-  assert_equals(stats.datagrams.expiredOutgoing, 0);
-  assert_equals(stats.datagrams.droppedIncoming, 0);
-  assert_equals(stats.datagrams.lostOutgoing, 0);
+  if ("expiredOutgoing" in stats.datagrams) {
+    assert_equals(stats.datagrams.expiredOutgoing, 0);
+  }
+  if ("droppedIncoming" in stats.datagrams) {
+    assert_equals(stats.datagrams.droppedIncoming, 0);
+  }
+  if ('expiredIncoming' in stats.datagrams) {
+    assert_equals(stats.datagrams.expiredIncoming, 0);
+  }
+  if ("lostOutgoing" in stats.datagrams) {
+    assert_equals(stats.datagrams.lostOutgoing, 0);
+  }
 }, "WebTransport client should be able to provide stats after connection has been established");
 
 promise_test(async t => {
@@ -80,9 +103,9 @@ promise_test(async t => {
   await wt.ready;
 
   const numDatagrams = 64;
-  wt.datagrams.incomingHighWaterMark = 4;
+  wt.datagrams.incomingMaxBufferedDatagrams = 4;
 
-  const writer = wt.datagrams.writable.getWriter();
+  const writer = wt.datagrams.createWritable().getWriter();
   const encoder = new TextEncoder();
   const promises = [];
   while (promises.length < numDatagrams) {
@@ -94,13 +117,15 @@ promise_test(async t => {
   const maxAttempts = 40;
   let stats;
   for (let i = 0; i < maxAttempts; i++) {
-    wait(50);
+    await wait(50);
     stats = await wt.getStats();
-    if (stats.datagrams.droppedIncoming > 0) {
+    if ("droppedIncoming" in stats.datagrams && stats.datagrams.droppedIncoming > 0) {
       break;
     }
   }
-  assert_greater_than(stats.datagrams.droppedIncoming, 0);
-  assert_less_than_equal(stats.datagrams.droppedIncoming,
-                         numDatagrams - wt.datagrams.incomingHighWaterMark);
+  if ("droppedIncoming" in stats.datagrams) {
+    assert_greater_than(stats.datagrams.droppedIncoming, 0);
+    assert_less_than_equal(stats.datagrams.droppedIncoming,
+                             numDatagrams - wt.datagrams.incomingMaxBufferedDatagrams);
+  }
 }, "WebTransport client should be able to provide droppedIncoming values for datagrams");

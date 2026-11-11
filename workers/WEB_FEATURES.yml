@@ -1,15 +1,16 @@
-features:
-- name: request-animation-frame-workers
-  files:
-  - WorkerGlobalScope_requestAnimationFrame.worker.js
-- name: setinterval
-  files:
-  - 'WorkerGlobalScope_setInterval.htm'
-- name: settimeout
-  files:
-  - 'WorkerGlobalScope_setTimeout.htm'
-- name: ua-client-hints
-  files:
-  - WorkerNavigator_userAgentData.http.html
-  - WorkerNavigator_userAgentData.https.html
-  - WorkerNavigator_userAgentData.https.tentative.html
+rules:
+- WorkerNavigator-hardware-concurrency.any.js: [hardware-concurrency]
+- WorkerGlobalScope_requestAnimationFrame.worker.js: [request-animation-frame-workers]
+- WorkerGlobalScope_setInterval.htm: [setinterval]
+- WorkerGlobalScope_setTimeout.htm: [settimeout]
+- WorkerNavigator_userAgentData.http.html: [ua-client-hints]
+- WorkerNavigator_userAgentData.https.html: [ua-client-hints]
+- WorkerNavigator_onLine.htm: [online]
+- Worker-postMessage-happens-in-parallel.https.html: [postmessage]
+- postMessage_*: [postmessage]
+- WorkerNavigator_userAgent.htm: [user-agent-sniffing]
+- data-url-shared.html: [shared-workers]
+- SharedWorker-*: [shared-workers]
+- shared-worker-*: [shared-workers]
+- "*.any.*": []
+- "*": [dedicated-workers]

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>CSS Box Alignment Level 3: parsing justify-items with valid values</title>
 <link rel="help" href="https://drafts.csswg.org/css-align-3/#propdef-justify-items">
-<meta name="assert" content="justify-items supports the full grammar 'normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ] | legacy | legacy && [ left | right | center ]'.">
+<meta name="assert" content="justify-items supports the full grammar '[ <overflow-position>? normal ] | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ] | legacy | legacy && [ left | right | center ]'.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
@@ -12,6 +12,8 @@
 <body>
 <script>
 test_valid_value("justify-items", "normal");
+test_valid_value("justify-items", "unsafe normal");
+test_valid_value("justify-items", "safe normal");
 test_valid_value("justify-items", "stretch");
 
 // <baseline-position> = [ first | last ]? baseline
@@ -21,7 +23,7 @@ test_valid_value("justify-items", "last baseline");
 
 // <overflow-position>? [ <self-position> | left | right ]
 // <overflow-position> = unsafe | safe
-// <self-position> = center | start | end | self-start | self-end | flex-start | flex-end
+// <self-position> = center | start | end | self-start | self-end | flex-start | flex-end | flow-start | flow-end
 test_valid_value("justify-items", "center");
 test_valid_value("justify-items", "start");
 test_valid_value("justify-items", "end");
@@ -29,6 +31,10 @@ test_valid_value("justify-items", "self-start");
 test_valid_value("justify-items", "self-end");
 test_valid_value("justify-items", "flex-start");
 test_valid_value("justify-items", "flex-end");
+test_valid_value("justify-items", "flow-start");
+test_valid_value("justify-items", "flow-end");
+test_valid_value("justify-items", "safe flow-start");
+test_valid_value("justify-items", "unsafe flow-end");
 test_valid_value("justify-items", "unsafe center");
 test_valid_value("justify-items", "safe self-end");
 test_valid_value("justify-items", "right");

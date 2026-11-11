@@ -33,6 +33,17 @@ test_computed_value("width", "min(NaN * 1px, 15px)", "0px");
 test_computed_value("width", "min(-15px, NaN * 1px)", "0px");
 test_computed_value("width", "min(NaN * 1px, -15px)", "0px");
 
+// A NaN operand must propagate even when another operand is a percentage,
+// which is resolved later than an absolute length.
+test_computed_value("width", "min(50%, NaN * 1px)", "0px");
+test_computed_value("width", "min(NaN * 1px, 50%)", "0px");
+test_computed_value("width", "max(50%, NaN * 1px)", "0px");
+test_computed_value("width", "max(NaN * 1px, 50%)", "0px");
+test_computed_value("width", "clamp(50%, NaN * 1px, 100px)", "0px");
+test_computed_value("width", "clamp(10px, 50%, NaN * 1px)", "0px");
+test_computed_value("width", "clamp(NaN * 1px, 50%, 100px)", "0px");
+test_computed_value("width", "calc(min(50%, NaN * 1px) + 10px)", "0px");
+
 test_computed_value("width", "calc(infinity * 1px - infinity * 1%)", "0px");
 testComputedValueGreaterOrLowerThan("width", "calc(infinity * 1px + infinity * 1%)", REALLY_LARGE);
 test_computed_value("width", "calc(min(NaN * 1px, infinity * 1px) + max(infinity * 1px, -infinity * 1px))", "0px");
@@ -49,6 +60,9 @@ testComputedValueGreaterOrLowerThan("margin-left", "calc(max(10000px, 0px) + min
 testComputedValueGreaterOrLowerThan("margin-left", "calc(-infinity * 1px - infinity * 1px)", REALLY_LARGE_NEGATIVE);
 testComputedValueGreaterOrLowerThan("margin-left", "calc(min(-infinity * 1px, 10px))", REALLY_LARGE_NEGATIVE);
 
+testComputedValueGreaterOrLowerThan("margin-left", "calc(1em / sign(1em - 16px))", REALLY_LARGE);
+testComputedValueGreaterOrLowerThan("margin-left", "calc(1em / (-1 * sign(1em - 16px)))", REALLY_LARGE_NEGATIVE);
+
 // For <time>
 test_computed_value("animation-duration", "calc(NaN * 1s)", "0s");
 testComputedValueGreaterOrLowerThan("animation-duration", "calc(infinity * 1s)", REALLY_LARGE);
@@ -58,6 +72,9 @@ testComputedValueGreaterOrLowerThan("animation-duration", "calc(max(infinity * 1
 testComputedValueGreaterOrLowerThan("transition-delay", "calc(-infinity* 1s)", REALLY_LARGE_NEGATIVE);
 testComputedValueGreaterOrLowerThan("transition-delay", "calc(max(10000s, 0s) + min(-infinity * 1s, infinity * 1s))", REALLY_LARGE_NEGATIVE);
 testComputedValueGreaterOrLowerThan("transition-delay", "calc(min(-infinity * 1s, 10s))", REALLY_LARGE_NEGATIVE);
+
+testComputedValueGreaterOrLowerThan("transition-delay", "calc(1s / sign(1em - 16px))", REALLY_LARGE);
+testComputedValueGreaterOrLowerThan("transition-delay", "calc(1s / (-1 * sign(1em - 16px)))", REALLY_LARGE_NEGATIVE);
 
 // For <angle>
 testTransformValuesCloseTo("rotate(calc(infinity * 1deg))", 0.0001, "rotate(0deg)");
@@ -76,10 +93,30 @@ testTransformValuesCloseTo("rotate(calc(infinity * 1grad))", 0.0001, "rotate(0de
 testTransformValuesCloseTo("rotate(calc(-infinity * 1grad))", 0.0001, "rotate(0deg)");
 testTransformValuesCloseTo("rotate(calc(NaN * 1grad))", 0.0001, "rotate(0deg)");
 
+testTransformValuesCloseTo("rotate(calc(1deg / sign(1em - 16px))", 0.0001, "rotate(0deg)");
+testTransformValuesCloseTo("rotate(calc(1deg / (-1 * sign(1em - 16px)))", 0.0001, "rotate(0deg)");
+
 // For <number>
 testComputedValueGreaterOrLowerThan("scale", "calc(max(infinity, 10))", REALLY_LARGE);
 testComputedValueGreaterOrLowerThan("scale", "calc(infinity)", REALLY_LARGE);
 testComputedValueGreaterOrLowerThan("scale", "calc(-infinity * 10)", REALLY_LARGE_NEGATIVE);
+
+testComputedValueGreaterOrLowerThan("scale", "calc(1 / sign(1em - 16px))", REALLY_LARGE);
+testComputedValueGreaterOrLowerThan("scale", "calc(1 / (-1 * sign(1em - 16px)))", REALLY_LARGE_NEGATIVE);
+
+// For <percentage>
+testComputedValueGreaterOrLowerThan("scale", "calc(max(infinity * 100%, 1000%))", REALLY_LARGE);
+testComputedValueGreaterOrLowerThan("scale", "calc(infinity * 100%)", REALLY_LARGE);
+testComputedValueGreaterOrLowerThan("scale", "calc(-infinity * 1000%)", REALLY_LARGE_NEGATIVE);
+
+testComputedValueGreaterOrLowerThan("scale", "calc(100% / sign(1em - 16px))", REALLY_LARGE);
+testComputedValueGreaterOrLowerThan("scale", "calc(100% / (-1 * sign(1em - 16px)))", REALLY_LARGE_NEGATIVE);
+
+testComputedValueGreaterOrLowerThan("translate", "calc(infinity * 100%)", REALLY_LARGE);
+testComputedValueGreaterOrLowerThan("translate", "calc(-infinity * 1000%)", REALLY_LARGE_NEGATIVE);
+
+testComputedValueGreaterOrLowerThan("translate", "calc(100% / sign(1em - 16px))", REALLY_LARGE);
+testComputedValueGreaterOrLowerThan("translate", "calc(100% / (-1 * sign(1em - 16px)))", REALLY_LARGE_NEGATIVE);
 
 </script>
 </body>

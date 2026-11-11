@@ -1,9 +1,10 @@
-features:
-- name: shadow-dom
-  files: "**"
-- name: slot-assign
-  files:
-  - imperative-slot-*
-- name: document-caretpositionfrompoint
-  files:
-  - Document-caretPositionFromPoint.tentative.html
+rules:
+- imperative-slot-*: [slot-assign]
+- HTMLSlotElement-interface.html: [slot]
+- Slottable-mixin.html: [slot]
+- layout-slot-*: [slot]
+- slotchange*.html: [slot]
+- slots*.html: [slot]
+- Document-caretPositionFromPoint.tentative.html: [document-caretpositionfrompoint]
+- HighlightRegistry-highlightsFromPoint.html: [highlightsfrompoint]
+- "*": [shadow-dom]

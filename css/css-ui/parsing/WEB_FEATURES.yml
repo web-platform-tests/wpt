@@ -1,7 +1,10 @@
-features:
-- name: field-sizing
-  files:
-  - field-sizing-*
-- name: user-select
-  files:
-  - user-select-*
+rules:
+- field-sizing-*: [field-sizing]
+- user-select-*: [user-select]
+- caret-color-*: [caret-color]
+- outline-width-*: [outlines]
+- outline-style-*: [outlines]
+- outline-color-*: [outlines]
+- outline-offset-*: [outlines]
+- cursor-*: [cursor]
+- box-sizing-*: [box-sizing]

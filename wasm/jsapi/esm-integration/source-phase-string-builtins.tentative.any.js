@@ -1,4 +1,4 @@
-// META: global=window,dedicatedworker,jsshell,shadowrealm
+// META: global=window,dedicatedworker,jsshell
 
 promise_test(async () => {
   const wasmModuleSource = await import.source("./resources/js-string-builtins.wasm");
@@ -37,3 +37,4 @@ promise_test(async () => {
 
   assert_equals(imports.length, 0);
 }, "Source phase import should handle string builtin import reflection correctly");
+

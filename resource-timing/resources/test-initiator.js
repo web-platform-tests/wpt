@@ -1,4 +1,8 @@
 
+// Returns the absolute URL for |path| (which must start with '/') in the
+// current origin. Requires /common/get-host-info.sub.js to be loaded first.
+const getUrl = path => get_host_info()['ORIGIN'] + path;
+
 const with_timeout_message = async (promise, message, timeout = 1000) => {
   return Promise.race([
     promise,

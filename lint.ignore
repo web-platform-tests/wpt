@@ -15,6 +15,10 @@ TRAILING WHITESPACE: conformance-checkers/*
 TRAILING WHITESPACE: html/syntax/xmldecl/support/no-version-or-space-or-trailing-question-trailing-body-single-quotes-spaces-and-line-breaks-around-equals.htm
 TRAILING WHITESPACE: html/syntax/xmldecl/support/no-version-or-space-or-trailing-question-trailing-body-single-quotes-spaces-and-line-breaks-around-equals-trail.htm
 
+# html5lib-tests .dat files contain trailing whitespace and CR characters as
+# part of literal test inputs.
+TRAILING WHITESPACE, CR AT EOL: html/syntax/parsing/resources/*.dat
+
 ## File types that should never be checked ##
 
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.adts
@@ -52,6 +56,13 @@ TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.wbn
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.avif
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.annexb
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.crx
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.xpi
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.tlb
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.dcb
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.dcz
+# MPEG-TS media segment; the .ts extension collides with TypeScript so it can't
+# be globbed, scope the binary-content checks to this file.
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: fetch/orb/**/*.ts
 
 ## .gitignore
 W3C-TEST.ORG: .gitignore
@@ -90,11 +101,13 @@ CR AT EOL: webvtt/parsing/file-parsing/tests/support/newlines.vtt
 CR AT EOL: css/css-text/ellisize-rtl-text-crash.html
 CR AT EOL: html/syntax/charset/after-head-after-1kb-crlf.html
 CR AT EOL: html/syntax/charset/after-head-in-1kb-crlf.html
+CR AT EOL: fetch/h1-parsing/resources/parsing_*.asis
 
 # Intentional use of tabs
 INDENT TABS: html/canvas/element/canvas-host/2d.canvas.host.size.attributes.parse.whitespace.html
 INDENT TABS: webvtt/parsing/file-parsing/tests/support/header-tab.vtt
 INDENT TABS: webvtt/parsing/file-parsing/tests/support/whitespace-chars.vtt
+INDENT TABS: fetch/h1-parsing/resources/parsing_*.asis
 
 ## Intentional use of trailing whitespace
 TRAILING WHITESPACE: server-timing/resources/parsing/*
@@ -102,14 +115,18 @@ TRAILING WHITESPACE: webvtt/parsing/file-parsing/support/*.vtt
 TRAILING WHITESPACE: webvtt/parsing/file-parsing/tests/support/*.vtt
 TRAILING WHITESPACE: xhr/resources/headers-some-are-empty.asis
 TRAILING WHITESPACE: content-security-policy/support/manifest.json
-TRAILING WHITESPACE: dom/xslt/resources/testu1LINE.xml
+TRAILING WHITESPACE: xml/xslt/resources/testu1LINE.xml
+TRAILING WHITESPACE: fetch/h1-parsing/resources/parsing_*.asis
 
 # Intentional use of print statements
 PRINT STATEMENT: dom/nodes/Document-createElement-namespace-tests/generate.py
 PRINT STATEMENT: encrypted-media/polyfill/make-polyfill-tests.py
 PRINT STATEMENT: resources/test/conftest.py
-PRINT STATEMENT: webdriver/tests/support/helpers.py
 PRINT STATEMENT: webdriver/tests/bidi/browser/set_download_behavior/conftest.py
+PRINT STATEMENT: webdriver/tests/bidi/browsing_context/print/*
+PRINT STATEMENT: webdriver/tests/classic/print/*
+PRINT STATEMENT: webdriver/tests/support/bidi/fixtures.py
+PRINT STATEMENT: webdriver/tests/support/classic/helpers.py
 
 # semi-legitimate use of console.*
 CONSOLE: console/*
@@ -123,11 +140,13 @@ CONSOLE: service-workers/service-worker/resources/navigation-redirect-other-orig
 CONSOLE: service-workers/service-worker/navigation-redirect.https.html
 CONSOLE: service-workers/service-worker/resources/clients-get-other-origin.html
 CONSOLE: webrtc/tools/*
+CONSOLE: webrtc/RTCDataChannel-worker.js
 CONSOLE: webaudio/resources/audit.js:41
 
 # Intentional use of console.*
-CONSOLE: infrastructure/webdriver/bidi/subscription.html
-CONSOLE: infrastructure/webdriver/bidi/subscription.window.js
+CONSOLE: infrastructure/testdriver/bidi/subscription.html
+CONSOLE: infrastructure/testdriver/bidi/subscription.window.js
+CONSOLE: html/browsers/history/the-location-interface/cross-origin-location-stringify-crash.sub.html
 CONSOLE: html/editing/dnd/events/ua-shadow-contents-manual.html
 
 # use of console in a public library - annotation-model ensures
@@ -151,6 +170,9 @@ SET TIMEOUT: *-manual.*
 SET TIMEOUT: annotation-model/scripts/ajv.min.js
 SET TIMEOUT: apng/animated-png-timeout.html
 SET TIMEOUT: avif/animated-avif-timeout.html
+SET TIMEOUT: jpegxl/animated-img-timeout.html
+SET TIMEOUT: clear-site-data/no-cors-fetch-iframe.https.sub.html
+SET TIMEOUT: clear-site-data/no-cors-fetch-window.https.sub.html
 SET TIMEOUT: cookies/resources/testharness-helpers.js
 SET TIMEOUT: common/reftest-wait.js
 SET TIMEOUT: compute-pressure/resources/support-iframe.html
@@ -191,6 +213,7 @@ SET TIMEOUT: focus/support/iframe-focuses-parent-same-site-inner.html
 SET TIMEOUT: generic-sensor/resources/iframe_sensor_handler.html
 SET TIMEOUT: html/browsers/browsing-the-web/back-forward-cache/resources/inflight-fetch-helper.js
 SET TIMEOUT: html/browsers/browsing-the-web/history-traversal/*
+SET TIMEOUT: html/browsers/browsing-the-web/resources/navigates-to-blank.html
 SET TIMEOUT: html/browsers/browsing-the-web/navigating-across-documents/*
 SET TIMEOUT: html/browsers/browsing-the-web/scroll-to-fragid/*
 SET TIMEOUT: html/browsers/browsing-the-web/unloading-documents/*
@@ -199,8 +222,18 @@ SET TIMEOUT: html/browsers/history/the-location-interface/*
 SET TIMEOUT: html/browsers/history/the-session-history-of-browsing-contexts/*
 SET TIMEOUT: html/browsers/offline/*
 SET TIMEOUT: html/browsers/the-window-object/*
+SET TIMEOUT: html/canvas/resources/draw-element-image-utils.js
+SET TIMEOUT: html/canvas/element/manual/draw-element-image/intersection-observer-visibility.tentative.html
+SET TIMEOUT: html/canvas/element/manual/draw-element-image/onpaint.tentative.html
+SET TIMEOUT: html/canvas/element/manual/draw-element-image/onpaint-css-animation.tentative.html
+SET TIMEOUT: html/canvas/element/manual/draw-element-image/onpaint-display-none.tentative.html
+SET TIMEOUT: html/canvas/element/manual/draw-element-image/onpaint-iframe-nested-invalidation.tentative.html
+SET TIMEOUT: html/canvas/element/manual/draw-element-image/onpaint-post-tree-order-shadow-dom.tentative.html
+SET TIMEOUT: html/canvas/element/manual/draw-element-image/onpaint-post-tree-order.tentative.html
+SET TIMEOUT: html/canvas/element/manual/draw-element-image/requestPaint.tentative.html
 SET TIMEOUT: html/cross-origin-opener-policy/resources/fully-loaded.js
 SET TIMEOUT: html/editing/dnd/*
+SET TIMEOUT: html/semantics/embedded-content/media-elements/crashtests/no-blocking-loads-gc-crash.html
 SET TIMEOUT: html/semantics/embedded-content/media-elements/track/track-element/crashtests/*
 SET TIMEOUT: html/semantics/embedded-content/the-iframe-element/*
 SET TIMEOUT: html/semantics/embedded-content/the-img-element/*
@@ -222,6 +255,10 @@ SET TIMEOUT: intersection-observer/resources/*
 SET TIMEOUT: intersection-observer/target-in-different-window.html
 SET TIMEOUT: intersection-observer/v2/animated-opacity.html
 SET TIMEOUT: js-self-profiling/resources/profiling-script.js
+SET TIMEOUT: long-animation-frame/loaf-iframe-self.html
+SET TIMEOUT: long-animation-frame/loaf-user-callback.html
+SET TIMEOUT: long-animation-frame/resources/loaf-congested-moment-worker.js
+SET TIMEOUT: long-animation-frame/resources/utils.js
 SET TIMEOUT: measure-memory/*
 SET TIMEOUT: media-source/mediasource-util.js
 SET TIMEOUT: media-source/URL-createObjectURL-revoke.html
@@ -276,6 +313,7 @@ SET TIMEOUT: secure-contexts/basic-popup-and-iframe-tests.https.js
 SET TIMEOUT: service-workers/cache-storage/cache-abort.https.any.js
 SET TIMEOUT: service-workers/service-worker/activation.https.html
 SET TIMEOUT: service-workers/service-worker/fetch-frame-resource.https.html
+SET TIMEOUT: service-workers/service-worker/fetch-request-body-cancel-worker.js
 SET TIMEOUT: service-workers/service-worker/fetch-request-redirect.https.html
 SET TIMEOUT: service-workers/service-worker/fetch-waits-for-activate.https.html
 SET TIMEOUT: service-workers/service-worker/postMessage-client-worker.js
@@ -290,12 +328,15 @@ SET TIMEOUT: service-workers/service-worker/resources/opaque-response-being-prel
 SET TIMEOUT: service-workers/service-worker/resources/opaque-response-preloaded-xhr.html
 SET TIMEOUT: service-workers/service-worker/resources/performance-timeline-worker.js
 SET TIMEOUT: service-workers/service-worker/resources/resource-timing-worker.js
+SET TIMEOUT: soft-navigation-heuristics/detection/tentative/change-style-attribute-display-4.html
 SET TIMEOUT: soft-navigation-heuristics/smoke/tentative/task-attribution.html
 SET TIMEOUT: shadow-dom/Document-prototype-currentScript.html
 SET TIMEOUT: shadow-dom/scroll-to-the-fragment-in-shadow-tree.html
 SET TIMEOUT: shadow-dom/slotchange-event.html
 SET TIMEOUT: subresource-integrity/integrity-policy/script.https.html
 SET TIMEOUT: subresource-integrity/integrity-policy/style.https.html
+SET TIMEOUT: trusted-types/setTimeout-setInterval-csp-tt-default-policy.html
+SET TIMEOUT: trusted-types/setTimeout-setInterval-csp-tt-no-default-policy.html
 SET TIMEOUT: trusted-types/support/block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.js
 SET TIMEOUT: trusted-types/support/DOMWindowTimers-setTimeout-setInterval.js
 SET TIMEOUT: trusted-types/support/should-sink-type-mismatch-violation-be-blocked-by-csp-002-worker-multiple-violations.js
@@ -310,6 +351,7 @@ SET TIMEOUT: webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/me
 SET TIMEOUT: webauthn/*timeout.https.html
 SET TIMEOUT: webdriver/*
 SET TIMEOUT: webmessaging/*
+SET TIMEOUT: webnn/resources/utils.js
 SET TIMEOUT: webrtc-encoded-transform/script-metadata-transform-worker.js
 SET TIMEOUT: webrtc-encoded-transform/script-transform-generateKeyFrame.js
 SET TIMEOUT: webrtc-encoded-transform/script-transform-sendKeyFrameRequest.js
@@ -403,18 +445,21 @@ SET TIMEOUT: css/css-fonts/font-display/font-display-feature-policy-02.tentative
 SET TIMEOUT: css/css-fonts/font-display/font-display-preload.html
 SET TIMEOUT: css/css-view-transitions/no-painting-while-render-blocked.html
 SET TIMEOUT: document-policy/font-display/override-to-optional.tentative.html
-SET TIMEOUT: feature-policy/experimental-features/resources/focus-without-user-activation-iframe-tentative.html
 SET TIMEOUT: geolocation/watchposition-timeout.https.window.js
 SET TIMEOUT: permissions-policy/experimental-features/resources/focus-without-user-activation-iframe-tentative.html
 SET TIMEOUT: html/browsers/windows/auxiliary-browsing-contexts/resources/close-opener.html
-SET TIMEOUT: html/cross-origin-embedder-policy/resources/reporting-worker.js
 SET TIMEOUT: html/cross-origin-opener-policy/navigate-to-aboutblank.https.html
 SET TIMEOUT: html/cross-origin-opener-policy/navigate-top-to-aboutblank.https.html
 SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/dynamic-markup-insertion/opening-the-input-stream/crbug-583445-regression.window.js
 SET TIMEOUT: html/webappapis/timers/*
 SET TIMEOUT: portals/history/resources/portal-harness.js
+SET TIMEOUT: requestidlecallback/callback-after-removed-frame-with-pending-timeout.html
 SET TIMEOUT: requestidlecallback/deadline-after-expired-timer.html
+SET TIMEOUT: resource-timing/tentative/initiator-url/dedicated-worker-script.html
+SET TIMEOUT: resource-timing/tentative/initiator-url/module-script-from-document.html
+SET TIMEOUT: resource-timing/tentative/initiator-url/set-timeout.html
+SET TIMEOUT: resource-timing/tentative/initiator-url/set-timeout.any.js
 SET TIMEOUT: resources/*
 SET TIMEOUT: scheduler/tentative/current-task-signal-async-abort.any.js
 SET TIMEOUT: scheduler/tentative/current-task-signal-async-priority.any.js
@@ -430,6 +475,7 @@ SET TIMEOUT: speculation-rules/prerender/resources/media-autoplay-attribute.html
 SET TIMEOUT: speculation-rules/prerender/resources/media-play.html
 SET TIMEOUT: html/browsers/browsing-the-web/back-forward-cache/timers.html
 SET TIMEOUT: dom/abort/crashtests/timeout-close.html
+SET TIMEOUT: xml/xslt/xslt-mutation-crash.xhtml
 SET TIMEOUT: storage-access-api/storage-access-beyond-cookies.locks.sub.https.window.js
 SET TIMEOUT: pointerevents/crashtests/longpress-crash.html
 
@@ -440,6 +486,7 @@ SET TIMEOUT: acid/acid3/test.html
 *: resources/webidl2/*
 *: tools/*
 *: */third_party/*
+*: third_party/*
 
 # .gitignore files in child directories
 *: cors/resources/.gitignore
@@ -629,9 +676,6 @@ WEB-PLATFORM.TEST:web-bundle/resources/wbn/*.wbn
 WEB-PLATFORM.TEST:web-bundle/subresource-loading/*.html
 WEB-PLATFORM.TEST:web-bundle/subresource-loading/resources/*.js
 
-# The /.well-known/shared-stored/trusted-origins file uses hard-coded hosts
-WEB-PLATFORM.TEST:shared-storage/resources/trusted-origins.py
-
 # Tests that depend on resources in /gen/ in Chromium:
 # https://github.com/web-platform-tests/wpt/issues/16455
 # Please consult with ecosystem-infra@chromium.org before adding more.
@@ -744,10 +788,6 @@ REFERENCE-IN-OTHER-TYPE: css/css-transforms/css-transform-scale-001-manual.html
 # Needs control of page size
 REFERENCE-IN-OTHER-TYPE: css/css-multicol/moz-multicol3-column-balancing-break-inside-avoid-1.html
 
-PRINT STATEMENT: webdriver/tests/bidi/browsing_context/print/*
-PRINT STATEMENT: webdriver/tests/classic/print/*
-PRINT STATEMENT: webdriver/tests/support/fixtures_bidi.py
-
 DUPLICATE-BASENAME-PATH: acid/acid3/empty.html
 DUPLICATE-BASENAME-PATH: acid/acid3/empty.xml
 DUPLICATE-BASENAME-PATH: dom/nodes/Document-createElement-namespace-tests/*
@@ -781,7 +821,7 @@ PARSE-FAILED: mathml/crashtests/mozilla/289180-1.xml
 # Invalid HTML syntax /> on non-void elements
 HTML INVALID SYNTAX: acid/*
 HTML INVALID SYNTAX: conformance-checkers/*
-HTML INVALID SYNTAX: css/css-scoping/shadow-cascade-order-001.html
+HTML INVALID SYNTAX: css/css-shadow/shadow-cascade-order-001.html
 HTML INVALID SYNTAX: dom/nodes/Document-createElement-namespace.html
 HTML INVALID SYNTAX: dom/nodes/Node-lookupNamespaceURI.html
 HTML INVALID SYNTAX: dom/nodes/Node-normalize.html
@@ -826,11 +866,11 @@ TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/showDirectoryPicker-manual.ht
 TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/showOpenFilePicker-manual.https.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/showSaveFilePicker-manual.https.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: mediacapture-streams/MediaStreamTrack-end-manual.https.html
-TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/change-payment-method-manual.https.html
-TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/change-shipping-address-manual.https.html
-TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/change-shipping-option-manual.https.html
-TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/payment-request-event-manual.https.html
-TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/supports-shipping-contact-delegation-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: web-based-payment-handler/change-payment-method-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: web-based-payment-handler/change-shipping-address-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: web-based-payment-handler/change-shipping-option-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: web-based-payment-handler/payment-request-event-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: web-based-payment-handler/supports-shipping-contact-delegation-manual.https.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: speech-api/SpeechRecognition-phrases-manual.https.html
 
 # Tests automatically imported from the WebAssembly/spec repository that should be removed after getting fixed upstream.
@@ -841,3 +881,5 @@ PROMISE_REJECTS: wasm/core/js/harness/testharness.js
 
 # Legitimate use of test_driver_internal
 TEST DRIVER INTERNAL: resources/testdriver.js
+
+INDENT TABS: fetch/compression-dictionary/resources/static/Makefile

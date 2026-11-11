@@ -125,6 +125,10 @@ class URLManifestItem(ManifestItem):
         return "h2" in self._flags
 
     @property
+    def websocket_h3(self) -> bool:
+        return "websocket-h3" in self._flags
+
+    @property
     def subdomain(self) -> bool:
         # Note: this is currently hard-coded to check for `www`, rather than
         # all possible valid subdomains. It can be extended if needed.
@@ -196,6 +200,12 @@ class TestharnessTest(URLManifestItem):
         if self.script_metadata:
             rv[-1]["script_metadata"] = [(k, v) for (k,v) in self.script_metadata]
         return rv
+
+
+class Test262Test(TestharnessTest):
+    __slots__ = ()
+
+    item_type = "test262"
 
 
 class RefTest(URLManifestItem):
@@ -342,6 +352,22 @@ class WebDriverSpecTest(URLManifestItem):
     __slots__ = ()
 
     item_type = "wdspec"
+
+    @property
+    def timeout(self) -> Optional[Text]:
+        return self._extras.get("timeout")
+
+    def to_json(self) -> Tuple[Optional[Text], Dict[Text, Any]]:
+        rv = super().to_json()
+        if self.timeout is not None:
+            rv[-1]["timeout"] = self.timeout
+        return rv
+
+
+class AccessibilityAPIMappingTest(URLManifestItem):
+    __slots__ = ()
+
+    item_type = "aamtest"
 
     @property
     def timeout(self) -> Optional[Text]:

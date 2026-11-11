@@ -14,6 +14,7 @@ const KNOWN_CAPABILITIES_SET = new Set([
   "conditionalCreate",
   "conditionalGet",
   "hybridTransport",
+  "immediateGet",
   "passkeyPlatformAuthenticator",
   "relatedOrigins",
   "signalAllAcceptedCredentials",
@@ -34,6 +35,9 @@ const KNOWN_CAPABILITIES_SET = new Set([
   "extension:getCredBlob",
   "extension:payment",
   "extension:prf",
+  "extension:cmtgKey",
+  "extension:crossDeviceFallbackUrl",
+  "extension:remoteClientDataJSON",
 ]);
 
 promise_test(async t => {

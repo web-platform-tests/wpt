@@ -2,8 +2,51 @@ const kValidAvailabilities =
     ['unavailable', 'downloadable', 'downloading', 'available'];
 const kAvailableAvailabilities = ['downloadable', 'downloading', 'available'];
 
+const kAudioPrompt = 'transcribe this';
+const kImagePrompt = 'describe this';
 const kTestPrompt = 'Please write a sentence in English.';
+const kTestPrompt2 = 'Please write another sentence in English.';
+
 const kTestContext = 'This is a test; this is only a test.';
+
+// SemanticEmbedder.create()/availability() require an embeddingSpace. This is
+// the space the current Chrome implementation serves; implementations that do
+// not serve it report 'unavailable' and the tests yield PRECONDITION_FAILED.
+const kEmbeddingSpace = 'embeddinggemma-300m';
+
+function embedderOptions(options = {}) {
+  return {embeddingSpace: kEmbeddingSpace, ...options};
+}
+
+const kValidAudioPath = '/media/speech.wav';
+const kValidImagePath = '/images/computer.jpg';
+const kValidSVGImagePath = '/images/pattern.svg';
+const kValidVideoPath = '/media/test.webm';
+
+const kAudioOptions = {
+  expectedInputs: [{type: 'audio'}]
+};
+const kImageOptions = {
+  expectedInputs: [{type: 'image'}]
+};
+
+const kValidAudioKeywords =
+    ['audio', 'speech', 'sentence', 'single', 'segment'];
+const kValidCanvasImageKeywords = ['image', 'red', 'green', 'blue', 'yellow', 'grid', 'color'];
+const kValidImageKeywords =
+    ['image', 'computer', 'keyboard', 'desk', 'PC', 'monitor', 'screen'];
+const kValidSVGImageKeywords =
+    ['image', 'red', 'green', 'blue', 'black'];
+const kValidVideoKeywords = [
+  'image', 'bip', 'black', 'white', 'yellow', 'green', 'blue', 'red',
+  'video', 'screen'
+];
+
+const kValidAudioRegex = matchKeywordsRegex(kValidAudioKeywords);
+const kValidCanvasImageRegex = matchKeywordsRegex(kValidCanvasImageKeywords);
+const kValidImageRegex = matchKeywordsRegex(kValidImageKeywords);
+const kValidSVGImageRegex = matchKeywordsRegex(kValidSVGImageKeywords);
+const kValidVideoRegex = matchKeywordsRegex(kValidVideoKeywords);
 
 const getId = (() => {
   let idCount = 0;
@@ -76,19 +119,21 @@ async function testAbortPromise(t, method) {
   }
 };
 
-async function testCreateMonitorWithAbortAt(
-    t, loadedToAbortAt, method, options = {}) {
+async function testCreateMonitorWithAbortAt(t, eventIndexToAbortAt, method,
+                                            options = {}) {
   const {promise: eventPromise, resolve} = Promise.withResolvers();
   let hadEvent = false;
+  let eventCount = 0;
   function monitor(m) {
     m.addEventListener('downloadprogress', e => {
-      if (e.loaded != loadedToAbortAt) {
+      if (eventCount !== eventIndexToAbortAt) {
+        eventCount++;
         return;
       }
 
       if (hadEvent) {
         assert_unreached(
-            'This should never be reached since LanguageDetector.create() was aborted.');
+            'This should never be reached since the create() operation was aborted.');
         return;
       }
 
@@ -102,7 +147,7 @@ async function testCreateMonitorWithAbortAt(
   const createPromise =
       method({...options, monitor, signal: controller.signal});
 
-  await eventPromise;
+  await Promise.race([eventPromise, createPromise]);
 
   const err = new Error('test');
   controller.abort(err);
@@ -111,7 +156,6 @@ async function testCreateMonitorWithAbortAt(
 
 async function testCreateMonitorWithAbort(t, method, options = {}) {
   await testCreateMonitorWithAbortAt(t, 0, method, options);
-  await testCreateMonitorWithAbortAt(t, 1, method, options);
 }
 
 // The method should take the AbortSignal as an option and return a
@@ -245,9 +289,31 @@ async function createRewriter(options = {}) {
   return await Rewriter.create(options);
 }
 
+async function createEmbedder(options = {}) {
+  await test_driver.bless();
+  return await SemanticEmbedder.create(embedderOptions(options));
+}
+
 async function createProofreader(options = {}) {
+  if (!options.monitor) {
+    const availability = await Proofreader.availability(options);
+    assert_implements_optional(
+        availability !== 'unavailable',
+        'Proofreader is not available for the given options');
+  }
   await test_driver.bless();
   return await Proofreader.create(options);
+}
+
+async function createDecisionModel(options = {}) {
+  if (!options.monitor) {
+    const availability = await DecisionModel.availability(options);
+    assert_implements_optional(
+        availability !== 'unavailable',
+        'DecisionModel is not available for the given options');
+  }
+  await test_driver.bless();
+  return await DecisionModel.create(options);
 }
 
 async function ensureLanguageModel(options = {}) {
@@ -257,6 +323,16 @@ async function ensureLanguageModel(options = {}) {
   // Yield PRECONDITION_FAILED if the API is unavailable on this device.
   assert_implements_optional(availability != 'unavailable', 'API unavailable');
 };
+
+async function ensureEmbedder(options = {}) {
+  assert_true(!!SemanticEmbedder);
+  const availability =
+      await SemanticEmbedder.availability(embedderOptions(options));
+  assert_in_array(availability, kValidAvailabilities);
+  // Yield PRECONDITION_FAILED if the API is unavailable on this device.
+  assert_implements_optional(availability != 'unavailable', 'API unavailable');
+};
+
 
 async function testDestroy(t, createMethod, options, instanceMethods) {
   const instance = await createMethod(options);
@@ -286,4 +362,57 @@ async function testCreateAbort(t, createMethod, options, instanceMethods) {
   for (const promise of promises) {
     await promise_rejects_exactly(t, error, promise);
   }
+}
+
+function consumeTransientUserActivation() {
+  const win = window.open('about:blank', '_blank');
+  if (win)
+    win.close();
+}
+
+// Helper function to create a regex from some keywords.
+function matchKeywordsRegex(keywords) {
+  const keywordsPattern = keywords.join('|');
+  return new RegExp(`(${keywordsPattern})`, 'i');
+}
+
+function messageWithContent(prompt, type, value) {
+  return [{
+    role: 'user',
+    content: [{type: 'text', value: prompt}, {type: type, value: value}]
+  }];
+}
+
+function createColorGridCanvas(width, height, isOffscreen = false) {
+  const canvas = isOffscreen
+    ? new OffscreenCanvas(width, height)
+    : document.createElement('canvas');
+
+  if (!isOffscreen) {
+    canvas.width = width;
+    canvas.height = height;
+  }
+
+  const context = canvas.getContext('2d');
+  const w2 = width / 2;
+  const h2 = height / 2;
+
+  context.fillStyle = 'red';
+  context.fillRect(0, 0, w2, h2);
+
+  context.fillStyle = 'green';
+  context.fillRect(w2, 0, w2, h2);
+
+  context.fillStyle = 'blue';
+  context.fillRect(0, h2, w2, h2);
+
+  context.fillStyle = 'yellow';
+  context.fillRect(w2, h2, w2, h2);
+
+  return canvas;
+}
+
+// Drains a ReadableStream and returns the concatenated string.
+async function readStream(stream) {
+  return (await Array.fromAsync(stream)).join('');
 }

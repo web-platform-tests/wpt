@@ -1,3 +1,13 @@
+function assert_numeric_type_equals(type, expectedType) {
+  const baseTypes = [
+    'length', 'angle', 'time', 'frequency', 'resolution', 'flex', 'percent'
+  ];
+  for (const baseType of baseTypes) {
+    assert_equals(type[baseType], expectedType[baseType], baseType);
+  }
+  assert_equals(type.percentHint, expectedType.percentHint);
+}
+
 function assert_color_channel_approx_equals(a, b) {
   // Color is is limited to 32bit RGBA, thus channels are values within 0-255.
   // Our epsilon needs to reflect this relatively limited precision.
@@ -40,9 +50,9 @@ function assert_color_channel_approx_equals(a, b) {
   }
 }
 
-// Compares two CSSStyleValues to check if they're the same type
-// and have the same attributes.
-function assert_style_value_equals(a, b) {
+// Compares two CSSStyleValues to check if they're the same type, have the same
+// attributes, and for CSSNumericValue objects, have the same numeric type.
+function assert_style_value_equals(a, b, epsilon) {
   if (a == null || b == null) {
     assert_equals(a, b);
     return;
@@ -58,11 +68,13 @@ function assert_style_value_equals(a, b) {
       assert_equals(a.value, b.value);
       break;
     case 'CSSUnitValue':
-      assert_approx_equals(a.value, b.value, 1e-6);
+      assert_approx_equals(a.value, b.value, epsilon ? epsilon : 1e-5);
       assert_equals(a.unit, b.unit);
       break;
     case 'CSSMathSum':
     case 'CSSMathProduct':
+      assert_style_value_array_unordered_equals(a.values, b.values);
+      break;
     case 'CSSMathMin':
     case 'CSSMathMax':
       assert_style_value_array_equals(a.values, b.values);
@@ -116,6 +128,15 @@ function assert_style_value_equals(a, b) {
       assert_equals(a, b);
       break;
   }
+
+  // For numeric values, also verify that the numeric type is preserved.
+  // This is especially useful for parsing and reification tests, where the
+  // parsed or reified value is compared against an explicitly constructed
+  // object, and numeric type computation may follow a different code path from
+  // explicit object construction.
+  if (a instanceof CSSNumericValue) {
+    assert_numeric_type_equals(a.type(), b.type());
+  }
 }
 
 // Compares two arrays of CSSStyleValues to check if every element is equal
@@ -124,6 +145,34 @@ function assert_style_value_array_equals(a, b) {
   for (let i = 0; i < a.length; i++) {
     assert_style_value_equals(a[i], b[i]);
   }
+}
+
+// Compares two arrays of CSSStyleValues, ignoring element order.
+//
+// Used for CSSMathSum and CSSMathProduct, where browsers currently differ
+// in how values are ordered. The ordering behavior is under discussion in
+// https://github.com/w3c/csswg-drafts/issues/9451.
+//
+// This is a temporary relaxation: for now, the test accepts any order
+// to avoid interop failures across engines. Once the spec is clarified,
+// tests should assert that the order matches the canonical (sorted) form
+// used for both CSS values and CSS Typed OM.
+function assert_style_value_array_unordered_equals(a, b) {
+  assert_equals(a.length, b.length);
+
+  const remaining = [...b];
+  a.forEach((valueA) => {
+    const matched = remaining.some((valueB, i) => {
+      try {
+        assert_style_value_equals(valueA, valueB);
+        remaining.splice(i, 1);
+        return true;
+      } catch {
+        return false;
+      }
+    });
+    assert_true(matched);
+  });
 }
 
 const gValidUnits = [

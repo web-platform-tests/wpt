@@ -47,12 +47,15 @@ import tempfile
 import zipfile
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-from tools.wpt.utils import get_download_to_descriptor
+from tools.wpt.httputils import get_download_to_descriptor
 
 root = os.path.abspath(
     os.path.join(os.path.dirname(__file__),
                  os.pardir,
                  os.pardir))
+
+
+started_processes = []
 
 
 def run(cmd, return_stdout=False, **kwargs):
@@ -68,7 +71,7 @@ def run(cmd, return_stdout=False, **kwargs):
 
 def start(cmd):
     print(" ".join(cmd))
-    subprocess.Popen(cmd)
+    started_processes.append(subprocess.Popen(cmd))
 
 
 def get_parser():
@@ -99,6 +102,8 @@ def get_parser():
                    help="Install web-platform.test certificates to UA store")
     p.add_argument("--no-install-certificates", action="store_false", default=None,
                    help="Don't install web-platform.test certificates to UA store")
+    p.add_argument("--setup-repository", action="store_true", default=None, dest="setup_repository",
+                   help="Run any repository setup steps, instead use the existing worktree")
     p.add_argument("--no-setup-repository", action="store_false", dest="setup_repository",
                    help="Don't run any repository setup steps, instead use the existing worktree. "
                         "This is useful for local testing.")
@@ -118,10 +123,13 @@ def get_parser():
     return p
 
 
-def start_userspace_oom_killer():
+def start_userspace_oom_killer(log_only=False):
     # Start userspace OOM killer: https://github.com/rfjakob/earlyoom
     # It will report memory usage every minute and prefer to kill browsers.
-    start(["sudo", "earlyoom", "-p", "-r", "60", "--prefer=(chrome|firefox)", "--avoid=python"])
+    cmd = ["sudo", "earlyoom", "-p", "-r", "60", "--prefer=(chrome|firefox)", "--avoid=python"]
+    if log_only:
+        cmd.append("--dryrun")
+    start(cmd)
 
 
 def make_hosts_file():
@@ -256,33 +264,35 @@ def unpack(path):
         raise Exception
 
 
-def setup_environment(args):
+def setup_environment(**kwargs):
     if "TASK_ARTIFACTS" in os.environ:
         artifacts = json.loads(os.environ["TASK_ARTIFACTS"])
         download_artifacts(artifacts)
 
-    if args.hosts_file:
+    if kwargs["hosts_file"]:
         make_hosts_file()
 
-    if args.install_certificates:
+    if kwargs["install_certificates"]:
         install_certificates()
 
-    if "chrome" in args.browser:
-        assert args.channel is not None
-        install_chrome(args.channel)
+    if "chrome" in kwargs["browser"]:
+        assert kwargs["channel"] is not None
+        install_chrome(kwargs["channel"])
 
     # These browsers use dbus for various features.
-    if any(b in args.browser for b in ["chrome", "webkitgtk_minibrowser", "wpewebkit_minibrowser"]):
+    if {"chrome", "firefox", "webkitgtk_minibrowser", "wpewebkit_minibrowser"}.intersection(
+            kwargs["browser"]):
         start_dbus()
 
-    if args.xvfb:
+    if kwargs["xvfb"]:
         start_xvfb()
 
-    if args.oom_killer:
-        start_userspace_oom_killer()
+    if kwargs["oom_killer"]:
+        log_only = "firefox_android" in kwargs["browser"]
+        start_userspace_oom_killer(log_only)
 
 
-def setup_repository(args):
+def setup_repository(**kwargs):
     is_pr = os.environ.get("GITHUB_PULL_REQUEST", "false") != "false"
 
     # Initially task_head points at the same commit as the ref we want to test.
@@ -303,12 +313,12 @@ def setup_repository(args):
     # resources. In the latter case we assume it's OK to use the current merge
     # instead of the one at the time the decision task ran.
 
-    if args.ref:
+    if kwargs["ref"]:
         if is_pr:
-            assert args.ref.endswith("/merge")
-            expected_head = args.merge_rev
+            assert kwargs["ref"].endswith("/merge")
+            expected_head = kwargs["merge_rev"]
         else:
-            expected_head = args.head_rev
+            expected_head = kwargs["head_rev"]
 
         task_head = run(["git", "rev-parse", "task_head"], return_stdout=True).strip()
 
@@ -324,14 +334,14 @@ def setup_repository(args):
                     sys.exit(1)
             else:
                 # Convert the refs/pulls/<id>/merge to refs/pulls/<id>/head
-                head_ref = args.ref.rsplit("/", 1)[0] + "/head"
+                head_ref = kwargs["ref"].rsplit("/", 1)[0] + "/head"
                 try:
                     remote_head = run(["git", "ls-remote", "origin", head_ref],
                                       return_stdout=True).split("\t")[0]
                 except subprocess.CalledProcessError:
                     print("CRITICAL: Failed to read remote ref %s" % head_ref)
                     sys.exit(1)
-                if remote_head != args.head_rev:
+                if remote_head != kwargs["head_rev"]:
                     print("CRITICAL: task_head points at %s, expected %s. "
                           "This may be because the branch was updated" % (task_head, expected_head))
                     sys.exit(1)
@@ -362,7 +372,7 @@ def setup_repository(args):
         # TODO: move this somewhere earlier in the task
         run(["git", "fetch", "--quiet", "origin", "%s:%s" % (branch, branch)])
 
-    checkout_rev = args.checkout if args.checkout is not None else "task_head"
+    checkout_rev = kwargs["checkout"] if kwargs["checkout"] is not None else "task_head"
     checkout_revision(checkout_rev)
 
     refs = run(["git", "for-each-ref", "refs/heads"], return_stdout=True)
@@ -405,36 +415,51 @@ def include_job(job):
     return job in set(jobs_str.splitlines())
 
 
+def run_tc(*args, **kwargs):
+    try:
+        is_ci = "TASKCLUSTER_ROOT_URL" in os.environ
+
+        if "TASK_EVENT" in os.environ:
+            event = json.loads(os.environ["TASK_EVENT"])
+        elif is_ci:
+            event = fetch_event_data()
+        else:
+            event = None
+
+        if event:
+            set_variables(event)
+
+        if kwargs["setup_repository"] or (kwargs["setup_repository"] is None and is_ci):
+            setup_repository(**kwargs)
+
+        # Hack for backwards compatibility
+        if kwargs["script"] in ["run-all", "lint", "update_built", "tools_unittest",
+                                "wpt_integration", "resources_unittest",
+                                "wptrunner_infrastructure", "stability", "affected_tests"]:
+            job = kwargs["script"]
+            if not include_job(job):
+                return
+            kwargs["script"] = kwargs["script_args"][0]
+            kwargs["script_args"] = kwargs["script_args"][1:]
+
+        # Run the job
+        setup_environment(**kwargs)
+        os.chdir(root)
+        cmd = [kwargs["script"]] + kwargs["script_args"]
+        print(" ".join(cmd))
+        sys.exit(subprocess.call(cmd))
+    finally:
+        for process in started_processes:
+            process.terminate()
+            try:
+                process.wait(30)
+            except subprocess.TimeoutExpired:
+                process.kill()
+
+
 def main():
     args = get_parser().parse_args()
-
-    if "TASK_EVENT" in os.environ:
-        event = json.loads(os.environ["TASK_EVENT"])
-    else:
-        event = fetch_event_data()
-
-    if event:
-        set_variables(event)
-
-    if args.setup_repository:
-        setup_repository(args)
-
-    # Hack for backwards compatibility
-    if args.script in ["run-all", "lint", "update_built", "tools_unittest",
-                       "wpt_integration", "resources_unittest",
-                       "wptrunner_infrastructure", "stability", "affected_tests"]:
-        job = args.script
-        if not include_job(job):
-            return
-        args.script = args.script_args[0]
-        args.script_args = args.script_args[1:]
-
-    # Run the job
-    setup_environment(args)
-    os.chdir(root)
-    cmd = [args.script] + args.script_args
-    print(" ".join(cmd))
-    sys.exit(subprocess.call(cmd))
+    run_tc(**vars(args))
 
 
 if __name__ == "__main__":

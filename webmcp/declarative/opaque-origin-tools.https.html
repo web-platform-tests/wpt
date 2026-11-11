@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP Opaque Origin Declarative Tool</title>
+<link rel="author" href="mailto:dom@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/helpers.js"></script>
+</head>
+<body>
+
+<form toolautosubmit toolname="opaque_tool" tooldescription="Opaque tool description">
+  <input type="text" name="param1">
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+promise_test(async t => {
+  // Assert that our CSP header took effect.
+  assert_equals(self.origin, 'null');
+
+  const form = document.querySelector('form');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    e.respondWith(Promise.resolve(`submitted:${form.elements.param1.value}`));
+  }, {once: true});
+
+  // Wait for the tool to register (happens synchronously upon parsing, but
+  // getTools is async)
+  const tool = await waitForTool('opaque_tool');
+  assert_true(!!tool, 'Tool should be successfully registered from an opaque origin');
+  assert_equals(tool.origin, 'null');
+
+  const result = await document.modelContext.executeTool(tool, {param1: 'value'});
+  assert_equals(result, 'submitted:value');
+}, 'An opaque origin document can register and execute its own declarative tools');
+</script>
+</body>
+</html>

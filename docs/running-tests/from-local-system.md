@@ -13,22 +13,21 @@ cd wpt
 
 ## System Setup
 
-Running the tests requires `python` and `pip` as well as updating the
+Running the tests requires `python` as well as updating the
 system `hosts` file.
 
-WPT requires Python 3.8 or higher.
+WPT requires Python 3.9 or higher.
 
 The required setup is different depending on your operating system.
 
 ### Linux Setup
 
-If not already present, use the system package manager to install `python`,
-and `pip`.
+If not already present, use the system package manager to install `python`.
 
 On Ubuntu:
 
 ```bash
-sudo apt-get install python3 python3-pip python3-venv
+sudo apt-get install python3 python3-venv
 ```
 
 It is important to have a package that provides a `python` binary. On Fedora,
@@ -116,6 +115,28 @@ port definitions of your choice e.g.:
   }
 }
 ```
+
+The WebSocket-over-HTTP/3 server is disabled by default. Start it with
+`./wpt serve --websocket-h3`; it prints its automatically chosen UDP port and
+starts a paired HTTPS listener on the same numbered TCP port. To run the
+WebSocket H3 test variant manually, open
+`https://web-platform.test:<port>/websockets/binary/001.html?wpt_flags=websocket-h3`
+using that port. The HTTPS listener advertises the H3 endpoint through
+Alt-Svc, and the test uses the configured port for its `wss:` connection.
+With `wpt run`, the server uses port 11001 and is also disabled by default;
+pass `--enable-websocket-h3` to start it and enable the WebSocket
+`?wpt_flags=websocket-h3` test variants. Without it, those variants are
+skipped. Browsers must separately support WebSocket over H3; for local builds
+where the implementation is behind a feature flag, enable that flag with
+`--binary-arg` when running the test.
+
+The browser must also accept the WPT test certificate for the QUIC connection
+to the H3 server. Certificate settings that allow ordinary HTTPS tests may not
+also allow QUIC: some browsers distinguish a locally trusted root from a
+recognized public root and require an additional test exception for QUIC.
+Check your browser's test-certificate configuration if the H3 connection
+fails. HTTP/3 requires TLS; switching to plain HTTP does not remove this
+requirement.
 
 After your `hosts` file is configured, the servers will be locally accessible at:
 

@@ -1,7 +1,7 @@
 import pytest
 
-from tests.support.asserts import assert_success
-from tests.support.helpers import is_element_in_viewport
+from tests.support.classic.asserts import assert_success
+from tests.support.classic.helpers import is_element_in_viewport
 
 from . import take_element_screenshot
 
@@ -21,9 +21,9 @@ def test_scroll_into_view(session, inline):
             }
         </style>
 
-        <input id="reference" type="text" size="20" value="foo"></input>
+        <input id="reference" type="text" size="20" value="foo">
         <div class="scroll-container">
-            <input id="target" type="text" size="20" value="foo"></input>
+            <input id="target" type="text" size="20" value="foo">
         </div>
         """)
 

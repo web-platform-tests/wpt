@@ -155,10 +155,59 @@ def test_gitignore_negative(path):
 @pytest.mark.parametrize("paths,errors",
                          [(["a/b.html", "a/B.html"], ["a/B.html"]),
                           (["A/b.html", "a/b.html"], ["a/b.html"]),
-                          (["a/b.html", "a/c.html"], [])])
+                          (["a/b.html", "a/c.html"], []),
+                          (["a/b.html", "A/c.html"], ["A/c.html"]),
+                          (["a/b/c.html", "a/B/d.html", "a/B/e.html", "a/b/f.html"], ["a/B/d.html", "a/B/e.html"]),
+                          (["WebIDL/a.html", "webidl/b.html", "webidl/c.html"], ["WebIDL/a.html"])])
 def test_unique_case_insensitive_paths(paths, errors):
+    paths = [os.path.join(*path.split("/")) for path in paths]
+    errors = [os.path.join(*path.split("/")) for path in errors]
     got_errors = check_unique_case_insensitive_paths(None, paths)
     assert len(got_errors) == len(errors)
     for (name, _, path, _), expected_path in zip(got_errors, errors):
         assert name == "DUPLICATE-CASE-INSENSITIVE-PATH"
         assert path == expected_path
+
+
+@pytest.mark.parametrize("path", [
+    os.path.join("css", "resources", "WEB_FEATURES.yml"),
+    os.path.join("css", "support", "WEB_FEATURES.yml"),
+    os.path.join("html", "tools", "WEB_FEATURES.yml"),
+    os.path.join("common", "WEB_FEATURES.yml"),
+    os.path.join("html", "semantics", "resources", "sub", "WEB_FEATURES.yml"),
+])
+def test_web_features_file_in_non_test_directory(path):
+    errors = check_path("/foo/", path)
+    assert len(errors) == 1
+    assert errors[0][0] == "WEB-FEATURES-FILE-IN-NON-TEST-DIRECTORY"
+
+
+@pytest.mark.parametrize("path", [
+    os.path.join("css", "css-images", "WEB_FEATURES.yml"),
+    os.path.join("html", "semantics", "WEB_FEATURES.yml"),
+    os.path.join("css", "WEB_FEATURES.yml"),
+    os.path.join("html", "semantics", "the-button-element", "WEB_FEATURES.yml"),
+])
+def test_web_features_file_in_non_test_directory_negative(path):
+    errors = check_path("/foo/", path)
+    assert not any(e[0] == "WEB-FEATURES-FILE-IN-NON-TEST-DIRECTORY" for e in errors)
+
+
+@pytest.mark.parametrize("path", [
+    os.path.join("css", "css-images", "WEB_FEATURES.yaml"),
+    os.path.join("html", "semantics", "WEB_FEATURES.yaml"),
+])
+def test_wrong_web_features_file_extension(path):
+    errors = check_path("/foo/", path)
+    assert len(errors) == 1
+    assert errors[0][0] == "INVALID-WEB-FEATURES-FILE"
+
+
+@pytest.mark.parametrize("path", [
+    os.path.join("css", "css-images", "WEB_FEATURES.yml"),
+    os.path.join("html", "semantics", "WEB_FEATURES.yml"),
+    os.path.join("css", "css-images", "other_file.yaml"),
+])
+def test_wrong_web_features_file_extension_negative(path):
+    errors = check_path("/foo/", path)
+    assert not any(e[0] == "INVALID-WEB-FEATURES-FILE" for e in errors)

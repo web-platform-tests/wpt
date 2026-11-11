@@ -124,14 +124,6 @@ async function createDedicatedWorkerContext(t, origin, header) {
   return [uuid, worker_url];
 }
 
-async function createSharedWorkerContext(t, origin, header) {
-  const uuid = token();
-  const worker_url = origin + remote_executor_worker_path + header + '&uuid=' + uuid;
-  const worker = new SharedWorker(worker_url);
-  worker.addEventListener('error', t.unreached_func('Worker.onerror'));
-  return [uuid, worker_url];
-}
-
 async function createIframeWithSWContext(t, origin, header) {
   // Register a service worker with no headers.
   const uuid = token();
@@ -150,8 +142,8 @@ async function createIframeWithSWContext(t, origin, header) {
   return [uuid, frame_url];
 }
 
-// A common interface for building the 4 type of execution contexts. Outputs the
-// token needed to create the RemoteContext.
+// A common interface for building the 3 types of execution contexts. Outputs
+// the token needed to create the RemoteContext.
 async function getTokenFromEnvironment(t,  environment, headers) {
   switch(environment) {
     case "document":
@@ -160,10 +152,7 @@ async function getTokenFromEnvironment(t,  environment, headers) {
     case "dedicated_worker":
       const dedicated_worker_context = await createDedicatedWorkerContext(t, window.origin, headers);
       return dedicated_worker_context[0];
-    case "shared_worker":
-      const shared_worker_context = await createSharedWorkerContext(t, window.origin, headers);
-      return shared_worker_context[0];
-    case "service_worker":
+    case "document_with_service_worker":
       const sw_context = await createIframeWithSWContext(t, window.origin, headers);
       return sw_context[0];
   }
@@ -210,3 +199,49 @@ const environments = {
     return [tok, error];
   },
 };
+
+// Returns the URL of an executor document that is served with pipe, such as dip_require_corp, and runs what is sent to uuid.
+function executorURL(pipe, uuid, executorOrigin = get_host_info().HTTPS_ORIGIN) {
+  return executorOrigin + executor_path + pipe + `&uuid=${uuid}`;
+}
+
+// Appends a frame for url that is removed when t ends, and returns a promise for it once it has loaded.
+function createFrame(t, url, allow) {
+  const frame = document.createElement("iframe");
+  t.add_cleanup(() => frame.remove());
+  if (allow)
+    frame.allow = allow;
+  const loaded = new Promise(resolve => frame.onload = resolve);
+  frame.src = url;
+  document.body.append(frame);
+  return loaded.then(() => frame);
+}
+
+// Returns script for runInContext() that appends a frame for url as child and waits for it to load.
+function appendFrameScript(url, allow) {
+  return `
+    const child = document.createElement("iframe");
+    ${allow ? `child.allow = ${JSON.stringify(allow)};` : ""}
+    const loaded = new Promise(resolve => child.onload = resolve);
+    child.src = ${JSON.stringify(url)};
+    document.body.append(child);
+    await loaded;
+  `;
+}
+
+// Runs the body of an async function in the context identified by uuid and returns its result.
+async function runInContext(uuid, body) {
+  const reply = token();
+  send(uuid, `
+    (async () => {
+      let result;
+      try {
+        result = await (async () => { ${body} })();
+      } catch (e) {
+        result = e.name;
+      }
+      send("${reply}", JSON.stringify(result));
+    })();
+  `);
+  return JSON.parse(await receive(reply));
+}

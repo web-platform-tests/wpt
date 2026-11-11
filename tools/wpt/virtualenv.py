@@ -127,13 +127,6 @@ class Virtualenv:
         return self._working_set
 
     def activate(self):
-        if sys.platform == "darwin":
-            # The default Python on macOS sets a __PYVENV_LAUNCHER__ environment
-            # variable which affects invocation of python (e.g. via pip) in a
-            # virtualenv. Unset it if present to avoid this. More background:
-            # https://github.com/web-platform-tests/wpt/issues/27377
-            # https://github.com/python/cpython/pull/9516
-            os.environ.pop("__PYVENV_LAUNCHER__", None)
 
         paths = self.get_paths()
 
@@ -173,7 +166,7 @@ class Virtualenv:
 
         # `--prefer-binary` guards against race conditions when installation
         # occurs while packages are in the process of being published.
-        call(self.pip_path, "install", "--prefer-binary", *requirements)
+        call(self.pip_path, "--disable-pip-version-check", "install", "--prefer-binary", *requirements)
 
     def install_requirements(self, *requirements_paths):
         install = []
@@ -190,7 +183,7 @@ class Virtualenv:
         if install:
             # `--prefer-binary` guards against race conditions when installation
             # occurs while packages are in the process of being published.
-            cmd = [self.pip_path, "install", "--prefer-binary"]
+            cmd = [self.pip_path, "--disable-pip-version-check", "install", "--prefer-binary"]
             for path in install:
                 cmd.extend(["-r", path])
             call(*cmd)

@@ -630,10 +630,10 @@ let m = $69;
 register("exporter", m)
 
 // elem.wast:1016
-assert_return(() => call(m, "get", [0]), "elem.wast:1016", null);
+assert_return(() => call(m, "get", [0]), "elem.wast:1016", "ref.null");
 
 // elem.wast:1017
-assert_return(() => call(m, "get", [1]), "elem.wast:1017", null);
+assert_return(() => call(m, "get", [1]), "elem.wast:1017", "ref.null");
 
 // elem.wast:1019
 assert_return(() => call(m, "set", [0, hostref(42)]), "elem.wast:1019");
@@ -654,7 +654,7 @@ let $$82 = module("\x00\x61\x73\x6d\x01\x00\x00\x00\x02\x94\x80\x80\x80\x00\x01\
 let $70 = instance($$82);
 
 // elem.wast:1029
-assert_return(() => call(m, "get", [0]), "elem.wast:1029", null);
+assert_return(() => call(m, "get", [0]), "elem.wast:1029", "ref.null");
 
 // elem.wast:1030
 assert_return(() => call(m, "get", [1]), "elem.wast:1030", hostref(137));
@@ -726,5 +726,17 @@ assert_return(() => call($76, "call_in_table", [6]), "elem.wast:1109", 42);
 
 // elem.wast:1110
 assert_trap(() => call($76, "call_in_table", [0]), "elem.wast:1110");
+
+// elem.wast:1113
+let $$89 = module("\x00\x61\x73\x6d\x01\x00\x00\x00\x01\x88\x80\x80\x80\x00\x02\x60\x00\x01\x7f\x60\x00\x00\x03\x85\x80\x80\x80\x00\x04\x00\x00\x01\x00\x04\x85\x80\x80\x80\x00\x01\x70\x01\x01\x01\x07\x8e\x80\x80\x80\x00\x02\x04\x69\x6e\x69\x74\x00\x02\x03\x72\x75\x6e\x00\x03\x09\x8f\x80\x80\x80\x00\x02\x04\x41\x00\x0b\x01\xd2\x00\x0b\x05\x70\x01\xd2\x01\x0b\x0a\xb2\x80\x80\x80\x00\x04\x85\x80\x80\x80\x00\x00\x41\xab\x01\x0b\x85\x80\x80\x80\x00\x00\x41\xcd\x01\x0b\x8c\x80\x80\x80\x00\x00\x41\x00\x41\x00\x41\x01\xfc\x0c\x01\x00\x0b\x87\x80\x80\x80\x00\x00\x41\x00\x11\x00\x00\x0b", "elem.wast:1113");
+
+// elem.wast:1113
+let $77 = instance($$89);
+
+// elem.wast:1125
+run(() => call($77, "init", []), "elem.wast:1125");
+
+// elem.wast:1126
+assert_return(() => call($77, "run", []), "elem.wast:1126", 205);
 reinitializeRegistry();
 })();

@@ -1,25 +1,20 @@
-features:
-- name: line-break
-  files:
-  - line-break-*
-- name: text-spacing-trim
-  files:
-  - text-spacing-trim-*
-- name: text-wrap-pretty
-  files:
-  - text-wrap-pretty.html
-- name: text-wrap-style
-  files:
-  - text-wrap-style-*
-- name: white-space-collapse
-  files:
-  - white-space-collapse-*
-- name: text-wrap
-  files:
-  # No wildcard here to avoid capturing text-wrap-mode-*.
-  - text-wrap-computed.html
-  - text-wrap-invalid.html
-  - text-wrap-valid.html
-- name: text-wrap-mode
-  files:
-  - text-wrap-mode-*
+rules:
+- letter-spacing-*: [letter-spacing]
+- line-break-*: [line-break]
+- hanging-punctuation-*: [hanging-punctuation]
+- overflow-wrap*: [overflow-wrap]
+- word-wrap*: [overflow-wrap]
+- text-spacing-trim-*: [text-spacing-trim]
+- text-wrap-pretty.html: [text-wrap-pretty]
+- white-space-collapse-*: [white-space-collapse]
+- text-wrap-*: [text-wrap]
+- word-spacing-*: [word-spacing]
+- tab-size-*: [tab-size]
+- text-autospace-*: [text-autospace]
+- text-align-all-*: [text-align]
+- text-align-computed.html: [text-align]
+- text-align-invalid.html: [text-align]
+- text-align-valid.html: [text-align]
+- text-align-last-*: [text-align-last]
+- text-transform-*: [text-transform]
+- text-justify-*: [text-justify]

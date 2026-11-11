@@ -9,7 +9,7 @@ def main(request, response):
     test_session_manager.set_has_called_refresh(True)
 
     if test_session_manager.get_refresh_endpoint_unavailable():
-        return (500, response.headers, "")
+        return (test_session_manager.get_refresh_endpoint_unavailable_status(), response.headers, "")
 
     session_id_header = request.headers.get("Sec-Secure-Session-Id")
     if session_id_header == None:
@@ -27,14 +27,14 @@ def main(request, response):
     if test_session_manager.get_has_custom_query_param() and 'refreshQueryParam' not in parse_qs(request.url_parts.query):
         return (400, response.headers, "")
 
-    session_key = test_session_manager.get_session_key(session_id)
-    if session_key == None:
-        return (400, response.headers, "")
-
-    if test_session_manager.get_refresh_sends_challenge():
+    if test_session_manager.get_allows_challenges() and test_session_manager.get_refresh_sends_challenge():
         challenge = "refresh_challenge_value"
         if request.headers.get("Secure-Session-Response") == None:
             return (403, [('Secure-Session-Challenge', f'"{challenge}";id="{session_id}"')], "")
+
+        session_key = test_session_manager.get_session_key(session_id)
+        if session_key == None:
+            return (400, response.headers, "")
 
         jwt_header, jwt_payload, verified = jwt_helper.decode_jwt(request.headers.get("Secure-Session-Response").decode('utf-8'), session_key)
 

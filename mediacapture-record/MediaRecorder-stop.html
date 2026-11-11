@@ -116,6 +116,28 @@
           return;
         }
 
+        const {stream: audio} = createAudioStream(t);
+        const recorder = new MediaRecorder(audio, {mimeType});
+        const events = recordEvents(recorder,
+            ["start", "stop", "dataavailable", "pause", "resume", "error"]);
+        recorder.start();
+        assert_equals(recorder.state, "recording", "MediaRecorder has been started successfully");
+        recorder.stop();
+        assert_equals(recorder.state, "inactive", "MediaRecorder state should be inactive immediately following stop() call");
+
+        const event = await new Promise(r => recorder.onstop = r);
+        assert_equals(event.type, "stop", "the event type should be stop");
+        assert_true(event.isTrusted, "isTrusted should be true when the event is created by C++");
+        assert_equals(recorder.state, "inactive", "MediaRecorder is inactive after stop event");
+
+        assertSequenceIn(events, ["start", "dataavailable", "stop"]);
+    }, "MediaRecorder will stop recording and fire a stop event when stop() is called for audio-only streams");
+
+    promise_test(async t => {
+        if (!isMimetypeSupported(mimeType, t)) {
+          return;
+        }
+
         const recorder = new MediaRecorder(createVideoStream(t).stream, {mimeType});
         recorder.stop();
         await Promise.race([
@@ -220,6 +242,74 @@
         assertSequenceIn(events, ["start", "dataavailable", "stop"]);
     }, "MediaRecorder will fire only start and stop events in a basic recording flow.");
 
+    promise_test(async t => {
+        const {stream} = createFlowingAudioVideoStream(t);
+        const audioTrack = stream.getAudioTracks()[0];
+        const videoTrack = stream.getVideoTracks()[0];
+        t.add_cleanup(() => {
+            audioTrack.stop();
+            videoTrack.stop();
+        });
+        const recorder = new MediaRecorder(stream);
+
+        let resolve;
+        const promise = new Promise((resolve_, reject) => {
+            resolve = resolve_;
+            t.step_timeout(() => reject("stop event time out"), 2000);
+        });
+
+        let events = [];
+        recorder.onstart = () => events.push("start");
+        recorder.onstop = () => {
+            events.push("stop");
+            resolve();
+        }
+        recorder.onerror = () => events.push("error");
+        recorder.ondataavailable = ()=> events.push("data");
+
+        recorder.start();
+        await new Promise(resolve => t.step_timeout(resolve, 0));
+
+        stream.removeTrack(stream.getAudioTracks()[0]);
+        recorder.stop();
+        await promise;
+        assert_array_equals(events, ["start", "data", "stop"]);
+    }, "MediaRecorder will not fire an error event if a recorder is stopped synchronously after a track is removed");
+
+    promise_test(async t => {
+        const {stream} = createFlowingAudioVideoStream(t);
+        const audioTrack = stream.getAudioTracks()[0];
+        const videoTrack = stream.getVideoTracks()[0];
+        t.add_cleanup(() => {
+            audioTrack.stop();
+            videoTrack.stop();
+        });
+        const recorder = new MediaRecorder(stream);
+
+        let resolve;
+        const promise = new Promise((resolve_, reject) => {
+            resolve = resolve_;
+            t.step_timeout(() => reject("stop event time out"), 2000);
+        });
+
+        let events = [];
+        recorder.onstart = ()=> events.push("start");
+        recorder.onstop = () => {
+            events.push("stop");
+            resolve();
+        }
+        recorder.onerror = ()=> events.push("error");
+        recorder.ondataavailable = ()=> events.push("data");
+
+        recorder.start();
+        await new Promise(resolve => t.step_timeout(resolve, 0));
+
+        audioTrack.stop();
+        videoTrack.stop();
+        recorder.stop();
+        await promise;
+        assert_array_equals(events, ["start", "data", "stop"]);
+    }, "MediaRecorder will not fire an error event if a recorder is stopped synchronously after all tracks are ended");
 </script>
 </body>
 </html>

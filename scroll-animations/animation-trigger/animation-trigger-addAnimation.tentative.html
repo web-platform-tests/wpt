@@ -49,6 +49,7 @@
                                     COVER_START_OFFSET + TRIGGER_END_PX,
                                     scroller);
       const ANIMATION_DURATION_MS = 1;
+
       const view_timeline = new ViewTimeline({ subject: subject });
       function setupAnimation() {
         const animation = new Animation(
@@ -63,12 +64,12 @@
         return animation;
       }
       function setupAnimationTrigger(use_default_trigger=false) {
-        const trigger = use_default_trigger ? new TimelineTrigger()
-            : new TimelineTrigger({
+        const trigger = use_default_trigger ? new TimelineTrigger([{}])
+            : new TimelineTrigger([{
               timeline: view_timeline,
-              rangeStart: `${TRIGGER_START_PX}px`,
-              rangeEnd: `${TRIGGER_END_PX}px`
-            });
+              activationRangeStart: `${TRIGGER_START_PX}px`,
+              activationRangeEnd: `${TRIGGER_END_PX}px`
+            }]);
         return trigger;
       }
 
@@ -112,7 +113,7 @@
         assert_times_equal(animation.currentTime, 0, "currentTime is 0");
 
         // Entering the trigger range should play the animation.
-        rangeBoundaries.enterTriggerRange();
+        await enter(rangeBoundaries);
         await animation.finished;
 
         assert_equals(animation.playState, "finished",
@@ -121,7 +122,7 @@
           "currentTime is 0");
         assert_array_equals(trigger.getAnimations(), [animation],
           "trigger has animation attached");
-      }, "Animation attached to untripped trigger is paused at the beginning.");
+      }, "Animation attached to untripped trigger is paused initially.");
 
       promise_test(async (test) => {
         await waitForScrollReset(test, scroller);
@@ -137,8 +138,7 @@
         assert_array_equals(trigger.getAnimations(), [],
           "trigger has no animations");
 
-        rangeBoundaries.enterTriggerRange();
-        await waitForAnimationFrames(2);
+        await enter(rangeBoundaries);
 
         assert_equals(animation.playState, "idle", "animation is still idle");
         assert_equals(animation.currentTime, null, "currentTime is still null");

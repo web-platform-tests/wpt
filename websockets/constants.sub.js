@@ -3,7 +3,10 @@ const __PATH = "echo";
 
 let __SCHEME;
 let __PORT;
-if (url_has_flag('h2')) {
+if (url_has_flag('websocket-h3')) {
+  __SCHEME = 'wss';
+  __PORT = "{{ports[websocket-h3-https][0]}}";
+} else if (url_has_flag('h2')) {
   __SCHEME = 'wss';
   __PORT = "{{ports[h2][0]}}";
 } else if (url_has_variant('wss') || location.protocol === 'https:') {
@@ -43,12 +46,6 @@ function CreateWebSocketWithAsciiSep(asciiWithSep) {
   IsWebSocket();
   const url = SCHEME_DOMAIN_PORT + "/" + __PATH;
   return new WebSocket(url, asciiWithSep);
-}
-
-function CreateWebSocketWithBlockedPort(blockedPort) {
-  IsWebSocket();
-  const url = __SCHEME + "://" + __SERVER__NAME + ":" + blockedPort + "/" + __PATH;
-  return new WebSocket(url);
 }
 
 function CreateWebSocketWithSpaceInUrl(urlWithSpace) {

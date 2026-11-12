@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/webxr_util.js"></script>
+<script src="resources/webxr_test_constants.js"></script>
+
+<script>
+const EPSILON = 1e-5;
+
+function assertVelocity(point, expected, description) {
+  assert_not_equals(point, null, description);
+  assert_approx_equals(point.x, expected[0], EPSILON, description + ' x');
+  assert_approx_equals(point.y, expected[1], EPSILON, description + ' y');
+  assert_approx_equals(point.z, expected[2], EPSILON, description + ' z');
+  assert_equals(point.w, 0, description + ' w');
+}
+
+function requestFrame(session) {
+  return new Promise((resolve) => {
+    session.requestAnimationFrame((time, frame) => resolve(frame));
+  });
+}
+
+// Updates to the fake device take effect in the frame after next.
+async function requestUpdatedFrame(session) {
+  await requestFrame(session);
+  return requestFrame(session);
+}
+
+xr_session_promise_test(
+    'XRViewerPose reports the viewer velocity relative to the reference space',
+    async (session, fakeDeviceController, t) => {
+      const localSpace = await session.requestReferenceSpace('local');
+      const viewerSpace = await session.requestReferenceSpace('viewer');
+      // Rotated 90 degrees about +y.
+      const rotatedSpace = localSpace.getOffsetReferenceSpace(
+          new XRRigidTransform(
+              {x: 0, y: 0, z: 0},
+              {x: 0, y: Math.SQRT1_2, z: 0, w: Math.SQRT1_2}));
+
+      let frame = await requestFrame(session);
+      t.step(() => {
+        const pose = frame.getViewerPose(localSpace);
+        assert_equals(pose.linearVelocity, null, 'no linear velocity');
+        assert_equals(pose.angularVelocity, null, 'no angular velocity');
+      });
+
+      fakeDeviceController.setViewerVelocity(
+          {linear: [1, 0, 0], angular: [0, 2, 0]});
+      frame = await requestUpdatedFrame(session);
+      t.step(() => {
+        const pose = frame.getViewerPose(localSpace);
+        const linearVelocity = pose.linearVelocity;
+        const angularVelocity = pose.angularVelocity;
+        assertVelocity(linearVelocity, [1, 0, 0], 'local linear');
+        assertVelocity(angularVelocity, [0, 2, 0], 'local angular');
+        assert_equals(pose.linearVelocity, linearVelocity,
+                      'linearVelocity returns the same object on each read');
+        assert_equals(pose.angularVelocity, angularVelocity,
+                      'angularVelocity returns the same object on each read');
+
+        const rotatedPose = frame.getViewerPose(rotatedSpace);
+        assertVelocity(rotatedPose.linearVelocity, [0, 0, 1],
+                       'rotated linear');
+        assertVelocity(rotatedPose.angularVelocity, [0, 2, 0],
+                       'rotated angular');
+
+        const viewerPose = frame.getViewerPose(viewerSpace);
+        assertVelocity(viewerPose.linearVelocity, [0, 0, 0], 'viewer linear');
+        assertVelocity(viewerPose.angularVelocity, [0, 0, 0],
+                       'viewer angular');
+      });
+    },
+    TRACKED_IMMERSIVE_DEVICE, 'immersive-vr');
+
+xr_session_promise_test(
+    'The viewer velocity stays until it is cleared',
+    async (session, fakeDeviceController, t) => {
+      const localSpace = await session.requestReferenceSpace('local');
+
+      fakeDeviceController.setViewerVelocity(
+          {linear: [0, 1, 0], angular: [0, 0, 0]});
+      fakeDeviceController.setViewerOrigin(
+          {position: [0, 1, 0], orientation: [0, 0, 0, 1]});
+      let frame = await requestUpdatedFrame(session);
+      t.step(() => {
+        const pose = frame.getViewerPose(localSpace);
+        assertVelocity(pose.linearVelocity, [0, 1, 0],
+                       'linear velocity after moving the viewer');
+        assertVelocity(pose.angularVelocity, [0, 0, 0],
+                       'angular velocity after moving the viewer');
+      });
+
+      fakeDeviceController.clearViewerVelocity();
+      frame = await requestUpdatedFrame(session);
+      t.step(() => {
+        const pose = frame.getViewerPose(localSpace);
+        assert_equals(pose.linearVelocity, null, 'cleared linear velocity');
+        assert_equals(pose.angularVelocity, null, 'cleared angular velocity');
+      });
+    },
+    TRACKED_IMMERSIVE_DEVICE, 'immersive-vr');
+
+xr_session_promise_test(
+    'XRPose reports input source velocities',
+    async (session, fakeDeviceController, t) => {
+      const localSpace = await session.requestReferenceSpace('local');
+      const inputSourceController =
+          fakeDeviceController.simulateInputSourceConnection({
+            handedness: 'right',
+            targetRayMode: 'tracked-pointer',
+            pointerOrigin: IDENTITY_TRANSFORM,
+            gripOrigin: IDENTITY_TRANSFORM,
+            profiles: [],
+          });
+      inputSourceController.setGripVelocity(
+          {linear: [0, 0, -3], angular: [0, 0, 0]});
+
+      let frame = await requestUpdatedFrame(session);
+      t.step(() => {
+        assert_equals(session.inputSources.length, 1, 'one input source');
+        const source = session.inputSources[0];
+
+        const gripPose = frame.getPose(source.gripSpace, localSpace);
+        assertVelocity(gripPose.linearVelocity, [0, 0, -3], 'grip linear');
+        assertVelocity(gripPose.angularVelocity, [0, 0, 0], 'grip angular');
+
+        const targetRayPose = frame.getPose(source.targetRaySpace, localSpace);
+        assertVelocity(targetRayPose.linearVelocity, [0, 0, -3],
+                       'target ray linear');
+
+        // The grip doesn't move relative to itself.
+        const gripFromGrip = frame.getPose(source.gripSpace, source.gripSpace);
+        assertVelocity(gripFromGrip.linearVelocity, [0, 0, 0],
+                       'grip relative to itself');
+      });
+
+      inputSourceController.clearGripVelocity();
+      frame = await requestUpdatedFrame(session);
+      t.step(() => {
+        const source = session.inputSources[0];
+        const gripPose = frame.getPose(source.gripSpace, localSpace);
+        assert_equals(gripPose.linearVelocity, null, 'cleared grip linear');
+        assert_equals(gripPose.angularVelocity, null, 'cleared grip angular');
+      });
+    },
+    TRACKED_IMMERSIVE_DEVICE, 'immersive-vr');
+
+xr_session_promise_test(
+    'Velocities need three elements in each vector',
+    async (session, fakeDeviceController, t) => {
+      const inputSourceController =
+          fakeDeviceController.simulateInputSourceConnection({
+            handedness: 'right',
+            targetRayMode: 'tracked-pointer',
+            pointerOrigin: IDENTITY_TRANSFORM,
+            profiles: [],
+          });
+      const badVelocities = [
+        {linear: [1, 0], angular: [0, 0, 0]},
+        {linear: [1, 0, 0], angular: [0, 0, 0, 0]},
+      ];
+      for (const velocity of badVelocities) {
+        assert_throws_js(
+            TypeError, () => fakeDeviceController.setViewerVelocity(velocity),
+            'setViewerVelocity(' + JSON.stringify(velocity) + ')');
+        assert_throws_js(
+            TypeError, () => inputSourceController.setGripVelocity(velocity),
+            'setGripVelocity(' + JSON.stringify(velocity) + ')');
+      }
+    },
+    TRACKED_IMMERSIVE_DEVICE, 'immersive-vr');
+</script>

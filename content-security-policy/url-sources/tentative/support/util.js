@@ -78,12 +78,16 @@ function load_frame(t, src) {
 
 // Tests whether a script requested with |url_string|, e.g. the value of the
 // src attribute, is allowed by a policy with the url source of |allowed|, a
-// URL string or a list of them, and |sources| in |directive|. The policy is
-// delivered as given by |test_type|, see get_support_url(). Loads |url_string|
-// in the support document |frame| and checks that it posts |expected|.
+// URL string or a list of them, and |sources| in |directive|, and |policy|
+// added to it. The policy is delivered as given by |test_type|, see
+// get_support_url(). Loads |url_string| in the support document |frame|, after
+// inserting a <base> for each of |base_urls|, and checks that it posts
+// |expected|. Violations of |ignored_violation_directive|, e.g. "base-uri" for
+// a <base> it blocks, aren't reported as the result.
 function url_string_test({name, url_string, allowed, expected,
                           test_type = "header", directive = "script-src",
-                          sources = "", frame = "iframe"}) {
+                          sources = "", frame = "iframe", base_urls = [],
+                          policy = "", ignored_violation_directive = ""}) {
   promise_test(async t => {
     const all_sources = ["'nonce-forinlinescript'"];
     for (const allowed_url_string of [allowed].flat()) {
@@ -92,10 +96,20 @@ function url_string_test({name, url_string, allowed, expected,
     if (sources) {
       all_sources.push(sources);
     }
-    const policy = `${directive} ${all_sources.join(" ")}`;
+    let full_policy = `${directive} ${all_sources.join(" ")}`;
+    if (policy) {
+      full_policy += `; ${policy}`;
+    }
+
+    const params = [["script_url", url_string],
+                    ["ignored_violation_directive",
+                     ignored_violation_directive]];
+    for (const base_url of base_urls) {
+      params.push(["base_url", base_url]);
+    }
 
     const result = await load_frame(t, get_support_url(test_type, frame,
-        policy, {script_url: url_string}));
+        full_policy, params));
     assert_equals(result, expected);
   }, `${name} - ${test_type}`);
 }

@@ -3,9 +3,24 @@
 <html>
 <body>
     <script nonce='forinlinescript'>
-        window.addEventListener('securitypolicyviolation', function() {
-          top.postMessage('CSP_VIOLATION', '*');
+        // Report violations, except of the directive given in the
+        // ignored_violation_directive parameter, e.g. base-uri for a <base>
+        // it blocks, which isn't the result of the test.
+        const ignoredDirective = new URLSearchParams(location.search)
+            .get('ignored_violation_directive');
+        window.addEventListener('securitypolicyviolation', function(e) {
+          if (e.effectiveDirective != ignoredDirective) {
+            top.postMessage('CSP_VIOLATION', '*');
+          }
         });
+
+        // For each base_url parameter, insert a <base>. Only the first one is
+        // used for the document's base URL.
+        for (const base of new URLSearchParams(location.search).getAll('base_url')) {
+          const element = document.createElement('base');
+          element.href = base;
+          document.head.appendChild(element);
+        }
     </script>
     <script src='{{GET[script_url]}}'></script>
 </body>

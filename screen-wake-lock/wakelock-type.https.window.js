@@ -2,8 +2,7 @@
 // META: script=/resources/testdriver-vendor.js
 
 promise_test(async t => {
-  await test_driver.set_permission(
-      {name: 'screen-wake-lock'}, 'granted');
+  await test_driver.bless("screen wake lock");
 
   const lock = await navigator.wakeLock.request();
   t.add_cleanup(() => {

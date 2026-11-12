@@ -1,11 +1,12 @@
+<!DOCTYPE html>
+<body>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script>
 "use strict";
 
 Promise.resolve().then(async () => {
-  test_driver.set_test_context(window.parent);
-  await test_driver.set_permission({ name: 'screen-wake-lock' }, 'granted');
+  await test_driver.bless("screen wake lock");
 
   try {
     const wakeLock = await navigator.wakeLock.request("screen");
@@ -20,3 +21,4 @@ Promise.resolve().then(async () => {
   }
 });
 </script>
+</body>

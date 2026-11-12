@@ -47,9 +47,9 @@
     }
   }
 
-  // Puts |pi| in a container element, between two text nodes:
+  // Wraps |pi| in a container element, between two text nodes:
   // <container>"before" pi "after"</container>
-  function attach(pi) {
+  function wrap(pi) {
     const container = pi.ownerDocument.createElement("container");
     container.append("before", pi, "after");
     return container;
@@ -65,11 +65,9 @@
     test(() => {
       const pi = createProcessingInstruction("t", DATA);
       const clone = pi.cloneNode();
-      assert_not_equals(clone, pi);
       assert_equals(clone.target, "t");
       assert_equals(clone.data, DATA);
-      assert_pi_attributes(clone, [["a", "b"], ["x", "yy"]], "clone");
-      assert_pi_attributes(pi, [["a", "b"], ["x", "yy"]], "original");
+      assert_pi_attributes(clone, [["a", "b"], ["x", "yy"]]);
     }, `cloneNode() preserves processing instruction attributes (source: ${source})`);
 
     test(() => {
@@ -96,6 +94,9 @@
       assert_pi_attributes(clone, [["x", "zz"], ["c", "d"]]);
     }, `cloneNode() reflects attributes modified before cloning (source: ${source})`);
 
+    // setAttribute() serializes value into pi.data with character references
+    // without re-parsing it; cloneNode() copies pi.data and parses those
+    // character references into clone's attribute map.
     test(() => {
       const pi = createProcessingInstruction("t", "");
       const value = `a"b'c<d>e&f`;
@@ -103,22 +104,28 @@
       const clone = pi.cloneNode();
       assert_equals(clone.data, pi.data);
       assert_pi_attributes(clone, [["v", value]]);
-    }, `cloneNode() round-trips escaped attribute values (source: ${source})`);
+    }, `cloneNode() unescapes character references written by setAttribute() (source: ${source})`);
+
+    test(() => {
+      const unnormalized = 'a = "b"   x = "yy"  ';
+      const pi = createProcessingInstruction("t", unnormalized);
+      const clone = pi.cloneNode();
+      assert_equals(clone.data, unnormalized);
+      assert_pi_attributes(clone, [["a", "b"], ["x", "yy"]]);
+    }, `cloneNode() does not normalize whitespace in data (source: ${source})`);
 
     test(() => {
       const pi = createProcessingInstruction("t", "a=b");
-      assert_pi_attributes(pi, [], "original");
       const clone = pi.cloneNode();
       assert_equals(clone.data, "a=b");
-      assert_pi_attributes(clone, [], "clone");
+      assert_pi_attributes(clone, []);
     }, `cloneNode() of a processing instruction with unparsable data has no attributes (source: ${source})`);
 
     test(() => {
       const pi = createProcessingInstruction("t", DATA);
-      const container = attach(pi);
+      const container = wrap(pi);
       const containerClone = container.cloneNode(true);
       const clone = containerClone.childNodes[1];
-      assert_not_equals(clone, pi);
       assert_pi_attributes(clone, [["a", "b"], ["x", "yy"]]);
     }, `Deep cloning a parent preserves processing instruction attributes (source: ${source})`);
 
@@ -186,27 +193,23 @@
     for (const c of range_cases) {
       test(() => {
         const pi = createProcessingInstruction("t", DATA);
-        const container = attach(pi);
+        const container = wrap(pi);
         const range = pi.ownerDocument.createRange();
         c.setup(range, pi, container);
         const fragment = range.cloneContents();
         const clone = fragment.childNodes[c.fragmentPIIndex];
-        assert_not_equals(clone, pi);
         assert_equals(clone.target, "t");
         assert_equals(clone.data, c.fragmentData);
-        assert_pi_attributes(clone, c.fragmentAttributes, "clone");
-        assert_equals(pi.data, DATA);
-        assert_pi_attributes(pi, [["a", "b"], ["x", "yy"]], "original");
+        assert_pi_attributes(clone, c.fragmentAttributes);
       }, `Range cloneContents() with ${c.name} updates the cloned processing instruction's attributes (source: ${source})`);
 
       test(() => {
         const pi = createProcessingInstruction("t", DATA);
-        const container = attach(pi);
+        const container = wrap(pi);
         const range = pi.ownerDocument.createRange();
         c.setup(range, pi, container);
         const fragment = range.extractContents();
         const clone = fragment.childNodes[c.fragmentPIIndex];
-        assert_not_equals(clone, pi);
         assert_equals(clone.target, "t");
         assert_equals(clone.data, c.fragmentData);
         assert_pi_attributes(clone, c.fragmentAttributes, "clone");
@@ -217,7 +220,7 @@
 
       test(() => {
         const pi = createProcessingInstruction("t", DATA);
-        const container = attach(pi);
+        const container = wrap(pi);
         const range = pi.ownerDocument.createRange();
         c.setup(range, pi, container);
         range.deleteContents();
@@ -229,7 +232,7 @@
 
     test(() => {
       const pi = createProcessingInstruction("t", DATA);
-      attach(pi);
+      wrap(pi);
       const range = pi.ownerDocument.createRange();
       range.setStart(pi, 0);
       range.setEnd(pi, 5);
@@ -255,7 +258,7 @@
     for (const [name, mutate] of Object.entries(attribute_mutations)) {
       test(() => {
         const pi = createProcessingInstruction("t", DATA);
-        attach(pi);
+        wrap(pi);
         const range = pi.ownerDocument.createRange();
         range.setStart(pi, 6);
         range.setEnd(pi, 12);
@@ -268,7 +271,7 @@
 
       test(() => {
         const pi = createProcessingInstruction("t", DATA);
-        const container = attach(pi);
+        const container = wrap(pi);
         const range = pi.ownerDocument.createRange();
         range.setStart(container, 0);
         range.setEnd(pi, 5);

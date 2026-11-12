@@ -32,8 +32,8 @@ promise_test(async testCase => {
   assert_equals(subscriptions.length, 2);
   assert_equals(subscriptions[0].name, 'cookie-name');
   assert_equals(subscriptions[0].url, self.registration.scope);
-  assert_equals(subscriptions[1].name, undefined)
-  assert_equals(subscriptions[1].url, self.registration.scope + '/subdir')
+  assert_equals(subscriptions[1].name, undefined);
+  assert_equals(subscriptions[1].url, self.registration.scope + '/subdir');
 }, 'cookieStore.subscribe without name or url in options');
 
 promise_test(async testCase => {

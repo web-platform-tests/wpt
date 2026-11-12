@@ -82,9 +82,10 @@ function load_frame(t, src) {
 // added to it. The policy is delivered as given by |test_type|, see
 // get_support_url(). Loads |url_string| with a <script> element of the type
 // |script_type| in the support document |frame|, after inserting a <base> for
-// each of |base_urls|, and checks that it posts |expected|. Violations of
-// |ignored_violation_directive|, e.g. "base-uri" for a <base> it blocks, aren't
-// reported as the result.
+// each of |base_urls|, or if |preload| is given, in preload.sub.html after
+// preloading it with a <link> of that rel, and checks that it posts
+// |expected|. Violations of |ignored_violation_directive|, e.g. "base-uri" for
+// a <base> it blocks, aren't reported as the result.
 //
 // With |imported_with| "import" or "import()", the <script> element is a
 // module script which imports |url_string| that way instead. The module script
@@ -94,7 +95,7 @@ function url_string_test({name, url_string, allowed, expected,
                           test_type = "header", directive = "script-src",
                           sources = "", frame = "iframe", base_urls = [],
                           policy = "", ignored_violation_directive = "",
-                          script_type = "", imported_with}) {
+                          script_type = "", preload = "", imported_with}) {
   promise_test(async t => {
     const all_sources = ["'nonce-forinlinescript'"];
     for (const allowed_url_string of [allowed].flat()) {
@@ -118,13 +119,14 @@ function url_string_test({name, url_string, allowed, expected,
 
     const params = [["script_url", script_url], ["script_type", script_type],
                     ["ignored_violation_directive",
-                     ignored_violation_directive]];
+                     ignored_violation_directive],
+                    ["preload", preload]];
     for (const base_url of base_urls) {
       params.push(["base_url", base_url]);
     }
 
-    const result = await load_frame(t, get_support_url(test_type, frame,
-        full_policy, params));
+    const result = await load_frame(t, get_support_url(test_type,
+        preload ? "preload" : frame, full_policy, params));
     assert_equals(result, expected);
   }, `${name} - ${test_type}`);
 }

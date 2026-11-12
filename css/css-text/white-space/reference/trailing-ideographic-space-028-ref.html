@@ -6,19 +6,17 @@
 .container {
   display: inline-block;
   line-height: 1;
-  color: transparent;
-}
-.sizer {
-  height: 0;
-  visibility: hidden;
 }
 .test {
   text-align: right;
 }
-.green { background: green; }
+.green {
+  background: green;
+  color: transparent;
+}
 </style>
 
-<p>Test passes if the green rectangle below is flush with the right edge of a box three ideographic characters (あああ) wide.
+<p>Test passes if the green rectangle below is flush with the right edge of the three ideographic characters (あああ).
 
 <div class=container>
   <div class=sizer>あああ</div>

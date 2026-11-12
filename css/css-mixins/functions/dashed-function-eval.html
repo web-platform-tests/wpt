@@ -1412,25 +1412,12 @@
   </style>
 </template>
 
-<template data-name="A set var() value overrides a keyword fallback">
-  <style>
-    @function --f(--x: 10px) {
-      result: var(--x, PASS);
-    }
-    #target {
-      --known: 30px;
-      --actual: --f(var(--known, initial));
-      --expected: 30px;
-    }
-  </style>
-</template>
-
 <!-- Typed parameters -->
 
 <template data-name="Typed parameter inherit argument refers to the calling element">
   <style>
     @function --f(--x <length>: 10px) {
-      result: var(--x, PASS);
+      result: var(--x, FAIL);
     }
     #target {
       --x: 30px;

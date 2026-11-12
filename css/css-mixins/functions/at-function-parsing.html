@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <title>Custom Functions: Prelude Parsing</title>
 <link rel="help" href="https://drafts.csswg.org/css-mixins-1/#function-rule">
+<link rel="help" href="https://drafts.csswg.org/css-mixins-1/#function-body">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
@@ -27,6 +28,7 @@
 
   test_invalid_prelude('@function --foo ()');
   test_invalid_prelude('@function --foo (--x)');
+  test_invalid_prelude('@function foo()');
 
   // All single <syntax-component> types.
   test_valid_prelude('@function --foo(--x auto)');
@@ -115,6 +117,11 @@
   test_invalid_prelude('@function --foo(;)');
   test_invalid_prelude('@function --foo(])');
   test_invalid_prelude('@function --foo(, --x])');
+  test_invalid_prelude('@function --foo(--x --y)');
+  test_invalid_prelude('@function --foo(--x, --x)');
+  test_invalid_prelude('@function --foo(--x <length>, --x)');
+  test_invalid_prelude('@function --foo(--x: 1px, --x: 2px)');
+  test_invalid_prelude('@function --foo(--x, --\\78 )');
 
   // Return value types.
   test_valid_prelude('@function --foo(--x) returns type(*)');
@@ -137,4 +144,14 @@
   test_invalid_prelude('@function --foo(--x): <length>');
   test_invalid_prelude('@function --foo(--x): length');
   test_invalid_prelude('@function --foo(--x) returneth <length>');
+
+  // Invalid definitions.
+
+  test(() => {
+    let s = new CSSStyleSheet();
+    s.replaceSync('@function --foo() { @function --bar() {} }');
+    assert_equals(s.cssRules.length, 1);
+    assert_equals(s.cssRules[0].cssRules.length, 0);
+  }, '@function --foo() { @function --bar() {} } has no valid body contents');
+
 </script>

@@ -862,6 +862,78 @@
   </style>
 </template>
 
+<!-- Invalid definitions are not callable -->
+
+<template data-name="Function with duplicate parameters is not callable">
+  <style>
+    @function --f(--x, --x) {
+      result: FAIL;
+    }
+    #target {
+      --actual: --f(1, 2);
+    }
+  </style>
+</template>
+
+<template data-name="Function with a non-custom-property parameter name is not callable">
+  <style>
+    @function --f(foo) {
+      result: FAIL;
+    }
+    #target {
+      --actual: --f(1);
+    }
+  </style>
+</template>
+
+<template data-name="Function with a reserved parameter name is not callable">
+  <style>
+    @function --f(--) {
+      result: FAIL;
+    }
+    #target {
+      --actual: --f(1);
+    }
+  </style>
+</template>
+
+<template data-name="Function without a block is not callable">
+  <style>
+    @function --f();
+    #target {
+      --actual: --f();
+    }
+  </style>
+</template>
+
+<template data-name="Function inside a style rule is not callable">
+  <style>
+    div {
+      @function --f() {
+        result: FAIL;
+      }
+    }
+    #target {
+      --actual: --f();
+    }
+  </style>
+</template>
+
+<template data-name="Function inside another function is not callable">
+  <style>
+    @function --f() {
+      @function --g() {
+        result: FAIL;
+      }
+      result: UNRELATED;
+    }
+
+    #target {
+      --actual: --g();
+    }
+  </style>
+</template>
+
 <!-- Invalid invocations -->
 
 <template data-name="Missing only argument">
@@ -1190,6 +1262,256 @@
   </style>
 </template>
 
+<!-- CSS-wide keywords as arguments -->
+
+<template data-name="inherit argument refers to the calling element">
+  <style>
+    @function --f(--x: FAIL) {
+      result: var(--x, FALLBACK);
+    }
+    #target {
+      --x: 30px;
+      --actual: --f(inherit);
+      --expected: 30px;
+    }
+  </style>
+</template>
+
+<template data-name="inherit argument refers to an inherited custom property">
+  <style>
+    @function --f(--x: FAIL) {
+      result: var(--x, FALLBACK);
+    }
+    #parent {
+      --x: 40px;
+    }
+    #target {
+      --actual: --f(inherit);
+      --expected: 40px;
+    }
+  </style>
+</template>
+
+<template data-name="inherit argument refers to a direct parent context">
+  <style>
+    @function --f(--x: FAIL) {
+      result: var(--x, FALLBACK);
+    }
+    @function --g() {
+      --x: PASS;
+      result: --f(inherit);
+    }
+    #target {
+      --x: FAIL;
+      --actual: --g();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="inherit argument refers to an indirect ancestor context">
+  <style>
+    @function --f(--x: FAIL) {
+      result: var(--x, FALLBACK);
+    }
+
+    @function --g() {
+      result: --f(inherit);
+    }
+
+    #target {
+      --x: PASS;
+      --actual: --g();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="inherit argument in a var() fallback">
+  <style>
+    @function --f(--x: FAIL) {
+      result: var(--x, FALLBACK);
+    }
+    #target {
+      --x: 30px;
+      --actual: --f(var(--unknown, inherit));
+      --expected: 30px;
+    }
+  </style>
+</template>
+
+<template data-name="initial argument">
+  <style>
+    @function --f(--x: 10px) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(initial);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="unset argument">
+  <style>
+    @function --f(--x: 10px) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(unset);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="revert argument">
+  <style>
+    @function --f(--x: 10px) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(revert);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="revert-layer argument">
+  <style>
+    @function --f(--x: 10px) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(revert-layer);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="revert-rule argument">
+  <style>
+    @function --f(--x: 10px) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(revert-rule);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="initial argument in a var() fallback">
+  <style>
+    @function --f(--x: 10px) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(var(--unknown, initial));
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="A set var() value overrides a keyword fallback">
+  <style>
+    @function --f(--x: 10px) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --known: 30px;
+      --actual: --f(var(--known, initial));
+      --expected: 30px;
+    }
+  </style>
+</template>
+
+<!-- Typed parameters -->
+
+<template data-name="Typed parameter inherit argument refers to the calling element">
+  <style>
+    @function --f(--x <length>: 10px) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --x: 30px;
+      --actual: --f(inherit);
+      --expected: 30px;
+    }
+  </style>
+</template>
+
+<template data-name="Typed parameter initial argument resolves to the guaranteed-invalid value">
+  <style>
+    @function --f(--x <length>: 10px) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(initial);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Typed parameter unset argument resolves to the guaranteed-invalid value">
+  <style>
+    @function --f(--x <length>: 10px) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(unset);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Typed parameter revert argument resolves to the guaranteed-invalid value">
+  <style>
+    @function --f(--x <length>: 10px) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(revert);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Typed parameter revert-layer argument resolves to the guaranteed-invalid value">
+  <style>
+    @function --f(--x <length>: 10px) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(revert-layer);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Typed parameter revert-rule argument resolves to the guaranteed-invalid value">
+  <style>
+    @function --f(--x <length>: 10px) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(revert-rule);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Typed parameter initial argument in a var() fallback">
+  <style>
+    @function --f(--x <length>: 10px) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(var(--unknown, initial));
+      --expected: PASS;
+    }
+  </style>
+</template>
+
 <!-- Other CSS-wide keywords (invalid in locals) -->
 
 <template data-name="Local with the unset keyword">
@@ -1235,6 +1557,112 @@
 <template data-name="Local with the revert-rule keyword">
   <style>
     @function --f() {
+      --x: revert-rule;
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Local with the unset keyword does not resolve to a same-named parameter">
+  <style>
+    @function --f(--x: PARAM) {
+      --x: unset;
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Local with the revert keyword does not resolve to a same-named parameter">
+  <style>
+    @function --f(--x: PARAM) {
+      --x: revert;
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Local with the revert-layer keyword does not resolve to a same-named parameter">
+  <style>
+    @function --f(--x: PARAM) {
+      --x: revert-layer;
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Local with the revert-rule keyword does not resolve to a same-named parameter">
+  <style>
+    @function --f(--x: PARAM) {
+      --x: revert-rule;
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<!-- Typed locals -->
+
+<template data-name="Typed local with the unset keyword does not resolve to a same-named parameter">
+  <style>
+    @function --f(--x <length>: 10px) {
+      --x: unset;
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Typed local with the revert keyword does not resolve to a same-named parameter">
+  <style>
+    @function --f(--x <length>: 10px) {
+      --x: revert;
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Typed local with the revert-layer keyword does not resolve to a same-named parameter">
+  <style>
+    @function --f(--x <length>: 10px) {
+      --x: revert-layer;
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Typed local with the revert-rule keyword does not resolve to a same-named parameter">
+  <style>
+    @function --f(--x <length>: 10px) {
       --x: revert-rule;
       result: var(--x, PASS);
     }

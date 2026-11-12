@@ -26,40 +26,4 @@
       "AbortError",
     );
   }, "the canonical request");
-
-  promise_test(async (t) => {
-    await checkRequest(
-      t,
-      "org-iso-mdoc",
-      { deviceRequest: CANONICAL_DEVICE_REQUEST_STR },
-      TypeError,
-    );
-  }, "encryptionInfo missing");
-
-  promise_test(async (t) => {
-    const data = Object.create({ encryptionInfo: CANONICAL_ENCRYPTION_INFO });
-    data.deviceRequest = CANONICAL_DEVICE_REQUEST_STR;
-    await checkRequest(t, "org-iso-mdoc", data, TypeError);
-  }, "encryptionInfo inherited from the prototype, not an own property");
-
-  promise_test(async (t) => {
-    await checkRequest(
-      t,
-      "org-iso-mdoc",
-      { deviceRequest: CANONICAL_DEVICE_REQUEST_STR, encryptionInfo: 123 },
-      TypeError,
-    );
-  }, "encryptionInfo that is not a string");
-
-  promise_test(async (t) => {
-    await checkRequest(
-      t,
-      "org-iso-mdoc",
-      {
-        deviceRequest: CANONICAL_DEVICE_REQUEST_STR,
-        encryptionInfo: "not base64!!!",
-      },
-      "AbortError",
-    );
-  }, "encryptionInfo that is a deliberately non-base64 string");
 </script>

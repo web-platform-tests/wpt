@@ -1,0 +1,18 @@
+<!-- Requests the script_url parameter with a <script> element, which the
+     policy of this document, given in the response header, blocks, and posts
+     the members of the violation event which are relevant for url sources to
+     the parent. -->
+<!DOCTYPE html>
+<html>
+<body>
+    <script nonce='forinlinescript'>
+        window.addEventListener('securitypolicyviolation', e => {
+          top.postMessage({blockedURI: e.blockedURI, urlHash: e.urlHash}, '*');
+        });
+
+        const script = document.createElement('script');
+        script.src = new URLSearchParams(location.search).get('script_url');
+        document.body.appendChild(script);
+    </script>
+</body>
+</html>

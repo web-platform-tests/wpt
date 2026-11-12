@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <script nonce='forinlinescript' src='create_worker.js'></script>
+    <script nonce='forinlinescript'>
+        window.addEventListener('securitypolicyviolation', function() {
+          top.postMessage('CSP_VIOLATION', '*');
+        });
+
+        // Creates a worker of the worker_type parameter from the script_url
+        // parameter and passes on what it posts. Create it once the document
+        // has loaded, as creating a worker while an iframe's document is still
+        // being parsed occasionally fails.
+        const params = new URLSearchParams(location.search);
+        window.addEventListener('load', async () => {
+          // The URL of this document is unique to the test.
+          top.postMessage(await create_worker(params.get('worker_type'),
+                                              params.get('script_url'),
+                                              {name: location.href}), '*');
+        });
+    </script>
+</body>
+</html>

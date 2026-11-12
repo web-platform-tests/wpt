@@ -113,3 +113,22 @@ function url_string_test({name, url_string, allowed, expected,
     assert_equals(result, expected);
   }, `${name} - ${test_type}`);
 }
+
+// Tests whether a |worker_type| ("dedicated", "shared" or "service") worker
+// requested with |url_string|, i.e. the URL passed to the Worker or
+// SharedWorker constructor or to navigator.serviceWorker.register(), is allowed
+// by a policy of the document with the url source of |allowed| in |directive|.
+// Creates the worker in worker.sub.html and checks that it posts |expected|.
+function url_string_worker_test({name, worker_type, url_string, allowed,
+                                 expected, directive = "script-src"}) {
+  promise_test(async t => {
+    const source = await url_source(allowed);
+    const policy = directive == "script-src" ?
+      `script-src 'nonce-forinlinescript' ${source}` :
+      `script-src 'nonce-forinlinescript'; ${directive} ${source}`;
+
+    const result = await load_frame(t, get_support_url("header", "worker",
+        policy, {worker_type, script_url: url_string}));
+    assert_equals(result, expected);
+  }, `${name} - header`);
+}

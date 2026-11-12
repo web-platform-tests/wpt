@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test MSE handles H.264 open-GOP content with SEI recovery points.</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta name="timeout" content="long">
+    <link rel="author" title="Piotr Niełacny" href="mailto:piotr.nielacny@gmail.com"/>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="mediasource-util.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+    // Test that non-IDR H.264 frames with SEI recovery points are accepted
+    // by MSE as random access points after a seek/discontinuity.
+    //
+    // The key scenario: append ONLY the SEI recovery point segment (without
+    // appending the IDR segment first). This forces MSE to treat it as a new
+    // random access point. If the browser doesn't recognize SEI recovery
+    // points as keyframes, the frames will be silently dropped and the
+    // buffered range will be empty.
+    //
+    // Test data: open-GOP H.264 fMP4:
+    //   Init (h264-sei-recovery-init.mp4): moov with avcC
+    //   Fragment 2 (h264-sei-recovery-media.mp4): starts with SEI recovery point + non-IDR
+
+    mediasource_test(function (test, video, mediaSource) {
+        if (!MediaSource.isTypeSupported('video/mp4; codecs="avc1.640029"')) {
+            test.done();
+            return;
+        }
+
+        const videoSB = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.640029"');
+
+        let initSegment, mediaSegmentSEI;
+
+        // Load init segment and the SEI recovery point segment (skip the IDR segment).
+        MediaSourceUtil.loadBinaryData(test, "mp4/h264-sei-recovery-init.mp4", function(data) {
+            initSegment = data;
+            MediaSourceUtil.loadBinaryData(test, "mp4/h264-sei-recovery-media.mp4", function(data) {
+                mediaSegmentSEI = data;
+                appendInit();
+            });
+        });
+
+        function appendInit() {
+            videoSB.appendBuffer(initSegment);
+            videoSB.addEventListener("updateend", appendSEISegment, {once: true});
+        }
+
+        function appendSEISegment() {
+            // Append only the recovery point segment — no IDR segment first.
+            // MSE needs a random access point to start buffering. If the
+            // browser doesn't recognize the SEI recovery point as one,
+            // all frames will be dropped.
+            videoSB.appendBuffer(mediaSegmentSEI);
+            videoSB.addEventListener("updateend", verifyBuffered, {once: true});
+        }
+
+        function verifyBuffered() {
+            // If SEI recovery points are recognized as keyframes, the segment
+            // should be buffered. If not, buffered will be empty.
+            assert_greater_than(videoSB.buffered.length, 0,
+                "SEI recovery point segment should be buffered (not silently dropped)");
+
+            assert_greater_than(videoSB.buffered.end(0), 0.5,
+                "Buffered range should contain decoded frames from the recovery point segment");
+
+            test.done();
+        }
+    }, "H.264 SEI recovery point frames are accepted as random access points by MSE.");
+</script>
+</body>
+</html>

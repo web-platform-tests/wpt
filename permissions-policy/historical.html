@@ -5,23 +5,23 @@
 <script src="/resources/testharnessreport.js"></script>
 <body>
   <script>
-    // Test 1: document.featurePolicy API should not exist (replaced by document.permissionsPolicy)
-    test(() => {
-      assert_false(
-        "featurePolicy" in document,
-        "document.featurePolicy should not exist"
-      );
-    }, "document.featurePolicy should not be present (use document.permissionsPolicy instead)");
+    for (const name of ["featurePolicy", "permissionsPolicy"]) {
+      test(() => {
+        assert_false(name in document);
+      }, `document.${name} should not be present`);
 
-    // Test 2: HTMLIFrameElement.featurePolicy API should not exist (replaced by permissionsPolicy)
-    test(() => {
-      assert_false(
-        "featurePolicy" in HTMLIFrameElement.prototype,
-        "HTMLIFrameElement.prototype.featurePolicy should not exist"
-      );
-    }, "HTMLIFrameElement.prototype.featurePolicy should not be present");
+      test(() => {
+        assert_false(name in HTMLIFrameElement.prototype);
+      }, `HTMLIFrameElement.prototype.${name} should not be present`);
+    }
 
-    // Test 3: Permissions-Policy header takes precedence over Feature-Policy header
+    for (const name of ["FeaturePolicy", "PermissionsPolicy"]) {
+      test(() => {
+        assert_false(name in self);
+      }, `${name} interface should not be present`);
+    }
+
+    // Permissions-Policy header takes precedence over Feature-Policy header
     // The header file sets:
     //   Permissions-Policy: sync-xhr=*  (allows sync-xhr)
     //   Feature-Policy: sync-xhr 'none' (would block sync-xhr)
@@ -37,7 +37,7 @@
       );
     }, "Permissions-Policy header takes precedence over Feature-Policy header");
 
-    // Test 4: iframe allow attribute should work with Permissions Policy
+    // iframe allow attribute should work with Permissions Policy
     promise_test(async () => {
       const iframe = document.createElement("iframe");
       iframe.src = "resources/historical-iframe.html";

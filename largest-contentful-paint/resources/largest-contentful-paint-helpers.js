@@ -1,6 +1,116 @@
 const image_delay = 2000;
 const delay_pipe_value = image_delay / 1000;
 
+// ---------------------------------------------------------------------------
+// Entry filters
+// ---------------------------------------------------------------------------
+
+// Returns whether |entry| matches |filter|.
+//
+// |entry| is the LCP entry to check.
+// |filter| is undefined (any entry), an object with 'url' and/or 'id', or a
+// predicate function.
+const matchesFilter = (entry, filter) => {
+  if (filter === undefined)
+    return true;
+  if (typeof filter === 'function')
+    return filter(entry);
+  if ('url' in filter && entry.url.substr(0, 100) !== filter.url.substr(0, 100))
+    return false;
+  if ('id' in filter && entry.id !== filter.id)
+    return false;
+  return true;
+};
+
+// ---------------------------------------------------------------------------
+// Observing entries
+// ---------------------------------------------------------------------------
+
+// Resolves with the entries matching |filter|, including buffered entries.
+//
+// |filter| selects which entries to consider (see matchesFilter()).
+// |count| is the number of entries to wait for before settling (default 1).
+// |settleMs| is the silence window after the last entry (default 0).
+//
+// Use awaitEntry() to add a timeout.
+const observeLCP = (filter, {count = 1, settleMs = 0} = {}) => {
+  return new Promise(resolve => {
+    const entries = [];
+    let settle_id = null;
+    const observer = new PerformanceObserver(entryList => {
+      for (const entry of entryList.getEntries()) {
+        if (!matchesFilter(entry, filter))
+          continue;
+        entries.push(entry);
+        if (entries.length < count)
+          continue;
+        if (settle_id !== null)
+          clearTimeout(settle_id);
+        if (settleMs === 0) {
+          observer.disconnect();
+          resolve(entries);
+          return;
+        }
+        settle_id = step_timeout(() => {
+          observer.disconnect();
+          resolve(entries);
+        }, settleMs);
+      }
+    });
+    observer.observe({type: 'largest-contentful-paint', buffered: true});
+  });
+};
+
+// Awaits |entryPromise| in test |t|.
+//
+// |t| is the current test; its step_timeout bounds the wait.
+// |entryPromise| resolves with the awaited value.
+// |message| is the rejection message used on timeout.
+// |timeout| is the maximum wait in milliseconds (default 5000).
+const awaitEntry = async (t, entryPromise, message, timeout = 5000) => {
+  let timeout_id;
+  const timeoutPromise = new Promise((_, reject) => {
+    timeout_id = t.step_timeout(
+        () => reject(new DOMException(message, 'TimeoutError')), timeout);
+  });
+  try {
+    return await Promise.race([entryPromise, timeoutPromise]);
+  } finally {
+    clearTimeout(timeout_id);
+  }
+};
+
+// Registers a promise_test that fails if an LCP entry matching |filter| is
+// observed.
+//
+// |filter| selects which entries to consider (see matchesFilter()).
+// |duration| is the observation window in milliseconds (default 500).
+// |name| is the subtest name.
+const assertNoLCPEntry = (filter, {duration = 500, name} = {}) => {
+  promise_test(async t => {
+    const entries = [];
+    const observer = new PerformanceObserver(entryList => {
+      entries.push(...entryList.getEntries().filter(
+          entry => matchesFilter(entry, filter)));
+    });
+    observer.observe({type: 'largest-contentful-paint', buffered: true});
+    await new Promise(resolve => t.step_timeout(resolve, duration));
+    observer.disconnect();
+    assert_equals(entries.length, 0,
+        'Should not have observed an LCP entry; observed: ' +
+        entries.map(entry => entry.id || '(text)').join(', '));
+  }, name || `No LCP entry within ${duration}ms`);
+};
+
+// Registers the invisible-images test: unrendered images must not be
+// observable by LargestContentfulPaint.
+const assertInvisibleImagesNotObservable = () => {
+  assert_implements(window.LargestContentfulPaint,
+                    "LargestContentfulPaint is not implemented");
+  assertNoLCPEntry(entry => !!entry.url, {duration: 500,
+      name: 'Images with opacity: 0, visibility: hidden, or display: none are not observable by LargestContentfulPaint.'});
+};
+
 const await_with_timeout = async (delay, message, promise, cleanup = ()=>{}) => {
   let timeout_id;
   const timeout = new Promise((_, reject) => {

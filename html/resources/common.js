@@ -28,7 +28,7 @@ var HTML5_VOID_ELEMENTS = [
   'param', 'source', 'track', 'wbr'
 ];
 
-// https://html.spec.whatwg.org/multipage/multipage/forms.html#form-associated-element
+// https://html.spec.whatwg.org/multipage/forms.html#form-associated-element
 var HTML5_FORM_ASSOCIATED_ELEMENTS = [ 'button', 'fieldset', 'input',
         'object', 'output', 'select', 'textarea' ];
 

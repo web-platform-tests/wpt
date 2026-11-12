@@ -51,6 +51,10 @@ const CASES = [
    "ORB allows same-origin non-media segment but playback fails (not media)"],
   ["hls-nested-top-non-media-same-segment-cross.sub.m3u8", "error",
    "ORB blocks same-origin media playlist with cross-origin non-media segment"],
+  ["hls-cross-origin-unlabeled-segment.sub.m3u8", "played",
+   "ORB allows playing unlabeled cross-origin HLS segment"],
+  ["hls-cross-origin-unlabeled-playlist.sub.m3u8", "played",
+   "ORB allows playing unlabeled cross-origin media playlist"],
 ];
 
 setup(() => {

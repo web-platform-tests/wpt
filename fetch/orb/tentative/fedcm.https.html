@@ -1,0 +1,29 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>ORB doesn't block FedCM requests</title>
+<meta name="pac" content="/fedcm/support/proxy.sub.pac">
+<link rel="help" href="https://github.com/whatwg/fetch/pull/1755">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body>
+<script type="module">
+import {fedcm_test,
+        manifest_origin,
+        fedcm_get_and_select_first_account} from '/fedcm/support/fedcm-helper.sub.js';
+
+fedcm_test(async t => {
+  const cred = await fedcm_get_and_select_first_account(t, {
+    identity: {
+      providers: [{
+        configURL: `${manifest_origin}/fetch/orb/resources/fedcm-manifest.json`,
+        clientId: "1",
+        nonce: "2"
+      }]
+    },
+    mediation: "required"
+  });
+  assert_equals(cred.token, "token");
+}, "FedCM config, accounts, and client metadata responses that are nosniff JSON aren't blocked");
+</script>

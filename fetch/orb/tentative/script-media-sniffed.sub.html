@@ -1,0 +1,21 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>ORB allows non-media requests whose response sniffs as audio or video</title>
+<link rel="help" href="https://github.com/whatwg/fetch/pull/1755">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+setup({ allow_uncaught_exception: true });
+
+promise_test(async t => {
+  const script = document.createElement("script");
+  script.src = "http://{{domains[www1]}}:{{ports[http][0]}}/fetch/orb/resources/sound.mp3?pipe=header(Content-Type,)";
+  t.add_cleanup(() => script.remove());
+  await new Promise((resolve, reject) => {
+    script.onload = resolve;
+    script.onerror = () => reject(new Error("blocked"));
+    document.body.append(script);
+  });
+}, "ORB shouldn't block an opaque script response that sniffs as audio");
+</script>

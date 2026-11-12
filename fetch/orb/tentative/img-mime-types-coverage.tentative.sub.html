@@ -15,6 +15,15 @@
     "text/css",
     "image/svg+xml",
 
+    // Media MIME types that can't always be sniffed
+    "application/dash+xml",
+    "application/vnd.apple.mpegurl",
+    "audio/aac",
+    "audio/aacp",
+    "audio/mpeg",
+    "audio/mpegurl",
+    "text/vtt",
+
     // JavaScript MIME types
     "application/ecmascript",
     "application/javascript",
@@ -50,14 +59,12 @@
     "application/xml",
     "application/xhtml+xml",
 
-    "application/dash+xml",
     "application/gzip",
     "application/msexcel",
     "application/mspowerpoint",
     "application/msword",
     "application/msword-template",
     "application/pdf",
-    "application/vnd.apple.mpegurl",
     "application/vnd.ces-quickpoint",
     "application/vnd.ces-quicksheet",
     "application/vnd.ces-quickword",
@@ -83,12 +90,10 @@
     "application/x-protobuf",
     "application/x-protobuffer",
     "application/zip",
-    "audio/mpegurl",
     "multipart/byteranges",
     "multipart/signed",
     "text/event-stream",
     "text/csv",
-    "text/vtt",
 ]
 
   const get_url = (mime) => {

@@ -23,6 +23,34 @@ expected_block(
       t => orb_test(t, contentTypeOptions("nosniff")),
       message("ORB should block opaque response with empty Content-Type and nosniff")));
 
+expected_block(
+  `${path}/image.png`,
+  (orb_test, message) =>
+    promise_test(
+      t => orb_test(t, contentType("text/html"), contentTypeOptions("nosniff")),
+      message("ORB should block opaque image labeled with an opaque-response-blocklisted MIME type and nosniff")));
+
+expected_block(
+  `${path}/sound.mp3`,
+  (orb_test, message) =>
+    promise_test(
+      t => orb_test(t, contentType("application/json"), contentTypeOptions("nosniff")),
+      message("ORB should block opaque audio labeled with an opaque-response-blocklisted MIME type and nosniff")));
+
+expected_block(
+  `${path}/image.png`,
+  (orb_test, message) =>
+    promise_test(
+      t => orb_test(t, contentType("text/plain"), contentTypeOptions("nosniff")),
+      message("ORB should block opaque image labeled text/plain with nosniff")));
+
+expected_block(
+  `${path}/sound.mp3`,
+  (orb_test, message) =>
+    promise_test(
+      t => orb_test(t, contentType("text/plain"), contentTypeOptions("nosniff")),
+      message("ORB should block opaque audio labeled text/plain with nosniff")));
+
 expected_allow(
   `${path}/image.png`,
   (orb_test, message) =>

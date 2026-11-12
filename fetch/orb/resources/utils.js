@@ -23,7 +23,7 @@ function testElementInitiator(t, path, name) {
   t.add_cleanup(() => element.remove());
   return new Promise((resolve, reject) => {
     element.onerror = e => reject(new TypeError());
-    element.onload = resolve;
+    element.onload = element.onloadedmetadata = resolve;
 
     document.body.appendChild(element);
   });
@@ -63,8 +63,15 @@ function testRunAll(file, testCallback, adapter, options) {
     testcase(testScriptInitiator, `<script src=${name}>`, options.onlyFetch || options.skip.includes("script")),
   ].filter(({skip}) => !skip)
   .forEach(({test, message}) => {
-    testCallback((t, ...args) => adapter(t, runTest(t, test, file, options, ...args), message), header => `${header}: ${message}`);
+    testCallback((t, ...args) => adapter(t, runTest(t, test, file, options, ...args), message, test), header => `${header}: ${message}`);
   });
+}
+
+function expectBlocked(t, promise, message, test) {
+  if (test === testFetchNoCors) {
+    return promise.then(response => assert_equals(response.type, "opaque", message));
+  }
+  return promise_rejects_js(t, TypeError, promise, message);
 }
 
 function expected_block(file, testCallback, options = {}) {
@@ -72,7 +79,7 @@ function expected_block(file, testCallback, options = {}) {
     onlyFetch: !self.GLOBAL.isWindow(),
     skip: []
   };
-  testRunAll(file, testCallback, (t, promise, message) => promise_rejects_js(t, TypeError, promise, message), { ...defaultOptions, ...options });
+  testRunAll(file, testCallback, expectBlocked, { ...defaultOptions, ...options });
 }
 
 function expected_allow(file, testCallback, options = {}) {
@@ -97,7 +104,7 @@ function expected_block_fetch(file, testCallback, options = {}) {
     skip: [],
     headers: null,
   };
-  testRunAll(file, testCallback, (t, promise, message) => promise_rejects_js(t, TypeError, promise, message), { ...defaultOptions, ...options, onlyFetch: true });
+  testRunAll(file, testCallback, expectBlocked, { ...defaultOptions, ...options, onlyFetch: true });
 }
 
 function hlsSupported() {

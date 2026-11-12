@@ -1,0 +1,40 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin-Resource-Policy doesn't block FedCM requests</title>
+<meta name="pac" content="/fedcm/support/proxy.sub.pac">
+<link rel="help" href="https://github.com/whatwg/fetch/pull/1966">
+<link rel="help" href="https://github.com/w3c-fedid/FedCM/pull/852">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body>
+<script type="module">
+import {fedcm_test,
+        request_options_with_mediation_required,
+        alt_request_options_with_mediation_required,
+        select_manifest,
+        fedcm_get_and_select_first_account} from './support/fedcm-helper.sub.js';
+
+function corp_config(options, value) {
+  const provider = options.identity.providers[0];
+  provider.configURL += `?pipe=header(Cross-Origin-Resource-Policy,${value})`;
+  return options;
+}
+
+for (const value of ["same-origin", "same-site"]) {
+  fedcm_test(async t => {
+    const options = corp_config(request_options_with_mediation_required(), value);
+    const cred = await fedcm_get_and_select_first_account(t, options);
+    assert_equals(cred.token, "token");
+  }, `A config response with \`Cross-Origin-Resource-Policy: ${value}\` isn't blocked`);
+
+  fedcm_test(async t => {
+    const options = alt_request_options_with_mediation_required(
+        `manifest_corp_${value.replace("-", "_")}.json`);
+    await select_manifest(t, options);
+    const cred = await fedcm_get_and_select_first_account(t, options);
+    assert_equals(cred.token, "token");
+  }, `Accounts and client metadata responses from a cross-site IDP with \`Cross-Origin-Resource-Policy: ${value}\` aren't blocked`);
+}
+</script>

@@ -1,0 +1,113 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>ORB and opaque fetch() responses passed on by a service worker</title>
+<link rel="help" href="https://github.com/whatwg/fetch/pull/1755">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/media.js"></script>
+<body>
+<script>
+const scope = "../resources/service-worker-scope/";
+const remote = `${get_host_info().HTTPS_REMOTE_ORIGIN}/fetch/orb/resources/`;
+let worker;
+
+promise_setup(async () => {
+  const old = await navigator.serviceWorker.getRegistration(scope);
+  if (old) {
+    await old.unregister();
+  }
+  const registration =
+      await navigator.serviceWorker.register("../resources/service-worker.js", { scope });
+  add_completion_callback(() => registration.unregister());
+  worker = registration.installing;
+  await new Promise(resolve => {
+    worker.addEventListener("statechange", () => {
+      if (worker.state === "activated") {
+        resolve();
+      }
+    });
+  });
+});
+
+function remoteURL(path, pipe) {
+  const url = new URL(path, remote);
+  url.searchParams.set("token", token());
+  if (pipe) {
+    url.searchParams.set("pipe", pipe);
+  }
+  return url.href;
+}
+
+async function load(t, name, path, pipe) {
+  const frame = document.createElement("iframe");
+  frame.src = `${scope}blank`;
+  t.add_cleanup(() => frame.remove());
+  await new Promise(resolve => {
+    frame.onload = resolve;
+    document.body.append(frame);
+  });
+  const element = frame.contentDocument.createElement(name);
+  element.src = `proxy?url=${encodeURIComponent(remoteURL(path, pipe))}`;
+  await new Promise((resolve, reject) => {
+    element.onload = element.onloadedmetadata = resolve;
+    element.onerror = () => reject(new TypeError());
+    frame.contentDocument.body.append(element);
+  });
+  return { frame, element };
+}
+
+function fetchInWorker(path) {
+  return new Promise(resolve => {
+    navigator.serviceWorker.addEventListener("message", e => resolve(e.data), { once: true });
+    worker.postMessage(remoteURL(path));
+  });
+}
+
+promise_test(async t => {
+  const { element } = await load(t, "img", "image.png");
+  assert_greater_than(element.naturalWidth, 0);
+}, "An opaque image/png fetch() response allowed by ORB keeps its body");
+
+promise_test(async t => {
+  const { frame } = await load(t, "script", "script.js");
+  assert_equals(frame.contentWindow.fn(), 42);
+}, "An opaque text/javascript fetch() response allowed by ORB keeps its body");
+
+promise_test(async t => {
+  const { frame } = await load(t, "script", "script.js", "header(Content-Type,application/pdf)");
+  assert_equals(frame.contentWindow.fn, undefined);
+}, "An opaque application/pdf fetch() response blocked by ORB has no body");
+
+promise_test(async t => {
+  const { element } = await load(t, "video", getVideoURI("/media/2x2-green"),
+                                 "header(Content-Type,application/octet-stream)");
+  assert_equals(element.videoWidth, 2);
+}, "An opaque fetch() response that sniffs as video keeps its body");
+
+promise_test(async t => {
+  const frame = document.createElement("iframe");
+  frame.src = `${scope}blank`;
+  t.add_cleanup(() => frame.remove());
+  await new Promise(resolve => {
+    frame.onload = resolve;
+    document.body.append(frame);
+  });
+  const video = frame.contentDocument.createElement("video");
+  video.preload = "metadata";
+  const url = new URL(remoteURL(getVideoURI("/media/movie_300")));
+  url.searchParams.set("passthrough", "");
+  video.src = url.href;
+  const error = new Promise((_, reject) => video.onerror = () => reject(new TypeError()));
+  frame.contentDocument.body.append(video);
+  await Promise.race([new Promise(resolve => video.onloadedmetadata = resolve), error]);
+  video.currentTime = 250;
+  await Promise.race([new Promise(resolve => video.onseeked = resolve), error]);
+  assert_approx_equals(video.currentTime, 250, 1);
+}, "A cross-origin video passed through a service worker with fetch(event.request) can seek");
+
+promise_test(async () => {
+  assert_object_equals(await fetchInWorker("data.json"), { type: "opaque" });
+}, "fetch() resolves with an opaque response when ORB blocks it");
+</script>

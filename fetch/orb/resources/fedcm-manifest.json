@@ -1,0 +1,6 @@
+{
+  "accounts_endpoint": "/fedcm/support/accounts.py?pipe=header(X-Content-Type-Options,nosniff)",
+  "client_metadata_endpoint": "/fedcm/support/client_metadata.py?pipe=header(X-Content-Type-Options,nosniff)",
+  "id_assertion_endpoint": "/fedcm/support/token.py",
+  "login_url": "/fedcm/support/login.html"
+}

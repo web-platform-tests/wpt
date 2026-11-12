@@ -74,3 +74,19 @@ promise_test(async t => {
   role = await test_driver.get_computed_role(control);
   assert_equals(role, "switch");
 }, `Connected <input type=checkbox switch>: adding type attribute`);
+
+promise_test(async t => {
+  const control = document.createElement("input");
+  t.add_cleanup(() => control.remove());
+  control.type = "checkbox";
+  control.switch = true;
+  document.body.append(control);
+  let role = await test_driver.get_computed_role(control);
+  assert_equals(role, "switch");
+  control.setAttribute("role", "checkbox");
+  role = await test_driver.get_computed_role(control);
+  assert_equals(role, "checkbox");
+  control.removeAttribute("role");
+  role = await test_driver.get_computed_role(control);
+  assert_equals(role, "switch");
+}, `Connected <input type=checkbox switch>: role attribute overrides switch`);

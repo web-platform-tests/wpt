@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Named items: property names don't shadow</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-document-nameditem">
+<link rel="help" href="https://webidl.spec.whatwg.org/#dfn-named-property-visibility">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<!-- interface Document -->
+<img name="constructor">
+<img name="currentScript">
+<img name="forms">
+<img name="onreadystatechange">
+<form name="title"></form>
+<form name="cookie"></form>
+<iframe name="body"></iframe>
+
+<!-- interface Node -->
+<img name="firstChild">
+<img name="isSameNode">
+
+<!-- interface EventTarget -->
+<img name="addEventListener">
+
+<!-- Object.prototype -->
+<img name="__proto__">
+<img name="toString">
+
+<!-- [LegacyUnforgeable] own property -->
+<img name="location">
+
+<img name="foobar">
+
+<script id="this-script">
+test(function() {
+  assert_equals(document.constructor, HTMLDocument);
+}, "document.constructor is not shadowed");
+
+test(function() {
+  assert_equals(document.currentScript, document.getElementById("this-script"));
+}, "document.currentScript is not shadowed");
+
+test(function() {
+  assert_true(document.forms instanceof HTMLCollection);
+  assert_equals(document.forms.length, 2);
+}, "document.forms is not shadowed");
+
+test(function() {
+  assert_equals(document.onreadystatechange, null);
+}, "document.onreadystatechange is not shadowed");
+
+test(function() {
+  assert_equals(document.title, "Named items: property names don't shadow");
+}, "document.title is not shadowed");
+
+test(function(t) {
+  const original = document.title;
+  t.add_cleanup(() => { document.title = original; });
+  document.title = "foo";
+  assert_equals(document.title, "foo");
+  assert_equals(document.querySelector("title").textContent, "foo");
+}, "Setting document.title uses the setter");
+
+test(function() {
+  assert_equals(typeof document.cookie, "string");
+}, "document.cookie is not shadowed");
+
+test(function() {
+  assert_equals(document.body, document.querySelector("body"));
+}, "document.body is not shadowed by an iframe");
+
+test(function() {
+  assert_true(document.firstChild instanceof DocumentType);
+  assert_equals(document.firstChild, document.childNodes[0]);
+}, "document.firstChild is not shadowed");
+
+test(function() {
+  assert_true(document.isSameNode instanceof Function);
+  assert_true(document.isSameNode(document));
+}, "document.isSameNode() is not shadowed");
+
+test(function() {
+  assert_equals(document.addEventListener, EventTarget.prototype.addEventListener);
+}, "document.addEventListener() is not shadowed");
+
+test(function() {
+  assert_equals(document.__proto__, HTMLDocument.prototype);
+}, "document.__proto__ is not shadowed");
+
+test(function() {
+  assert_equals(document.toString, Object.prototype.toString);
+}, "document.toString() is not shadowed");
+
+test(function() {
+  assert_true(document.location instanceof Location);
+}, "document.location is not shadowed");
+
+test(function() {
+  assert_equals(Object.getOwnPropertyDescriptor(document, "forms"), undefined, "forms");
+  assert_equals(Object.getOwnPropertyDescriptor(document, "body"), undefined, "body");
+  assert_true(Object.getOwnPropertyDescriptor(document, "foobar").value instanceof HTMLImageElement, "foobar");
+}, "Object.getOwnPropertyDescriptor() only returns visible named properties");
+
+test(function() {
+  const names = Object.getOwnPropertyNames(document);
+  assert_false(names.includes("forms"), "forms");
+  assert_false(names.includes("body"), "body");
+  assert_false(names.includes("toString"), "toString");
+  assert_true(names.includes("foobar"), "foobar");
+}, "Object.getOwnPropertyNames() only includes visible named properties");
+
+test(function() {
+  assert_true(delete document.forms);
+  assert_true(document.forms instanceof HTMLCollection);
+}, "delete document.forms returns true");
+
+test(function() {
+  assert_true(document.foobar instanceof HTMLImageElement);
+}, "document.foobar works (sanity check)");
+
+for (const proto of [Document.prototype, Node.prototype, EventTarget.prototype, Object.prototype]) {
+  test(function(t) {
+    const name = "wptExpando";
+    const img = document.createElement("img");
+    img.name = name;
+    t.add_cleanup(() => {
+      delete proto[name];
+      img.remove();
+    });
+    proto[name] = "expando";
+    document.querySelector("body").append(img);
+    assert_equals(document[name], "expando", "before delete");
+    delete proto[name];
+    assert_equals(document[name], img, "after delete");
+  }, `Expando on ${proto.constructor.name}.prototype is not shadowed`);
+}
+</script>

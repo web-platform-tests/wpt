@@ -1,0 +1,271 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>img select an image source with 2D sizes: optional preference for already-available higher-density image and zoom re-selection</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#select-an-image-source-from-a-source-set">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#normalise-the-source-densities">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#reacting-to-environment-changes">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+const dpr = window.devicePixelRatio;
+const dataGif = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+let nextId = 0;
+
+function imageUrl(label) {
+  return new URL(`/images/green-2x2.png?${label}-${++nextId}`, location.href).href;
+}
+
+// Returns `${w}w ${h}h` with exact aspect ratio `aspectW : aspectH` such that on a box
+// with concreteWidth = `unitCount * aspectW`, the normalized density is `u / unitCount`.
+function pair(mult, aspectW, aspectH, unitCount, ratio = dpr) {
+  const u = mult >= 1
+    ? Math.ceil(unitCount * mult * ratio)
+    : Math.max(1, Math.floor(unitCount * mult * ratio));
+  return `${u * aspectW}w ${u * aspectH}h`;
+}
+
+async function loadImg(t, attrs) {
+  const img = document.createElement("img");
+  t.add_cleanup(() => img.remove());
+  const loaded = new Promise((resolve, reject) => {
+    const timer = t.step_timeout(() => reject(new Error("Timed out waiting for img load")), 2000);
+    img.addEventListener("load", () => {
+      clearTimeout(timer);
+      resolve();
+    }, { once: true });
+    img.addEventListener("error", () => {
+      clearTimeout(timer);
+      reject(new Error("img load error"));
+    }, { once: true });
+  });
+  for (const [name, value] of Object.entries(attrs)) {
+    img.setAttribute(name, value);
+  }
+  document.body.appendChild(img);
+  await loaded;
+  return img;
+}
+
+promise_test(async t => {
+  const uncached1x = imageUrl("2d-uncached-1x");
+  const cached2x = imageUrl("2d-cached-2x");
+  const uncached4x = imageUrl("2d-uncached-4x");
+
+  await loadImg(t, { src: cached2x });
+
+  // cover 512px 512px with 3:2 aspect ratio has concreteWidth = 768px = 256 * 3.
+  // The 2048px fallback ensures 1D fallback sees cached2x below DPR and picks uncached4x.
+  const img = await loadImg(t, {
+    sizes: "cover 512px 512px, 2048px",
+    srcset: `${uncached1x} ${pair(1, 3, 2, 256)}, ${cached2x} ${pair(2, 3, 2, 256)}, ${uncached4x} ${pair(4, 3, 2, 256)}`,
+  });
+  assert_equals(img.currentSrc, cached2x);
+  assert_equals(performance.getEntriesByName(uncached1x).length, 0);
+  assert_equals(performance.getEntriesByName(uncached4x).length, 0);
+}, "2D sizes with h descriptors: prefers already-loaded higher-density candidate over uncached DPR-matching candidate");
+
+promise_test(async t => {
+  const uncached1x = imageUrl("2d-data-uncached-1x");
+  const uncached4x = imageUrl("2d-data-uncached-4x");
+
+  const img = await loadImg(t, {
+    sizes: "contain 1024px 512px, 2048px",
+    srcset: `${uncached1x} ${pair(1, 1, 1, 512)}, ${dataGif} ${pair(2, 1, 1, 512)}, ${uncached4x} ${pair(4, 1, 1, 512)}`,
+  });
+  assert_equals(img.currentSrc, dataGif);
+  assert_equals(performance.getEntriesByName(uncached1x).length, 0);
+  assert_equals(performance.getEntriesByName(uncached4x).length, 0);
+}, "2D sizes with h descriptors: prefers higher-density data: URL candidate over uncached DPR-matching candidate");
+
+promise_test(async t => {
+  const uncached1x = imageUrl("2d-pic-uncached-1x");
+  const cached2x = imageUrl("2d-pic-cached-2x");
+  const uncached4x = imageUrl("2d-pic-uncached-4x");
+  const uncachedFallback = imageUrl("2d-pic-fallback");
+
+  await loadImg(t, { src: cached2x });
+
+  const picture = document.createElement("picture");
+  t.add_cleanup(() => picture.remove());
+  const source = document.createElement("source");
+  source.sizes = "cover 512px 512px, 2048px";
+  source.srcset = `${uncached1x} ${pair(1, 3, 2, 256)}, ${cached2x} ${pair(2, 3, 2, 256)}, ${uncached4x} ${pair(4, 3, 2, 256)}`;
+  const img = document.createElement("img");
+  const loaded = new Promise((resolve, reject) => {
+    const timer = t.step_timeout(() => reject(new Error("Timed out waiting for picture img load")), 2000);
+    img.addEventListener("load", () => {
+      clearTimeout(timer);
+      resolve();
+    }, { once: true });
+    img.addEventListener("error", () => {
+      clearTimeout(timer);
+      reject(new Error("picture img error"));
+    }, { once: true });
+  });
+  img.src = uncachedFallback;
+  picture.append(source, img);
+  document.body.appendChild(picture);
+  await loaded;
+
+  assert_equals(img.currentSrc, cached2x);
+  assert_equals(performance.getEntriesByName(uncached1x).length, 0);
+  assert_equals(performance.getEntriesByName(uncached4x).length, 0);
+  assert_equals(performance.getEntriesByName(uncachedFallback).length, 0);
+}, "picture with 2D sizes: prefers already-loaded higher-density source candidate over uncached DPR-matching candidate");
+
+promise_test(async t => {
+  const uncached1x = imageUrl("2d-preload-uncached-1x");
+  const preloaded2x = imageUrl("2d-preloaded-2x");
+  const uncached4x = imageUrl("2d-preload-uncached-4x");
+
+  const link = document.createElement("link");
+  t.add_cleanup(() => link.remove());
+  assert_implements(link.relList && link.relList.supports("preload"), "preload not supported");
+  link.rel = "preload";
+  link.as = "image";
+  // Preload at cover 512px 512px where concreteWidth = 1024px (2:1 aspect ratio) selects preloaded2x.
+  link.imageSizes = "cover 512px 512px, 128px";
+  link.imageSrcset = `${uncached1x} ${pair(0.5, 2, 1, 512)}, ${preloaded2x} ${pair(1, 2, 1, 512)}, ${uncached4x} ${pair(2, 2, 1, 512)}`;
+  const linkLoaded = new Promise((resolve, reject) => {
+    const timer = t.step_timeout(() => reject(new Error("Timed out waiting for preload")), 2000);
+    link.addEventListener("load", () => {
+      clearTimeout(timer);
+      resolve();
+    }, { once: true });
+    link.addEventListener("error", () => {
+      clearTimeout(timer);
+      reject(new Error("preload error"));
+    }, { once: true });
+  });
+  document.head.appendChild(link);
+  await linkLoaded;
+
+  // On contain 512px 512px, concreteWidth halves to 512px, so uncached1x is 1*dpr, preloaded2x is 2*dpr, and uncached4x is 4*dpr.
+  const img = await loadImg(t, {
+    sizes: "contain 512px 512px, 2048px",
+    srcset: `${uncached1x} ${pair(0.5, 2, 1, 512)}, ${preloaded2x} ${pair(1, 2, 1, 512)}, ${uncached4x} ${pair(2, 2, 1, 512)}`,
+  });
+  assert_equals(img.currentSrc, preloaded2x);
+  assert_equals(performance.getEntriesByName(uncached1x).length, 0);
+  assert_equals(performance.getEntriesByName(uncached4x).length, 0);
+}, "prefers higher-density 2D candidate preloaded via <link rel=preload imagesizes imagesrcset>");
+
+promise_test(async t => {
+  const uncachedSmall = imageUrl("2d-shrink-uncached");
+  const loadedLarge = imageUrl("2d-shrink-loaded");
+  const uncachedUltra = imageUrl("2d-shrink-ultra");
+
+  // With 2:1 aspect ratio on cover 512px 512px, concreteWidth = 1024px, so loadedLarge (1x*dpr) is selected.
+  const img = await loadImg(t, {
+    sizes: "cover 512px 512px, 128px",
+    srcset: `${uncachedSmall} ${pair(0.5, 2, 1, 512)}, ${loadedLarge} ${pair(1, 2, 1, 512)}, ${uncachedUltra} ${pair(2, 2, 1, 512)}`,
+  });
+  assert_equals(img.currentSrc, loadedLarge);
+  assert_equals(performance.getEntriesByName(uncachedSmall).length, 0);
+  assert_equals(performance.getEntriesByName(uncachedUltra).length, 0);
+
+  // Switching from cover to contain halves concreteWidth to 512px, making uncachedSmall 1x*dpr and loadedLarge 2x*dpr.
+  // Mutating `sizes` runs `update the image data` with `maybe omit events` false, so the async microtask cache hit
+  // in the `list of available images` queues `load` without fetching `uncachedSmall` or `uncachedUltra`.
+  // The 2048px fallback ensures that if `contain 512px 512px` were ignored, `loadedLarge` would fall below DPR
+  // and `uncachedUltra` would be fetched instead.
+  const cachedReload = new Promise((resolve, reject) => {
+    const timer = t.step_timeout(() => reject(new Error("Timed out waiting for cached 2D resize load")), 2000);
+    img.addEventListener("load", () => {
+      clearTimeout(timer);
+      resolve();
+    }, { once: true });
+    img.addEventListener("error", () => {
+      clearTimeout(timer);
+      reject(new Error("unexpected error on cached 2D resize"));
+    }, { once: true });
+  });
+  img.sizes = "contain 512px 512px, 2048px";
+  await cachedReload;
+  await loadImg(t, { src: imageUrl("2d-shrink-sentinel") });
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+  assert_true(img.complete);
+  assert_equals(img.currentSrc, loadedLarge);
+  assert_equals(performance.getEntriesByName(uncachedSmall).length, 0);
+  assert_equals(performance.getEntriesByName(uncachedUltra).length, 0);
+}, "keeps element's already-loaded wider 2D candidate when sizes fit changes from cover to contain");
+
+promise_test(async t => {
+  const uncached1x = imageUrl("2d-auto-uncached-1x");
+  const cached2x = imageUrl("2d-auto-cached-2x");
+  const uncached4x = imageUrl("2d-auto-uncached-4x");
+
+  await loadImg(t, { src: cached2x });
+
+  // On a 512px x 128px box with object-fit: contain and 1:1 h descriptors, 2D concreteWidth = 128px
+  // (cached2x is 2x*dpr >= dpr), whereas 1D sizes="auto" uses 512px (cached2x is 0.5x*dpr < dpr).
+  const img = await loadImg(t, {
+    loading: "lazy",
+    sizes: "auto",
+    style: "width: 512px; height: 128px; object-fit: contain",
+    srcset: `${uncached1x} ${pair(1, 1, 1, 128)}, ${cached2x} ${pair(2, 1, 1, 128)}, ${uncached4x} ${pair(4, 1, 1, 128)}`,
+  });
+  assert_equals(img.currentSrc, cached2x);
+  assert_equals(performance.getEntriesByName(uncached1x).length, 0);
+  assert_equals(performance.getEntriesByName(uncached4x).length, 0);
+
+  // Switching computed 'object-fit' from contain to scale-down sets `maybe omit events` and keeps `cached2x`
+  // without firing `load` or fetching `uncached1x`.
+  let unexpectedEvent = false;
+  img.onload = img.onerror = () => { unexpectedEvent = true; };
+  img.style.objectFit = "scale-down";
+  img.getBoundingClientRect();
+  await loadImg(t, { src: imageUrl("2d-auto-sentinel") });
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  assert_false(unexpectedEvent, "object-fit change keeping same cached URL must omit load");
+  assert_equals(img.currentSrc, cached2x);
+  assert_equals(performance.getEntriesByName(uncached1x).length, 0);
+}, "sizes='auto' with object-fit: contain prefers already-loaded higher-density 2D candidate");
+
+promise_test(async t => {
+  const u1 = imageUrl("2d-dyn-zoom-1x");
+  const u2 = imageUrl("2d-dyn-zoom-2x");
+  const u4 = imageUrl("2d-dyn-zoom-4x");
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+  await new Promise(resolve => {
+    iframe.addEventListener("load", resolve, { once: true });
+    iframe.srcdoc = `<!doctype html>
+      <img sizes="cover 512px 512px, 2048px"
+           srcset="${u1} ${pair(1, 3, 2, 256)}, ${u2} ${pair(2, 3, 2, 256)}, ${u4} ${pair(4, 3, 2, 256)}">`;
+  });
+  const img = iframe.contentDocument.querySelector("img");
+  assert_equals(img.currentSrc, u1);
+
+  iframe.style.zoom = "2";
+  iframe.offsetWidth;
+  assert_equals(iframe.contentWindow.devicePixelRatio, 2 * dpr);
+  await t.step_wait(() => img.currentSrc === u2, "img re-selected the 2x 2D candidate", 1500);
+}, "dynamic zoom change on the iframe re-selects the 2D sizes + h descriptor image source");
+
+promise_test(async t => {
+  const u1 = imageUrl("2d-dyn-vh-small");
+  const u2 = imageUrl("2d-dyn-vh-large");
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  iframe.style.cssText = "width: 128px; height: 64px; border: 0";
+  document.body.appendChild(iframe);
+  await new Promise(resolve => {
+    iframe.addEventListener("load", resolve, { once: true });
+    iframe.srcdoc = `<!doctype html>
+      <img sizes="cover 100vw 100vh, 2048px"
+           srcset="${u1} ${pair(1, 1, 1, 128)}, ${u2} ${pair(1, 1, 1, 256)}">`;
+  });
+  const img = iframe.contentDocument.querySelector("img");
+  // In the 128x64 iframe, cover 100vw 100vh = 128px -> u1 (1x DPR); 1D 2048px would pick u2.
+  assert_equals(img.currentSrc, u1);
+
+  // Increasing iframe height to 256px increases 100vh to 256px -> concreteWidth = 256px -> u2.
+  iframe.style.height = "256px";
+  iframe.offsetHeight;
+  await t.step_wait(() => img.currentSrc === u2, "img re-selected the 256px 2D candidate on iframe height resize", 1500);
+}, "dynamic iframe viewport height change re-selects the 2D sizes + h descriptor image source");
+</script>

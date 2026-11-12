@@ -6,9 +6,9 @@
   test(function() {
     var wildcard_origin = 'https:';
     assert_array_equals(
-      document.permissionsPolicy.getAllowlistForFeature('fullscreen'),
+      document.featurePolicy.getAllowlistForFeature('fullscreen'),
       [wildcard_origin]);
-    assert_true(document.permissionsPolicy.allowsFeature('fullscreen'));
+    assert_true(document.featurePolicy.allowsFeature('fullscreen'));
   }, 'Test scheme only policy works as expected');
   </script>
 </body>

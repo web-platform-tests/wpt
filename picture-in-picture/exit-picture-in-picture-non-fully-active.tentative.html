@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<title>exitPictureInPicture() on a document that is not fully active</title>
+<meta name="timeout" content="long">
+<link rel="help" href="https://w3c.github.io/picture-in-picture/#dom-document-exitpictureinpicture">
+<link rel="help" href="https://github.com/w3c/picture-in-picture/pull/260">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body></body>
+<script>
+'use strict';
+
+const HELPER = '/picture-in-picture/resources/unload-document-helper.html';
+
+function loadIframe(src) {
+  return new Promise(resolve => {
+    const iframe = document.createElement('iframe');
+    iframe.addEventListener('load', () => resolve(iframe), { once: true });
+    iframe.src = src;
+    document.body.appendChild(iframe);
+  });
+}
+
+promise_test(async t => {
+  const iframe = await loadIframe(HELPER);
+  t.add_cleanup(() => iframe.remove());
+  const video = await iframe.contentWindow.videoReady;
+
+  await test_driver.bless('enter Picture-in-Picture from iframe', null,
+                          iframe.contentWindow);
+  const pipWindow = await video.requestPictureInPicture();
+  assert_equals(iframe.contentDocument.pictureInPictureElement, video,
+                'pictureInPictureElement is set inside the iframe document');
+
+  // Steal the references needed once the iframe is gone.
+  const iframeDocument = iframe.contentDocument;
+  const DOMExceptionCtor = iframe.contentWindow.DOMException;
+
+  // No longer fully active. exitPictureInPicture() is called in the same
+  // task, so the promise must settle from the synchronous checks; nothing
+  // queued for the iframe's document can run anymore.
+  iframe.remove();
+  const exitPromise = iframeDocument.exitPictureInPicture();
+
+  await promise_rejects_dom(
+      t, 'InvalidStateError', DOMExceptionCtor, exitPromise,
+      'exitPictureInPicture() rejects on a document that is not fully active');
+
+  await t.step_wait(
+      () => pipWindow.width === 0 && pipWindow.height === 0,
+      'pipWindow.width and pipWindow.height become 0 after the iframe is ' +
+      'removed');
+  assert_equals(iframeDocument.pictureInPictureElement, null,
+                'the removed iframe\'s document no longer has a ' +
+                'pictureInPictureElement');
+}, 'exitPictureInPicture() called right after removing the iframe rejects ' +
+   'with InvalidStateError');
+</script>

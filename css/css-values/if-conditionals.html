@@ -2,6 +2,7 @@
 <title>CSS Values and Units Test: CSS inline if() function</title>
 <meta name="assert" content="Test inline if() function">
 <link rel="help" href="https://drafts.csswg.org/css-values-5/#if-notation">
+<link rel="help" href="https://drafts.csswg.org/css-variables-1/#serializing-custom-props">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -115,8 +116,8 @@
   test_if_with_custom_properties('if(  style(--x)  : true_value; )', [['--x', '3']], 'true_value');
   test_if_with_custom_properties('if(style(--x: 3): true_value;)', [['--x', '3']], 'true_value');
   test_if_with_custom_properties('if(style(--x: 0): true_value;)', [['--x', '0']], 'true_value');
-  test_if_with_custom_properties('if(style(--x: 0): ;)', [['--x', '0']], '');
-  test_if_with_custom_properties('if(style(--x: 0): )', [['--x', '0']], '');
+  test_if_with_custom_properties('if(style(--x: 0): ;)', [['--x', '0']], ' ');
+  test_if_with_custom_properties('if(style(--x: 0): )', [['--x', '0']], ' ');
   test_if_with_custom_properties('if(style(--x: blue): true_value;)', [['--x', 'blue']], 'true_value');
   test_if_with_custom_properties('if(style(--x: 3): true_value; else: false_value)', [['--x', '3']], 'true_value');
   test_if_with_custom_properties('if(style(--non-existent: var(--non-existent)): true_value; else: false_value)', [], 'false_value');
@@ -164,11 +165,11 @@
   test_if_with_custom_properties(`if(style(--x: 0): true_value;
           else: )`,
         [['--x', '3']],
-        '');
+        ' ');
   test_if_with_custom_properties(`if(style(--x: 3): ;
           else: false_value)`,
         [['--x', '3']],
-        '');
+        ' ');
   test_if_with_custom_properties(`if(style(--non-existent: 0): true_value;
           else: false_value)`,
         [['--x', '3']],
@@ -752,17 +753,17 @@
         [['--x', '3'], ['--y', 'green'], ['--z', '11px']],
     'false_value');
 
-  // IACVT
-  test_if_with_custom_properties('if(style(--x: 0): true_value;)', [['--x', '3']], '');
-  test_if_with_custom_properties('if(style(--non-existent): true_value;)', [['--x', '3']], '');
-  test_if_with_custom_properties('if(style(--non-existent: 3): true_value;)', [['--x', '3']], '');
-  test_if_with_custom_properties('if(style(--invalid): value)', [], '');
-  test_if_with_custom_properties('if(style(--invalid): var(--x))', [['--x', 'true_value']], '');
+  // No matching branch produces an empty token stream, not an invalid value.
+  test_if_with_custom_properties('if(style(--x: 0): true_value;)', [['--x', '3']], ' ');
+  test_if_with_custom_properties('if(style(--non-existent): true_value;)', [['--x', '3']], ' ');
+  test_if_with_custom_properties('if(style(--non-existent: 3): true_value;)', [['--x', '3']], ' ');
+  test_if_with_custom_properties('if(style(--invalid): value)', [], ' ');
+  test_if_with_custom_properties('if(style(--invalid): var(--x))', [['--x', 'true_value']], ' ');
   test_if_with_custom_properties(`if(style(--x: 1): value1;
           style(--y: green): value2;
           style(--z: 3px): value3;)`,
         [['--x', '3'], ['--y', 'red'], ['--z', '10px']],
-        '');
+        ' ');
 
   // Equality of attr-tainted if()
   test_if_with_custom_properties('if(style(--x: attr(data-attr type(*))): true_value; else: false_value)', [['--x', 'attr']], 'true_value');

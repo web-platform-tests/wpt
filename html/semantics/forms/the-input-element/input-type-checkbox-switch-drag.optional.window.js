@@ -46,29 +46,20 @@ promise_test(async t => {
   const input = createSwitch(t);
   const events = recordEvents(input);
 
-  await drag(input, [0.15, 0.5, 0.85]);
+  await drag(input, [0.15, 0.5, 0.85, 1.5]);
   assert_true(input.checked);
   assert_array_equals(events, ["click", "input", "change"]);
-}, "Dragging the thumb to the other end toggles the switch");
+}, "Dragging the thumb to the other end and releasing outside the switch toggles it");
 
 promise_test(async t => {
   const input = createSwitch(t);
   input.checked = true;
   const events = recordEvents(input);
 
-  await drag(input, [0.85, 0.5, 0.15]);
+  await drag(input, [0.85, 0.5, 0.15, -0.5]);
   assert_false(input.checked);
   assert_array_equals(events, ["click", "input", "change"]);
-}, "Dragging the thumb of a switch that is on to the other end toggles the switch");
-
-promise_test(async t => {
-  const input = createSwitch(t);
-  const events = recordEvents(input);
-
-  await drag(input, [0.15, 0.5, 0.85, 1.5]);
-  assert_true(input.checked);
-  assert_array_equals(events, ["click", "input", "change"]);
-}, "Dragging the thumb to the other end and releasing outside the switch toggles the switch");
+}, "Dragging the thumb of a switch that is on to the other end and releasing outside the switch toggles it");
 
 promise_test(async t => {
   const input = createSwitch(t);
@@ -90,19 +81,52 @@ promise_test(async t => {
 
 promise_test(async t => {
   const input = createSwitch(t);
+  const events = recordEvents(input);
+
+  await drag(input, [0.15, -0.5]);
+  assert_false(input.checked);
+  assert_array_equals(events, []);
+}, "Releasing outside the switch without reaching the other end does not fire a click event");
+
+promise_test(async t => {
+  const input = createSwitch(t);
+  const events = recordEvents(input);
+  input.addEventListener("pointerdown", () => {
+    input.addEventListener("pointermove", () => { input.checked = true; }, { once: true });
+  }, { once: true });
+
+  await drag(input, [0.15, 0.5, 0.85, 1.5]);
+  assert_true(input.checked);
+  assert_array_equals(events, []);
+}, "Setting checked during a drag stops the drag");
+
+promise_test(async t => {
+  const input = createSwitch(t);
+  const events = recordEvents(input);
+  input.addEventListener("pointerdown", () => {
+    input.addEventListener("pointermove", () => { input.disabled = true; }, { once: true });
+  }, { once: true });
+
+  await drag(input, [0.15, 0.5, 0.85, 1.5]);
+  assert_false(input.checked);
+  assert_array_equals(events, []);
+}, "Disabling the switch during a drag stops the drag");
+
+promise_test(async t => {
+  const input = createSwitch(t);
   input.dir = "rtl";
   const events = recordEvents(input);
 
-  await drag(input, [0.15, 0.5, 0.85]);
+  await drag(input, [0.15, 0.5, 0.85, 1.5]);
   assert_true(input.checked);
   assert_array_equals(events, ["click", "input", "change"]);
-}, "Dragging the thumb of a right-to-left switch from right to left toggles the switch");
+}, "Dragging the thumb of a right-to-left switch from right to left toggles it");
 
 promise_test(async t => {
   const input = createSwitch(t, "writing-mode: vertical-lr");
   const events = recordEvents(input);
 
-  await drag(input, [0.15, 0.5, 0.85]);
+  await drag(input, [0.15, 0.5, 0.85, 1.5]);
   assert_true(input.checked);
   assert_array_equals(events, ["click", "input", "change"]);
-}, "Dragging the thumb of a vertical switch from top to bottom toggles the switch");
+}, "Dragging the thumb of a vertical switch from top to bottom toggles it");

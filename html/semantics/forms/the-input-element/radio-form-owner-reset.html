@@ -131,4 +131,64 @@ test(t => {
   assert_true(otherFormRadio.checked, "The other form's radio remains checked");
   assert_false(ownerless.checked, "The ownerless radio is unchecked on actual disassociation");
 }, "Changing the form attribute to an unmatched ID makes a radio join the ownerless group");
+
+test(t => {
+  const container = document.createElement("div");
+  container.innerHTML = `
+    <form id="owner"><input type="radio" name="group" form="owner"></form>
+    <input type="radio" name="group">`;
+  document.body.append(container);
+  t.add_cleanup(() => container.remove());
+  const form = container.querySelector("form");
+  const [associated, ownerless] = container.querySelectorAll("input");
+  associated.checked = true;
+  ownerless.checked = true;
+  assert_equals(associated.form, form);
+  assert_equals(ownerless.form, null);
+  assert_true(associated.checked);
+  assert_true(ownerless.checked);
+
+  container.remove();
+
+  assert_true(ownerless.checked, "The associated radio never joins the ownerless group");
+  assert_true(associated.checked);
+  assert_equals(associated.form, form, "The ancestor form remains the owner after disconnection");
+  assert_equals(ownerless.form, null);
+}, "Disconnecting a subtree preserves radio checkedness when the form owner is unchanged");
+
+test(t => {
+  const container = document.createElement("div");
+  container.innerHTML = `
+    <form id="outside"></form>
+    <div>
+      <form id="ancestor">
+        <input type="radio" name="group">
+        <input type="radio" name="group" form="outside">
+      </form>
+      <input type="radio" name="group">
+    </div>`;
+  document.body.append(container);
+  t.add_cleanup(() => container.remove());
+  const subtree = container.lastElementChild;
+  const [outside, ancestor] = container.querySelectorAll("form");
+  const [destination, moving, ownerless] = container.querySelectorAll("input");
+  destination.checked = true;
+  moving.checked = true;
+  ownerless.checked = true;
+  assert_equals(destination.form, ancestor);
+  assert_equals(moving.form, outside);
+  assert_equals(ownerless.form, null);
+  assert_true(destination.checked);
+  assert_true(moving.checked);
+  assert_true(ownerless.checked);
+
+  subtree.remove();
+
+  assert_true(ownerless.checked, "The reassociated radio never joins the ownerless group");
+  assert_equals(moving.form, ancestor, "The disconnected radio falls back to its ancestor form");
+  assert_true(moving.checked);
+  assert_false(destination.checked, "The ancestor form's radio is unchecked");
+  assert_equals(destination.form, ancestor);
+  assert_equals(ownerless.form, null);
+}, "Disconnecting a subtree reassociates a radio with its ancestor form without joining the ownerless group");
 </script>

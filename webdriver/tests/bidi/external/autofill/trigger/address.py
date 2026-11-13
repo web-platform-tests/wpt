@@ -9,7 +9,9 @@ from . import ADDRESS, ADDRESS_FIELD_VALUES, ADDRESS_FORM, get_form_control_valu
 pytestmark = pytest.mark.asyncio
 
 
-@pytest.mark.parametrize("selector", ["#given-name", "#postal-code"])
+@pytest.mark.parametrize(
+    "selector", ["#given-name", "#postal-code", "#address-line1", "#country"]
+)
 async def test_address(bidi_session, top_context, load_form, get_element, selector):
     await load_form(ADDRESS_FORM)
     element = await get_element(selector)
@@ -27,13 +29,14 @@ async def test_address(bidi_session, top_context, load_form, get_element, select
         "address-level2": "San Francisco",
         "address-level1": "CA",
         "postal-code": "94102",
+        "country": "US",
     }
 
 
 async def test_address_other_form(bidi_session, top_context, load_form, get_element):
     await load_form(
-        ADDRESS_FORM
-        + "<form><input id='other-given-name' autocomplete='given-name'></form>"
+        "<form><input id='other-given-name' autocomplete='given-name'></form>"
+        + ADDRESS_FORM
     )
     element = await get_element("#given-name")
 
@@ -51,6 +54,7 @@ async def test_address_other_form(bidi_session, top_context, load_form, get_elem
         "address-level2": "San Francisco",
         "address-level1": "CA",
         "postal-code": "94102",
+        "country": "US",
         "other-given-name": "",
     }
 
@@ -91,4 +95,5 @@ async def test_address_empty_fields(bidi_session, top_context, load_form, get_el
         "address-level2": "",
         "address-level1": "",
         "postal-code": "",
+        "country": "",
     }

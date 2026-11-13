@@ -35,10 +35,14 @@ ADDRESS_FORM = """
 <form>
   <input id="given-name" autocomplete="given-name">
   <input id="family-name" autocomplete="family-name">
-  <input id="address-line1" autocomplete="address-line1">
+  <textarea id="address-line1" autocomplete="address-line1"></textarea>
   <input id="address-level2" autocomplete="address-level2">
   <input id="address-level1" autocomplete="address-level1">
   <input id="postal-code" autocomplete="postal-code">
+  <select id="country" autocomplete="country">
+    <option value=""></option>
+    <option value="US">United States</option>
+  </select>
 </form>
 """
 

@@ -113,10 +113,18 @@ async def test_params_element_not_form_control(
         )
 
 
+@pytest.mark.parametrize(
+    "markup",
+    [
+        "<input id='cc-number' autocomplete='cc-number'>",
+        "<form><input id='cc-number' form='missing' autocomplete='cc-number'></form>",
+    ],
+    ids=["no form", "unmatched form attribute"],
+)
 async def test_params_element_without_form_owner(
-    bidi_session, top_context, load_form, get_element
+    bidi_session, top_context, load_form, get_element, markup
 ):
-    await load_form("<input id='cc-number' autocomplete='cc-number'>")
+    await load_form(markup)
     element = await get_element("#cc-number")
 
     with pytest.raises(InvalidArgumentException):
@@ -165,6 +173,20 @@ async def test_params_card_invalid_type(
         )
 
 
+async def test_params_card_null(bidi_session, top_context, load_form, get_element):
+    await load_form(ADDRESS_FORM)
+    element = await get_element("#given-name")
+
+    # With `address` present, treating a null `card` as absent would succeed.
+    with pytest.raises(InvalidArgumentException):
+        await bidi_session.autofill.trigger(
+            context=top_context["context"],
+            element=element,
+            card=None,
+            address=ADDRESS,
+        )
+
+
 @pytest.mark.parametrize("key", CARD_KEYS)
 async def test_params_card_missing_field(
     bidi_session, top_context, load_form, get_element, key
@@ -205,6 +227,20 @@ async def test_params_address_invalid_type(
     with pytest.raises(InvalidArgumentException):
         await bidi_session.autofill.trigger(
             context=top_context["context"], element=element, address=value
+        )
+
+
+async def test_params_address_null(bidi_session, top_context, load_form, get_element):
+    await load_form(CARD_FORM)
+    element = await get_element("#cc-number")
+
+    # With `card` present, treating a null `address` as absent would succeed.
+    with pytest.raises(InvalidArgumentException):
+        await bidi_session.autofill.trigger(
+            context=top_context["context"],
+            element=element,
+            card=CARD,
+            address=None,
         )
 
 

@@ -2068,6 +2068,51 @@
         },
 
         /**
+         * Delivers a push message to a service worker registration.
+         *
+         * This is a vendor-specific extension. The message is delivered to the
+         * registration for `scope` without going through a push service.
+         *
+         * @example
+         * await test_driver.deliver_push_message(registration.scope, "hello");
+         *
+         * @param {String} scope - The registration scope URL.
+         * @param {String} data - The push message payload. An empty string
+         *                        delivers a push event without payload.
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} Fulfilled after the message has been delivered,
+         *                    or rejected if the browser does not support it.
+         */
+        deliver_push_message: function(scope, data, context=null) {
+          return window.test_driver_internal.deliver_push_message(scope, data, context);
+        },
+
+        /**
+         * Fires `pushsubscriptionchange` for a service worker registration.
+         *
+         * This is a vendor-specific extension. The event has no old or new
+         * subscription, like when the push service drops a subscription.
+         *
+         * @example
+         * await test_driver.fire_push_subscription_change_event(registration.scope);
+         *
+         * @param {String} scope - The registration scope URL.
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} Fulfilled after the event has been dispatched and
+         *                    its `waitUntil` promises settled, or rejected if
+         *                    the browser does not support it.
+         */
+        fire_push_subscription_change_event: function(scope, context=null) {
+          return window.test_driver_internal.fire_push_subscription_change_event(scope, context);
+        },
+
+        /**
          * Cancels the Federated Credential Management dialog
          *
          * Matches the `Cancel dialog
@@ -2941,6 +2986,14 @@
 
         async set_spc_transaction_mode(mode, context=null) {
             throw new Error("set_spc_transaction_mode() is not implemented by testdriver-vendor.js");
+        },
+
+        async deliver_push_message(scope, data, context=null) {
+            throw new Error("deliver_push_message() is not implemented by testdriver-vendor.js");
+        },
+
+        async fire_push_subscription_change_event(scope, context=null) {
+            throw new Error("fire_push_subscription_change_event() is not implemented by testdriver-vendor.js");
         },
 
         set_rph_registration_mode: function(mode, context=null) {

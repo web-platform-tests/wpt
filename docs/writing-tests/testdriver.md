@@ -130,6 +130,12 @@ the global scope.
 .. js:autofunction:: test_driver.freeze
 ```
 
+### Push API ###
+```eval_rst
+.. js:autofunction:: test_driver.deliver_push_message
+.. js:autofunction:: test_driver.fire_push_subscription_change_event
+```
+
 ### Reporting Observer ###
 ```eval_rst
 .. js:autofunction:: test_driver.generate_test_report

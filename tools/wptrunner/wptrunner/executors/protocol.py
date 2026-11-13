@@ -839,6 +839,29 @@ class SetPermissionProtocolPart(ProtocolPart):
         pass
 
 
+class PushProtocolPart(ProtocolPart):
+    """Protocol part for the Push API"""
+    __metaclass__ = ABCMeta
+
+    name = "push"
+
+    @abstractmethod
+    def deliver_push_message(self, scope, data):
+        """Deliver a push message to the registration for `scope`.
+
+        :param scope: The registration scope URL.
+        :param data: The push message payload, empty for no payload."""
+        pass
+
+    @abstractmethod
+    def fire_push_subscription_change_event(self, scope):
+        """Fire `pushsubscriptionchange` for the registration for `scope`
+        without subscriptions, as when the push service drops them.
+
+        :param scope: The registration scope URL."""
+        pass
+
+
 class GlobalPrivacyControlProtocolPart(ProtocolPart):
     """Protocol part for reading and writing the GPC signal"""
     __metaclass__ = ABCMeta

@@ -3,6 +3,7 @@
 <title>CSS Scoping: ::slotted pseudo parsing</title>
 <link rel="author" title="Rune Lillesveen" href="mailto:rune@opera.com">
 <link rel="help" href="https://drafts.csswg.org/css-shadow/#slotted-pseudo">
+<link rel="help" href="https://drafts.csswg.org/selectors-4/#pseudo-element-states">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
@@ -17,7 +18,7 @@
   test_invalid_selector("::slotted(*):host");
   test_invalid_selector("::slotted(*):host(div)");
   test_invalid_selector("::slotted(*):has(span)");
-  test_invalid_selector("::slotted(*):hover");
+  test_valid_selector("::slotted(*):hover");
   test_invalid_selector("::slotted(*):read-only");
   test_invalid_selector("::slotted(*)::slotted(*)");
   test_invalid_selector("::slotted(*)::before::slotted(*)");
@@ -29,11 +30,11 @@
   test_valid_selector("::slotted(:not(.a))");
 
   test_valid_forgiving_selector("::slotted(*):is()");
-  test_valid_forgiving_selector("::slotted(*):is(:hover)");
+  test_valid_selector("::slotted(*):is(:hover)");
   test_valid_forgiving_selector("::slotted(*):is(#id)");
 
   test_valid_forgiving_selector("::slotted(*):where()");
-  test_valid_forgiving_selector("::slotted(*):where(:hover)");
+  test_valid_selector("::slotted(*):where(:hover)");
   test_valid_forgiving_selector("::slotted(*):where(#id)");
   test_valid_forgiving_selector("::slotted(*):where(::before)");
 

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Name Comp: inherited presentational role with global attr (Tentative)</title>
+    <title>Computed Role: inherited presentational role with global ARIA attribute or focusable (Tentative)</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="/resources/testdriver.js"></script>
@@ -13,16 +13,17 @@
 
     <!-- current spec: https://w3c.github.io/aria/#conflict_resolution_presentation_none -->
     <!-- PR with proposed clarification, pending user agent tests: https://github.com/w3c/aria/pull/2237 -->
-    <h1>Presentational role inherited with global</h1>
+    <h1>Presentational role</h1>
+    <h2>Inherited presentational role with global ARIA attribute</h2>
 
-    <!-- li is inheriting presentational role from ul; it has a global aria attr but it doesn't impact the presentational conflict resolution -->
+    <!-- li inherits the presentational role from ul; aria-describedby is a global ARIA attribute and does not override the inherited presentational role -->
     <ul role="none">
       <li aria-describedby="test" data-testname="presentational roles conflict - ul[role=none] > li[aria-describedby]" class="ex-generic">a</li>
       <li aria-describedby="test">b</li>
       <li aria-describedby="test">c</li>
     </ul>
 
-    <!-- td is inheriting presentational role from table; it has a global aria attr but it doesn't impact the presentational conflict resolution -->
+    <!-- td inherits the presentational role from table; aria-describedby is a global ARIA attribute and does not override the inherited presentational role -->
     <table role="none">
       <tbody>
           <tr>
@@ -31,7 +32,7 @@
       </tbody>
     </table>
 
-    <!-- td is inheriting presentational role from table; it has a global aria attr but it doesn't impact the presentational conflict resolution -->
+    <!-- td inherits the presentational role from table; aria-describedby is a global ARIA attribute and does not override the inherited presentational role -->
     <style>
       table.with-style, table.with-style th, table.with-style td {
         border: 1px solid black;
@@ -54,6 +55,30 @@
           </tr>
       </tbody>
     </table>
+
+    <!-- li has an explicit presentational role and a global ARIA attribute, but its required accessibility parent ul also has a presentational role -->
+    <h2>Explicit presentational role with global ARIA attribute and presentational required accessibility parent</h2>
+    <ul role="none">
+      <li role="none" aria-describedby="test" data-testname="presentational roles conflict - ul[role=none] > li[role=none][aria-describedby]" class="ex-generic">a</li>
+      <li aria-describedby="test">b</li>
+      <li aria-describedby="test">c</li>
+    </ul>
+
+    <!-- li inherits the presentational role from ul and is focusable; focusability does not "override" the inherited presentational role -->
+    <h2>Inherited presentational role and focusable element</h2>
+    <ul role="none">
+      <li tabindex="0" data-testname="presentational roles conflict - ul[role=none] > li[tabindex=0]" class="ex-generic">a</li>
+      <li aria-describedby="test">b</li>
+      <li aria-describedby="test">c</li>
+    </ul>
+
+    <!-- li has an explicit presentational role and is focusable, but its required accessibility parent ul also has a presentational role -->
+    <h2>Explicit presentational role, focusable element, and presentational required accessibility parent</h2>
+    <ul role="none">
+      <li tabindex="0" role="none" data-testname="presentational roles conflict - ul[role=none] > li[role=none][tabindex=0]" class="ex-generic">a</li>
+      <li aria-describedby="test">b</li>
+      <li aria-describedby="test">c</li>
+    </ul>
 
     <script>
       AriaUtils.verifyGenericRolesBySelector(".ex-generic");

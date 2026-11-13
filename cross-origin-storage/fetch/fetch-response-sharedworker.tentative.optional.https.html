@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: fetch-response in a shared worker</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+'use strict';
+
+// Runs fetch-response.tentative.optional.https.any.js in a shared worker. Under Permissions Policy for workers
+// (https://github.com/explainers-by-googlers/workers-permissions-policy), a
+// shared worker gets only the policy-controlled features its creator delegates
+// through the `allow` option, so this variant is created by hand: the
+// generated .any.sharedworker.html wrapper constructs its worker without one.
+// https://wicg.github.io/cross-origin-storage/#permissions-policy-integration
+fetch_tests_from_worker(
+    new SharedWorker('fetch-response.tentative.optional.https.any.worker.js', {allow: 'cross-origin-storage'}));
+</script>

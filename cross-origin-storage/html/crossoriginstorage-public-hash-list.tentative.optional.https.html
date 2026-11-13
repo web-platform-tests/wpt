@@ -1,0 +1,82 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: HTML integration and the Public Hash List</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="../resources/helpers.js"></script>
+<script src="../resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#public-hash-list
+// https://wicg.github.io/cross-origin-storage/#availability-gating
+// https://github.com/WICG/cross-origin-storage#html-integration
+//
+// Optional: the contents of the Public Hash List are implementation-defined.
+// This test assumes the list carries resources/phl-listed-resource.js
+// (jQuery 3.7.1's minified build, see public-hash-list.tentative.optional.https.html).
+// crossoriginstorage-cross-origin.tentative.https.html covers the negative
+// direction for bytes unique to a run.
+//
+// A "*"-scoped <script> whose hash is on the list is disclosable to a
+// cross-site origin. GREASE'ing, or a cross-site lookup budget, may still
+// refuse any single lookup, so the reader tries a few times and the file fails
+// only if no lookup was ever served.
+
+const LISTED_RESOURCE = new URL('../resources/phl-listed-resource.js', location.href).href;
+const ATTEMPTS = 8;
+
+function loadScript(t, src, integrity) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.integrity = integrity;
+    script.setAttribute('crossoriginstorage', '*');
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('script failed to load'));
+    t.add_cleanup(() => script.remove());
+    document.body.appendChild(script);
+  });
+}
+
+promise_test(async t => {
+  const text = await fetch(LISTED_RESOURCE).then(r => r.text());
+  const integrity = await cosSha256Integrity(text);
+  await loadScript(t, LISTED_RESOURCE, integrity);
+
+  const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
+  let result;
+  for (let i = 0; i < ATTEMPTS; ++i) {
+    result = await ctx.execute_script(async (integrity) => {
+      delete window.jQuery;
+      const script = document.createElement('script');
+      script.src = './does-not-exist-' + Math.random() + '.js';
+      script.integrity = integrity;
+      script.setAttribute('crossoriginstorage', '*');
+      const loaded = await new Promise((resolve) => {
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+      });
+      script.remove();
+      return {ok: loaded, version: loaded ? window.jQuery?.fn?.jquery : null};
+    }, [integrity]);
+    if (result.ok) break;
+  }
+
+  cosDisclosureTally.authorized++;
+  if (result.ok) {
+    cosDisclosureTally.disclosed++;
+    assert_equals(result.version, '3.7.1', 'the listed resource ran in the cross-site document');
+  }
+}, 'HTML, Public Hash List: a "*"-scoped listed <script> may be served to a cross-site origin');
+
+promise_test(async t => {
+  cosAssertSomeDisclosureObserved();
+}, 'meta: the listed resource was served cross-site at least once');
+</script>
+</body>

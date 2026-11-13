@@ -1,0 +1,168 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Cross-Origin Storage: a worker's Cross-Origin-Storage-Allow-Origin ceiling comes from its creator</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#allow-origin-header
+//
+// A worker's COS scope ceiling is set when "run a worker" creates it, to the
+// ceiling of the global that created it, transitively, down to a Document. A
+// shared worker keeps its creator's ceiling for its lifetime, and contexts
+// that connect to it later leave it unchanged. The worker's own script
+// response plays no part. Each
+// test below makes a list-scoped write from a worker, listing one cross-site
+// origin, and checks whether that origin can read the entry: a listed origin
+// reads deterministically ("determine COS disclosure"), and a dropped one is
+// refused deterministically, since the writer and every other storing origin
+// are of this document's site.
+//
+// The owner documents are same-origin frames whose responses carry the
+// header through `pipeHeader`. The worker is resources/cos-ceiling-worker.js.
+
+const {HTTPS_ORIGIN} = get_host_info();
+const WORKER_URL = '/cross-origin-storage/resources/cos-ceiling-worker.js';
+
+// Opens a same-origin owner frame whose response carries `ceiling` as its
+// Cross-Origin-Storage-Allow-Origin header, or no header for null.
+async function openOwner(ceiling) {
+  const opts = {};
+  if (ceiling !== null) {
+    opts.pipeHeader = cosAllowOriginPipe(ceiling);
+  }
+  return (await cosOpenRemoteContext(HTTPS_ORIGIN, opts)).ctx;
+}
+
+// From inside `ctx`, starts a dedicated worker and has it store `content`
+// listing `origins`. With `fromBlob`, the worker runs this script's text from
+// a blob: URL. `scriptUrl` overrides the worker script URL.
+async function storeFromDedicatedWorker(ctx, hash, content, origins, {fromBlob = false, scriptUrl = WORKER_URL} = {}) {
+  return ctx.execute_script(async (scriptUrl, fromBlob, hash, content, origins) => {
+    let url = scriptUrl;
+    if (fromBlob) {
+      const text = await (await fetch(scriptUrl)).text();
+      url = URL.createObjectURL(new Blob([text], {type: 'text/javascript'}));
+    }
+    const worker = new Worker(url);
+    return new Promise((resolve) => {
+      worker.onmessage = (e) => resolve(e.data);
+      worker.onerror = (e) => resolve({ok: false, name: 'WorkerError', message: String(e.message)});
+      worker.postMessage({hash, content, origins});
+    });
+  }, [scriptUrl, fromBlob, hash, content, origins]);
+}
+
+// Connects `ctx` to the shared worker named `name` and waits until the worker
+// has answered. The first context to connect creates the worker. Every
+// owner delegates cross-origin-storage through `allow`, which a shared worker
+// needs to use COS at all under Permissions Policy for workers
+// (https://github.com/explainers-by-googlers/workers-permissions-policy), and
+// which every connection to it has to repeat.
+async function connectSharedWorker(ctx, name) {
+  return ctx.execute_script(async (scriptUrl, name) => {
+    self.cosSharedWorker =
+        new SharedWorker(scriptUrl, {name, allow: 'cross-origin-storage'});
+    const port = self.cosSharedWorker.port;
+    return new Promise((resolve) => {
+      port.onmessage = (e) => resolve(e.data);
+      port.postMessage({ping: true});
+    });
+  }, [WORKER_URL, name]);
+}
+
+// Has the shared worker that `ctx` connected to store `content`.
+async function storeFromSharedWorker(ctx, hash, content, origins) {
+  return ctx.execute_script(async (hash, content, origins) => {
+    const port = self.cosSharedWorker.port;
+    return new Promise((resolve) => {
+      port.onmessage = (e) => resolve(e.data);
+      port.postMessage({hash, content, origins});
+    });
+  }, [hash, content, origins]);
+}
+
+async function readAs(origin, hash) {
+  const {ctx} = await cosOpenRemoteContext(origin);
+  return cosRemoteRead(ctx, hash);
+}
+
+async function newContent(label) {
+  const content = cosUniqueContent(label);
+  return {content, hash: cosHash(await cosSha256Hex(content))};
+}
+
+promise_test(async t => {
+  const listed = cosNextCrossSiteOrigin();
+  const owner = await openOwner(listed);
+  const {content, hash} = await newContent('worker-inherits-owner-ceiling');
+  const stored = await storeFromDedicatedWorker(owner, hash, content, [listed]);
+  assert_true(stored.ok, `the worker's write must succeed, got ${stored.name}: ${stored.message}`);
+  cosAssertDisclosed(await readAs(listed, hash), content,
+    'a cross-site origin listed by a dedicated worker whose owner document authorizes it');
+}, 'dedicated worker: the owner document\'s ceiling authorizes the worker\'s list-scoped write');
+
+promise_test(async t => {
+  const listed = cosNextCrossSiteOrigin();
+  const owner = await openOwner(listed);
+  const {content, hash} = await newContent('blob-worker-inherits-owner-ceiling');
+  const stored = await storeFromDedicatedWorker(owner, hash, content, [listed], {fromBlob: true});
+  assert_true(stored.ok, `the worker's write must succeed, got ${stored.name}: ${stored.message}`);
+  cosAssertDisclosed(await readAs(listed, hash), content,
+    'a cross-site origin listed by a blob: worker whose owner document authorizes it');
+}, 'blob: dedicated worker: the owner document\'s ceiling authorizes the worker\'s list-scoped write');
+
+promise_test(async t => {
+  // The worker's script response names the listed origin, and its owner
+  // document sends no header. Only the owners count, so the origin is dropped.
+  const listed = cosNextCrossSiteOrigin();
+  const owner = await openOwner(null);
+  const scriptUrl = `${WORKER_URL}?pipe=${encodeURIComponent(cosAllowOriginPipe(listed))}`;
+  const {content, hash} = await newContent('worker-script-header-ignored');
+  const stored = await storeFromDedicatedWorker(owner, hash, content, [listed], {scriptUrl});
+  assert_true(stored.ok, `the worker's write must succeed, got ${stored.name}: ${stored.message}`);
+  cosAssertNotDisclosed(await readAs(listed, hash),
+    'a cross-site origin named only by the worker script\'s own response header');
+}, 'dedicated worker: a Cross-Origin-Storage-Allow-Origin header on the worker script response authorizes nothing');
+
+promise_test(async t => {
+  // The creator names the listed origin. A second owner that sends no header
+  // connects afterwards and asks for the write, and the origin is kept.
+  const listed = cosNextCrossSiteOrigin();
+  const creator = await openOwner(listed);
+  const later = await openOwner(null);
+  const name = `cos-ceiling-${token()}`;
+  await connectSharedWorker(creator, name);
+  await connectSharedWorker(later, name);
+  const {content, hash} = await newContent('shared-worker-later-owner-cannot-narrow');
+  const stored = await storeFromSharedWorker(later, hash, content, [listed]);
+  assert_true(stored.ok, `the worker's write must succeed, got ${stored.name}: ${stored.message}`);
+  cosAssertDisclosed(await readAs(listed, hash), content,
+    'a cross-site origin the creator authorizes, listed through an owner that authorizes nothing');
+}, 'shared worker: an owner that connects later does not narrow the creator\'s ceiling');
+
+promise_test(async t => {
+  // The creator sends no header. A second owner that names the listed origin
+  // connects afterwards and asks for the write, and the origin is dropped.
+  const listed = cosNextCrossSiteOrigin();
+  const creator = await openOwner(null);
+  const later = await openOwner(listed);
+  const name = `cos-ceiling-${token()}`;
+  await connectSharedWorker(creator, name);
+  await connectSharedWorker(later, name);
+  const {content, hash} = await newContent('shared-worker-later-owner-cannot-widen');
+  const stored = await storeFromSharedWorker(later, hash, content, [listed]);
+  assert_true(stored.ok, `the worker's write must succeed, got ${stored.name}: ${stored.message}`);
+  cosAssertNotDisclosed(await readAs(listed, hash),
+    'a cross-site origin only an owner that connected after the creator authorizes');
+}, 'shared worker: an owner that connects later does not widen the creator\'s ceiling');
+</script>
+</body>

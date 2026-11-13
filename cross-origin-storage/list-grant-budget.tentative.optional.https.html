@@ -1,0 +1,118 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Cross-Origin Storage: a cross-site lookup budget and origins list grants</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#availability-gating
+// https://wicg.github.io/cross-origin-storage/#cos-entries
+//
+// This file is optional, for the same reason probe-budget.tentative.optional.
+// https.any.js is: the specification describes a cross-site lookup budget only
+// in a non-normative note. That note leaves a lookup uncharged only when
+// "determine COS disclosure" answers it through a grant written under the
+// reader's own top-level site, which is a storing-origins grant or an origins
+// list grant whose partition is the reader's. A first-party origins list
+// grant also admits the listed origin first-party under any other top-level
+// site, and a lookup answered that way is charged. Without that charge, two
+// cooperating sites could pass an identifier of any width through marker
+// files written on one with a list naming the other.
+//
+// A read refused for being over budget rejects with NotFoundError, exactly as
+// a miss does, and the budget's size is implementation-defined. The charge
+// itself is therefore only observable by exhausting the budget, which belongs
+// to a whole top-level site, persists across reloads, and would refuse the
+// cross-partition reads that top-level-site-keying.tentative.https.html makes
+// under the alt site. So these tests keep their charged footprint small and
+// pin down the boundary from the uncharged side: a user agent that charged
+// lookups the note leaves free would refuse some of the reads below.
+//
+// List-scoped writes from this document rely on the companion .sub.headers
+// file, whose Cross-Origin-Storage-Allow-Origin ceiling names the alt-site
+// origins.
+
+const {HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+
+// More than the 8 to 16 lookups per window the README suggests, so that a
+// user agent charging these reads would refuse some of them.
+const FREE_READS = 24;
+
+// Small enough to stay well inside any plausible budget (see above).
+const CHARGED_READS = 3;
+
+async function storeListed(label, origins) {
+  const content = cosUniqueContent(label);
+  const {hash} = await cosStore(content, {origins});
+  return {hash, content};
+}
+
+promise_test(async t => {
+  // The listed origin runs as a frame under this document, so its partition
+  // is the one the list was written under.
+  const entries = [];
+  for (let i = 0; i < FREE_READS; ++i) {
+    entries.push(await storeListed(`list-same-partition-${i}`, [HTTPS_NOTSAMESITE_ORIGIN]));
+  }
+
+  const {ctx: frame} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  for (const [i, {hash, content}] of entries.entries()) {
+    cosAssertDisclosed(await cosRemoteRead(frame, hash), content,
+      `read ${i + 1} of ${FREE_READS} by the listed origin, framed under the writer's top-level site`);
+  }
+}, 'reads through a list written under the reader\'s own top-level site are never charged');
+
+promise_test(async t => {
+  // The listed origin runs top-level on its own site, a partition other than
+  // the one the list was written under, so each of these reads is charged.
+  // A charged read is either disclosed intact or refused with NotFoundError,
+  // and it must never surface a distinct over-budget signal.
+  const entries = [];
+  for (let i = 0; i < CHARGED_READS; ++i) {
+    entries.push(await storeListed(`list-cross-partition-${i}`, [HTTPS_NOTSAMESITE_ORIGIN]));
+  }
+
+  const topLevel = await cosOpenTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  let disclosed = 0;
+  for (const [i, {hash, content}] of entries.entries()) {
+    const result = await cosRemoteRead(topLevel, hash);
+    if (result.ok) {
+      ++disclosed;
+      assert_equals(result.text, content, `read ${i + 1}: content`);
+    } else {
+      assert_equals(result.name, 'NotFoundError',
+        `read ${i + 1}: a charged read refused over budget must reject exactly as a miss, ` +
+        `got ${result.name}: ${result.message}`);
+    }
+  }
+  assert_greater_than(disclosed, 0,
+    `all ${CHARGED_READS} reads by the listed origin under its own top-level site were ` +
+    `refused, which a cross-site lookup budget of plausible size does not explain`);
+}, 'reads through a first-party list under another top-level site are disclosed or refused as a miss');
+
+promise_test(async t => {
+  // The test above spent part of the alt site's budget. That must leave the
+  // reads the budget does not charge alone: the listed origin, top-level on
+  // its own site, still reads back what it stored there itself. This adds no
+  // charged lookups of its own, so that top-level-site-keying.tentative.
+  // https.html keeps enough of the budget if it runs later in the same window.
+  const topLevel = await cosOpenTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  const content = cosUniqueContent('list-budget-storer-free');
+  const hash = cosHash(await cosSha256Hex(content));
+  const stored = await cosRemoteStore(topLevel, hash, content);
+  assert_true(stored.ok, `the write succeeds, got ${stored.name}: ${stored.message}`);
+  for (let i = 0; i < FREE_READS; ++i) {
+    cosAssertDisclosed(await cosRemoteRead(topLevel, hash), content,
+      `read ${i + 1} of ${FREE_READS} by the storing origin of its own entry`);
+  }
+}, 'charged lookups leave a storing origin\'s reads of its own entries uncharged');
+</script>
+</body>

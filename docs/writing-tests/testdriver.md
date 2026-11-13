@@ -130,6 +130,11 @@ the global scope.
 .. js:autofunction:: test_driver.freeze
 ```
 
+### Service Workers ###
+```eval_rst
+.. js:autofunction:: test_driver.terminate_service_worker
+```
+
 ### Reporting Observer ###
 ```eval_rst
 .. js:autofunction:: test_driver.generate_test_report

@@ -377,6 +377,20 @@ class SetSPCTransactionModeAction:
         self.logger.debug("Setting SPC transaction mode to %s" % mode)
         return self.protocol.spc_transactions.set_spc_transaction_mode(mode)
 
+
+class TerminateServiceWorkerAction:
+    name = "terminate_service_worker"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        scope = payload.get("scope")
+        self.logger.debug("Terminating service worker for scope %s" % scope)
+        return self.protocol.service_worker.terminate_service_worker(scope)
+
+
 class SetRPHRegistrationModeAction:
     name = "set_rph_registration_mode"
 
@@ -687,6 +701,7 @@ actions = [ClickAction,
            SetUserVerifiedAction,
            SetCredentialPropertiesAction,
            SetSPCTransactionModeAction,
+           TerminateServiceWorkerAction,
            SetRPHRegistrationModeAction,
            CancelFedCMDialogAction,
            ClickFedCMDialogButtonAction,

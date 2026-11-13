@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>TestDriver bidi.autofill.trigger method</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body>
+<form id="address">
+  <input id="given-name" autocomplete="given-name">
+  <input id="family-name" autocomplete="family-name">
+  <input id="email" autocomplete="email">
+  <input id="postal-code" autocomplete="postal-code">
+</form>
+<form id="card">
+  <input id="cc-name" autocomplete="cc-name">
+  <input id="cc-number" autocomplete="cc-number">
+  <input id="cc-exp-month" autocomplete="cc-exp-month">
+  <input id="cc-exp-year" autocomplete="cc-exp-year">
+</form>
+<iframe id="iframe" srcdoc="<form><input id=cc-name autocomplete=cc-name><input id=cc-number autocomplete=cc-number></form>"></iframe>
+<script>
+  const CARD = {
+    number: "4111111111111111",
+    name: "John Doe",
+    expiryMonth: "12",
+    expiryYear: "2040",
+    cvc: "123",
+  };
+
+  // Wait for the page, including the iframe, to load before triggering
+  // autofill, so that the forms are known to the user agent.
+  const loaded = new Promise(resolve => window.addEventListener("load", resolve));
+
+  promise_test(async () => {
+    await loaded;
+    await test_driver.bidi.autofill.trigger({
+      element: document.getElementById("given-name"),
+      address: {
+        fields: [
+          {name: "given-name", value: "John"},
+          {name: "family-name", value: "Doe"},
+          {name: "email", value: "john.doe@example.com"},
+          {name: "postal-code", value: "94102"},
+        ]
+      }
+    });
+    assert_equals(document.getElementById("given-name").value, "John");
+    assert_equals(document.getElementById("family-name").value, "Doe");
+    assert_equals(document.getElementById("email").value,
+                  "john.doe@example.com");
+    assert_equals(document.getElementById("postal-code").value, "94102");
+  }, "autofill an address");
+
+  promise_test(async () => {
+    await loaded;
+    await test_driver.bidi.autofill.trigger({
+      element: document.getElementById("cc-number"),
+      card: CARD,
+    });
+    assert_equals(document.getElementById("cc-name").value, CARD.name);
+    assert_equals(document.getElementById("cc-number").value, CARD.number);
+    assert_equals(document.getElementById("cc-exp-month").value,
+                  CARD.expiryMonth);
+    assert_equals(document.getElementById("cc-exp-year").value,
+                  CARD.expiryYear);
+  }, "autofill a credit card");
+
+  promise_test(async () => {
+    await loaded;
+    const doc = document.getElementById("iframe").contentDocument;
+    await test_driver.bidi.autofill.trigger({
+      element: doc.getElementById("cc-number"),
+      card: CARD,
+    });
+    assert_equals(doc.getElementById("cc-name").value, CARD.name);
+    assert_equals(doc.getElementById("cc-number").value, CARD.number);
+  }, "autofill a credit card in a same-origin iframe");
+</script>
+</body>

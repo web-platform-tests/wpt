@@ -1,0 +1,46 @@
+import pytest
+
+from . import ADDRESS, ADDRESS_FORM, get_form_control_values
+
+pytestmark = pytest.mark.asyncio
+
+
+@pytest.mark.parametrize("selector", ["#given-name", "#postal-code"])
+async def test_address(bidi_session, top_context, load_form, get_element, selector):
+    await load_form(ADDRESS_FORM)
+    element = await get_element(selector)
+
+    result = await bidi_session.autofill.trigger(
+        context=top_context["context"], element=element, address=ADDRESS
+    )
+    assert result == {}
+
+    values = await get_form_control_values(bidi_session, top_context)
+    assert values == {
+        "given-name": "John",
+        "family-name": "Smith",
+        "address-line1": "123 Main St",
+        "address-level2": "San Francisco",
+        "address-level1": "CA",
+        "postal-code": "94102",
+    }
+
+
+async def test_address_empty_fields(bidi_session, top_context, load_form, get_element):
+    await load_form(ADDRESS_FORM)
+    element = await get_element("#given-name")
+
+    result = await bidi_session.autofill.trigger(
+        context=top_context["context"], element=element, address={"fields": []}
+    )
+    assert result == {}
+
+    values = await get_form_control_values(bidi_session, top_context)
+    assert values == {
+        "given-name": "",
+        "family-name": "",
+        "address-line1": "",
+        "address-level2": "",
+        "address-level1": "",
+        "postal-code": "",
+    }

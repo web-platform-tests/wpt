@@ -87,6 +87,50 @@
              * object.
              */
             /**
+             * `autofill <https://wicg.github.io/autofill-event/#webdriver-bidi-module>`_ module.
+             */
+            autofill: {
+                /**
+                 * Triggers autofill on a form control, using the provided
+                 * credit card or address data, as if the user had selected
+                 * an autofill suggestion for that form control. Matches the
+                 * `autofill.trigger
+                 * <https://wicg.github.io/autofill-event/#webdriver-bidi-trigger>`_
+                 * WebDriver BiDi command.
+                 *
+                 * @example
+                 * await test_driver.bidi.autofill.trigger({
+                 *     element: document.getElementById("given-name"),
+                 *     address: {
+                 *         fields: [
+                 *             {name: "given-name", value: "John"},
+                 *             {name: "family-name", value: "Doe"},
+                 *         ]
+                 *     }
+                 * });
+                 *
+                 * @param {object} params - Parameters for the command.
+                 * @param {Element} params.element - The form control to
+                 * trigger autofill on. It must have a form owner.
+                 * @param {object} [params.card] - The credit card data to
+                 * fill. Matches the `autofill.Card` type. Mutually
+                 * exclusive with `address`.
+                 * @param {object} [params.address] - The address data to
+                 * fill. Matches the `autofill.Address` type. Mutually
+                 * exclusive with `card`.
+                 * @param {Context} [params.context] - The browsing context
+                 * containing `element`. If omitted, defaults to the
+                 * element's window.
+                 * @returns {Promise<void>} Resolves once the autofill
+                 * values have been applied to the form controls.
+                 */
+                trigger: function (params) {
+                    assertBidiIsEnabled();
+                    return window.test_driver_internal.bidi.autofill.trigger(
+                        params);
+                }
+            },
+            /**
              * `bluetooth <https://webbluetoothcg.github.io/web-bluetooth>`_ module.
              */
             bluetooth: {
@@ -2667,6 +2711,12 @@
         in_automation: false,
 
         bidi: {
+            autofill: {
+                trigger: function (params) {
+                    throw new Error(
+                        "bidi.autofill.trigger is not implemented by testdriver-vendor.js");
+                }
+            },
             bluetooth: {
                 handle_request_device_prompt: function() {
                     throw new Error(

@@ -317,6 +317,16 @@ const event = await log_entry_promise;
 .. js:autofunction:: test_driver.bidi.log.entry_added.once
 ```
 
+### Autofill ###
+
+The module provides access to the WebDriver BiDi
+[autofill](https://wicg.github.io/autofill-event/#webdriver-bidi-module) module,
+which triggers autofill on form controls.
+
+```eval_rst
+.. js:autofunction:: test_driver.bidi.autofill.trigger
+```
+
 ### Bluetooth ###
 
 The module provides access to [Web Bluetooth](https://webbluetoothcg.github.io/web-bluetooth).

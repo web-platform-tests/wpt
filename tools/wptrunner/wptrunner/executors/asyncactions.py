@@ -23,6 +23,30 @@ def get_browsing_context_id(context):
         return context.browsing_context
     raise ValueError("Unexpected context type: %s" % context)
 
+class BidiAutofillTriggerAction:
+    name = "bidi.autofill.trigger"
+
+    def __init__(self, logger, protocol):
+        do_delayed_imports()
+        self.logger = logger
+        self.protocol = protocol
+
+    async def __call__(self, payload):
+        if "context" not in payload:
+            raise ValueError("Missing required parameter: context")
+        context = get_browsing_context_id(payload["context"])
+
+        if "element" not in payload:
+            raise ValueError("Missing required parameter: element")
+        element = payload["element"]
+        if not isinstance(element, webdriver.bidi.protocol.BidiNode):
+            raise ValueError("Unexpected element type: %s" % element)
+
+        card = payload.get("card", webdriver.bidi.undefined.UNDEFINED)
+        address = payload.get("address", webdriver.bidi.undefined.UNDEFINED)
+        return await self.protocol.bidi_autofill.trigger(
+            context, {"sharedId": element.shared_id}, card, address)
+
 class BidiBluetoothAction:
     def __init__(self, logger, protocol):
         do_delayed_imports()
@@ -472,6 +496,7 @@ class BidiDigitalCredentialsSetVirtualWalletBehaviorAction:
 
 
 async_actions = [
+    BidiAutofillTriggerAction,
     BidiBluetoothHandleRequestDevicePrompt,
     BidiBluetoothSimulateAdapterAction,
     BidiBluetoothDisableSimulationAction,

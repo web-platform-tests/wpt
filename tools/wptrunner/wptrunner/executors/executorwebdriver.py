@@ -39,6 +39,7 @@ from .protocol import (BaseProtocolPart,
                        FedCMProtocolPart,
                        DigitalCredentialsProtocolPart,
                        VirtualSensorProtocolPart,
+                       BidiAutofillProtocolPart,
                        BidiBluetoothProtocolPart,
                        BidiBrowsingContextProtocolPart,
                        BidiEmulationProtocolPart,
@@ -130,6 +131,19 @@ addEventListener("__test_restart", e => {e.preventDefault(); callback(true)})"""
                 self.logger.error(message)
                 break
         return False
+
+
+class WebDriverBidiAutofillProtocolPart(BidiAutofillProtocolPart):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.webdriver = None
+
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    async def trigger(self, context, element, card, address):
+        return await self.webdriver.bidi_session.autofill.trigger(
+            context=context, element=element, card=card, address=address)
 
 
 class WebDriverBidiBluetoothProtocolPart(BidiBluetoothProtocolPart):
@@ -1202,7 +1216,8 @@ class WebDriverProtocol(Protocol):
 
 class WebDriverBidiProtocol(WebDriverProtocol):
     enable_bidi = True
-    implements = [WebDriverBidiBluetoothProtocolPart,
+    implements = [WebDriverBidiAutofillProtocolPart,
+                  WebDriverBidiBluetoothProtocolPart,
                   WebDriverBidiBrowsingContextProtocolPart,
                   WebDriverBidiEmulationProtocolPart,
                   WebDriverBidiEventsProtocolPart,

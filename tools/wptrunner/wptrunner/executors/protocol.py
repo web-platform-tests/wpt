@@ -381,6 +381,28 @@ class WebExtensionsProtocolPart(ProtocolPart):
         pass
 
 
+class BidiAutofillProtocolPart(ProtocolPart):
+    """Protocol part for autofill"""
+    __metaclass__ = ABCMeta
+    name = "bidi_autofill"
+
+    @abstractmethod
+    async def trigger(self,
+            context: str,
+            element: Mapping[str, Any],
+            card: Union[Mapping[str, Any], "Undefined"],
+            address: Union[Mapping[str, Any], "Undefined"]) -> None:
+        """
+        Triggers autofill on a form control.
+
+        :param context: The browsing context containing the element.
+        :param element: A `script.SharedReference` to the form control.
+        :param card: The `autofill.Card` data to fill, if any.
+        :param address: The `autofill.Address` data to fill, if any.
+        """
+        pass
+
+
 class BidiBluetoothProtocolPart(ProtocolPart):
     """Protocol part for managing BiDi events"""
     __metaclass__ = ABCMeta

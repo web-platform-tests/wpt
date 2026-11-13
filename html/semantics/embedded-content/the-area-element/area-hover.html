@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS ':hover' matches on &lt;area> overlapping geometry in reverse tree order</title>
+<link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/image-maps.html">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/semantics-other.html#selector-hover">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<img id="img" src="/images/grgr-256x256.png" usemap="#map" width="300" height="300">
+<map name="map">
+  <area id="areaTop" shape="rect" coords="50,50,180,180">
+  <area id="areaBottom" shape="rect" coords="120,120,250,250">
+</map>
+
+<script>
+  async function pointerMove(x, y) {
+    await new test_driver.Actions().pointerMove(x - 150, y - 150, { origin: img }).send();
+  }
+
+  promise_test(async () => {
+    await pointerMove(10, 10);
+    assert_true(img.matches(':hover'));
+    assert_false(areaTop.matches(':hover'));
+    assert_false(areaBottom.matches(':hover'));
+
+    await pointerMove(60, 60);
+    assert_true(areaTop.matches(':hover'));
+    assert_false(areaBottom.matches(':hover'));
+
+    await pointerMove(150, 150);
+    assert_true(areaTop.matches(':hover'));
+    assert_false(areaBottom.matches(':hover'));
+
+    await pointerMove(240, 240);
+    assert_false(areaTop.matches(':hover'));
+    assert_true(areaBottom.matches(':hover'));
+
+    await pointerMove(290, 290);
+    assert_true(img.matches(':hover'));
+    assert_false(areaTop.matches(':hover'));
+    assert_false(areaBottom.matches(':hover'));
+  });
+</script>

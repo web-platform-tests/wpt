@@ -1,0 +1,34 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<title>Cookies: an expired cookie is not returned, without any intervening Set-Cookie</title>
+<meta name=help href="https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis#section-5.7">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+function drop(t, name) { t.add_cleanup(() => { document.cookie = `${name}=; Max-Age=0; Path=/`; }); }
+const listed = async () => (await fetch("/cookies/resources/list.py", {credentials: "include"})).json();
+const wait = t => new Promise(r => t.step_timeout(r, 4000));
+promise_test(async t => {
+  drop(t, "expiredHttp");
+  drop(t, "expiredHttpControl");
+  document.cookie = "expiredHttpControl=1; Max-Age=3600; Path=/";
+  document.cookie = "expiredHttp=1; Max-Age=2; Path=/";
+  assert_equals((await listed()).expiredHttp, "1", "sent before it expires");
+  await wait(t);
+  const after = await listed();
+  assert_equals(after.expiredHttpControl, "1", "the control cookie is still sent");
+  assert_false("expiredHttp" in after, "the expired cookie is not sent");
+}, "Cookie request header, with no document.cookie read in between");
+promise_test(async t => {
+  drop(t, "expiredDom");
+  drop(t, "expiredDomControl");
+  const names = () => document.cookie.split("; ").map(c => c.split("=")[0]);
+  document.cookie = "expiredDomControl=1; Max-Age=3600; Path=/";
+  document.cookie = "expiredDom=1; Max-Age=2; Path=/";
+  assert_in_array("expiredDom", names(), "present before it expires");
+  await wait(t);
+  assert_in_array("expiredDomControl", names(), "the control cookie is still present");
+  assert_false(names().includes("expiredDom"), "the expired cookie is gone");
+}, "document.cookie, with no request in between");
+</script>

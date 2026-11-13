@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Cookies: a last invalid Expires, and Domain=., as browsers handle them</title>
+<!-- Tentative: all tested browsers differ from RFC 6265bis 5.6.1 step 2 and 5.6.3 here.
+     See httpwg/http-extensions#2046 and #1744. -->
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+const PAST = "Thu, 01 Jan 2004 00:00:00 GMT";
+function has(name) { return document.cookie.split("; ").some(c => c.startsWith(name + "=")); }
+function drop(name) { document.cookie = `${name}=; Max-Age=0; Path=/`; }
+test(t => {
+  t.add_cleanup(() => drop("laBadExpires"));
+  document.cookie = `laBadExpires=1; Path=/; Expires=${PAST}; Expires=garbage`;
+  assert_true(has("laBadExpires"));
+}, "An unparsable last Expires cancels the earlier past Expires");
+test(t => {
+  t.add_cleanup(() => drop("laDotDomain"));
+  document.cookie = "laDotDomain=1; Path=/; Domain=.";
+  assert_false(has("laDotDomain"));
+}, "Domain=. rejects the cookie");
+</script>

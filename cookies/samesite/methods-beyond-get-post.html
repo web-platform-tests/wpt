@@ -1,0 +1,16 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Cookies: requests with other methods carry SameSite=Strict cookies to their own origin</title>
+<meta name=help href="https://fetch.spec.whatwg.org/#cookie-infrastructure">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+for (const method of ["PUT", "DELETE", "PATCH", "OPTIONS"]) {
+  promise_test(async t => {
+    t.add_cleanup(() => { document.cookie = "methodStrict=; Max-Age=0; Path=/"; });
+    document.cookie = "methodStrict=1; SameSite=Strict; Path=/";
+    const r = await fetch("/cookies/resources/list.py", {method, credentials: "include"});
+    assert_equals((await r.json()).methodStrict, "1");
+  }, `${method} carries a SameSite=Strict cookie on a same-origin request`);
+}
+</script>

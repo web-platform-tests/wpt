@@ -1,0 +1,36 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Cookies: Max-Age wins in any order, and a last Path or Domain with an unusable value replaces earlier ones</title>
+<meta name=help href="https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis#section-5.6">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+const PAST = "Thu, 01 Jan 2004 00:00:00 GMT";
+const FUTURE = new Date(Date.now() + 3600 * 1000).toUTCString();
+function has(name) { return document.cookie.split("; ").some(c => c.startsWith(name + "=")); }
+function drop(name, path = "/") { document.cookie = `${name}=; Max-Age=0; Path=${path}`; }
+test(t => {
+  t.add_cleanup(() => drop("laMaxFirst"));
+  document.cookie = `laMaxFirst=1; Path=/; Max-Age=3600; Expires=${PAST}`;
+  assert_true(has("laMaxFirst"));
+}, "Max-Age before a past Expires keeps the cookie");
+test(t => {
+  t.add_cleanup(() => drop("laMaxZero"));
+  document.cookie = "laMaxZero=1; Path=/";
+  assert_true(has("laMaxZero"), "present before it is removed");
+  document.cookie = `laMaxZero=1; Path=/; Max-Age=0; Expires=${FUTURE}`;
+  assert_false(has("laMaxZero"));
+}, "Max-Age=0 before a future Expires removes an existing cookie");
+test(t => {
+  t.add_cleanup(() => {
+    for (const path of ["/elsewhere", "/cookies/attributes", "foo"]) drop("laBadPath", path);
+  });
+  document.cookie = "laBadPath=1; Path=/elsewhere; Path=foo";
+  assert_true(has("laBadPath"), "a last Path without a leading / selects the default path");
+}, "A last Path without a leading / discards the earlier valid Path");
+test(t => {
+  t.add_cleanup(() => drop("laEmptyDomain"));
+  document.cookie = "laEmptyDomain=1; Path=/; Domain=";
+  assert_true(has("laEmptyDomain"));
+}, "A cookie with an empty Domain is accepted");
+</script>

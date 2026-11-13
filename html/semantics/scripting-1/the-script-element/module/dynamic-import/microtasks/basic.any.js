@@ -13,7 +13,6 @@ promise_test(async t => {
 
 promise_test(async t => {
   // Use a unique token to ensure that the module is not in the module map
-  // (Date.now() can repeat when the tests run within one millisecond).
   const specifier = "./empty-module.js?" + token();
 
   await import(specifier);
@@ -25,7 +24,6 @@ promise_test(async t => {
 
 promise_test(async t => {
   // Use a unique token to ensure that the module is not in the module map
-  // (Date.now() can repeat when the tests run within one millisecond).
   const specifier = "./empty-module.js?" + token();
 
   const getCount = ticker(1e6);

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>&lt;area> inherits CSS 'cursor' property from &lt;map></title>
+<link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  img {
+    cursor: default;
+  }
+
+  map {
+    cursor: pointer;
+  }
+
+  area {
+    cursor: inherit;
+  }
+</style>
+
+<img id="img" src="/images/green-256x256.png" usemap="#map" width="300" height="300">
+<map name="map" id="map">
+  <area id="area" shape="rect" coords="100,100,200,200">
+</map>
+
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(img).cursor, 'default');
+    assert_equals(getComputedStyle(map).cursor, 'pointer');
+    assert_equals(getComputedStyle(area).cursor, 'pointer');
+  });
+</script>

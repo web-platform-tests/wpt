@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<title>AudioSession state follows an audible AudioContext</title>
+<link rel="help" href="https://w3c.github.io/audio-session/#audiocontext-sink">
+<link rel="help" href="https://w3c.github.io/audio-session/#audio-session-states">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+function waitForState(state) {
+  return new Promise(resolve => {
+    if (navigator.audioSession.state === state) {
+      resolve();
+      return;
+    }
+    navigator.audioSession.addEventListener("statechange", function listener() {
+      if (navigator.audioSession.state === state) {
+        navigator.audioSession.removeEventListener("statechange", listener);
+        resolve();
+      }
+    });
+  });
+}
+
+async function startAudibleContext(t) {
+  const context = new AudioContext();
+  t.add_cleanup(async () => {
+    await context.close();
+    await waitForState("inactive");
+  });
+  const oscillator = new OscillatorNode(context);
+  const gain = new GainNode(context, {gain: 0.01});
+  oscillator.connect(gain).connect(context.destination);
+  oscillator.start();
+  // A user agent can let an AudioContext start only after user activation.
+  await test_driver.bless("resume the AudioContext");
+  await context.resume();
+  assert_equals(context.state, "running", "The AudioContext runs");
+  return context;
+}
+
+promise_test(async t => {
+  assert_implements("audioSession" in navigator &&
+                    "state" in navigator.audioSession,
+                    "AudioSession.state is not supported");
+  navigator.audioSession.type = "auto";
+  await startAudibleContext(t);
+  await waitForState("active");
+}, "An audible AudioContext makes the audio session active");
+
+promise_test(async t => {
+  assert_implements("audioSession" in navigator &&
+                    "state" in navigator.audioSession,
+                    "AudioSession.state is not supported");
+  navigator.audioSession.type = "auto";
+  const context = await startAudibleContext(t);
+  await waitForState("active");
+  await context.suspend();
+  await waitForState("inactive");
+}, "Suspending the only audible AudioContext makes the audio session inactive");
+
+promise_test(async t => {
+  assert_implements("audioSession" in navigator &&
+                    "state" in navigator.audioSession,
+                    "AudioSession.state is not supported");
+  navigator.audioSession.type = "playback";
+  t.add_cleanup(() => { navigator.audioSession.type = "auto"; });
+  await startAudibleContext(t);
+  await waitForState("active");
+}, "An audible AudioContext makes a \"playback\" audio session active");
+</script>

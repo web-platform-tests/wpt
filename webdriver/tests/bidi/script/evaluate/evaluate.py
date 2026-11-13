@@ -50,6 +50,29 @@ async def test_target_realm(bidi_session, default_realm):
     )
 
 
+async def test_result_realm_is_not_page_controlled(
+    bidi_session, top_context, default_realm
+):
+    result = await bidi_session.script.evaluate(
+        raw_result=True,
+        expression="""(() => {
+            const originalStringify = JSON.stringify;
+            JSON.stringify = value => {
+                JSON.stringify = originalStringify;
+                return originalStringify({...value, realm: "page-controlled-realm"});
+            };
+            setTimeout(() => { JSON.stringify = originalStringify; }, 0);
+            return 42;
+        })()""",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False,
+    )
+
+    recursive_compare(
+        {"realm": default_realm, "result": {"type": "number", "value": 42}}, result
+    )
+
+
 async def test_different_target_realm(bidi_session):
     await bidi_session.browsing_context.create(type_hint="tab")
 

@@ -35,6 +35,9 @@
     @page n,-XYZ {
         size: 9in;
     }
+    @page --a {
+        size: 10in;
+    }
 </style>
 
 <script>
@@ -47,7 +50,8 @@
         "_a, Z" : "size: 6in;",
         "-b, y" : "size: 7in;",
         "_abcd" : "size: 8in;",
-        "n, -XYZ" : "size: 9in;"
+        "n, -XYZ" : "size: 9in;",
+        "--a" : "size: 10in;"
     };
     let styleSheets = document.styleSheets;
     for (let sheet of styleSheets) {
@@ -72,4 +76,17 @@
     test(function() {
         assert_equals(Object.keys(expectedForSelector).length, 0, "missing @page selectors");
     });
+    test(function() {
+        let sheet = styleSheets[0];
+        let index = sheet.insertRule("@page --a { size: 3in; }");
+        let rule = sheet.cssRules[index];
+        assert_equals(rule.selectorText, "--a");
+        assert_equals(rule.style.size, "3in");
+        sheet.deleteRule(index);
+    }, "inserting a rule with a dashed page name");
+    test(function() {
+        let rule = styleSheets[0].cssRules[0];
+        rule.selectorText = "--b";
+        assert_equals(rule.selectorText, "--b");
+    }, "assigning a dashed page name as selector text");
 </script>

@@ -3,28 +3,13 @@
 <title>Selection indices after content change</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="helpers.js"></script>
 
 <input id="i1" type="text" value="hello">
 <textarea id="t1">hello</textarea>
 
 <script>
 "use strict";
-
-// This helper ensures that when the selection direction is reset, it always is reset to the same value consistently
-// (which must be one of either "none" or "forward"). This helps catch bugs like one observed in Chrome, where textareas
-// reset to "none" but inputs reset to "forward".
-let observedResetSelectionDirection;
-function assertSelectionDirectionIsReset(element) {
-  if (!observedResetSelectionDirection) {
-    assert_in_array(element.selectionDirection, ["none", "forward"],
-      "selectionDirection must be set to either none or forward");
-    observedResetSelectionDirection = element.selectionDirection;
-  } else {
-    assert_equals(element.selectionDirection, observedResetSelectionDirection,
-      `selectionDirection must be reset to ${observedResetSelectionDirection} (which was previously observed to be ` +
-      `the value after resetting the selection direction)`);
-  }
-}
 
 runInputTest("input out of document", () => {
   const input = document.createElement("input");

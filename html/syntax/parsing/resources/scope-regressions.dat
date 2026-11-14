@@ -1,0 +1,329 @@
+#data
+<table><td><svg><tbody><desc><table></table><td>x
+#errors
+missing-doctype
+td start tag in table body without a tr
+closing a cell with foreign descendants still open
+eof with unclosed elements
+#document
+| <html>
+|   <head>
+|   <body>
+|     <table>
+|       <tbody>
+|         <tr>
+|           <td>
+|             <svg svg>
+|               <svg tbody>
+|                 <svg desc>
+|                   <table>
+|           <td>
+|             "x"
+
+#data
+<svg><template><desc><table></table>x<p>y
+#errors
+missing-doctype
+eof with unclosed elements
+#document
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg template>
+|         <svg desc>
+|           <table>
+|           "x"
+|           <p>
+|             "y"
+
+#data
+<table><svg><template><desc><div><template></template><td>x
+#errors
+missing-doctype
+svg start tag in table
+div start tag in table
+td start tag in table body without a tr
+eof with unclosed elements
+#document
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg template>
+|         <svg desc>
+|           <div>
+|             <template>
+|               content
+|     <table>
+|       <tbody>
+|         <tr>
+|           <td>
+|             "x"
+
+#data
+<svg><aK><desc></aK>x
+#errors
+foreign end tag does not match the current node
+eof with unclosed elements
+#document-fragment
+div
+#document
+| <svg svg>
+|   <svg aK>
+|     <svg desc>
+|   "x"
+
+#data
+<svg><aK><desc></ak>x
+#errors
+foreign end tag does not match the current node
+unmatched ak end tag in HTML rules
+eof with unclosed elements
+#document-fragment
+div
+#document
+| <svg svg>
+|   <svg aK>
+|     <svg desc>
+|       "x"
+
+#data
+<svg><desc><span></desc>x
+#errors
+desc end tag blocked by a special element
+eof with unclosed elements
+#document-fragment
+div
+#document
+| <svg svg>
+|   <svg desc>
+|     <span>
+|       "x"
+
+#data
+<svg><title><span></title>x
+#errors
+title end tag blocked by a special element
+eof with unclosed elements
+#document-fragment
+div
+#document
+| <svg svg>
+|   <svg title>
+|     <span>
+|       "x"
+
+#data
+<math><mi><span></mi>x
+#errors
+mi end tag blocked by a special element
+eof with unclosed elements
+#document-fragment
+div
+#document
+| <math math>
+|   <math mi>
+|     <span>
+|       "x"
+
+#data
+<svg><desc><b>x</desc>y
+#errors
+missing-doctype
+desc end tag blocked by a special element
+eof with unclosed elements
+#document
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg desc>
+|         <b>
+|           "xy"
+
+#data
+<div><form></div><svg></form></svg><form>x
+#errors
+div end tag with form still open
+foreign end tag does not match the current node
+form pointer element is not in scope
+eof with unclosed elements
+#document-fragment
+div
+#document
+| <div>
+|   <form>
+| <svg svg>
+| <form>
+|   "x"
+
+#data
+<b id=1><b><b><b><b></b></b></b></b>x
+#errors
+eof with unclosed elements
+#document-fragment
+div
+#document
+| <b>
+|   id="1"
+|   <b>
+|     <b>
+|       <b>
+|         <b>
+|   "x"
+
+#data
+<b id=1><svg><desc><b><b><b><b></b></b></b></b>x
+#errors
+eof with unclosed elements
+#document-fragment
+div
+#document
+| <b>
+|   id="1"
+|   <svg svg>
+|     <svg desc>
+|       <b>
+|         <b>
+|           <b>
+|             <b>
+|       "x"
+
+#data
+<b id=1><svg><desc><b><b><b><b></b></b></b><i></b>x
+#errors
+formatting element is not in scope
+eof with unclosed elements
+#document-fragment
+div
+#document
+| <b>
+|   id="1"
+|   <svg svg>
+|     <svg desc>
+|       <b>
+|         <b>
+|           <b>
+|             <b>
+|         <i>
+|           "x"
+
+#data
+<form id=a><table></form><form id=b></table><p>x</form>y
+#errors
+missing-doctype
+form end tag in table
+form pointer element is not in scope
+form start tag in table
+form pointer element is not in scope
+eof with unclosed elements
+#document
+| <html>
+|   <head>
+|   <body>
+|     <form>
+|       id="a"
+|       <table>
+|         <form>
+|           id="b"
+|       <p>
+|         "xy"
+
+#data
+<table><tr><td>a</td></tfoot><td>b
+#errors
+tfoot end tag without tfoot in table scope
+eof with unclosed elements
+#document-fragment
+div
+#document
+| <table>
+|   <tbody>
+|     <tr>
+|       <td>
+|         "a"
+|       <td>
+|         "b"
+
+#data
+<table><thead><tr><td>a</td></tbody><td>b
+#errors
+tbody end tag without tbody in table scope
+eof with unclosed elements
+#document-fragment
+div
+#document
+| <table>
+|   <thead>
+|     <tr>
+|       <td>
+|         "a"
+|       <td>
+|         "b"
+
+#data
+<table><tbody><template><td>a</td></tbody><td>b
+#errors
+tbody end tag without tbody in table scope
+eof with an open template
+eof with unclosed elements
+#document-fragment
+div
+#document
+| <table>
+|   <tbody>
+|     <template>
+|       content
+|         <td>
+|           "a"
+|         <td>
+|           "b"
+
+#data
+<form><svg><option></form><g>
+#errors
+foreign end tag does not match the current node
+form end tag with foreign descendants still open
+eof with unclosed elements
+#document-fragment
+div
+#document
+| <form>
+|   <svg svg>
+|     <svg option>
+|       <svg g>
+
+#data
+<table><td><template><tr></table>X
+#errors
+td start tag in table body without a tr
+table end tag without a table body in table scope
+non-space character in table
+eof with an open template
+eof with unclosed elements
+#document-fragment
+div
+#document
+| <table>
+|   <tbody>
+|     <tr>
+|       <td>
+|         <template>
+|           content
+|             <tr>
+|             "X"
+
+#data
+<p><table></table><div>x
+#errors
+HTML p start tag in foreign content
+HTML div start tag in foreign content
+eof with unclosed elements
+#document-fragment
+svg tbody
+#document
+| <p>
+| <table>
+| <div>
+|   "x"

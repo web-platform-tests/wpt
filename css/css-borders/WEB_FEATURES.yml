@@ -11,7 +11,6 @@ rules:
 - border-left-*: [borders]
 - border-right-*: [borders]
 - border-shorthand*: [borders]
-- border-style-*: [borders]
+- border-style*: [borders]
 - border-top-*: [borders]
 - border-width-*: [borders]
-- ttwf-css3background-border-*: [borders]

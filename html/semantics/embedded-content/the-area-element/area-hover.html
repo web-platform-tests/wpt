@@ -30,18 +30,43 @@
     await pointerMove(60, 60);
     assert_true(areaTop.matches(':hover'));
     assert_false(areaBottom.matches(':hover'));
+  }, 'first <area> matches :hover');
 
-    await pointerMove(150, 150);
-    assert_true(areaTop.matches(':hover'));
+  promise_test(async () => {
+    await pointerMove(10, 10);
+    assert_true(img.matches(':hover'));
+    assert_false(areaTop.matches(':hover'));
     assert_false(areaBottom.matches(':hover'));
 
     await pointerMove(240, 240);
     assert_false(areaTop.matches(':hover'));
     assert_true(areaBottom.matches(':hover'));
+  }, 'second <area> matches :hover');
 
-    await pointerMove(290, 290);
+  promise_test(async () => {
+    await pointerMove(10, 10);
     assert_true(img.matches(':hover'));
     assert_false(areaTop.matches(':hover'));
     assert_false(areaBottom.matches(':hover'));
-  });
+
+    await pointerMove(150, 150);
+    assert_true(areaTop.matches(':hover'));
+    assert_false(areaBottom.matches(':hover'));
+  }, 'topmost <area> matches :hover');
+
+  promise_test(async () => {
+    await pointerMove(10, 10);
+    assert_true(img.matches(':hover'));
+    assert_false(areaTop.matches(':hover'));
+    assert_false(areaBottom.matches(':hover'));
+
+    await pointerMove(60, 60);
+    assert_true(areaTop.matches(':hover'));
+    assert_false(areaBottom.matches(':hover'));
+
+    await pointerMove(10, 10);
+    assert_true(img.matches(':hover'));
+    assert_false(areaTop.matches(':hover'));
+    assert_false(areaBottom.matches(':hover'));
+  }, '<area> stops matching :hover after moving the pointer off it');
 </script>

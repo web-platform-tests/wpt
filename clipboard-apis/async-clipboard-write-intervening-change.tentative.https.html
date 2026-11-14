@@ -1,0 +1,84 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Async Clipboard write with an intervening clipboard change</title>
+<link rel="help" href="https://w3c.github.io/clipboard-apis/#dom-clipboard-write">
+<link rel="help" href="https://github.com/w3c/clipboard-apis/issues/254">
+<body>Body needed for test_driver.click()</body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/user-activation.js"></script>
+<script>
+// Start a write whose text/plain representation stays pending until the test
+// calls resolveData(). This lets another write complete before the data is
+// available. Cleanup resolves the representation and waits for the write to
+// settle, even if the test fails.
+async function startDelayedWrite(t, text) {
+  let resolveData;
+  const data = new Promise(resolve => {
+    resolveData = () => resolve(new Blob([text], {type: 'text/plain'}));
+  });
+  let write;
+  t.add_cleanup(async () => {
+    resolveData();
+    if (write) {
+      await write.then(() => {}, () => {});
+    }
+  });
+
+  const item = new ClipboardItem({'text/plain': data});
+  await waitForUserActivation();
+  write = navigator.clipboard.write([item]);
+  // The write may reject before the test is ready to await it.
+  write.catch(() => {});
+  return {write, resolveData};
+}
+
+async function readClipboardText() {
+  await waitForUserActivation();
+  return navigator.clipboard.readText();
+}
+
+// A delayed representation alone must not prevent a write from succeeding.
+promise_test(async t => {
+  await tryGrantReadPermission();
+  await tryGrantWritePermission();
+
+  const text = 'delayed write without an intervening change';
+  const delayed = await startDelayedWrite(t, text);
+  delayed.resolveData();
+  await delayed.write;
+  assert_equals(await readClipboardText(), text);
+}, 'A delayed clipboard write succeeds without an intervening write');
+
+// An intervening write should invalidate the pending write, even if it writes
+// the same text already on the clipboard. These same-page writes do not test
+// changes made by native applications or distinguish cancellation on invocation
+// from change-count-based detection.
+for (const identical of [false, true]) {
+  promise_test(async t => {
+    await tryGrantReadPermission();
+    await tryGrantWritePermission();
+
+    const newerText = 'newer clipboard content';
+    const initialText = identical ? newerText : 'initial clipboard content';
+    await waitForUserActivation();
+    await navigator.clipboard.writeText(initialText);
+
+    const delayed = await startDelayedWrite(t, 'older pending write');
+    // Install the assertion before starting the intervening write, since the
+    // pending write may be rejected before its representation is resolved.
+    const rejection = promise_rejects_dom(t, 'InvalidStateError', delayed.write);
+    // Keep an early assertion failure from becoming an unhandled rejection.
+    rejection.catch(() => {});
+
+    await waitForUserActivation();
+    await navigator.clipboard.writeText(newerText);
+    delayed.resolveData();
+    await rejection;
+    assert_equals(await readClipboardText(), newerText);
+  }, `A delayed clipboard write rejects after an intervening write of ${
+    identical ? 'identical' : 'different'} content`);
+}
+</script>

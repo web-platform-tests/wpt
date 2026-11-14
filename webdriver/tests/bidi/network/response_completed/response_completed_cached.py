@@ -17,12 +17,14 @@ from .. import (
 pytestmark = pytest.mark.asyncio
 
 
+@pytest.mark.parametrize("use_gzip", [False, True])
 async def test_cached(
     wait_for_event,
     wait_for_future_safe,
     url,
     fetch,
     setup_network_test,
+    use_gzip,
 ):
     network_events = await setup_network_test(
         events=[
@@ -31,15 +33,28 @@ async def test_cached(
     )
     events = network_events[RESPONSE_COMPLETED_EVENT]
 
-    cached_url = url(
-        f"/webdriver/tests/support/http_handlers/cached.py?status=200&nocache={random.random()}"
-    )
+    body = "x" * 2000
+    decoded_size = len(body.encode("utf-8"))
+    cached_url = url(get_cached_url("text/plain", body))
+    if use_gzip:
+        cached_url += "&pipe=gzip"
     on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
     await fetch(cached_url)
     await wait_for_future_safe(on_response_completed)
 
     assert len(events) == 1
     expected_request = {"method": "GET", "url": cached_url}
+    encoded_size = decoded_size
+    if use_gzip:
+        headers = {
+            header["name"].lower(): header["value"]["value"]
+            for header in events[0]["response"]["headers"]
+        }
+        assert headers["content-encoding"] == "gzip"
+        encoded_size = int(headers["content-length"])
+        assert 0 < encoded_size < decoded_size
+
+    assert events[0]["response"]["bytesReceived"] > encoded_size
 
     # The first request/response is used to fill the browser cache, so we expect
     # fromCache to be False here.
@@ -47,6 +62,8 @@ async def test_cached(
         "url": cached_url,
         "fromCache": False,
         "status": 200,
+        "bodySize": encoded_size,
+        "content": {"size": decoded_size},
     }
     assert_response_event(
         events[0],
@@ -67,6 +84,9 @@ async def test_cached(
         "url": cached_url,
         "fromCache": True,
         "status": 200,
+        "bodySize": encoded_size,
+        "content": {"size": decoded_size},
+        "bytesReceived": 0,
     }
     assert_response_event(
         events[1],

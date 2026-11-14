@@ -1000,3 +1000,57 @@ promise_test(async t => {
   assert_typed_array_equals(view1, new Uint8Array(underlying, 2), 'reader1 value');
   assert_typed_array_equals(view2, new Uint8Array([0x03]), 'reader2 value');
 }, 'ReadableStream teeing with byte source: reading an array with a byte offset should clone correctly');
+
+promise_test(async t => {
+
+  const rs = new ReadableStream({
+    type: 'bytes',
+    start(c) {
+      c.enqueue(new Uint8Array([0x01]));
+      c.close();
+    }
+  });
+
+  const [branch1, branch2] = rs.tee();
+  const reader1 = branch1.getReader({ mode: 'byob' });
+  const reader2 = branch2.getReader();
+
+  await promise_rejects_js(t, TypeError, reader1.read(new Uint16Array(1)), 'read(view) from branch1 should reject');
+  await promise_rejects_js(t, TypeError, reader1.closed, 'branch1 should be errored');
+
+  const result1 = await reader2.read();
+  assert_equals(result1.done, false, 'first read() from branch2 should be not done');
+  assert_typed_array_equals(result1.value, new Uint8Array([0x01]), 'first chunk from branch2 should be correct');
+  const result2 = await reader2.read();
+  assert_equals(result2.done, true, 'second read() from branch2 should be done');
+
+}, 'ReadableStream teeing with byte source: close in the middle of an element of a read(view) from branch1');
+
+promise_test(async t => {
+
+  const rs = recordingReadableStream({ type: 'bytes' });
+
+  const [branch1, branch2] = rs.tee();
+  const reader1 = branch1.getReader({ mode: 'byob' });
+  const reader2 = branch2.getReader();
+  const read1 = reader1.read(new Uint16Array(1));
+  const read2 = reader2.read();
+
+  await flushAsyncEvents();
+  rs.controller.byobRequest.view[0] = 0x01;
+  rs.controller.byobRequest.respond(1);
+
+  await flushAsyncEvents();
+  rs.controller.close();
+  rs.controller.byobRequest.respond(0);
+
+  await promise_rejects_js(t, TypeError, read1, 'read(view) from branch1 should reject');
+  await promise_rejects_js(t, TypeError, reader1.closed, 'branch1 should be errored');
+
+  const result1 = await read2;
+  assert_equals(result1.done, false, 'first read() from branch2 should be not done');
+  assert_typed_array_equals(result1.value, new Uint8Array([0x01]), 'first chunk from branch2 should be correct');
+  const result2 = await reader2.read();
+  assert_equals(result2.done, true, 'second read() from branch2 should be done');
+
+}, 'ReadableStream teeing with byte source: respond(0) after close() in the middle of an element of a read(view) from branch1');

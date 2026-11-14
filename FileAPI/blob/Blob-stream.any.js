@@ -92,3 +92,10 @@ promise_test(async () => {
   const chunks = await read_all_chunks(stream, { mode: "byob" });
   assert_array_equals(chunks, input_arr);
 }, "Reading Blob.stream() with BYOB reader")
+
+promise_test(async t => {
+  const blob = new Blob(["a"]);
+  const reader = blob.stream().getReader({ mode: "byob" });
+  await promise_rejects_js(t, TypeError, reader.read(new Uint16Array(1)));
+  await promise_rejects_js(t, TypeError, reader.closed);
+}, "Reading Blob.stream() with BYOB reader ending partway through an element")

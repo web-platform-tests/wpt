@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Focus-visible ring matches the &lt;area> circle geometry</title>
+<link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/image-maps.html#image-map-processing-model">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#dom-focusoptions-focusvisible">
+<link rel="match" href="reference/area-circle-transform-ref.html">
+<link rel="mismatch" href="area-circle-focus-visible-transform.html?mismatch">
+<style>
+  #container {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    background-color: gray;
+
+    transform: scaleX(1.5);
+    transform-origin: 0 0;
+  }
+
+  svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  img {
+    margin-left: 40px;
+    margin-top: 60px;
+  }
+</style>
+
+<div id="container">
+  <img src="/images/transparent-300x300.png" usemap="#map" width="300" height="300">
+  <svg id="svg" width="400" height="400">
+    <circle transform="translate(40,60)" cx="130" cy="170" r="100" fill="none"
+      stroke="green" stroke-width="16" />
+  </svg>
+</div>
+<map name="map">
+  <area id="area" shape="circle" coords="130,170,100" tabindex="0" href>
+</map>
+
+<script>
+  if (location.search.endsWith('mismatch')) {
+    container.style.zIndex = -1;
+    svg.style.zIndex = -1;
+  }
+  area.focus({ focusVisible: true });
+</script>

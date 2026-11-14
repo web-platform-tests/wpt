@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Focus-visible ring is not shown for a non-focusable &lt;area></title>
+<link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/image-maps.html#image-map-processing-model">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#dom-focusoptions-focusvisible">
+<link rel="match" href="reference/area-circle-ref.html">
+<style>
+  #container {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    background-color: gray;
+    z-index: -1;
+  }
+
+  svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+
+  img {
+    margin-left: 40px;
+    margin-top: 60px;
+  }
+</style>
+
+<div id="container">
+  <svg id="svg" width="400" height="400">
+    <circle transform="translate(40,60)" cx="130" cy="170" r="100" fill="none"
+      stroke="green" stroke-width="16" />
+  </svg>
+  <img src="/images/transparent-300x300.png" usemap="#map" width="300" height="300">
+</div>
+<map name="map">
+  <area id="area" shape="circle" coords="130,170,100">
+</map>
+
+<script>
+  area.focus({ focusVisible: true });
+</script>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Focus visible ring matches the &lt;area> polygon geometry</title>
+<title>Focus-visible ring matches the &lt;area> polygon geometry</title>
 <link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/image-maps.html#image-map-processing-model">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#dom-focusoptions-focusvisible">
@@ -15,13 +15,15 @@
     background-color: gray;
   }
 
-  img, svg {
+  svg {
     position: absolute;
+    top: 0;
+    left: 0;
   }
 
   img {
-    left: 40px;
-    top: 60px;
+    margin-left: 40px;
+    margin-top: 60px;
   }
 </style>
 
@@ -36,7 +38,7 @@
 <map name="map">
   <area id="area" shape="poly"
     coords="180,90 200,150 265,150 215,190 235,255 180,215 125,255 145,190 95,150 160,150"
-    tabindex="0">
+    tabindex="0" href>
 </map>
 
 <script>

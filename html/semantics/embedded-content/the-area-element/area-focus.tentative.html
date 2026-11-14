@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTMLAreaElement focus</title>
+<link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/image-maps.html">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<img src="/images/grgr-256x256.png" usemap="#map" width="300" height="300">
+<map name="map">
+  <area id="area" shape="circle" coords="75,75,75">
+</map>
+
+<script>
+  test(() => {
+    area.focus();
+    assert_not_equals(document.activeElement, area);
+  }, 'an <area> without an href attribute is not focusable');
+  area.blur();
+
+  test(() => {
+    area.setAttribute('href', '');
+    area.focus();
+    assert_equals(document.activeElement, area);
+  }, 'an <area> with an href attribute is focusable');
+  area.blur();
+  area.removeAttribute('href');
+
+  test(() => {
+    area.setAttribute('tabindex', '0');
+    area.focus();
+    assert_equals(document.activeElement, area);
+  }, 'an <area> with a tabindex=0 attribute is focusable');
+  area.blur();
+  area.removeAttribute('tabindex');
+
+  test(() => {
+    area.setAttribute('tabindex', '-1');
+    area.focus();
+    assert_equals(document.activeElement, area);
+  }, 'an <area> with a tabindex=-1 attribute is focusable');
+  area.blur();
+  area.removeAttribute('tabindex');
+</script>

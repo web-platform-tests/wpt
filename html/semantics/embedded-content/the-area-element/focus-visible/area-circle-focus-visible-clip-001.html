@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Focus visible ring matches the &lt;area> circle geometry</title>
+<title>Focus-visible ring matches the &lt;area> circle geometry</title>
 <link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/image-maps.html#image-map-processing-model">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#dom-focusoptions-focusvisible">
@@ -14,13 +14,15 @@
     background-color: gray;
   }
 
-  img, svg {
+  svg {
     position: absolute;
+    top: 0;
+    left: 0;
   }
 
   img {
-    left: 40px;
-    top: 60px;
+    margin-left: 40px;
+    margin-top: 60px;
   }
 </style>
 
@@ -32,7 +34,7 @@
   </svg>
 </div>
 <map name="map">
-  <area id="area" shape="circle" coords="60,170,100" tabindex="0">
+  <area id="area" shape="circle" coords="60,170,100" tabindex="0" href>
 </map>
 
 <script>

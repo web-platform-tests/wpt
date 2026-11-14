@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Resource Timing initiator type: img fetch after an environment change</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#img-environment-changes">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="frame" style="width: 100px; height: 100px" srcdoc='
+  <picture>
+    <source media="(min-width: 500px)" srcset="/images/green-2x2.png?id=environment-change-wide">
+    <img src="/images/green-1x1.png?id=environment-change-narrow">
+  </picture>'></iframe>
+<script>
+promise_test(async t => {
+  await new Promise(resolve => window.onload = resolve);
+  const frame = document.getElementById("frame");
+  const img = frame.contentDocument.querySelector("img");
+  assert_equals(img.currentSrc, new URL("/images/green-1x1.png?id=environment-change-narrow", location).href,
+                "narrow source selected initially");
+
+  frame.style.width = "600px";
+  await new Promise(resolve => {
+    img.onload = resolve;
+    img.onerror = t.unreached_func("img error");
+  });
+  assert_equals(img.currentSrc, new URL("/images/green-2x2.png?id=environment-change-wide", location).href,
+                "wide source selected after resize");
+
+  const entry = await new Promise(resolve => {
+    new frame.contentWindow.PerformanceObserver(list => {
+      const entry = list.getEntries().find(e => e.name === img.currentSrc);
+      if (entry)
+        resolve(entry);
+    }).observe({type: "resource", buffered: true});
+  });
+  assert_equals(entry.initiatorType, "img");
+}, "img fetch from reacting to environment changes has initiator type 'img'");
+</script>

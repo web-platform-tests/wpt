@@ -335,10 +335,20 @@ promise_test(async t => {
     receivedDatagrams++;
   }
 
-  // Check that the receivedDatagrams is less than or equal to the
+  // Check that the receivedDatagrams is less than or equal to
   // incomingMaxBufferedDatagrams.
-  assert_less_than_equal(receivedDatagrams, N);
-}, 'Datagrams read is less than or equal to the incomingMaxBufferedDatagrams');
+  assert_less_than_equal(receivedSequenceNumbers.length, N);
+
+  // Check that the received datagrams are from the end of the sequence.
+  // If datagrams are being dropped from the beginning, the received sequence
+  // numbers should all be from the later part of the sequence.
+  // We won't assume that every datagram sent was received or dropped to avoid
+  // timing issues.  Just verify that the received datagrams don't come from the
+  // start of the sequence.
+  const minReceivedSequence = Math.min(...receivedSequenceNumbers);
+  assert_greater_than_equal(minReceivedSequence, N-1,
+    'Dropped datagrams should be from the beginning of the sequence');
+}, 'Datagrams read is less than or equal to incomingMaxBufferedDatagrams');
 
 promise_test(async t => {
   // Establish a WebTransport session.
@@ -372,7 +382,6 @@ promise_test(async t => {
   // Initial values are implementation-defined
   assert_greater_than_equal(wt.datagrams.incomingMaxBufferedDatagrams, 1);
   assert_greater_than_equal(wt.datagrams.outgoingMaxBufferedDatagrams, 1);
-
   wt.datagrams.incomingMaxBufferedDatagrams = 5;
   assert_equals(wt.datagrams.incomingMaxBufferedDatagrams, 5);
   wt.datagrams.outgoingMaxBufferedDatagrams = 5;

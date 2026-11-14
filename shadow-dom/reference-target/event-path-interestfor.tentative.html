@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+
+<body>
+<x-component id="outerJ">
+<template shadowRootMode="open">
+    <style>
+        button {
+            interest-delay: 0s;
+        }
+    </style>
+    <button id="button" interestfor="middleJ">Interest</button>
+    <x-component id="middleJ">
+    <template shadowRootMode="open" shadowRootReferenceTarget="innerJ">
+        <x-component id="innerJ">
+        <template shadowRootMode="open" shadowRootReferenceTarget="targetDiv">
+            <div id="targetDiv"></div>
+        </template>
+        </x-component>
+    </template>
+    </x-component>
+</template>
+</x-component>
+<button id="otherFocusTarget">Other</button>
+
+<script>
+function waitForRender() {
+    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+async function focusOn(element) {
+    element.focus();
+    await waitForRender();
+}
+
+promise_test(async (t) => {
+    const outerJ = document.getElementById("outerJ");
+    const button = outerJ.shadowRoot.getElementById("button");
+    const middleJ = outerJ.shadowRoot.getElementById("middleJ");
+    const innerJ = middleJ.shadowRoot.getElementById("innerJ");
+    const targetDiv = innerJ.shadowRoot.getElementById("targetDiv");
+    let elementsReceivingInterestEvent = [];
+
+    outerJ.addEventListener("interest", (e) => {
+        assert_unreached("interest event should not fire on outer component.");
+    }, {once: true});
+
+    innerJ.addEventListener("interest", (e) => {
+        elementsReceivingInterestEvent.push(innerJ);
+        assert_true(e instanceof InterestEvent);
+        assert_equals(e.target, innerJ,
+                "target for event listener on innerJ is innerJ");
+        assert_equals(e.source, button,
+                "source for event listener on innerJ is button");
+    }, {once: true});
+
+    targetDiv.addEventListener("interest", (e) => {
+        elementsReceivingInterestEvent.push(targetDiv);
+        assert_true(e instanceof InterestEvent);
+        assert_true(e.composed, "InterestEvent with source should be composed");
+        assert_equals(e.relatedTarget, undefined, "InterestEvent doesn't expose relatedTarget property");
+        assert_equals(e.target, targetDiv,
+                "target for event listener on targetDiv is targetDiv");
+        assert_equals(e.source, button,
+                "source for event listener on targetDiv is button");
+    }, {once: true});
+
+    middleJ.addEventListener("interest", (e) => {
+        elementsReceivingInterestEvent.push(middleJ);
+        assert_true(e instanceof InterestEvent);
+        assert_equals(e.target, middleJ,
+                "target for event listener on middleJ is middleJ");
+        assert_equals(e.source, button,
+                "source for event listener on middleJ is button");
+    }, {once: true});
+
+    await focusOn(button);
+    assert_array_equals(elementsReceivingInterestEvent, [targetDiv, innerJ, middleJ], "Expected elements to receive the interest event");
+}, "interest event propagates to source's shadow tree only; target in deeper shadow root");
+
+promise_test(async (t) => {
+    const outerJ = document.getElementById("outerJ");
+    const button = outerJ.shadowRoot.getElementById("button");
+    const middleJ = outerJ.shadowRoot.getElementById("middleJ");
+    const innerJ = middleJ.shadowRoot.getElementById("innerJ");
+    const targetDiv = innerJ.shadowRoot.getElementById("targetDiv");
+    const otherFocusTarget = document.getElementById("otherFocusTarget");
+    let elementsReceivingEvent = [];
+
+    outerJ.addEventListener("loseinterest", (e) => {
+        assert_unreached("loseinterest event should not fire on outer component.");
+    }, {once: true});
+
+    targetDiv.addEventListener("loseinterest", (e) => {
+        elementsReceivingEvent.push(targetDiv);
+        assert_true(e instanceof InterestEvent);
+        assert_true(e.composed, "InterestEvent with source should be composed");
+        assert_equals(e.relatedTarget, undefined, "InterestEvent doesn't expose relatedTarget property");
+        assert_equals(e.target, targetDiv,
+                "target for loseinterest event listener on targetDiv is targetDiv");
+        assert_equals(e.source, button,
+                "source for loseinterest event listener on targetDiv is button");
+    }, {once: true});
+
+    middleJ.addEventListener("loseinterest", (e) => {
+        elementsReceivingEvent.push(middleJ);
+        assert_true(e instanceof InterestEvent);
+        assert_equals(e.target, middleJ,
+                "target for loseinterest event listener on middleJ is middleJ");
+        assert_equals(e.source, button,
+                "source for loseinterest event listener on middleJ is button");
+    }, {once: true});
+
+    innerJ.addEventListener("loseinterest", (e) => {
+        elementsReceivingEvent.push(innerJ);
+        assert_true(e instanceof InterestEvent);
+        assert_equals(e.target, innerJ,
+                "target for loseinterest event listener on innerJ is innerJ");
+        assert_equals(e.source, button,
+                "source for loseinterest event listener on innerJ is button");
+    }, {once: true});
+
+    await focusOn(button);
+    await focusOn(otherFocusTarget);
+    assert_array_equals(elementsReceivingEvent, [targetDiv, innerJ, middleJ], "Expected elements to receive the loseinterest event");
+}, "loseinterest event propagates to source's shadow tree only; target in deeper shadow root");
+</script>
+
+</body>
+
+</html>

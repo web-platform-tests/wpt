@@ -61,13 +61,6 @@ function test_idl_setter(element_creation_method, test_name_suffix, referencing_
     const host_container = document.querySelector("#host-container");
     const host = element_creation_method(host_container, referenced_element_type);
 
-    if (reflected_property === "ariaOwnsElements") {
-      // It's undetermined whether reference target should work with aria-owns or not; see
-      // https://github.com/WICG/webcomponents/issues/1091 and
-      // https://github.com/w3c/aria/issues/2266
-      return;
-    }
-
     if (expected_behavior === Behavior.ReflectsHost) {
       referencing_element[reflected_property] = host;
       // For element reflecting properties, the IDL getter returns the element even
@@ -134,12 +127,9 @@ function run_test_for_all_reflecting_properties(setup_function, test_function, t
       test_function(setup_function, test_name_suffix, referencing_element_type, referenced_element_type, "aria-errormessage", "ariaErrorMessageElements", Behavior.ReflectsHostInArray);
       test_function(setup_function, test_name_suffix, referencing_element_type, referenced_element_type, "aria-flowto", "ariaFlowToElements", Behavior.ReflectsHostInArray);
       test_function(setup_function, test_name_suffix, referencing_element_type, referenced_element_type, "aria-labelledby", "ariaLabelledByElements", Behavior.ReflectsHostInArray);
-      test_function(setup_function, test_name_suffix, referencing_element_type, referenced_element_type, "aria-owns", "ariaOwnsElements", Behavior.ReflectsHostInArray);
 
-      test_function(setup_function, test_name_suffix, referencing_element_type, referenced_element_type, "anchor", "anchorElement", Behavior.ReflectsHost);
       test_function(setup_function, test_name_suffix, referencing_element_type, referenced_element_type, "commandfor", "commandForElement", Behavior.ReflectsHost);
       test_function(setup_function, test_name_suffix, referencing_element_type, referenced_element_type, "popovertarget", "popoverTargetElement", Behavior.ReflectsHost);
-      test_function(setup_function, test_name_suffix, referencing_element_type, referenced_element_type, "interestfor", "interestForElement", Behavior.ReflectsHost);
 
       const expected_htmlFor_property_behavior = (referencing_element_type == "output") ? Behavior.ReflectsHostIDInDOMTokenList : Behavior.ReflectsHostID;
       test_function(setup_function, test_name_suffix, referencing_element_type, referenced_element_type, "for", "htmlFor", expected_htmlFor_property_behavior);
@@ -158,6 +148,24 @@ function run_test_for_all_reflecting_properties(setup_function, test_function, t
 
       const expected_control_property_behavior = HTML5_LABELABLE_ELEMENTS.includes(referenced_element_type) ? Behavior.ReflectsHostReadOnly : Behavior.IsNull;
       test_function(setup_function, test_name_suffix, referencing_element_type, referenced_element_type, "for", "control", expected_control_property_behavior);
+    }
+  }
+}
+
+// Reflecting properties whose interaction with reference target isn't (yet) standardized. These
+// are only run from .tentative test files.
+function run_test_for_nonstandard_reflecting_properties(setup_function, test_function, test_name_suffix) {
+  for(let referencing_element_type of element_types) {
+    for(let referenced_element_type of element_types) {
+      // It's undetermined whether reference target should work with aria-owns or not; see
+      // https://github.com/WICG/webcomponents/issues/1091 and
+      // https://github.com/w3c/aria/issues/2266
+      if (test_function !== test_idl_setter) {
+        test_function(setup_function, test_name_suffix, referencing_element_type, referenced_element_type, "aria-owns", "ariaOwnsElements", Behavior.ReflectsHostInArray);
+      }
+
+      test_function(setup_function, test_name_suffix, referencing_element_type, referenced_element_type, "anchor", "anchorElement", Behavior.ReflectsHost);
+      test_function(setup_function, test_name_suffix, referencing_element_type, referenced_element_type, "interestfor", "interestForElement", Behavior.ReflectsHost);
     }
   }
 }

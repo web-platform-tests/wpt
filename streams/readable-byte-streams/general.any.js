@@ -1637,6 +1637,41 @@ promise_test(async t => {
   await Promise.all([reader1.closed, reader2.closed]);
 }, 'ReadableStream with byte source: tee() with a partially filled read(view) when the original stream closes');
 
+promise_test(async t => {
+  let controller;
+  const stream = new ReadableStream({
+    start(c) {
+      controller = c;
+    },
+    pull: t.unreached_func('pull() should not be called'),
+    type: 'bytes'
+  });
+
+  // The BYOB read takes the enqueued byte into a partially filled pull-into, which stays pending after the BYOB
+  // reader is released.
+  const byobReader = stream.getReader({ mode: 'byob' });
+  const byobReadPromise = byobReader.read(new Uint16Array(1));
+  controller.enqueue(new Uint8Array([0x01]));
+  byobReader.releaseLock();
+  await promise_rejects_js(t, TypeError, byobReadPromise, 'read(view) must fail');
+
+  controller.close();
+  const reader = stream.getReader();
+  const read1 = reader.read();
+  const read2 = reader.read();
+
+  // respond(0) puts the partially filled byte back in the queue, where the pending read() must get it.
+  controller.byobRequest.respond(0);
+
+  const result1 = await read1;
+  assert_false(result1.done, 'first result.done');
+  assert_typed_array_equals(result1.value, new Uint8Array([0x01]), 'first result.value');
+  const result2 = await read2;
+  assert_true(result2.done, 'second result.done');
+  await reader.closed;
+}, 'ReadableStream with byte source: close() and respond(0) after releasing a BYOB reader with a partially filled ' +
+   'read(view) must fulfill a pending read() with the partial bytes');
+
 test(() => {
   let controller;
 

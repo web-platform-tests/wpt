@@ -6,24 +6,31 @@
 <div id="log"></div>
 <script>
 var events = [];
+var onStop = null;
 onmessage = function(e) {
   events.push(e.data);
+  if (e.data === "stop" && onStop) {
+    const callback = onStop;
+    onStop = null;
+    callback();
+  }
 };
 async_test(test => {
-  test.step_timeout(() => {
+  // Start each wait for a (wrongly fired) load event once the child has called stop(), so that
+  // the child document's fetch time does not count against it.
+  onStop = () => test.step_timeout(() => {
     const frame = document.querySelector('iframe');
     const child = frame.contentWindow;
     assert_equals(child.document.readyState, 'complete', 'readyState is complete');
     assert_array_equals(events, ["loading", "stop"], 'no load event was fired');
     events = [];
-    frame.src = "abort-document-load-2.html";
-
-    test.step_timeout(() => {
+    onStop = () => test.step_timeout(() => {
       const child = frame.contentWindow;
       assert_equals(child.document.readyState, 'complete', 'readyState is complete');
       assert_array_equals(events, ["loading", "DOMContentLoaded", "stop", "complete"], 'no load event was fired');
       test.done();
     }, 1000);
+    frame.src = "abort-document-load-2.html";
   }, 1000);
 });
 </script>

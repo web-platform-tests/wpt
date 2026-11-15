@@ -1,0 +1,59 @@
+<!doctype html>
+<meta charset="utf-8">
+<script>
+const urls = new Set();
+
+function createURL(source) {
+  const url = URL.createObjectURL(
+      new Blob([source], { type: 'text/javascript' }));
+  urls.add(url);
+  return url;
+}
+
+function runWorker(url, id, revokeAfterRun) {
+  const worker = new Worker(url);
+  worker.onmessage = event => {
+    parent.postMessage({
+      kind: 'result', id, evalAllowed: event.data.evalAllowed
+    }, location.origin);
+    worker.terminate();
+    if (revokeAfterRun) {
+      URL.revokeObjectURL(url);
+      urls.delete(url);
+    }
+  };
+  worker.onerror = event => {
+    event.preventDefault();
+    parent.postMessage({
+      kind: 'worker-error', id, message: event.message
+    }, location.origin);
+    worker.terminate();
+    if (revokeAfterRun) {
+      URL.revokeObjectURL(url);
+      urls.delete(url);
+    }
+  };
+}
+
+addEventListener('message', event => {
+  if (event.source !== parent || event.origin !== location.origin ||
+      !event.data) {
+    return;
+  }
+
+  const { command, id, source, url } = event.data;
+  if (command === 'create') {
+    parent.postMessage({ kind: 'created', id, url: createURL(source) },
+        location.origin);
+  } else if (command === 'create-and-run') {
+    runWorker(createURL(source), id, true);
+  } else if (command === 'run') {
+    runWorker(url, id, false);
+  } else if (command === 'revoke' && urls.has(url)) {
+    URL.revokeObjectURL(url);
+    urls.delete(url);
+  }
+});
+
+parent.postMessage({ kind: 'ready' }, location.origin);
+</script>

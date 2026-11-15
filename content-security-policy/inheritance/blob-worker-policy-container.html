@@ -1,0 +1,115 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Blob workers use the Blob URL creator's policy container</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<iframe id="protectedContext"></iframe>
+
+<script>
+const workerSource = `
+  let evalAllowed = true;
+  try {
+    eval('1 + 1');
+  } catch (error) {
+    evalAllowed = false;
+  }
+  postMessage({ evalAllowed });
+`;
+
+function runWorker(t, url) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(url);
+    t.add_cleanup(() => worker.terminate());
+    worker.onmessage = event => {
+      worker.terminate();
+      resolve({ kind: 'result', evalAllowed: event.data.evalAllowed });
+    };
+    worker.onerror = event => {
+      event.preventDefault();
+      worker.terminate();
+      reject(new Error(`Worker error: ${event.message}`));
+    };
+  });
+}
+
+function waitForMessage(source, predicate) {
+  return new Promise(resolve => {
+    function listener(event) {
+      if (event.source !== source || event.origin !== location.origin ||
+          !predicate(event.data)) {
+        return;
+      }
+      removeEventListener('message', listener);
+      resolve(event.data);
+    }
+    addEventListener('message', listener);
+  });
+}
+
+function command(frame, message, predicate) {
+  const response = waitForMessage(frame.contentWindow, predicate);
+  frame.contentWindow.postMessage(message, location.origin);
+  return response;
+}
+
+function isResponse(data, id) {
+  return data && data.id === id &&
+      (data.kind === 'result' || data.kind === 'worker-error');
+}
+
+const protectedContext = document.querySelector('#protectedContext');
+const protectedContextReady = waitForMessage(
+    protectedContext.contentWindow, data => data && data.kind === 'ready');
+protectedContext.src = 'support/blob-worker-protected-context.html';
+
+promise_test(async t => {
+  const url = URL.createObjectURL(
+      new Blob([workerSource], { type: 'text/javascript' }));
+  t.add_cleanup(() => URL.revokeObjectURL(url));
+  const result = await runWorker(t, url);
+  assert_true(result.evalAllowed,
+      'eval must be available when both creator and caller have no CSP');
+}, 'Control: an unprotected Blob creator and caller allow worker eval');
+
+promise_test(async t => {
+  await protectedContextReady;
+  const id = 'protected-control';
+  const result = await command(
+      protectedContext,
+      { command: 'create-and-run', source: workerSource, id },
+      data => isResponse(data, id));
+  assert_equals(result.kind, 'result', 'The worker must start');
+  assert_false(result.evalAllowed,
+      'eval must be blocked when both creator and caller have restrictive CSP');
+}, 'Control: a protected Blob creator and caller block worker eval');
+
+promise_test(async t => {
+  await protectedContextReady;
+  const id = 'protected-creator';
+  const created = await command(
+      protectedContext,
+      { command: 'create', source: workerSource, id },
+      data => data && data.kind === 'created' && data.id === id);
+  t.add_cleanup(() => protectedContext.contentWindow.postMessage(
+      { command: 'revoke', url: created.url }, location.origin));
+  const result = await runWorker(t, created.url);
+  assert_false(result.evalAllowed,
+      'The protected Blob URL creator policy must block eval');
+}, 'A Blob worker uses a protected creator policy, not an unprotected caller policy');
+
+promise_test(async t => {
+  await protectedContextReady;
+  const id = 'unprotected-creator';
+  const url = URL.createObjectURL(
+      new Blob([workerSource], { type: 'text/javascript' }));
+  t.add_cleanup(() => URL.revokeObjectURL(url));
+  const result = await command(
+      protectedContext,
+      { command: 'run', url, id },
+      data => isResponse(data, id));
+  assert_equals(result.kind, 'result', 'The worker must start');
+  assert_true(result.evalAllowed,
+      'The unprotected Blob URL creator policy must allow eval');
+}, 'A Blob worker uses an unprotected creator policy, not a protected caller policy');
+</script>

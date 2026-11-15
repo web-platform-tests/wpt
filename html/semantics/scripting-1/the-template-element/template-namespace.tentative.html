@@ -324,10 +324,14 @@ test(() => {
   assert_equals(cloned.namespaceURI, HTML_NS);
   assert_equals(cloned.content.querySelector("circle").namespaceURI, SVG_NS);
 
-  // Even when detached from <svg>, the cloned template retains its inherited namespace.
+  cloned.innerHTML = "<a href='#'>detached</a>";
+  assert_equals(cloned.content.firstElementChild.namespaceURI, HTML_NS);
+
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.appendChild(cloned);
   cloned.innerHTML = "<rect width='5' height='5'/>";
   assert_equals(cloned.content.firstElementChild.namespaceURI, SVG_NS);
-}, "cloneNode(true) on a <template> parsed inside <svg> preserves contents and inherited namespace");
+}, "cloneNode(true) on a <template> parsed inside <svg> preserves parsed contents without retaining SVG namespace when detached");
 
 test(() => {
   const outer1 = document.getElementById("outer-div-for-stray-end-tag");
@@ -415,27 +419,40 @@ test(() => {
   const svg = document.createElementNS(SVG_NS, "svg");
   const domTemplate = document.createElement("template");
   svg.appendChild(domTemplate);
+  domTemplate.innerHTML = "<circle cx='1' cy='1' r='1'/>";
+  assert_equals(domTemplate.content.firstElementChild.namespaceURI, SVG_NS);
 
   const clonedFromDomInSvg = domTemplate.cloneNode(true);
-  clonedFromDomInSvg.innerHTML = "<circle cx='1' cy='1' r='1'/>";
   assert_equals(clonedFromDomInSvg.content.firstElementChild.namespaceURI, SVG_NS);
+  clonedFromDomInSvg.innerHTML = "<a href='#'>detached clone defaults to HTML</a>";
+  assert_equals(clonedFromDomInSvg.content.firstElementChild.namespaceURI, HTML_NS);
 
-  domTemplate.contentNamespace = "html";
-  const clonedWithOverride = domTemplate.cloneNode(true);
-  clonedWithOverride.removeAttribute("contentnamespace");
-  clonedWithOverride.innerHTML = "<rect width='2' height='2'/>";
-  assert_equals(clonedWithOverride.content.firstElementChild.namespaceURI, SVG_NS);
+  domTemplate.remove();
+  domTemplate.innerHTML = "<a href='#'>detached template defaults to HTML</a>";
+  assert_equals(domTemplate.content.firstElementChild.namespaceURI, HTML_NS);
+
+  domTemplate.contentNamespace = "svg";
+  const clonedExplicit = domTemplate.cloneNode(false);
+  clonedExplicit.innerHTML = "<rect width='2' height='2'/>";
+  assert_equals(clonedExplicit.content.firstElementChild.namespaceURI, SVG_NS);
+  clonedExplicit.removeAttribute("contentnamespace");
+  clonedExplicit.innerHTML = "<a href='#'>auto after removing attribute</a>";
+  assert_equals(clonedExplicit.content.firstElementChild.namespaceURI, HTML_NS);
 
   const svg2 = document.createElementNS(SVG_NS, "svg");
   svg2.innerHTML = "<template><path/></template>";
   const parserTemplate = svg2.firstElementChild;
-  const div = document.createElement("div");
-  div.appendChild(parserTemplate);
+  assert_equals(parserTemplate.content.firstElementChild.namespaceURI, SVG_NS);
 
-  const clonedAfterReparent = parserTemplate.cloneNode(true);
-  clonedAfterReparent.innerHTML = "<a href='#'>html after reparent and clone</a>";
-  assert_equals(clonedAfterReparent.content.firstElementChild.namespaceURI, HTML_NS);
-}, "Cloning a DOM-created <template> appended to <svg> or a parser-created <svg><template> reparented into <div> updates inherited namespace");
+  parserTemplate.remove();
+  parserTemplate.innerHTML = "<a href='#'>html after detach</a>";
+  assert_equals(parserTemplate.content.firstElementChild.namespaceURI, HTML_NS);
+
+  const math = document.createElementNS(MATHML_NS, "math");
+  math.appendChild(parserTemplate);
+  parserTemplate.innerHTML = "<mi>x</mi>";
+  assert_equals(parserTemplate.content.firstElementChild.namespaceURI, MATHML_NS);
+}, "Auto template namespace is resolved only at parse time from live context and defaults to HTML when detached");
 
 test(() => {
   const t = document.createElement("template");
@@ -468,9 +485,10 @@ test(() => {
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.innerHTML = "<template><rect/></template>";
   const parsedInSvg = svg.firstElementChild;
-  standaloneFrag.appendChild(parsedInSvg);
-  parsedInSvg.innerHTML = "<path/>";
   assert_equals(parsedInSvg.content.firstElementChild.namespaceURI, SVG_NS);
+  standaloneFrag.appendChild(parsedInSvg);
+  parsedInSvg.innerHTML = "<a href='#'>falls back to HTML in hostless DocumentFragment</a>";
+  assert_equals(parsedInSvg.content.firstElementChild.namespaceURI, HTML_NS);
 }, "DOM-attached <template> inside outer template.content or standalone DocumentFragment");
 
 test(() => {
@@ -625,11 +643,16 @@ test(() => {
   assert_equals(doc.getElementById("in-desc").content.firstElementChild.namespaceURI, HTML_NS);
 
   const shallow = doc.getElementById("shallow-src").cloneNode(false);
+  assert_equals(shallow.namespaceURI, HTML_NS);
   assert_equals(shallow.content.childNodes.length, 0);
-  shallow.innerHTML = "<circle/>";
-  assert_equals(shallow.content.firstElementChild.namespaceURI, SVG_NS);
+  shallow.innerHTML = "<a>html-when-detached</a>";
+  assert_equals(shallow.content.firstElementChild.namespaceURI, HTML_NS);
 
-  const imported = document.importNode(doc.getElementById("shallow-src"), false);
+  const importedAuto = document.importNode(doc.getElementById("shallow-src"), true);
+  assert_equals(importedAuto.content.firstElementChild.namespaceURI, SVG_NS);
+
+  const imported = document.importNode(cdataTpl, false);
+  assert_equals(imported.content.childNodes.length, 0);
   imported.innerHTML = "<![CDATA[<frag>]]><use xlink:href='#x'/>";
   assert_equals(imported.content.firstChild.nodeValue, "<frag>");
   const useEl = imported.content.querySelector("use");

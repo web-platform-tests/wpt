@@ -157,6 +157,7 @@
   test_query('style(-1 <= -2 <= -3)', false);
   test_query('style(-3 <= -2 <= 1)', true);
   test_query('style(-1 <= -2 <= 1)', false);
+
   test_query_with_custom_properties('style(--x >= -1)',
                                   [['--x', '-1']],
                                   true);

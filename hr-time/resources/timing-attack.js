@@ -5,16 +5,19 @@ function run_test(isolated) {
   }
   test(function() {
     function check_resolutions(times, length) {
-      const end = length - 2;
+      // Allow for floating point error when coarsened times are converted to
+      // milliseconds relative to the time origin.
+      const minimum_difference = resolution * 0.99;
 
-      // we compare each value with the following ones
-      for (let i = 0; i < end; i++) {
+      // we compare each value with the following ones, including the last
+      // value, which is the only one that differs from the first
+      for (let i = 0; i < length; i++) {
         const h1 = times[i];
-        for (let j = i+1; j < end; j++) {
+        for (let j = i+1; j < length; j++) {
           const h2 = times[j];
           const diff = h2 - h1;
-          assert_true((diff === 0) || ((diff * 1000) >= resolution),
-            "Differences smaller than ' + resolution + ' microseconds: " + diff);
+          assert_true((diff === 0) || ((diff * 1000) >= minimum_difference),
+            "Differences smaller than " + resolution + " microseconds: " + diff);
         }
       }
       return true;

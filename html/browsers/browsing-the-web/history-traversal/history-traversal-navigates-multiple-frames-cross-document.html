@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>A history traversal navigates a child cross-document while navigating its parent same-document</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#apply-the-history-step">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/helpers.js"></script>
+
+<!--
+  Session history, written as top(iframe):
+
+    [T(B), T(D), T#a(D)*]
+
+  history.go(-2) changes the top-level navigable same-document (T#a -> T), and
+  the iframe cross-document (D -> B). Both have to be traversed. See also
+  history-traversal-navigates-multiple-frames.html, where both parts are
+  same-document.
+-->
+
+<body>
+<script>
+const B = new URL("/common/blank.html?b", location.href).href;
+const D = new URL("/common/blank.html?d", location.href).href;
+
+promise_test(async t => {
+  // [T(B)*]
+  const iframe = await addIframe(B);
+  t.add_cleanup(() => iframe.remove());
+
+  // [T(B), T(D)*]
+  await waitToAvoidReplace(t);
+  iframe.contentWindow.location.href = D;
+  await waitForIframeLoad(iframe);
+
+  // [T(B), T(D), T#a(D)*]
+  history.pushState(null, "", "#a");
+
+  const iframeLoaded = waitForIframeLoad(iframe);
+  history.go(-2);
+
+  await t.step_wait(() => location.hash === "",
+      "the top-level navigable goes back");
+  // In the failure case, wait a bit for the iframe's traversal, so that the
+  // assertion below reports where the iframe actually is.
+  await Promise.race([
+    iframeLoaded,
+    new Promise(resolve => t.step_timeout(resolve, 3000)),
+  ]);
+  assert_equals(iframe.contentWindow.location.href, B,
+      "the iframe goes back to B");
+}, "A history traversal navigates a child cross-document while navigating " +
+   "its parent same-document");
+</script>

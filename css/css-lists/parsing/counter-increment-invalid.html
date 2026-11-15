@@ -12,6 +12,8 @@
 <body>
 <script>
 test_invalid_value('counter-increment', 'none chapter');
+test_invalid_value('counter-increment', 'chapter none');
+test_invalid_value('counter-increment', 'chapter 1 none 1');
 test_invalid_value('counter-increment', 'reversed(none)');
 test_invalid_value('counter-increment', 'reversed(chapter)');
 test_invalid_value('counter-increment', '3');

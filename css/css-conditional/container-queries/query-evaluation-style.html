@@ -142,7 +142,27 @@
   test_query('style(3% >= 3%)', true);
   test_query('style(3s > 3ms)', true);
   test_query('style(3dppx > 96dpi)', true);
-
+  test_query('style(-1 = -1)', true);
+  test_query('style(-1 > -2)', true);
+  test_query('style(-1 >= -2)', true);
+  test_query('style(-1 < -2)', false);
+  test_query('style(-1 <= -2)', false);
+  test_query('style(-1 < -1)', false);
+  test_query('style(-2 < -1)', true);
+  test_query('style(-1px = -1px)', true);
+  test_query('style(-0.5 = -0.5)', true);
+  test_query('style(calc(0 - 1) = calc(0 - 1))', true);
+  test_query('style(-3 <= -2 <= -1)', true);
+  test_query('style(-1 >= -2 >= -3)', true);
+  test_query('style(-1 <= -2 <= -3)', false);
+  test_query('style(-3 <= -2 <= 1)', true);
+  test_query('style(-1 <= -2 <= 1)', false);
+  test_query_with_custom_properties('style(--x >= -1)',
+                                  [['--x', '-1']],
+                                  true);
+  test_query_with_custom_properties('style(--x <= -2)',
+                                  [['--x', '-1']],
+                                  false);
   test_query_with_custom_properties('style(3 <= --x)',
                                   [['--x', '3']],
                                   true);

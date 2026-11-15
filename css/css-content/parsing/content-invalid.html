@@ -28,6 +28,10 @@ test_invalid_value_combinations("content", `attr()`);
 test_invalid_value_combinations("content", `counters(counter-name)`);
 test_invalid_value_combinations("content", `counter()`);
 
+// <counter-name> cannot be the keyword none (css-lists-3, CSS 2).
+test_invalid_value_combinations("content", `counter(none)`);
+test_invalid_value_combinations("content", `counters(none, ".")`);
+
 test_invalid_value_alt_text("content", "open-quote");
 test_invalid_value_alt_text("content", "close-quote");
 test_invalid_value_alt_text("content", "no-open-quote");

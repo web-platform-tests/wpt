@@ -579,7 +579,10 @@ test(t => {
   }, { extends: "template" });
   doc.write('<template is="self-marker-tpl" id="self-tpl" for="self-m"><circle/></template></svg>');
   doc.close();
-  assert_equals(doc.getElementById("self-tpl").content.firstElementChild.namespaceURI, SVG_NS);
+  const selfTpl = doc.getElementById("self-tpl");
+  assert_equals(selfTpl.namespaceURI, HTML_NS);
+  assert_equals(selfTpl.content.childElementCount, 0);
+  assert_equals(selfTpl.firstElementChild.namespaceURI, SVG_NS);
 }, "Self-referential <template for> terminates without cycle and null/custom XML parent namespaces fall back to HTML");
 
 test(() => {

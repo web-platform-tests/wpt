@@ -3,3 +3,8 @@ rules:
 - at-import-*: [import]
 - cascade-007.xht: [import]
 - cascade-012.xht: [import]
+- inherited-value-*: [inherit-value]
+- cascade-precedence-*: [inherit-value]
+- non-inherited-value-001.xht: [inherit-value]
+- specificity-002.xht: [style-attr]
+- specificity-*: [selectors]

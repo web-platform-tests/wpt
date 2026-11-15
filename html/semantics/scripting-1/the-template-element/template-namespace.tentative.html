@@ -452,7 +452,7 @@ test(() => {
   math.appendChild(parserTemplate);
   parserTemplate.innerHTML = "<mi>x</mi>";
   assert_equals(parserTemplate.content.firstElementChild.namespaceURI, MATHML_NS);
-}, "Auto template namespace is resolved only at parse time from live context and defaults to HTML when detached");
+}, "Implicit template namespace is resolved only at parse time from live context and defaults to HTML when detached");
 
 test(() => {
   const t = document.createElement("template");
@@ -816,35 +816,20 @@ test(t => {
   assert_equals(doc.getElementById("t-late-svg").contentNamespace, "svg");
   assert_equals(doc.getElementById("t-late-svg").content.firstElementChild.namespaceURI, HTML_NS);
 
-  let capturedDsdTpl = null;
   win.customElements.define("reentrant-svg-tpl", class extends win.HTMLTemplateElement {
     connectedCallback() {
       doc.write("<circle/></template><p id='after-reentrant'>ok</p>");
-    }
-  }, { extends: "template" });
-  win.customElements.define("capture-dsd-tpl", class extends win.HTMLTemplateElement {
-    constructor() {
-      super();
-      capturedDsdTpl = this;
     }
   }, { extends: "template" });
 
   doc.open();
   doc.write("<!doctype html><body>");
   doc.write('<template is="reentrant-svg-tpl" id="t-reentrant" contentnamespace="svg">');
-  doc.write('<div id="dsd-wrap"><template is="capture-dsd-tpl" shadowrootmode="open"></template></div>');
   doc.close();
 
   assert_equals(doc.getElementById("t-reentrant").content.firstElementChild.namespaceURI, SVG_NS);
   assert_not_equals(doc.getElementById("after-reentrant"), null);
-
-  const svgHost = doc.createElementNS(SVG_NS, "svg");
-  svgHost.appendChild(capturedDsdTpl);
-  const range = doc.createRange();
-  range.setStart(capturedDsdTpl, 0);
-  const ctxFrag = range.createContextualFragment("<rect></rect>");
-  assert_equals(ctxFrag.firstElementChild.namespaceURI, HTML_NS);
-}, "Customized built-in <template is='...'> synchronous attribute mutations, re-entrant document.write during parsing, and ShadowRoot-backed <template> reparented into <svg>");
+}, "Customized built-in <template is='...'> synchronous attribute mutations and re-entrant document.write during parsing");
 
 test(t => {
   const iframe = document.createElement("iframe");

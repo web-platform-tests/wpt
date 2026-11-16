@@ -1,0 +1,148 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HTML partial updates: activeTemplateAttributeFilter across multiple registrations and re-observation</title>
+<link rel="help" href="https://dom.spec.whatwg.org/#dom-mutationobserver-observe">
+<link rel="help" href="https://dom.spec.whatwg.org/#dom-mutationrecord-activetemplateattributes">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/mutation-records.js"></script>
+<body>
+<script>
+  function createDoc(t, html) {
+    const iframe = document.createElement("iframe");
+    document.body.append(iframe);
+    t.add_cleanup(() => iframe.remove());
+    const doc = iframe.contentDocument;
+    doc.open();
+    doc.write(html);
+    return doc;
+  }
+
+  test(t => {
+    const doc = createDoc(t, `<div id="outer"><div id="target"><?marker name="m"></div></div>`);
+    const outer = doc.getElementById("outer");
+    const target = doc.getElementById("target");
+    const records = [];
+    const observer = new MutationObserver(list => records.push(...list));
+    observer.observe(outer, {
+      childList: true,
+      subtree: true,
+      activeTemplateAttributeFilter: ["data-outer", "for"],
+    });
+    observer.observe(target, {
+      childList: true,
+      subtree: true,
+      activeTemplateAttributeFilter: ["data-target", "for"],
+    });
+
+    doc.write(`<template for="m" data-outer="1" data-target="2"><b>x</b></template>`);
+    doc.close();
+    records.push(...observer.takeRecords());
+
+    assert_equals(records.length, 4);
+    const attrs = records[0].activeTemplateAttributes;
+    assert_array_equals(Object.keys(attrs), ["data-target", "for", "data-outer"]);
+    assert_equals(attrs["data-target"], "2");
+    assert_equals(attrs["for"], "m");
+    assert_equals(attrs["data-outer"], "1");
+    for (const record of records) {
+      assert_equals(record.activeTemplateAttributes, attrs);
+    }
+  }, "Matching target and ancestor registrations union activeTemplateAttributeFilter in reverse tree order");
+
+  test(t => {
+    const doc = createDoc(t, `<div id="outer"><div id="target"><?marker name="m"></div></div><div id="other"></div>`);
+    const outer = doc.getElementById("outer");
+    const other = doc.getElementById("other");
+    const target = doc.getElementById("target");
+    const records = [];
+    const observer = new MutationObserver(list => records.push(...list));
+    observer.observe(outer, {
+      childList: true,
+      subtree: true,
+      activeTemplateAttributeFilter: ["data-transient"],
+    });
+
+    other.append(target);
+    observer.observe(target, {
+      childList: true,
+      activeTemplateAttributeFilter: ["data-direct"],
+    });
+    doc.write(`<template for="m" data-transient="1" data-direct="2"><br></template>`);
+    doc.close();
+    records.push(...observer.takeRecords());
+
+    const targetRecords = records.filter(r => r.target === target);
+    assert_equals(targetRecords.length, 3);
+    const attrs = targetRecords[0].activeTemplateAttributes;
+    assert_array_equals(Object.keys(attrs), ["data-transient", "data-direct"]);
+    for (const record of targetRecords) {
+      assert_equals(record.activeTemplateAttributes, attrs);
+    }
+  }, "Coexisting transient and direct registrations on the target union activeTemplateAttributeFilter");
+
+  test(t => {
+    const doc = createDoc(t, `<div id="outer"><div id="target"><?marker name="m"></div></div>`);
+    const outer = doc.getElementById("outer");
+    const target = doc.getElementById("target");
+    const records = [];
+    const observer = new MutationObserver(list => records.push(...list));
+    observer.observe(outer, {
+      childList: true,
+      subtree: true,
+      activeTemplateAttributeFilter: ["data-outer"],
+    });
+    observer.observe(target, {
+      childList: true,
+      subtree: false,
+      activeTemplateAttributeFilter: ["data-target"],
+    });
+
+    doc.write(`<template for="m" data-outer="1" data-target="2"><b><i>x</i></b></template>`);
+    doc.close();
+    records.push(...observer.takeRecords());
+
+    assert_equals(records.length, 5);
+    const attrs = records[0].activeTemplateAttributes;
+    assert_array_equals(Object.keys(attrs), ["data-target", "data-outer"]);
+    for (const record of records) {
+      assert_equals(record.activeTemplateAttributes, attrs);
+    }
+  }, "All records for an active template and observer share the object created on the first record");
+
+  test(t => {
+    const doc = createDoc(t, `<div id="target"><?marker name="m"><?marker name="m2"></div>`);
+    const target = doc.getElementById("target");
+    const records = [];
+    const observer = new MutationObserver(list => records.push(...list));
+    observer.observe(target, {
+      childList: true,
+      activeTemplateAttributeFilter: ["for"],
+    });
+
+    doc.write(`<template for="m" data-x="1"><br>`);
+    observer.observe(target, {
+      childList: true,
+      activeTemplateAttributeFilter: ["for", "data-x"],
+    });
+    doc.write(`<hr></template><template for="m2" data-x="2"><u></u></template>`);
+    doc.close();
+    records.push(...observer.takeRecords());
+
+    assert_array_equals(records.map(r => r.activeTemplateStatus),
+      ["start", "update", "update", "end", "start", "update", "end"]);
+    const firstAttrs = records[0].activeTemplateAttributes;
+    assert_array_equals(Object.keys(firstAttrs), ["for"]);
+    for (const record of records.slice(0, 4)) {
+      assert_equals(record.activeTemplateAttributes, firstAttrs);
+    }
+    const secondAttrs = records[4].activeTemplateAttributes;
+    assert_not_equals(secondAttrs, firstAttrs);
+    assert_array_equals(Object.keys(secondAttrs), ["for", "data-x"]);
+    assert_equals(secondAttrs["data-x"], "2");
+    for (const record of records.slice(4)) {
+      assert_equals(record.activeTemplateAttributes, secondAttrs);
+    }
+  }, "Re-calling observe() mid-patch preserves object identity for the active template and applies to the next template");
+</script>
+</body>

@@ -12,6 +12,15 @@ PAGE_EMPTY_WITH_HASH_FOO = f"{PAGE_EMPTY}#foo"
 PAGE_OTHER = "/webdriver/tests/bidi/browsing_context/support/other.html"
 
 
+async def assert_same_document(bidi_session, context):
+    result = await bidi_session.script.evaluate(
+        expression="window.marker",
+        target=ContextTarget(context["context"]),
+        await_promise=False,
+    )
+    assert result == {"type": "string", "value": "same-document"}
+
+
 @pytest.mark.parametrize(
     "hash_before, hash_after",
     [
@@ -52,17 +61,31 @@ async def test_navigate_different_documents(
     await navigate_and_assert(bidi_session, new_tab, url(url_after))
 
 
-async def test_navigate_in_iframe(bidi_session, inline, new_tab):
+@pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
+async def test_navigate_in_iframe(bidi_session, inline, iframe, new_tab, wait):
     frame_start_url = inline("frame")
-    url_before = inline(f"<iframe src='{frame_start_url}'></iframe>")
+    url_before = inline(iframe("frame"))
     contexts = await navigate_and_assert(bidi_session, new_tab, url_before)
 
     assert len(contexts[0]["children"]) == 1
     frame = contexts[0]["children"][0]
     assert frame["url"] == frame_start_url
 
+    # Mark the frame's document so that we can check it is not replaced.
+    await bidi_session.script.evaluate(
+        expression="window.marker = 'same-document'",
+        target=ContextTarget(frame["context"]),
+        await_promise=False,
+    )
+
     url_after = f"{frame_start_url}#foo"
-    await navigate_and_assert(bidi_session, frame, url_after)
+    await navigate_and_assert(bidi_session, frame, url_after, wait=wait)
+    await assert_same_document(bidi_session, frame)
+
+    # Navigating to the URL the frame is already at, including its fragment,
+    # is also a navigation to a fragment and stays in the same document.
+    await navigate_and_assert(bidi_session, frame, url_after, wait=wait)
+    await assert_same_document(bidi_session, frame)
 
 
 async def test_navigate_unique_navigation_id(bidi_session, inline, new_tab):
@@ -90,42 +113,3 @@ async def test_navigate_unique_navigation_id(bidi_session, inline, new_tab):
     )
     any_string(same_hash_result["navigation"])
     assert same_hash_result["navigation"] != other_hash_result["navigation"]
-
-
-@pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
-async def test_navigate_in_iframe_to_current_fragment(
-    bidi_session, inline, new_tab, wait
-):
-    frame_start_url = f"{inline('frame')}#foo"
-    url_before = inline(f"<iframe src='{frame_start_url}'></iframe>")
-    contexts = await navigate_and_assert(bidi_session, new_tab, url_before)
-
-    assert len(contexts[0]["children"]) == 1
-    frame = contexts[0]["children"][0]
-    assert frame["url"] == frame_start_url
-
-    # Mark the frame's document so that we can check it is not replaced.
-    await bidi_session.script.evaluate(
-        expression="document.querySelector('iframe').contentWindow.marker = 'same-document'",
-        target=ContextTarget(new_tab["context"]),
-        await_promise=False,
-    )
-
-    # Navigating to the URL the frame is already at, including its fragment,
-    # is a navigation to a fragment and stays in the same document.
-    result = await bidi_session.browsing_context.navigate(
-        context=frame["context"], url=frame_start_url, wait=wait
-    )
-    any_string(result["navigation"])
-    assert result["url"] == frame_start_url
-
-    contexts = await bidi_session.browsing_context.get_tree(root=frame["context"])
-    assert len(contexts) == 1
-    assert contexts[0]["url"] == frame_start_url
-
-    result = await bidi_session.script.evaluate(
-        expression="document.querySelector('iframe').contentWindow.marker",
-        target=ContextTarget(new_tab["context"]),
-        await_promise=False,
-    )
-    assert result == {"type": "string", "value": "same-document"}

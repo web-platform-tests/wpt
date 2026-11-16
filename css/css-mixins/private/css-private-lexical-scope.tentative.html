@@ -87,11 +87,11 @@
 
     #nested-scope {
       @private {
-        --x: red;
+        --x: green;
       }
       & {
         @private {
-          --y: var(--x, green);
+          --y: var(--x, red);
         }
         color: var(--y, red);
         background-color: var(--x, blue);
@@ -191,8 +191,8 @@
     test(() => {
       const style = getComputedStyle(document.getElementById('nested-scope'));
       assert_equals(style.color, 'rgb(0, 128, 0)');
-      assert_equals(style.backgroundColor, 'rgb(255, 0, 0)');
-    }, 'A nested private initializer does not capture an enclosing private name');
+      assert_equals(style.backgroundColor, 'rgb(0, 128, 0)');
+    }, 'A nested private initializer captures an enclosing private name');
 
     test(() => {
       assert_equals(

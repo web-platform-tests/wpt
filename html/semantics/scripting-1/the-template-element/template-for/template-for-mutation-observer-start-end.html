@@ -7,15 +7,23 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/mutation-records.js"></script>
 <div id="target">before<?start name="p">old<b>fallback</b><?end>after</div>
+<div id="unclosed"><?start name="u">old</div>
 <script>
   const target = document.getElementById("target");
+  const unclosed = document.getElementById("unclosed");
   const getFilteredRecords = collectRecords(target, {
     childList: true,
     activeTemplateAttributeFilter: ["for"],
   });
   const getPlainRecords = collectRecords(target, { childList: true });
+  const getUnclosedFilteredRecords = collectRecords(unclosed, {
+    childList: true,
+    activeTemplateAttributeFilter: ["for"],
+  });
+  const getUnclosedPlainRecords = collectRecords(unclosed, { childList: true });
 </script>
 <template for="p"><span>new</span>text</template>
+<template for="u"><b>new</b></template>
 <script>
   test(() => {
     assert_array_equals(getFilteredRecords().map(describeRecord), [
@@ -37,6 +45,27 @@
       assert_equals(record.activeTemplateAttributes, null);
     }
   }, "An observer without activeTemplateAttributeFilter gets the same records with null status and attributes");
+
+  test(() => {
+    const filteredRecords = getUnclosedFilteredRecords();
+    assert_array_equals(filteredRecords.map(describeRecord), [
+      `start: added [] removed [<?start>, "old"] between null and null`,
+      `update: added [<b>] removed [] between null and null`,
+      `end: added [] removed [] between null and null`,
+    ]);
+    for (const record of filteredRecords) {
+      assert_equals(record.target, unclosed);
+      assert_equals(record.activeTemplateAttributes, filteredRecords[0].activeTemplateAttributes);
+    }
+    const plainRecords = getUnclosedPlainRecords();
+    assert_array_equals(plainRecords.map(describeRecord), [
+      `null: added [] removed [<?start>, "old"] between null and null`,
+      `null: added [<b>] removed [] between null and null`,
+    ]);
+    for (const record of plainRecords) {
+      assert_equals(record.activeTemplateAttributes, null);
+    }
+  }, "An empty end record is delivered only to observers with activeTemplateAttributeFilter");
 
   test(() => {
     assert_equals(target.innerHTML, "before<span>new</span>textafter");

@@ -14,6 +14,10 @@ function describeNode(node) {
 }
 
 function describeRecord(record) {
+  assert_equals(record.type, "childList", "record.type");
+  assert_equals(record.attributeName, null, "record.attributeName");
+  assert_equals(record.attributeNamespace, null, "record.attributeNamespace");
+  assert_equals(record.oldValue, null, "record.oldValue");
   const added = Array.from(record.addedNodes, describeNode).join(", ");
   const removed = Array.from(record.removedNodes, describeNode).join(", ");
   return `${record.activeTemplateStatus}: added [${added}] removed [${removed}] ` +

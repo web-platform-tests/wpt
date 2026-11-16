@@ -19,34 +19,43 @@
       childList: true,
       activeTemplateAttributeFilter: ["data-x"],
     });
+    const getPlainRecords = collectRecords(target, { childList: true });
     doc.write(`<template for="p" data-x="1"><b>new</b>`);
-    return { iframe, doc, target, getRecords };
+    return { iframe, doc, target, getRecords, getPlainRecords };
   }
 
-  function assertAborted(target, records) {
+  function assertAborted(target, records, plainRecords) {
     assert_array_equals(records.map(describeRecord), [
       `start: added [] removed [<?start>, "old"] between null and <?end>`,
       `update: added [<b>] removed [] between null and <?end>`,
       `abort: added [] removed [] between null and null`,
     ]);
     for (const record of records) {
+      assert_equals(record.target, target);
       assert_equals(record.activeTemplateAttributes, records[0].activeTemplateAttributes);
     }
     assert_equals(records[0].activeTemplateAttributes["data-x"], "1");
+    assert_array_equals(plainRecords.map(describeRecord), [
+      `null: added [] removed [<?start>, "old"] between null and <?end>`,
+      `null: added [<b>] removed [] between null and <?end>`,
+    ]);
+    for (const record of plainRecords) {
+      assert_equals(record.activeTemplateAttributes, null);
+    }
     assert_equals(target.lastChild.nodeType, Node.PROCESSING_INSTRUCTION_NODE);
     assert_equals(target.lastChild.target, "end", "<?end> is not removed");
   }
 
   test(t => {
-    const { doc, target, getRecords } = startPatch(t);
+    const { doc, target, getRecords, getPlainRecords } = startPatch(t);
     doc.close();
-    assertAborted(target, getRecords());
+    assertAborted(target, getRecords(), getPlainRecords());
   }, "Reaching the end of the input before </template> queues an abort record");
 
   test(t => {
-    const { iframe, target, getRecords } = startPatch(t);
+    const { iframe, target, getRecords, getPlainRecords } = startPatch(t);
     iframe.contentWindow.stop();
-    assertAborted(target, getRecords());
+    assertAborted(target, getRecords(), getPlainRecords());
   }, "Aborting the parser before </template> queues an abort record");
 </script>
 </body>

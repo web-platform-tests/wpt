@@ -9,17 +9,29 @@
 <div id="target"><?marker name="one"><?marker name="two"></div>
 <script>
   const target = document.getElementById("target");
+  const filterArray = [
+    "data-y",
+    "for",
+    "data-y",
+    "data-empty",
+    "__proto__",
+    "constructor",
+    "toString",
+    "data-missing",
+    "DATA-X",
+  ];
   const getRecords = collectRecords(target, {
     childList: true,
-    activeTemplateAttributeFilter: ["for", "data-x", "data-missing", "DATA-Y"],
+    activeTemplateAttributeFilter: filterArray,
   });
+  filterArray.push("data-z");
   const getEmptyFilterRecords = collectRecords(target, {
     childList: true,
     activeTemplateAttributeFilter: [],
   });
 </script>
-<template for="one" data-x="1" data-y="2" data-z="3"><b>1</b><i>2</i></template>
-<template for="two" data-x="other"><u>3</u></template>
+<template for="one" data-x="1" data-y="2" data-z="3" data-empty="" __proto__="proto" constructor="ctor" toString="str"><b>1</b><i>2</i></template>
+<template for="two" data-y="other"><u>3</u></template>
 <script>
   function attributesPerTemplate(records) {
     assert_array_equals(records.map(r => r.activeTemplateStatus),
@@ -39,13 +51,26 @@
     assert_not_equals(one, two);
     assert_equals(Object.getPrototypeOf(one), null);
     assert_true(Object.isFrozen(one));
-    assert_array_equals(Object.keys(one), ["for", "data-x"]);
+    assert_array_equals(Object.keys(one),
+      ["data-y", "for", "data-empty", "__proto__", "constructor"]);
+    assert_equals(one["data-y"], "2");
     assert_equals(one["for"], "one");
-    assert_equals(one["data-x"], "1");
-    assert_array_equals(Object.keys(two), ["for", "data-x"]);
+    assert_equals(one["data-empty"], "");
+    assert_equals(one["__proto__"], "proto");
+    assert_equals(one["constructor"], "ctor");
+    assert_equals(one["toString"], undefined, "HTML lowercases toString to tostring and null prototype has no inherited toString");
+    assert_equals(one["data-z"], undefined, "mutating the passed array after observe() has no effect");
+    for (const key of Object.keys(one)) {
+      const desc = Object.getOwnPropertyDescriptor(one, key);
+      assert_equals(desc.writable, false, `${key} writable`);
+      assert_equals(desc.enumerable, true, `${key} enumerable`);
+      assert_equals(desc.configurable, false, `${key} configurable`);
+      assert_false("get" in desc, `${key} is a data property`);
+    }
+    assert_array_equals(Object.keys(two), ["data-y", "for"]);
+    assert_equals(two["data-y"], "other");
     assert_equals(two["for"], "two");
-    assert_equals(two["data-x"], "other");
-  }, "activeTemplateAttributes is a frozen object with a null prototype that holds the listed attributes");
+  }, "activeTemplateAttributes is a frozen object with a null prototype that holds the listed attributes in filter order");
 
   test(() => {
     const [one, two] = attributesPerTemplate(getEmptyFilterRecords());

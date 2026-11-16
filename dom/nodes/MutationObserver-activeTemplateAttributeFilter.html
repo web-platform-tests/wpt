@@ -21,10 +21,52 @@
   test(() => {
     const target = document.createElement("div");
     const observer = new MutationObserver(() => {});
-    observer.observe(target, { activeTemplateAttributeFilter: ["for"], childList: true });
+    let converted = false;
+    observer.observe(target, {
+      activeTemplateAttributeFilter: [{
+        toString() {
+          converted = true;
+          return "for";
+        },
+      }],
+      childList: true,
+    });
+    assert_true(converted, "activeTemplateAttributeFilter items are converted");
     target.append(document.createElement("span"));
-    assert_equals(observer.takeRecords().length, 1);
+    const records = observer.takeRecords();
+    assert_equals(records.length, 1);
+    assert_equals(records[0].activeTemplateStatus, null);
+    assert_equals(records[0].activeTemplateAttributes, null);
   }, "activeTemplateAttributeFilter can be combined with childList: true");
+
+  test(() => {
+    const target = document.createElement("div");
+    const observer = new MutationObserver(() => {});
+    observer.observe(target, { activeTemplateAttributeFilter: [], childList: undefined });
+    const child = document.createElement("span");
+    target.append(child);
+    const records = observer.takeRecords();
+    assert_equals(records.length, 1);
+    assert_equals(records[0].type, "childList");
+    assert_equals(records[0].addedNodes[0], child);
+  }, "activeTemplateAttributeFilter with childList: undefined implies childList");
+
+  test(() => {
+    assert_true("activeTemplateStatus" in MutationRecord.prototype);
+    const target = document.createElement("div");
+    const observer = new MutationObserver(() => {});
+    assert_throws_js(TypeError, () => {
+      observer.observe(target, { activeTemplateAttributeFilter: undefined });
+    });
+    observer.observe(target, {
+      activeTemplateAttributeFilter: undefined,
+      childList: false,
+      attributes: true,
+    });
+    target.setAttribute("a", "b");
+    target.append(document.createElement("span"));
+    assert_array_equals(observer.takeRecords().map(r => r.type), ["attributes"]);
+  }, "activeTemplateAttributeFilter: undefined is treated as omitted");
 
   test(() => {
     const target = document.createElement("div");
@@ -48,6 +90,7 @@
   }, "activeTemplateAttributeFilter implies childList when combined with other options");
 
   test(() => {
+    assert_true("activeTemplateStatus" in MutationRecord.prototype);
     const target = document.createElement("div");
     const observer = new MutationObserver(() => {});
     assert_throws_js(TypeError, () => {
@@ -64,7 +107,39 @@
     assert_throws_js(TypeError, () => {
       observer.observe(target, { activeTemplateAttributeFilter: 1, childList: true });
     });
-  }, "activeTemplateAttributeFilter must be a sequence");
+    assert_throws_js(TypeError, () => {
+      observer.observe(target, { activeTemplateAttributeFilter: null, childList: true });
+    });
+    assert_throws_js(TypeError, () => {
+      observer.observe(target, { activeTemplateAttributeFilter: "for", childList: true });
+    });
+    assert_throws_js(TypeError, () => {
+      observer.observe(target, { activeTemplateAttributeFilter: [Symbol()], childList: true });
+    });
+
+    let converted = 0;
+    observer.observe(target, {
+      activeTemplateAttributeFilter: new Set([{
+        toString() {
+          converted++;
+          return "for";
+        },
+      }]),
+    });
+    assert_equals(converted, 1);
+  }, "activeTemplateAttributeFilter must be convertible to sequence<DOMString>");
+
+  test(() => {
+    for (const prop of ["activeTemplateStatus", "activeTemplateAttributes"]) {
+      const desc = Object.getOwnPropertyDescriptor(MutationRecord.prototype, prop);
+      assert_not_equals(desc, undefined, `${prop} descriptor exists`);
+      assert_equals(typeof desc.get, "function", `${prop} has a getter`);
+      assert_equals(desc.set, undefined, `${prop} is readonly`);
+      assert_true(desc.enumerable, `${prop} is enumerable`);
+      assert_true(desc.configurable, `${prop} is configurable`);
+      assert_throws_js(TypeError, () => MutationRecord.prototype[prop], `${prop} brand check`);
+    }
+  }, "MutationRecord.prototype activeTemplateStatus and activeTemplateAttributes descriptors and brand checks");
 
   test(() => {
     assert_true("activeTemplateStatus" in MutationRecord.prototype);
@@ -95,8 +170,46 @@
     const target = document.createElement("div");
     const observer = new MutationObserver(() => {});
     observer.observe(target, { activeTemplateAttributeFilter: [] });
+    assert_throws_js(TypeError, () => {
+      observer.observe(target, {
+        activeTemplateAttributeFilter: [],
+        childList: false,
+        attributes: true,
+      });
+    });
+    target.append(document.createElement("span"));
+    assert_equals(observer.takeRecords().length, 1);
+
     observer.observe(target, { attributes: true });
     target.append(document.createElement("span"));
     assert_equals(observer.takeRecords().length, 0);
-  }, "Observing the same node again replaces activeTemplateAttributeFilter and the implied childList");
+  }, "Observing the same node again replaces activeTemplateAttributeFilter and the implied childList, unless observe() throws");
+
+  test(() => {
+    assert_true("activeTemplateStatus" in MutationRecord.prototype);
+    const target = document.createElement("div");
+    const fragment = document.createDocumentFragment();
+    const a = document.createElement("a");
+    const b = document.createElement("b");
+    fragment.append(a, b);
+
+    const observer = new MutationObserver(() => {});
+    observer.observe(target, { activeTemplateAttributeFilter: ["for"], subtree: true });
+    observer.observe(fragment, { activeTemplateAttributeFilter: ["for"] });
+
+    target.append(fragment);
+    if (typeof target.moveBefore === "function") {
+      target.moveBefore(b, a);
+    }
+    const c = document.createElement("i");
+    target.replaceChild(c, a);
+    target.replaceChildren(document.createElement("u"));
+
+    const records = observer.takeRecords();
+    assert_true(records.length >= 4);
+    for (const record of records) {
+      assert_equals(record.activeTemplateStatus, null);
+      assert_equals(record.activeTemplateAttributes, null);
+    }
+  }, "DocumentFragment emptying, moveBefore, replaceChild, and replaceChildren have null activeTemplateStatus and activeTemplateAttributes");
 </script>

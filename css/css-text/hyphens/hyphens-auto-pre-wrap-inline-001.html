@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Text Test: hanging space after an inline element with 'hyphens: auto'</title>
+<link rel="help" href="https://drafts.csswg.org/css-text-3/#hyphens-property">
+<link rel="help" href="https://drafts.csswg.org/css-text-3/#white-space-phase-2">
+<link rel="help" href="https://crbug.com/568010365">
+<link rel="match" href="reference/hyphens-auto-pre-wrap-inline-001-ref.html">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<meta name="assert" content="With 'white-space: pre-wrap', a preserved space at the end of a line hangs, so the word before it stays on the line even if the space does not fit. 'hyphens: auto' does not change this when the word ends an inline element and the space is outside of it.">
+<style>
+div {
+  font: 20px/1 Ahem;
+  width: 5em;
+  margin-bottom: 1em;
+  white-space: pre-wrap;
+  hyphens: auto;
+}
+</style>
+<p>Test passes if there are three identical black shapes below.</p>
+<div lang="en"><span>XX</span> <span>XX</span> <span>XXXX</span></div>
+<div lang="en"><span>XX</span> <span>XX</span> XXXX</div>
+<div lang="en">XX XX XXXX</div>

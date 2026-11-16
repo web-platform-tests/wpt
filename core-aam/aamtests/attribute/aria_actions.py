@@ -33,3 +33,10 @@ def test_atspi(atspi, session, url):
     assert actions.do_action(action_id)
     button = session.find.css("#otherthing")
     assert button[0].text == "Open"
+
+def test_axapi(axapi, session, url):
+    session.url = url("core-aam/aamtests/attribute/aria_actions.html")
+
+    node = axapi.find_node("test", session.url)
+
+    assert node

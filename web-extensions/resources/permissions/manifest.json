@@ -1,0 +1,12 @@
+{
+  "name": "WPT browser.permissions Test",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["storage"],
+  "optional_permissions": ["cookies"],
+  "background": {
+    "scripts": [ "background.js" ],
+    "service_worker": "background.js",
+    "type": "module"
+  }
+}

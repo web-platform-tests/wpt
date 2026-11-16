@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>An &lt;area> used by an hidden image is not focusable</title>
 <link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/image-maps.html">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#data-model">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -16,7 +16,7 @@
     assert_not_equals(document.activeElement, area);
     area.focus();
     assert_not_equals(document.activeElement, area);
-  }, 'an <area> used by hidden image is not focusable');
+  }, 'an <area> used by an hidden image is not focusable');
   area.blur();
 
   test(() => {
@@ -24,7 +24,7 @@
     area.setAttribute('href', '');
     area.focus();
     assert_not_equals(document.activeElement, area);
-  }, 'an <area href> used by hidden image is not focusable');
+  }, 'an <area href> used by an hidden image is not focusable');
   area.blur();
   area.removeAttribute('href');
 
@@ -33,7 +33,7 @@
     area.setAttribute('tabindex', '0');
     area.focus();
     assert_not_equals(document.activeElement, area);
-  }, 'an <area tabindex=0> used by hidden image is not focusable');
+  }, 'an <area tabindex=0> used by an hidden image is not focusable');
   area.blur();
   area.removeAttribute('tabindex');
 
@@ -42,5 +42,5 @@
     area.setAttribute('tabindex', '-1');
     area.focus();
     assert_not_equals(document.activeElement, area);
-  }, 'an <area tabindex=-1> used by hidden image is not focusable');
+  }, 'an <area tabindex=-1> used by an hidden image is not focusable');
 </script>

@@ -8,11 +8,8 @@
   <script src="resources/largest-contentful-paint-helpers.js"></script>
   <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
   <script>
-    setup(() => {
-      assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
-    });
-
     promise_test(async t => {
+      assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
       const scope = "resources/lcp-sw.https.html";
 
       const registration =

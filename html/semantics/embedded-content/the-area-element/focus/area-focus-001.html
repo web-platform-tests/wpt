@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>An &lt;area> with a valid tabindex is focusable when non-hidden and non-inert</title>
+<title>An &lt;area> with a valid tabindex is focusable when associated with a visible and non-inert image</title>
 <link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#data-model">
 <script src="/resources/testharness.js"></script>
@@ -62,7 +62,7 @@
     ],
     ['no images by img usemap attribute removal',
       () => { img1.useMap = ''; img2.useMap = ''; },
-      () => { img1.useMap = '#map1'; img2.useMap = '#map1'; }
+      () => { img1.useMap = '#map'; img2.useMap = '#map'; }
     ],
   ];
 

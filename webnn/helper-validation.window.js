@@ -141,6 +141,134 @@ test(() => {
   }
 }, 'ULP comparison rejects NaN versus a non-NaN even within tolerance');
 
+// Largest finite values and the midpoints above them, where rounding to
+// nearest overflows. Each is an exact binary64 value.
+const MAX_FLOAT16 = 65504;
+const FLOAT16_OVERFLOW_MIDPOINT = 65520;
+const MAX_FLOAT32 = 2 ** 128 - 2 ** 104;
+const FLOAT32_OVERFLOW_MIDPOINT = 2 ** 128 - 2 ** 103;
+
+const assertUlpComparisonFails = (actual, expected, nulp, dataType, description) => {
+  let error;
+  try {
+    assert_array_approx_equals_ulp(
+        [actual], [expected], nulp, dataType, description);
+  } catch (caught) {
+    error = caught;
+  }
+  assert_true(error instanceof AssertionError,
+      `${description}: ${dataType} actual ${actual} must not match expected ` +
+          `${expected} at ${nulp} ULP`);
+};
+
+test(() => {
+  assert_equals(Math.fround(MAX_FLOAT32), MAX_FLOAT32);
+  assert_equals(toHalf(MAX_FLOAT16), 0x7bff);
+  for (const [actual, expected, dataType] of [
+    [0x7bff, Infinity, 'float16'],
+    [0x7c00, MAX_FLOAT16, 'float16'],
+    [0xfbff, -Infinity, 'float16'],
+    [0xfc00, -MAX_FLOAT16, 'float16'],
+    [MAX_FLOAT32, Infinity, 'float32'],
+    [Infinity, MAX_FLOAT32, 'float32'],
+    [-MAX_FLOAT32, -Infinity, 'float32'],
+    [-Infinity, -MAX_FLOAT32, 'float32'],
+  ]) {
+    // The encodings are adjacent, so only the classification separates them.
+    assert_equals(
+        Number(ulpDistance(actual, expected, dataType)), 1,
+        `${dataType} encodings of ${actual} and ${expected} are adjacent`);
+    for (const nulp of [1, 2, 1024]) {
+      assertUlpComparisonFails(
+          actual, expected, nulp, dataType, 'finite versus infinite');
+    }
+  }
+}, 'ULP comparison rejects the largest finite value versus infinity within ' +
+    'tolerance');
+
+test(() => {
+  for (const [actual, expected, dataType] of [
+    [0x7c00, Infinity, 'float16'],
+    [0xfc00, -Infinity, 'float16'],
+    [Infinity, Infinity, 'float32'],
+    [-Infinity, -Infinity, 'float32'],
+  ]) {
+    assert_array_approx_equals_ulp(
+        [actual], [expected], 0, dataType, 'same-sign infinities');
+  }
+  for (const [actual, expected, dataType] of [
+    [0x7c00, -Infinity, 'float16'],
+    [0xfc00, Infinity, 'float16'],
+    [Infinity, -Infinity, 'float32'],
+    [-Infinity, Infinity, 'float32'],
+  ]) {
+    assertUlpComparisonFails(
+        actual, expected, 1, dataType, 'opposite-sign infinities');
+  }
+}, 'ULP comparison accepts same-sign infinities and rejects opposite signs');
+
+test(() => {
+  for (const [actual, expected, nulp, dataType] of [
+    [0x7bff, MAX_FLOAT16, 0, 'float16'],
+    [0x7bfe, MAX_FLOAT16, 1, 'float16'],
+    [0x7bff, 65472, 1, 'float16'],
+    [0xfbff, -MAX_FLOAT16, 0, 'float16'],
+    [0xfbfe, -MAX_FLOAT16, 1, 'float16'],
+    [MAX_FLOAT32, MAX_FLOAT32, 0, 'float32'],
+    [MAX_FLOAT32 - 2 ** 104, MAX_FLOAT32, 1, 'float32'],
+    [MAX_FLOAT32, MAX_FLOAT32 - 2 ** 104, 1, 'float32'],
+    [-MAX_FLOAT32, -MAX_FLOAT32, 0, 'float32'],
+    [-(MAX_FLOAT32 - 2 ** 104), -MAX_FLOAT32, 1, 'float32'],
+  ]) {
+    assert_array_approx_equals_ulp(
+        [actual], [expected], nulp, dataType, 'adjacent finite values');
+  }
+  for (const [actual, expected, dataType] of [
+    [0x7bfe, MAX_FLOAT16, 'float16'],
+    [0xfbfe, -MAX_FLOAT16, 'float16'],
+    [MAX_FLOAT32 - 2 ** 104, MAX_FLOAT32, 'float32'],
+    [-(MAX_FLOAT32 - 2 ** 104), -MAX_FLOAT32, 'float32'],
+  ]) {
+    assertUlpComparisonFails(
+        actual, expected, 0, dataType, 'adjacent finite values');
+  }
+}, 'ULP comparison keeps its tolerance for finite values next to the ' +
+    'largest finite value');
+
+test(() => {
+  // A reference that rounds to infinity in the output data type expects an
+  // infinity, and one that rounds to the largest finite value does not.
+  for (const [actual, expected, dataType] of [
+    [0x7c00, FLOAT16_OVERFLOW_MIDPOINT, 'float16'],
+    [0x7c00, 1e5, 'float16'],
+    [0xfc00, -FLOAT16_OVERFLOW_MIDPOINT, 'float16'],
+    [Infinity, FLOAT32_OVERFLOW_MIDPOINT, 'float32'],
+    [Infinity, 1e39, 'float32'],
+    [-Infinity, -FLOAT32_OVERFLOW_MIDPOINT, 'float32'],
+  ]) {
+    assert_array_approx_equals_ulp(
+        [actual], [expected], 0, dataType, 'reference overflows the type');
+    assertUlpComparisonFails(
+        dataType === 'float16' ? toHalf(Math.sign(expected) * MAX_FLOAT16) :
+                                 Math.sign(expected) * MAX_FLOAT32,
+        expected, 1, dataType, 'reference overflows the type');
+  }
+  for (const [actual, expected, dataType] of [
+    [0x7c00, FLOAT16_OVERFLOW_MIDPOINT - 2 ** -20, 'float16'],
+    [0xfc00, -FLOAT16_OVERFLOW_MIDPOINT + 2 ** -20, 'float16'],
+    [Infinity, FLOAT32_OVERFLOW_MIDPOINT - 2 ** 75, 'float32'],
+    [-Infinity, -FLOAT32_OVERFLOW_MIDPOINT + 2 ** 75, 'float32'],
+  ]) {
+    assertUlpComparisonFails(
+        actual, expected, 1, dataType, 'reference rounds to a finite value');
+    assert_array_approx_equals_ulp(
+        [dataType === 'float16' ? toHalf(Math.sign(expected) * MAX_FLOAT16) :
+                                  Math.sign(expected) * MAX_FLOAT32],
+        [expected], 0, dataType, 'reference rounds to a finite value');
+  }
+}, 'ULP comparison classifies the reference after rounding it to the ' +
+    'output data type');
+
 test(t => {
   const dataType = 'int64';
   [[0n, 0n, 0n],

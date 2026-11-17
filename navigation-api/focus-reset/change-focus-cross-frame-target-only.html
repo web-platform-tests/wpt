@@ -2,6 +2,8 @@
 <title>Cross-frame focus updates set focus-changed only on the new focus target's document</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <body>
 <script>
 async function createSameOriginIframe(t) {
@@ -51,6 +53,8 @@ function holdNavigation(navigation, fragment, focusReset) {
 
 promise_test(async t => {
   const { iframe, parentButton, childButton } = await createFocusTargets(t);
+  await test_driver.click(parentButton);
+  assert_true(document.hasFocus(), "Top-level document has system focus");
   childButton.focus();
   assert_equals(iframe.contentDocument.activeElement, childButton);
   parentButton.focus();
@@ -63,6 +67,8 @@ promise_test(async t => {
 promise_test(async t => {
   const { iframe, parentButton, childButton } = await createFocusTargets(t);
   const childDoc = iframe.contentDocument;
+  await test_driver.click(parentButton);
+  assert_true(document.hasFocus(), "Top-level document has system focus");
   childButton.focus();
   assert_equals(childDoc.activeElement, childButton);
   parentButton.focus();

@@ -89,6 +89,29 @@
           history.pushState({}, "", "/with-request-animation-frame");
         });
       }
+
+      function withNewMessageChannel() {
+        const channel = new MessageChannel();
+        channel.port1.onmessage = () => {
+          updateUI();
+          history.pushState({}, "", "/with-new-message-channel");
+          channel.port1.close();
+          channel.port2.close();
+        };
+        channel.port2.postMessage(null);
+      }
+
+      const persistentChannel = new MessageChannel();
+      persistentChannel.port1.onmessage = () => {
+        updateUI();
+        history.pushState({}, "", "/with-existing-message-channel");
+        persistentChannel.port1.close();
+        persistentChannel.port2.close();
+      };
+
+      function withExistingMessageChannel() {
+        persistentChannel.port2.postMessage(null);
+      }
     </script>
   </head>
   <body>
@@ -102,6 +125,8 @@
     <div id="with-scheduler-post-task" onclick="withSchedulerPostTask()">Click here!</div>
     <div id="with-scheduler-yield" onclick="withSchedulerYield()">Click here!</div>
     <div id="with-request-animation-frame" onclick="withRequestAnimationFrame()">Click here!</div>
+    <div id="with-new-message-channel" onclick="withNewMessageChannel()">Click here!</div>
+    <div id="with-existing-message-channel" onclick="withExistingMessageChannel()">Click here!</div>
 
     <script>
       function test_template(test_id, description) {
@@ -139,6 +164,8 @@
         test_template("with-scheduler-yield", "With scheduler.yield.");
       }
       test_template("with-request-animation-frame", "With requestAnimationFrame.");
+      test_template("with-new-message-channel", "With a MessageChannel created during the click.");
+      test_template("with-existing-message-channel", "With a message posted during the click on an existing MessageChannel.");
     </script>
   </body>
 </html>

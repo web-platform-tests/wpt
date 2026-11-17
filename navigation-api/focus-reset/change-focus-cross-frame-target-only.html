@@ -1,0 +1,146 @@
+<!doctype html>
+<title>Cross-frame focus updates set focus-changed only on the new focus target's document</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+async function createSameOriginIframe(t) {
+  const iframe = document.body.appendChild(document.createElement("iframe"));
+  t.add_cleanup(() => iframe.remove());
+  await new Promise(resolve => {
+    iframe.onload = resolve;
+    iframe.src = "/common/blank.html";
+  });
+  return iframe;
+}
+
+promise_test(async t => {
+  const parentButton = document.body.appendChild(document.createElement("button"));
+  t.add_cleanup(() => parentButton.remove());
+
+  const iframe = await createSameOriginIframe(t);
+  const childDoc = iframe.contentDocument;
+  const childWin = iframe.contentWindow;
+  const childAutofocus = childDoc.body.appendChild(childDoc.createElement("button"));
+  childAutofocus.autofocus = true;
+  const childButton = childDoc.body.appendChild(childDoc.createElement("button"));
+
+  childButton.focus();
+  parentButton.focus();
+  assert_equals(document.activeElement, parentButton);
+
+  let resolveIntercept;
+  childWin.navigation.addEventListener("navigate", e => {
+    e.intercept({
+      handler: () => new Promise(resolve => { resolveIntercept = resolve; }),
+      focusReset: "after-transition"
+    });
+  }, { once: true });
+
+  const finished = childWin.navigation.navigate("#refocus-child").finished;
+  childButton.focus();
+  assert_equals(document.activeElement, iframe);
+  assert_equals(childDoc.activeElement, childButton);
+
+  resolveIntercept();
+  await finished;
+  assert_equals(document.activeElement, iframe);
+  assert_equals(childDoc.activeElement, childButton,
+                "Re-focusing the child button from the parent document suppresses the child's focus reset");
+}, "Re-focusing an iframe's previously focused element from the parent suppresses the iframe's focus reset");
+
+promise_test(async t => {
+  const parentAutofocus = document.body.appendChild(document.createElement("button"));
+  parentAutofocus.autofocus = true;
+  const parentButton = document.body.appendChild(document.createElement("button"));
+  t.add_cleanup(() => {
+    parentAutofocus.remove();
+    parentButton.remove();
+  });
+
+  const iframe = await createSameOriginIframe(t);
+  const childDoc = iframe.contentDocument;
+  const childButton = childDoc.body.appendChild(childDoc.createElement("button"));
+
+  parentButton.focus();
+
+  let resolveIntercept;
+  navigation.addEventListener("navigate", e => {
+    e.intercept({
+      handler: () => new Promise(resolve => { resolveIntercept = resolve; }),
+      focusReset: "after-transition"
+    });
+  }, { once: true });
+
+  const finished = navigation.navigate("#parent-into-child").finished;
+  childButton.focus();
+  assert_equals(document.activeElement, iframe);
+
+  resolveIntercept();
+  await finished;
+  assert_equals(document.activeElement, parentAutofocus,
+                "Focusing an element in a child iframe does not set the parent document's focus-changed flag");
+}, "Moving focus from a navigating parent into a child iframe does not suppress the parent's focus reset");
+
+promise_test(async t => {
+  const parentAutofocus = document.body.appendChild(document.createElement("button"));
+  parentAutofocus.autofocus = true;
+  t.add_cleanup(() => parentAutofocus.remove());
+
+  const iframe = await createSameOriginIframe(t);
+  const childDoc = iframe.contentDocument;
+  const b1 = childDoc.body.appendChild(childDoc.createElement("button"));
+  const b2 = childDoc.body.appendChild(childDoc.createElement("button"));
+
+  b1.focus();
+
+  let resolveIntercept;
+  navigation.addEventListener("navigate", e => {
+    e.intercept({
+      handler: () => new Promise(resolve => { resolveIntercept = resolve; }),
+      focusReset: "after-transition"
+    });
+  }, { once: true });
+
+  const finished = navigation.navigate("#parent-while-child-moves").finished;
+  b2.focus();
+
+  resolveIntercept();
+  await finished;
+  assert_equals(document.activeElement, parentAutofocus,
+                "Moving focus inside a child iframe does not set the parent document's focus-changed flag");
+}, "Moving focus inside a child iframe does not suppress a navigating parent document's focus reset");
+
+promise_test(async t => {
+  const parentButton = document.body.appendChild(document.createElement("button"));
+  t.add_cleanup(() => parentButton.remove());
+
+  const iframe = await createSameOriginIframe(t);
+  const childDoc = iframe.contentDocument;
+  const childWin = iframe.contentWindow;
+  const childAutofocus = childDoc.body.appendChild(childDoc.createElement("button"));
+  childAutofocus.autofocus = true;
+  const childButton = childDoc.body.appendChild(childDoc.createElement("button"));
+
+  childButton.focus();
+
+  let resolveIntercept;
+  childWin.navigation.addEventListener("navigate", e => {
+    e.intercept({
+      handler: () => new Promise(resolve => { resolveIntercept = resolve; }),
+      focusReset: "after-transition"
+    });
+  }, { once: true });
+
+  const finished = childWin.navigation.navigate("#child-while-moving-out").finished;
+  parentButton.focus();
+  assert_equals(document.activeElement, parentButton);
+
+  resolveIntercept();
+  await finished;
+  assert_equals(document.activeElement, iframe);
+  assert_equals(childDoc.activeElement, childAutofocus,
+                "Moving focus out to the parent does not set the child iframe's focus-changed flag");
+}, "Moving focus out of a navigating child iframe to the parent does not suppress the child's focus reset");
+</script>
+</body>

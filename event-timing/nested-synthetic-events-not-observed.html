@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Event Timing: synthetic events nested in trusted events are not observed</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/event-timing-test-utils.js"></script>
+<button id="target">Click me</button>
+<div id="synthetic">Synthetic event target</div>
+<script>
+promise_test(async t => {
+  assert_implements(window.PerformanceEventTiming, 'Event Timing is not supported.');
+  const target = document.getElementById('target');
+  const synthetic = document.getElementById('synthetic');
+  const entries = [];
+  const observer = new PerformanceObserver(list => entries.push(...list.getEntries()));
+  t.add_cleanup(() => observer.disconnect());
+  observer.observe({type: 'event', durationThreshold: 16});
+  addListeners(target, ['pointerdown', 'pointerup', 'click']);
+  addListeners(synthetic, ['pointerup', 'click']);
+  let syntheticEvents = 0;
+  for (const type of ['pointerup', 'click']) {
+    synthetic.addEventListener(type, t.step_func(event => {
+      assert_false(event.isTrusted, 'The nested event is synthetic');
+      syntheticEvents++;
+    }));
+  }
+  target.addEventListener('pointerdown', t.step_func(event => {
+    assert_true(event.isTrusted, 'The enclosing pointerdown is trusted');
+    synthetic.dispatchEvent(new PointerEvent('pointerup', {
+      bubbles: true, pointerId: event.pointerId, pointerType: event.pointerType
+    }));
+    synthetic.dispatchEvent(new PointerEvent('click', {
+      bubbles: true, pointerId: event.pointerId, pointerType: event.pointerType
+    }));
+  }), {once: true});
+
+  const initialCount = performance.interactionCount;
+  await click(target);
+  await t.step_wait(() => ['pointerdown', 'pointerup', 'click'].every(name =>
+      entries.some(entry => entry.name === name && entry.target === target)),
+      'All trusted interaction events are observed');
+  entries.push(...observer.takeRecords());
+  assert_equals(syntheticEvents, 2, 'Both synthetic events ran inside pointerdown');
+  assert_false(entries.some(entry => entry.target === synthetic),
+      'Nested synthetic events do not produce performance entries');
+  const trustedEntries = entries.filter(entry =>
+      ['pointerdown', 'pointerup', 'click'].includes(entry.name));
+  assert_equals(trustedEntries.length, 3, 'Only the three trusted events are reported');
+  const interactionId = trustedEntries[0].interactionId;
+  assert_greater_than(interactionId, 0, 'The trusted interaction has an interactionId');
+  for (const entry of trustedEntries) {
+    assert_equals(entry.interactionId, interactionId,
+        'Nested synthetic events do not split the trusted interaction');
+  }
+  await verifyInteractionCount(t, initialCount + 1);
+}, 'Event Timing ignores synthetic pointerup and click nested in a trusted pointerdown');
+</script>

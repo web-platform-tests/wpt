@@ -73,7 +73,23 @@ promise_test(async t => {
                 "Child iframe resets focus when focus did not change during its navigation");
 }, "Navigating an iframe without changing focus resets focus inside that iframe");
 
-promise_test(async t => {
+function holdNavigation(nav, fragment, focusReset) {
+  const started = Promise.withResolvers();
+  const hold = Promise.withResolvers();
+  nav.addEventListener("navigate", event => {
+    event.intercept({
+      focusReset,
+      handler() {
+        started.resolve();
+        return hold.promise;
+      }
+    });
+  }, { once: true });
+  const { finished } = nav.navigate(fragment);
+  return { started: started.promise, release: hold.resolve, finished };
+}
+
+async function changeParentFocusDuringNavigations(t, childFocusReset, fragment) {
   const parentButton1 = document.body.appendChild(document.createElement("button"));
   const parentButton2 = document.body.appendChild(document.createElement("button"));
   t.add_cleanup(() => {
@@ -90,34 +106,46 @@ promise_test(async t => {
 
   parentButton1.focus();
 
-  let resolveParent, resolveChild;
-  navigation.addEventListener("navigate", e => {
-    e.intercept({
-      handler: () => new Promise(resolve => { resolveParent = resolve; }),
-      focusReset: "after-transition"
-    });
-  }, { once: true });
-  childWin.navigation.addEventListener("navigate", e => {
-    e.intercept({
-      handler: () => new Promise(resolve => { resolveChild = resolve; }),
-      focusReset: "after-transition"
-    });
-  }, { once: true });
+  const parentNavigation = holdNavigation(navigation, fragment, "after-transition");
+  let childNavigation;
+  try {
+    childNavigation = holdNavigation(childWin.navigation, "#child-unmoved", childFocusReset);
+    await Promise.all([parentNavigation.started, childNavigation.started]);
 
-  const parentFinished = navigation.navigate("#parent-move").finished;
-  const childFinished = childWin.navigation.navigate("#child-unmoved").finished;
+    parentButton2.focus();
+    assert_equals(document.activeElement, parentButton2,
+                  "Focus moved within the parent while both navigations were pending");
 
-  parentButton2.focus();
+    parentNavigation.release();
+    await parentNavigation.finished;
+    assert_equals(document.activeElement, parentButton2,
+                  "Parent focus reset was suppressed because focus changed in parent");
 
-  resolveParent();
-  await parentFinished;
-  assert_equals(document.activeElement, parentButton2,
-                "Parent focus reset was suppressed because focus changed in parent");
+    childNavigation.release();
+    await childNavigation.finished;
+  } finally {
+    parentNavigation.release();
+    childNavigation?.release();
+    await Promise.allSettled([parentNavigation.finished, childNavigation?.finished]);
+  }
 
-  resolveChild();
-  await childFinished;
+  return { iframe, parentButton2, childDoc, childAutofocus };
+}
+
+for (const childFocusReset of ["manual", "after-transition"]) {
+  promise_test(async t => {
+    const { iframe, parentButton2 } = await changeParentFocusDuringNavigations(
+      t, childFocusReset, "#parent-move-" + childFocusReset);
+    assert_equals(document.activeElement, childFocusReset === "manual" ? parentButton2 : iframe);
+  }, `Changing focus in the parent while both documents navigate with child focusReset "${childFocusReset}"`);
+}
+
+promise_test(async t => {
+  const { iframe, childDoc, childAutofocus } = await changeParentFocusDuringNavigations(
+    t, "after-transition", "#parent-move-autofocus");
+  assert_equals(document.activeElement, iframe, "Focus reset moved focus into the child iframe");
   assert_equals(childDoc.activeElement, childAutofocus,
-                "Changing focus in the parent document did not mark the child iframe's focus as changed");
-}, "Changing focus in the parent document marks only the parent document's focus as changed, not a navigating child iframe's");
+                "The child iframe's autofocus button was focused after the reset");
+}, "The child iframe's focus reset selects its autofocus button while both documents navigate");
 </script>
 </body>

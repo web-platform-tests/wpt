@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <title>
+    Test that the disconnect event is fired when the user disconnects from the
+    remote playback device using the browser or device user interface
+  </title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/common/media.js"></script>
+  <script src="./utils.js"></script>
+  <script>
+    setup({ explicit_timeout: true });
+  </script>
+  <body>
+    <div id="prep">
+      <p>Please make sure a device for remote playback is <b>available.</b></p>
+      <button id="prompt-button-prep">Show devices</button>
+      <button id="start-button">Start test</button>
+    </div>
+    <div id="pick-device" style="display: none">
+      <p id="connect-instructions">
+        Click the button below to prompt for a remote playback device and select
+        one!
+      </p>
+      <button id="prompt-button">Pick device</button>
+      <p id="disconnect-instructions" style="display: none">
+        The device is connected. Now <b>stop remote playback</b> without using
+        this page: use the browser's user interface (for example, its media
+        controls, toolbar or system menu for casting) or the remote playback
+        device's user interface (for example, its remote control).
+      </p>
+    </div>
+  </body>
+  <script src="./prepare-device.js"></script>
+  <script>
+    let v = document.createElement("video");
+    v.src = getVideoURI("/media/movie_300");
+    let promptButton = document.getElementById("prompt-button");
+    const metadataLoaded = enablePromptAfterMetadataLoaded(
+        v, document.getElementById("prompt-button-prep"), promptButton);
+
+    // Records the order of prompt() fulfillment and events fired at v.remote,
+    // along with the state observed at each step.
+    const log = [];
+    logRemotePlaybackEvents(v.remote, log);
+
+    promise_test(async t => {
+      assert_equals(v.remote.state, "disconnected");
+      await metadataLoaded;
+      await promptOnClick(promptButton, v.remote);
+      log.push(`prompt resolved:${v.remote.state}`);
+
+      // This test does not check the order of prompt() fulfillment relative
+      // to the connecting event; only check that prompt() resolved while
+      // connecting, and that the connecting and connect events were fired.
+      if (!log.some(e => e.startsWith("connect:"))) {
+        await waitForEvent(v.remote, "connect");
+      }
+      assert_true(log.includes("prompt resolved:connecting"),
+                  "prompt() must resolve while the state is connecting.");
+      assert_array_equals(log.filter(e => !e.startsWith("prompt")),
+                          ["connecting:connecting", "connect:connected"]);
+    }, "Test that prompt() resolves and the device connects when the user selects a device.");
+
+    promise_test(async t => {
+      assert_equals(v.remote.state, "connected",
+                    "The device must be connected to test disconnection.");
+      log.length = 0;
+      document.getElementById("connect-instructions").style.display = "none";
+      promptButton.style.display = "none";
+      document.getElementById("disconnect-instructions").style.display =
+          "block";
+
+      // The user agent runs the steps to disconnect from the device, which set
+      // the state to disconnected and then fire the disconnect event, without
+      // any call to prompt().
+      await waitForEvent(v.remote, "disconnect");
+      assert_array_equals(log, ["disconnect:disconnected"],
+                          "Only a disconnect event must be fired, after the " +
+                          "state changes to disconnected.");
+      assert_equals(v.remote.state, "disconnected");
+    }, "Test that the disconnect event is fired when the user disconnects using the browser or device user interface.");
+  </script>
+</html>

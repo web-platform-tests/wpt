@@ -701,9 +701,22 @@ promise_test(async t => {
 
   const reader = stream.getReader({ mode: 'byob' });
 
-  await promise_rejects_js(t, TypeError, reader.read(new Uint16Array(2), { min: 2 }), 'read() must fail');
-  await promise_rejects_js(t, TypeError, reader.closed, 'reader.closed should reject');
-}, 'ReadableStream with byte source: 3 byte enqueue(), then close(), then read({ min }) with 2-element Uint16Array must fail');
+  const result1 = await reader.read(new Uint16Array(2), { min: 2 });
+  assert_false(result1.done, 'first result.done');
+  assert_equals(result1.value.constructor, Uint16Array, 'first result.value.constructor');
+  assert_equals(result1.value.length, 1, 'first result.value.length');
+  assert_typed_array_equals(new Uint8Array(result1.value.buffer, result1.value.byteOffset, result1.value.byteLength),
+                            new Uint8Array([0xaa, 0xbb, 0xcc, 0x00]).subarray(0, 2), 'first result.value bytes');
+
+  await promise_rejects_js(t, TypeError, reader.read(new Uint16Array(1)), 'second read() must fail');
+
+  const result3 = await reader.read(new Uint8Array(1));
+  assert_false(result3.done, 'third result.done');
+  assert_typed_array_equals(result3.value, new Uint8Array([0xcc]), 'third result.value');
+
+  await reader.closed;
+}, 'ReadableStream with byte source: 3 byte enqueue(), then close(), then read({ min }) with 2-element Uint16Array ' +
+   'must fulfill with the whole elements and keep the remaining byte');
 
 promise_test(async t => {
   let controller;
@@ -719,11 +732,23 @@ promise_test(async t => {
   const readPromise = reader.read(new Uint16Array(2), { min: 2 });
 
   controller.enqueue(new Uint8Array([0xaa, 0xbb, 0xcc]));
-  assert_throws_js(TypeError, () => controller.close(), 'controller.close() must throw');
+  controller.close();
+  controller.byobRequest.respond(0);
 
-  await promise_rejects_js(t, TypeError, readPromise, 'read() must fail');
-  await promise_rejects_js(t, TypeError, reader.closed, 'reader.closed must reject');
-}, 'ReadableStream with byte source: read({ min }) with 2-element Uint16Array, then 3 byte enqueue(), then close() must fail');
+  const result1 = await readPromise;
+  assert_false(result1.done, 'first result.done');
+  assert_equals(result1.value.constructor, Uint16Array, 'first result.value.constructor');
+  assert_equals(result1.value.length, 1, 'first result.value.length');
+  assert_typed_array_equals(new Uint8Array(result1.value.buffer, result1.value.byteOffset, result1.value.byteLength),
+                            new Uint8Array([0xaa, 0xbb, 0xcc, 0x00]).subarray(0, 2), 'first result.value bytes');
+
+  const result2 = await reader.read(new Uint8Array(1));
+  assert_false(result2.done, 'second result.done');
+  assert_typed_array_equals(result2.value, new Uint8Array([0xcc]), 'second result.value');
+
+  await reader.closed;
+}, 'ReadableStream with byte source: read({ min }) with 2-element Uint16Array, then 3 byte enqueue(), then close() ' +
+   'must fulfill with the whole elements and keep the remaining byte');
 
 promise_test(async t => {
   let pullCount = 0;

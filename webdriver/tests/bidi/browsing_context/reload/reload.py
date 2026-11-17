@@ -74,7 +74,5 @@ async def test_image(bidi_session, new_tab, url):
 
 
 @pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
-async def test_initial_empty_document(bidi_session, new_tab, wait):
-    # The new tab has not been navigated, so it still shows its initial empty
-    # document, which is reloaded like any other document.
+async def test_initial_about_blank(bidi_session, new_tab, wait):
     await reload_and_assert(bidi_session, new_tab, url="about:blank", wait=wait)

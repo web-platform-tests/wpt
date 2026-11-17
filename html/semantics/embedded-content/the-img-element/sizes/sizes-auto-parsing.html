@@ -14,9 +14,9 @@
 "use strict";
 
 const dpr = window.devicePixelRatio || 1;
-const smallW = Math.max(1, Math.round(20 * dpr));
-const mediumW = Math.max(2, Math.round(300 * dpr));
-const largeW = Math.max(3, Math.round(1200 * dpr));
+const smallW = Math.max(1, Math.ceil(20 * dpr));
+const mediumW = Math.max(2, Math.ceil(320 * dpr));
+const largeW = Math.max(3, Math.ceil(1200 * dpr));
 
 function makeSrcset(token) {
   return `/images/green-1x1.png?small-${token} ${smallW}w, ` +

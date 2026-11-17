@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>&lt;area> focusable</title>
+<title>An &lt;area> with a valid tabindex is focusable when non-hidden and non-inert</title>
 <link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#data-model">
 <script src="/resources/testharness.js"></script>
@@ -20,7 +20,7 @@
   const focusableContexts = [
     ['one visible image', () => img2.remove(), () => img1.after(img2)],
     ['two visible images', () => { }, () => { }],
-    ['one visible image (after: two visible images)', () => img2.remove(), () => img1.after(img2)],
+    ['one visible image (after: "two visible images")', () => img2.remove(), () => img1.after(img2)],
     ['one hidden and one visible image', () => img1.hidden = true, () => img1.hidden = false],
     ['one visible and one hidden image', () => img2.hidden = true, () => img2.hidden = false],
     ['one inert and one non-inert image', () => img1.inert = true, () => img1.inert = false],

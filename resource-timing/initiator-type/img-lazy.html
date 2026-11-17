@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Resource Timing initiator type: lazy-loaded img</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#updating-the-image-data">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resource-timing/resources/observe-entry.js"></script>
+<div style="height: 10000px"></div>
+<img id="img" loading="lazy" src="/images/green-1x1.png?id=lazy">
+<script>
+promise_test(async t => {
+  await new Promise(resolve => window.onload = resolve);
+  const img = document.getElementById("img");
+  assert_false(img.complete, "img not loaded before it is scrolled into view");
+
+  img.scrollIntoView();
+  await new Promise(resolve => {
+    img.onload = resolve;
+    img.onerror = t.unreached_func("img error");
+  });
+
+  const entry = await observe_entry("green-1x1.png?id=lazy");
+  assert_equals(entry.initiatorType, "img");
+}, "lazy-loaded img fetch has initiator type 'img'");
+</script>

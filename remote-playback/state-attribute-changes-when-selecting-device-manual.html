@@ -6,6 +6,7 @@
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/common/media.js"></script>
+  <script src="./utils.js"></script>
   <script>
     setup({ explicit_timeout: true });
   </script>
@@ -26,7 +27,10 @@
   <script src="./prepare-device.js"></script>
   <script>
     let v = document.createElement("video");
-    v.src = getVideoURI("/media/movie_5");
+    v.src = getVideoURI("/media/movie_300");
+    enablePromptAfterMetadataLoaded(
+        v, document.getElementById("prompt-button-prep"),
+        document.getElementById("prompt-button"));
 
     async_test(t => {
       assert_equals(v.remote.state, "disconnected");

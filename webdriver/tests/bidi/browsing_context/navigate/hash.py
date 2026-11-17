@@ -61,10 +61,13 @@ async def test_navigate_different_documents(
     await navigate_and_assert(bidi_session, new_tab, url(url_after))
 
 
+@pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
 @pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
-async def test_navigate_in_iframe(bidi_session, inline, iframe, new_tab, wait):
+async def test_navigate_in_iframe(
+    bidi_session, inline, iframe, new_tab, wait, domain
+):
     frame_start_url = inline("frame")
-    url_before = inline(iframe("frame"))
+    url_before = inline(iframe("frame"), domain=domain)
     contexts = await navigate_and_assert(bidi_session, new_tab, url_before)
 
     assert len(contexts[0]["children"]) == 1

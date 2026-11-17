@@ -130,8 +130,32 @@ promise_test(async t => {
   source.srcset = makeSrcset("remove-source-sizes-omitted");
   await loaded;
   assert_true(img.currentSrc.includes("small-remove-source-sizes-omitted"),
-              `Removing <source sizes> when img allows auto-sizes should default to auto (got: ${img.currentSrc})`);
-}, "Removing sizes from <source> when img allows auto-sizes defaults to auto");
+              `Removing <source sizes> should use the img's sizes='auto' (got: ${img.currentSrc})`);
+}, "Removing sizes from <source> uses the img's sizes='auto'");
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  source.srcset = makeSrcset("change-img-sizes");
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.sizes = "auto";
+  img.width = 10;
+  picture.append(source, img);
+  t.add_cleanup(() => picture.remove());
+
+  let loaded = nextLoad(img);
+  document.body.append(picture);
+  await loaded;
+  assert_true(img.currentSrc.includes("small-change-img-sizes"),
+              `Omitted <source sizes> should initially use the img's sizes='auto' (got: ${img.currentSrc})`);
+
+  loaded = nextLoad(img);
+  img.sizes = "300px";
+  await loaded;
+  assert_true(img.currentSrc.includes("medium-change-img-sizes"),
+              `Changing <img sizes> should update the size used for <source> without sizes (got: ${img.currentSrc})`);
+}, "Changing <img sizes> updates the size used for <source> without sizes");
 
 promise_test(async t => {
   const container = document.createElement("div");
@@ -155,9 +179,40 @@ promise_test(async t => {
   img.loading = "eager";
   await loaded;
 
-  assert_true(img.currentSrc.includes("large-unrendered-omitted-source-sizes"),
-              `Omitted <source sizes> must default to bare auto and fall back to 100vw when unrendered (got: ${img.currentSrc})`);
-}, "Unrendered img with sizes='auto, 300px' and omitted <source sizes> falls back to 100vw");
+  assert_true(img.currentSrc.includes("medium-unrendered-omitted-source-sizes"),
+              `Omitted <source sizes> must use the img's sizes and fall back to 300px when unrendered (got: ${img.currentSrc})`);
+}, "Unrendered img with sizes='auto, 300px' and omitted <source sizes> falls back to 300px");
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  source.srcset = makeSrcset("omitted-source-sizes-non-auto");
+  const img = document.createElement("img");
+  img.sizes = "300px";
+  const loaded = nextLoad(img);
+  picture.append(source, img);
+  t.add_cleanup(() => picture.remove());
+  document.body.append(picture);
+  await loaded;
+
+  assert_true(img.currentSrc.includes("medium-omitted-source-sizes-non-auto"),
+              `Omitted <source sizes> must use the img's sizes='300px' (got: ${img.currentSrc})`);
+}, "Omitted <source sizes> uses <img sizes='300px'> when img does not allow auto-sizes");
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  source.srcset = makeSrcset("omitted-source-and-img-sizes");
+  const img = document.createElement("img");
+  const loaded = nextLoad(img);
+  picture.append(source, img);
+  t.add_cleanup(() => picture.remove());
+  document.body.append(picture);
+  await loaded;
+
+  assert_true(img.currentSrc.includes("large-omitted-source-and-img-sizes"),
+              `Omitted <source sizes> and <img sizes> must fall back to 100vw (got: ${img.currentSrc})`);
+}, "Omitted <source sizes> and omitted <img sizes> fall back to 100vw");
 
 promise_test(async t => {
   const picture = document.createElement("picture");

@@ -50,9 +50,10 @@
       await promptOnClick(promptButton, v.remote);
       log.push(`prompt resolved:${v.remote.state}`);
 
-      // This test does not check the order of prompt() fulfillment relative
-      // to the connecting event; only check that prompt() resolved while
-      // connecting, and that the connecting and connect events were fired.
+      // The order of prompt() fulfillment and the connecting event is checked
+      // by prompt-resolves-before-connecting-manual.html, so only check that
+      // prompt() resolved while connecting, followed by the connecting and
+      // connect events.
       if (!log.some(e => e.startsWith("connect:"))) {
         await waitForEvent(v.remote, "connect");
       }

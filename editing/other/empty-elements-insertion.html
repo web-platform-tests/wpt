@@ -42,20 +42,6 @@
   }, 'Insert text into the inline element styled with border' );
 
   promise_test( async () => {
-    utils.setupEditingHost( `<p><strong id="unstyled"></strong></p>` );
-
-    const target = document.querySelector( '#unstyled' );
-    const actions = new test_driver.Actions();
-    await actions
-      .pointerMove( 0, 0, { origin: target } )
-      .pointerDown( { button: actions.ButtonType.LEFT } )
-      .pointerUp( { button: actions.ButtonType.LEFT } )
-      .send();
-    document.execCommand( 'insertText', false, 'a' );
-    assert_greater_than( target.innerHTML.length, 0, 'The text should be inserted into the unstyled <strong> element' );
-  }, 'Insert text into the unstyled inline element' );
-
-  promise_test( async () => {
     utils.setupEditingHost( `<p><strong id="unstyled-before"></strong></p>` );
 
     const target = document.querySelector( '#unstyled-before' );

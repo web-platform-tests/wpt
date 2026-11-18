@@ -53,7 +53,12 @@ def assert_events(events, expected_events):
 
 
 async def assert_pointer_events(
-    bidi_session, context, expected_events, target, pointer_type
+    bidi_session,
+    context,
+    expected_events,
+    target,
+    pointer_type,
+    expected_pointer_ids=None,
 ):
     events = await get_object_from_context(
         bidi_session, context["context"], "window.recordedEvents"
@@ -66,6 +71,10 @@ async def assert_pointer_events(
     for e in events:
         assert e["target"] == target
         assert e["pointerType"] == pointer_type
+
+    if expected_pointer_ids is not None:
+        pointer_ids = [e["pointerId"] for e in events]
+        assert pointer_ids == expected_pointer_ids
 
 
 
@@ -168,6 +177,7 @@ async def record_pointer_events(bidi_session, context, container, selector):
                 window.recordedEvents.push({{
                     "type": event.type,
                     "pointerType": event.pointerType,
+                    "pointerId": event.pointerId,
                     "target": event.target.id
                 }});
             }}

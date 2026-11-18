@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Named items: property names don't shadow in any kind of document</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-document-nameditem">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const HTML_NS = "http://www.w3.org/1999/xhtml";
+
+function appendIframe(t, setup) {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  setup(iframe);
+  document.body.append(iframe);
+  return iframe;
+}
+
+function loadInIframe(t, attr, value) {
+  return new Promise(resolve => {
+    appendIframe(t, iframe => {
+      iframe.onload = () => resolve(iframe.contentDocument);
+      iframe.setAttribute(attr, value);
+    });
+  });
+}
+
+function xhrDocument(url) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.responseType = "document";
+    xhr.onload = () => resolve(xhr.response);
+    xhr.onerror = reject;
+    xhr.send();
+  });
+}
+
+function parse(type, markup) {
+  return new DOMParser().parseFromString(markup, type);
+}
+
+const kinds = [
+  ["HTML", t => loadInIframe(t, "src", "/common/blank.html")],
+  ["initial about:blank", t => appendIframe(t, () => {}).contentDocument],
+  ["srcdoc", t => loadInIframe(t, "srcdoc", "<!DOCTYPE html><title>srcdoc</title>")],
+  ["image", t => loadInIframe(t, "src", "/images/green.png")],
+  ["media", t => loadInIframe(t, "src", "/media/white.webm")],
+  ["text", t => loadInIframe(t, "src", "/common/text-plain.txt")],
+  ["XHTML", t => loadInIframe(t, "src", "/common/dummy.xhtml")],
+  ["XML", t => loadInIframe(t, "src", "/common/dummy.xml")],
+  ["SVG", t => loadInIframe(t, "src", "/images/colors.svg")],
+  ["createHTMLDocument()", () => document.implementation.createHTMLDocument("")],
+  ["createDocument() XML", () => document.implementation.createDocument(null, "root")],
+  ["createDocument() XHTML", () => document.implementation.createDocument(HTML_NS, "html")],
+  ["new Document()", () => new Document()],
+  ["DOMParser text/html", () => parse("text/html", "<!DOCTYPE html>")],
+  ["DOMParser application/xml", () => parse("application/xml", "<root></root>")],
+  ["DOMParser application/xhtml+xml", () => parse("application/xhtml+xml", `<html xmlns="${HTML_NS}"><body></body></html>`)],
+  ["DOMParser image/svg+xml", () => parse("image/svg+xml", `<svg xmlns="http://www.w3.org/2000/svg"></svg>`)],
+  ["XMLHttpRequest HTML", () => xhrDocument("/common/blank.html")],
+  ["XMLHttpRequest XML", () => xhrDocument("/common/dummy.xml")],
+  ["template contents owner", () => document.createElement("template").content.ownerDocument],
+];
+
+function documentPrototype(doc) {
+  let proto = Object.getPrototypeOf(doc);
+  while (Object.getOwnPropertyDescriptor(proto, "constructor").value.name !== "Document") {
+    proto = Object.getPrototypeOf(proto);
+  }
+  return proto;
+}
+
+for (const [kind, getDocument] of kinds) {
+  promise_test(async t => {
+    const doc = await getDocument(t);
+    const docProto = documentPrototype(doc);
+    const objectProto = Object.getPrototypeOf(Object.getPrototypeOf(Object.getPrototypeOf(docProto)));
+    if (!doc.documentElement) {
+      doc.append(docProto.createElementNS.call(doc, HTML_NS, "html"));
+    }
+    const parent = doc.body || doc.documentElement;
+    const title = doc.title;
+    t.add_cleanup(() => { delete docProto.wptExpando; });
+    docProto.wptExpando = "expando";
+    for (const [localName, name] of [
+      ["img", "title"], ["form", "cookie"], ["img", "createElement"], ["img", "toString"],
+      ["img", "wptExpando"],
+    ]) {
+      const element = docProto.createElementNS.call(doc, HTML_NS, localName);
+      element.setAttribute("name", name);
+      parent.append(element);
+    }
+    assert_equals(doc.title, title, "title");
+    assert_equals(typeof doc.cookie, "string", "cookie");
+    assert_equals(doc.createElement, docProto.createElement, "createElement");
+    assert_equals(doc.toString, objectProto.toString, "toString");
+    assert_equals(doc.wptExpando, "expando", "expando on Document.prototype");
+  }, `Named elements don't shadow properties in ${kind} documents`);
+}
+</script>

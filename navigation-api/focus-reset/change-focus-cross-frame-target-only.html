@@ -92,6 +92,30 @@ promise_test(async t => {
 }, "Re-focusing an iframe's previously focused element from the parent suppresses the iframe's focus reset");
 
 promise_test(async t => {
+  const { iframe, parentButton, childButton, childAutofocus } = await createFocusTargets(t);
+  const childDoc = iframe.contentDocument;
+  await test_driver.click(parentButton);
+  assert_true(document.hasFocus(), "Top-level document has system focus");
+  childButton.focus();
+
+  const childNavigation = holdNavigation(iframe.contentWindow.navigation,
+                                         "#same-focus-path", "after-transition");
+  try {
+    await childNavigation.started;
+    assert_equals(document.activeElement, iframe);
+    assert_equals(childDoc.activeElement, childButton);
+    childButton.focus();
+    assert_equals(childDoc.activeElement, childButton);
+  } finally {
+    await childNavigation.finish();
+  }
+
+  assert_equals(document.activeElement, iframe);
+  assert_equals(childDoc.activeElement, childAutofocus,
+                "The pending focus reset selects the iframe's autofocus button");
+}, "Calling focus() on the already-focused child button does not suppress the iframe's focus reset");
+
+promise_test(async t => {
   const parentAutofocus = document.body.appendChild(document.createElement("button"));
   parentAutofocus.autofocus = true;
   const parentButton = document.body.appendChild(document.createElement("button"));

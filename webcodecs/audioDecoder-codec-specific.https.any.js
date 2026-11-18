@@ -214,22 +214,10 @@ let CONFIG = null;
 let CHUNK_DATA = null;
 let CHUNKS = null;
 promise_setup(async () => {
-  // Don't run any tests if the codec is not supported.
   assert_equals("function", typeof AudioDecoder.isConfigSupported);
-  let supported = false;
-  try {
-    const support = await AudioDecoder.isConfigSupported({
-      codec: CODEC_DATA.config.codec,
-      sampleRate: CODEC_DATA.config.sampleRate,
-      numberOfChannels: CODEC_DATA.config.numberOfChannels
-    });
-    supported = support.supported;
-  } catch (e) {
-  }
-  assert_implements_optional(supported,
-                             CODEC_DATA.config.codec + ' unsupported');
 
-  // Fetch the media data and prepare buffers.
+  // Fetch the media data and prepare buffers. This must happen before the
+  // support check, as some codecs (e.g. flac, vorbis) require a description.
   const response = await fetch(CODEC_DATA.src);
   const buf = await response.arrayBuffer();
 
@@ -260,6 +248,16 @@ promise_setup(async () => {
       CONFIG.description = view(buf, CODEC_DATA.config.description);
     }
   }
+
+  // Don't run any tests if the codec is not supported.
+  let supported = false;
+  try {
+    const support = await AudioDecoder.isConfigSupported(CONFIG);
+    supported = support.supported;
+  } catch (e) {
+  }
+  assert_implements_optional(supported,
+                             CODEC_DATA.config.codec + ' unsupported');
 
   CHUNK_DATA = [];
   // For PCM, split in chunks of 1200 bytes and compute the rest

@@ -2,6 +2,7 @@ from pathlib import Path
 import asyncio
 import pytest
 
+from tests.bidi import remote_mapping_to_dict
 from tests.bidi.input.file_dialog_opened import assert_file_dialog_opened_event
 from webdriver.bidi.modules.script import ContextTarget
 from webdriver.bidi.undefined import UNDEFINED
@@ -41,10 +42,8 @@ async def test_show_save_file_picker_accept_new_file(
         bidi_session.script.evaluate(
             expression="""(async () => {
                 const handle = await window.showSaveFilePicker();
-                const writable = await handle.createWritable();
-                await writable.write("Saved new file");
-                await writable.close();
-                return handle.name;
+                const file = await handle.getFile();
+                return { name: handle.name, text: await file.text() };
             })()""",
             target=ContextTarget(new_tab["context"]),
             await_promise=True,
@@ -61,8 +60,12 @@ async def test_show_save_file_picker_accept_new_file(
         element=UNDEFINED,
     )
     result = await eval_task
-    assert result["value"] == "created_by_save_picker.txt"
-    assert new_save_path.read_text(encoding="utf-8") == "Saved new file"
+    assert remote_mapping_to_dict(result["value"]) == {
+        "name": "created_by_save_picker.txt",
+        "text": "",
+    }
+    assert new_save_path.exists()
+    assert new_save_path.read_bytes() == b""
 
 
 async def test_show_save_file_picker_accept_existing_file(
@@ -73,9 +76,7 @@ async def test_show_save_file_picker_accept_existing_file(
     )
 
     overwrite_path = Path(temp_files["root"]) / "overwrite.txt"
-    overwrite_path.write_text(
-        "Long initial content to overwrite", encoding="utf-8"
-    )
+    overwrite_path.write_text("Initial non-empty content", encoding="utf-8")
 
     await bidi_session.browser.set_file_dialog_behavior(
         file_dialog_behavior={
@@ -83,18 +84,21 @@ async def test_show_save_file_picker_accept_existing_file(
             "paths": [str(overwrite_path)],
         }
     )
-    await bidi_session.script.evaluate(
+    result = await bidi_session.script.evaluate(
         expression="""(async () => {
             const handle = await window.showSaveFilePicker();
-            const writable = await handle.createWritable();
-            await writable.write("Short");
-            await writable.close();
+            const file = await handle.getFile();
+            return { name: handle.name, text: await file.text() };
         })()""",
         target=ContextTarget(new_tab["context"]),
         await_promise=True,
         user_activation=True,
     )
-    assert overwrite_path.read_text(encoding="utf-8") == "Short"
+    assert remote_mapping_to_dict(result["value"]) == {
+        "name": "overwrite.txt",
+        "text": "",
+    }
+    assert overwrite_path.read_bytes() == b""
 
 
 async def test_show_save_file_picker_cancel(bidi_session, inline, new_tab):

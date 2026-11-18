@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<title>An audible AudioContext and a "playback" audio session activate the media session</title>
+<link rel="help" href="https://w3c.github.io/mediasession/#audiocontext-activation-conditions">
+<link rel="help" href="https://w3c.github.io/audio-session/#dom-audiosessiontype-playback">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/audiocontext-activation.js"></script>
+<script>
+audioContextActivationTest({audioSessionType: "playback"});
+</script>

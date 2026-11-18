@@ -49,6 +49,7 @@
     assert_array_equals(contents,
       ["0  1", "0 a", "0 ab", "0 abc", "0 abc", "0 abcd", "0 abcd", "0 abcde", "0 abcde", "0 abcdef", "0 abcdef"]
     );
-    assert_false(start_marker.isConnected);
+    assert_equals(start_marker.parentNode, target,
+      "<?start> is removed when patching starts, so the parser does not remove it again");
   });
 </script>

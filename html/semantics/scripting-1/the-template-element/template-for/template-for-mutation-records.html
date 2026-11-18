@@ -2,6 +2,7 @@
 <meta charset="utf-8" />
 <title>HTML partial updates - mutation records for removal</title>
 <link rel="help" href="https://github.com/WICG/declarative-partial-updates" />
+<link rel="help" href="https://html.spec.whatwg.org/multipage/scripting.html#prepare-content-patching" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -32,10 +33,8 @@
      "added [1:SPAN:'remove'] removed []",
      "added [7:end:''] removed []",
      "added [3:#text:''] removed []",
-     "added [] removed [3:#text:'text']",
-     "added [] removed [1:SPAN:'remove']",
+     "added [] removed [7:start:'name=\"n\"' 3:#text:'text' 1:SPAN:'remove']",
      "added [1:SPAN:'content'] removed []",
-     "added [] removed [7:start:'name=\"n\"']",
      "added [] removed [7:end:'']"]);
   });
 </script>

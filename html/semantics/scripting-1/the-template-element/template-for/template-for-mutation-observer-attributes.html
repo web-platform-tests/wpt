@@ -1,0 +1,98 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HTML partial updates: activeTemplateAttributes of mutation records</title>
+<link rel="help" href="https://dom.spec.whatwg.org/#dom-mutationrecord-activetemplateattributes">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#current-active-template">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/mutation-records.js"></script>
+<div id="target"><?marker name="one"><?marker name="two"></div>
+<script>
+  const target = document.getElementById("target");
+  const filterArray = [
+    "data-y",
+    "for",
+    "data-y",
+    "data-empty",
+    "__proto__",
+    "constructor",
+    "toString",
+    "data-missing",
+    "DATA-X",
+  ];
+  const getRecords = collectRecords(target, {
+    childList: true,
+    activeTemplateAttributeFilter: filterArray,
+  });
+  filterArray.push("data-z");
+  const getEmptyFilterRecords = collectRecords(target, {
+    childList: true,
+    activeTemplateAttributeFilter: [],
+  });
+</script>
+<template for="one" data-x="1" data-y="2" data-z="3" data-empty="" __proto__="proto" constructor="ctor" toString="str"><b>1</b><i>2</i></template>
+<template for="two" data-y="other"><u>3</u></template>
+<script>
+  function attributesPerTemplate(records) {
+    assert_array_equals(records.map(r => r.activeTemplateStatus),
+      ["start", "update", "update", "end", "start", "update", "end"]);
+    return [records.slice(0, 4), records.slice(4)].map(group => {
+      const attributes = group[0].activeTemplateAttributes;
+      for (const record of group) {
+        assert_equals(record.activeTemplateAttributes, attributes,
+          "all records for one template return the same object");
+      }
+      return attributes;
+    });
+  }
+
+  test(() => {
+    const [one, two] = attributesPerTemplate(getRecords());
+    assert_not_equals(one, two);
+    assert_equals(Object.getPrototypeOf(one), null);
+    assert_true(Object.isFrozen(one));
+    assert_array_equals(Object.keys(one),
+      ["data-y", "for", "data-empty", "__proto__", "constructor"]);
+    assert_equals(one["data-y"], "2");
+    assert_equals(one["for"], "one");
+    assert_equals(one["data-empty"], "");
+    assert_equals(one["__proto__"], "proto");
+    assert_equals(one["constructor"], "ctor");
+    assert_equals(one["toString"], undefined, "HTML lowercases toString to tostring and null prototype has no inherited toString");
+    assert_equals(one["data-z"], undefined, "mutating the passed array after observe() has no effect");
+    for (const key of Object.keys(one)) {
+      const desc = Object.getOwnPropertyDescriptor(one, key);
+      assert_equals(desc.writable, false, `${key} writable`);
+      assert_equals(desc.enumerable, true, `${key} enumerable`);
+      assert_equals(desc.configurable, false, `${key} configurable`);
+      assert_false("get" in desc, `${key} is a data property`);
+    }
+    assert_array_equals(Object.keys(two), ["data-y", "for"]);
+    assert_equals(two["data-y"], "other");
+    assert_equals(two["for"], "two");
+  }, "activeTemplateAttributes is a frozen object with a null prototype that holds the listed attributes in filter order");
+
+  test(() => {
+    const [one, two] = attributesPerTemplate(getEmptyFilterRecords());
+    const [otherObserverOne] = attributesPerTemplate(getRecords());
+    assert_not_equals(one, two);
+    assert_not_equals(one, otherObserverOne, "each observer gets its own object");
+    assert_equals(Object.getPrototypeOf(one), null);
+    assert_true(Object.isFrozen(one));
+    assert_array_equals(Object.keys(one), []);
+  }, "An empty activeTemplateAttributeFilter results in an empty object");
+
+  test(() => {
+    const map = new WeakMap();
+    for (const record of getRecords()) {
+      const attributes = record.activeTemplateAttributes;
+      if (!map.has(attributes)) {
+        map.set(attributes, []);
+      }
+      map.get(attributes).push(record.activeTemplateStatus);
+    }
+    const [one, two] = attributesPerTemplate(getRecords());
+    assert_array_equals(map.get(one), ["start", "update", "update", "end"]);
+    assert_array_equals(map.get(two), ["start", "update", "end"]);
+  }, "activeTemplateAttributes can be used as a WeakMap key to group records");
+</script>

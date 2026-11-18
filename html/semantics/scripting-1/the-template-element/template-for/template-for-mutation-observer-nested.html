@@ -1,0 +1,32 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HTML partial updates: mutation records for nested template for elements</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#current-active-template">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/mutation-records.js"></script>
+<div id="target"><?start name="outer">old<?end></div>
+<script>
+  const target = document.getElementById("target");
+  const getRecords = collectRecords(target, {
+    childList: true,
+    activeTemplateAttributeFilter: ["data-name"],
+  });
+</script>
+<template for="outer" data-name="outer">before<?marker name="inner">after<template for="inner" data-name="inner"><b>X</b></template></template>
+<script>
+  test(() => {
+    const records = getRecords();
+    assert_array_equals(records.map(r => `${describeRecord(r)} (${r.activeTemplateAttributes?.["data-name"]})`), [
+      `start: added [] removed [<?start>, "old"] between null and <?end> (outer)`,
+      `update: added ["before"] removed [] between null and <?end> (outer)`,
+      `update: added [<?marker>] removed [] between "before" and <?end> (outer)`,
+      `update: added ["after"] removed [] between <?marker> and <?end> (outer)`,
+      `start: added [] removed [] between "before" and <?marker> (inner)`,
+      `update: added [<b>] removed [] between "before" and <?marker> (inner)`,
+      `end: added [] removed [<?marker>] between <b> and "after" (inner)`,
+      `end: added [] removed [<?end>] between "after" and null (outer)`,
+    ]);
+    assert_equals(target.innerHTML, "before<b>X</b>after");
+  }, "Each record carries the innermost template for element");
+</script>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>focus({ focusVisible }) on the already focused element doesn't change focus indication</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#dom-focus">
+<link rel="help" href="https://github.com/whatwg/html/issues/4512">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<button id="other">other</button>
+<div id="target" tabindex="0">target</div>
+<script>
+const other = document.getElementById("other");
+const target = document.getElementById("target");
+
+test(t => {
+  t.add_cleanup(() => other.focus());
+  other.focus();
+  target.focus({ focusVisible: false });
+  assert_equals(document.activeElement, target, "target is focused");
+  assert_false(target.matches(":focus-visible"), "focusVisible: false when the focus moves");
+  target.focus({ focusVisible: true });
+  assert_false(target.matches(":focus-visible"),
+               "focusVisible: true on the focused element doesn't indicate focus");
+}, "focus({ focusVisible: true }) on the already focused element");
+
+test(t => {
+  t.add_cleanup(() => other.focus());
+  other.focus();
+  target.focus({ focusVisible: true });
+  assert_equals(document.activeElement, target, "target is focused");
+  assert_true(target.matches(":focus-visible"), "focusVisible: true when the focus moves");
+  target.focus({ focusVisible: false });
+  assert_true(target.matches(":focus-visible"),
+              "focusVisible: false on the focused element doesn't stop indicating focus");
+}, "focus({ focusVisible: false }) on the already focused element");
+</script>

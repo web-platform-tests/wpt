@@ -1,6 +1,7 @@
 import pytest
 import pytest_asyncio
 
+from tests.bidi import remote_mapping_to_dict
 from webdriver.bidi.modules.script import ContextTarget
 
 
@@ -56,9 +57,10 @@ def trigger_input_file_dialog(bidi_session, inline):
             await_promise=True,
             user_activation=True,
         )
+        parsed = remote_mapping_to_dict(result["value"])
         return {
-            "event": result["value"]["event"]["value"],
-            "files": [f["value"] for f in result["value"]["files"]["value"]],
+            "event": parsed["event"],
+            "files": [f["value"] for f in parsed["files"]],
         }
 
     return _trigger

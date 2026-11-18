@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<link rel="author" title="Anne van Kesteren" href="mailto:annevk@annevk.nl">
+<link rel="help" href="https://html.spec.whatwg.org/#the-input-element-as-a-range-control">
+<link rel="help" href="https://drafts.csswg.org/css-writing-modes-4/#valdef-text-orientation-upright">
+<title>Range input appearance none writing mode vertical-lr, RTL direction & upright text orientation</title>
+<meta charset="utf-8">
+<link rel="match" href="range-input-appearance-none-sideways-lr-rtl-ref.html">
+<link rel="mismatch" href="range-input-appearance-none-sideways-lr-ref.html">
+
+<!-- 'text-orientation: upright' makes the used 'direction' ltr. The lowest value is on the
+     inline-start side, which is therefore the top here, as for vertical-lr with LTR direction. The
+     match reference uses that; the mismatch reference uses vertical-lr with RTL direction. -->
+<p>The range input below should match the correct writing mode.</p>
+<input type="range" min="0" max="100" value="10" style="appearance: none; writing-mode: vertical-lr; direction: rtl; text-orientation: upright">

@@ -2,8 +2,16 @@ import pytest
 
 import webdriver.bidi.error as error
 from tests.bidi import get_invalid_cases
+from webdriver.bidi.undefined import UNDEFINED
 
 pytestmark = pytest.mark.asyncio
+
+
+async def test_params_file_dialog_behavior_missing(bidi_session):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.browser.set_file_dialog_behavior(
+            file_dialog_behavior=UNDEFINED
+        )
 
 
 @pytest.mark.parametrize("value", get_invalid_cases("dict", nullable=True))

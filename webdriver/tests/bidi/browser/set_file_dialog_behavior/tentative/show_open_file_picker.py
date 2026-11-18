@@ -112,34 +112,63 @@ async def test_show_open_file_picker_accept_multiple(
     ]
 
 
-async def test_show_open_file_picker_cancel_and_unselectable(
-    bidi_session, inline, new_tab, temp_files
+async def test_show_open_file_picker_cancel(bidi_session, inline, new_tab):
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=inline(""), wait="complete"
+    )
+    await bidi_session.browser.set_file_dialog_behavior(
+        file_dialog_behavior={"type": "cancel"}
+    )
+
+    result = await bidi_session.script.evaluate(
+        expression="""(async () => {
+            try {
+                await window.showOpenFilePicker();
+                return "resolved";
+            } catch (e) {
+                return e instanceof DOMException ? e.name : String(e);
+            }
+        })()""",
+        target=ContextTarget(new_tab["context"]),
+        await_promise=True,
+        user_activation=True,
+    )
+    assert result["value"] == "AbortError"
+
+
+@pytest.mark.parametrize(
+    "case", ["multiple_paths", "directory", "nonexistent", "relative"]
+)
+async def test_show_open_file_picker_unselectable_paths(
+    bidi_session, inline, new_tab, temp_files, case
 ):
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"], url=inline(""), wait="complete"
     )
+    paths_by_case = {
+        "multiple_paths": [temp_files["file1"], temp_files["file2"]],
+        "directory": [temp_files["subdir"]],
+        "nonexistent": [f"{temp_files['root']}/missing.txt"],
+        "relative": ["relative/file1.txt"],
+    }
+    await bidi_session.browser.set_file_dialog_behavior(
+        file_dialog_behavior={
+            "type": "accept",
+            "paths": paths_by_case[case],
+        }
+    )
 
-    for behavior in [
-        {"type": "cancel"},
-        {"type": "accept", "paths": [temp_files["file1"], temp_files["file2"]]},
-        {"type": "accept", "paths": [temp_files["subdir"]]},
-        {"type": "accept", "paths": [f"{temp_files['root']}/missing.txt"]},
-        {"type": "accept", "paths": ["relative/file1.txt"]},
-    ]:
-        await bidi_session.browser.set_file_dialog_behavior(
-            file_dialog_behavior=behavior
-        )
-        result = await bidi_session.script.evaluate(
-            expression="""(async () => {
-                try {
-                    await window.showOpenFilePicker();
-                    return "resolved";
-                } catch (e) {
-                    return e instanceof DOMException ? e.name : String(e);
-                }
-            })()""",
-            target=ContextTarget(new_tab["context"]),
-            await_promise=True,
-            user_activation=True,
-        )
-        assert result["value"] == "AbortError"
+    result = await bidi_session.script.evaluate(
+        expression="""(async () => {
+            try {
+                await window.showOpenFilePicker();
+                return "resolved";
+            } catch (e) {
+                return e instanceof DOMException ? e.name : String(e);
+            }
+        })()""",
+        target=ContextTarget(new_tab["context"]),
+        await_promise=True,
+        user_activation=True,
+    )
+    assert result["value"] == "AbortError"

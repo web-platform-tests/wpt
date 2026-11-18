@@ -1,5 +1,3 @@
-# META: timeout=long
-
 import pytest
 
 pytestmark = pytest.mark.asyncio

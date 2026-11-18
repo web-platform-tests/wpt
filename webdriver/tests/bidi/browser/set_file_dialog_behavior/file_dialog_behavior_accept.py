@@ -68,22 +68,24 @@ async def test_multiple_paths_for_single_file_input_cancels_dialog(
     assert result == {"event": "cancel", "files": []}
 
 
-async def test_unselectable_paths_cancel_file_input(
-    bidi_session, new_tab, temp_files, trigger_input_file_dialog
+@pytest.mark.parametrize("case", ["nonexistent", "directory", "relative"])
+async def test_unselectable_path_cancels_file_input(
+    bidi_session, new_tab, temp_files, trigger_input_file_dialog, case
 ):
-    for unselectable_path in [
-        f"{temp_files['root']}/does_not_exist.txt",
-        temp_files["subdir"],
-        "relative/file1.txt",
-    ]:
-        await bidi_session.browser.set_file_dialog_behavior(
-            file_dialog_behavior={
-                "type": "accept",
-                "paths": [unselectable_path],
-            }
-        )
-        result = await trigger_input_file_dialog(new_tab, multiple=False)
-        assert result == {"event": "cancel", "files": []}
+    unselectable_paths = {
+        "nonexistent": f"{temp_files['root']}/does_not_exist.txt",
+        "directory": temp_files["subdir"],
+        "relative": "relative/file1.txt",
+    }
+    await bidi_session.browser.set_file_dialog_behavior(
+        file_dialog_behavior={
+            "type": "accept",
+            "paths": [unselectable_paths[case]],
+        }
+    )
+
+    result = await trigger_input_file_dialog(new_tab, multiple=False)
+    assert result == {"event": "cancel", "files": []}
 
 
 @pytest.mark.capabilities(

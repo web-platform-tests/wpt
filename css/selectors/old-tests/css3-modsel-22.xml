@@ -9,14 +9,17 @@
 li:lang(en-GB) { background-color : lime }]]></style>
   <link rel="author" title="Daniel Glazman" href="http://glazman.org/"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
-  <link rel="help" href="https://www.w3.org/TR/css3-selectors/#selectors"/> <!-- bogus link to make sure it gets found -->
+  <link rel="help" href="https://drafts.csswg.org/selectors-4/#the-lang-pseudo"/>
+  <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/8720"/>
  </head>
  <body>
 <ul>
   <li lang="en-GB" id="t1">This list item should be green because its language is
         British English</li>
-  <li lang="en-GB-wa" id="t2">This list item should be green because its language
-        is British English (Wales)</li>
+  <li lang="en-GB-wa" id="t2">This list item should NOT be green because its language
+        tag is malformed</li>
+  <li lang="en-GB-x-wa" id="t5">This list item should be green because its language
+        is British English with a private-use subtag</li>
 </ul>
 <ol>
   <li lang="en-US" id="t3">This list item should NOT be green because its language
@@ -27,10 +30,26 @@ li:lang(en-GB) { background-color : lime }]]></style>
 <script><![CDATA[
 test(function() {
   assert_background_color('t1', LIME, 'lang=en-GB should be green');
-  assert_background_color('t2', LIME, 'lang=en-GB-wa should be green');
+}, 'li:lang(en-GB) matches lang=en-GB');
+
+// Selectors 4 requires malformed element language tags not to match.
+// Language-tag and range requirements remain under discussion in
+// https://github.com/w3c/csswg-drafts/issues/8720.
+test(function() {
+  assert_background_color('t2', RED, 'lang=en-GB-wa should be red');
+}, 'li:lang(en-GB) does not match malformed lang=en-GB-wa');
+
+test(function() {
+  assert_background_color('t5', LIME, 'lang=en-GB-x-wa should be green');
+}, 'li:lang(en-GB) matches lang=en-GB-x-wa');
+
+test(function() {
   assert_not_background_color('t3', LIME, 'lang=en-US should not be green');
+}, 'li:lang(en-GB) does not match lang=en-US');
+
+test(function() {
   assert_not_background_color('t4', LIME, 'lang=fr should not be green');
-}, 'li:lang(en-GB) matches');
+}, 'li:lang(en-GB) does not match lang=fr');
 ]]></script>
 </body>
 </html>

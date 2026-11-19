@@ -351,5 +351,29 @@ test(t => {
   assert_false(box.isParsing, "patch target stops parsing when parser aborts");
   doc.close();
 }, "Declarative ShadowRoot and <template for> targets stop parsing on EOF and parser abort");
+
+test(t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+  const doc = iframe.contentDocument;
+  doc.open();
+
+  const win = doc.defaultView;
+  let formParsingInConnected = null;
+  class TableFormProbe extends win.HTMLFormElement {
+    connectedCallback() {
+      formParsingInConnected = this.isParsing;
+    }
+  }
+  const formTag = "table-form-probe-" + Math.random().toString(36).slice(2);
+  win.customElements.define(formTag, TableFormProbe, { extends: "form" });
+
+  doc.write(`<table><form is="${formTag}" id="tf"></table>`);
+  doc.close();
+
+  assert_false(formParsingInConnected, "in-table <form> is not on stack of open elements during connectedCallback");
+  assert_false(doc.getElementById("tf").isParsing, "in-table <form> is not parsing after insertion");
+}, "in-table <form> is immediately popped and sees isParsing === false in connectedCallback");
 </script>
 </body>

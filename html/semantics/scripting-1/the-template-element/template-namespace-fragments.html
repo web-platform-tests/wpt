@@ -282,4 +282,64 @@ promise_test(async () => {
   await writer.close();
   assert_equals(tpl.content.firstElementChild.namespaceURI, SVG_NS);
 }, "Element.prototype.streamHTMLUnsafe respects <template> namespaces");
+
+test(() => {
+  const svgTpl = document.createElement("template");
+  svgTpl.contentNamespace = SVG_NS;
+  svgTpl.setHTML("<circle/><script>window.sanitizedScript = true;</scr" + "ipt>");
+  assert_equals(svgTpl.content.childElementCount, 1);
+  assert_equals(svgTpl.content.firstElementChild.localName, "circle");
+  assert_equals(svgTpl.content.firstElementChild.namespaceURI, SVG_NS);
+
+  const mathTpl = document.createElement("template");
+  mathTpl.contentNamespace = MATHML_NS;
+  mathTpl.setHTML("<mrow><mi>x</mi></mrow><script>window.sanitizedMathScript = true;</scr" + "ipt>");
+  assert_equals(mathTpl.content.childElementCount, 1);
+  assert_equals(mathTpl.content.firstElementChild.localName, "mrow");
+  assert_equals(mathTpl.content.firstElementChild.namespaceURI, MATHML_NS);
+
+  const div = document.createElement("div");
+  const sReplaceSvg = new Sanitizer({
+    elements: ["div", "template", { name: "circle", namespace: SVG_NS }],
+    replaceWithChildrenElements: [{ name: "svg", namespace: SVG_NS }]
+  });
+  div.setHTML("<svg><template><circle/></template></svg>", { sanitizer: sReplaceSvg });
+  const unparentedSvgTpl = div.firstElementChild;
+  assert_true(unparentedSvgTpl instanceof HTMLTemplateElement);
+  assert_equals(unparentedSvgTpl.contentNamespace, SVG_NS);
+  assert_equals(unparentedSvgTpl.content.firstElementChild.namespaceURI, SVG_NS);
+
+  const sReplaceTpl = new Sanitizer({
+    elements: ["div", { name: "circle", namespace: SVG_NS }],
+    replaceWithChildrenElements: ["template"]
+  });
+  div.setHTML('<template contentnamespace="svg"><circle/></template>', { sanitizer: sReplaceTpl });
+  assert_equals(div.childNodes.length, 0);
+}, "template.setHTML() and Sanitizer replaceWithChildrenElements respect template contentNamespace");
+
+test(() => {
+  const domTpl = document.createElement("template");
+  domTpl.setAttribute("contentnamespace", "svg");
+  assert_equals(domTpl.contentNamespace, HTML_NS);
+  domTpl.innerHTML = "<circle/>";
+  assert_equals(domTpl.content.firstElementChild.namespaceURI, HTML_NS);
+  assert_equals(domTpl.outerHTML, '<template contentnamespace="html"><circle></circle></template>');
+
+  const wrap = document.createElement("div");
+  wrap.innerHTML = '<template contentnamespace="html"></template>';
+  const parsedTpl = wrap.firstElementChild;
+  parsedTpl.contentNamespace = SVG_NS;
+  assert_equals(parsedTpl.getAttribute("contentnamespace"), "html");
+  parsedTpl.innerHTML = "<circle/>";
+  assert_equals(parsedTpl.content.firstElementChild.namespaceURI, SVG_NS);
+  assert_equals(parsedTpl.outerHTML, '<template contentnamespace="svg"><circle></circle></template>');
+
+  parsedTpl.setAttribute("contentnamespace", "mathml");
+  assert_equals(parsedTpl.contentNamespace, SVG_NS);
+  const cloned = parsedTpl.cloneNode(true);
+  assert_equals(cloned.contentNamespace, SVG_NS);
+  assert_equals(cloned.getAttribute("contentnamespace"), "mathml");
+  cloned.innerHTML = "<rect/>";
+  assert_equals(cloned.content.firstElementChild.namespaceURI, SVG_NS);
+}, "Mutability quirks: contentnamespace attribute does not affect contentNamespace or innerHTML/cloneNode after creation");
 </script>

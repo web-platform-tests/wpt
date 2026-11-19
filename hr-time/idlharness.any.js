@@ -9,7 +9,7 @@
 
 idl_test(
   ['hr-time'],
-  ['html', 'dom'],
+  ['html', 'dom', 'webaudio'],
   async idl_array => {
     if (self.GLOBAL.isWorker()) {
       idl_array.add_objects({ WorkerGlobalScope: ['self'] });

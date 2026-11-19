@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>IdlArray.prototype.merge_partials() and merge_mixins() with a test filter</title>
+</head>
+<body>
+<div id="log"></div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/idlharness.js"></script>
+<script>
+    "use strict";
+
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_idls('[Exposed=Window] interface A { attribute any a; }; partial interface A { attribute any b; };');
+        idl.set_test_filter(() => false);
+        idl.merge_partials();
+        assert_array_equals(idl.members.A.members.map(m => m.name), ['a', 'b']);
+    }, 'should merge partial members when the filter excludes the partial');
+
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_idls('[Exposed=Window] interface B {}; [Exposed=Window] partial interface B { attribute any c; };');
+        idl.set_test_filter(() => false);
+        idl.merge_partials();
+        assert_true(idl.members.B.members[0].has_extended_attribute("Exposed"));
+    }, 'should give merged partial members the Exposed attribute of the partial');
+
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_idls('[Exposed=Window] interface C {}; [Exposed=Window, SecureContext] partial interface C {};');
+        idl.set_test_filter(() => false);
+        idl.merge_partials();
+        assert_true(idl.members.C.has_extended_attribute("SecureContext"));
+    }, 'should merge partial extended attributes other than Exposed onto the interface');
+
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_idls('[Exposed=Window] interface D { attribute any a; }; partial interface D { attribute any a; };');
+        idl.set_test_filter(() => false);
+        idl.merge_partials();
+        assert_array_equals(idl.members.D.members.map(m => m.name), ['a', 'a']);
+    }, 'should merge partial members even when they clash with existing members');
+
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_idls('[Exposed=Window] interface E { attribute any a; }; interface mixin M { attribute any a; attribute any b; }; E includes M;');
+        idl.set_test_filter(() => false);
+        idl.merge_mixins();
+        assert_array_equals(idl.members.E.members.map(m => m.name), ['a', 'b']);
+    }, 'should merge mixin members which do not clash when the filter excludes the including interface');
+</script>
+</body>
+</html>

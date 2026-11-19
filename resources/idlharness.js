@@ -803,11 +803,12 @@ IdlArray.prototype.merge_partials = function()
         }
         testedPartials.set(parsed_idl.name, partialTestCount);
 
-        if (!self.shouldRunSubTest(partialTestName)) {
-            return;
-        }
+        // Partials are always merged, but their structural tests are only
+        // generated if the original definition's tests are not filtered out.
+        const runTests = (!this.test_filter || this.test_filter(parsed_idl.name)) &&
+            self.shouldRunSubTest(parsed_idl.name);
 
-        if (!parsed_idl.untested) {
+        if (runTests && !parsed_idl.untested) {
             test(function () {
                 assert_true(originalExists, `Original ${parsed_idl.type} should be defined`);
 
@@ -838,7 +839,7 @@ IdlArray.prototype.merge_partials = function()
             // other extended attributes on partial interfaces.
             const exposureAttr = parsed_idl.extAttrs.find(a => a.name === "Exposed");
             if (exposureAttr) {
-                if (!parsed_idl.untested) {
+                if (runTests && !parsed_idl.untested) {
                     test(function () {
                         const partialExposure = exposure_set(parsed_idl);
                         const memberExposure = exposure_set(this.members[parsed_idl.name]);
@@ -872,18 +873,20 @@ IdlArray.prototype.merge_partials = function()
             }.bind(this));
         }
         if (parsed_idl.members.length) {
-            test(function () {
-                var clash = parsed_idl.members.find(function(member) {
-                    return this.members[parsed_idl.name].members.find(function(m) {
-                        return this.are_duplicate_members(m, member);
-                    }.bind(this));
+            const clash = parsed_idl.members.find(function(member) {
+                return this.members[parsed_idl.name].members.find(function(m) {
+                    return this.are_duplicate_members(m, member);
                 }.bind(this));
-                parsed_idl.members.forEach(function(member)
-                {
-                    this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
-                }.bind(this));
-                assert_true(!clash, "member " + (clash && clash.name) + " is unique");
-            }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: member names are unique`);
+            }.bind(this));
+            parsed_idl.members.forEach(function(member)
+            {
+                this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
+            }.bind(this));
+            if (runTests) {
+                test(function () {
+                    assert_true(!clash, "member " + (clash && clash.name) + " is unique");
+                }, `Partial ${parsed_idl.type} ${partialTestName}: member names are unique`);
+            }
         }
     }.bind(this));
     this.partials = [];
@@ -903,21 +906,23 @@ IdlArray.prototype.merge_mixins = function()
         if (!(rhs in this.members)) throw errStr + rhs + " is undefined.";
         if (!(this.members[rhs] instanceof IdlInterface)) throw errStr + rhs + " is not an interface.";
 
-        if (this.members[rhs].members.length && self.shouldRunSubTest(testName)) {
-            test(function () {
-                var clash = this.members[rhs].members.find(function(member) {
-                    return this.members[lhs].members.find(function(m) {
-                        return this.are_duplicate_members(m, member);
-                    }.bind(this));
-                }.bind(this));
-                this.members[rhs].members.forEach(function(member) {
-                    assert_true(
-                        this.members[lhs].members.every(m => !this.are_duplicate_members(m, member)),
-                        "member " + member.name + " is unique");
-                    this.members[lhs].members.push(new IdlInterfaceMember(member));
-                }.bind(this));
-                assert_true(!clash, "member " + (clash && clash.name) + " is unique");
-            }.bind(this), testName);
+        if (this.members[rhs].members.length) {
+            // Mixins are always merged, but the structural test belongs with
+            // the tests of the interface that includes the mixin.
+            const existing = this.members[lhs].members;
+            let clash = null;
+            for (const member of this.members[rhs].members) {
+                if (existing.some(m => this.are_duplicate_members(m, member))) {
+                    clash = clash || member;
+                } else {
+                    existing.push(new IdlInterfaceMember(member));
+                }
+            }
+            if ((!this.test_filter || this.test_filter(lhs)) && self.shouldRunSubTest(lhs)) {
+                test(function () {
+                    assert_true(!clash, "member " + (clash && clash.name) + " is unique");
+                }, testName);
+            }
         }
     }
     this.includes = [];

@@ -22,9 +22,7 @@ var miscElements = {
   },
   noscript: {},
 
-  template: {
-    contentNamespace: {type: "enum", keywords: ["html", "svg", "mathml"]},
-  },
+  template: {},
   slot: {
     name: "string",
   },

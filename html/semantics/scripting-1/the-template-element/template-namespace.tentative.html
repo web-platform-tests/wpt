@@ -89,8 +89,7 @@
 <svg><foreignObject id="fo-patch-host"><?marker name="fo-slot"></foreignObject></svg>
 <template for="fo-slot"><a id="patched-in-fo" href="#">fo-html</a></template>
 
-<template id="outer-patch-tpl" contentnamespace="svg"><?marker name="tpl-svg-slot"></template>
-<template for="tpl-svg-slot"><circle id="patched-in-tpl-svg" /></template>
+<template id="outer-patch-tpl" contentnamespace="svg"><?marker name="tpl-svg-slot"><template for="tpl-svg-slot"><circle id="patched-in-tpl-svg" /></template></template>
 
 <template id="failed-for-in-body" for="nonexistent-slot"><circle /></template>
 
@@ -121,6 +120,7 @@ test(() => {
 
   for (const bad of ["", "html", "svg", "mathml", "http://example.com"]) {
     assert_throws_js(TypeError, () => { t.contentNamespace = bad; });
+    assert_equals(t.contentNamespace, MATHML_NS);
   }
 
   t.contentNamespace = HTML_NS;
@@ -261,7 +261,7 @@ test(() => {
   assert_equals(msup.namespaceURI, MATHML_NS);
 
   // Explicit contentnamespace that mismatches the patch target errors the patch.
-  assert_equals(document.getElementById("svg-html-slot"), undefined);
+  assert_equals(document.getElementById("patched-html-in-svg"), null);
   const failedSvgHtml = document.getElementById("failed-for-svg-html");
   assert_not_equals(failedSvgHtml, null);
   assert_equals(failedSvgHtml.contentNamespace, HTML_NS);
@@ -307,6 +307,16 @@ test(() => {
   const svgPatch = document.createElementNS(SVG_NS, "svg");
   svgPatch.innerHTML = "<?marker name='frag-svg-slot'><template for='frag-svg-slot'><circle/></template>";
   assert_equals(svgPatch.firstElementChild.namespaceURI, SVG_NS);
+
+  const tplPatch = document.createElement("template");
+  tplPatch.contentNamespace = SVG_NS;
+  tplPatch.innerHTML =
+    "<?marker name='tpl-frag-slot'>" +
+    "<template for='tpl-frag-slot'><circle id='patched-in-tpl-frag'/></template>" +
+    "<?marker name='tpl-frag-mismatch'>" +
+    "<template for='tpl-frag-mismatch' contentnamespace='html'><div id='mismatched-in-tpl-frag'></div></template>";
+  assert_equals(tplPatch.content.getElementById("patched-in-tpl-frag").namespaceURI, SVG_NS);
+  assert_equals(tplPatch.content.getElementById("mismatched-in-tpl-frag"), null);
 }, "Fragment parsing (innerHTML) respects template contentNamespace and ancestor SVG namespace");
 
 test(() => {

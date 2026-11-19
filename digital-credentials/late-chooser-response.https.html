@@ -16,8 +16,16 @@
     t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
 
     const iframe = document.createElement("iframe");
-    document.body.append(iframe);
-    await test_driver.bless("user activation for the iframe's request");
+    await new Promise((resolve) => {
+      iframe.addEventListener("load", resolve, { once: true });
+      iframe.src = "about:blank";
+      document.body.appendChild(iframe);
+    });
+    await test_driver.bless(
+      "user activation for the iframe's request",
+      null,
+      iframe.contentWindow,
+    );
     iframe.contentWindow.navigator.credentials.get(makeGetOptions()).catch(() => {});
     await new Promise((resolve) => t.step_timeout(resolve, 100));
 
@@ -30,8 +38,14 @@
       iframe.remove();
       secondRequest = navigator.credentials.get(makeGetOptions({ signal: abortController.signal }));
     });
+    let settledEarly = false;
+    secondRequest.then(
+      () => (settledEarly = true),
+      () => (settledEarly = true),
+    );
 
     await new Promise((resolve) => t.step_timeout(resolve, 100));
+    assert_false(settledEarly, "The second request should still be pending before it is aborted");
     abortController.abort(reason);
     await promise_rejects_exactly(
       t,

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<title>focus() on a shadow host whose focus delegate already has focus doesn't scroll</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#dom-focus">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#focus-delegate">
+<link rel="help" href="https://github.com/whatwg/html/issues/4512">
+<link rel="match" href="/css/reference/ref-filled-green-100px-square-only.html">
+<meta name="assert" content="Calling focus() on a shadow host with delegatesFocus, when its focus delegate already has focus, doesn't scroll.">
+<style>
+  html {
+    overflow: hidden;
+  }
+  #host {
+    margin-top: 200vh;
+  }
+</style>
+<p>Test passes if there is a filled green square.</p>
+<div id="square" style="width: 100px; height: 100px; background: green;"></div>
+<div id="host"></div>
+<script src="/common/reftest-wait.js"></script>
+<script>
+  const shadowRoot = host.attachShadow({ mode: "open", delegatesFocus: true });
+  shadowRoot.innerHTML = `<div tabindex="-1"
+      style="width: 100px; height: 100px; background: red; outline: none;"></div>`;
+  host.focus();
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    // The first focus() has to focus the inner element and scroll it into view; otherwise the
+    // test checks nothing, so make it fail.
+    if (window.scrollY == 0 || shadowRoot.activeElement != shadowRoot.firstElementChild)
+      square.style.background = "red";
+    window.scrollTo(0, 0);
+    host.focus();
+    requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
+  }));
+</script>
+</html>

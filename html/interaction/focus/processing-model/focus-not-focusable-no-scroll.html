@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<title>focus() on an element that isn't focusable doesn't scroll it into view</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#dom-focus">
+<link rel="help" href="https://github.com/whatwg/html/issues/4512">
+<link rel="match" href="/css/reference/ref-filled-green-100px-square-only.html">
+<meta name="assert" content="Calling focus() on an element that isn't focusable doesn't scroll it into view.">
+<style>
+  html {
+    overflow: hidden;
+  }
+  #target, #control {
+    margin-top: 200vh;
+    width: 100px;
+    height: 100px;
+    background: red;
+    outline: none;
+  }
+</style>
+<p>Test passes if there is a filled green square.</p>
+<div id="square" style="width: 100px; height: 100px; background: green;"></div>
+<div id="target"></div>
+<div id="control" tabindex="-1"></div>
+<script src="/common/reftest-wait.js"></script>
+<script>
+  control.focus();
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    // focus() on the control has to scroll it into view; otherwise the test checks nothing, so
+    // make it fail.
+    if (window.scrollY == 0)
+      square.style.background = "red";
+    window.scrollTo(0, 0);
+    target.focus();
+    requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
+  }));
+</script>
+</html>

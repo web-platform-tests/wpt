@@ -241,4 +241,26 @@
     const data = { ...canonMultisigned, payload };
     await checkRequest(t, "openid4vp-v1-multisigned", data, "AbortError");
   }, "multisigned: a payload with extra, unknown claims alongside response_mode 'dc_api.jwt'");
+
+  promise_test(async (t) => {
+    const data = {
+      ...canonUnsigned,
+      response_mode: "dc_api.jwt",
+      toJSON() {
+        return { ...canonUnsigned, response_mode: "dc_api" };
+      },
+    };
+    await checkRequest(t, "openid4vp-v1-unsigned", data, TypeError);
+  }, "unsigned: own response_mode is valid but toJSON returns invalid response_mode");
+
+  promise_test(async (t) => {
+    const data = {
+      ...canonUnsigned,
+      toJSON() {
+        return { ...canonUnsigned, response_mode: "dc_api.jwt" };
+      },
+    };
+    delete data.response_mode;
+    await checkRequest(t, "openid4vp-v1-unsigned", data, "AbortError");
+  }, "unsigned: no own response_mode but toJSON returns valid response_mode");
 </script>

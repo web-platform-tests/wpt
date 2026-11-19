@@ -832,5 +832,28 @@ promise_test(async t => {
   assert_equals(errRecords.length, 1, "errored streamBeforeHTML aborts fragment parser and queues parseEndChildList fallback");
   assert_false(container.isParsing);
 }, "window.stop() and errored HTML streams signal parse end");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='reopened'><span>open");
+  const reopened = doc.getElementById("reopened");
+
+  const records = [];
+  const mo = new MutationObserver(r => records.push(...r));
+  mo.observe(reopened, { childList: true, parseEndChildList: true });
+
+  doc.open();
+  doc.close();
+  await Promise.resolve();
+  assert_false(reopened.isParsing, "document.open() clears isParsing on old parser elements");
+  assert_equals(records.length, 1, "document.open() aborts active parser and queues parseEndChildList fallback");
+  assert_equals(records[0].addedNodes.length, 0);
+  assert_equals(records[0].removedNodes.length, 0);
+}, "document.open() aborts active parser and signals parse end");
 </script>
 </body>

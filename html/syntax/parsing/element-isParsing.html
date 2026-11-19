@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Element and ShadowRoot isParsing</title>
+<link rel="help" href="https://html.spec.whatwg.org/#dom-element-isparsing">
+<link rel="help" href="https://html.spec.whatwg.org/#dom-shadowroot-isparsing">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+test(() => {
+  const div = document.createElement("div");
+  assert_false(div.isParsing, "newly created element is not parsing");
+
+  div.innerHTML = "<span>hello</span>";
+  assert_false(div.isParsing, "element after innerHTML is not parsing");
+  assert_false(div.firstChild.isParsing, "child after innerHTML is not parsing");
+}, "Imperatively created elements and innerHTML are not parsing");
+
+test(t => {
+  const div = document.createElement("div");
+  t.add_cleanup(() => {
+    div.remove();
+    delete window.__recordParsing;
+  });
+  document.body.appendChild(div);
+  let parsingDuringSetHTMLUnsafe = null;
+  window.__recordParsing = () => {
+    parsingDuringSetHTMLUnsafe = div.isParsing;
+  };
+  div.setHTMLUnsafe("<script>window.__recordParsing()</" + "script>", { runScripts: true });
+  assert_false(parsingDuringSetHTMLUnsafe, "target of synchronous setHTMLUnsafe is not parsing");
+}, "Synchronous setHTMLUnsafe with runScripts does not mark target as parsing");
+
+test(() => {
+  const elDesc = Object.getOwnPropertyDescriptor(Element.prototype, "isParsing");
+  assert_equals(typeof elDesc.get, "function", "Element.prototype.isParsing has a getter");
+  assert_equals(elDesc.set, undefined, "Element.prototype.isParsing is readonly");
+  const srDesc = Object.getOwnPropertyDescriptor(ShadowRoot.prototype, "isParsing");
+  assert_equals(typeof srDesc.get, "function", "ShadowRoot.prototype.isParsing has a getter");
+  assert_equals(srDesc.set, undefined, "ShadowRoot.prototype.isParsing is readonly");
+  assert_false("isParsing" in document, "Document does not have isParsing");
+  assert_false("isParsing" in document.createDocumentFragment(), "DocumentFragment does not have isParsing");
+  assert_false("isParsing" in document.createTextNode(""), "Text does not have isParsing");
+  const shadow = document.createElement("div").attachShadow({ mode: "open" });
+  assert_false(shadow.isParsing, "imperatively attached ShadowRoot is not parsing");
+}, "isParsing is a readonly getter on Element.prototype and ShadowRoot.prototype");
+
+test(t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='outer'><span id='inner'>");
+
+  const outer = doc.getElementById("outer");
+  const inner = doc.getElementById("inner");
+  assert_true(outer.isParsing, "outer is parsing before end tag");
+  assert_true(inner.isParsing, "inner is parsing before end tag");
+
+  doc.write("text</span>");
+  assert_true(outer.isParsing, "outer is still parsing after inner closes");
+  assert_false(inner.isParsing, "inner is no longer parsing after </span>");
+
+  doc.write("</div>");
+  assert_false(outer.isParsing, "outer is no longer parsing after </div>");
+  doc.close();
+}, "isParsing tracks stack of open elements across document.write chunks");
+
+test(t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='eof-open'><p>half");
+  const el = doc.getElementById("eof-open");
+  assert_true(el.isParsing, "element is parsing before close()");
+
+  doc.close();
+  assert_false(el.isParsing, "element stops parsing on EOF/close()");
+}, "isParsing becomes false at EOF when end tag is missing");
+
+test(t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='aborted'><span>open");
+  const el = doc.getElementById("aborted");
+  assert_true(el.isParsing, "element is parsing before parser abort");
+
+  doc.open();
+  assert_false(el.isParsing, "element stops parsing when parser is aborted by doc.open()");
+  doc.close();
+}, "isParsing becomes false when HTML parser is aborted by document.open()");
+
+test(t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<ul><li id='li1'>one");
+  const li1 = doc.getElementById("li1");
+  assert_true(li1.isParsing, "li1 is parsing before next li");
+
+  doc.write("<li id='li2'>two");
+  const li2 = doc.getElementById("li2");
+  assert_false(li1.isParsing, "li1 stops parsing on implied end tag");
+  assert_true(li2.isParsing, "li2 is parsing");
+
+  doc.write("</ul>");
+  assert_false(li2.isParsing, "li2 stops parsing on </ul>");
+  doc.close();
+}, "isParsing becomes false on implied end tags");
+
+test(t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<b id='b'><i id='i'>bold");
+  const b = doc.getElementById("b");
+  const i = doc.getElementById("i");
+  assert_true(b.isParsing);
+  assert_true(i.isParsing);
+
+  doc.write("</b>italic");
+  assert_false(b.isParsing, "original b is popped at </b>");
+  assert_false(i.isParsing, "original i is popped during adoption agency");
+  const clonedI = doc.body.lastChild;
+  assert_not_equals(clonedI, i, "cloned i is a distinct element");
+  assert_true(clonedI.isParsing, "cloned i is on the stack until </i>");
+
+  doc.write("</i>");
+  assert_false(clonedI.isParsing, "cloned i stops parsing at </i>");
+  doc.close();
+}, "isParsing with adoption agency algorithm");
+
+test(t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='d'><img id='img'><svg><rect id='rect'/></svg>");
+  assert_false(doc.getElementById("img").isParsing, "void element is not parsing");
+  assert_false(doc.getElementById("rect").isParsing, "self-closing foreign element is not parsing");
+  assert_true(doc.getElementById("d").isParsing, "parent div is still parsing");
+  doc.close();
+}, "Void and self-closing foreign elements are not parsing");
+
+test(t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='d'><p>1</p>");
+  const d = doc.getElementById("d");
+  d.remove();
+  assert_true(d.isParsing, "removed element remains on stack of open elements");
+  doc.write("</div>");
+  assert_false(d.isParsing, "removed element stops parsing at end tag");
+  doc.close();
+}, "Element removed from document mid-parse stays parsing until its end tag");
+
+promise_test(async () => {
+  const div = document.createElement("div");
+  const stream = div.streamHTML();
+  assert_true(div.isParsing, "element is parsing while streamHTML is open");
+
+  const writer = stream.getWriter();
+  await writer.write("<p>hello</p>");
+  assert_true(div.isParsing, "element is still parsing after write");
+
+  await writer.close();
+  assert_false(div.isParsing, "element stops parsing after stream close");
+}, "isParsing is true during streamHTML() and false after close()");
+
+promise_test(async () => {
+  const div = document.createElement("div");
+  const stream = div.streamHTMLUnsafe();
+  assert_true(div.isParsing, "element is parsing while streamHTMLUnsafe is open");
+
+  const writer = stream.getWriter();
+  await writer.write("<p>hello");
+  assert_true(div.isParsing);
+
+  await writer.abort("stop");
+  assert_false(div.isParsing, "element stops parsing after stream abort()");
+}, "isParsing becomes false when streamHTMLUnsafe() is aborted");
+
+promise_test(async () => {
+  const div = document.createElement("div");
+  const w1 = div.streamAppendHTML().getWriter();
+  const w2 = div.streamAppendHTML().getWriter();
+  assert_true(div.isParsing);
+
+  await w1.write("<p>1</p>");
+  await w1.close();
+  assert_true(div.isParsing, "still parsing while second stream is open");
+
+  await w2.write("<p>2</p>");
+  await w2.close();
+  assert_false(div.isParsing, "stops parsing once all streams close");
+}, "Concurrent streamAppendHTML() keeps isParsing true until all close");
+
+promise_test(async () => {
+  const host = document.createElement("div");
+  const shadow = host.attachShadow({ mode: "open" });
+  const writer = shadow.streamHTML().getWriter();
+  assert_true(shadow.isParsing, "shadowRoot.streamHTML() marks shadowRoot as parsing");
+  assert_false(host.isParsing, "shadowRoot.streamHTML() does not mark host as parsing");
+  await writer.write("<p>in shadow</p>");
+  assert_true(shadow.isParsing, "shadowRoot remains parsing after write");
+  await writer.close();
+  assert_false(shadow.isParsing, "shadowRoot stops parsing after close()");
+
+  const template = document.createElement("template");
+  const tWriter = template.streamHTML().getWriter();
+  assert_false(template.isParsing, "template.streamHTML() targets template.content, not template");
+  await tWriter.close();
+}, "ShadowRoot.streamHTML() marks shadowRoot (not host) as parsing; template.streamHTML() does not mark template");
+
+test(t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='host'><template shadowrootmode='open'><span id='s'>hi");
+  const host = doc.getElementById("host");
+  const shadow = host.shadowRoot;
+  assert_true(host.isParsing, "host is on stack of open elements");
+  assert_true(shadow.isParsing, "declarative ShadowRoot is parsing while <template shadowrootmode> is open");
+  assert_true(shadow.getElementById("s").isParsing, "child inside declarative ShadowRoot is parsing");
+
+  doc.write("</span></template>");
+  assert_false(shadow.isParsing, "declarative ShadowRoot stops parsing at </template>");
+  assert_true(host.isParsing, "host remains parsing until </div>");
+
+  doc.write("</div>");
+  assert_false(host.isParsing, "host stops parsing at </div>");
+  doc.close();
+}, "Declarative ShadowRoot isParsing tracks <template shadowrootmode> on stack of open elements");
+
+test(t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='box'><?marker name='m'?></div>");
+  const box = doc.getElementById("box");
+  assert_false(box.isParsing, "box finished initial parse");
+
+  doc.write("<template for='m'><span>patched");
+  assert_true(box.isParsing, "box is parsing again while <template for='m'> is open");
+
+  doc.write("</span></template>");
+  assert_false(box.isParsing, "box stops parsing at </template>");
+  doc.close();
+}, "Element targeted by <template for> content patch isParsing while patch template is open");
+
+test(t => {
+  const results = [];
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+  const doc = iframe.contentDocument;
+  doc.open();
+
+  const win = doc.defaultView;
+  class ParsingProbe extends win.HTMLElement {
+    connectedCallback() {
+      results.push({ id: this.id, isParsing: this.isParsing });
+    }
+  }
+  class VoidProbe extends win.HTMLImageElement {
+    connectedCallback() {
+      results.push({ id: this.id, isParsing: this.isParsing });
+    }
+  }
+  const tag = "parsing-probe-" + Math.random().toString(36).slice(2);
+  const voidTag = "void-probe-" + Math.random().toString(36).slice(2);
+  win.customElements.define(tag, ParsingProbe);
+  win.customElements.define(voidTag, VoidProbe, { extends: "img" });
+
+  doc.write(`<${tag} id="open"><img is="${voidTag}" id="void">`);
+  doc.write(`</${tag}>`);
+  doc.close();
+
+  const imperative = doc.createElement(tag);
+  imperative.id = "imperative";
+  doc.body.appendChild(imperative);
+
+  assert_equals(results.length, 3);
+  assert_equals(results[0].id, "open");
+  assert_true(results[0].isParsing, "isParsing is true in connectedCallback for non-void element during parse");
+  assert_equals(results[1].id, "void");
+  assert_false(results[1].isParsing, "isParsing is false in connectedCallback for customized void element");
+  assert_equals(results[2].id, "imperative");
+  assert_false(results[2].isParsing, "isParsing is false in connectedCallback for createElement");
+}, "Custom element connectedCallback sees isParsing === true only for non-void elements during parsing");
+
+promise_test(async () => {
+  const host = document.createElement("div");
+  const shadow = host.attachShadow({ mode: "open" });
+  const anchor = document.createElement("span");
+  shadow.appendChild(anchor);
+
+  const writer = anchor.streamBeforeHTML().getWriter();
+  assert_true(shadow.isParsing, "streamBeforeHTML inside ShadowRoot marks ShadowRoot as parsing");
+  await writer.write("<p>before</p>");
+  assert_true(shadow.isParsing);
+  await writer.close();
+  assert_false(shadow.isParsing, "ShadowRoot stops parsing when streamBeforeHTML closes");
+}, "Positional streamBeforeHTML() inside ShadowRoot marks ShadowRoot as parsing");
+
+test(t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='host'><template shadowrootmode='open'><span>unclosed");
+  const shadow = doc.getElementById("host").shadowRoot;
+  assert_true(shadow.isParsing, "declarative ShadowRoot is parsing before EOF");
+  doc.close();
+  assert_false(shadow.isParsing, "declarative ShadowRoot stops parsing at EOF");
+
+  doc.open();
+  doc.write("<div id='box'><?marker name='m'?></div><template for='m'><span>unclosed");
+  const box = doc.getElementById("box");
+  assert_true(box.isParsing, "patch target is parsing before parser abort");
+  doc.open();
+  assert_false(box.isParsing, "patch target stops parsing when parser aborts");
+  doc.close();
+}, "Declarative ShadowRoot and <template for> targets stop parsing on EOF and parser abort");
+</script>
+</body>

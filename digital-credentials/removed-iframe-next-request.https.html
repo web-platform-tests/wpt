@@ -21,6 +21,7 @@
       iframe.src = "about:blank";
       document.body.appendChild(iframe);
     });
+    t.add_cleanup(() => iframe.remove());
     await test_driver.bless(
       "user activation for the iframe's request",
       null,
@@ -35,11 +36,14 @@
     await new Promise((resolve) => t.step_timeout(resolve, 100));
     assert_false(firstSettled, "The iframe's request should still be pending before the iframe is removed");
 
+    iframe.remove();
+    await new Promise((resolve) => t.step_timeout(resolve, 100));
+
     const abortController = new AbortController();
+    t.add_cleanup(() => abortController.abort());
     const reason = new Error("The second request was aborted.");
     let secondRequest;
     await test_driver.bless("user activation for the second request", () => {
-      iframe.remove();
       secondRequest = navigator.credentials.get(makeGetOptions({ signal: abortController.signal }));
     });
     let settledEarly = false;

@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8" />
-<title>Digital Credential: navigating away from an initial about:blank document abandons its pending request</title>
+<title>Digital Credential: a pending request in an iframe, and navigating the iframe away from its initial about:blank document</title>
 <link rel="help" href="https://w3c-fedid.github.io/digital-credentials/" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -63,6 +63,7 @@
     await navigateAway(iframe);
 
     const abortController = new AbortController();
+    t.add_cleanup(() => abortController.abort());
     const reason = new Error("The second request was aborted.");
     let secondRequest;
     await test_driver.bless("user activation for the second request", () => {

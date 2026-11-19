@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8" />
-<title>Digital Credential: a late response to an abandoned request doesn't settle the next request</title>
+<title>Digital Credential: removing the requesting iframe lets the next request start</title>
 <link rel="help" href="https://w3c-fedid.github.io/digital-credentials/" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -26,11 +26,15 @@
       null,
       iframe.contentWindow,
     );
-    iframe.contentWindow.navigator.credentials.get(makeGetOptions()).catch(() => {});
+    const firstRequest = iframe.contentWindow.navigator.credentials.get(makeGetOptions());
+    let firstSettled = false;
+    firstRequest.then(
+      () => (firstSettled = true),
+      () => (firstSettled = true),
+    );
     await new Promise((resolve) => t.step_timeout(resolve, 100));
+    assert_false(firstSettled, "The iframe's request should still be pending before the iframe is removed");
 
-    // Removing the iframe abandons its request at once, but the wallet
-    // responds to it only after the next request has started.
     const abortController = new AbortController();
     const reason = new Error("The second request was aborted.");
     let secondRequest;
@@ -53,5 +57,5 @@
       secondRequest,
       "The second request should settle only when it is aborted",
     );
-  }, "The wallet's late response to an abandoned request doesn't settle the next request.");
+  }, "Removing the requesting iframe lets the next request start.");
 </script>

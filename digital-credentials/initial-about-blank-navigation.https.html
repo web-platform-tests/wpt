@@ -22,8 +22,13 @@
     const FrameDOMException = frameWindow.DOMException;
     await test_driver.bless("user activation for the iframe's request", null, frameWindow);
     const firstRequest = frameWindow.navigator.credentials.get(makeGetOptions());
-    firstRequest.catch(() => {});
+    let firstSettled = false;
+    firstRequest.then(
+      () => (firstSettled = true),
+      () => (firstSettled = true),
+    );
     await new Promise((resolve) => t.step_timeout(resolve, 100));
+    assert_false(firstSettled, "The iframe's request should still be pending before it navigates");
     return { iframe, FrameDOMException, firstRequest };
   }
 
@@ -43,10 +48,14 @@
     await test_driver.bless("user activation for the second request", () => {
       secondRequest = navigator.credentials.get(makeGetOptions({ signal: abortController.signal }));
     });
-    let error;
-    secondRequest.catch((e) => (error = e));
-    await new Promise((resolve) => t.step_timeout(resolve, 100));
-    assert_equals(error?.name, "NotAllowedError", "The second request should fail while the iframe's request is pending");
+    const outcome = await Promise.race([
+      secondRequest.then(
+        () => "fulfilled",
+        (e) => e.name,
+      ),
+      new Promise((resolve) => t.step_timeout(() => resolve("still pending"), 3000)),
+    ]);
+    assert_equals(outcome, "NotAllowedError", "The second request should fail while the iframe's request is pending");
   }, "A pending request in an iframe makes a request from the top page fail.");
 
   promise_test(async (t) => {

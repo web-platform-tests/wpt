@@ -41,6 +41,9 @@ function maxWidthAtHalfway(element) {
     && animation.transitionProperty === "max-width");
   assert_true(!!transition, "a transition for max-width should be running");
 
+  // Pause before seeking: seeking alone leaves the transition playing, so a slow frame
+  // could let it finish before the value is read.
+  transition.pause();
   transition.currentTime = 500;
   return getComputedStyle(element).maxWidth;
 }

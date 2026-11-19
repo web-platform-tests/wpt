@@ -27,12 +27,9 @@ test(() => {
     mo.observe(el, { childList: false, parseEndChildList: true });
   }, "parseEndChildList: true with explicit childList: false throws TypeError");
 
-  assert_throws_js(TypeError, () => {
-    mo.observe(el, { childList: true, subtree: true, parseEndChildList: true });
-  }, "parseEndChildList: true with subtree: true throws TypeError");
-
   mo.observe(el, { childList: true, parseEndChildList: false });
   mo.observe(el, { childList: true, subtree: true, parseEndChildList: false });
+  mo.observe(el, { childList: true, subtree: true, parseEndChildList: true });
   mo.observe(el, { childList: true, attributes: true, parseEndChildList: true });
   mo.disconnect();
 }, "MutationObserver.observe() option validation for parseEndChildList");
@@ -518,5 +515,73 @@ promise_test(async () => {
   assert_equals(called, 0, "Document and plain DocumentFragment do not receive parseEndChildList fallback");
   mo.disconnect();
 }, "parseEndChildList has no effect on Document or plain DocumentFragment targets");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='outer'><div id='inner'>");
+  const outer = doc.getElementById("outer");
+  const inner = doc.getElementById("inner");
+
+  const deliveries = [];
+  const mo = new MutationObserver(records => {
+    deliveries.push(records.map(r => ({
+      target: r.target.id,
+      added: r.addedNodes.length,
+      removed: r.removedNodes.length,
+      outerParsing: outer.isParsing,
+    })));
+  });
+  mo.observe(outer, { childList: true, subtree: true, parseEndChildList: true });
+
+  doc.write("</div>");
+  await Promise.resolve();
+  assert_equals(deliveries.length, 0, "descendant closing does not queue parseEndChildList fallback");
+
+  doc.write("<div id='inner2'><span>x</span></div>");
+  await Promise.resolve();
+  assert_equals(deliveries.length, 1);
+
+  inner.appendChild(doc.createElement("em"));
+  doc.write("</div>");
+  doc.close();
+  await Promise.resolve();
+  assert_equals(deliveries.length, 2);
+  assert_equals(deliveries[1].length, 2, "descendant mutation + outer parseEndChildList fallback both delivered");
+  assert_equals(deliveries[1][0].target, "inner");
+  assert_equals(deliveries[1][0].added, 1);
+  assert_equals(deliveries[1][1].target, "outer");
+  assert_equals(deliveries[1][1].added, 0);
+  assert_equals(deliveries[1][1].removed, 0);
+  assert_false(deliveries[1][1].outerParsing);
+}, "parseEndChildList with subtree: true applies only to target, not descendants");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='outer'><div id='inner'>");
+  const outer = doc.getElementById("outer");
+  const inner = doc.getElementById("inner");
+
+  const records = [];
+  const mo = new MutationObserver(r => records.push(...r));
+  mo.observe(outer, { childList: true, subtree: true, parseEndChildList: true });
+
+  inner.remove();
+  doc.write("</div>");
+  await Promise.resolve();
+
+  const innerRecords = records.filter(r => r.target === inner);
+  assert_equals(innerRecords.length, 0, "transient registered observer on removed descendant does not emit parseEndChildList fallback");
+  doc.close();
+}, "Transient registered observer from subtree: true does not emit parseEndChildList fallback on removed descendant");
 </script>
 </body>

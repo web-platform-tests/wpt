@@ -1,0 +1,53 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>crossOriginIsolated on detached iframes</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+promise_test(async t => {
+  assert_true(self.crossOriginIsolated, "top-level window must be crossOriginIsolated");
+
+  const iframe = document.createElement("iframe");
+  document.body.appendChild(iframe);
+  const win = iframe.contentWindow;
+  assert_true(win.crossOriginIsolated, "attached initial about:blank iframe is crossOriginIsolated");
+
+  iframe.remove();
+  assert_true(win.crossOriginIsolated, "detached initial about:blank iframe remains crossOriginIsolated");
+}, "crossOriginIsolated remains true after detaching an initial about:blank iframe");
+
+promise_test(async t => {
+  assert_true(self.crossOriginIsolated, "top-level window must be crossOriginIsolated");
+
+  const iframe = document.createElement("iframe");
+  iframe.src = "/common/blank.html?pipe=header(Cross-Origin-Embedder-Policy,require-corp)";
+  const loaded = new Promise(resolve => iframe.addEventListener("load", resolve, { once: true }));
+  document.body.appendChild(iframe);
+  await loaded;
+
+  const win = iframe.contentWindow;
+  assert_true(win.crossOriginIsolated, "attached same-origin iframe is crossOriginIsolated");
+
+  iframe.remove();
+  assert_true(win.crossOriginIsolated, "detached same-origin iframe remains crossOriginIsolated");
+}, "crossOriginIsolated remains true after detaching a same-origin iframe");
+
+promise_test(async t => {
+  assert_true(self.crossOriginIsolated, "top-level window must be crossOriginIsolated");
+
+  const iframe = document.createElement("iframe");
+  iframe.allow = "cross-origin-isolated 'none'";
+  iframe.src = "/common/blank.html?pipe=header(Cross-Origin-Embedder-Policy,require-corp)";
+  const loaded = new Promise(resolve => iframe.addEventListener("load", resolve, { once: true }));
+  document.body.appendChild(iframe);
+  await loaded;
+
+  const win = iframe.contentWindow;
+  assert_false(win.crossOriginIsolated, "attached iframe with cross-origin-isolated 'none' is not crossOriginIsolated");
+
+  iframe.remove();
+  assert_false(win.crossOriginIsolated, "detached iframe with cross-origin-isolated 'none' remains not crossOriginIsolated");
+}, "crossOriginIsolated remains false when disabled by permissions policy, before and after detach");
+</script>
+</body>

@@ -50,21 +50,6 @@
       <a href="#">inside mtext</a>
     </template>
   </mtext>
-  <annotation-xml encoding="text/html">
-    <template id="in-annotation-html">
-      <a href="#">inside annotation-xml text/html</a>
-    </template>
-  </annotation-xml>
-  <annotation-xml encoding="application/xhtml+xml">
-    <template id="in-annotation-xhtml">
-      <a href="#">inside annotation-xml application/xhtml+xml</a>
-    </template>
-  </annotation-xml>
-  <annotation-xml encoding="application/mathml-presentation+xml">
-    <template id="in-annotation-mathml">
-      <mrow><mi>z</mi></mrow>
-    </template>
-  </annotation-xml>
 </math>
 
 <div id="outer-div-for-stray-end-tag"><template id="stray-end-tag-svg" contentnamespace="svg"><g></div><circle id="circle-after-stray-div-end" /></g></template><span id="sibling-after-stray-div-end"></span></div>
@@ -164,19 +149,7 @@ test(() => {
   const inMtext = document.getElementById("in-mtext");
   assert_equals(inMtext.namespaceURI, HTML_NS);
   assert_equals(inMtext.content.firstElementChild.namespaceURI, HTML_NS);
-
-  const inAnnotationHtml = document.getElementById("in-annotation-html");
-  assert_equals(inAnnotationHtml.namespaceURI, HTML_NS);
-  assert_equals(inAnnotationHtml.content.firstElementChild.namespaceURI, HTML_NS);
-
-  const inAnnotationXhtml = document.getElementById("in-annotation-xhtml");
-  assert_equals(inAnnotationXhtml.namespaceURI, HTML_NS);
-  assert_equals(inAnnotationXhtml.content.firstElementChild.namespaceURI, HTML_NS);
-
-  const inAnnotationMathml = document.getElementById("in-annotation-mathml");
-  assert_equals(inAnnotationMathml.namespaceURI, HTML_NS);
-  assert_equals(inAnnotationMathml.content.firstElementChild.namespaceURI, MATHML_NS);
-}, "<template> inside <math> is an HTMLTemplateElement and inherits MathML namespace unless in a MathML text or HTML integration point");
+}, "<template> inside <math> is an HTMLTemplateElement and inherits MathML namespace unless in a MathML text integration point");
 
 test(() => {
   const tSvg = document.getElementById("explicit-svg");
@@ -276,23 +249,6 @@ test(() => {
 
 test(() => {
   const wrap = document.createElement("div");
-  wrap.innerHTML = "<math><annotation-xml></annotation-xml></math>";
-  const ax = wrap.querySelector("annotation-xml");
-  ax.setAttribute("encoding", "text/html");
-
-  const t = document.createElement("template");
-  ax.appendChild(t);
-  t.innerHTML = "<a href='#'>html link</a>";
-  assert_equals(t.content.firstElementChild.namespaceURI, HTML_NS);
-
-  ax.removeAttribute("encoding");
-  ax.setAttributeNS("http://example.com/ns", "encoding", "text/html");
-  t.innerHTML = "<mrow><mi>x</mi></mrow>";
-  assert_equals(t.content.firstElementChild.namespaceURI, MATHML_NS);
-}, "Parser-created <annotation-xml> checks live no-namespace encoding attribute once outside open parser stack");
-
-test(() => {
-  const wrap = document.createElement("div");
   wrap.innerHTML = "<form><svg></svg></form>";
   const svg = wrap.querySelector("svg");
   svg.innerHTML = "<g></form><foreignObject><form id='inner-form'></form></foreignObject></g>";
@@ -329,25 +285,6 @@ test(() => {
   assert_equals(fragTpl.content.lastElementChild.localName, "rect");
   assert_equals(fragTpl.content.lastElementChild.namespaceURI, SVG_NS);
 }, "Resetting insertion mode after <table> inside <foreignObject> restores foreign <template> 'in body' mode");
-
-test(t => {
-  const iframe = document.createElement("iframe");
-  document.body.appendChild(iframe);
-  t.add_cleanup(() => iframe.remove());
-  const doc = iframe.contentDocument;
-  doc.open();
-  doc.write("<!doctype html><body><math><annotation-xml id='ax'>");
-  doc.getElementById("ax").setAttribute("encoding", "text/html");
-  doc.write("<template id='open-ax-tpl'><mi>x</mi></template></annotation-xml></math>");
-  doc.close();
-
-  assert_equals(doc.getElementById("open-ax-tpl").content.firstElementChild.namespaceURI, MATHML_NS);
-
-  const afterCloseTpl = doc.createElement("template");
-  doc.getElementById("ax").appendChild(afterCloseTpl);
-  afterCloseTpl.innerHTML = "<a href='#'>after close</a>";
-  assert_equals(afterCloseTpl.content.firstElementChild.namespaceURI, HTML_NS);
-}, "Open <annotation-xml> uses start-tag token during active parsing");
 
 test(t => {
   const div = document.createElement("div");

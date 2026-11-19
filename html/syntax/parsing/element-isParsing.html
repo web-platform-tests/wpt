@@ -285,21 +285,22 @@ test(t => {
 
   const win = doc.defaultView;
   class ParsingProbe extends win.HTMLElement {
-    connectedCallback() {
-      results.push({ id: this.id, isParsing: this.isParsing });
+    static get observedAttributes() { return ["data-a"]; }
+    constructor() {
+      super();
+      results.push(`ctor:${this.isParsing}`);
     }
-  }
-  class VoidProbe extends win.HTMLImageElement {
+    attributeChangedCallback() {
+      results.push(`attr:${this.isParsing}`);
+    }
     connectedCallback() {
-      results.push({ id: this.id, isParsing: this.isParsing });
+      results.push(`connected:${this.id}:${this.isParsing}`);
     }
   }
   const tag = "parsing-probe-" + Math.random().toString(36).slice(2);
-  const voidTag = "void-probe-" + Math.random().toString(36).slice(2);
   win.customElements.define(tag, ParsingProbe);
-  win.customElements.define(voidTag, VoidProbe, { extends: "img" });
 
-  doc.write(`<${tag} id="open"><img is="${voidTag}" id="void">`);
+  doc.write(`<${tag} id="open" data-a="1">`);
   doc.write(`</${tag}>`);
   doc.close();
 
@@ -307,14 +308,59 @@ test(t => {
   imperative.id = "imperative";
   doc.body.appendChild(imperative);
 
-  assert_equals(results.length, 3);
-  assert_equals(results[0].id, "open");
-  assert_true(results[0].isParsing, "isParsing is true in connectedCallback for non-void element during parse");
-  assert_equals(results[1].id, "void");
-  assert_false(results[1].isParsing, "isParsing is false in connectedCallback for customized void element");
-  assert_equals(results[2].id, "imperative");
-  assert_false(results[2].isParsing, "isParsing is false in connectedCallback for createElement");
-}, "Custom element connectedCallback sees isParsing === true only for non-void elements during parsing");
+  assert_array_equals(results, [
+    "ctor:false",
+    "attr:false",
+    "connected:open:true",
+    "ctor:false",
+    "connected:imperative:false",
+  ]);
+}, "Autonomous custom element sees isParsing === false in constructor/attributeChangedCallback and true in connectedCallback during parsing");
+
+test(t => {
+  const results = [];
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+  const doc = iframe.contentDocument;
+  doc.open();
+
+  const win = doc.defaultView;
+  class HtmlProbe extends win.HTMLHtmlElement {
+    connectedCallback() {
+      results.push(`html:${this.isParsing}`);
+    }
+  }
+  class ScriptProbe extends win.HTMLScriptElement {
+    connectedCallback() {
+      results.push(`script-connected:${this.isParsing}`);
+    }
+  }
+  class VoidProbe extends win.HTMLImageElement {
+    connectedCallback() {
+      results.push(`img:${this.isParsing}`);
+    }
+  }
+  const htmlTag = "html-probe-" + Math.random().toString(36).slice(2);
+  const scriptTag = "script-probe-" + Math.random().toString(36).slice(2);
+  const voidTag = "void-probe-" + Math.random().toString(36).slice(2);
+  win.customElements.define(htmlTag, HtmlProbe, { extends: "html" });
+  win.customElements.define(scriptTag, ScriptProbe, { extends: "script" });
+  win.customElements.define(voidTag, VoidProbe, { extends: "img" });
+  win.__recordScriptBody = el => {
+    results.push(`script-body:${el.isParsing}`);
+  };
+
+  doc.write(`<!DOCTYPE html><html is="${htmlTag}"><head><script is="${scriptTag}">window.__recordScriptBody(document.currentScript)<\/script></head><body><img is="${voidTag}"></body></html>`);
+  doc.close();
+
+  assert_array_equals(results, [
+    "html:true",
+    "script-connected:true",
+    "script-body:false",
+    "img:false",
+  ]);
+}, "Customized built-in html, script, and void elements report expected isParsing states");
 
 promise_test(async () => {
   const host = document.createElement("div");
@@ -408,5 +454,41 @@ test(t => {
   assert_false(clonedI.isParsing, "cloned i stops parsing at </i>");
   doc.close();
 }, "isParsing with adoption agency algorithm and furthestBlock");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='host'><template shadowrootmode='open'><span>in");
+  const host = doc.getElementById("host");
+  const shadow = host.shadowRoot;
+  const writer = shadow.streamAppendHTML().getWriter();
+
+  doc.write("</span></template></div>");
+  doc.close();
+  assert_true(shadow.isParsing, "ShadowRoot remains parsing while streamAppendHTML is open after </template>");
+
+  await writer.close();
+  assert_false(shadow.isParsing, "ShadowRoot stops parsing once streamAppendHTML also closes");
+
+  doc.open();
+  doc.write("<div id='stopped'><span>open");
+  const stopped = doc.getElementById("stopped");
+  assert_true(stopped.isParsing);
+  iframe.contentWindow.stop();
+  assert_false(stopped.isParsing, "isParsing becomes false when window.stop() aborts parser");
+
+  const container = document.createElement("div");
+  const ref = document.createElement("span");
+  container.appendChild(ref);
+  const errWriter = ref.streamBeforeHTML().getWriter();
+  assert_true(container.isParsing);
+  ref.remove();
+  await promise_rejects_dom(t, "HierarchyRequestError", errWriter.write("<p>x</p>"));
+  assert_false(container.isParsing, "isParsing becomes false when HTML stream errors");
+}, "ShadowRoot overlap, window.stop(), and errored HTML streams update isParsing");
 </script>
 </body>

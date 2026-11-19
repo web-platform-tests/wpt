@@ -234,6 +234,31 @@ test(() => {
 }, "manual assign() is ignored unless slotAssignment is manual");
 
 test(() => {
+  // A disconnected tree: mutations must not crash, and the state must be correct once
+  // the host is connected. A detached <select> getting options appended is the way the
+  // Web Inspector frontend hits this.
+  const host = document.createElement("div");
+  const root = host.attachShadow({ mode: "open" });
+  root.innerHTML = SHADOW_STYLE + "<slot></slot>";
+  const slot = root.querySelector("slot");
+  host.append(document.createElement("div"));
+  host.replaceChildren();
+  host.append(document.createElement("div"));
+  container.append(host);
+  assertSlotted(slot, "filled while detached, correct once connected");
+
+  host.remove();
+  host.replaceChildren();
+  container.append(host);
+  assertNotSlotted(slot, "emptied while detached, correct once reconnected");
+
+  const select = document.createElement("select");
+  select.appendChild(document.createElement("option"));
+  container.append(select);
+  select.remove();
+}, "mutations in a disconnected tree");
+
+test(() => {
   const host = document.createElement("div");
   container.append(host);
   const root = host.attachShadow({ mode: "open", slotAssignment: "manual" });

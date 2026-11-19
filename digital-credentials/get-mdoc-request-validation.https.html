@@ -26,4 +26,19 @@
       "AbortError",
     );
   }, "the canonical request");
+
+  promise_test(async (t) => {
+    await checkRequest(
+      t,
+      "org-iso-mdoc",
+      {
+        deviceRequest: CANONICAL_DEVICE_REQUEST_STR,
+        encryptionInfo: CANONICAL_ENCRYPTION_INFO,
+        toJSON() {
+          return null;
+        },
+      },
+      TypeError,
+    );
+  }, "request with toJSON returning null");
 </script>

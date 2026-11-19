@@ -60,3 +60,22 @@ async def test_reload_resets_iframe_location(bidi_session, new_tab, inline, doma
         await_promise=False,
     )
     assert result["value"] == "about:blank"
+
+
+@pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
+async def test_frame_reload_is_a_reload(bidi_session, new_tab, inline, iframe, domain):
+    frame_url = inline("frame")
+    parent_url = inline(iframe("frame"), domain=domain)
+    contexts = await navigate_and_assert(bidi_session, new_tab, parent_url)
+    frame = contexts[0]["children"][0]
+
+    await reload_and_assert(bidi_session, frame, url=frame_url)
+
+    # The reloaded document's navigation timing type is "reload" rather than
+    # "navigate".
+    result = await bidi_session.script.evaluate(
+        expression="performance.getEntriesByType('navigation')[0].type",
+        target=ContextTarget(frame["context"]),
+        await_promise=False,
+    )
+    assert result == {"type": "string", "value": "reload"}

@@ -11,7 +11,9 @@
 <script type="module">
   import { makeGetOptions } from "./support/helper.js";
 
-  promise_test(async (t) => {
+  // Aborts the signal from inside toJSON() while the browser serializes the
+  // request data, then lets toJSON() finish with `finish(data)`.
+  async function getWithAbortInToJSON(t, finish) {
     await test_driver.set_virtual_wallet_behavior("wait");
     t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
 
@@ -25,7 +27,7 @@
       toJSON() {
         toJSONCalls++;
         abortController.abort(reason);
-        return data;
+        return finish(data);
       },
     };
 
@@ -42,5 +44,15 @@
       "The request should reject with the signal's abort reason",
     );
     assert_greater_than(toJSONCalls, 0, "The browser should have serialized the request data");
+  }
+
+  promise_test(async (t) => {
+    await getWithAbortInToJSON(t, () => {
+      throw new TypeError("toJSON throws after aborting");
+    });
+  }, "Aborting the signal and then throwing while the request data is serialized rejects with the abort reason.");
+
+  promise_test(async (t) => {
+    await getWithAbortInToJSON(t, (data) => data);
   }, "Aborting the signal while the request data is serialized rejects with the abort reason.");
 </script>

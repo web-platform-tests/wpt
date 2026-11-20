@@ -102,3 +102,67 @@ tbody
 | <math math>
 |   <math tfoot>
 |     <math mo>
+
+#data
+<!DOCTYPE html><math><title><mi/></title></math>
+#errors
+(1,33): start-tag-in-foreign-rcdata-element
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|       <math title>
+|         <math mi>
+
+#data
+<!DOCTYPE html><math><textarea>x</textarea></math>
+#errors
+(1,31): raw-text-start-tag-in-foreign-content
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|       <math textarea>
+|         "x"
+
+#data
+<!DOCTYPE html><math><script><!--</script>--></script></math>
+#errors
+(1,34): end-tag-in-comment-cdata-or-processing-instruction
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|       <math script>
+|         <!-- </script> -->
+
+#data
+<!DOCTYPE html><math><style><![CDATA[a</style>]]></style></math>
+#errors
+(1,39): end-tag-in-comment-cdata-or-processing-instruction
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|       <math style>
+|         "a</style>"
+
+#data
+<!DOCTYPE html><math><title><!--</title--></title></math>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|       <math title>
+|         <!-- </title -->

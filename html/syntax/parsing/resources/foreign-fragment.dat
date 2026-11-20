@@ -71,6 +71,7 @@ svg desc
 </title>X
 #errors
 5: Stray end tag “title”.
+8: End tag, comment, or processing instruction in an SVG or MathML “title”, “style”, “script”, or “noscript” fragment.
 #document-fragment
 svg title
 #document
@@ -429,6 +430,7 @@ svg foreignObject
 #data
 <div></div>
 #errors
+5: Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
 #document-fragment
 svg title
 #document
@@ -437,6 +439,7 @@ svg title
 #data
 <figure></figure>
 #errors
+8: Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
 #document-fragment
 svg title
 #document
@@ -643,3 +646,75 @@ svg svg
 #document
 | <p>
 | <svg foo>
+
+#data
+<rect/>
+#errors
+7: Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
+#document-fragment
+svg style
+#document
+| <svg rect>
+
+#data
+<!--x-->
+#errors
+8: End tag, comment, or processing instruction in an SVG or MathML “title”, “style”, “script”, or “noscript” fragment.
+#document-fragment
+svg title
+#document
+| <!-- x -->
+
+#data
+<!--</title>-->
+#errors
+5: End tag of the enclosing SVG or MathML element inside a comment, processing instruction, or CDATA section.
+15: End tag, comment, or processing instruction in an SVG or MathML “title”, “style”, “script”, or “noscript” fragment.
+#document-fragment
+svg title
+#document
+| <!-- </title> -->
+
+#data
+<?a b?>
+#errors
+7: End tag, comment, or processing instruction in an SVG or MathML “title”, “style”, “script”, or “noscript” fragment.
+#document-fragment
+math script
+#document
+| <?a b?>
+
+#data
+<![CDATA[</title>]]>
+#errors
+10: End tag of the enclosing SVG or MathML element inside a comment, processing instruction, or CDATA section.
+#document-fragment
+svg title
+#document
+| "</title>"
+
+#data
+<b><!--x--></b>
+#errors
+3: Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
+#document-fragment
+svg title
+#document
+| <b>
+|   <!-- x -->
+
+#data
+<!--x-->
+#errors
+#document-fragment
+svg desc
+#document
+| <!-- x -->
+
+#data
+x
+#errors
+#document-fragment
+svg title
+#document
+| "x"

@@ -619,6 +619,7 @@ no-doctype
 <svg><title><div>
 #errors
 (1,5): expected-doctype-but-got-start-tag
+(1,17): start-tag-in-foreign-rcdata-element
 (1,17): expected-closing-tag-but-got-eof
 #document
 | <html>
@@ -632,6 +633,7 @@ no-doctype
 <svg><title><rect><div>
 #errors
 (1,5): expected-doctype-but-got-start-tag
+(1,18): start-tag-in-foreign-rcdata-element
 (1,23): expected-closing-tag-but-got-eof
 #document
 | <html>
@@ -646,6 +648,7 @@ no-doctype
 <svg><title><svg><div>
 #errors
 (1,5): expected-doctype-but-got-start-tag
+(1,17): start-tag-in-foreign-rcdata-element
 (1,22): unexpected-html-element-in-foreign-content
 (1,22): expected-closing-tag-but-got-eof
 #document

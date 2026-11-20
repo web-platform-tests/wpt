@@ -577,6 +577,7 @@
 #data
 <!DOCTYPE html><p><svg><title><p>
 #errors
+(1,31) start-tag-in-foreign-rcdata-element
 (1,33) expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>

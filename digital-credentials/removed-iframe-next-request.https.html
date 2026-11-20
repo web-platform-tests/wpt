@@ -74,9 +74,8 @@
       null,
       iframe.contentWindow,
     );
-    const firstRequest = iframe.contentWindow.navigator.credentials.get(options);
-    firstRequest.catch(() => {});
-    assert_greater_than(toJSONCalls, 0, "The browser should have serialized the request data");
+    iframe.contentWindow.navigator.credentials.get(options).catch(() => {});
+    await t.step_wait(() => toJSONCalls > 0, "The browser should have serialized the request data");
     await new Promise((resolve) => t.step_timeout(resolve, 100));
 
     await test_driver.set_virtual_wallet_behavior("respond", "openid4vp-v1-unsigned", { value: "second-response" });

@@ -39,28 +39,11 @@
     iframe.remove();
     await new Promise((resolve) => t.step_timeout(resolve, 100));
 
-    const abortController = new AbortController();
-    t.add_cleanup(() => abortController.abort());
-    const reason = new Error("The second request was aborted.");
-    let secondRequest;
-    await test_driver.bless("user activation for the second request", () => {
-      secondRequest = navigator.credentials.get(makeGetOptions({ signal: abortController.signal }));
-    });
-    let settledEarly = false;
-    secondRequest.then(
-      () => (settledEarly = true),
-      () => (settledEarly = true),
-    );
-
-    await new Promise((resolve) => t.step_timeout(resolve, 100));
-    assert_false(settledEarly, "The second request should still be pending before it is aborted");
-    abortController.abort(reason);
-    await promise_rejects_exactly(
-      t,
-      reason,
-      secondRequest,
-      "The second request should settle only when it is aborted",
-    );
+    await test_driver.set_virtual_wallet_behavior("respond", "openid4vp-v1-unsigned", { value: "second-response" });
+    await test_driver.bless("user activation for the second request");
+    const credential = await navigator.credentials.get(makeGetOptions({ protocol: "openid4vp-v1-unsigned" }));
+    assert_equals(credential.protocol, "openid4vp-v1-unsigned");
+    assert_equals(credential.data.value, "second-response");
   }, "Removing the requesting iframe lets the next request start.");
 
   promise_test(async (t) => {
@@ -96,27 +79,10 @@
     assert_greater_than(toJSONCalls, 0, "The browser should have serialized the request data");
     await new Promise((resolve) => t.step_timeout(resolve, 100));
 
-    const abortController = new AbortController();
-    t.add_cleanup(() => abortController.abort());
-    const reason = new Error("The second request was aborted.");
-    let secondRequest;
-    await test_driver.bless("user activation for the second request", () => {
-      secondRequest = navigator.credentials.get(makeGetOptions({ signal: abortController.signal }));
-    });
-    let settledEarly = false;
-    secondRequest.then(
-      () => (settledEarly = true),
-      () => (settledEarly = true),
-    );
-
-    await new Promise((resolve) => t.step_timeout(resolve, 100));
-    assert_false(settledEarly, "The second request should still be pending before it is aborted");
-    abortController.abort(reason);
-    await promise_rejects_exactly(
-      t,
-      reason,
-      secondRequest,
-      "The second request should settle only when it is aborted",
-    );
+    await test_driver.set_virtual_wallet_behavior("respond", "openid4vp-v1-unsigned", { value: "second-response" });
+    await test_driver.bless("user activation for the second request");
+    const credential = await navigator.credentials.get(makeGetOptions({ protocol: "openid4vp-v1-unsigned" }));
+    assert_equals(credential.protocol, "openid4vp-v1-unsigned");
+    assert_equals(credential.data.value, "second-response");
   }, "Removing the requesting iframe while its request data is serialized lets the next request start.");
 </script>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script'">
+<link rel="help" href="https://html.spec.whatwg.org/#timer-initialisation-steps">
+<link rel="help" href="https://w3c.github.io/trusted-types/dist/spec/#get-trusted-type-compliant-string-algorithm">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+  window.log = [];
+  trustedTypes.createPolicy("default", {
+    createScript: s => { log.push(`main createScript ${s}`); return s; }
+  });
+  const htmlPolicy = trustedTypes.createPolicy("html", { createHTML: s => s });
+
+  const iframeLoaded = new Promise(resolve => {
+    const iframe = document.createElement("iframe");
+    iframe.srcdoc = htmlPolicy.createHTML(`<!DOCTYPE html>
+<meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script'">
+<script>
+  trustedTypes.createPolicy("default", {
+    createScript: s => { parent.log.push(\`iframe createScript \${s}\`); return s; }
+  });
+<\/script>`);
+    iframe.onload = () => resolve(iframe);
+    document.body.append(iframe);
+  });
+
+  for (const [set, clear] of [["setTimeout", "clearTimeout"], ["setInterval", "clearInterval"]]) {
+    test(t => {
+      log.length = 0;
+      const handler = { toString() { log.push("handler toString"); return "void 0"; } };
+      const timeout = { valueOf() { log.push("timeout valueOf"); return 0; } };
+      const id = window[set](handler, timeout);
+      window[clear](id);
+      assert_array_equals(log, ["handler toString", "timeout valueOf", "main createScript void 0"]);
+    }, `${set}() runs the default policy after converting all arguments`);
+
+    promise_test(async t => {
+      const iframe = await iframeLoaded;
+      log.length = 0;
+      const id = iframe.contentWindow[set].call(window, "void 0", 0);
+      window[clear](id);
+      assert_array_equals(log, ["main createScript void 0"]);
+    }, `${set}() from another realm uses the default policy of this's global`);
+
+    promise_test(async t => {
+      const iframe = await iframeLoaded;
+      log.length = 0;
+      const id = window[set].call(iframe.contentWindow, "void 0", 0);
+      iframe.contentWindow[clear](id);
+      assert_array_equals(log, ["iframe createScript void 0"]);
+    }, `${set}() called on another realm's global uses that global's default policy`);
+  }
+</script>

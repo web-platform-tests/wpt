@@ -5,11 +5,11 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <svg><title id="t"></title></svg>
-<table><script>t.append(document.querySelector("table"))</script><b id="b">x</b></table>
+<table><script>document.getElementById("t").append(document.querySelector("table"))</script><b id="b">x</b></table>
 <script>
 test(() => {
   const title = document.getElementById("t");
   assert_array_equals(Array.from(title.children, e => e.localName), ["table"]);
   assert_equals(document.getElementById("b"), null);
-}, "An element foster parented into an SVG title element that a script moved the table into isn't inserted");
+}, "Element foster parented into an SVG title is not inserted");
 </script>

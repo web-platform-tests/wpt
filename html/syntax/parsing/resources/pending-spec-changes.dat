@@ -109,7 +109,7 @@
 #data
 <!DOCTYPE html><svg><title><!foo></title></svg>
 #errors
-expected-dashes-or-doctype
+incorrectly-opened-comment
 #document
 | <!DOCTYPE html>
 | <html>
@@ -122,7 +122,7 @@ expected-dashes-or-doctype
 #data
 <!DOCTYPE html><svg><title><!DOCTYPE html></title></svg>
 #errors
-expected-dashes-or-doctype
+incorrectly-opened-comment
 #document
 | <!DOCTYPE html>
 | <html>
@@ -185,7 +185,7 @@ expected-dashes-or-doctype
 #data
 <!DOCTYPE html><svg><title>a</title/><rect/></svg>
 #errors
-self-closing-flag-on-end-tag
+end-tag-with-trailing-solidus
 #document
 | <!DOCTYPE html>
 | <html>
@@ -400,7 +400,7 @@ expected-closing-tag-but-got-eof
 <!DOCTYPE html><svg><xmp/><rect></svg>
 #errors
 unexpected-html-element-in-foreign-content
-non-void-element-with-trailing-solidus
+non-void-html-element-start-tag-with-trailing-solidus
 expected-named-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
@@ -488,7 +488,7 @@ expected-closing-tag-but-got-eof
 #data
 <!DOCTYPE html><svg><title>&amp</title><rect/></svg>
 #errors
-named-entity-without-semicolon
+missing-semicolon-after-character-reference
 #document
 | <!DOCTYPE html>
 | <html>
@@ -515,7 +515,7 @@ named-entity-without-semicolon
 #data
 <!DOCTYPE html><svg><title><!</title><rect/></svg>
 #errors
-expected-dashes-or-doctype
+incorrectly-opened-comment
 #document
 | <!DOCTYPE html>
 | <html>
@@ -543,7 +543,7 @@ eof-in-comment
 #data
 <!DOCTYPE html><svg><title><!foo </title><rect/></svg>
 #errors
-expected-dashes-or-doctype
+incorrectly-opened-comment
 #document
 | <!DOCTYPE html>
 | <html>
@@ -613,7 +613,7 @@ eof-in-cdata
 #data
 <!DOCTYPE html><svg><title>x</title></ !x><rect/></svg>
 #errors
-expected-closing-tag-but-got-char
+invalid-first-character-of-tag-name
 #document
 | <!DOCTYPE html>
 | <html>
@@ -1054,7 +1054,7 @@ expected-closing-tag-but-got-eof
 <!DOCTYPE html><svg><textarea/></svg>
 #errors
 unexpected-html-element-in-foreign-content
-non-void-element-with-trailing-solidus
+non-void-html-element-start-tag-with-trailing-solidus
 expected-named-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>

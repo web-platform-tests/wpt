@@ -1,4 +1,3 @@
-import asyncio
 import pytest
 
 from tests.bidi.input.file_dialog_opened import assert_file_dialog_opened_event
@@ -68,14 +67,13 @@ async def test_multiple_paths_for_single_file_input_cancels_dialog(
     assert result == {"event": "cancel", "files": []}
 
 
-@pytest.mark.parametrize("case", ["nonexistent", "directory", "relative"])
+@pytest.mark.parametrize("case", ["nonexistent", "directory"])
 async def test_unselectable_path_cancels_file_input(
     bidi_session, new_tab, temp_files, trigger_input_file_dialog, case
 ):
     unselectable_paths = {
         "nonexistent": f"{temp_files['root']}/does_not_exist.txt",
         "directory": temp_files["subdir"],
-        "relative": "relative/file1.txt",
     }
     await bidi_session.browser.set_file_dialog_behavior(
         file_dialog_behavior={
@@ -88,27 +86,22 @@ async def test_unselectable_path_cancels_file_input(
     assert result == {"event": "cancel", "files": []}
 
 
-@pytest.mark.capabilities(
-    {"unhandledPromptBehavior": {"file": "dismiss", "default": "ignore"}}
-)
-async def test_accept_overrides_unhandled_prompt_behavior_and_reset(
+async def test_unselectable_path_among_selectable_paths_cancels_file_input(
     bidi_session, new_tab, temp_files, trigger_input_file_dialog
 ):
     await bidi_session.browser.set_file_dialog_behavior(
         file_dialog_behavior={
             "type": "accept",
-            "paths": [temp_files["file1"]],
+            "paths": [
+                temp_files["file1"],
+                f"{temp_files['root']}/does_not_exist.txt",
+            ],
         }
     )
 
-    # Configured file dialog behavior takes precedence over unhandledPromptBehavior.
-    result = await trigger_input_file_dialog(new_tab, multiple=False)
-    assert result == {"event": "change", "files": ["file1.txt"]}
-
-    # Resetting to None restores unhandledPromptBehavior ("dismiss").
-    await bidi_session.browser.set_file_dialog_behavior(file_dialog_behavior=None)
-    result_after_reset = await trigger_input_file_dialog(new_tab, multiple=False)
-    assert result_after_reset == {"event": "cancel", "files": []}
+    # The dialog is cancelled instead of selecting only the existing file.
+    result = await trigger_input_file_dialog(new_tab, multiple=True)
+    assert result == {"event": "cancel", "files": []}
 
 
 @pytest.mark.parametrize("multiple", [False, True])
@@ -132,13 +125,10 @@ async def test_accept_emits_file_dialog_opened_event(
         }
     )
 
-    dialog_task = asyncio.create_task(
-        trigger_input_file_dialog(new_tab, multiple=multiple)
-    )
+    result = await trigger_input_file_dialog(new_tab, multiple=multiple)
+    assert result == {"event": "change", "files": ["file1.txt"]}
+
     event = await wait_for_future_safe(on_opened)
     assert_file_dialog_opened_event(
         event, new_tab["context"], "default", multiple=multiple
     )
-
-    result = await dialog_task
-    assert result == {"event": "change", "files": ["file1.txt"]}

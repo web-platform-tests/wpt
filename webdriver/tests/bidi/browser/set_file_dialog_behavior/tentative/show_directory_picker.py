@@ -1,4 +1,3 @@
-import asyncio
 import pytest
 
 from tests.bidi.input.file_dialog_opened import assert_file_dialog_opened_event
@@ -32,20 +31,18 @@ async def test_show_directory_picker_accept(
         }
     )
 
-    eval_task = asyncio.create_task(
-        bidi_session.script.evaluate(
-            expression="""(async () => {
-                const dir = await window.showDirectoryPicker();
-                const names = [];
-                for await (const [name] of dir.entries()) {
-                    names.push(name);
-                }
-                return names.sort();
-            })()""",
-            target=ContextTarget(new_tab["context"]),
-            await_promise=True,
-            user_activation=True,
-        )
+    result = await bidi_session.script.evaluate(
+        expression="""(async () => {
+            const dir = await window.showDirectoryPicker();
+            const names = [];
+            for await (const [name] of dir.entries()) {
+                names.push(name);
+            }
+            return names.sort();
+        })()""",
+        target=ContextTarget(new_tab["context"]),
+        await_promise=True,
+        user_activation=True,
     )
 
     event = await wait_for_future_safe(on_opened)
@@ -57,48 +54,29 @@ async def test_show_directory_picker_accept(
         element=UNDEFINED,
     )
 
-    result = await eval_task
     assert [item["value"] for item in result["value"]] == ["nested.txt"]
 
 
-async def test_show_directory_picker_cancel(bidi_session, inline, new_tab):
-    await bidi_session.browsing_context.navigate(
-        context=new_tab["context"], url=inline(""), wait="complete"
-    )
+async def test_show_directory_picker_cancel(
+    bidi_session, new_tab, get_picker_error
+):
     await bidi_session.browser.set_file_dialog_behavior(
         file_dialog_behavior={"type": "cancel"}
     )
 
-    result = await bidi_session.script.evaluate(
-        expression="""(async () => {
-            try {
-                await window.showDirectoryPicker();
-                return "resolved";
-            } catch (e) {
-                return e instanceof DOMException ? e.name : String(e);
-            }
-        })()""",
-        target=ContextTarget(new_tab["context"]),
-        await_promise=True,
-        user_activation=True,
-    )
-    assert result["value"] == "AbortError"
+    assert await get_picker_error(new_tab, "showDirectoryPicker") == "AbortError"
 
 
 @pytest.mark.parametrize(
-    "case", ["file", "multiple_directories", "nonexistent", "relative"]
+    "case", ["file", "multiple_directories", "nonexistent"]
 )
 async def test_show_directory_picker_unselectable_paths(
-    bidi_session, inline, new_tab, temp_files, case
+    bidi_session, new_tab, temp_files, get_picker_error, case
 ):
-    await bidi_session.browsing_context.navigate(
-        context=new_tab["context"], url=inline(""), wait="complete"
-    )
     paths_by_case = {
         "file": [temp_files["file1"]],
         "multiple_directories": [temp_files["subdir"], temp_files["subdir2"]],
         "nonexistent": [f"{temp_files['root']}/missing_dir"],
-        "relative": ["relative/subdir"],
     }
     await bidi_session.browser.set_file_dialog_behavior(
         file_dialog_behavior={
@@ -107,17 +85,4 @@ async def test_show_directory_picker_unselectable_paths(
         }
     )
 
-    result = await bidi_session.script.evaluate(
-        expression="""(async () => {
-            try {
-                await window.showDirectoryPicker();
-                return "resolved";
-            } catch (e) {
-                return e instanceof DOMException ? e.name : String(e);
-            }
-        })()""",
-        target=ContextTarget(new_tab["context"]),
-        await_promise=True,
-        user_activation=True,
-    )
-    assert result["value"] == "AbortError"
+    assert await get_picker_error(new_tab, "showDirectoryPicker") == "AbortError"

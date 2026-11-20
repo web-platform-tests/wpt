@@ -22,6 +22,13 @@ async def test_params_file_dialog_behavior_invalid_type(bidi_session, value):
         )
 
 
+async def test_params_file_dialog_behavior_type_missing(bidi_session):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.browser.set_file_dialog_behavior(
+            file_dialog_behavior={}
+        )
+
+
 @pytest.mark.parametrize("value", get_invalid_cases("string"))
 async def test_params_file_dialog_behavior_type_invalid_type(
     bidi_session, value

@@ -1,14 +1,38 @@
 import pytest
 import pytest_asyncio
 
+import webdriver.bidi.error as error
 from tests.bidi import remote_mapping_to_dict
 from webdriver.bidi.modules.script import ContextTarget
+from webdriver.bidi.undefined import UNDEFINED
+
+# Time in seconds to wait for a file dialog to be handled.
+DIALOG_TIMEOUT = 2.0
 
 
 @pytest_asyncio.fixture(autouse=True)
 async def reset_file_dialog_behavior(bidi_session):
     yield
-    await bidi_session.browser.set_file_dialog_behavior(file_dialog_behavior=None)
+
+    # Reset the global behavior and the behavior of the default user context,
+    # which outlives the test, unlike the user contexts that a test creates.
+    # A remote end that does not support the command, or the configuration per
+    # user context, is tolerated here, so that only the tests report it.
+    for user_contexts in [UNDEFINED, ["default"]]:
+        try:
+            await bidi_session.browser.set_file_dialog_behavior(
+                file_dialog_behavior=None, user_contexts=user_contexts
+            )
+        except (
+            error.UnknownCommandException,
+            error.UnsupportedOperationException,
+        ):
+            pass
+
+
+@pytest.fixture
+def dialog_timeout_ms(configuration):
+    return DIALOG_TIMEOUT * configuration["timeout_multiplier"] * 1000
 
 
 @pytest_asyncio.fixture(params=["default", "new"])
@@ -42,7 +66,14 @@ def temp_files(tmp_path):
 
 
 @pytest.fixture
-def trigger_input_file_dialog(bidi_session, inline):
+def trigger_input_file_dialog(bidi_session, dialog_timeout_ms, inline):
+    """
+    Opens the file dialog of an `<input type=file>` and returns the event that
+    the input fires ("change" or "cancel") with the names of the selected
+    files. The event is "timeout" if the input fires neither of them in time,
+    e.g. if the remote end shows the file dialog to the user.
+    """
+
     async def _trigger(
         context, multiple=False, webkitdirectory=False, activate=True
     ):
@@ -60,8 +91,8 @@ def trigger_input_file_dialog(bidi_session, inline):
         await bidi_session.browsing_context.navigate(
             context=context["context"], url=url, wait="complete"
         )
-        result = await bidi_session.script.evaluate(
-            expression="""new Promise((resolve) => {
+        result = await bidi_session.script.call_function(
+            function_declaration="""(timeout) => new Promise((resolve) => {
                 input.addEventListener("change", () => {
                     resolve({
                         event: "change",
@@ -74,8 +105,15 @@ def trigger_input_file_dialog(bidi_session, inline):
                         files: [],
                     });
                 });
+                setTimeout(() => {
+                    resolve({
+                        event: "timeout",
+                        files: [],
+                    });
+                }, timeout);
                 input.showPicker();
             })""",
+            arguments=[{"type": "number", "value": dialog_timeout_ms}],
             target=ContextTarget(context["context"]),
             await_promise=True,
             user_activation=True,

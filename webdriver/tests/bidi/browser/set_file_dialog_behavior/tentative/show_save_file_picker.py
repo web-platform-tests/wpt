@@ -1,5 +1,4 @@
 from pathlib import Path
-import asyncio
 import pytest
 
 from tests.bidi import remote_mapping_to_dict
@@ -38,17 +37,15 @@ async def test_show_save_file_picker_accept_new_file(
         }
     )
 
-    eval_task = asyncio.create_task(
-        bidi_session.script.evaluate(
-            expression="""(async () => {
-                const handle = await window.showSaveFilePicker();
-                const file = await handle.getFile();
-                return { name: handle.name, text: await file.text() };
-            })()""",
-            target=ContextTarget(new_tab["context"]),
-            await_promise=True,
-            user_activation=True,
-        )
+    result = await bidi_session.script.evaluate(
+        expression="""(async () => {
+            const handle = await window.showSaveFilePicker();
+            const file = await handle.getFile();
+            return { name: handle.name, text: await file.text() };
+        })()""",
+        target=ContextTarget(new_tab["context"]),
+        await_promise=True,
+        user_activation=True,
     )
 
     event = await wait_for_future_safe(on_opened)
@@ -59,7 +56,7 @@ async def test_show_save_file_picker_accept_new_file(
         multiple=False,
         element=UNDEFINED,
     )
-    result = await eval_task
+
     assert remote_mapping_to_dict(result["value"]) == {
         "name": "created_by_save_picker.txt",
         "text": "",
@@ -101,41 +98,26 @@ async def test_show_save_file_picker_accept_existing_file(
     assert overwrite_path.read_bytes() == b""
 
 
-async def test_show_save_file_picker_cancel(bidi_session, inline, new_tab):
-    await bidi_session.browsing_context.navigate(
-        context=new_tab["context"], url=inline(""), wait="complete"
-    )
+async def test_show_save_file_picker_cancel(
+    bidi_session, new_tab, get_picker_error
+):
     await bidi_session.browser.set_file_dialog_behavior(
         file_dialog_behavior={"type": "cancel"}
     )
 
-    result = await bidi_session.script.evaluate(
-        expression="""(async () => {
-            try {
-                await window.showSaveFilePicker();
-                return "resolved";
-            } catch (e) {
-                return e instanceof DOMException ? e.name : String(e);
-            }
-        })()""",
-        target=ContextTarget(new_tab["context"]),
-        await_promise=True,
-        user_activation=True,
-    )
-    assert result["value"] == "AbortError"
+    assert await get_picker_error(new_tab, "showSaveFilePicker") == "AbortError"
 
 
-@pytest.mark.parametrize("case", ["multiple_paths", "directory", "relative"])
+@pytest.mark.parametrize(
+    "case", ["multiple_paths", "directory", "missing_parent"]
+)
 async def test_show_save_file_picker_unselectable_paths(
-    bidi_session, inline, new_tab, temp_files, case
+    bidi_session, new_tab, temp_files, get_picker_error, case
 ):
-    await bidi_session.browsing_context.navigate(
-        context=new_tab["context"], url=inline(""), wait="complete"
-    )
     paths_by_case = {
         "multiple_paths": [temp_files["file1"], temp_files["file2"]],
         "directory": [temp_files["subdir"]],
-        "relative": ["relative/save.txt"],
+        "missing_parent": [f"{temp_files['root']}/missing_dir/save.txt"],
     }
     await bidi_session.browser.set_file_dialog_behavior(
         file_dialog_behavior={
@@ -144,17 +126,4 @@ async def test_show_save_file_picker_unselectable_paths(
         }
     )
 
-    result = await bidi_session.script.evaluate(
-        expression="""(async () => {
-            try {
-                await window.showSaveFilePicker();
-                return "resolved";
-            } catch (e) {
-                return e instanceof DOMException ? e.name : String(e);
-            }
-        })()""",
-        target=ContextTarget(new_tab["context"]),
-        await_promise=True,
-        user_activation=True,
-    )
-    assert result["value"] == "AbortError"
+    assert await get_picker_error(new_tab, "showSaveFilePicker") == "AbortError"

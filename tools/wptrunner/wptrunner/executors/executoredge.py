@@ -24,6 +24,12 @@ class EdgeDriverRefTestExecutor(WebDriverRefTestExecutor):
 class EdgeDriverTestharnessExecutor(WebDriverTestharnessExecutor):
     protocol_cls = EdgeDriverProtocol
 
+    def create_test_window(self, protocol):
+        test_window = super().create_test_window(protocol)
+        # Window switching alone may not focus the native content view.
+        protocol.cdp.execute_cdp_command("Page.bringToFront")
+        return test_window
+
 
 class EdgeDriverPrintRefTestExecutor(EdgeDriverRefTestExecutor):
     protocol_cls = EdgeDriverProtocol

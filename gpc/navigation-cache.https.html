@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>GPC preference is cached until the next top-level document load</title>
+<!--
+  Spec: https://www.w3.org/TR/gpc/#preference-caching
+  A preference change is not reflected in an already loaded top-level
+  document. Workers are not covered; w3c/gpc#146 has no resolution.
+  A new top-level document is already covered by
+  navigator-globalPrivacyControl.https.html and sec-gpc.https.html.
+-->
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+function expectedHeader(gpc) {
+  return gpc ? "1" : null;
+}
+
+function readSecGPC() {
+  const url = "support/sec-gpc-value.py?nonce=" + Date.now() + "-" + Math.random();
+  return fetch(url, {cache: "no-store"}).then(response => {
+    assert_equals(response.status, 200, "Sec-GPC echo status");
+    return response.json();
+  }).then(body => body["sec-gpc"]);
+}
+
+promise_test(async t => {
+  const session = await test_driver.get_global_privacy_control();
+  assert_true(session.gpc === true || session.gpc === false,
+    "Get Global Privacy Control returns a boolean session preference");
+  t.add_cleanup(() => test_driver.set_global_privacy_control(session.gpc));
+
+  const cached = navigator.globalPrivacyControl;
+  assert_equals(typeof cached, "boolean",
+    "navigator.globalPrivacyControl is a boolean in the loaded document");
+  const headerBefore = await readSecGPC();
+  assert_equals(headerBefore, expectedHeader(cached),
+    "Sec-GPC on a same-document subresource matches the cached preference");
+
+  const updated = !cached;
+  const setResult = await test_driver.set_global_privacy_control(updated);
+  assert_equals(setResult.gpc, updated,
+    "Set Global Privacy Control reports the updated session preference");
+
+  assert_equals(navigator.globalPrivacyControl, cached,
+    "the loaded document keeps its cached navigator.globalPrivacyControl");
+  const headerAfter = await readSecGPC();
+  assert_equals(headerAfter, headerBefore,
+    "a later same-document subresource keeps the cached Sec-GPC value");
+}, "A preference change waits for the next top-level document load");
+</script>

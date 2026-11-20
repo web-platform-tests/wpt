@@ -800,3 +800,29 @@ svg textarea
 #document
 | <b>
 |   "x"
+
+#data
+<!DOCTYPE html><svg><title><a</title><rect/></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "<a"
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><title>&x</title><rect/></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "&x"
+|       <svg rect>

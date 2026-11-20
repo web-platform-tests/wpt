@@ -90,12 +90,10 @@ for (const [ns, name] of contexts) {
   }, `Markers for later patches still work in ${ns} ${name}`);
 
   test(() => {
-    // The adoption agency moves the furthest block to the common ancestor, which is the template,
-    // so its insertion location is the patch target.
-    const el = parse(ns, name, marker,
-      '<template for="a"><b>1<p><style></' + name + '><img src=x></style></p></b></template>');
+    // </b> arrives while p is open, so the adoption agency moves the furthest block (p) to the
+    // appropriate place for the common ancestor (the template), which is the patch target.
+    const el = parse(ns, name, marker, '<template for="a"><b>1<p>2</b>3</p></template>');
     assert_array_equals(kinds(el), []);
-    assert_equals(el.parentNode.querySelector("img"), null);
   }, `Elements moved by the adoption agency are not inserted into ${ns} ${name}`);
 
   test(() => {

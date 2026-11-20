@@ -62,4 +62,61 @@
       "The second request should settle only when it is aborted",
     );
   }, "Removing the requesting iframe lets the next request start.");
+
+  promise_test(async (t) => {
+    await test_driver.set_virtual_wallet_behavior("wait");
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+
+    const iframe = document.createElement("iframe");
+    await new Promise((resolve) => {
+      iframe.addEventListener("load", resolve, { once: true });
+      iframe.src = "about:blank";
+      document.body.appendChild(iframe);
+    });
+    t.add_cleanup(() => iframe.remove());
+
+    const options = makeGetOptions();
+    const request = options.digital.requests[0];
+    const data = request.data;
+    let toJSONCalls = 0;
+    request.data = {
+      toJSON() {
+        toJSONCalls++;
+        iframe.remove();
+        return data;
+      },
+    };
+    await test_driver.bless(
+      "user activation for the iframe's request",
+      null,
+      iframe.contentWindow,
+    );
+    const firstRequest = iframe.contentWindow.navigator.credentials.get(options);
+    firstRequest.catch(() => {});
+    assert_greater_than(toJSONCalls, 0, "The browser should have serialized the request data");
+    await new Promise((resolve) => t.step_timeout(resolve, 100));
+
+    const abortController = new AbortController();
+    t.add_cleanup(() => abortController.abort());
+    const reason = new Error("The second request was aborted.");
+    let secondRequest;
+    await test_driver.bless("user activation for the second request", () => {
+      secondRequest = navigator.credentials.get(makeGetOptions({ signal: abortController.signal }));
+    });
+    let settledEarly = false;
+    secondRequest.then(
+      () => (settledEarly = true),
+      () => (settledEarly = true),
+    );
+
+    await new Promise((resolve) => t.step_timeout(resolve, 100));
+    assert_false(settledEarly, "The second request should still be pending before it is aborted");
+    abortController.abort(reason);
+    await promise_rejects_exactly(
+      t,
+      reason,
+      secondRequest,
+      "The second request should settle only when it is aborted",
+    );
+  }, "Removing the requesting iframe while its request data is serialized lets the next request start.");
 </script>

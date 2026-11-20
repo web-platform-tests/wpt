@@ -35,14 +35,12 @@
       assert_equals(toJSONCalls, 0, "Nothing should serialize the request data before get()");
       promise = navigator.credentials.get(options);
     });
-    const outcome = await Promise.race([
-      promise.then(
-        () => "fulfilled",
-        (error) => error,
-      ),
-      new Promise((resolve) => t.step_timeout(() => resolve("still pending"), 3000)),
-    ]);
+    await promise_rejects_exactly(
+      t,
+      reason,
+      promise,
+      "The request should reject with the signal's abort reason",
+    );
     assert_greater_than(toJSONCalls, 0, "The browser should have serialized the request data");
-    assert_equals(outcome, reason, "The request should reject with the signal's abort reason");
   }, "Aborting the signal while the request data is serialized rejects with the abort reason.");
 </script>

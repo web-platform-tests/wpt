@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Cookies: paths with the same number of segments sort by length, not by creation time</title>
+<meta name=help href="https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis#section-5.8.3">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+test(t => {
+  t.add_cleanup(() => {
+    document.cookie = "orderEqualShort=; Max-Age=0; Path=/cookies/";
+    document.cookie = "orderEqualLong=; Max-Age=0; Path=/cookies/ordering";
+  });
+  document.cookie = "orderEqualShort=1; Path=/cookies/";
+  document.cookie = "orderEqualLong=2; Path=/cookies/ordering";
+  const got = document.cookie.split("; ").filter(c => c.startsWith("orderEqualShort=") || c.startsWith("orderEqualLong="));
+  assert_array_equals(got, ["orderEqualLong=2", "orderEqualShort=1"]);
+}, "/cookies/ordering sorts before /cookies/ although it was created later");
+</script>

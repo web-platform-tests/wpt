@@ -11,8 +11,6 @@
 <script type="module">
   import { makeGetOptions } from "./support/helper.js";
 
-  // Aborts the signal from inside toJSON() while the browser serializes the
-  // request data, then lets toJSON() finish with `finish(data)`.
   async function getWithAbortInToJSON(t, finish) {
     await test_driver.set_virtual_wallet_behavior("wait");
     t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));

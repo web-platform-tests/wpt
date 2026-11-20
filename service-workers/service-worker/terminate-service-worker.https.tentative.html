@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<meta name="timeout" content="long">
+<title>terminate_service_worker terminates a running service worker</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/test-helpers.sub.js"></script>
+<script>
+const SCRIPT = 'resources/terminate-worker.js';
+const SCOPE = 'resources/terminate-scope/';
+
+// Absent from browsers without the vendor-specific support.
+function rethrowIfUnsupported(error) {
+  const message = String(error && error.message ? error.message : error);
+  if (message.includes('not implemented') ||
+      message.includes("wasn't found") ||
+      message.includes('unknown command')) {
+    throw new OptionalFeatureUnsupportedError(message);
+  }
+  throw error;
+}
+
+function ping(worker) {
+  return new Promise(resolve => {
+    const channel = new MessageChannel();
+    channel.port1.onmessage = event => resolve(event.data);
+    worker.postMessage('ping', [channel.port2]);
+  });
+}
+
+promise_test(async t => {
+  const registration = await service_worker_unregister_and_register(
+      t, SCRIPT, SCOPE);
+  t.add_cleanup(() => registration.unregister());
+  const worker = registration.installing || registration.waiting ||
+      registration.active;
+  await wait_for_state(t, worker, 'activated');
+
+  const first = await ping(registration.active);
+
+  await test_driver.terminate_service_worker().catch(rethrowIfUnsupported);
+
+  const second = await ping(worker);
+  assert_not_equals(first, second,
+      'the worker restarted with new script state');
+}, 'terminate_service_worker terminates a running service worker');
+
+promise_test(async t => {
+  const scopeA = 'resources/terminate-scope-a/';
+  const scopeB = 'resources/terminate-scope-b/';
+  // Distinct scripts, so a runner that identifies the worker by script URL
+  // still stops only one of them.
+  const registrationA = await service_worker_unregister_and_register(
+      t, SCRIPT + '?a', scopeA);
+  t.add_cleanup(() => registrationA.unregister());
+  const registrationB = await service_worker_unregister_and_register(
+      t, SCRIPT + '?b', scopeB);
+  t.add_cleanup(() => registrationB.unregister());
+
+  const workerA = registrationA.installing || registrationA.waiting ||
+      registrationA.active;
+  const workerB = registrationB.installing || registrationB.waiting ||
+      registrationB.active;
+  await wait_for_state(t, workerA, 'activated');
+  await wait_for_state(t, workerB, 'activated');
+
+  const firstA = await ping(registrationA.active);
+  const firstB = await ping(registrationB.active);
+
+  await test_driver.terminate_service_worker(registrationA.scope).catch(
+      rethrowIfUnsupported);
+
+  const secondA = await ping(workerA);
+  const secondB = await ping(workerB);
+  assert_not_equals(firstA, secondA, 'the scoped worker restarted');
+  assert_equals(firstB, secondB, 'the other worker kept running');
+}, 'terminate_service_worker only terminates the requested scope');
+</script>

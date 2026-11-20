@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>SVG and MathML noscript is parsed as text whether or not scripting is enabled</title>
+<link rel="help" href="https://github.com/whatwg/html/issues/11397">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+function dump(node) {
+  return Array.from(node.childNodes, n =>
+    n.nodeType === Node.TEXT_NODE ? `text:${n.data}` : `element:${n.localName}`);
+}
+
+for (const ns of ["svg", "math"]) {
+  test(() => {
+    const doc = new DOMParser().parseFromString(
+      `<${ns}><noscript><b>x</b></noscript></${ns}>`, "text/html");
+    assert_array_equals(dump(doc.querySelector(`${ns} noscript`)), ["text:<b>x</b>"]);
+  }, `${ns} noscript is text in a document parsed with scripting disabled`);
+
+  test(() => {
+    const div = document.createElement("div");
+    div.innerHTML = `<${ns}><noscript><b>x</b></noscript></${ns}>`;
+    assert_array_equals(dump(div.querySelector(`${ns} noscript`)), ["text:<b>x</b>"]);
+  }, `${ns} noscript is text in fragment parsing with scripting enabled`);
+}
+
+test(() => {
+  const doc = new DOMParser().parseFromString(
+    "<!DOCTYPE html><body><noscript><b>x</b></noscript>", "text/html");
+  assert_array_equals(dump(doc.querySelector("noscript")), ["element:b"]);
+}, "HTML noscript still contains elements when scripting is disabled");
+</script>

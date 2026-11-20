@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Elements foster parented into an SVG title element are left out of the tree</title>
+<link rel="help" href="https://github.com/whatwg/html/issues/11397">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<svg><title id="t"></title></svg>
+<table><script>document.getElementById("t").append(document.querySelector("table"))</script><b id="b">x</b></table>
+<script>
+test(() => {
+  const title = document.getElementById("t");
+  assert_array_equals(Array.from(title.children, e => e.localName), ["table"]);
+  assert_equals(document.getElementById("b"), null);
+}, "Element foster parented into an SVG title is not inserted");
+</script>

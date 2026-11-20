@@ -68,7 +68,7 @@
       );
       assert_equals(
         element.innerHTML,
-        '<?marker name="p"?><template>New content</template>',
+        '<?marker name="p"?><template contentnamespace="html">New content</template>',
       );
     }, "<template for> attribute is sanitized away with removeAttributes in a fragment");
   </script>

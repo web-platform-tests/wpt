@@ -28,6 +28,7 @@ def main(request, response):
   <div id="log"></div>
   <img id="imageTest">
   <script>
+    {"setup({explicit_done: true});" if destination == "document" else ""}
     test(function(t) {{
       assert_equals({maybeBoolToJavascriptLiteral(gpcValue)}, {maybeBoolToJavascriptLiteral(expectedGPCValue)}, "Expected Sec-GPC value ({maybeBoolToJavascriptLiteral(expectedGPCValue)}) is on the {destinationDescription} fetch");
     }}, `Expected Sec-GPC value ({maybeBoolToJavascriptLiteral(expectedGPCValue)}) is on the {destinationDescription} fetch`);
@@ -47,22 +48,27 @@ def main(request, response):
     iframe.src = "getGPC.py?gpc={maybeBoolToJavascriptLiteral(expectedGPCValue)}";
     document.body.appendChild(iframe);
     async function run() {{
-      await Promise.all([
-        fetch_tests_from_window(iframe.contentWindow),
-        fetch_tests_from_worker(new Worker("getGPC.py?gpc={maybeBoolToJavascriptLiteral(expectedGPCValue)}")),
-        fetch_tests_from_worker(new SharedWorker("getGPC.py?gpc={maybeBoolToJavascriptLiteral(expectedGPCValue)}")),
-      ]);
+      await new Promise((resolve, reject) => {{
+        const script = document.createElement("script");
+        script.src = "getGPC.py?gpc={maybeBoolToJavascriptLiteral(expectedGPCValue)}";
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      }});
+      await fetch_tests_from_window(iframe.contentWindow);
+      await fetch_tests_from_worker(new Worker("getGPC.py?gpc={maybeBoolToJavascriptLiteral(expectedGPCValue)}"));
+      await fetch_tests_from_worker(new SharedWorker("getGPC.py?gpc={maybeBoolToJavascriptLiteral(expectedGPCValue)}"));
       let r = await navigator.serviceWorker.register(
         "getGPC.py?gpc={maybeBoolToJavascriptLiteral(expectedGPCValue)}",
         {{scope: "./blank.html"}});
       let sw = r.active || r.installing || r.waiting;
       await fetch_tests_from_worker(sw);
       await r.unregister();
+      done();
     }}
     run();
   </script>
-  """ if destination == "document" else "") + f"""
-  <script src="getGPC.py?gpc={maybeBoolToJavascriptLiteral(expectedGPCValue)}{"&framed" if destination == "iframe" or inFrame else ""}"></script>
+  """ if destination == "document" else "") + (f'  <script src="getGPC.py?gpc={maybeBoolToJavascriptLiteral(expectedGPCValue)}{"&framed" if destination == "iframe" or inFrame else ""}"></script>\n' if destination != "document" else "") + """
 </body>
 </html>
 """

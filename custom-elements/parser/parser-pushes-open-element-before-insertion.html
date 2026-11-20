@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML parser pushes non-void elements onto the stack of open elements before DOM insertion</title>
+<link rel="help" href="https://html.spec.whatwg.org/#insert-a-foreign-element">
+<link rel="help" href="https://html.spec.whatwg.org/#the-style-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+test(t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<!DOCTYPE html><style id='st'>");
+
+  const st = doc.getElementById("st");
+  assert_equals(st.sheet, null, "style.sheet is null while <style> is on the stack of open elements");
+  assert_equals(doc.styleSheets.length, 0, "no CSSStyleSheet created on start-tag insertion");
+
+  doc.write("body { color: rgb(1, 2, 3); }</style>");
+  assert_not_equals(st.sheet, null, "style.sheet is created when </style> pops <style>");
+  assert_equals(doc.styleSheets.length, 1);
+  doc.close();
+}, "HTML parser-inserted <style> is on the stack of open elements during insertion and waits until </style>");
+
+test(t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  const win = doc.defaultView;
+
+  const tag = "foster-stack-probe-" + Math.random().toString(36).slice(2);
+  win.customElements.define(tag, class extends win.HTMLElement {
+    connectedCallback() {
+      if (!this.didWrite) {
+        this.didWrite = true;
+        doc.write("<span>in-fostered</span>");
+      }
+    }
+  });
+
+  doc.write(`<div id="wrap"><table id="tbl"><${tag} id="fostered">`);
+  doc.write(`after</${tag}></table></div>`);
+  doc.close();
+
+  const wrap = doc.getElementById("wrap");
+  const fostered = doc.getElementById("fostered");
+  const tbl = doc.getElementById("tbl");
+  assert_array_equals([...wrap.children], [fostered, tbl]);
+  assert_equals(fostered.innerHTML, "<span>in-fostered</span>after");
+}, "Foster-parented custom element is on the stack of open elements during connectedCallback");
+</script>
+</body>

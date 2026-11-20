@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>XML parser pushes elements onto the stack of open elements before DOM insertion</title>
+<link rel="help" href="https://html.spec.whatwg.org/#parsing-xhtml-documents"/>
+<link rel="help" href="https://html.spec.whatwg.org/#the-style-element"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style id="st"><script>
+window.sheetWhileOpen = document.getElementById("st").sheet;
+</script>body { color: rgb(1, 2, 3); }</style>
+</head>
+<body>
+<script>
+test(() => {
+  const st = document.getElementById("st");
+  assert_equals(window.sheetWhileOpen, null, "style.sheet is null while style element is on the XML stack of open elements");
+  assert_not_equals(st.sheet, null, "style.sheet is created when style end tag pops the XML stack");
+  assert_true([...document.styleSheets].includes(st.sheet));
+}, "XML parser-inserted style element enters stack of open elements before insertion and waits until end tag");
+</script>
+</body>
+</html>

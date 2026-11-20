@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>An &lt;area> with a valid tabindex is focusable when associated with a visible and non-inert image</title>
+<link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#data-model">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<img id="img1" src="/images/grgr-256x256.png" usemap="#map" width="300" height="300">
+<img id="img2" src="/images/ggrr-256x256.png" usemap="#map" width="300" height="300">
+<map name="map">
+  <area id="area1" shape="circle" coords="75,75,75">
+</map>
+
+<script>
+  const img1 = window.img1;
+  const img2 = window.img2;
+  const area = window.area1;
+
+  const focusableContexts = [
+    ['one visible image', () => img2.remove(), () => img1.after(img2)],
+    ['two visible images', () => { }, () => { }],
+    ['one visible image (after: "two visible images")', () => img2.remove(), () => img1.after(img2)],
+    ['one hidden and one visible image', () => img1.hidden = true, () => img1.hidden = false],
+    ['one visible and one hidden image', () => img2.hidden = true, () => img2.hidden = false],
+    ['one inert and one non-inert image', () => img1.inert = true, () => img1.inert = false],
+    ['one non-inert and one inert image', () => img2.inert = true, () => img2.inert = false],
+  ];
+
+  const notFocusableContexts = [
+    ['one inert image',
+      () => { img2.remove(); img1.inert = true; },
+      () => { img1.after(img2); img1.inert = false; }
+    ],
+    ['two inert images',
+      () => { img1.inert = true; img2.inert = true; },
+      () => { img1.inert = false; img2.inert = false; }
+    ],
+    ['one hidden image',
+      () => { img2.remove(); img1.hidden = true; },
+      () => { img1.after(img2); img1.hidden = false; }
+    ],
+    ['two hidden images',
+      () => { img1.hidden = true; img2.hidden = true; },
+      () => { img1.hidden = false; img2.hidden = false; }
+    ],
+    ['one inert and one hidden image',
+      () => { img1.inert = true; img2.hidden = true; },
+      () => { img1.inert = false; img2.hidden = false; }
+    ],
+    ['two hidden images by a parent',
+      () => document.body.hidden = true,
+      () => document.body.hidden = false,
+    ],
+    ['two inert images by a parent',
+      () => document.body.inert = true,
+      () => document.body.inert = false,
+    ],
+    ['no images',
+      () => { img1.remove(); img2.remove(); },
+      () => document.body.prepend(img1, img2)
+    ],
+    ['no images by img usemap attribute removal',
+      () => { img1.useMap = ''; img2.useMap = ''; },
+      () => { img1.useMap = '#map'; img2.useMap = '#map'; }
+    ],
+  ];
+
+  const focusableAttributes = [
+    ['tabindex', 0],
+    ['tabindex', 1],
+    ['tabindex', -1]
+  ];
+
+  const testAttributes = [
+    ...focusableAttributes,
+    ['tabindex', ''],
+    ['tabindex', 'abc'],
+    ['href', ''],
+    ['href', '#'],
+    ['href', 'abc']
+  ];
+
+  for (const [name, setup, cleanup] of notFocusableContexts) {
+    for (const [attrName, attrValue] of testAttributes) {
+      area.setAttribute(attrName, attrValue);
+      setup();
+      test(() => {
+        assert_not_equals(document.activeElement, area);
+        area.focus();
+        assert_not_equals(document.activeElement, area);
+      }, `an <area ${attrName}="${attrValue}"> associated with ${name} is NOT focusable`);
+      area.blur();
+      cleanup();
+      area.removeAttribute(attrName);
+    }
+  }
+
+  for (const [name, setup, cleanup] of notFocusableContexts) {
+    setup();
+    test(() => {
+      assert_not_equals(document.activeElement, area);
+      area.focus();
+      assert_not_equals(document.activeElement, area);
+    }, `an <area> associated with ${name} is NOT focusable`);
+    area.blur();
+    cleanup();
+  }
+
+  for (const [attrName, attrValue] of focusableAttributes) {
+    area.setAttribute(attrName, attrValue);
+    for (const [name, setup, cleanup] of focusableContexts) {
+      setup();
+      test(() => {
+        assert_not_equals(document.activeElement, area);
+        area.focus();
+        assert_equals(document.activeElement, area);
+      }, `an <area ${attrName}="${attrValue}"> associated with ${name} is focusable`);
+      area.blur();
+      cleanup();
+    }
+    area.removeAttribute(attrName);
+  }
+</script>

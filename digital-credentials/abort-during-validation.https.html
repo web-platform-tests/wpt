@@ -53,6 +53,24 @@
   }, "Aborting the signal and then throwing while the request data is serialized rejects with the abort reason.");
 
   promise_test(async (t) => {
+    await test_driver.set_virtual_wallet_behavior("wait");
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+
+    const options = makeGetOptions();
+    options.digital.requests[0].data = {
+      toJSON() {
+        throw null;
+      },
+    };
+
+    let promise;
+    await test_driver.bless("user activation for get()", () => {
+      promise = navigator.credentials.get(options);
+    });
+    await promise_rejects_exactly(t, null, promise, "The request should reject with the thrown value");
+  }, "Throwing null while the request data is serialized rejects with null.");
+
+  promise_test(async (t) => {
     await getWithAbortInToJSON(t, (data) => data);
   }, "Aborting the signal while the request data is serialized rejects with the abort reason.");
 </script>

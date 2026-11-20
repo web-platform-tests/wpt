@@ -1,0 +1,48 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Digital Credential: aborting the signal while the request data is serialized</title>
+<link rel="help" href="https://w3c-fedid.github.io/digital-credentials/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body></body>
+<script type="module">
+  import { makeGetOptions } from "./support/helper.js";
+
+  promise_test(async (t) => {
+    await test_driver.set_virtual_wallet_behavior("wait");
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+
+    const abortController = new AbortController();
+    const reason = new Error("The page aborted while the browser read the request data.");
+    const options = makeGetOptions({ signal: abortController.signal });
+    const request = options.digital.requests[0];
+    const data = request.data;
+    let toJSONCalls = 0;
+    request.data = {
+      toJSON() {
+        toJSONCalls++;
+        abortController.abort(reason);
+        return data;
+      },
+    };
+
+    let promise;
+    await test_driver.bless("user activation for get()", () => {
+      assert_false(abortController.signal.aborted, "The signal should not be aborted before get()");
+      assert_equals(toJSONCalls, 0, "Nothing should serialize the request data before get()");
+      promise = navigator.credentials.get(options);
+    });
+    const outcome = await Promise.race([
+      promise.then(
+        () => "fulfilled",
+        (error) => error,
+      ),
+      new Promise((resolve) => t.step_timeout(() => resolve("still pending"), 3000)),
+    ]);
+    assert_greater_than(toJSONCalls, 0, "The browser should have serialized the request data");
+    assert_equals(outcome, reason, "The request should reject with the signal's abort reason");
+  }, "Aborting the signal while the request data is serialized rejects with the abort reason.");
+</script>

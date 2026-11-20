@@ -25,11 +25,23 @@ from .executorwebdriver import (
     WebDriverTestharnessExecutor,
     WebDriverTestharnessProtocolPart,
 )
-from .protocol import LeakProtocolPart, ProtocolPart
+from .protocol import LeakProtocolPart, ProtocolPart, TextMarkerProtocolPart
 
 here = os.path.dirname(__file__)
 
 AXNode = Mapping[str, Any]
+
+
+def _extract_chromedriver_ids(element_id_string: str) -> Optional[Mapping[str, str]]:
+    """
+    Extracts Frame, Document, and Element IDs from a ChromeDriver id.
+    Expected format: f.[hash].d.[hash].e.[id]
+    """
+    pattern = r"^f\.(?P<frame>[^.]+)\.d\.(?P<document>[^.]+)\.e\.(?P<element>.+)$"
+    match = re.match(pattern, element_id_string)
+
+    return match.groupdict() if match else None
+
 
 def _update_capabilities_if_extension_test(
     browser: Any, capabilities: Optional[MutableMapping[str, Any]]
@@ -230,7 +242,7 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
 
     def _get_ax_node_for_element(self, element: Any) -> Optional[AXNode]:
         # Parse the ID, then hand it off to the shared helper
-        parsed_ids = self._extract_chromedriver_ids(element.id)
+        parsed_ids = _extract_chromedriver_ids(element.id)
 
         if parsed_ids and parsed_ids.get("element"):
             return self._get_ax_node_by_backend_node_id(parsed_ids["element"])
@@ -282,16 +294,33 @@ class ChromeDriverAccessibilityProtocolPart(WebDriverAccessibilityProtocolPart):
 
         return rv
 
-    @staticmethod
-    def _extract_chromedriver_ids(element_id_string: str) -> Optional[Mapping[str, str]]:
-        """
-        Extracts Frame, Document, and Element IDs from a ChromeDriver id.
-        Expected format: f.[hash].d.[hash].e.[id]
-        """
-        pattern = r"^f\.(?P<frame>[^.]+)\.d\.(?P<document>[^.]+)\.e\.(?P<element>.+)$"
-        match = re.match(pattern, element_id_string)
 
-        return match.groupdict() if match else None
+class ChromeDriverTextMarkerProtocolPart(TextMarkerProtocolPart):
+    """Forces spelling and grammar markers through the DOM.setTextMarker and
+    DOM.clearTextMarkers CDP commands [0].
+
+    No teardown: Chromium clears forced markers when the session ends, and the
+    harness navigates the test window between tests.
+
+    [0]: https://chromium.googlesource.com/chromium/src/+/8f98e5983275b8804dcfe95fa038e3fd8757684d
+    """
+
+    def set_text_marker(self, element, type, start, end):
+        parsed = _extract_chromedriver_ids(element.id)
+
+        if not parsed or not parsed.get("element"):
+            raise ValueError(f"Could not parse ChromeDriver element id: {element.id}")
+
+        return self.parent.cdp.execute_cdp_command("DOM.setTextMarker", {
+            "backendNodeId": int(parsed["element"]),
+            "type": type,
+            "start": start,
+            "end": end
+        })
+
+    def clear_text_markers(self):
+        return self.parent.cdp.execute_cdp_command("DOM.clearTextMarkers", {})
+
 
 class ChromeDriverDevToolsProtocolPart(ProtocolPart):
     """A low-level API for sending Chrome DevTools Protocol [0] commands directly to the browser.
@@ -352,6 +381,7 @@ class ChromeDriverProtocol(WebDriverProtocol):
         ChromeDriverFedCMProtocolPart,
         ChromeDriverTestDriverProtocolPart,
         ChromeDriverTestharnessProtocolPart,
+        ChromeDriverTextMarkerProtocolPart,
         ChromeDriverTracingProtocolPart,
     ]
     for base_part in WebDriverProtocol.implements:
@@ -377,6 +407,7 @@ class ChromeDriverBidiProtocol(WebDriverBidiProtocol):
         ChromeDriverDevToolsProtocolPart,
         ChromeDriverFedCMProtocolPart,
         ChromeDriverTestharnessProtocolPart,
+        ChromeDriverTextMarkerProtocolPart,
         ChromeDriverTracingProtocolPart,
     ]
     for base_part in WebDriverBidiProtocol.implements:

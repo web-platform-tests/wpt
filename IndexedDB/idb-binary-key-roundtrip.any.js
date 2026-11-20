@@ -7,6 +7,7 @@
 
 const sample = [0x44, 0x33, 0x22, 0x11, 0xFF, 0xEE, 0xDD, 0xCC];
 const buffer = new Uint8Array(sample).buffer;
+const immutableBuffer = new Uint8Array(sample).buffer.transferToImmutable();
 
 function assert_key_valid(a, message) {
   assert_equals(indexedDB.cmp(a, a), 0, message);
@@ -97,6 +98,7 @@ function value_test(value_description, value, value_buffer) {
 }
 
 value_test('ArrayBuffer', buffer, buffer);
+value_test('immutable ArrayBuffer', immutableBuffer, immutableBuffer);
 value_test('DataView', new DataView(buffer), buffer);
 value_test(
     'DataView with explicit offset', new DataView(buffer, 3),

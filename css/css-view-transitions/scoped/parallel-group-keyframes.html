@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Concurrent scoped transitions use their own group keyframes</title>
+<link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/#scoped-transitions">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+#scope1 {
+  width: 100px;
+  height: 150px;
+  background: blue;
+  contain: layout;
+}
+#scope2 {
+  width: 200px;
+  height: 250px;
+  background: green;
+  contain: layout;
+}
+#target1 { view-transition-name: a; width: 20px; height: 20px; }
+#target2 { view-transition-name: b; width: 40px; height: 40px; }
+</style>
+</head>
+<body>
+<div id="scope1"><div id="target1"></div></div>
+<div id="scope2"><div id="target2"></div></div>
+<script>
+function groupKeyframes(scope, name) {
+  const anims = document.getAnimations().filter(a =>
+      a.effect.target === scope &&
+      a.effect.pseudoElement === `::view-transition-group(${name})`);
+  assert_equals(anims.length, 1,
+                `one group animation for ${name} on #${scope.id}`);
+  return anims[0].effect.getKeyframes();
+}
+
+promise_test(async t => {
+  const vt1 = scope1.startViewTransition(() => {});
+  const vt2 = scope2.startViewTransition(() => {});
+  t.add_cleanup(() => { vt1.skipTransition(); vt2.skipTransition(); });
+  await Promise.all([vt1.ready, vt2.ready]);
+
+  const root1 = groupKeyframes(scope1, 'root');
+  assert_equals(root1[0].width, '100px', 'scope1 root from width');
+  assert_equals(root1[0].height, '150px', 'scope1 root from height');
+
+  const root2 = groupKeyframes(scope2, 'root');
+  assert_equals(root2[0].width, '200px', 'scope2 root from width');
+  assert_equals(root2[0].height, '250px', 'scope2 root from height');
+
+  const a = groupKeyframes(scope1, 'a');
+  assert_equals(a[0].width, '20px', 'target1 group from width');
+  assert_equals(a[0].height, '20px', 'target1 group from height');
+
+  const b = groupKeyframes(scope2, 'b');
+  assert_equals(b[0].width, '40px', 'target2 group from width');
+  assert_equals(b[0].height, '40px', 'target2 group from height');
+}, 'Each concurrent scoped transition resolves its own group keyframes');
+</script>
+</body>
+</html>

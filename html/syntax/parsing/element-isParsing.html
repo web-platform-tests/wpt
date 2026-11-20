@@ -375,5 +375,38 @@ test(t => {
   assert_false(formParsingInConnected, "in-table <form> is not on stack of open elements during connectedCallback");
   assert_false(doc.getElementById("tf").isParsing, "in-table <form> is not parsing after insertion");
 }, "in-table <form> is immediately popped and sees isParsing === false in connectedCallback");
+
+test(t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<b id='b'><span id='s'><i id='i'><p id='p'>bold");
+  const b = doc.getElementById("b");
+  const s = doc.getElementById("s");
+  const i = doc.getElementById("i");
+  const p = doc.getElementById("p");
+  assert_true(b.isParsing);
+  assert_true(s.isParsing);
+  assert_true(i.isParsing);
+  assert_true(p.isParsing);
+
+  doc.write("</b>");
+  assert_false(b.isParsing, "formattingElement b stops parsing at </b>");
+  assert_false(s.isParsing, "intermediate span stops parsing during AAA");
+  assert_false(i.isParsing, "original i stops parsing when replaced in AAA");
+  assert_true(p.isParsing, "furthestBlock p remains on stack of open elements");
+  const clonedI = p.parentNode;
+  assert_equals(clonedI.localName, "i");
+  assert_not_equals(clonedI, i);
+  assert_true(clonedI.isParsing, "cloned i in AAA is on stack of open elements");
+
+  doc.write("</p></i>");
+  assert_false(p.isParsing, "p stops parsing at </p>");
+  assert_false(clonedI.isParsing, "cloned i stops parsing at </i>");
+  doc.close();
+}, "isParsing with adoption agency algorithm and furthestBlock");
 </script>
 </body>

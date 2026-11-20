@@ -583,5 +583,54 @@ promise_test(async t => {
   assert_equals(innerRecords.length, 0, "transient registered observer on removed descendant does not emit parseEndChildList fallback");
   doc.close();
 }, "Transient registered observer from subtree: true does not emit parseEndChildList fallback on removed descendant");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<b id='b'><span id='s'><i id='i'><p id='p'>hello");
+  const b = doc.getElementById("b");
+  const s = doc.getElementById("s");
+  const i = doc.getElementById("i");
+  const p = doc.getElementById("p");
+
+  const records = [];
+  const mo = new MutationObserver(r => records.push(...r));
+  mo.observe(b, { childList: true, parseEndChildList: true });
+  mo.observe(s, { childList: true, parseEndChildList: true });
+  mo.observe(i, { childList: true, parseEndChildList: true });
+
+  doc.write("</b>");
+  await Promise.resolve();
+
+  const iRecords = records.filter(r => r.target === i);
+  const sRecords = records.filter(r => r.target === s);
+  const bRecords = records.filter(r => r.target === b);
+  assert_equals(iRecords.length, 1, "intermediate formatting element gets only one childList record when furthestBlock is detached");
+  assert_array_equals([...iRecords[0].removedNodes], [p], "i record reflects removal of p without preceding empty fallback");
+  assert_equals(sRecords.length, 1, "intermediate non-formatting element gets one empty fallback record");
+  assert_equals(sRecords[0].addedNodes.length, 0);
+  assert_equals(sRecords[0].removedNodes.length, 0);
+  assert_equals(bRecords.length, 1, "formattingElement gets one empty fallback record");
+  assert_equals(bRecords[0].addedNodes.length, 0);
+  doc.close();
+
+  doc.open();
+  doc.write("<b><span id='s2'><p id='p2'>hello");
+  const s2 = doc.getElementById("s2");
+  const p2 = doc.getElementById("p2");
+  const s2Records = [];
+  const mo2 = new MutationObserver(r => s2Records.push(...r));
+  mo2.observe(s2, { childList: true, parseEndChildList: true });
+  doc.write("</b>");
+  doc.close();
+  await Promise.resolve();
+
+  assert_equals(s2Records.length, 1, "intermediate ordinary element gets only the real removal record, not a preceding empty fallback");
+  assert_array_equals([...s2Records[0].removedNodes], [p2]);
+}, "Adoption agency algorithm detaches furthestBlock before signaling parse end on intermediate elements");
 </script>
 </body>

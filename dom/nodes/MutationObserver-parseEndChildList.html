@@ -175,7 +175,7 @@ promise_test(async t => {
   assert_equals(records[0].addedNodes.length, 0);
 }, "takeRecords() before parse end still results in empty fallback record at parse end");
 
-promise_test(async t => {
+promise_test(async () => {
   const alreadyParsed = document.createElement("div");
   let called = 0;
   const mo = new MutationObserver(() => { called++; });
@@ -674,10 +674,6 @@ promise_test(async t => {
   document.body.appendChild(iframe);
 
   const doc = iframe.contentDocument;
-  doc.open();
-  doc.write("<div id='dDefault'></div><div id='dThrow'>");
-  doc.close();
-
   doc.open();
   doc.write("<div id='d1'>");
   const d1 = doc.getElementById("d1");

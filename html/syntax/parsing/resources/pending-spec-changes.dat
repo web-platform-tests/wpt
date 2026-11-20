@@ -122,7 +122,7 @@ incorrectly-opened-comment
 #data
 <!DOCTYPE html><svg><title><!DOCTYPE html></title></svg>
 #errors
-incorrectly-opened-comment
+unexpected-doctype
 #document
 | <!DOCTYPE html>
 | <html>
@@ -130,7 +130,50 @@ incorrectly-opened-comment
 |   <body>
 |     <svg svg>
 |       <svg title>
-|         <!-- DOCTYPE html -->
+
+#data
+<!DOCTYPE html><svg><style>a<!doctype x "y">b</style>c</svg>
+#errors
+unexpected-doctype
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg style>
+|         "ab"
+|       "c"
+
+#data
+<!DOCTYPE html><svg><title>a<!DOCTYPE x</title>b
+#errors
+unexpected-doctype
+expected-closing-tag-but-got-eof
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "a"
+|       "b"
+
+#data
+<!DOCTYPE html><math><title>a<!DOCTYPE x"></title>">b</math>c
+#errors
+unexpected-doctype
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|       <math title>
+|         "a"
+|       "">b"
+|     "c"
 
 #data
 <!DOCTYPE html><svg><style><!-- </title> --></style></svg>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>template for patching into SVG and MathML title, style, script and noscript elements</title>
+<link rel="help" href="https://github.com/whatwg/html/issues/11397">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const contexts = [
+  ["svg", "title"],
+  ["svg", "style"],
+  ["svg", "script"],
+  ["svg", "noscript"],
+  ["math", "title"],
+  ["math", "style"],
+];
+
+function parse(ns, name, markers, patches) {
+  const doc = Document.parseHTMLUnsafe(
+    `<${ns}><${name}>${markers}</${name}></${ns}>${patches}`);
+  return doc.querySelector(`${ns} ${name}`);
+}
+
+function kinds(node) {
+  return Array.from(node.childNodes, n => {
+    switch (n.nodeType) {
+      case Node.TEXT_NODE: return `text:${n.data}`;
+      case Node.COMMENT_NODE: return `comment:${n.data}`;
+      case Node.PROCESSING_INSTRUCTION_NODE: return `pi:${n.target} ${n.data}`;
+      default: return `element:${n.localName}`;
+    }
+  });
+}
+
+for (const [ns, name] of contexts) {
+  const marker = '<?marker name="a"?>';
+
+  test(() => {
+    const el = parse(ns, name, marker, '<template for="a">hello</template>');
+    assert_array_equals(kinds(el), ["text:hello"]);
+  }, `Text is kept when patching into ${ns} ${name}`);
+
+  test(() => {
+    const el = parse(ns, name, marker, '<template for="a"><!-- c --></template>');
+    assert_array_equals(kinds(el), ["comment: c "]);
+  }, `A comment is kept when patching into ${ns} ${name}`);
+
+  test(() => {
+    const el = parse(ns, name, marker, '<template for="a"><?x y?></template>');
+    assert_array_equals(kinds(el), ["pi:x y"]);
+  }, `A processing instruction is kept when patching into ${ns} ${name}`);
+
+  test(() => {
+    const el = parse(ns, name, marker, `<template for="a"><!-- </${name}> --></template>`);
+    assert_array_equals(kinds(el), []);
+  }, `A comment containing "</" is dropped when patching into ${ns} ${name}`);
+
+  test(() => {
+    const el = parse(ns, name, marker, '<template for="a"><?x </y?></template>');
+    assert_array_equals(kinds(el), []);
+  }, `A processing instruction containing "</" is dropped when patching into ${ns} ${name}`);
+
+  test(() => {
+    const el = parse(ns, name, marker, '<template for="a"><b>bold</b>text</template>');
+    assert_array_equals(kinds(el), ["text:text"]);
+  }, `Element children are dropped when patching into ${ns} ${name}`);
+
+  test(() => {
+    const el = parse(ns, name, marker, '<template for="a"><style>x</style><i><u>y</u></i>z</template>');
+    assert_array_equals(kinds(el), ["text:z"]);
+  }, `Nested elements are dropped when patching into ${ns} ${name}`);
+
+  test(() => {
+    const el = parse(ns, name, marker + '<?marker name="b"?>',
+      '<template for="a">1</template><template for="b">2</template>');
+    assert_array_equals(kinds(el), ["text:12"]);
+  }, `Markers for later patches still work in ${ns} ${name}`);
+
+  test(() => {
+    const el = parse(ns, name, marker,
+      '<template for="a">t<!-- c --><?x y?><b>bold</b></template>');
+    const reparsed = Document.parseHTMLUnsafe(el.parentNode.outerHTML);
+    const el2 = reparsed.querySelector(`${ns} ${name}`);
+    assert_array_equals(kinds(el2), kinds(el));
+  }, `The tree patched into ${ns} ${name} round-trips through serialization`);
+}
+</script>

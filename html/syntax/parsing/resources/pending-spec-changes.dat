@@ -44,3 +44,417 @@
 |               <svg desc>
 |           <td>
 |             <circle>
+
+#data
+<!DOCTYPE html><svg><title><b>x</b></title><rect/></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "<b>x</b>"
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><title>&amp;&lt;b&gt;</title></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "&<b>"
+
+#data
+<!DOCTYPE html><svg><style><!-- x --></style></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg style>
+|         <!--  x  -->
+
+#data
+<!DOCTYPE html><svg><title><?a b?></title></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <?a b?>
+
+#data
+<!DOCTYPE html><svg><style><![CDATA[a<b&amp;]]></style></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg style>
+|         "a<b&amp;"
+
+#data
+<!DOCTYPE html><svg><title><!foo></title></svg>
+#errors
+expected-dashes-or-doctype
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!-- foo -->
+
+#data
+<!DOCTYPE html><svg><title><!DOCTYPE html></title></svg>
+#errors
+expected-dashes-or-doctype
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!-- DOCTYPE html -->
+
+#data
+<!DOCTYPE html><svg><style><!-- </title> --></style></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg style>
+|         <!--  </title>  -->
+
+#data
+<!DOCTYPE html><svg><title>a</titlex>b</title></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "a</titlex>b"
+
+#data
+<!DOCTYPE html><svg><title>a</TITLE><rect/></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "a"
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><title>a</title ><rect/></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "a"
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><title>a</title/><rect/></svg>
+#errors
+self-closing-flag-on-end-tag
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "a"
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><title><!-- </title><rect/>--></svg>
+#errors
+eof-in-comment
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!--   -->
+|       <svg rect>
+|       "-->"
+
+#data
+<!DOCTYPE html><svg><title><?a b </title><rect/></svg>
+#errors
+eof-in-processing-instruction
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><style><![CDATA[a</style><rect/></svg>
+#errors
+eof-in-cdata
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg style>
+|         "a"
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><noscript><b></noscript></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg noscript>
+|         "<b>"
+
+#data
+<!DOCTYPE html><svg><script>"<b>"</script></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg script>
+|         ""<b>""
+
+#data
+<!DOCTYPE html><math><title><b>x</b></title></math>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|       <math title>
+|         "<b>x</b>"
+
+#data
+<!DOCTYPE html><math><style>a<b></style></math>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|       <math style>
+|         "a<b>"
+
+#data
+<!DOCTYPE html><svg><title/><rect/></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><textarea>x</textarea></svg>
+#errors
+unexpected-html-element-in-foreign-content
+unexpected-end-tag
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|     <textarea>
+|       "x"
+
+#data
+<!DOCTYPE html><math><textarea>x</textarea></math>
+#errors
+unexpected-html-element-in-foreign-content
+unexpected-end-tag
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|     <textarea>
+|       "x"
+
+#data
+<!DOCTYPE html><svg><xmp><b></xmp></svg>
+#errors
+unexpected-html-element-in-foreign-content
+unexpected-end-tag
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|     <xmp>
+|       "<b>"
+
+#data
+<!DOCTYPE html><svg><iframe><b></iframe></svg>
+#errors
+unexpected-html-element-in-foreign-content
+unexpected-end-tag
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|     <iframe>
+|       "<b>"
+
+#data
+<!DOCTYPE html><svg><noembed><b></noembed></svg>
+#errors
+unexpected-html-element-in-foreign-content
+unexpected-end-tag
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|     <noembed>
+|       "<b>"
+
+#data
+<!DOCTYPE html><svg><noframes><b></noframes></svg>
+#errors
+unexpected-html-element-in-foreign-content
+unexpected-end-tag
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|     <noframes>
+|       "<b>"
+
+#data
+<!DOCTYPE html><svg><plaintext><b></plaintext></svg>
+#errors
+unexpected-html-element-in-foreign-content
+expected-closing-tag-but-got-eof
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|     <plaintext>
+|       "<b></plaintext></svg>"
+
+#data
+<!DOCTYPE html><svg><xmp/><rect></svg>
+#errors
+unexpected-html-element-in-foreign-content
+non-void-element-with-trailing-solidus
+expected-named-closing-tag-but-got-eof
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|     <xmp>
+|       "<rect></svg>"
+
+#data
+<b>x</b>
+#errors
+#document-fragment
+svg title
+#document
+| "<b>x</b>"
+
+#data
+<!--x-->
+#errors
+#document-fragment
+svg title
+#document
+| "<!--x-->"
+
+#data
+a</style>b
+#errors
+#document-fragment
+svg style
+#document
+| "a</style>b"
+
+#data
+&amp;
+#errors
+#document-fragment
+svg script
+#document
+| "&"
+
+#data
+<![CDATA[x]]>
+#errors
+#document-fragment
+svg noscript
+#document
+| "x"
+
+#data
+<?x?>
+#errors
+#document-fragment
+math title
+#document
+| "<?x?>"

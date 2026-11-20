@@ -48,15 +48,15 @@ test(() => {
   const ax = wrap.querySelector("annotation-xml");
   ax.setAttribute("encoding", "text/html");
 
-  const t = document.createElement("template");
-  ax.appendChild(t);
-  t.innerHTML = "<a href='#'>html link</a>";
-  assert_equals(t.content.firstElementChild.namespaceURI, HTML_NS);
+  ax.innerHTML = "<template><a href='#'>html link</a></template>";
+  assert_equals(ax.firstElementChild.contentNamespace, HTML_NS);
+  assert_equals(ax.firstElementChild.content.firstElementChild.namespaceURI, HTML_NS);
 
   ax.removeAttribute("encoding");
   ax.setAttributeNS("http://example.com/ns", "encoding", "text/html");
-  t.innerHTML = "<mrow><mi>x</mi></mrow>";
-  assert_equals(t.content.firstElementChild.namespaceURI, MATHML_NS);
+  ax.innerHTML = "<template><mrow><mi>x</mi></mrow></template>";
+  assert_equals(ax.firstElementChild.contentNamespace, MATHML_NS);
+  assert_equals(ax.firstElementChild.content.firstElementChild.namespaceURI, MATHML_NS);
 }, "Parser-created <annotation-xml> checks live no-namespace encoding attribute once outside open parser stack");
 
 test(t => {
@@ -72,9 +72,9 @@ test(t => {
 
   assert_equals(doc.getElementById("open-ax-tpl").content.firstElementChild.namespaceURI, MATHML_NS);
 
-  const afterCloseTpl = doc.createElement("template");
-  doc.getElementById("ax").appendChild(afterCloseTpl);
-  afterCloseTpl.innerHTML = "<a href='#'>after close</a>";
-  assert_equals(afterCloseTpl.content.firstElementChild.namespaceURI, HTML_NS);
+  const ax = doc.getElementById("ax");
+  ax.innerHTML = "<template><a href='#'>after close</a></template>";
+  assert_equals(ax.firstElementChild.contentNamespace, HTML_NS);
+  assert_equals(ax.firstElementChild.content.firstElementChild.namespaceURI, HTML_NS);
 }, "Open <annotation-xml> uses start-tag token during active parsing");
 </script>

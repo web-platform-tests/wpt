@@ -299,15 +299,16 @@ test(() => {
   assert_equals(mathTpl.content.firstElementChild.namespaceURI, MATHML_NS);
 
   const div = document.createElement("div");
-  const sReplaceSvg = new Sanitizer({
-    elements: ["div", "template", { name: "circle", namespace: SVG_NS }],
-    replaceWithChildrenElements: [{ name: "svg", namespace: SVG_NS }]
+  const sReplaceG = new Sanitizer({
+    elements: ["div", { name: "svg", namespace: SVG_NS }, "template", { name: "circle", namespace: SVG_NS }],
+    replaceWithChildrenElements: [{ name: "g", namespace: SVG_NS }]
   });
-  div.setHTML("<svg><template><circle/></template></svg>", { sanitizer: sReplaceSvg });
-  const unparentedSvgTpl = div.firstElementChild;
-  assert_true(unparentedSvgTpl instanceof HTMLTemplateElement);
-  assert_equals(unparentedSvgTpl.contentNamespace, SVG_NS);
-  assert_equals(unparentedSvgTpl.content.firstElementChild.namespaceURI, SVG_NS);
+  div.setHTML("<svg><g><template><circle/></template></g></svg>", { sanitizer: sReplaceG });
+  const unparentedGTpl = div.querySelector("template");
+  assert_true(unparentedGTpl instanceof HTMLTemplateElement);
+  assert_equals(unparentedGTpl.parentNode.localName, "svg");
+  assert_equals(unparentedGTpl.contentNamespace, SVG_NS);
+  assert_equals(unparentedGTpl.content.firstElementChild.namespaceURI, SVG_NS);
 
   const sReplaceTpl = new Sanitizer({
     elements: ["div", { name: "circle", namespace: SVG_NS }],

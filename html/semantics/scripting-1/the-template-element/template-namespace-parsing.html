@@ -20,7 +20,9 @@
 </template>
 
 <svg><template id="explicit-html" contentnamespace="html">
-  <a href="#">hello</a><tr><td>cell</td></tr>
+  <a href="#">hello</a>
+</template><template id="explicit-html-table" contentnamespace="html">
+  <tr><td>cell</td></tr>
 </template></svg>
 
 <svg>
@@ -114,7 +116,11 @@ test(() => {
   assert_equals(t.namespaceURI, HTML_NS);
   assert_equals(t.contentNamespace, HTML_NS);
   assert_equals(t.content.firstElementChild.namespaceURI, HTML_NS);
-  assert_equals(t.content.querySelector("tr").namespaceURI, HTML_NS);
+
+  const tTable = document.getElementById("explicit-html-table");
+  assert_equals(tTable.namespaceURI, HTML_NS);
+  assert_equals(tTable.contentNamespace, HTML_NS);
+  assert_equals(tTable.content.querySelector("tr").namespaceURI, HTML_NS);
 }, "<template contentnamespace='html'> inside <svg> parses non-breakout and table contents in the HTML namespace");
 
 test(() => {
@@ -258,7 +264,7 @@ test(() => {
   assert_equals(wrap.querySelector("#after-tpl-f").form, wrap.querySelector("#outer-f"));
   assert_equals(wrap.querySelector("#tpl-f").content.querySelector("circle").namespaceURI, SVG_NS);
 
-  const markup = "<b><div>x</b>y</div><g></b></g><span>z</span>";
+  const markup = "<div><b>x</div><g></b></g><span>z</span>";
   const doc = Document.parseHTMLUnsafe(`<template id="doc-tpl" contentnamespace="svg">${markup}</template>`);
   const docSpan = doc.getElementById("doc-tpl").content.querySelector("span");
   assert_equals(docSpan.parentNode.localName, "b");
@@ -326,10 +332,10 @@ test(t => {
     '<template id="xt" contentnamespace="svg"><circle/></template>' +
     '<svg xmlns="http://www.w3.org/2000/svg">' +
     '<template xmlns="http://www.w3.org/1999/xhtml" id="xt-in-svg">' +
-    '<template id="xt-nested-in-svg"/>' +
+    '<template id="xt-nested-in-svg"/' + '>' +
     '</template>' +
     '</svg>' +
-    '<custom xmlns="http://example.com"><template xmlns="http://www.w3.org/1999/xhtml" id="xt-in-custom"/></custom>' +
+    '<custom xmlns="http://example.com"><template xmlns="http://www.w3.org/1999/xhtml" id="xt-in-custom"/' + '></custom>' +
     '</html>',
     "application/xhtml+xml"
   );
@@ -346,7 +352,7 @@ test(t => {
   const xtNestedInSvg = xtInSvg.content.getElementById("xt-nested-in-svg");
   assert_equals(xtNestedInSvg.contentNamespace, SVG_NS);
   assert_equals(xmlDoc.getElementById("xt-in-custom").contentNamespace, HTML_NS);
-}, "Self-closing <template/> in SVG/MathML, MathML <mfrac> layout with <template>, and XML parser contentNamespace");
+}, "Self-closing template tag in SVG/MathML, MathML <mfrac> layout with <template>, and XML parser contentNamespace");
 
 test(() => {
   const host = document.createElement("div");

@@ -1,0 +1,157 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>
+  AudioWorklet.addModule() succeeds while AudioContext is interrupted
+</title>
+<link rel="help" href="https://webaudio.github.io/web-audio-api/#AudioWorklet">
+<link rel="help" href="https://wicg.github.io/iframe-media-pausing/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const PROCESSOR_NAME = 'test-processor';
+const PROCESSOR_SCRIPT = `
+  class TestProcessor extends AudioWorkletProcessor {
+    static get parameterDescriptors() {
+      return [{name: 'gain', defaultValue: 0.5}];
+    }
+    process() {
+      this.port.postMessage('rendered');
+      return false;
+    }
+  }
+  registerProcessor('${PROCESSOR_NAME}', TestProcessor);
+`;
+
+async function createTestContext(t, {hidden = false} = {}) {
+  const iframe = document.createElement('iframe');
+  iframe.allow = "media-playback-while-not-visible 'none'; autoplay *";
+  if (hidden) {
+    iframe.style.display = 'none';
+  }
+  iframe.srcdoc = '<!doctype html>';
+  const loaded = new Promise(
+      r => iframe.addEventListener('load', r, {once: true}));
+  document.body.appendChild(iframe);
+  let win;
+  let ctx;
+  let url;
+  t.add_cleanup(async () => {
+    if (url) {
+      win.URL.revokeObjectURL(url);
+    }
+    if (ctx && ctx.state !== 'closed') {
+      await ctx.close();
+    }
+    iframe.remove();
+  });
+  await loaded;
+  win = iframe.contentWindow;
+  ctx = new win.AudioContext();
+  url = win.URL.createObjectURL(
+      new win.Blob([PROCESSOR_SCRIPT], {type: 'text/javascript'}));
+  return {iframe, win, ctx, url};
+}
+
+function stateChangedTo(ctx, expectedState) {
+  return new Promise(resolve => {
+    ctx.addEventListener('statechange', function onStateChange() {
+      if (ctx.state === expectedState) {
+        ctx.removeEventListener('statechange', onStateChange);
+        resolve();
+      }
+    });
+  });
+}
+
+promise_test(async t => {
+  const {iframe, win, ctx, url} = await createTestContext(t);
+
+  await Promise.all([ctx.resume(), stateChangedTo(ctx, 'running')]);
+
+  const interrupted = stateChangedTo(ctx, 'interrupted');
+  iframe.style.display = 'none';
+  await interrupted;
+  assert_equals(ctx.state, 'interrupted');
+  const timeBeforeAddModule = ctx.currentTime;
+
+  let stateChangesDuringAddModule = 0;
+  const onUnexpectedStateChange = () => stateChangesDuringAddModule++;
+  ctx.addEventListener('statechange', onUnexpectedStateChange);
+
+  const result = await ctx.audioWorklet.addModule(url);
+  ctx.removeEventListener('statechange', onUnexpectedStateChange);
+
+  assert_equals(result, undefined);
+  assert_equals(ctx.state, 'interrupted');
+  assert_equals(ctx.currentTime, timeBeforeAddModule);
+  assert_equals(stateChangesDuringAddModule, 0);
+
+  const node = new win.AudioWorkletNode(ctx, PROCESSOR_NAME);
+  assert_equals(node.parameters.get('gain').defaultValue, 0.5);
+  node.connect(ctx.destination);
+
+  const rendered = new Promise(r => {
+    node.port.onmessage = e => r(e.data);
+  });
+  const resumed = stateChangedTo(ctx, 'running');
+  iframe.style.display = '';
+
+  const [msg] = await Promise.all([rendered, resumed]);
+  assert_equals(msg, 'rendered');
+  assert_equals(ctx.state, 'running');
+}, 'AudioWorklet.addModule() while AudioContext is interrupted');
+
+promise_test(async t => {
+  const {iframe, win, ctx, url} = await createTestContext(t, {hidden: true});
+
+  const interrupted = stateChangedTo(ctx, 'interrupted');
+  await Promise.all([
+    promise_rejects_dom(
+        t, 'InvalidStateError', win.DOMException, ctx.resume()),
+    interrupted,
+  ]);
+  assert_equals(ctx.state, 'interrupted');
+
+  const result = await ctx.audioWorklet.addModule(url);
+  assert_equals(result, undefined);
+  assert_equals(ctx.state, 'interrupted');
+  const timeAfterAddModule = ctx.currentTime;
+
+  const node = new win.AudioWorkletNode(ctx, PROCESSOR_NAME);
+  let renderedWhileInterrupted = false;
+  const rendered = new Promise(r => {
+    node.port.onmessage = e => {
+      if (iframe.style.display === 'none') {
+        renderedWhileInterrupted = true;
+      }
+      r(e.data);
+    };
+  });
+  node.connect(ctx.destination);
+
+  const refCtx = new AudioContext({sampleRate: 48000});
+  t.add_cleanup(() => refCtx.close());
+  const source = new AudioBufferSourceNode(refCtx, {
+    buffer: new AudioBuffer({length: 4096, sampleRate: refCtx.sampleRate}),
+  });
+  source.connect(refCtx.destination);
+  const refEnded = new Promise(r => {
+    source.onended = r;
+  });
+  source.start();
+  await Promise.all([refCtx.resume(), refEnded]);
+
+  assert_false(renderedWhileInterrupted);
+  assert_equals(ctx.currentTime, timeAfterAddModule);
+  assert_equals(ctx.state, 'interrupted');
+
+  const resumed = stateChangedTo(ctx, 'running');
+  iframe.style.display = '';
+
+  const [msg] = await Promise.all([rendered, resumed]);
+  assert_equals(msg, 'rendered');
+  assert_equals(ctx.state, 'running');
+}, 'AudioWorklet.addModule() on hidden-at-creation interrupted AudioContext');
+</script>
+</body>

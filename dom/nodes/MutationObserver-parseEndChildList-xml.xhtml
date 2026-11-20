@@ -11,6 +11,15 @@
 <body>
 <div id="target"><script>
 const xmlParseEvents = [];
+customElements.define("xml-open-probe", class extends HTMLElement {
+  constructor() {
+    super();
+    this.parsingInCtor = this.isParsing;
+  }
+  connectedCallback() {
+    this.parsingInConnected = this.isParsing;
+  }
+});
 const target = document.getElementById("target");
 xmlParseEvents.push({ step: "before-end", isParsing: target.isParsing });
 const mo = new MutationObserver(records => {
@@ -23,6 +32,8 @@ const mo = new MutationObserver(records => {
 });
 mo.observe(target, { childList: true, parseEndChildList: true });
 </script></div>
+<div id="emptyDiv"/>
+<xml-open-probe id="openProbe"><span>child</span></xml-open-probe>
 <script>
 promise_test(async () => {
   await Promise.resolve();
@@ -34,6 +45,15 @@ promise_test(async () => {
   assert_equals(xmlParseEvents[1].count, 1);
   assert_true(xmlParseEvents[1].empty, "empty fallback childList record queued in XML parser");
 }, "isParsing and parseEndChildList work in XML parser");
+
+test(() => {
+  const emptyDiv = document.getElementById("emptyDiv");
+  assert_false(emptyDiv.isParsing, "empty-element tag is not parsing after insertion");
+  const openProbe = document.getElementById("openProbe");
+  assert_false(openProbe.parsingInCtor, "start-tag element is not yet on XML stack during constructor");
+  assert_true(openProbe.parsingInConnected, "start-tag element is on XML stack during connectedCallback");
+  assert_false(openProbe.isParsing, "start-tag element is no longer parsing after end tag");
+}, "XML start-tag element enters stack of open elements after creation and before insertion");
 </script>
 </body>
 </html>

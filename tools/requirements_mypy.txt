@@ -1,4 +1,4 @@
-mypy==1.14.1
+mypy==1.19.1
 
 types-python-dateutil==2.9.0.20260124
 types-atomicwrites==1.4.5.1

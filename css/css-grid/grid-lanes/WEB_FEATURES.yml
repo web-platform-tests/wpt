@@ -1,2 +1,2 @@
 rules:
-- "**": [masonry]
+- "**": [grid-lanes]

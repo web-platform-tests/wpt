@@ -341,6 +341,7 @@
 #data
 <!doctype html><svg><plaintext>a</plaintext>b
 #errors
+31: Start tag “textarea”, “xmp”, “iframe”, “noembed”, “noframes”, or “plaintext” in a foreign namespace context.
 45: End of file seen and there were open elements.
 #document
 | <!DOCTYPE html>
@@ -355,6 +356,7 @@
 #data
 <!doctype html><svg><title><plaintext>a</plaintext>b
 #errors
+38: Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
 52: End of file seen and there were open elements.
 #document
 | <!DOCTYPE html>

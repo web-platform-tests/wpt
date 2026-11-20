@@ -12,6 +12,8 @@ const contexts = [
   ["svg", "noscript"],
   ["math", "title"],
   ["math", "style"],
+  ["math", "script"],
+  ["math", "noscript"],
 ];
 
 function parse(ns, name, markers, patches) {
@@ -31,6 +33,8 @@ function kinds(node) {
   });
 }
 
+// Adjacent text nodes are merged when the parser appends to the preceding Text node, which is
+// why two patches that insert text give one text node.
 for (const [ns, name] of contexts) {
   const marker = '<?marker name="a"?>';
 
@@ -55,6 +59,16 @@ for (const [ns, name] of contexts) {
   }, `A comment containing "</" is dropped when patching into ${ns} ${name}`);
 
   test(() => {
+    const el = parse(ns, name, marker, '<template for="a"><!-- </x> --></template>');
+    assert_array_equals(kinds(el), []);
+  }, `A comment containing "</" followed by any name is dropped when patching into ${ns} ${name}`);
+
+  test(() => {
+    const el = parse(ns, name, marker, '<template for="a"><!-- < / --></template>');
+    assert_array_equals(kinds(el), ["comment: < / "]);
+  }, `A comment containing "<" and "/" that aren't adjacent is kept when patching into ${ns} ${name}`);
+
+  test(() => {
     const el = parse(ns, name, marker, '<template for="a"><?x </y?></template>');
     assert_array_equals(kinds(el), []);
   }, `A processing instruction containing "</" is dropped when patching into ${ns} ${name}`);
@@ -76,11 +90,22 @@ for (const [ns, name] of contexts) {
   }, `Markers for later patches still work in ${ns} ${name}`);
 
   test(() => {
+    // The adoption agency moves the furthest block to the common ancestor, which is the template,
+    // so its insertion location is the patch target.
     const el = parse(ns, name, marker,
-      '<template for="a">t<!-- c --><?x y?><b>bold</b></template>');
+      '<template for="a"><b>1<p><style></' + name + '><img src=x></style></p></b></template>');
+    assert_array_equals(kinds(el), []);
+    assert_equals(el.parentNode.querySelector("img"), null);
+  }, `Elements moved by the adoption agency are not inserted into ${ns} ${name}`);
+
+  test(() => {
+    const el = parse(ns, name, marker,
+      '<template for="a">t<!-- c --><?x y?><b>bold</b>&lt;b&gt;&amp;</template>');
+    assert_array_equals(kinds(el), ["text:t", "comment: c ", "pi:x y", "text:<b>&"]);
     const reparsed = Document.parseHTMLUnsafe(el.parentNode.outerHTML);
     const el2 = reparsed.querySelector(`${ns} ${name}`);
     assert_array_equals(kinds(el2), kinds(el));
+    assert_equals(el2.textContent, "t<b>&");
   }, `The tree patched into ${ns} ${name} round-trips through serialization`);
 }
 </script>

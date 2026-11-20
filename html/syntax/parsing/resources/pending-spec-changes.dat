@@ -458,3 +458,345 @@ svg noscript
 math title
 #document
 | "<?x?>"
+
+#data
+<!DOCTYPE html><svg><title>a</title
+#errors
+expected-closing-tag-but-got-eof
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "a</title"
+
+#data
+<!DOCTYPE html><svg><title><</title><rect/></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "<"
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><title>&amp</title><rect/></svg>
+#errors
+named-entity-without-semicolon
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "&"
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><title>&</title><rect/></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "&"
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><title><!</title><rect/></svg>
+#errors
+expected-dashes-or-doctype
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!--  -->
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><title><!--</title><rect/></svg>
+#errors
+eof-in-comment
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!--  -->
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><title><!foo </title><rect/></svg>
+#errors
+expected-dashes-or-doctype
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!-- foo  -->
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><style><![CDATA[a]]</style><rect/></svg>
+#errors
+eof-in-cdata
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg style>
+|         "a]]"
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><title>a</title
+><rect/></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "a"
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><title>a</title	><rect/></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "a"
+|       <svg rect>
+
+#data
+<!DOCTYPE html><svg><title><!-- c --></title><!-- d --><?p q?><![CDATA[y]]></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!--  c  -->
+|       <!--  d  -->
+|       <?p q?>
+|       "y"
+
+#data
+<!DOCTYPE html><svg><title>x</title></ !x><rect/></svg>
+#errors
+expected-closing-tag-but-got-char
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "x"
+|       <!--  !x -->
+|       <svg rect>
+
+#data
+<!DOCTYPE html><math><script>a<b></script><noscript>c<d>&amp;</noscript></math>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|       <math script>
+|         "a<b>"
+|       <math noscript>
+|         "c<d>&"
+
+#data
+<!DOCTYPE html><math><title><!-- c --></title></math>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|       <math title>
+|         <!--  c  -->
+
+#data
+<!DOCTYPE html><math><style><![CDATA[x]]></style></math>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|       <math style>
+|         "x"
+
+#data
+<!DOCTYPE html><math><title>a</TITLE><mi/></math>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|       <math title>
+|         "a"
+|       <math mi>
+
+#data
+<!DOCTYPE html><math><xmp><b></xmp></math>
+#errors
+unexpected-html-element-in-foreign-content
+unexpected-end-tag
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|     <xmp>
+|       "<b>"
+
+#data
+<!DOCTYPE html><math><iframe><b></iframe></math>
+#errors
+unexpected-html-element-in-foreign-content
+unexpected-end-tag
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|     <iframe>
+|       "<b>"
+
+#data
+<!DOCTYPE html><svg><foreignObject><title>a<b></title></foreignObject></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg foreignObject>
+|         <title>
+|           "a<b>"
+
+#data
+<!DOCTYPE html><svg><desc><style>a<b></style></desc></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg desc>
+|         <style>
+|           "a<b>"
+
+#data
+<!DOCTYPE html><svg><desc><script>"<b>"</script></desc></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg desc>
+|         <script>
+|           ""<b>""
+
+#data
+<!DOCTYPE html><math><annotation-xml encoding="text/html"><title>a<b></title></annotation-xml></math>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|       <math annotation-xml>
+|         encoding="text/html"
+|         <title>
+|           "a<b>"
+
+#data
+a</style>b
+#errors
+#document-fragment
+math style
+#document
+| "a</style>b"
+
+#data
+<b>x</b>
+#errors
+#document-fragment
+math script
+#document
+| "<b>x</b>"
+
+#data
+<!--x--><?y?>
+#errors
+#document-fragment
+math noscript
+#document
+| "<!--x--><?y?>"
+
+#data
+<textarea>y</textarea>
+#errors
+unexpected-html-element-in-foreign-content
+#document-fragment
+svg g
+#document
+| <textarea>
+|   "y"
+
+#data
+<b>x</b>
+#errors
+unexpected-html-element-in-foreign-content
+#document-fragment
+svg textarea
+#document
+| <b>
+|   "x"

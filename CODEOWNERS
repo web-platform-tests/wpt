@@ -1574,15 +1574,12 @@ webrtc/RTCRtpTransceiver.https.html @web-platform-tests/interop
 webrtc/RTCSctpTransport-events.html @web-platform-tests/interop
 webrtc/RTCSctpTransport-maxChannels.html @web-platform-tests/interop
 webrtc/historical.html @web-platform-tests/interop
-webrtc/idlharness.https.window.js @web-platform-tests/interop
 webrtc/protocol/additional-codecs.html @web-platform-tests/interop
 webrtc/protocol/bundle.https.html @web-platform-tests/interop
 webrtc/protocol/candidate-exchange.https.html @web-platform-tests/interop
 webrtc/protocol/codecs-subsequent-offer.https.html @web-platform-tests/interop
 webrtc/protocol/crypto-suite.https.html @web-platform-tests/interop
 webrtc/protocol/dtls-setup.https.html @web-platform-tests/interop
-webrtc/protocol/handover-datachannel.html @web-platform-tests/interop
-webrtc/protocol/handover.html @web-platform-tests/interop
 webrtc/protocol/rtp-demuxing.html @web-platform-tests/interop
 webrtc/protocol/rtp-extension-support.html @web-platform-tests/interop
 webrtc/protocol/rtp-headerextensions.html @web-platform-tests/interop

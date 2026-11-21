@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Text: Unicode 18 full case mapping for U+1DF95</title>
+<link rel="help" href="https://drafts.csswg.org/css-text-3/#text-transform">
+<link rel="help" href="https://www.unicode.org/Public/18.0.0/ucd/SpecialCasing.txt">
+<meta name="assert" content="U+1DF95 maps to SS when uppercased and Ss when titlecased.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #uppercase { text-transform: uppercase; }
+  #capitalize { text-transform: capitalize; }
+</style>
+<span id="uppercase">&#x1DF95;</span>
+<span id="capitalize">&#x1DF95;</span>
+<script>
+function selectedText(element) {
+  const selection = window.getSelection();
+  selection.selectAllChildren(element);
+  const text = selection.toString();
+  selection.removeAllRanges();
+  return text;
+}
+
+test(() => {
+  assert_equals(selectedText(document.getElementById("uppercase")), "SS");
+}, "Unicode 18 U+1DF95 uppercases to SS");
+
+test(() => {
+  assert_equals(selectedText(document.getElementById("capitalize")), "Ss");
+}, "Unicode 18 U+1DF95 titlecases to Ss");
+</script>

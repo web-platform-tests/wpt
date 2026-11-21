@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>ECMAScript RegExp Unicode 18 simple case folding for U+1DF95</title>
+<link rel="help" href="https://tc39.es/ecma262/#sec-runtime-semantics-canonicalize-ch">
+<link rel="help" href="https://www.unicode.org/Public/18.0.0/ucd/CaseFolding.txt">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const ligature = "\u{1DF95}";
+const sharpS = "\u00DF";
+
+test(() => {
+  assert_true(new RegExp(ligature, "iu").test(sharpS));
+  assert_true(new RegExp(sharpS, "iu").test(ligature));
+}, "Unicode 18 simple case folding equates U+1DF95 with U+00DF");
+
+test(() => {
+  assert_false(new RegExp(ligature, "iu").test("ss"));
+  assert_false(/ss/iu.test(ligature));
+}, "Unicode-aware RegExp uses simple, not full, case folding for U+1DF95");
+</script>

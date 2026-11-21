@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta name="timeout" content="long">
+<title>test_driver.deliver_push_message</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/push-testdriver.js"></script>
+<script>
+const SCRIPT = 'resources/push-event-worker.js';
+const SCOPE = 'resources/deliver-push-scope/';
+const OTHER_SCOPE = 'resources/deliver-push-other-scope/';
+
+const nextMessage = messageQueue();
+
+let registration;
+
+promise_setup(async () => {
+  registration = await navigator.serviceWorker.register(SCRIPT, {scope: SCOPE});
+  add_completion_callback(() => registration.unregister());
+  await waitForActivated(registration);
+});
+
+async function deliver(scope, data) {
+  await test_driver.deliver_push_message(scope, data).catch(rethrowIfUnsupported);
+}
+
+promise_test(async () => {
+  await deliver(registration.scope, 'hello');
+  const message = await nextMessage(data => data.text === 'hello');
+  assert_equals(message.scope, registration.scope);
+}, 'delivers a text payload');
+
+promise_test(async () => {
+  await deliver(registration.scope, '');
+  const message = await nextMessage(data => data.push &&
+                                            data.scope === registration.scope &&
+                                            !data.hasData);
+  assert_false(message.hasData, 'event.data must be null without a payload');
+}, 'delivers a push event without a payload');
+
+promise_test(async () => {
+  const payload = 'hola \u00f1 \ud83d\ude00';
+  await deliver(registration.scope, payload);
+  const message = await nextMessage(data => data.text === payload);
+  assert_array_equals(message.bytes,
+                      Array.from(new TextEncoder().encode(payload)));
+}, 'delivers a UTF-8 payload');
+
+promise_test(async t => {
+  const other = await navigator.serviceWorker.register(SCRIPT,
+                                                       {scope: OTHER_SCOPE});
+  t.add_cleanup(() => other.unregister());
+  await waitForActivated(other);
+
+  await deliver(registration.scope, 'scoped');
+  const message = await nextMessage(data => data.text === 'scoped');
+  assert_equals(message.scope, registration.scope);
+
+  const unexpected = await Promise.race([
+    nextMessage(data => data.text === 'scoped' && data.scope === OTHER_SCOPE),
+    new Promise(resolve => t.step_timeout(() => resolve(null), 500)),
+  ]);
+  assert_equals(unexpected, null,
+                'the other registration must not receive the push event');
+}, 'delivers only to the registration for the scope');
+
+promise_test(async () => {
+  // A push event is supposed to start the worker, not only reach a running one.
+  // terminate_service_worker is a separate vendor API, absent until it lands.
+  if (typeof test_driver.terminate_service_worker !== 'function') {
+    throw new OptionalFeatureUnsupportedError(
+        'terminate_service_worker is not implemented');
+  }
+  await test_driver.terminate_service_worker(registration.scope).catch(
+      rethrowIfUnsupported);
+
+  await deliver(registration.scope, 'restart');
+  const message = await nextMessage(data => data.text === 'restart');
+  assert_equals(message.scope, registration.scope);
+}, 'delivers a push event to a stopped worker');
+</script>

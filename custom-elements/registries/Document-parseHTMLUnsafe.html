@@ -1,0 +1,136 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Document.parseHTMLUnsafe scoped custom element registries</title>
+<link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+<link rel="help" href="https://html.spec.whatwg.org/#dom-parsehtmlunsafe" />
+<link
+  rel="help"
+  href="https://html.spec.whatwg.org/#dom-customelementregistry-initialize"
+/>
+<link rel="help" href="https://dom.spec.whatwg.org/#concept-node-adopt" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    "use strict";
+
+    test((t) => {
+      const calls = [];
+      class GlobalElement extends HTMLElement {
+        constructor() {
+          super();
+          calls.push("global");
+        }
+      }
+      class ScopedElement extends HTMLElement {
+        constructor() {
+          super();
+          calls.push(`construct ${this.id}`);
+        }
+        connectedCallback() {
+          calls.push(`connect ${this.id}`);
+        }
+      }
+      customElements.define("parse-html-light", GlobalElement);
+      const registry = new CustomElementRegistry();
+      registry.define("parse-html-light", ScopedElement);
+      const parsed = Document.parseHTMLUnsafe(
+        '<div><parse-html-light id="outer"><parse-html-light id="inner"></parse-html-light></parse-html-light></div>',
+      );
+      const container = parsed.body.firstElementChild;
+      const elements = Array.from(
+        container.querySelectorAll("parse-html-light"),
+      );
+      for (const element of elements) {
+        assert_equals(element.customElementRegistry, null);
+        assert_false(element.matches(":defined"));
+      }
+      assert_array_equals(
+        calls,
+        [],
+        "Parsing must not run custom element constructors",
+      );
+
+      registry.initialize(parsed);
+      for (const element of elements) {
+        assert_equals(element.customElementRegistry, registry);
+        assert_true(element instanceof ScopedElement);
+      }
+      assert_array_equals(
+        calls,
+        [
+          "construct outer",
+          "connect outer",
+          "construct inner",
+          "connect inner",
+        ],
+        "Initialisation upgrades connected elements in tree order",
+      );
+
+      t.add_cleanup(() => container.remove());
+      document.body.append(container);
+      for (const element of elements) {
+        assert_equals(element.customElementRegistry, registry);
+        assert_true(element instanceof ScopedElement);
+      }
+      assert_array_equals(
+        calls,
+        [
+          "construct outer",
+          "connect outer",
+          "construct inner",
+          "connect inner",
+          "connect outer",
+          "connect inner",
+        ],
+        "Adoption preserves the scoped registry without reconstructing elements",
+      );
+    }, "parseHTMLUnsafe light DOM can be initialised with a scoped registry before adoption");
+
+    test((t) => {
+      const calls = [];
+      class GlobalElement extends HTMLElement {
+        constructor() {
+          super();
+          calls.push("global");
+        }
+      }
+      class ScopedElement extends HTMLElement {
+        constructor() {
+          super();
+          calls.push("scoped");
+        }
+      }
+      customElements.define("parse-html-shadow", GlobalElement);
+      const registry = new CustomElementRegistry();
+      registry.define("parse-html-shadow", ScopedElement);
+      const parsed = Document.parseHTMLUnsafe(
+        '<div><template shadowrootmode="open" shadowrootcustomelementregistry><parse-html-shadow></parse-html-shadow></template></div>',
+      );
+      const host = parsed.body.firstElementChild;
+      const shadow = host.shadowRoot;
+      const element = shadow.firstElementChild;
+      assert_equals(shadow.customElementRegistry, null);
+      assert_equals(element.customElementRegistry, null);
+      assert_false(element.matches(":defined"));
+      assert_array_equals(calls, []);
+
+      registry.initialize(shadow);
+      assert_equals(shadow.customElementRegistry, registry);
+      assert_equals(element.customElementRegistry, registry);
+      assert_true(element instanceof ScopedElement);
+      assert_array_equals(calls, ["scoped"]);
+
+      t.add_cleanup(() => host.remove());
+      document.body.append(host);
+      assert_equals(shadow.customElementRegistry, registry);
+      assert_equals(element.customElementRegistry, registry);
+      assert_true(element instanceof ScopedElement);
+      assert_array_equals(
+        calls,
+        ["scoped"],
+        "Only the scoped constructor runs, once",
+      );
+    }, "parseHTMLUnsafe declarative shadow root can be initialised with a scoped registry before adoption");
+  </script>
+</body>

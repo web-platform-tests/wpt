@@ -259,6 +259,49 @@ promise_test(t => {
   }));
 }, "Test that decodingInfo with type webrtc rejects key system configuration.");
 
+for (const {label, fields, initDataTypes} of [
+  {label: 'omitted', fields: {}, initDataTypes: []},
+  {label: 'empty', fields: {initDataType: ''}, initDataTypes: []},
+  {label: 'keyids', fields: {initDataType: 'keyids'}, initDataTypes: ['keyids']},
+]) {
+  promise_test(async () => {
+    const keySystem = minimalKeySystemConfiguration.keySystem;
+    // Check the underlying EME configuration independently so that optional
+    // codec and initialization data type support do not cause a failure.
+    try {
+      await navigator.requestMediaKeySystemAccess(keySystem, [{
+        initDataTypes,
+        videoCapabilities: [{contentType: minimalVideoConfiguration.contentType}],
+      }]);
+    } catch (error) {
+      assert_equals(error.name, 'NotSupportedError');
+      assert_implements_optional(false, 'The Clear Key EME configuration is supported');
+    }
+
+    const info = await navigator.mediaCapabilities.decodingInfo({
+      type: 'file',
+      video: minimalVideoConfiguration,
+      keySystemConfiguration: {keySystem, ...fields},
+    });
+    assert_true(info.supported);
+    assert_not_equals(info.keySystemAccess, null);
+    assert_array_equals(info.keySystemAccess.getConfiguration().initDataTypes, initDataTypes);
+  }, `decodingInfo() negotiates the correct initDataTypes when initDataType is ${label}.`);
+}
+
+promise_test(async () => {
+  const info = await navigator.mediaCapabilities.decodingInfo({
+    type: 'file',
+    video: minimalVideoConfiguration,
+    keySystemConfiguration: {
+      ...minimalKeySystemConfiguration,
+      initDataType: 'bogus',
+    },
+  });
+  assert_false(info.supported);
+  assert_equals(info.keySystemAccess, null);
+}, 'decodingInfo() reports an unrecognized initDataType as unsupported.');
+
 async function runEncryptionSchemeTest(t, scheme, expectedSupported) {
   const config = {
     type: 'file',

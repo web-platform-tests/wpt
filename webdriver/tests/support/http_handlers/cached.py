@@ -20,6 +20,6 @@ def main(request, response):
     response.headers.set(b"Cache-Control", "max-age=3600")
 
     if b"response" in request.GET:
-        return request.GET.first(b"response")
+        response.content = request.GET.first(b"response")
     else:
-        return "Cached HTTP Response"
+        response.content = "Cached HTTP Response"

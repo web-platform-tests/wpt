@@ -11,7 +11,7 @@
 <script type="module">
   import { makeGetOptions } from "./support/helper.js";
 
-  async function getWithAbortInToJSON(t, finish) {
+  async function getWithAbortInToJSON(t, finish, expected = (reason) => reason) {
     await test_driver.set_virtual_wallet_behavior("wait");
     t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
 
@@ -35,20 +35,20 @@
       assert_equals(toJSONCalls, 0, "Nothing should serialize the request data before get()");
       promise = navigator.credentials.get(options);
     });
-    await promise_rejects_exactly(
-      t,
-      reason,
-      promise,
-      "The request should reject with the signal's abort reason",
-    );
+    await promise_rejects_exactly(t, expected(reason), promise, "The request should reject with the expected error");
     assert_greater_than(toJSONCalls, 0, "The browser should have serialized the request data");
   }
 
   promise_test(async (t) => {
-    await getWithAbortInToJSON(t, () => {
-      throw new TypeError("toJSON throws after aborting");
-    });
-  }, "Aborting the signal and then throwing while the request data is serialized rejects with the abort reason.");
+    const thrown = new TypeError("toJSON throws after aborting");
+    await getWithAbortInToJSON(
+      t,
+      () => {
+        throw thrown;
+      },
+      () => thrown,
+    );
+  }, "Aborting the signal and then throwing while the request data is serialized rejects with the thrown error.");
 
   promise_test(async (t) => {
     await test_driver.set_virtual_wallet_behavior("wait");

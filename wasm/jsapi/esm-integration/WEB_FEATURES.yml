@@ -1,4 +1,5 @@
 rules:
+- exnref-tdz.tentative.any.js: [wasm-exnref-exceptions]
 - global-exports-live-bindings.tentative.any.js: [wasm-mutable-globals]
 - mutable-global-sharing.tentative.any.js: [wasm-mutable-globals]
 - source-phase-string-builtins.tentative.any.js: [wasm-string-builtins]

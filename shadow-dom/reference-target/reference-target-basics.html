@@ -71,6 +71,59 @@ test(() => {
   assert_equals(shadow4.referenceTarget, "[object Object]");
 }, "ShadowRootInitDict can be used to set referenceTarget on shadow root");
 
+test(() => {
+  const host1 = document.createElement("div");
+  host1.attachShadow({"mode": "open", "clonable": true, "referenceTarget": "targetID"});
+  const clone1 = host1.cloneNode(true);
+  assert_not_equals(clone1.shadowRoot, null);
+  assert_equals(clone1.shadowRoot.referenceTarget, "targetID");
+
+  const host2 = document.createElement("div");
+  host2.attachShadow({"mode": "open", "clonable": true});
+  const clone2 = host2.cloneNode(true);
+  assert_not_equals(clone2.shadowRoot, null);
+  assert_equals(clone2.shadowRoot.referenceTarget, null);
+}, "Cloning a host copies the referenceTarget of its clonable shadow root");
+
+test(() => {
+  const container = document.createElement("div");
+  container.setHTMLUnsafe(`<div><template shadowrootmode="open" shadowrootclonable shadowrootreferencetarget="targetID"></template></div>`);
+  const host = container.firstChild;
+  assert_equals(host.shadowRoot.referenceTarget, "targetID");
+  const clone = host.cloneNode(true);
+  assert_not_equals(clone.shadowRoot, null);
+  assert_equals(clone.shadowRoot.referenceTarget, "targetID");
+}, "Cloning a host copies the referenceTarget of its clonable declarative shadow root");
+
+test(() => {
+  const host = document.createElement("div");
+  const shadow = host.attachShadow({"mode": "open", "clonable": true, "referenceTarget": "targetID"});
+  shadow.referenceTarget = "otherID";
+  assert_equals(host.cloneNode(true).shadowRoot.referenceTarget, "otherID");
+  shadow.referenceTarget = null;
+  assert_equals(host.cloneNode(true).shadowRoot.referenceTarget, null);
+}, "Cloning a host copies the current referenceTarget of its clonable shadow root");
+
+test(() => {
+  const container = document.createElement("div");
+  container.setHTMLUnsafe(`<div><template shadowrootmode="open" shadowrootreferencetarget="targetID"></template></div>`);
+  const host = container.firstChild;
+  const declarativeShadow = host.shadowRoot;
+  const shadow = host.attachShadow({"mode": "open", "referenceTarget": "otherID"});
+  assert_equals(shadow, declarativeShadow);
+  assert_equals(shadow.referenceTarget, "targetID");
+}, "attachShadow() on a host with a declarative shadow root does not change its referenceTarget");
+
+test(() => {
+  const container = document.createElement("div");
+  container.setHTMLUnsafe(`<div><template shadowrootmode="open"></template></div>`);
+  const host = container.firstChild;
+  const declarativeShadow = host.shadowRoot;
+  const shadow = host.attachShadow({"mode": "open", "referenceTarget": "otherID"});
+  assert_equals(shadow, declarativeShadow);
+  assert_equals(shadow.referenceTarget, null);
+}, "attachShadow() on a host with a declarative shadow root without shadowrootreferencetarget does not set referenceTarget");
+
 </script>
 </body>
 </html>

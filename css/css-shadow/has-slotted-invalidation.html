@@ -145,17 +145,17 @@ test(() => {
 test(() => {
   const { host, root } = makeHost("<slot><div>fallback</div></slot>");
   const slot = root.querySelector("slot");
-  // Find flattened slottables appends the slot's children when nothing is assigned, so a
-  // slot showing its fallback content has a non-empty list of flattened slotted nodes.
-  // https://dom.spec.whatwg.org/#find-flattened-slotables
-  assertSlotted(slot, "a slot showing fallback content still has flattened slotted nodes");
+  // https://drafts.csswg.org/css-shadow-1/#has-slotted-pseudo
+  // "When :has-slotted matches a slot with fallback content, we can conclude
+  // that the fallback content is not being displayed."
+  assertNotSlotted(slot, "a slot rendering its own fallback content does not match");
 
   host.append(document.createElement("div"));
-  assertSlotted(slot, "and still matches once real content is slotted");
+  assertSlotted(slot, "matches once real content is slotted");
 
   host.replaceChildren();
-  assertSlotted(slot, "and again when it falls back");
-}, "fallback content counts as flattened slotted nodes");
+  assertNotSlotted(slot, "stops matching when it falls back again");
+}, "a slot rendering fallback content does not match");
 
 test(() => {
   const { host, root } = makeHost();

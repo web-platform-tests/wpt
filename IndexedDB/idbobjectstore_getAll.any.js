@@ -29,6 +29,14 @@ object_store_get_all_values_test(
 object_store_get_all_values_test(
     /*storeName=*/ 'out-of-line', /*options=*/ {count: 10}, 'Test maxCount');
 
+get_all_with_null_query_test(
+    'getAll', /*storeName=*/ 'out-of-line', /*indexName=*/ undefined,
+    /*count=*/ undefined, 'Get all values with null query');
+
+get_all_with_null_query_test(
+    'getAll', /*storeName=*/ 'out-of-line', /*indexName=*/ undefined,
+    /*count=*/ 10, 'Test maxCount with null query');
+
 object_store_get_all_values_test(
     /*storeName=*/ 'out-of-line',
     /*options=*/ {query: IDBKeyRange.bound('g', 'm')}, 'Get bound range');

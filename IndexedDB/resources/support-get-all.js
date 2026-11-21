@@ -586,3 +586,37 @@ function get_all_with_invalid_keys_test(
     test.done();
   }, testDescription);
 }
+
+// Test `getAll()` or `getAllKeys()` with an explicit null query.  A null query
+// must use an unbounded key range, and an optional `count` must still limit
+// the results.  The `get_all_test()` helpers above omit falsy arguments, so
+// this calls the get all function directly.
+function get_all_with_null_query_test(
+    getAllFunctionName, storeName, optionalIndexName, count, testDescription) {
+  // Set up the object store or index to query.
+  const setupFunction = optionalIndexName ? index_get_all_test_setup :
+                                            object_store_get_all_test_setup;
+
+  setupFunction(storeName, (test, connection, expectedRecords) => {
+    const transaction = connection.transaction(storeName, 'readonly');
+    let queryTarget = transaction.objectStore(storeName);
+    if (optionalIndexName) {
+      queryTarget = queryTarget.index(optionalIndexName);
+    }
+
+    const request = count === undefined ?
+        queryTarget[getAllFunctionName](null) :
+        queryTarget[getAllFunctionName](null, count);
+    request.onerror =
+        test.unreached_func(`"${getAllFunctionName}()" request must succeed.`);
+
+    request.onsuccess = test.step_func(event => {
+      const expectedResults = calculateExpectedGetAllResults(
+          getAllFunctionName, expectedRecords, {count});
+
+      const actualResults = event.target.result;
+      verifyGetAllResults(getAllFunctionName, actualResults, expectedResults);
+      test.done();
+    });
+  }, testDescription);
+}

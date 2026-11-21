@@ -1,0 +1,61 @@
+<!doctype html>
+<title>Adopting the focus target into a navigating iframe during blur does not suppress the iframe's focus reset</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body>
+<script>
+promise_test(async t => {
+  const b1 = document.body.appendChild(document.createElement("button"));
+  const b2 = document.body.appendChild(document.createElement("button"));
+  const iframe = document.body.appendChild(document.createElement("iframe"));
+  t.add_cleanup(() => {
+    b1.remove();
+    b2.remove();
+    iframe.remove();
+  });
+
+  await new Promise(resolve => {
+    iframe.onload = resolve;
+    iframe.src = "/common/blank.html";
+  });
+
+  const childDoc = iframe.contentDocument;
+  const childWin = iframe.contentWindow;
+  const childAutofocus = childDoc.body.appendChild(childDoc.createElement("button"));
+  childAutofocus.autofocus = true;
+  childAutofocus.getBoundingClientRect();
+
+  await test_driver.click(document.documentElement);
+  assert_true(document.hasFocus(), "Document has focus");
+  b1.focus();
+  assert_equals(document.activeElement, b1);
+
+  let resolveChildIntercept;
+  childWin.navigation.addEventListener("navigate", e => {
+    e.intercept({
+      handler: () => new Promise(resolve => { resolveChildIntercept = resolve; }),
+      focusReset: "after-transition"
+    });
+  }, { once: true });
+
+  const childFinished = childWin.navigation.navigate("#1").finished;
+
+  b1.addEventListener("blur", () => {
+    childDoc.body.appendChild(b2);
+  }, { once: true });
+
+  b2.focus();
+  assert_equals(b2.ownerDocument, childDoc,
+                "blur listener adopted the focus target into the iframe document");
+  assert_not_equals(childDoc.activeElement, b2,
+                    "Adopted focus target is not designated as the iframe document's focused area");
+
+  resolveChildIntercept();
+  await childFinished;
+  assert_equals(childDoc.activeElement, childAutofocus,
+                "Iframe navigation still resets focus after transition");
+}, "Adopting the focus target into a navigating iframe during blur does not mark the iframe's focus as changed");
+</script>
+</body>

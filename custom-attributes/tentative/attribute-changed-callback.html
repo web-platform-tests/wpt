@@ -1,0 +1,345 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Custom Attributes: attributeChangedCallback</title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="attributeChangedCallback must be enqueued whenever a custom attribute is added, changed or removed"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/custom-elements/resources/custom-elements-helpers.js"></script>
+    <script src="resources/custom-attributes-helpers.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      const custom = define_new_custom_attribute();
+
+      function create_connected_element_with_custom_attribute(test, value) {
+        const element = document.createElement("div");
+        document.body.appendChild(element);
+        test.add_cleanup(() => element.remove());
+        element.setAttribute(
+          custom.name,
+          value === undefined ? "initial" : value,
+        );
+        const attr = element.getAttributeNode(custom.name);
+        assert_true(attr instanceof custom.class);
+        custom.takeLog();
+        return { element, attr };
+      }
+
+      test(function () {
+        const element = document.createElement("div");
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+
+        element.setAttribute(custom.name, "foo");
+        const attr = element.getAttributeNode(custom.name);
+        let log = custom.takeLog();
+        assert_array_equals(log.types(), [
+          "constructed",
+          "attributeChanged",
+          "connected",
+        ]);
+        assert_attribute_changed_entry(log[1], {
+          oldValue: null,
+          newValue: "foo",
+          attribute: attr,
+        });
+
+        element.setAttribute(custom.name, "bar");
+        assert_equals(element.getAttribute(custom.name), "bar");
+        assert_equals(
+          element.getAttributeNode(custom.name),
+          attr,
+          "changing the value must keep the same attribute node",
+        );
+        log = custom.takeLog();
+        assert_array_equals(log.types(), ["attributeChanged"]);
+        assert_attribute_changed_entry(log[0], {
+          oldValue: "foo",
+          newValue: "bar",
+          attribute: attr,
+        });
+
+        element.removeAttribute(custom.name);
+        log = custom.takeLog();
+        assert_array_equals(log.types(), ["attributeChanged", "disconnected"]);
+        assert_attribute_changed_entry(log[0], {
+          oldValue: "bar",
+          newValue: null,
+          attribute: attr,
+        });
+      }, "setAttribute and removeAttribute must enqueue and invoke attributeChangedCallback");
+
+      test(function () {
+        const { element, attr } =
+          create_connected_element_with_custom_attribute(this);
+
+        element.setAttributeNS(null, custom.name, "ns-null");
+        let log = custom.takeLog();
+        assert_array_equals(log.types(), ["attributeChanged"]);
+        assert_attribute_changed_entry(log[0], {
+          oldValue: "initial",
+          newValue: "ns-null",
+          attribute: attr,
+        });
+
+        element.removeAttributeNS(null, custom.name);
+        log = custom.takeLog();
+        assert_array_equals(log.types(), ["attributeChanged", "disconnected"]);
+        assert_attribute_changed_entry(log[0], {
+          oldValue: "ns-null",
+          newValue: null,
+          attribute: attr,
+        });
+      }, "setAttributeNS and removeAttributeNS with a null namespace must enqueue and invoke attributeChangedCallback");
+
+      test(function () {
+        const { element, attr } =
+          create_connected_element_with_custom_attribute(this);
+
+        element.setAttributeNS(
+          "http://www.w3.org/2000/svg",
+          custom.name,
+          "svg",
+        );
+        assert_equals(
+          element.getAttributeNS("http://www.w3.org/2000/svg", custom.name),
+          "svg",
+        );
+        assert_equals(
+          element.getAttribute(custom.name),
+          "initial",
+          "the null namespace attribute must be untouched",
+        );
+        assert_array_equals(
+          custom.takeLog().types(),
+          [],
+          "a namespaced attribute with the same local name is not a custom attribute",
+        );
+        assert_equals(
+          Object.getPrototypeOf(
+            element.getAttributeNodeNS(
+              "http://www.w3.org/2000/svg",
+              custom.name,
+            ),
+          ),
+          Attr.prototype,
+        );
+
+        element.removeAttributeNS("http://www.w3.org/2000/svg", custom.name);
+        assert_array_equals(custom.takeLog().types(), []);
+        assert_equals(element.getAttributeNode(custom.name), attr);
+      }, "Namespaced attributes with the same local name must not be treated as custom attributes");
+
+      test(function () {
+        const { element, attr } =
+          create_connected_element_with_custom_attribute(this);
+
+        attr.value = "via-node";
+        assert_equals(element.getAttribute(custom.name), "via-node");
+        let log = custom.takeLog();
+        assert_array_equals(log.types(), ["attributeChanged"]);
+        assert_attribute_changed_entry(log[0], {
+          oldValue: "initial",
+          newValue: "via-node",
+          attribute: attr,
+        });
+
+        attr.nodeValue = "via-nodeValue";
+        log = custom.takeLog();
+        assert_array_equals(log.types(), ["attributeChanged"]);
+        assert_attribute_changed_entry(log[0], {
+          oldValue: "via-node",
+          newValue: "via-nodeValue",
+          attribute: attr,
+        });
+
+        attr.textContent = "via-textContent";
+        log = custom.takeLog();
+        assert_array_equals(log.types(), ["attributeChanged"]);
+        assert_attribute_changed_entry(log[0], {
+          oldValue: "via-nodeValue",
+          newValue: "via-textContent",
+          attribute: attr,
+        });
+      }, "Setting Attr.value, nodeValue and textContent must enqueue and invoke attributeChangedCallback");
+
+      test(function () {
+        custom.takeLog();
+        const element = document.createElement("div");
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+
+        element.toggleAttribute(custom.name);
+        const attr = element.getAttributeNode(custom.name);
+        let log = custom.takeLog();
+        assert_array_equals(log.types(), [
+          "constructed",
+          "attributeChanged",
+          "connected",
+        ]);
+        assert_attribute_changed_entry(log[1], {
+          oldValue: null,
+          newValue: "",
+          attribute: attr,
+        });
+
+        element.toggleAttribute(custom.name, true);
+        assert_array_equals(
+          custom.takeLog().types(),
+          [],
+          "toggleAttribute(name, true) on an existing attribute must not change anything",
+        );
+
+        element.toggleAttribute(custom.name);
+        log = custom.takeLog();
+        assert_array_equals(log.types(), ["attributeChanged", "disconnected"]);
+        assert_attribute_changed_entry(log[0], {
+          oldValue: "",
+          newValue: null,
+          attribute: attr,
+        });
+      }, "toggleAttribute must enqueue and invoke attributeChangedCallback");
+
+      test(function () {
+        const element = document.createElement("div");
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+
+        const attr = document.createAttribute(custom.name);
+        attr.value = "node";
+        custom.takeLog();
+        element.setAttributeNode(attr);
+        let log = custom.takeLog();
+        assert_array_equals(log.types(), ["attributeChanged", "connected"]);
+        assert_attribute_changed_entry(log[0], {
+          oldValue: null,
+          newValue: "node",
+          attribute: attr,
+        });
+
+        element.removeAttributeNode(attr);
+        log = custom.takeLog();
+        assert_array_equals(log.types(), ["attributeChanged", "disconnected"]);
+        assert_attribute_changed_entry(log[0], {
+          oldValue: "node",
+          newValue: null,
+          attribute: attr,
+        });
+      }, "setAttributeNode and removeAttributeNode must enqueue and invoke attributeChangedCallback");
+
+      test(function () {
+        const { element, attr } =
+          create_connected_element_with_custom_attribute(this);
+
+        const other = document.createElement("div");
+        document.body.appendChild(other);
+        this.add_cleanup(() => other.remove());
+
+        element.removeAttributeNode(attr);
+        custom.takeLog();
+        other.setAttributeNode(attr);
+        assert_equals(attr.ownerElement, other);
+        const log = custom.takeLog();
+        assert_array_equals(log.types(), ["attributeChanged", "connected"]);
+        assert_attribute_changed_entry(log[0], {
+          oldValue: null,
+          newValue: "initial",
+          attribute: attr,
+        });
+        assert_connected_entry(log[1], attr, other);
+      }, "Moving a custom attribute node to another element must enqueue attributeChangedCallback and connectedCallback for the new element");
+
+      test(function () {
+        const { element, attr } =
+          create_connected_element_with_custom_attribute(this);
+        const other = document.createElement("div");
+        assert_throws_dom("InUseAttributeError", function () {
+          other.setAttributeNode(attr);
+        });
+        assert_equals(attr.ownerElement, element);
+        assert_array_equals(custom.takeLog().types(), []);
+      }, "setAttributeNode with a custom attribute that is in use must throw an InUseAttributeError and not enqueue callbacks");
+
+      test(function () {
+        custom.takeLog();
+        const element = document.createElement("div", {
+          customAttributeRegistry: null,
+        });
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        element.setAttribute(custom.name, "a");
+        assert_array_equals(
+          custom.takeLog().types(),
+          [],
+          "an element with a null custom attribute registry must not upgrade",
+        );
+        element.setAttribute(custom.name, "b");
+        element.removeAttribute(custom.name);
+        assert_array_equals(
+          custom.takeLog().types(),
+          [],
+          "an attribute that has not been upgraded has no attributeChangedCallback",
+        );
+      }, "attributeChangedCallback must not be enqueued for an attribute that has not been upgraded");
+
+      test(function () {
+        const other = define_new_custom_attribute();
+        const { element, attr } =
+          create_connected_element_with_custom_attribute(this);
+
+        element.setAttribute(other.name, "other");
+        assert_array_equals(
+          custom.takeLog().types(),
+          [],
+          "changes to other attributes must not be observed",
+        );
+        element.setAttribute("title", "title");
+        element.removeAttribute("title");
+        assert_array_equals(custom.takeLog().types(), []);
+        assert_array_equals(other.takeLog().types(), [
+          "constructed",
+          "attributeChanged",
+          "connected",
+        ]);
+      }, "A custom attribute must only observe changes to itself");
+
+      test(function () {
+        const { element, attr } =
+          create_connected_element_with_custom_attribute(this);
+        element.remove();
+        custom.takeLog();
+
+        element.setAttribute(custom.name, "changed-while-disconnected");
+        let log = custom.takeLog();
+        assert_array_equals(
+          log.types(),
+          ["attributeChanged"],
+          "a custom attribute on a disconnected element must still observe value changes",
+        );
+        assert_attribute_changed_entry(log[0], {
+          oldValue: "initial",
+          newValue: "changed-while-disconnected",
+          attribute: attr,
+        });
+
+        element.removeAttribute(custom.name);
+        log = custom.takeLog();
+        assert_array_equals(
+          log.types(),
+          ["attributeChanged"],
+          "removing from a disconnected element must not invoke disconnectedCallback",
+        );
+      }, "attributeChangedCallback must be enqueued for a custom attribute on a disconnected element");
+    </script>
+  </body>
+</html>

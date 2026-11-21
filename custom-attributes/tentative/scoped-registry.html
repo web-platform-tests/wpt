@@ -1,0 +1,1170 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Custom Attributes: scoped CustomAttributeRegistry</title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="The custom attribute registry of a node must be set when it is created, cloned, adopted or initialized, mirroring scoped custom element registries"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/custom-elements/resources/custom-elements-helpers.js"></script>
+    <script src="../resources/custom-attributes-helpers.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <div id="declarative-host">
+      <template shadowrootmode="open" shadowrootcustomattributeregistry>
+        <span dsd-global-attr="parsed"></span>
+        <div></div>
+      </template>
+    </div>
+    <script>
+      const dsdGlobalDefinition = define_custom_attribute("dsd-global-attr");
+
+      function create_iframe_document(test) {
+        const iframe = document.createElement("iframe");
+        document.body.appendChild(iframe);
+        test.add_cleanup(() => iframe.remove());
+        return iframe.contentDocument;
+      }
+
+      // Parses a host with a declarative shadow root into a new disconnected div of
+      // doc and returns the host.
+      function parse_declarative_host(
+        doc,
+        templateAttributes,
+        shadowMarkup = "",
+      ) {
+        const container = doc.createElement("div");
+        container.setHTMLUnsafe(
+          `<div><template shadowrootmode="open" ${templateAttributes}>${shadowMarkup}</template></div>`,
+        );
+        return container.firstChild;
+      }
+
+      function assert_plain_attribute(element, name, description) {
+        assert_equals(
+          Object.getPrototypeOf(element.getAttributeNode(name)),
+          Attr.prototype,
+          description,
+        );
+      }
+
+      // Defaults and creation
+
+      test(function () {
+        assert_equals(
+          document.customAttributeRegistry,
+          customAttributes,
+          "a document uses the global registry by default",
+        );
+        assert_equals(
+          document.body.customAttributeRegistry,
+          customAttributes,
+          "parsed elements use their document registry by default",
+        );
+        const element = document.createElement("div");
+        assert_equals(element.customAttributeRegistry, customAttributes);
+        const host = document.createElement("div");
+        const shadowRoot = host.attachShadow({ mode: "open" });
+        assert_equals(
+          shadowRoot.customAttributeRegistry,
+          customAttributes,
+          "a shadow root uses its document registry by default",
+        );
+        assert_equals(
+          document.implementation.createHTMLDocument().customAttributeRegistry,
+          null,
+          "a document without a browsing context has a null registry",
+        );
+      }, "Nodes must default to the custom attribute registry of their document");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const scopedDefinition = define_new_custom_attribute(scoped);
+        assert_throws_js(
+          TypeError,
+          function () {
+            new scopedDefinition.class();
+          },
+          "a constructor defined only in a scoped registry must not be constructable via the global registry",
+        );
+        assert_equals(customAttributes.get(scopedDefinition.name), undefined);
+        assert_equals(
+          scoped.get(scopedDefinition.name),
+          scopedDefinition.class,
+        );
+      }, "A scoped registry must not affect the global registry");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const scopedDefinition = define_new_custom_attribute(scoped);
+        const element = document.createElement("div", {
+          customAttributeRegistry: scoped,
+        });
+        assert_equals(
+          element.customAttributeRegistry,
+          scoped,
+          "createElement must set the element registry",
+        );
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        assert_equals(
+          element.customAttributeRegistry,
+          scoped,
+          "insertion must not change the registry",
+        );
+
+        element.setAttribute(scopedDefinition.name, "created");
+        assert_true(
+          element.getAttributeNode(scopedDefinition.name) instanceof
+            scopedDefinition.class,
+        );
+
+        const namespaced = document.createElementNS(
+          "http://www.w3.org/1999/xhtml",
+          "div",
+          { customAttributeRegistry: scoped },
+        );
+        assert_equals(
+          namespaced.customAttributeRegistry,
+          scoped,
+          "createElementNS must set the element registry",
+        );
+        const plain = document.createElement("div", {});
+        assert_equals(
+          plain.customAttributeRegistry,
+          customAttributes,
+          "omitting the option must use the document registry",
+        );
+      }, "createElement with customAttributeRegistry must set the element registry");
+
+      test(function () {
+        const definition = define_new_custom_attribute();
+        const element = document.createElement("div", {
+          customAttributeRegistry: null,
+        });
+        assert_equals(
+          element.customAttributeRegistry,
+          null,
+          "a null option must set a null registry",
+        );
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        assert_equals(
+          element.customAttributeRegistry,
+          null,
+          "insertion must not change a null registry",
+        );
+
+        element.setAttribute(definition.name, "value");
+        assert_plain_attribute(
+          element,
+          definition.name,
+          "an element with a null registry must not upgrade its attributes",
+        );
+        assert_array_equals(definition.takeLog().types(), []);
+      }, "createElement with a null customAttributeRegistry must set a null registry");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        class ScopedCustomElement extends HTMLElement {}
+        customElements.define(
+          "scoped-attribute-registry-element",
+          ScopedCustomElement,
+        );
+        const definition = define_new_custom_attribute();
+
+        const constructed = new ScopedCustomElement();
+        assert_equals(
+          constructed.customAttributeRegistry,
+          customAttributes,
+          "an element created by the HTMLElement constructor must use the registry of its document",
+        );
+        constructed.setAttribute(definition.name, "value");
+        assert_true(
+          constructed.getAttributeNode(definition.name) instanceof
+            definition.class,
+        );
+
+        assert_equals(
+          document.createElement("scoped-attribute-registry-element")
+            .customAttributeRegistry,
+          customAttributes,
+        );
+        assert_equals(
+          document.createElement("scoped-attribute-registry-element", {
+            customAttributeRegistry: scoped,
+          }).customAttributeRegistry,
+          scoped,
+          "createElement must set the requested registry on a custom element",
+        );
+        assert_equals(
+          document.createElement("scoped-attribute-registry-element", {
+            customAttributeRegistry: null,
+          }).customAttributeRegistry,
+          null,
+        );
+      }, "A custom element created by its constructor must use the custom attribute registry of its document");
+
+      // Shadow roots
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const scopedDefinition = define_new_custom_attribute(scoped);
+        const host = document.createElement("div");
+        document.body.appendChild(host);
+        this.add_cleanup(() => host.remove());
+        const shadowRoot = host.attachShadow({
+          mode: "open",
+          customAttributeRegistry: scoped,
+        });
+        assert_equals(
+          shadowRoot.customAttributeRegistry,
+          scoped,
+          "attachShadow must set the shadow root registry",
+        );
+        assert_equals(
+          host.customAttributeRegistry,
+          customAttributes,
+          "the host keeps its own registry",
+        );
+
+        const inner = document.createElement("span");
+        shadowRoot.appendChild(inner);
+        assert_equals(
+          inner.customAttributeRegistry,
+          customAttributes,
+          "an element keeps the registry it was created with when inserted into a shadow tree",
+        );
+        inner.setAttribute(scopedDefinition.name, "appended");
+        assert_plain_attribute(
+          inner,
+          scopedDefinition.name,
+          "definitions of the shadow root registry must not apply to an element created with another registry",
+        );
+
+        shadowRoot.innerHTML = `<b ${scopedDefinition.name}="parsed"><i ${scopedDefinition.name}="nested"></i></b>`;
+        const b = shadowRoot.firstChild;
+        assert_equals(
+          b.customAttributeRegistry,
+          scoped,
+          "innerHTML must create elements with the shadow root registry",
+        );
+        assert_equals(
+          b.firstChild.customAttributeRegistry,
+          scoped,
+          "innerHTML must create nested elements with the shadow root registry",
+        );
+        assert_true(
+          b.getAttributeNode(scopedDefinition.name) instanceof
+            scopedDefinition.class,
+          "attributes parsed into the shadow root must be upgraded before innerHTML returns",
+        );
+        assert_true(
+          b.firstChild.getAttributeNode(scopedDefinition.name) instanceof
+            scopedDefinition.class,
+        );
+        assert_array_equals(scopedDefinition.takeLog().types(), [
+          "constructed",
+          "attributeChanged",
+          "connected",
+          "constructed",
+          "attributeChanged",
+          "connected",
+        ]);
+      }, "Elements parsed into a shadow root with a scoped registry must use that registry");
+
+      test(function () {
+        const host = document.createElement("div");
+        const shadowRoot = host.attachShadow({
+          mode: "open",
+          customAttributeRegistry: null,
+        });
+        assert_equals(
+          shadowRoot.customAttributeRegistry,
+          null,
+          "attachShadow with a null option must set a null registry",
+        );
+        shadowRoot.innerHTML = `<span ${dsdGlobalDefinition.name}="value"></span>`;
+        assert_equals(shadowRoot.firstChild.customAttributeRegistry, null);
+        assert_plain_attribute(
+          shadowRoot.firstChild,
+          dsdGlobalDefinition.name,
+          "elements with a null registry must not upgrade",
+        );
+      }, "attachShadow with a null customAttributeRegistry must set a null registry");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const name = "same-name-attr";
+        class ScopedSameName extends Attr {}
+        class GlobalSameName extends Attr {}
+        scoped.define(name, ScopedSameName);
+        customAttributes.define(name, GlobalSameName);
+
+        const scopedElement = document.createElement("span", {
+          customAttributeRegistry: scoped,
+        });
+        scopedElement.setAttribute(name, "");
+        assert_true(
+          scopedElement.getAttributeNode(name) instanceof ScopedSameName,
+          "an element created with the scoped registry uses the scoped definition",
+        );
+
+        const host = document.createElement("div");
+        const shadowRoot = host.attachShadow({
+          mode: "open",
+          customAttributeRegistry: scoped,
+        });
+        const globalElement = document.createElement("span");
+        shadowRoot.appendChild(globalElement);
+        globalElement.setAttribute(name, "");
+        assert_true(
+          globalElement.getAttributeNode(name) instanceof GlobalSameName,
+          "an element created with the global registry uses the global definition, even inside a scoped shadow tree",
+        );
+      }, "The same attribute name may be defined differently in a scoped and the global registry");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const name = "late-scoped-attr";
+        const scopedElement = document.createElement("div", {
+          customAttributeRegistry: scoped,
+        });
+        scopedElement.setAttribute(name, "scoped");
+        const globalElement = document.createElement("div");
+        globalElement.setAttribute(name, "global");
+        const host = document.createElement("div");
+        const shadowRoot = host.attachShadow({
+          mode: "open",
+          customAttributeRegistry: scoped,
+        });
+        shadowRoot.innerHTML = `<span ${name}="shadow"></span>`;
+        const shadowElement = shadowRoot.firstChild;
+        document.body.append(scopedElement, globalElement, host);
+        this.add_cleanup(() => {
+          scopedElement.remove();
+          globalElement.remove();
+          host.remove();
+        });
+
+        class LateAttr extends Attr {}
+        customAttributes.define(name, LateAttr);
+        assert_true(globalElement.getAttributeNode(name) instanceof LateAttr);
+        assert_plain_attribute(
+          scopedElement,
+          name,
+          "defining in the global registry must not upgrade attributes of elements using a scoped registry",
+        );
+        assert_plain_attribute(shadowElement, name);
+
+        class LateScopedAttr extends Attr {}
+        scoped.define(name, LateScopedAttr);
+        assert_true(
+          scopedElement.getAttributeNode(name) instanceof LateScopedAttr,
+          "defining in the scoped registry must upgrade connected candidates using it",
+        );
+        assert_true(
+          shadowElement.getAttributeNode(name) instanceof LateScopedAttr,
+        );
+      }, "define must only upgrade candidates whose registry is the registry being defined on");
+
+      // Declarative shadow DOM
+
+      test(function () {
+        const shadowRoot =
+          document.getElementById("declarative-host").shadowRoot;
+        assert_equals(
+          shadowRoot.customAttributeRegistry,
+          null,
+          "a declarative shadow root with shadowrootcustomattributeregistry must have a null registry",
+        );
+        const span = shadowRoot.querySelector("span");
+        assert_equals(
+          span.customAttributeRegistry,
+          null,
+          "parsed elements in it must have a null registry",
+        );
+        assert_plain_attribute(
+          span,
+          dsdGlobalDefinition.name,
+          "attributes of parsed elements in it must not be upgraded",
+        );
+
+        const div = shadowRoot.querySelector("div");
+        div.attachShadow({ mode: "open" });
+        assert_equals(div.customAttributeRegistry, null);
+        assert_equals(
+          div.shadowRoot.customAttributeRegistry,
+          customAttributes,
+          "attachShadow inside it must default to the registry of the document",
+        );
+      }, "A declarative shadow root with shadowrootcustomattributeregistry must have a null registry");
+
+      test(function () {
+        const host = parse_declarative_host(
+          document,
+          "shadowrootcustomattributeregistry",
+          `<span ${dsdGlobalDefinition.name}="parsed"></span>`,
+        );
+        assert_equals(host.shadowRoot.customAttributeRegistry, null);
+        assert_equals(host.shadowRoot.firstChild.customAttributeRegistry, null);
+        assert_plain_attribute(
+          host.shadowRoot.firstChild,
+          dsdGlobalDefinition.name,
+        );
+
+        const withoutAttribute = parse_declarative_host(
+          document,
+          "",
+          `<span ${dsdGlobalDefinition.name}="parsed"></span>`,
+        );
+        assert_equals(
+          withoutAttribute.shadowRoot.customAttributeRegistry,
+          customAttributes,
+          "a declarative shadow root without the attribute must use the registry of its document",
+        );
+        assert_equals(
+          withoutAttribute.shadowRoot.firstChild.customAttributeRegistry,
+          customAttributes,
+        );
+      }, "setHTMLUnsafe must create declarative shadow roots with a null registry for shadowrootcustomattributeregistry");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const host = parse_declarative_host(
+          document,
+          "shadowrootcustomattributeregistry",
+          '<span scoped-dsd-attr="parsed"></span>',
+        );
+        const span = host.shadowRoot.firstChild;
+        class ScopedDSDAttr extends Attr {}
+        scoped.define("scoped-dsd-attr", ScopedDSDAttr);
+
+        scoped.initialize(host.shadowRoot);
+        assert_equals(
+          host.shadowRoot.customAttributeRegistry,
+          scoped,
+          "initialize must set a null shadow root registry",
+        );
+        assert_equals(
+          span.customAttributeRegistry,
+          scoped,
+          "initialize must set the null registry of elements in the shadow tree",
+        );
+        assert_true(
+          span.getAttributeNode("scoped-dsd-attr") instanceof ScopedDSDAttr,
+          "initialize must upgrade attributes in the shadow tree",
+        );
+      }, "CustomAttributeRegistry.initialize must set the registry of a declarative shadow root with shadowrootcustomattributeregistry");
+
+      test(function () {
+        const template = document.createElement("template");
+        assert_false(
+          template.hasAttribute("shadowrootcustomattributeregistry"),
+        );
+        assert_equals(template.shadowRootCustomAttributeRegistry, "");
+        template.shadowRootCustomAttributeRegistry = "blah";
+        assert_equals(
+          template.getAttribute("shadowrootcustomattributeregistry"),
+          "blah",
+        );
+        assert_equals(template.shadowRootCustomAttributeRegistry, "blah");
+      }, "shadowRootCustomAttributeRegistry must reflect the shadowrootcustomattributeregistry content attribute as a string");
+
+      test(function () {
+        const div = document.createElement("div");
+        div.setHTMLUnsafe(
+          '<span><template shadowrootmode="open" shadowrootserializable></template></span>',
+        );
+        assert_equals(
+          div.firstChild.shadowRoot.customAttributeRegistry,
+          customAttributes,
+        );
+        assert_equals(
+          div.getHTML({ serializableShadowRoots: true }),
+          '<span><template shadowrootmode="open" shadowrootserializable=""></template></span>',
+        );
+      }, "Serializing a global registry shadow root in a document with a global registry");
+
+      test(function () {
+        const div = document.createElement("div");
+        div.setHTMLUnsafe(
+          '<span><template shadowrootmode="open" shadowrootcustomattributeregistry shadowrootserializable></template></span>',
+        );
+        assert_equals(div.firstChild.shadowRoot.customAttributeRegistry, null);
+        assert_equals(
+          div.getHTML({ serializableShadowRoots: true }),
+          '<span><template shadowrootmode="open" shadowrootserializable="" shadowrootcustomattributeregistry=""></template></span>',
+        );
+      }, "Serializing a null registry shadow root in a document with a global registry");
+
+      test(function () {
+        const div = document.createElement("div");
+        div.setHTMLUnsafe(
+          '<span><template shadowrootmode="open" shadowrootcustomattributeregistry shadowrootserializable></template></span>',
+        );
+        const scoped = new CustomAttributeRegistry();
+        scoped.initialize(div.firstChild.shadowRoot);
+        assert_equals(
+          div.firstChild.shadowRoot.customAttributeRegistry,
+          scoped,
+        );
+        assert_equals(
+          div.getHTML({ serializableShadowRoots: true }),
+          '<span><template shadowrootmode="open" shadowrootserializable="" shadowrootcustomattributeregistry=""></template></span>',
+        );
+      }, "Serializing a scoped registry shadow root in a document with a global registry");
+
+      test(function () {
+        const div = document.implementation
+          .createHTMLDocument()
+          .createElement("div");
+        assert_equals(div.customAttributeRegistry, null);
+        div.setHTMLUnsafe(
+          '<span><template shadowrootmode="open" shadowrootcustomattributeregistry shadowrootserializable></template></span>',
+        );
+        assert_equals(div.firstChild.shadowRoot.customAttributeRegistry, null);
+        assert_equals(
+          div.getHTML({ serializableShadowRoots: true }),
+          '<span><template shadowrootmode="open" shadowrootserializable=""></template></span>',
+        );
+      }, "Serializing a null registry shadow root in a document with a null registry");
+
+      test(function () {
+        const div = document.implementation
+          .createHTMLDocument()
+          .createElement("div");
+        div.setHTMLUnsafe(
+          '<span><template shadowrootmode="open" shadowrootcustomattributeregistry shadowrootserializable></template></span>',
+        );
+        const scoped = new CustomAttributeRegistry();
+        scoped.initialize(div.firstChild.shadowRoot);
+        assert_equals(
+          div.getHTML({ serializableShadowRoots: true }),
+          '<span><template shadowrootmode="open" shadowrootserializable="" shadowrootcustomattributeregistry=""></template></span>',
+        );
+      }, "Serializing a scoped registry shadow root in a document with a null registry");
+
+      test(function () {
+        const div = document.createElement("div");
+        div.setHTMLUnsafe(
+          '<span><template shadowrootmode="open" shadowrootcustomelementregistry shadowrootcustomattributeregistry shadowrootserializable></template></span>',
+        );
+        assert_equals(
+          div.getHTML({ serializableShadowRoots: true }),
+          '<span><template shadowrootmode="open" shadowrootserializable="" shadowrootcustomelementregistry="" shadowrootcustomattributeregistry=""></template></span>',
+        );
+      }, "Serializing a shadow root with null custom element and custom attribute registries");
+
+      // importNode
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const scopedDefinition = define_new_custom_attribute(scoped);
+        const source = document.createElement("div", {
+          customAttributeRegistry: null,
+        });
+        source.setAttribute(scopedDefinition.name, "source");
+        const child = document.createElement("span", {
+          customAttributeRegistry: null,
+        });
+        child.setAttribute(scopedDefinition.name, "child");
+        source.appendChild(child);
+
+        const imported = document.importNode(source, {
+          customAttributeRegistry: scoped,
+        });
+        assert_equals(
+          imported.customAttributeRegistry,
+          scoped,
+          "importNode must set the registry on a root with a null registry",
+        );
+        assert_equals(
+          imported.firstChild.customAttributeRegistry,
+          scoped,
+          "importNode must set the registry on descendants with a null registry",
+        );
+        assert_equals(
+          source.customAttributeRegistry,
+          null,
+          "the source must be untouched",
+        );
+        assert_true(
+          imported.getAttributeNode(scopedDefinition.name) instanceof
+            scopedDefinition.class,
+          "importNode must upgrade the attributes of the clone",
+        );
+        assert_true(
+          imported.firstChild.getAttributeNode(scopedDefinition.name) instanceof
+            scopedDefinition.class,
+        );
+        assert_array_equals(scopedDefinition.takeLog().types(), [
+          "constructed",
+          "attributeChanged",
+          "constructed",
+          "attributeChanged",
+        ]);
+
+        const selfOnly = document.importNode(source, {
+          customAttributeRegistry: scoped,
+          selfOnly: true,
+        });
+        assert_equals(selfOnly.customAttributeRegistry, scoped);
+        assert_equals(selfOnly.childNodes.length, 0);
+
+        const withoutOption = document.importNode(source, true);
+        assert_equals(
+          withoutOption.customAttributeRegistry,
+          customAttributes,
+          "without the option, null registries must be set to the document registry",
+        );
+        assert_equals(
+          withoutOption.firstChild.customAttributeRegistry,
+          customAttributes,
+        );
+      }, "importNode with customAttributeRegistry must set the registry of nodes with a null registry");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const otherScoped = new CustomAttributeRegistry();
+        const scopedDefinition = define_new_custom_attribute(scoped);
+        const globalSource = document.createElement("div");
+        globalSource.setAttribute(scopedDefinition.name, "global");
+        const scopedSource = document.createElement("div", {
+          customAttributeRegistry: otherScoped,
+        });
+        scopedSource.setAttribute(scopedDefinition.name, "scoped");
+
+        const importedGlobal = document.importNode(globalSource, {
+          customAttributeRegistry: scoped,
+        });
+        assert_equals(
+          importedGlobal.customAttributeRegistry,
+          customAttributes,
+          "a global registry must not be replaced by the option",
+        );
+        assert_plain_attribute(importedGlobal, scopedDefinition.name);
+
+        const importedScoped = document.importNode(scopedSource, {
+          customAttributeRegistry: scoped,
+        });
+        assert_equals(
+          importedScoped.customAttributeRegistry,
+          otherScoped,
+          "a scoped registry must not be replaced by the option",
+        );
+        assert_plain_attribute(importedScoped, scopedDefinition.name);
+        assert_array_equals(scopedDefinition.takeLog().types(), []);
+      }, "importNode with customAttributeRegistry must not replace a non-null registry");
+
+      // initialize
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const scopedDefinition = define_new_custom_attribute(scoped);
+        const root = document.createElement("div", {
+          customAttributeRegistry: null,
+        });
+        root.setAttribute(scopedDefinition.name, "root");
+        const child = document.createElement("span", {
+          customAttributeRegistry: null,
+        });
+        child.setAttribute(scopedDefinition.name, "child");
+        root.appendChild(child);
+        const explicit = document.createElement("span");
+        explicit.setAttribute(scopedDefinition.name, "explicit");
+        root.appendChild(explicit);
+
+        scoped.initialize(root);
+        assert_equals(
+          root.customAttributeRegistry,
+          scoped,
+          "initialize must set a null registry on the root",
+        );
+        assert_equals(
+          child.customAttributeRegistry,
+          scoped,
+          "initialize must set a null registry on descendants",
+        );
+        assert_equals(
+          explicit.customAttributeRegistry,
+          customAttributes,
+          "initialize must not replace a non-null registry",
+        );
+        assert_true(
+          root.getAttributeNode(scopedDefinition.name) instanceof
+            scopedDefinition.class,
+          "initialize must upgrade",
+        );
+        assert_true(
+          child.getAttributeNode(scopedDefinition.name) instanceof
+            scopedDefinition.class,
+        );
+        assert_plain_attribute(explicit, scopedDefinition.name);
+        assert_array_equals(
+          scopedDefinition.takeLog().types(),
+          [
+            "constructed",
+            "attributeChanged",
+            "constructed",
+            "attributeChanged",
+          ],
+          "initialize on a disconnected tree must not invoke connectedCallback",
+        );
+      }, "CustomAttributeRegistry.initialize must set null registries in the subtree and upgrade it");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const scopedDefinition = define_new_custom_attribute(scoped);
+        const root = document.createElement("div");
+        root.setAttribute(scopedDefinition.name, "root");
+        const child = document.createElement("span", {
+          customAttributeRegistry: null,
+        });
+        child.setAttribute(scopedDefinition.name, "child");
+        root.appendChild(child);
+
+        scoped.initialize(root);
+        assert_equals(
+          root.customAttributeRegistry,
+          customAttributes,
+          "initialize must not replace the registry of a root that has one",
+        );
+        assert_plain_attribute(root, scopedDefinition.name);
+        assert_equals(child.customAttributeRegistry, scoped);
+        assert_true(
+          child.getAttributeNode(scopedDefinition.name) instanceof
+            scopedDefinition.class,
+        );
+      }, "CustomAttributeRegistry.initialize must only set null registries");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const globalShadowRoot = document
+          .createElement("div")
+          .attachShadow({ mode: "open" });
+        scoped.initialize(globalShadowRoot);
+        assert_equals(
+          globalShadowRoot.customAttributeRegistry,
+          customAttributes,
+          "initialize must not replace a non-null shadow root registry",
+        );
+
+        const nullShadowRoot = document
+          .createElement("div")
+          .attachShadow({ mode: "open", customAttributeRegistry: null });
+        scoped.initialize(nullShadowRoot);
+        assert_equals(
+          nullShadowRoot.customAttributeRegistry,
+          scoped,
+          "initialize must set a null shadow root registry",
+        );
+      }, "CustomAttributeRegistry.initialize must only set the registry of a shadow root that has none");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const doc = document.implementation.createHTMLDocument();
+        scoped.initialize(doc);
+        assert_equals(
+          doc.customAttributeRegistry,
+          scoped,
+          "initialize must set a null document registry",
+        );
+        assert_equals(
+          doc.body.customAttributeRegistry,
+          scoped,
+          "initialize must set null registries of elements in the document",
+        );
+        assert_equals(
+          doc.createElement("div").customAttributeRegistry,
+          scoped,
+          "new elements must use the document registry",
+        );
+
+        assert_throws_dom(
+          "NotSupportedError",
+          function () {
+            customAttributes.initialize(document);
+          },
+          "the global registry must not initialize a Document",
+        );
+        const nullElement = document.createElement("div", {
+          customAttributeRegistry: null,
+        });
+        customAttributes.initialize(nullElement);
+        assert_equals(
+          nullElement.customAttributeRegistry,
+          customAttributes,
+          "the global registry may initialize nodes of its own document",
+        );
+      }, "CustomAttributeRegistry.initialize must set a null document registry");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const element = document.createElement("div", {
+          customAttributeRegistry: null,
+        });
+        element.setAttribute("initialize-then-define-attr", "value");
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+
+        scoped.initialize(element);
+        assert_equals(element.customAttributeRegistry, scoped);
+        class InitializeThenDefineAttr extends Attr {}
+        scoped.define("initialize-then-define-attr", InitializeThenDefineAttr);
+        assert_true(
+          element.getAttributeNode("initialize-then-define-attr") instanceof
+            InitializeThenDefineAttr,
+          "define must upgrade attributes of connected elements initialized with the scoped registry",
+        );
+      }, "CustomAttributeRegistry.initialize must allow a later define on the scoped registry to upgrade the subtree");
+
+      test_with_window(function (contentWindow, contentDocument) {
+        const otherGlobal = contentWindow.customAttributes;
+        assert_not_equals(otherGlobal, customAttributes);
+        assert_throws_dom(
+          "NotSupportedError",
+          function () {
+            document.createElement("div").attachShadow({
+              mode: "open",
+              customAttributeRegistry: otherGlobal,
+            });
+          },
+          "attachShadow must reject the global registry of another document",
+        );
+        assert_throws_dom(
+          "NotSupportedError",
+          function () {
+            document.createElement("div", {
+              customAttributeRegistry: otherGlobal,
+            });
+          },
+          "createElement must reject the global registry of another document",
+        );
+        assert_throws_dom(
+          "NotSupportedError",
+          function () {
+            document.importNode(document.createElement("div"), {
+              customAttributeRegistry: otherGlobal,
+            });
+          },
+          "importNode must reject the global registry of another document",
+        );
+        assert_throws_dom(
+          "NotSupportedError",
+          contentWindow.DOMException,
+          function () {
+            otherGlobal.initialize(document.createElement("div"));
+          },
+          "a global registry must not initialize nodes of another document",
+        );
+
+        const shadowRoot = document.createElement("div").attachShadow({
+          mode: "open",
+          customAttributeRegistry: customAttributes,
+        });
+        assert_equals(
+          shadowRoot.customAttributeRegistry,
+          customAttributes,
+          "the document's own global registry must be accepted",
+        );
+        const scopedFromOther = new contentWindow.CustomAttributeRegistry();
+        const scopedRoot = document.createElement("div").attachShadow({
+          mode: "open",
+          customAttributeRegistry: scopedFromOther,
+        });
+        assert_equals(
+          scopedRoot.customAttributeRegistry,
+          scopedFromOther,
+          "a scoped registry from another window must be accepted",
+        );
+      }, "Options must reject a global registry that is not the document's own");
+
+      test_with_window(function (contentWindow, contentDocument) {
+        const scoped = new CustomAttributeRegistry();
+        const scopedDefinition = define_new_custom_attribute(scoped);
+        const element = contentDocument.createElement("div", {
+          customAttributeRegistry: scoped,
+        });
+        element.setAttribute(scopedDefinition.name, "cross-document");
+        assert_true(
+          element.getAttributeNode(scopedDefinition.name) instanceof
+            scopedDefinition.class,
+          "a scoped registry must work in a different document",
+        );
+        assert_array_equals(scopedDefinition.takeLog().types(), [
+          "constructed",
+          "attributeChanged",
+        ]);
+        contentDocument.body.appendChild(element);
+        assert_array_equals(scopedDefinition.takeLog().types(), ["connected"]);
+      }, "A scoped registry must be usable across documents");
+
+      // Adoption
+
+      test(function () {
+        const contentDocument = create_iframe_document(this);
+        const element = document.createElement("div");
+        contentDocument.body.appendChild(element);
+        assert_equals(
+          element.customAttributeRegistry,
+          contentDocument.customAttributeRegistry,
+          "a global registry must be replaced by the registry of the new document",
+        );
+
+        const explicit = document.createElement("div", {
+          customAttributeRegistry: customAttributes,
+        });
+        contentDocument.body.appendChild(explicit);
+        assert_equals(
+          explicit.customAttributeRegistry,
+          contentDocument.customAttributeRegistry,
+        );
+
+        const scoped = new CustomAttributeRegistry();
+        const scopedElement = document.createElement("div", {
+          customAttributeRegistry: scoped,
+        });
+        contentDocument.body.appendChild(scopedElement);
+        assert_equals(
+          scopedElement.customAttributeRegistry,
+          scoped,
+          "a scoped registry must be kept",
+        );
+
+        const nullTarget = document.implementation.createHTMLDocument();
+        const toNull = document.createElement("div");
+        nullTarget.body.appendChild(toNull);
+        assert_equals(
+          toNull.customAttributeRegistry,
+          null,
+          "a global registry must be replaced by a null document registry",
+        );
+      }, "Adopting an element must replace a global registry and keep a scoped one");
+
+      test(function () {
+        const nullDocument = document.implementation.createHTMLDocument();
+        const root = nullDocument.createElement("div");
+        const child = nullDocument.createElement("span");
+        child.setAttribute(dsdGlobalDefinition.name, "child");
+        root.appendChild(child);
+        assert_equals(root.customAttributeRegistry, null);
+        assert_equals(child.customAttributeRegistry, null);
+
+        document.body.appendChild(root);
+        this.add_cleanup(() => root.remove());
+        assert_equals(
+          root.customAttributeRegistry,
+          customAttributes,
+          "an adopted root with a null registry must get the document registry",
+        );
+        assert_equals(
+          child.customAttributeRegistry,
+          customAttributes,
+          "a descendant with a null registry must get the registry of its parent",
+        );
+        assert_true(
+          child.getAttributeNode(dsdGlobalDefinition.name) instanceof
+            dsdGlobalDefinition.class,
+        );
+      }, "Adopting elements with a null registry must look up the registry of their parent");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const nullDocument = document.implementation.createHTMLDocument();
+        const root = nullDocument.createElement("div", {
+          customAttributeRegistry: scoped,
+        });
+        const child = nullDocument.createElement("span");
+        root.appendChild(child);
+        assert_equals(child.customAttributeRegistry, null);
+
+        document.adoptNode(root);
+        assert_equals(root.customAttributeRegistry, scoped);
+        assert_equals(
+          child.customAttributeRegistry,
+          null,
+          "a descendant with a null registry whose parent has a scoped registry must keep a null registry",
+        );
+
+        const fragment = nullDocument.createDocumentFragment();
+        const fragmentChild = nullDocument.createElement("span");
+        fragment.appendChild(fragmentChild);
+        document.adoptNode(fragment);
+        assert_equals(
+          fragmentChild.customAttributeRegistry,
+          customAttributes,
+          "an element whose parent is a DocumentFragment must get the document registry",
+        );
+      }, "Adopting elements with a null registry must only take the effective global registry of their parent");
+
+      test(function () {
+        const contentDocument = create_iframe_document(this);
+        const scoped = new CustomAttributeRegistry();
+
+        const globalShadow = document
+          .createElement("div")
+          .attachShadow({ mode: "open" });
+        contentDocument.adoptNode(globalShadow.host);
+        assert_equals(
+          globalShadow.customAttributeRegistry,
+          contentDocument.customAttributeRegistry,
+          "a global shadow root registry must be replaced by the registry of the new document",
+        );
+
+        const scopedShadow = document
+          .createElement("div")
+          .attachShadow({ mode: "open", customAttributeRegistry: scoped });
+        contentDocument.adoptNode(scopedShadow.host);
+        assert_equals(
+          scopedShadow.customAttributeRegistry,
+          scoped,
+          "a scoped shadow root registry must be kept",
+        );
+
+        const nullShadow = document
+          .createElement("div")
+          .attachShadow({ mode: "open", customAttributeRegistry: null });
+        contentDocument.adoptNode(nullShadow.host);
+        assert_equals(
+          nullShadow.customAttributeRegistry,
+          contentDocument.customAttributeRegistry,
+          "a null shadow root registry must be replaced by the registry of the new document",
+        );
+
+        const declarativeHost = parse_declarative_host(
+          document,
+          "shadowrootcustomattributeregistry",
+        );
+        contentDocument.adoptNode(declarativeHost);
+        assert_equals(
+          declarativeHost.shadowRoot.customAttributeRegistry,
+          null,
+          "the null registry of a declarative shadow root with shadowrootcustomattributeregistry must be kept",
+        );
+
+        const toNull = document
+          .createElement("div")
+          .attachShadow({ mode: "open" });
+        document.implementation.createHTMLDocument().adoptNode(toNull.host);
+        assert_equals(
+          toNull.customAttributeRegistry,
+          null,
+          "a global shadow root registry must be replaced by a null document registry",
+        );
+      }, "Adopting a shadow root must replace a global or null registry, unless it must be kept null, and keep a scoped one");
+
+      // Cloning
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const scopedDefinition = define_new_custom_attribute(scoped);
+        const scopedElement = document.createElement("div", {
+          customAttributeRegistry: scoped,
+        });
+        scopedElement.setAttribute(scopedDefinition.name, "value");
+        scopedDefinition.takeLog();
+
+        const scopedClone = scopedElement.cloneNode();
+        assert_equals(
+          scopedClone.customAttributeRegistry,
+          scoped,
+          "a clone must keep a scoped registry",
+        );
+        assert_true(
+          scopedClone.getAttributeNode(scopedDefinition.name) instanceof
+            scopedDefinition.class,
+          "the attributes of the clone must be upgraded using the scoped registry",
+        );
+        assert_array_equals(scopedDefinition.takeLog().types(), [
+          "constructed",
+          "attributeChanged",
+        ]);
+
+        const globalClone = document.createElement("div").cloneNode();
+        assert_equals(
+          globalClone.customAttributeRegistry,
+          customAttributes,
+          "a clone must use the document registry in place of a global registry",
+        );
+        const nullClone = document
+          .createElement("div", { customAttributeRegistry: null })
+          .cloneNode();
+        assert_equals(
+          nullClone.customAttributeRegistry,
+          null,
+          "a clone must keep a null registry",
+        );
+      }, "Cloning an element must keep a scoped or null registry and replace a global registry with the document registry");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const scopedHost = document.createElement("div");
+        scopedHost.attachShadow({
+          mode: "open",
+          clonable: true,
+          customAttributeRegistry: scoped,
+        });
+        assert_equals(
+          scopedHost.cloneNode().shadowRoot.customAttributeRegistry,
+          scoped,
+          "a clonable shadow root must keep a scoped registry",
+        );
+
+        const globalHost = document.createElement("div");
+        globalHost.attachShadow({ mode: "open", clonable: true });
+        assert_equals(
+          globalHost.cloneNode().shadowRoot.customAttributeRegistry,
+          customAttributes,
+        );
+
+        const declarativeHost = parse_declarative_host(
+          document,
+          "shadowrootclonable shadowrootcustomattributeregistry",
+          "<span></span>",
+        );
+        const declarativeClone = declarativeHost.cloneNode(true);
+        assert_equals(
+          declarativeClone.shadowRoot.customAttributeRegistry,
+          null,
+          "a clonable shadow root must keep a null registry",
+        );
+        assert_equals(
+          declarativeClone.shadowRoot.firstChild.customAttributeRegistry,
+          null,
+        );
+        const contentDocument = create_iframe_document(this);
+        contentDocument.adoptNode(declarativeClone);
+        assert_equals(
+          declarativeClone.shadowRoot.customAttributeRegistry,
+          null,
+          "the clone of a shadow root whose registry must be kept null must also keep it null on adoption",
+        );
+      }, "Cloning a shadow root must keep a scoped or null registry and replace a global registry");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const doc = document.implementation.createHTMLDocument();
+        scoped.initialize(doc);
+        assert_equals(
+          doc.cloneNode().customAttributeRegistry,
+          scoped,
+          "cloning a document must keep a scoped registry",
+        );
+        assert_equals(
+          document.cloneNode().customAttributeRegistry,
+          null,
+          "cloning a document must not keep a global registry",
+        );
+      }, "Cloning a document must only keep a scoped registry");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,263 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Custom Attributes: disconnectedCallback</title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="disconnectedCallback must be enqueued whenever a connected custom attribute stops being connected, either because its element is removed or because the attribute is removed"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/custom-elements/resources/custom-elements-helpers.js"></script>
+    <script src="resources/custom-attributes-helpers.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      const custom = define_new_custom_attribute();
+
+      function create_connected_element(doc) {
+        const element = document.createElement("div");
+        const attr = document.createAttribute(custom.name);
+        element.setAttributeNode(attr);
+        doc.documentElement.appendChild(element);
+        custom.takeLog();
+        return { element, attr };
+      }
+
+      document_types().forEach(function (entry) {
+        const documentName = entry.name;
+        const getDocument = entry.create;
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element, attr } = create_connected_element(doc);
+              t.add_cleanup(() => element.remove());
+              element.remove();
+              const log = custom.takeLog();
+              assert_array_equals(log.types(), ["disconnected"]);
+              assert_disconnected_entry(log[0], attr);
+            });
+          },
+          "Removing an element with a custom attribute from " +
+            documentName +
+            " must enqueue and invoke disconnectedCallback",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element, attr } = create_connected_element(doc);
+              t.add_cleanup(() => element.remove());
+              const parent = doc.createElementNS(
+                "http://www.w3.org/1999/xhtml",
+                "div",
+              );
+              doc.documentElement.appendChild(parent);
+              t.add_cleanup(() => parent.remove());
+              parent.appendChild(element);
+              custom.takeLog();
+
+              parent.remove();
+              const log = custom.takeLog();
+              assert_array_equals(log.types(), ["disconnected"]);
+              assert_disconnected_entry(log[0], attr);
+            });
+          },
+          "Removing an ancestor of an element with a custom attribute from " +
+            documentName +
+            " must enqueue and invoke disconnectedCallback",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element, attr } = create_connected_element(doc);
+              t.add_cleanup(() => element.remove());
+              const host = doc.createElementNS(
+                "http://www.w3.org/1999/xhtml",
+                "div",
+              );
+              const shadowRoot = host.attachShadow({ mode: "closed" });
+              doc.documentElement.appendChild(host);
+              t.add_cleanup(() => host.remove());
+              shadowRoot.appendChild(element);
+              custom.takeLog();
+
+              element.remove();
+              const log = custom.takeLog();
+              assert_array_equals(log.types(), ["disconnected"]);
+              assert_disconnected_entry(log[0], attr);
+            });
+          },
+          "Removing an element with a custom attribute from a shadow tree in " +
+            documentName +
+            " must enqueue and invoke disconnectedCallback",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element, attr } = create_connected_element(doc);
+              t.add_cleanup(() => element.remove());
+              const host = doc.createElementNS(
+                "http://www.w3.org/1999/xhtml",
+                "div",
+              );
+              const shadowRoot = host.attachShadow({ mode: "closed" });
+              doc.documentElement.appendChild(host);
+              t.add_cleanup(() => host.remove());
+              shadowRoot.appendChild(element);
+              custom.takeLog();
+
+              host.remove();
+              const log = custom.takeLog();
+              assert_array_equals(log.types(), ["disconnected"]);
+              assert_disconnected_entry(log[0], attr);
+            });
+          },
+          "Removing the shadow host of an element with a custom attribute from " +
+            documentName +
+            " must enqueue and invoke disconnectedCallback",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element, attr } = create_connected_element(doc);
+              t.add_cleanup(() => element.remove());
+              element.removeAttribute(custom.name);
+              assert_false(element.hasAttribute(custom.name));
+              assert_equals(attr.ownerElement, null);
+              const log = custom.takeLog();
+              assert_array_equals(log.types(), [
+                "attributeChanged",
+                "disconnected",
+              ]);
+              assert_attribute_changed_entry(log[0], {
+                oldValue: "",
+                newValue: null,
+                attribute: attr,
+              });
+              assert_disconnected_entry(log[1], attr);
+            });
+          },
+          "Removing a custom attribute from a connected element in " +
+            documentName +
+            " must enqueue and invoke attributeChangedCallback then disconnectedCallback",
+        );
+      });
+
+      test(function () {
+        const { element, attr } = create_connected_element(document);
+        this.add_cleanup(() => element.remove());
+
+        element.removeAttributeNode(attr);
+        let log = custom.takeLog();
+        assert_array_equals(log.types(), ["attributeChanged", "disconnected"]);
+        assert_disconnected_entry(log[1], attr);
+
+        element.setAttributeNode(attr);
+        log = custom.takeLog();
+        assert_array_equals(
+          log.types(),
+          ["attributeChanged", "connected"],
+          "reattaching the same node must reconnect it",
+        );
+        assert_connected_entry(log[1], attr, element);
+      }, "removeAttributeNode must enqueue and invoke attributeChangedCallback then disconnectedCallback");
+
+      test(function () {
+        const { element, attr } = create_connected_element(document);
+        this.add_cleanup(() => element.remove());
+
+        element.toggleAttribute(custom.name);
+        assert_false(element.hasAttribute(custom.name));
+        const log = custom.takeLog();
+        assert_array_equals(log.types(), ["attributeChanged", "disconnected"]);
+        assert_disconnected_entry(log[1], attr);
+      }, "toggleAttribute removing a custom attribute must enqueue and invoke attributeChangedCallback then disconnectedCallback");
+
+      test(function () {
+        const { element, attr } = create_connected_element(document);
+        this.add_cleanup(() => element.remove());
+
+        const replacement = document.createAttribute(custom.name);
+        replacement.value = "replacement";
+        custom.takeLog();
+        element.setAttributeNode(replacement);
+        assert_equals(element.getAttributeNode(custom.name), replacement);
+        assert_equals(
+          attr.ownerElement,
+          null,
+          "the replaced node must be detached",
+        );
+        assert_equals(
+          attr.value,
+          "",
+          "the replaced node must keep its old value",
+        );
+
+        const log = custom.takeLog();
+        assert_array_equals(log.types(), [
+          "attributeChanged",
+          "disconnected",
+          "attributeChanged",
+          "connected",
+        ]);
+        assert_attribute_changed_entry(log[0], {
+          oldValue: "",
+          newValue: null,
+          attribute: attr,
+        });
+        assert_disconnected_entry(log[1], attr);
+        assert_attribute_changed_entry(log[2], {
+          oldValue: null,
+          newValue: "replacement",
+          attribute: replacement,
+        });
+        assert_connected_entry(log[3], replacement, element);
+      }, "Replacing a custom attribute node with setAttributeNode must disconnect the old node and connect the new one");
+
+      test(function () {
+        const element = document.createElement("div");
+        const attr = document.createAttribute(custom.name);
+        element.setAttributeNode(attr);
+        custom.takeLog();
+
+        element.removeAttribute(custom.name);
+        const log = custom.takeLog();
+        assert_array_equals(
+          log.types(),
+          ["attributeChanged"],
+          "a disconnected element must not invoke disconnectedCallback",
+        );
+        assert_attribute_changed_entry(log[0], {
+          oldValue: "",
+          newValue: null,
+          attribute: attr,
+        });
+      }, "Removing a custom attribute from a disconnected element must only enqueue attributeChangedCallback");
+
+      test(function () {
+        const { element, attr } = create_connected_element(document);
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(element);
+        const log = custom.takeLog();
+        assert_array_equals(log.types(), ["disconnected"]);
+        assert_disconnected_entry(log[0], attr);
+      }, "Moving an element with a custom attribute into a DocumentFragment must enqueue and invoke disconnectedCallback");
+    </script>
+  </body>
+</html>

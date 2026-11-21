@@ -1,0 +1,514 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Custom Attributes: CustomAttributeRegistry interface</title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="CustomAttributeRegistry interface must exist and mirror CustomElementRegistry"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      test(function () {
+        assert_true(
+          "CustomAttributeRegistry" in window,
+          "CustomAttributeRegistry must be exposed",
+        );
+        assert_true(
+          window.customAttributes instanceof CustomAttributeRegistry,
+          "window.customAttributes must be a CustomAttributeRegistry",
+        );
+        assert_equals(
+          window.customAttributes,
+          window.customAttributes,
+          "window.customAttributes must return the same object",
+        );
+        for (const method of [
+          "define",
+          "get",
+          "getName",
+          "whenDefined",
+          "upgrade",
+          "initialize",
+        ]) {
+          assert_true(
+            method in CustomAttributeRegistry.prototype,
+            `"${method}" exists on CustomAttributeRegistry.prototype`,
+          );
+          assert_true(
+            method in customAttributes,
+            `"${method}" exists on window.customAttributes`,
+          );
+        }
+      }, "CustomAttributeRegistry interface must have define, get, getName, whenDefined, upgrade and initialize as methods");
+
+      test(function () {
+        const registry = new CustomAttributeRegistry();
+        assert_true(registry instanceof CustomAttributeRegistry);
+        assert_not_equals(
+          registry,
+          customAttributes,
+          "a constructed registry must be distinct from the global one",
+        );
+        assert_not_equals(
+          new CustomAttributeRegistry(),
+          registry,
+          "each construction must create a new registry",
+        );
+      }, "CustomAttributeRegistry must be constructable");
+
+      test(function () {
+        assert_true("constructor" in Attr.prototype);
+        assert_equals(Attr.prototype.constructor, Attr);
+        assert_equals(Attr.length, 0, "Attr constructor takes no arguments");
+      }, "Attr must have a constructor");
+
+      test(function () {
+        assert_throws_js(
+          TypeError,
+          function () {
+            customAttributes.define("bad-name", 1);
+          },
+          "customAttributes.define must throw a TypeError when the constructor is a number",
+        );
+        assert_throws_js(
+          TypeError,
+          function () {
+            customAttributes.define("bad-name", "123");
+          },
+          "customAttributes.define must throw a TypeError when the constructor is a string",
+        );
+        assert_throws_js(
+          TypeError,
+          function () {
+            customAttributes.define("bad-name", {});
+          },
+          "customAttributes.define must throw a TypeError when the constructor is an object",
+        );
+        assert_throws_js(
+          TypeError,
+          function () {
+            customAttributes.define("bad-name", []);
+          },
+          "customAttributes.define must throw a TypeError when the constructor is an array",
+        );
+      }, "customAttributes.define must throw when the constructor is not a constructor");
+
+      test(function () {
+        customAttributes.define("plain-attr", Attr);
+        assert_equals(customAttributes.get("plain-attr"), Attr);
+      }, "customAttributes.define must not throw when the constructor is Attr");
+
+      test(function () {
+        class MyAttr extends Attr {}
+
+        const invalidNames = [
+          null,
+          "",
+          "abc",
+          "a-Bc",
+          "A-bc",
+          "-abc",
+          "1-abc",
+          "a-b c",
+          "a-b>c",
+          "a-b=c",
+          "a-b/c",
+          "aria-label",
+          "aria-",
+          "data-foo",
+          "data-",
+          "xml-lang",
+          "xmlns-foo",
+          "xlink-href",
+          "accept-charset",
+          "http-equiv",
+        ];
+        for (const name of invalidNames) {
+          assert_throws_dom(
+            "SyntaxError",
+            function () {
+              customAttributes.define(name, MyAttr);
+            },
+            `customAttributes.define must throw a SyntaxError if the name is ${JSON.stringify(name)}`,
+          );
+        }
+      }, "customAttributes.define must throw with an invalid name");
+
+      test(function () {
+        const validNames = [
+          "a-b",
+          "my-attr",
+          "my-attr-2",
+          "x-y_z",
+          "x-y.z",
+          "z-",
+          "ab-cd-ef",
+          "font-face-src",
+          "a-b<c",
+        ];
+        for (const name of validNames) {
+          class MyAttr extends Attr {}
+          customAttributes.define(name, MyAttr);
+          assert_equals(
+            customAttributes.get(name),
+            MyAttr,
+            `${name} must be definable`,
+          );
+        }
+      }, "customAttributes.define must accept valid custom attribute names");
+
+      test(function () {
+        class SomeAttr extends Attr {}
+
+        const calls = [];
+        const OtherAttr = new Proxy(class extends Attr {}, {
+          get: function (target, name) {
+            calls.push(name);
+            return target[name];
+          },
+        });
+
+        customAttributes.define("some-attr", SomeAttr);
+        assert_throws_dom(
+          "NotSupportedError",
+          function () {
+            customAttributes.define("some-attr", OtherAttr);
+          },
+          "customAttributes.define must throw a NotSupportedError if the name is already used",
+        );
+        assert_array_equals(
+          calls,
+          [],
+          "customAttributes.define must validate the name before getting the prototype of the constructor",
+        );
+      }, "customAttributes.define must throw when there is already a custom attribute of the same name");
+
+      test(function () {
+        class AnotherAttr extends Attr {}
+        customAttributes.define("another-attr", AnotherAttr);
+        assert_throws_dom(
+          "NotSupportedError",
+          function () {
+            customAttributes.define("some-other-attr", AnotherAttr);
+          },
+          "customAttributes.define must throw a NotSupportedError if the constructor already defines an attribute",
+        );
+      }, "customAttributes.define must throw a NotSupportedError when there is already a custom attribute with the same constructor");
+
+      test(function () {
+        const outerCalls = [];
+        const OuterAttr = new Proxy(class extends Attr {}, {
+          get: function (target, name) {
+            outerCalls.push(name);
+            customAttributes.define("inner-attr", InnerAttr);
+            return target[name];
+          },
+        });
+        const innerCalls = [];
+        const InnerAttr = new Proxy(class extends Attr {}, {
+          get: function (target, name) {
+            innerCalls.push(name);
+            return target[name];
+          },
+        });
+
+        assert_throws_dom(
+          "NotSupportedError",
+          function () {
+            customAttributes.define("outer-attr", OuterAttr);
+          },
+          "customAttributes.define must throw a NotSupportedError when the definition is running flag is set",
+        );
+        assert_array_equals(
+          outerCalls,
+          ["prototype"],
+          'customAttributes.define must get "prototype"',
+        );
+        assert_array_equals(
+          innerCalls,
+          [],
+          "the inner define must throw before getting the prototype of its constructor",
+        );
+      }, "customAttributes.define must throw a NotSupportedError when the definition is running flag is set");
+
+      test(function () {
+        const calls = [];
+        const AttrWithBadInnerConstructor = new Proxy(class extends Attr {}, {
+          get: function (target, name) {
+            calls.push(name);
+            customAttributes.define("inner-attr", 1);
+            return target[name];
+          },
+        });
+        assert_throws_js(TypeError, function () {
+          customAttributes.define(
+            "attr-with-bad-inner-constructor",
+            AttrWithBadInnerConstructor,
+          );
+        });
+        assert_array_equals(calls, ["prototype"]);
+      }, "customAttributes.define must check IsConstructor on the constructor before checking the definition is running flag");
+
+      test(function () {
+        const calls = [];
+        const AttrWithBadInnerName = new Proxy(class extends Attr {}, {
+          get: function (target, name) {
+            calls.push(name);
+            customAttributes.define("badname", class extends Attr {});
+            return target[name];
+          },
+        });
+        assert_throws_dom("SyntaxError", function () {
+          customAttributes.define(
+            "attr-with-bad-inner-name",
+            AttrWithBadInnerName,
+          );
+        });
+        assert_array_equals(calls, ["prototype"]);
+      }, "customAttributes.define must validate the name before checking the definition is running flag");
+
+      test(function () {
+        class DefinedAttr extends Attr {}
+        customAttributes.define("check-order-defined-attr", DefinedAttr);
+
+        assert_throws_js(
+          TypeError,
+          function () {
+            customAttributes.define("badname", 1);
+          },
+          "customAttributes.define must check IsConstructor before validating the name",
+        );
+        assert_throws_dom(
+          "SyntaxError",
+          function () {
+            customAttributes.define("badname", DefinedAttr);
+          },
+          "customAttributes.define must validate the name before checking whether the constructor is already defined",
+        );
+
+        let innerError = null;
+        const OuterAttr = new Proxy(class extends Attr {}, {
+          get: function (target, name) {
+            try {
+              customAttributes.define("check-order-other-attr", DefinedAttr);
+            } catch (e) {
+              innerError = e;
+            }
+            return target[name];
+          },
+        });
+        customAttributes.define("check-order-outer-attr", OuterAttr);
+        assert_true(
+          innerError instanceof DOMException,
+          "the inner define must throw",
+        );
+        assert_equals(
+          innerError.name,
+          "NotSupportedError",
+          "customAttributes.define must reject an already defined constructor while the definition is running flag is set",
+        );
+        assert_equals(
+          customAttributes.get("check-order-other-attr"),
+          undefined,
+        );
+        assert_equals(
+          customAttributes.get("check-order-outer-attr"),
+          OuterAttr,
+          "the outer define must succeed",
+        );
+      }, "customAttributes.define must check its arguments before checking the definition is running flag");
+
+      test(function () {
+        const prototypeCalls = [];
+        function ProxiedAttr() {
+          return Reflect.construct(Attr, [], new.target);
+        }
+        ProxiedAttr.prototype = new Proxy(Object.create(Attr.prototype), {
+          get: function (target, name) {
+            prototypeCalls.push(name);
+            return target[name];
+          },
+        });
+        customAttributes.define("proxied-attr", ProxiedAttr);
+        assert_array_equals(
+          prototypeCalls,
+          [
+            "connectedCallback",
+            "disconnectedCallback",
+            "connectedMoveCallback",
+            "adoptedCallback",
+            "attributeChangedCallback",
+          ],
+          "customAttributes.define must get each lifecycle callback from the prototype, in order",
+        );
+      }, "customAttributes.define must get the lifecycle callbacks from the prototype");
+
+      test(function () {
+        class NoPrototypeAttr extends Attr {}
+        const proxy = new Proxy(NoPrototypeAttr, {
+          get: function (target, name) {
+            if (name == "prototype") return 1;
+            return target[name];
+          },
+        });
+        assert_throws_js(
+          TypeError,
+          function () {
+            customAttributes.define("attr-without-prototype", proxy);
+          },
+          'customAttributes.define must throw a TypeError when "prototype" is not an object',
+        );
+      }, 'customAttributes.define must throw a TypeError when "prototype" is not an object');
+
+      test(function () {
+        for (const callback of [
+          "connectedCallback",
+          "disconnectedCallback",
+          "connectedMoveCallback",
+          "adoptedCallback",
+          "attributeChangedCallback",
+        ]) {
+          class BadCallbackAttr extends Attr {}
+          BadCallbackAttr.prototype[callback] = 1;
+          assert_throws_js(
+            TypeError,
+            function () {
+              customAttributes.define("bad-callback-attr", BadCallbackAttr);
+            },
+            `customAttributes.define must throw a TypeError when ${callback} is not callable`,
+          );
+        }
+      }, "customAttributes.define must throw a TypeError when a lifecycle callback is not callable");
+
+      test(function () {
+        class NoCallbacksAttr extends Attr {}
+        customAttributes.define("no-callbacks-attr", NoCallbacksAttr);
+        assert_equals(
+          customAttributes.get("no-callbacks-attr"),
+          NoCallbacksAttr,
+        );
+      }, "customAttributes.define must not require any lifecycle callbacks");
+
+      test(function () {
+        assert_equals(
+          customAttributes.get("undefined-attr"),
+          undefined,
+          "get must return undefined for an undefined name",
+        );
+        assert_equals(
+          customAttributes.get("badname"),
+          undefined,
+          "get must return undefined for an invalid name",
+        );
+        assert_equals(
+          customAttributes.get(""),
+          undefined,
+          "get must return undefined for the empty string",
+        );
+        class GetAttr extends Attr {}
+        customAttributes.define("get-attr", GetAttr);
+        assert_equals(
+          customAttributes.get("get-attr"),
+          GetAttr,
+          "get must return the defined constructor",
+        );
+      }, "customAttributes.get must return the constructor of the named custom attribute, or undefined");
+
+      test(function () {
+        class NamedAttr extends Attr {}
+        class UnnamedAttr extends Attr {}
+        customAttributes.define("named-attr", NamedAttr);
+        assert_equals(customAttributes.getName(NamedAttr), "named-attr");
+        assert_equals(customAttributes.getName(UnnamedAttr), null);
+        assert_throws_js(
+          TypeError,
+          function () {
+            customAttributes.getName({});
+          },
+          "getName must throw a TypeError when the argument is not a constructor",
+        );
+      }, "customAttributes.getName must return the name of the defined constructor, or null");
+
+      promise_test(function () {
+        return promise_rejects_dom(
+          this,
+          "SyntaxError",
+          customAttributes.whenDefined("badname"),
+        );
+      }, "customAttributes.whenDefined must return a promise rejected with a SyntaxError for an invalid name");
+
+      promise_test(function () {
+        return promise_rejects_dom(
+          this,
+          "SyntaxError",
+          customAttributes.whenDefined("aria-defined"),
+        );
+      }, "customAttributes.whenDefined must return a promise rejected with a SyntaxError for a reserved name");
+
+      promise_test(function () {
+        class AlreadyDefinedAttr extends Attr {}
+        customAttributes.define("already-defined-attr", AlreadyDefinedAttr);
+        return customAttributes
+          .whenDefined("already-defined-attr")
+          .then(function (ctor) {
+            assert_equals(ctor, AlreadyDefinedAttr);
+          });
+      }, "customAttributes.whenDefined must return a promise resolved with the constructor when the name is already defined");
+
+      promise_test(function () {
+        const promise = customAttributes.whenDefined("later-defined-attr");
+        assert_equals(
+          customAttributes.whenDefined("later-defined-attr"),
+          promise,
+          "whenDefined must return the same promise for the same undefined name",
+        );
+        assert_not_equals(
+          customAttributes.whenDefined("other-later-attr"),
+          promise,
+          "whenDefined must return a different promise for a different name",
+        );
+
+        class LaterDefinedAttr extends Attr {}
+        customAttributes.define("later-defined-attr", LaterDefinedAttr);
+        return promise.then(function (ctor) {
+          assert_equals(ctor, LaterDefinedAttr);
+          assert_not_equals(
+            customAttributes.whenDefined("later-defined-attr"),
+            promise,
+            "whenDefined must return a new resolved promise once the name has been defined",
+          );
+        });
+      }, "A promise returned by customAttributes.whenDefined must be resolved with the defined constructor once such constructor is defined");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        class ScopedAttr extends Attr {}
+        scoped.define("scoped-only-attr", ScopedAttr);
+        assert_equals(scoped.get("scoped-only-attr"), ScopedAttr);
+        assert_equals(
+          customAttributes.get("scoped-only-attr"),
+          undefined,
+          "definitions must not leak into the global registry",
+        );
+        assert_equals(customAttributes.getName(ScopedAttr), null);
+        assert_equals(scoped.getName(ScopedAttr), "scoped-only-attr");
+        class GlobalAttr extends Attr {}
+        customAttributes.define("scoped-only-attr", GlobalAttr);
+        assert_equals(
+          scoped.get("scoped-only-attr"),
+          ScopedAttr,
+          "definitions must not leak into a scoped registry",
+        );
+      }, "Definitions in one registry must not be visible from another");
+    </script>
+  </body>
+</html>

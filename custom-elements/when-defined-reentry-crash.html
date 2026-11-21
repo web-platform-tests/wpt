@@ -10,8 +10,12 @@ class CustomElement extends HTMLElement {}
 Object.prototype.__defineGetter__("then", main);
 
 let depth = 0;
+// When whatwg/webidl#1645 lands, promise resolution will be deferred to a
+// microtask, which breaks the depth based termination below. Instead,
+// explicitly bound the total number of calls.
+let calls = 0;
 function main() {
-  if (depth > 1) return;
+  if (depth > 1 || ++calls > 10) return;
   ++depth;
   customElements.whenDefined("custom-a"); // Causes re-entry of main()
   try { customElements.define("custom-a", CustomElement) } catch (e) {}

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Service Worker: passthrough and preload navigations keep the referrer</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<body>
+<script>
+'use strict';
+
+const script = './resources/fetch-rewrite-worker.js';
+const base = './resources/navigation-referrer-server.py';
+const scope = base + '?with-sw';
+const page_url = location.href.split('#')[0];
+let registration;
+
+function target_url(swaction) {
+  if (swaction === 'no-sw') {
+    return new URL(base + '?no-sw', location).href;
+  }
+  if (swaction === 'navpreload') {
+    assert_true('navigationPreload' in registration,
+                'navigation preload must be supported');
+  }
+  return new URL(`${scope}&${swaction}`, location).href;
+}
+
+function wait_for_message(source_getter) {
+  return new Promise(resolve => {
+    self.addEventListener('message', function listener(evt) {
+      if (evt.source !== source_getter()) return;
+      self.removeEventListener('message', listener);
+      resolve(evt.data);
+    });
+  });
+}
+
+async function navigate_iframe(t, url, referrer_policy) {
+  const frame = document.createElement('iframe');
+  t.add_cleanup(() => frame.remove());
+  if (referrer_policy) frame.referrerPolicy = referrer_policy;
+  const message = wait_for_message(() => frame.contentWindow);
+  frame.src = url;
+  document.body.append(frame);
+  return message;
+}
+
+async function navigate_popup(t, url, referrer_policy) {
+  const name = token();
+  const popup = window.open('about:blank', name);
+  t.add_cleanup(() => popup.close());
+  const link = document.createElement('a');
+  t.add_cleanup(() => link.remove());
+  link.href = url;
+  link.target = name;
+  link.textContent = 'navigate popup';
+  if (referrer_policy) link.referrerPolicy = referrer_policy;
+  document.body.append(link);
+  const message = wait_for_message(() => popup);
+  await test_driver.click(link);
+  return message;
+}
+
+promise_test(async t => {
+  registration = await service_worker_unregister_and_register(t, script, scope);
+  add_completion_callback(() => registration.unregister());
+  await wait_for_state(t, registration.installing, 'activated');
+  if (registration.navigationPreload)
+    await registration.navigationPreload.enable();
+}, 'Setup service worker');
+
+const scenarios = [
+  {name: 'iframe', navigate: navigate_iframe, policy: '',
+   expected: {referer: page_url, documentReferrer: page_url}},
+  {name: 'iframe with no-referrer policy', navigate: navigate_iframe,
+   policy: 'no-referrer',
+   expected: {referer: 'not set', documentReferrer: ''}},
+  {name: 'top-level', navigate: navigate_popup, policy: '',
+   expected: {referer: page_url, documentReferrer: page_url}},
+  {name: 'top-level with no-referrer policy', navigate: navigate_popup,
+   policy: 'no-referrer',
+   expected: {referer: 'not set', documentReferrer: ''}},
+];
+
+for (const scenario of scenarios) {
+  for (const swaction of ['no-sw', 'passthrough', 'navpreload']) {
+    promise_test(async t => {
+      const result = await scenario.navigate(t, target_url(swaction),
+                                             scenario.policy);
+      assert_equals(
+          JSON.stringify({referer: result.referer,
+                          documentReferrer: result.documentReferrer}),
+          JSON.stringify(scenario.expected));
+    }, `${scenario.name} navigation, ${swaction}: Referer header and ` +
+       'document.referrer');
+  }
+}
+</script>
+</body>

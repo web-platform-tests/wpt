@@ -490,6 +490,17 @@ class WebPlatformTestRegexp(Regexp):
     """
 
 
+class HTMLMultipageNoFragmentRegexp(Regexp):
+    pattern = br"html\.spec\.whatwg\.org/multipage/[A-Za-z0-9-]+(?:\.html?(?![A-Za-z0-9#-])|(?![A-Za-z0-9./#-]))"
+    name = "HTML MULTIPAGE NO FRAGMENT"
+    description = "Link to a page of the multipage HTML Standard without a fragment"
+    to_fix = """
+        add a fragment for the relevant section, e.g.
+        `https://html.spec.whatwg.org/multipage/dom.html#dom`, so the link
+        still works when sections move between pages
+    """
+
+
 class Webidl2Regexp(Regexp):
     pattern = br"webidl2\.js"
     name = "WEBIDL2.JS"

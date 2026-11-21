@@ -327,9 +327,29 @@ const getBitwise = (value, dataType) => {
 };
 
 /**
+ * Round a JavaScript Number to the nearest value of a floating-point
+ * ``dataType``, ties to even.
+ * @param {Number} value
+ * @param {String} dataType - Either "float16" or "float32".
+ * @return {Number} The rounded value; an infinity when ``value`` overflows.
+ */
+const roundToDataType = (value, dataType) => {
+  if (dataType === 'float32') {
+    return Math.fround(value);
+  } else if (dataType === 'float16') {
+    return Float16Array.of(value)[0];
+  }
+  throw new AssertionError(`Data type ${dataType} is not supported`);
+};
+
+/**
  * Assert that each array property in ``actual`` is a number being close enough
  * to the corresponding property in ``expected`` by the acceptable ULP distance
  * ``nulp`` with given ``dataType`` data type.
+ *
+ * For floating-point data types, NaN, infinite and finite values are distinct
+ * classes: the classes of ``actual`` and of ``expected`` rounded to
+ * ``dataType`` must match before the ULP distance is applied.
  *
  * @param {Array} actual - Array of test values.
  * @param {Array} expected - Array of values expected to be close to the values
@@ -359,6 +379,19 @@ const assert_array_approx_equals_ulp = (actual, expected, nulp, dataType, descri
             `assert_array_approx_equals_ulp: ${description} NaN classification ` +
                 `differs at index ${i}`);
         continue;
+      }
+      if (kFloatTypes.includes(dataType)) {
+        // The ULP tolerance is for finite values. The largest finite value and
+        // the same-sign infinity are adjacent encodings, so an overflow would
+        // otherwise pass at a tolerance of one. The expected value is rounded
+        // to the output data type first: a reference that overflows the
+        // output type expects an infinity.
+        assert_equals(
+            Number.isFinite(actualValue),
+            Number.isFinite(roundToDataType(expected[i], dataType)),
+            `assert_array_approx_equals_ulp: ${description} actual ` +
+                `${actualValue} and expected ${expected[i]} differ in ` +
+                `finite/infinite classification at index ${i}`);
       }
       let distance = ulpDistance(actual[i], expected[i], dataType);
 

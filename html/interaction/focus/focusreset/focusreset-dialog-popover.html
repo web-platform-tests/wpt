@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>focusreset event: cancelled by dialog and popover focusing steps</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interactive-elements.html#dialog-focusing-steps">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/popover.html#popover-focusing-steps">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#focus-update-steps">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/infrastructure.html#node-remove-focus-fixup">
+<link rel="help" href="https://dom.spec.whatwg.org/#notify-mutation-observers">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/focusreset-helpers.js"></script>
+
+<script>
+"use strict";
+
+// The dialog and popover focusing steps run the focusing steps, which run the
+// focus update steps, so they cancel a pending focusreset just like focus().
+
+promise_test(async t => {
+  await settle(t);
+  const events = recordFocusResets(t);
+  const button = createFocusable(t);
+  const dialog = createFocusable(t, "dialog");
+  const dialogButton = createFocusable(t, "button", dialog);
+  t.add_cleanup(() => dialog.close());
+
+  button.focus();
+  button.remove();
+  dialog.showModal();
+  assert_equals(document.activeElement, dialogButton,
+                "sanity: showModal() focused the dialog's first focusable descendant");
+  await afterNextRenderingUpdateAndTask(t);
+  assert_equals(events.length, 0, "no focusreset");
+}, "showModal() after the removal, in the same task, cancels focusreset");
+
+promise_test(async t => {
+  await settle(t);
+  const events = recordFocusResets(t);
+  const button = createFocusable(t);
+  const dialog = createFocusable(t, "dialog");
+  const dialogButton = createFocusable(t, "button", dialog);
+  t.add_cleanup(() => dialog.close());
+
+  button.focus();
+  button.remove();
+  dialog.show();
+  assert_equals(document.activeElement, dialogButton,
+                "sanity: show() focused the dialog's first focusable descendant");
+  await afterNextRenderingUpdateAndTask(t);
+  assert_equals(events.length, 0, "no focusreset");
+}, "show() after the removal, in the same task, cancels focusreset");
+
+promise_test(async t => {
+  await settle(t);
+  const events = recordFocusResets(t);
+  const button = createFocusable(t);
+  const popover = createFocusable(t, "div");
+  popover.popover = "manual";
+  const popoverButton = createFocusable(t, "button", popover);
+  popoverButton.autofocus = true;
+  t.add_cleanup(() => {
+    if (popover.matches(":popover-open")) {
+      popover.hidePopover();
+    }
+  });
+
+  button.focus();
+  button.remove();
+  popover.showPopover();
+  assert_equals(document.activeElement, popoverButton,
+                "sanity: showPopover() focused the autofocus descendant");
+  await afterNextRenderingUpdateAndTask(t);
+  assert_equals(events.length, 0, "no focusreset");
+}, "showPopover() on a popover with an autofocus descendant, after the removal, cancels focusreset");
+
+promise_test(async t => {
+  await settle(t);
+  const events = recordFocusResets(t);
+  const button = createFocusable(t);
+  const popover = createFocusable(t, "div");
+  popover.popover = "manual";
+  createFocusable(t, "button", popover);
+  t.add_cleanup(() => {
+    if (popover.matches(":popover-open")) {
+      popover.hidePopover();
+    }
+  });
+
+  button.focus();
+  button.remove();
+  popover.showPopover();
+  assert_equals(document.activeElement, document.body,
+                "sanity: showPopover() without autofocus doesn't move focus");
+  await afterNextRenderingUpdateAndTask(t);
+  assert_equals(events.length, 1,
+                "focusreset is fired, as focus wasn't explicitly updated");
+}, "showPopover() on a popover without an autofocus descendant doesn't cancel focusreset");
+</script>

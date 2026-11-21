@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>focusreset cross-origin child</title>
+<button id="b">b</button>
+<script>
+"use strict";
+
+// Commands are posted by the parent:
+// - "focus": focuses #b.
+// - "focus-and-remove": focuses #b, removes it, and reports after the
+//   microtask that would fire focusreset (i.e., in a new task).
+// Replies are posted back to the parent as {command, ...state}.
+
+let focusResets = 0;
+document.addEventListener("focusreset", () => focusResets++);
+
+function state() {
+  const button = document.getElementById("b");
+  return {
+    focusResets,
+    hasFocus: document.hasFocus(),
+    buttonFocused: !!button && document.activeElement === button,
+    activeElementIsBody: document.activeElement === document.body,
+  };
+}
+
+window.addEventListener("message", e => {
+  const command = e.data;
+  const button = document.getElementById("b");
+  if (command === "focus") {
+    button.focus();
+    parent.postMessage({command, ...state()}, "*");
+  } else if (command === "focus-and-remove") {
+    button.focus();
+    const focusedBeforeRemoval = document.activeElement === button;
+    const hadFocus = document.hasFocus();
+    button.remove();
+    const resetsAfterRemoval = focusResets;
+    // Report in a new task, i.e. after the focusreset microtask.
+    const channel = new MessageChannel();
+    channel.port1.onmessage = () => {
+      parent.postMessage({command, focusedBeforeRemoval, hadFocus,
+                          resetsAfterRemoval, ...state()}, "*");
+    };
+    channel.port2.postMessage(null);
+  }
+});
+
+parent.postMessage({command: "ready"}, "*");
+</script>

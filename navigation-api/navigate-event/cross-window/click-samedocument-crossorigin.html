@@ -26,6 +26,7 @@ async_test(t => {
     assert_false(e.data.userInitiated, "userInitiated");
     assert_true(e.data.hashChange, "hashChange");
     assert_equals(e.data.formData, null, "formData");
+    assert_equals(e.data.sourceElement, null, "sourceElement");
     assert_equals(e.data.destination.url, link.href, "destination.url");
     assert_true(e.data.destination.sameDocument, "destination.sameDocument");
     assert_equals(e.data.destination.key, "", "destination.key");

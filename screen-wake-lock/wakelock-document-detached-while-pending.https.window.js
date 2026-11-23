@@ -14,6 +14,8 @@ promise_test(async t => {
   const { wakeLock } = iframe.contentWindow.navigator;
   const frameDOMException = iframe.contentWindow.DOMException;
 
+  await test_driver.set_permission(
+      { name: "screen-wake-lock" }, "granted", iframe.contentWindow);
   await test_driver.bless("screen wake lock", null, iframe.contentWindow);
   const promise = wakeLock.request("screen");
 

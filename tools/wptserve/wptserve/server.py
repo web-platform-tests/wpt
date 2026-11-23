@@ -302,6 +302,15 @@ class WebTestServer(http.server.ThreadingHTTPServer):
             request.do_handshake()
         super().finish_request(request, client_address)
 
+        if isinstance(request, ssl.SSLSocket):
+            # Send close_notify before TCP shutdown so clients can recognize
+            # the end of a close-delimited response (RFC 9112, section 9.8).
+            try:
+                request.settimeout(1)
+                request.unwrap()
+            except (OSError, ValueError):
+                pass  # The peer may already have closed or may never reply.
+
     def handle_error(self, request, client_address):
         error = sys.exc_info()[1]
 

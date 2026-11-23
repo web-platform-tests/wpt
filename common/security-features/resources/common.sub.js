@@ -104,6 +104,27 @@ function timeoutPromise(t, ms) {
 }
 
 /**
+ * Polls a "report-headers" URL until the server has received the request it
+ * reports on, rather than waiting a fixed time for that request to be made.
+ * @param {Test} t The test, used to schedule polls.
+ * @param {string} url The "report-headers" URL to poll.
+ * @param {number} timeout How long to wait for the request in ms. This is
+ *     multiplied by the global timeout_multiplier.
+ * @return {Promise} A promise for the reported request, like requestViaXhr.
+ */
+async function waitForReport(t, url, timeout = 3000) {
+  let timedOut = false;
+  t.step_timeout(() => { timedOut = true; }, timeout);
+  for (;;) {
+    const result = await xhrRequest(url);
+    if (result !== null)
+      return wrapResult(result);
+    assert_false(timedOut, "The server never received the request.");
+    await timeoutPromise(t, 50);
+  }
+}
+
+/**
  * Normalizes the target port for use in a URL. For default ports, this is the
  *     empty string (omitted port), otherwise it's a colon followed by the port
  *     number. Ports 80, 443 and an empty string are regarded as default ports.

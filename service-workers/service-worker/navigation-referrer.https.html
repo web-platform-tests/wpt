@@ -152,9 +152,9 @@ const scenarios = [
 for (const container of ['popup', 'iframe']) {
   for (const [how, helper] of [['click', 'same-origin'],
                                ['assign', 'same-origin'],
-                               ['bless-click', 'cross-site'],
+                               ['script-click', 'cross-site'],
                                ['assign', 'cross-site'],
-                               ['bless-click', 'cross-origin'],
+                               ['script-click', 'cross-origin'],
                                ['click', 'controlled']]) {
     scenarios.push({
       name: `same-tab ${how} in ${container} from ${helper} page`,

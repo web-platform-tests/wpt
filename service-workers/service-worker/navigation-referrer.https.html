@@ -25,7 +25,10 @@ function target_url(swaction) {
     assert_true('navigationPreload' in registration,
                 'navigation preload must be supported');
   }
-  return new URL(`${scope}&${swaction}`, location).href;
+  // `ignore` makes the worker skip respondWith(), so the request falls back to
+  // the network.
+  const action = swaction === 'fallback' ? 'ignore' : swaction;
+  return new URL(`${scope}&${action}`, location).href;
 }
 
 function wait_for_message(source_getter) {
@@ -176,7 +179,7 @@ function expected_result(scenario, url) {
 }
 
 for (const scenario of scenarios) {
-  for (const swaction of ['no-sw', 'passthrough', 'navpreload']) {
+  for (const swaction of ['no-sw', 'fallback', 'passthrough', 'navpreload']) {
     promise_test(async t => {
       const url = scenario.helper ? helper_url(scenario, swaction) :
                                     target_url(swaction);

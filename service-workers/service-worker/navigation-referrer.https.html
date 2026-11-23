@@ -6,8 +6,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
 <body>
 <script>
@@ -62,19 +60,17 @@ async function navigate_popup(t, url, referrer_policy) {
   if (referrer_policy) link.referrerPolicy = referrer_policy;
   document.body.append(link);
   const message = wait_for_message(() => popup);
-  await test_driver.click(link);
+  link.click();
   return message;
 }
 
 /**
  * Loads a helper page at `url` in a popup or an iframe. The helper navigates
- * its own browsing context. For `how` = 'click', the helper only signals
- * that it is ready, and this function clicks its link: a click sent by the
- * helper itself gets its answer after the helper is gone.
+ * its own browsing context.
  */
-async function open_helper(t, container, url, how) {
+async function open_helper(t, container, url) {
   let win;
-  const first = wait_for_message(() => win);
+  const message = wait_for_message(() => win);
   if (container === 'popup') {
     win = window.open(url);
     t.add_cleanup(() => win.close());
@@ -85,13 +81,7 @@ async function open_helper(t, container, url, how) {
     t.add_cleanup(() => frame.remove());
     win = frame.contentWindow;
   }
-  if (how !== 'click') return first;
-  await first;
-  const [result] = await Promise.all([
-    wait_for_message(() => win),
-    test_driver.click(win.document.getElementById('link')),
-  ]);
-  return result;
+  return message;
 }
 
 /**
@@ -152,13 +142,13 @@ const scenarios = [
 for (const container of ['popup', 'iframe']) {
   for (const [how, helper] of [['click', 'same-origin'],
                                ['assign', 'same-origin'],
-                               ['script-click', 'cross-site'],
+                               ['click', 'cross-site'],
                                ['assign', 'cross-site'],
-                               ['script-click', 'cross-origin'],
+                               ['click', 'cross-origin'],
                                ['click', 'controlled']]) {
     scenarios.push({
       name: `same-tab ${how} in ${container} from ${helper} page`,
-      navigate: (t, url) => open_helper(t, container, url, how),
+      navigate: (t, url) => open_helper(t, container, url),
       how, helper,
     });
   }

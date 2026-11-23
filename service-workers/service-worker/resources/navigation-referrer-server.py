@@ -3,7 +3,7 @@ from html import escape
 
 def main(request, response):
     response.headers.set(b"Content-Type", b"text/html")
-    for how in (b"click", b"script-click", b"assign"):
+    for how in (b"click", b"assign"):
         url = request.GET.first(how, None)
         if url is not None:
             return helper(how, url)
@@ -28,21 +28,15 @@ def main(request, response):
 def helper(how, url):
     """Returns a page that navigates its own browsing context to `url`.
 
-    click: posts 'ready'; the test then clicks the link with test_driver.
-    script-click: clicks the link from script. A cross-site test cannot
-        reach the link to click it.
+    click: clicks the link from script.
     assign: assigns location.href.
     """
     return b"""<!DOCTYPE html>
     <a id="link" href="%s">navigate self</a>
     <script>
       self.addEventListener('load', () => {
-        const how = '%s';
-        const test_window = self.opener || self.parent;
-        if (how === 'assign') {
+        if ('%s' === 'assign') {
           location.href = link.href;
-        } else if (how === 'click') {
-          test_window.postMessage('ready', '*');
         } else {
           link.click();
         }

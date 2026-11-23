@@ -27,7 +27,7 @@
       null,
       iframe.contentWindow,
     );
-    const firstRequest = iframe.contentWindow.navigator.credentials.get(makeGetOptions());
+    const firstRequest = iframe.contentWindow.navigator.credentials.get(makeGetOptions({ protocol: "org-iso-mdoc" }));
     let firstSettled = false;
     firstRequest.then(
       () => (firstSettled = true),
@@ -39,10 +39,10 @@
     iframe.remove();
     await new Promise((resolve) => t.step_timeout(resolve, 100));
 
-    await test_driver.set_virtual_wallet_behavior("respond", "openid4vp-v1-unsigned", { value: "second-response" });
+    await test_driver.set_virtual_wallet_behavior("respond", "org-iso-mdoc", { value: "second-response" });
     await test_driver.bless("user activation for the second request");
-    const credential = await navigator.credentials.get(makeGetOptions({ protocol: "openid4vp-v1-unsigned" }));
-    assert_equals(credential.protocol, "openid4vp-v1-unsigned");
+    const credential = await navigator.credentials.get(makeGetOptions({ protocol: "org-iso-mdoc" }));
+    assert_equals(credential.protocol, "org-iso-mdoc");
     assert_equals(credential.data.value, "second-response");
   }, "Removing the requesting iframe lets the next request start.");
 
@@ -58,11 +58,12 @@
     });
     t.add_cleanup(() => iframe.remove());
 
-    const options = makeGetOptions();
+    const options = makeGetOptions({ protocol: ["org-iso-mdoc", "org-iso-mdoc"] });
     const request = options.digital.requests[0];
     const data = request.data;
     let toJSONCalls = 0;
     request.data = {
+      ...data,
       toJSON() {
         toJSONCalls++;
         iframe.remove();
@@ -78,10 +79,10 @@
     await t.step_wait(() => toJSONCalls > 0, "The browser should have serialized the request data");
     await new Promise((resolve) => t.step_timeout(resolve, 100));
 
-    await test_driver.set_virtual_wallet_behavior("respond", "openid4vp-v1-unsigned", { value: "second-response" });
+    await test_driver.set_virtual_wallet_behavior("respond", "org-iso-mdoc", { value: "second-response" });
     await test_driver.bless("user activation for the second request");
-    const credential = await navigator.credentials.get(makeGetOptions({ protocol: "openid4vp-v1-unsigned" }));
-    assert_equals(credential.protocol, "openid4vp-v1-unsigned");
+    const credential = await navigator.credentials.get(makeGetOptions({ protocol: "org-iso-mdoc" }));
+    assert_equals(credential.protocol, "org-iso-mdoc");
     assert_equals(credential.data.value, "second-response");
   }, "Removing the requesting iframe while its request data is serialized lets the next request start.");
 </script>

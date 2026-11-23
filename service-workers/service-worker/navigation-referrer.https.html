@@ -5,6 +5,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
@@ -65,6 +66,53 @@ async function navigate_popup(t, url, referrer_policy) {
   return message;
 }
 
+/**
+ * Loads a helper page at `url` in a popup or an iframe. The helper navigates
+ * its own browsing context. For `how` = 'click', the helper only signals
+ * that it is ready, and this function clicks its link: a click sent by the
+ * helper itself gets its answer after the helper is gone.
+ */
+async function open_helper(t, container, url, how) {
+  let win;
+  const first = wait_for_message(() => win);
+  if (container === 'popup') {
+    win = window.open(url);
+    t.add_cleanup(() => win.close());
+  } else {
+    const frame = document.createElement('iframe');
+    frame.src = url;
+    document.body.append(frame);
+    t.add_cleanup(() => frame.remove());
+    win = frame.contentWindow;
+  }
+  if (how !== 'click') return first;
+  await first;
+  const [result] = await Promise.all([
+    wait_for_message(() => win),
+    test_driver.click(win.document.getElementById('link')),
+  ]);
+  return result;
+}
+
+/**
+ * Returns the URL of a helper page that navigates its own browsing context to
+ * the target URL. See the server for the values of `how`.
+ */
+function helper_url(scenario, swaction) {
+  const server = new URL(base, location);
+  const helper = {
+    'same-origin': server.href + '?helper',
+    'cross-site': get_host_info().HTTPS_NOTSAMESITE_ORIGIN + server.pathname +
+                  '?helper',
+    'cross-origin': get_host_info().HTTPS_REMOTE_ORIGIN + server.pathname +
+                    '?helper',
+    // The helper itself loads through the worker, so the worker controls it.
+    'controlled': target_url(swaction) + '&helper',
+  }[scenario.helper];
+  const url = encodeURIComponent(target_url(swaction));
+  return `${helper}&${scenario.how}=${url}`;
+}
+
 promise_test(async t => {
   registration = await service_worker_unregister_and_register(t, script, scope);
   add_completion_callback(() => registration.unregister());
@@ -86,15 +134,44 @@ const scenarios = [
    expected: {referer: 'not set', documentReferrer: ''}},
 ];
 
+// The navigated document starts the navigation itself, in the same tab.
+for (const container of ['popup', 'iframe']) {
+  for (const [how, helper] of [['click', 'same-origin'],
+                               ['assign', 'same-origin'],
+                               ['bless-click', 'cross-site'],
+                               ['assign', 'cross-site'],
+                               ['bless-click', 'cross-origin'],
+                               ['click', 'controlled']]) {
+    scenarios.push({
+      name: `same-tab ${how} in ${container} from ${helper} page`,
+      navigate: (t, url) => open_helper(t, container, url, how),
+      how, helper,
+    });
+  }
+}
+
+/**
+ * Returns the expected result. A same-tab navigation has the helper page as
+ * referrer; the default policy strict-origin-when-cross-origin cuts a
+ * cross-origin referrer to its origin.
+ */
+function expected_result(scenario, url) {
+  if (!scenario.helper) return scenario.expected;
+  const referrer = scenario.helper.startsWith('cross-') ?
+      new URL(url).origin + '/' : url;
+  return {referer: referrer, documentReferrer: referrer};
+}
+
 for (const scenario of scenarios) {
   for (const swaction of ['no-sw', 'passthrough', 'navpreload']) {
     promise_test(async t => {
-      const result = await scenario.navigate(t, target_url(swaction),
-                                             scenario.policy);
+      const url = scenario.helper ? helper_url(scenario, swaction) :
+                                    target_url(swaction);
+      const result = await scenario.navigate(t, url, scenario.policy);
       assert_equals(
           JSON.stringify({referer: result.referer,
                           documentReferrer: result.documentReferrer}),
-          JSON.stringify(scenario.expected));
+          JSON.stringify(expected_result(scenario, url)));
     }, `${scenario.name} navigation, ${swaction}: Referer header and ` +
        'document.referrer');
   }

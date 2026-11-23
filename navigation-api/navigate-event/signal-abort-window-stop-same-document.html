@@ -1,0 +1,186 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../navigation-methods/return-value/resources/helpers.js"></script>
+<body>
+<script>
+async function createLoadedIframe(t) {
+  const iframe = document.createElement("iframe");
+  iframe.src = "/common/blank.html";
+  document.body.appendChild(iframe);
+  t.add_cleanup(() => iframe.remove());
+  await new Promise(resolve => iframe.addEventListener("load", () => t.step_timeout(resolve, 0), { once: true }));
+  return iframe;
+}
+
+promise_test(async t => {
+  const iframe = await createLoadedIframe(t);
+  const w = iframe.contentWindow;
+
+  let abortSignal;
+  let onabortCalled = false;
+  let navigateerrorCalled = false;
+  let canceledInSecondListener = false;
+
+  w.navigation.onnavigatesuccess = t.unreached_func("navigatesuccess must not fire");
+  w.navigation.onnavigateerror = t.step_func(() => {
+    navigateerrorCalled = true;
+  });
+  w.navigation.addEventListener("navigate", t.step_func(e => {
+    abortSignal = e.signal;
+    abortSignal.onabort = () => { onabortCalled = true; };
+    w.stop();
+  }));
+  w.navigation.addEventListener("navigate", t.step_func(e => {
+    canceledInSecondListener = e.defaultPrevented;
+  }));
+
+  const result = w.navigation.navigate("#1");
+  await assertBothRejectDOM(t, result, "AbortError", w);
+
+  assert_true(abortSignal.aborted);
+  assert_true(onabortCalled);
+  assert_true(navigateerrorCalled);
+  assert_true(canceledInSecondListener);
+  assert_equals(w.location.hash, "");
+}, "window.stop() inside a navigate listener aborts a fragment navigation");
+
+promise_test(async t => {
+  const iframe = await createLoadedIframe(t);
+  const w = iframe.contentWindow;
+
+  let abortSignal;
+  let navigateerrorCalled = false;
+
+  w.navigation.onnavigatesuccess = t.unreached_func("navigatesuccess must not fire");
+  w.navigation.onnavigateerror = t.step_func(() => {
+    navigateerrorCalled = true;
+  });
+  w.navigation.addEventListener("navigate", t.step_func(e => {
+    abortSignal = e.signal;
+    w.stop();
+  }));
+
+  w.history.pushState(null, "", "#push");
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+
+  assert_true(abortSignal.aborted);
+  assert_true(navigateerrorCalled);
+  assert_equals(w.location.hash, "");
+}, "window.stop() inside a navigate listener aborts history.pushState()");
+
+promise_test(async t => {
+  const popup = window.open("/common/blank.html");
+  t.add_cleanup(() => popup.close());
+  await new Promise(resolve => popup.addEventListener("load", () => t.step_timeout(resolve, 0), { once: true }));
+
+  await popup.navigation.navigate("#trav1").finished;
+  await popup.navigation.navigate("#trav2").finished;
+
+  let abortSignal;
+  let navigateerrorCalled = false;
+  popup.navigation.onnavigatesuccess = t.unreached_func("navigatesuccess must not fire");
+  popup.navigation.onnavigateerror = t.step_func(() => {
+    navigateerrorCalled = true;
+  });
+  popup.navigation.onnavigate = t.step_func(e => {
+    abortSignal = e.signal;
+    popup.stop();
+  });
+
+  await assertBothRejectDOM(t, popup.navigation.back(), "AbortError", popup);
+
+  assert_true(abortSignal.aborted);
+  assert_true(navigateerrorCalled);
+  assert_equals(popup.location.hash, "#trav2");
+}, "window.stop() inside a navigate listener aborts a cancelable traversal");
+
+for (const { name, setup, trigger, waitForCommit } of [
+  {
+    name: "fragment navigation",
+    trigger: w => w.navigation.navigate("#1"),
+  },
+  {
+    name: "history.pushState()",
+    trigger: w => { w.history.pushState(null, "", "#push"); return null; },
+  },
+  {
+    name: "navigation.reload()",
+    trigger: w => w.navigation.reload(),
+  },
+  {
+    name: "same-document traversal",
+    setup: async w => {
+      await w.navigation.navigate("#a").finished;
+      await w.navigation.navigate("#b").finished;
+    },
+    trigger: w => w.navigation.back(),
+    waitForCommit: true,
+  },
+]) {
+  promise_test(async t => {
+    const iframe = await createLoadedIframe(t);
+    const w = iframe.contentWindow;
+
+    if (setup) {
+      await setup(w);
+    }
+
+    let abortSignal;
+    let navigateerrorCalled = false;
+
+    w.navigation.onnavigatesuccess = t.unreached_func("navigatesuccess must not fire");
+    w.navigation.onnavigateerror = t.step_func(() => {
+      navigateerrorCalled = true;
+    });
+    w.navigation.onnavigate = t.step_func(e => {
+      abortSignal = e.signal;
+      e.intercept({ handler: () => new Promise(resolve => t.step_timeout(resolve, 20)) });
+    });
+
+    const result = trigger(w);
+    if (waitForCommit) {
+      await result.committed;
+    }
+
+    const transition = w.navigation.transition;
+    assert_not_equals(transition, null);
+
+    w.stop();
+
+    assert_true(abortSignal.aborted);
+    assert_true(navigateerrorCalled);
+    await promise_rejects_dom(t, "AbortError", w.DOMException, transition.finished);
+    if (result) {
+      await assertCommittedFulfillsFinishedRejectsDOM(t, result, w.navigation.currentEntry, "AbortError", w);
+    }
+    await new Promise(resolve => t.step_timeout(resolve, 30));
+  }, `window.stop() aborts an intercepted ${name}`);
+}
+
+promise_test(async t => {
+  const iframe = await createLoadedIframe(t);
+  const w = iframe.contentWindow;
+
+  let abortSignal;
+  let navigateerrorCalled = false;
+
+  w.navigation.onnavigatesuccess = t.unreached_func("navigatesuccess must not fire");
+  w.navigation.onnavigateerror = t.step_func(() => {
+    navigateerrorCalled = true;
+  });
+  w.navigation.onnavigate = t.step_func(e => {
+    abortSignal = e.signal;
+  });
+
+  const result = w.navigation.navigate("#unintercepted");
+  w.stop();
+
+  assert_equals(w.location.hash, "#unintercepted");
+  assert_true(abortSignal.aborted);
+  assert_true(navigateerrorCalled);
+  await assertCommittedFulfillsFinishedRejectsDOM(t, result, w.navigation.currentEntry, "AbortError", w);
+  await new Promise(resolve => t.step_timeout(resolve, 10));
+}, "window.stop() immediately after an unintercepted fragment navigation aborts the ongoing navigate event");
+</script>
+</body>

@@ -18,6 +18,11 @@
   <div role="listitem" data-testname="last simple listitem" data-expectedrole="listitem" class="ex">x</div>
 </div>
 
+<!-- verify UA role's tokens list selection -->
+<ul role="list none" data-testname="ul[role=list none]" data-expectedrole="list" class="ex">
+  <li data-testname="ul[role=list none] > li" data-expectedrole="listitem" class="ex">a</li>
+</ul>
+
 <script>
 AriaUtils.verifyRolesBySelector(".ex");
 </script>

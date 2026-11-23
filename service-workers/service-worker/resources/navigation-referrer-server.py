@@ -10,10 +10,17 @@ def main(request, response):
     return b"""
     <script>
       self.addEventListener('load', evt => {
-        (self.opener || self.parent).postMessage({
+        const result = {
           referer: '%s',
           documentReferrer: document.referrer,
-        }, '*');
+        };
+        const channel = new URLSearchParams(location.search).get('channel');
+        if (channel) {
+          new BroadcastChannel(channel).postMessage(result);
+          self.close();
+        } else {
+          (self.opener || self.parent).postMessage(result, '*');
+        }
       });
     </script>""" % request.headers.get(b"referer", b"not set")
 

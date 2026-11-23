@@ -95,6 +95,19 @@ async function open_helper(t, container, url, how) {
 }
 
 /**
+ * Opens the helper at `url` in a window without an opener, so the helper can
+ * enter the back/forward cache when it navigates away. The target page sends
+ * its result over a BroadcastChannel.
+ */
+async function open_noopener_helper(t, url, channel_name) {
+  const channel = new BroadcastChannel(channel_name);
+  t.add_cleanup(() => channel.close());
+  const message = new Promise(resolve => channel.onmessage = e => resolve(e.data));
+  window.open(url, '_blank', 'noopener');
+  return message;
+}
+
+/**
  * Returns the URL of a helper page that navigates its own browsing context to
  * the target URL. See the server for the values of `how`.
  */
@@ -109,7 +122,8 @@ function helper_url(scenario, swaction) {
     // The helper itself loads through the worker, so the worker controls it.
     'controlled': target_url(swaction) + '&helper',
   }[scenario.helper];
-  const url = encodeURIComponent(target_url(swaction));
+  const channel = scenario.channel ? `&channel=${scenario.channel}` : '';
+  const url = encodeURIComponent(target_url(swaction) + channel);
   return `${helper}&${scenario.how}=${url}`;
 }
 
@@ -149,6 +163,15 @@ for (const container of ['popup', 'iframe']) {
     });
   }
 }
+
+// The helper loaded through the worker navigates away, and the browser can
+// put it in the back/forward cache.
+const channel = token();
+scenarios.push({
+  name: 'same-tab assign in noopener popup from controlled page',
+  navigate: (t, url) => open_noopener_helper(t, url, channel),
+  how: 'assign', helper: 'controlled', channel,
+});
 
 /**
  * Returns the expected result. A same-tab navigation has the helper page as

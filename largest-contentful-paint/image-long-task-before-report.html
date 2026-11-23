@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>LargestContentfulPaint: long task after an image's paint, before the report</title>
+<link rel="help" href="https://w3c.github.io/largest-contentful-paint/#sec-report-largest-contentful-paint">
+<link rel="help" href="https://w3c.github.io/paint-timing/#mark-paint-timing">
+<style>
+  #target { display: block; visibility: hidden; }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/mutation-before-report.js"></script>
+<body>
+<img id="target" src="/images/lcp-256x256.png">
+<script>
+  // Control for image-relayout-before-report.html and
+  // image-replaced-before-report.tentative.html: the same long task, but no
+  // change to the image.
+  test_mutation_before_report(img => {},
+      'A long task after the first paint keeps the LCP at the first paint.');
+</script>
+</body>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>LargestContentfulPaint: image re-laid out after its paint, before the report</title>
+<link rel="help" href="https://w3c.github.io/largest-contentful-paint/#sec-report-largest-contentful-paint">
+<link rel="help" href="https://w3c.github.io/paint-timing/#mark-paint-timing">
+<style>
+  #target { display: block; visibility: hidden; }
+  #target.relayout { display: flex; }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/mutation-before-report.js"></script>
+<body>
+<img id="target" src="/images/lcp-256x256.png">
+<script>
+  // The element stays connected, so it stays exposed for paint timing. A
+  // display change does not add a new pending image record, so the first paint
+  // is the only one that report largest contentful paint sees.
+  test_mutation_before_report(img => img.classList.add('relayout'),
+      'A display change after the first paint keeps the LCP at the first paint.');
+</script>
+</body>

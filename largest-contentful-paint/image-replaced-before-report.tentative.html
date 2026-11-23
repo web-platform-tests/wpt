@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>LargestContentfulPaint: image replaced after its paint, before the report</title>
+<link rel="help" href="https://w3c.github.io/largest-contentful-paint/#sec-report-largest-contentful-paint">
+<link rel="help" href="https://w3c.github.io/paint-timing/#mark-paint-timing">
+<style>
+  #target { display: block; visibility: hidden; }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/mutation-before-report.js"></script>
+<body>
+<img id="target" src="/images/lcp-256x256.png">
+<script>
+  // Tentative: report largest contentful paint checks "exposed for paint
+  // timing" when it runs. With presentation times, that is a task after the
+  // frame is presented, so the replaced element is no longer connected. The
+  // introduction says that removed content is still considered. This test
+  // expects the first paint to count, as the introduction describes.
+  test_mutation_before_report(img => {
+    const clone = img.cloneNode();
+    img.removeAttribute('id');
+    img.replaceWith(clone);
+  }, 'A replacement after the first paint keeps the LCP at the first paint.');
+</script>
+</body>

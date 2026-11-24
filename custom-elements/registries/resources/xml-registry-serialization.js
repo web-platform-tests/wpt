@@ -98,12 +98,12 @@ test(() => {
 }, 'A namespaced attribute does not suppress the generated XML registry attribute');
 
 test(() => {
-  const parent = xmlRegistryElement('section', null);
-  parent.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg"><g></g></svg>';
-  const svg = parent.firstElementChild;
-  assert_equals(svg.customElementRegistry, null);
+  const svgNamespace = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNamespace, 'svg', {customElementRegistry: null});
+  svg.append(document.createElementNS(
+      svgNamespace, 'g', {customElementRegistry: new CustomElementRegistry()}));
   const parsed = xmlRegistryParse(xmlRegistrySerialize(svg));
-  assert_equals(parsed.namespaceURI, 'http://www.w3.org/2000/svg');
+  assert_equals(parsed.namespaceURI, svgNamespace);
   assert_false(parsed.hasAttribute('customelementregistry'));
   assert_false(parsed.firstElementChild.hasAttribute('customelementregistry'));
 }, 'XML serialization does not generate registry attributes on foreign elements');
@@ -145,6 +145,17 @@ test(() => {
       Array.from(parsed.children, child => child.hasAttribute('customelementregistry')),
       [true, true, false]);
 }, 'XMLSerializer uses the document context for top-level fragment children');
+
+test(() => {
+  const registry = new CustomElementRegistry();
+  const shadowRoot = xmlRegistryElement('div').attachShadow(
+      {mode: 'open', customElementRegistry: registry});
+  shadowRoot.append(xmlRegistryElement('span', registry), xmlRegistryElement('span', null));
+  const parsed = xmlRegistryParse(`<root>${xmlRegistrySerialize(shadowRoot)}</root>`);
+  assert_array_equals(
+      Array.from(parsed.children, child => child.hasAttribute('customelementregistry')),
+      [false, true]);
+}, 'XMLSerializer uses the shadow root registry context for shadow root children');
 
 test(() => {
   const registry = new CustomElementRegistry();

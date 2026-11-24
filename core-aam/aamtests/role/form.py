@@ -20,12 +20,16 @@ def test_atspi(atspi, session, inline):
 #     # AXRole: AXGroup
 #     # AXSubrole: AXLandmarkForm
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: IA2_ROLE_FORM
-#     # Object Attribute: xml-roles:form
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: IA2_ROLE_FORM
+    # Object Attribute: xml-roles:form
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_role(node) == "IA2_ROLE_FORM"
+    assert ia2.get_attributes(node).get("xml-roles") == "form"
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

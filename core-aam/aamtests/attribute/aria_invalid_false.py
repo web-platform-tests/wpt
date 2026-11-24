@@ -17,11 +17,14 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXInvalid: false
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # State: IA2_STATE_INVALID_ENTRY: not exposed
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # State: IA2_STATE_INVALID_ENTRY: not exposed
+
+    node = ia2.find_node("test", session.url)
+    assert "INVALID_ENTRY" not in ia2.get_state_list(node)
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

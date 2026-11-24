@@ -18,12 +18,15 @@ def test_atspi(atspi, session, inline):
 #     # Property: AXARIAPosInSet: <value>
 #     # See also: Group Position
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Object Attribute: posinset:<value>
-#     # See also: Group Position
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Object Attribute: posinset:<value>
+    # See also: Group Position
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_attributes(node).get("posinset") == "2"
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

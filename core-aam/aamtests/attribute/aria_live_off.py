@@ -21,13 +21,19 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXARIALive: "off"
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Object Attribute: live:off
-#     # Object Attribute: container-live:off
-#     # Object Attribute: container-live:off: on all descendants
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Object Attribute: live:off
+    # Object Attribute: container-live:off
+    # Object Attribute: container-live:off: on all descendants
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_attributes(node).get("live") == "off"
+    assert ia2.get_attributes(node).get("container-live") == "off"
+    child_node = ia2.find_node("child", session.url)
+    assert ia2.get_attributes(child_node).get("container-live") == "off"
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

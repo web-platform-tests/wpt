@@ -17,12 +17,17 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXEnabled: NO
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # State: STATE_SYSTEM_UNAVAILABLE
-#     # State: STATE_SYSTEM_UNAVAILABLE: on all descendants with STATE_SYSTEM_FOCUSABLE
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # State: STATE_SYSTEM_UNAVAILABLE
+    # State: STATE_SYSTEM_UNAVAILABLE: on all descendants with STATE_SYSTEM_FOCUSABLE
+
+    node = ia2.find_node("test", session.url)
+    assert "UNAVAILABLE" in ia2.get_msaa_state_list(node)
+    checkbox_node = ia2.find_node("checkbox", session.url)
+    assert "UNAVAILABLE" in ia2.get_msaa_state_list(checkbox_node)
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

@@ -17,12 +17,16 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Method: AXUIElementIsAttributeSettable(AXValue): YES
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # State: STATE_SYSTEM_READONLY: not exposed
-#     # State: IA2_STATE_EDITABLE
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # State: STATE_SYSTEM_READONLY: not exposed
+    # State: IA2_STATE_EDITABLE
+
+    node = ia2.find_node("test", session.url)
+    assert "READONLY" not in ia2.get_msaa_state_list(node)
+    assert "EDITABLE" in ia2.get_state_list(node)
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

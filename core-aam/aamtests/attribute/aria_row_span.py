@@ -19,12 +19,16 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXRowIndexRange.length: <value>
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Object Attribute: rowspan:<value>
-#     # Method: IAccessibleTableCell::rowExtent(): column=<value>
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Object Attribute: rowspan:<value>
+    # Method: IAccessibleTableCell::rowExtent(): column=<value>
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_attributes(node).get("rowspan") == "2"
+    assert ia2.get_table_cell_interface(node).rowExtent == 2
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

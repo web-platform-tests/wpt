@@ -18,12 +18,15 @@ def test_atspi(atspi, session, inline):
 #     # Property: AXTitle: <value>
 #     # See also: Name Computation
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Property: accName: <value>
-#     # See also: Name Computation
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Property: accName: <value>
+    # See also: Name Computation
+
+    node = ia2.find_node("test", session.url)
+    assert node.accName(ia2.CHILDID_SELF) == "hello world"
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

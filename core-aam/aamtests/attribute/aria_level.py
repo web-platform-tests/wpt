@@ -17,13 +17,17 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXDisclosureLevel: <value> (zero-based), when used on an outline row (like a treeitem or group)
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Object Attribute: level:<value>
-#     # Method: IAccessible2::groupPosition(): groupLevel=<value> on roles that support aria-posinset and aria-setsize
-#     # See also: groupPosition()
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Object Attribute: level:<value>
+    # Method: IAccessible2::groupPosition(): groupLevel=<value> on roles that support aria-posinset and aria-setsize
+    # See also: groupPosition()
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_attributes(node).get("level") == "5"
+    assert ia2.get_group_position(node)["groupLevel"] == 5
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

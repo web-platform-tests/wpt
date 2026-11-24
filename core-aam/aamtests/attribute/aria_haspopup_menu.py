@@ -20,12 +20,16 @@ def test_atspi(atspi, session, inline):
 #     # Property: AXPopupValue:menu
 #     # Action: AXShowMenu
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # State: STATE_SYSTEM_HASPOPUP
-#     # Object Attribute: haspopup:menu
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # State: STATE_SYSTEM_HASPOPUP
+    # Object Attribute: haspopup:menu
+
+    node = ia2.find_node("test", session.url)
+    assert "HASPOPUP" in ia2.get_msaa_state_list(node)
+    assert ia2.get_attributes(node).get("haspopup") == "menu"
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

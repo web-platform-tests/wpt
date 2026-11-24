@@ -18,11 +18,14 @@ def test_atspi(atspi, session, inline):
 #     # AXRole: AXGroup
 #     # AXSubrole: AXApplicationTimer
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Object Attribute: xml-roles:timer
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Object Attribute: xml-roles:timer
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_attributes(node).get("xml-roles") == "timer"
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

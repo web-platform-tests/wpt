@@ -21,14 +21,19 @@ def test_atspi(atspi, session, inline):
 #     # AXSubrole: AXSwitch
 #     # See also: aria-checked in the State and Property Mapping Tables
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_CHECKBUTTON
-#     # Role: IA2_ROLE_TOGGLE_BUTTON
-#     # Object Attribute: xml-roles:switch
-#     # See also: aria-checked in the State and Property Mapping Tables
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_CHECKBUTTON
+    # Role: IA2_ROLE_TOGGLE_BUTTON
+    # Object Attribute: xml-roles:switch
+    # See also: aria-checked in the State and Property Mapping Tables
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_CHECKBUTTON"
+    assert ia2.get_role(node) == "IA2_ROLE_TOGGLE_BUTTON"
+    assert ia2.get_attributes(node).get("xml-roles") == "switch"
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

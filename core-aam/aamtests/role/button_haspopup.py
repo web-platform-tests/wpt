@@ -36,12 +36,16 @@ def test_axapi(axapi, session, inline, test_html):
     _, subrole = axapi.AXUIElementCopyAttributeValue(node, "AXSubrole", None)
     assert subrole is None
 
-# @pytest.mark.parametrize("test_html", TEST_HTML.values(), ids=TEST_HTML.keys())
-# def test_ia2(ia2, session, inline, test_html):
-#     session.url = inline(test_html)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_BUTTONMENU
+@pytest.mark.parametrize("test_html", TEST_HTML.values(), ids=TEST_HTML.keys())
+def test_ia2(ia2, session, inline, test_html):
+    session.url = inline(test_html)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_BUTTONMENU
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_BUTTONMENU"
+    assert ia2.get_role(node) == "ROLE_SYSTEM_BUTTONMENU"
 
 @pytest.mark.parametrize("test_html", TEST_HTML.values(), ids=TEST_HTML.keys())
 def test_uia(uia, session, inline, test_html):

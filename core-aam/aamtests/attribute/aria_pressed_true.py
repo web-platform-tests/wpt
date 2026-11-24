@@ -18,12 +18,15 @@ def test_atspi(atspi, session, inline):
 #     # Property: AXValue: 1
 #     # See also: button with defined value for aria-pressed
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # State: STATE_SYSTEM_PRESSED
-#     # See also: button with defined value for aria-pressed
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # State: STATE_SYSTEM_PRESSED
+    # See also: button with defined value for aria-pressed
+
+    node = ia2.find_node("test", session.url)
+    assert "PRESSED" in ia2.get_msaa_state_list(node)
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

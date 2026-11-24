@@ -17,11 +17,14 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # AXRoleDescription: Defined as that specified for the role of the element: based on the explicit role if the role attribute is provided; otherwise, based on the implicit role for the host language.
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Not mapped
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Not mapped
+
+    node = ia2.find_node("test", session.url)
+    assert not node.localizedExtendedRole
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

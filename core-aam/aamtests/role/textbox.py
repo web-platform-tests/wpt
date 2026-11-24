@@ -37,12 +37,17 @@ def test_atspi_readonly(atspi, session, inline):
 #     # AXRole: AXTextField
 #     # AXSubrole: <nil>
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_TEXT
-#     # State: IA2_STATE_SINGLE_LINE
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_TEXT
+    # State: IA2_STATE_SINGLE_LINE
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_TEXT"
+    assert ia2.get_role(node) == "ROLE_SYSTEM_TEXT"
+    assert "SINGLE_LINE" in ia2.get_state_list(node)
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

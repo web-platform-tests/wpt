@@ -24,14 +24,21 @@ def test_atspi(atspi, session, inline):
 #     # AXRole: AXGroup
 #     # AXSubrole: AXApplicationStatus
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_STATUSBAR
-#     # Object Attribute: container-live:polite
-#     # Object Attribute: live:polite
-#     # Object Attribute: container-live-role:status
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_STATUSBAR
+    # Object Attribute: container-live:polite
+    # Object Attribute: live:polite
+    # Object Attribute: container-live-role:status
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_STATUSBAR"
+    assert ia2.get_role(node) == "ROLE_SYSTEM_STATUSBAR"
+    assert ia2.get_attributes(node).get("container-live") == "polite"
+    assert ia2.get_attributes(node).get("live") == "polite"
+    assert ia2.get_attributes(node).get("container-live-role") == "status"
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

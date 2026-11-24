@@ -18,12 +18,15 @@ def test_atspi(atspi, session, inline):
 #     # Property: AXMinValue: <value>
 #     # See also: Handling Author Errors for States and Properties
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Method: IAccessibleValue::minimumValue(): <value>
-#     # See also: Handling Author Errors for States and Properties
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Method: IAccessibleValue::minimumValue(): <value>
+    # See also: Handling Author Errors for States and Properties
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_value_interface(node).minimumValue == 2
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

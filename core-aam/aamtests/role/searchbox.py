@@ -24,12 +24,17 @@ def test_atspi(atspi, session, inline):
 #     # AXRole: AXTextField
 #     # AXSubrole: AXSearchField
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_TEXT
-#     # Object Attribute: text-input-type:search
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_TEXT
+    # Object Attribute: text-input-type:search
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_TEXT"
+    assert ia2.get_role(node) == "ROLE_SYSTEM_TEXT"
+    assert ia2.get_attributes(node).get("text-input-type") == "search"
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

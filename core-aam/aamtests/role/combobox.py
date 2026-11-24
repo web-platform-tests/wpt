@@ -22,13 +22,19 @@ def test_atspi(atspi, session, inline):
 #     # AXRole: AXComboBox
 #     # AXSubrole: <nil>
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_COMBOBOX
-#     # State: STATE_SYSTEM_HASPOPUP
-#     # State: STATE_SYSTEM_COLLAPSED: if aria-expanded is not "true"
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_COMBOBOX
+    # State: STATE_SYSTEM_HASPOPUP
+    # State: STATE_SYSTEM_COLLAPSED: if aria-expanded is not "true"
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_COMBOBOX"
+    assert ia2.get_role(node) == "ROLE_SYSTEM_COMBOBOX"
+    assert "HASPOPUP" in ia2.get_msaa_state_list(node)
+    assert "COLLAPSED" in ia2.get_msaa_state_list(node)
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

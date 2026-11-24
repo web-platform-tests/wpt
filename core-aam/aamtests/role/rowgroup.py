@@ -17,11 +17,15 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Not mapped
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_GROUPING
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_GROUPING
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_GROUPING"
+    assert ia2.get_role(node) == "ROLE_SYSTEM_GROUPING"
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

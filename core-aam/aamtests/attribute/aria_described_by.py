@@ -26,14 +26,20 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # <span class="api">In the accessibilityCustomContent API, expose as an <code>AXCustomContent</code> object with <code>{ label: "description" }</code> and `<code>value</code>` set to the description string.</span><br> - <span class="seealso">See also: <a href="#mapping_additional_nd">Name Computation</a></span>
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Property: accDescription: <value>
-#     # Relation: IA2_RELATION_DESCRIBED_BY: points to accessible nodes matching IDREFs, if the referenced objects are in the accessibility tree
-#     # Reverse Relation: IA2_RELATION_DESCRIPTION_FOR: points to element
-#     # See also: Name Computation and Mapping Additional Relations
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Property: accDescription: <value>
+    # Relation: IA2_RELATION_DESCRIBED_BY: points to accessible nodes matching IDREFs, if the referenced objects are in the accessibility tree
+    # Reverse Relation: IA2_RELATION_DESCRIPTION_FOR: points to element
+    # See also: Name Computation and Mapping Additional Relations
+
+    node = ia2.find_node("test", session.url)
+    assert node.accDescription(ia2.CHILDID_SELF) == "hello world"
+    assert "description" in ia2.get_relation_targets(node, "IA2_RELATION_DESCRIBED_BY")
+    description_node = ia2.find_node("description", session.url)
+    assert "test" in ia2.get_relation_targets(description_node, "IA2_RELATION_DESCRIPTION_FOR")
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

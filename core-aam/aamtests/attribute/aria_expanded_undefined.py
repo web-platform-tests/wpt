@@ -18,11 +18,16 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Not mapped
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Not mapped
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Not mapped
+
+    node = ia2.find_node("test", session.url)
+    assert "EXPANDED" not in ia2.get_msaa_state_list(node)
+    assert "COLLAPSED" not in ia2.get_msaa_state_list(node)
+    assert "EXPANDED" not in ia2.get_msaa_state_list(node)
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

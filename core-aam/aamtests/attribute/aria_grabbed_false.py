@@ -17,11 +17,14 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXGrabbed: NO
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Object Attribute: grabbed:false
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Object Attribute: grabbed:false
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_attributes(node).get("grabbed") == "false"
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

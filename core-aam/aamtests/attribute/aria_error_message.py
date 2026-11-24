@@ -24,13 +24,18 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXErrorMessageElements: pointers to accessible nodes matching IDREFs
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Relation: IA2_RELATION_ERROR: points to accessible nodes matching IDREFs, if the referenced objects are in the accessibility tree
-#     # Reverse Relation: IA2_RELATION_ERROR_FOR: points to element
-#     # See also: Mapping Additional Relations
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Relation: IA2_RELATION_ERROR: points to accessible nodes matching IDREFs, if the referenced objects are in the accessibility tree
+    # Reverse Relation: IA2_RELATION_ERROR_FOR: points to element
+    # See also: Mapping Additional Relations
+
+    node = ia2.find_node("test", session.url)
+    assert "error" in ia2.get_relation_targets(node, "IA2_RELATION_ERROR")
+    error_node = ia2.find_node("error", session.url)
+    assert "test" in ia2.get_relation_targets(error_node, "IA2_RELATION_ERROR_FOR")
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

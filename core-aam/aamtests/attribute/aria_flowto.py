@@ -24,13 +24,18 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXLinkedUIElements: pointers to accessible nodes matching IDREFs
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Relation: IA2_RELATION_FLOW_TO: points to accessible nodes matching IDREFs
-#     # Reverse Relation: IA2_RELATION_FLOW_FROM: points to element
-#     # See also: Mapping Additional Relations
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Relation: IA2_RELATION_FLOW_TO: points to accessible nodes matching IDREFs
+    # Reverse Relation: IA2_RELATION_FLOW_FROM: points to element
+    # See also: Mapping Additional Relations
+
+    node = ia2.find_node("test", session.url)
+    assert "next" in ia2.get_relation_targets(node, "IA2_RELATION_FLOWS_TO")
+    next_node = ia2.find_node("next", session.url)
+    assert "test" in ia2.get_relation_targets(next_node, "IA2_RELATION_FLOWS_FROM")
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

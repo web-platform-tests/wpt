@@ -25,7 +25,10 @@ customElements.define('my-control', class extends HTMLElement {
   static get formAssociated() { return true; }
 });
 
-['mousedown', 'mouseup', 'pointerdown', 'pointerup', 'click'].forEach(eventName => {
+const disallowedEvents = ['mousedown', 'mouseup', 'click', 'dblclick'];
+const allowedEvents =
+  ['pointerdown', 'pointerup', 'auxclick' , 'mousemove', 'pointermove', 'contextmenu'];
+[...disallowedEvents, ...allowedEvents].forEach(eventName => {
   [true, false].forEach(clickChildElement => {
     for (const target of targetparent.children) {
       promise_test(async () => {
@@ -39,14 +42,46 @@ customElements.define('my-control', class extends HTMLElement {
         let targetchild = target.firstElementChild;
         targetchild.addEventListener(eventName, () => childReceivedEvent = true);
 
-        await test_driver.click(clickChildElement ? targetchild : target);
+        const elementToClick = clickChildElement ? targetchild : target;
+        const actions = new test_driver.Actions();
+        if (eventName === 'dblclick') {
+          await actions
+            .pointerMove(1, 1, {origin: elementToClick})
+            .pointerDown()
+            .pointerUp()
+            .pointerDown()
+            .pointerUp()
+            .send();
+        } else if (eventName === 'auxclick') {
+          const actions = new test_driver.Actions();
+          await actions
+            .pointerMove(1, 1, {origin: elementToClick})
+            .pointerDown({button: actions.ButtonType.MIDDLE})
+            .pointerUp({button: actions.ButtonType.MIDDLE})
+            .send();
+        } else if (eventName.endsWith('move')) {
+          await actions
+            .pointerMove(1, 1, {origin: elementToClick})
+            .pointerMove(5, 1, {origin: elementToClick})
+            .send();
+        } else if (eventName === 'contextmenu') {
+          const contextMenuPromise = new Promise(resolve => {
+            elementToClick.addEventListener('contextmenu', resolve, { once: true });
+          });
+          await actions
+            .pointerMove(1, 1, {origin: elementToClick})
+            .pointerDown({button: actions.ButtonType.RIGHT})
+            .pointerUp({button: actions.ButtonType.RIGHT})
+            .send();
+          await contextMenuPromise;
+        } else {
+          await test_driver.click(elementToClick);
+        }
 
-        const parentShouldReceiveEvents = eventName.startsWith('pointer');
-        assert_equals(parentReceivedEvent, parentShouldReceiveEvents,
+        const shouldReceiveEvent = allowedEvents.includes(eventName);
+        assert_equals(parentReceivedEvent, shouldReceiveEvent,
                       `parent element received ${eventName} events`);
-
-        const targetShouldReceiveEvents = eventName.startsWith('pointer');
-        assert_equals(targetReceivedEvent, targetShouldReceiveEvents,
+        assert_equals(targetReceivedEvent, shouldReceiveEvent,
                       `target element received ${eventName} events`);
         assert_equals(childReceivedEvent, clickChildElement,
                       `child element received ${eventName} events`);

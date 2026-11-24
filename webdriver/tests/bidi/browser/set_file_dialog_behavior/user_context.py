@@ -24,9 +24,9 @@ async def test_user_contexts(
         user_context=not_affected_user_context, type_hint="tab"
     )
 
-    # Set global behavior to cancel so unaffected contexts do not open OS dialogs.
+    # Set global behavior to dismiss so unaffected contexts do not open OS dialogs.
     await bidi_session.browser.set_file_dialog_behavior(
-        file_dialog_behavior={"type": "cancel"}
+        file_dialog_behavior={"type": "dismiss"}
     )
 
     # Override behavior in affected_user_context to accept file1.
@@ -64,7 +64,7 @@ async def test_user_contexts(
         == expected_cancel
     )
 
-    # Reset per-user-context override; global cancel applies.
+    # Reset per-user-context override; global dismiss applies.
     await bidi_session.browser.set_file_dialog_behavior(
         file_dialog_behavior=None,
         user_contexts=[affected_user_context],
@@ -105,7 +105,7 @@ async def test_per_user_context_overrides_global(
 
     # Set a conflicting global override afterwards; per-user-context still wins.
     await bidi_session.browser.set_file_dialog_behavior(
-        file_dialog_behavior={"type": "cancel"}
+        file_dialog_behavior={"type": "dismiss"}
     )
     assert await trigger_input_file_dialog(context) == {
         "event": "change",

@@ -98,11 +98,11 @@ async def test_show_save_file_picker_accept_existing_file(
     assert overwrite_path.read_bytes() == b""
 
 
-async def test_show_save_file_picker_cancel(
+async def test_show_save_file_picker_dismiss(
     bidi_session, new_tab, get_picker_error
 ):
     await bidi_session.browser.set_file_dialog_behavior(
-        file_dialog_behavior={"type": "cancel"}
+        file_dialog_behavior={"type": "dismiss"}
     )
 
     assert await get_picker_error(new_tab, "showSaveFilePicker") == "AbortError"

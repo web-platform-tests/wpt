@@ -57,11 +57,11 @@ async def test_show_directory_picker_accept(
     assert [item["value"] for item in result["value"]] == ["nested.txt"]
 
 
-async def test_show_directory_picker_cancel(
+async def test_show_directory_picker_dismiss(
     bidi_session, new_tab, get_picker_error
 ):
     await bidi_session.browser.set_file_dialog_behavior(
-        file_dialog_behavior={"type": "cancel"}
+        file_dialog_behavior={"type": "dismiss"}
     )
 
     assert await get_picker_error(new_tab, "showDirectoryPicker") == "AbortError"

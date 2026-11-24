@@ -15,9 +15,9 @@ async def test_set_and_overwrite_globally(
     result = await trigger_input_file_dialog(new_tab)
     assert result == {"event": "change", "files": ["file1.txt"]}
 
-    # Overwrite with cancel globally.
+    # Overwrite with dismiss globally.
     await bidi_session.browser.set_file_dialog_behavior(
-        file_dialog_behavior={"type": "cancel"}
+        file_dialog_behavior={"type": "dismiss"}
     )
     result = await trigger_input_file_dialog(new_tab)
     assert result == {"event": "cancel", "files": []}

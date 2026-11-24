@@ -7,11 +7,11 @@ pytestmark = pytest.mark.asyncio
 FILE_DIALOG_OPENED_EVENT = "input.fileDialogOpened"
 
 
-async def test_cancel_file_dialog(
+async def test_dismiss_file_dialog(
     bidi_session, new_tab, trigger_input_file_dialog
 ):
     await bidi_session.browser.set_file_dialog_behavior(
-        file_dialog_behavior={"type": "cancel"}
+        file_dialog_behavior={"type": "dismiss"}
     )
 
     result = await trigger_input_file_dialog(new_tab, multiple=False)
@@ -23,7 +23,7 @@ async def test_cancel_file_dialog(
 
 
 @pytest.mark.parametrize("multiple", [False, True])
-async def test_cancel_emits_file_dialog_opened_event(
+async def test_dismiss_emits_file_dialog_opened_event(
     bidi_session,
     subscribe_events,
     wait_for_event,
@@ -36,7 +36,7 @@ async def test_cancel_emits_file_dialog_opened_event(
     on_opened = wait_for_event(FILE_DIALOG_OPENED_EVENT)
 
     await bidi_session.browser.set_file_dialog_behavior(
-        file_dialog_behavior={"type": "cancel"}
+        file_dialog_behavior={"type": "dismiss"}
     )
 
     result = await trigger_input_file_dialog(new_tab, multiple=multiple)

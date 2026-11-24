@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>CSS Images Reference: Gradients with the equivalent color(srgb) color stops</title>
+<link rel="author" title="Javier Fernández García-Boente" href="mailto:jfernandez@igalia.com">
+<style>
+  div {
+    width: 300px;
+    height: 40px;
+  }
+  #linear, #currentcolor {
+    background: linear-gradient(to right, color(srgb 0.25 0.25 0.5), blue);
+  }
+  #radial {
+    background: radial-gradient(color(srgb 0.25 0.25 0.5), blue);
+  }
+  #conic {
+    background: conic-gradient(color(srgb 0.25 0.25 0.5), blue);
+  }
+  #repeating {
+    background: repeating-linear-gradient(to right, color(srgb 0.25 0.25 0.5), blue 100px);
+  }
+  #one-color {
+    background: linear-gradient(to right, color(srgb 1 0 0), blue);
+  }
+</style>
+<div id="linear"></div>
+<div id="radial"></div>
+<div id="conic"></div>
+<div id="repeating"></div>
+<div id="one-color"></div>
+<div id="currentcolor"></div>

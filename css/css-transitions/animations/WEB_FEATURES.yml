@@ -4,3 +4,4 @@ rules:
 - move-after-transition.html: [transitions]
 - transition-end-event-shorthands.html: [transitions]
 - transition-timing-function.html: [transitions]
+- animate-with-color-mix-variadic.html: [color-mix-variadic]

@@ -6,6 +6,7 @@ rules:
 - rec2020-*: [color-function]
 - srgb-*: [color-function]
 - xyz-*: [color-function]
+- color-mix-variadic-*: [color-mix-variadic]
 - color-mix-*: [color-mix]
 - nested-color-mix-with-currentcolor.html: [color-mix]
 - currentcolor-visited-fallback.html: [currentcolor, currentcolor]

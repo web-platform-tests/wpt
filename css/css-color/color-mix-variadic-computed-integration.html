@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Color: color-mix() with one color or more than two colors combined with other CSS features</title>
+<link rel="author" title="Javier Fernández García-Boente" href="mailto:jfernandez@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-color-5/#color-mix">
+<link rel="help" href="https://drafts.csswg.org/css-color-5/#relative-colors">
+<link rel="help" href="https://drafts.csswg.org/css-variables-2/#substitute-a-var">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/color-testcommon.js"></script>
+<style>
+  #var-items {
+    --colors: red, lime, blue;
+    color: color-mix(in srgb, var(--colors));
+  }
+  #var-all-arguments {
+    --arguments: in srgb, red, lime, blue;
+    color: color-mix(var(--arguments));
+  }
+  #var-percentage {
+    --percentage: 50%;
+    color: color-mix(in srgb, red var(--percentage), lime, blue);
+  }
+  #relative-color-origin {
+    color: color(from color-mix(in srgb, red, lime, blue) srgb r g b / 0.5);
+  }
+  #three-colors-in-two {
+    color: color-mix(in srgb, color-mix(in srgb, red, lime, blue), white);
+  }
+  #two-colors-in-three {
+    color: color-mix(in srgb, color-mix(in srgb, black, white), black, white);
+  }
+  #one-color-in-three {
+    color: color-mix(in srgb, color-mix(in srgb, white), black, black);
+  }
+  #light-dark-light {
+    color-scheme: light;
+    color: color-mix(in srgb, light-dark(black, white), black, white);
+  }
+  #light-dark-dark {
+    color-scheme: dark;
+    color: color-mix(in srgb, light-dark(black, white), black, white);
+  }
+</style>
+
+<div id="var-items"></div>
+<div id="var-all-arguments"></div>
+<div id="var-percentage"></div>
+<div id="relative-color-origin"></div>
+<div id="three-colors-in-two"></div>
+<div id="two-colors-in-three"></div>
+<div id="one-color-in-three"></div>
+<div id="light-dark-light"></div>
+<div id="light-dark-dark"></div>
+
+<script>
+  const assert_color = set_up_fuzzy_color_test();
+
+  function test_color(id, expected, description) {
+    test(() => {
+      assert_color(getComputedStyle(document.getElementById(id)).color, expected);
+    }, description);
+  }
+
+  test_color("var-items", "color(srgb 0.333333 0.333333 0.333333)",
+             "A var() can provide several colors");
+  test_color("var-all-arguments", "color(srgb 0.333333 0.333333 0.333333)",
+             "A var() can provide the interpolation method and several colors");
+  test_color("var-percentage", "color(srgb 0.5 0.25 0.25)",
+             "A var() can provide the percentage of one of three colors");
+  test_color("relative-color-origin", "color(srgb 0.333333 0.333333 0.333333 / 0.5)",
+             "color-mix() with three colors as the origin color of a relative color");
+  test_color("three-colors-in-two", "color(srgb 0.666667 0.666667 0.666667)",
+             "color-mix() with three colors inside color-mix() with two colors");
+  test_color("two-colors-in-three", "color(srgb 0.5 0.5 0.5)",
+             "color-mix() with two colors inside color-mix() with three colors");
+  test_color("one-color-in-three", "color(srgb 0.333333 0.333333 0.333333)",
+             "color-mix() with one color inside color-mix() with three colors");
+  test_color("light-dark-light", "color(srgb 0.333333 0.333333 0.333333)",
+             "light-dark() inside color-mix() with three colors, with a light color-scheme");
+  test_color("light-dark-dark", "color(srgb 0.666667 0.666667 0.666667)",
+             "light-dark() inside color-mix() with three colors, with a dark color-scheme");
+</script>

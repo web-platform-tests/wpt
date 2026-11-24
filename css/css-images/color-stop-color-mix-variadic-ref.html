@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>CSS Images Reference: Gradient color stops with the equivalent color(srgb) color</title>
+<link rel="author" title="Javier Fernández García-Boente" href="mailto:jfernandez@igalia.com">
+<style>
+  .test {
+    width: 100px;
+    height: 25px;
+  }
+  /* The same gradients as the test, so that engines that dither gradients
+     paint the same pixels. */
+  #t1, #t4 {
+    background-image: linear-gradient(color(srgb 0 0.25 0) 0 0);
+  }
+  #t2 {
+    background-image: radial-gradient(color(srgb 0 0.25 0) 0 0);
+  }
+  #t3 {
+    background-image: conic-gradient(color(srgb 0 0.25 0) 0 0);
+  }
+</style>
+<p>Test passes if there is a filled dark green square.</p>
+<div id="t1" class="test"></div>
+<div id="t2" class="test"></div>
+<div id="t3" class="test"></div>
+<div id="t4" class="test"></div>

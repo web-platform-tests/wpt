@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CSS transitions with color-mix() of one color or more than two colors</title>
+  <link rel="author" title="Javier Fernández García-Boente" href="mailto:jfernandez@igalia.com">
+  <link rel="help" href="https://drafts.csswg.org/css-color-4/#interpolation">
+  <link rel="help" href="https://drafts.csswg.org/css-color-5/#color-mix">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<style>
+  #target-1, #target-2, #target-3, #target-4, #target-5, #target-6 {
+    color: black;
+    height: 100px;
+    width: 100px;
+    display: inline-block;
+    transition: background-color 1s linear;
+  }
+  /* With a black currentcolor, the three colors mix to 1/3 gray. */
+  #target-1,
+  #target-2.update-2 {
+    background-color: color-mix(in srgb, currentcolor, white, black);
+  }
+  #target-3,
+  #target-4.update-4 {
+    background-color: color-mix(in srgb, currentcolor);
+  }
+  /* Without currentcolor, the three colors also mix to 1/3 gray. */
+  #target-5,
+  #target-6.update-6 {
+    background-color: color-mix(in srgb, red, lime, blue);
+  }
+  #target-1.update-1,
+  #target-2,
+  #target-3.update-3,
+  #target-4,
+  #target-5.update-5,
+  #target-6 {
+    background-color: rgb(0, 255, 0);
+  }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/web-animations/testcommon.js"></script>
+<script src="/css/support/color-testcommon.js"></script>
+<body>
+  <div id="target-1"></div>
+  <div id="target-2"></div>
+  <div id="target-3"></div>
+  <div id="target-4"></div>
+  <div id="target-5"></div>
+  <div id="target-6"></div>
+  <div id="probe"></div>
+</body>
+<script>
+  'use strict';
+
+  // Browsers serialize an interpolated color in different color spaces and
+  // number formats, so convert it to Oklab with fixed precision before
+  // comparing.
+  function toOklab(color) {
+    const probe = document.getElementById('probe');
+    probe.style.color = `oklab(from ${color} l a b)`;
+    const [l, a, b] =
+        getComputedStyle(probe).color.match(/-?[\d.]+(e-?\d+)?/g).map(Number);
+    return `oklab(${l.toFixed(4)} ${a.toFixed(4)} ${b.toFixed(4)})`;
+  }
+
+  async function runAnimationTest(t, elementId, update, expected_colors) {
+    const elem = document.getElementById(elementId);
+    t.add_cleanup(() => {
+      elem.classList.remove(update);
+    });
+    await waitForNextFrame();
+    await waitForNextFrame();
+    elem.classList.add(update);
+    const anim = elem.getAnimations()[0];
+    await anim.ready;
+    // Keep the animation in effect when it reaches the end.
+    anim.effect.updateTiming({ fill: 'forwards' });
+    expected_colors.forEach(data => {
+      anim.currentTime = 1000 * data.at;
+      const actual = toOklab(getComputedStyle(elem).backgroundColor);
+      assert_oklab_color(actual, data.value,
+                         `Background color at ${100 * data.at}% animation progress`);
+    });
+  }
+
+  const gray_to_green = [
+    { at: 0, value: 'oklab(0.4495 0 0)' },
+    { at: 0.25, value: 'oklab(0.5538 -0.0585 0.0449)' },
+    { at: 0.5, value: 'oklab(0.6580 -0.1169 0.0897)' },
+    { at: 0.75, value: 'oklab(0.7622 -0.1754 0.1346)' },
+    { at: 1, value: 'oklab(0.8664 -0.2339 0.1795)' }
+  ];
+
+  const green_to_gray = [...gray_to_green].reverse().map(
+      (data, i) => ({ at: gray_to_green[i].at, value: data.value }));
+
+  const black_to_green = [
+    { at: 0, value: 'oklab(0 0 0)' },
+    { at: 0.25, value: 'oklab(0.2166 -0.0585 0.0449)' },
+    { at: 0.5, value: 'oklab(0.4332 -0.1169 0.0897)' },
+    { at: 0.75, value: 'oklab(0.6498 -0.1754 0.1346)' },
+    { at: 1, value: 'oklab(0.8664 -0.2339 0.1795)' }
+  ];
+
+  const green_to_black = [...black_to_green].reverse().map(
+      (data, i) => ({ at: black_to_green[i].at, value: data.value }));
+
+  window.onload = async () => {
+    promise_test(t => {
+      return runAnimationTest(t, 'target-1', 'update-1', gray_to_green);
+    }, 'Transition from color-mix with three colors and currentcolor to legacy rgb');
+
+    promise_test(t => {
+      return runAnimationTest(t, 'target-2', 'update-2', green_to_gray);
+    }, 'Transition from legacy rgb to color-mix with three colors and currentcolor');
+
+    promise_test(t => {
+      return runAnimationTest(t, 'target-3', 'update-3', black_to_green);
+    }, 'Transition from color-mix with one color and currentcolor to legacy rgb');
+
+    promise_test(t => {
+      return runAnimationTest(t, 'target-4', 'update-4', green_to_black);
+    }, 'Transition from legacy rgb to color-mix with one color and currentcolor');
+
+    promise_test(t => {
+      return runAnimationTest(t, 'target-5', 'update-5', gray_to_green);
+    }, 'Transition from color-mix with three colors to legacy rgb');
+
+    promise_test(t => {
+      return runAnimationTest(t, 'target-6', 'update-6', green_to_gray);
+    }, 'Transition from legacy rgb to color-mix with three colors');
+  };
+</script>
+</html>

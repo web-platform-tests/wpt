@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<title>CSS Images Test: Gradients interpolating color-mix() color stops of one color or more than two colors</title>
+<link rel="author" title="Javier Fernández García-Boente" href="mailto:jfernandez@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-images-4/#color-stop-syntax">
+<link rel="help" href="https://drafts.csswg.org/css-color-4/#interpolation">
+<link rel="help" href="https://drafts.csswg.org/css-color-5/#color-mix">
+<link rel="match" href="color-mix-variadic-gradient-ref.html">
+<meta name="assert" content="A color-mix() color stop of one color or more than two colors resolves to the mixed color, and since it isn't a legacy color, the gradient interpolates in Oklab.">
+<style>
+  div {
+    width: 300px;
+    height: 40px;
+  }
+  /* These mixes resolve to color(srgb 0.25 0.25 0.5). Percentages of 25% and
+     50% keep each step of the mix exact in binary floating point, so the stops
+     match the reference bit for bit, and engines that dither gradients paint
+     the same pixels. */
+  #linear {
+    background: linear-gradient(to right, color-mix(in srgb, red 25%, lime 25%, blue 50%), blue);
+  }
+  #radial {
+    background: radial-gradient(color-mix(in srgb, red 25%, lime 25%, blue 50%), blue);
+  }
+  #conic {
+    background: conic-gradient(color-mix(in srgb, red 25%, lime 25%, blue 50%), blue);
+  }
+  #repeating {
+    background: repeating-linear-gradient(to right, color-mix(in srgb, red 25%, lime 25%, blue 50%), blue 100px);
+  }
+  #one-color {
+    background: linear-gradient(to right, color-mix(in srgb, red), blue);
+  }
+  #currentcolor {
+    color: red;
+    background: linear-gradient(to right, color-mix(in srgb, currentcolor 25%, lime 25%, blue 50%), blue);
+  }
+</style>
+<div id="linear"></div>
+<div id="radial"></div>
+<div id="conic"></div>
+<div id="repeating"></div>
+<div id="one-color"></div>
+<div id="currentcolor"></div>

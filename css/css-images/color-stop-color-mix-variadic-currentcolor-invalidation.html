@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>CSS Images Test: Invalidate currentcolor in gradient with color-mix() color stops of one color or more than two colors</title>
+<link rel="author" title="Javier Fernández García-Boente" href="mailto:jfernandez@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-images/#gradients">
+<link rel="help" href="https://drafts.csswg.org/css-color-5/#color-mix">
+<link rel="match" href="color-stop-color-mix-variadic-currentcolor-invalidation-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<style>
+  .test {
+    color: red;
+    width: 100px;
+    height: 25px;
+  }
+  /* Mixing in srgb keeps the channels of currentcolor unchanged, so the stops
+     match the reference's color bit for bit, and engines that dither
+     gradients paint the same pixels. */
+  #t1 {
+    background-image: linear-gradient(color-mix(in srgb, currentcolor, pink 0%, blue 0%) 0 0);
+  }
+  #t2 {
+    background-image: conic-gradient(color-mix(in srgb, currentcolor, pink 0%, blue 0%) 0 0);
+  }
+  #t3 {
+    background-image: linear-gradient(color-mix(in srgb, currentcolor) 0 0);
+  }
+  #t4 {
+    background-image: conic-gradient(color-mix(in srgb, currentcolor) 0 0);
+  }
+</style>
+<p>Test passes if there is a filled green square.</p>
+<div id="t1" class="test"></div>
+<div id="t2" class="test"></div>
+<div id="t3" class="test"></div>
+<div id="t4" class="test"></div>
+<script>
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    for (const element of document.querySelectorAll(".test")) {
+      // Unlike green's 128/255, these channels are exact in binary floating
+      // point, so the reference can give the same color.
+      element.style.color = "color(srgb 0 0.75 0)";
+    }
+    takeScreenshot();
+  }));
+</script>
+</html>

@@ -8,7 +8,7 @@
 async_test(t => {
   const url = new URL("resources/cross-origin-iframe-helper.html", location.href);
   url.hostname = get_host_info().REMOTE_HOST;
-  const iframe = document.createElement("iframe")
+  const iframe = document.createElement("iframe");
   iframe.src = url;
   iframe.name = "windowname";
   document.body.append(iframe);

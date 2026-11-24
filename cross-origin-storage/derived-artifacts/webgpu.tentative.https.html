@@ -1,0 +1,66 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Cross-Origin Storage: WebGPU derived artifacts are keyed on pipeline inputs</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="../resources/cross-origin-helpers.js"></script>
+<body>
+<script type="module">
+// https://wicg.github.io/cross-origin-storage/#derived-artifacts
+//
+// A user agent may reuse a pipeline compiled from shader code read from a
+// Cross-Origin Storage entry under another top-level site, but the key of that
+// derived artifact includes every page-chosen input, and the artifact depends
+// on its key alone. Pipeline-overridable constants and the entry point are
+// page-chosen. Each test creates pipelines from one stored shader under this
+// document's top-level site and under another one, with different inputs, and
+// checks that every site gets the output its own inputs describe. Whether a
+// user agent reuses anything is not observable here, so these tests hold
+// whether or not it does.
+import {runWebGPU, shader, store} from '../resources/derived-artifacts.mjs';
+
+const MODULE = '/cross-origin-storage/resources/derived-artifacts.mjs';
+const {HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+
+async function runHere(value, computeList) {
+  const result = await runWebGPU(value, computeList);
+  assert_implements_optional(!result.unsupported, 'WebGPU');
+  return result.results;
+}
+
+async function runThere(t, value, computeList) {
+  const result = await cosRunTopLevel(
+    t, HTTPS_NOTSAMESITE_ORIGIN, MODULE, 'runWebGPU', [value, computeList]);
+  assert_true(result.ok, `running on another top-level site, got ${result.name}: ${result.message}`);
+  assert_implements_optional(!result.value.unsupported, 'WebGPU on another top-level site');
+  return result.value.results;
+}
+
+async function check(t, mine, theirs) {
+  const value = await store(shader(), [HTTPS_NOTSAMESITE_ORIGIN]);
+  assert_array_equals(await runHere(value, [mine.compute]), [mine.expected],
+    'this site, with its inputs');
+  assert_array_equals(await runThere(t, value, [theirs.compute, mine.compute]),
+    [theirs.expected, mine.expected],
+    'another top-level site, with other inputs and then with the same inputs');
+  assert_array_equals(await runHere(value, [theirs.compute]), [theirs.expected],
+    'this site, with the other inputs');
+}
+
+// The shader writes `k * 3 + 1` from entry point `a` and `k * 5 + 2` from `b`.
+promise_test(t => check(t,
+  {compute: {entryPoint: 'a', constants: {k: 7}}, expected: 22},
+  {compute: {entryPoint: 'a', constants: {k: 9}}, expected: 28}),
+  'pipeline-overridable constants are part of the key of a pipeline compiled from ' +
+  'Cross-Origin Storage');
+
+promise_test(t => check(t,
+  {compute: {entryPoint: 'a'}, expected: 4},
+  {compute: {entryPoint: 'b'}, expected: 7}),
+  'the entry point is part of the key of a pipeline compiled from Cross-Origin Storage');
+</script>
+</body>

@@ -252,3 +252,19 @@ function cosAllowOriginPipe(origins) {
   const list = Array.isArray(origins) ? origins : [origins];
   return `header(Cross-Origin-Storage-Allow-Origin,${list.join('\\,')})`;
 }
+
+// Opens a top-level window on `origin` (see cosOpenTopLevel()), imports the
+// module at the root-absolute `path` from that origin there, and returns what
+// its export `name` resolves to when called with `args`. Shaped as
+// {ok: true, value} or {ok: false, name, message}.
+async function cosRunTopLevel(t, origin, path, name, args) {
+  const ctx = await cosOpenTopLevel(t, origin);
+  return ctx.execute_script(async (path, name, args) => {
+    try {
+      const module = await import(path);
+      return {ok: true, value: await module[name](...args)};
+    } catch (e) {
+      return {ok: false, name: e.name, message: e.message};
+    }
+  }, [path, name, args]);
+}

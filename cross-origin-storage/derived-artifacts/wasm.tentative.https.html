@@ -1,0 +1,67 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Cross-Origin Storage: WebAssembly derived artifacts are keyed on compile options</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="../resources/cross-origin-helpers.js"></script>
+<body>
+<script type="module">
+// https://wicg.github.io/cross-origin-storage/#derived-artifacts
+//
+// A user agent may reuse a module compiled from a Cross-Origin Storage entry
+// under another top-level site, but the key of that derived artifact includes
+// every page-chosen input, and the artifact depends on its key alone. Compile
+// options other than the defaults are page-chosen. Each test compiles one
+// stored module under this document's top-level site and under another one,
+// with different options, and checks that every site gets the module its own
+// options describe. Whether a user agent reuses anything is not observable
+// here, so these tests hold whether or not it does.
+import {jsStringBuiltinsModule, runWasm, store, stringConstantsModule}
+  from '../resources/derived-artifacts.mjs';
+
+const MODULE = '/cross-origin-storage/resources/derived-artifacts.mjs';
+const {HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+
+function assertModule(actual, expected, description) {
+  assert_array_equals(actual.imports, expected.imports, `${description}: imports`);
+  assert_equals(actual.value, expected.value, `${description}: result`);
+}
+
+async function runThere(t, value, optionsList) {
+  const result = await cosRunTopLevel(
+    t, HTTPS_NOTSAMESITE_ORIGIN, MODULE, 'runWasm', [value, optionsList]);
+  assert_true(result.ok, `compiling on another top-level site, got ${result.name}: ${result.message}`);
+  return result.value;
+}
+
+async function check(t, bytes, options, feature, withOptions, withoutOptions) {
+  const value = await store(bytes, [HTTPS_NOTSAMESITE_ORIGIN]);
+  const [first] = await runWasm(value, [options]);
+  assert_implements_optional(first.imports.length === 0, feature);
+  assertModule(first, withOptions, 'this site, with the options');
+
+  const [defaults, same] = await runThere(t, value, [{}, options]);
+  assertModule(defaults, withoutOptions, 'another top-level site, with default options');
+  assertModule(same, withOptions, 'another top-level site, with the same options');
+
+  const [last] = await runWasm(value, [{}]);
+  assertModule(last, withoutOptions, 'this site, with default options');
+}
+
+promise_test(t => check(t, jsStringBuiltinsModule(), {builtins: ['js-string']},
+  'JS String Builtins',
+  {imports: [], value: 4},
+  {imports: ['wasm:js-string length'], value: -1}),
+  'builtins is part of the key of a module compiled from Cross-Origin Storage');
+
+promise_test(t => check(t, stringConstantsModule(), {importedStringConstants: "'"},
+  'imported string constants',
+  {imports: [], value: 'hi'},
+  {imports: ["' hi"], value: 'import object'}),
+  'importedStringConstants is part of the key of a module compiled from Cross-Origin Storage');
+</script>
+</body>

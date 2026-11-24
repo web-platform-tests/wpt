@@ -12,9 +12,19 @@ def main(request, response):
   headers = [(b'Cache-Control', b'no-cache, must-revalidate'),
              (b'Pragma', b'no-cache'),
              (b'Content-Type', b'application/javascript')]
+
+  # Allows this script to be statically imported cross-origin by a module
+  # service worker. Access-Control-Allow-Headers is deliberately not sent, so
+  # a request with a Service-Worker header fails its CORS preflight.
+  if b'cors' in request.GET:
+    headers.append((b'Access-Control-Allow-Origin', b'*'))
+
   body = b'/* This is a service worker script */\n'
 
   if b'import' in request.GET:
     body += b"importScripts('%s');" % request.GET[b'import']
+
+  if b'static-import' in request.GET:
+    body += b"import '%s';" % request.GET[b'static-import']
 
   return 200, headers, body

@@ -28,13 +28,13 @@ index_get_all_values_test(
 index_get_all_values_test(
     /*storeName=*/ 'out-of-line', /*options=*/ {count: 10}, 'maxCount=10');
 
-get_all_with_null_query_test(
-    'getAll', /*storeName=*/ 'out-of-line', /*indexName=*/ 'test_idx',
-    /*count=*/ undefined, 'Get all with null query');
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {query: null},
+    'Get all with null query');
 
-get_all_with_null_query_test(
-    'getAll', /*storeName=*/ 'out-of-line', /*indexName=*/ 'test_idx',
-    /*count=*/ 10, 'maxCount=10 with null query');
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {query: null, count: 10},
+    'maxCount=10 with null query');
 
 index_get_all_values_test(
     /*storeName=*/ 'out-of-line',

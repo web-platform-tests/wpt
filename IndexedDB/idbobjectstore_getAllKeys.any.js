@@ -25,13 +25,13 @@ object_store_get_all_keys_test(
 object_store_get_all_keys_test(
     /*storeName=*/ 'out-of-line', /*options=*/ {count: 10}, 'Test maxCount');
 
-get_all_with_null_query_test(
-    'getAllKeys', /*storeName=*/ 'out-of-line', /*indexName=*/ undefined,
-    /*count=*/ undefined, 'Get all keys with null query');
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {query: null},
+    'Get all keys with null query');
 
-get_all_with_null_query_test(
-    'getAllKeys', /*storeName=*/ 'out-of-line', /*indexName=*/ undefined,
-    /*count=*/ 10, 'Test maxCount with null query');
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {query: null, count: 10},
+    'Test maxCount with null query');
 
 object_store_get_all_keys_test(
     /*storeName=*/ 'out-of-line',

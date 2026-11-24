@@ -24,13 +24,13 @@ index_get_all_keys_test(
 index_get_all_keys_test(
     /*storeName=*/ 'out-of-line', /*options=*/ {count: 10}, 'maxCount=10');
 
-get_all_with_null_query_test(
-    'getAllKeys', /*storeName=*/ 'out-of-line', /*indexName=*/ 'test_idx',
-    /*count=*/ undefined, 'Get all keys with null query');
+index_get_all_keys_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {query: null},
+    'Get all keys with null query');
 
-get_all_with_null_query_test(
-    'getAllKeys', /*storeName=*/ 'out-of-line', /*indexName=*/ 'test_idx',
-    /*count=*/ 10, 'maxCount=10 with null query');
+index_get_all_keys_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {query: null, count: 10},
+    'maxCount=10 with null query');
 
 index_get_all_keys_test(
     /*storeName=*/ 'out-of-line',
@@ -68,7 +68,7 @@ index_get_all_keys_test(
 
 index_get_all_keys_test(
     /*storeName=*/ 'out-of-line',
-    /*options=*/ {query: 0}, 'maxCount=0');
+    /*options=*/ {count: 0}, 'maxCount=0');
 
 index_get_all_keys_test(
     /*storeName=*/ 'out-of-line',

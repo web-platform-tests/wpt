@@ -57,11 +57,12 @@ for (const [parentKind, childKind, expectedMarker] of [
 test(() => {
   const registry = new CustomElementRegistry();
   const parent = xmlRegistryElement('section', registry);
-  const child = xmlRegistryElement('span', registry);
-  parent.append(child);
-  const parsed = xmlRegistryParse(xmlRegistrySerialize(child));
-  assert_true(parsed.hasAttribute('customelementregistry'));
-}, 'XMLSerializer does not use a parent outside the serialized subtree as registry context');
+  const inheriting = xmlRegistryElement('span', registry);
+  const differing = xmlRegistryElement('span', null);
+  parent.append(inheriting, differing);
+  assert_false(xmlRegistryParse(xmlRegistrySerialize(inheriting)).hasAttribute('customelementregistry'));
+  assert_true(xmlRegistryParse(xmlRegistrySerialize(differing)).hasAttribute('customelementregistry'));
+}, 'XMLSerializer compares an element with its parent registry, like outerHTML');
 
 test(() => {
   const parent = xmlRegistryElement('section');

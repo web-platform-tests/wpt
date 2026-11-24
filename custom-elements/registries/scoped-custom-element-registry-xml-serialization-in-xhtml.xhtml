@@ -28,8 +28,8 @@ test(() => {
   parent.append(child);
   assert_false(parent.innerHTML.includes('customelementregistry'));
   assert_false(child.outerHTML.includes('customelementregistry'));
-  assert_true(xmlRegistrySerialize(child).includes('customelementregistry'));
-}, 'XML fragment getters and XMLSerializer use their respective registry contexts');
+  assert_false(xmlRegistrySerialize(child).includes('customelementregistry'));
+}, 'XML fragment getters and XMLSerializer use the parent registry context');
 
 test(() => {
   const parent = xmlRegistryElement('section', null);

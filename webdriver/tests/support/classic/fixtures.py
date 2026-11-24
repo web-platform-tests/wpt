@@ -46,8 +46,7 @@ async def session(capabilities, configuration):
         session.start()
 
         # Enforce a fixed default window size and position
-        if session.capabilities.get("setWindowRect"):
-            set_default_window_rect(session)
+        set_default_window_rect(session)
 
         # Set default timeouts with a single command to save round-trips
         multiplier = configuration["timeout_multiplier"]

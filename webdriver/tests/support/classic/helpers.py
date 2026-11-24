@@ -40,14 +40,18 @@ def cleanup_session(session):
     def _close_window(session, window):
         """Dismiss the open user prompt in the given window, and close it."""
         session.window_handle = window
-        # Closing a window with an open user prompt would fail.
+        # Dismiss any open user prompt first, otherwise the user prompt
+        # handler of Close Window might return an error and leave the
+        # window open.
         _dismiss_user_prompt(session)
-        session.window.close()
+        if session.session_id is None:
+            return
+        if len(session.handles) > 1:
+            session.window.close()
 
     @ignore_exceptions
     def _restore_timeouts(session):
         """Restore modified timeouts to their default values."""
-        # A single command for all the timeouts saves round-trips.
         session.send_session_command("POST", "timeouts", {
             "implicit": defaults.IMPLICIT_WAIT_TIMEOUT * 1000,
             "pageLoad": defaults.PAGE_LOAD_TIMEOUT * 1000,
@@ -64,7 +68,6 @@ def cleanup_session(session):
         by closing the last window. Its top-level browsing context ends up
         selected.
         """
-        # Query the window handles only once.
         handles = session.handles
         if not handles:
             return
@@ -76,6 +79,10 @@ def cleanup_session(session):
 
         if current_window in handles:
             window_to_keep = current_window
+            # Dismiss any open user prompt in the current window before
+            # switching to other windows, as modal prompts can prevent
+            # focusing another top-level browsing context.
+            _dismiss_user_prompt(session)
         else:
             # The current window was closed, so select the first remaining one.
             window_to_keep = handles[0]
@@ -84,10 +91,13 @@ def cleanup_session(session):
             if window != window_to_keep:
                 _close_window(session, window)
 
-        # Switching to the window also selects its top-level browsing context,
-        # and unlike switching frames it doesn't fail for open user prompts.
+        if session.session_id is None:
+            return
+
+        # Switching to the window also selects its top-level browsing context.
         session.window_handle = window_to_keep
-        _dismiss_user_prompt(session)
+        if current_window != window_to_keep:
+            _dismiss_user_prompt(session)
 
     _restore_timeouts(session)
     _restore_windows(session)
@@ -95,6 +105,8 @@ def cleanup_session(session):
 
 def set_default_window_rect(session):
     """Set the default window size and position with a single command."""
+    if not session.capabilities.get("setWindowRect"):
+        return
     width, height = defaults.WINDOW_SIZE
     x, y = defaults.WINDOW_POSITION
     try:

@@ -71,8 +71,7 @@ async def bidi_session(capabilities, configuration):
             await session.bidi_session.start()
 
             # Enforce a fixed default window size and position
-            if session.capabilities.get("setWindowRect"):
-                set_default_window_rect(session)
+            set_default_window_rect(session)
 
             yield session.bidi_session
 

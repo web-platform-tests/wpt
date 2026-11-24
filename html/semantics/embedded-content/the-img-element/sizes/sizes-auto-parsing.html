@@ -251,7 +251,7 @@ promise_test(async t => {
   await loaded;
 
   assert_true(img.currentSrc.includes("large-empty-source-sizes"),
-              `Explicit empty <source sizes=''> must fall back to 100vw rather than defaulting to auto (got: ${img.currentSrc})`);
+              `Explicit empty <source sizes=''> must fall back to 100vw rather than using the img's sizes (got: ${img.currentSrc})`);
 }, "Explicit empty <source sizes=''> falls back to 100vw even when img allows auto-sizes");
 
 promise_test(async t => {

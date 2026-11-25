@@ -11,7 +11,7 @@
 <script>
 runBfcacheTest({
   targetOrigin: originSameOrigin,
-  funcBeforeNavigation() {
+  funcBeforeNavigation: () => {
     window.savedActivation = navigation.activation;
   },
   async funcAfterAssertion(pageA, pageB) {
@@ -33,7 +33,7 @@ runBfcacheTest({
 
 runBfcacheTest({
   targetOrigin: originCrossSite,
-  funcBeforeNavigation() {
+  funcBeforeNavigation: () => {
     window.savedActivation = navigation.activation;
   },
   async funcAfterAssertion(pageA) {

@@ -2,7 +2,11 @@ import time
 
 def main(request, response):
     delay = request.GET.first(b'delay', b'')
-    body = b'preload body'
+    # A body load that falls back to a second network request gets a different body.
+    if b'Service-Worker-Navigation-Preload' in request.headers:
+        body = b'preload body'
+    else:
+        body = b'network body'
 
     if delay == b'headers':
         time.sleep(1)

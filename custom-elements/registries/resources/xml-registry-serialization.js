@@ -172,3 +172,30 @@ test(() => {
   assert_equals(parsed.firstElementChild.customElementRegistry, registry);
   assert_false(source.hasAttribute('customelementregistry'));
 }, 'An XML-serialized scoped registry boundary reparses as null and can be initialized');
+
+test(() => {
+  const element = xmlRegistryElement('section', null);
+  element.setAttribute('id', 'x');
+  assert_equals(
+      xmlRegistrySerialize(element),
+      `<section xmlns="${xmlRegistryHTMLNamespace}" customelementregistry="" id="x"></section>`);
+}, 'XML serialization generates the registry attribute before the other attributes');
+
+test(() => {
+  const element = document.createElementNS(
+      xmlRegistryHTMLNamespace, 'h:section', {customElementRegistry: null});
+  assert_equals(
+      xmlRegistrySerialize(element),
+      `<h:section xmlns:h="${xmlRegistryHTMLNamespace}" customelementregistry=""></h:section>`);
+}, 'XML serialization generates the registry attribute on a prefixed HTML element');
+
+test(() => {
+  const registry = new CustomElementRegistry();
+  const template = xmlRegistryElement('template');
+  const span = xmlRegistryElement('span', registry);
+  template.content.append(span);
+  assert_equals(span.customElementRegistry, registry);
+  assert_equals(
+      xmlRegistrySerialize(template),
+      `<template xmlns="${xmlRegistryHTMLNamespace}"><span customelementregistry=""></span></template>`);
+}, 'XML serialization generates the registry attribute for a scoped element in template contents');

@@ -133,7 +133,7 @@ promise_test(async t => {
     '    window.name = "reloaded"; location.reload();' +
     '  } else { parent.postMessage({ step: window.name, navType }, "*"); }' +
     '}, 0));' +
-    '<\\/script>'
+    '</' + 'script>'
   );
   const dataUrl = `data:text/html,${dataPayload}`;
   const iframe = document.createElement('iframe');

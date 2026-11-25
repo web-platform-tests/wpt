@@ -9,7 +9,7 @@ function downloadReferrerTest(tagName, attributes, expectedReferrer, description
     document.body.append(element);
     t.add_cleanup(() => element.remove());
 
-    element.click();
+    await test_driver.bless("download", () => element.click());
 
     const headers = JSON.parse(await receive(id));
     assert_equals(headers.referer ?? "", expectedReferrer, "Referer header of the download request");

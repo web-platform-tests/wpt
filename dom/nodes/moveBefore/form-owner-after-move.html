@@ -22,6 +22,10 @@
 <div id="img-cell-into-form"><table><form id="img-cell-into-form-form"><tr><td id="img-cell-into-form-cell"><img id="img-cell-into-form-img" name="pic"></td></tr></table></form></div>
 <div id="img-moved"><table><form id="img-moved-form"><tr><td><img id="img-moved-img" name="pic"></td></tr></table></form></div>
 <div id="img-form-moved"><table><form id="img-form-moved-form"><tr><td><img id="img-form-moved-img" name="pic"></td></tr></table></form></div>
+<div id="img-table-into-form"><table id="img-table-into-form-table"><form id="img-table-into-form-form"><tr><td><img id="img-table-into-form-img" name="pic"></td></tr></table></form></div>
+<div id="img-table-into-shadow"><table id="img-table-into-shadow-table"><form id="img-table-into-shadow-form"><tr><td><img id="img-table-into-shadow-img" name="pic"></td></tr></table></form></div>
+<div id="img-cell-moved"><table><form id="img-cell-moved-form"><tr><td id="img-cell-moved-cell"><img id="img-cell-moved-img" name="pic"></td></tr></table></form></div>
+<div id="img-form-into-shadow"><table><form id="img-form-into-shadow-form"><tr><td><img id="img-form-into-shadow-img" name="pic"></td></tr></table></form></div>
 <div id="image-input-table-moved"><table id="image-input-table-moved-table"><form id="image-input-table-moved-form"><tr><td><input type="image" id="image-input-table-moved-input"></td></tr></table></form></div>
 <div id="image-input-cell-into-form"><table><form id="image-input-cell-into-form-form"><tr><td id="image-input-cell-into-form-cell"><input type="image" id="image-input-cell-into-form-input"></td></tr></table></form></div>
 <div id="image-input-moved"><table><form id="image-input-moved-form"><tr><td><input type="image" id="image-input-moved-input"></td></tr></table></form></div>
@@ -203,6 +207,20 @@ test(t => {
 }, "Moving an img from one form to another associates it with the new form");
 
 test(t => {
+  const form = document.createElement("form");
+  const wrapper = document.createElement("div");
+  const img = document.createElement("img");
+  img.name = "pic";
+  wrapper.append(img);
+  document.body.append(form, wrapper);
+  t.add_cleanup(() => { form.remove(); wrapper.remove(); });
+  assert_equals(form.pic, undefined);
+
+  form.moveBefore(wrapper, null);
+  assert_equals(form.pic, img);
+}, "Moving an ancestor of an img into a form associates the img with the form");
+
+test(t => {
   const form = document.getElementById("img-table-moved-form");
   const img = document.getElementById("img-table-moved-img");
   assert_equals(form.pic, img, "the img is associated with the form by the parser");
@@ -241,6 +259,54 @@ test(t => {
   document.getElementById("destination").moveBefore(form, null);
   assert_equals(form.pic, undefined);
 }, "Moving a form away from an img it was associated with by the parser resets the img's form owner");
+
+test(t => {
+  const form = document.getElementById("img-table-into-form-form");
+  const img = document.getElementById("img-table-into-form-img");
+  const outerForm = document.createElement("form");
+  document.body.append(outerForm);
+  t.add_cleanup(() => outerForm.remove());
+  assert_equals(form.pic, img, "the img is associated with the form by the parser");
+
+  outerForm.moveBefore(document.getElementById("img-table-into-form-table"), null);
+  assert_equals(form.pic, img);
+  assert_equals(outerForm.pic, undefined);
+}, "Moving a table containing both a parser-associated img and its form into another form keeps the association");
+
+test(t => {
+  const form = document.getElementById("img-table-into-shadow-form");
+  const img = document.getElementById("img-table-into-shadow-img");
+  const host = document.createElement("div");
+  document.body.append(host);
+  t.add_cleanup(() => host.remove());
+  const root = host.attachShadow({ mode: "open" });
+  assert_equals(form.pic, img, "the img is associated with the form by the parser");
+
+  root.moveBefore(document.getElementById("img-table-into-shadow-table"), null);
+  assert_equals(form.pic, img);
+}, "Moving a table containing both a parser-associated img and its form into a shadow root keeps the association");
+
+test(t => {
+  const form = document.getElementById("img-cell-moved-form");
+  const img = document.getElementById("img-cell-moved-img");
+  assert_equals(form.pic, img, "the img is associated with the form by the parser");
+
+  document.getElementById("destination").moveBefore(document.getElementById("img-cell-moved-cell"), null);
+  assert_equals(form.pic, undefined);
+}, "Moving the cell containing a parser-associated img, but not its form, resets the form owner");
+
+test(t => {
+  const form = document.getElementById("img-form-into-shadow-form");
+  const img = document.getElementById("img-form-into-shadow-img");
+  const host = document.createElement("div");
+  document.body.append(host);
+  t.add_cleanup(() => host.remove());
+  const root = host.attachShadow({ mode: "open" });
+  assert_equals(form.pic, img, "the img is associated with the form by the parser");
+
+  root.moveBefore(form, null);
+  assert_equals(form.pic, undefined);
+}, "Moving a form into a shadow root resets the form owner of an img it was associated with by the parser");
 
 test(t => {
   const form = document.getElementById("image-input-table-moved-form");

@@ -25,8 +25,12 @@ promise_test(async testCase => {
   let subscriptions =
       [{name: 'cookie-name'}, {url: self.registration.scope + '/subdir'}];
   await self.registration.cookies.subscribe(subscriptions);
-  testCase.add_cleanup(
-      () => self.registration.cookies.unsubscribe(subscriptions));
+  // Window tests unregister the worker, which also removes its subscriptions.
+  // Avoid racing unsubscribe() against that cleanup.
+  if (!self.GLOBAL.isWindow()) {
+    testCase.add_cleanup(
+        () => self.registration.cookies.unsubscribe(subscriptions));
+  }
 
   subscriptions = await self.registration.cookies.getSubscriptions();
   assert_equals(subscriptions.length, 2);
@@ -56,8 +60,10 @@ promise_test(async testCase => {
 
   let subscriptions = [{}];
   await self.registration.cookies.subscribe(subscriptions);
-  testCase.add_cleanup(
-      () => self.registration.cookies.unsubscribe(subscriptions));
+  if (!self.GLOBAL.isWindow()) {
+    testCase.add_cleanup(
+        () => self.registration.cookies.unsubscribe(subscriptions));
+  }
 
   subscriptions = await self.registration.cookies.getSubscriptions();
   assert_equals(subscriptions.length, 1);
@@ -113,7 +119,9 @@ promise_test(async testCase => {
   await self.registration.cookies.subscribe(subscriptions);
   await self.registration.cookies.subscribe(subscriptions);
   await self.registration.cookies.subscribe(subscriptions);
-  testCase.add_cleanup(() => registration.cookies.unsubscribe(subscriptions));
+  if (!self.GLOBAL.isWindow()) {
+    testCase.add_cleanup(() => registration.cookies.unsubscribe(subscriptions));
+  }
 
   subscriptions = await registration.cookies.getSubscriptions();
   assert_equals(subscriptions.length, 1);
@@ -144,7 +152,9 @@ promise_test(async testCase => {
     {name: 'cookie-name2'},
   ];
   await self.registration.cookies.subscribe(subscriptions);
-  testCase.add_cleanup(() => registration.cookies.unsubscribe(subscriptions));
+  if (!self.GLOBAL.isWindow()) {
+    testCase.add_cleanup(() => registration.cookies.unsubscribe(subscriptions));
+  }
 
   // Call unsubscribe for same subscription multiple times to verify that it
   // is idempotent.
@@ -157,3 +167,4 @@ promise_test(async testCase => {
   assert_equals(subscriptions[0].name, 'cookie-name2');
   assert_equals(subscriptions[0].url, registration.scope);
 }, 'CookieStore.unsubscribe is idempotent');
+

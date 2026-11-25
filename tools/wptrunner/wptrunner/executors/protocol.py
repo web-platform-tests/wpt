@@ -198,6 +198,11 @@ class BaseProtocolPart(ProtocolPart):
         :param url: The url to load"""
         pass
 
+    @abstractmethod
+    def refresh(self):
+        """Reload the document of the current top-level browsing context"""
+        pass
+
 
 class TestharnessProtocolPart(ProtocolPart):
     """Protocol part required to run testharness tests."""
@@ -464,6 +469,19 @@ class BidiBluetoothProtocolPart(ProtocolPart):
         pass
 
     @abstractmethod
+    async def simulate_gatt_mtu_change(self,
+                               context: str,
+                               address: str,
+                               mtu: int) -> None:
+        """
+        Simulates an ATT MTU exchange with a simulated bluetooth peripheral.
+        :param context: Browsing context to set the simulated peripheral to.
+        :param address: The address of the simulated bluetooth peripheral.
+        :param mtu: The new ATT MTU in octets.
+        """
+        pass
+
+    @abstractmethod
     async def simulate_service(self,
                                context: str,
                                address: str,
@@ -578,6 +596,22 @@ class BidiBrowsingContextProtocolPart(ProtocolPart):
         """
         pass
 
+    @abstractmethod
+    async def set_viewport(self,
+                           context: Optional[str],
+                           viewport: Union[Optional[Mapping[str, Any]], "Undefined"],
+                           device_pixel_ratio: Union[Optional[float], "Undefined"],
+                           user_contexts: Optional[List[str]]) -> None:
+        """
+        Modifies specific viewport characteristics for a browsing context or
+        user contexts.
+
+        `viewport=None` or `device_pixel_ratio=None` clears the corresponding
+        override.
+        Passing `UNDEFINED` means the corresponding field is omitted from the
+        BiDi command.
+        """
+        pass
 
 class BidiEventsProtocolPart(ProtocolPart):
     """Protocol part for managing BiDi events"""

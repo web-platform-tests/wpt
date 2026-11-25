@@ -269,6 +269,37 @@
                         .simulate_gatt_disconnection(params);
                 },
                 /**
+                 * Simulates an ATT MTU exchange for a given peripheral.
+                 * Matches the `bluetooth.simulateGattMtuChange
+                 * <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulategattmtuchange-command>`_
+                 * WebDriver BiDi command.
+                 *
+                 * @example
+                 * await test_driver.bidi.bluetooth.simulate_gatt_mtu_change({
+                 *     "address": "09:09:09:09:09:09",
+                 *     "mtu": 100,
+                 * });
+                 *
+                 * @param {object} params - Parameters for the command.
+                 * @param {string} params.address - The address of the simulated
+                 * bluetooth peripheral. Matches the
+                 * `bluetooth.SimulateGattMtuChangeParameters:address <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulategattmtuchange-command>`_
+                 * value.
+                 * @param {number} params.mtu - The ATT MTU in octets negotiated
+                 * with the simulated bluetooth peripheral. Matches the
+                 * `bluetooth.SimulateGattMtuChangeParameters:mtu <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulategattmtuchange-command>`_
+                 * value.
+                 * @param {Context} [params.context] The optional context parameter specifies in
+                 * which browsing context the ATT MTU exchange should be simulated. If not
+                 * provided, the current browsing context is used.
+                 * @returns {Promise} fulfilled after the ATT MTU exchange is
+                 * simulated, or rejected if the operation fails.
+                 */
+                simulate_gatt_mtu_change: function(params) {
+                    return window.test_driver_internal.bidi.bluetooth
+                        .simulate_gatt_mtu_change(params);
+                },
+                /**
                  * Simulates a GATT service.
                  * Matches the `bluetooth.simulateService
                  * <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateservice-command>`_
@@ -776,6 +807,76 @@
                         });
                     },
                 }
+            },
+            /**
+             * `browsingContext <https://www.w3.org/TR/webdriver-bidi/#module-browsingContext>`_ module.
+             */
+            browsing_context: {
+                /**
+                 * Sets the viewport and/or device pixel ratio override for the
+                 * specified browsing context. Matches the
+                 * `browsingContext.setViewport
+                 * <https://www.w3.org/TR/webdriver-bidi/#command-browsingContext-setViewport>`_
+                 * WebDriver BiDi command.
+                 *
+                 * @example
+                 * await test_driver.bidi.browsing_context.set_viewport(t, {
+                 *     devicePixelRatio: 2
+                 * });
+                 *
+                 * @param {Test} test - The current testharness Test object used to register
+                 * cleanup.
+                 * @param {object} params - Parameters for the command.
+                 * @param {Context} [params.context] The optional browsing
+                 * context to update. If omitted and `params.userContexts` is
+                 * not provided, this wrapper defaults to the current window.
+                 * @param {null|object} [params.viewport] The optional viewport
+                 * override. Passing `null` clears the viewport override.
+                 * @param {null|number} [params.devicePixelRatio] The optional
+                 * device pixel ratio override. Passing `null` clears the DPR
+                 * override.
+                 * @param {Array.<string>} [params.userContexts] The
+                 * optional user contexts to update.
+                 * @returns {Promise<void>} Resolves when the viewport settings
+                 * are successfully applied.
+                 */
+                set_viewport: async function(test, params) {
+                    assertBidiIsEnabled();
+                    // Validate before changing browser state so an invalid
+                    // call cannot leave an override without cleanup.
+                    if (!test || typeof test.add_cleanup !== "function") {
+                        throw new TypeError(
+                            "set_viewport requires a testharness Test object " +
+                            "as its first argument");
+                    }
+
+                    const cleanupParams = {};
+
+                    if (params.context !== undefined) {
+                        cleanupParams.context = params.context;
+                    } else if (params.userContexts !== undefined) {
+                        cleanupParams.userContexts = params.userContexts;
+                    }
+                    // Clear only non-null overrides set by this call.
+                    if (params.viewport !== undefined &&
+                        params.viewport !== null) {
+                        cleanupParams.viewport = null;
+                    }
+                    if (params.devicePixelRatio !== undefined &&
+                        params.devicePixelRatio !== null) {
+                        cleanupParams.devicePixelRatio = null;
+                    }
+
+                    await window.test_driver_internal.bidi.browsing_context
+                        .set_viewport(params);
+
+                    if ("viewport" in cleanupParams ||
+                        "devicePixelRatio" in cleanupParams) {
+                        test.add_cleanup(() =>
+                            window.test_driver_internal.bidi.browsing_context
+                                .set_viewport(cleanupParams));
+                    }
+                },
             },
             /**
              * `speculation <https://wicg.github.io/nav-speculation/prefetch.html>`_ module.
@@ -1657,6 +1758,32 @@
          */
         navigate: function(url, context=null) {
             return window.test_driver_internal.navigate(url, context);
+        },
+
+        /**
+         * Reloads the document of the top-level browsing context.
+         *
+         * Matches the behaviour of the `Refresh
+         * <https://www.w3.org/TR/webdriver/#refresh>`_
+         * WebDriver command.
+         *
+         * Refreshing the browsing context in which the
+         * test is running will unload the test.
+         *
+         * @param {(String|WindowProxy)} context - Browsing context in which
+         *                                         to run the call: a
+         *                                         ``WindowProxy``, a WebDriver
+         *                                         window handle as returned by
+         *                                         :js:func:`create_window`, or
+         *                                         null to use the current
+         *                                         browsing context.
+         *
+         * @returns {Promise} fulfilled when the WebDriver command returns, which
+         *                    depends on the session's page load strategy, or
+         *                    rejected if the WebDriver command errors.
+         */
+        refresh: function(context=null) {
+            return window.test_driver_internal.refresh(context);
         },
 
         /**
@@ -2694,6 +2821,12 @@
                     }
                 }
             },
+            browsing_context: {
+                set_viewport: function() {
+                    throw new Error(
+                        'bidi.browsing_context.set_viewport is not implemented by testdriver-vendor.js');
+                },
+            },
             emulation: {
                 set_geolocation_override: function (params) {
                     throw new Error(
@@ -2846,6 +2979,10 @@
 
         async navigate(url, context=null) {
             throw new Error("navigate() is not implemented by testdriver-vendor.js");
+        },
+
+        async refresh(context=null) {
+            throw new Error("refresh() is not implemented by testdriver-vendor.js");
         },
 
         async minimize_window(context=null) {

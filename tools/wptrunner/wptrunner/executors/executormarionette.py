@@ -123,6 +123,9 @@ class MarionetteBaseProtocolPart(BaseProtocolPart):
     def load(self, url):
         self.marionette.navigate(url)
 
+    def refresh(self):
+        self.marionette.refresh()
+
     def wait(self):
         try:
             socket_timeout = self.marionette.client.socket_timeout
@@ -928,8 +931,9 @@ class MarionetteProtocol(Protocol):
         return True
 
     def on_environment_change(self, old_environment, new_environment):
-        # Unset all the old prefs
-        for name in old_environment.get("prefs", {}).keys():
+        # Unset all the old prefs, in the reverse of the order they were set, so
+        # that prefs which depend on earlier ones are restored first.
+        for name in reversed(old_environment.get("prefs", {}).keys()):
             value = self.executor.original_pref_values[name]
             if value is None:
                 self.prefs.clear(name)
@@ -1208,7 +1212,8 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                 self.has_window = False
 
             if not self.has_window:
-                self.protocol.base.create_window(type="window")
+                test_window = self.protocol.base.create_window(type="window")
+                self.protocol.base.set_window(test_window)
                 # Resize the browser window so that its inner dimensions have
                 # exactly a size of 800x600 pixels, which means ignoring all
                 # visible toolbars and sidebars.
@@ -1498,3 +1503,13 @@ class MarionettePytestExecutor(PytestExecutor):
         for option in ["androidPackage", "androidDeviceSerial", "env"]:
             if hasattr(browser, option):
                 self.capabilities["moz:firefoxOptions"][option] = getattr(browser, option)
+
+    @property
+    def session_config(self):
+        config = super().session_config
+        if hasattr(self.browser, "adb_binary"):
+            config["android"] = {
+                "adb_binary": self.browser.adb_binary,
+                "device_serial": self.browser.androidDeviceSerial,
+            }
+        return config

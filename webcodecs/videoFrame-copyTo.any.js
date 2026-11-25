@@ -52,6 +52,30 @@ promise_test(async t => {
 }, 'Test copying I420 frame to a non-shared ArrayBufferView');
 
 promise_test(async t => {
+  const frame = makeI420_4x2();
+  const byteOffset = 4;
+  const trailing = 8;
+  const PAD = 0xAA;  // Distinct padding value so we can check for it later
+  const backing = new Uint8Array(byteOffset + I420_DATA.length + trailing);
+  backing.fill(PAD);
+  const destination = backing.subarray(byteOffset,
+                                      byteOffset + I420_DATA.length);
+  const expectedLayout = [
+      {offset: 0, stride: 4},
+      {offset: 8, stride: 2},
+      {offset: 10, stride: 2},
+  ];
+  assert_equals(frame.allocationSize(), I420_DATA.length, 'allocationSize()');
+  const layout = await frame.copyTo(destination);
+  assert_layout_equals(layout, expectedLayout);
+  assert_buffer_equals(destination, I420_DATA);
+  assert_buffer_equals(backing.subarray(0, byteOffset),
+                       new Uint8Array(byteOffset).fill(PAD));
+  assert_buffer_equals(backing.subarray(byteOffset + I420_DATA.length),
+                       new Uint8Array(trailing).fill(PAD));
+}, 'Test copying I420 frame to a view with a non-zero byteOffset');
+
+promise_test(async t => {
   const frame = makeRGBA_2x2();
   const expectedLayout = [
       {offset: 0, stride: 8},
@@ -66,6 +90,34 @@ promise_test(async t => {
   assert_layout_equals(layout, expectedLayout);
   assert_buffer_equals(data, expectedData);
 }, 'Test RGBA frame.');
+
+promise_test(async t => {
+  const data = new Uint8Array(32);
+  for (let i = 0; i < data.length; i++) {
+    data[i] = i + 1;
+  }
+  const frame = new VideoFrame(data, {
+      format: 'RGBA',
+      timestamp: 0,
+      codedWidth: 4,
+      codedHeight: 2,
+  });
+  const options = {
+      rect: {x: 2, y: 0, width: 2, height: 2},
+  };
+  const expectedLayout = [
+      {offset: 0, stride: 8},
+  ];
+  const expectedData = new Uint8Array([
+      9,10,11,12, 13,14,15,16,
+      25,26,27,28, 29,30,31,32,
+  ]);
+  assert_equals(frame.allocationSize(options), expectedData.length, 'allocationSize()');
+  const destination = new Uint8Array(expectedData.length);
+  const layout = await frame.copyTo(destination, options);
+  assert_layout_equals(layout, expectedLayout);
+  assert_buffer_equals(destination, expectedData);
+}, 'Test RGBA left crop.');
 
 promise_test(async t => {
   const frame = makeNV12_4x2();
@@ -90,6 +142,66 @@ promise_test(async t => {
   const data = new Uint8Array(11);
   await promise_rejects_js(t, TypeError, frame.copyTo(data));
 }, 'Test undersized buffer.');
+
+for (const format of [undefined, 'RGBA']) {
+  for (const destinationType of ['ArrayBuffer', 'Uint8Array', 'Uint16Array', 'DataView']) {
+    const bytesPerElement = self[destinationType].BYTES_PER_ELEMENT || 1;
+    for (const empty of [false, true]) {
+      promise_test(async t => {
+        const frame = makeI420_4x2();
+        t.add_cleanup(() => frame.close());
+        const options = {format};
+        const size = frame.allocationSize(options);
+        const byteLength = empty ? 0 : size - bytesPerElement;
+        const destination = destinationType === 'ArrayBuffer'
+            ? new ArrayBuffer(byteLength)
+            : new self[destinationType](new ArrayBuffer(size + 8), 4,
+                                        byteLength / bytesPerElement);
+        await promise_rejects_js(t, TypeError,
+                                frame.copyTo(destination, options));
+      }, `copyTo rejects ${empty ? "empty" : "undersized"} ${destinationType} ` +
+         `with format ${format}`);
+    }
+
+    promise_test(async t => {
+      const frame = makeI420_4x2();
+      t.add_cleanup(() => frame.close());
+      const options = {format};
+      const size = frame.allocationSize(options);
+      const backing = new ArrayBuffer(size + 8);
+      const destination = destinationType === 'ArrayBuffer'
+          ? backing : new self[destinationType](backing, 4, size / bytesPerElement);
+      structuredClone(backing, {transfer: [backing]});
+      await promise_rejects_js(t, TypeError,
+                              frame.copyTo(destination, options));
+    }, `copyTo rejects detached ${destinationType} with format ${format}`);
+  }
+}
+
+for (const destinationType of ['ArrayBuffer', 'Uint8Array', 'Uint16Array', 'DataView']) {
+  const bytesPerElement = self[destinationType].BYTES_PER_ELEMENT || 1;
+  promise_test(async t => {
+    const frame = makeI420_4x2();
+    t.add_cleanup(() => frame.close());
+    const options = {format: 'RGBA'};
+    const size = frame.allocationSize(options);
+    const expected = new Uint8Array(size);
+    await frame.copyTo(expected, {...options, colorSpace: 'srgb'});
+    const backing = new Uint8Array(size + 8).fill(0xAA);
+    const destination = destinationType === 'ArrayBuffer'
+        ? new ArrayBuffer(size)
+        : new self[destinationType](backing.buffer, 4, size / bytesPerElement);
+    const layout = await frame.copyTo(destination, options);
+    assert_layout_equals(layout, [{offset: 0, stride: 16}]);
+    if (destinationType === 'ArrayBuffer') {
+      assert_buffer_equals(new Uint8Array(destination), expected);
+    } else {
+      assert_buffer_equals(backing.subarray(4, 4 + size), expected);
+      assert_array_equals(backing.subarray(0, 4), [0xAA, 0xAA, 0xAA, 0xAA]);
+      assert_array_equals(backing.subarray(4 + size), [0xAA, 0xAA, 0xAA, 0xAA]);
+    }
+  }, `copyTo converts I420 to RGBA into an exactly sized ${destinationType}`);
+}
 
 promise_test(async t => {
   const frame = makeI420_4x2();
@@ -301,6 +413,39 @@ promise_test(async t => {
 }, 'Test invalid rect.');
 
 promise_test(async t => {
+  const frame = makeI420_4x2();
+  const options = {
+      rect: {x: 0, y: 0, width: 3, height: 2},
+  };
+  const expectedLayout = [
+      {offset: 0, stride: 3},
+      {offset: 6, stride: 2},
+      {offset: 8, stride: 2},
+  ];
+  const expectedData = new Uint8Array([
+      1, 2, 3,  // y
+      5, 6, 7,
+      9, 10,    // u
+      11, 12    // v
+  ]);
+  assert_equals(frame.allocationSize(options), expectedData.length, 'allocationSize()');
+  const data = new Uint8Array(expectedData.length);
+  const layout = await frame.copyTo(data, options);
+  assert_layout_equals(layout, expectedLayout);
+  assert_buffer_equals(data, expectedData);
+}, 'Test odd width rect.');
+
+promise_test(async t => {
+  const frame = makeI420_4x2();
+  const options = {
+      rect: {x: 1, y: 0, width: 2, height: 2},
+  };
+  assert_throws_js(TypeError, () => frame.allocationSize(options));
+  const data = new Uint8Array(12);
+  await promise_rejects_js(t, TypeError, frame.copyTo(data, options));
+}, 'Test rect with unaligned x.');
+
+promise_test(async t => {
   let init = {
     format: 'I420',
     timestamp: 1234,
@@ -332,10 +477,14 @@ promise_test(async t => {
           redV);
 
   let frame = new VideoFrame(data, init);
-  assert_equals(frame.codedWidth, init.visibleRect.width);
-  assert_equals(frame.codedHeight, init.visibleRect.height);
-  assert_equals(frame.visibleRect.x, 0);
-  assert_equals(frame.visibleRect.y, 0);
+  t.add_cleanup(() => frame.close());
+  // The constructor may retain, crop, or reposition the visible rectangle.
+  assert_greater_than_equal(frame.visibleRect.x, 0);
+  assert_greater_than_equal(frame.visibleRect.y, 0);
+  assert_greater_than_equal(
+      frame.codedWidth, frame.visibleRect.x + frame.visibleRect.width);
+  assert_greater_than_equal(
+      frame.codedHeight, frame.visibleRect.y + frame.visibleRect.height);
   assert_equals(frame.visibleRect.width, init.visibleRect.width);
   assert_equals(frame.visibleRect.height, init.visibleRect.height);
   assert_equals(frame.displayWidth, init.visibleRect.width);
@@ -349,8 +498,14 @@ promise_test(async t => {
   // of `data`, but it's simpler and works better with testharness.js operators
   // to just create a fresh packed version for direct comparison.
   let packed_data = new Uint8Array(frame.allocationSize(options));
-  fillYUV(packed_data, frame.codedWidth, frame.codedHeight, frame.visibleRect,
-          redY, redU, redV);
+  const packedRect = {
+    x: 0,
+    y: 0,
+    width: init.visibleRect.width,
+    height: init.visibleRect.height,
+  };
+  fillYUV(packed_data, packedRect.width, packedRect.height, packedRect, redY,
+          redU, redV);
 
   assert_array_equals(copied_data, packed_data, `Copied frame data incorrect.`);
 }, 'copyTo from byte data with non-default visibleRect');

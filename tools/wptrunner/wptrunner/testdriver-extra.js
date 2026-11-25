@@ -301,6 +301,15 @@
         });
     }
 
+    window.test_driver_internal.bidi.bluetooth.simulate_gatt_mtu_change =
+        function(params) {
+        return create_action('bidi.bluetooth.simulate_gatt_mtu_change', {
+            // Default to the current window.
+            context: window,
+            ...params
+        });
+    }
+
     window.test_driver_internal.bidi.bluetooth.simulate_service =
         function(params) {
         return create_action('bidi.bluetooth.simulate_service', {
@@ -412,6 +421,27 @@
             'bluetooth.descriptorEventGenerated', on_event);
         return () => event_target.removeEventListener(
                     'bluetooth.descriptorEventGenerated', on_event);
+    };
+
+    window.test_driver_internal.bidi.browsing_context = {
+        set_viewport: function(params) {
+            const actionParams = {...(params ?? {})};
+            const hasContext = "context" in actionParams &&
+                actionParams.context !== undefined;
+            const hasUserContexts = "userContexts" in actionParams &&
+                actionParams.userContexts !== undefined;
+
+            if (hasContext && hasUserContexts) {
+                throw new Error(
+                    "`context` and `userContexts` are mutually exclusive in set_viewport");
+            }
+            if (!hasContext && !hasUserContexts) {
+                // browsingContext.setViewport requires exactly one of `context`
+                // or `userContexts`. Default to the current window if neither was provided.
+                actionParams.context = window;
+            }
+            return create_action("bidi.browsing_context.set_viewport", actionParams);
+        }
     };
 
     window.test_driver_internal.bidi.emulation.set_geolocation_override =
@@ -591,6 +621,10 @@
 
     window.test_driver_internal.navigate = function(url, context=null) {
         return create_context_action("navigate", context, {url});
+    };
+
+    window.test_driver_internal.refresh = function(context=null) {
+        return create_context_action("refresh", context, {});
     };
 
     window.test_driver_internal.minimize_window = function(context=null) {

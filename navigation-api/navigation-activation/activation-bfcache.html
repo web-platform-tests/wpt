@@ -1,0 +1,33 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Navigation activation is reused when restored from the back-forward cache</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#update-document-for-history-step-application">
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"></script>
+<script>
+runBfcacheTest({
+  targetOrigin: originSameOrigin,
+  funcBeforeNavigation() {
+    window.savedActivation = navigation.activation;
+  },
+  async funcAfterAssertion(pageA, pageB) {
+    const result = await pageA.execute_script(() => ({
+      hasActivation: !!window.savedActivation,
+      reusedActivation: navigation.activation === window.savedActivation,
+      currentEntry: navigation.activation?.entry === navigation.currentEntry,
+      from: navigation.activation?.from?.url,
+      navigationType: navigation.activation?.navigationType,
+    }));
+
+    assert_true(result.hasActivation, "The document initially has an activation");
+    assert_true(result.reusedActivation, "The saved activation object is reused");
+    assert_true(result.currentEntry, "Activation refers to the current entry");
+    assert_equals(result.from, pageB.url, "Activation refers to the entry we traversed from");
+    assert_equals(result.navigationType, "traverse");
+  },
+}, "NavigationActivation survives back-forward cache restoration");
+</script>

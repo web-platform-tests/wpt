@@ -79,7 +79,7 @@ async def test_existing_nested_contexts(bidi_session, wait_for_events, test_page
             url=test_page_nested_frames,
             user_context="default",
             client_window=find_client_window_by_context(second_context, contexts),
-            has_planned_navigation=True,
+            has_planned_navigation=False,
         )
 
         assert_browsing_context(
@@ -89,7 +89,7 @@ async def test_existing_nested_contexts(bidi_session, wait_for_events, test_page
             parent=second_context["context"],
             user_context="default",
             client_window=contexts[1]["children"][0]["clientWindow"],
-            has_planned_navigation=True,
+            has_planned_navigation=False,
         )
 
         assert_browsing_context(
@@ -99,7 +99,7 @@ async def test_existing_nested_contexts(bidi_session, wait_for_events, test_page
             parent=contexts[1]["children"][0]["context"],
             user_context="default",
             client_window=contexts[1]["children"][0]["children"][0]["clientWindow"],
-            has_planned_navigation=True,
+            has_planned_navigation=False,
         )
 
 
@@ -132,7 +132,7 @@ async def test_new_context_event_not_subscribed(bidi_session, wait_for_events, t
             url="about:blank",
             user_context="default",
             client_window=find_client_window_by_context(top_context, contexts),
-            has_planned_navigation=True,
+            has_planned_navigation=False,
         )
 
         assert_browsing_context(
@@ -141,7 +141,7 @@ async def test_new_context_event_not_subscribed(bidi_session, wait_for_events, t
             url="about:blank",
             user_context="default",
             client_window=find_client_window_by_context(first_context, contexts),
-            has_planned_navigation=True,
+            has_planned_navigation=False,
         )
 
 
@@ -167,7 +167,7 @@ async def test_new_context_event_cross_origin_frame(bidi_session, wait_for_event
             url=test_page_cross_origin_frame,
             user_context="default",
             client_window=find_client_window_by_context(first_context, contexts),
-            has_planned_navigation=True,
+            has_planned_navigation=False,
         )
 
         assert_browsing_context(
@@ -177,5 +177,5 @@ async def test_new_context_event_cross_origin_frame(bidi_session, wait_for_event
             parent=first_context["context"],
             user_context="default",
             client_window=contexts[1]["children"][0]["clientWindow"],
-            has_planned_navigation=True,
+            has_planned_navigation=False,
         )

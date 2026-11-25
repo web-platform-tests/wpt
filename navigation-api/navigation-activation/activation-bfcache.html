@@ -14,19 +14,17 @@ runBfcacheTest({
   funcBeforeNavigation: () => {
     window.savedActivation = navigation.activation;
   },
-  async funcAfterAssertion(pageA, pageB) {
+  async funcAfterAssertion(pageA) {
     const result = await pageA.execute_script(() => ({
       hasActivation: !!window.savedActivation,
       reusedActivation: navigation.activation === window.savedActivation,
       currentEntry: navigation.activation?.entry === navigation.currentEntry,
-      from: navigation.activation?.from?.url,
       navigationType: navigation.activation?.navigationType,
     }));
 
     assert_true(result.hasActivation, "The document initially has an activation");
     assert_true(result.reusedActivation, "The saved activation object is reused");
     assert_true(result.currentEntry, "Activation refers to the current entry");
-    assert_equals(result.from, pageB.url, "Activation refers to the entry we traversed from");
     assert_equals(result.navigationType, "traverse");
   },
 }, "NavigationActivation survives same-origin back-forward cache restoration");

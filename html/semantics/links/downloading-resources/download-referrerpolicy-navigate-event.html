@@ -1,0 +1,51 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Downloading a hyperlink snapshots referrer policy before firing the navigate event</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks">
+<link rel="help" href="https://github.com/whatwg/html/pull/13152">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<body>
+<script>
+promise_test(async t => {
+  const id = token();
+  const element = document.createElement("a");
+  element.href = showRequestHeaders(location.origin, id);
+  element.download = "";
+  element.referrerPolicy = "no-referrer";
+  document.body.append(element);
+  t.add_cleanup(() => element.remove());
+
+  navigation.addEventListener("navigate", e => {
+    e.sourceElement.referrerPolicy = "unsafe-url";
+  }, { once: true });
+
+  await test_driver.bless("download", () => element.click());
+
+  const headers = JSON.parse(await receive(id));
+  assert_equals(headers.referer ?? "", "", "Referer header reflects initial referrerpolicy");
+}, "Mutating referrerpolicy during the navigate event does not affect the download request");
+
+promise_test(async t => {
+  const id = token();
+  const element = document.createElement("a");
+  element.href = showRequestHeaders(location.origin, id);
+  element.download = "";
+  element.rel = "noreferrer";
+  document.body.append(element);
+  t.add_cleanup(() => element.remove());
+
+  navigation.addEventListener("navigate", e => {
+    e.sourceElement.rel = "";
+  }, { once: true });
+
+  await test_driver.bless("download", () => element.click());
+
+  const headers = JSON.parse(await receive(id));
+  assert_equals(headers.referer ?? "", "", "Referer header reflects initial rel=noreferrer");
+}, "Mutating rel during the navigate event does not affect the download request");
+</script>

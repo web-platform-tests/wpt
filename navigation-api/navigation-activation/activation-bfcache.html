@@ -29,5 +29,25 @@ runBfcacheTest({
     assert_equals(result.from, pageB.url, "Activation refers to the entry we traversed from");
     assert_equals(result.navigationType, "traverse");
   },
-}, "NavigationActivation survives back-forward cache restoration");
+}, "NavigationActivation survives same-origin back-forward cache restoration");
+
+runBfcacheTest({
+  targetOrigin: originCrossSite,
+  funcBeforeNavigation() {
+    window.savedActivation = navigation.activation;
+  },
+  async funcAfterAssertion(pageA) {
+    const result = await pageA.execute_script(() => ({
+      reusedActivation: navigation.activation === window.savedActivation,
+      currentEntry: navigation.activation?.entry === navigation.currentEntry,
+      from: navigation.activation?.from,
+      navigationType: navigation.activation?.navigationType,
+    }));
+
+    assert_true(result.reusedActivation, "The saved activation object is reused");
+    assert_true(result.currentEntry, "Activation refers to the current entry");
+    assert_equals(result.from, null, "The previous cross-origin entry is not exposed");
+    assert_equals(result.navigationType, "traverse");
+  },
+}, "NavigationActivation clears its old entry after cross-origin back-forward cache restoration");
 </script>

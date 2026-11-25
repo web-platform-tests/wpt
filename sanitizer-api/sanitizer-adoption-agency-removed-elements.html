@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>The adoption agency algorithm with removed formatting elements and template commonAncestors</title>
+<title>The adoption agency algorithm with removed formatting elements and template common ancestors</title>
 <link rel="help" href="https://html.spec.whatwg.org/#adoption-agency-algorithm">
 <link rel="help" href="https://html.spec.whatwg.org/#look-up-a-custom-element-registry">
 <link rel="help" href="https://html.spec.whatwg.org/#dom-element-sethtmlunsafe">
@@ -175,7 +175,7 @@
     const target = document.createElement("div");
     container.append(target);
 
-    // commonAncestor is the <template> element, whose registry is the
+    // The common ancestor is the <template> element, whose registry is the
     // document's, but the inner loop's clone of <i> replaces an element in the
     // template contents, so like everything else in there it has no registry.
     target.innerHTML = "<template><b><i><p></b></template>";

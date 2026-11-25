@@ -82,22 +82,22 @@ promise_test(async t => {
   iframe.srcdoc = '<!doctype html><p>srcdoc</p>';
   await waitForLoad(t, iframe, 'initial srcdoc load', () => document.body.appendChild(iframe));
   let entries = iframe.contentWindow.performance.getEntriesByType('navigation');
-  assert_equals(entries.length, 1);
+  assert_equals(entries.length, 1, 'The initial srcdoc document has one navigation timing entry');
   assert_equals(entries[0].type, 'navigate');
   await waitForLoad(t, iframe, 'srcdoc reload', () => iframe.contentWindow.location.reload());
   entries = iframe.contentWindow.performance.getEntriesByType('navigation');
-  assert_equals(entries.length, 1);
+  assert_equals(entries.length, 1, 'The reloaded srcdoc document has one navigation timing entry');
   assert_equals(entries[0].type, 'reload');
   await waitForLoad(t, iframe, 'blank load after srcdoc', () => {
     iframe.contentWindow.location.href = '/common/blank.html?after-srcdoc';
   });
   entries = iframe.contentWindow.performance.getEntriesByType('navigation');
-  assert_equals(entries.length, 1);
+  assert_equals(entries.length, 1, 'The document after srcdoc has one navigation timing entry');
   assert_equals(entries[0].type, 'navigate');
   await waitForLoad(t, iframe, 'back to srcdoc', () => iframe.contentWindow.history.back());
   assert_equals(iframe.contentWindow.location.href, 'about:srcdoc');
   entries = iframe.contentWindow.performance.getEntriesByType('navigation');
-  assert_equals(entries.length, 1);
+  assert_equals(entries.length, 1, 'The traversed srcdoc document has one navigation timing entry');
   assert_equals(entries[0].type, 'back_forward');
 }, 'srcdoc iframe reload and back/forward history population set PerformanceNavigationTiming.type');
 
@@ -172,17 +172,25 @@ promise_test(async t => {
   const iframe = document.createElement('iframe');
   t.add_cleanup(() => iframe.remove());
   iframe.sandbox = 'allow-scripts allow-same-origin';
+  const assertSandboxed = label => {
+    const childDocument = iframe.contentDocument;
+    // Test the child document's sandbox flag directly. window.open() instead
+    // depends on the entry global object and on popup-blocking policy.
+    assert_throws_dom('SecurityError', iframe.contentWindow.DOMException, () => {
+      childDocument.domain = childDocument.domain;
+    }, `${label}: document.domain remains sandboxed`);
+  };
   await waitForLoad(t, iframe, 'initial sandboxed load', () => {
     iframe.src = '/common/blank.html?target-snapshot-1';
     document.body.appendChild(iframe);
   });
   await waitForLoad(t, iframe, 'sandboxed reload', () => iframe.contentWindow.location.reload());
   assert_equals(iframe.contentWindow.performance.getEntriesByType('navigation')[0].type, 'reload');
-  assert_equals(iframe.contentWindow.open('/common/blank.html'), null);
+  assertSandboxed('Reloaded document');
   await waitForLoad(t, iframe, 'sandboxed second page', () => {
     iframe.contentWindow.location.href = '/common/blank.html?target-snapshot-2';
   });
   await waitForLoad(t, iframe, 'sandboxed back', () => iframe.contentWindow.history.back());
   assert_equals(iframe.contentWindow.performance.getEntriesByType('navigation')[0].type, 'back_forward');
-  assert_equals(iframe.contentWindow.open('/common/blank.html'), null);
+  assertSandboxed('Traversed document');
 }, 'Target snapshot sandboxing flags are preserved alongside PerformanceNavigationTiming.type on reload and back/forward');

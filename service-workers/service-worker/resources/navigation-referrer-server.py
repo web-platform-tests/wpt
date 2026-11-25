@@ -1,3 +1,4 @@
+import json
 from html import escape
 
 
@@ -11,7 +12,7 @@ def main(request, response):
     <script>
       self.addEventListener('load', evt => {
         const result = {
-          referer: '%s',
+          referer: %s,
           documentReferrer: document.referrer,
         };
         const channel = new URLSearchParams(location.search).get('channel');
@@ -22,7 +23,8 @@ def main(request, response):
           (self.opener || self.parent).postMessage(result, '*');
         }
       });
-    </script>""" % request.headers.get(b"referer", b"not set")
+    </script>""" % json.dumps(
+        request.headers.get(b"referer", b"not set").decode()).encode()
 
 
 def helper(how, url):

@@ -1,0 +1,41 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Density-corrected natural width for sizes=auto with object-fit</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#parsing-a-sizes-attribute">
+<link rel="help" href="https://github.com/whatwg/html/pull/13053">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+for (const [width, height, fit, expectedWidth] of [
+  [80, 40, "contain", 20],
+  [80, 40, "cover", 40],
+  [40, 80, "contain", 10],
+  [40, 80, "cover", 20],
+]) {
+  promise_test(async t => {
+    const img = document.createElement("img");
+    t.add_cleanup(() => img.remove());
+    img.loading = "lazy";
+    img.sizes = "auto";
+    img.width = width;
+    img.height = height;
+    img.style.cssText = `width: 20px; height: 20px; object-fit: ${fit}`;
+    // One candidate makes the density observable independently of DPR
+    // and of the browser's choice between candidate URLs.
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"/>`;
+    document.body.prepend(img);
+    await new Promise(requestAnimationFrame);
+    await new Promise(requestAnimationFrame);
+    img.srcset = `data:image/svg+xml,${encodeURIComponent(svg)} ${width}w`;
+    const loaded = new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+    });
+    await loaded;
+    await new Promise(requestAnimationFrame);
+    await new Promise(requestAnimationFrame);
+    assert_equals(img.naturalWidth, expectedWidth);
+  }, `sizes=auto, ${width}x${height} image, object-fit: ${fit}`);
+}
+</script>

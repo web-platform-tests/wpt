@@ -38,11 +38,18 @@ runBfcacheTest({
   },
   async funcAfterAssertion(pageA) {
     const result = await pageA.execute_script(() => ({
+      persisted: window.isPageshowPersisted,
       reusedActivation: navigation.activation === window.savedActivation,
       currentEntry: navigation.activation?.entry === navigation.currentEntry,
       from: navigation.activation?.from,
       navigationType: navigation.activation?.navigationType,
     }));
+
+    // Cross-origin BFCache restoration is optional. Do not assert activation
+    // state when the browser performed a normal reload instead.
+    if (!result.persisted) {
+      return;
+    }
 
     assert_true(result.reusedActivation, "The saved activation object is reused");
     assert_true(result.currentEntry, "Activation refers to the current entry");

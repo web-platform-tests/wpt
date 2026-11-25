@@ -78,7 +78,7 @@ test(t => {
   assert_equals(input.form, form);
 }, "Moving an ancestor of an input into a form associates the input with the form");
 
-test(t => {
+test(() => {
   const form = document.getElementById("table-moved-form");
   const input = document.getElementById("table-moved-input");
   assert_equals(input.form, form, "the input is associated with the form by the parser");
@@ -112,7 +112,7 @@ test(t => {
   assert_equals(input.form, form);
 }, "Moving a table containing both a parser-associated input and its form into a shadow root keeps the association");
 
-test(t => {
+test(() => {
   const input = document.getElementById("cell-moved-input");
   assert_equals(input.form, document.getElementById("cell-moved-form"), "the input is associated with the form by the parser");
 
@@ -131,7 +131,7 @@ test(t => {
   assert_equals(input.form, outerForm);
 }, "Moving the cell containing a parser-associated input into another form associates the input with that form");
 
-test(t => {
+test(() => {
   const input = document.getElementById("input-moved-input");
   assert_equals(input.form, document.getElementById("input-moved-form"), "the input is associated with the form by the parser");
 
@@ -139,7 +139,7 @@ test(t => {
   assert_equals(input.form, null);
 }, "Moving a parser-associated input without its form resets the form owner");
 
-test(t => {
+test(() => {
   const form = document.getElementById("form-moved-form");
   const input = document.getElementById("form-moved-input");
   assert_equals(input.form, form, "the input is associated with the form by the parser");
@@ -202,7 +202,7 @@ test(t => {
   assert_equals(form2.pic, img);
 }, "Moving an img from one form to another associates it with the new form");
 
-test(t => {
+test(() => {
   const form = document.getElementById("img-table-moved-form");
   const img = document.getElementById("img-table-moved-img");
   assert_equals(form.pic, img, "the img is associated with the form by the parser");
@@ -224,7 +224,7 @@ test(t => {
   assert_equals(outerForm.pic, img);
 }, "Moving the cell containing a parser-associated img into another form associates the img with that form");
 
-test(t => {
+test(() => {
   const form = document.getElementById("img-moved-form");
   const img = document.getElementById("img-moved-img");
   assert_equals(form.pic, img, "the img is associated with the form by the parser");
@@ -233,7 +233,7 @@ test(t => {
   assert_equals(form.pic, undefined);
 }, "Moving a parser-associated img without its form resets the form owner");
 
-test(t => {
+test(() => {
   const form = document.getElementById("img-form-moved-form");
   const img = document.getElementById("img-form-moved-img");
   assert_equals(form.pic, img, "the img is associated with the form by the parser");
@@ -242,7 +242,7 @@ test(t => {
   assert_equals(form.pic, undefined);
 }, "Moving a form away from an img it was associated with by the parser resets the img's form owner");
 
-test(t => {
+test(() => {
   const form = document.getElementById("image-input-table-moved-form");
   const input = document.getElementById("image-input-table-moved-input");
   assert_equals(input.form, form, "the image button is associated with the form by the parser");
@@ -263,7 +263,7 @@ test(t => {
   assert_equals(input.form, outerForm);
 }, "Moving the cell containing a parser-associated input type=image into another form associates the input with that form");
 
-test(t => {
+test(() => {
   const form = document.getElementById("image-input-moved-form");
   const input = document.getElementById("image-input-moved-input");
   assert_equals(input.form, form, "the image button is associated with the form by the parser");
@@ -272,7 +272,7 @@ test(t => {
   assert_equals(input.form, null);
 }, "Moving a parser-associated input type=image without its form resets the form owner");
 
-test(t => {
+test(() => {
   const form = document.getElementById("image-input-form-moved-form");
   const input = document.getElementById("image-input-form-moved-input");
   assert_equals(input.form, form, "the image button is associated with the form by the parser");

@@ -1,0 +1,3 @@
+path {
+  {{GET[property]}}: url(http://{{hosts[][]}}:{{ports[http][0]}}/common/security-features/subresource/svg.py?id={{GET[id]}}#invalidFragment);
+}

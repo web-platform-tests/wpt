@@ -20,11 +20,14 @@ promise_test(async t => {
   document.body.append(element);
   t.add_cleanup(() => element.remove());
 
-  navigation.addEventListener("navigate", e => {
-    e.sourceElement.referrerPolicy = "unsafe-url";
-  }, { once: true });
+  let onnavigate_called = false;
+  navigation.onnavigate = t.step_func(() => {
+    onnavigate_called = true;
+    element.referrerPolicy = "unsafe-url";
+  });
 
   await test_driver.bless("download", () => element.click());
+  assert_true(onnavigate_called, "navigate event fired");
 
   const headers = JSON.parse(await receive(id));
   assert_equals(headers.referer ?? "", "", "Referer header reflects initial referrerpolicy");
@@ -39,11 +42,14 @@ promise_test(async t => {
   document.body.append(element);
   t.add_cleanup(() => element.remove());
 
-  navigation.addEventListener("navigate", e => {
-    e.sourceElement.rel = "";
-  }, { once: true });
+  let onnavigate_called = false;
+  navigation.onnavigate = t.step_func(() => {
+    onnavigate_called = true;
+    element.rel = "";
+  });
 
   await test_driver.bless("download", () => element.click());
+  assert_true(onnavigate_called, "navigate event fired");
 
   const headers = JSON.parse(await receive(id));
   assert_equals(headers.referer ?? "", "", "Referer header reflects initial rel=noreferrer");

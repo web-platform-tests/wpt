@@ -25,7 +25,7 @@
 //
 // The writes here are performed inside a RemoteContext whose response carries
 // the ceiling header via `pipeHeader`, because the top-level test document has
-// no way to set that header on its own response. The "*" grant is exercised
+// no way to set that header on its own response. The global scope is exercised
 // too, to confirm it needs no header at all.
 //
 // wptserve offers exactly two sites, and every cross-site pool origin belongs
@@ -105,7 +105,7 @@ promise_test(async t => {
   const originInCeiling = cosNextCrossSiteOrigin();
   const originSameSite = cosNextSameSiteOrigin();
   const {ctx: writer} = await openWriter([originInCeiling, originSameSite]);
-  const content = cosUniqueContent('ceiling-is-a-bound-not-a-grant');
+  const content = cosUniqueContent('ceiling-is-a-bound-not-access');
   const hash = cosHash(await cosSha256Hex(content));
   const stored = await cosRemoteStore(writer, hash, content, {origins: [originSameSite]});
   assert_true(stored.ok, `write must succeed, got ${stored.name}: ${stored.message}`);
@@ -161,7 +161,7 @@ promise_test(async t => {
 promise_test(async t => {
   // A loopback http: origin is potentially trustworthy, so a header that
   // carries one alongside a valid origin stays intact, and the valid origin
-  // keeps its grant. Compare the tests above, where one bad token fails the
+  // keeps its access. Compare the tests above, where one bad token fails the
   // whole header closed.
   const originListed = cosNextCrossSiteOrigin();
   const {result, content} = await writeListedAndRead(
@@ -193,7 +193,7 @@ promise_test(async t => {
 }, 'ceiling: a Cross-Origin-Storage-Allow-Origin token with a path authorizes the origin of that URL');
 
 promise_test(async t => {
-  // The "*" grant is governed at the read path by the Public Hash List, not by
+  // The global scope is governed at the read path by the Public Hash List, not by
   // this header, so a global write needs no Cross-Origin-Storage-Allow-Origin
   // header and succeeds without one. Content generated for this run is not on
   // the PHL, so a non-storer cross-site reader is refused deterministically.

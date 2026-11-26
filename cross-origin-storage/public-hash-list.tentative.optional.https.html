@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>Cross-Origin Storage: a hash on the Public Hash List is disclosed through the "*" grant</title>
+<title>Cross-Origin Storage: a hash on the Public Hash List is disclosed through the global scope</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -18,7 +18,7 @@
 // public-hash-list.tentative.https.html covers the *negative* direction of
 // this gate: content invented by the test cannot be on the Public Hash List,
 // so a cross-site non-storer is refused. That half alone is satisfied by a
-// user agent that discloses nothing at all through the global grant.
+// user agent that discloses nothing at all through the global scope.
 //
 // This file is optional because the positive direction depends on PHL
 // membership, which is implementation-defined: no normative text requires the

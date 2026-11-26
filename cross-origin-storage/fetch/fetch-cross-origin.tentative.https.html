@@ -28,10 +28,10 @@
 // is the point, so these tests assert the *outcome* (bytes or no bytes).
 //
 // Every entry here holds bytes unique to the run, so none of them is on the
-// Public Hash List. A reader that qualifies only through the "*" grant is
+// Public Hash List. A reader that qualifies only through the global scope is
 // therefore refused deterministically ("determine COS disclosure"), and a
 // storing, listed, or same-site reader is served deterministically, since the
-// Public Hash List gate and GREASE'ing apply to the "*" grant alone.
+// Public Hash List gate and GREASE'ing apply to the global scope alone.
 //
 // The list form is bounded by the `Cross-Origin-Storage-Allow-Origin` header
 // on the *fetched resource's* response: "store a fetched resource in
@@ -163,7 +163,7 @@ promise_test(async t => {
   // origin admits the origins same site with it, so listing a cross-site pool
   // origin would admit the reader below. The listed origin is therefore one of
   // this document's own site, other than this origin, and the reader comes
-  // from the cross-site pool, outside every grant the entry carries.
+  // from the cross-site pool, outside every scope the entry carries.
   const listed = cosNextSameSiteOrigin();
   const {integrity} = await storeHere('list-excluded', [listed], {allow: listed});
   const {ctx: excluded} = await openCrossSite();
@@ -220,7 +220,7 @@ for (const [label, allowFor] of [
 
 promise_test(async t => {
   // Visibility can be upgraded but never downgraded. Later writes of the same
-  // bytes with "*" and with "" leave the listed origin's grant in place, and
+  // bytes with "*" and with "" leave the listed origin's access in place, and
   // the listed origin needs no Public Hash List membership to use it.
   const {ctx, origin} = await openCrossSite();
   const content = cosUniqueContent('fetch-upgrade-additive');
@@ -228,7 +228,7 @@ promise_test(async t => {
   await storeHere('upgrade-global', '*', {content});
   await storeHere('upgrade-samesite', '', {content});
   cosAssertDisclosed(await cosRemoteRead(ctx, hash), content,
-    'a listed origin keeps its grant after later "*" and "" writes of the same bytes');
+    'a listed origin keeps its access after later "*" and "" writes of the same bytes');
 }, 'fetch, cross-origin: later fetch() writes of the same bytes never narrow an entry\'s visibility');
 </script>
 </body>

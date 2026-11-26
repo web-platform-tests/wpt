@@ -16,18 +16,18 @@
 // https://wicg.github.io/cross-origin-storage/#resource-visibility-upgrades
 // https://wicg.github.io/cross-origin-storage/#cos-entries (globally disclosable)
 //
-// The explicit origins list and the "*" (globally disclosable) grant are stored
-// independently, so a later "*" write ADDS the global grant on top of an
+// The explicit origins list and the global ("*") scope are stored
+// independently, so a later "*" write ADDS the global scope on top of an
 // existing list and leaves the list in place. This is a regression guard for
 // the bug where a "*" write overwrote the list: because availability gating
-// (the Public Hash List) applies to the "*" grant and not to an explicit list,
+// (the Public Hash List) applies to the global scope and not to an explicit list,
 // an origin that could read the entry off the list would, after such a write,
 // start getting NotFoundError whenever the hash was not on the PHL.
 //
 // The content here is unique per run and so never on the PHL. Under the bug,
 // every post-"*"-write read below is therefore a hard NotFound (the list is
-// gone and the hash is not on the PHL). With the grants kept apart, each is a
-// list-tier disclosure, which "determine COS disclosure" grants before it
+// gone and the hash is not on the PHL). With the two scopes kept apart, each is
+// a list-tier disclosure, which "determine COS disclosure" allows before it
 // reaches the PHL gate or GREASE'ing, so it is asserted strictly.
 //
 // List-scoped writes are performed from a RemoteContext whose response carries
@@ -82,7 +82,7 @@ promise_test(async t => {
 promise_test(async t => {
   // The upgrade is additive even when a DIFFERENT origin performs the "*"
   // write: a later writer that supplies the correct bytes can set the global
-  // grant, and doing so must still not knock the originally-listed origin off
+  // scope, and doing so must still not knock the originally-listed origin off
   // the entry.
   const listedOrigin = cosNextCrossSiteOrigin();
   const content = cosUniqueContent('list-survives-wildcard-upgrade-by-other-writer');

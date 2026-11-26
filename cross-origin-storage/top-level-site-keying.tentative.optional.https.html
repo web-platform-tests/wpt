@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="timeout" content="long">
-<title>Cross-Origin Storage: the "*" grant is not keyed to the top-level site</title>
+<title>Cross-Origin Storage: the global scope is not keyed to the top-level site</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -16,7 +16,7 @@
 // https://wicg.github.io/cross-origin-storage/#cos-entries
 // https://wicg.github.io/cross-origin-storage/#availability-gating
 //
-// top-level-site-keying.tentative.https.html covers every grant that is keyed
+// top-level-site-keying.tentative.https.html covers every sharing record that is keyed
 // to the top-level site of the write. This file covers the one that is not:
 // "Globally disclosable is not keyed, since the Public Hash List and GREASE'ing
 // already govern it." A "*"-scoped entry whose hash is on the PHL is therefore
@@ -25,10 +25,10 @@
 //
 // The tests read under a top-level site other than the one the write ran
 // under, because a read under the writer's own top-level site would succeed
-// through the keyed storing-origin grant and pass whether or not the global
-// grant were keyed. Writes in this file only ever run under this document's
+// through the keyed storing-origin record and pass whether or not the global
+// scope were keyed. Writes in this file only ever run under this document's
 // top-level site, so a disclosure under the alt site can only come from an
-// unkeyed global grant, even if an earlier test already stored the same bytes.
+// unkeyed global scope, even if an earlier test already stored the same bytes.
 //
 // This file is optional for the same reason as
 // public-hash-list.tentative.optional.https.html: the positive direction needs
@@ -37,7 +37,7 @@
 // see public-hash-list.tentative.optional.https.html for why it is stable.
 //
 // A user agent may also make a "*"-scoped write available through the global
-// grant only after a user gesture (a non-normative example mitigation in
+// scope only after a user gesture (a non-normative example mitigation in
 // #availability-gating). Like public-hash-list.tentative.optional.https.html,
 // this file does not provide one.
 const {HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
@@ -110,8 +110,8 @@ promise_test(async t => {
 
 promise_test(async t => {
   // The control: the same write scope and the same reader, for a hash the
-  // test invents, so it cannot be on the PHL. The storing-origin grant is
-  // keyed to this document's top-level site, and the global grant requires
+  // test invents, so it cannot be on the PHL. The storing-origin record is
+  // keyed to this document's top-level site, and the global scope requires
   // PHL membership, so nothing discloses it under the alt site.
   const content = cosUniqueContent('frame-star-unlisted');
   const hash = cosHash(await cosSha256Hex(content));

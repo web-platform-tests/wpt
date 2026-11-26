@@ -38,7 +38,7 @@
 // every origin in the cross-site pool belongs to. Every cross-site pool origin
 // is therefore same site with every other one, and a listed cross-site origin
 // admits all of them (see the "same-site extension" test below). Tests that
-// need an origin outside every grant list only origins of this document's own
+// need an origin outside every origins list only origins of this document's own
 // site, and read from the cross-site pool.
 
 const {HTTPS_ORIGIN} = get_host_info();
@@ -100,9 +100,9 @@ promise_test(async t => {
 }, 'list tier: an explicitly-listed cross-site origin is authorized, deterministically, with no PHL gate involved');
 
 promise_test(async t => {
-  // The grant extends to every origin same site with a listed one, so listing
-  // one origin of the "alt" site admits a different origin of that site that
-  // was never named.
+  // Access extends to every origin same site with a listed one, so listing one
+  // origin of the "alt" site admits a different origin of that site that was
+  // never named.
   const listOrigin = cosNextCrossSiteOrigin();
   const {hash, content} = await cosStore(
     cosUniqueContent('list-same-site-extension'), {origins: [listOrigin]});
@@ -150,7 +150,7 @@ promise_test(async t => {
 promise_test(async t => {
   // origins: [] adds no recipient, and it does not withhold the entry from the
   // writer's own site either: per "determine COS disclosure", every entry
-  // grants the origins same site with its storing origins, whatever its
+  // admits the origins same site with its storing origins, whatever its
   // explicit origins list holds. An explicit empty list is therefore
   // equivalent to omitting origins.
   const {hash, content} = await cosStore(
@@ -187,7 +187,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   // A non-storer cross-site origin reading a "*"-scoped resource qualifies
-  // through the global grant alone, which "determine COS disclosure" gates on
+  // through the global scope alone, which "determine COS disclosure" gates on
   // the Public Hash List. Content generated for this run cannot have cleared
   // the list's popularity bar, so the read is refused deterministically.
   const {hash} = await cosStore(cosUniqueContent('wildcard-other-reader'), {origins: '*'});
@@ -221,7 +221,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   // "upgrade resource visibility" only appends to the origins list. A later
-  // list write that does not name an origin leaves the earlier grant to that
+  // list write that does not name an origin leaves the earlier access of that
   // origin in place.
   const content = cosUniqueContent('list-merge-is-additive');
   const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
@@ -249,11 +249,11 @@ promise_test(async t => {
 }, 'resource visibility upgrade: a later write can upgrade a list-scoped entry to wildcard');
 
 promise_test(async t => {
-  // Upgrade: wildcard -> list. The two grants are independent, so listing an
+  // Upgrade: wildcard -> list. The two scopes are independent, so listing an
   // origin on an entry that is already globally disclosable gives that origin
-  // PHL-independent access, while the "*" grant stays in force. The content is
+  // PHL-independent access, while the global scope stays in force. The content is
   // unique to this run and so not on the PHL: before the list write the
-  // cross-site reader qualifies through the global grant alone and is refused,
+  // cross-site reader qualifies through the global scope alone and is refused,
   // after it the reader is listed and must be disclosed.
   const content = cosUniqueContent('upgrade-wildcard-to-list');
   const {hash} = await cosStore(content, {origins: '*'});
@@ -267,7 +267,7 @@ promise_test(async t => {
 
   cosAssertDisclosed(await cosRemoteRead(ctx, hash), content,
     'after the list write, the newly-listed origin of a globally disclosable entry');
-}, 'resource visibility upgrade: a later list write on a "*"-scoped entry grants the listed origin PHL-independent access');
+}, 'resource visibility upgrade: a later list write on a "*"-scoped entry gives the listed origin PHL-independent access');
 
 promise_test(async t => {
   // Downgrade attempt: wildcard -> omitted (same-site). Per "upgrade resource

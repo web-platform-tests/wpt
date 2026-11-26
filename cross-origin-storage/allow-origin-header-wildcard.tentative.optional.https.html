@@ -27,7 +27,7 @@
 // This file is optional because PHL membership is implementation-defined: no
 // normative text requires that resource to be on any user agent's list.
 //
-// The global grant is a property of the entry and it persists, so once any
+// The global scope is a property of the entry and it persists, so once any
 // earlier run has written these bytes "*", the read below succeeds whatever
 // this run's writer sent. The test is therefore only conclusive against a
 // profile in which this resource was never stored with origins: "*".
@@ -38,7 +38,7 @@ const LISTED_RESOURCE = '/cross-origin-storage/resources/phl-listed-resource.js'
 const LISTED_DIGEST =
   'fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a';
 
-// The read qualifies through the global grant alone, which the user agent may
+// The read qualifies through the global scope alone, which the user agent may
 // GREASE, so a single refusal is not conclusive. See public-hash-list.tentative.optional.https.html.
 const ATTEMPTS = 8;
 
@@ -76,7 +76,7 @@ promise_test(async t => {
       return;
     }
     assert_equals(result.name, 'NotFoundError',
-      `a refused global-grant read must reject with NotFoundError, got ${result.name}: ${result.message}`);
+      `a refused global-scope read must reject with NotFoundError, got ${result.name}: ${result.message}`);
     rejections.push(result.name);
   }
   assert_unreached(

@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="timeout" content="long">
-<title>Cross-Origin Storage: a cross-site lookup budget and origins list grants</title>
+<title>Cross-Origin Storage: a cross-site lookup budget and origins lists</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -19,10 +19,10 @@
 // This file is optional, for the same reason probe-budget.tentative.optional.
 // https.any.js is: the specification describes a cross-site lookup budget only
 // in a non-normative note. That note leaves a lookup uncharged only when
-// "determine COS disclosure" answers it through a grant written under the
-// reader's own top-level site, which is a storing-origins grant or an origins
-// list grant whose partition is the reader's. A first-party origins list
-// grant also admits the listed origin first-party under any other top-level
+// "determine COS disclosure" answers it through a sharing record written under the
+// reader's own top-level site, which is a storing-origins record or an origins
+// list record whose partition is the reader's. A first-party origins list
+// record also admits the listed origin first-party under any other top-level
 // site, and a lookup answered that way is charged. Without that charge, two
 // cooperating sites could pass an identifier of any width through marker
 // files written on one with a list naming the other.

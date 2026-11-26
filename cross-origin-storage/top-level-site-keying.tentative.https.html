@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="timeout" content="long">
-<title>Cross-Origin Storage: grants are keyed to the top-level site</title>
+<title>Cross-Origin Storage: sharing records are keyed to the top-level site</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -17,7 +17,7 @@
 // https://wicg.github.io/cross-origin-storage/#reading-files
 // https://wicg.github.io/cross-origin-storage/#original-storer-access
 //
-// Every grant except the global one records the COS partition (the site of
+// Every sharing record except the global scope records the COS partition (the site of
 // the top-level origin) of the write that added it, and "determine COS
 // disclosure" honors it only for reads under that same partition. A frame
 // embedded on two sites therefore cannot read back on one what it wrote on
@@ -94,7 +94,7 @@ promise_test(async t => {
   // A first-party list admits the listed origins first-party anywhere, and
   // also under the writer's own top-level site. The top-level read is charged
   // against a cross-site lookup budget, if the user agent applies one, while
-  // the framed read is not; list-grant-budget.tentative.optional.https.html
+  // the framed read is not; list-scope-budget.tentative.optional.https.html
   // covers that split.
   const {hash, content} = await uniqueHash('first-party-list');
   await cosStore(content, {origins: [HTTPS_NOTSAMESITE_ORIGIN]});
@@ -108,7 +108,7 @@ promise_test(async t => {
 }, 'an origins list written first-party admits the listed origins first-party and under the writer\'s top-level site');
 
 promise_test(async t => {
-  // A list written from a cross-site frame is keyed like every other grant
+  // A list written from a cross-site frame is keyed like every other sharing record
   // that frame adds. The frame's own response authorizes the listed origin,
   // which is the origin of a different frame of the same site.
   const {hash, content} = await uniqueHash('frame-list-keyed');

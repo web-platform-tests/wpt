@@ -97,7 +97,7 @@ async function cosRemoteReadDigest(ctx, hash) {
 // the page, which persists across reloads for a time window
 // (https://wicg.github.io/cross-origin-storage/#availability-gating). Such a
 // budget is a non-normative example mitigation. It leaves uncharged only the
-// lookups answered by a grant written under the reader's own top-level site,
+// lookups answered by a sharing record written under the reader's own top-level site,
 // and since it is keyed on the test page's top-level site, the pools do not
 // divide it.
 function cosOriginPools() {
@@ -151,20 +151,20 @@ function cosNextCrossSiteOrigin() {
 }
 
 // Tally of what cosAssertDisclosableOrGreased() actually saw, so that a file
-// whose global-grant reads were *all* refused fails, and does not pass
+// whose global-scope reads were *all* refused fails, and does not pass
 // vacuously.
 const cosDisclosureTally = {authorized: 0, disclosed: 0};
 
-// Fails if a file made global-grant reads of a Public Hash List resource and
+// Fails if a file made global-scope reads of a Public Hash List resource and
 // not one of them was disclosed. GREASE'ing is probabilistic and a cross-site
 // lookup budget is finite, so any single refusal is expected; every one of
 // them being refused means the file exercised none of the disclosure path it
 // exists to test.
 function cosAssertSomeDisclosureObserved() {
   assert_greater_than(cosDisclosureTally.authorized, 0,
-    'this check belongs only in files that make global-grant reads');
+    'this check belongs only in files that make global-scope reads');
   assert_greater_than(cosDisclosureTally.disclosed, 0,
-    `all ${cosDisclosureTally.authorized} global-grant reads in this file were refused, so ` +
+    `all ${cosDisclosureTally.authorized} global-scope reads in this file were refused, so ` +
     `none of them tested disclosure. Expected causes: GREASE'ing set so high that the feature ` +
     `is never useful, the resource missing from the Public Hash List, or a cross-site lookup ` +
     `budget too small for this suite`);
@@ -192,7 +192,7 @@ function cosAssertDisclosedDigest(result, expectedDigest, description) {
 }
 
 // Asserts the outcome of a read that qualifies through the global ("*")
-// grant alone, for a resource on the Public Hash List. Only this case may be
+// scope alone, for a resource on the Public Hash List. Only this case may be
 // refused for an authorized reader: the user agent may GREASE it
 // (https://wicg.github.io/cross-origin-storage/#greaseing) or refuse it once a
 // cross-site lookup budget is spent
@@ -206,14 +206,14 @@ function cosAssertDisclosableOrGreased(result, expectedText, description) {
     assert_equals(result.text, expectedText, `${description}: content`);
   } else {
     assert_equals(result.name, 'NotFoundError',
-      `${description}: a refused global-grant read must still reject with NotFoundError ` +
+      `${description}: a refused global-scope read must still reject with NotFoundError ` +
       `(GREASE'd, or over a cross-site lookup budget), got ${result.name}: ${result.message}`);
   }
 }
 
 // Asserts that a read is NOT authorized: this must deterministically reject
 // with NotFoundError. An out-of-scope origin is refused by "determine COS
-// disclosure" itself, and so is a global-grant reader of a hash that is not on
+// disclosure" itself, and so is a global-scope reader of a hash that is not on
 // the Public Hash List.
 function cosAssertNotDisclosed(result, description) {
   assert_false(result.ok, `${description}: expected the read to be rejected`);

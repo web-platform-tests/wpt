@@ -23,3 +23,23 @@ updates:
   schedule:
     interval: daily
   open-pull-requests-limit: 1000
+  cooldown:
+    default-days: 3
+    # Exclude mozbase packages; we also control the upstream, if these are bad
+    # then either pypi itself was compromised or we have a worse problem.
+    exclude:
+      - marionette_driver
+      - mozcrash
+      - mozdebug
+      - mozdevice
+      - mozfile
+      - mozinfo
+      - mozinstall
+      - mozleak
+      - mozlog
+      - mozprocess
+      - mozprofile
+      - mozrunner
+      - mozshellutil
+      - mozterm
+      - mozversion

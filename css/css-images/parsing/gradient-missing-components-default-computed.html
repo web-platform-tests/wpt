@@ -1,0 +1,28 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Gradients with missing HSL or HWB components default to Oklab</title>
+<link rel="help" href="https://drafts.csswg.org/css-images-4/#gradient-colors">
+<link rel="help" href="https://drafts.csswg.org/css-color-4/#interpolation-space">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="target"></div>
+<script>
+const target = document.getElementById("target");
+for (const color of ["hsl(none 100% 50%)", "hwb(120 0% 0% / none)"]) {
+  test(() => {
+    function computedGradient(method) {
+      target.style.backgroundImage = "";
+      target.style.backgroundImage = `linear-gradient(${method}${color}, blue)`;
+      const computed = getComputedStyle(target).backgroundImage;
+      assert_not_equals(computed, "none", "The gradient parses");
+      return computed;
+    }
+
+    const implicit = computedGradient("");
+    assert_equals(computedGradient("in oklab, "), implicit,
+                  "Explicit Oklab serializes as the default");
+    assert_not_equals(computedGradient("in srgb, "), implicit,
+                      "Explicit sRGB differs from the default");
+  }, `A gradient with ${color} defaults to Oklab`);
+}
+</script>

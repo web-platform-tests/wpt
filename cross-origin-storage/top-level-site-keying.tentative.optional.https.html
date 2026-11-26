@@ -1,0 +1,134 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Cross-Origin Storage: the "*" grant is not keyed to the top-level site</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#cos-entries
+// https://wicg.github.io/cross-origin-storage/#availability-gating
+//
+// top-level-site-keying.tentative.https.html covers every grant that is keyed
+// to the top-level site of the write. This file covers the one that is not:
+// "Globally disclosable is not keyed, since the Public Hash List and GREASE'ing
+// already govern it." A "*"-scoped entry whose hash is on the PHL is therefore
+// readable under any top-level site, including one other than the site of the
+// write, even by the very origin that wrote it from a frame.
+//
+// The tests read under a top-level site other than the one the write ran
+// under, because a read under the writer's own top-level site would succeed
+// through the keyed storing-origin grant and pass whether or not the global
+// grant were keyed. Writes in this file only ever run under this document's
+// top-level site, so a disclosure under the alt site can only come from an
+// unkeyed global grant, even if an earlier test already stored the same bytes.
+//
+// This file is optional for the same reason as
+// public-hash-list.tentative.optional.https.html: the positive direction needs
+// a hash that is on the user agent's Public Hash List, which is
+// implementation-defined. resources/phl-listed-resource.js is that resource;
+// see public-hash-list.tentative.optional.https.html for why it is stable.
+//
+// A user agent may also make a "*"-scoped write available through the global
+// grant only after a user gesture (a non-normative example mitigation in
+// #availability-gating). Like public-hash-list.tentative.optional.https.html,
+// this file does not provide one.
+const {HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+
+const LISTED_RESOURCE = '/cross-origin-storage/resources/phl-listed-resource.js';
+const LISTED_DIGEST =
+  'fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a';
+
+// See public-hash-list.tentative.optional.https.html: GREASE'ing may suppress
+// an otherwise-authorized disclosure, so a disclosable entry gets several
+// reads, and an entry that is not disclosable is never disclosed by any of
+// them.
+const ATTEMPTS = 8;
+
+// Fetches `url` inside `ctx`, from `ctx`'s own origin, and stores the bytes
+// with `options`. Returns {ok: true, hash} or {ok: false, name, message}.
+async function remoteStoreFetched(ctx, url, options) {
+  return ctx.execute_script(async (url, options) => {
+    try {
+      const response = await fetch(url);
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      const digest = await crypto.subtle.digest('SHA-256', bytes);
+      const value = Array.from(new Uint8Array(digest))
+        .map((b) => b.toString(16).padStart(2, '0')).join('');
+      const hash = {algorithm: 'SHA-256', value};
+      const handle = await navigator.crossOriginStorage.getFileHandle(
+        hash, {...options, create: true});
+      const writable = await handle.createWritable();
+      await writable.write(new Blob([bytes]));
+      await writable.close();
+      return {ok: true, hash};
+    } catch (e) {
+      return {ok: false, name: e.name, message: e.message};
+    }
+  }, [url, options]);
+}
+
+// Reads `hash` from `ctx` up to ATTEMPTS times, stopping at the first
+// disclosure. Returns {disclosed, digest, rejections}.
+async function readUntilDisclosed(ctx, hash) {
+  const rejections = [];
+  for (let i = 0; i < ATTEMPTS; ++i) {
+    const result = await cosRemoteReadDigest(ctx, hash);
+    if (result.ok)
+      return {disclosed: true, digest: result.digest, rejections};
+    rejections.push(result.name);
+  }
+  return {disclosed: false, rejections};
+}
+
+promise_test(async t => {
+  const {ctx: frame} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const stored = await remoteStoreFetched(frame, LISTED_RESOURCE, {origins: '*'});
+  assert_true(stored.ok,
+    `the cross-site frame's write succeeds, got ${stored.name}: ${stored.message}`);
+  assert_equals(stored.hash.value, LISTED_DIGEST,
+    'the vendored resource must still be the hash this test is about');
+
+  // The listed hash is the only lookup this top-level site makes in this test,
+  // so a cross-site lookup budget cannot turn it into a spurious failure.
+  const topLevel = await cosOpenTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  const listed = await readUntilDisclosed(topLevel, stored.hash);
+  assert_true(listed.disclosed,
+    `a "*"-scoped entry on the PHL, written from a cross-site frame, must be ` +
+    `disclosable under another top-level site; ${ATTEMPTS} reads were all ` +
+    `rejected (${listed.rejections.join(', ')})`);
+  assert_equals(listed.digest, LISTED_DIGEST,
+    'a disclosed resource must be byte-for-byte what was stored');
+}, 'a "*"-scoped entry on the PHL written from a cross-site frame is readable under another top-level site');
+
+promise_test(async t => {
+  // The control: the same write scope and the same reader, for a hash the
+  // test invents, so it cannot be on the PHL. The storing-origin grant is
+  // keyed to this document's top-level site, and the global grant requires
+  // PHL membership, so nothing discloses it under the alt site.
+  const content = cosUniqueContent('frame-star-unlisted');
+  const hash = cosHash(await cosSha256Hex(content));
+  const {ctx: frame} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  const stored = await cosRemoteStore(frame, hash, content, {origins: '*'});
+  assert_true(stored.ok,
+    `the cross-site frame's write succeeds, got ${stored.name}: ${stored.message}`);
+
+  const topLevel = await cosOpenTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  const unlisted = await readUntilDisclosed(topLevel, hash);
+  assert_false(unlisted.disclosed,
+    'a "*"-scoped entry that is not on the PHL, written from a cross-site ' +
+    'frame, must not be disclosed under another top-level site, not even to ' +
+    'the origin that wrote it');
+  assert_array_equals(
+    unlisted.rejections, new Array(ATTEMPTS).fill('NotFoundError'),
+    'every refusal must be indistinguishable from a genuine miss');
+}, 'a "*"-scoped entry off the PHL written from a cross-site frame is not readable under another top-level site');
+</script>
+</body>

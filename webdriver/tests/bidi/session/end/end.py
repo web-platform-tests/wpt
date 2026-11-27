@@ -1,11 +1,14 @@
 import asyncio
 import copy
+from urllib.parse import urljoin
 
 import pytest
 import webdriver
 
+from tests.support.classic.asserts import assert_error
 from webdriver.bidi.client import BidiSession
 from webdriver.bidi.error import InvalidSessionIDError
+from webdriver.transport import HTTPWireProtocol
 
 
 pytestmark = pytest.mark.asyncio
@@ -59,6 +62,35 @@ async def test_end_replies_to_pipelined_command(bidi_session):
     assert await asyncio.wait_for(end_response, timeout=2) == {}
     with pytest.raises(InvalidSessionIDError):
         await asyncio.wait_for(command_response, timeout=2)
+
+
+async def test_end_invalidates_classic_session(bidi_session, configuration):
+    session_id = bidi_session.session_id
+    assert session_id is not None
+    assert await bidi_session.session.end() == {}
+
+    transport = HTTPWireProtocol(configuration["host"], configuration["port"])
+    try:
+        response = await asyncio.get_running_loop().run_in_executor(
+            None, transport.send, "GET", f"session/{session_id}/url"
+        )
+        assert_error(response, "invalid session id")
+    finally:
+        transport.close()
+
+
+async def test_end_on_static_connection(bidi_session, wait_for_future_safe):
+    static_url = urljoin(bidi_session.websocket_url, "/session")
+    static_session = BidiSession.bidi_only(static_url)
+    try:
+        await static_session.start_transport()
+        response = await static_session.send_command("session.end", {})
+        with pytest.raises(InvalidSessionIDError):
+            await wait_for_future_safe(response)
+    finally:
+        await static_session.end()
+
+    assert await bidi_session.browsing_context.get_tree()
 
 
 async def test_end_allows_replacement_session_after_success(

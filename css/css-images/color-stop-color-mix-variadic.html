@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>CSS Images Test: Gradient color stops with color-mix() of one color or more than two colors</title>
+<link rel="author" title="Javier Fernández García-Boente" href="mailto:jfernandez@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-images/#gradients">
+<link rel="help" href="https://drafts.csswg.org/css-color-5/#color-mix">
+<link rel="match" href="color-stop-color-mix-variadic-ref.html">
+<style>
+  .test {
+    width: 100px;
+    height: 25px;
+  }
+  /* Every mix is 25% lime and 75% black, which is the reference's
+     color(srgb 0 0.25 0). Percentages of 12.5%, 25% and 50% keep each step
+     of the mix exact in binary floating point, so the colors match the
+     reference bit for bit, and engines that dither gradients paint the same
+     pixels. */
+  /* Every item counts: lime and the first black share the 50% left by the
+     last black. */
+  #t1 {
+    background-image: linear-gradient(color-mix(in srgb, lime, black, black 50%) 0 0);
+  }
+  #t2 {
+    background-image: radial-gradient(color-mix(in srgb, lime 12.5%, lime 12.5%, black 25%, black 50%) 0 0);
+  }
+  #t3 {
+    background-image: conic-gradient(color-mix(in srgb, lime, black, black 50%) 0 0);
+  }
+  #t4 {
+    background-image: linear-gradient(color-mix(in srgb, color(srgb 0 0.25 0)) 0 0);
+  }
+</style>
+<p>Test passes if there is a filled dark green square.</p>
+<div id="t1" class="test"></div>
+<div id="t2" class="test"></div>
+<div id="t3" class="test"></div>
+<div id="t4" class="test"></div>

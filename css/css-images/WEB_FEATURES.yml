@@ -56,5 +56,6 @@ rules:
 - multiple-position-color-stop-conic-2.html: *id003
 - multiple-position-color-stop-*: [gradients]
 - color-stop-currentcolor.html: [gradients]
+- color-stop-color-mix-variadic*: [color-mix-variadic]
 - css-image-fallbacks-and-annotations*: [image-function]
 - image-rendering-*: [image-rendering]

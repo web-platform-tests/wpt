@@ -1,4 +1,5 @@
 rules:
+- gradient-color-mix-variadic-*: [color-mix-variadic]
 - gradient-position-*: [gradients]
 - gradient-interpolation-*: [gradient-interpolation]
 - image-orientation-*: [image-orientation]

@@ -1,4 +1,5 @@
 rules:
+- color-mix-variadic-*: [color-mix-variadic]
 - color-scheme-dependent-color-stops.html: [gradients]
 - color-stops-parsing.html: [gradients]
 - gradient-infinity-*: [gradients]

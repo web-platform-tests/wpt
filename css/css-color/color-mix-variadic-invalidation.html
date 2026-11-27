@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Color: color-mix() with one color or more than two colors is recomputed when its colors change</title>
+<link rel="author" title="Javier Fernández García-Boente" href="mailto:jfernandez@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-color-5/#color-mix">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/color-testcommon.js"></script>
+<style>
+  #parent {
+    color: black;
+  }
+  #parent.red {
+    color: red;
+  }
+  #three-colors {
+    color: color-mix(in srgb, currentcolor, white, black);
+  }
+  #one-color {
+    color: color-mix(in srgb, currentcolor);
+  }
+  #background {
+    color: black;
+    background-color: color-mix(in srgb, currentcolor, white, black);
+  }
+  #background.red {
+    color: red;
+  }
+  #custom-property {
+    --item: black;
+    background-color: color-mix(in srgb, var(--item), white, black);
+  }
+  #color-scheme {
+    color-scheme: light;
+    background-color: color-mix(in srgb, light-dark(black, red), white, black);
+  }
+  #color-scheme.dark {
+    color-scheme: dark;
+  }
+</style>
+
+<div id="parent">
+  <div id="three-colors">
+    <div id="child"></div>
+  </div>
+  <div id="one-color"></div>
+</div>
+<div id="background"></div>
+<div id="custom-property"></div>
+<div id="color-scheme"></div>
+
+<script>
+  const assert_color = set_up_fuzzy_color_test();
+  const style = id => getComputedStyle(document.getElementById(id));
+
+  // Mixing black, white and black gives 1/3 gray; replacing the first black
+  // with red gives 2/3 red.
+  const GRAY = "color(srgb 0.333333 0.333333 0.333333)";
+  const REDDISH = "color(srgb 0.666667 0.333333 0.333333)";
+
+  test(t => {
+    const parent = document.getElementById("parent");
+    t.add_cleanup(() => parent.classList.remove("red"));
+    assert_color(style("three-colors").color, GRAY);
+    parent.classList.add("red");
+    assert_color(style("three-colors").color, REDDISH);
+    assert_color(style("child").color, REDDISH);
+  }, "color-mix() with three colors and currentcolor is recomputed when the parent's color changes");
+
+  test(t => {
+    const parent = document.getElementById("parent");
+    t.add_cleanup(() => parent.classList.remove("red"));
+    assert_color(style("one-color").color, "color(srgb 0 0 0)");
+    parent.classList.add("red");
+    assert_color(style("one-color").color, "color(srgb 1 0 0)");
+  }, "color-mix() with one color and currentcolor is recomputed when the parent's color changes");
+
+  test(t => {
+    const element = document.getElementById("background");
+    t.add_cleanup(() => element.classList.remove("red"));
+    assert_color(style("background").backgroundColor, GRAY);
+    element.classList.add("red");
+    assert_color(style("background").backgroundColor, REDDISH);
+  }, "color-mix() with three colors and currentcolor in background-color is recomputed when the color property changes");
+
+  test(t => {
+    const element = document.getElementById("custom-property");
+    t.add_cleanup(() => { element.style.removeProperty("--item"); });
+    assert_color(style("custom-property").backgroundColor, GRAY);
+    element.style.setProperty("--item", "red");
+    assert_color(style("custom-property").backgroundColor, REDDISH);
+  }, "color-mix() with three colors is recomputed when a custom property it uses changes");
+
+  test(t => {
+    const element = document.getElementById("color-scheme");
+    t.add_cleanup(() => element.classList.remove("dark"));
+    assert_color(style("color-scheme").backgroundColor, GRAY);
+    element.classList.add("dark");
+    assert_color(style("color-scheme").backgroundColor, REDDISH);
+  }, "color-mix() with three colors is recomputed when the color-scheme of a light-dark() color changes");
+</script>

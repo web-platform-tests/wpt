@@ -1,0 +1,248 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const onloadPromise = new Promise(resolve => {
+  window.addEventListener("load", () => step_timeout(resolve, 0), { once: true });
+});
+
+promise_test(async t => {
+  await onloadPromise;
+  const startEntry = navigation.currentEntry;
+  const startIndex = startEntry.index;
+  const startLength = navigation.entries().length;
+  const startHash = location.hash;
+
+  await navigation.navigate("#1a").finished;
+
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+
+  let handlerCount = 0;
+  let errorCount = 0;
+  let successCount = 0;
+  let nav2Result;
+
+  navigation.addEventListener("navigateerror", () => errorCount++, { signal: controller.signal });
+  navigation.addEventListener("navigatesuccess", () => successCount++, { signal: controller.signal });
+
+  navigation.addEventListener("navigate", e => {
+    if (e.navigationType !== "traverse") {
+      return;
+    }
+    e.intercept({
+      precommitHandler: async () => {
+        navigation.transition.committed.then(t.step_func(() => {
+          assert_equals(location.hash, startHash, "URL updated before transition.committed resolves");
+          assert_equals(navigation.currentEntry, startEntry, "currentEntry updated before transition.committed resolves");
+          nav2Result = navigation.navigate("#2a");
+        }));
+        await new Promise(r => t.step_timeout(r, 10));
+      },
+      handler: () => {
+        handlerCount++;
+        return new Promise(r => t.step_timeout(r, 30));
+      }
+    });
+  }, { signal: controller.signal });
+
+  const backResult = navigation.back();
+  assert_equals(await backResult.committed, startEntry);
+  await promise_rejects_dom(t, "AbortError", backResult.finished);
+  assert_not_equals(nav2Result, undefined);
+  const nav2Entry = await nav2Result.finished;
+
+  assert_equals(location.hash, "#2a");
+  assert_equals(navigation.currentEntry, nav2Entry);
+  assert_equals(navigation.currentEntry.index, startIndex + 1);
+  assert_equals(navigation.entries().length, startLength + 1);
+  assert_equals(handlerCount, 1);
+  assert_equals(errorCount, 1);
+  assert_equals(successCount, 1);
+
+  controller.abort();
+  await navigation.back().finished;
+  assert_equals(location.hash, startHash);
+  assert_equals(navigation.currentEntry, startEntry);
+  await navigation.forward().finished;
+  assert_equals(location.hash, "#2a");
+  assert_equals(navigation.currentEntry, nav2Entry);
+}, "Same-document navigation.navigate() in transition.committed after precommitHandler traversal");
+
+promise_test(async t => {
+  await onloadPromise;
+  const startEntry = navigation.currentEntry;
+  const startIndex = startEntry.index;
+  const startLength = navigation.entries().length;
+  const startHash = location.hash;
+
+  await navigation.navigate("#1b").finished;
+
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+
+  let handler1Count = 0;
+  let handler2Count = 0;
+  let errorCount = 0;
+  let successCount = 0;
+  let nav2Result;
+
+  navigation.addEventListener("navigateerror", () => errorCount++, { signal: controller.signal });
+  navigation.addEventListener("navigatesuccess", () => successCount++, { signal: controller.signal });
+
+  navigation.addEventListener("navigate", e => {
+    if (e.navigationType === "traverse") {
+      e.intercept({
+        precommitHandler: async () => {
+          navigation.transition.committed.then(t.step_func(() => {
+            assert_equals(location.hash, startHash);
+            assert_equals(navigation.currentEntry, startEntry);
+            nav2Result = navigation.navigate("#2b");
+          }));
+          await new Promise(r => t.step_timeout(r, 10));
+        },
+        handler: () => {
+          handler1Count++;
+          return new Promise(r => t.step_timeout(r, 30));
+        }
+      });
+    } else if (new URL(e.destination.url).hash === "#2b") {
+      e.intercept({
+        handler: () => {
+          handler2Count++;
+          return new Promise(r => t.step_timeout(r, 30));
+        }
+      });
+    }
+  }, { signal: controller.signal });
+
+  const backResult = navigation.back();
+  assert_equals(await backResult.committed, startEntry);
+  await promise_rejects_dom(t, "AbortError", backResult.finished);
+  assert_not_equals(nav2Result, undefined);
+  const nav2Entry = await nav2Result.finished;
+
+  assert_equals(location.hash, "#2b");
+  assert_equals(navigation.currentEntry, nav2Entry);
+  assert_equals(navigation.currentEntry.index, startIndex + 1);
+  assert_equals(navigation.entries().length, startLength + 1);
+  assert_equals(handler1Count, 1);
+  assert_equals(handler2Count, 1);
+  assert_equals(errorCount, 1);
+  assert_equals(successCount, 1);
+
+  controller.abort();
+  await navigation.back().finished;
+  assert_equals(location.hash, startHash);
+  assert_equals(navigation.currentEntry, startEntry);
+  await navigation.forward().finished;
+  assert_equals(location.hash, "#2b");
+  assert_equals(navigation.currentEntry, nav2Entry);
+}, "Intercepted navigation.navigate() in transition.committed after precommitHandler traversal");
+
+promise_test(async t => {
+  await onloadPromise;
+  const startEntry = navigation.currentEntry;
+  const startIndex = startEntry.index;
+  const startLength = navigation.entries().length;
+  const startHash = location.hash;
+
+  await navigation.navigate("#1c").finished;
+
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+
+  let handlerCount = 0;
+
+  navigation.addEventListener("navigate", e => {
+    if (e.navigationType !== "traverse") {
+      return;
+    }
+    e.intercept({
+      precommitHandler: async () => {
+        navigation.transition.committed.then(t.step_func(() => {
+          assert_equals(location.hash, startHash);
+          assert_equals(navigation.currentEntry, startEntry);
+          history.pushState(null, "", "#2c");
+        }));
+        await new Promise(r => t.step_timeout(r, 10));
+      },
+      handler: () => {
+        handlerCount++;
+        return new Promise(r => t.step_timeout(r, 30));
+      }
+    });
+  }, { signal: controller.signal });
+
+  const backResult = navigation.back();
+  assert_equals(await backResult.committed, startEntry);
+  await promise_rejects_dom(t, "AbortError", backResult.finished);
+
+  assert_equals(location.hash, "#2c");
+  assert_equals(navigation.currentEntry.index, startIndex + 1);
+  assert_equals(navigation.entries().length, startLength + 1);
+  assert_equals(handlerCount, 1);
+
+  controller.abort();
+  await navigation.back().finished;
+  assert_equals(location.hash, startHash);
+  assert_equals(navigation.currentEntry, startEntry);
+  await navigation.forward().finished;
+  assert_equals(location.hash, "#2c");
+}, "history.pushState() in transition.committed after precommitHandler traversal");
+
+promise_test(async t => {
+  await onloadPromise;
+  const startEntry = navigation.currentEntry;
+  const startIndex = startEntry.index;
+  const startLength = navigation.entries().length;
+  const startHistoryLength = history.length;
+  const startHash = location.hash;
+
+  await navigation.navigate("#1d").finished;
+  await navigation.navigate("#1d2").finished;
+  assert_equals(history.length, startHistoryLength + 2);
+
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+
+  let nav2Result;
+  navigation.addEventListener("currententrychange", e => {
+    if (e.navigationType === "traverse") {
+      assert_equals(location.hash, startHash);
+      assert_equals(navigation.currentEntry, startEntry);
+      nav2Result = navigation.navigate("#2d");
+      assert_equals(history.length, startHistoryLength + 1);
+    }
+  }, { signal: controller.signal });
+
+  navigation.addEventListener("navigate", e => {
+    if (e.navigationType === "traverse") {
+      e.intercept({
+        precommitHandler: () => new Promise(r => t.step_timeout(r, 10)),
+        handler: () => new Promise(r => t.step_timeout(r, 30))
+      });
+    }
+  }, { signal: controller.signal });
+
+  const traverseResult = navigation.traverseTo(startEntry.key);
+  assert_equals(await traverseResult.committed, startEntry);
+  await promise_rejects_dom(t, "AbortError", traverseResult.finished);
+  assert_not_equals(nav2Result, undefined);
+  const nav2Entry = await nav2Result.finished;
+
+  assert_equals(location.hash, "#2d");
+  assert_equals(navigation.currentEntry, nav2Entry);
+  assert_equals(navigation.currentEntry.index, startIndex + 1);
+  assert_equals(navigation.entries().length, startLength + 1);
+  assert_equals(history.length, startHistoryLength + 1);
+
+  controller.abort();
+  await navigation.back().finished;
+  assert_equals(location.hash, startHash);
+  assert_equals(navigation.currentEntry, startEntry);
+  await navigation.forward().finished;
+  assert_equals(location.hash, "#2d");
+  assert_equals(navigation.currentEntry, nav2Entry);
+}, "Same-document navigation.navigate() in currententrychange after precommitHandler traversal");
+</script>

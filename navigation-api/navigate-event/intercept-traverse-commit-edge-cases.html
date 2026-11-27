@@ -1,0 +1,253 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const onloadPromise = new Promise(resolve => {
+  window.addEventListener("load", () => step_timeout(resolve, 0), { once: true });
+});
+
+function createIframe(t, src = "/common/blank.html") {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  const loaded = new Promise(resolve => {
+    iframe.addEventListener("load", () => t.step_timeout(resolve, 0), { once: true });
+  });
+  iframe.src = src;
+  document.body.appendChild(iframe);
+  return loaded.then(() => iframe);
+}
+
+promise_test(async t => {
+  await onloadPromise;
+  await navigation.navigate("#d3-start").finished;
+  await navigation.navigate("#d3-1").finished;
+
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+
+  let nav2;
+  let t2;
+  let precommitReject;
+  const err = new Error("precommit rejected");
+
+  navigation.addEventListener("navigate", e => {
+    if (e.navigationType === "traverse") {
+      e.intercept({ handler: () => {} });
+    } else if (new URL(e.destination.url).hash === "#d3-2") {
+      e.intercept({
+        precommitHandler: () => new Promise((_, reject) => { precommitReject = reject; }),
+        handler: () => {}
+      });
+    }
+  }, { signal: controller.signal });
+
+  navigation.addEventListener("currententrychange", t.step_func(e => {
+    if (e.navigationType === "traverse") {
+      nav2 = navigation.navigate("#d3-2");
+      t2 = navigation.transition;
+    }
+  }), { signal: controller.signal });
+
+  const backResult = navigation.back();
+  await backResult.committed;
+  assert_not_equals(t2, undefined);
+  assert_not_equals(precommitReject, undefined);
+  await promise_rejects_dom(t, "AbortError", backResult.finished);
+
+  precommitReject(err);
+  await promise_rejects_exactly(t, err, t2.committed);
+  await promise_rejects_exactly(t, err, t2.finished);
+  await promise_rejects_exactly(t, err, nav2.committed);
+  await promise_rejects_exactly(t, err, nav2.finished);
+}, "navigation.transition.committed is not prematurely resolved when currententrychange starts a precommitHandler navigation");
+
+promise_test(async t => {
+  await onloadPromise;
+  await navigation.navigate("#d6a-start").finished;
+  const startHistoryLength = history.length;
+  await navigation.navigate("#d6a-1").finished;
+
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+
+  navigation.addEventListener("navigate", e => {
+    if (e.navigationType === "traverse") {
+      e.intercept({ handler: () => {} });
+    }
+  }, { signal: controller.signal });
+
+  history.back();
+  history.pushState(null, "", "#d6a-foo");
+
+  // Wait for traversal queue to drain.
+  await new Promise(resolve => t.step_timeout(resolve, 100));
+  assert_equals(location.hash, "#d6a-start");
+  assert_equals(history.length, startHistoryLength + 1);
+  assert_equals(navigation.entries().at(-1).url.endsWith("#d6a-foo"), true);
+
+  controller.abort();
+  await navigation.traverseTo(navigation.entries().at(-1).key).finished;
+  assert_equals(location.hash, "#d6a-foo");
+}, "history.back(); history.pushState() with intercepted traverse preserves pushState entry");
+
+promise_test(async t => {
+  await onloadPromise;
+  await navigation.navigate("#d6b-start").finished;
+  const startHistoryLength = history.length;
+  await navigation.navigate("#d6b-1").finished;
+
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+
+  navigation.addEventListener("navigate", e => {
+    if (e.navigationType === "traverse") {
+      e.intercept({ handler: () => {} });
+    }
+  }, { signal: controller.signal });
+
+  history.back();
+  history.replaceState(null, "", "#d6b-rep");
+
+  await new Promise(resolve => t.step_timeout(resolve, 100));
+  assert_equals(location.hash, "#d6b-start");
+  assert_equals(history.length, startHistoryLength + 1);
+
+  controller.abort();
+  const fwdDone = new Promise(resolve => {
+    window.addEventListener("popstate", resolve, { once: true });
+  });
+  history.forward();
+  await fwdDone;
+  assert_equals(location.hash, "#d6b-rep");
+  assert_equals(new URL(navigation.currentEntry.url).hash, "#d6b-rep");
+}, "history.back(); history.replaceState() with intercepted traverse updates forward entry");
+
+promise_test(async t => {
+  await onloadPromise;
+  await navigation.navigate("#state-start").finished;
+  history.replaceState({ page: "start" }, "");
+  const startHistoryLength = history.length;
+  await navigation.navigate("#state-1").finished;
+  history.replaceState({ page: "one" }, "");
+
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+
+  let stateInCurrentEntryChange;
+  let stateInHandler;
+  let nav2Result;
+
+  navigation.addEventListener("currententrychange", t.step_func(e => {
+    if (e.navigationType === "traverse") {
+      stateInCurrentEntryChange = history.state;
+    }
+  }), { signal: controller.signal });
+
+  navigation.addEventListener("navigate", e => {
+    if (e.navigationType === "traverse") {
+      e.intercept({
+        precommitHandler: () => new Promise(r => t.step_timeout(r, 0)),
+        handler: () => {
+          stateInHandler = history.state;
+          nav2Result = navigation.navigate("#state-2");
+        }
+      });
+    }
+  }, { signal: controller.signal });
+
+  const backResult = navigation.back();
+  await backResult.committed;
+  await promise_rejects_dom(t, "AbortError", backResult.finished);
+  await nav2Result.finished;
+
+  assert_equals(stateInCurrentEntryChange?.page, "start");
+  assert_equals(stateInHandler?.page, "start");
+
+  // Wait for traversal queue to drain, then verify delta history.back()/forward() and length.
+  controller.abort();
+  await new Promise(resolve => t.step_timeout(resolve, 50));
+  assert_equals(history.length, startHistoryLength + 1);
+
+  const popBack = new Promise(r => window.addEventListener("popstate", r, { once: true }));
+  history.back();
+  await popBack;
+  assert_equals(location.hash, "#state-start");
+
+  const popFwd = new Promise(r => window.addEventListener("popstate", r, { once: true }));
+  history.forward();
+  await popFwd;
+  assert_equals(location.hash, "#state-2");
+}, "history.state and post-drain history.length / delta back-forward after precommitHandler traverse");
+
+promise_test(async t => {
+  await onloadPromise;
+  const iframe = await createIframe(t, "/common/blank.html?joint=0");
+  const iw = iframe.contentWindow;
+  const h0 = history.length;
+  await navigation.navigate("#joint-1").finished;
+
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+
+  navigation.addEventListener("navigate", e => {
+    if (e.navigationType === "traverse") {
+      e.intercept({
+        handler: () => {
+          iw.history.pushState(null, "", "#joint-inew");
+        }
+      });
+    }
+  }, { signal: controller.signal });
+
+  await navigation.back().finished;
+  controller.abort();
+  await new Promise(resolve => t.step_timeout(resolve, 50));
+
+  assert_equals(location.hash, "#state-2");
+  assert_equals(iw.location.hash, "#joint-inew");
+  assert_equals(history.length, h0 + 1);
+}, "Top-level intercepted traverse handler calling iframe.history.pushState preserves joint history");
+
+promise_test(async t => {
+  await onloadPromise;
+  const popup = window.open("/common/blank.html?popup=1");
+  t.add_cleanup(() => popup.close());
+  await new Promise(resolve => {
+    popup.addEventListener("load", () => t.step_timeout(resolve, 0), { once: true });
+  });
+
+  await popup.navigation.navigate("#1").finished;
+  popup.marker = "alive";
+
+  let nav2;
+  popup.navigation.addEventListener("navigate", e => {
+    if (e.navigationType === "traverse") {
+      e.intercept({
+        precommitHandler: () => new Promise(r => t.step_timeout(r, 0)),
+        handler: () => {
+          nav2 = popup.navigation.navigate("/common/blank.html?popup=2");
+        }
+      });
+    }
+  }, { once: true });
+
+  popup.navigation.back();
+  await new Promise(resolve => {
+    popup.addEventListener("unload", () => {}, { once: true });
+    const check = () => {
+      try {
+        if (popup.location.search === "?popup=2" && popup.document.readyState === "complete") {
+          resolve();
+          return;
+        }
+      } catch {}
+      t.step_timeout(check, 10);
+    };
+    t.step_timeout(check, 10);
+  });
+  assert_equals(popup.location.search, "?popup=2");
+  assert_not_equals(nav2, undefined);
+}, "Cross-document navigation started in intercepted traverse handler is not blocked by ongoing navigation");
+</script>
+</body>

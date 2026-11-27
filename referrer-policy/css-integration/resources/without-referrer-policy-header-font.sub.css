@@ -1,0 +1,9 @@
+@font-face {
+  font-family: 'wpt';
+  font-style: normal;
+  font-weight: normal;
+  src: url(http://{{hosts[][]}}:{{ports[http][0]}}/common/security-features/subresource/font.py?id={{GET[id]}}) format('truetype');
+}
+body {
+  font-family: 'wpt';
+}

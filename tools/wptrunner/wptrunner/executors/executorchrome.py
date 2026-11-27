@@ -493,6 +493,8 @@ class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor):
             # new window, so tracing that event is not interesting.
         if self.reuse_window:
             self.protocol.testharness.persistent_test_window = test_window
+        # Window switching alone may not focus the native content view.
+        protocol.cdp.execute_cdp_command("Page.bringToFront")
         return test_window
 
     def do_test(self, test):

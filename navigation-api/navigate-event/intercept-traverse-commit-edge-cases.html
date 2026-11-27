@@ -1,8 +1,8 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<body>
 <script>
+// Wait for after the load event so that the navigation doesn't get converted into a replace navigation.
 const onloadPromise = new Promise(resolve => {
   window.addEventListener("load", () => step_timeout(resolve, 0), { once: true });
 });
@@ -20,8 +20,8 @@ function createIframe(t, src = "/common/blank.html") {
 
 promise_test(async t => {
   await onloadPromise;
-  await navigation.navigate("#d3-start").finished;
-  await navigation.navigate("#d3-1").finished;
+  await navigation.navigate("#committed-start").finished;
+  await navigation.navigate("#committed-1").finished;
 
   const controller = new AbortController();
   t.add_cleanup(() => controller.abort());
@@ -34,7 +34,7 @@ promise_test(async t => {
   navigation.addEventListener("navigate", e => {
     if (e.navigationType === "traverse") {
       e.intercept({ handler: () => {} });
-    } else if (new URL(e.destination.url).hash === "#d3-2") {
+    } else if (new URL(e.destination.url).hash === "#committed-2") {
       e.intercept({
         precommitHandler: () => new Promise((_, reject) => { precommitReject = reject; }),
         handler: () => {}
@@ -44,7 +44,7 @@ promise_test(async t => {
 
   navigation.addEventListener("currententrychange", t.step_func(e => {
     if (e.navigationType === "traverse") {
-      nav2 = navigation.navigate("#d3-2");
+      nav2 = navigation.navigate("#committed-2");
       t2 = navigation.transition;
     }
   }), { signal: controller.signal });
@@ -64,9 +64,9 @@ promise_test(async t => {
 
 promise_test(async t => {
   await onloadPromise;
-  await navigation.navigate("#d6a-start").finished;
+  await navigation.navigate("#push-start").finished;
   const startHistoryLength = history.length;
-  await navigation.navigate("#d6a-1").finished;
+  await navigation.navigate("#push-1").finished;
 
   const controller = new AbortController();
   t.add_cleanup(() => controller.abort());
@@ -78,24 +78,24 @@ promise_test(async t => {
   }, { signal: controller.signal });
 
   history.back();
-  history.pushState(null, "", "#d6a-foo");
+  history.pushState(null, "", "#push-2");
 
   // Wait for traversal queue to drain.
   await new Promise(resolve => t.step_timeout(resolve, 100));
-  assert_equals(location.hash, "#d6a-start");
+  assert_equals(location.hash, "#push-start");
   assert_equals(history.length, startHistoryLength + 1);
-  assert_equals(navigation.entries().at(-1).url.endsWith("#d6a-foo"), true);
+  assert_equals(new URL(navigation.entries().at(-1).url).hash, "#push-2");
 
   controller.abort();
   await navigation.traverseTo(navigation.entries().at(-1).key).finished;
-  assert_equals(location.hash, "#d6a-foo");
+  assert_equals(location.hash, "#push-2");
 }, "history.back(); history.pushState() with intercepted traverse preserves pushState entry");
 
 promise_test(async t => {
   await onloadPromise;
-  await navigation.navigate("#d6b-start").finished;
+  await navigation.navigate("#replace-start").finished;
   const startHistoryLength = history.length;
-  await navigation.navigate("#d6b-1").finished;
+  await navigation.navigate("#replace-1").finished;
 
   const controller = new AbortController();
   t.add_cleanup(() => controller.abort());
@@ -107,10 +107,10 @@ promise_test(async t => {
   }, { signal: controller.signal });
 
   history.back();
-  history.replaceState(null, "", "#d6b-rep");
+  history.replaceState(null, "", "#replace-rep");
 
   await new Promise(resolve => t.step_timeout(resolve, 100));
-  assert_equals(location.hash, "#d6b-start");
+  assert_equals(location.hash, "#replace-start");
   assert_equals(history.length, startHistoryLength + 1);
 
   controller.abort();
@@ -119,8 +119,8 @@ promise_test(async t => {
   });
   history.forward();
   await fwdDone;
-  assert_equals(location.hash, "#d6b-rep");
-  assert_equals(new URL(navigation.currentEntry.url).hash, "#d6b-rep");
+  assert_equals(location.hash, "#replace-rep");
+  assert_equals(new URL(navigation.currentEntry.url).hash, "#replace-rep");
 }, "history.back(); history.replaceState() with intercepted traverse updates forward entry");
 
 promise_test(async t => {
@@ -218,7 +218,6 @@ promise_test(async t => {
   });
 
   await popup.navigation.navigate("#1").finished;
-  popup.marker = "alive";
 
   let nav2;
   popup.navigation.addEventListener("navigate", e => {
@@ -234,7 +233,6 @@ promise_test(async t => {
 
   popup.navigation.back();
   await new Promise(resolve => {
-    popup.addEventListener("unload", () => {}, { once: true });
     const check = () => {
       try {
         if (popup.location.search === "?popup=2" && popup.document.readyState === "complete") {
@@ -250,4 +248,3 @@ promise_test(async t => {
   assert_not_equals(nav2, undefined);
 }, "Cross-document navigation started in intercepted traverse handler is not blocked by ongoing navigation");
 </script>
-</body>

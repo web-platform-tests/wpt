@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>History population popup helper</title>
+<script>
+'use strict';
+
+const params = new URLSearchParams(location.search);
+const channelName = params.get('channel');
+const step = params.get('step') || '1';
+let bc = null;
+
+async function blockBFCache() {
+  window.marker = true;
+  if (navigator.locks) {
+    await new Promise(resolve => {
+      navigator.locks.request(`bfcache-blocker-${channelName}-${step}`, () => {
+        resolve();
+        return new Promise(() => {});
+      });
+    });
+  }
+  const pc = new RTCPeerConnection();
+  window.keptPeerConnection = pc;
+  try {
+    await pc.addIceCandidate({ candidate: 'test', sdpMLineIndex: 0 });
+  } catch (_) {}
+}
+
+function attachChannel() {
+  if (bc) {
+    bc.close();
+  }
+  bc = new BroadcastChannel(channelName);
+  bc.onmessage = async (e) => {
+    const { action, nextUrl } = e.data;
+    if (action === 'reload') {
+      bc.close();
+      bc = null;
+      location.reload();
+    } else if (action === 'block-bfcache-and-navigate') {
+      await blockBFCache();
+      bc.close();
+      bc = null;
+      location.href = nextUrl;
+    } else if (action === 'block-bfcache-and-back') {
+      await blockBFCache();
+      bc.close();
+      bc = null;
+      history.back();
+    } else if (action === 'block-bfcache-and-forward') {
+      await blockBFCache();
+      bc.close();
+      bc = null;
+      history.forward();
+    }
+  };
+}
+
+window.addEventListener('pageshow', (e) => {
+  setTimeout(() => {
+    attachChannel();
+    const entries = performance.getEntriesByType('navigation');
+    bc.postMessage({
+      step,
+      type: entries.length ? entries[0].type : null,
+      persisted: e.persisted,
+      hadMarker: Boolean(window.marker),
+    });
+  }, 0);
+});
+</script>

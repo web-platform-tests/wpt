@@ -18,12 +18,16 @@ def test_atspi(atspi, session, inline):
 #     # AXRole: AXHeading
 #     # AXSubrole: <nil>
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: IA2_ROLE_HEADING
-#     # Object Attribute: xml-roles:heading
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: IA2_ROLE_HEADING
+    # Object Attribute: xml-roles:heading
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_role(node) == "IA2_ROLE_HEADING"
+    assert ia2.get_attributes(node).get("xml-roles") == "heading"
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

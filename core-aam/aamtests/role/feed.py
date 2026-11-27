@@ -20,12 +20,17 @@ def test_atspi(atspi, session, inline):
 #     # AXRole: AXGroup
 #     # AXSubrole: AXApplicationGroup
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_GROUPING
-#     # Object Attribute: xml-roles:feed
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_GROUPING
+    # Object Attribute: xml-roles:feed
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_GROUPING"
+    assert ia2.get_role(node) == "ROLE_SYSTEM_GROUPING"
+    assert ia2.get_attributes(node).get("xml-roles") == "feed"
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

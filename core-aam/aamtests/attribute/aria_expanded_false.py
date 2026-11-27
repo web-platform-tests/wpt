@@ -19,11 +19,14 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXExpanded: NO
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # State: STATE_SYSTEM_COLLAPSED
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # State: STATE_SYSTEM_COLLAPSED
+
+    node = ia2.find_node("test", session.url)
+    assert "COLLAPSED" in ia2.get_msaa_state_list(node)
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

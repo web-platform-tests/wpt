@@ -18,12 +18,28 @@ def test_atspi(atspi, session, inline):
 #     # AXRole: AXGroup
 #     # AXSubrole: AXApplicationAlertDialog
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_DIALOG
-#     # Event: EVENT_SYSTEM_ALERT: .
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_DIALOG
+    # Event: EVENT_SYSTEM_ALERT: .
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_DIALOG"
+    assert ia2.get_role(node) == "ROLE_SYSTEM_DIALOG"
+
+def test_ia2_event(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Event: EVENT_SYSTEM_ALERT: .
+
+    def add_element():
+        session.execute_script("document.body.insertAdjacentHTML('beforeend', \"<div role='alertdialog' id='added'>content</div>\")")
+
+    event = ia2.expect_event("EVENT_SYSTEM_ALERT", dom_id="added", action=add_element)
+    assert event is not None
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

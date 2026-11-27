@@ -19,11 +19,14 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXARIACurrent: true
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Object Attribute: current:true
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Object Attribute: current:true
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_attributes(node).get("current") == "true"
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

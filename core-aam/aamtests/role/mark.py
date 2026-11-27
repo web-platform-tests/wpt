@@ -21,13 +21,18 @@ def test_atspi(atspi, session, inline):
 #     # AXRoleDescription: highlight
 #     # AXAttributedStringForTextMarkerRange: AXHighlight = 1;: for all text contained in a mark
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_GROUPING
-#     # Role: IA2_ROLE_MARK
-#     # Object Attribute: xml-roles:mark
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_GROUPING
+    # Role: IA2_ROLE_MARK
+    # Object Attribute: xml-roles:mark
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_GROUPING"
+    assert ia2.get_role(node) == "IA2_ROLE_MARK"
+    assert ia2.get_attributes(node).get("xml-roles") == "mark"
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

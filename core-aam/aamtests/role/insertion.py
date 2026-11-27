@@ -21,11 +21,14 @@ def test_atspi(atspi, session, inline):
 #     # AXSubrole: AXInsertStyleGroup
 #     # AXAttributedStringForTextMarkerRange: AXIsSuggestedInsertion = 1;: for all text contained in a insertion
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: IA2_ROLE_CONTENT_INSERTION
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: IA2_ROLE_CONTENT_INSERTION
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_role(node) == "IA2_ROLE_CONTENT_INSERTION"
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

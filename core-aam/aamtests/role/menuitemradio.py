@@ -19,13 +19,17 @@ def test_atspi(atspi, session, inline):
 #     # AXSubrole: <nil>
 #     # See also: aria-checked in the State and Property Mapping Tables
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_RADIOBUTTON: or ROLE_SYSTEM_MENUITEM
-#     # Role: IA2_ROLE_RADIO_MENU_ITEM
-#     # See also: aria-checked in the State and Property Mapping Tables
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_RADIOBUTTON: or ROLE_SYSTEM_MENUITEM
+    # Role: IA2_ROLE_RADIO_MENU_ITEM
+    # See also: aria-checked in the State and Property Mapping Tables
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) in ["ROLE_SYSTEM_RADIOBUTTON", "ROLE_SYSTEM_MENUITEM"]
+    assert ia2.get_role(node) == "IA2_ROLE_RADIO_MENU_ITEM"
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

@@ -19,12 +19,16 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXOrientation: AXHorizontalOrientation
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # State: IA2_STATE_HORIZONTAL
-#     # State: IA2_STATE_VERTICAL: not exposed
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # State: IA2_STATE_HORIZONTAL
+    # State: IA2_STATE_VERTICAL: not exposed
+
+    node = ia2.find_node("test", session.url)
+    assert "HORIZONTAL" in ia2.get_state_list(node)
+    assert "VERTICAL" not in ia2.get_state_list(node)
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

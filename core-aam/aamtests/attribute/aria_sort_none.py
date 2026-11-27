@@ -13,10 +13,13 @@ def test_atspi(atspi, session, inline):
 
 # Intentionally no AX API test. AX API does not surface this node or attribute.
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Object Attribute: sort:none: , if the value is not unspecified
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Object Attribute: sort:none: , if the value is not unspecified
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_attributes(node).get("sort") == "none"
 
 # Intentionally no UIA test. UIA does not surface this node or attribute.

@@ -25,13 +25,19 @@ def test_atspi(atspi, session, inline):
 #     # AXHeader: a pointer to the row or group containing those columnheader elements
 #     # AXRowHeaderUIElements: a list of pointers to the rowheader elements
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_TABLE
-#     # Object Attribute: xml-roles:table
-#     # Interface: IAccessibleTable2
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_TABLE
+    # Object Attribute: xml-roles:table
+    # Interface: IAccessibleTable2
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_TABLE"
+    assert ia2.get_role(node) == "ROLE_SYSTEM_TABLE"
+    assert ia2.get_attributes(node).get("xml-roles") == "table"
+    assert ia2.get_table2_interface(node) is not None
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

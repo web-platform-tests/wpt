@@ -194,6 +194,37 @@ class Ia2State(enum.IntFlag):
     IA2_STATE_VERTICAL = ia2_mod.IA2_STATE_VERTICAL
 
 
+class Relation(str, enum.Enum):
+    # IAccessible2 relation types - string constants not provided via the
+    # type library, see AccessibleRelation.idl
+    IA2_RELATION_CONTAINING_APPLICATION = "containingApplication"
+    IA2_RELATION_CONTAINING_DOCUMENT = "containingDocument"
+    IA2_RELATION_CONTAINING_TAB_PANE = "containingTabPane"
+    IA2_RELATION_CONTAINING_WINDOW = "containingWindow"
+    IA2_RELATION_CONTROLLED_BY = "controlledBy"
+    IA2_RELATION_CONTROLLER_FOR = "controllerFor"
+    IA2_RELATION_DESCRIBED_BY = "describedBy"
+    IA2_RELATION_DESCRIPTION_FOR = "descriptionFor"
+    IA2_RELATION_DETAILS = "details"
+    IA2_RELATION_DETAILS_FOR = "detailsFor"
+    IA2_RELATION_EMBEDDED_BY = "embeddedBy"
+    IA2_RELATION_EMBEDS = "embeds"
+    IA2_RELATION_ERROR = "error"
+    IA2_RELATION_ERROR_FOR = "errorFor"
+    IA2_RELATION_FLOWS_FROM = "flowsFrom"
+    IA2_RELATION_FLOWS_TO = "flowsTo"
+    IA2_RELATION_LABEL_FOR = "labelFor"
+    IA2_RELATION_LABELLED_BY = "labelledBy"
+    IA2_RELATION_MEMBER_OF = "memberOf"
+    IA2_RELATION_NEXT_TABBABLE = "nextTabbable"
+    IA2_RELATION_NODE_CHILD_OF = "nodeChildOf"
+    IA2_RELATION_NODE_PARENT_OF = "nodeParentOf"
+    IA2_RELATION_PARENT_WINDOW_OF = "parentWindowOf"
+    IA2_RELATION_POPUP_FOR = "popupFor"
+    IA2_RELATION_PREVIOUS_TABBABLE = "previousTabbable"
+    IA2_RELATION_SUBWINDOW_OF = "subwindowOf"
+
+
 def msaa_state_list_to_string(states):
     state_strings = []
     for state in MsaaState:

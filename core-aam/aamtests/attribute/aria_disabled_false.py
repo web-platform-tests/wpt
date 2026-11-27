@@ -17,11 +17,14 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXEnabled: YES
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # State: STATE_SYSTEM_UNAVAILABLE: not exposed
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # State: STATE_SYSTEM_UNAVAILABLE: not exposed
+
+    node = ia2.find_node("test", session.url)
+    assert "UNAVAILABLE" not in ia2.get_msaa_state_list(node)
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

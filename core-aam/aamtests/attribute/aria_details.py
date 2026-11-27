@@ -20,13 +20,18 @@ def test_atspi(atspi, session, inline):
 
 # Intentionally no AX API test. AX API does not surface this node or attribute.
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Relation: IA2_RELATION_DETAILS: points to accessible nodes matching IDREFs, if the referenced objects are in the accessibility tree
-#     # Reverse Relation: IA2_RELATION_DETAILS_FOR: points to element
-#     # See also: Mapping Additional Relations
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Relation: IA2_RELATION_DETAILS: points to accessible nodes matching IDREFs, if the referenced objects are in the accessibility tree
+    # Reverse Relation: IA2_RELATION_DETAILS_FOR: points to element
+    # See also: Mapping Additional Relations
+
+    node = ia2.find_node("test", session.url)
+    assert "details" in ia2.get_relation_targets(node, "IA2_RELATION_DETAILS")
+    details_node = ia2.find_node("details", session.url)
+    assert "test" in ia2.get_relation_targets(details_node, "IA2_RELATION_DETAILS_FOR")
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

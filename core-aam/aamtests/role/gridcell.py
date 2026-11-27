@@ -20,12 +20,17 @@ def test_atspi(atspi, session, inline):
 #     # AXRole: AXCell
 #     # AXSubrole: <nil>
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_CELL
-#     # Interface: IAccessibleTableCell
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_CELL
+    # Interface: IAccessibleTableCell
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_CELL"
+    assert ia2.get_role(node) == "ROLE_SYSTEM_CELL"
+    assert ia2.get_table_cell_interface(node) is not None
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

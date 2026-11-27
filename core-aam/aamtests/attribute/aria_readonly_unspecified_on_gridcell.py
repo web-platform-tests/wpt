@@ -18,11 +18,15 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # The <code>gridcell</code> MUST inherit any author-provided value for <code>aria-readonly</code> from the containing <code>grid</code> or <code>treegrid</code>. Expose the inherited value on the <code>gridcell</code> as described for <a href="#ariaReadonlyTrue"><code>aria-readonly="true"</code></a> and <a href="#ariaReadonlyFalse"><code>aria-readonly="false"</code></a>.
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # The <code>gridcell</code> MUST inherit any author-provided value for <code>aria-readonly</code> from the containing <code>grid</code> or <code>treegrid</code>. Expose the inherited value on the <code>gridcell</code> as described for <a href="#ariaReadonlyTrue"><code>aria-readonly="true"</code></a> and <a href="#ariaReadonlyFalse"><code>aria-readonly="false"</code></a>.
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # The <code>gridcell</code> MUST inherit any author-provided value for <code>aria-readonly</code> from the containing <code>grid</code> or <code>treegrid</code>. Expose the inherited value on the <code>gridcell</code> as described for <a href="#ariaReadonlyTrue"><code>aria-readonly="true"</code></a> and <a href="#ariaReadonlyFalse"><code>aria-readonly="false"</code></a>.
+
+    node = ia2.find_node("test", session.url)
+    assert "READONLY" in ia2.get_msaa_state_list(node)
+    assert "EDITABLE" not in ia2.get_state_list(node)
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

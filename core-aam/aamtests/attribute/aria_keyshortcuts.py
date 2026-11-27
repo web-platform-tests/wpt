@@ -17,11 +17,14 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXKeyShortcutsValue: <value>
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Property: accKeyboardShortcut: <value>
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Property: accKeyboardShortcut: <value>
+
+    node = ia2.find_node("test", session.url)
+    assert node.accKeyboardShortcut(ia2.CHILDID_SELF) == "Shift+Space"
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

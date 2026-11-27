@@ -22,11 +22,14 @@ def test_axapi(axapi, session, inline):
     assert not err
     assert value == "foobar"
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Object Attribute: braillelabel:<value>
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Object Attribute: braillelabel:<value>
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_attributes(node).get("braillelabel") == "foobar"
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

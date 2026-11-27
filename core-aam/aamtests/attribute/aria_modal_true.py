@@ -17,11 +17,14 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Prune the accessibility tree such that the background content is no longer exposed. No specific property is set on the <a class="termref">accessible object</a> that corresponds to the <a class="termref">element</a> with <code>aria-modal="true"</code>. Only the tree whose root is that modal accessible object is exposed.
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # State: IA2_STATE_MODAL
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # State: IA2_STATE_MODAL
+
+    node = ia2.find_node("test", session.url)
+    assert "MODAL" in ia2.get_state_list(node)
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

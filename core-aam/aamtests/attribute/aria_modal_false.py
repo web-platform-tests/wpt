@@ -17,11 +17,14 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Grow the accessibility tree such that the background content is exposed. No specific property is set on the <a class="termref">accessible object</a> that corresponds to the <a class="termref">element</a> with <code>aria-modal="false"</code>.
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # State: IA2_STATE_MODAL: not exposed
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # State: IA2_STATE_MODAL: not exposed
+
+    node = ia2.find_node("test", session.url)
+    assert "MODAL" not in ia2.get_state_list(node)
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

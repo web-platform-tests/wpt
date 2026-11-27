@@ -13,12 +13,16 @@ def test_atspi(atspi, session, inline):
 
 # Intentionally no AX API test. AX API does not surface this node or attribute.
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # State: STATE_SYSTEM_MULTISELECTABLE: not exposed
-#     # State: STATE_SYSTEM_EXTSELECTABLE: not exposed
-#     # See also: Selection for details on accessibility events
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # State: STATE_SYSTEM_MULTISELECTABLE: not exposed
+    # State: STATE_SYSTEM_EXTSELECTABLE: not exposed
+    # See also: Selection for details on accessibility events
+
+    node = ia2.find_node("test", session.url)
+    assert "MULTISELECTABLE" not in ia2.get_msaa_state_list(node)
+    assert "EXTSELECTABLE" not in ia2.get_msaa_state_list(node)
 
 # Intentionally no UIA test. UIA does not surface this node or attribute.

@@ -18,13 +18,17 @@ def test_atspi(atspi, session, inline):
 #     # Property: AXValueDescription: <value>
 #     # See also: Handling Author Errors for States and Properties
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Method: IAccessible::get_accValue(): <value>
-#     # Object Attribute: valuetext:<value>
-#     # See also: Handling Author Errors for States and Properties
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Method: IAccessible::get_accValue(): <value>
+    # Object Attribute: valuetext:<value>
+    # See also: Handling Author Errors for States and Properties
+
+    node = ia2.find_node("test", session.url)
+    assert node.accValue(ia2.CHILDID_SELF) == "hello world"
+    assert ia2.get_attributes(node).get("valuetext") == "hello world"
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import ctypes
 from ctypes import POINTER, byref
@@ -13,12 +13,19 @@ IAccessible2Ptr = Any
 IAccessibleHyperlinkPtr = Any
 
 import comtypes.client
-from comtypes import IServiceProvider
+from comtypes import COMError, IServiceProvider
 
 from .api_wrapper import ApiWrapper
 from ia2 import (  # type: ignore[attr-defined]
     IAccessible2_2,
+    IAccessibleEditableText,
     IAccessibleHyperlink,
+    IAccessibleImage,
+    IAccessibleTable2,
+    IAccessibleTableCell,
+    IAccessibleText,
+    IAccessibleValue,
+    Relation,
     Role,
     msaa_state_list_to_string,
     state_list_to_string,
@@ -26,6 +33,8 @@ from ia2 import (  # type: ignore[attr-defined]
 
 CHILDID_SELF = 0
 OBJID_CLIENT = -4
+SELFLAG_NONE = 0
+E_NOTIMPL = -2147467263  # 0x80004001 as a signed HRESULT
 
 user32 = ctypes.windll.user32  # type: ignore
 oleacc = ctypes.oledll.oleacc  # type: ignore
@@ -87,15 +96,74 @@ def to_ia2(node: IAccessiblePtr) -> IAccessible2Ptr:
     return service.QueryService(IAccessible._iid_, IAccessible2_2)
 
 
+def attributes_to_dict(attributes: Optional[str]) -> Dict[str, str]:
+    """Parse an IAccessible2 attribute string ("name:value;name2:value2;")
+    into a dict. The characters \\ : ; , = are backslash escaped."""
+    result: Dict[str, str] = {}
+    key: Optional[str] = None
+    current = ""
+    escaped = False
+    for char in attributes or "":
+        if escaped:
+            current += char
+            escaped = False
+        elif char == "\\":
+            escaped = True
+        elif char == ":" and key is None:
+            key = current
+            current = ""
+        elif char == ";":
+            if key is not None:
+                result[key] = current
+            key = None
+            current = ""
+        else:
+            current += char
+    if key is not None:
+        result[key] = current
+    return result
+q
+
 class Ia2Wrapper(ApiWrapper[IAccessible2Ptr, Any]):
 
     @property
     def api_name(self) -> str:
         return "IA2"
 
-    def get_hyperlink_interface(self, node: IAccessible2Ptr) -> IAccessibleHyperlinkPtr:
-        service = node.QueryInterface(IServiceProvider)
-        return service.QueryService(IAccessible._iid_, IAccessibleHyperlink)
+    @property
+    def CHILDID_SELF(self) -> int:  # noqa: N802
+        return CHILDID_SELF
+
+    def _query_interface(self, node: IAccessible2Ptr, interface: Any) -> Optional[Any]:
+        """
+        :returns: The interface pointer, or None if the node does not implement it.
+        """
+        try:
+            service = node.QueryInterface(IServiceProvider)
+            return service.QueryService(IAccessible._iid_, interface)
+        except COMError:
+            return None
+
+    def get_editable_text_interface(self, node: IAccessible2Ptr) -> Optional[Any]:
+        return self._query_interface(node, IAccessibleEditableText)
+
+    def get_hyperlink_interface(self, node: IAccessible2Ptr) -> Optional[IAccessibleHyperlinkPtr]:
+        return self._query_interface(node, IAccessibleHyperlink)
+
+    def get_image_interface(self, node: IAccessible2Ptr) -> Optional[Any]:
+        return self._query_interface(node, IAccessibleImage)
+
+    def get_table2_interface(self, node: IAccessible2Ptr) -> Optional[Any]:
+        return self._query_interface(node, IAccessibleTable2)
+
+    def get_table_cell_interface(self, node: IAccessible2Ptr) -> Optional[Any]:
+        return self._query_interface(node, IAccessibleTableCell)
+
+    def get_text_interface(self, node: IAccessible2Ptr) -> Optional[Any]:
+        return self._query_interface(node, IAccessibleText)
+
+    def get_value_interface(self, node: IAccessible2Ptr) -> Optional[Any]:
+        return self._query_interface(node, IAccessibleValue)
 
     def get_role(self, node: IAccessible2Ptr) -> str:
         return Role(node.role()).name
@@ -108,6 +176,49 @@ class Ia2Wrapper(ApiWrapper[IAccessible2Ptr, Any]):
 
     def get_msaa_state_list(self, node: IAccessible2Ptr) -> str:
         return msaa_state_list_to_string(node.accState(CHILDID_SELF))
+
+    def get_attributes(self, node: IAccessible2Ptr) -> Dict[str, str]:
+        return attributes_to_dict(node.attributes)
+
+    def get_text_attributes(self, node: IAccessible2Ptr, offset: int = 0) -> Dict[str, str]:
+        text = self.get_text_interface(node)
+        assert text is not None, "Node does not implement IAccessibleText"
+        _start, _end, attributes = text.attributes(offset)
+        return attributes_to_dict(attributes)
+
+    def get_relation_targets(self, node: IAccessible2Ptr, relation_name: str) -> List[str]:
+        """
+        :param relation_name: The relation constant name, e.g. "IA2_RELATION_LABELLED_BY".
+        :returns: The DOM ids of the targets of that relation.
+        """
+        targets, count = node.relationTargetsOfType(Relation[relation_name].value, 0)
+        return [
+            self.get_attributes(to_ia2(targets[i])).get("id", "[unknown id]")
+            for i in range(count)
+        ]
+
+    def get_group_position(self, node: IAccessible2Ptr) -> Dict[str, int]:
+        """
+        :returns: The result of IAccessible2::groupPosition as a dict.
+        """
+        group_level, similar_items_in_group, position_in_group = node.groupPosition
+        return {
+            "groupLevel": group_level,
+            "similarItemsInGroup": similar_items_in_group,
+            "positionInGroup": position_in_group,
+        }
+
+    def supports_acc_select(self, node: IAccessible2Ptr) -> bool:
+        """Calls IAccessible::accSelect with SELFLAG_NONE, which does not change
+        the selection.
+
+        :returns: False if accSelect is not implemented (E_NOTIMPL).
+        """
+        try:
+            node.accSelect(SELFLAG_NONE, CHILDID_SELF)
+        except COMError as e:
+            return e.hresult != E_NOTIMPL
+        return True
 
     def _find_browser(self) -> Optional[IAccessible2Ptr]:
         """Find the IAccessible2 node representing the browser.

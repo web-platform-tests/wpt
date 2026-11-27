@@ -21,12 +21,17 @@ def test_atspi(atspi, session, inline):
 #     # AXRole: AXIncrementor
 #     # AXSubrole: <nil>
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_SPINBUTTON
-#     # Interface: IAccessibleValue
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_SPINBUTTON
+    # Interface: IAccessibleValue
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_SPINBUTTON"
+    assert ia2.get_role(node) == "ROLE_SYSTEM_SPINBUTTON"
+    assert ia2.get_value_interface(node) is not None
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

@@ -22,14 +22,20 @@ def test_atspi(atspi, session, inline):
 #     # Property: AXARIALive: "assertive"
 #     # See also: Changes to document content or node visibility
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Object Attribute: live:assertive
-#     # Object Attribute: container-live:assertive
-#     # Object Attribute: container-live:assertive: on all descendants
-#     # See also: Changes to document content or node visibility
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Object Attribute: live:assertive
+    # Object Attribute: container-live:assertive
+    # Object Attribute: container-live:assertive: on all descendants
+    # See also: Changes to document content or node visibility
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_attributes(node).get("live") == "assertive"
+    assert ia2.get_attributes(node).get("container-live") == "assertive"
+    child_node = ia2.find_node("child", session.url)
+    assert ia2.get_attributes(child_node).get("container-live") == "assertive"
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

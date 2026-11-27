@@ -33,13 +33,17 @@ def test_axapi(axapi, session, inline, test_html):
     assert not err
     assert subrole == "AXToggle"
 
-# @pytest.mark.parametrize("test_html", TEST_HTML.values(), ids=TEST_HTML.keys())
-# def test_ia2(ia2, session, inline, test_html):
-#     session.url = inline(test_html)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_PUSHBUTTON
-#     # Role: IA2_ROLE_TOGGLE_BUTTON
+@pytest.mark.parametrize("test_html", TEST_HTML.values(), ids=TEST_HTML.keys())
+def test_ia2(ia2, session, inline, test_html):
+    session.url = inline(test_html)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_PUSHBUTTON
+    # Role: IA2_ROLE_TOGGLE_BUTTON
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_PUSHBUTTON"
+    assert ia2.get_role(node) == "IA2_ROLE_TOGGLE_BUTTON"
 
 @pytest.mark.parametrize("test_html", TEST_HTML.values(), ids=TEST_HTML.keys())
 def test_uia(uia, session, inline, test_html):

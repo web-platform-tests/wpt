@@ -22,12 +22,16 @@ def test_atspi(atspi, session, inline):
 #     # Property: AXValue: 2
 #     # Property: AXMenuItemMarkChar: <nil> for menuitemcheckbox and menuitemradio
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # State: STATE_SYSTEM_MIXED
-#     # Object Attribute: checkable:true
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # State: STATE_SYSTEM_MIXED
+    # Object Attribute: checkable:true
+
+    node = ia2.find_node("test", session.url)
+    assert "MIXED" in ia2.get_msaa_state_list(node)
+    assert ia2.get_attributes(node).get("checkable") == "true"
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

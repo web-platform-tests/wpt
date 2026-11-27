@@ -17,11 +17,14 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXRowIndexDescription: <value>
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Object Attribute: rowindextext:<value>
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Object Attribute: rowindextext:<value>
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_attributes(node).get("rowindextext") == "foo"
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

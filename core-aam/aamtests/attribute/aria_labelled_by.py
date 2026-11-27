@@ -28,14 +28,20 @@ def test_atspi(atspi, session, inline):
 #     # Property: AXTitleUIElement: points to accessible node matching IDREF, if there is a single referenced element that is in the accessibility tree
 #     # See also: Name Computation
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Property: accName: <value>
-#     # Relation: IA2_RELATION_LABELLED_BY: points to accessible nodes matching IDREFs, if the referenced objects are in the accessibility tree
-#     # Reverse Relation: IA2_RELATION_LABEL_FOR: points to element
-#     # See also: Name Computation and Mapping Additional Relations
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Property: accName: <value>
+    # Relation: IA2_RELATION_LABELLED_BY: points to accessible nodes matching IDREFs, if the referenced objects are in the accessibility tree
+    # Reverse Relation: IA2_RELATION_LABEL_FOR: points to element
+    # See also: Name Computation and Mapping Additional Relations
+
+    node = ia2.find_node("test", session.url)
+    assert node.accName(ia2.CHILDID_SELF) == "hello world"
+    assert "label" in ia2.get_relation_targets(node, "IA2_RELATION_LABELLED_BY")
+    label_node = ia2.find_node("label", session.url)
+    assert "test" in ia2.get_relation_targets(label_node, "IA2_RELATION_LABEL_FOR")
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

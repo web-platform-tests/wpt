@@ -20,12 +20,17 @@ def test_atspi(atspi, session, inline):
 #     # AXRole: AXImage
 #     # AXSubrole: <nil>
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_GRAPHIC
-#     # Interface: IAccessibleImage
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_GRAPHIC
+    # Interface: IAccessibleImage
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_GRAPHIC"
+    assert ia2.get_role(node) == "ROLE_SYSTEM_GRAPHIC"
+    assert ia2.get_image_interface(node) is not None
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

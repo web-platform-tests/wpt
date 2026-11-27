@@ -22,12 +22,16 @@ def test_atspi(atspi, session, inline, test_value, test_html):
 
 # Intentionally no AX API test. AX API does not surface this attribute.
 
-# @pytest.mark.parametrize("test_value,test_html", TEST_HTML.items(), ids=TEST_HTML.keys())
-# def test_ia2(ia2, session, inline, test_value, test_html):
-#     session.url = inline(test_html)
-#
-#     # Spec:
-#     # Object Attribute: autocomplete:<value>
-#     # State: IA2_STATE_SUPPORTS_AUTOCOMPLETION
+@pytest.mark.parametrize("test_value,test_html", TEST_HTML.items(), ids=TEST_HTML.keys())
+def test_ia2(ia2, session, inline, test_value, test_html):
+    session.url = inline(test_html)
+
+    # Spec:
+    # Object Attribute: autocomplete:<value>
+    # State: IA2_STATE_SUPPORTS_AUTOCOMPLETION
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_attributes(node).get("autocomplete") == test_value
+    assert "SUPPORTS_AUTOCOMPLETION" in ia2.get_state_list(node)
 
 # Intentionally no UIA test. UIA does not surface this attribute.

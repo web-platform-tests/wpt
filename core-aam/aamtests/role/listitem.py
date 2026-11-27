@@ -18,12 +18,17 @@ def test_atspi(atspi, session, inline):
 #     # AXRole: AXGroup
 #     # AXSubrole: <nil>
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_LISTITEM
-#     # State: STATE_SYSTEM_READONLY
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_LISTITEM
+    # State: STATE_SYSTEM_READONLY
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) == "ROLE_SYSTEM_LISTITEM"
+    assert ia2.get_role(node) == "ROLE_SYSTEM_LISTITEM"
+    assert "READONLY" in ia2.get_msaa_state_list(node)
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

@@ -17,11 +17,14 @@ def test_atspi(atspi, session, inline):
 #     # Spec:
 #     # Property: AXColumnIndexDescription: <value>
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Object Attribute: colindextext:<value>
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Object Attribute: colindextext:<value>
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_attributes(node).get("colindextext") == "foo"
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

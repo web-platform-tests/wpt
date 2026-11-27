@@ -18,12 +18,15 @@ def test_atspi(atspi, session, inline):
 #     # Property: AXMaxValue: <value>
 #     # See also: Handling Author Errors for States and Properties
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Method: IAccessibleValue::maximumValue(): <value>
-#     # See also: Handling Author Errors for States and Properties
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Method: IAccessibleValue::maximumValue(): <value>
+    # See also: Handling Author Errors for States and Properties
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_value_interface(node).maximumValue == 10
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

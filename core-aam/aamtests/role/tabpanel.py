@@ -18,11 +18,15 @@ def test_atspi(atspi, session, inline):
 #     # AXRole: AXGroup
 #     # AXSubrole: AXTabPanel
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_PANE: or ROLE_SYSTEM_PROPERTYPAGE
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_PANE: or ROLE_SYSTEM_PROPERTYPAGE
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_msaa_role(node) in ["ROLE_SYSTEM_PANE", "ROLE_SYSTEM_PROPERTYPAGE"]
+    assert ia2.get_role(node) in ["ROLE_SYSTEM_PANE", "ROLE_SYSTEM_PROPERTYPAGE"]
 
 def test_uia(uia, session, inline):
     session.url = inline(TEST_HTML)

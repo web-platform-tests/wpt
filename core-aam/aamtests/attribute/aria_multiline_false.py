@@ -20,12 +20,16 @@ def test_atspi(atspi, session, inline):
 #     # Not mapped
 #     # See also: textbox in the Role Mapping Tables
 
-# def test_ia2(ia2, session, inline):
-#     session.url = inline(TEST_HTML)
-#
-#     # Spec:
-#     # State: IA2_STATE_SINGLE_LINE
-#     # State: IA2_STATE_MULTI_LINE: not exposed
+def test_ia2(ia2, session, inline):
+    session.url = inline(TEST_HTML)
+
+    # Spec:
+    # State: IA2_STATE_SINGLE_LINE
+    # State: IA2_STATE_MULTI_LINE: not exposed
+
+    node = ia2.find_node("test", session.url)
+    assert "SINGLE_LINE" in ia2.get_state_list(node)
+    assert "MULTI_LINE" not in ia2.get_state_list(node)
 
 # def test_uia(uia, session, inline):
 #     session.url = inline(TEST_HTML)

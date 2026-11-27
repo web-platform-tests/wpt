@@ -20,3 +20,4 @@ rules:
 - text-align-last-*: [text-align-last]
 - text-transform-*: [text-transform]
 - text-justify-*: [text-justify]
+- wrap-inside-*: [wrap-inside]

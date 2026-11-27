@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Text Module Test: parsing wrap-inside with invalid values</title>
+<link rel="author" title="Tim Nguyen" href="https://github.com/nt1m">
+<link rel="help" href="https://drafts.csswg.org/css-text-4/#wrap-inside">
+<meta name="assert" content="wrap-inside supports only the grammar 'auto | avoid'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_invalid_value("wrap-inside", "none");
+test_invalid_value("wrap-inside", "normal");
+test_invalid_value("wrap-inside", "always");
+test_invalid_value("wrap-inside", "avoid-line");
+test_invalid_value("wrap-inside", "avoid-flex");
+test_invalid_value("wrap-inside", "avoid-page");
+test_invalid_value("wrap-inside", "avoid-column");
+test_invalid_value("wrap-inside", "avoid-region");
+test_invalid_value("wrap-inside", "wrap");
+test_invalid_value("wrap-inside", "nowrap");
+test_invalid_value("wrap-inside", "auto avoid");
+test_invalid_value("wrap-inside", "avoid auto");
+test_invalid_value("wrap-inside", "avoid avoid");
+test_invalid_value("wrap-inside", "auto auto");
+test_invalid_value("wrap-inside", "avoid, auto");
+test_invalid_value("wrap-inside", "'avoid'");
+test_invalid_value("wrap-inside", "0");
+test_invalid_value("wrap-inside", "5px");
+</script>
+</body>
+</html>
